@@ -1,0 +1,7 @@
+# Meson build options for semicolon-lapack
+
+option('tests', type: 'boolean', value: true,
+       description: 'Build and enable test suite')
+
+option('benchmarks', type: 'boolean', value: false,
+       description: 'Build benchmark executables for profiling')
