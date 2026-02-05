@@ -1,0 +1,127 @@
+/**
+ * @file dsygv_2stage.c
+ * @brief DSYGV_2STAGE computes all eigenvalues and optionally eigenvectors of a
+ *        real generalized symmetric-definite eigenproblem using 2-stage reduction.
+ */
+
+#include "semicolon_lapack_double.h"
+#include <cblas.h>
+
+/**
+ * DSYGV_2STAGE computes all the eigenvalues, and optionally, the eigenvectors
+ * of a real generalized symmetric-definite eigenproblem, of the form
+ * A*x=(lambda)*B*x, A*B*x=(lambda)*x, or B*A*x=(lambda)*x.
+ * Here A and B are assumed to be symmetric and B is also positive definite.
+ * This routine uses the 2-stage technique for the reduction to tridiagonal
+ * which showed higher performance on recent architecture and for large sizes N>2000.
+ *
+ * @param[in]     itype  = 1: A*x = lambda*B*x; = 2: A*B*x = lambda*x; = 3: B*A*x = lambda*x
+ * @param[in]     jobz   = 'N': eigenvalues only; = 'V': not available in this release.
+ * @param[in]     uplo   = 'U': upper triangles stored; = 'L': lower triangles stored
+ * @param[in]     n      The order of the matrices A and B. n >= 0.
+ * @param[in,out] A      Symmetric matrix A. On exit, eigenvectors if jobz='V'.
+ * @param[in]     lda    Leading dimension of A. lda >= max(1, n).
+ * @param[in,out] B      Symmetric positive definite B. On exit, Cholesky factor.
+ * @param[in]     ldb    Leading dimension of B. ldb >= max(1, n).
+ * @param[out]    W      Eigenvalues in ascending order.
+ * @param[out]    work   Workspace. On exit, work[0] = optimal LWORK.
+ * @param[in]     lwork  Length of work. If -1, workspace query.
+ * @param[out]    info   = 0: success; < 0: illegal argument; > 0: DPOTRF/DSYEV error.
+ */
+void dsygv_2stage(
+    const int itype,
+    const char* jobz,
+    const char* uplo,
+    const int n,
+    double* restrict A,
+    const int lda,
+    double* restrict B,
+    const int ldb,
+    double* restrict W,
+    double* restrict work,
+    const int lwork,
+    int* info)
+{
+    const double ONE = 1.0;
+
+    int lquery, upper, wantz;
+    int neig, lwmin, lhtrd, lwtrd, kd, ib;
+
+    wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    lquery = (lwork == -1);
+
+    *info = 0;
+    if (itype < 1 || itype > 3) {
+        *info = -1;
+    } else if (!(jobz[0] == 'N' || jobz[0] == 'n')) {
+        *info = -2;
+    } else if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
+        *info = -3;
+    } else if (n < 0) {
+        *info = -4;
+    } else if (lda < (1 > n ? 1 : n)) {
+        *info = -6;
+    } else if (ldb < (1 > n ? 1 : n)) {
+        *info = -8;
+    }
+
+    if (*info == 0) {
+        kd = ilaenv2stage(1, "DSYTRD_2STAGE", jobz, n, -1, -1, -1);
+        ib = ilaenv2stage(2, "DSYTRD_2STAGE", jobz, n, kd, -1, -1);
+        lhtrd = ilaenv2stage(3, "DSYTRD_2STAGE", jobz, n, kd, ib, -1);
+        lwtrd = ilaenv2stage(4, "DSYTRD_2STAGE", jobz, n, kd, ib, -1);
+        lwmin = 2 * n + lhtrd + lwtrd;
+        work[0] = (double)lwmin;
+
+        if (lwork < lwmin && !lquery) {
+            *info = -11;
+        }
+    }
+
+    if (*info != 0) {
+        xerbla("DSYGV_2STAGE ", -(*info));
+        return;
+    } else if (lquery) {
+        return;
+    }
+
+    if (n == 0) {
+        return;
+    }
+
+    dpotrf(uplo, n, B, ldb, info);
+    if (*info != 0) {
+        *info = n + *info;
+        return;
+    }
+
+    dsygst(itype, uplo, n, A, lda, B, ldb, info);
+    dsyev_2stage(jobz, uplo, n, A, lda, W, work, lwork, info);
+
+    if (wantz) {
+        neig = n;
+        if (*info > 0) {
+            neig = *info - 1;
+        }
+        if (itype == 1 || itype == 2) {
+            if (upper) {
+                cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
+                            CblasNonUnit, n, neig, ONE, B, ldb, A, lda);
+            } else {
+                cblas_dtrsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans,
+                            CblasNonUnit, n, neig, ONE, B, ldb, A, lda);
+            }
+        } else if (itype == 3) {
+            if (upper) {
+                cblas_dtrmm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans,
+                            CblasNonUnit, n, neig, ONE, B, ldb, A, lda);
+            } else {
+                cblas_dtrmm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans,
+                            CblasNonUnit, n, neig, ONE, B, ldb, A, lda);
+            }
+        }
+    }
+
+    work[0] = (double)lwmin;
+}

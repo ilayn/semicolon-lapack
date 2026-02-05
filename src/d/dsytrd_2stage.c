@@ -1,0 +1,84 @@
+/**
+ * @file dsytrd_2stage.c
+ * @brief DSYTRD_2STAGE reduces a real symmetric matrix to tridiagonal form using 2-stage algorithm.
+ */
+
+#include "semicolon_lapack_double.h"
+
+void dsytrd_2stage(const char* vect, const char* uplo, const int n,
+                   double* A, const int lda,
+                   double* D, double* E, double* tau,
+                   double* hous2, const int lhous2,
+                   double* work, const int lwork, int* info)
+{
+    int lquery, upper;
+    int kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
+
+    *info = 0;
+    (void)(vect[0] == 'V' || vect[0] == 'v');  /* wantq set but not used */
+    upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    lquery = (lwork == -1) || (lhous2 == -1);
+
+    kd = ilaenv2stage(1, "DSYTRD_2STAGE", vect, n, -1, -1, -1);
+    ib = ilaenv2stage(2, "DSYTRD_2STAGE", vect, n, kd, -1, -1);
+    if (n == 0) {
+        lhmin = 1;
+        lwmin = 1;
+    } else {
+        lhmin = ilaenv2stage(3, "DSYTRD_2STAGE", vect, n, kd, ib, -1);
+        lwmin = ilaenv2stage(4, "DSYTRD_2STAGE", vect, n, kd, ib, -1);
+    }
+
+    if (!(vect[0] == 'N' || vect[0] == 'n')) {
+        *info = -1;
+    } else if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
+        *info = -2;
+    } else if (n < 0) {
+        *info = -3;
+    } else if (lda < ((1 > n) ? 1 : n)) {
+        *info = -5;
+    } else if (lhous2 < lhmin && !lquery) {
+        *info = -10;
+    } else if (lwork < lwmin && !lquery) {
+        *info = -12;
+    }
+
+    if (*info == 0) {
+        hous2[0] = (double)lhmin;
+        work[0] = (double)lwmin;
+    }
+
+    if (*info != 0) {
+        xerbla("DSYTRD_2STAGE", -(*info));
+        return;
+    } else if (lquery) {
+        return;
+    }
+
+    if (n == 0) {
+        work[0] = 1.0;
+        return;
+    }
+
+    ldab = kd + 1;
+    lwrk = lwork - ldab * n;
+    abpos = 0;
+    wpos = abpos + ldab * n;
+
+    dsytrd_sy2sb(uplo, n, kd, A, lda, &work[abpos], ldab,
+                 tau, &work[wpos], lwrk, info);
+    if (*info != 0) {
+        xerbla("DSYTRD_SY2SB", -(*info));
+        return;
+    }
+
+    dsytrd_sb2st("Y", vect, uplo, n, kd,
+                 &work[abpos], ldab, D, E,
+                 hous2, lhous2, &work[wpos], lwrk, info);
+    if (*info != 0) {
+        xerbla("DSYTRD_SB2ST", -(*info));
+        return;
+    }
+
+    work[0] = (double)lwmin;
+}
