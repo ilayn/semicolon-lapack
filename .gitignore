@@ -1,0 +1,35 @@
+# Build directories
+build/
+builddir/
+build-cov/
+builddir_cov/
+*_cov/
+cmake-build-*/
+
+# Compiled objects
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.lib
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Generated files
+*.log
+compile_commands.json
+
+# Documentation build artifacts
+doc/build/
+doc/source/xml/
