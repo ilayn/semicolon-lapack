@@ -1,0 +1,127 @@
+/**
+ * @file dpot01.c
+ * @brief DPOT01 reconstructs a symmetric positive definite matrix from its
+ *        Cholesky factorization and computes the residual.
+ */
+
+#include <cblas.h>
+#include <math.h>
+#include "verify.h"
+
+// Forward declarations
+extern double dlamch(const char* cmach);
+extern double dlansy(const char* norm, const char* uplo, const int n,
+                     const double* const restrict A, const int lda,
+                     double* const restrict work);
+
+/**
+ * DPOT01 reconstructs a symmetric positive definite matrix A from
+ * its L*L' or U'*U factorization and computes the residual
+ *    norm( L*L' - A ) / ( N * norm(A) * EPS ) or
+ *    norm( U'*U - A ) / ( N * norm(A) * EPS ),
+ * where EPS is the machine epsilon.
+ *
+ * @param[in]     uplo    Specifies whether the upper or lower triangular part
+ *                        of the symmetric matrix A is stored:
+ *                        = 'U': Upper triangular
+ *                        = 'L': Lower triangular
+ * @param[in]     n       The number of rows and columns of the matrix A. n >= 0.
+ * @param[in]     A       Double precision array, dimension (lda, n).
+ *                        The original symmetric matrix A.
+ * @param[in]     lda     The leading dimension of the array A. lda >= max(1,n).
+ * @param[in,out] AFAC    Double precision array, dimension (ldafac, n).
+ *                        On entry, the factor L or U from the L*L' or U'*U
+ *                        factorization. Overwritten with the reconstructed
+ *                        matrix, and then with the difference L*L' - A
+ *                        (or U'*U - A).
+ * @param[in]     ldafac  The leading dimension of the array AFAC.
+ *                        ldafac >= max(1,n).
+ * @param[out]    rwork   Double precision array, dimension (n).
+ * @param[out]    resid   norm(L*L' - A) / (N * norm(A) * EPS) or
+ *                        norm(U'*U - A) / (N * norm(A) * EPS)
+ */
+void dpot01(
+    const char* uplo,
+    const int n,
+    const double* const restrict A,
+    const int lda,
+    double* const restrict AFAC,
+    const int ldafac,
+    double* const restrict rwork,
+    double* resid)
+{
+    const double ZERO = 0.0;
+    const double ONE = 1.0;
+
+    // Quick exit if n = 0
+    if (n <= 0) {
+        *resid = ZERO;
+        return;
+    }
+
+    // Determine EPS and the norm of A
+    double eps = dlamch("E");
+    double anorm = dlansy("1", uplo, n, A, lda, rwork);
+    if (anorm <= ZERO) {
+        *resid = ONE / eps;
+        return;
+    }
+
+    if (uplo[0] == 'U' || uplo[0] == 'u') {
+        // Compute the product U'*U, overwriting U.
+        // Process columns from right to left.
+        for (int k = n - 1; k >= 0; k--) {
+            // Compute the (k,k) element of the result.
+            // AFAC(k,k) = dot(column k of AFAC, rows 0..k)
+            // Fortran: T = DDOT(K, AFAC(1,K), 1, AFAC(1,K), 1)
+            double t = cblas_ddot(k + 1, &AFAC[k * ldafac], 1,
+                                  &AFAC[k * ldafac], 1);
+            AFAC[k + k * ldafac] = t;
+
+            // Compute the rest of column k.
+            // Fortran: DTRMV('Upper','Transpose','Non-unit', K-1, AFAC, LDAFAC, AFAC(1,K), 1)
+            if (k > 0) {
+                cblas_dtrmv(CblasColMajor, CblasUpper, CblasTrans, CblasNonUnit,
+                            k, AFAC, ldafac, &AFAC[k * ldafac], 1);
+            }
+        }
+    } else {
+        // Compute the product L*L', overwriting L.
+        // Process columns from right to left.
+        for (int k = n - 1; k >= 0; k--) {
+            // Add a multiple of column k of the factor L to each of
+            // columns k+1 through n-1.
+            // Fortran: DSYR('Lower', N-K, ONE, AFAC(K+1,K), 1, AFAC(K+1,K+1), LDAFAC)
+            if (k + 1 < n) {
+                cblas_dsyr(CblasColMajor, CblasLower,
+                           n - k - 1, ONE,
+                           &AFAC[(k + 1) + k * ldafac], 1,
+                           &AFAC[(k + 1) + (k + 1) * ldafac], ldafac);
+            }
+
+            // Scale column k by the diagonal element.
+            // Fortran: T = AFAC(K,K); DSCAL(N-K+1, T, AFAC(K,K), 1)
+            double t = AFAC[k + k * ldafac];
+            cblas_dscal(n - k, t, &AFAC[k + k * ldafac], 1);
+        }
+    }
+
+    // Compute the difference L*L' - A (or U'*U - A).
+    if (uplo[0] == 'U' || uplo[0] == 'u') {
+        for (int j = 0; j < n; j++) {
+            for (int i = 0; i <= j; i++) {
+                AFAC[i + j * ldafac] -= A[i + j * lda];
+            }
+        }
+    } else {
+        for (int j = 0; j < n; j++) {
+            for (int i = j; i < n; i++) {
+                AFAC[i + j * ldafac] -= A[i + j * lda];
+            }
+        }
+    }
+
+    // Compute norm(L*L' - A) / (N * norm(A) * EPS)
+    *resid = dlansy("1", uplo, n, AFAC, ldafac, rwork);
+    *resid = ((*resid / (double)n) / anorm) / eps;
+}

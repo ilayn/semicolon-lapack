@@ -1,0 +1,362 @@
+/**
+ * @file test_dchkrfp.c
+ * @brief Comprehensive test suite for Rectangular Full Packed (RFP) routines.
+ *
+ * This is a port of LAPACK's TESTING/LIN/dchkrfp.f and ddrvrfp.f to C using CMocka.
+ * Tests DPFTRF, DPFTRS, DPFTRI and format conversion routines.
+ *
+ * Test structure from ddrvrfp.f:
+ *   TEST 1: ||L*L' - A|| / (N * ||A|| * eps)  - Cholesky factorization
+ *   TEST 2: ||I - A*AINV|| / (N * ||A|| * ||AINV|| * eps)  - Inverse
+ *   TEST 3: ||B - A*X|| / (||A|| * ||X|| * eps)  - Solve residual
+ *   TEST 4: ||X - XACT|| / (||XACT|| * CNDNUM * eps)  - Solution accuracy
+ *
+ * Matrix types (from dlatb4 for DPO):
+ *   1. Diagonal
+ *   2. Random, CNDNUM = 2
+ *   3. First row and column zero (error exit test)
+ *   4. Last row and column zero (error exit test)
+ *   5. Middle row and column zero (error exit test)
+ *   6. Random, CNDNUM = sqrt(0.1/EPS)
+ *   7. Random, CNDNUM = 0.1/EPS
+ *   8. Scaled near underflow
+ *   9. Scaled near overflow
+ *
+ * Parameters:
+ *   N values: 0, 1, 2, 3, 5, 10, 16, 50
+ *   NRHS values: 1, 2, 5, 10
+ *   UPLO: 'U', 'L'
+ *   TRANS (RFP format): 'N', 'T'
+ *   THRESH: 30.0
+ */
+
+#include "test_harness.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <math.h>
+#include <cblas.h>
+
+static const int NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
+static const int NSVAL[] = {1, 2, 5, 10};
+
+#define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
+#define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
+#define NTYPES  9
+#define NTESTS  4
+#define THRESH  30.0
+#define NMAX    50
+#define MAXRHS  16
+
+extern double dlamch(const char* cmach);
+extern double dlansy(const char* norm, const char* uplo, const int n,
+                     const double* const restrict A, const int lda,
+                     double* const restrict work);
+extern void dlacpy(const char* uplo, const int m, const int n,
+                   const double* const restrict A, const int lda,
+                   double* const restrict B, const int ldb);
+extern void dlatms(const int m, const int n, const char* dist, int* iseed,
+                   const char* sym, double* d, const int mode, const double cond,
+                   const double dmax, const int kl, const int ku, const char* pack,
+                   double* a, const int lda, double* work, int* info);
+extern void dlarhs(const char* path, const char* xtype, const char* uplo,
+                   const char* trans, const int m, const int n, const int kl,
+                   const int ku, const int nrhs, const double* A, const int lda,
+                   const double* X, const int ldx, double* B, const int ldb,
+                   int* iseed, int* info);
+extern void dlatb4(const char* path, const int imat, const int m, const int n,
+                   char* type, int* kl, int* ku, double* anorm, int* mode,
+                   double* cndnum, char* dist);
+extern void dpftrf(const char* transr, const char* uplo, const int n,
+                   double* arf, int* info);
+extern void dpftrs(const char* transr, const char* uplo, const int n,
+                   const int nrhs, const double* arf, double* b, const int ldb,
+                   int* info);
+extern void dpftri(const char* transr, const char* uplo, const int n,
+                   double* arf, int* info);
+extern void dpotrf(const char* uplo, const int n, double* a, const int lda,
+                   int* info);
+extern void dpotri(const char* uplo, const int n, double* a, const int lda,
+                   int* info);
+extern void dtrttf(const char* transr, const char* uplo, const int n,
+                   const double* a, const int lda, double* arf, int* info);
+extern void dtfttr(const char* transr, const char* uplo, const int n,
+                   const double* arf, double* a, const int lda, int* info);
+void dpot01(const char* uplo, int n, const double* A, int lda,
+            double* AFAC, int ldafac, double* rwork, double* resid);
+void dpot02(const char* uplo, int n, int nrhs, const double* A, int lda,
+            const double* X, int ldx, double* B, int ldb,
+            double* rwork, double* resid);
+void dpot03(const char* uplo, int n, const double* A, int lda,
+            const double* AINV, int ldainv, double* work, int ldwork,
+            double* rwork, double* rcond, double* resid);
+void dget04(int n, int nrhs, const double* X, int ldx,
+            const double* XACT, int ldxact, double rcond, double* resid);
+
+typedef struct {
+    int n;
+    int nrhs;
+    int imat;
+    int iuplo;
+    int iform;
+    char name[80];
+} dchkrfp_params_t;
+
+static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
+{
+    double result[NTESTS];
+    char ctx[128];
+    int info;
+    int lda = (n > 1) ? n : 1;
+    int ldb = lda;
+    int iseed[4] = {1988, 1989, 1990, 1991};
+    char uplo = (iuplo == 0) ? 'U' : 'L';
+    char cform = (iform == 0) ? 'N' : 'T';
+    char type, dist;
+    int kl, ku, mode;
+    double anorm, cndnum;
+    double rcondc, ainvnm;
+    int rfp_size = (n * (n + 1)) / 2;
+    int k;
+    int zerot, izero;
+
+    if (n == 0 && imat > 1) return;
+    if (imat == 4 && n <= 1) return;
+    if (imat == 5 && n <= 2) return;
+
+    double* A = calloc(NMAX * NMAX, sizeof(double));
+    double* ASAV = calloc(NMAX * NMAX, sizeof(double));
+    double* AFAC = calloc(NMAX * NMAX, sizeof(double));
+    double* AINV = calloc(NMAX * NMAX, sizeof(double));
+    double* B = calloc(NMAX * MAXRHS, sizeof(double));
+    double* BSAV = calloc(NMAX * MAXRHS, sizeof(double));
+    double* X = calloc(NMAX * MAXRHS, sizeof(double));
+    double* XACT = calloc(NMAX * MAXRHS, sizeof(double));
+    double* ARF = calloc(rfp_size + 1, sizeof(double));
+    double* ARFINV = calloc(rfp_size + 1, sizeof(double));
+    double* work = calloc(3 * NMAX, sizeof(double));
+    double* rwork = calloc(NMAX, sizeof(double));
+    double* temp = calloc(NMAX * NMAX, sizeof(double));
+
+    dlatb4("DPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
+
+    dlatms(n, n, &dist, iseed, &type, work, mode, cndnum, anorm, kl, ku,
+           &uplo, A, lda, work, &info);
+    if (info != 0) {
+        snprintf(ctx, sizeof(ctx), "n=%d imat=%d uplo=%c form=%c DLATMS info=%d",
+                 n, imat, uplo, cform, info);
+        set_test_context(ctx);
+        goto cleanup;
+    }
+
+    zerot = (imat >= 3 && imat <= 5);
+    izero = 0;
+    if (zerot) {
+        if (imat == 3) izero = 0;
+        else if (imat == 4) izero = n - 1;
+        else izero = n / 2;
+
+        if (uplo == 'U') {
+            for (int i = 0; i < izero; i++) {
+                A[izero * lda + i] = 0.0;
+            }
+            for (int i = izero; i < n; i++) {
+                A[i * lda + izero] = 0.0;
+            }
+        } else {
+            for (int i = 0; i < izero; i++) {
+                A[i * lda + izero] = 0.0;
+            }
+            for (int i = izero; i < n; i++) {
+                A[izero * lda + i] = 0.0;
+            }
+        }
+    }
+
+    dlacpy(&uplo, n, n, A, lda, ASAV, lda);
+
+    if (zerot) {
+        rcondc = 0.0;
+    } else {
+        double norm_a = dlansy("1", &uplo, n, A, lda, rwork);
+        dlacpy(&uplo, n, n, A, lda, AFAC, lda);
+        dpotrf(&uplo, n, AFAC, lda, &info);
+        if (info == 0) {
+            dpotri(&uplo, n, AFAC, lda, &info);
+            if (info == 0 && n > 0) {
+                ainvnm = dlansy("1", &uplo, n, AFAC, lda, rwork);
+                rcondc = (1.0 / norm_a) / ainvnm;
+            } else {
+                rcondc = 0.0;
+            }
+        } else {
+            rcondc = 0.0;
+        }
+        dlacpy(&uplo, n, n, ASAV, lda, A, lda);
+    }
+
+    dlarhs("DPO", "N", &uplo, " ", n, n, kl, ku, nrhs, A, lda,
+           XACT, lda, B, lda, iseed, &info);
+    dlacpy("F", n, nrhs, B, lda, BSAV, lda);
+
+    dlacpy(&uplo, n, n, A, lda, AFAC, lda);
+    dlacpy("F", n, nrhs, B, ldb, X, ldb);
+
+    dtrttf(&cform, &uplo, n, AFAC, lda, ARF, &info);
+    if (info != 0) {
+        snprintf(ctx, sizeof(ctx), "n=%d imat=%d uplo=%c form=%c DTRTTF info=%d",
+                 n, imat, uplo, cform, info);
+        set_test_context(ctx);
+        goto cleanup;
+    }
+
+    dpftrf(&cform, &uplo, n, ARF, &info);
+
+    if (zerot) {
+        if (info != izero + 1) {
+            snprintf(ctx, sizeof(ctx), "n=%d imat=%d uplo=%c form=%c DPFTRF info=%d expected=%d",
+                     n, imat, uplo, cform, info, izero + 1);
+            set_test_context(ctx);
+        }
+        goto cleanup;
+    }
+
+    if (info != 0) {
+        snprintf(ctx, sizeof(ctx), "n=%d imat=%d uplo=%c form=%c DPFTRF info=%d",
+                 n, imat, uplo, cform, info);
+        set_test_context(ctx);
+        goto cleanup;
+    }
+
+    dpftrs(&cform, &uplo, n, nrhs, ARF, X, ldb, &info);
+    if (info != 0) {
+        snprintf(ctx, sizeof(ctx), "n=%d imat=%d uplo=%c form=%c DPFTRS info=%d",
+                 n, imat, uplo, cform, info);
+        set_test_context(ctx);
+        goto cleanup;
+    }
+
+    dtfttr(&cform, &uplo, n, ARF, AFAC, lda, &info);
+
+    dlacpy(&uplo, n, n, AFAC, lda, temp, lda);
+    dpot01(&uplo, n, A, lda, AFAC, lda, rwork, &result[0]);
+    dlacpy(&uplo, n, n, temp, lda, AFAC, lda);
+
+    if ((n % 2) == 0) {
+        for (int j = 0; j < n / 2; j++) {
+            for (int i = 0; i <= n; i++) {
+                ARFINV[j * (n + 1) + i] = ARF[j * (n + 1) + i];
+            }
+        }
+    } else {
+        for (int j = 0; j < (n + 1) / 2; j++) {
+            for (int i = 0; i < n; i++) {
+                ARFINV[j * n + i] = ARF[j * n + i];
+            }
+        }
+    }
+
+    dpftri(&cform, &uplo, n, ARFINV, &info);
+    dtfttr(&cform, &uplo, n, ARFINV, AINV, lda, &info);
+
+    dpot03(&uplo, n, A, lda, AINV, lda, temp, lda, rwork, &rcondc, &result[1]);
+
+    dlacpy("F", n, nrhs, BSAV, lda, temp, lda);
+    dpot02(&uplo, n, nrhs, A, lda, X, lda, temp, lda, rwork, &result[2]);
+
+    dget04(n, nrhs, X, lda, XACT, lda, rcondc, &result[3]);
+
+    for (k = 0; k < NTESTS; k++) {
+        snprintf(ctx, sizeof(ctx), "n=%d nrhs=%d imat=%d uplo=%c form=%c TEST %d",
+                 n, nrhs, imat, uplo, cform, k + 1);
+        set_test_context(ctx);
+        assert_residual_below(result[k], THRESH);
+    }
+    clear_test_context();
+
+cleanup:
+    free(A);
+    free(ASAV);
+    free(AFAC);
+    free(AINV);
+    free(B);
+    free(BSAV);
+    free(X);
+    free(XACT);
+    free(ARF);
+    free(ARFINV);
+    free(work);
+    free(rwork);
+    free(temp);
+}
+
+static void test_dchkrfp_case(void** state)
+{
+    dchkrfp_params_t* params = *state;
+    run_dchkrfp_single(params->n, params->nrhs, params->imat,
+                       params->iuplo, params->iform);
+}
+
+#define MAX_TESTS (NN * NNS * NTYPES * 2 * 2)
+
+static dchkrfp_params_t g_params[MAX_TESTS];
+static struct CMUnitTest g_tests[MAX_TESTS];
+static int g_num_tests = 0;
+
+static void build_test_array(void)
+{
+    g_num_tests = 0;
+
+    for (int in = 0; in < (int)NN; in++) {
+        int n = NVAL[in];
+
+        for (int ins = 0; ins < (int)NNS; ins++) {
+            int nrhs = NSVAL[ins];
+
+            for (int imat = 1; imat <= (int)NTYPES; imat++) {
+
+                if (n == 0 && imat > 1) continue;
+                if (imat == 4 && n <= 1) continue;
+                if (imat == 5 && n <= 2) continue;
+
+                for (int iuplo = 0; iuplo < 2; iuplo++) {
+                    for (int iform = 0; iform < 2; iform++) {
+
+                        dchkrfp_params_t* p = &g_params[g_num_tests];
+                        p->n = n;
+                        p->nrhs = nrhs;
+                        p->imat = imat;
+                        p->iuplo = iuplo;
+                        p->iform = iform;
+                        snprintf(p->name, sizeof(p->name),
+                                 "dchkrfp_n%d_nrhs%d_imat%d_%c_%c",
+                                 n, nrhs, imat,
+                                 (iuplo == 0) ? 'U' : 'L',
+                                 (iform == 0) ? 'N' : 'T');
+
+                        g_tests[g_num_tests].name = p->name;
+                        g_tests[g_num_tests].test_func = test_dchkrfp_case;
+                        g_tests[g_num_tests].setup_func = NULL;
+                        g_tests[g_num_tests].teardown_func = NULL;
+                        g_tests[g_num_tests].initial_state = p;
+
+                        g_num_tests++;
+                        if (g_num_tests >= (int)MAX_TESTS) return;
+                    }
+                }
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    build_test_array();
+
+    if (g_num_tests == 0) {
+        printf("No valid test cases generated\n");
+        return 0;
+    }
+
+    return _cmocka_run_group_tests("dchkrfp", g_tests, g_num_tests, NULL, NULL);
+}

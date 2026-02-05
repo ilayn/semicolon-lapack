@@ -1,0 +1,694 @@
+/**
+ * @file test_dgesvx.c
+ * @brief CMocka test suite for dgesvx (expert driver for general linear systems).
+ *
+ * Tests the expert driver which provides equilibration, condition estimation,
+ * iterative refinement, and error bounds.
+ *
+ * Verification:
+ * - dget02: ||B - A*X|| / (||A|| * ||X|| * eps) for solution quality
+ * - dget04: ||X_computed - X_exact|| scaled by condition
+ * - dget07: Tests error bounds (FERR) and backward error (BERR)
+ *
+ * Configurations:
+ *   Sizes: {2, 3, 5, 10, 20}
+ *   NRHS:  {1, 2, 5}
+ *   FACT:  {'N', 'E'}
+ *   TRANS: {'N', 'T'}
+ *   Types: {4 (well-conditioned), 8 (ill-conditioned, N>=5 only)}
+ */
+
+#include "test_harness.h"
+
+/* Test threshold - see LAPACK dtest.in */
+#define THRESH 20.0
+#include <stdbool.h>
+#include <cblas.h>
+
+/* Routine under test */
+extern void dgesvx(const char *fact, const char *trans, const int n, const int nrhs,
+                   double * const restrict A, const int lda,
+                   double * const restrict AF, const int ldaf,
+                   int * const restrict ipiv, char *equed,
+                   double * const restrict R, double * const restrict C,
+                   double * const restrict B, const int ldb,
+                   double * const restrict X, const int ldx,
+                   double *rcond, double * const restrict ferr,
+                   double * const restrict berr, double * const restrict work,
+                   int * const restrict iwork, int *info);
+
+/* For test_factored: pre-factor using dgetrf */
+extern void dgetrf(const int m, const int n, double * const restrict A,
+                   const int lda, int * const restrict ipiv, int *info);
+
+/* Verification routines */
+extern void dget02(const char *trans, const int m, const int n, const int nrhs,
+                   const double * const restrict A, const int lda,
+                   const double * const restrict X, const int ldx,
+                   double * const restrict B, const int ldb,
+                   double * const restrict rwork, double *resid);
+extern void dget04(const int n, const int nrhs, const double * const restrict X,
+                   const int ldx, const double * const restrict XACT,
+                   const int ldxact, const double rcond, double *resid);
+extern void dget07(const char *trans, const int n, const int nrhs,
+                   const double * const restrict A, const int lda,
+                   const double * const restrict B, const int ldb,
+                   const double * const restrict X, const int ldx,
+                   const double * const restrict XACT, const int ldxact,
+                   const double * const restrict ferr, const bool chkferr,
+                   const double * const restrict berr,
+                   double * const restrict reslts);
+
+/* Matrix generation */
+extern void dlatb4(const char *path, const int imat, const int m, const int n,
+                   char *type, int *kl, int *ku, double *anorm, int *mode,
+                   double *cndnum, char *dist);
+extern void dlatms(const int m, const int n, const char *dist,
+                   uint64_t seed, const char *sym, double *d,
+                   const int mode, const double cond, const double dmax,
+                   const int kl, const int ku, const char *pack,
+                   double *A, const int lda, double *work, int *info);
+
+/* Utilities */
+extern double dlamch(const char *cmach);
+
+/*
+ * Test fixture: holds all allocated memory for a single test case.
+ */
+typedef struct {
+    int n;
+    int nrhs;
+    int lda, ldaf, ldb, ldx;
+    double *A;        /* Original matrix */
+    double *A_orig;   /* Pristine copy of A */
+    double *AF;       /* Factored matrix */
+    double *B;        /* Right-hand side (modified by dgesvx) */
+    double *B_orig;   /* Pristine copy of B */
+    double *X;        /* Solution */
+    double *XACT;     /* Exact solution */
+    double *d;        /* Singular values for dlatms */
+    double *R;        /* Row scale factors */
+    double *C;        /* Column scale factors */
+    double *work;     /* Workspace (max of dlatms and dgesvx needs) */
+    double *rwork;    /* Workspace for dget02 */
+    double *ferr;     /* Forward error bounds */
+    double *berr;     /* Backward error bounds */
+    double *reslts;   /* Results from dget07 */
+    int *ipiv;        /* Pivot indices */
+    int *iwork;       /* Integer workspace for dgesvx */
+    uint64_t seed;    /* RNG seed */
+} dgesvx_fixture_t;
+
+/* Global seed for test sequence reproducibility */
+static uint64_t g_seed = 1729;
+
+/**
+ * Setup fixture: allocate memory for given dimensions.
+ */
+static int dgesvx_setup(void **state, int n, int nrhs)
+{
+    dgesvx_fixture_t *fix = malloc(sizeof(dgesvx_fixture_t));
+    assert_non_null(fix);
+
+    fix->n = n;
+    fix->nrhs = nrhs;
+    fix->lda = n;
+    fix->ldaf = n;
+    fix->ldb = n;
+    fix->ldx = n;
+    fix->seed = g_seed++;
+
+    fix->A = malloc(fix->lda * n * sizeof(double));
+    fix->A_orig = malloc(fix->lda * n * sizeof(double));
+    fix->AF = malloc(fix->ldaf * n * sizeof(double));
+    fix->B = malloc(fix->ldb * nrhs * sizeof(double));
+    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(double));
+    fix->X = malloc(fix->ldx * nrhs * sizeof(double));
+    fix->XACT = malloc(fix->ldx * nrhs * sizeof(double));
+    fix->d = malloc(n * sizeof(double));
+    fix->R = malloc(n * sizeof(double));
+    fix->C = malloc(n * sizeof(double));
+    fix->work = malloc(4 * n * sizeof(double));
+    fix->rwork = malloc(n * sizeof(double));
+    fix->ferr = malloc(nrhs * sizeof(double));
+    fix->berr = malloc(nrhs * sizeof(double));
+    fix->reslts = malloc(2 * sizeof(double));
+    fix->ipiv = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(int));
+
+    assert_non_null(fix->A);
+    assert_non_null(fix->A_orig);
+    assert_non_null(fix->AF);
+    assert_non_null(fix->B);
+    assert_non_null(fix->B_orig);
+    assert_non_null(fix->X);
+    assert_non_null(fix->XACT);
+    assert_non_null(fix->d);
+    assert_non_null(fix->R);
+    assert_non_null(fix->C);
+    assert_non_null(fix->work);
+    assert_non_null(fix->rwork);
+    assert_non_null(fix->ferr);
+    assert_non_null(fix->berr);
+    assert_non_null(fix->reslts);
+    assert_non_null(fix->ipiv);
+    assert_non_null(fix->iwork);
+
+    *state = fix;
+    return 0;
+}
+
+/**
+ * Teardown fixture: free all allocated memory.
+ */
+static int dgesvx_teardown(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    if (fix) {
+        free(fix->A);
+        free(fix->A_orig);
+        free(fix->AF);
+        free(fix->B);
+        free(fix->B_orig);
+        free(fix->X);
+        free(fix->XACT);
+        free(fix->d);
+        free(fix->R);
+        free(fix->C);
+        free(fix->work);
+        free(fix->rwork);
+        free(fix->ferr);
+        free(fix->berr);
+        free(fix->reslts);
+        free(fix->ipiv);
+        free(fix->iwork);
+        free(fix);
+    }
+    return 0;
+}
+
+/* Size-specific setup wrappers: N x NRHS */
+static int setup_2_1(void **state) { return dgesvx_setup(state, 2, 1); }
+static int setup_2_2(void **state) { return dgesvx_setup(state, 2, 2); }
+static int setup_3_1(void **state) { return dgesvx_setup(state, 3, 1); }
+static int setup_3_2(void **state) { return dgesvx_setup(state, 3, 2); }
+static int setup_5_1(void **state) { return dgesvx_setup(state, 5, 1); }
+static int setup_5_2(void **state) { return dgesvx_setup(state, 5, 2); }
+static int setup_5_5(void **state) { return dgesvx_setup(state, 5, 5); }
+static int setup_10_1(void **state) { return dgesvx_setup(state, 10, 1); }
+static int setup_10_2(void **state) { return dgesvx_setup(state, 10, 2); }
+static int setup_10_5(void **state) { return dgesvx_setup(state, 10, 5); }
+static int setup_20_1(void **state) { return dgesvx_setup(state, 20, 1); }
+static int setup_20_2(void **state) { return dgesvx_setup(state, 20, 2); }
+static int setup_20_5(void **state) { return dgesvx_setup(state, 20, 5); }
+
+/* Sanity test setups */
+static int setup_3_1_sanity(void **state) { return dgesvx_setup(state, 3, 1); }
+static int setup_4_1_equil(void **state) { return dgesvx_setup(state, 4, 1); }
+static int setup_3_2_factored(void **state) { return dgesvx_setup(state, 3, 2); }
+static int setup_3_1_singular(void **state) { return dgesvx_setup(state, 3, 1); }
+static int setup_3_1_transpose(void **state) { return dgesvx_setup(state, 3, 1); }
+
+/**
+ * Core test logic: generate matrix, solve with dgesvx, compute residuals.
+ * Populates resid_02, resid_04, reslts[0] (FERR), reslts[1] (BERR).
+ * Returns 0 on success, nonzero if the matrix was singular (skip residual checks).
+ */
+static int run_dgesvx_test(dgesvx_fixture_t *fix, int imat, const char* fact, const char* trans,
+                           double *resid_02, double *resid_04, double *reslts)
+{
+    char type, dist;
+    int kl, ku, mode;
+    double anorm_param, cndnum;
+    int info;
+    int n = fix->n;
+    int nrhs = fix->nrhs;
+
+    /* Get matrix parameters */
+    dlatb4("DGE", imat, n, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
+
+    /* Generate test matrix A */
+    dlatms(n, n, &dist, fix->seed, &type, fix->d, mode, cndnum, anorm_param,
+           kl, ku, "N", fix->A, fix->lda, fix->work, &info);
+    assert_int_equal(info, 0);
+    memcpy(fix->A_orig, fix->A, fix->lda * n * sizeof(double));
+
+    /* Generate known exact solution XACT */
+    for (int j = 0; j < nrhs; j++) {
+        for (int i = 0; i < n; i++) {
+            fix->XACT[i + j * fix->ldx] = 1.0 + (double)i / n + (double)j / nrhs;
+        }
+    }
+
+    /* Compute B = op(A) * XACT */
+    CBLAS_TRANSPOSE cblas_trans = (trans[0] == 'N') ? CblasNoTrans : CblasTrans;
+    cblas_dgemm(CblasColMajor, cblas_trans, CblasNoTrans,
+                n, nrhs, n, 1.0, fix->A, fix->lda, fix->XACT, fix->ldx,
+                0.0, fix->B, fix->ldb);
+    memcpy(fix->B_orig, fix->B, fix->ldb * nrhs * sizeof(double));
+
+    /* Solve using dgesvx */
+    char equed;
+    double rcond;
+    dgesvx(fact, trans, n, nrhs, fix->A, fix->lda, fix->AF, fix->ldaf,
+           fix->ipiv, &equed, fix->R, fix->C, fix->B, fix->ldb,
+           fix->X, fix->ldx, &rcond, fix->ferr, fix->berr,
+           fix->work, fix->iwork, &info);
+
+    if (info > 0 && info <= n) {
+        /* Singular matrix - skip residual tests */
+        return 1;
+    }
+    assert_true(info >= 0);
+
+    /* Test 1: Solution residual using dget02 */
+    double *B_copy = malloc(fix->ldb * nrhs * sizeof(double));
+    assert_non_null(B_copy);
+    memcpy(B_copy, fix->B_orig, fix->ldb * nrhs * sizeof(double));
+    dget02(trans, n, n, nrhs, fix->A_orig, fix->lda, fix->X, fix->ldx,
+           B_copy, fix->ldb, fix->rwork, resid_02);
+    free(B_copy);
+
+    /* Test 2: Solution accuracy using dget04 */
+    double rcond_use = (rcond > 0.0) ? rcond : 1.0 / cndnum;
+    dget04(n, nrhs, fix->X, fix->ldx, fix->XACT, fix->ldx, rcond_use, resid_04);
+
+    /* Test 3: Error bounds using dget07 */
+    bool chkferr = (imat <= 4);
+    dget07(trans, n, nrhs, fix->A_orig, fix->lda, fix->B_orig, fix->ldb,
+           fix->X, fix->ldx, fix->XACT, fix->ldx,
+           fix->ferr, chkferr, fix->berr, reslts);
+
+    return 0;
+}
+
+/*
+ * Sanity test: simple known system
+ * A * x = b where solution is x = [1, 1, 1]'
+ */
+static void test_dgesvx_simple(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    int n = 3;
+    int nrhs = 1;
+    int info;
+    char equed;
+    double rcond;
+
+    /* System: A * x = b where solution is x = [1, 1, 1]' */
+    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
+    double B[3] = {4, 10, 24};
+
+    memcpy(fix->A, A, 9 * sizeof(double));
+    memcpy(fix->B, B, 3 * sizeof(double));
+
+    dgesvx("N", "N", n, nrhs, fix->A, n, fix->AF, n, fix->ipiv, &equed,
+           fix->R, fix->C, fix->B, n, fix->X, n, &rcond,
+           fix->ferr, fix->berr, fix->work, fix->iwork, &info);
+
+    assert_info_success(info);
+
+    double tol = 1e-10;
+    assert_true(fabs(fix->X[0] - 1.0) < tol);
+    assert_true(fabs(fix->X[1] - 1.0) < tol);
+    assert_true(fabs(fix->X[2] - 1.0) < tol);
+}
+
+/*
+ * Sanity test: equilibration with poorly scaled matrix
+ */
+static void test_dgesvx_equilibration(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    int n = 4;
+    int nrhs = 1;
+    int info;
+    char equed;
+    double rcond;
+
+    /* Poorly scaled diagonal matrix */
+    double A[16] = {
+        1e10, 0, 0, 0,
+        0, 1e-10, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    };
+    double B[4] = {1e10, 1e-10, 1, 1};
+
+    memcpy(fix->A, A, 16 * sizeof(double));
+    memcpy(fix->B, B, 4 * sizeof(double));
+
+    dgesvx("E", "N", n, nrhs, fix->A, n, fix->AF, n, fix->ipiv, &equed,
+           fix->R, fix->C, fix->B, n, fix->X, n, &rcond,
+           fix->ferr, fix->berr, fix->work, fix->iwork, &info);
+
+    /* info = 0 or info = n+1 (ill-conditioned warning) are both acceptable */
+    assert_true(info == 0 || info == n + 1);
+
+    double tol = 1e-8;
+    for (int i = 0; i < n; i++) {
+        assert_true(fabs(fix->X[i] - 1.0) < tol);
+    }
+}
+
+/*
+ * Sanity test: pre-factored matrix (FACT='F')
+ */
+static void test_dgesvx_factored(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    int n = 3;
+    int nrhs = 2;
+    int info;
+    char equed = 'N';
+    double rcond;
+
+    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
+    double A_orig[9];
+    memcpy(A_orig, A, 9 * sizeof(double));
+
+    /* Pre-factor using dgetrf */
+    memcpy(fix->AF, A, 9 * sizeof(double));
+    dgetrf(n, n, fix->AF, n, fix->ipiv, &info);
+    assert_info_success(info);
+
+    /* Two RHS: first has solution [1,1,1], second has solution ~[0,1,1] */
+    double B[6] = {4, 10, 24, 3, 9, 23};
+    memcpy(fix->A, A_orig, 9 * sizeof(double));
+    memcpy(fix->B, B, 6 * sizeof(double));
+
+    dgesvx("F", "N", n, nrhs, fix->A, n, fix->AF, n, fix->ipiv, &equed,
+           fix->R, fix->C, fix->B, n, fix->X, n, &rcond,
+           fix->ferr, fix->berr, fix->work, fix->iwork, &info);
+
+    assert_info_success(info);
+
+    /* First RHS: solution should be [1, 1, 1] */
+    double tol = 1e-10;
+    assert_true(fabs(fix->X[0] - 1.0) < tol);
+    assert_true(fabs(fix->X[1] - 1.0) < tol);
+    assert_true(fabs(fix->X[2] - 1.0) < tol);
+}
+
+/*
+ * Sanity test: singular matrix detection
+ */
+static void test_dgesvx_singular(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    int n = 3;
+    int nrhs = 1;
+    int info;
+    char equed;
+    double rcond;
+
+    /* Singular matrix (all columns identical) */
+    double A[9] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+    double B[3] = {1, 2, 3};
+
+    memcpy(fix->A, A, 9 * sizeof(double));
+    memcpy(fix->B, B, 3 * sizeof(double));
+
+    dgesvx("N", "N", n, nrhs, fix->A, n, fix->AF, n, fix->ipiv, &equed,
+           fix->R, fix->C, fix->B, n, fix->X, n, &rcond,
+           fix->ferr, fix->berr, fix->work, fix->iwork, &info);
+
+    assert_info_singular(info);
+}
+
+/*
+ * Sanity test: transpose solve
+ */
+static void test_dgesvx_transpose(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    int n = 3;
+    int nrhs = 1;
+    int info;
+    char equed;
+    double rcond;
+
+    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
+    double xact[3] = {1.0, 1.0, 1.0};
+
+    memcpy(fix->A, A, 9 * sizeof(double));
+
+    /* Compute B = A' * xact */
+    cblas_dgemv(CblasColMajor, CblasTrans, n, n, 1.0, fix->A, n, xact, 1, 0.0, fix->B, 1);
+
+    dgesvx("N", "T", n, nrhs, fix->A, n, fix->AF, n, fix->ipiv, &equed,
+           fix->R, fix->C, fix->B, n, fix->X, n, &rcond,
+           fix->ferr, fix->berr, fix->work, fix->iwork, &info);
+
+    assert_info_success(info);
+
+    double tol = 1e-10;
+    assert_true(fabs(fix->X[0] - 1.0) < tol);
+    assert_true(fabs(fix->X[1] - 1.0) < tol);
+    assert_true(fabs(fix->X[2] - 1.0) < tol);
+}
+
+/*
+ * Comprehensive test: FACT='N', TRANS='N', well-conditioned (type 4)
+ */
+static void test_dgesvx_fact_N_trans_N_type4(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 4, "N", "N", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    /* Type 4 is well-conditioned, check FERR */
+    assert_residual_ok(reslts[0]);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='N', TRANS='N', ill-conditioned (type 8)
+ */
+static void test_dgesvx_fact_N_trans_N_type8(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+
+    if (fix->n < 5) {
+        skip_test("type 8 requires N >= 5");
+    }
+
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 8, "N", "N", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    /* Type 8 is ill-conditioned, skip FERR check */
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='N', TRANS='T', well-conditioned (type 4)
+ */
+static void test_dgesvx_fact_N_trans_T_type4(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 4, "N", "T", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    assert_residual_ok(reslts[0]);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='N', TRANS='T', ill-conditioned (type 8)
+ */
+static void test_dgesvx_fact_N_trans_T_type8(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+
+    if (fix->n < 5) {
+        skip_test("type 8 requires N >= 5");
+    }
+
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 8, "N", "T", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='E', TRANS='N', well-conditioned (type 4)
+ */
+static void test_dgesvx_fact_E_trans_N_type4(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 4, "E", "N", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    assert_residual_ok(reslts[0]);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='E', TRANS='N', ill-conditioned (type 8)
+ */
+static void test_dgesvx_fact_E_trans_N_type8(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+
+    if (fix->n < 5) {
+        skip_test("type 8 requires N >= 5");
+    }
+
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 8, "E", "N", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='E', TRANS='T', well-conditioned (type 4)
+ */
+static void test_dgesvx_fact_E_trans_T_type4(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 4, "E", "T", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    assert_residual_ok(reslts[0]);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Comprehensive test: FACT='E', TRANS='T', ill-conditioned (type 8)
+ */
+static void test_dgesvx_fact_E_trans_T_type8(void **state)
+{
+    dgesvx_fixture_t *fix = *state;
+
+    if (fix->n < 5) {
+        skip_test("type 8 requires N >= 5");
+    }
+
+    double resid_02, resid_04;
+    double reslts[2];
+
+    fix->seed = g_seed++;
+    int rc = run_dgesvx_test(fix, 8, "E", "T", &resid_02, &resid_04, reslts);
+    if (rc != 0) {
+        skip_test("singular matrix");
+    }
+
+    assert_residual_ok(resid_02);
+    assert_residual_ok(resid_04);
+    assert_residual_ok(reslts[1]);
+}
+
+/*
+ * Macro to generate all 8 test entries for a given size setup.
+ * Creates tests for all FACT x TRANS x TYPE combinations.
+ */
+#define DGESVX_TESTS(setup_fn) \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_N_trans_N_type4, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_N_trans_N_type8, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_N_trans_T_type4, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_N_trans_T_type8, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_E_trans_N_type4, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_E_trans_N_type8, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_E_trans_T_type4, setup_fn, dgesvx_teardown), \
+    cmocka_unit_test_setup_teardown(test_dgesvx_fact_E_trans_T_type8, setup_fn, dgesvx_teardown)
+
+int main(void)
+{
+    const struct CMUnitTest tests[] = {
+        /* Sanity checks */
+        cmocka_unit_test_setup_teardown(test_dgesvx_simple, setup_3_1_sanity, dgesvx_teardown),
+        cmocka_unit_test_setup_teardown(test_dgesvx_equilibration, setup_4_1_equil, dgesvx_teardown),
+        cmocka_unit_test_setup_teardown(test_dgesvx_factored, setup_3_2_factored, dgesvx_teardown),
+        cmocka_unit_test_setup_teardown(test_dgesvx_singular, setup_3_1_singular, dgesvx_teardown),
+        cmocka_unit_test_setup_teardown(test_dgesvx_transpose, setup_3_1_transpose, dgesvx_teardown),
+
+        /* Comprehensive: N=2, NRHS=1 */
+        DGESVX_TESTS(setup_2_1),
+        /* Comprehensive: N=2, NRHS=2 */
+        DGESVX_TESTS(setup_2_2),
+
+        /* Comprehensive: N=3, NRHS=1 */
+        DGESVX_TESTS(setup_3_1),
+        /* Comprehensive: N=3, NRHS=2 */
+        DGESVX_TESTS(setup_3_2),
+
+        /* Comprehensive: N=5, NRHS=1 */
+        DGESVX_TESTS(setup_5_1),
+        /* Comprehensive: N=5, NRHS=2 */
+        DGESVX_TESTS(setup_5_2),
+        /* Comprehensive: N=5, NRHS=5 */
+        DGESVX_TESTS(setup_5_5),
+
+        /* Comprehensive: N=10, NRHS=1 */
+        DGESVX_TESTS(setup_10_1),
+        /* Comprehensive: N=10, NRHS=2 */
+        DGESVX_TESTS(setup_10_2),
+        /* Comprehensive: N=10, NRHS=5 */
+        DGESVX_TESTS(setup_10_5),
+
+        /* Comprehensive: N=20, NRHS=1 */
+        DGESVX_TESTS(setup_20_1),
+        /* Comprehensive: N=20, NRHS=2 */
+        DGESVX_TESTS(setup_20_2),
+        /* Comprehensive: N=20, NRHS=5 */
+        DGESVX_TESTS(setup_20_5),
+    };
+
+    return cmocka_run_group_tests_name("dgesvx", tests, NULL, NULL);
+}
