@@ -6,6 +6,7 @@
 
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
+#include "lapack_tuning.h"
 
 /**
  * SPOTRF computes the Cholesky factorization of a real symmetric
@@ -23,7 +24,7 @@
  *                      = 'U': Upper triangle of A is stored
  *                      = 'L': Lower triangle of A is stored
  * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Single precision array, dimension (lda, n).
+ * @param[in,out] A     Double precision array, dimension (lda, n).
  *                      On entry, the symmetric matrix A.
  *                      On exit, if info = 0, the factor U or L from the
  *                      Cholesky factorization A = U**T*U or A = L*L**T.
@@ -62,12 +63,12 @@ void spotrf(
     // Quick return if possible
     if (n == 0) return;
 
-    // Block size for SPOTRF (from LAPACK ilaenv, typically 64)
-    int nb = 64;
+    // Determine the block size (NB=64 from ilaenv for POTRF)
+    int nb = lapack_get_nb("POTRF");
 
     if (nb <= 1 || nb >= n) {
         // Use unblocked code
-        spotf2(uplo, n, A, lda, info);
+        spotrf2(uplo, n, A, lda, info);
     } else {
         // Use blocked code
         if (upper) {
@@ -76,6 +77,8 @@ void spotrf(
                 // Update and factorize the current diagonal block
                 int jb = nb < (n - j) ? nb : (n - j);
 
+                // Fortran: DSYRK('Upper', 'T', JB, J-1, -ONE, A(1,J), LDA, ONE, A(J,J), LDA)
+                // 0-based: n_size = jb, k = j
                 if (j > 0) {
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
                                 jb, j, NEG_ONE,
@@ -84,7 +87,7 @@ void spotrf(
                 }
 
                 // Factor the diagonal block
-                spotf2("U", jb, &A[j + j * lda], lda, info);
+                spotrf2("U", jb, &A[j + j * lda], lda, info);
                 if (*info != 0) {
                     *info = *info + j;
                     return;
@@ -92,6 +95,7 @@ void spotrf(
 
                 if (j + jb < n) {
                     // Compute the current block row
+                    // Fortran: DGEMM('T', 'N', JB, N-J-JB+1, J-1, -ONE, A(1,J), LDA, A(1,J+JB), LDA, ONE, A(J,J+JB), LDA)
                     if (j > 0) {
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     jb, n - j - jb, j, NEG_ONE,
@@ -99,6 +103,7 @@ void spotrf(
                                     &A[(j + jb) * lda], lda,
                                     ONE, &A[j + (j + jb) * lda], lda);
                     }
+                    // Fortran: DTRSM('L', 'U', 'T', 'N', JB, N-J-JB+1, ONE, A(J,J), LDA, A(J,J+JB), LDA)
                     cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans,
                                 CblasNonUnit, jb, n - j - jb, ONE,
                                 &A[j + j * lda], lda,
@@ -111,6 +116,7 @@ void spotrf(
                 // Update and factorize the current diagonal block
                 int jb = nb < (n - j) ? nb : (n - j);
 
+                // Fortran: DSYRK('Lower', 'N', JB, J-1, -ONE, A(J,1), LDA, ONE, A(J,J), LDA)
                 if (j > 0) {
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
                                 jb, j, NEG_ONE,
@@ -119,7 +125,7 @@ void spotrf(
                 }
 
                 // Factor the diagonal block
-                spotf2("L", jb, &A[j + j * lda], lda, info);
+                spotrf2("L", jb, &A[j + j * lda], lda, info);
                 if (*info != 0) {
                     *info = *info + j;
                     return;
@@ -127,6 +133,7 @@ void spotrf(
 
                 if (j + jb < n) {
                     // Compute the current block column
+                    // Fortran: DGEMM('N', 'T', N-J-JB+1, JB, J-1, -ONE, A(J+JB,1), LDA, A(J,1), LDA, ONE, A(J+JB,J), LDA)
                     if (j > 0) {
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     n - j - jb, jb, j, NEG_ONE,
@@ -134,6 +141,7 @@ void spotrf(
                                     &A[j], lda,
                                     ONE, &A[(j + jb) + j * lda], lda);
                     }
+                    // Fortran: DTRSM('R', 'L', 'T', 'N', N-J-JB+1, JB, ONE, A(J,J), LDA, A(J+JB,J), LDA)
                     cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans,
                                 CblasNonUnit, n - j - jb, jb, ONE,
                                 &A[j + j * lda], lda,

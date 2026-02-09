@@ -1,6 +1,6 @@
 /**
  * @file slaswp.c
- * @brief Row interchanges for pivoting (single precision).
+ * @brief Row interchanges for pivoting.
  */
 
 #include "semicolon_lapack_single.h"
@@ -26,6 +26,16 @@
  *                      If incx > 0, pivots are applied from k1 to k2.
  *                      If incx < 0, pivots are applied from k2 to k1.
  *                      If incx = 0, returns immediately.
+ *
+ * @rst
+ * .. note::
+ *
+ *    This function is typically called after :c:func:`sgetrf` or
+ *    :c:func:`sgetrf2` to apply the same row permutations to other matrices
+ *    (e.g., the right-hand side matrix B when solving Ax = B).
+ *
+ *    The implementation processes columns in blocks of 32 for cache efficiency.
+ * @endrst
  */
 void slaswp(
     const int n,

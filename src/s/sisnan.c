@@ -9,11 +9,11 @@
 /**
  * SISNAN returns nonzero if its argument is NaN, and zero otherwise.
  *
- * @param[in] sin  Input to test for NaN.
+ * @param[in] din  Input to test for NaN.
  *
- * @return Nonzero if sin is NaN, zero otherwise.
+ * @return Nonzero if din is NaN, zero otherwise.
  */
-int sisnan(const float sin)
+int sisnan(const float din)
 {
-    return isnan(sin);
+    return isnan(din);
 }

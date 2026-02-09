@@ -1,0 +1,141 @@
+/**
+ * @file ssycon_3.c
+ * @brief SSYCON_3 estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by SSYTRF_RK or DSYTRF_BK.
+ */
+
+#include "semicolon_lapack_single.h"
+
+/**
+ * SSYCON_3 estimates the reciprocal of the condition number (in the
+ * 1-norm) of a real symmetric matrix A using the factorization
+ * computed by SSYTRF_RK or DSYTRF_BK:
+ *
+ *    A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
+ *
+ * where U (or L) is unit upper (or lower) triangular matrix,
+ * U**T (or L**T) is the transpose of U (or L), P is a permutation
+ * matrix, P**T is the transpose of P, and D is symmetric and block
+ * diagonal with 1-by-1 and 2-by-2 diagonal blocks.
+ *
+ * An estimate is obtained for norm(inv(A)), and the reciprocal of the
+ * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
+ * This routine uses BLAS3 solver SSYTRS_3.
+ *
+ * @param[in] uplo
+ *          Specifies whether the details of the factorization are
+ *          stored as an upper or lower triangular matrix:
+ *          = 'U':  Upper triangular, form is A = P*U*D*(U**T)*(P**T);
+ *          = 'L':  Lower triangular, form is A = P*L*D*(L**T)*(P**T).
+ *
+ * @param[in] n
+ *          The order of the matrix A. n >= 0.
+ *
+ * @param[in] A
+ *          Double precision array, dimension (lda, n).
+ *          Diagonal of the block diagonal matrix D and factors U or L
+ *          as computed by SSYTRF_RK and DSYTRF_BK.
+ *
+ * @param[in] lda
+ *          The leading dimension of the array A. lda >= max(1, n).
+ *
+ * @param[in] E
+ *          Double precision array, dimension (n).
+ *          Contains the superdiagonal (or subdiagonal) elements of the
+ *          symmetric block diagonal matrix D.
+ *
+ * @param[in] ipiv
+ *          Integer array, dimension (n).
+ *          Details of the interchanges and the block structure of D.
+ *
+ * @param[in] anorm
+ *          The 1-norm of the original matrix A.
+ *
+ * @param[out] rcond
+ *          The reciprocal of the condition number of the matrix A,
+ *          computed as rcond = 1/(anorm * ainvnm).
+ *
+ * @param[out] work
+ *          Double precision array, dimension (2*n).
+ *
+ * @param[out] iwork
+ *          Integer array, dimension (n).
+ *
+ * @param[out] info
+ *          = 0: successful exit
+ *          < 0: if info = -i, the i-th argument had an illegal value
+ */
+void ssycon_3(
+    const char* uplo,
+    const int n,
+    const float* const restrict A,
+    const int lda,
+    const float* restrict E,
+    const int* restrict ipiv,
+    const float anorm,
+    float* rcond,
+    float* restrict work,
+    int* restrict iwork,
+    int* info)
+{
+    int upper;
+    int i, kase;
+    float ainvnm;
+    int isave[3];
+    int dummy_info;
+
+    *info = 0;
+    upper = (uplo[0] == 'U' || uplo[0] == 'u');
+
+    if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
+        *info = -1;
+    } else if (n < 0) {
+        *info = -2;
+    } else if (lda < (1 > n ? 1 : n)) {
+        *info = -4;
+    } else if (anorm < 0.0f) {
+        *info = -7;
+    }
+    if (*info != 0) {
+        xerbla("SSYCON_3", -(*info));
+        return;
+    }
+
+    *rcond = 0.0f;
+    if (n == 0) {
+        *rcond = 1.0f;
+        return;
+    } else if (anorm <= 0.0f) {
+        return;
+    }
+
+    if (upper) {
+
+        for (i = n - 1; i >= 0; i--) {
+            if (ipiv[i] > 0 && A[i + i * lda] == 0.0f) {
+                return;
+            }
+        }
+
+    } else {
+
+        for (i = 0; i < n; i++) {
+            if (ipiv[i] > 0 && A[i + i * lda] == 0.0f) {
+                return;
+            }
+        }
+    }
+
+    kase = 0;
+    for (;;) {
+        slacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
+        if (kase == 0) {
+            break;
+        }
+
+        ssytrs_3(uplo, n, 1, A, lda, E, ipiv, work, n, &dummy_info);
+    }
+
+    if (ainvnm != 0.0f) {
+        *rcond = (1.0f / ainvnm) / anorm;
+    }
+}

@@ -1,0 +1,95 @@
+/**
+ * @file slaqsy.c
+ * @brief SLAQSY equilibrates a symmetric matrix using scaling factors.
+ */
+
+#include <float.h>
+#include "semicolon_lapack_single.h"
+
+/**
+ * SLAQSY equilibrates a symmetric matrix A using the scaling factors
+ * in the vector S.
+ *
+ * @param[in]     uplo   Specifies whether the upper or lower triangular part
+ *                       of the symmetric matrix A is stored.
+ *                       = 'U': Upper triangular
+ *                       = 'L': Lower triangular
+ * @param[in]     n      The order of the matrix A. n >= 0.
+ * @param[in,out] A      Double precision array, dimension (lda, n).
+ *                       On entry, the symmetric matrix A. If UPLO = 'U', the
+ *                       leading n by n upper triangular part of A contains the
+ *                       upper triangular part of the matrix A, and the strictly
+ *                       lower triangular part of A is not referenced. If
+ *                       UPLO = 'L', the leading n by n lower triangular part of
+ *                       A contains the lower triangular part of the matrix A,
+ *                       and the strictly upper triangular part of A is not
+ *                       referenced.
+ *                       On exit, if equed = 'Y', the equilibrated matrix:
+ *                       diag(S) * A * diag(S).
+ * @param[in]     lda    The leading dimension of the array A. lda >= max(n,1).
+ * @param[in]     S      Double precision array, dimension (n).
+ *                       The scale factors for A.
+ * @param[in]     scond  Ratio of the smallest S(i) to the largest S(i).
+ * @param[in]     amax   Absolute value of largest matrix entry.
+ * @param[out]    equed  Specifies whether or not equilibration was done.
+ *                       = 'N': No equilibration.
+ *                       = 'Y': Equilibration was done, i.e., A has been replaced
+ *                              by diag(S) * A * diag(S).
+ */
+void slaqsy(
+    const char* uplo,
+    const int n,
+    float* const restrict A,
+    const int lda,
+    const float* const restrict S,
+    const float scond,
+    const float amax,
+    char* equed)
+{
+    // Internal parameters
+    // THRESH is a threshold value used to decide if scaling should be done
+    const float THRESH = 0.1f;
+
+    // Quick return if possible
+    if (n <= 0) {
+        *equed = 'N';
+        return;
+    }
+
+    // Initialize LARGE and SMALL
+    // SMALL = SLAMCH('Safe minimum') / SLAMCH('Precision')
+    // LARGE = 1 / SMALL
+    float eps = FLT_EPSILON * 0.5f;
+    float sfmin = FLT_MIN;
+    float small_val = 1.0f / FLT_MAX;
+    if (small_val >= sfmin) {
+        sfmin = small_val * (1.0f + eps);
+    }
+    float small = sfmin / eps;
+    float large = 1.0f / small;
+
+    if (scond >= THRESH && amax >= small && amax <= large) {
+        // No equilibration
+        *equed = 'N';
+    } else {
+        // Replace A by diag(S) * A * diag(S)
+        if (uplo[0] == 'U' || uplo[0] == 'u') {
+            // Upper triangle of A is stored
+            for (int j = 0; j < n; j++) {
+                float cj = S[j];
+                for (int i = 0; i <= j; i++) {
+                    A[i + j * lda] = cj * S[i] * A[i + j * lda];
+                }
+            }
+        } else {
+            // Lower triangle of A is stored
+            for (int j = 0; j < n; j++) {
+                float cj = S[j];
+                for (int i = j; i < n; i++) {
+                    A[i + j * lda] = cj * S[i] * A[i + j * lda];
+                }
+            }
+        }
+        *equed = 'Y';
+    }
+}

@@ -1,6 +1,6 @@
 /**
  * @file sgetrf.c
- * @brief Blocked LU factorization using Level 3 BLAS (single precision).
+ * @brief Blocked LU factorization using Level 3 BLAS.
  */
 
 #include <cblas.h>
@@ -28,10 +28,13 @@
  * @param[in]     lda   The leading dimension of the array A (lda >= max(1,m)).
  * @param[out]    ipiv  The pivot indices; row i was interchanged with row
  *                      ipiv[i]. Array of dimension min(m,n), 0-based.
- * @param[out]    info  Exit status.
+ *
+ * @param[out]   info  Exit status.
  *                      - = 0: successful exit
  *                      - < 0: if info = -i, the i-th argument had an illegal value
- *                      - > 0: if info = i, U(i-1,i-1) is exactly zero.
+ *                      - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
+ *                             has been completed, but U is exactly singular, and division
+ *                             by zero will occur if it is used to solve a system of equations.
  */
 void sgetrf(
     const int m,
@@ -47,7 +50,6 @@ void sgetrf(
     int i, iinfo, j, jb, nb;
     int minmn = m < n ? m : n;
 
-    // Test the input parameters
     *info = 0;
     if (m < 0) {
         *info = -1;
@@ -61,26 +63,20 @@ void sgetrf(
         return;
     }
 
-    // Quick return if possible
     if (m == 0 || n == 0) {
         return;
     }
 
-    // Block size from tuning table
     nb = lapack_get_nb("GETRF");
 
     if (nb <= 1 || nb >= minmn) {
-        // Use unblocked code
-        sgetf2(m, n, A, lda, ipiv, info);
+        sgetrf2(m, n, A, lda, ipiv, info);
     } else {
-        // Use blocked code
         for (j = 0; j < minmn; j += nb) {
             jb = minmn - j < nb ? minmn - j : nb;
 
-            // Factor diagonal and subdiagonal blocks
-            sgetf2(m - j, jb, A + j + j * lda, lda, &ipiv[j], &iinfo);
+            sgetrf2(m - j, jb, A + j + j * lda, lda, &ipiv[j], &iinfo);
 
-            // Adjust INFO and the pivot indices
             if (*info == 0 && iinfo > 0) {
                 *info = iinfo + j;
             }
@@ -88,22 +84,18 @@ void sgetrf(
                 ipiv[i] = j + ipiv[i];
             }
 
-            // Apply interchanges to columns 0:j-1
             if (j > 0) {
                 slaswp(j, A, lda, j, j + jb - 1, ipiv, 1);
             }
 
             if (j + jb < n) {
-                // Apply interchanges to columns j+jb:n-1
                 slaswp(n - j - jb, A + (j + jb) * lda, lda, j, j + jb - 1, ipiv, 1);
 
-                // Compute block row of U
                 cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, CblasUnit,
                             jb, n - j - jb, ONE, A + j + j * lda, lda,
                             A + j + (j + jb) * lda, lda);
 
                 if (j + jb < m) {
-                    // Update trailing submatrix
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                 m - j - jb, n - j - jb, jb,
                                 NEG_ONE, A + (j + jb) + j * lda, lda,

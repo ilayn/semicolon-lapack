@@ -24,7 +24,7 @@
  *                      = 'U': Upper triangular
  *                      = 'L': Lower triangular
  * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Single precision array, dimension (lda, n).
+ * @param[in,out] A     Double precision array, dimension (lda, n).
  *                      On entry, the symmetric matrix A. If UPLO = 'U', the
  *                      leading n by n upper triangular part of A contains the
  *                      upper triangular part of the matrix A. If UPLO = 'L',
@@ -72,13 +72,15 @@ void spotf2(
         // Compute the Cholesky factorization A = U**T * U.
         for (int j = 0; j < n; j++) {
             // Compute U(j,j) and test for non-positive-definiteness.
+            // Fortran: AJJ = A(J,J) - DDOT(J-1, A(1,J), 1, A(1,J), 1)
+            // 0-based: length = j (number of elements above diagonal in column j)
             float ajj = A[j + j * lda];
             if (j > 0) {
                 ajj -= cblas_sdot(j, &A[j * lda], 1, &A[j * lda], 1);
             }
             if (ajj <= ZERO || sisnan(ajj)) {
                 A[j + j * lda] = ajj;
-                *info = j + 1;
+                *info = j + 1;  // 1-based for error reporting
                 return;
             }
             ajj = sqrtf(ajj);
@@ -86,6 +88,8 @@ void spotf2(
 
             // Compute elements j+1:n-1 of row j.
             if (j < n - 1) {
+                // Fortran: DGEMV('T', J-1, N-J, -ONE, A(1,J+1), LDA, A(1,J), 1, ONE, A(J,J+1), LDA)
+                // 0-based: m = j, n_cols = n-j-1
                 if (j > 0) {
                     cblas_sgemv(CblasColMajor, CblasTrans,
                                 j, n - j - 1, NEG_ONE,
@@ -93,6 +97,7 @@ void spotf2(
                                 &A[j * lda], 1,
                                 ONE, &A[j + (j + 1) * lda], lda);
                 }
+                // Fortran: DSCAL(N-J, ONE/AJJ, A(J,J+1), LDA)
                 cblas_sscal(n - j - 1, ONE / ajj, &A[j + (j + 1) * lda], lda);
             }
         }
@@ -100,13 +105,15 @@ void spotf2(
         // Compute the Cholesky factorization A = L * L**T.
         for (int j = 0; j < n; j++) {
             // Compute L(j,j) and test for non-positive-definiteness.
+            // Fortran: AJJ = A(J,J) - DDOT(J-1, A(J,1), LDA, A(J,1), LDA)
+            // 0-based: length = j (number of elements left of diagonal in row j)
             float ajj = A[j + j * lda];
             if (j > 0) {
                 ajj -= cblas_sdot(j, &A[j], lda, &A[j], lda);
             }
             if (ajj <= ZERO || sisnan(ajj)) {
                 A[j + j * lda] = ajj;
-                *info = j + 1;
+                *info = j + 1;  // 1-based for error reporting
                 return;
             }
             ajj = sqrtf(ajj);
@@ -114,6 +121,8 @@ void spotf2(
 
             // Compute elements j+1:n-1 of column j.
             if (j < n - 1) {
+                // Fortran: DGEMV('N', N-J, J-1, -ONE, A(J+1,1), LDA, A(J,1), LDA, ONE, A(J+1,J), 1)
+                // 0-based: m = n-j-1, n_cols = j
                 if (j > 0) {
                     cblas_sgemv(CblasColMajor, CblasNoTrans,
                                 n - j - 1, j, NEG_ONE,
@@ -121,6 +130,7 @@ void spotf2(
                                 &A[j], lda,
                                 ONE, &A[(j + 1) + j * lda], 1);
                 }
+                // Fortran: DSCAL(N-J, ONE/AJJ, A(J+1,J), 1)
                 cblas_sscal(n - j - 1, ONE / ajj, &A[(j + 1) + j * lda], 1);
             }
         }

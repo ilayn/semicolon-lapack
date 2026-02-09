@@ -1,0 +1,478 @@
+/**
+ * @file slasyf_rook.c
+ * @brief SLASYF_ROOK computes a partial factorization of a real symmetric matrix using the bounded Bunch-Kaufman ("rook") diagonal pivoting method.
+ */
+
+#include "semicolon_lapack_single.h"
+#include <cblas.h>
+#include <math.h>
+
+/**
+ * SLASYF_ROOK computes a partial factorization of a real symmetric
+ * matrix A using the bounded Bunch-Kaufman ("rook") diagonal
+ * pivoting method.
+ *
+ * @param[in] uplo
+ *          = 'U':  Upper triangular
+ *          = 'L':  Lower triangular
+ *
+ * @param[in] n
+ *          The order of the matrix A. n >= 0.
+ *
+ * @param[in] nb
+ *          The maximum number of columns to factor. nb >= 2.
+ *
+ * @param[out] kb
+ *          The number of columns actually factored.
+ *
+ * @param[in,out] A
+ *          Double precision array, dimension (lda, n).
+ *          On entry, the symmetric matrix A.
+ *          On exit, details of the partial factorization.
+ *
+ * @param[in] lda
+ *          The leading dimension of A. lda >= max(1, n).
+ *
+ * @param[out] ipiv
+ *          Integer array, dimension (n).
+ *          Details of the interchanges and block structure.
+ *
+ * @param[out] W
+ *          Double precision array, dimension (ldw, nb).
+ *
+ * @param[in] ldw
+ *          The leading dimension of W. ldw >= max(1, n).
+ *
+ * @param[out] info
+ *          = 0: successful exit
+ *          > 0: if info = k, D(k,k) is exactly zero.
+ */
+void slasyf_rook(
+    const char* uplo,
+    const int n,
+    const int nb,
+    int* kb,
+    float* const restrict A,
+    const int lda,
+    int* restrict ipiv,
+    float* const restrict W,
+    const int ldw,
+    int* info)
+{
+    int done;
+    int imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
+    float absakk, alpha, colmax, d11, d12, d21, d22;
+    float dtemp, r1, rowmax, t, sfmin;
+
+    *info = 0;
+
+    alpha = (1.0f + sqrtf(17.0f)) / 8.0f;
+
+    sfmin = slamch("S");
+
+    if (uplo[0] == 'U' || uplo[0] == 'u') {
+
+        k = n - 1;
+        while (1) {
+
+            kw = nb + k - (n - 1);
+
+            if ((k <= n - nb && nb < n) || k < 0) {
+                break;
+            }
+
+            kstep = 1;
+            p = k;
+
+            cblas_scopy(k + 1, &A[0 + k * lda], 1, &W[0 + kw * ldw], 1);
+            if (k < n - 1) {
+                cblas_sgemv(CblasColMajor, CblasNoTrans, k + 1, n - k - 1, -1.0f,
+                            &A[0 + (k + 1) * lda], lda, &W[k + (kw + 1) * ldw], ldw,
+                            1.0f, &W[0 + kw * ldw], 1);
+            }
+
+            absakk = fabsf(W[k + kw * ldw]);
+
+            if (k > 0) {
+                imax = cblas_isamax(k, &W[0 + kw * ldw], 1);
+                colmax = fabsf(W[imax + kw * ldw]);
+            } else {
+                colmax = 0.0f;
+            }
+
+            if (fmaxf(absakk, colmax) == 0.0f) {
+
+                if (*info == 0) {
+                    *info = k + 1;
+                }
+                kp = k;
+                cblas_scopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
+
+            } else {
+
+                if (!(absakk < alpha * colmax)) {
+
+                    kp = k;
+
+                } else {
+
+                    done = 0;
+
+                    while (!done) {
+
+                        cblas_scopy(imax + 1, &A[0 + imax * lda], 1, &W[0 + (kw - 1) * ldw], 1);
+                        cblas_scopy(k - imax, &A[imax + (imax + 1) * lda], lda,
+                                    &W[imax + 1 + (kw - 1) * ldw], 1);
+
+                        if (k < n - 1) {
+                            cblas_sgemv(CblasColMajor, CblasNoTrans, k + 1, n - k - 1, -1.0f,
+                                        &A[0 + (k + 1) * lda], lda, &W[imax + (kw + 1) * ldw], ldw,
+                                        1.0f, &W[0 + (kw - 1) * ldw], 1);
+                        }
+
+                        if (imax != k) {
+                            jmax = imax + 1 + cblas_isamax(k - imax - 1, &W[imax + 1 + (kw - 1) * ldw], 1);
+                            rowmax = fabsf(W[jmax + (kw - 1) * ldw]);
+                        } else {
+                            rowmax = 0.0f;
+                        }
+
+                        if (imax > 0) {
+                            itemp = cblas_isamax(imax, &W[0 + (kw - 1) * ldw], 1);
+                            dtemp = fabsf(W[itemp + (kw - 1) * ldw]);
+                            if (dtemp > rowmax) {
+                                rowmax = dtemp;
+                                jmax = itemp;
+                            }
+                        }
+
+                        if (!(fabsf(W[imax + (kw - 1) * ldw]) < alpha * rowmax)) {
+
+                            kp = imax;
+
+                            cblas_scopy(k + 1, &W[0 + (kw - 1) * ldw], 1, &W[0 + kw * ldw], 1);
+
+                            done = 1;
+
+                        } else if ((p == jmax) || (rowmax <= colmax)) {
+
+                            kp = imax;
+                            kstep = 2;
+                            done = 1;
+
+                        } else {
+
+                            p = imax;
+                            colmax = rowmax;
+                            imax = jmax;
+
+                            cblas_scopy(k + 1, &W[0 + (kw - 1) * ldw], 1, &W[0 + kw * ldw], 1);
+
+                        }
+                    }
+                }
+
+                kk = k - kstep + 1;
+
+                kkw = nb + kk - (n - 1);
+
+                if ((kstep == 2) && (p != k)) {
+
+                    cblas_scopy(k - p, &A[p + 1 + k * lda], 1, &A[p + (p + 1) * lda], lda);
+                    cblas_scopy(p + 1, &A[0 + k * lda], 1, &A[0 + p * lda], 1);
+
+                    cblas_sswap(n - k, &A[k + k * lda], lda, &A[p + k * lda], lda);
+                    cblas_sswap(n - kk, &W[k + kkw * ldw], ldw, &W[p + kkw * ldw], ldw);
+                }
+
+                if (kp != kk) {
+
+                    A[kp + k * lda] = A[kk + k * lda];
+                    cblas_scopy(k - 1 - kp, &A[kp + 1 + kk * lda], 1, &A[kp + (kp + 1) * lda], lda);
+                    cblas_scopy(kp + 1, &A[0 + kk * lda], 1, &A[0 + kp * lda], 1);
+
+                    cblas_sswap(n - kk, &A[kk + kk * lda], lda, &A[kp + kk * lda], lda);
+                    cblas_sswap(n - kk, &W[kk + kkw * ldw], ldw, &W[kp + kkw * ldw], ldw);
+                }
+
+                if (kstep == 1) {
+
+                    cblas_scopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
+                    if (k > 0) {
+                        if (fabsf(A[k + k * lda]) >= sfmin) {
+                            r1 = 1.0f / A[k + k * lda];
+                            cblas_sscal(k, r1, &A[0 + k * lda], 1);
+                        } else if (A[k + k * lda] != 0.0f) {
+                            for (ii = 0; ii < k; ii++) {
+                                A[ii + k * lda] = A[ii + k * lda] / A[k + k * lda];
+                            }
+                        }
+                    }
+
+                } else {
+
+                    if (k > 1) {
+
+                        d12 = W[k - 1 + kw * ldw];
+                        d11 = W[k + kw * ldw] / d12;
+                        d22 = W[k - 1 + (kw - 1) * ldw] / d12;
+                        t = 1.0f / (d11 * d22 - 1.0f);
+                        for (j = 0; j <= k - 2; j++) {
+                            A[j + (k - 1) * lda] = t * ((d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]) / d12);
+                            A[j + k * lda] = t * ((d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]) / d12);
+                        }
+                    }
+
+                    A[k - 1 + (k - 1) * lda] = W[k - 1 + (kw - 1) * ldw];
+                    A[k - 1 + k * lda] = W[k - 1 + kw * ldw];
+                    A[k + k * lda] = W[k + kw * ldw];
+                }
+            }
+
+            if (kstep == 1) {
+                ipiv[k] = kp + 1;
+            } else {
+                ipiv[k] = -(p + 1);
+                ipiv[k - 1] = -(kp + 1);
+            }
+
+            k = k - kstep;
+        }
+
+        /* Update the upper triangle of A11 using cblas_dgemm (DGEMMTR replacement) */
+        if (k >= 0 && n > nb) {
+            cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
+                        k + 1, k + 1, n - k - 1, -1.0f,
+                        &A[0 + (k + 1) * lda], lda, &W[0 + (kw + 1) * ldw], ldw,
+                        1.0f, &A[0], lda);
+        }
+
+        j = k + 1;
+        while (j < n) {
+
+            kstep = 1;
+            jp1 = 0;
+            jj = j;
+            jp2 = ipiv[j];
+            if (jp2 < 0) {
+                jp2 = -jp2;
+                j = j + 1;
+                jp1 = -ipiv[j];
+                kstep = 2;
+            }
+
+            j = j + 1;
+            jp2 = jp2 - 1;
+            jp1 = jp1 - 1;
+            if (jp2 != jj && j < n) {
+                cblas_sswap(n - j, &A[jp2 + j * lda], lda, &A[jj + j * lda], lda);
+            }
+            jj = j - 1;
+            if (jp1 != jj && kstep == 2 && j < n) {
+                cblas_sswap(n - j, &A[jp1 + j * lda], lda, &A[jj + j * lda], lda);
+            }
+        }
+
+        *kb = n - 1 - k;
+
+    } else {
+
+        k = 0;
+        while (1) {
+
+            if ((k >= nb - 1 && nb < n) || k >= n) {
+                break;
+            }
+
+            kstep = 1;
+            p = k;
+
+            cblas_scopy(n - k, &A[k + k * lda], 1, &W[k + k * ldw], 1);
+            if (k > 0) {
+                cblas_sgemv(CblasColMajor, CblasNoTrans, n - k, k, -1.0f,
+                            &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
+                            1.0f, &W[k + k * ldw], 1);
+            }
+
+            absakk = fabsf(W[k + k * ldw]);
+
+            if (k < n - 1) {
+                imax = k + 1 + cblas_isamax(n - k - 1, &W[k + 1 + k * ldw], 1);
+                colmax = fabsf(W[imax + k * ldw]);
+            } else {
+                colmax = 0.0f;
+            }
+
+            if (fmaxf(absakk, colmax) == 0.0f) {
+
+                if (*info == 0) {
+                    *info = k + 1;
+                }
+                kp = k;
+                cblas_scopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
+
+            } else {
+
+                if (!(absakk < alpha * colmax)) {
+
+                    kp = k;
+
+                } else {
+
+                    done = 0;
+
+                    while (!done) {
+
+                        cblas_scopy(imax - k, &A[imax + k * lda], lda, &W[k + (k + 1) * ldw], 1);
+                        cblas_scopy(n - imax, &A[imax + imax * lda], 1, &W[imax + (k + 1) * ldw], 1);
+                        if (k > 0) {
+                            cblas_sgemv(CblasColMajor, CblasNoTrans, n - k, k, -1.0f,
+                                        &A[k + 0 * lda], lda, &W[imax + 0 * ldw], ldw,
+                                        1.0f, &W[k + (k + 1) * ldw], 1);
+                        }
+
+                        if (imax != k) {
+                            jmax = k + cblas_isamax(imax - k, &W[k + (k + 1) * ldw], 1);
+                            rowmax = fabsf(W[jmax + (k + 1) * ldw]);
+                        } else {
+                            rowmax = 0.0f;
+                        }
+
+                        if (imax < n - 1) {
+                            itemp = imax + 1 + cblas_isamax(n - imax - 1, &W[imax + 1 + (k + 1) * ldw], 1);
+                            dtemp = fabsf(W[itemp + (k + 1) * ldw]);
+                            if (dtemp > rowmax) {
+                                rowmax = dtemp;
+                                jmax = itemp;
+                            }
+                        }
+
+                        if (!(fabsf(W[imax + (k + 1) * ldw]) < alpha * rowmax)) {
+
+                            kp = imax;
+
+                            cblas_scopy(n - k, &W[k + (k + 1) * ldw], 1, &W[k + k * ldw], 1);
+
+                            done = 1;
+
+                        } else if ((p == jmax) || (rowmax <= colmax)) {
+
+                            kp = imax;
+                            kstep = 2;
+                            done = 1;
+
+                        } else {
+
+                            p = imax;
+                            colmax = rowmax;
+                            imax = jmax;
+
+                            cblas_scopy(n - k, &W[k + (k + 1) * ldw], 1, &W[k + k * ldw], 1);
+
+                        }
+                    }
+                }
+
+                kk = k + kstep - 1;
+
+                if ((kstep == 2) && (p != k)) {
+
+                    cblas_scopy(p - k, &A[k + k * lda], 1, &A[p + k * lda], lda);
+                    cblas_scopy(n - p, &A[p + k * lda], 1, &A[p + p * lda], 1);
+
+                    cblas_sswap(k + 1, &A[k + 0 * lda], lda, &A[p + 0 * lda], lda);
+                    cblas_sswap(kk + 1, &W[k + 0 * ldw], ldw, &W[p + 0 * ldw], ldw);
+                }
+
+                if (kp != kk) {
+
+                    A[kp + k * lda] = A[kk + k * lda];
+                    cblas_scopy(kp - k - 1, &A[k + 1 + kk * lda], 1, &A[kp + (k + 1) * lda], lda);
+                    cblas_scopy(n - kp, &A[kp + kk * lda], 1, &A[kp + kp * lda], 1);
+
+                    cblas_sswap(kk + 1, &A[kk + 0 * lda], lda, &A[kp + 0 * lda], lda);
+                    cblas_sswap(kk + 1, &W[kk + 0 * ldw], ldw, &W[kp + 0 * ldw], ldw);
+                }
+
+                if (kstep == 1) {
+
+                    cblas_scopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
+                    if (k < n - 1) {
+                        if (fabsf(A[k + k * lda]) >= sfmin) {
+                            r1 = 1.0f / A[k + k * lda];
+                            cblas_sscal(n - k - 1, r1, &A[k + 1 + k * lda], 1);
+                        } else if (A[k + k * lda] != 0.0f) {
+                            for (ii = k + 1; ii < n; ii++) {
+                                A[ii + k * lda] = A[ii + k * lda] / A[k + k * lda];
+                            }
+                        }
+                    }
+
+                } else {
+
+                    if (k < n - 2) {
+
+                        d21 = W[k + 1 + k * ldw];
+                        d11 = W[k + 1 + (k + 1) * ldw] / d21;
+                        d22 = W[k + k * ldw] / d21;
+                        t = 1.0f / (d11 * d22 - 1.0f);
+                        for (j = k + 2; j < n; j++) {
+                            A[j + k * lda] = t * ((d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]) / d21);
+                            A[j + (k + 1) * lda] = t * ((d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]) / d21);
+                        }
+                    }
+
+                    A[k + k * lda] = W[k + k * ldw];
+                    A[k + 1 + k * lda] = W[k + 1 + k * ldw];
+                    A[k + 1 + (k + 1) * lda] = W[k + 1 + (k + 1) * ldw];
+                }
+            }
+
+            if (kstep == 1) {
+                ipiv[k] = kp + 1;
+            } else {
+                ipiv[k] = -(p + 1);
+                ipiv[k + 1] = -(kp + 1);
+            }
+
+            k = k + kstep;
+        }
+
+        /* Update the lower triangle of A22 using cblas_dgemm (DGEMMTR replacement) */
+        if (k < n && k > 0) {
+            cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
+                        n - k, n - k, k, -1.0f,
+                        &A[k + 0 * lda], lda, &W[k + 0 * ldw], ldw,
+                        1.0f, &A[k + k * lda], lda);
+        }
+
+        j = k - 1;
+        while (j >= 0) {
+
+            kstep = 1;
+            jp1 = 0;
+            jj = j;
+            jp2 = ipiv[j];
+            if (jp2 < 0) {
+                jp2 = -jp2;
+                j = j - 1;
+                jp1 = -ipiv[j];
+                kstep = 2;
+            }
+
+            j = j - 1;
+            jp2 = jp2 - 1;
+            jp1 = jp1 - 1;
+            if (jp2 != jj && j >= 0) {
+                cblas_sswap(j + 1, &A[jp2 + 0 * lda], lda, &A[jj + 0 * lda], lda);
+            }
+            jj = j + 1;
+            if (jp1 != jj && kstep == 2 && j >= 0) {
+                cblas_sswap(j + 1, &A[jp1 + 0 * lda], lda, &A[jj + 0 * lda], lda);
+            }
+        }
+
+        *kb = k;
+
+    }
+}
