@@ -12,6 +12,7 @@
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
 #include "testutils/test_rng.h"
+#include "testutils/verify.h"
 
 /* Routines under test */
 extern void dgttrf(const int n, double * const restrict DL,
@@ -25,20 +26,6 @@ extern void dgttrs(const char *trans, const int n, const int nrhs,
                    const double * const restrict DU2,
                    const int * const restrict ipiv,
                    double * const restrict B, const int ldb, int *info);
-
-/* Verification routine */
-extern void dgtt02(const char *trans, const int n, const int nrhs,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict X, const int ldx,
-                   double * const restrict B, const int ldb,
-                   double *resid);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
 
 /* Utilities */
 extern double dlamch(const char *cmach);
@@ -69,6 +56,7 @@ typedef struct {
     double *B;       /* Right-hand side / computed solution */
     double *B_copy;  /* Copy of RHS for verification */
     uint64_t seed;   /* RNG seed */
+    uint64_t rng_state[4]; /* RNG state */
 } dgttrs_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -78,7 +66,7 @@ static uint64_t g_seed = 3141;
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
 static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
-                                uint64_t *seed)
+                                uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
@@ -89,15 +77,13 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
 
     dlatb4("DGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    rng_seed(*seed);
-
     /* Generate diagonally dominant matrix for stability */
     for (i = 0; i < n; i++) {
-        D[i] = 4.0 + rng_uniform();
+        D[i] = 4.0 + rng_uniform(state);
     }
     for (i = 0; i < n - 1; i++) {
-        DL[i] = rng_uniform() - 0.5;
-        DU[i] = rng_uniform() - 0.5;
+        DL[i] = rng_uniform(state) - 0.5;
+        DU[i] = rng_uniform(state) - 0.5;
     }
 
     /* Scale if needed */
@@ -110,8 +96,6 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
             DU[i] *= anorm;
         }
     }
-
-    (*seed)++;
 }
 
 /**
@@ -129,6 +113,7 @@ static int dgttrs_setup(void **state, int n, int nrhs)
     fix->nrhs = nrhs;
     fix->ldb = ldb;
     fix->seed = g_seed++;
+    rng_seed(fix->rng_state, fix->seed);
 
     fix->DL = malloc((m > 0 ? m : 1) * sizeof(double));
     fix->D = malloc(n * sizeof(double));
@@ -215,7 +200,7 @@ static double run_dgttrs_test(dgttrs_fixture_t *fix, int imat, const char* trans
     int i, j;
 
     /* Generate test matrix */
-    generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, &fix->seed);
+    generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Copy to factored arrays */
     memcpy(fix->DLF, fix->DL, (m > 0 ? m : 1) * sizeof(double));
@@ -227,13 +212,11 @@ static double run_dgttrs_test(dgttrs_fixture_t *fix, int imat, const char* trans
     assert_info_success(info);
 
     /* Generate random solution XACT */
-    rng_seed(fix->seed);
     for (j = 0; j < nrhs; j++) {
         for (i = 0; i < n; i++) {
-            fix->XACT[i + j * ldb] = rng_uniform_symmetric();
+            fix->XACT[i + j * ldb] = rng_uniform_symmetric(fix->rng_state);
         }
     }
-    fix->seed++;
 
     /* Compute B = op(A) * XACT */
     for (j = 0; j < nrhs; j++) {
@@ -267,6 +250,7 @@ static void test_dgttrs_notrans(void **state)
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         double resid = run_dgttrs_test(fix, imat, "N");
         assert_residual_ok(resid);
     }
@@ -281,6 +265,7 @@ static void test_dgttrs_trans(void **state)
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         double resid = run_dgttrs_test(fix, imat, "T");
         assert_residual_ok(resid);
     }

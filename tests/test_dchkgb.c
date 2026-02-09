@@ -27,6 +27,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -87,15 +88,16 @@ extern double dget06(const double rcond, const double rcondc);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    const double* XACT, const int ldxact, double* B,
-                   const int ldb, uint64_t seed, int* info);
+                   const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -239,8 +241,9 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
     xlaenv(1, nb);
 
     /* Seed based on (m, n, kl, ku, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL +
-                    (uint64_t)(m * 10000 + n * 1000 + kl * 100 + ku * 10 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL +
+                    (uint64_t)(m * 10000 + n * 1000 + kl * 100 + ku * 10 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -255,8 +258,8 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
     /* Generate the matrix directly in band storage using pack='Z'.
      * dlatms with pack='Z' generates a band matrix and stores it directly
      * in band format with leading dimension kl+ku+1. */
-    dlatms(m, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm_gen,
-           kl, ku, "Z", ws->A, lda, ws->WORK, &info);
+    dlatms(m, n, &dist, &type, ws->D, mode, cndnum, anorm_gen,
+           kl, ku, "Z", ws->A, lda, ws->WORK, &info, rng_state);
     if (info != 0) {
         /* Matrix generation failed - skip this test */
         return;
@@ -394,7 +397,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
 
             /* Generate right-hand side */
             dlarhs("DGB", &xtype, " ", trans, n, n, kl, ku, nrhs,
-                   ws->A, lda, ws->XACT, ldb, ws->B, ldb, seed++, &info);
+                   ws->A, lda, ws->XACT, ldb, ws->B, ldb, &info, rng_state);
             xtype = 'C';
 
             /* Copy B to X */

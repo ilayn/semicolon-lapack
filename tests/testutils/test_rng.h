@@ -1,9 +1,11 @@
 /**
  * @file test_rng.h
- * @brief Random number generator for LAPACK test infrastructure.
+ * @brief Stateless random number generation for LAPACK test infrastructure.
  *
  * Uses xoshiro256+ (Blackman & Vigna, 2018), a fast high-quality PRNG.
- * This replaces LAPACK's archaic 48-bit LCG with 4-element seed arrays.
+ * All functions take an explicit uint64_t state[static 4] parameter —
+ * no global state. The caller owns the state (uint64_t[4]), initializes
+ * it via rng_seed(), and passes it to every function that needs randomness.
  *
  * Reference: https://prng.di.unimi.it/xoshiro256plus.c
  */
@@ -13,9 +15,6 @@
 
 #include <stdint.h>
 #include <math.h>
-
-/* xoshiro256+ state - 256 bits */
-static uint64_t rng_state[4];
 
 /**
  * Rotate left helper.
@@ -28,7 +27,7 @@ static inline uint64_t rng_rotl(const uint64_t x, int k) {
  * SplitMix64 - used to initialize xoshiro256+ state from a single seed.
  * Reference: https://prng.di.unimi.it/splitmix64.c
  */
-static inline uint64_t rng_splitmix64(uint64_t *x) {
+static inline uint64_t rng_splitmix64(uint64_t* x) {
     uint64_t z = (*x += 0x9e3779b97f4a7c15ULL);
     z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
     z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
@@ -36,32 +35,35 @@ static inline uint64_t rng_splitmix64(uint64_t *x) {
 }
 
 /**
- * Initialize RNG with a single 64-bit seed.
+ * Initialize RNG state from a single 64-bit seed.
  *
- * @param seed  Any 64-bit value (0 is fine, will be expanded)
+ * @param[out] state  The 4-element state array to initialize.
+ * @param[in]  seed   Any 64-bit value (0 is fine, will be expanded).
  */
-static inline void rng_seed(uint64_t seed) {
-    rng_state[0] = rng_splitmix64(&seed);
-    rng_state[1] = rng_splitmix64(&seed);
-    rng_state[2] = rng_splitmix64(&seed);
-    rng_state[3] = rng_splitmix64(&seed);
+static inline void rng_seed(uint64_t state[static 4], uint64_t seed) {
+    state[0] = rng_splitmix64(&seed);
+    state[1] = rng_splitmix64(&seed);
+    state[2] = rng_splitmix64(&seed);
+    state[3] = rng_splitmix64(&seed);
 }
 
 /**
  * Generate next 64-bit random value.
  * This is the core xoshiro256+ algorithm.
+ *
+ * @param[in,out] state  The 4-element state array.
  */
-static inline uint64_t rng_next(void) {
-    const uint64_t result = rng_state[0] + rng_state[3];
-    const uint64_t t = rng_state[1] << 17;
+static inline uint64_t rng_next(uint64_t state[static 4]) {
+    const uint64_t result = state[0] + state[3];
+    const uint64_t t = state[1] << 17;
 
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
+    state[2] ^= state[0];
+    state[3] ^= state[1];
+    state[1] ^= state[2];
+    state[0] ^= state[3];
 
-    rng_state[2] ^= t;
-    rng_state[3] = rng_rotl(rng_state[3], 45);
+    state[2] ^= t;
+    state[3] = rng_rotl(state[3], 45);
 
     return result;
 }
@@ -70,10 +72,12 @@ static inline uint64_t rng_next(void) {
  * Generate uniform random double in (0, 1).
  * Uses upper 53 bits for full double precision mantissa.
  * Excludes exactly 0.0 and 1.0 (matches LAPACK dlaran behavior).
+ *
+ * @param[in,out] state  The 4-element state array.
  */
-static inline double rng_uniform(void) {
+static inline double rng_uniform(uint64_t state[static 4]) {
     /* Convert to [0, 1) then shift to (0, 1) */
-    double u = (rng_next() >> 11) * 0x1.0p-53;
+    double u = (rng_next(state) >> 11) * 0x1.0p-53;
     /* Ensure we never return exactly 0 or 1 */
     if (u == 0.0) u = 0x1.0p-53;
     return u;
@@ -81,19 +85,23 @@ static inline double rng_uniform(void) {
 
 /**
  * Generate uniform random double in (-1, 1).
+ *
+ * @param[in,out] state  The 4-element state array.
  */
-static inline double rng_uniform_symmetric(void) {
-    return 2.0 * rng_uniform() - 1.0;
+static inline double rng_uniform_symmetric(uint64_t state[static 4]) {
+    return 2.0 * rng_uniform(state) - 1.0;
 }
 
 /**
  * Generate standard normal random double N(0,1).
  * Uses Box-Muller transform (same as LAPACK dlarnd).
+ *
+ * @param[in,out] state  The 4-element state array.
  */
-static inline double rng_normal(void) {
+static inline double rng_normal(uint64_t state[static 4]) {
     static const double TWOPI = 6.28318530717958647692528676655900576839;
-    double u1 = rng_uniform();
-    double u2 = rng_uniform();
+    double u1 = rng_uniform(state);
+    double u2 = rng_uniform(state);
     return sqrt(-2.0 * log(u1)) * cos(TWOPI * u2);
 }
 
@@ -101,27 +109,29 @@ static inline double rng_normal(void) {
  * Generate random value according to distribution type.
  * Compatible with LAPACK IDIST parameter.
  *
- * @param idist  1 = uniform(0,1), 2 = uniform(-1,1), 3 = normal(0,1)
+ * @param[in,out] state  The 4-element state array.
+ * @param[in]     idist  1 = uniform(0,1), 2 = uniform(-1,1), 3 = normal(0,1)
  */
-static double rng_dist(int idist) {
+static double rng_dist(uint64_t state[static 4], int idist) {
     switch (idist) {
-        case 1: return rng_uniform();
-        case 2: return rng_uniform_symmetric();
-        case 3: return rng_normal();
-        default: return rng_uniform();
+        case 1: return rng_uniform(state);
+        case 2: return rng_uniform_symmetric(state);
+        case 3: return rng_normal(state);
+        default: return rng_uniform(state);
     }
 }
 
 /**
  * Fill array with random values from specified distribution.
  *
- * @param idist  Distribution type (1, 2, or 3)
- * @param n      Number of values to generate
- * @param x      Output array of dimension n
+ * @param[in,out] state  The 4-element state array.
+ * @param[in]     idist  Distribution type (1, 2, or 3)
+ * @param[in]     n      Number of values to generate
+ * @param[out]    x      Output array of dimension n
  */
-static inline void rng_fill(int idist, int n, double *x) {
+static inline void rng_fill(uint64_t state[static 4], int idist, int n, double* x) {
     for (int i = 0; i < n; i++) {
-        x[i] = rng_dist(idist);
+        x[i] = rng_dist(state, idist);
     }
 }
 

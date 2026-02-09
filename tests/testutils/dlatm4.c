@@ -68,7 +68,8 @@ extern double dlamch(const char* cmach);
 void dlatm4(const int itype, const int n, const int nz1, const int nz2,
             const int isign, const double amagn, const double rcond,
             const double triang, const int idist,
-            double* A, const int lda)
+            double* A, const int lda,
+            uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -186,14 +187,14 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
                 /* Randomly distributed D values on (RCOND, 1) */
                 alpha = log(rcond);
                 for (jd = kbeg - 1; jd < kend; jd++) {
-                    A[jd + jd * lda] = exp(alpha * rng_uniform());
+                    A[jd + jd * lda] = exp(alpha * rng_uniform(state));
                 }
                 break;
 
             case 10:
                 /* Randomly distributed D values from DIST */
                 for (jd = kbeg - 1; jd < kend; jd++) {
-                    A[jd + jd * lda] = rng_dist(idist);
+                    A[jd + jd * lda] = rng_dist(state, idist);
                 }
                 break;
         }
@@ -210,13 +211,13 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
         if (isign > 0) {
             for (jd = kbeg - 1; jd < kend; jd++) {
                 if (A[jd + jd * lda] != ZERO) {
-                    if (rng_uniform() > HALF)
+                    if (rng_uniform(state) > HALF)
                         A[jd + jd * lda] = -A[jd + jd * lda];
                 }
             }
             for (jd = isdb - 1; jd < isde; jd++) {
                 if (A[(jd + 1) + jd * lda] != ZERO) {
-                    if (rng_uniform() > HALF)
+                    if (rng_uniform(state) > HALF)
                         A[(jd + 1) + jd * lda] = -A[(jd + 1) + jd * lda];
                 }
             }
@@ -241,17 +242,17 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
         if (isign == 2 && abstype != 2 && abstype != 3) {
             safmin = dlamch("S");
             for (jd = kbeg - 1; jd < kend - 1; jd += 2) {
-                if (rng_uniform() > HALF) {
+                if (rng_uniform(state) > HALF) {
                     /* Rotation on left */
-                    cl = TWO * rng_uniform() - ONE;
-                    sl = TWO * rng_uniform() - ONE;
+                    cl = TWO * rng_uniform(state) - ONE;
+                    sl = TWO * rng_uniform(state) - ONE;
                     temp = ONE / fmax(safmin, sqrt(cl * cl + sl * sl));
                     cl = cl * temp;
                     sl = sl * temp;
 
                     /* Rotation on right */
-                    cr = TWO * rng_uniform() - ONE;
-                    sr = TWO * rng_uniform() - ONE;
+                    cr = TWO * rng_uniform(state) - ONE;
+                    sr = TWO * rng_uniform(state) - ONE;
                     temp = ONE / fmax(safmin, sqrt(cr * cr + sr * sr));
                     cr = cr * temp;
                     sr = sr * temp;
@@ -276,13 +277,13 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
             ioff = 2;
             for (jr = 0; jr < n - 1; jr++) {
                 if (A[(jr + 1) + jr * lda] == ZERO)
-                    A[jr + (jr + 1) * lda] = triang * rng_dist(idist);
+                    A[jr + (jr + 1) * lda] = triang * rng_dist(state, idist);
             }
         }
 
         for (jc = 1; jc < n; jc++) {
             for (jr = 0; jr < jc - ioff + 1; jr++) {
-                A[jr + jc * lda] = triang * rng_dist(idist);
+                A[jr + jc * lda] = triang * rng_dist(state, idist);
             }
         }
     }

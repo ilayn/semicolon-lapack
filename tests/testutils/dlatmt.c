@@ -75,7 +75,8 @@ void dlatmt(const int m, const int n, const char* dist,
             const char* sym, double* d, const int mode,
             const double cond, const double dmax, const int rank,
             const int kl, const int ku, const char* pack,
-            double* A, const int lda, double* work, int* info)
+            double* A, const int lda, double* work, int* info,
+            uint64_t state[static 4])
 {
     /* Local scalars */
     double alpha, angle, c, dummy, extra, s, temp;
@@ -213,7 +214,7 @@ void dlatmt(const int m, const int n, const char* dist,
 
     /* 2) Set up D if indicated.
      *    Compute D according to COND and MODE */
-    dlatm7(mode, cond, irsign, idist, d, mnmin, rank, &iinfo);
+    dlatm7(mode, cond, irsign, idist, d, mnmin, rank, &iinfo, state);
     if (iinfo != 0) {
         *info = 1;
         return;
@@ -316,7 +317,7 @@ void dlatmt(const int m, const int n, const char* dist,
                     int limit = ((m + jku < n) ? m + jku : n) + jkl - 1;
                     for (jr = 1; jr <= limit; jr++) {
                         extra = ZERO;
-                        angle = TWOPI * rng_uniform();
+                        angle = TWOPI * rng_uniform(state);
                         c = cos(angle);
                         s = sin(angle);
                         icol = (1 > jr - jkl) ? 1 : jr - jkl;
@@ -385,7 +386,7 @@ void dlatmt(const int m, const int n, const char* dist,
                     int limit = ((n + jkl < m) ? n + jkl : m) + jku - 1;
                     for (jc = 1; jc <= limit; jc++) {
                         extra = ZERO;
-                        angle = TWOPI * rng_uniform();
+                        angle = TWOPI * rng_uniform(state);
                         c = cos(angle);
                         s = sin(angle);
                         irow = (1 > jc - jku) ? 1 : jc - jku;
@@ -457,7 +458,7 @@ void dlatmt(const int m, const int n, const char* dist,
                     int start_jc = ((m + jku < n) ? m + jku : n) - 1;
                     for (jc = start_jc; jc >= 1 - jkl; jc--) {
                         extra = ZERO;
-                        angle = TWOPI * rng_uniform();
+                        angle = TWOPI * rng_uniform(state);
                         c = cos(angle);
                         s = sin(angle);
                         irow = (1 > jc - jku + 1) ? 1 : jc - jku + 1;
@@ -525,7 +526,7 @@ void dlatmt(const int m, const int n, const char* dist,
                     int start_jr = ((n + jkl < m) ? n + jkl : m) - 1;
                     for (jr = start_jr; jr >= 1 - jku; jr--) {
                         extra = ZERO;
-                        angle = TWOPI * rng_uniform();
+                        angle = TWOPI * rng_uniform(state);
                         c = cos(angle);
                         s = sin(angle);
                         icol = (1 > jr - jkl + 1) ? 1 : jr - jkl + 1;
@@ -616,7 +617,7 @@ void dlatmt(const int m, const int n, const char* dist,
                             }
                             temp = A[idx];
                         }
-                        angle = TWOPI * rng_uniform();
+                        angle = TWOPI * rng_uniform(state);
                         c = cos(angle);
                         s = sin(angle);
                         {
@@ -738,7 +739,7 @@ void dlatmt(const int m, const int n, const char* dist,
                             }
                             temp = A[idx];
                         }
-                        angle = TWOPI * rng_uniform();
+                        angle = TWOPI * rng_uniform(state);
                         c = cos(angle);
                         s = -sin(angle);
                         {
@@ -843,11 +844,10 @@ void dlatmt(const int m, const int n, const char* dist,
 
         if (isym == 1) {
             /* Non-symmetric -- A = U D V */
-            uint64_t dlagge_seed = (uint64_t)(m * 1000 + n * 100 + kl * 10 + ku);
-            dlagge(mr, nc, llb, uub, d, A, lda, dlagge_seed, work, &iinfo);
+            dlagge(mr, nc, llb, uub, d, A, lda, work, &iinfo, state);
         } else {
             /* Symmetric -- A = U D U' */
-            dlagsy(m, llb, d, A, lda, work, &iinfo);
+            dlagsy(m, llb, d, A, lda, work, &iinfo, state);
         }
         if (iinfo != 0) {
             *info = 3;

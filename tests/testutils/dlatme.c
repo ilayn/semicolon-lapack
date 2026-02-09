@@ -60,10 +60,6 @@ extern double dlange(const char* norm, const int m, const int n,
  *     'S' => UNIFORM( -1, 1 )
  *     'N' => NORMAL( 0, 1 )
  *
- * @param[in,out] seed
- *     On entry, the seed of the random number generator.
- *     On exit, the seed is updated.
- *
  * @param[in,out] D
  *     Array, dimension (n).
  *     On entry, if MODE=0, contains the eigenvalues.
@@ -127,12 +123,13 @@ extern double dlange(const char* norm, const int m, const int n,
  *     < 0: illegal argument
  *     > 0: error in called routine
  */
-void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
+void dlatme(const int n, const char* dist, double* D,
             const int mode, const double cond, const double dmax,
             const char* ei, const char* rsign, const char* upper,
             const char* sim, double* DS, const int modes, const double conds,
             const int kl, const int ku, const double anorm,
-            double* A, const int lda, double* work, int* info)
+            double* A, const int lda, double* work, int* info,
+            uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -255,11 +252,8 @@ void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
         return;
     }
 
-    /* Initialize random number generator */
-    rng_seed(*seed);
-
     /* 2) Set up diagonal of A - Compute D according to COND and MODE */
-    dlatm1(mode, cond, irsign, idist, D, n, &iinfo);
+    dlatm1(mode, cond, irsign, idist, D, n, &iinfo, state);
     if (iinfo != 0) {
         *info = 1;
         return;
@@ -302,7 +296,7 @@ void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
         }
     } else if (mode == 5 || mode == -5) {
         for (j = 1; j < n; j += 2) {
-            if (dlaran_rng(seed) > HALF) {
+            if (dlaran_rng(state) > HALF) {
                 A[(j-1) + j * lda] = A[j + j * lda];
                 A[j + (j-1) * lda] = -A[j + j * lda];
                 A[j + j * lda] = A[(j-1) + (j-1) * lda];
@@ -319,7 +313,7 @@ void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
                 jr = jc - 1;
             }
             if (jr >= 0) {
-                dlarnv_rng(idist, seed, jr + 1, &A[0 + jc * lda]);
+                dlarnv_rng(idist, jr + 1, &A[0 + jc * lda], state);
             }
         }
     }
@@ -330,14 +324,14 @@ void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
     if (isim != 0) {
         /* Compute S (singular values of the eigenvector matrix)
          * according to CONDS and MODES */
-        dlatm1(modes, conds, 0, 0, DS, n, &iinfo);
+        dlatm1(modes, conds, 0, 0, DS, n, &iinfo, state);
         if (iinfo != 0) {
             *info = 3;
             return;
         }
 
         /* Multiply by V and V' */
-        dlarge(n, A, lda, seed, work, &iinfo);
+        dlarge(n, A, lda, work, &iinfo, state);
         if (iinfo != 0) {
             *info = 4;
             return;
@@ -355,7 +349,7 @@ void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
         }
 
         /* Multiply by U and U' */
-        dlarge(n, A, lda, seed, work, &iinfo);
+        dlarge(n, A, lda, work, &iinfo, state);
         if (iinfo != 0) {
             *info = 4;
             return;
@@ -430,5 +424,4 @@ void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
         }
     }
 
-    (*seed)++;
 }

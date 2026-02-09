@@ -6,6 +6,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -62,10 +63,11 @@ extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
+                   const char* sym, double* d,
                    const int mode, const double cond, const double dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -73,8 +75,6 @@ extern void dlacpy(const char* uplo, const int m, const int n,
 extern void dlaset(const char* uplo, const int m, const int n,
                    const double alpha, const double beta, double* A, const int lda);
 extern double dlamch(const char* cmach);
-
-#include "testutils/test_rng.h"
 
 typedef struct {
     int n;
@@ -192,55 +192,45 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     } else {
         seed = 1988 + n * 1000 + 7 * 100;  /* Types 7-12 share type 7's seed */
     }
+    uint64_t rng_state[4];
+    rng_seed(rng_state, seed);
     int info;
 
     if (imat <= 6) {
         /* Types 1-6: generate matrices of known condition number.
-         * Generate in band storage: kl+ku+1 rows */
-        double* AB = ws->AF;  /* Use AF as band storage workspace */
-        int lda_band = kl + ku + 1;
+         * Generate in band storage with LDA=3, using KOFF offset. */
+        int nmax1 = (1 > n) ? 1 : n;
+        int koff = (2 - ku > 3 - nmax1) ? 2 - ku : 3 - nmax1;
+        koff -= 1;  /* convert to 0-based */
 
-        dlatms(n, n, &dist, seed, &type, ws->RWORK, mode, cndnum,
-               anorm, kl, ku, "Z", AB, lda_band, ws->WORK, &info);
+        dlatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
+               anorm, kl, ku, "Z", &ws->AF[koff], 3, ws->WORK, &info, rng_state);
         if (info != 0) {
             fail_msg("DLATMS info=%d", info);
             return;
         }
         izero = 0;
 
-        /* Extract tridiagonal from band storage.
-         * LAPACK band storage: AB(ku+1+i-j, j) = A(i,j)  (1-indexed)
-         * In C (0-indexed): AB[ku + i - j + j*lda] = A[i,j]
-         * For diagonal (i=j): AB[ku + j*lda] = A[j,j]
-         * For superdiag (i=j-1): AB[ku-1 + j*lda] = A[j-1,j], valid for j=1..n-1
-         * For subdiag (i=j+1): AB[ku+1 + j*lda] = A[j+1,j], valid for j=0..n-2
-         */
+        /* Extract tridiagonal from AF with stride 3.
+         * AF[1 + 3*i] = diagonal, AF[3 + 3*i] = subdiag, AF[2 + 3*i] = superdiag */
         for (int i = 0; i < n; i++) {
-            D[i] = AB[ku + lda_band * i];
+            D[i] = ws->AF[1 + 3 * i];
         }
-        /* For diagonal-only matrices (kl=ku=0), DL and DU are zero */
-        if (kl == 0) {
-            for (int i = 0; i < m; i++) DL[i] = 0.0;
-        } else {
-            for (int i = 0; i < m; i++) {
-                DL[i] = AB[(ku + 1) + lda_band * i];
+        if (n > 1) {
+            for (int i = 0; i < n - 1; i++) {
+                DL[i] = ws->AF[3 + 3 * i];
             }
-        }
-        if (ku == 0) {
-            for (int i = 0; i < m; i++) DU[i] = 0.0;
-        } else {
-            for (int i = 0; i < m; i++) {
-                DU[i] = AB[(ku - 1) + lda_band * (i + 1)];
+            for (int i = 0; i < n - 1; i++) {
+                DU[i] = ws->AF[2 + 3 * i];
             }
         }
     } else {
         /* Types 7-12: generate tridiagonal matrices with unknown condition */
-        rng_seed(seed);
 
         if (!zerot) {
             /* Generate matrix with elements from [-1,1] */
             for (int i = 0; i < n + 2 * m; i++) {
-                ws->A[i] = 2.0 * rng_uniform() - 1.0;
+                ws->A[i] = 2.0 * rng_uniform(rng_state) - 1.0;
             }
             if (anorm != 1.0) {
                 cblas_dscal(n + 2 * m, anorm, ws->A, 1);
@@ -338,10 +328,10 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     double rcondc = (itran == 0) ? rcondo : rcondi;
 
     /* Generate NRHS random solution vectors */
-    rng_seed(seed + (uint64_t)itran);
+    rng_seed(rng_state, seed + (uint64_t)itran);
     for (int j = 0; j < NRHS; j++) {
         for (int i = 0; i < n; i++) {
-            ws->XACT[j * lda + i] = 2.0 * rng_uniform() - 1.0;
+            ws->XACT[j * lda + i] = 2.0 * rng_uniform(rng_state) - 1.0;
         }
     }
 

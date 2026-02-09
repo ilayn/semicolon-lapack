@@ -23,19 +23,14 @@
 #define THRESH 30.0
 
 #include <cblas.h>
+#include "testutils/test_rng.h"
+#include "testutils/verify.h"
 
 /* Routine under test */
 extern void dtrevc(const char* side, const char* howmny, int* select,
                    const int n, const double* T, const int ldt,
                    double* VL, const int ldvl, double* VR, const int ldvr,
                    const int mm, int* m, double* work, int* info);
-
-/* Verification routine */
-extern void dget22(const char* transa, const char* transe, const char* transw,
-                   const int n, const double* A, const int lda,
-                   const double* E, const int lde,
-                   const double* wr, const double* wi,
-                   double* work, double* result);
 
 /* Utilities */
 extern double dlamch(const char* cmach);
@@ -57,9 +52,6 @@ extern void dhseqr_(const char* job, const char* compz, const int* n,
                     double* wr, double* wi, double* Z, const int* ldz,
                     double* work, const int* lwork, int* info);
 
-/* RNG from test infrastructure */
-#include "test_rng.h"
-
 /*
  * Test fixture
  */
@@ -72,6 +64,7 @@ typedef struct {
     double* wi;      /* Imaginary parts of eigenvalues */
     double* work;    /* Workspace */
     int* select;     /* Selection array */
+    uint64_t rng_state[4]; /* RNG state */
 } dtrevc_fixture_t;
 
 static uint64_t g_seed = 2024;
@@ -85,7 +78,7 @@ static int dtrevc_setup(void** state, int n)
     assert_non_null(fix);
 
     fix->n = n;
-    rng_seed(g_seed++);  /* Initialize RNG */
+    rng_seed(fix->rng_state, g_seed++);  /* Initialize RNG */
 
     /* Allocate arrays */
     fix->T = malloc(n * n * sizeof(double));
@@ -144,7 +137,8 @@ static int setup_20(void** state) { return dtrevc_setup(state, 20); }
  * - 2x2 blocks for complex conjugate pairs
  * - Random values in the strictly upper triangular part
  */
-static void generate_schur_matrix(double* T, int n, double* wr, double* wi)
+static void generate_schur_matrix(double* T, int n, double* wr, double* wi,
+                                  uint64_t state[static 4])
 {
     /* Initialize to zero */
     for (int i = 0; i < n * n; i++)
@@ -153,12 +147,12 @@ static void generate_schur_matrix(double* T, int n, double* wr, double* wi)
     /* Place eigenvalues on diagonal - mix of real and complex */
     int j = 0;
     while (j < n) {
-        double u = rng_uniform();
+        double u = rng_uniform(state);
 
         if (j < n - 1 && u < 0.4) {
             /* Create a 2x2 block for complex conjugate pair */
-            double real_part = rng_uniform_symmetric();
-            double imag_part = 0.5 + rng_uniform();  /* Ensure nonzero */
+            double real_part = rng_uniform_symmetric(state);
+            double imag_part = 0.5 + rng_uniform(state);  /* Ensure nonzero */
 
             /* 2x2 block:  [ a   b ]
              *             [-c   a ]  where eigenvalues are a +/- i*sqrt(b*c)
@@ -178,7 +172,7 @@ static void generate_schur_matrix(double* T, int n, double* wr, double* wi)
             j += 2;
         } else {
             /* Real eigenvalue */
-            double eig = rng_uniform_symmetric();
+            double eig = rng_uniform_symmetric(state);
             T[j + j * n] = eig;
             wr[j] = eig;
             wi[j] = 0.0;
@@ -202,7 +196,7 @@ static void generate_schur_matrix(double* T, int n, double* wr, double* wi)
             if (row > 0 && T[row + (row - 1) * n] != 0.0 && col <= row) {
                 continue;  /* Already handled by 2x2 block */
             }
-            T[row + col * n] = 0.5 * rng_uniform_symmetric();
+            T[row + col * n] = 0.5 * rng_uniform_symmetric(state);
         }
     }
 }
@@ -218,7 +212,7 @@ static void test_right_eigenvectors(void** state)
     double result[2];
 
     /* Generate Schur matrix */
-    generate_schur_matrix(fix->T, n, fix->wr, fix->wi);
+    generate_schur_matrix(fix->T, n, fix->wr, fix->wi, fix->rng_state);
 
     /* Compute all right eigenvectors */
     dtrevc("R", "A", fix->select, n, fix->T, n,
@@ -247,7 +241,7 @@ static void test_left_eigenvectors(void** state)
     double result[2];
 
     /* Generate Schur matrix */
-    generate_schur_matrix(fix->T, n, fix->wr, fix->wi);
+    generate_schur_matrix(fix->T, n, fix->wr, fix->wi, fix->rng_state);
 
     /* Compute all left eigenvectors */
     dtrevc("L", "A", fix->select, n, fix->T, n,
@@ -276,7 +270,7 @@ static void test_both_eigenvectors(void** state)
     double result[2];
 
     /* Generate Schur matrix */
-    generate_schur_matrix(fix->T, n, fix->wr, fix->wi);
+    generate_schur_matrix(fix->T, n, fix->wr, fix->wi, fix->rng_state);
 
     /* Compute both left and right eigenvectors */
     dtrevc("B", "A", fix->select, n, fix->T, n,
@@ -313,7 +307,7 @@ static void test_selected_eigenvectors(void** state)
     }
 
     /* Generate Schur matrix */
-    generate_schur_matrix(fix->T, n, fix->wr, fix->wi);
+    generate_schur_matrix(fix->T, n, fix->wr, fix->wi, fix->rng_state);
 
     /* Select every other eigenvalue (respecting complex pairs) */
     int nselected = 0;
@@ -360,7 +354,7 @@ static void test_backtransform(void** state)
     double result[2];
 
     /* Generate Schur matrix */
-    generate_schur_matrix(fix->T, n, fix->wr, fix->wi);
+    generate_schur_matrix(fix->T, n, fix->wr, fix->wi, fix->rng_state);
 
     /* Initialize VR to identity (simulating Q from Schur decomposition) */
     dlaset("F", n, n, 0.0, 1.0, fix->VR, n);

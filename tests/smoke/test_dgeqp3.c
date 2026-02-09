@@ -11,6 +11,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -34,16 +36,6 @@ extern double dlange(const char *norm, const int m, const int n,
                      const double * restrict A, const int lda,
                      double *work);
 extern double dlamch(const char *cmach);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
-extern void dlatms(const int m, const int n, const char *dist,
-                   uint64_t seed, const char *sym, double *d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char *pack,
-                   double *A, const int lda, double *work, int *info);
 
 typedef struct {
     int m, n;
@@ -154,8 +146,10 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
 
     /* Generate matrix A */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
-    dlatms(m, n, &dist, fix->seed, &type, fix->d, mode, cndnum, anorm_param,
-           kl, ku, "N", fix->A, lda, fix->genwork, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, fix->seed);
+    dlatms(m, n, &dist, &type, fix->d, mode, cndnum, anorm_param,
+           kl, ku, "N", fix->A, lda, fix->genwork, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* Copy A to AF */

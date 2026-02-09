@@ -127,8 +127,8 @@ typedef struct {
     /* Test results */
     double result[13];
 
-    /* RNG seed */
-    uint64_t seed;
+    /* RNG state */
+    uint64_t rng_state[4];
 } ddrves_workspace_t;
 
 /* Global workspace pointer */
@@ -187,7 +187,7 @@ static int group_setup(void** state)
         return -1;
     }
 
-    g_ws->seed = 0xDEADBEEFULL;
+    rng_seed(g_ws->rng_state, 0xDEADBEEFULL);
     return 0;
 }
 
@@ -222,7 +222,7 @@ static int group_teardown(void** state)
  * Based on ddrves.f lines 583-700.
  */
 static int generate_matrix(int n, int jtype, double* A, int lda,
-                           double* work, int* iwork, uint64_t* seed)
+                           double* work, int* iwork, uint64_t state[static 4])
 {
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
@@ -269,15 +269,13 @@ static int generate_matrix(int n, int jtype, double* A, int lda,
 
     } else if (itype == 4) {
         /* Diagonal matrix, eigenvalues specified via DLATMS */
-        dlatms(n, n, "S", *seed, "S", work, imode, cond, anorm,
-               0, 0, "N", A, lda, work + n, &iinfo);
-        (*seed)++;
+        dlatms(n, n, "S", "S", work, imode, cond, anorm,
+               0, 0, "N", A, lda, work + n, &iinfo, state);
 
     } else if (itype == 5) {
         /* Symmetric, eigenvalues specified via DLATMS */
-        dlatms(n, n, "S", *seed, "S", work, imode, cond, anorm,
-               n, n, "N", A, lda, work + n, &iinfo);
-        (*seed)++;
+        dlatms(n, n, "S", "S", work, imode, cond, anorm,
+               n, n, "N", A, lda, work + n, &iinfo, state);
 
     } else if (itype == 6) {
         /* General, eigenvalues specified via DLATME */
@@ -292,22 +290,18 @@ static int generate_matrix(int n, int jtype, double* A, int lda,
         }
 
         char ei[2] = " ";  /* No complex conjugate pairs specified */
-        dlatme(n, "S", seed, work, imode, cond, 1.0,
+        dlatme(n, "S", work, imode, cond, 1.0,
                ei, "T", "T", "T", work + n, 4, conds,
-               n, n, anorm, A, lda, work + 2 * n, &iinfo);
+               n, n, anorm, A, lda, work + 2 * n, &iinfo, state);
 
     } else if (itype == 9) {
         /* General, random eigenvalues via DLATMR */
         int idumma[1] = {1};  /* Dummy pivot array */
 
-        /* Initialize RNG state */
-        rng_seed(*seed);
-        (*seed)++;
-
         dlatmr(n, n, "S", "N", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, n, 0.0, anorm, "N",
-               A, lda, iwork, &iinfo);
+               A, lda, iwork, &iinfo, state);
 
         /* For n >= 4, zero out some regions to create sparse structure */
         if (n >= 4) {
@@ -373,7 +367,7 @@ static void run_ddrves_single(ddrves_params_t* params)
     }
 
     /* Generate matrix */
-    int iinfo = generate_matrix(n, jtype, A, lda, work, ws->iwork, &ws->seed);
+    int iinfo = generate_matrix(n, jtype, A, lda, work, ws->iwork, ws->rng_state);
     if (iinfo != 0) {
         /* Matrix generation failed */
         ws->result[rsub] = ulpinv;

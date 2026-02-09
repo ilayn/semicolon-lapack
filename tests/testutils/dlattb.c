@@ -24,7 +24,6 @@ extern double dlamch(const char* cmach);
  *                        Specifies whether the matrix or its transpose will
  *                        be used.
  * @param[out]    diag    'N': Non-unit triangular, 'U': Unit triangular.
- * @param[in,out] seed    Random number seed.
  * @param[in]     n       The order of the matrix to be generated.
  * @param[in]     kd      The number of superdiagonals or subdiagonals of the
  *                        banded triangular matrix A. kd >= 0.
@@ -39,10 +38,11 @@ extern double dlamch(const char* cmach);
  * @param[out]    work    Workspace. Double precision array, dimension (2*n).
  * @param[out]    info    = 0: successful exit
  *                        < 0: if info = -k, the k-th argument had an illegal value
+ * @param[in,out] state   RNG state array of 4 uint64_t values.
  */
 void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
-            uint64_t* seed, const int n, const int kd, double* AB, const int ldab,
-            double* B, double* work, int* info)
+            const int n, const int kd, double* AB, const int ldab,
+            double* B, double* work, int* info, uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -67,8 +67,6 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
 
     if (n <= 0)
         return;
-
-    rng_seed(*seed);
 
     unfl = dlamch("S");
     ulp = dlamch("E") * dlamch("B");
@@ -95,8 +93,8 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         char symm[2] = {type, '\0'};
         char dstr[2] = {dist, '\0'};
         char pack[2] = {packit, '\0'};
-        dlatms(n, n, dstr, *seed, symm, B, mode, cndnum, anorm,
-               kl, ku, pack, &AB[ioff], ldab, work, info);
+        dlatms(n, n, dstr, symm, B, mode, cndnum, anorm,
+               kl, ku, pack, &AB[ioff], ldab, work, info, state);
 
     } else if (imat == 6) {
         if (upper) {
@@ -136,24 +134,24 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
 
         if (kd == 1) {
             if (upper) {
-                AB[0 + 1 * ldab] = (rng_uniform() < 0.5 ? -tnorm : tnorm);
+                AB[0 + 1 * ldab] = (rng_uniform(state) < 0.5 ? -tnorm : tnorm);
                 lenj = (n - 3) / 2;
-                dlarnv_rng(2, seed, lenj, work);
+                dlarnv_rng(2, lenj, work, state);
                 for (j = 0; j < lenj; j++) {
                     AB[0 + 2 * (j + 2) * ldab] = tnorm * work[j];
                 }
             } else {
-                AB[1 + 0 * ldab] = (rng_uniform() < 0.5 ? -tnorm : tnorm);
+                AB[1 + 0 * ldab] = (rng_uniform(state) < 0.5 ? -tnorm : tnorm);
                 lenj = (n - 3) / 2;
-                dlarnv_rng(2, seed, lenj, work);
+                dlarnv_rng(2, lenj, work, state);
                 for (j = 0; j < lenj; j++) {
                     AB[1 + (2 * j + 2) * ldab] = tnorm * work[j];
                 }
             }
         } else if (kd > 1) {
-            star1 = (rng_uniform() < 0.5 ? -tnorm : tnorm);
+            star1 = (rng_uniform(state) < 0.5 ? -tnorm : tnorm);
             sfac = sqrt(tnorm);
-            plus1 = (rng_uniform() < 0.5 ? -sfac : sfac);
+            plus1 = (rng_uniform(state) < 0.5 ? -sfac : sfac);
             for (j = 0; j < n; j += 2) {
                 plus2 = star1 / plus1;
                 work[j] = plus1;
@@ -163,7 +161,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
                     work[n + j + 1] = ZERO;
                     plus1 = star1 / plus2;
 
-                    rexp = rng_uniform() * 2.0 - 1.0;
+                    rexp = rng_uniform(state) * 2.0 - 1.0;
                     if (rexp < ZERO) {
                         star1 = -pow(sfac, ONE - rexp);
                     } else {
@@ -185,31 +183,31 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[(kd + 1 - lenj) + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[(kd + 1 - lenj) + j * ldab], state);
                 AB[kd + j * ldab] = (AB[kd + j * ldab] >= ZERO ? TWO : -TWO);
             }
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j < kd + 1 ? n - j : kd + 1);
                 if (lenj > 0)
-                    dlarnv_rng(2, seed, lenj, &AB[0 + j * ldab]);
+                    dlarnv_rng(2, lenj, &AB[0 + j * ldab], state);
                 AB[0 + j * ldab] = (AB[0 + j * ldab] >= ZERO ? TWO : -TWO);
             }
         }
 
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         iy = cblas_idamax(n, B, 1);
         bnorm = fabs(B[iy]);
         bscal = bignum / (ONE > bnorm ? ONE : bnorm);
         cblas_dscal(n, bscal, B, 1);
 
     } else if (imat == 11) {
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         tscal = ONE / (double)(kd + 1);
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[(kd + 1 - lenj) + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[(kd + 1 - lenj) + j * ldab], state);
                 cblas_dscal(lenj - 1, tscal, &AB[(kd + 1 - lenj) + j * ldab], 1);
                 AB[kd + j * ldab] = (AB[kd + j * ldab] >= ZERO ? ONE : -ONE);
             }
@@ -217,7 +215,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j < kd + 1 ? n - j : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[0 + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[0 + j * ldab], state);
                 if (lenj > 1)
                     cblas_dscal(lenj - 1, tscal, &AB[1 + j * ldab], 1);
                 AB[0 + j * ldab] = (AB[0 + j * ldab] >= ZERO ? ONE : -ONE);
@@ -226,18 +224,18 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         }
 
     } else if (imat == 12) {
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[(kd + 1 - lenj) + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[(kd + 1 - lenj) + j * ldab], state);
                 AB[kd + j * ldab] = (AB[kd + j * ldab] >= ZERO ? ONE : -ONE);
             }
             AB[kd + (n - 1) * ldab] = smlnum * AB[kd + (n - 1) * ldab];
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j < kd + 1 ? n - j : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[0 + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[0 + j * ldab], state);
                 AB[0 + j * ldab] = (AB[0 + j * ldab] >= ZERO ? ONE : -ONE);
             }
             AB[0 + 0 * ldab] = smlnum * AB[0 + 0 * ldab];
@@ -293,7 +291,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
     } else if (imat == 14) {
         texp = ONE / (double)(kd + 1);
         tscal = pow(smlnum, texp);
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         if (upper) {
             for (j = 0; j < n; j++) {
                 for (i = (kd + 1 - j > 0 ? kd + 1 - j : 0); i < kd; i++) {
@@ -321,7 +319,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[(kd + 1 - lenj) + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[(kd + 1 - lenj) + j * ldab], state);
                 if (j != iy) {
                     AB[kd + j * ldab] = (AB[kd + j * ldab] >= ZERO ? TWO : -TWO);
                 } else {
@@ -331,7 +329,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j < kd + 1 ? n - j : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[0 + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[0 + j * ldab], state);
                 if (j != iy) {
                     AB[0 + j * ldab] = (AB[0 + j * ldab] >= ZERO ? TWO : -TWO);
                 } else {
@@ -339,7 +337,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
                 }
             }
         }
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         cblas_dscal(n, TWO, B, 1);
 
     } else if (imat == 16) {
@@ -396,19 +394,19 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j < kd ? j : kd);
-                dlarnv_rng(2, seed, lenj, &AB[(kd - lenj) + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[(kd - lenj) + j * ldab], state);
                 AB[kd + j * ldab] = (double)(j + 1);
             }
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j - 1 < kd ? n - j - 1 : kd);
                 if (lenj > 0)
-                    dlarnv_rng(2, seed, lenj, &AB[1 + j * ldab]);
+                    dlarnv_rng(2, lenj, &AB[1 + j * ldab], state);
                 AB[0 + j * ldab] = (double)(j + 1);
             }
         }
 
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         iy = cblas_idamax(n, B, 1);
         bnorm = fabs(B[iy]);
         bscal = bignum / (ONE > bnorm ? ONE : bnorm);
@@ -420,7 +418,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[(kd + 1 - lenj) + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[(kd + 1 - lenj) + j * ldab], state);
                 for (i = kd + 1 - lenj; i <= kd; i++) {
                     AB[i + j * ldab] = (AB[i + j * ldab] >= ZERO ? tleft : -tleft) + tscal * AB[i + j * ldab];
                 }
@@ -428,26 +426,26 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j < kd + 1 ? n - j : kd + 1);
-                dlarnv_rng(2, seed, lenj, &AB[0 + j * ldab]);
+                dlarnv_rng(2, lenj, &AB[0 + j * ldab], state);
                 for (i = 0; i < lenj; i++) {
                     AB[i + j * ldab] = (AB[i + j * ldab] >= ZERO ? tleft : -tleft) + tscal * AB[i + j * ldab];
                 }
             }
         }
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         cblas_dscal(n, TWO, B, 1);
     }
 
     if (!(trans[0] == 'N' || trans[0] == 'n')) {
         if (upper) {
             for (j = 0; j < n / 2; j++) {
-                lenj = (n - 2 * j < kd + 1 ? n - 2 * j : kd + 1);
+                lenj = (n - 2 * j - 1 < kd + 1 ? n - 2 * j - 1 : kd + 1);
                 cblas_dswap(lenj, &AB[kd + j * ldab], ldab - 1,
                             &AB[(kd + 1 - lenj) + (n - 1 - j) * ldab], -1);
             }
         } else {
             for (j = 0; j < n / 2; j++) {
-                lenj = (n - 2 * j < kd + 1 ? n - 2 * j : kd + 1);
+                lenj = (n - 2 * j - 1 < kd + 1 ? n - 2 * j - 1 : kd + 1);
                 cblas_dswap(lenj, &AB[0 + j * ldab], 1,
                             &AB[(lenj - 1) + (n - j - lenj) * ldab], -ldab + 1);
             }

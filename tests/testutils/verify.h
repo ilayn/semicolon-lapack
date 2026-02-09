@@ -113,26 +113,30 @@ void dlatb4(const char *path, const int imat, const int m, const int n,
             char *type, int *kl, int *ku, double *anorm, int *mode,
             double *cndnum, char *dist);
 
-void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+void dlatms(const int m, const int n, const char* dist,
             const char* sym, double *d, const int mode, const double cond,
             const double dmax, const int kl, const int ku, const char* pack,
-            double *A, const int lda, double *work, int *info);
+            double *A, const int lda, double *work, int *info,
+            uint64_t state[static 4]);
 
 void dlatmt(const int m, const int n, const char* dist,
             const char* sym, double* d, const int mode,
             const double cond, const double dmax, const int rank,
             const int kl, const int ku, const char* pack,
-            double* A, const int lda, double* work, int* info);
+            double* A, const int lda, double* work, int* info,
+            uint64_t state[static 4]);
 
 void dlatm1(const int mode, const double cond, const int irsign,
-            const int idist, double* d, const int n, int* info);
+            const int idist, double* d, const int n, int* info,
+            uint64_t state[static 4]);
 
 void dlagge(const int m, const int n, const int kl, const int ku,
-            const double* d, double* A, const int lda, uint64_t seed,
-            double* work, int* info);
+            const double* d, double* A, const int lda,
+            double* work, int* info, uint64_t state[static 4]);
 
 void dlagsy(const int n, const int k, const double* d, double* A,
-            const int lda, double* work, int* info);
+            const int lda, double* work, int* info,
+            uint64_t state[static 4]);
 
 void dlarot(const int lrows, const int lleft, const int lright,
             const int nl, const double c, const double s,
@@ -142,7 +146,7 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
             const char* trans, const int m, const int n, const int kl,
             const int ku, const int nrhs, const double* A, const int lda,
             double* X, const int ldx, double* B, const int ldb,
-            uint64_t seed, int* info);
+            int* info, uint64_t state[static 4]);
 
 void dlaord(const char* job, const int n, double* X, const int incx);
 
@@ -328,7 +332,8 @@ double drzt02(const int m, const int n, const double* AF, const int lda,
 
 /* Least squares verification routines */
 void dqrt13(const int scale, const int m, const int n,
-            double* A, const int lda, double* norma);
+            double* A, const int lda, double* norma,
+            uint64_t state[static 4]);
 
 double dqrt14(const char* trans, const int m, const int n, const int nrhs,
               const double* A, const int lda, const double* X, const int ldx,
@@ -338,7 +343,8 @@ void dqrt15(const int scale, const int rksel,
             const int m, const int n, const int nrhs,
             double* A, const int lda, double* B, const int ldb,
             double* S, int* rank, double* norma, double* normb,
-            double* work, const int lwork);
+            double* work, const int lwork,
+            uint64_t state[static 4]);
 
 void dqrt16(const char* trans, const int m, const int n, const int nrhs,
             const double* A, const int lda,
@@ -358,15 +364,16 @@ double dqrt17(const char* trans, const int iresid,
 void dlaror(const char* side, const char* init,
             const int m, const int n,
             double* A, const int lda,
-            const uint64_t seed,
-            double* X, int* info);
+            double* X, int* info,
+            uint64_t state[static 4]);
 
-void dlarge(const int n, double* A, const int lda, uint64_t* seed,
-            double* work, int* info);
+void dlarge(const int n, double* A, const int lda,
+            double* work, int* info, uint64_t state[static 4]);
 
-void dlarnv_rng(const int idist, uint64_t* seed, const int n, double* x);
+void dlarnv_rng(const int idist, const int n, double* x,
+                uint64_t state[static 4]);
 
-double dlaran_rng(uint64_t* seed);
+double dlaran_rng(uint64_t state[static 4]);
 
 /* Triangular verification routines */
 void dtrt01(const char* uplo, const char* diag, const int n,
@@ -396,8 +403,9 @@ void dtrt06(const double rcond, const double rcondc,
 
 /* Triangular matrix generation */
 void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
-            uint64_t* seed, const int n, double* A, const int lda,
-            double* B, double* work, int* info);
+            const int n, double* A, const int lda,
+            double* B, double* work, int* info,
+            uint64_t state[static 4]);
 
 /* Triangular packed (TP) verification routines */
 void dtpt01(const char* uplo, const char* diag, const int n,
@@ -431,8 +439,8 @@ void dtpt06(const double rcond, const double rcondc,
 
 /* Triangular packed matrix generation */
 void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-            uint64_t* seed, const int n, double* AP, double* B, double* work,
-            int* info);
+            const int n, double* AP, double* B, double* work,
+            int* info, uint64_t state[static 4]);
 
 /* Eigenvalue verification routines */
 void dstech(const int n, const double* const restrict A, const double* const restrict B,
@@ -443,6 +451,13 @@ void dstt21(const int n, const int kband, const double* const restrict AD,
             const double* const restrict AE, const double* const restrict SD,
             const double* const restrict SE, const double* const restrict U, const int ldu,
             double* const restrict work, double* restrict result);
+
+void dstt22(const int n, const int m, const int kband,
+            const double* const restrict AD, const double* const restrict AE,
+            const double* const restrict SD, const double* const restrict SE,
+            const double* const restrict U, const int ldu,
+            double* const restrict work, const int ldwork,
+            double* restrict result);
 
 void dsyt21(const int itype, const char* uplo, const int n, const int kband,
             const double* const restrict A, const int lda,
@@ -493,6 +508,26 @@ void dbdt01(const int m, const int n, const int kd,
             const double* const restrict PT, const int ldpt,
             double* const restrict work, double* resid);
 
+void dbdt02(const int m, const int n,
+            const double* const restrict B, const int ldb,
+            const double* const restrict C, const int ldc,
+            const double* const restrict U, const int ldu,
+            double* const restrict work, double* resid);
+
+void dbdt03(const char* uplo, const int n, const int kd,
+            const double* const restrict D, const double* const restrict E,
+            const double* const restrict U, const int ldu,
+            const double* const restrict S,
+            const double* const restrict VT, const int ldvt,
+            double* const restrict work, double* resid);
+
+void dbdt04(const char* uplo, const int n,
+            const double* const restrict D, const double* const restrict E,
+            const double* const restrict S, const int ns,
+            const double* const restrict U, const int ldu,
+            const double* const restrict VT, const int ldvt,
+            double* const restrict work, double* resid);
+
 void dort03(const char* rc, const int mu, const int mv, const int n,
             const int k, const double* const restrict U, const int ldu,
             const double* const restrict V, const int ldv,
@@ -506,6 +541,11 @@ void dbdt05(const int m, const int n, const double* const restrict A, const int 
             double* const restrict work, double* resid);
 
 /* Non-symmetric eigenvalue verification routines */
+void dget10(const int m, const int n,
+            const double* const restrict A, const int lda,
+            const double* const restrict B, const int ldb,
+            double* const restrict work, double* result);
+
 void dort01(const char* rowcol, const int m, const int n,
             const double* U, const int ldu,
             double* work, const int lwork, double* resid);
@@ -525,26 +565,29 @@ void dget22(const char* transa, const char* transe, const char* transw,
 void dlatm4(const int itype, const int n, const int nz1, const int nz2,
             const int isign, const double amagn, const double rcond,
             const double triang, const int idist,
-            double* A, const int lda);
+            double* A, const int lda, uint64_t state[static 4]);
 
-void dlatme(const int n, const char* dist, uint64_t* seed, double* D,
+void dlatme(const int n, const char* dist, double* D,
             const int mode, const double cond, const double dmax,
             const char* ei, const char* rsign, const char* upper,
             const char* sim, double* DS, const int modes, const double conds,
             const int kl, const int ku, const double anorm,
-            double* A, const int lda, double* work, int* info);
+            double* A, const int lda, double* work, int* info,
+            uint64_t state[static 4]);
 
 double dlatm2(const int m, const int n, const int i, const int j,
               const int kl, const int ku, const int idist,
               const double* d, const int igrade,
               const double* dl, const double* dr,
-              const int ipvtng, const int* iwork, const double sparse);
+              const int ipvtng, const int* iwork, const double sparse,
+              uint64_t state[static 4]);
 
 double dlatm3(const int m, const int n, const int i, const int j,
               int* isub, int* jsub, const int kl, const int ku,
               const int idist, const double* d, const int igrade,
               const double* dl, const double* dr,
-              const int ipvtng, const int* iwork, const double sparse);
+              const int ipvtng, const int* iwork, const double sparse,
+              uint64_t state[static 4]);
 
 void dlatmr(const int m, const int n, const char* dist, const char* sym,
             double* d, const int mode, const double cond, const double dmax,
@@ -553,7 +596,8 @@ void dlatmr(const int m, const int n, const char* dist, const char* sym,
             const int moder, const double condr, const char* pivtng,
             const int* ipivot, const int kl, const int ku,
             const double sparse, const double anorm, const char* pack,
-            double* A, const int lda, int* iwork, int* info);
+            double* A, const int lda, int* iwork, int* info,
+            uint64_t state[static 4]);
 
 /* GSVD verification routines */
 void dgsvts3(const int m, const int p, const int n,
@@ -587,7 +631,7 @@ void dlakf2(const int m, const int n,
 /* Singular value distribution */
 void dlatm7(const int mode, const double cond, const int irsign,
             const int idist, double* d, const int n, const int rank,
-            int* info);
+            int* info, uint64_t state[static 4]);
 
 /* Generalized Sylvester test matrices */
 void dlatm5(const int prtype, const int m, const int n,
@@ -644,10 +688,90 @@ void dlavsy_rook(const char* uplo, const char* trans, const char* diag,
                  const int* const restrict ipiv,
                  double* const restrict B, const int ldb, int* info);
 
+/* DGEEVX verification */
+void dget23(const int comp, const char* balanc, const int jtype,
+            const double thresh, const int n,
+            double* A, const int lda, double* H,
+            double* wr, double* wi, double* wr1, double* wi1,
+            double* VL, const int ldvl, double* VR, const int ldvr,
+            double* LRE, const int ldlre,
+            double* rcondv, double* rcndv1, const double* rcdvin,
+            double* rconde, double* rcnde1, const double* rcdein,
+            double* scale, double* scale1, double* result,
+            double* work, const int lwork, int* iwork, int* info);
+
+/* DGEESX verification */
+void dget24(const int comp, const int jtype, const double thresh,
+            const int n, double* A, const int lda,
+            double* H, double* HT,
+            double* wr, double* wi, double* wrt, double* wit,
+            double* wrtmp, double* witmp,
+            double* VS, const int ldvs, double* VS1,
+            const double rcdein, const double rcdvin,
+            const int nslct, const int* islct,
+            double* result, double* work, const int lwork,
+            int* iwork, int* bwork, int* info);
+
+/* Triangular banded (TB) verification routines */
+void dtbt02(const char* uplo, const char* trans, const char* diag,
+            const int n, const int kd, const int nrhs,
+            const double* AB, const int ldab,
+            const double* X, const int ldx,
+            const double* B, const int ldb,
+            double* work, double* resid);
+
+void dtbt03(const char* uplo, const char* trans, const char* diag,
+            const int n, const int kd, const int nrhs,
+            const double* AB, const int ldab,
+            const double scale, const double* cnorm, const double tscal,
+            const double* X, const int ldx,
+            const double* B, const int ldb,
+            double* work, double* resid);
+
+void dtbt05(const char* uplo, const char* trans, const char* diag,
+            const int n, const int kd, const int nrhs,
+            const double* AB, const int ldab,
+            const double* B, const int ldb,
+            const double* X, const int ldx,
+            const double* XACT, const int ldxact,
+            const double* ferr, const double* berr,
+            double* reslts);
+
+void dtbt06(const double rcond, const double rcondc,
+            const char* uplo, const char* diag, const int n, const int kd,
+            const double* AB, const int ldab, double* work, double* rat);
+
 /* Triangular banded matrix generation */
 void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
-            uint64_t* seed, const int n, const int kd,
+            const int n, const int kd,
             double* AB, const int ldab, double* B,
-            double* work, int* info);
+            double* work, int* info, uint64_t state[static 4]);
+
+/* Symmetric verification routines (BK variants) */
+void dsyt01_3(const char* uplo, const int n,
+              const double* const restrict A, const int lda,
+              double* const restrict AFAC, const int ldafac,
+              double* const restrict E,
+              int* const restrict ipiv,
+              double* const restrict C, const int ldc,
+              double* const restrict rwork, double* resid);
+
+void dsyt01_aa(const char* uplo, const int n,
+               const double* const restrict A, const int lda,
+               const double* const restrict AFAC, const int ldafac,
+               const int* const restrict ipiv,
+               double* const restrict C, const int ldc,
+               double* const restrict rwork, double* resid);
+
+void dsyt01_rook(const char* uplo, const int n,
+                 const double* const restrict A, const int lda,
+                 const double* const restrict AFAC, const int ldafac,
+                 const int* const restrict ipiv,
+                 double* const restrict C, const int ldc,
+                 double* const restrict rwork, double* resid);
+
+/* TSQR verification */
+void dtsqr01(const char* tssw, const int m, const int n, const int mb,
+             const int nb, double* result);
 
 #endif /* VERIFY_H */

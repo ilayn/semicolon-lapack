@@ -63,7 +63,8 @@ double dlatm3(
     const double* dr,
     const int ipvtng,
     const int* iwork,
-    const double sparse)
+    const double sparse,
+    uint64_t state[static 4])
 {
     const double ZERO = 0.0;
 
@@ -97,7 +98,7 @@ double dlatm3(
     }
 
     if (sparse > ZERO) {
-        if (rng_uniform() < sparse) {
+        if (rng_uniform(state) < sparse) {
             return ZERO;
         }
     }
@@ -105,7 +106,7 @@ double dlatm3(
     if (i == j) {
         temp = d[i - 1];
     } else {
-        temp = rng_dist(idist);
+        temp = rng_dist(state, idist);
     }
 
     if (igrade == 1) {

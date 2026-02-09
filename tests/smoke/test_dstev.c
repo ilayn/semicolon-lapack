@@ -19,6 +19,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -42,31 +43,6 @@ extern void dstech(const int n, const double* A, const double* B,
 /* Utilities */
 extern double dlamch(const char* cmach);
 
-/* ---------- xoshiro256+ RNG ---------- */
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
-
 /* ---------- Test fixture ---------- */
 typedef struct {
     int n;
@@ -80,6 +56,7 @@ typedef struct {
     double* work;   /* workspace: max(2*(n-1) for dstev, n*(n+1) for dstt21) */
     double* result; /* dstt21 results (2) */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dstev_fixture_t;
 
 /* Global seed for reproducibility */
@@ -185,14 +162,13 @@ static void gen_wilkinson(int n, double* D, double* E)
 }
 
 /* Type 5: Random symmetric tridiagonal */
-static void gen_random(int n, double* D, double* E, uint64_t seed)
+static void gen_random(int n, double* D, double* E, uint64_t state[static 4])
 {
-    rng_seed(seed);
     for (int i = 0; i < n; i++) {
-        D[i] = 2.0 * rng_uniform() - 1.0;
+        D[i] = rng_uniform_symmetric(state);
     }
     for (int i = 0; i < n - 1; i++) {
-        E[i] = 2.0 * rng_uniform() - 1.0;
+        E[i] = rng_uniform_symmetric(state);
     }
 }
 
@@ -217,7 +193,10 @@ static void gen_matrix(dstev_fixture_t* fix, int imat)
     case 2: gen_identity(n, fix->AD, fix->AE); break;
     case 3: gen_toeplitz_121(n, fix->AD, fix->AE); break;
     case 4: gen_wilkinson(n, fix->AD, fix->AE); break;
-    case 5: gen_random(n, fix->AD, fix->AE, fix->seed + (uint64_t)imat); break;
+    case 5:
+        rng_seed(fix->rng_state, fix->seed + (uint64_t)imat);
+        gen_random(n, fix->AD, fix->AE, fix->rng_state);
+        break;
     case 6: gen_graded(n, fix->AD, fix->AE); break;
     }
 

@@ -8,32 +8,12 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
 #include <cblas.h>
-
-/* Verification routine */
-extern void dqlt01(const int m, const int n,
-                   const double * const restrict A,
-                   double * const restrict AF,
-                   double * const restrict Q,
-                   double * const restrict L,
-                   const int lda,
-                   double * const restrict tau,
-                   double * const restrict work, const int lwork,
-                   double * const restrict rwork,
-                   double * restrict result);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
-extern void dlatms(const int m, const int n, const char *dist,
-                   uint64_t seed, const char *sym, double *d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char *pack,
-                   double *A, const int lda, double *work, int *info);
 
 typedef struct {
     int m, n;
@@ -115,8 +95,10 @@ static void run_qlt01(ql_fixture_t *fix, int imat)
 
     dlatb4("DGE", imat, fix->m, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    dlatms(fix->m, fix->n, &dist, fix->seed, &type, fix->d, mode, cndnum, anorm,
-           kl, ku, "N", fix->A, fix->lda, fix->genwork, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, fix->seed);
+    dlatms(fix->m, fix->n, &dist, &type, fix->d, mode, cndnum, anorm,
+           kl, ku, "N", fix->A, fix->lda, fix->genwork, &info, rng_state);
     assert_int_equal(info, 0);
 
     dqlt01(fix->m, fix->n, fix->A, fix->AF, fix->Q, fix->L, fix->lda,

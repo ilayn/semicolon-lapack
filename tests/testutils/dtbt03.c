@@ -59,7 +59,7 @@ void dtbt03(const char* uplo, const char* trans, const char* diag,
     const double ZERO = 0.0;
     const double ONE = 1.0;
     int ix, j;
-    double bignum, eps, err, smlnum, tnorm, xnorm, xscal;
+    double eps, err, smlnum, tnorm, xnorm, xscal;
 
     /* Quick exit if N = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -69,7 +69,6 @@ void dtbt03(const char* uplo, const char* trans, const char* diag,
 
     eps = dlamch("E");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
 
     /* Compute the norm of the triangular matrix A using the column
      * norms already computed by DLATBS. */

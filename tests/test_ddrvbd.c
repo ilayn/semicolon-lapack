@@ -30,8 +30,8 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include "testutils/verify.h"
-#include <cblas.h>
 
 /* Test threshold from LAPACK svd.in (line 10) */
 #define THRESH 50.0
@@ -103,8 +103,6 @@ extern void dgejsv(const char* joba, const char* jobu, const char* jobv,
 
 /* Utility routines */
 extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
                    const double* A, const int lda, double* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
@@ -155,38 +153,12 @@ typedef struct {
     /* Test results */
     double result[NRESULTS];
 
-    /* RNG seed */
-    uint64_t seed;
+    /* RNG state */
+    uint64_t rng_state[4];
 } ddrvbd_workspace_t;
 
 /* Global workspace pointer */
 static ddrvbd_workspace_t* g_ws = NULL;
-
-/* ===== RNG Implementation (xoshiro256+) ===== */
-
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
 
 /* ===== Helper Functions ===== */
 
@@ -237,56 +209,6 @@ static double check_sv_order(const double* S, int n, double ulpinv)
 }
 
 /**
- * Compute ||A - U*diag(S)*VT|| / (||A|| * max(m,n) * ulp).
- *
- * For full SVD: U is m x minmn, S is minmn, VT is minmn x n.
- * Computes: temp = U * diag(S) * VT, then resid = ||A - temp||.
- */
-static double svd_residual(int m, int n, int ku,
-                           const double* A, int lda,
-                           const double* U, int ldu,
-                           const double* S,
-                           const double* VT, int ldvt,
-                           double* work)
-{
-    /* ku = number of columns in U (economy SVD), also rows in VT
-     * For full SVD, ku = min(m,n)
-     */
-    double ulp = dlamch("P");
-    int maxmn = (m > n) ? m : n;
-
-    /* Compute ||A|| */
-    double anorm = dlange("F", m, n, A, lda, NULL);
-    if (anorm == 0.0) anorm = 1.0;
-
-    /* Compute U * diag(S) in work[0 : m*ku-1] */
-    /* Scale columns of U by S */
-    double* US = work;
-    for (int j = 0; j < ku; j++) {
-        for (int i = 0; i < m; i++) {
-            US[i + j * m] = U[i + j * ldu] * S[j];
-        }
-    }
-
-    /* Compute (U*S) * VT in work[m*ku : m*ku + m*n - 1] */
-    double* USVT = &work[m * ku];
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                m, n, ku, 1.0, US, m, VT, ldvt, 0.0, USVT, m);
-
-    /* Compute A - U*S*VT */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
-            USVT[i + j * m] = A[i + j * lda] - USVT[i + j * m];
-        }
-    }
-
-    /* Compute ||A - U*S*VT|| */
-    double resid = dlange("F", m, n, USVT, m, NULL);
-
-    return resid / (anorm * maxmn * ulp);
-}
-
-/**
  * Generate test matrix of specified type.
  *
  * Types (from ddrvbd.f):
@@ -297,7 +219,8 @@ static double svd_residual(int m, int n, int ku,
  *   5: Same as 3, scaled near overflow
  */
 static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
-                                 double* S, double* work, uint64_t seed, int* info)
+                                 double* S, double* work, int* info,
+                                 uint64_t state[static 4])
 {
     double ulp = dlamch("P");
     double unfl = dlamch("S");
@@ -339,8 +262,8 @@ static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
         }
 
         /* Use dlatms to generate random matrix with specified singular values */
-        dlatms(m, n, "U", seed, "N", S, 4, cond, anorm,
-               m - 1, n - 1, "N", A, lda, work, info);
+        dlatms(m, n, "U", "N", S, 4, cond, anorm,
+               m - 1, n - 1, "N", A, lda, work, info, state);
 
         if (*info != 0) {
             return;
@@ -379,7 +302,12 @@ static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
  * skipping (JOBU='A',JOBVT='A') which is tested separately and (JOBU='O',JOBVT='O')
  * which is invalid (both can't overwrite A).
  *
+ * @param m       Number of rows of A
+ * @param n       Number of columns of A
+ * @param ASAV    Saved copy of original matrix A
+ * @param lda     Leading dimension of A
  * @param lswork  Working workspace size (varies in IWS loop)
+ * @param ws      Workspace structure
  */
 static void test_dgesvd(int m, int n, const double* ASAV, int lda,
                         int lswork, ddrvbd_workspace_t* ws)
@@ -406,9 +334,9 @@ static void test_dgesvd(int m, int n, const double* ASAV, int lda,
         return;
     }
 
-    /* Test 1: Reconstruction */
-    ws->result[0] = svd_residual(m, n, mnmin, ASAV, lda, ws->USAV, m,
-                                 ws->SSAV, ws->VTSAV, n, ws->work);
+    /* Test 1: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
+    dbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
+           ws->VTSAV, n, ws->work, &ws->result[0]);
 
     /* Test 2: U orthogonality */
     dort01("C", m, m, ws->USAV, m, ws->work, ws->lwork, &ws->result[1]);
@@ -500,7 +428,12 @@ static void test_dgesvd(int m, int n, const double* ASAV, int lda,
  * Tests 8-11: Full SVD (jobz='A')
  * Tests 12-14: Partial SVD (max over jobz='N','O','S')
  *
+ * @param m       Number of rows of A
+ * @param n       Number of columns of A
+ * @param ASAV    Saved copy of original matrix A
+ * @param lda     Leading dimension of A
  * @param lswork  Working workspace size (varies in IWS loop)
+ * @param ws      Workspace structure
  */
 static void test_dgesdd(int m, int n, const double* ASAV, int lda,
                         int lswork, ddrvbd_workspace_t* ws)
@@ -527,9 +460,9 @@ static void test_dgesdd(int m, int n, const double* ASAV, int lda,
         return;
     }
 
-    /* Test 8: Reconstruction */
-    ws->result[7] = svd_residual(m, n, mnmin, ASAV, lda, ws->USAV, m,
-                                 ws->SSAV, ws->VTSAV, n, ws->work);
+    /* Test 8: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
+    dbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
+           ws->VTSAV, n, ws->work, &ws->result[7]);
 
     /* Test 9: U orthogonality */
     dort01("C", m, m, ws->USAV, m, ws->work, ws->lwork, &ws->result[8]);
@@ -615,13 +548,17 @@ static void test_dgesdd(int m, int n, const double* ASAV, int lda,
  * Only works for M >= N.
  * Returns V (not VT), so we need to transpose.
  *
+ * @param m       Number of rows of A
+ * @param n       Number of columns of A
+ * @param ASAV    Saved copy of original matrix A
+ * @param lda     Leading dimension of A
  * @param lswork  Working workspace size (varies in IWS loop)
+ * @param ws      Workspace structure
  */
 static void test_dgesvj(int m, int n, const double* ASAV, int lda,
-                        int lswork, ddrvbd_workspace_t* ws)
+                        ddrvbd_workspace_t* ws)
 {
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
+    double ulpinv = 1.0 / dlamch("P");
     int info;
 
     /* Initialize results to 0 */
@@ -635,7 +572,7 @@ static void test_dgesvj(int m, int n, const double* ASAV, int lda,
     dlacpy("F", m, n, ASAV, lda, ws->USAV, m);
 
     dgesvj("G", "U", "V", m, n, ws->USAV, m, ws->SSAV, 0, ws->A, n,
-           ws->work, lswork, &info);
+           ws->work, ws->lwork, &info);
 
     if (info != 0) {
         ws->result[14] = ulpinv;
@@ -649,23 +586,15 @@ static void test_dgesvj(int m, int n, const double* ASAV, int lda,
         }
     }
 
-    /* Test 15: Reconstruction using economy SVD (M×N U, N×N VT) */
-    ws->result[14] = svd_residual(m, n, mnmin, ASAV, lda, ws->USAV, m,
-                                  ws->SSAV, ws->VTSAV, n, ws->work);
+    /* Test 15: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
+    dbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
+           ws->VTSAV, n, ws->work, &ws->result[14]);
 
     /* Test 16: U orthogonality */
-    {
-        double sfmin = dlamch("S");
-        int n2 = 0;
-        for (int i = 0; i < mnmin; i++) {
-            if (ws->SSAV[i] > sfmin) n2++;
-        }
-        int ncols_check = (n2 > 0) ? n2 : mnmin;
-        dort01("C", m, ncols_check, ws->USAV, m, ws->work, ws->lwork, &ws->result[15]);
+    if (m != 0 && n != 0) {
+        dort01("C", m, m, ws->USAV, m, ws->work, ws->lwork, &ws->result[15]);
+        dort01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork, &ws->result[16]);
     }
-
-    /* Test 17: VT orthogonality - N×N */
-    dort01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork, &ws->result[16]);
 
     /* Test 18: S ordering */
     ws->result[17] = check_sv_order(ws->SSAV, mnmin, ulpinv);
@@ -679,10 +608,9 @@ static void test_dgesvj(int m, int n, const double* ASAV, int lda,
  * Returns V (not VT), so we need to transpose.
  */
 static void test_dgejsv(int m, int n, const double* ASAV, int lda,
-                        int lswork, ddrvbd_workspace_t* ws)
+                        ddrvbd_workspace_t* ws)
 {
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
+    double ulpinv = 1.0 / dlamch("P");
     int info;
 
     /* Initialize results to 0 */
@@ -696,7 +624,7 @@ static void test_dgejsv(int m, int n, const double* ASAV, int lda,
     dlacpy("F", m, n, ASAV, lda, ws->VTSAV, m);
 
     dgejsv("G", "U", "V", "R", "N", "N", m, n, ws->VTSAV, m,
-           ws->SSAV, ws->USAV, m, ws->A, n, ws->work, lswork, ws->iwork, &info);
+           ws->SSAV, ws->USAV, m, ws->A, n, ws->work, ws->lwork, ws->iwork, &info);
 
     if (info != 0) {
         ws->result[18] = ulpinv;
@@ -710,23 +638,15 @@ static void test_dgejsv(int m, int n, const double* ASAV, int lda,
         }
     }
 
-    /* Test 19: Reconstruction using economy SVD */
-    ws->result[18] = svd_residual(m, n, mnmin, ASAV, lda, ws->USAV, m,
-                                  ws->SSAV, ws->VTSAV, n, ws->work);
+    /* Test 19: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
+    dbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
+           ws->VTSAV, n, ws->work, &ws->result[18]);
 
-    /* Test 20: U orthogonality */
-    {
-        double sfmin = dlamch("S");
-        int n2 = 0;
-        for (int i = 0; i < mnmin; i++) {
-            if (ws->SSAV[i] > sfmin) n2++;
-        }
-        int ncols_check = (n2 > 0) ? n2 : mnmin;
-        dort01("C", m, ncols_check, ws->USAV, m, ws->work, ws->lwork, &ws->result[19]);
+    /* Test 20: U orthogonality, Test 21: VT orthogonality */
+    if (m != 0 && n != 0) {
+        dort01("C", m, m, ws->USAV, m, ws->work, ws->lwork, &ws->result[19]);
+        dort01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork, &ws->result[20]);
     }
-
-    /* Test 21: VT orthogonality - N×N */
-    dort01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork, &ws->result[20]);
 
     /* Test 22: S ordering */
     ws->result[21] = check_sv_order(ws->SSAV, mnmin, ulpinv);
@@ -771,9 +691,9 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
         return;
     }
 
-    /* Test 23: Reconstruction */
-    ws->result[22] = svd_residual(m, n, mnmin, ASAV, lda, ws->USAV, m,
-                                  ws->SSAV, ws->VTSAV, mnmin, ws->work);
+    /* Test 23: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
+    dbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
+           ws->VTSAV, mnmin, ws->work, &ws->result[22]);
 
     /* Test 24: U orthogonality - U is M x MNMIN */
     dort01("C", m, mnmin, ws->USAV, m, ws->work, ws->lwork, &ws->result[23]);
@@ -837,8 +757,8 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
 
     /* === RANGE='I' (index range) === */
     if (mnmin > 1) {
-        int il = 1 + (int)((mnmin - 1) * rng_uniform());
-        int iu = 1 + (int)((mnmin - 1) * rng_uniform());
+        int il = 1 + (int)((mnmin - 1) * rng_uniform(ws->rng_state));
+        int iu = 1 + (int)((mnmin - 1) * rng_uniform(ws->rng_state));
         if (iu < il) {
             int tmp = il;
             il = iu;
@@ -907,7 +827,12 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
  * Only works for M >= N.
  * Returns V (not VT).
  *
+ * @param m       Number of rows of A
+ * @param n       Number of columns of A
+ * @param ASAV    Saved copy of original matrix A
+ * @param lda     Leading dimension of A
  * @param lswork  Working workspace size (varies in IWS loop)
+ * @param ws      Workspace structure
  */
 static void test_dgesvdq(int m, int n, const double* ASAV, int lda,
                          int lswork, ddrvbd_workspace_t* ws)
@@ -939,14 +864,15 @@ static void test_dgesvdq(int m, int n, const double* ASAV, int lda,
         return;
     }
 
-    /* Test 36: Reconstruction */
-    ws->result[35] = svd_residual(m, n, mnmin, ASAV, lda, ws->U, m, ws->S, ws->VT, n, ws->work);
+    /* Test 36: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
+    dbdt01(m, n, 0, ASAV, lda, ws->U, m, ws->S, NULL,
+           ws->VT, n, ws->work, &ws->result[35]);
 
-    /* Test 37: U orthogonality */
-    dort01("C", m, mnmin, ws->U, m, ws->work, ws->lwork, &ws->result[36]);
-
-    /* Test 38: VT orthogonality */
-    dort01("R", mnmin, n, ws->VT, n, ws->work, ws->lwork, &ws->result[37]);
+    /* Test 37: U orthogonality, Test 38: VT orthogonality */
+    if (m != 0 && n != 0) {
+        dort01("C", m, m, ws->U, m, ws->work, ws->lwork, &ws->result[36]);
+        dort01("R", n, n, ws->VT, n, ws->work, ws->lwork, &ws->result[37]);
+    }
 
     /* Test 39: S ordering */
     ws->result[38] = check_sv_order(ws->S, mnmin, ulpinv);
@@ -981,7 +907,7 @@ static int group_setup(void** state)
     g_ws->lwork = compute_lwork(mmax, nmax);
     g_ws->liwork = 12 * mnmax;
     g_ws->lrwork = 2 * mnmax;
-    g_ws->seed = 2024;
+    rng_seed(g_ws->rng_state, 2024);
 
     /* Allocate arrays */
     g_ws->A = malloc(mmax * nmax * sizeof(double));
@@ -1047,13 +973,13 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 
     /* Seed based on parameters for reproducibility */
     uint64_t seed = 2024 + m * 1000 + n * 100 + itype;
-    rng_seed(seed);
+    rng_seed(ws->rng_state, seed);
 
     int info;
 
     /* Generate test matrix */
     generate_test_matrix(itype, m, n, ws->ASAV, m,
-                         ws->SSAV, ws->work, seed, &info);
+                         ws->SSAV, ws->work, &info, ws->rng_state);
 
     if (info != 0) {
         snprintf(context, sizeof(context),
@@ -1119,7 +1045,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 
         /* DGESVJ (tests 15-18, M >= N only) */
         if (m >= n) {
-            test_dgesvj(m, n, ws->ASAV, m, lswork_gesdd, ws);
+            test_dgesvj(m, n, ws->ASAV, m, ws);
             for (int i = 14; i < 18; i++) {
                 if (ws->result[i] < 0.0) continue;
                 if (ws->result[i] >= THRESH) {
@@ -1134,7 +1060,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 
         /* DGEJSV (tests 19-22, M >= N only) */
         if (m >= n) {
-            test_dgejsv(m, n, ws->ASAV, m, lswork_gesdd, ws);
+            test_dgejsv(m, n, ws->ASAV, m, ws);
             for (int i = 18; i < 22; i++) {
                 if (ws->result[i] < 0.0) continue;
                 if (ws->result[i] >= THRESH) {

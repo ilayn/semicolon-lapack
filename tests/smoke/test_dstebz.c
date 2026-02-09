@@ -19,6 +19,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -44,33 +45,6 @@ extern void dstech(const int n, const double* A, const double* B,
 extern double dlamch(const char* cmach);
 
 /* -----------------------------------------------------------------------
- * RNG: xoshiro256+ (Blackman & Vigna, 2018)
- * ----------------------------------------------------------------------- */
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
-
-/* -----------------------------------------------------------------------
  * Test fixture
  * ----------------------------------------------------------------------- */
 typedef struct {
@@ -86,6 +60,7 @@ typedef struct {
     double* work;    /* workspace (4*n) */
     int* iwork;      /* int workspace (3*n) */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dstebz_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -127,14 +102,13 @@ static void gen_wilkinson(int n, double* D, double* E)
 }
 
 /** Matrix type 5: Random symmetric tridiagonal */
-static void gen_random(int n, double* D, double* E, uint64_t seed)
+static void gen_random(int n, double* D, double* E, uint64_t state[static 4])
 {
-    rng_seed(seed);
     for (int i = 0; i < n; i++) {
-        D[i] = 2.0 * rng_uniform() - 1.0;
+        D[i] = rng_uniform_symmetric(state);
     }
     for (int i = 0; i < n - 1; i++) {
-        E[i] = 2.0 * rng_uniform() - 1.0;
+        E[i] = rng_uniform_symmetric(state);
     }
 }
 
@@ -148,14 +122,15 @@ static void gen_graded(int n, double* D, double* E)
 }
 
 /** Generate matrix of given type */
-static void generate_matrix(int n, int imat, double* D, double* E, uint64_t seed)
+static void generate_matrix(int n, int imat, double* D, double* E,
+                            uint64_t state[static 4])
 {
     switch (imat) {
         case 1: gen_zero(n, D, E); break;
         case 2: gen_identity(n, D, E); break;
         case 3: gen_toeplitz_121(n, D, E); break;
         case 4: gen_wilkinson(n, D, E); break;
-        case 5: gen_random(n, D, E, seed); break;
+        case 5: gen_random(n, D, E, state); break;
         case 6: gen_graded(n, D, E); break;
     }
 }
@@ -259,7 +234,8 @@ static void test_range_all(void** state)
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        generate_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Compute all eigenvalues via dstebz */
         dstebz("A", "E", n, 0.0, 0.0, 0, 0, 2.0 * dlamch("S"),

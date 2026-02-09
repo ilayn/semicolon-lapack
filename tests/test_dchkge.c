@@ -27,6 +27,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -91,15 +92,16 @@ extern void dget07(const char* trans, const int n, const int nrhs,
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    const double* XACT, const int ldxact, double* B,
-                   const int ldb, uint64_t seed, int* info);
+                   const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -241,7 +243,8 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
 
     /* Seed based on (m, n, imat) for reproducibility.
      * Note: seed does NOT include inb so we test the same matrix with different NB */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -252,8 +255,8 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix */
-    dlatms(m, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm,
-           kl, ku, "N", ws->A, lda, ws->WORK, &info);
+    dlatms(m, n, &dist, &type, ws->D, mode, cndnum, anorm,
+           kl, ku, "N", ws->A, lda, ws->WORK, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* For types 5-7, zero one or more columns to create singular matrix */
@@ -361,7 +364,7 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
              * TEST 3: Solve and compute residual for A * X = B
              */
             dlarhs("DGE", "N", " ", trans_arr, n, n, kl, ku, nrhs,
-                   ws->A, lda, ws->XACT, lda, ws->B, lda, seed++, &info);
+                   ws->A, lda, ws->XACT, lda, ws->B, lda, &info, rng_state);
 
             dlacpy("F", n, nrhs, ws->B, lda, ws->X, lda);
             dgetrs(trans_arr, n, nrhs, ws->AFAC, lda, ws->IPIV, ws->X, lda, &info);

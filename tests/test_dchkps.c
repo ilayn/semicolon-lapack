@@ -23,6 +23,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
@@ -63,7 +64,8 @@ extern void dlatmt(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode,
                    const double cond, const double dmax, const int rank,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -158,6 +160,8 @@ static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
     int lda = (n > 1) ? n : 1;
     double result;
     char ctx[128];
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat * 10 + irank));
 
     /* Set block size for this test via xlaenv */
     int nb = NBVAL[inb];
@@ -177,7 +181,7 @@ static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
 
     /* Generate symmetric positive semidefinite test matrix with specified rank */
     dlatmt(n, n, &dist, &type, ws->D, mode, cndnum, anorm, rank,
-           kl, ku, uplo_str, ws->A, lda, ws->WORK, &info);
+           kl, ku, uplo_str, ws->A, lda, ws->WORK, &info, rng_state);
 
     if (info != 0) {
         /* dlatmt failed - skip this test case */

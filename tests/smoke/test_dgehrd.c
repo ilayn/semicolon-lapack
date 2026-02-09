@@ -32,6 +32,7 @@ typedef struct {
     double* work;    /* Workspace */
     double* tau;     /* Householder reflectors */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dgehrd_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
@@ -75,7 +76,7 @@ static int setup_N(void** state, int n) {
         return -1;
     }
 
-    rng_seed(fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
     *state = fix;
     return 0;
 }
@@ -108,7 +109,8 @@ static int setup_32(void** state) { return setup_N(state, 32); }
  * @param lda    Leading dimension
  * @param anorm  Desired matrix norm
  */
-static void generate_test_matrix(int itype, int n, double* A, int lda, double anorm)
+static void generate_test_matrix(int itype, int n, double* A, int lda, double anorm,
+                                 uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -148,7 +150,7 @@ static void generate_test_matrix(int itype, int n, double* A, int lda, double an
             /* For simplicity, use dlatm4 for eigenvalue test matrices */
             {
                 int mode = (itype == 4) ? 4 : (itype == 5) ? 3 : 1;
-                dlatm4(mode, n, 0, 0, 1, anorm, ulp, ZERO, 2, A, lda);
+                dlatm4(mode, n, 0, 0, 1, anorm, ulp, ZERO, 2, A, lda, state);
             }
             break;
 
@@ -158,7 +160,7 @@ static void generate_test_matrix(int itype, int n, double* A, int lda, double an
             {
                 double scale = (itype == 7) ? sqrt(dlamch("O")) * ulp / (double)n
                                             : sqrt(dlamch("U")) * (double)n / ulp;
-                dlatm4(4, n, 0, 0, 1, scale, ulp, ZERO, 2, A, lda);
+                dlatm4(4, n, 0, 0, 1, scale, ulp, ZERO, 2, A, lda, state);
             }
             break;
 
@@ -167,7 +169,7 @@ static void generate_test_matrix(int itype, int n, double* A, int lda, double an
             /* Generate random entries */
             for (int j = 0; j < n; j++) {
                 for (int i = 0; i < n; i++) {
-                    A[i + j * lda] = anorm * rng_uniform_symmetric();
+                    A[i + j * lda] = anorm * rng_uniform_symmetric(state);
                 }
             }
             break;
@@ -188,7 +190,7 @@ static void test_hessenberg_reduction(dgehrd_fixture_t* fix, int itype)
     double anorm = ONE;
 
     /* Generate test matrix */
-    generate_test_matrix(itype, n, fix->A, lda, anorm);
+    generate_test_matrix(itype, n, fix->A, lda, anorm, fix->rng_state);
 
     /* Copy A to H before reduction */
     dlacpy(" ", n, n, fix->A, lda, fix->H, lda);
@@ -344,25 +346,25 @@ static void test_partial_range(void** state)
     dlaset("F", n, n, ZERO, ZERO, fix->A, lda);
 
     /* Set diagonal for rows 0 and n-1 (isolated eigenvalues) */
-    fix->A[0 + 0 * lda] = rng_uniform_symmetric() + 2.0;
-    fix->A[(n-1) + (n-1) * lda] = rng_uniform_symmetric() + 2.0;
+    fix->A[0 + 0 * lda] = rng_uniform_symmetric(fix->rng_state) + 2.0;
+    fix->A[(n-1) + (n-1) * lda] = rng_uniform_symmetric(fix->rng_state) + 2.0;
 
     /* Upper part of row 0 (can be non-zero) */
     for (int j = 1; j < n; j++) {
-        fix->A[0 + j * lda] = rng_uniform_symmetric();
+        fix->A[0 + j * lda] = rng_uniform_symmetric(fix->rng_state);
     }
 
     /* Active submatrix: rows/columns ilo:ihi */
     for (int j = ilo; j <= ihi; j++) {
         for (int i = ilo; i <= ihi; i++) {
-            fix->A[i + j * lda] = rng_uniform_symmetric();
+            fix->A[i + j * lda] = rng_uniform_symmetric(fix->rng_state);
         }
     }
 
     /* Elements connecting active block to last row/column
      * Last column can have entries in rows ilo:ihi */
     for (int i = ilo; i <= ihi; i++) {
-        fix->A[i + (n - 1) * lda] = rng_uniform_symmetric();
+        fix->A[i + (n - 1) * lda] = rng_uniform_symmetric(fix->rng_state);
     }
 
     /* Copy to H */

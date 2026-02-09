@@ -26,6 +26,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <cblas.h>
 #include <math.h>
 #include <string.h>
@@ -65,31 +66,6 @@ extern double dlamch(const char* cmach);
 extern void dlacpy(const char* uplo, const int m, const int n,
                    const double* A, const int lda, double* B, const int ldb);
 
-/* ---- Simple xoshiro256+ RNG ---- */
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
@@ -110,6 +86,7 @@ typedef struct {
     int* iwork;
     int lwork;
     uint64_t seed;
+    uint64_t rng_state[4];
 } dggsvd3_fixture_t;
 
 static uint64_t g_seed = 2024;
@@ -215,11 +192,12 @@ static int setup_40_15_20(void** state) { return dggsvd3_setup(state, 40, 15, 20
 /**
  * Helper: generate random m x n matrix
  */
-static void generate_random_matrix(double* A, int m, int n, int lda)
+static void generate_random_matrix(double* A, int m, int n, int lda,
+                                   uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            A[i + j * lda] = 2.0 * rng_uniform() - 1.0;
+            A[i + j * lda] = rng_uniform_symmetric(state);
         }
     }
 }
@@ -260,7 +238,7 @@ static void test_random_wellcond(void** state)
         return;
     }
 
-    rng_seed(fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
 
     int lda = (m > 1) ? m : 1;
     int ldb = (p > 1) ? p : 1;
@@ -269,8 +247,8 @@ static void test_random_wellcond(void** state)
     int ldq = (n > 1) ? n : 1;
     int ldr = (n > 1) ? n : 1;
 
-    generate_random_matrix(fix->A, m, n, lda);
-    generate_random_matrix(fix->B, p, n, ldb);
+    generate_random_matrix(fix->A, m, n, lda, fix->rng_state);
+    generate_random_matrix(fix->B, p, n, ldb, fix->rng_state);
 
     memset(fix->R, 0, ldr * n * sizeof(double));
 
@@ -301,7 +279,7 @@ static void test_diagonal_matrices(void** state)
         return;
     }
 
-    rng_seed(fix->seed + 100);
+    rng_seed(fix->rng_state, fix->seed + 100);
 
     int lda = (m > 1) ? m : 1;
     int ldb = (p > 1) ? p : 1;
@@ -317,10 +295,10 @@ static void test_diagonal_matrices(void** state)
     int minpn = (p < n) ? p : n;
 
     for (int i = 0; i < minmn; i++) {
-        fix->A[i + i * lda] = rng_uniform() + 0.1;
+        fix->A[i + i * lda] = rng_uniform(fix->rng_state) + 0.1;
     }
     for (int i = 0; i < minpn; i++) {
-        fix->B[i + i * ldb] = rng_uniform() + 0.1;
+        fix->B[i + i * ldb] = rng_uniform(fix->rng_state) + 0.1;
     }
 
     memset(fix->R, 0, ldr * n * sizeof(double));
@@ -352,7 +330,7 @@ static void test_triangular_matrices(void** state)
         return;
     }
 
-    rng_seed(fix->seed + 200);
+    rng_seed(fix->rng_state, fix->seed + 200);
 
     int lda = (m > 1) ? m : 1;
     int ldb = (p > 1) ? p : 1;
@@ -366,10 +344,10 @@ static void test_triangular_matrices(void** state)
 
     for (int j = 0; j < n; j++) {
         for (int i = 0; i <= j && i < m; i++) {
-            fix->A[i + j * lda] = 2.0 * rng_uniform() - 1.0;
+            fix->A[i + j * lda] = rng_uniform_symmetric(fix->rng_state);
         }
         for (int i = 0; i <= j && i < p; i++) {
-            fix->B[i + j * ldb] = 2.0 * rng_uniform() - 1.0;
+            fix->B[i + j * ldb] = rng_uniform_symmetric(fix->rng_state);
         }
     }
 
@@ -402,7 +380,7 @@ static void test_zero_A(void** state)
         return;
     }
 
-    rng_seed(fix->seed + 300);
+    rng_seed(fix->rng_state, fix->seed + 300);
 
     int lda = (m > 1) ? m : 1;
     int ldb = (p > 1) ? p : 1;
@@ -412,7 +390,7 @@ static void test_zero_A(void** state)
     int ldr = (n > 1) ? n : 1;
 
     memset(fix->A, 0, lda * n * sizeof(double));
-    generate_random_matrix(fix->B, p, n, ldb);
+    generate_random_matrix(fix->B, p, n, ldb, fix->rng_state);
 
     memset(fix->R, 0, ldr * n * sizeof(double));
 
@@ -443,7 +421,7 @@ static void test_zero_B(void** state)
         return;
     }
 
-    rng_seed(fix->seed + 400);
+    rng_seed(fix->rng_state, fix->seed + 400);
 
     int lda = (m > 1) ? m : 1;
     int ldb = (p > 1) ? p : 1;
@@ -452,7 +430,7 @@ static void test_zero_B(void** state)
     int ldq = (n > 1) ? n : 1;
     int ldr = (n > 1) ? n : 1;
 
-    generate_random_matrix(fix->A, m, n, lda);
+    generate_random_matrix(fix->A, m, n, lda, fix->rng_state);
     memset(fix->B, 0, ldb * n * sizeof(double));
 
     memset(fix->R, 0, ldr * n * sizeof(double));

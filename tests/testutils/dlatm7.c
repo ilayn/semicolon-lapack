@@ -74,7 +74,7 @@ extern void xerbla(const char* srname, const int info);
  */
 void dlatm7(const int mode, const double cond, const int irsign,
             const int idist, double* d, const int n, const int rank,
-            int* info)
+            int* info, uint64_t state[static 4])
 {
     const double ONE = 1.0;
     const double ZERO = 0.0;
@@ -168,13 +168,13 @@ void dlatm7(const int mode, const double cond, const int irsign,
                 /* Randomly distributed D values on (1/cond, 1): */
                 alpha = log(ONE / cond);
                 for (i = 0; i < n; i++) {
-                    d[i] = exp(alpha * rng_uniform());
+                    d[i] = exp(alpha * rng_uniform(state));
                 }
                 break;
 
             case 6:
                 /* Randomly distributed D values from IDIST */
-                rng_fill(idist, n, d);
+                rng_fill(state, idist, n, d);
                 break;
         }
 
@@ -182,7 +182,7 @@ void dlatm7(const int mode, const double cond, const int irsign,
          * random signs to D */
         if ((mode != -6 && mode != 0 && mode != 6) && irsign == 1) {
             for (i = 0; i < n; i++) {
-                temp = rng_uniform();
+                temp = rng_uniform(state);
                 if (temp > HALF) {
                     d[i] = -d[i];
                 }

@@ -32,6 +32,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 #include <cblas.h>
 
 /* Test parameters from dtest.in */
@@ -51,23 +53,6 @@ extern void dsytrf(const char* uplo, const int n, double* restrict A,
                    const int lda, int* restrict ipiv,
                    double* restrict work, const int lwork, int* info);
 
-/* Verification routine */
-extern void dsyt01(const char* uplo, const int n,
-                   const double* restrict A, const int lda,
-                   const double* restrict AFAC, const int ldafac,
-                   const int* restrict ipiv,
-                   double* restrict C, const int ldc,
-                   double* restrict rwork, double* resid);
-
-/* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
 
 /**
  * Test parameters for a single test case.
@@ -162,15 +147,14 @@ static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
     double resid;
     char ctx[128];
 
-    /* Seed based on (n, uplo, imat, routine) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat * 10 + routine);
-
     /* Get matrix parameters for this type */
     dlatb4("DSY", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate symmetric test matrix */
-    dlatms(n, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm,
-           kl, ku, uplo_str, ws->A, lda, ws->WORK, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat * 10 + routine));
+    dlatms(n, n, &dist, &type, ws->D, mode, cndnum, anorm,
+           kl, ku, uplo_str, ws->A, lda, ws->WORK, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* For types 3-6, zero one or more rows and columns.

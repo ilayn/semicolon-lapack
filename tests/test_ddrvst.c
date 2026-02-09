@@ -127,8 +127,8 @@ typedef struct {
     /* Test results */
     double result[80];
 
-    /* RNG seed */
-    uint64_t seed;
+    /* RNG state */
+    uint64_t rng_state[4];
 } ddrvst_workspace_t;
 
 /* Global workspace pointer */
@@ -209,7 +209,7 @@ static int group_setup(void** state)
         return -1;
     }
 
-    g_ws->seed = 0xDEADBEEFULL;
+    rng_seed(g_ws->rng_state, 0xDEADBEEFULL);
     return 0;
 }
 
@@ -249,7 +249,7 @@ static int group_teardown(void** state)
  */
 static int generate_matrix(int n, int jtype, double* A, int lda,
                            double* U, int ldu, double* work, int* iwork,
-                           uint64_t* seed)
+                           uint64_t state[static 4])
 {
     (void)ldu;
     int itype = KTYPE[jtype - 1];
@@ -289,48 +289,39 @@ static int generate_matrix(int n, int jtype, double* A, int lda,
 
     } else if (itype == 4) {
         /* Diagonal matrix, eigenvalues specified via DLATMS */
-        dlatms(n, n, "S", *seed, "S", work, imode, cond, anorm,
-               0, 0, "N", A, lda, work + n, &iinfo);
-        (*seed)++;
+        dlatms(n, n, "S", "S", work, imode, cond, anorm,
+               0, 0, "N", A, lda, work + n, &iinfo, state);
 
     } else if (itype == 5) {
         /* Symmetric, eigenvalues specified via DLATMS */
-        dlatms(n, n, "S", *seed, "S", work, imode, cond, anorm,
-               n, n, "N", A, lda, work + n, &iinfo);
-        (*seed)++;
+        dlatms(n, n, "S", "S", work, imode, cond, anorm,
+               n, n, "N", A, lda, work + n, &iinfo, state);
 
     } else if (itype == 7) {
         /* Diagonal, random eigenvalues via DLATMR */
         int idumma[1] = {1};
-        rng_seed(*seed);
-        (*seed)++;
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, 0, 0, 0.0, anorm, "N",
-               A, lda, iwork, &iinfo);
+               A, lda, iwork, &iinfo, state);
 
     } else if (itype == 8) {
         /* Symmetric, random eigenvalues via DLATMR */
         int idumma[1] = {1};
-        rng_seed(*seed);
-        (*seed)++;
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, n, 0.0, anorm, "N",
-               A, lda, iwork, &iinfo);
+               A, lda, iwork, &iinfo, state);
 
     } else if (itype == 9) {
         /* Symmetric banded, eigenvalues specified via DLATMS */
         /* Half bandwidth randomly chosen */
-        rng_seed(*seed);
-        int ihbw = (int)((n - 1) * rng_uniform());
-        (*seed)++;
+        int ihbw = (int)((n - 1) * rng_uniform(state));
 
         /* For PACK='Z', LDA must be at least 2*KL + KU + 1 = 2*IHBW + 1 */
         int ldu_band = 2 * ihbw + 1;
-        dlatms(n, n, "S", *seed, "S", work, imode, cond, anorm,
-               ihbw, ihbw, "Z", U, ldu_band, work + n, &iinfo);
-        (*seed)++;
+        dlatms(n, n, "S", "S", work, imode, cond, anorm,
+               ihbw, ihbw, "Z", U, ldu_band, work + n, &iinfo, state);
 
         /* Store as dense matrix */
         dlaset("F", lda, n, 0.0, 0.0, A, lda);
@@ -396,7 +387,7 @@ static void run_tridiag_tests(ddrvst_params_t* params)
     if (n == 0) return;
 
     /* Generate matrix */
-    iinfo = generate_matrix(n, jtype, A, lda, ws->U, ldu, work, iwork, &ws->seed);
+    iinfo = generate_matrix(n, jtype, A, lda, ws->U, ldu, work, iwork, ws->rng_state);
     if (iinfo != 0) {
         ws->result[0] = ulpinv;
         print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
@@ -560,7 +551,7 @@ static void run_symmetric_tests(ddrvst_params_t* params)
     if (n == 0) return;
 
     /* Generate matrix (use fresh seed) */
-    iinfo = generate_matrix(n, jtype, A, lda, ws->U, ldu, work, iwork, &ws->seed);
+    iinfo = generate_matrix(n, jtype, A, lda, ws->U, ldu, work, iwork, ws->rng_state);
     if (iinfo != 0) {
         ws->result[24] = ulpinv;
         print_message("Matrix generation failed for symmetric tests, jtype=%d, n=%d\n",

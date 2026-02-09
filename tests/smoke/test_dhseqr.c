@@ -37,6 +37,7 @@ typedef struct {
     double* work;    /* Workspace */
     double* tau;     /* Householder reflectors */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dhseqr_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
@@ -93,7 +94,7 @@ static int setup_N(void** state, int n) {
         return -1;
     }
 
-    rng_seed(fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
     *state = fix;
     return 0;
 }
@@ -126,12 +127,13 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate upper Hessenberg test matrix.
  */
-static void generate_hessenberg_matrix(int n, double* H, int ldh, double anorm)
+static void generate_hessenberg_matrix(int n, double* H, int ldh, double anorm,
+                                       uint64_t state[static 4])
 {
     /* Generate random Hessenberg matrix directly */
     for (int j = 0; j < n; j++) {
         for (int i = 0; i <= j + 1 && i < n; i++) {
-            H[i + j * ldh] = anorm * rng_uniform_symmetric();
+            H[i + j * ldh] = anorm * rng_uniform_symmetric(state);
         }
         for (int i = j + 2; i < n; i++) {
             H[i + j * ldh] = 0.0;
@@ -205,7 +207,7 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
     const double ZERO = 0.0;
 
     /* Generate Hessenberg matrix */
-    generate_hessenberg_matrix(n, fix->H, lda, ONE);
+    generate_hessenberg_matrix(n, fix->H, lda, ONE, fix->rng_state);
 
     /* Copy H to T1 for Schur decomposition with Z */
     dlacpy(" ", n, n, fix->H, lda, fix->T1, lda);
@@ -291,7 +293,7 @@ static void test_eigenvalues_only(void** state)
     int info;
 
     /* Generate Hessenberg matrix */
-    generate_hessenberg_matrix(n, fix->H, lda, 1.0);
+    generate_hessenberg_matrix(n, fix->H, lda, 1.0, fix->rng_state);
 
     /* Copy H to T1 */
     dlacpy(" ", n, n, fix->H, lda, fix->T1, lda);

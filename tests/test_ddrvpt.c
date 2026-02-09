@@ -6,6 +6,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -64,10 +65,11 @@ extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
+                   const char* sym, double* d,
                    const int mode, const double cond, const double dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -75,8 +77,6 @@ extern void dlacpy(const char* uplo, const int m, const int n,
 extern void dlaset(const char* uplo, const int m, const int n,
                    const double alpha, const double beta, double* A, const int lda);
 extern double dlamch(const char* cmach);
-
-#include "testutils/test_rng.h"
 
 typedef struct {
     int n;
@@ -190,6 +190,8 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     } else {
         seed = 1988 + n * 1000 + 7 * 100;  /* Types 7-12 share type 7's seed */
     }
+    uint64_t rng_state[4];
+    rng_seed(rng_state, seed);
     int info;
 
     (void)type; (void)dist; (void)mode; (void)kl; (void)ku;
@@ -202,8 +204,8 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
         char symtype[2] = {type, '\0'};
         char disttype[2] = {dist, '\0'};
 
-        dlatms(n, n, disttype, seed, symtype, ws->RWORK, mode, cndnum,
-               anorm, kl, ku, "B", ws->A, 2, ws->WORK, &info);
+        dlatms(n, n, disttype, symtype, ws->RWORK, mode, cndnum,
+               anorm, kl, ku, "B", ws->A, 2, ws->WORK, &info, rng_state);
 
         if (info != 0) {
             fail_msg("DLATMS info=%d for imat=%d", info, imat);
@@ -227,15 +229,14 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     } else {
         /* Types 7-12: generate a diagonally dominant matrix with
          * unknown condition number in the vectors D and E. */
-        rng_seed(seed);
 
         if (!zerot) {
             /* Let D and E have values from [-1,1] */
             for (int i = 0; i < n; i++) {
-                D[i] = 2.0 * rng_uniform() - 1.0;
+                D[i] = 2.0 * rng_uniform(rng_state) - 1.0;
             }
             for (int i = 0; i < n - 1; i++) {
-                E[i] = 2.0 * rng_uniform() - 1.0;
+                E[i] = 2.0 * rng_uniform(rng_state) - 1.0;
             }
 
             /* Make the tridiagonal matrix diagonally dominant */
@@ -287,10 +288,10 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     }
 
     /* Generate NRHS random solution vectors */
-    rng_seed(seed + 42);
+    rng_seed(rng_state, seed + 42);
     for (int j = 0; j < NRHS; j++) {
         for (int i = 0; i < n; i++) {
-            ws->XACT[j * lda + i] = 2.0 * rng_uniform() - 1.0;
+            ws->XACT[j * lda + i] = 2.0 * rng_uniform(rng_state) - 1.0;
         }
     }
 

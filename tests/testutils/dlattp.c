@@ -38,8 +38,8 @@ extern double dlamch(const char* cmach);
  * @param[out]    info    0 = successful exit, < 0 = illegal argument.
  */
 void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-            uint64_t* seed, const int n, double* A, double* B, double* work,
-            int* info)
+            const int n, double* A, double* B, double* work,
+            int* info, uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -94,8 +94,8 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         dstr[0] = dist;
         char pack[2] = "C";
         pack[0] = packit;
-        dlatms(n, n, dstr, *seed, symm, B, mode, cndnum, anorm,
-               kl, ku, pack, A, n, work, info);
+        dlatms(n, n, dstr, symm, B, mode, cndnum, anorm,
+               kl, ku, pack, A, n, work, info, state);
     }
     /* IMAT = 7: Unit triangular identity */
     else if (imat == 7) {
@@ -158,7 +158,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
                 work[j + 1] = plus2;
                 work[n + j + 1] = ZERO;
                 plus1 = star1 / plus2;
-                rexp = rng_uniform() * 2.0 - 1.0;
+                rexp = rng_uniform(state) * 2.0 - 1.0;
                 if (rexp < ZERO) {
                     star1 = -pow(sfac, ONE - rexp);
                 } else {
@@ -278,21 +278,21 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, j + 1, &A[jc]);
+                dlarnv_rng(2, j + 1, &A[jc], state);
                 A[jc + j] = (A[jc + j] >= 0) ? TWO : -TWO;
                 jc += j + 1;
             }
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, n - j, &A[jc]);
+                dlarnv_rng(2, n - j, &A[jc], state);
                 A[jc] = (A[jc] >= 0) ? TWO : -TWO;
                 jc += n - j;
             }
         }
 
         /* Set the right hand side so that the largest value is BIGNUM */
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         iy = cblas_idamax(n, B, 1);
         bnorm = fabs(B[iy]);
         bscal = bignum / fmax(ONE, bnorm);
@@ -302,23 +302,23 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
      * cause immediate overflow when dividing by T(j,j).
      * In type 12, the offdiagonal elements are small (CNORM(j) < 1). */
     else if (imat == 12) {
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         tscal = ONE / fmax(ONE, (double)(n - 1));
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, j, &A[jc]);
+                dlarnv_rng(2, j, &A[jc], state);
                 cblas_dscal(j, tscal, &A[jc], 1);
-                A[jc + j] = (rng_uniform() >= 0.5) ? ONE : -ONE;
+                A[jc + j] = (rng_uniform(state) >= 0.5) ? ONE : -ONE;
                 jc += j + 1;
             }
             A[n * (n + 1) / 2 - 1] = smlnum;
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, n - j - 1, &A[jc + 1]);
+                dlarnv_rng(2, n - j - 1, &A[jc + 1], state);
                 cblas_dscal(n - j - 1, tscal, &A[jc + 1], 1);
-                A[jc] = (rng_uniform() >= 0.5) ? ONE : -ONE;
+                A[jc] = (rng_uniform(state) >= 0.5) ? ONE : -ONE;
                 jc += n - j;
             }
             A[0] = smlnum;
@@ -328,20 +328,20 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
      * cause immediate overflow when dividing by T(j,j).
      * In type 13, the offdiagonal elements are O(1) (CNORM(j) > 1). */
     else if (imat == 13) {
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, j, &A[jc]);
-                A[jc + j] = (rng_uniform() >= 0.5) ? ONE : -ONE;
+                dlarnv_rng(2, j, &A[jc], state);
+                A[jc + j] = (rng_uniform(state) >= 0.5) ? ONE : -ONE;
                 jc += j + 1;
             }
             A[n * (n + 1) / 2 - 1] = smlnum;
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, n - j - 1, &A[jc + 1]);
-                A[jc] = (rng_uniform() >= 0.5) ? ONE : -ONE;
+                dlarnv_rng(2, n - j - 1, &A[jc + 1], state);
+                A[jc] = (rng_uniform(state) >= 0.5) ? ONE : -ONE;
                 jc += n - j;
             }
             A[0] = smlnum;
@@ -410,7 +410,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
     else if (imat == 15) {
         texp = ONE / fmax(ONE, (double)(n - 1));
         tscal = pow(smlnum, texp);
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
@@ -445,7 +445,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, j + 1, &A[jc]);
+                dlarnv_rng(2, j + 1, &A[jc], state);
                 if (j != iy) {
                     A[jc + j] = (A[jc + j] >= 0) ? TWO : -TWO;
                 } else {
@@ -456,7 +456,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, n - j, &A[jc]);
+                dlarnv_rng(2, n - j, &A[jc], state);
                 if (j != iy) {
                     A[jc] = (A[jc] >= 0) ? TWO : -TWO;
                 } else {
@@ -465,7 +465,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
                 jc += n - j;
             }
         }
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         cblas_dscal(n, TWO, B, 1);
     }
     /* IMAT = 17: Make the offdiagonal elements large to cause overflow
@@ -516,7 +516,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, j, &A[jc]);
+                dlarnv_rng(2, j, &A[jc], state);
                 A[jc + j] = ZERO;
                 jc += j + 1;
             }
@@ -524,7 +524,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
             jc = 0;
             for (j = 0; j < n; j++) {
                 if (j < n - 1) {
-                    dlarnv_rng(2, seed, n - j - 1, &A[jc + 1]);
+                    dlarnv_rng(2, n - j - 1, &A[jc + 1], state);
                 }
                 A[jc] = ZERO;
                 jc += n - j;
@@ -532,7 +532,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         }
 
         /* Set the right hand side so that the largest value is BIGNUM */
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         iy = cblas_idamax(n, B, 1);
         bnorm = fabs(B[iy]);
         bscal = bignum / fmax(ONE, bnorm);
@@ -547,7 +547,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, j + 1, &A[jc]);
+                dlarnv_rng(2, j + 1, &A[jc], state);
                 for (i = 0; i <= j; i++) {
                     A[jc + i] = (A[jc + i] >= 0 ? tleft : -tleft) + tscal * A[jc + i];
                 }
@@ -556,14 +556,14 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                dlarnv_rng(2, seed, n - j, &A[jc]);
+                dlarnv_rng(2, n - j, &A[jc], state);
                 for (i = j; i < n; i++) {
                     A[jc + i - j] = (A[jc + i - j] >= 0 ? tleft : -tleft) + tscal * A[jc + i - j];
                 }
                 jc += n - j;
             }
         }
-        dlarnv_rng(2, seed, n, B);
+        dlarnv_rng(2, n, B, state);
         cblas_dscal(n, TWO, B, 1);
     }
 

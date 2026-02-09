@@ -18,6 +18,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -48,10 +49,11 @@ extern double drzt02(const int m, const int n, const double* AF, const int lda,
                      const double* tau, double* work, const int lwork);
 
 /* Matrix generation */
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlaord(const char* job, const int n, double* X, const int incx);
 
 /* Utilities */
@@ -152,7 +154,8 @@ static void run_dchktz_single(int m, int n, int imode)
     char ctx[128];
 
     /* Seed based on (m, n, imode) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imode);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imode));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -170,8 +173,10 @@ static void run_dchktz_single(int m, int n, int imode)
     } else {
         /* Generate matrix with specified singular value distribution */
         /* mode 1: one small singular value, mode 2: exponential distribution */
-        dlatms(m, n, "U", seed++, "N", ws->S, mode,
-               ONE / eps, ONE, m, n, "N", ws->A, lda, ws->WORK, &info);
+        dlatms(m, n, "U",
+               "N", ws->S, mode,
+               ONE / eps, ONE, m, n, "N", ws->A, lda, ws->WORK, &info,
+               rng_state);
 
         /* Reduce to upper trapezoidal form using QR factorization */
         dgeqr2(m, n, ws->A, lda, ws->WORK, &ws->WORK[mnmin], &info);

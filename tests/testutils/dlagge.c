@@ -45,15 +45,15 @@ extern void xerbla(const char* srname, const int info);
  * @param[in] lda
  *     The leading dimension of the array A. lda >= max(1, m).
  *
- * @param[in] seed
- *     Random number seed for generating orthogonal transformations.
- *
  * @param[out] work
  *     Workspace array of dimension (m + n).
  *
  * @param[out] info
  *     = 0: successful exit
  *     < 0: if info = -i, the i-th argument had an illegal value
+ *
+ * @param[in,out] state
+ *     RNG state array (xoshiro256+), already initialized by the caller.
  */
 void dlagge(
     const int m,
@@ -63,9 +63,9 @@ void dlagge(
     const double* d,
     double* A,
     const int lda,
-    uint64_t seed,
     double* work,
-    int* info)
+    int* info,
+    uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -73,9 +73,6 @@ void dlagge(
     int i, j;
     double tau, wa, wb, wn;
     int minmn = (m < n) ? m : n;
-
-    /* Initialize RNG with seed */
-    rng_seed(seed);
 
     /* Test the input arguments */
     *info = 0;
@@ -116,7 +113,7 @@ void dlagge(
             /* Generate random reflection */
             int len = m - i;
             for (j = 0; j < len; j++) {
-                work[j] = rng_normal();
+                work[j] = rng_normal(state);
             }
             wn = cblas_dnrm2(len, work, 1);
             wa = (work[0] >= 0.0) ? wn : -wn;
@@ -140,7 +137,7 @@ void dlagge(
             /* Generate random reflection */
             int len = n - i;
             for (j = 0; j < len; j++) {
-                work[j] = rng_normal();
+                work[j] = rng_normal(state);
             }
             wn = cblas_dnrm2(len, work, 1);
             wa = (work[0] >= 0.0) ? wn : -wn;

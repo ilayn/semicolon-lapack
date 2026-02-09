@@ -21,6 +21,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -54,31 +55,6 @@ extern void dstech(const int n, const double* A, const double* B,
 /* Utilities */
 extern double dlamch(const char* cmach);
 
-/* ---- Simple xoshiro256+ RNG ---- */
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
@@ -97,6 +73,7 @@ typedef struct {
     int* ifail;         /* convergence info (n) */
     double* result;     /* dstt21 results (2 elements) */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dstevx_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -189,7 +166,7 @@ static int setup_50(void** state) { return dstevx_setup(state, 50); }
  * @param seed  RNG seed (used for type 4)
  */
 static void generate_stevx_matrix(int n, int imat, double* D, double* E,
-                                   uint64_t seed)
+                                   uint64_t state[static 4])
 {
     int i;
 
@@ -214,9 +191,8 @@ static void generate_stevx_matrix(int n, int imat, double* D, double* E,
 
     case 4:
         /* Random symmetric tridiagonal */
-        rng_seed(seed);
-        for (i = 0; i < n; i++) D[i] = 2.0 * rng_uniform() - 1.0;
-        for (i = 0; i < n - 1; i++) E[i] = 2.0 * rng_uniform() - 1.0;
+        for (i = 0; i < n; i++) D[i] = rng_uniform_symmetric(state);
+        for (i = 0; i < n - 1; i++) E[i] = rng_uniform_symmetric(state);
         break;
 
     case 5:
@@ -251,7 +227,8 @@ static void test_range_all_V(void** state)
         fix->seed = g_seed++;
 
         /* Generate test matrix */
-        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original for verification */
         memcpy(fix->AD, fix->D, n * sizeof(double));
@@ -309,7 +286,8 @@ static void test_range_all_N(void** state)
         fix->seed = g_seed++;
 
         /* Generate test matrix */
-        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Copy for dstev reference */
         memcpy(D_ref, fix->D, n * sizeof(double));
@@ -322,7 +300,8 @@ static void test_range_all_N(void** state)
         assert_info_success(info);
 
         /* Regenerate for dstevx (D, E may be overwritten) */
-        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Compute eigenvalues only with dstevx */
         dstevx("N", "A", n, fix->D, fix->E,
@@ -380,7 +359,8 @@ static void test_range_value(void** state)
     }
 
     /* Generate 1-2-1 Toeplitz matrix */
-    generate_stevx_matrix(n, 2, fix->D, fix->E, fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
+    generate_stevx_matrix(n, 2, fix->D, fix->E, fix->rng_state);
 
     /* Save original */
     memcpy(fix->AD, fix->D, n * sizeof(double));
@@ -504,7 +484,8 @@ static void test_range_index(void** state)
     int m_expected = iu - il + 1;
 
     /* Generate 1-2-1 Toeplitz matrix */
-    generate_stevx_matrix(n, 2, fix->D, fix->E, fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
+    generate_stevx_matrix(n, 2, fix->D, fix->E, fix->rng_state);
 
     /* Save original */
     memcpy(fix->AD, fix->D, n * sizeof(double));
@@ -624,7 +605,8 @@ static void test_sturm(void** state)
         fix->seed = g_seed++;
 
         /* Generate test matrix */
-        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original diagonal and off-diagonal */
         memcpy(fix->AD, fix->D, n * sizeof(double));

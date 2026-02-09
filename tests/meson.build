@@ -23,6 +23,8 @@ lapack_tests = {
   'dchkgt': ['test_dchkgt.c', 'tridiag'],    # General tridiagonal
   'dchkpt': ['test_dchkpt.c', 'tridiag'],    # Positive definite tridiagonal
   'dchksy': ['test_dchksy.c', 'symmetric'],  # Symmetric indefinite
+  'dchksy_aa': ['test_dchksy_aa.c', 'symmetric'],  # Symmetric indefinite (Aasen)
+  'dchksy_aa_2stage': ['test_dchksy_aa_2stage.c', 'symmetric'],  # Symmetric indefinite (Aasen 2-stage)
   'dchksp': ['test_dchksp.c', 'symmetric'],    # Symmetric indefinite packed
   'dchkqr': ['test_dchkqr.c', 'qr'],         # QR factorization
   'dchklq': ['test_dchklq.c', 'qr'],         # LQ factorization
@@ -36,12 +38,15 @@ lapack_tests = {
   'dchkqrt': ['test_dchkqrt.c', 'qr'],       # Blocked QR (DGEQRT/DGEMQRT)
   'dchkqrtp': ['test_dchkqrtp.c', 'qr'],     # Triangular-pentagonal QR (DTPQRT/DTPMQRT)
   'dchkorhr_col': ['test_dchkorhr_col.c', 'qr'], # Householder reconstruction
+  'dchktsqr': ['test_dchktsqr.c', 'qr'],    # Tall-skinny QR (DGEQR/DGELQ/DGEMQR/DGEMLQ)
   'dchktr': ['test_dchktr.c', 'triangular'], # Triangular matrices
   'dchktp': ['test_dchktp.c', 'triangular'], # Triangular packed matrices
+  'dchktb': ['test_dchktb.c', 'triangular'], # Triangular banded matrices
   'dchkeq': ['test_dchkeq.c', 'condition'],  # Equilibration routines
   'dchkrfp': ['test_dchkrfp.c', 'rfp'],      # RFP (Rectangular Full Packed) format
 
   # Expert driver tests (ddrv*.f ports)
+  'ddrvgb': ['test_ddrvgb.c', 'band'],       # DGBSV/DGBSVX drivers
   'ddrvge': ['test_ddrvge.c', 'lu'],         # DGESV/DGESVX drivers
   'ddrvpo': ['test_ddrvpo.c', 'cholesky'],   # DPOSV/DPOSVX drivers
   'ddrvsy': ['test_ddrvsy.c', 'symmetric'],  # DSYSV/DSYSVX drivers
@@ -54,6 +59,9 @@ lapack_tests = {
   'ddrvst': ['test_ddrvst.c', 'eigen'],      # Symmetric eigenvalue drivers
   'ddrvab': ['test_ddrvab.c', 'solve'],      # DSGESV mixed-precision solver
   'ddrvac': ['test_ddrvac.c', 'solve'],      # DSPOSV mixed-precision solver
+
+  # RNG validation
+  'rng_validation': ['test_rng_validation.c', 'rng'],  # xoshiro256+ correctness
 }
 
 # Build and register LAPACK test drivers

@@ -6,6 +6,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -57,15 +58,16 @@ extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
+                   const char* sym, double* d,
                    const int mode, const double cond, const double dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n,
                    const int kl, const int ku, const int nrhs,
                    const double* A, const int lda, double* XACT, const int ldxact,
-                   double* B, const int ldb, uint64_t seed, int* info);
+                   double* B, const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -185,10 +187,11 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
     dlatb4("DPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix with DLATMS */
-    uint64_t seed = 1988 + n * 1000 + imat * 100 + iuplo * 10;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988 + n * 1000 + imat * 100 + iuplo * 10);
     int info;
-    dlatms(n, n, &dist, seed, &type, ws->RWORK, mode, cndnum,
-           anorm, kl, ku, uplo, ws->A, lda, ws->WORK, &info);
+    dlatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
+           anorm, kl, ku, uplo, ws->A, lda, ws->WORK, &info, rng_state);
     if (info != 0) {
         fail_msg("DLATMS info=%d", info);
         return;
@@ -294,10 +297,10 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
     dlacpy(uplo, n, n, ws->ASAV, lda, ws->A, lda);
 
     /* Form exact solution and set right hand side */
-    seed = 1988 + n * 1000 + imat * 100 + iuplo * 10;
+    rng_seed(rng_state, 1988 + n * 1000 + imat * 100 + iuplo * 10);
     char xtype = 'N';
     dlarhs("DPO", &xtype, uplo, " ", n, n, kl, ku,
-           NRHS, ws->A, lda, ws->XACT, lda, ws->B, lda, seed, &info);
+           NRHS, ws->A, lda, ws->XACT, lda, ws->B, lda, &info, rng_state);
     xtype = 'C';
     dlacpy("Full", n, NRHS, ws->B, lda, ws->BSAV, lda);
 

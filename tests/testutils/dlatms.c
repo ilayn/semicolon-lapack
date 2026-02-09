@@ -1,21 +1,10 @@
 /**
  * @file dlatms.c
- * @brief Matrix generator for testing LAPACK routines.
+ * @brief DLATMS generates random matrices with specified singular values
+ *        (or symmetric/hermitian with specified eigenvalues) for testing
+ *        LAPACK programs.
  *
- * Faithful port of LAPACK TESTING/MATGEN/dlatms.f
- * Uses xoshiro256+ PRNG instead of LAPACK's archaic 48-bit LCG.
- *
- * Supports:
- * - PACK='N': No packing (full matrix storage)
- * - PACK='U': Zero out all subdiagonal entries (symmetric only)
- * - PACK='L': Zero out all superdiagonal entries (symmetric only)
- * - PACK='B': Store lower triangle in band storage (symmetric/lower triangular)
- * - PACK='Q': Store upper triangle in band storage (symmetric/upper triangular)
- * - PACK='Z': Band storage format for general band matrices (GB)
- *
- * Generation methods:
- * - Uses orthogonal transformations via DLAGGE for nonsymmetric matrices
- * - Uses orthogonal transformations via DLAGSY for symmetric matrices
+ * Port of LAPACK TESTING/MATGEN/dlatms.f to C.
  */
 
 #include <math.h>
@@ -25,52 +14,17 @@
 #include <cblas.h>
 #include "test_rng.h"
 
-/* Forward declarations for routines not in verify.h */
 extern void xerbla(const char* srname, const int info);
 extern void dlaset(const char* uplo, const int m, const int n,
                    const double alpha, const double beta,
                    double* A, const int lda);
+extern void dlartg(const double f, const double g,
+                   double* c, double* s, double* r);
 
-/**
- * DLATMS generates random matrices with specified singular values
- * (or symmetric/hermitian with specified eigenvalues) for testing
- * LAPACK programs.
- *
- * @param[in]     m       Number of rows.
- * @param[in]     n       Number of columns.
- * @param[in]     dist    Distribution for random numbers: 'U'=uniform(0,1),
- *                        'S'=symmetric(-1,1), 'N'=normal(0,1).
- * @param[in]     seed    Random number seed.
- * @param[in]     sym     Matrix symmetry: 'N'=nonsymmetric, 'S'=symmetric,
- *                        'H'=hermitian (same as S for real), 'P'=positive definite.
- * @param[out]    d       Array of singular values/eigenvalues (dimension min(m,n)).
- * @param[in]     mode    How to compute d:
- *                        0: Use d as input
- *                        1: d[0]=1, d[1:n-1]=1/cond
- *                        2: d[0:n-2]=1, d[n-1]=1/cond
- *                        3: d[i]=cond^(-(i)/(n-1)) (geometric)
- *                        4: d[i]=1-(i)/(n-1)*(1-1/cond) (arithmetic)
- *                        5: Random in [1/cond, 1] with log uniform distribution
- *                        6: Random from same distribution as matrix
- *                        MODE < 0 has same meaning as ABS(MODE), order reversed.
- * @param[in]     cond    Condition number (>= 1).
- * @param[in]     dmax    Maximum singular value (d is scaled so max|d[i]|=|dmax|).
- * @param[in]     kl      Lower bandwidth for band storage.
- * @param[in]     ku      Upper bandwidth for band storage.
- * @param[in]     pack    Packing: 'N'=no packing, 'Z'=band storage.
- * @param[out]    A       Output matrix.
- *                        If pack='N': dimension (lda, n), lda >= m.
- *                        If pack='Z': dimension (lda, n), lda >= kl+ku+1.
- * @param[in]     lda     Leading dimension of A.
- * @param[out]    work    Workspace, dimension (3*max(m,n) + m*n) for pack='Z',
- *                        dimension (m+n) for pack='N'.
- * @param[out]    info    0=success, <0=argument error, >0=other error.
- */
 void dlatms(
     const int m,
     const int n,
     const char* dist,
-    uint64_t seed,
     const char* sym,
     double* d,
     const int mode,
@@ -82,26 +36,26 @@ void dlatms(
     double* A,
     const int lda,
     double* work,
-    int* info)
+    int* info,
+    uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
+    const double TWOPI = 6.28318530717958647692528676655900576839;
 
-    int i, j;
-    int mnmin;
-    double temp, alpha;
-    int isym;    /* 1 = nonsymmetric, 2 = symmetric */
-    int irsign = 0;  /* 1 = random signs on diagonal */
-    int idist;   /* 1 = U(0,1), 2 = U(-1,1), 3 = N(0,1) */
-    int ipack;   /* 0=N, 1=U, 2=L, 5=B, 6=Q, 7=Z */
-    int iinfo;
+    int givens;
+    int i, ic, icol = 0, idist, iendch, iinfo, il, ilda,
+        ioffg, ioffst, ipack, ipackg, ir, ir1, ir2,
+        irow = 0, irsign = 0, iskew, isym, isympk, j, jc, jch,
+        jkl, jku, jr, k, llb, minlda, mnmin, mr, nc,
+        uub;
+    int topdwn, ilextr, iltemp;
+    double alpha, angle, c, dummy, extra, s, temp;
 
     *info = 0;
 
-    /* Quick return if possible */
-    if (m == 0 || n == 0) {
+    if (m == 0 || n == 0)
         return;
-    }
 
     /* Decode DIST */
     if (dist[0] == 'U' || dist[0] == 'u') {
@@ -130,7 +84,7 @@ void dlatms(
     }
 
     /* Decode PACK */
-    int isympk = 0;  /* Symmetric packing indicator */
+    isympk = 0;
     if (pack[0] == 'N' || pack[0] == 'n') {
         ipack = 0;
     } else if (pack[0] == 'U' || pack[0] == 'u') {
@@ -157,10 +111,30 @@ void dlatms(
         ipack = -1;
     }
 
-    /* Compute limits on bandwidth */
-    int llb = (kl < m - 1) ? kl : m - 1;
-    int uub = (ku < n - 1) ? ku : n - 1;
     mnmin = (m < n) ? m : n;
+    llb = (kl < m - 1) ? kl : m - 1;
+    uub = (ku < n - 1) ? ku : n - 1;
+    mr = (m < n + llb) ? m : n + llb;
+    nc = (n < m + uub) ? n : m + uub;
+
+    if (ipack == 5 || ipack == 6) {
+        minlda = uub + 1;
+    } else if (ipack == 7) {
+        minlda = llb + uub + 1;
+    } else {
+        minlda = m;
+    }
+
+    givens = 0;
+    if (isym == 1) {
+        if ((double)(llb + uub) < 0.3 * (double)((1 > mr + nc) ? 1 : mr + nc))
+            givens = 1;
+    } else {
+        if (2 * llb < m)
+            givens = 1;
+    }
+    if (lda < m && lda >= minlda)
+        givens = 1;
 
     /* Set INFO if an error */
     if (m < 0) {
@@ -185,16 +159,8 @@ void dlatms(
                (isympk == 2 && isym == 1 && kl > 0) ||
                (isympk == 3 && isym == 1 && ku > 0) ||
                (isympk != 0 && m != n)) {
-        /* PACK='U' or 'L' requires symmetric matrix (SYM != 'N')
-         * PACK='C' or 'Q' requires SYM='S'/'H'/'P' and KL=0
-         * PACK='R' or 'B' requires SYM='S'/'H'/'P' and KU=0
-         * Symmetric packing requires square matrix */
         *info = -12;
-    } else if ((ipack == 0 || ipack == 1 || ipack == 2) && lda < m) {
-        *info = -14;
-    } else if ((ipack == 5 || ipack == 6) && lda < uub + 1) {
-        *info = -14;
-    } else if (ipack == 7 && lda < llb + uub + 1) {
+    } else if (lda < (1 > minlda ? 1 : minlda)) {
         *info = -14;
     }
 
@@ -203,186 +169,522 @@ void dlatms(
         return;
     }
 
-    /* Initialize RNG with seed */
-    rng_seed(seed);
-
-    /* Generate diagonal (singular values or eigenvalues) via dlatm1 */
-    dlatm1(mode, cond, irsign, idist, d, mnmin, &iinfo);
+    /* 2) Set up D */
+    dlatm1(mode, cond, irsign, idist, d, mnmin, &iinfo, state);
     if (iinfo != 0) {
         *info = 1;
         return;
     }
 
-    /* Scale by dmax */
-    if (mode != 0 && mode != 6 && mode != -6) {
+    topdwn = (fabs(d[0]) <= fabs(d[mnmin - 1]));
+
+    if (mode != 0 && abs(mode) != 6) {
         temp = fabs(d[0]);
         for (i = 1; i < mnmin; i++) {
             if (fabs(d[i]) > temp) temp = fabs(d[i]);
         }
         if (temp > ZERO) {
             alpha = dmax / temp;
-            for (i = 0; i < mnmin; i++) {
-                d[i] *= alpha;
-            }
         } else {
-            *info = 2;  /* Cannot scale to dmax (max. sing. value is 0) */
+            *info = 2;
+            return;
+        }
+        cblas_dscal(mnmin, alpha, d, 1);
+    }
+
+    /* 3) Generate Banded Matrix using Givens rotations.
+     *    Also the special case of UUB=LLB=0
+     *
+     *    Compute Addressing constants to cover all storage formats.
+     *    Whether GE, SY, GB, or SB, upper or lower triangle or both,
+     *    the (i,j)-th element is in A(i - ISKEW*j + IOFFST, j) */
+
+    if (ipack > 4) {
+        ilda = lda - 1;
+        iskew = 1;
+        if (ipack > 5) {
+            ioffst = uub + 1;
+        } else {
+            ioffst = 1;
+        }
+    } else {
+        ilda = lda;
+        iskew = 0;
+        ioffst = 0;
+    }
+
+    /* ipackg is the format that the matrix is generated in */
+    ipackg = 0;
+    dlaset("F", lda, n, ZERO, ZERO, A, lda);
+
+#define AIND(i1, j1) ((i1) - iskew*(j1) + ioffst - 1 + ((j1)-1)*lda)
+#define AINDG(i1, j1) ((i1) - iskew*(j1) + ioffg - 1 + ((j1)-1)*lda)
+
+    if (llb == 0 && uub == 0) {
+        /* Diagonal Matrix */
+        cblas_dcopy(mnmin, d, 1, &A[ioffst - iskew], ilda + 1);
+        if (ipack <= 2 || ipack >= 5)
+            ipackg = ipack;
+
+    } else if (givens) {
+
+        if (isym == 1) {
+            /* Non-symmetric -- A = U D V */
+            if (ipack > 4) {
+                ipackg = ipack;
+            } else {
+                ipackg = 0;
+            }
+
+            cblas_dcopy(mnmin, d, 1, &A[ioffst - iskew], ilda + 1);
+
+            if (topdwn) {
+                jkl = 0;
+                for (jku = 1; jku <= uub; jku++) {
+
+                    for (jr = 1; jr <= (((m + jku < n) ? m + jku : n) + jkl - 1); jr++) {
+                        extra = ZERO;
+                        angle = TWOPI * rng_uniform(state);
+                        c = cos(angle);
+                        s = sin(angle);
+                        icol = (1 > jr - jkl) ? 1 : jr - jkl;
+                        if (jr < m) {
+                            il = ((n < jr + jku) ? n : jr + jku) + 1 - icol;
+                            dlarot(1, jr > jkl, 0, il,
+                                   c, s, &A[AIND(jr, icol)],
+                                   ilda, &extra, &dummy);
+                        }
+
+                        ir = jr;
+                        ic = icol;
+                        for (jch = jr - jkl; jch >= 1; jch -= jkl + jku) {
+                            if (ir < m) {
+                                dlartg(A[AIND(ir + 1, ic + 1)],
+                                       extra, &c, &s, &dummy);
+                            }
+                            irow = (1 > jch - jku) ? 1 : jch - jku;
+                            il = ir + 2 - irow;
+                            temp = ZERO;
+                            iltemp = (jch > jku);
+                            dlarot(0, iltemp, 1, il, c,
+                                   -s, &A[AIND(irow, ic)],
+                                   ilda, &temp, &extra);
+                            if (iltemp) {
+                                dlartg(A[AIND(irow + 1, ic + 1)],
+                                       temp, &c, &s, &dummy);
+                                icol = (1 > jch - jku - jkl) ? 1 : jch - jku - jkl;
+                                il = ic + 2 - icol;
+                                extra = ZERO;
+                                dlarot(1, jch > jku + jkl,
+                                       1, il, c, -s,
+                                       &A[AIND(irow, icol)],
+                                       ilda, &extra, &temp);
+                                ic = icol;
+                                ir = irow;
+                            }
+                        }
+                    }
+                }
+
+                jku = uub;
+                for (jkl = 1; jkl <= llb; jkl++) {
+
+                    for (jc = 1; jc <= (((n + jkl < m) ? n + jkl : m) + jku - 1); jc++) {
+                        extra = ZERO;
+                        angle = TWOPI * rng_uniform(state);
+                        c = cos(angle);
+                        s = sin(angle);
+                        irow = (1 > jc - jku) ? 1 : jc - jku;
+                        if (jc < n) {
+                            il = ((m < jc + jkl) ? m : jc + jkl) + 1 - irow;
+                            dlarot(0, jc > jku, 0, il,
+                                   c, s, &A[AIND(irow, jc)],
+                                   ilda, &extra, &dummy);
+                        }
+
+                        ic = jc;
+                        ir = irow;
+                        for (jch = jc - jku; jch >= 1; jch -= jkl + jku) {
+                            if (ic < n) {
+                                dlartg(A[AIND(ir + 1, ic + 1)],
+                                       extra, &c, &s, &dummy);
+                            }
+                            icol = (1 > jch - jkl) ? 1 : jch - jkl;
+                            il = ic + 2 - icol;
+                            temp = ZERO;
+                            iltemp = (jch > jkl);
+                            dlarot(1, iltemp, 1, il, c,
+                                   -s, &A[AIND(ir, icol)],
+                                   ilda, &temp, &extra);
+                            if (iltemp) {
+                                dlartg(A[AIND(ir + 1, icol + 1)],
+                                       temp, &c, &s, &dummy);
+                                irow = (1 > jch - jkl - jku) ? 1 : jch - jkl - jku;
+                                il = ir + 2 - irow;
+                                extra = ZERO;
+                                dlarot(0, jch > jkl + jku,
+                                       1, il, c, -s,
+                                       &A[AIND(irow, icol)],
+                                       ilda, &extra, &temp);
+                                ic = icol;
+                                ir = irow;
+                            }
+                        }
+                    }
+                }
+
+            } else {
+                /* Bottom-Up */
+                jkl = 0;
+                for (jku = 1; jku <= uub; jku++) {
+
+                    iendch = ((m < n + jkl) ? m : n + jkl) - 1;
+                    for (jc = ((m + jku < n) ? m + jku : n) - 1; jc >= 1 - jkl; jc--) {
+                        extra = ZERO;
+                        angle = TWOPI * rng_uniform(state);
+                        c = cos(angle);
+                        s = sin(angle);
+                        irow = (1 > jc - jku + 1) ? 1 : jc - jku + 1;
+                        if (jc > 0) {
+                            il = ((m < jc + jkl + 1) ? m : jc + jkl + 1) + 1 - irow;
+                            dlarot(0, 0, jc + jkl < m,
+                                   il, c, s,
+                                   &A[AIND(irow, jc)],
+                                   ilda, &dummy, &extra);
+                        }
+
+                        ic = jc;
+                        for (jch = jc + jkl; jch <= iendch; jch += jkl + jku) {
+                            ilextr = (ic > 0);
+                            if (ilextr) {
+                                dlartg(A[AIND(jch, ic)],
+                                       extra, &c, &s, &dummy);
+                            }
+                            ic = (1 > ic) ? 1 : ic;
+                            icol = (n - 1 < jch + jku) ? n - 1 : jch + jku;
+                            iltemp = (jch + jku < n);
+                            temp = ZERO;
+                            dlarot(1, ilextr, iltemp,
+                                   icol + 2 - ic, c, s,
+                                   &A[AIND(jch, ic)],
+                                   ilda, &extra, &temp);
+                            if (iltemp) {
+                                dlartg(A[AIND(jch, icol)],
+                                       temp, &c, &s, &dummy);
+                                il = ((iendch < jch + jkl + jku) ? iendch : jch + jkl + jku) + 2 - jch;
+                                extra = ZERO;
+                                dlarot(0, 1,
+                                       jch + jkl + jku <= iendch, il, c, s,
+                                       &A[AIND(jch, icol)],
+                                       ilda, &temp, &extra);
+                                ic = icol;
+                            }
+                        }
+                    }
+                }
+
+                jku = uub;
+                for (jkl = 1; jkl <= llb; jkl++) {
+
+                    iendch = ((n < m + jku) ? n : m + jku) - 1;
+                    for (jr = ((n + jkl < m) ? n + jkl : m) - 1; jr >= 1 - jku; jr--) {
+                        extra = ZERO;
+                        angle = TWOPI * rng_uniform(state);
+                        c = cos(angle);
+                        s = sin(angle);
+                        icol = (1 > jr - jkl + 1) ? 1 : jr - jkl + 1;
+                        if (jr > 0) {
+                            il = ((n < jr + jku + 1) ? n : jr + jku + 1) + 1 - icol;
+                            dlarot(1, 0, jr + jku < n,
+                                   il, c, s,
+                                   &A[AIND(jr, icol)],
+                                   ilda, &dummy, &extra);
+                        }
+
+                        ir = jr;
+                        for (jch = jr + jku; jch <= iendch; jch += jkl + jku) {
+                            ilextr = (ir > 0);
+                            if (ilextr) {
+                                dlartg(A[AIND(ir, jch)],
+                                       extra, &c, &s, &dummy);
+                            }
+                            ir = (1 > ir) ? 1 : ir;
+                            irow = (m - 1 < jch + jkl) ? m - 1 : jch + jkl;
+                            iltemp = (jch + jkl < m);
+                            temp = ZERO;
+                            dlarot(0, ilextr, iltemp,
+                                   irow + 2 - ir, c, s,
+                                   &A[AIND(ir, jch)],
+                                   ilda, &extra, &temp);
+                            if (iltemp) {
+                                dlartg(A[AIND(irow, jch)],
+                                       temp, &c, &s, &dummy);
+                                il = ((iendch < jch + jkl + jku) ? iendch : jch + jkl + jku) + 2 - jch;
+                                extra = ZERO;
+                                dlarot(1, 1,
+                                       jch + jkl + jku <= iendch, il, c, s,
+                                       &A[AIND(irow, jch)],
+                                       ilda, &temp, &extra);
+                                ir = irow;
+                            }
+                        }
+                    }
+                }
+            }
+
+        } else {
+            /* Symmetric -- A = U D U' */
+            ipackg = ipack;
+            ioffg = ioffst;
+
+            if (topdwn) {
+                /* Top-Down -- Generate Upper triangle only */
+                if (ipack >= 5) {
+                    ipackg = 6;
+                    ioffg = uub + 1;
+                } else {
+                    ipackg = 1;
+                }
+                cblas_dcopy(mnmin, d, 1, &A[ioffg - iskew], ilda + 1);
+
+                for (k = 1; k <= uub; k++) {
+                    for (jc = 1; jc <= n - 1; jc++) {
+                        irow = (1 > jc - k) ? 1 : jc - k;
+                        il = ((jc + 1 < k + 2) ? jc + 1 : k + 2);
+                        extra = ZERO;
+                        temp = A[AINDG(jc, jc + 1)];
+                        angle = TWOPI * rng_uniform(state);
+                        c = cos(angle);
+                        s = sin(angle);
+                        dlarot(0, jc > k, 1, il, c, s,
+                               &A[AINDG(irow, jc)], ilda,
+                               &extra, &temp);
+                        dlarot(1, 1, 0,
+                               ((k < n - jc) ? k : n - jc) + 1, c, s,
+                               &A[AINDG(jc, jc)], ilda,
+                               &temp, &dummy);
+
+                        icol = jc;
+                        for (jch = jc - k; jch >= 1; jch -= k) {
+                            dlartg(A[AINDG(jch + 1, icol + 1)],
+                                   extra, &c, &s, &dummy);
+                            temp = A[AINDG(jch, jch + 1)];
+                            dlarot(1, 1, 1, k + 2, c,
+                                   -s,
+                                   &A[AINDG(jch, jch)], ilda,
+                                   &temp, &extra);
+                            irow = (1 > jch - k) ? 1 : jch - k;
+                            il = ((jch + 1 < k + 2) ? jch + 1 : k + 2);
+                            extra = ZERO;
+                            dlarot(0, jch > k, 1, il,
+                                   c, -s,
+                                   &A[AINDG(irow, jch)], ilda,
+                                   &extra, &temp);
+                            icol = jch;
+                        }
+                    }
+                }
+
+                if (ipack != ipackg && ipack != 3) {
+                    for (jc = 1; jc <= n; jc++) {
+                        irow = ioffst - iskew * jc;
+                        for (jr = jc; jr <= ((n < jc + uub) ? n : jc + uub); jr++) {
+                            A[(jr + irow - 1) + (jc - 1) * lda] =
+                                A[AINDG(jc, jr)];
+                        }
+                    }
+                    if (ipack == 5) {
+                        for (jc = n - uub + 1; jc <= n; jc++) {
+                            for (jr = n + 2 - jc; jr <= uub + 1; jr++) {
+                                A[(jr - 1) + (jc - 1) * lda] = ZERO;
+                            }
+                        }
+                    }
+                    if (ipackg == 6) {
+                        ipackg = ipack;
+                    } else {
+                        ipackg = 0;
+                    }
+                }
+
+            } else {
+                /* Bottom-Up -- Generate Lower triangle only */
+                if (ipack >= 5) {
+                    ipackg = 5;
+                    if (ipack == 6)
+                        ioffg = 1;
+                } else {
+                    ipackg = 2;
+                }
+                cblas_dcopy(mnmin, d, 1, &A[ioffg - iskew], ilda + 1);
+
+                for (k = 1; k <= uub; k++) {
+                    for (jc = n - 1; jc >= 1; jc--) {
+                        il = ((n + 1 - jc < k + 2) ? n + 1 - jc : k + 2);
+                        extra = ZERO;
+                        temp = A[AINDG(jc + 1, jc)];
+                        angle = TWOPI * rng_uniform(state);
+                        c = cos(angle);
+                        s = -sin(angle);
+                        dlarot(0, 1, n - jc > k, il, c,
+                               s,
+                               &A[AINDG(jc, jc)], ilda,
+                               &temp, &extra);
+                        icol = (1 > jc - k + 1) ? 1 : jc - k + 1;
+                        dlarot(1, 0, 1, jc + 2 - icol,
+                               c, s,
+                               &A[AINDG(jc, icol)], ilda,
+                               &dummy, &temp);
+
+                        icol = jc;
+                        for (jch = jc + k; jch <= n - 1; jch += k) {
+                            dlartg(A[AINDG(jch, icol)],
+                                   extra, &c, &s, &dummy);
+                            temp = A[AINDG(jch + 1, jch)];
+                            dlarot(1, 1, 1, k + 2, c,
+                                   s,
+                                   &A[AINDG(jch, icol)], ilda,
+                                   &extra, &temp);
+                            il = ((n + 1 - jch < k + 2) ? n + 1 - jch : k + 2);
+                            extra = ZERO;
+                            dlarot(0, 1, n - jch > k, il,
+                                   c, s,
+                                   &A[AINDG(jch, jch)], ilda,
+                                   &temp, &extra);
+                            icol = jch;
+                        }
+                    }
+                }
+
+                if (ipack != ipackg && ipack != 4) {
+                    for (jc = n; jc >= 1; jc--) {
+                        irow = ioffst - iskew * jc;
+                        for (jr = jc; jr >= (1 > jc - uub ? 1 : jc - uub); jr--) {
+                            A[(jr + irow - 1) + (jc - 1) * lda] =
+                                A[AINDG(jc, jr)];
+                        }
+                    }
+                    if (ipack == 6) {
+                        for (jc = 1; jc <= uub; jc++) {
+                            for (jr = 1; jr <= uub + 1 - jc; jr++) {
+                                A[(jr - 1) + (jc - 1) * lda] = ZERO;
+                            }
+                        }
+                    }
+                    if (ipackg == 5) {
+                        ipackg = ipack;
+                    } else {
+                        ipackg = 0;
+                    }
+                }
+            }
+        }
+
+    } else {
+        /* 4) Generate Banded Matrix by first
+         *    Rotating by random Unitary matrices,
+         *    then reducing the bandwidth using Householder
+         *    transformations.
+         *
+         *    Note: we should get here only if LDA >= N */
+
+        if (isym == 1) {
+            dlagge(mr, nc, llb, uub, d, A, lda, work, &iinfo, state);
+        } else {
+            dlagsy(m, llb, d, A, lda, work, &iinfo, state);
+        }
+        if (iinfo != 0) {
+            *info = 3;
             return;
         }
     }
 
-    /* Generate the matrix */
-    if (ipack == 0 || ipack == 1 || ipack == 2 || ipack == 3 || ipack == 4) {
-        /* No packing, triangular packing, or packed triangular - generate directly into A first */
-
-        /* Special case: diagonal matrix (llb==0 && uub==0) */
-        if (llb == 0 && uub == 0) {
-            /* Just copy D to the diagonal, no orthogonal transformations needed */
-            dlaset("F", m, n, ZERO, ZERO, A, lda);
-            for (i = 0; i < mnmin; i++) {
-                A[i + i * lda] = d[i];
-            }
-        } else if (isym == 1) {
-            /* Nonsymmetric: A = U * D * V' */
-            dlagge(m, n, llb, uub, d, A, lda, seed, work, &iinfo);
-            if (iinfo != 0) {
-                *info = 3;
-                return;
-            }
-        } else {
-            /* Symmetric: A = U * D * U' */
-            dlagsy(n, llb, d, A, lda, work, &iinfo);
-            if (iinfo != 0) {
-                *info = 3;
-                return;
-            }
-        }
-
-        /* Apply packing if needed */
+    /* 5) Pack the matrix */
+    if (ipack != ipackg) {
         if (ipack == 1) {
-            /* PACK='U': Zero out all subdiagonal entries */
-            for (j = 0; j < m; j++) {
-                for (i = j + 1; i < m; i++) {
-                    A[i + j * lda] = ZERO;
+            for (j = 1; j <= m; j++) {
+                for (i = j + 1; i <= m; i++) {
+                    A[(i - 1) + (j - 1) * lda] = ZERO;
                 }
             }
+
         } else if (ipack == 2) {
-            /* PACK='L': Zero out all superdiagonal entries */
-            for (j = 1; j < m; j++) {
-                for (i = 0; i < j; i++) {
-                    A[i + j * lda] = ZERO;
+            for (j = 2; j <= m; j++) {
+                for (i = 1; i <= j - 1; i++) {
+                    A[(i - 1) + (j - 1) * lda] = ZERO;
                 }
             }
+
         } else if (ipack == 3) {
-            /* PACK='C': Upper triangle packed columnwise.
-             * Pack A[i,j] for i <= j into linear array. */
-            int jc = 0;
-            for (j = 0; j < m; j++) {
-                for (i = 0; i <= j; i++) {
-                    A[jc + i] = A[i + j * lda];
+            icol = 1;
+            irow = 0;
+            for (j = 1; j <= m; j++) {
+                for (i = 1; i <= j; i++) {
+                    irow = irow + 1;
+                    if (irow > lda) {
+                        irow = 1;
+                        icol = icol + 1;
+                    }
+                    A[(irow - 1) + (icol - 1) * lda] = A[(i - 1) + (j - 1) * lda];
                 }
-                jc += j + 1;
             }
+
         } else if (ipack == 4) {
-            /* PACK='R': Lower triangle packed columnwise.
-             * Pack A[i,j] for i >= j into linear array. */
-            int jc = 0;
-            for (j = 0; j < m; j++) {
-                for (i = j; i < m; i++) {
-                    A[jc + i - j] = A[i + j * lda];
+            icol = 1;
+            irow = 0;
+            for (j = 1; j <= m; j++) {
+                for (i = j; i <= m; i++) {
+                    irow = irow + 1;
+                    if (irow > lda) {
+                        irow = 1;
+                        icol = icol + 1;
+                    }
+                    A[(irow - 1) + (icol - 1) * lda] = A[(i - 1) + (j - 1) * lda];
                 }
-                jc += m - j;
-            }
-        }
-    } else if (ipack == 7) {
-        /* Pack='Z': Band storage */
-
-        /* Special case: diagonal matrix (llb==0 && uub==0) */
-        if (llb == 0 && uub == 0) {
-            /* Just copy D to the diagonal in band storage */
-            dlaset("F", 1, n, ZERO, ZERO, A, lda);
-            for (i = 0; i < mnmin; i++) {
-                A[ku + i * lda] = d[i];  /* ku=0 for diagonal, so A[0 + i*lda] */
-            }
-        } else {
-            /* Generate full matrix first, then pack */
-            int ldtmp = (m > 1) ? m : 1;
-            double* Afull = work;              /* Temporary full matrix */
-            double* work2 = work + ldtmp * n;  /* Remaining workspace */
-
-            if (isym == 1) {
-                /* Nonsymmetric: generate full matrix first */
-                dlagge(m, n, llb, uub, d, Afull, ldtmp, seed, work2, &iinfo);
-            } else {
-                /* Symmetric: generate full matrix first */
-                dlagsy(n, llb, d, Afull, ldtmp, work2, &iinfo);
-            }
-            if (iinfo != 0) {
-                *info = 3;
-                return;
             }
 
-            /* Pack into band storage format 'Z'
-             * Band storage: A[ku+i-j + j*lda] = Afull[i,j]
-             * for max(0,j-ku) <= i <= min(m-1,j+kl) */
-            dlaset("F", kl + ku + 1, n, ZERO, ZERO, A, lda);
-            for (j = 0; j < n; j++) {
-                int i_start = (j - ku > 0) ? j - ku : 0;
-                int i_end = (j + kl < m - 1) ? j + kl : m - 1;
-                for (i = i_start; i <= i_end; i++) {
-                    A[ku + i - j + j * lda] = Afull[i + j * ldtmp];
+        } else if (ipack >= 5) {
+            if (ipack == 5)
+                uub = 0;
+            if (ipack == 6)
+                llb = 0;
+
+            for (j = 1; j <= uub; j++) {
+                for (i = ((j + llb < m) ? j + llb : m); i >= 1; i--) {
+                    A[(i - j + uub) + (j - 1) * lda] = A[(i - 1) + (j - 1) * lda];
+                }
+            }
+
+            for (j = uub + 2; j <= n; j++) {
+                for (i = j - uub; i <= ((j + llb < m) ? j + llb : m); i++) {
+                    A[(i - j + uub) + (j - 1) * lda] = A[(i - 1) + (j - 1) * lda];
                 }
             }
         }
-    } else if (ipack == 5 || ipack == 6) {
-        /* Pack='B' or 'Q': Band storage for symmetric matrices
-         * 'B' stores lower triangle in band format (uub=0)
-         * 'Q' stores upper triangle in band format (llb=0) */
 
-        int llb_pack = (ipack == 6) ? 0 : llb;
-        int uub_pack = (ipack == 5) ? 0 : uub;
-
-        /* Special case: diagonal matrix */
-        if (llb == 0 && uub == 0) {
-            dlaset("F", 1, n, ZERO, ZERO, A, lda);
-            for (i = 0; i < mnmin; i++) {
-                A[i * lda] = d[i];
-            }
-        } else {
-            /* Generate full matrix first, then pack */
-            int ldtmp = (m > 1) ? m : 1;
-            double* Afull = work;
-            double* work2 = work + ldtmp * n;
-
-            /* Symmetric: A = U * D * U' */
-            dlagsy(n, llb, d, Afull, ldtmp, work2, &iinfo);
-            if (iinfo != 0) {
-                *info = 3;
-                return;
-            }
-
-            /* Pack into band storage format
-             * For 'B': A[i-j + j*lda] = Afull[i,j] for j <= i <= min(n-1,j+kl)
-             * For 'Q': A[kl+i-j + j*lda] = Afull[i,j] for max(0,j-kl) <= i <= j */
-            int lda_band = uub_pack + llb_pack + 1;
-            dlaset("F", lda_band, n, ZERO, ZERO, A, lda);
-
-            if (ipack == 5) {
-                /* 'B': lower triangle in band storage */
-                for (j = 0; j < n; j++) {
-                    int i_end = (j + llb < n - 1) ? j + llb : n - 1;
-                    for (i = j; i <= i_end; i++) {
-                        A[i - j + j * lda] = Afull[i + j * ldtmp];
-                    }
+        if (ipack == 3 || ipack == 4) {
+            for (jc = icol; jc <= m; jc++) {
+                for (jr = irow + 1; jr <= lda; jr++) {
+                    A[(jr - 1) + (jc - 1) * lda] = ZERO;
                 }
-            } else {
-                /* 'Q': upper triangle in band storage */
-                for (j = 0; j < n; j++) {
-                    int i_start = (j - uub > 0) ? j - uub : 0;
-                    for (i = i_start; i <= j; i++) {
-                        A[uub + i - j + j * lda] = Afull[i + j * ldtmp];
-                    }
+                irow = 0;
+            }
+
+        } else if (ipack >= 5) {
+            ir1 = uub + llb + 2;
+            ir2 = uub + m + 2;
+            for (jc = 1; jc <= n; jc++) {
+                for (jr = 1; jr <= uub + 1 - jc; jr++) {
+                    A[(jr - 1) + (jc - 1) * lda] = ZERO;
+                }
+                for (jr = (1 > ((ir1 < ir2 - jc) ? ir1 : ir2 - jc)) ? 1 : ((ir1 < ir2 - jc) ? ir1 : ir2 - jc);
+                     jr <= lda; jr++) {
+                    A[(jr - 1) + (jc - 1) * lda] = ZERO;
                 }
             }
         }
     }
+
+#undef AIND
+#undef AINDG
 }

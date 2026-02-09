@@ -78,7 +78,8 @@ extern void dgetsls(const char* trans, const int m, const int n, const int nrhs,
 
 /* Verification routines */
 extern void dqrt13(const int scale, const int m, const int n,
-                   double* A, const int lda, double* norma);
+                   double* A, const int lda, double* norma,
+                   uint64_t state[static 4]);
 extern void dqrt16(const char* trans, const int m, const int n, const int nrhs,
                    const double* A, const int lda,
                    const double* X, const int ldx,
@@ -100,7 +101,8 @@ extern void dqrt15(const int scale, const int rksel,
                    const int m, const int n, const int nrhs,
                    double* A, const int lda, double* B, const int ldb,
                    double* S, int* rank, double* norma, double* normb,
-                   double* work, const int lwork);
+                   double* work, const int lwork,
+                   uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -287,6 +289,7 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     const double ONE = 1.0;
     const double ZERO = 0.0;
     char ctx[128];
+    uint64_t rng_state[4];
 
     if (m == 0 || n == 0) return;
 
@@ -297,8 +300,8 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     xlaenv(1, nb);
     xlaenv(3, nx);
 
-    rng_seed(1988 + m * 100 + n * 10 + iscale + nb);
-    dqrt13(iscale, m, n, ws->COPYA, lda, &norma);
+    rng_seed(rng_state, 1988 + m * 100 + n * 10 + iscale + nb);
+    dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
     /* DGELS tests 1-2 */
     for (int itran = 1; itran <= 2; itran++) {
@@ -308,7 +311,7 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
         int ldwork = (ncols > 1) ? ncols : 1;
 
         if (ncols > 0) {
-            rng_seed(1989 + m * 100 + n * 10 + iscale + itran + nb);
+            rng_seed(rng_state, 1989 + m * 100 + n * 10 + iscale + itran + nb);
             for (int j = 0; j < nrhs; j++) {
                 for (int i = 0; i < ncols; i++) {
                     ws->WORK[i + j * ldwork] = ((double)(i + j * ncols + 1)) / (ncols * nrhs + 1);
@@ -342,8 +345,8 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     }
 
     /* DGELST tests 3-4 */
-    rng_seed(2988 + m * 100 + n * 10 + iscale + nb);
-    dqrt13(iscale, m, n, ws->COPYA, lda, &norma);
+    rng_seed(rng_state, 2988 + m * 100 + n * 10 + iscale + nb);
+    dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
     for (int itran = 1; itran <= 2; itran++) {
         const char* trans = (itran == 1) ? "N" : "T";
@@ -352,7 +355,7 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
         int ldwork = (ncols > 1) ? ncols : 1;
 
         if (ncols > 0) {
-            rng_seed(2989 + m * 100 + n * 10 + iscale + itran + nb);
+            rng_seed(rng_state, 2989 + m * 100 + n * 10 + iscale + itran + nb);
             for (int j = 0; j < nrhs; j++) {
                 for (int i = 0; i < ncols; i++) {
                     ws->WORK[i + j * ldwork] = ((double)(i + j * ncols + 1)) / (ncols * nrhs + 1);
@@ -386,8 +389,8 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     }
 
     /* DGETSLS tests 5-6 */
-    rng_seed(3988 + m * 100 + n * 10 + iscale + nb);
-    dqrt13(iscale, m, n, ws->COPYA, lda, &norma);
+    rng_seed(rng_state, 3988 + m * 100 + n * 10 + iscale + nb);
+    dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
     for (int itran = 1; itran <= 2; itran++) {
         const char* trans = (itran == 1) ? "N" : "T";
@@ -396,7 +399,7 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
         int ldwork = (ncols > 1) ? ncols : 1;
 
         if (ncols > 0) {
-            rng_seed(3989 + m * 100 + n * 10 + iscale + itran + nb);
+            rng_seed(rng_state, 3989 + m * 100 + n * 10 + iscale + itran + nb);
             for (int j = 0; j < nrhs; j++) {
                 for (int i = 0; i < ncols; i++) {
                     ws->WORK[i + j * ldwork] = ((double)(i + j * ncols + 1)) / (ncols * nrhs + 1);
@@ -446,6 +449,7 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
     const double ONE = 1.0;
     const double ZERO = 0.0;
     char ctx[128];
+    uint64_t rng_state[4];
 
     if (m == 0 || n == 0) return;
 
@@ -464,9 +468,9 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
     xlaenv(1, nb);
     xlaenv(3, nx);
 
-    rng_seed(4988 + m * 100 + n * 10 + iscale + irank * 1000 + nb);
+    rng_seed(rng_state, 4988 + m * 100 + n * 10 + iscale + irank * 1000 + nb);
     dqrt15(iscale, irank, m, n, nrhs, ws->COPYA, lda, ws->COPYB, ldb,
-           ws->COPYS, &rank, &norma, &normb, ws->WORK, ws->lwork);
+           ws->COPYS, &rank, &norma, &normb, ws->WORK, ws->lwork, rng_state);
 
     int itype = (irank - 1) * 3 + iscale;
 
@@ -551,9 +555,9 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
            ws->WORK, ws->lwork, ws->IWORK, &info);
 
     /* Regenerate COPYS since DGELSS modified S */
-    rng_seed(4988 + m * 100 + n * 10 + iscale + irank * 1000 + nb);
+    rng_seed(rng_state, 4988 + m * 100 + n * 10 + iscale + irank * 1000 + nb);
     dqrt15(iscale, irank, m, n, nrhs, ws->COPYA, lda, ws->COPYB, ldb,
-           ws->COPYS, &rank, &norma, &normb, ws->WORK, ws->lwork);
+           ws->COPYS, &rank, &norma, &normb, ws->WORK, ws->lwork, rng_state);
 
     if (rank > 0) {
         cblas_daxpy(mnmin, -ONE, ws->COPYS, 1, ws->S, 1);

@@ -12,6 +12,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -28,24 +30,11 @@ extern void dpocon(const char* uplo, const int n,
                    double* const restrict work, int* const restrict iwork,
                    int* info);
 
-/* Verification routine */
-extern double dget06(const double rcond, const double rcondc);
-
 /* Utilities */
 extern double dlamch(const char* cmach);
 extern double dlansy(const char* norm, const char* uplo, const int n,
                      const double* const restrict A, const int lda,
                      double* const restrict work);
-
-/* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
 
 /*
  * Test fixture
@@ -127,8 +116,10 @@ static void run_dpocon_test(dpocon_fixture_t* fix, int imat, const char* uplo)
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
     char sym_str[2] = {type, '\0'};
-    dlatms(fix->n, fix->n, &dist, fix->seed, sym_str, fix->d, mode, cndnum, anorm_param,
-           kl, ku, "N", fix->A, fix->lda, fix->work, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, fix->seed);
+    dlatms(fix->n, fix->n, &dist, sym_str, fix->d, mode, cndnum, anorm_param,
+           kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* Factor A */

@@ -13,26 +13,13 @@
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
 #include "testutils/test_rng.h"
+#include "testutils/verify.h"
 
 /* Routine under test */
 extern void dgtsv(const int n, const int nrhs,
                   double * const restrict DL, double * const restrict D,
                   double * const restrict DU, double * const restrict B,
                   const int ldb, int *info);
-
-/* Verification routine */
-extern void dgtt02(const char *trans, const int n, const int nrhs,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict X, const int ldx,
-                   double * const restrict B, const int ldb,
-                   double *resid);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
 
 /* Utilities */
 extern double dlamch(const char *cmach);
@@ -61,6 +48,7 @@ typedef struct {
     double *B;        /* Right-hand side / computed solution */
     double *B_copy;   /* Copy of RHS for verification */
     uint64_t seed;    /* RNG seed */
+    uint64_t rng_state[4]; /* RNG state */
 } dgtsv_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -70,7 +58,7 @@ static uint64_t g_seed = 2718;
  * Generate a tridiagonal matrix for testing.
  */
 static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
-                                uint64_t *seed)
+                                uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
@@ -81,15 +69,13 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
 
     dlatb4("DGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    rng_seed(*seed);
-
     /* Generate random tridiagonal - diagonally dominant for stability */
     for (i = 0; i < n; i++) {
-        D[i] = 4.0 + rng_uniform();
+        D[i] = 4.0 + rng_uniform(state);
     }
     for (i = 0; i < n - 1; i++) {
-        DL[i] = rng_uniform() - 0.5;
-        DU[i] = rng_uniform() - 0.5;
+        DL[i] = rng_uniform(state) - 0.5;
+        DU[i] = rng_uniform(state) - 0.5;
     }
 
     /* Apply modifications based on type */
@@ -112,8 +98,6 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
             DU[i] *= anorm;
         }
     }
-
-    (*seed)++;
 }
 
 /**
@@ -131,6 +115,7 @@ static int dgtsv_setup(void **state, int n, int nrhs)
     fix->nrhs = nrhs;
     fix->ldb = ldb;
     fix->seed = g_seed++;
+    rng_seed(fix->rng_state, fix->seed);
 
     fix->DL = malloc((m > 0 ? m : 1) * sizeof(double));
     fix->D = malloc(n * sizeof(double));
@@ -212,7 +197,7 @@ static double run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
     int i, j;
 
     /* Generate test matrix */
-    generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, &fix->seed);
+    generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Save original matrix */
     memcpy(fix->DL_copy, fix->DL, (m > 0 ? m : 1) * sizeof(double));
@@ -220,13 +205,11 @@ static double run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
     memcpy(fix->DU_copy, fix->DU, (m > 0 ? m : 1) * sizeof(double));
 
     /* Generate random solution XACT */
-    rng_seed(fix->seed);
     for (j = 0; j < nrhs; j++) {
         for (i = 0; i < n; i++) {
-            fix->XACT[i + j * ldb] = rng_uniform_symmetric();
+            fix->XACT[i + j * ldb] = rng_uniform_symmetric(fix->rng_state);
         }
     }
-    fix->seed++;
 
     /* Compute B = A * XACT */
     for (j = 0; j < nrhs; j++) {
@@ -268,6 +251,7 @@ static void test_dgtsv_wellcond(void **state)
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         double resid = run_dgtsv_test(fix, imat);
         assert_true(resid >= 0.0); /* not singular */
         assert_residual_ok(resid);
@@ -289,6 +273,7 @@ static void test_dgtsv_random(void **state)
     int random_types[] = {7, 11, 12};
     for (int k = 0; k < 3; k++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         double resid = run_dgtsv_test(fix, random_types[k]);
         if (resid < 0.0) {
             /* Singular - acceptable for these types */

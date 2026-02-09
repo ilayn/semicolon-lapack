@@ -23,6 +23,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -88,15 +89,16 @@ extern int dgennd(const int m, const int n, const double* A, const int lda);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    const double* XACT, const int ldxact, double* B,
-                   const int ldb, uint64_t seed, int* info);
+                   const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -229,7 +231,8 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
     xlaenv(3, nx);
 
     /* Seed based on (m, n, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -240,8 +243,8 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
     dlatb4("DQR", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix */
-    dlatms(m, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm,
-           kl, ku, "N", ws->A, lda, ws->WORK, &info);
+    dlatms(m, n, &dist, &type, ws->D, mode, cndnum, anorm,
+           kl, ku, "N", ws->A, lda, ws->WORK, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* Set K values to test: MINMN, 0, 1, MINMN/2 */
@@ -346,7 +349,7 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
 
                 /* Generate right-hand side */
                 dlarhs("DQR", "N", "F", "N", m, n, 0, 0, nrhs,
-                       ws->A, lda, ws->XACT, lda, ws->B, lda, seed++, &info);
+                       ws->A, lda, ws->XACT, lda, ws->B, lda, &info, rng_state);
 
                 dlacpy("F", m, nrhs, ws->B, lda, ws->X, lda);
                 /* Use ws->C instead of ws->AF for DGELS - DGELS modifies its input

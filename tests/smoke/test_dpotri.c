@@ -10,6 +10,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -20,23 +22,6 @@ extern void dpotrf(const char* uplo, const int n, double* const restrict A,
                    const int lda, int* info);
 extern void dpotri(const char* uplo, const int n, double* const restrict A,
                    const int lda, int* info);
-
-/* Verification routine */
-extern void dpot03(const char* uplo, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict AINV, const int ldainv,
-                   double* const restrict work, const int ldwork,
-                   double* const restrict rwork, double* rcond, double* resid);
-
-/* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
 
 /*
  * Test fixture
@@ -110,8 +95,10 @@ static double run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     char sym_str[2] = {type, '\0'};
-    dlatms(fix->n, fix->n, &dist, fix->seed, sym_str, fix->d, mode, cndnum, anorm,
-           kl, ku, "N", fix->A, fix->lda, fix->work, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, fix->seed);
+    dlatms(fix->n, fix->n, &dist, sym_str, fix->d, mode, cndnum, anorm,
+           kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* Copy A to AINV for factorization */

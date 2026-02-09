@@ -133,7 +133,7 @@ void dsyt01_aa(
         }
     }
 
-    /* Apply symmetric pivots */
+    /* Apply symmetric pivots. */
     for (j = n - 1; j >= 0; j--) {
         i = ipiv[j];
         if (i != j) {

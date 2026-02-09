@@ -20,6 +20,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -82,15 +83,16 @@ extern double dget06(const double rcond, const double rcondc);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    double* X, const int ldx, double* B, const int ldb,
-                   uint64_t seed, int* info);
+                   int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -228,7 +230,8 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
     char ctx[128];
 
     /* Seed based on (n, kd, uplo, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(n * 10000 + kd * 1000 + iuplo * 100 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 10000 + kd * 1000 + iuplo * 100 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -260,16 +263,16 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
 
     if (!zerot) {
         /* Generate symmetric positive definite band test matrix */
-        dlatms(n, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm_param,
-               kd, kd, &packit, &ws->A[koff], ldab, ws->WORK, &info);
+        dlatms(n, n, &dist, &type, ws->D, mode, cndnum, anorm_param,
+               kd, kd, &packit, &ws->A[koff], ldab, ws->WORK, &info, rng_state);
         if (info != 0) {
             return;
         }
     } else {
         /* For singular types, we reuse the matrix from type 1 and zero a row/column */
         /* First generate a normal matrix */
-        dlatms(n, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm_param,
-               kd, kd, &packit, &ws->A[koff], ldab, ws->WORK, &info);
+        dlatms(n, n, &dist, &type, ws->D, mode, cndnum, anorm_param,
+               kd, kd, &packit, &ws->A[koff], ldab, ws->WORK, &info, rng_state);
         if (info != 0) {
             return;
         }
@@ -374,7 +377,7 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
         snprintf(ctx, sizeof(ctx), "n=%d kd=%d uplo=%c imat=%d nrhs=%d TEST 2", n, kd, uplo, imat, nrhs);
         set_test_context(ctx);
         dlarhs("DPB", "N", uplo_str, " ", n, n, kd, kd, nrhs,
-               ws->A, ldab, ws->XACT, lda, ws->B, lda, seed++, &info);
+               ws->A, ldab, ws->XACT, lda, ws->B, lda, &info, rng_state);
 
         dlacpy("F", n, nrhs, ws->B, lda, ws->X, lda);
         dpbtrs(uplo_str, n, kd, nrhs, ws->AFAC, ldab, ws->X, lda, &info);

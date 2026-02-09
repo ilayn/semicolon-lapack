@@ -54,7 +54,8 @@ void dlagsy(
     double* A,
     const int lda,
     double* work,
-    int* info)
+    int* info,
+    uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -93,7 +94,7 @@ void dlagsy(
         /* Generate random reflection */
         int len = n - i;
         for (j = 0; j < len; j++) {
-            work[j] = rng_normal();
+            work[j] = rng_normal(state);
         }
         wn = cblas_dnrm2(len, work, 1);
         wa = (work[0] >= 0.0) ? wn : -wn;

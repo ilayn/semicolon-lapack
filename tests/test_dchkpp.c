@@ -19,6 +19,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -75,15 +76,16 @@ extern double dget06(const double rcond, const double rcondc);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    const double* XACT, const int ldxact, double* B,
-                   const int ldb, uint64_t seed, int* info);
+                   const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -208,7 +210,8 @@ static void run_dchkpp_single(int n, int iuplo, int imat)
     char ctx[128];
 
     /* Seed based on (n, uplo, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -219,8 +222,8 @@ static void run_dchkpp_single(int n, int iuplo, int imat)
     dlatb4("DPP", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate symmetric positive definite test matrix in packed form */
-    dlatms(n, n, &dist, seed++, &type, ws->D, mode, cndnum, anorm,
-           kl, ku, packit, ws->A, lda, ws->WORK, &info);
+    dlatms(n, n, &dist, &type, ws->D, mode, cndnum, anorm,
+           kl, ku, packit, ws->A, lda, ws->WORK, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* For types 3-5, zero one row and column to create singular matrix */
@@ -320,7 +323,7 @@ static void run_dchkpp_single(int n, int iuplo, int imat)
         /* Generate RHS using full-format A temporarily */
         /* For packed, we need dlarhs with packed matrix - use lda=n for the RHS arrays */
         dlarhs("DPP", "N", uplo_str, " ", n, n, kl, ku, nrhs,
-               ws->A, lda, ws->XACT, lda, ws->B, lda, seed++, &info);
+               ws->A, lda, ws->XACT, lda, ws->B, lda, &info, rng_state);
 
         dlacpy("F", n, nrhs, ws->B, lda, ws->X, lda);
         dpptrs(uplo_str, n, nrhs, ws->AFAC, ws->X, lda, &info);

@@ -51,10 +51,6 @@ extern void dlaset(const char* uplo, const int m, const int n,
  * @param[in] lda
  *     The leading dimension of the array A. lda >= max(1, m).
  *
- * @param[in] seed
- *     Seed for random number generator. Used to initialize the local
- *     RNG state for reproducibility.
- *
  * @param[out] X
  *     Workspace array of dimension (3*max(m, n)).
  *     2*m + n if side = 'L',
@@ -65,12 +61,15 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *     = 0: normal return
  *     < 0: if info = -k, the k-th argument had an illegal value
  *     = 1: if the random numbers generated are bad.
+ *
+ * @param[in,out] state
+ *     RNG state array of 4 uint64_t elements, passed through from caller.
  */
 void dlaror(const char* side, const char* init,
             const int m, const int n,
             double* A, const int lda,
-            const uint64_t seed,
-            double* X, int* info)
+            double* X, int* info,
+            uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -78,9 +77,6 @@ void dlaror(const char* side, const char* init,
 
     int irow, itype, ixfrm, j, jcol, kbeg, nxfrm;
     double factor, xnorm, xnorms;
-
-    /* Initialize RNG with provided seed for reproducibility */
-    rng_seed(seed);
 
     *info = 0;
     if (n == 0 || m == 0) {
@@ -136,7 +132,7 @@ void dlaror(const char* side, const char* init,
 
         /* Generate independent normal(0, 1) random numbers */
         for (j = kbeg; j < nxfrm; j++) {
-            X[j] = rng_normal();
+            X[j] = rng_normal(state);
         }
 
         /* Generate a Householder transformation from the random vector X */
@@ -172,7 +168,7 @@ void dlaror(const char* side, const char* init,
         }
     }
 
-    X[2 * nxfrm - 1] = (rng_normal() >= 0.0) ? ONE : -ONE;
+    X[2 * nxfrm - 1] = (rng_normal(state) >= 0.0) ? ONE : -ONE;
 
     /* Scale the matrix A by D */
     if (itype == 1 || itype == 3) {

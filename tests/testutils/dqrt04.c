@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "verify.h"
+#include "test_rng.h"
 #include <cblas.h>
 
 extern double dlamch(const char* cmach);
@@ -55,7 +56,8 @@ void dqrt04(const int m, const int n, const int nb, double* restrict result)
     int info;
     int j;
     double anorm, resid, cnorm, dnorm;
-    uint64_t seed = 1988198919901991ULL;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL);
 
     double* A = malloc(m * n * sizeof(double));
     double* AF = malloc(m * n * sizeof(double));
@@ -70,7 +72,7 @@ void dqrt04(const int m, const int n, const int nb, double* restrict result)
     double* DF = malloc(n * m * sizeof(double));
 
     for (j = 0; j < n; j++) {
-        dlarnv_rng(2, &seed, m, &A[j * m]);
+        dlarnv_rng(2, m, &A[j * m], rng_state);
     }
     dlacpy("F", m, n, A, m, AF, m);
 
@@ -99,7 +101,7 @@ void dqrt04(const int m, const int n, const int nb, double* restrict result)
     result[1] = resid / (eps * (m > 1 ? m : 1));
 
     for (j = 0; j < n; j++) {
-        dlarnv_rng(2, &seed, m, &C[j * m]);
+        dlarnv_rng(2, m, &C[j * m], rng_state);
     }
     cnorm = dlange("1", m, n, C, m, rwork);
     dlacpy("F", m, n, C, m, CF, m);
@@ -129,7 +131,7 @@ void dqrt04(const int m, const int n, const int nb, double* restrict result)
     }
 
     for (j = 0; j < m; j++) {
-        dlarnv_rng(2, &seed, n, &D[j * n]);
+        dlarnv_rng(2, n, &D[j * n], rng_state);
     }
     dnorm = dlange("1", n, m, D, n, rwork);
     dlacpy("F", n, m, D, n, DF, n);

@@ -74,7 +74,8 @@ void dlatm1(
     const int idist,
     double* d,
     const int n,
-    int* info)
+    int* info,
+    uint64_t state[static 4])
 {
     const double ONE = 1.0;
     const double HALF = 0.5;
@@ -158,7 +159,7 @@ void dlatm1(
                 /* Randomly distributed D values on (1/cond, 1): */
                 alpha = log(ONE / cond);
                 for (i = 0; i < n; i++) {
-                    d[i] = exp(alpha * rng_uniform());
+                    d[i] = exp(alpha * rng_uniform(state));
                 }
                 break;
 
@@ -167,17 +168,17 @@ void dlatm1(
                 switch (idist) {
                     case 1:  /* UNIFORM(0, 1) */
                         for (i = 0; i < n; i++) {
-                            d[i] = rng_uniform();
+                            d[i] = rng_uniform(state);
                         }
                         break;
                     case 2:  /* UNIFORM(-1, 1) */
                         for (i = 0; i < n; i++) {
-                            d[i] = 2.0 * rng_uniform() - 1.0;
+                            d[i] = 2.0 * rng_uniform(state) - 1.0;
                         }
                         break;
                     case 3:  /* NORMAL(0, 1) */
                         for (i = 0; i < n; i++) {
-                            d[i] = rng_normal();
+                            d[i] = rng_normal(state);
                         }
                         break;
                 }
@@ -188,7 +189,7 @@ void dlatm1(
          * random signs to D */
         if ((mode != -6 && mode != 0 && mode != 6) && irsign == 1) {
             for (i = 0; i < n; i++) {
-                temp = rng_uniform();
+                temp = rng_uniform(state);
                 if (temp > HALF) {
                     d[i] = -d[i];
                 }

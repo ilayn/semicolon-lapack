@@ -387,6 +387,30 @@ void dlatb4(
             }
         }
 
+    } else if (strcmp(c2, "TB") == 0) {
+        // xTB: Triangular banded matrix
+        *type = 'N';
+
+        int mat = (imat < 0) ? -imat : imat;
+
+        // Condition number
+        if (mat == 2 || mat == 8) {
+            *cndnum = badc1;
+        } else if (mat == 3 || mat == 9) {
+            *cndnum = badc2;
+        } else {
+            *cndnum = TWO;
+        }
+
+        // Norm
+        if (mat == 4) {
+            *anorm = small;
+        } else if (mat == 5) {
+            *anorm = large;
+        } else {
+            *anorm = ONE;
+        }
+
     } else if (strcmp(c2, "TR") == 0 || strcmp(c2, "TP") == 0) {
         // xTR, xTP: Triangular
         *type = 'N';

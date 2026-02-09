@@ -66,7 +66,8 @@ void dlatmr(
     double* A,
     const int lda,
     int* iwork,
-    int* info)
+    int* info,
+    uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -257,7 +258,7 @@ void dlatmr(
         fulbnd = 1;
     }
 
-    dlatm1(mode, cond, irsign, idist, d, mnmin, info);
+    dlatm1(mode, cond, irsign, idist, d, mnmin, info, state);
     if (*info != 0) {
         *info = 1;
         return;
@@ -283,7 +284,7 @@ void dlatmr(
     }
 
     if (igrade == 1 || igrade == 3 || igrade == 4 || igrade == 5) {
-        dlatm1(model, condl, 0, idist, dl, m, info);
+        dlatm1(model, condl, 0, idist, dl, m, info, state);
         if (*info != 0) {
             *info = 3;
             return;
@@ -291,7 +292,7 @@ void dlatmr(
     }
 
     if (igrade == 2 || igrade == 3) {
-        dlatm1(moder, condr, 0, idist, dr, n, info);
+        dlatm1(moder, condr, 0, idist, dr, n, info, state);
         if (*info != 0) {
             *info = 4;
             return;
@@ -326,7 +327,7 @@ void dlatmr(
                     for (i = 1; i <= j; i++) {
                         temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                       idist, d, igrade, dl, dr, ipvtng,
-                                      iwork, sparse);
+                                      iwork, sparse, state);
                         A[(isub - 1) + (jsub - 1) * lda] = temp;
                         A[(jsub - 1) + (isub - 1) * lda] = temp;
                     }
@@ -336,7 +337,7 @@ void dlatmr(
                     for (i = 1; i <= m; i++) {
                         temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                       idist, d, igrade, dl, dr, ipvtng,
-                                      iwork, sparse);
+                                      iwork, sparse, state);
                         A[(isub - 1) + (jsub - 1) * lda] = temp;
                     }
                 }
@@ -346,7 +347,7 @@ void dlatmr(
                 for (i = 1; i <= j; i++) {
                     temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                   idist, d, igrade, dl, dr, ipvtng,
-                                  iwork, sparse);
+                                  iwork, sparse, state);
                     mnsub = min_int(isub, jsub);
                     mxsub = max_int(isub, jsub);
                     A[(mnsub - 1) + (mxsub - 1) * lda] = temp;
@@ -360,7 +361,7 @@ void dlatmr(
                 for (i = 1; i <= j; i++) {
                     temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                   idist, d, igrade, dl, dr, ipvtng,
-                                  iwork, sparse);
+                                  iwork, sparse, state);
                     mnsub = min_int(isub, jsub);
                     mxsub = max_int(isub, jsub);
                     A[(mxsub - 1) + (mnsub - 1) * lda] = temp;
@@ -374,7 +375,7 @@ void dlatmr(
                 for (i = 1; i <= j; i++) {
                     temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                   idist, d, igrade, dl, dr, ipvtng,
-                                  iwork, sparse);
+                                  iwork, sparse, state);
                     mnsub = min_int(isub, jsub);
                     mxsub = max_int(isub, jsub);
                     k = mxsub * (mxsub - 1) / 2 + mnsub;
@@ -388,7 +389,7 @@ void dlatmr(
                 for (i = 1; i <= j; i++) {
                     temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                   idist, d, igrade, dl, dr, ipvtng,
-                                  iwork, sparse);
+                                  iwork, sparse, state);
                     mnsub = min_int(isub, jsub);
                     mxsub = max_int(isub, jsub);
                     if (mnsub == 1) {
@@ -410,7 +411,7 @@ void dlatmr(
                     } else {
                         temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                       idist, d, igrade, dl, dr, ipvtng,
-                                      iwork, sparse);
+                                      iwork, sparse, state);
                         mnsub = min_int(isub, jsub);
                         mxsub = max_int(isub, jsub);
                         A[(mxsub - mnsub) + (mnsub - 1) * lda] = temp;
@@ -422,7 +423,7 @@ void dlatmr(
                 for (i = j - kuu; i <= j; i++) {
                     temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                   idist, d, igrade, dl, dr, ipvtng,
-                                  iwork, sparse);
+                                  iwork, sparse, state);
                     mnsub = min_int(isub, jsub);
                     mxsub = max_int(isub, jsub);
                     A[(mnsub - mxsub + kuu) + (mxsub - 1) * lda] = temp;
@@ -434,7 +435,7 @@ void dlatmr(
                     for (i = j - kuu; i <= j; i++) {
                         temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                       idist, d, igrade, dl, dr, ipvtng,
-                                      iwork, sparse);
+                                      iwork, sparse, state);
                         mnsub = min_int(isub, jsub);
                         mxsub = max_int(isub, jsub);
                         A[(mnsub - mxsub + kuu) + (mxsub - 1) * lda] = temp;
@@ -451,7 +452,7 @@ void dlatmr(
                     for (i = j - kuu; i <= j + kll; i++) {
                         temp = dlatm3(m, n, i, j, &isub, &jsub, kl, ku,
                                       idist, d, igrade, dl, dr, ipvtng,
-                                      iwork, sparse);
+                                      iwork, sparse, state);
                         A[(isub - jsub + kuu) + (jsub - 1) * lda] = temp;
                     }
                 }
@@ -464,7 +465,7 @@ void dlatmr(
                     for (i = 1; i <= j; i++) {
                         A[(i - 1) + (j - 1) * lda] = dlatm2(m, n, i, j, kl, ku, idist,
                                                             d, igrade, dl, dr, ipvtng,
-                                                            iwork, sparse);
+                                                            iwork, sparse, state);
                         A[(j - 1) + (i - 1) * lda] = A[(i - 1) + (j - 1) * lda];
                     }
                 }
@@ -473,7 +474,7 @@ void dlatmr(
                     for (i = 1; i <= m; i++) {
                         A[(i - 1) + (j - 1) * lda] = dlatm2(m, n, i, j, kl, ku, idist,
                                                             d, igrade, dl, dr, ipvtng,
-                                                            iwork, sparse);
+                                                            iwork, sparse, state);
                     }
                 }
             }
@@ -482,7 +483,7 @@ void dlatmr(
                 for (i = 1; i <= j; i++) {
                     A[(i - 1) + (j - 1) * lda] = dlatm2(m, n, i, j, kl, ku, idist,
                                                         d, igrade, dl, dr, ipvtng,
-                                                        iwork, sparse);
+                                                        iwork, sparse, state);
                     if (i != j) {
                         A[(j - 1) + (i - 1) * lda] = ZERO;
                     }
@@ -493,7 +494,7 @@ void dlatmr(
                 for (i = 1; i <= j; i++) {
                     A[(j - 1) + (i - 1) * lda] = dlatm2(m, n, i, j, kl, ku, idist,
                                                         d, igrade, dl, dr, ipvtng,
-                                                        iwork, sparse);
+                                                        iwork, sparse, state);
                     if (i != j) {
                         A[(i - 1) + (j - 1) * lda] = ZERO;
                     }
@@ -511,7 +512,7 @@ void dlatmr(
                     }
                     A[(isub - 1) + (jsub - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                               idist, d, igrade, dl, dr,
-                                                              ipvtng, iwork, sparse);
+                                                              ipvtng, iwork, sparse, state);
                 }
             }
         } else if (ipack == 4) {
@@ -528,7 +529,7 @@ void dlatmr(
                         isub = k - lda * (jsub - 1);
                         A[(isub - 1) + (jsub - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                                   idist, d, igrade, dl, dr,
-                                                                  ipvtng, iwork, sparse);
+                                                                  ipvtng, iwork, sparse, state);
                     }
                 }
             } else {
@@ -543,7 +544,7 @@ void dlatmr(
                         }
                         A[(isub - 1) + (jsub - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                                   idist, d, igrade, dl, dr,
-                                                                  ipvtng, iwork, sparse);
+                                                                  ipvtng, iwork, sparse, state);
                     }
                 }
             }
@@ -555,7 +556,7 @@ void dlatmr(
                     } else {
                         A[(j - i) + (i - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                             idist, d, igrade, dl, dr,
-                                                            ipvtng, iwork, sparse);
+                                                            ipvtng, iwork, sparse, state);
                     }
                 }
             }
@@ -564,7 +565,7 @@ void dlatmr(
                 for (i = j - kuu; i <= j; i++) {
                     A[(i - j + kuu) + (j - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                               idist, d, igrade, dl, dr,
-                                                              ipvtng, iwork, sparse);
+                                                              ipvtng, iwork, sparse, state);
                 }
             }
         } else if (ipack == 7) {
@@ -573,7 +574,7 @@ void dlatmr(
                     for (i = j - kuu; i <= j; i++) {
                         A[(i - j + kuu) + (j - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                                   idist, d, igrade, dl, dr,
-                                                                  ipvtng, iwork, sparse);
+                                                                  ipvtng, iwork, sparse, state);
                         if (i < 1) {
                             A[(j - i + kuu) + (i + n - 1) * lda] = ZERO;
                         }
@@ -587,7 +588,7 @@ void dlatmr(
                     for (i = j - kuu; i <= j + kll; i++) {
                         A[(i - j + kuu) + (j - 1) * lda] = dlatm2(m, n, i, j, kl, ku,
                                                                   idist, d, igrade, dl, dr,
-                                                                  ipvtng, iwork, sparse);
+                                                                  ipvtng, iwork, sparse, state);
                     }
                 }
             }

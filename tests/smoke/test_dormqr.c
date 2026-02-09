@@ -12,6 +12,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -26,38 +28,6 @@ extern void dgelqf(const int m, const int n,
                    double * const restrict A, const int lda,
                    double * const restrict tau,
                    double * const restrict work, const int lwork, int *info);
-
-/* Verification routines */
-extern void dqrt03(const int m, const int n, const int k,
-                   const double * const restrict AF,
-                   double * const restrict C,
-                   double * const restrict CC,
-                   double * const restrict Q,
-                   const int lda,
-                   const double * const restrict tau,
-                   double * const restrict work, const int lwork,
-                   double * const restrict rwork,
-                   double * restrict result);
-extern void dlqt03(const int m, const int n, const int k,
-                   const double * const restrict AF,
-                   double * const restrict C,
-                   double * const restrict CC,
-                   double * const restrict Q,
-                   const int lda,
-                   const double * const restrict tau,
-                   double * const restrict work, const int lwork,
-                   double * const restrict rwork,
-                   double * restrict result);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
-extern void dlatms(const int m, const int n, const char *dist,
-                   uint64_t seed, const char *sym, double *d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char *pack,
-                   double *A, const int lda, double *work, int *info);
 extern void dlacpy(const char *uplo, const int m, const int n,
                    const double * const restrict A, const int lda,
                    double * const restrict B, const int ldb);
@@ -158,8 +128,10 @@ static void test_dormqr(void **state)
         double anorm, cndnum;
 
         dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
-        dlatms(m, n, &dist, fix->seed, &type, fix->d, mode, cndnum, anorm,
-               kl, ku, "N", fix->A, fix->lda, fix->genwork, &info);
+        uint64_t rng_state[4];
+        rng_seed(rng_state, fix->seed);
+        dlatms(m, n, &dist, &type, fix->d, mode, cndnum, anorm,
+               kl, ku, "N", fix->A, fix->lda, fix->genwork, &info, rng_state);
         assert_int_equal(info, 0);
 
         /* QR factorize into AF */
@@ -199,8 +171,10 @@ static void test_dormlq(void **state)
         double anorm, cndnum;
 
         dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
-        dlatms(m, n, &dist, fix->seed, &type, fix->d, mode, cndnum, anorm,
-               kl, ku, "N", fix->A, fix->lda, fix->genwork, &info);
+        uint64_t rng_state[4];
+        rng_seed(rng_state, fix->seed);
+        dlatms(m, n, &dist, &type, fix->d, mode, cndnum, anorm,
+               kl, ku, "N", fix->A, fix->lda, fix->genwork, &info, rng_state);
         assert_int_equal(info, 0);
 
         /* LQ factorize into AF */

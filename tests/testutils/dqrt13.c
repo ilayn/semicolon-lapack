@@ -46,7 +46,8 @@ extern void dlascl(const char* type, const int kl, const int ku,
  *     The one-norm of A.
  */
 void dqrt13(const int scale, const int m, const int n,
-            double* A, const int lda, double* norma)
+            double* A, const int lda, double* norma,
+            uint64_t state[static 4])
 {
     const double ONE = 1.0;
 
@@ -62,7 +63,7 @@ void dqrt13(const int scale, const int m, const int n,
     /* Generate benign matrix: random entries with diagonal dominance */
     for (j = 0; j < n; j++) {
         /* Fill column j with uniform(-1, 1) random values */
-        rng_fill(2, m, &A[j * lda]);
+        rng_fill(state, 2, m, &A[j * lda]);
 
         /* Make diagonal dominant for well-conditioning */
         if (j < m) {

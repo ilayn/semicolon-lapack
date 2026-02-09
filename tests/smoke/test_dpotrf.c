@@ -19,6 +19,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 #include <string.h>
 #include <cblas.h>
 
@@ -40,22 +42,6 @@ extern void dpotrf2(const char* uplo, const int n, double* A,
                     const int lda, int* info);
 extern void dpotrf(const char* uplo, const int n, double* A,
                    const int lda, int* info);
-
-/* Verification routine */
-extern void dpot01(const char* uplo, const int n,
-                   const double* A, const int lda,
-                   double* AFAC, const int ldafac,
-                   double* rwork, double* resid);
-
-/* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -142,16 +128,15 @@ static void run_dpotrf_single(int n, int iuplo, int imat, int iroutine)
     int info;
     int lda = (n > 1) ? n : 1;
 
-    /* Seed based on (n, uplo, imat, routine) for reproducibility */
-    uint64_t seed = 5001500150015001ULL + (uint64_t)(n * 10000 + iuplo * 1000 + imat * 10 + iroutine);
-
     /* Get matrix parameters for this type */
     dlatb4("DPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate symmetric positive definite test matrix */
     char sym_str[2] = {type, '\0'};
-    dlatms(n, n, &dist, seed, sym_str, ws->D, mode, cndnum, anorm,
-           kl, ku, "N", ws->A, lda, ws->WORK, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 5001500150015001ULL + (uint64_t)(n * 10000 + iuplo * 1000 + imat * 10 + iroutine));
+    dlatms(n, n, &dist, sym_str, ws->D, mode, cndnum, anorm,
+           kl, ku, "N", ws->A, lda, ws->WORK, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* Copy A to AFAC for factorization */

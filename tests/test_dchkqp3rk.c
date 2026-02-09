@@ -23,6 +23,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <cblas.h>
 
 /* Test parameters from dtest.in */
@@ -64,10 +65,11 @@ extern double dqpt01(const int m, const int n, const int k,
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlaord(const char* job, const int n, double* X, const int incx);
 
 /* Utilities */
@@ -203,7 +205,7 @@ static int group_teardown(void** state)
  * @return 0 on success, -1 if this IMAT should be skipped for this size
  */
 static int generate_matrix(int m, int n, int imat, double* COPYA, int lda,
-                           double* S, double* WORK, uint64_t* seed)
+                           double* S, double* WORK, uint64_t rng_state[static 4])
 {
     const double ZERO = 0.0;
     int minmn = (m < n) ? m : n;
@@ -227,8 +229,9 @@ static int generate_matrix(int m, int n, int imat, double* COPYA, int lda,
 
         char dist_str[2] = {dist, '\0'};
         char type_str[2] = {type, '\0'};
-        dlatms(m, n, dist_str, (*seed)++, type_str, S, mode, cndnum, anorm,
-               kl, ku, "N", COPYA, lda, WORK, &info);
+        dlatms(m, n, dist_str,
+               type_str, S, mode, cndnum, anorm,
+               kl, ku, "N", COPYA, lda, WORK, &info, rng_state);
 
         if (info != 0) {
             return -1;
@@ -309,8 +312,9 @@ static int generate_matrix(int m, int n, int imat, double* COPYA, int lda,
         char dist_str[2] = {dist, '\0'};
         char type_str[2] = {type, '\0'};
         int ind_offset_gen = nb_zero * lda;
-        dlatms(m, nb_gen, dist_str, (*seed)++, type_str, S, mode, cndnum, anorm,
-               kl, ku, "N", &COPYA[ind_offset_gen], lda, WORK, &info);
+        dlatms(m, nb_gen, dist_str,
+               type_str, S, mode, cndnum, anorm,
+               kl, ku, "N", &COPYA[ind_offset_gen], lda, WORK, &info, rng_state);
 
         if (info != 0) {
             return -1;
@@ -378,7 +382,8 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     }
 
     /* Seed based on (m, n, nrhs, imat) for reproducibility */
-    uint64_t seed = g_seed + (uint64_t)(m * 10000 + n * 1000 + nrhs * 100 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, g_seed + (uint64_t)(m * 10000 + n * 1000 + nrhs * 100 + imat));
 
     /* Generate RHS matrix B (COPYB) with dlatb4/dlatms for IMAT=14 parameters */
     {
@@ -388,8 +393,9 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
         dlatb4("DQK", 14, m, nrhs, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
         char dist_str[2] = {dist, '\0'};
         char type_str[2] = {type, '\0'};
-        dlatms(m, nrhs, dist_str, seed++, type_str, ws->S, mode, cndnum, anorm,
-               kl, ku, "N", ws->COPYB, lda, ws->WORK, &info);
+        dlatms(m, nrhs, dist_str,
+               type_str, ws->S, mode, cndnum, anorm,
+               kl, ku, "N", ws->COPYB, lda, ws->WORK, &info, rng_state);
         if (info != 0) {
             snprintf(ctx, sizeof(ctx), "m=%d n=%d nrhs=%d type=%d: COPYB generation failed (info=%d)",
                      m, n, nrhs, imat, info);
@@ -400,7 +406,7 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     }
 
     /* Generate test matrix COPYA */
-    if (generate_matrix(m, n, imat, ws->COPYA, lda, ws->S, ws->WORK, &seed) != 0) {
+    if (generate_matrix(m, n, imat, ws->COPYA, lda, ws->S, ws->WORK, rng_state) != 0) {
         /* Skip this configuration */
         return;
     }

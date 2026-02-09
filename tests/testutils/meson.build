@@ -133,13 +133,17 @@ testutils_sources = files(
 
   # Eigenvalue verification (dst*)
   'dstt21.c',   # Tridiagonal eigenvalue decomposition: |A - USU'| and |I - UU'|
+  'dstt22.c',   # Partial tridiagonal eigenvalue: |U'AU - S| and |I - U'U|
   'dsyt21.c',   # Symmetric eigenvalue decomposition: |A - USU'| and |I - UU'|
   'dsyt22.c',   # Partial symmetric eigenvalue: |U'AU - S| and |I - U'U|
   'dsxt1.c',    # Compare eigenvalue sets
   'dstech.c',   # Eigenvalue accuracy via Sturm sequence
 
-  # Eigenvector verification (dget22)
+  # Eigenvector verification (dget22, dget10)
   'dget22.c',   # Eigenvector check: |A*E - E*W| / (|A| |E| ulp)
+  'dget10.c',   # Matrix comparison: |A - B| / (|A| M eps)
+  'dget23.c',   # DGEEVX verification: 11 tests for eigenvalues/eigenvectors/condition numbers
+  'dget24.c',   # DGEESX verification: 17 tests for Schur form/sorting/condition numbers
 
   # Non-symmetric eigenvalue verification
   'dort01.c',   # Orthogonality check: |I - U*U'| / (n * eps)
@@ -148,6 +152,9 @@ testutils_sources = files(
 
   # SVD verification
   'dbdt01.c',   # Bidiagonal reconstruction: |A - Q*B*P'| / (n * |A| * eps)
+  'dbdt02.c',   # Change of basis: |B - U*C| / (max(m,n) * |B| * eps)
+  'dbdt03.c',   # Full bidiagonal SVD: |B - U*S*VT| / (n * |B| * eps)
+  'dbdt04.c',   # Partial bidiagonal SVD: |S - U'*B*V| / (n * |B| * eps)
   'dbdt05.c',   # Partial SVD: |S - U'*A*V| / (n * |A| * eps)
 
   # GSVD verification

@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "verify.h"
+#include "test_rng.h"
 #include <cblas.h>
 
 extern double dlamch(const char* cmach);
@@ -66,7 +67,8 @@ void dlqt05(const int m, const int n, const int l, const int nb,
     int info;
     int j;
     double anorm, resid, cnorm, dnorm;
-    uint64_t seed = 1988198919901991ULL;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL);
 
     double* A = malloc(m * n2 * sizeof(double));
     double* AF = malloc(m * n2 * sizeof(double));
@@ -83,18 +85,18 @@ void dlqt05(const int m, const int n, const int l, const int nb,
     dlaset("F", m, n2, 0.0, 0.0, A, m);
     dlaset("F", nb, m, 0.0, 0.0, T, nb);
     for (j = 1; j <= m; j++) {
-        dlarnv_rng(2, &seed, m - j + 1, &A[(j - 1) + (j - 1) * m]);
+        dlarnv_rng(2, m - j + 1, &A[(j - 1) + (j - 1) * m], rng_state);
     }
     if (n > 0) {
         for (j = 1; j <= n - l; j++) {
             int col = m + j - 1;
-            dlarnv_rng(2, &seed, m, &A[col * m]);
+            dlarnv_rng(2, m, &A[col * m], rng_state);
         }
     }
     if (l > 0) {
         for (j = 1; j <= l; j++) {
             int col = n + m - l + j - 1;
-            dlarnv_rng(2, &seed, m - j + 1, &A[(j - 1) + col * m]);
+            dlarnv_rng(2, m - j + 1, &A[(j - 1) + col * m], rng_state);
         }
     }
 
@@ -126,7 +128,7 @@ void dlqt05(const int m, const int n, const int l, const int nb,
 
     dlaset("F", n2, m, 0.0, 1.0, C, n2);
     for (j = 0; j < m; j++) {
-        dlarnv_rng(2, &seed, n2, &C[j * n2]);
+        dlarnv_rng(2, n2, &C[j * n2], rng_state);
     }
     cnorm = dlange("1", n2, m, C, n2, rwork);
     dlacpy("F", n2, m, C, n2, CF, n2);
@@ -158,7 +160,7 @@ void dlqt05(const int m, const int n, const int l, const int nb,
     }
 
     for (j = 0; j < n2; j++) {
-        dlarnv_rng(2, &seed, m, &D[j * m]);
+        dlarnv_rng(2, m, &D[j * m], rng_state);
     }
     dnorm = dlange("1", m, n2, D, m, rwork);
     dlacpy("F", m, n2, D, m, DF, m);

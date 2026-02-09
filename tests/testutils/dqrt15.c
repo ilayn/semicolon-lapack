@@ -85,7 +85,8 @@ void dqrt15(const int scale, const int rksel,
             const int m, const int n, const int nrhs,
             double* A, const int lda, double* B, const int ldb,
             double* S, int* rank, double* norma, double* normb,
-            double* work, const int lwork)
+            double* work, const int lwork,
+            uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -113,9 +114,6 @@ void dqrt15(const int scale, const int rksel,
     smlnum = (smlnum / eps) / eps;
     bignum = ONE / smlnum;
 
-    /* Seed RNG based on inputs for reproducibility */
-    rng_seed(1988 + scale * 1000 + rksel * 100 + m * 10 + n);
-
     /* Determine rank and (unscaled) singular values */
     if (rksel == 1) {
         *rank = mn;
@@ -135,7 +133,7 @@ void dqrt15(const int scale, const int rksel,
         for (j = 1; j < *rank; j++) {
             /* Generate random singular value > SVMIN */
             do {
-                temp = rng_uniform();  /* Uniform(0,1) */
+                temp = rng_uniform(state);  /* Uniform(0,1) */
             } while (temp <= SVMIN);
             S[j] = fabs(temp);
         }
@@ -144,7 +142,7 @@ void dqrt15(const int scale, const int rksel,
         dlaord("D", *rank, S, 1);
 
         /* Generate 'rank' columns of a random orthogonal matrix in A */
-        rng_fill(2, m, work);  /* Uniform(-1,1) */
+        rng_fill(state, 2, m, work);  /* Uniform(-1,1) */
         double nrm = cblas_dnrm2(m, work, 1);
         cblas_dscal(m, ONE / nrm, work, 1);
         dlaset("F", m, *rank, ZERO, ONE, A, lda);
@@ -153,7 +151,7 @@ void dqrt15(const int scale, const int rksel,
         /* workspace used: m + mn */
 
         /* Generate consistent rhs in the range space of A */
-        rng_fill(2, (*rank) * nrhs, work);  /* Uniform(-1,1) */
+        rng_fill(state, 2, (*rank) * nrhs, work);  /* Uniform(-1,1) */
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m, nrhs, *rank, ONE, A, lda, work, *rank,
                     ZERO, B, ldb);
@@ -167,11 +165,7 @@ void dqrt15(const int scale, const int rksel,
         if (*rank < n) {
             dlaset("F", m, n - *rank, ZERO, ZERO, &A[(*rank) * lda], lda);
         }
-        /* Use different seed offset (2988) for dlaror to avoid correlation
-           with the singular value generation (1988) */
-        dlaror("R", "N", m, n, A, lda,
-               2988 + scale * 1000 + rksel * 100 + m * 10 + n,
-               work, &info);
+        dlaror("R", "N", m, n, A, lda, work, &info, state);
 
     } else {
         /* work space used: 2*n + m */

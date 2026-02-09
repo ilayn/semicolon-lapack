@@ -3,7 +3,7 @@
  * @brief Test utility version of DLARNV that uses xoshiro256+ RNG.
  *
  * These are test-only versions that use our modern xoshiro256+ RNG
- * with a simple uint64_t seed, instead of LAPACK's 48-bit LCG with
+ * with explicit state passing instead of LAPACK's 48-bit LCG with
  * 4-element integer seed array.
  *
  * Named dlarnv_rng/dlaran_rng to avoid conflict with the library's
@@ -24,44 +24,37 @@
  *     = 2:  uniform (-1,1)
  *     = 3:  normal (0,1)
  *
- * @param[in,out] seed
- *     On entry, the seed of the random number generator.
- *     On exit, the seed is updated.
- *
  * @param[in] n
  *     The number of random numbers to be generated.
  *
  * @param[out] x
  *     The generated random numbers.
+ *
+ * @param[in,out] state
+ *     The 4-element RNG state array, advanced on exit.
  */
-void dlarnv_rng(const int idist, uint64_t* seed, const int n, double* x)
+void dlarnv_rng(const int idist, const int n, double* x,
+                uint64_t state[static 4])
 {
     if (n <= 0) {
         return;
     }
 
-    rng_seed(*seed);
-
     for (int i = 0; i < n; i++) {
-        x[i] = rng_dist(idist);
+        x[i] = rng_dist(state, idist);
     }
-
-    (*seed)++;
 }
 
 /**
  * dlaran_rng returns a random real number from a uniform (0,1) distribution
  * using xoshiro256+ RNG.
  *
- * @param[in,out] seed
- *     On entry, the seed of the random number generator.
- *     On exit, the seed is updated.
+ * @param[in,out] state
+ *     The 4-element RNG state array, advanced on exit.
  *
  * @return A random real number in (0,1).
  */
-double dlaran_rng(uint64_t* seed)
+double dlaran_rng(uint64_t state[static 4])
 {
-    rng_seed(*seed);
-    (*seed)++;
-    return rng_uniform();
+    return rng_uniform(state);
 }

@@ -28,17 +28,17 @@ extern double dlamch(const char* cmach);
  * @param[in]     trans   'N' for no transpose, 'T' or 'C' for transpose.
  *                        Used to flip the matrix if transpose will be used.
  * @param[out]    diag    Returns 'N' for non-unit triangular, 'U' for unit triangular.
- * @param[in,out] seed    Random number seed.
  * @param[in]     n       The order of the matrix. n >= 0.
  * @param[out]    A       Array (lda, n). The triangular matrix A.
  * @param[in]     lda     The leading dimension of A. lda >= max(1,n).
  * @param[out]    B       Array (n). The right hand side vector (for IMAT > 10).
  * @param[out]    work    Array (3*n). Workspace.
  * @param[out]    info    0 = successful exit, < 0 = illegal argument.
+ * @param[in,out] state   RNG state array of 4 uint64_t elements.
  */
 void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
-            uint64_t* seed, const int n, double* A, const int lda,
-            double* B, double* work, int* info)
+            const int n, double* A, const int lda,
+            double* B, double* work, int* info, uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -68,9 +68,6 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
         return;
     }
 
-    /* Initialize RNG with seed */
-    rng_seed(*seed);
-
     /* Machine parameters */
     unfl = dlamch("S");
     ulp = dlamch("E") * dlamch("B");
@@ -92,8 +89,8 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
         symm[0] = type;
         char dstr[2] = "S";
         dstr[0] = dist;
-        dlatms(n, n, dstr, *seed, symm, B, mode, cndnum, anorm,
-               kl, ku, "N", A, lda, work, info);
+        dlatms(n, n, dstr, symm, B, mode, cndnum, anorm,
+               kl, ku, "N", A, lda, work, info, state);
     }
     /* IMAT = 7: Unit triangular identity */
     else if (imat == 7) {
@@ -149,7 +146,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
                 work[n + j + 1] = ZERO;
                 plus1 = star1 / plus2;
                 /* Generate a random value in (-1, 1) using dlarnv with idist=2 */
-                rng_fill(2, 1, &rexp);
+                rng_fill(state, 2, 1, &rexp);
                 star1 = star1 * pow(sfac, rexp);
                 if (rexp < ZERO) {
                     star1 = -pow(sfac, ONE - rexp);
@@ -261,18 +258,18 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     else if (imat == 11) {
         if (upper) {
             for (j = 0; j < n; j++) {
-                rng_fill(2, j + 1, &A[j * lda]);
+                rng_fill(state, 2, j + 1, &A[j * lda]);
                 A[j * lda + j] = (A[j * lda + j] >= ZERO) ? TWO : -TWO;
             }
         } else {
             for (j = 0; j < n; j++) {
-                rng_fill(2, n - j, &A[j * lda + j]);
+                rng_fill(state, 2, n - j, &A[j * lda + j]);
                 A[j * lda + j] = (A[j * lda + j] >= ZERO) ? TWO : -TWO;
             }
         }
 
         /* Set RHS so largest value is BIGNUM */
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
         iy = cblas_idamax(n, B, 1);
         bnorm = fabs(B[iy]);
         bscal = bignum / fmax(ONE, bnorm);
@@ -280,19 +277,19 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     }
     /* IMAT = 12: Small diagonal, small off-diagonal (CNORM < 1) */
     else if (imat == 12) {
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
         tscal = ONE / fmax(ONE, (double)(n - 1));
 
         if (upper) {
             for (j = 0; j < n; j++) {
-                rng_fill(2, j + 1, &A[j * lda]);
+                rng_fill(state, 2, j + 1, &A[j * lda]);
                 cblas_dscal(j, tscal, &A[j * lda], 1);
                 A[j * lda + j] = (A[j * lda + j] >= ZERO) ? ONE : -ONE;
             }
             A[(n - 1) * lda + (n - 1)] = smlnum * A[(n - 1) * lda + (n - 1)];
         } else {
             for (j = 0; j < n; j++) {
-                rng_fill(2, n - j, &A[j * lda + j]);
+                rng_fill(state, 2, n - j, &A[j * lda + j]);
                 if (j < n - 1) {
                     cblas_dscal(n - j - 1, tscal, &A[j * lda + j + 1], 1);
                 }
@@ -303,17 +300,17 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     }
     /* IMAT = 13: Small diagonal, O(1) off-diagonal (CNORM > 1) */
     else if (imat == 13) {
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
 
         if (upper) {
             for (j = 0; j < n; j++) {
-                rng_fill(2, j + 1, &A[j * lda]);
+                rng_fill(state, 2, j + 1, &A[j * lda]);
                 A[j * lda + j] = (A[j * lda + j] >= ZERO) ? ONE : -ONE;
             }
             A[(n - 1) * lda + (n - 1)] = smlnum * A[(n - 1) * lda + (n - 1)];
         } else {
             for (j = 0; j < n; j++) {
-                rng_fill(2, n - j, &A[j * lda + j]);
+                rng_fill(state, 2, n - j, &A[j * lda + j]);
                 A[j * lda + j] = (A[j * lda + j] >= ZERO) ? ONE : -ONE;
             }
             A[0] = smlnum * A[0];
@@ -370,7 +367,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     else if (imat == 15) {
         texp = ONE / fmax(ONE, (double)(n - 1));
         tscal = pow(smlnum, texp);
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
 
         if (upper) {
             for (j = 0; j < n; j++) {
@@ -402,7 +399,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
 
         if (upper) {
             for (j = 0; j < n; j++) {
-                rng_fill(2, j + 1, &A[j * lda]);
+                rng_fill(state, 2, j + 1, &A[j * lda]);
                 if (j != iy) {
                     A[j * lda + j] = (A[j * lda + j] >= ZERO) ? TWO : -TWO;
                 } else {
@@ -411,7 +408,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
             }
         } else {
             for (j = 0; j < n; j++) {
-                rng_fill(2, n - j, &A[j * lda + j]);
+                rng_fill(state, 2, n - j, &A[j * lda + j]);
                 if (j != iy) {
                     A[j * lda + j] = (A[j * lda + j] >= ZERO) ? TWO : -TWO;
                 } else {
@@ -419,7 +416,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
                 }
             }
         }
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
         cblas_dscal(n, TWO, B, 1);
     }
     /* IMAT = 17: Large off-diagonal causing overflow */
@@ -464,21 +461,21 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             for (j = 0; j < n; j++) {
                 if (j > 0) {
-                    rng_fill(2, j, &A[j * lda]);
+                    rng_fill(state, 2, j, &A[j * lda]);
                 }
                 A[j * lda + j] = ZERO;
             }
         } else {
             for (j = 0; j < n; j++) {
                 if (j < n - 1) {
-                    rng_fill(2, n - j - 1, &A[j * lda + j + 1]);
+                    rng_fill(state, 2, n - j - 1, &A[j * lda + j + 1]);
                 }
                 A[j * lda + j] = ZERO;
             }
         }
 
         /* Set RHS so largest value is BIGNUM */
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
         iy = cblas_idamax(n, B, 1);
         bnorm = fabs(B[iy]);
         bscal = bignum / fmax(ONE, bnorm);
@@ -491,7 +488,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
 
         if (upper) {
             for (j = 0; j < n; j++) {
-                rng_fill(2, j + 1, &A[j * lda]);
+                rng_fill(state, 2, j + 1, &A[j * lda]);
                 for (i = 0; i <= j; i++) {
                     double sign = (A[j * lda + i] >= ZERO) ? ONE : -ONE;
                     A[j * lda + i] = sign * tleft + tscal * A[j * lda + i];
@@ -499,14 +496,14 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
             }
         } else {
             for (j = 0; j < n; j++) {
-                rng_fill(2, n - j, &A[j * lda + j]);
+                rng_fill(state, 2, n - j, &A[j * lda + j]);
                 for (i = j; i < n; i++) {
                     double sign = (A[j * lda + i] >= ZERO) ? ONE : -ONE;
                     A[j * lda + i] = sign * tleft + tscal * A[j * lda + i];
                 }
             }
         }
-        rng_fill(2, n, B);
+        rng_fill(state, 2, n, B);
         cblas_dscal(n, TWO, B, 1);
     }
 

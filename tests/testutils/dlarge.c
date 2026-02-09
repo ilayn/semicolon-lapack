@@ -30,19 +30,19 @@ extern void xerbla(const char* srname, const int info);
  * @param[in] lda
  *     The leading dimension of the array A.  lda >= n.
  *
- * @param[in,out] seed
- *     On entry, the seed of the random number generator.
- *     On exit, the seed is updated.
- *
  * @param[out] work
  *     Double precision array, dimension (2*n).
  *
  * @param[out] info
  *     = 0: successful exit
  *     < 0: if info = -i, the i-th argument had an illegal value
+ *
+ * @param[in,out] state
+ *     On entry, the state of the random number generator.
+ *     On exit, the state is updated.
  */
-void dlarge(const int n, double* A, const int lda, uint64_t* seed,
-            double* work, int* info)
+void dlarge(const int n, double* A, const int lda,
+            double* work, int* info, uint64_t state[static 4])
 {
     const double ZERO = 0.0;
     const double ONE = 1.0;
@@ -63,7 +63,7 @@ void dlarge(const int n, double* A, const int lda, uint64_t* seed,
 
     for (i = n - 1; i >= 0; i--) {
 
-        dlarnv_rng(3, seed, n - i, work);
+        dlarnv_rng(3, n - i, work, state);
         wn = cblas_dnrm2(n - i, work, 1);
         wa = (work[0] >= 0.0) ? wn : -wn;
         if (wn == ZERO) {

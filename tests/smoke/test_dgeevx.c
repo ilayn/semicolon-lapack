@@ -34,6 +34,7 @@ typedef struct {
     double* work;     /* Workspace */
     int* iwork;       /* Integer workspace */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dgeevx_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
@@ -88,7 +89,7 @@ static int setup_N(void** state, int n) {
         return -1;
     }
 
-    rng_seed(fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
     *state = fix;
     return 0;
 }
@@ -120,11 +121,12 @@ static int setup_20(void** state) { return setup_N(state, 20); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, double* A, int lda, double anorm)
+static void generate_random_matrix(int n, double* A, int lda, double anorm,
+                                   uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
-            A[i + j * lda] = anorm * rng_uniform_symmetric();
+            A[i + j * lda] = anorm * rng_uniform_symmetric(state);
         }
     }
 }
@@ -142,7 +144,7 @@ static void test_basic(void** state)
     double result[2];
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Keep a copy for verification */
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
@@ -197,7 +199,7 @@ static void test_with_balancing(void** state)
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
             double scale_factor = pow(10.0, (double)(j - i));
-            fix->A[i + j * lda] = scale_factor * rng_uniform_symmetric();
+            fix->A[i + j * lda] = scale_factor * rng_uniform_symmetric(fix->rng_state);
         }
     }
 
@@ -240,7 +242,7 @@ static void test_condition_eigenvalues(void** state)
     double abnrm;
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute with condition numbers for eigenvalues */
     int lwork = 10 * n * n;
@@ -269,7 +271,7 @@ static void test_condition_eigenvectors(void** state)
     double abnrm;
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute with condition numbers for eigenvectors */
     int lwork = 10 * n * n;
@@ -299,7 +301,7 @@ static void test_condition_both(void** state)
     double result[2];
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute with both condition numbers */

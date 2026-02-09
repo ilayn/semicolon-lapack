@@ -28,6 +28,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -91,13 +92,13 @@ extern void dtpt06(const double rcond, const double rcondc,
 
 /* Matrix generation */
 extern void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-                   uint64_t* seed, const int n, double* AP, double* B, double* work,
-                   int* info);
+                   const int n, double* AP, double* B, double* work,
+                   int* info, uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    double* XACT, const int ldxact, double* B, const int ldb,
-                   uint64_t seed, int* info);
+                   int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -228,7 +229,8 @@ static void test_standard(void** state)
     char diag;
     int info, lda, lap;
     double rcondo, rcondi, rcond, rcondc, anorm, ainvnm;
-    uint64_t seed = 1988 + imat * 1000 + n * 100 + p->iuplo * 10;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10);
     const double ONE = 1.0;
     const double ZERO = 0.0;
 
@@ -240,7 +242,7 @@ static void test_standard(void** state)
     }
 
     /* Generate triangular packed test matrix */
-    dlattp(imat, uplo, "N", &diag, &seed, n, ws->AP, ws->XACT, ws->WORK, &info);
+    dlattp(imat, uplo, "N", &diag, n, ws->AP, ws->XACT, ws->WORK, &info, rng_state);
     assert_info_success(info);
 
     int idiag = (diag == 'N' || diag == 'n') ? 1 : 2;
@@ -287,7 +289,7 @@ static void test_standard(void** state)
 
             /* TEST 2: Solve and compute residual for op(A)*x = b */
             dlarhs("DTP", "N", uplo, trans, n, n, 0, idiag, nrhs,
-                   ws->AP, lap, ws->XACT, lda, ws->B, lda, seed, &info);
+                   ws->AP, lap, ws->XACT, lda, ws->B, lda, &info, rng_state);
 
             dlacpy("F", n, nrhs, ws->B, lda, ws->X, lda);
             dtptrs(uplo, trans, &diag, n, nrhs, ws->AP, ws->X, lda, &info);
@@ -364,7 +366,8 @@ static void test_latps(void** state)
     char diag;
     int info, lda;
     double scale;
-    uint64_t seed = 1988 + imat * 1000 + n * 100 + p->iuplo * 10;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10);
     const double ONE = 1.0;
     const double ZERO = 0.0;
 
@@ -380,7 +383,7 @@ static void test_latps(void** state)
         const char* trans = transs[itran];
 
         /* Generate triangular packed test matrix */
-        dlattp(imat, uplo, trans, &diag, &seed, n, ws->AP, ws->XACT, ws->WORK, &info);
+        dlattp(imat, uplo, trans, &diag, n, ws->AP, ws->XACT, ws->WORK, &info, rng_state);
 
         /* TEST 8: Solve the system op(A)*x = b with NORMIN='N' */
         cblas_dcopy(n, ws->XACT, 1, ws->B, 1);

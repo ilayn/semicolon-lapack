@@ -8,6 +8,7 @@
 #include <math.h>
 #include "test_harness.h"
 #include "verify.h"
+#include "test_rng.h"
 
 /* Test that dlatmt generates correct diagonal matrices */
 static void test_diagonal_matrix(void** state)
@@ -21,13 +22,16 @@ static void test_diagonal_matrix(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 42ULL);
+
     /* Set known diagonal values */
     for (int i = 0; i < n; i++) {
         d[i] = (double)(i + 1);
     }
 
     /* Generate diagonal matrix (kl=ku=0) */
-    dlatmt(n, n, "U", "N", d, 0, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "N", d, 0, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -63,8 +67,11 @@ static void test_nonsym_banded_givens(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 43ULL);
+
     /* Generate matrix with mode=3 (geometric distribution of singular values) */
-    dlatmt(m, n, "U", "N", d, 3, 10.0, 1.0, n, kl, ku, "N", A, lda, work, &info);
+    dlatmt(m, n, "U", "N", d, 3, 10.0, 1.0, n, kl, ku, "N", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -102,8 +109,11 @@ static void test_symmetric_givens(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 44ULL);
+
     /* Generate symmetric matrix with small bandwidth (Givens path) */
-    dlatmt(n, n, "U", "S", d, 3, 10.0, 1.0, n, k, k, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "S", d, 3, 10.0, 1.0, n, k, k, "N", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -148,13 +158,16 @@ static void test_band_storage_B(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 45ULL);
+
     /* Set known eigenvalues */
     for (int i = 0; i < n; i++) {
         d[i] = (double)(n - i);
     }
 
     /* Generate symmetric matrix in band storage */
-    dlatmt(n, n, "U", "S", d, 0, 1.0, 1.0, n, k, k, "B", A, lda, work, &info);
+    dlatmt(n, n, "U", "S", d, 0, 1.0, 1.0, n, k, k, "B", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -188,13 +201,16 @@ static void test_band_storage_Q(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 46ULL);
+
     /* Set known eigenvalues */
     for (int i = 0; i < n; i++) {
         d[i] = (double)(n - i);
     }
 
     /* Generate symmetric matrix in band storage */
-    dlatmt(n, n, "U", "S", d, 0, 1.0, 1.0, n, k, k, "Q", A, lda, work, &info);
+    dlatmt(n, n, "U", "S", d, 0, 1.0, 1.0, n, k, k, "Q", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -228,8 +244,11 @@ static void test_band_storage_Z(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 47ULL);
+
     /* Generate non-symmetric banded matrix in full band storage */
-    dlatmt(n, n, "U", "N", d, 3, 10.0, 1.0, n, kl, ku, "Z", A, lda, work, &info);
+    dlatmt(n, n, "U", "N", d, 3, 10.0, 1.0, n, kl, ku, "Z", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -263,8 +282,11 @@ static void test_householder_path(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 48ULL);
+
     /* Generate matrix via Householder (non-symmetric) */
-    dlatmt(n, n, "U", "N", d, 3, 10.0, 1.0, n, kl, ku, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "N", d, 3, 10.0, 1.0, n, kl, ku, "N", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -294,8 +316,11 @@ static void test_pack_C(void** state)
     double* work = malloc(3 * n * sizeof(double));
     int info;
 
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 49ULL);
+
     /* Generate symmetric matrix in packed storage */
-    dlatmt(n, n, "U", "S", d, 3, 10.0, 1.0, n, n-1, n-1, "C", A, lda, work, &info);
+    dlatmt(n, n, "U", "S", d, 3, 10.0, 1.0, n, n-1, n-1, "C", A, lda, work, &info, rng_state);
 
     assert_info_success(info);
 
@@ -322,29 +347,31 @@ static void test_error_handling(void** state)
     double* d = malloc(n * sizeof(double));
     double* work = malloc(3 * n * sizeof(double));
     int info;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 50ULL);
 
     /* Test invalid DIST */
-    dlatmt(n, n, "X", "N", d, 0, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info);
+    dlatmt(n, n, "X", "N", d, 0, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info, rng_state);
     assert_int_equal(info, -3);
 
     /* Test invalid SYM */
-    dlatmt(n, n, "U", "X", d, 0, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "X", d, 0, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info, rng_state);
     assert_int_equal(info, -5);
 
     /* Test invalid MODE */
-    dlatmt(n, n, "U", "N", d, 10, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "N", d, 10, 1.0, 1.0, n, 0, 0, "N", A, lda, work, &info, rng_state);
     assert_int_equal(info, -7);
 
     /* Test invalid COND */
-    dlatmt(n, n, "U", "N", d, 3, 0.5, 1.0, n, 0, 0, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "N", d, 3, 0.5, 1.0, n, 0, 0, "N", A, lda, work, &info, rng_state);
     assert_int_equal(info, -8);
 
     /* Test negative KL */
-    dlatmt(n, n, "U", "N", d, 0, 1.0, 1.0, n, -1, 0, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "N", d, 0, 1.0, 1.0, n, -1, 0, "N", A, lda, work, &info, rng_state);
     assert_int_equal(info, -10);
 
     /* Test KL != KU for symmetric */
-    dlatmt(n, n, "U", "S", d, 0, 1.0, 1.0, n, 2, 3, "N", A, lda, work, &info);
+    dlatmt(n, n, "U", "S", d, 0, 1.0, 1.0, n, 2, 3, "N", A, lda, work, &info, rng_state);
     assert_int_equal(info, -11);
 
     free(A);

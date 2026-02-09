@@ -24,10 +24,10 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
-#include "testutils/test_rng.h"
 
 /* Test parameters from dtest.in */
 static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
@@ -78,10 +78,11 @@ extern double dget06(const double rcond, const double rcondc);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -187,7 +188,7 @@ static int group_teardown(void** state)
  * For types 7-12: Generate diagonally dominant tridiagonal directly.
  */
 static void generate_pt_matrix(int n, int imat, double* D, double* E,
-                                uint64_t* seed, int* izero, double* Z)
+                                uint64_t state[static 4], int* izero, double* Z)
 {
     char type, dist;
     int kl, ku, mode;
@@ -210,12 +211,11 @@ static void generate_pt_matrix(int n, int imat, double* D, double* E,
         /* Types 1-6: Generate positive definite tridiagonal with controlled condition.
            Generate diagonally dominant matrix directly since this is simpler
            and still tests the PT routines correctly. */
-        rng_seed(*seed);
         for (int i = 0; i < n; i++) {
-            D[i] = rng_uniform_symmetric();
+            D[i] = rng_uniform_symmetric(state);
         }
         for (int i = 0; i < n - 1; i++) {
-            E[i] = rng_uniform_symmetric();
+            E[i] = rng_uniform_symmetric(state);
         }
 
         /* Make the tridiagonal matrix diagonally dominant (positive definite). */
@@ -245,20 +245,17 @@ static void generate_pt_matrix(int n, int imat, double* D, double* E,
             }
         }
 
-        (*seed)++;
-
     } else {
         /* Types 7-12: generate a diagonally dominant matrix with
            unknown condition number in the vectors D and E. */
 
         if (!zerot || *izero == 0) {
             /* Let D and E have values from [-1,1]. */
-            rng_seed(*seed);
             for (int i = 0; i < n; i++) {
-                D[i] = rng_uniform_symmetric();
+                D[i] = rng_uniform_symmetric(state);
             }
             for (int i = 0; i < n - 1; i++) {
-                E[i] = rng_uniform_symmetric();
+                E[i] = rng_uniform_symmetric(state);
             }
 
             /* Make the tridiagonal matrix diagonally dominant. */
@@ -279,8 +276,6 @@ static void generate_pt_matrix(int n, int imat, double* D, double* E,
             if (n > 1) {
                 cblas_dscal(n - 1, anorm / dmax, E, 1);
             }
-
-            (*seed)++;
 
         } else if (*izero > 0) {
             /* Reuse the last matrix by copying back the zeroed out
@@ -351,7 +346,8 @@ static void run_dchkpt_single(int n, int imat)
     char ctx[128];
 
     /* Seed based on (n, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(n * 1000 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -362,7 +358,7 @@ static void run_dchkpt_single(int n, int imat)
     izero = 0;
 
     /* Generate test matrix */
-    generate_pt_matrix(n, imat, ws->D, ws->E, &seed, &izero, ws->Z);
+    generate_pt_matrix(n, imat, ws->D, ws->E, rng_state, &izero, ws->Z);
 
     /* Copy to factored arrays: D(N+1:2N), E(N+1:2N-1) in Fortran terms */
     cblas_dcopy(n, ws->D, 1, ws->DF, 1);
@@ -420,10 +416,9 @@ static void run_dchkpt_single(int n, int imat)
         int nrhs = NSVAL[irhs];
 
         /* Generate NRHS random solution vectors. */
-        rng_seed(seed++);
         for (int j = 0; j < nrhs; j++) {
             for (int i = 0; i < n; i++) {
-                ws->XACT[i + j * lda] = rng_uniform_symmetric();
+                ws->XACT[i + j * lda] = rng_uniform_symmetric(rng_state);
             }
         }
 

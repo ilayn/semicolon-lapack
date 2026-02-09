@@ -25,10 +25,10 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
-#include "testutils/test_rng.h"
 
 /* Test parameters from dtest.in */
 static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
@@ -89,10 +89,11 @@ extern double dget06(const double rcond, const double rcondc);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -212,7 +213,7 @@ static int group_teardown(void** state)
  * For types 7-12: Generate random tridiagonal directly.
  */
 static void generate_gt_matrix(int n, int imat, double* DL, double* D, double* DU,
-                                uint64_t* seed, int* izero)
+                                uint64_t rng_state[static 4], int* izero)
 {
     char type, dist;
     int kl, ku, mode;
@@ -249,8 +250,9 @@ static void generate_gt_matrix(int n, int imat, double* DL, double* D, double* D
         }
 
         /* Generate band matrix with KL=1, KU=1 */
-        dlatms(n, n, &dist, (*seed)++, &type, d_sing, mode, cndnum, anorm,
-               kl, ku, "Z", AB, lda, work, &info);
+        dlatms(n, n, &dist,
+               &type, d_sing, mode, cndnum, anorm,
+               kl, ku, "Z", AB, lda, work, &info, rng_state);
 
         if (info == 0) {
             /* Extract tridiagonal from band storage */
@@ -278,17 +280,16 @@ static void generate_gt_matrix(int n, int imat, double* DL, double* D, double* D
         free(work);
     } else {
         /* Types 7-12: Random generation */
-        rng_seed(*seed);
 
         /* Generate random elements from [-1, 1] */
         for (int i = 0; i < m; i++) {
-            DL[i] = rng_uniform_symmetric();
+            DL[i] = rng_uniform_symmetric(rng_state);
         }
         for (int i = 0; i < n; i++) {
-            D[i] = rng_uniform_symmetric();
+            D[i] = rng_uniform_symmetric(rng_state);
         }
         for (int i = 0; i < m; i++) {
-            DU[i] = rng_uniform_symmetric();
+            DU[i] = rng_uniform_symmetric(rng_state);
         }
 
         /* Scale if needed */
@@ -303,8 +304,6 @@ static void generate_gt_matrix(int n, int imat, double* DL, double* D, double* D
                 DU[i] *= anorm;
             }
         }
-
-        (*seed)++;
 
         /* For types 8-10, zero one column to create singular matrix */
         if (zerot) {
@@ -355,7 +354,8 @@ static void run_dchkgt_single(int n, int imat)
     char ctx[128];  /* Context string for error messages */
 
     /* Seed based on (n, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(n * 1000 + imat);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + imat));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -363,7 +363,7 @@ static void run_dchkgt_single(int n, int imat)
     }
 
     /* Generate test matrix */
-    generate_gt_matrix(n, imat, ws->DL, ws->D, ws->DU, &seed, &izero);
+    generate_gt_matrix(n, imat, ws->DL, ws->D, ws->DU, rng_state, &izero);
 
     /* Copy to factored arrays */
     memcpy(ws->DLF, ws->DL, m * sizeof(double));
@@ -454,10 +454,9 @@ static void run_dchkgt_single(int n, int imat)
         int nrhs = NSVAL[irhs];
 
         /* Generate NRHS random solution vectors */
-        rng_seed(seed++);
         for (int j = 0; j < nrhs; j++) {
             for (int i = 0; i < n; i++) {
-                ws->XACT[i + j * lda] = rng_uniform_symmetric();
+                ws->XACT[i + j * lda] = rng_uniform_symmetric(rng_state);
             }
         }
 

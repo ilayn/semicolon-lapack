@@ -31,6 +31,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -55,15 +56,16 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 extern void dlacpy(const char* uplo, const int m, const int n,
                    const double* const restrict A, const int lda,
                    double* const restrict B, const int ldb);
-extern void dlatms(const int m, const int n, const char* dist, int* iseed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* a, const int lda, double* work, int* info);
+                   double* a, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
-                   const double* X, const int ldx, double* B, const int ldb,
-                   int* iseed, int* info);
+                   double* X, const int ldx, double* B, const int ldb,
+                   int* info, uint64_t state[static 4]);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
@@ -109,7 +111,8 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
     int info;
     int lda = (n > 1) ? n : 1;
     int ldb = lda;
-    int iseed[4] = {1988, 1989, 1990, 1991};
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988);
     char uplo = (iuplo == 0) ? 'U' : 'L';
     char cform = (iform == 0) ? 'N' : 'T';
     char type, dist;
@@ -140,8 +143,8 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
 
     dlatb4("DPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    dlatms(n, n, &dist, iseed, &type, work, mode, cndnum, anorm, kl, ku,
-           &uplo, A, lda, work, &info);
+    dlatms(n, n, &dist, &type, work, mode, cndnum, anorm, kl, ku,
+           &uplo, A, lda, work, &info, rng_state);
     if (info != 0) {
         snprintf(ctx, sizeof(ctx), "n=%d imat=%d uplo=%c form=%c DLATMS info=%d",
                  n, imat, uplo, cform, info);
@@ -196,7 +199,7 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
     }
 
     dlarhs("DPO", "N", &uplo, " ", n, n, kl, ku, nrhs, A, lda,
-           XACT, lda, B, lda, iseed, &info);
+           XACT, lda, B, lda, &info, rng_state);
     dlacpy("F", n, nrhs, B, lda, BSAV, lda);
 
     dlacpy(&uplo, n, n, A, lda, AFAC, lda);

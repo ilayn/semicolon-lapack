@@ -54,6 +54,7 @@ typedef struct {
     double* Z;      /* eigenvector workspace for dsteqr */
     double* work;   /* workspace for dsteqr and dstech */
     uint64_t seed;  /* RNG seed */
+    uint64_t rng_state[4]; /* RNG state */
 } dsterf_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -69,7 +70,7 @@ static uint64_t g_seed = 2024;
  * @param seed  RNG seed (incremented after use)
  */
 static void generate_st_matrix(int n, int imat, double* D, double* E,
-                               uint64_t* seed)
+                               uint64_t state[static 4])
 {
     int i;
 
@@ -106,22 +107,18 @@ static void generate_st_matrix(int n, int imat, double* D, double* E,
         case 5:
             /* Random diagonal, zero off-diagonal */
             /* Eigenvalues = diagonal entries */
-            rng_seed(*seed);
-            for (i = 0; i < n; i++) D[i] = rng_uniform_symmetric() * 10.0;
+            for (i = 0; i < n; i++) D[i] = rng_uniform_symmetric(state) * 10.0;
             for (i = 0; i < n - 1; i++) E[i] = 0.0;
-            (*seed)++;
             break;
 
         case 6:
             /* Random symmetric tridiagonal (well-conditioned) */
-            rng_seed(*seed);
             for (i = 0; i < n; i++) {
-                D[i] = rng_uniform_symmetric() * 5.0 + (double)n;
+                D[i] = rng_uniform_symmetric(state) * 5.0 + (double)n;
             }
             for (i = 0; i < n - 1; i++) {
-                E[i] = rng_uniform_symmetric();
+                E[i] = rng_uniform_symmetric(state);
             }
-            (*seed)++;
             break;
 
         case 7:
@@ -171,6 +168,7 @@ static int dsterf_setup(void** state, int n)
 
     fix->n = n;
     fix->seed = g_seed++;
+    rng_seed(fix->rng_state, fix->seed);
 
     int n_alloc = (n > 0) ? n : 1;
     int e_alloc = (n > 1) ? n - 1 : 1;
@@ -244,7 +242,7 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
     if (n <= 0) return;
 
     /* Generate test matrix */
-    generate_st_matrix(n, imat, fix->D, fix->E, &fix->seed);
+    generate_st_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
     /* Save originals (dsterf destroys D and E) */
     memcpy(fix->D_orig, fix->D, n * sizeof(double));
@@ -312,7 +310,7 @@ static void run_dsterf_exact_test(dsterf_fixture_t* fix, int imat)
     if (n <= 0) return;
 
     /* Generate test matrix */
-    generate_st_matrix(n, imat, fix->D, fix->E, &fix->seed);
+    generate_st_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
     /* Save originals */
     memcpy(fix->D_orig, fix->D, n * sizeof(double));
@@ -382,6 +380,7 @@ static void test_dsterf_all_types(void** state)
 
     for (int imat = 1; imat <= 7; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         run_dsterf_test(fix, imat);
     }
 }
@@ -400,6 +399,7 @@ static void test_dsterf_exact(void** state)
     /* Test types 1 (zero), 2 (identity), 3 (1-2-1 Toeplitz) */
     for (int imat = 1; imat <= 3; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         run_dsterf_exact_test(fix, imat);
     }
 }

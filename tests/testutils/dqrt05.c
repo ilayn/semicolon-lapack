@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "verify.h"
+#include "test_rng.h"
 #include <cblas.h>
 
 extern double dlamch(const char* cmach);
@@ -66,7 +67,8 @@ void dqrt05(const int m, const int n, const int l, const int nb, double* restric
     int info;
     int j;
     double anorm, resid, cnorm, dnorm;
-    uint64_t seed = 1988198919901991ULL;
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL);
 
     double* A = malloc(m2 * n * sizeof(double));
     double* AF = malloc(m2 * n * sizeof(double));
@@ -84,13 +86,13 @@ void dqrt05(const int m, const int n, const int l, const int nb, double* restric
     dlaset("F", nb, n, 0.0, 0.0, T, nb);
 
     for (j = 0; j < n; j++) {
-        dlarnv_rng(2, &seed, j + 1, &A[j * m2]);
+        dlarnv_rng(2, j + 1, &A[j * m2], rng_state);
     }
     if (m > 0) {
         int ml = m - l;
         for (j = 0; j < n; j++) {
             if (ml > 0) {
-                dlarnv_rng(2, &seed, ml, &A[n + j * m2]);
+                dlarnv_rng(2, ml, &A[n + j * m2], rng_state);
             }
         }
     }
@@ -98,7 +100,7 @@ void dqrt05(const int m, const int n, const int l, const int nb, double* restric
         int start_row = n + m - l;
         for (j = 0; j < n; j++) {
             int len = (j + 1 < l) ? (j + 1) : l;
-            dlarnv_rng(2, &seed, len, &A[start_row + j * m2]);
+            dlarnv_rng(2, len, &A[start_row + j * m2], rng_state);
         }
     }
 
@@ -129,7 +131,7 @@ void dqrt05(const int m, const int n, const int l, const int nb, double* restric
     result[1] = resid / (eps * (m2 > 1 ? m2 : 1));
 
     for (j = 0; j < n; j++) {
-        dlarnv_rng(2, &seed, m2, &C[j * m2]);
+        dlarnv_rng(2, m2, &C[j * m2], rng_state);
     }
     cnorm = dlange("1", m2, n, C, m2, rwork);
     dlacpy("F", m2, n, C, m2, CF, m2);
@@ -161,7 +163,7 @@ void dqrt05(const int m, const int n, const int l, const int nb, double* restric
     }
 
     for (j = 0; j < m2; j++) {
-        dlarnv_rng(2, &seed, n, &D[j * n]);
+        dlarnv_rng(2, n, &D[j * n], rng_state);
     }
     dnorm = dlange("1", n, m2, D, n, rwork);
     dlacpy("F", n, m2, D, n, DF, n);

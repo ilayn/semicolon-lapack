@@ -10,6 +10,7 @@
  * for that specific test suite (see dtest.in, dchkge.f, etc.).
  *
  * Usage:
+ * @code
  *   #include "test_harness.h"
  *   #define THRESH 30.0
  *
@@ -18,6 +19,7 @@
  *       dget01(m, n, A, lda, AFAC, lda, ipiv, rwork, &resid);
  *       assert_residual_ok(resid);
  *   }
+ * @endcode
  */
 
 #ifndef TEST_HARNESS_H

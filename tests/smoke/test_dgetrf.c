@@ -23,6 +23,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 #include <string.h>
 #include <cblas.h>
 
@@ -39,22 +41,6 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 /* Routine under test */
 extern void dgetrf(const int m, const int n, double* A,
                    const int lda, int* ipiv, int* info);
-
-/* Verification routine */
-extern void dget01(const int m, const int n, const double* A,
-                   const int lda, double* AFAC,
-                   const int ldafac, const int* ipiv,
-                   double* rwork, double* resid);
-
-/* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   uint64_t seed, const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -144,15 +130,14 @@ static void run_dgetrf_single(int m, int n, int imat)
     int lda = (m > 1) ? m : 1;
     int minmn = (m < n) ? m : n;
 
-    /* Seed based on (m, n, imat) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(m * 10000 + n * 100 + imat);
-
     /* Get matrix parameters for this type */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix */
-    dlatms(m, n, &dist, seed, &type, ws->D, mode, cndnum, anorm,
-           kl, ku, "N", ws->A, lda, ws->WORK, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 10000 + n * 100 + imat));
+    dlatms(m, n, &dist, &type, ws->D, mode, cndnum, anorm,
+           kl, ku, "N", ws->A, lda, ws->WORK, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* For types 5-7, zero one or more columns to create singular matrix */

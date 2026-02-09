@@ -12,7 +12,8 @@
 #include "verify.h"
 
 /* Local helper for generating random vectors */
-static void dlarhs_dlarnv(const int idist, const int n, double* x);
+static void dlarhs_dlarnv(const int idist, const int n, double* x,
+                          uint64_t state[static 4]);
 
 /**
  * DLARHS chooses a set of NRHS random solution vectors and sets
@@ -47,7 +48,7 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
             const char* trans, const int m, const int n, const int kl,
             const int ku, const int nrhs, const double* A, const int lda,
             double* X, const int ldx, double* B, const int ldb,
-            uint64_t seed, int* info)
+            int* info, uint64_t state[static 4])
 {
     const double ONE = 1.0;
     const double ZERO = 0.0;
@@ -121,12 +122,9 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
         mb = m;
     }
 
-    /* Initialize RNG for reproducibility */
-    rng_seed(seed);
-
     if (!(xtype[0] == 'C' || xtype[0] == 'c')) {
         for (j = 0; j < nrhs; j++) {
-            dlarhs_dlarnv(2, n, &X[j * ldx]);
+            dlarhs_dlarnv(2, n, &X[j * ldx], state);
         }
     }
 
@@ -195,6 +193,19 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
             cblas_dtpmv(CblasColMajor, uploC, transA, diagC,
                         n, A, &B[j * ldb], 1);
         }
+    } else if ((c2[0] == 'T' || c2[0] == 't') && (c2[1] == 'B' || c2[1] == 'b')) {
+        /* Triangular banded - use DTBMV (one column at a time)
+         * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
+        for (j = 0; j < nrhs; j++) {
+            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(double));
+        }
+        CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
+        CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
+        CBLAS_DIAG diagC = (ku == 2) ? CblasUnit : CblasNonUnit;
+        for (j = 0; j < nrhs; j++) {
+            cblas_dtbmv(CblasColMajor, uploC, transA, diagC,
+                        n, kl, A, lda, &B[j * ldb], 1);
+        }
     } else if ((c2[0] == 'P' || c2[0] == 'p') && (c2[1] == 'B' || c2[1] == 'b')) {
         /* Symmetric positive definite band - use DSBMV */
         CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
@@ -221,20 +232,21 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
  * @param[in] n      Length of vector.
  * @param[out] x     Output vector.
  */
-static void dlarhs_dlarnv(const int idist, const int n, double* x)
+static void dlarhs_dlarnv(const int idist, const int n, double* x,
+                          uint64_t state[static 4])
 {
     int i;
 
     for (i = 0; i < n; i++) {
         if (idist == 1) {
             /* Uniform (0, 1) */
-            x[i] = rng_uniform();
+            x[i] = rng_uniform(state);
         } else if (idist == 2) {
             /* Uniform (-1, 1) */
-            x[i] = rng_uniform_symmetric();
+            x[i] = rng_uniform_symmetric(state);
         } else {
             /* Normal (0, 1) */
-            x[i] = rng_normal();
+            x[i] = rng_normal(state);
         }
     }
 }

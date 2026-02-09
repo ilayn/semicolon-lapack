@@ -11,6 +11,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -30,16 +32,6 @@ extern double dlange(const char *norm, const int m, const int n,
                      const double * restrict A, const int lda,
                      double *work);
 extern double dlamch(const char *cmach);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
-extern void dlatms(const int m, const int n, const char *dist,
-                   uint64_t seed, const char *sym, double *d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char *pack,
-                   double *A, const int lda, double *work, int *info);
 
 typedef struct {
     int m, n, nrhs;
@@ -144,8 +136,10 @@ static void run_dgelsy_fullrank(lsy_fixture_t *fix, int imat)
 
     /* Generate full-rank matrix A */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
-    dlatms(m, n, &dist, fix->seed, &type, fix->d, mode, cndnum, anorm_param,
-           kl, ku, "N", fix->A, lda, fix->genwork, &info);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, fix->seed);
+    dlatms(m, n, &dist, &type, fix->d, mode, cndnum, anorm_param,
+           kl, ku, "N", fix->A, lda, fix->genwork, &info, rng_state);
     assert_int_equal(info, 0);
 
     /* Generate random X_true (n x nrhs) */
@@ -229,8 +223,10 @@ static void run_dgelsy_rankdef(lsy_fixture_t *fix, int def_rank)
     /* Generate A = U * D * V^T with specified singular values.
      * mode=0 means use d[] directly as singular values. */
     int info_gen;
-    dlatms(m, n, "U", fix->seed, "N", fix->d, 0, 1.0, 1.0,
-           m, n, "N", fix->A, lda, fix->genwork, &info_gen);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, fix->seed);
+    dlatms(m, n, "U", "N", fix->d, 0, 1.0, 1.0,
+           m, n, "N", fix->A, lda, fix->genwork, &info_gen, rng_state);
     assert_int_equal(info_gen, 0);
 
     /* Generate random X_true (n x nrhs) */

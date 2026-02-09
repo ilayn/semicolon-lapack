@@ -14,6 +14,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <cblas.h>
 
 /* Test parameters */
@@ -45,16 +46,17 @@ extern void dlatb4(const char* path, const int imat, const int m, const int n,
                    char* type, int* kl, int* ku, double* anorm, int* mode,
                    double* cndnum, char* dist);
 
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
                    const int ku, const int nrhs, const double* A, const int lda,
                    double* X, const int ldx, double* B, const int ldb,
-                   uint64_t seed, int* info);
+                   int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
@@ -136,7 +138,8 @@ static void run_test_single(int n, int nrhs, int imat, char uplo)
     int izero = 0;
 
     /* Seed based on test parameters (matches LAPACK ISEEDY = {1988, 1989, 1990, 1991}) */
-    uint64_t seed = 1988 + n * 1000 + imat * 100 + nrhs + (uplo == 'U' ? 0 : 50);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988 + n * 1000 + imat * 100 + nrhs + (uplo == 'U' ? 0 : 50));
 
     /* Get matrix parameters for positive definite path */
     dlatb4("DPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -144,8 +147,8 @@ static void run_test_single(int n, int nrhs, int imat, char uplo)
     /* Generate symmetric positive definite test matrix */
     char dist_str[2] = {dist, '\0'};
     char uplo_str[2] = {uplo, '\0'};
-    dlatms(n, n, dist_str, seed, "P", g_ws->RWORK, mode, cndnum, anorm,
-           kl, ku, uplo_str, g_ws->A, lda, g_ws->WORK, &info);
+    dlatms(n, n, dist_str, "P", g_ws->RWORK, mode, cndnum, anorm,
+           kl, ku, uplo_str, g_ws->A, lda, g_ws->WORK, &info, rng_state);
 
     if (info != 0) {
         /* Matrix generation failed - skip this test */
@@ -192,7 +195,7 @@ static void run_test_single(int n, int nrhs, int imat, char uplo)
 
     /* Generate right-hand side */
     dlarhs("DPO", "N", uplo_str, " ", n, n, kl, ku, nrhs,
-           g_ws->A, lda, g_ws->X, lda, g_ws->B, lda, seed, &info);
+           g_ws->A, lda, g_ws->X, lda, g_ws->B, lda, &info, rng_state);
 
     /* Save a copy of A for later */
     dlacpy("A", n, n, g_ws->A, lda, g_ws->AFAC, lda);

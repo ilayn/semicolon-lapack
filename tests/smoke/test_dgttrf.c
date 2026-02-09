@@ -22,30 +22,13 @@
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
 #include "testutils/test_rng.h"
+#include "testutils/verify.h"
 
 /* Routine under test */
 extern void dgttrf(const int n, double * const restrict DL,
                    double * const restrict D, double * const restrict DU,
                    double * const restrict DU2, int * const restrict ipiv,
                    int *info);
-
-/* Verification routine */
-extern void dgtt01(const int n, const double * const restrict DL,
-                   const double * const restrict D, const double * const restrict DU,
-                   const double * const restrict DLF, const double * const restrict DF,
-                   const double * const restrict DUF, const double * const restrict DU2,
-                   const int * const restrict ipiv, double * const restrict work,
-                   const int ldwork, double *resid);
-
-/* Matrix generation */
-extern void dlatb4(const char *path, const int imat, const int m, const int n,
-                   char *type, int *kl, int *ku, double *anorm, int *mode,
-                   double *cndnum, char *dist);
-extern void dlatms(const int m, const int n, const char *dist,
-                   uint64_t seed, const char *sym, double *d,
-                   const int mode, const double cond, const double dmax,
-                   const int kl, const int ku, const char *pack,
-                   double *A, const int lda, double *work, int *info);
 
 /* Utilities */
 extern double dlamch(const char *cmach);
@@ -66,6 +49,7 @@ typedef struct {
     int *ipiv;       /* Pivot indices */
     double *work;    /* Workspace for dgtt01 */
     uint64_t seed;   /* RNG seed */
+    uint64_t rng_state[4]; /* RNG state */
 } dgttrf_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -78,7 +62,7 @@ static uint64_t g_seed = 1988;
  * For types 7-12: Generate random tridiagonal directly.
  */
 static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
-                                uint64_t *seed)
+                                uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
@@ -103,8 +87,8 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
         assert_non_null(work);
 
         /* Generate band matrix with KL=1, KU=1 */
-        dlatms(n, n, &dist, (*seed)++, &type, d_sing, mode, cndnum, anorm,
-               kl, ku, "N", AB, lda, work, &info);
+        dlatms(n, n, &dist, &type, d_sing, mode, cndnum, anorm,
+               kl, ku, "N", AB, lda, work, &info, state);
 
         if (info != 0) {
             /* Fall back to simple generation */
@@ -133,14 +117,12 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
 
     } else {
         /* Types 7-12: Random generation */
-        rng_seed(*seed);
-
         for (i = 0; i < n; i++) {
-            D[i] = rng_uniform_symmetric();
+            D[i] = rng_uniform_symmetric(state);
         }
         for (i = 0; i < n - 1; i++) {
-            DL[i] = rng_uniform_symmetric();
-            DU[i] = rng_uniform_symmetric();
+            DL[i] = rng_uniform_symmetric(state);
+            DU[i] = rng_uniform_symmetric(state);
         }
 
         /* Apply modifications based on type */
@@ -168,8 +150,6 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
                 DU[i] *= anorm;
             }
         }
-
-        (*seed)++;
     }
 }
 
@@ -184,6 +164,7 @@ static int dgttrf_setup(void **state, int n)
 
     fix->n = n;
     fix->seed = g_seed++;
+    rng_seed(fix->rng_state, fix->seed);
 
     int m = (n > 1) ? n - 1 : 0;
     int m_alloc = (m > 0) ? m : 1;        /* At least 1 for malloc */
@@ -256,7 +237,7 @@ static double run_dgttrf_test(dgttrf_fixture_t *fix, int imat)
     int m = (n > 1) ? n - 1 : 0;
 
     /* Generate test matrix */
-    generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, &fix->seed);
+    generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Copy to factored arrays */
     memcpy(fix->DLF, fix->DL, m * sizeof(double));
@@ -291,6 +272,7 @@ static void test_dgttrf_structured(void **state)
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         double resid = run_dgttrf_test(fix, imat);
         assert_residual_ok(resid);
     }
@@ -310,6 +292,7 @@ static void test_dgttrf_random(void **state)
 
     for (int imat = 7; imat <= 12; imat++) {
         fix->seed = g_seed++;
+        rng_seed(fix->rng_state, fix->seed);
         double resid = run_dgttrf_test(fix, imat);
         assert_residual_ok(resid);
     }

@@ -20,6 +20,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
@@ -41,31 +42,6 @@ extern void dstech(const int n, const double* A, const double* B,
 /* Utilities */
 extern double dlamch(const char* cmach);
 
-/* ---- Simple xoshiro256+ RNG ---- */
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
@@ -81,6 +57,7 @@ typedef struct {
     double* work_dstt21;/* workspace for dstt21: n*(n+1) */
     double* result;     /* dstt21 results (2 elements) */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dsteqr_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -164,7 +141,7 @@ static int setup_50(void** state) { return dsteqr_setup(state, 50); }
  * @param seed  RNG seed (used for types 5-6)
  */
 static void generate_steqr_matrix(int n, int imat, double* D, double* E,
-                                   uint64_t seed)
+                                   uint64_t state[static 4])
 {
     int i;
 
@@ -195,16 +172,14 @@ static void generate_steqr_matrix(int n, int imat, double* D, double* E,
 
     case 5:
         /* Random diagonal, zero off-diagonal */
-        rng_seed(seed);
-        for (i = 0; i < n; i++) D[i] = 2.0 * rng_uniform() - 1.0;
+        for (i = 0; i < n; i++) D[i] = rng_uniform_symmetric(state);
         for (i = 0; i < n - 1; i++) E[i] = 0.0;
         break;
 
     case 6:
         /* Random symmetric tridiagonal */
-        rng_seed(seed);
-        for (i = 0; i < n; i++) D[i] = 2.0 * rng_uniform() - 1.0;
-        for (i = 0; i < n - 1; i++) E[i] = 2.0 * rng_uniform() - 1.0;
+        for (i = 0; i < n; i++) D[i] = rng_uniform_symmetric(state);
+        for (i = 0; i < n - 1; i++) E[i] = rng_uniform_symmetric(state);
         break;
 
     case 7:
@@ -237,7 +212,8 @@ static void test_compz_I(void** state)
         fix->seed = g_seed++;
 
         /* Generate test matrix */
-        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original for verification */
         memcpy(fix->AD, fix->D, n * sizeof(double));
@@ -283,7 +259,8 @@ static void test_compz_N(void** state)
         fix->seed = g_seed++;
 
         /* Generate test matrix */
-        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Copy for COMPZ='I' run */
         memcpy(D_I, fix->D, n * sizeof(double));
@@ -296,7 +273,8 @@ static void test_compz_N(void** state)
         assert_info_success(info);
 
         /* Regenerate for COMPZ='N' run (E is destroyed by dsteqr) */
-        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Compute eigenvalues only */
         dsteqr("N", n, fix->D, fix->E, fix->Z, 1, fix->work, &info);
@@ -346,7 +324,8 @@ static void test_sturm(void** state)
         fix->seed = g_seed++;
 
         /* Generate test matrix */
-        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->seed);
+        rng_seed(fix->rng_state, fix->seed);
+        generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original diagonal and off-diagonal */
         memcpy(fix->AD, fix->D, n * sizeof(double));

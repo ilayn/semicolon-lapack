@@ -20,6 +20,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <cblas.h>
 #include <math.h>
 #include <string.h>
@@ -44,31 +45,6 @@ extern double dlange(const char* norm, const int m, const int n,
 extern void dlacpy(const char* uplo, const int m, const int n,
                    const double* A, const int lda, double* B, const int ldb);
 
-/* ---- Simple xoshiro256+ RNG ---- */
-static uint64_t rng_state[4];
-
-static void rng_seed(uint64_t s)
-{
-    for (int i = 0; i < 4; i++) {
-        s = s * 6364136223846793005ULL + 1442695040888963407ULL;
-        rng_state[i] = s;
-    }
-}
-
-static double rng_uniform(void)
-{
-    uint64_t s = rng_state[1] * 5;
-    uint64_t r = ((s << 7) | (s >> 57)) * 9;
-    uint64_t t = rng_state[1] << 17;
-    rng_state[2] ^= rng_state[0];
-    rng_state[3] ^= rng_state[1];
-    rng_state[1] ^= rng_state[2];
-    rng_state[0] ^= rng_state[3];
-    rng_state[2] ^= t;
-    rng_state[3] = (rng_state[3] << 45) | (rng_state[3] >> 19);
-    return (double)(r >> 11) * 0x1.0p-53;
-}
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
@@ -82,7 +58,7 @@ typedef struct {
     double* work;       /* workspace */
     int lwork;          /* workspace size */
     double* temp;       /* temporary workspace for verification */
-    uint64_t seed;
+    uint64_t rng_state[4];
 } dgesvd_fixture_t;
 
 /* Global seed for test sequence reproducibility */
@@ -98,7 +74,7 @@ static int dgesvd_setup(void** state, int m, int n)
 
     fix->m = m;
     fix->n = n;
-    fix->seed = g_seed++;
+    rng_seed(fix->rng_state, g_seed++);
 
     int minmn = (m < n) ? m : n;
     int maxmn = (m > n) ? m : n;
@@ -164,11 +140,11 @@ static int setup_30x50(void** state) { return dgesvd_setup(state, 30, 50); }
 /**
  * Helper: generate random m x n matrix
  */
-static void generate_random_matrix(double* A, int m, int n)
+static void generate_random_matrix(double* A, int m, int n, uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            A[i + j * m] = 2.0 * rng_uniform() - 1.0;
+            A[i + j * m] = rng_uniform_symmetric(state);
         }
     }
 }
@@ -176,7 +152,8 @@ static void generate_random_matrix(double* A, int m, int n)
 /**
  * Helper: generate random matrix with specified singular values
  */
-static void generate_matrix_with_sv(double* A, int m, int n, const double* sv)
+static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
+                                    uint64_t state[static 4])
 {
     int minmn = (m < n) ? m : n;
 
@@ -200,7 +177,7 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv)
         /* Random Householder vector */
         double nrm = 0.0;
         for (int i = 0; i < m; i++) {
-            v[i] = 2.0 * rng_uniform() - 1.0;
+            v[i] = rng_uniform_symmetric(state);
             nrm += v[i] * v[i];
         }
         nrm = sqrt(nrm);
@@ -225,7 +202,7 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv)
         /* Random Householder vector */
         double nrm = 0.0;
         for (int j = 0; j < n; j++) {
-            v[j] = 2.0 * rng_uniform() - 1.0;
+            v[j] = rng_uniform_symmetric(state);
             nrm += v[j] * v[j];
         }
         nrm = sqrt(nrm);
@@ -388,8 +365,6 @@ static void test_zero_matrix(void** state)
     int minmn = (m < n) ? m : n;
     int info;
 
-    rng_seed(fix->seed);
-
     /* Zero matrix */
     memset(fix->A, 0, m * n * sizeof(double));
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
@@ -413,8 +388,6 @@ static void test_identity_like(void** state)
     int m = fix->m, n = fix->n;
     int minmn = (m < n) ? m : n;
     int info;
-
-    rng_seed(fix->seed);
 
     /* Identity-like: diag(1,1,...,1) */
     memset(fix->A, 0, m * n * sizeof(double));
@@ -448,10 +421,8 @@ static void test_random_wellcond(void** state)
     int minmn = (m < n) ? m : n;
     int info;
 
-    rng_seed(fix->seed);
-
     /* Generate random matrix */
-    generate_random_matrix(fix->A, m, n);
+    generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     dgesvd("A", "A", m, n, fix->Acopy, m, fix->S,
@@ -486,8 +457,6 @@ static void test_known_sv(void** state)
     int info;
     double eps = dlamch("E");
 
-    rng_seed(fix->seed);
-
     /* Specify known singular values */
     double* sv_known = malloc(minmn * sizeof(double));
     assert_non_null(sv_known);
@@ -496,7 +465,7 @@ static void test_known_sv(void** state)
     }
 
     /* Generate matrix with these singular values */
-    generate_matrix_with_sv(fix->A, m, n, sv_known);
+    generate_matrix_with_sv(fix->A, m, n, sv_known, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     dgesvd("A", "A", m, n, fix->Acopy, m, fix->S,
@@ -529,8 +498,6 @@ static void test_rank_deficient(void** state)
     if (rank < 1) rank = 1;
     int info;
 
-    rng_seed(fix->seed);
-
     /* Specify singular values with zeros */
     double* sv_known = malloc(minmn * sizeof(double));
     for (int i = 0; i < rank; i++) {
@@ -540,7 +507,7 @@ static void test_rank_deficient(void** state)
         sv_known[i] = 0.0;
     }
 
-    generate_matrix_with_sv(fix->A, m, n, sv_known);
+    generate_matrix_with_sv(fix->A, m, n, sv_known, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     dgesvd("A", "A", m, n, fix->Acopy, m, fix->S,
@@ -574,9 +541,7 @@ static void test_economy_svd(void** state)
     int minmn = (m < n) ? m : n;
     int info;
 
-    rng_seed(fix->seed);
-
-    generate_random_matrix(fix->A, m, n);
+    generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     /* Economy SVD: U is m x minmn, VT is minmn x n */
@@ -603,9 +568,7 @@ static void test_sv_only(void** state)
     int minmn = (m < n) ? m : n;
     int info;
 
-    rng_seed(fix->seed);
-
-    generate_random_matrix(fix->A, m, n);
+    generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     /* Singular values only */
@@ -651,9 +614,7 @@ static void test_overwrite_U(void** state)
         return;
     }
 
-    rng_seed(fix->seed);
-
-    generate_random_matrix(fix->A, m, n);
+    generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     /* jobu='O': first minmn columns of U overwrite A */
@@ -686,9 +647,7 @@ static void test_overwrite_VT(void** state)
         return;
     }
 
-    rng_seed(fix->seed);
-
-    generate_random_matrix(fix->A, m, n);
+    generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     /* jobvt='O': first minmn rows of VT overwrite A */

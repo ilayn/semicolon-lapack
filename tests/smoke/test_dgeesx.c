@@ -31,6 +31,7 @@ typedef struct {
     int* iwork;       /* Integer workspace */
     int* bwork;       /* Boolean work for SELECT */
     uint64_t seed;
+    uint64_t rng_state[4];
 } dgeesx_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
@@ -100,7 +101,7 @@ static int setup_N(void** state, int n) {
         return -1;
     }
 
-    rng_seed(fix->seed);
+    rng_seed(fix->rng_state, fix->seed);
     *state = fix;
     return 0;
 }
@@ -129,11 +130,12 @@ static int setup_20(void** state) { return setup_N(state, 20); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, double* A, int lda, double anorm)
+static void generate_random_matrix(int n, double* A, int lda, double anorm,
+                                   uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
-            A[i + j * lda] = anorm * rng_uniform_symmetric();
+            A[i + j * lda] = anorm * rng_uniform_symmetric(state);
         }
     }
 }
@@ -151,7 +153,7 @@ static void test_basic(void** state)
     double result[2];
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Keep a copy for verification */
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
@@ -195,7 +197,7 @@ static void test_with_ordering(void** state)
     double result[2];
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Keep a copy */
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
@@ -248,7 +250,7 @@ static void test_condition_eigenvalue(void** state)
     double rconde, rcondv;
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute with condition number for eigenvalue cluster */
     int lwork = 10 * n * n;
@@ -289,7 +291,7 @@ static void test_condition_subspace(void** state)
     double rconde, rcondv;
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute with condition number for invariant subspace */
     int lwork = 10 * n * n;
@@ -331,7 +333,7 @@ static void test_condition_both(void** state)
     double result[2];
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute with both condition numbers */
@@ -403,7 +405,7 @@ static void test_no_vectors(void** state)
     double rconde, rcondv;
 
     /* Generate random matrix */
-    generate_random_matrix(n, fix->A, lda, 1.0);
+    generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute without Schur vectors */
     int lwork = 10 * n * n;
@@ -437,7 +439,7 @@ static void test_symmetric_matrix(void** state)
     /* Generate symmetric matrix */
     for (int j = 0; j < n; j++) {
         for (int i = j; i < n; i++) {
-            double val = rng_uniform_symmetric();
+            double val = rng_uniform_symmetric(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
         }

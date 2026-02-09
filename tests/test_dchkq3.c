@@ -19,6 +19,7 @@
  */
 
 #include "test_harness.h"
+#include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <cblas.h>
@@ -53,10 +54,11 @@ extern double dqpt01(const int m, const int n, const int k,
                      double* work, const int lwork);
 
 /* Matrix generation */
-extern void dlatms(const int m, const int n, const char* dist, uint64_t seed,
+extern void dlatms(const int m, const int n, const char* dist,
                    const char* sym, double* d, const int mode, const double cond,
                    const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info);
+                   double* A, const int lda, double* work, int* info,
+                   uint64_t state[static 4]);
 extern void dlaord(const char* job, const int n, double* X, const int incx);
 
 /* Utilities */
@@ -170,7 +172,8 @@ static void run_dchkq3_single(int m, int n, int imode, int inb)
     xlaenv(3, nx);
 
     /* Seed based on (m, n, imode) for reproducibility */
-    uint64_t seed = 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imode);
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imode));
 
     /* Initialize results */
     for (int k = 0; k < NTESTS; k++) {
@@ -197,8 +200,9 @@ static void run_dchkq3_single(int m, int n, int imode, int inb)
         }
     } else {
         /* Generate matrix with specified singular value distribution */
-        dlatms(m, n, "U", seed++, "N", ws->S, mode, ONE / eps, ONE,
-               m, n, "N", ws->COPYA, lda, ws->WORK, &info);
+        dlatms(m, n, "U",
+               "N", ws->S, mode, ONE / eps, ONE,
+               m, n, "N", ws->COPYA, lda, ws->WORK, &info, rng_state);
 
         /* For imode 4-6, set column fixing indicators */
         if (imode >= 4) {
