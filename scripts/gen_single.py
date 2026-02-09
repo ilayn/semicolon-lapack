@@ -37,6 +37,13 @@ EXCLUDE_FILES = {
     "dlat2s.c",   # double -> single symmetric conversion
 }
 
+# Precision-independent files that live in src/auxiliary/, not src/d/ or src/s/
+AUXILIARY_FILES = {
+    "ieeeck.c",
+    "ilaenv2stage.c",
+    "iparam2stage.c",
+}
+
 # Hand-written files in src/s/ that are NOT generated from src/d/.
 # The script preserves these across full runs.
 PRESERVE_FILES = [
@@ -402,6 +409,10 @@ def main():
     for fname in src_files:
         if fname in EXCLUDE_FILES:
             print(f"  SKIP (mixed-precision): {fname}", file=sys.stderr)
+            skipped += 1
+            continue
+        if fname in AUXILIARY_FILES:
+            print(f"  SKIP (precision-independent): {fname}", file=sys.stderr)
             skipped += 1
             continue
 

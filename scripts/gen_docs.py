@@ -24,6 +24,7 @@ SRC_D = os.path.join(PROJECT_ROOT, "src", "d")
 SRC_S = os.path.join(PROJECT_ROOT, "src", "s")
 SRC_C = os.path.join(PROJECT_ROOT, "src", "c")
 SRC_Z = os.path.join(PROJECT_ROOT, "src", "z")
+SRC_AUX = os.path.join(PROJECT_ROOT, "src", "auxiliary")
 
 # ---------------------------------------------------------------------------
 # Precision configuration (tab order: single first)
@@ -67,7 +68,7 @@ SPECIAL_SOURCES = {
 
 # Pages with no precision prefix (precision-independent utilities).
 # Shown as bare doxygenfile directives, no tabs.
-PRECISION_INDEPENDENT = {"ieeeck", "ilaenv2stage", "iparmq"}
+PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "iparam2stage", "iparmq"}
 
 # ---------------------------------------------------------------------------
 # Hierarchy definition
@@ -373,7 +374,7 @@ HIERARCHY = {
         ]),
     }),
     "auxiliary": ("Auxiliary Parameters", [
-        "ieeeck", "ilaenv2stage", "labad",
+        "xerbla", "ieeeck", "ilaenv2stage", "iparam2stage", "labad",
     ]),
 }
 
@@ -391,11 +392,11 @@ def get_sources(page_name, prefix, src_dir):
     if page_name in PRECISION_INDEPENDENT:
         # Precision-independent: only emit once (under 'd' precision)
         if prefix == "d":
-            path = os.path.join(SRC_D, f"{page_name}.c")
+            path = os.path.join(SRC_AUX, f"{page_name}.c")
             if os.path.exists(path):
                 return [page_name]
-            # Also check src/s (some precision-independent files live there)
-            path = os.path.join(SRC_S, f"{page_name}.c")
+            # Fallback to src/d for files not yet moved
+            path = os.path.join(SRC_D, f"{page_name}.c")
             if os.path.exists(path):
                 return [page_name]
         return []
