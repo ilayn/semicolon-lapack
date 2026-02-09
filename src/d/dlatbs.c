@@ -177,12 +177,11 @@ void dlatbs(
                     grow = ZERO;
                 }
             }
-            if (grow > smlnum) {
-                grow = xbnd;
-            }
+            grow = xbnd;
         } else {
             /* A is unit triangular */
-            grow = (ONE < ONE / (xbnd > smlnum ? xbnd : smlnum)) ? ONE / (xbnd > smlnum ? xbnd : smlnum) : ONE;
+            double denom = (xbnd > smlnum) ? xbnd : smlnum;
+            grow = (ONE < ONE / denom) ? ONE : ONE / denom;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
                 grow = grow * (ONE / (ONE + cnorm[j]));
@@ -216,11 +215,10 @@ void dlatbs(
                     xbnd = xbnd * (tjj / xj);
                 }
             }
-            if (grow > smlnum) {
-                grow = (grow < xbnd) ? grow : xbnd;
-            }
+            grow = (grow < xbnd) ? grow : xbnd;
         } else {
-            grow = (ONE < ONE / (xbnd > smlnum ? xbnd : smlnum)) ? ONE / (xbnd > smlnum ? xbnd : smlnum) : ONE;
+            double denom = (xbnd > smlnum) ? xbnd : smlnum;
+            grow = (ONE < ONE / denom) ? ONE : ONE / denom;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
                 xj = ONE + cnorm[j];

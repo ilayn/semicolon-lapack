@@ -518,7 +518,7 @@ L110:
             {
                 double tmp1 = fabs(wr);
                 double tmp2 = fabs(wi);
-                double tmp3 = (ONE > tmp1) ? tmp1 : ONE;
+                double tmp3 = (ONE > tmp1) ? ONE : tmp1;
                 tmp3 = (tmp3 > tmp2) ? tmp3 : tmp2;
                 if (safmin * tmp3 > temp) temp = safmin * tmp3;
             }

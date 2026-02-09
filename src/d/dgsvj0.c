@@ -135,7 +135,7 @@ void dgsvj0(const char* jobv, const int m, const int n,
                 igl = ibr * kbl + ir1 * kbl;
 
                 /* p-loop within diagonal block */
-                for (p = igl; p < ((igl + kbl - 1 < n - 1) ? (igl + kbl - 1) : (n - 1)); p++) {
+                for (p = igl; p < ((igl + kbl < n - 1) ? (igl + kbl) : (n - 1)); p++) {
                     /* de Rijk's pivoting */
                     q = cblas_idamax(n - p, &SVA[p], 1) + p;
                     if (p != q) {
@@ -348,7 +348,7 @@ L2103:
                     } else {
                         SVA[p] = aapp;
                         if (ir1 == 0 && aapp == ZERO) {
-                            notrot += ((igl + kbl - 1 < n) ? (igl + kbl - 1) : n) - p;
+                            notrot += ((igl + kbl < n) ? (igl + kbl) : n) - 1 - p;
                         }
                     }
                 } /* end p-loop */

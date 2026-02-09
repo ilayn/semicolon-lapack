@@ -114,7 +114,7 @@ void dsytrs_aa(
         if (n > 1) {
 
             for (k = 0; k < n; k++) {
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
                 }
@@ -141,7 +141,7 @@ void dsytrs_aa(
                         n - 1, nrhs, 1.0, &A[0 + 1 * lda], lda, &B[1 + 0 * ldb], ldb);
 
             for (k = n - 1; k >= 0; k--) {
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
                 }
@@ -153,7 +153,7 @@ void dsytrs_aa(
         if (n > 1) {
 
             for (k = 0; k < n; k++) {
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
                 }
@@ -180,7 +180,7 @@ void dsytrs_aa(
                         n - 1, nrhs, 1.0, &A[1 + 0 * lda], lda, &B[1 + 0 * ldb], ldb);
 
             for (k = n - 1; k >= 0; k--) {
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
                 }

@@ -74,13 +74,8 @@ double dlantb(
         if (udiag) {
             value = ONE;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
-                /* Upper triangular, unit diagonal */
                 for (j = 0; j < n; j++) {
-                    /*
-                     * 0-based: i from max(k+1-j, 0) to k-1 (excluding diagonal at k)
-                     * LAPACK 1-based: I = MAX(K+2-J, 1) to K
-                     */
-                    int i_start = (k + 1 - j > 0) ? k + 1 - j : 0;
+                    int i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i < k; i++) {
                         sum = fabs(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -89,12 +84,7 @@ double dlantb(
                     }
                 }
             } else {
-                /* Lower triangular, unit diagonal */
                 for (j = 0; j < n; j++) {
-                    /*
-                     * 0-based: i from 1 to min(n-j, k+1)-1 (excluding diagonal at 0)
-                     * LAPACK 1-based: I = 2 to MIN(N+1-J, K+1)
-                     */
                     int i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 1; i < i_end; i++) {
                         sum = fabs(AB[i + j * ldab]);
@@ -107,13 +97,8 @@ double dlantb(
         } else {
             value = ZERO;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
-                /* Upper triangular, non-unit diagonal */
                 for (j = 0; j < n; j++) {
-                    /*
-                     * 0-based: i from max(k+1-j, 0) to k (including diagonal)
-                     * LAPACK 1-based: I = MAX(K+2-J, 1) to K+1
-                     */
-                    int i_start = (k + 1 - j > 0) ? k + 1 - j : 0;
+                    int i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i <= k; i++) {
                         sum = fabs(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -122,12 +107,7 @@ double dlantb(
                     }
                 }
             } else {
-                /* Lower triangular, non-unit diagonal */
                 for (j = 0; j < n; j++) {
-                    /*
-                     * 0-based: i from 0 to min(n-j, k+1)-1 (including diagonal)
-                     * LAPACK 1-based: I = 1 to MIN(N+1-J, K+1)
-                     */
                     int i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 0; i < i_end; i++) {
                         sum = fabs(AB[i + j * ldab]);
@@ -139,19 +119,19 @@ double dlantb(
             }
         }
     } else if (norm[0] == 'O' || norm[0] == 'o' || norm[0] == '1') {
-        /* Find norm1(A) - maximum column sum */
+        /* Find norm1(A) */
         value = ZERO;
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    int i_start = (k + 1 - j > 0) ? k + 1 - j : 0;
+                    int i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i < k; i++) {
                         sum += fabs(AB[i + j * ldab]);
                     }
                 } else {
                     sum = ZERO;
-                    int i_start = (k + 1 - j > 0) ? k + 1 - j : 0;
+                    int i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i <= k; i++) {
                         sum += fabs(AB[i + j * ldab]);
                     }
@@ -181,7 +161,7 @@ double dlantb(
             }
         }
     } else if (norm[0] == 'I' || norm[0] == 'i') {
-        /* Find normI(A) - maximum row sum */
+        /* Find normI(A) */
         value = ZERO;
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
@@ -190,10 +170,6 @@ double dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = k - j;
-                    /*
-                     * 0-based: rows from max(0, j-k) to j-1
-                     * LAPACK 1-based: I = MAX(1, J-K) to J-1
-                     */
                     int row_start = (j - k > 0) ? j - k : 0;
                     for (i = row_start; i < j; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
@@ -205,10 +181,6 @@ double dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = k - j;
-                    /*
-                     * 0-based: rows from max(0, j-k) to j
-                     * LAPACK 1-based: I = MAX(1, J-K) to J
-                     */
                     int row_start = (j - k > 0) ? j - k : 0;
                     for (i = row_start; i <= j; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
@@ -222,10 +194,6 @@ double dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = -j;
-                    /*
-                     * 0-based: rows from j+1 to min(n-1, j+k)
-                     * LAPACK 1-based: I = J+1 to MIN(N, J+K)
-                     */
                     int row_end = (j + k < n - 1) ? j + k : n - 1;
                     for (i = j + 1; i <= row_end; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
@@ -237,10 +205,6 @@ double dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = -j;
-                    /*
-                     * 0-based: rows from j to min(n-1, j+k)
-                     * LAPACK 1-based: I = J to MIN(N, J+K)
-                     */
                     int row_end = (j + k < n - 1) ? j + k : n - 1;
                     for (i = j; i <= row_end; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
@@ -255,20 +219,15 @@ double dlantb(
             }
         }
     } else if (norm[0] == 'F' || norm[0] == 'f' || norm[0] == 'E' || norm[0] == 'e') {
-        /* Find normF(A) - Frobenius norm using dlassq */
+        /* Find normF(A) */
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 scale = ONE;
                 sum = (double)n;
                 if (k > 0) {
                     for (j = 1; j < n; j++) {
-                        /*
-                         * Number of off-diagonal elements in column j: min(j, k)
-                         * Starting row in band storage: max(k+1-j, 0)
-                         * LAPACK: CALL DLASSQ(MIN(J-1, K), AB(MAX(K+2-J, 1), J), ...)
-                         */
                         int count = (j < k) ? j : k;
-                        int start = (k + 1 - j > 0) ? k + 1 - j : 0;
+                        int start = (k - j > 0) ? k - j : 0;
                         dlassq(count, &AB[start + j * ldab], 1, &scale, &sum);
                     }
                 }
@@ -276,13 +235,8 @@ double dlantb(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    /*
-                     * Number of elements including diagonal: min(j+1, k+1)
-                     * Starting row in band storage: max(k+1-j, 0)
-                     * LAPACK: CALL DLASSQ(MIN(J, K+1), AB(MAX(K+2-J, 1), J), ...)
-                     */
                     int count = (j + 1 < k + 1) ? j + 1 : k + 1;
-                    int start = (k + 1 - j > 0) ? k + 1 - j : 0;
+                    int start = (k - j > 0) ? k - j : 0;
                     dlassq(count, &AB[start + j * ldab], 1, &scale, &sum);
                 }
             }
@@ -292,11 +246,6 @@ double dlantb(
                 sum = (double)n;
                 if (k > 0) {
                     for (j = 0; j < n - 1; j++) {
-                        /*
-                         * Number of off-diagonal elements: min(n-1-j, k)
-                         * Starting at row 1 in band storage (row 0 is diagonal)
-                         * LAPACK: CALL DLASSQ(MIN(N-J, K), AB(2, J), ...)
-                         */
                         int count = (n - 1 - j < k) ? n - 1 - j : k;
                         dlassq(count, &AB[1 + j * ldab], 1, &scale, &sum);
                     }
@@ -305,11 +254,6 @@ double dlantb(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    /*
-                     * Number of elements including diagonal: min(n-j, k+1)
-                     * Starting at row 0 in band storage
-                     * LAPACK: CALL DLASSQ(MIN(N-J+1, K+1), AB(1, J), ...)
-                     */
                     int count = (n - j < k + 1) ? n - j : k + 1;
                     dlassq(count, &AB[j * ldab], 1, &scale, &sum);
                 }

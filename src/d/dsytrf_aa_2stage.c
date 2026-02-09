@@ -134,7 +134,7 @@ void dsytrf_aa_2stage(
     kb = (nb < n) ? nb : n;
 
     for (j = 0; j < kb; j++) {
-        ipiv[j] = j + 1;
+        ipiv[j] = j;
     }
 
     TB[0] = (double)nb;
@@ -198,7 +198,7 @@ void dsytrf_aa_2stage(
             for (i = 0; i < kb; i++) {
                 for (k = i + 1; k < kb; k++) {
                     TB[td + (k - i) + (j * nb + i) * ldtb] =
-                        TB[td - (k - (i + 1)) + (j * nb + k) * ldtb];
+                        TB[td - (k - i) + (j * nb + k) * ldtb];
                 }
             }
 
@@ -268,7 +268,7 @@ void dsytrf_aa_2stage(
                     ipiv[(j + 1) * nb + k] = ipiv[(j + 1) * nb + k] + (j + 1) * nb;
 
                     i1 = (j + 1) * nb + k;
-                    i2 = ipiv[(j + 1) * nb + k] - 1;
+                    i2 = ipiv[(j + 1) * nb + k];
                     if (i1 != i2) {
                         cblas_dswap(k, &A[(j + 1) * nb + i1 * lda], 1,
                                     &A[(j + 1) * nb + i2 * lda], 1);
@@ -350,7 +350,7 @@ void dsytrf_aa_2stage(
 
             for (i = 0; i < kb; i++) {
                 for (k = i + 1; k < kb; k++) {
-                    TB[td - (k - (i + 1)) + (j * nb + k) * ldtb] =
+                    TB[td - (k - i) + (j * nb + k) * ldtb] =
                         TB[td + (k - i) + (j * nb + i) * ldtb];
                 }
             }
@@ -409,7 +409,7 @@ void dsytrf_aa_2stage(
                     ipiv[(j + 1) * nb + k] = ipiv[(j + 1) * nb + k] + (j + 1) * nb;
 
                     i1 = (j + 1) * nb + k;
-                    i2 = ipiv[(j + 1) * nb + k] - 1;
+                    i2 = ipiv[(j + 1) * nb + k];
                     if (i1 != i2) {
                         cblas_dswap(k, &A[i1 + (j + 1) * nb * lda], lda,
                                     &A[i2 + (j + 1) * nb * lda], lda);

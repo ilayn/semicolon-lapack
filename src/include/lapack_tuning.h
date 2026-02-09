@@ -12,13 +12,17 @@
  *     of block sizes (equivalent to LAPACK's XLAENV/ILAENV test mechanism)
  *
  * Production usage (in src/lapack_tuning.c):
+ * @code
  *     #define LAPACK_TUNING_IMPLEMENTATION
  *     #include "lapack_tuning.h"
+ * @endcode
  *
  * Test usage (in tests/testutils/lapack_tuning_test.c):
+ * @code
  *     #define LAPACK_TUNING_IMPLEMENTATION
  *     #define LAPACK_TUNING_TEST
  *     #include "lapack_tuning.h"
+ * @endcode
  *
  * The test version provides xlaenv() and allows overriding NB values,
  * mirroring LAPACK's TESTING/LIN/ilaenv.f vs SRC/ilaenv.f approach.

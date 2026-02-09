@@ -138,14 +138,14 @@ void dlasyf_aa(
                     A[(j1 + i2 - 1) + i2 * lda] = piv;
 
                     cblas_dswap(i1, &H[i1 + 0 * ldh], ldh, &H[i2 + 0 * ldh], ldh);
-                    ipiv[i1] = i2 + 1;
+                    ipiv[i1] = i2;
 
                     if (i1 > k1) {
                         cblas_dswap(i1 - k1 + 1, &A[0 + i1 * lda], 1,
                                     &A[0 + i2 * lda], 1);
                     }
                 } else {
-                    ipiv[j + 1] = j + 1 + 1;
+                    ipiv[j + 1] = j + 1;
                 }
 
                 A[k + (j + 1) * lda] = work[1];
@@ -229,14 +229,14 @@ void dlasyf_aa(
                     A[i2 + (j1 + i2 - 1) * lda] = piv;
 
                     cblas_dswap(i1, &H[i1 + 0 * ldh], ldh, &H[i2 + 0 * ldh], ldh);
-                    ipiv[i1] = i2 + 1;
+                    ipiv[i1] = i2;
 
                     if (i1 > k1) {
                         cblas_dswap(i1 - k1 + 1, &A[i1 + 0 * lda], lda,
                                     &A[i2 + 0 * lda], lda);
                     }
                 } else {
-                    ipiv[j + 1] = j + 1 + 1;
+                    ipiv[j + 1] = j + 1;
                 }
 
                 A[(j + 1) + k * lda] = work[1];

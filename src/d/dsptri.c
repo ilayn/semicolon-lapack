@@ -162,9 +162,9 @@ void dsptri(
                 AP[kc + k] = AP[kpc + kp];
                 AP[kpc + kp] = temp;
                 if (kstep == 2) {
-                    temp = AP[kcnext - 1];
-                    AP[kcnext - 1] = AP[kc + kp + 1];
-                    AP[kc + kp + 1] = temp;
+                    temp = AP[kc + 2*k + 1];
+                    AP[kc + 2*k + 1] = AP[kc + k + kp + 1];
+                    AP[kc + k + kp + 1] = temp;
                 }
             }
 

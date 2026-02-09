@@ -106,7 +106,7 @@ void dsytrf_aa(
     if (n == 0) {
         return;
     }
-    ipiv[0] = 1;
+    ipiv[0] = 0;
     if (n == 1) {
         return;
     }
@@ -132,9 +132,9 @@ void dsytrf_aa(
 
             for (j2 = j + 1; j2 < ((n < j + jb + 1) ? n : j + jb + 1); j2++) {
                 ipiv[j2] = ipiv[j2] + j;
-                if ((j2 != ipiv[j2] - 1) && ((j1 - k1 - 1) > 2)) {
-                    cblas_dswap(j1 - k1 - 1 - 2, &A[0 + j2 * lda], 1,
-                                &A[0 + (ipiv[j2] - 1) * lda], 1);
+                if ((j2 != ipiv[j2]) && ((j1 - k1) > 2)) {
+                    cblas_dswap(j1 - k1 - 2, &A[0 + j2 * lda], 1,
+                                &A[0 + ipiv[j2] * lda], 1);
                 }
             }
             j = j + jb;
@@ -199,9 +199,9 @@ void dsytrf_aa(
 
             for (j2 = j + 1; j2 < ((n < j + jb + 1) ? n : j + jb + 1); j2++) {
                 ipiv[j2] = ipiv[j2] + j;
-                if ((j2 != ipiv[j2] - 1) && ((j1 - k1 - 1) > 2)) {
-                    cblas_dswap(j1 - k1 - 1 - 2, &A[j2 + 0 * lda], lda,
-                                &A[(ipiv[j2] - 1) + 0 * lda], lda);
+                if ((j2 != ipiv[j2]) && ((j1 - k1) > 2)) {
+                    cblas_dswap(j1 - k1 - 2, &A[j2 + 0 * lda], lda,
+                                &A[ipiv[j2] + 0 * lda], lda);
                 }
             }
             j = j + jb;

@@ -3,6 +3,186 @@
  * @brief DGESVJ computes the SVD of a real M-by-N matrix using Jacobi rotations.
  */
 
+/**
+ * DGESVJ computes the singular value decomposition (SVD) of a real
+ * M-by-N matrix A, where M >= N. The SVD of A is written as
+ *
+ *              A = U * SIGMA * V^t,
+ *
+ * where SIGMA is an N-by-N diagonal matrix, U is an M-by-N orthonormal
+ * matrix, and V is an N-by-N orthogonal matrix. The diagonal elements
+ * of SIGMA are the singular values of A. The columns of U and V are the
+ * left and the right singular vectors of A, respectively.
+ * DGESVJ can sometimes compute tiny singular values and their singular
+ * vectors much more accurately than other SVD routines, see below under
+ * Further Details.
+ *
+ * @param[in] joba
+ *          Specifies the structure of A.
+ *          = 'L': The input matrix A is lower triangular;
+ *          = 'U': The input matrix A is upper triangular;
+ *          = 'G': The input matrix A is general M-by-N matrix, M >= N.
+ *
+ * @param[in] jobu
+ *          Specifies whether to compute the left singular vectors
+ *          (columns of U):
+ *          = 'U': The left singular vectors corresponding to the nonzero
+ *                 singular values are computed and returned in the leading
+ *                 columns of A. See more details in the description of A.
+ *                 The default numerical orthogonality threshold is set to
+ *                 approximately TOL=CTOL*EPS, CTOL=SQRT(M), EPS=DLAMCH('E').
+ *          = 'C': Analogous to JOBU='U', except that user can control the
+ *                 level of numerical orthogonality of the computed left
+ *                 singular vectors. TOL can be set to TOL = CTOL*EPS, where
+ *                 CTOL is given on input in the array WORK.
+ *                 No CTOL smaller than ONE is allowed. CTOL greater
+ *                 than 1 / EPS is meaningless. The option 'C'
+ *                 can be used if M*EPS is satisfactory orthogonality
+ *                 of the computed left singular vectors, so CTOL=M could
+ *                 save few sweeps of Jacobi rotations.
+ *                 See the descriptions of A and WORK(1).
+ *          = 'N': The matrix U is not computed. However, see the
+ *                 description of A.
+ *
+ * @param[in] jobv
+ *          Specifies whether to compute the right singular vectors, that
+ *          is, the matrix V:
+ *          = 'V': the matrix V is computed and returned in the array V
+ *          = 'A': the Jacobi rotations are applied to the MV-by-N
+ *                 array V. In other words, the right singular vector
+ *                 matrix V is not computed explicitly, instead it is
+ *                 applied to an MV-by-N matrix initially stored in the
+ *                 first MV rows of V.
+ *          = 'N': the matrix V is not computed and the array V is not
+ *                 referenced
+ *
+ * @param[in] m
+ *          The number of rows of the input matrix A. 1/DLAMCH('E') > M >= 0.
+ *
+ * @param[in] n
+ *          The number of columns of the input matrix A.
+ *          M >= N >= 0.
+ *
+ * @param[in,out] A
+ *          Double precision array, dimension (lda, n).
+ *          On entry, the M-by-N matrix A.
+ *          On exit:
+ *          If JOBU = 'U' or JOBU = 'C':
+ *                 If INFO = 0:
+ *                 RANKA orthonormal columns of U are returned in the
+ *                 leading RANKA columns of the array A. Here RANKA <= N
+ *                 is the number of computed singular values of A that are
+ *                 above the underflow threshold DLAMCH('S'). The singular
+ *                 vectors corresponding to underflowed or zero singular
+ *                 values are not computed. The value of RANKA is returned
+ *                 in the array WORK as RANKA=NINT(WORK(2)). Also see the
+ *                 descriptions of SVA and WORK. The computed columns of U
+ *                 are mutually numerically orthogonal up to approximately
+ *                 TOL=SQRT(M)*EPS (default); or TOL=CTOL*EPS (JOBU = 'C'),
+ *                 see the description of JOBU.
+ *                 If INFO > 0:
+ *                 the procedure DGESVJ did not converge in the given number
+ *                 of iterations (sweeps). In that case, the computed
+ *                 columns of U may not be orthogonal up to TOL. The output
+ *                 U (stored in A), SIGMA (given by the computed singular
+ *                 values in SVA(1:N)) and V is still a decomposition of the
+ *                 input matrix A in the sense that the residual
+ *                 ||A-SCALE*U*SIGMA*V^T||_2 / ||A||_2 is small.
+ *          If JOBU = 'N':
+ *                 If INFO = 0:
+ *                 Note that the left singular vectors are 'for free' in the
+ *                 one-sided Jacobi SVD algorithm. However, if only the
+ *                 singular values are needed, the level of numerical
+ *                 orthogonality of U is not an issue and iterations are
+ *                 stopped when the columns of the iterated matrix are
+ *                 numerically orthogonal up to approximately M*EPS. Thus,
+ *                 on exit, A contains the columns of U scaled with the
+ *                 corresponding singular values.
+ *                 If INFO > 0:
+ *                 the procedure DGESVJ did not converge in the given number
+ *                 of iterations (sweeps).
+ *
+ * @param[in] lda
+ *          The leading dimension of the array A. lda >= max(1, m).
+ *
+ * @param[out] SVA
+ *          Double precision array, dimension (n).
+ *          On exit:
+ *          If INFO = 0:
+ *          depending on the value SCALE = WORK(1), we have:
+ *                 If SCALE = ONE:
+ *                 SVA(1:N) contains the computed singular values of A.
+ *                 During the computation SVA contains the Euclidean column
+ *                 norms of the iterated matrices in the array A.
+ *                 If SCALE /= ONE:
+ *                 The singular values of A are SCALE*SVA(1:N), and this
+ *                 factored representation is due to the fact that some of the
+ *                 singular values of A might underflow or overflow.
+ *          If INFO > 0:
+ *          the procedure DGESVJ did not converge in the given number of
+ *          iterations (sweeps) and SCALE*SVA(1:N) may not be accurate.
+ *
+ * @param[in] mv
+ *          If JOBV = 'A', then the product of Jacobi rotations in DGESVJ
+ *          is applied to the first MV rows of V. See the description of JOBV.
+ *
+ * @param[in,out] V
+ *          Double precision array, dimension (ldv, n).
+ *          If JOBV = 'V', then V contains on exit the N-by-N matrix of
+ *                         the right singular vectors;
+ *          If JOBV = 'A', then V contains the product of the computed right
+ *                         singular vector matrix and the initial matrix in
+ *                         the array V.
+ *          If JOBV = 'N', then V is not referenced.
+ *
+ * @param[in] ldv
+ *          The leading dimension of the array V, ldv >= 1.
+ *          If JOBV = 'V', then ldv >= max(1, n).
+ *          If JOBV = 'A', then ldv >= max(1, mv).
+ *
+ * @param[in,out] work
+ *          Double precision array, dimension (max(1, lwork)).
+ *          On entry:
+ *          If JOBU = 'C':
+ *          work[0] = CTOL, where CTOL defines the threshold for convergence.
+ *                    The process stops if all columns of A are mutually
+ *                    orthogonal up to CTOL*EPS, EPS=DLAMCH('E').
+ *                    It is required that CTOL >= ONE, i.e. it is not
+ *                    allowed to force the routine to obtain orthogonality
+ *                    below EPS.
+ *          On exit:
+ *          work[0] = SCALE is the scaling factor such that SCALE*SVA(1:N)
+ *                    are the computed singular values of A.
+ *                    (See description of SVA.)
+ *          work[1] = NINT(work[1]) is the number of the computed nonzero
+ *                    singular values.
+ *          work[2] = NINT(work[2]) is the number of the computed singular
+ *                    values that are larger than the underflow threshold.
+ *          work[3] = NINT(work[3]) is the number of sweeps of Jacobi
+ *                    rotations needed for numerical convergence.
+ *          work[4] = max_{i/=j} |COS(A(:,i),A(:,j))| in the last sweep.
+ *                    This is useful information in cases when DGESVJ did
+ *                    not converge, as it can be used to estimate whether
+ *                    the output is still useful and for post festum analysis.
+ *          work[5] = the largest absolute value over all sines of the
+ *                    Jacobi rotation angles in the last sweep. It can be
+ *                    useful for a post festum analysis.
+ *
+ * @param[in] lwork
+ *          The length of the array work.
+ *          lwork >= 1, if min(m,n) = 0, and lwork >= max(6, m+n), otherwise.
+ *          If on entry lwork = -1, then a workspace query is assumed and
+ *          no computation is done; work[0] is set to the minimal (and optimal)
+ *          length of work.
+ *
+ * @param[out] info
+ *          = 0: successful exit.
+ *          < 0: if info = -i, then the i-th argument had an illegal value
+ *          > 0: DGESVJ did not converge in the maximal allowed number (30)
+ *               of sweeps. The output may still be useful. See the
+ *               description of work.
+ */
+
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <cblas.h>
@@ -12,44 +192,6 @@ static const double HALF = 0.5;
 static const double ONE = 1.0;
 static const int NSWEEP = 30;
 
-/**
- * DGESVJ computes the singular value decomposition (SVD) of a real
- * M-by-N matrix A, where M >= N. The SVD of A is written as
- *
- *              A = U * SIGMA * V^t
- *
- * where SIGMA is an N-by-N diagonal matrix, U is an M-by-N orthonormal
- * matrix, and V is an N-by-N orthogonal matrix. The diagonal elements
- * of SIGMA are the singular values of A.
- *
- * DGESVJ can sometimes compute tiny singular values and their singular
- * vectors much more accurately than other SVD routines.
- *
- * @param[in]     joba    = 'L': A is lower triangular.
- *                         = 'U': A is upper triangular.
- *                         = 'G': A is a general M-by-N matrix.
- * @param[in]     jobu    = 'U': Compute left singular vectors in A.
- *                         = 'C': User-controlled orthogonality threshold.
- *                         = 'N': Do not compute left singular vectors.
- * @param[in]     jobv    = 'V': Compute right singular vectors in V.
- *                         = 'A': Apply rotations to existing MV-by-N matrix V.
- *                         = 'N': Do not compute right singular vectors.
- * @param[in]     m       Number of rows of A. M >= 0.
- * @param[in]     n       Number of columns of A. M >= N >= 0.
- * @param[in,out] A       Array (lda, n). On entry, the M-by-N matrix.
- *                        On exit, contains U if jobu='U' or 'C'.
- * @param[in]     lda     Leading dimension of A. lda >= max(1,m).
- * @param[out]    SVA     Array (n). Singular values in descending order.
- * @param[in]     mv      If jobv='A', number of rows of V to transform.
- * @param[in,out] V       Array (ldv, n). Right singular vectors if jobv='V' or 'A'.
- * @param[in]     ldv     Leading dimension of V.
- * @param[in,out] work    Workspace of dimension lwork.
- *                        On entry, work[0] = CTOL if jobu='C'.
- *                        On exit, work[0] = scale, work[1] = nrank,
- *                        work[3] = nsweep, work[4] = max|cos|, work[5] = max|sin|.
- * @param[in]     lwork   lwork >= max(6, m+n).
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
- */
 void dgesvj(const char* joba, const char* jobu, const char* jobv,
             const int m, const int n, double* const restrict A, const int lda,
             double* const restrict SVA, const int mv,
@@ -57,19 +199,20 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
             double* const restrict work, const int lwork, int* info)
 {
     int lsvec, uctol, rsvec, applv, upper, lower, lquery;
-    int minmn, lwmin, mvl;
+    int minmn, lwmin, mvl = 0;
     int i, ibr, igl, ir1, p, q, kbl, nbl;
-    int rowskip, lkahead, swband;
-    int notrot, pskipped, emptsw;
+    int rowskip, lkahead, swband, blskip;
+    int notrot, pskipped, emptsw, iswrot;
+    int ijblsk, jbc, jgl;
+    int n2, n4, n34;
     int ierr;
+    int rotok, noscale, goscale;
     double aapp, aapp0, aapq, aaqq, apoaq, aqoap;
     double big, bigtheta, cs, sn, t, temp1, theta, thsign;
     double ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
-    double rootsfmin, sfmin, skl, small, tol, sn_scale;
+    double rootsfmin, sfmin, skl, small, tol, roottol;
     double fastr[5];
-    int rotok, noscale, goscale;
 
-    /* Test the input parameters */
     lsvec = (jobu[0] == 'U' || jobu[0] == 'u');
     uctol = (jobu[0] == 'C' || jobu[0] == 'c');
     rsvec = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -85,12 +228,11 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
     }
 
     lquery = (lwork == -1);
-
-    if (!upper && !lower && !(joba[0] == 'G' || joba[0] == 'g')) {
+    if (!(upper || lower || joba[0] == 'G' || joba[0] == 'g')) {
         *info = -1;
-    } else if (!lsvec && !uctol && !(jobu[0] == 'N' || jobu[0] == 'n')) {
+    } else if (!(lsvec || uctol || jobu[0] == 'N' || jobu[0] == 'n')) {
         *info = -2;
-    } else if (!rsvec && !applv && !(jobv[0] == 'N' || jobv[0] == 'n')) {
+    } else if (!(rsvec || applv || jobv[0] == 'N' || jobv[0] == 'n')) {
         *info = -3;
     } else if (m < 0) {
         *info = -4;
@@ -118,10 +260,8 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* Quick return for void matrix */
     if (minmn == 0) return;
 
-    /* Set numerical parameters */
     if (uctol) {
         ctol = work[0];
     } else {
@@ -142,6 +282,7 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
     bigtheta = ONE / rooteps;
 
     tol = ctol * epsln;
+    roottol = sqrt(tol);
 
     if ((double)m * epsln >= ONE) {
         *info = -4;
@@ -149,24 +290,19 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* Initialize the right singular vector matrix */
     if (rsvec) {
         mvl = n;
         dlaset("A", mvl, n, ZERO, ONE, V, ldv);
     } else if (applv) {
         mvl = mv;
-    } else {
-        mvl = 0;
     }
     rsvec = rsvec || applv;
 
-    /* Initialize SVA = ||A e_i||_2, with scaling */
     skl = ONE / sqrt((double)m * (double)n);
     noscale = 1;
     goscale = 1;
 
     if (lower) {
-        /* Lower triangular input */
         for (p = 0; p < n; p++) {
             aapp = ZERO;
             aaqq = ONE;
@@ -191,7 +327,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
             }
         }
     } else if (upper) {
-        /* Upper triangular input */
         for (p = 0; p < n; p++) {
             aapp = ZERO;
             aaqq = ONE;
@@ -216,7 +351,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
             }
         }
     } else {
-        /* General dense input */
         for (p = 0; p < n; p++) {
             aapp = ZERO;
             aaqq = ONE;
@@ -244,7 +378,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
 
     if (noscale) skl = ONE;
 
-    /* Find max and min of SVA */
     aapp = ZERO;
     aaqq = big;
     for (p = 0; p < n; p++) {
@@ -252,7 +385,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         aapp = fmax(aapp, SVA[p]);
     }
 
-    /* Quick return for zero matrix */
     if (aapp == ZERO) {
         if (lsvec) dlaset("G", m, n, ZERO, ONE, A, lda);
         work[0] = ONE;
@@ -264,7 +396,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* Quick return for one-column matrix */
     if (n == 1) {
         if (lsvec) dlascl("G", 0, 0, SVA[0], skl, m, 1, A, lda, &ierr);
         work[0] = ONE / skl;
@@ -276,23 +407,21 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         return;
     }
 
-    /* Protect small singular values from underflow */
-    sn_scale = sqrt(sfmin / epsln);
+    sn = sqrt(sfmin / epsln);
     temp1 = sqrt(big / (double)n);
-    if ((aapp <= sn_scale) || (aaqq >= temp1) ||
-        ((sn_scale <= aaqq) && (aapp <= temp1))) {
+    if ((aapp <= sn) || (aaqq >= temp1) ||
+        ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = fmin(big, temp1 / aapp);
-    } else if ((aaqq <= sn_scale) && (aapp <= temp1)) {
-        temp1 = fmin(sn_scale / aaqq, big / (aapp * sqrt((double)n)));
-    } else if ((aaqq >= sn_scale) && (aapp >= temp1)) {
-        temp1 = fmax(sn_scale / aaqq, temp1 / aapp);
-    } else if ((aaqq <= sn_scale) && (aapp >= temp1)) {
-        temp1 = fmin(sn_scale / aaqq, big / (sqrt((double)n) * aapp));
+    } else if ((aaqq <= sn) && (aapp <= temp1)) {
+        temp1 = fmin(sn / aaqq, big / (aapp * sqrt((double)n)));
+    } else if ((aaqq >= sn) && (aapp >= temp1)) {
+        temp1 = fmax(sn / aaqq, temp1 / aapp);
+    } else if ((aaqq <= sn) && (aapp >= temp1)) {
+        temp1 = fmin(sn / aaqq, big / (sqrt((double)n) * aapp));
     } else {
         temp1 = ONE;
     }
 
-    /* Scale if necessary */
     if (temp1 != ONE) {
         dlascl("G", 0, 0, ONE, temp1, n, 1, SVA, n, &ierr);
     }
@@ -302,56 +431,105 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         skl = ONE / skl;
     }
 
-    /* Row-cyclic Jacobi SVD algorithm with column pivoting */
     emptsw = (n * (n - 1)) / 2;
     notrot = 0;
     fastr[0] = ZERO;
 
-    /* Initialize WORK = diag(D) = I */
     for (q = 0; q < n; q++) {
         work[q] = ONE;
     }
 
-    /* Tuning parameters */
     swband = 3;
     kbl = (8 < n) ? 8 : n;
     nbl = n / kbl;
     if (nbl * kbl != n) nbl = nbl + 1;
+    blskip = kbl * kbl;
     rowskip = (5 < kbl) ? 5 : kbl;
     lkahead = 1;
 
-    int n4 = n / 4;
+    if ((lower || upper) && (n > ((64 > 4 * kbl) ? 64 : 4 * kbl))) {
+        n4 = n / 4;
+        n2 = n / 2;
+        n34 = 3 * n4;
+        if (applv) {
+            q = 0;
+        } else {
+            q = 1;
+        }
 
-    /* Main sweep loop */
+        if (lower) {
+
+            dgsvj0(jobv, m - n34, n - n34, &A[n34 + n34 * lda], lda,
+                   &work[n34], &SVA[n34], mvl,
+                   &V[n34 * q + n34 * ldv], ldv, epsln, sfmin, tol,
+                   2, &work[n], lwork - n, &ierr);
+
+            dgsvj0(jobv, m - n2, n34 - n2, &A[n2 + n2 * lda], lda,
+                   &work[n2], &SVA[n2], mvl,
+                   &V[n2 * q + n2 * ldv], ldv, epsln, sfmin, tol, 2,
+                   &work[n], lwork - n, &ierr);
+
+            dgsvj1(jobv, m - n2, n - n2, n4, &A[n2 + n2 * lda], lda,
+                   &work[n2], &SVA[n2], mvl,
+                   &V[n2 * q + n2 * ldv], ldv, epsln, sfmin, tol, 1,
+                   &work[n], lwork - n, &ierr);
+
+            dgsvj0(jobv, m - n4, n2 - n4, &A[n4 + n4 * lda], lda,
+                   &work[n4], &SVA[n4], mvl,
+                   &V[n4 * q + n4 * ldv], ldv, epsln, sfmin, tol, 1,
+                   &work[n], lwork - n, &ierr);
+
+            dgsvj0(jobv, m, n4, A, lda, work, SVA, mvl, V, ldv,
+                   epsln, sfmin, tol, 1, &work[n], lwork - n,
+                   &ierr);
+
+            dgsvj1(jobv, m, n2, n4, A, lda, work, SVA, mvl, V,
+                   ldv, epsln, sfmin, tol, 1, &work[n],
+                   lwork - n, &ierr);
+
+        } else if (upper) {
+
+            dgsvj0(jobv, n4, n4, A, lda, work, SVA, mvl, V,
+                   ldv,
+                   epsln, sfmin, tol, 2, &work[n], lwork - n,
+                   &ierr);
+
+            dgsvj0(jobv, n2, n4, &A[n4 * lda], lda,
+                   &work[n4],
+                   &SVA[n4], mvl, &V[n4 * q + n4 * ldv], ldv,
+                   epsln, sfmin, tol, 1, &work[n], lwork - n,
+                   &ierr);
+
+            dgsvj1(jobv, n2, n2, n4, A, lda, work, SVA, mvl, V,
+                   ldv, epsln, sfmin, tol, 1, &work[n],
+                   lwork - n, &ierr);
+
+            dgsvj0(jobv, n2 + n4, n4, &A[n2 * lda], lda,
+                   &work[n2], &SVA[n2], mvl,
+                   &V[n2 * q + n2 * ldv], ldv, epsln, sfmin, tol, 1,
+                   &work[n], lwork - n, &ierr);
+
+        }
+    }
+
     for (i = 0; i < NSWEEP; i++) {
+
         mxaapq = ZERO;
         mxsinj = ZERO;
+        iswrot = 0;
 
         notrot = 0;
         pskipped = 0;
 
-        /* Each sweep calls DGSVJ0 and DGSVJ1 for preprocessing */
-        if (i > 0 && swband > 0) {
-            /* Call DGSVJ0 for diagonal blocks preprocessing */
-            dgsvj0(jobv, m, n, A, lda, work, SVA, mvl, V, ldv,
-                   epsln, sfmin, tol, 2, &work[n], lwork - n, &ierr);
-        }
-
-        /* Call DGSVJ1 for off-diagonal blocks preprocessing */
-        if (n > n4 && i > 0) {
-            dgsvj1(jobv, m, n, n4, A, lda, work, SVA, mvl, V, ldv,
-                   epsln, sfmin, tol, 1, &work[n], lwork - n, &ierr);
-        }
-
-        /* Block loop */
         for (ibr = 0; ibr < nbl; ibr++) {
             igl = ibr * kbl;
 
-            for (ir1 = 0; ir1 <= (lkahead < nbl - ibr - 1 ? lkahead : nbl - ibr - 1); ir1++) {
-                igl = ibr * kbl + ir1 * kbl;
+            for (ir1 = 0; ir1 <= ((lkahead < nbl - ibr - 1) ? lkahead : nbl - ibr - 1); ir1++) {
 
-                for (p = igl; p < ((igl + kbl - 1 < n - 1) ? (igl + kbl - 1) : (n - 1)); p++) {
-                    /* de Rijk's pivoting */
+                igl = (ibr + ir1) * kbl;
+
+                for (p = igl; p < (((igl + kbl - 1) < (n - 2)) ? (igl + kbl - 1) : (n - 2)) + 1; p++) {
+
                     q = cblas_idamax(n - p, &SVA[p], 1) + p;
                     if (p != q) {
                         cblas_dswap(m, &A[p * lda], 1, &A[q * lda], 1);
@@ -365,7 +543,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                     }
 
                     if (ir1 == 0) {
-                        /* Recompute column norms */
                         if (SVA[p] < rootbig && SVA[p] > rootsfmin) {
                             SVA[p] = cblas_dnrm2(m, &A[p * lda], 1) * work[p];
                         } else {
@@ -380,20 +557,21 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                     }
 
                     if (aapp > ZERO) {
+
                         pskipped = 0;
 
-                        for (q = p + 1; q < ((igl + kbl < n) ? igl + kbl : n); q++) {
+                        for (q = p + 1; q < (((igl + kbl - 1) < (n - 1)) ? (igl + kbl - 1) : (n - 1)) + 1; q++) {
+
                             aaqq = SVA[q];
 
                             if (aaqq > ZERO) {
-                                aapp0 = aapp;
 
-                                /* Compute aapq = A(:,p)'*A(:,q) * D(p)*D(q) / (||A(:,p)||*||A(:,q)||) */
+                                aapp0 = aapp;
                                 if (aaqq >= ONE) {
                                     rotok = (small * aapp) <= aaqq;
                                     if (aapp < (big / aaqq)) {
-                                        aapq = (cblas_ddot(m, &A[p * lda], 1, &A[q * lda], 1) *
-                                                work[p] * work[q] / aaqq) / aapp;
+                                        aapq = (cblas_ddot(m, &A[p * lda], 1, &A[q * lda], 1)
+                                                * work[p] * work[q] / aaqq) / aapp;
                                     } else {
                                         cblas_dcopy(m, &A[p * lda], 1, &work[n], 1);
                                         dlascl("G", 0, 0, aapp, work[p], m, 1, &work[n], lda, &ierr);
@@ -402,8 +580,8 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                                 } else {
                                     rotok = aapp <= (aaqq / small);
                                     if (aapp > (small / aaqq)) {
-                                        aapq = (cblas_ddot(m, &A[p * lda], 1, &A[q * lda], 1) *
-                                                work[p] * work[q] / aaqq) / aapp;
+                                        aapq = (cblas_ddot(m, &A[p * lda], 1, &A[q * lda], 1)
+                                                * work[p] * work[q] / aaqq) / aapp;
                                     } else {
                                         cblas_dcopy(m, &A[q * lda], 1, &work[n], 1);
                                         dlascl("G", 0, 0, aaqq, work[q], m, 1, &work[n], lda, &ierr);
@@ -413,19 +591,22 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
 
                                 mxaapq = fmax(mxaapq, fabs(aapq));
 
-                                /* Decide whether to rotate */
                                 if (fabs(aapq) > tol) {
+
                                     if (ir1 == 0) {
                                         notrot = 0;
                                         pskipped = 0;
+                                        iswrot = iswrot + 1;
                                     }
 
                                     if (rotok) {
+
                                         aqoap = aaqq / aapp;
                                         apoaq = aapp / aaqq;
                                         theta = -HALF * fabs(aqoap - apoaq) / aapq;
 
                                         if (fabs(theta) > bigtheta) {
+
                                             t = HALF / theta;
                                             fastr[2] = t * work[p] / work[q];
                                             fastr[3] = -t * work[q] / work[p];
@@ -434,18 +615,20 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                                             SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
                                             aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
                                             mxsinj = fmax(mxsinj, fabs(t));
+
                                         } else {
+
                                             thsign = -copysign(ONE, aapq);
                                             t = ONE / (theta + thsign * sqrt(ONE + theta * theta));
                                             cs = sqrt(ONE / (ONE + t * t));
                                             sn = t * cs;
+
                                             mxsinj = fmax(mxsinj, fabs(sn));
                                             SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
                                             aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
 
                                             apoaq = work[p] / work[q];
                                             aqoap = work[q] / work[p];
-
                                             if (work[p] >= ONE) {
                                                 if (work[q] >= ONE) {
                                                     fastr[2] = t * apoaq;
@@ -497,8 +680,8 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                                                 }
                                             }
                                         }
+
                                     } else {
-                                        /* Modified Gram-Schmidt */
                                         cblas_dcopy(m, &A[p * lda], 1, &work[n], 1);
                                         dlascl("G", 0, 0, aapp, ONE, m, 1, &work[n], lda, &ierr);
                                         dlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
@@ -509,28 +692,28 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                                         mxsinj = fmax(mxsinj, sfmin);
                                     }
 
-                                    /* Recompute SVA if needed */
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
                                         if (aaqq < rootbig && aaqq > rootsfmin) {
                                             SVA[q] = cblas_dnrm2(m, &A[q * lda], 1) * work[q];
                                         } else {
-                                            temp1 = ZERO;
+                                            t = ZERO;
                                             aaqq = ONE;
-                                            dlassq(m, &A[q * lda], 1, &temp1, &aaqq);
-                                            SVA[q] = temp1 * sqrt(aaqq) * work[q];
+                                            dlassq(m, &A[q * lda], 1, &t, &aaqq);
+                                            SVA[q] = t * sqrt(aaqq) * work[q];
                                         }
                                     }
                                     if ((aapp / aapp0) <= rooteps) {
                                         if (aapp < rootbig && aapp > rootsfmin) {
                                             aapp = cblas_dnrm2(m, &A[p * lda], 1) * work[p];
                                         } else {
-                                            temp1 = ZERO;
+                                            t = ZERO;
                                             aapp = ONE;
-                                            dlassq(m, &A[p * lda], 1, &temp1, &aapp);
-                                            aapp = temp1 * sqrt(aapp) * work[p];
+                                            dlassq(m, &A[p * lda], 1, &t, &aapp);
+                                            aapp = t * sqrt(aapp) * work[p];
                                         }
                                         SVA[p] = aapp;
                                     }
+
                                 } else {
                                     if (ir1 == 0) notrot++;
                                     pskipped++;
@@ -545,47 +728,283 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
                                 notrot = 0;
                                 break;
                             }
+
                         } /* end q-loop */
 
                         SVA[p] = aapp;
+
                     } else {
                         SVA[p] = aapp;
-                        if (ir1 == 0 && aapp == ZERO) {
-                            notrot += ((igl + kbl - 1 < n) ? (igl + kbl - 1) : n) - p;
-                        }
+                        if (ir1 == 0 && aapp == ZERO)
+                            notrot += (((igl + kbl - 1) < (n - 1)) ? (igl + kbl - 1) : (n - 1)) - p;
                     }
+
                 } /* end p-loop */
+
             } /* end ir1-loop */
 
-            /* Off-diagonal blocks would be handled here similar to dgsvj0 */
+            igl = ibr * kbl;
+
+            for (jbc = ibr + 1; jbc < nbl; jbc++) {
+
+                jgl = jbc * kbl;
+
+                ijblsk = 0;
+                for (p = igl; p < (((igl + kbl - 1) < (n - 1)) ? (igl + kbl - 1) : (n - 1)) + 1; p++) {
+
+                    aapp = SVA[p];
+                    if (aapp > ZERO) {
+
+                        pskipped = 0;
+
+                        for (q = jgl; q < (((jgl + kbl - 1) < (n - 1)) ? (jgl + kbl - 1) : (n - 1)) + 1; q++) {
+
+                            aaqq = SVA[q];
+                            if (aaqq > ZERO) {
+                                aapp0 = aapp;
+
+                                if (aaqq >= ONE) {
+                                    if (aapp >= aaqq) {
+                                        rotok = (small * aapp) <= aaqq;
+                                    } else {
+                                        rotok = (small * aaqq) <= aapp;
+                                    }
+                                    if (aapp < (big / aaqq)) {
+                                        aapq = (cblas_ddot(m, &A[p * lda], 1, &A[q * lda], 1)
+                                                * work[p] * work[q] / aaqq) / aapp;
+                                    } else {
+                                        cblas_dcopy(m, &A[p * lda], 1, &work[n], 1);
+                                        dlascl("G", 0, 0, aapp, work[p], m, 1, &work[n], lda, &ierr);
+                                        aapq = cblas_ddot(m, &work[n], 1, &A[q * lda], 1) * work[q] / aaqq;
+                                    }
+                                } else {
+                                    if (aapp >= aaqq) {
+                                        rotok = aapp <= (aaqq / small);
+                                    } else {
+                                        rotok = aaqq <= (aapp / small);
+                                    }
+                                    if (aapp > (small / aaqq)) {
+                                        aapq = (cblas_ddot(m, &A[p * lda], 1, &A[q * lda], 1)
+                                                * work[p] * work[q] / aaqq) / aapp;
+                                    } else {
+                                        cblas_dcopy(m, &A[q * lda], 1, &work[n], 1);
+                                        dlascl("G", 0, 0, aaqq, work[q], m, 1, &work[n], lda, &ierr);
+                                        aapq = cblas_ddot(m, &work[n], 1, &A[p * lda], 1) * work[p] / aapp;
+                                    }
+                                }
+
+                                mxaapq = fmax(mxaapq, fabs(aapq));
+
+                                if (fabs(aapq) > tol) {
+                                    notrot = 0;
+                                    pskipped = 0;
+                                    iswrot = iswrot + 1;
+
+                                    if (rotok) {
+
+                                        aqoap = aaqq / aapp;
+                                        apoaq = aapp / aaqq;
+                                        theta = -HALF * fabs(aqoap - apoaq) / aapq;
+                                        if (aaqq > aapp0) theta = -theta;
+
+                                        if (fabs(theta) > bigtheta) {
+
+                                            t = HALF / theta;
+                                            fastr[2] = t * work[p] / work[q];
+                                            fastr[3] = -t * work[q] / work[p];
+                                            cblas_drotm(m, &A[p * lda], 1, &A[q * lda], 1, fastr);
+                                            if (rsvec) cblas_drotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
+                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
+                                            mxsinj = fmax(mxsinj, fabs(t));
+
+                                        } else {
+
+                                            thsign = -copysign(ONE, aapq);
+                                            if (aaqq > aapp0) thsign = -thsign;
+                                            t = ONE / (theta + thsign * sqrt(ONE + theta * theta));
+                                            cs = sqrt(ONE / (ONE + t * t));
+                                            sn = t * cs;
+
+                                            mxsinj = fmax(mxsinj, fabs(sn));
+                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
+                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
+
+                                            apoaq = work[p] / work[q];
+                                            aqoap = work[q] / work[p];
+                                            if (work[p] >= ONE) {
+                                                if (work[q] >= ONE) {
+                                                    fastr[2] = t * apoaq;
+                                                    fastr[3] = -t * aqoap;
+                                                    work[p] = work[p] * cs;
+                                                    work[q] = work[q] * cs;
+                                                    cblas_drotm(m, &A[p * lda], 1, &A[q * lda], 1, fastr);
+                                                    if (rsvec) cblas_drotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
+                                                } else {
+                                                    cblas_daxpy(m, -t * aqoap, &A[q * lda], 1, &A[p * lda], 1);
+                                                    cblas_daxpy(m, cs * sn * apoaq, &A[p * lda], 1, &A[q * lda], 1);
+                                                    if (rsvec) {
+                                                        cblas_daxpy(mvl, -t * aqoap, &V[q * ldv], 1, &V[p * ldv], 1);
+                                                        cblas_daxpy(mvl, cs * sn * apoaq, &V[p * ldv], 1, &V[q * ldv], 1);
+                                                    }
+                                                    work[p] = work[p] * cs;
+                                                    work[q] = work[q] / cs;
+                                                }
+                                            } else {
+                                                if (work[q] >= ONE) {
+                                                    cblas_daxpy(m, t * apoaq, &A[p * lda], 1, &A[q * lda], 1);
+                                                    cblas_daxpy(m, -cs * sn * aqoap, &A[q * lda], 1, &A[p * lda], 1);
+                                                    if (rsvec) {
+                                                        cblas_daxpy(mvl, t * apoaq, &V[p * ldv], 1, &V[q * ldv], 1);
+                                                        cblas_daxpy(mvl, -cs * sn * aqoap, &V[q * ldv], 1, &V[p * ldv], 1);
+                                                    }
+                                                    work[p] = work[p] / cs;
+                                                    work[q] = work[q] * cs;
+                                                } else {
+                                                    if (work[p] >= work[q]) {
+                                                        cblas_daxpy(m, -t * aqoap, &A[q * lda], 1, &A[p * lda], 1);
+                                                        cblas_daxpy(m, cs * sn * apoaq, &A[p * lda], 1, &A[q * lda], 1);
+                                                        work[p] = work[p] * cs;
+                                                        work[q] = work[q] / cs;
+                                                        if (rsvec) {
+                                                            cblas_daxpy(mvl, -t * aqoap, &V[q * ldv], 1, &V[p * ldv], 1);
+                                                            cblas_daxpy(mvl, cs * sn * apoaq, &V[p * ldv], 1, &V[q * ldv], 1);
+                                                        }
+                                                    } else {
+                                                        cblas_daxpy(m, t * apoaq, &A[p * lda], 1, &A[q * lda], 1);
+                                                        cblas_daxpy(m, -cs * sn * aqoap, &A[q * lda], 1, &A[p * lda], 1);
+                                                        work[p] = work[p] / cs;
+                                                        work[q] = work[q] * cs;
+                                                        if (rsvec) {
+                                                            cblas_daxpy(mvl, t * apoaq, &V[p * ldv], 1, &V[q * ldv], 1);
+                                                            cblas_daxpy(mvl, -cs * sn * aqoap, &V[q * ldv], 1, &V[p * ldv], 1);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    } else {
+                                        if (aapp > aaqq) {
+                                            cblas_dcopy(m, &A[p * lda], 1, &work[n], 1);
+                                            dlascl("G", 0, 0, aapp, ONE, m, 1, &work[n], lda, &ierr);
+                                            dlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
+                                            temp1 = -aapq * work[p] / work[q];
+                                            cblas_daxpy(m, temp1, &work[n], 1, &A[q * lda], 1);
+                                            dlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
+                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq * aapq));
+                                            mxsinj = fmax(mxsinj, sfmin);
+                                        } else {
+                                            cblas_dcopy(m, &A[q * lda], 1, &work[n], 1);
+                                            dlascl("G", 0, 0, aaqq, ONE, m, 1, &work[n], lda, &ierr);
+                                            dlascl("G", 0, 0, aapp, ONE, m, 1, &A[p * lda], lda, &ierr);
+                                            temp1 = -aapq * work[q] / work[p];
+                                            cblas_daxpy(m, temp1, &work[n], 1, &A[p * lda], 1);
+                                            dlascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
+                                            SVA[p] = aapp * sqrt(fmax(ZERO, ONE - aapq * aapq));
+                                            mxsinj = fmax(mxsinj, sfmin);
+                                        }
+                                    }
+
+                                    if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
+                                        if (aaqq < rootbig && aaqq > rootsfmin) {
+                                            SVA[q] = cblas_dnrm2(m, &A[q * lda], 1) * work[q];
+                                        } else {
+                                            t = ZERO;
+                                            aaqq = ONE;
+                                            dlassq(m, &A[q * lda], 1, &t, &aaqq);
+                                            SVA[q] = t * sqrt(aaqq) * work[q];
+                                        }
+                                    }
+                                    if ((aapp / aapp0) * (aapp / aapp0) <= rooteps) {
+                                        if (aapp < rootbig && aapp > rootsfmin) {
+                                            aapp = cblas_dnrm2(m, &A[p * lda], 1) * work[p];
+                                        } else {
+                                            t = ZERO;
+                                            aapp = ONE;
+                                            dlassq(m, &A[p * lda], 1, &t, &aapp);
+                                            aapp = t * sqrt(aapp) * work[p];
+                                        }
+                                        SVA[p] = aapp;
+                                    }
+
+                                } else {
+                                    notrot = notrot + 1;
+                                    pskipped = pskipped + 1;
+                                    ijblsk = ijblsk + 1;
+                                }
+                            } else {
+                                notrot = notrot + 1;
+                                pskipped = pskipped + 1;
+                                ijblsk = ijblsk + 1;
+                            }
+
+                            if (i < swband && ijblsk >= blskip) {
+                                SVA[p] = aapp;
+                                notrot = 0;
+                                goto offdiag_cleanup;
+                            }
+                            if (i < swband && pskipped > rowskip) {
+                                aapp = -aapp;
+                                notrot = 0;
+                                break;
+                            }
+
+                        } /* end q-loop */
+
+                        SVA[p] = aapp;
+
+                    } else {
+
+                        if (aapp == ZERO) notrot = notrot +
+                            (((jgl + kbl - 1) < (n - 1)) ? (jgl + kbl - 1) : (n - 1)) - jgl + 1;
+                        if (aapp < ZERO) notrot = 0;
+
+                    }
+
+                } /* end p-loop */
+
+            } /* end jbc-loop */
+
+            offdiag_cleanup:
+            {
+                int pp;
+                for (pp = igl; pp < ((igl + kbl < n) ? igl + kbl : n); pp++) {
+                    SVA[pp] = fabs(SVA[pp]);
+                }
+            }
+
         } /* end ibr-loop */
 
-        /* Update SVA(n) */
         if (SVA[n - 1] < rootbig && SVA[n - 1] > rootsfmin) {
             SVA[n - 1] = cblas_dnrm2(m, &A[(n - 1) * lda], 1) * work[n - 1];
         } else {
-            temp1 = ZERO;
+            t = ZERO;
             aapp = ONE;
-            dlassq(m, &A[(n - 1) * lda], 1, &temp1, &aapp);
-            SVA[n - 1] = temp1 * sqrt(aapp) * work[n - 1];
+            dlassq(m, &A[(n - 1) * lda], 1, &t, &aapp);
+            SVA[n - 1] = t * sqrt(aapp) * work[n - 1];
         }
 
-        /* Check convergence */
-        if (i > swband + 1 && mxaapq < (double)n * tol && (double)n * mxaapq * mxsinj < tol) {
+        if ((i + 1 < swband) && ((mxaapq <= roottol) || (iswrot <= n)))
+            swband = i + 1;
+
+        if ((i > swband) && (mxaapq < sqrt((double)n) * tol)
+            && ((double)n * mxaapq * mxsinj < tol)) {
             break;
         }
 
         if (notrot >= emptsw) break;
+
     } /* end sweep loop */
 
-    /* Set INFO */
     if (i >= NSWEEP) {
-        *info = NSWEEP;
+        *info = NSWEEP - 1;
     } else {
         *info = 0;
     }
 
-    /* Sort singular values and rescale */
+    n2 = 0;
+    n4 = 0;
     for (p = 0; p < n - 1; p++) {
         q = cblas_idamax(n - p, &SVA[p], 1) + p;
         if (p != q) {
@@ -598,33 +1017,28 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
             cblas_dswap(m, &A[p * lda], 1, &A[q * lda], 1);
             if (rsvec) cblas_dswap(mvl, &V[p * ldv], 1, &V[q * ldv], 1);
         }
+        if (SVA[p] != ZERO) {
+            n4 = n4 + 1;
+            if (SVA[p] * skl > sfmin) n2 = n2 + 1;
+        }
+    }
+    if (SVA[n - 1] != ZERO) {
+        n4 = n4 + 1;
+        if (SVA[n - 1] * skl > sfmin) n2 = n2 + 1;
     }
 
-    /* Count nonzero and significant singular values */
-    int n2_rank = 0;
-    int n1_rank = 0;
-    for (p = 0; p < n; p++) {
-        if (SVA[p] != ZERO) n2_rank++;
-        if (SVA[p] * skl > sfmin) n1_rank++;  /* Changed >= to > to match Fortran .GT. */
-    }
-
-    /* Scale U (normalize left singular vectors) */
     if (lsvec || uctol) {
-        for (p = 0; p < n1_rank; p++) {
+        for (p = 0; p < n2; p++) {
             cblas_dscal(m, work[p] / SVA[p], &A[p * lda], 1);
         }
     }
 
-    /* Scale V (assemble the fast rotations and normalize) */
-    /* Fortran lines 1609-1621 */
     if (rsvec) {
         if (applv) {
-            /* V was pre-initialized: scale by work */
             for (p = 0; p < n; p++) {
                 cblas_dscal(mvl, work[p], &V[p * ldv], 1);
             }
         } else {
-            /* Normalize each column of V */
             for (p = 0; p < n; p++) {
                 temp1 = ONE / cblas_dnrm2(mvl, &V[p * ldv], 1);
                 cblas_dscal(mvl, temp1, &V[p * ldv], 1);
@@ -632,30 +1046,20 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    /* Undo scaling, if necessary (and possible).
-     * Fortran lines 1623-1631
-     *
-     * If we can undo the scaling without overflow/underflow, multiply
-     * SVA by SKL and set SKL=1. Otherwise, leave SKL as is and the
-     * caller must use WORK(1)=SKL to get the true singular values.
-     */
-    {
-        int n2_idx = (n1_rank > 0) ? (n1_rank - 1) : 0;
-        if (((skl > ONE) && (SVA[0] < (big / skl))) ||
-            ((skl < ONE) && (SVA[n2_idx] > (sfmin / skl)))) {
-            for (p = 0; p < n; p++) {
-                SVA[p] = skl * SVA[p];
-            }
-            skl = ONE;
+    if (((skl > ONE) && (SVA[0] < (big / skl)))
+        || ((skl < ONE) && (SVA[((n2 > 1) ? n2 : 1) - 1] > (sfmin / skl)))) {
+        for (p = 0; p < n; p++) {
+            SVA[p] = skl * SVA[p];
         }
+        skl = ONE;
     }
 
-    /* Set output: WORK(1) = SKL (or 1/SKL in LAPACK convention?) */
-    /* Note: Looking at Fortran line 1633: WORK(1) = SKL, not 1/SKL */
     work[0] = skl;
-    work[1] = (double)n1_rank;
-    work[2] = (double)n2_rank;
+    work[1] = (double)n4;
+    work[2] = (double)n2;
     work[3] = (double)(i + 1);
     work[4] = mxaapq;
     work[5] = mxsinj;
+
+    return;
 }
