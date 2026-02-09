@@ -1,24 +1,16 @@
 #!/usr/bin/env python3
-"""Generate precision-tabbed RST documentation from existing API reference files.
+"""Generate the complete API documentation structure with precision tabs.
+
+Creates leaf RST pages (with sphinx-design tab-set blocks where multiple
+precisions exist), intermediate toctree pages, and the api/index.rst.
+Idempotent: running twice produces the same output.
 
 Usage:
-    python scripts/gen_docs.py              # update all RST files
+    python scripts/gen_docs.py              # regenerate all RST files
     python scripts/gen_docs.py --dry-run    # preview without writing
-    python scripts/gen_docs.py --file hesv.rst           # single file
-    python scripts/gen_docs.py --file hesv.rst --dry-run # preview single file
-
-Reads doc/source/api/**/*.rst, finds `.. doxygenfile:: dXXX.c` directives,
-checks which precision variants (s, c, z) exist in src/, and generates
-sphinx-design tab-set blocks for multi-precision pages.
-
-No real↔complex name mapping (sy→he, or→un, etc.) is applied. The script
-does a trivial prefix swap (d→s, d→c, d→z) and relies on file-existence
-checks. Routines where complex names differ (symmetric/orthogonal families)
-will only show real-precision tabs; complex-only families get separate pages.
 """
 
 import os
-import re
 import sys
 import argparse
 
@@ -27,199 +19,552 @@ import argparse
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
-DOC_API = os.path.join(PROJECT_ROOT, "doc", "source", "api")
+API_DIR = os.path.join(PROJECT_ROOT, "doc", "source", "api")
 SRC_D = os.path.join(PROJECT_ROOT, "src", "d")
 SRC_S = os.path.join(PROJECT_ROOT, "src", "s")
 SRC_C = os.path.join(PROJECT_ROOT, "src", "c")
 SRC_Z = os.path.join(PROJECT_ROOT, "src", "z")
 
-# Precision definitions: (prefix, label, sync_key, src_dir)
+# ---------------------------------------------------------------------------
+# Precision configuration (tab order: single first)
+# ---------------------------------------------------------------------------
 PRECISIONS = [
-    ("d", "Double",         "double",         SRC_D),
     ("s", "Single",         "single",         SRC_S),
-    ("z", "Complex Double", "complex-double", SRC_Z),
+    ("d", "Double",         "double",         SRC_D),
     ("c", "Complex Single", "complex-single", SRC_C),
+    ("z", "Complex Double", "complex-double", SRC_Z),
 ]
 
-# Regex to find doxygenfile directives referencing d-prefixed C files
-RE_DOXYGENFILE_D = re.compile(r"\.\.\s+doxygenfile::\s+(d\w+\.c)")
+# ---------------------------------------------------------------------------
+# Source file mapping exceptions
+# ---------------------------------------------------------------------------
+# For standard pages: source = <prefix><page_name>.c (e.g., page "sysv" ->
+# dsysv.c, ssysv.c, csysv.c, zsysv.c). Only pages that deviate from this
+# pattern need entries here.
+#
+# Format: page_name -> {precision_prefix: [source_basenames_without_.c]}
+# Precisions not listed are derived from the 'd' entry by swapping the first
+# character, unless NO 'd' entry exists.
+SPECIAL_SOURCES = {
+    # Mixed precision (single source, never gets tabs)
+    "gesv_mixed":  {"d": ["dsgesv"]},
+    "posv_mixed":  {"d": ["dsposv"]},
+    # Precision conversion routines
+    "_lag2_":      {"d": ["dlag2s"]},
+    "_lat2_":      {"d": ["dlat2s"]},
+    "lag2d":       {"s": ["slag2d"]},
+    # Integer functions with embedded precision character
+    "ilalc":       {"d": ["iladlc"], "s": ["ilaslc"],
+                    "c": ["ilaclc"], "z": ["ilazlc"]},
+    "ilalr":       {"d": ["iladlr"], "s": ["ilaslr"],
+                    "c": ["ilaclr"], "z": ["ilazlr"]},
+    # Multi-file pages
+    "larf":        {"d": ["dlarf", "dlarf1f", "dlarf1l"],
+                    "s": ["slarf", "slarf1f", "slarf1l"],
+                    "c": ["clarf", "clarf1f", "clarf1l"],
+                    "z": ["zlarf", "zlarf1f", "zlarf1l"]},
+}
+
+# Pages with no precision prefix (precision-independent utilities).
+# Shown as bare doxygenfile directives, no tabs.
+PRECISION_INDEPENDENT = {"ieeeck", "ilaenv2stage", "iparmq"}
+
+# ---------------------------------------------------------------------------
+# Hierarchy definition
+# ---------------------------------------------------------------------------
+# Structure: {dir_name: (title, {subdir: ...} | [page_names])}
+# Page names are the real-precision LAPACK names (sy, sp, sb, or, op),
+# NOT the complex-only names (he, hp, hb, un, up).
+HIERARCHY = {
+    "linear-systems": ("Linear Systems", {
+        "general": ("General Matrix", [
+            "gesv", "gesv_mixed", "gesvx",
+            "getrf", "getrf2", "getf2", "getrs", "getri",
+            "gecon", "geequ", "geequb", "gerfs",
+            "getc2", "gesc2",
+            "laswp", "laqge", "latdf",
+        ]),
+        "general-banded": ("General Banded", [
+            "gbsv", "gbsvx",
+            "gbtrf", "gbtf2", "gbtrs",
+            "gbcon", "gbequ", "gbequb", "gbrfs",
+            "laqgb",
+        ]),
+        "general-tridiagonal": ("General Tridiagonal", [
+            "gtsv", "gtsvx",
+            "gttrf", "gttrs", "gtts2",
+            "gtcon", "gtrfs",
+        ]),
+        "spd": ("Symmetric Positive Definite", [
+            "posv", "posv_mixed", "posvx",
+            "potrf", "potrf2", "potf2", "potrs", "potri",
+            "pocon", "poequ", "poequb", "porfs",
+            "laqsy",
+        ]),
+        "spd-band": ("SPD Band Storage", [
+            "pbsv", "pbsvx",
+            "pbtrf", "pbtf2", "pbtrs",
+            "pbcon", "pbequ", "pbrfs",
+            "laqsb",
+        ]),
+        "spd-packed": ("SPD Packed Storage", [
+            "ppsv", "ppsvx",
+            "pptrf", "pptrs", "pptri",
+            "ppcon", "ppequ", "pprfs",
+            "laqsp",
+        ]),
+        "spd-rfp": ("SPD Rectangular Full Packed", [
+            "pftrf", "pftrs", "pftri",
+            "pstf2", "pstrf",
+        ]),
+        "spd-tridiagonal": ("SPD Tridiagonal", [
+            "ptsv", "ptsvx",
+            "pttrf", "pttrs", "ptts2",
+            "ptcon", "ptrfs",
+        ]),
+        "symmetric-indefinite": ("Symmetric Indefinite", [
+            "sysv", "sysv_rk", "sysv_rook",
+            "sysv_aa", "sysv_aa_2stage",
+            "sysvx",
+            "sytrf", "sytrf_rk", "sytrf_rook",
+            "sytrf_aa", "sytrf_aa_2stage",
+            "sytf2", "sytf2_rk", "sytf2_rook",
+            "sytrs", "sytrs2", "sytrs_3",
+            "sytrs_rook",
+            "sytrs_aa", "sytrs_aa_2stage",
+            "sytri", "sytri2", "sytri2x",
+            "sytri_3", "sytri_3x", "sytri_rook",
+            "sycon", "sycon_3", "sycon_rook",
+            "syequb", "syrfs", "syswapr",
+            "lasyf", "lasyf_rk", "lasyf_rook", "lasyf_aa",
+            "syconv", "syconvf", "syconvf_rook",
+        ]),
+        "symmetric-indefinite-packed": ("Symmetric Indefinite Packed", [
+            "spsv", "spsvx",
+            "sptrf", "sptrs", "sptri",
+            "spcon", "sprfs",
+        ]),
+        "triangular": ("Triangular", [
+            "trtrs", "trtri", "trti2", "trcon", "trrfs",
+            "latrs", "latrs3",
+            "lauu2", "lauum",
+        ]),
+        "triangular-band": ("Triangular Band", [
+            "tbtrs", "tbcon", "tbrfs",
+            "latbs",
+        ]),
+        "triangular-packed": ("Triangular Packed", [
+            "tptrs", "tptri", "tpcon", "tprfs",
+            "latps",
+        ]),
+        "triangular-rfp": ("Triangular RFP", [
+            "tftri",
+        ]),
+        "auxiliary": ("Condition Estimation Helpers", [
+            "lacn2", "lacon",
+        ]),
+    }),
+    "least-squares": ("Least Squares", {
+        "drivers": ("Drivers", [
+            "gels", "gelsd", "gelss", "gelst", "gelsy", "getsls",
+        ]),
+        "constrained": ("Constrained", [
+            "ggglm", "gglse",
+        ]),
+        "auxiliary": ("Auxiliary", [
+            "laic1", "lals0", "lalsa", "lalsd",
+        ]),
+    }),
+    "orthogonal": ("Orthogonal / Unitary Factors", {
+        "qr": ("QR Factorization", [
+            "geqrf", "geqr2", "geqr2p", "geqrfp",
+            "geqr", "geqrt", "geqrt2", "geqrt3",
+            "orgqr", "org2r",
+            "ormqr", "orm2r", "gemqr", "gemqrt",
+        ]),
+        "qr-pivoting": ("QR with Column Pivoting", [
+            "geqp3", "geqp3rk", "laqp2", "laqp2rk", "laqp3rk", "laqps",
+        ]),
+        "qr-tall-skinny": ("QR, Tall-Skinny (TSQR)", [
+            "latsqr", "lamtsqr", "getsqrhrt", "larfb_gett",
+            "orgtsqr", "orgtsqr_row",
+            "laorhr_col_getrfnp", "laorhr_col_getrfnp2", "orhr_col",
+        ]),
+        "qr-tri-pent": ("QR, Triangular-Pentagonal", [
+            "tpqrt", "tpqrt2", "tpmqrt", "tprfb",
+        ]),
+        "lq": ("LQ Factorization", [
+            "gelqf", "gelq2", "gelq", "gelqt", "gelqt3",
+            "orglq", "orgl2",
+            "ormlq", "orml2", "gemlq", "gemlqt",
+        ]),
+        "lq-short-wide": ("LQ, Short-Wide", [
+            "laswlq", "lamswlq",
+        ]),
+        "lq-tri-pent": ("LQ, Triangular-Pentagonal", [
+            "tplqt", "tplqt2", "tpmlqt",
+        ]),
+        "ql": ("QL Factorization", [
+            "geqlf", "geql2",
+            "orgql", "org2l",
+            "ormql", "orm2l",
+        ]),
+        "rq": ("RQ Factorization", [
+            "gerqf", "gerq2",
+            "orgrq", "orgr2",
+            "ormrq", "ormr2",
+        ]),
+        "rz": ("RZ Factorization", [
+            "tzrzf", "latrz",
+            "ormrz", "ormr3",
+            "larz", "larzb", "larzt",
+        ]),
+        "householder": ("Householder Reflectors", [
+            "larfg", "larfgp",
+            "larf", "larfb", "larft", "larfx", "larfy",
+        ]),
+        "givens": ("Givens / Jacobi Rotations", [
+            "lartg", "lar2v", "largv", "lartgp", "lartv", "lasr",
+        ]),
+        "cs-decomposition": ("Cosine-Sine (CS) Decomposition", [
+            "orcsd", "orcsd2by1", "bbcsd",
+            "orbdb", "orbdb1", "orbdb2", "orbdb3",
+            "orbdb4", "orbdb5", "orbdb6",
+            "lapmr", "lapmt",
+        ]),
+        "generalized-qr": ("Generalized QR", [
+            "ggqrf",
+        ]),
+        "generalized-rq": ("Generalized RQ", [
+            "ggrqf",
+        ]),
+    }),
+    "eigenvalues-nonsymmetric": ("Non-symmetric Eigenvalues", {
+        "standard-drivers": ("Standard Eigenvalue Drivers", [
+            "geev", "geevx", "gees", "geesx",
+        ]),
+        "generalized-drivers": ("Generalized Eigenvalue Drivers", [
+            "ggev", "ggev3", "ggevx", "gges", "gges3", "ggesx",
+        ]),
+        "computational": ("Computational Routines", [
+            "gehrd", "gehd2", "orghr", "ormhr",
+            "gebak", "gebal",
+            "hseqr", "hsein",
+            "trevc", "trevc3", "trexc", "trsen", "trsna",
+            "trsyl", "trsyl3",
+            "lahqr", "lahr2",
+            "laqr0", "laqr1", "laqr2", "laqr3", "laqr4", "laqr5",
+            "laqz0", "laqz1", "laqz2", "laqz3", "laqz4",
+            "laein", "laexc", "laln2", "lanv2", "laqtr", "lasy2",
+            "iparmq",
+        ]),
+        "generalized-computational": ("Generalized Computational", [
+            "gghrd", "gghd3", "ggbak", "ggbal",
+            "hgeqz",
+            "tgevc", "tgexc", "tgex2", "tgsen", "tgsna",
+            "tgsy2", "tgsyl",
+            "lagv2", "orm22",
+        ]),
+    }),
+    "eigenvalues-symmetric": ("Symmetric / Hermitian Eigenvalues", {
+        "dense-drivers": ("Dense Matrix Drivers", [
+            "syev", "syev_2stage",
+            "syevd", "syevd_2stage",
+            "syevr", "syevr_2stage",
+            "syevx", "syevx_2stage",
+        ]),
+        "band-drivers": ("Band Matrix Drivers", [
+            "sbev", "sbev_2stage",
+            "sbevd", "sbevd_2stage",
+            "sbevx", "sbevx_2stage",
+        ]),
+        "packed-drivers": ("Packed Matrix Drivers", [
+            "spev", "spevd", "spevx",
+        ]),
+        "tridiagonal-drivers": ("Tridiagonal Eigensolvers", [
+            "stev", "stevd", "stevr", "stevx",
+            "steqr", "sterf", "stedc", "stemr", "stegr",
+            "stebz", "stein",
+            "pteqr",
+        ]),
+        "generalized-drivers": ("Generalized Eigenvalue Drivers", [
+            "sygv", "sygv_2stage", "sygvd", "sygvx",
+            "sbgv", "sbgvd", "sbgvx",
+            "spgv", "spgvd", "spgvx",
+        ]),
+        "reduction": ("Reduction to Tridiagonal", [
+            "sytrd", "sytrd_2stage", "sytrd_sy2sb", "sytrd_sb2st",
+            "sytd2", "sbtrd", "sptrd",
+            "sb2st_kernels", "latrd",
+            "orgtr", "ormtr", "opgtr", "opmtr",
+            "disna", "lae2", "laev2",
+            "lagtf", "lagts",
+        ]),
+        "generalized-computational": ("Generalized Computational", [
+            "sygst", "sygs2", "sbgst", "spgst",
+            "lag2", "pbstf",
+        ]),
+        "tridiag-dc": ("Tridiagonal Divide-and-Conquer", [
+            "laed0", "laed1", "laed2", "laed3", "laed4",
+            "laed5", "laed6", "laed7", "laed8", "laed9",
+            "laeda", "lamrg",
+        ]),
+        "tridiag-rrr": ("Tridiagonal RRR (MRRR)", [
+            "lar1v", "larra", "larrb", "larrc", "larrd",
+            "larre", "larrf", "larrj", "larrk", "larrr", "larrv",
+        ]),
+        "tridiag-bisection": ("Tridiagonal Bisection", [
+            "laebz", "laneg",
+        ]),
+    }),
+    "svd": ("Singular Value Decomposition", {
+        "standard-drivers": ("Standard SVD Drivers", [
+            "gesvd", "gesdd", "gesvdx", "gesvdq",
+            "gejsv", "gesvj",
+            "bdsdc", "bdsqr", "bdsvdx",
+        ]),
+        "generalized-drivers": ("Generalized SVD Drivers", [
+            "ggsvd3",
+        ]),
+        "computational": ("Bidiagonal Reduction", [
+            "gebrd", "gebd2", "gbbrd",
+            "orgbr", "ormbr",
+            "labrd",
+            "las2", "lasv2", "lartgs",
+            "gsvj0", "gsvj1",
+        ]),
+        "generalized-computational": ("Generalized SVD Computational", [
+            "ggsvp3", "lags2", "lapll", "tgsja",
+        ]),
+        "bidiag-dc": ("Bidiagonal Divide-and-Conquer", [
+            "lasd0", "lasd1", "lasd2", "lasd3", "lasd4",
+            "lasd5", "lasd6", "lasd7", "lasd8",
+            "lasda", "lasdq", "lasdt",
+        ]),
+        "bidiag-qr": ("Bidiagonal QR Iteration", [
+            "lasq1", "lasq2", "lasq3", "lasq4", "lasq5", "lasq6",
+        ]),
+    }),
+    "blas-like": ("BLAS-like Extensions", {
+        "initialize-copy": ("Initialize, Copy, Convert", [
+            "_lag2_", "_lat2_", "lag2d",
+            "lacpy", "larnv", "laruv", "laset",
+            "tfttp", "tfttr", "tpttf", "tpttr", "trttf", "trttp",
+        ]),
+        "vector-ops": ("Vector Operations", [
+            "lasrt", "rscl",
+        ]),
+        "matrix-vector-ops": ("Matrix-Vector Operations", [
+            "ilalc", "ilalr", "lascl",
+        ]),
+        "matrix-matrix-ops": ("Matrix-Matrix Operations", [
+            "sfrk", "lagtm", "tfsm",
+        ]),
+        "norms": ("Matrix Norms", [
+            "langb", "lange", "langt",
+            "lansb", "lansy", "lansf", "lansp",
+            "lanhs", "lanst",
+            "lantb", "lantp", "lantr",
+            "lassq",
+        ]),
+        "scalar-ops": ("Scalar Operations", [
+            "lamch", "isnan", "ladiv", "laisnan",
+            "lapy2", "lapy3", "larmm",
+        ]),
+    }),
+    "auxiliary": ("Auxiliary Parameters", [
+        "ieeeck", "ilaenv2stage", "labad",
+    ]),
+}
 
 
 # ---------------------------------------------------------------------------
-# Derive precision variants
+# Source lookup
 # ---------------------------------------------------------------------------
-def derive_filename(d_filename, prefix):
-    """Derive a precision variant filename via simple prefix swap.
+def get_sources(page_name, prefix, src_dir):
+    """Return list of source basenames (without .c) that exist for a page.
 
-    E.g., derive_filename("dgetrf.c", "s") -> "sgetrf.c"
+    For standard pages: tries <prefix><page_name>.c in src_dir.
+    For SPECIAL_SOURCES: uses the explicit mapping.
+    For PRECISION_INDEPENDENT: returns the bare filename under 'd' only.
     """
-    return prefix + d_filename[1:]
-
-
-def find_available_precisions(d_filenames):
-    """For a list of d-prefixed filenames, find which precisions have ALL files.
-
-    Returns list of (prefix, label, sync_key, [filenames]) for precisions
-    where every derived file exists. Double is always included (source of truth).
-    """
-    available = []
-    for prefix, label, sync_key, src_dir in PRECISIONS:
+    if page_name in PRECISION_INDEPENDENT:
+        # Precision-independent: only emit once (under 'd' precision)
         if prefix == "d":
-            # Double always available (it's what the RST already references)
-            available.append((prefix, label, sync_key, list(d_filenames)))
-            continue
-        derived = [derive_filename(f, prefix) for f in d_filenames]
-        if all(os.path.isfile(os.path.join(src_dir, f)) for f in derived):
-            available.append((prefix, label, sync_key, derived))
-    return available
+            path = os.path.join(SRC_D, f"{page_name}.c")
+            if os.path.exists(path):
+                return [page_name]
+            # Also check src/s (some precision-independent files live there)
+            path = os.path.join(SRC_S, f"{page_name}.c")
+            if os.path.exists(path):
+                return [page_name]
+        return []
+
+    if page_name in SPECIAL_SOURCES:
+        spec = SPECIAL_SOURCES[page_name]
+        if prefix not in spec:
+            return []
+        return [f for f in spec[prefix]
+                if os.path.exists(os.path.join(src_dir, f"{f}.c"))]
+
+    # Standard: prefix + page_name
+    fname = f"{prefix}{page_name}"
+    if os.path.exists(os.path.join(src_dir, f"{fname}.c")):
+        return [fname]
+    return []
 
 
 # ---------------------------------------------------------------------------
-# RST generation
+# RST generation helpers
 # ---------------------------------------------------------------------------
 def make_doxygenfile_block(filename, indent):
     """Generate a doxygenfile directive block."""
-    lines = []
-    lines.append(f"{indent}.. doxygenfile:: {filename}")
-    lines.append(f"{indent}   :project: semicolon-lapack")
-    lines.append(f"{indent}   :sections: func")
-    return "\n".join(lines)
+    return (f"{indent}.. doxygenfile:: {filename}\n"
+            f"{indent}   :project: semicolon-lapack\n"
+            f"{indent}   :sections: func")
 
 
-def make_tab_item(label, sync_key, filenames, name=None):
-    """Generate a single tab-item block."""
-    lines = []
-    if name:
-        lines.append(f"    .. tab-item:: {label} ({name})")
-        lines.append(f"        :name: {name}")
-    else:
-        lines.append(f"    .. tab-item:: {label}")
-    lines.append(f"        :sync: {sync_key}")
-    lines.append("")
-    for i, fname in enumerate(filenames):
-        lines.append(make_doxygenfile_block(fname, "        "))
-        if i < len(filenames) - 1:
+def generate_leaf_rst(page_name):
+    """Generate RST content for a leaf (routine) page."""
+    title = page_name
+    underline = "=" * len(title)
+
+    # Precision-independent: bare doxygenfile, no tabs
+    if page_name in PRECISION_INDEPENDENT:
+        return (f"{title}\n{underline}\n\n\n"
+                f"{make_doxygenfile_block(page_name + '.c', '')}\n\n")
+
+    # Find which precisions have source files
+    available = []
+    for prefix, label, sync_key, src_dir in PRECISIONS:
+        sources = get_sources(page_name, prefix, src_dir)
+        if sources:
+            available.append((prefix, label, sync_key, sources))
+
+    if not available:
+        return (f"{title}\n{underline}\n\n"
+                f".. note:: No source files found for ``{page_name}``.\n")
+
+    if len(available) == 1:
+        # Single precision: bare doxygenfile(s), no tabs
+        _, _, _, sources = available[0]
+        lines = [title, underline, "", ""]
+        for src in sources:
+            lines.append(make_doxygenfile_block(f"{src}.c", ""))
             lines.append("")
+        return "\n".join(lines) + "\n"
+
+    # Multiple precisions: tab-set
+    is_multi = any(len(srcs) > 1 for _, _, _, srcs in available)
+    lines = [title, underline, "", ".. tab-set::", ""]
+
+    for prefix, label, sync_key, sources in available:
+        if is_multi:
+            lines.append(f"    .. tab-item:: {label}")
+        else:
+            func_name = sources[0]
+            lines.append(f"    .. tab-item:: {label} ({func_name})")
+            lines.append(f"        :name: {func_name}")
+        lines.append(f"        :sync: {sync_key}")
+        lines.append("")
+        for src in sources:
+            lines.append(make_doxygenfile_block(f"{src}.c", "        "))
+            lines.append("")
+
+    return "\n".join(lines) + "\n"
+
+
+def generate_toctree_rst(title, entries):
+    """Generate RST content for a toctree (intermediate) page."""
+    lines = [title, "=" * len(title), "", ".. toctree::", "   :maxdepth: 1", ""]
+    for entry in entries:
+        lines.append(f"   {entry}")
+    lines.append("")
     return "\n".join(lines)
 
 
-def generate_tabbed_rst(title, underline_char, d_filenames):
-    """Generate full RST content with tab-set for multi-precision."""
-    available = find_available_precisions(d_filenames)
+# ---------------------------------------------------------------------------
+# File I/O with change tracking
+# ---------------------------------------------------------------------------
+def write_file(filepath, content, dry_run=False, stats=None):
+    """Write content to file if changed. Returns True if file was updated."""
+    if os.path.exists(filepath):
+        with open(filepath) as f:
+            old = f.read()
+        if old == content:
+            if stats is not None:
+                stats["unchanged"] += 1
+            return False
 
-    if len(available) <= 1:
-        # Only double — no tabs needed, generate bare format
-        return generate_bare_rst(title, underline_char, d_filenames)
+    if dry_run:
+        if stats is not None:
+            stats["would_update"] += 1
+        return True
 
-    is_multi = len(d_filenames) > 1
-    lines = []
-    lines.append(title)
-    lines.append(underline_char * len(title))
-    lines.append("")
-    lines.append(".. tab-set::")
-    lines.append("")
-
-    for prefix, label, sync_key, filenames in available:
-        # For single-file tabs: include routine name in label and :name:
-        if is_multi:
-            tab = make_tab_item(label, sync_key, filenames)
-        else:
-            routine_name = filenames[0].replace(".c", "")
-            tab = make_tab_item(label, sync_key, filenames, name=routine_name)
-        lines.append(tab)
-        lines.append("")
-
-    return "\n".join(lines) + "\n"
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    with open(filepath, "w") as f:
+        f.write(content)
+    if stats is not None:
+        stats["updated"] += 1
+    return True
 
 
-def generate_bare_rst(title, underline_char, d_filenames):
-    """Generate RST with bare doxygenfile directives (no tabs)."""
-    lines = []
-    lines.append(title)
-    lines.append(underline_char * len(title))
-    lines.append("")
-    lines.append("")
-    for i, fname in enumerate(d_filenames):
-        lines.append(make_doxygenfile_block(fname, ""))
-        lines.append("")
-    return "\n".join(lines) + "\n"
+def clean_leaf_dir(leaf_dir, expected_files, dry_run=False):
+    """Remove stale .rst files in a leaf directory."""
+    removed = []
+    if not os.path.isdir(leaf_dir):
+        return removed
+    for fname in os.listdir(leaf_dir):
+        if fname.endswith(".rst") and fname not in expected_files:
+            fpath = os.path.join(leaf_dir, fname)
+            removed.append(fpath)
+            if not dry_run:
+                os.remove(fpath)
+    return removed
 
 
 # ---------------------------------------------------------------------------
-# Parse existing RST
+# Hierarchy walker
 # ---------------------------------------------------------------------------
-def parse_rst(filepath):
-    """Parse an RST file and extract title and d-prefixed doxygenfile refs.
+def process_node(parent_dir, node_name, node_data, dry_run, stats):
+    """Recursively process one node of the hierarchy.
 
-    Returns (title, underline_char, d_filenames) or None if no d-prefixed
-    doxygenfile directives found.
+    Returns the toctree entry name for the parent.
     """
-    with open(filepath) as f:
-        content = f.read()
+    title = node_data[0]
+    children = node_data[1]
+    node_dir = os.path.join(parent_dir, node_name)
+    toctree_path = os.path.join(parent_dir, f"{node_name}.rst")
 
-    # Extract title: first non-blank line followed by underline
-    lines = content.split("\n")
-    title = None
-    underline_char = "="
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped and title is None:
-            title = stripped
-            continue
-        if title is not None and stripped:
-            # This should be the underline
-            if all(c == stripped[0] for c in stripped):
-                underline_char = stripped[0]
-            break
+    os.makedirs(node_dir, exist_ok=True)
 
-    if title is None:
-        return None
+    if isinstance(children, list):
+        # Leaf container: directory of routine pages
+        expected = {f"{page}.rst" for page in children}
+        stale = clean_leaf_dir(node_dir, expected, dry_run)
+        for f in stale:
+            rel = os.path.relpath(f, API_DIR)
+            print(f"  {'Would remove' if dry_run else 'Removed'}: {rel}")
 
-    # Find all d-prefixed doxygenfile references
-    d_filenames = RE_DOXYGENFILE_D.findall(content)
-    if not d_filenames:
-        return None
+        toctree_entries = []
+        for page_name in children:
+            leaf_path = os.path.join(node_dir, f"{page_name}.rst")
+            content = generate_leaf_rst(page_name)
+            write_file(leaf_path, content, dry_run, stats)
+            toctree_entries.append(f"{node_name}/{page_name}")
 
-    # Deduplicate while preserving order
-    seen = set()
-    unique = []
-    for f in d_filenames:
-        if f not in seen:
-            seen.add(f)
-            unique.append(f)
+        toctree_content = generate_toctree_rst(title, toctree_entries)
+        write_file(toctree_path, toctree_content, dry_run, stats)
 
-    return (title, underline_char, unique)
+    elif isinstance(children, dict):
+        # Intermediate node: sub-families
+        sub_entries = []
+        for sub_name, sub_data in children.items():
+            process_node(node_dir, sub_name, sub_data, dry_run, stats)
+            sub_entries.append(f"{node_name}/{sub_name}")
 
-
-# ---------------------------------------------------------------------------
-# Process a single RST file
-# ---------------------------------------------------------------------------
-def process_file(filepath):
-    """Process one RST file. Returns (new_content, changed) or (None, False)."""
-    parsed = parse_rst(filepath)
-    if parsed is None:
-        return None, False
-
-    title, underline_char, d_filenames = parsed
-    new_content = generate_tabbed_rst(title, underline_char, d_filenames)
-
-    with open(filepath) as f:
-        old_content = f.read()
-
-    return new_content, (new_content != old_content)
-
-
-# ---------------------------------------------------------------------------
-# Collect RST files
-# ---------------------------------------------------------------------------
-def collect_rst_files(root):
-    """Recursively collect all .rst files under root."""
-    rst_files = []
-    for dirpath, _, filenames in os.walk(root):
-        for fname in sorted(filenames):
-            if fname.endswith(".rst"):
-                rst_files.append(os.path.join(dirpath, fname))
-    return sorted(rst_files)
+        toctree_content = generate_toctree_rst(title, sub_entries)
+        write_file(toctree_path, toctree_content, dry_run, stats)
 
 
 # ---------------------------------------------------------------------------
@@ -227,70 +572,51 @@ def collect_rst_files(root):
 # ---------------------------------------------------------------------------
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate precision-tabbed RST documentation"
+        description="Generate API documentation structure with precision tabs"
     )
     parser.add_argument(
         "--dry-run", action="store_true",
-        help="Print changes instead of writing files"
-    )
-    parser.add_argument(
-        "--file", type=str, default=None,
-        help="Process only this file (basename, e.g. hesv.rst)"
+        help="Preview changes without writing files"
     )
     args = parser.parse_args()
 
-    # Collect files
-    if args.file:
-        # Find the file in the API doc tree
-        matches = []
-        for rst in collect_rst_files(DOC_API):
-            if os.path.basename(rst) == args.file:
-                matches.append(rst)
-        if not matches:
-            print(f"Error: {args.file} not found under {DOC_API}",
-                  file=sys.stderr)
-            return 1
-        rst_files = matches
-    else:
-        rst_files = collect_rst_files(DOC_API)
-
-    # Report source directories
+    print("Source directories:", file=sys.stderr)
     for prefix, label, sync_key, src_dir in PRECISIONS:
         exists = os.path.isdir(src_dir)
-        count = len([f for f in os.listdir(src_dir) if f.endswith(".c")]) \
-            if exists else 0
+        count = (len([f for f in os.listdir(src_dir) if f.endswith(".c")])
+                 if exists else 0)
         status = f"{count} files" if exists else "not found"
-        print(f"  {label:16s} ({prefix}) : {src_dir} ({status})",
-              file=sys.stderr)
+        print(f"  {label:16s} ({prefix}) : {status}", file=sys.stderr)
+    print(file=sys.stderr)
 
-    updated = 0
-    skipped = 0
-    unchanged = 0
+    stats = {"updated": 0, "unchanged": 0, "would_update": 0}
+    dry_run = args.dry_run
 
-    for filepath in rst_files:
-        relpath = os.path.relpath(filepath, PROJECT_ROOT)
-        new_content, changed = process_file(filepath)
+    # Count leaf pages in hierarchy
+    def count_pages(node):
+        children = node[1]
+        if isinstance(children, list):
+            return len(children)
+        return sum(count_pages(v) for v in children.values())
 
-        if new_content is None:
-            skipped += 1
-            continue
+    total_pages = sum(count_pages(v) for v in HIERARCHY.values())
 
-        if not changed:
-            unchanged += 1
-            continue
+    # Process hierarchy
+    top_entries = []
+    for family_name, family_data in HIERARCHY.items():
+        process_node(API_DIR, family_name, family_data, dry_run, stats)
+        top_entries.append(family_name)
 
-        if args.dry_run:
-            print(f"=== {relpath} ===")
-            print(new_content)
-        else:
-            with open(filepath, "w") as f:
-                f.write(new_content)
-            updated += 1
+    # Write api/index.rst
+    index_content = generate_toctree_rst("API Reference", top_entries)
+    write_file(os.path.join(API_DIR, "index.rst"), index_content, dry_run, stats)
 
-    print(f"\nProcessed {len(rst_files)} RST files:", file=sys.stderr)
-    print(f"  Updated:   {updated}", file=sys.stderr)
-    print(f"  Unchanged: {unchanged}", file=sys.stderr)
-    print(f"  Skipped:   {skipped} (no d-prefixed doxygenfile)", file=sys.stderr)
+    # Report
+    action = "Would update" if dry_run else "Updated"
+    n_changed = stats["would_update"] if dry_run else stats["updated"]
+    print(f"Hierarchy: {total_pages} leaf pages", file=sys.stderr)
+    print(f"  {action}: {n_changed}", file=sys.stderr)
+    print(f"  Unchanged: {stats['unchanged']}", file=sys.stderr)
 
     return 0
 
