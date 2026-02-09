@@ -47,8 +47,10 @@ lapack_tests = {
 
   # Expert driver tests (ddrv*.f ports)
   'ddrvgb': ['test_ddrvgb.c', 'band'],       # DGBSV/DGBSVX drivers
+  'ddrvpb': ['test_ddrvpb.c', 'band'],       # DPBSV/DPBSVX drivers
   'ddrvge': ['test_ddrvge.c', 'lu'],         # DGESV/DGESVX drivers
   'ddrvpo': ['test_ddrvpo.c', 'cholesky'],   # DPOSV/DPOSVX drivers
+  'ddrvpp': ['test_ddrvpp.c', 'cholesky'],   # DPPSV/DPPSVX drivers
   'ddrvsy': ['test_ddrvsy.c', 'symmetric'],  # DSYSV/DSYSVX drivers
   'ddrvgt': ['test_ddrvgt.c', 'tridiag'],    # DGTSV/DGTSVX drivers
   'ddrvpt': ['test_ddrvpt.c', 'tridiag'],    # DPTSV/DPTSVX drivers
@@ -59,6 +61,10 @@ lapack_tests = {
   'ddrvst': ['test_ddrvst.c', 'eigen'],      # Symmetric eigenvalue drivers
   'ddrvab': ['test_ddrvab.c', 'solve'],      # DSGESV mixed-precision solver
   'ddrvac': ['test_ddrvac.c', 'solve'],      # DSPOSV mixed-precision solver
+  'ddrvrf1': ['test_ddrvrf1.c', 'rfp'],     # DLANSF (RFP norm)
+  'ddrvrf2': ['test_ddrvrf2.c', 'rfp'],     # RFP conversion roundtrips
+  'ddrvrf3': ['test_ddrvrf3.c', 'rfp'],     # DTFSM (RFP triangular solve)
+  'ddrvrf4': ['test_ddrvrf4.c', 'rfp'],     # DSFRK (RFP rank-k update)
 
   # RNG validation
   'rng_validation': ['test_rng_validation.c', 'rng'],  # xoshiro256+ correctness
