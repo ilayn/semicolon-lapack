@@ -8,25 +8,19 @@
 #include "semicolon_lapack_double.h"
 
 /*
- * Blue's scaling constants for double precision.
- * These are computed from the IEEE 754 double precision parameters:
- *   radix = 2
- *   minexponent = -1021 (DBL_MIN_EXP - 1)
- *   maxexponent = 1024  (DBL_MAX_EXP)
- *   digits = 53         (DBL_MANT_DIG)
+ * Blue's scaling constants.
+ * Computed from IEEE 754 precision parameters (la_constants.f90):
+ *   tsml = 2^ceiling((minexponent - 1) / 2)
+ *   tbig = 2^floor((maxexponent - digits + 1) / 2)
+ *   ssml = 2^(-floor((minexponent - digits) / 2))
+ *   sbig = 2^(-ceiling((maxexponent + digits - 1) / 2))
  *
- * tsml = radix^ceiling((minexponent - 1) * 0.5)
- *      = 2^ceiling((-1021 - 1) * 0.5) = 2^ceiling(-511) = 2^(-511)
- *
- * tbig = radix^floor((maxexponent - digits + 1) * 0.5)
- *      = 2^floor((1024 - 53 + 1) * 0.5) = 2^floor(486) = 2^486
- *
- * ssml = radix^(-floor((minexponent - digits) * 0.5))
- *      = 2^(-floor((-1021 - 53) * 0.5)) = 2^(-floor(-537)) = 2^537
- *
- * sbig = radix^(-ceiling((maxexponent + digits - 1) * 0.5))
- *      = 2^(-ceiling((1024 + 53 - 1) * 0.5)) = 2^(-ceiling(538)) = 2^(-538)
+ * where minexponent = DBL_MIN_EXP, maxexponent = DBL_MAX_EXP,
+ * digits = DBL_MANT_DIG. The CEIL_HALF/FLOOR_HALF macros compute
+ * ceiling(n/2) and floor(n/2) for integers using C integer division.
  */
+#define CEIL_HALF(n)  (((n) >= 0) ? (((n) + 1) / 2) : ((n) / 2))
+#define FLOOR_HALF(n) (((n) >= 0) ? ((n) / 2) : (((n) - 1) / 2))
 
 /**
  * DLASSQ returns the values scale_out and sumsq_out such that
@@ -69,14 +63,10 @@ void dlassq(
     const double ZERO = 0.0;
     const double ONE = 1.0;
 
-    /*
-     * Blue's scaling constants for IEEE 754 double precision.
-     * Using ldexp for exact powers of 2.
-     */
-    const double tsml = ldexp(1.0, -511);  /* 2^(-511) threshold for small */
-    const double tbig = ldexp(1.0, 486);   /* 2^486 threshold for big */
-    const double ssml = ldexp(1.0, 537);   /* 2^537 scale-up multiplier */
-    const double sbig = ldexp(1.0, -538);  /* 2^(-538) scale-down multiplier */
+    const double tsml = ldexp(1.0, CEIL_HALF(DBL_MIN_EXP - 1));
+    const double tbig = ldexp(1.0, FLOOR_HALF(DBL_MAX_EXP - DBL_MANT_DIG + 1));
+    const double ssml = ldexp(1.0, -FLOOR_HALF(DBL_MIN_EXP - DBL_MANT_DIG));
+    const double sbig = ldexp(1.0, -CEIL_HALF(DBL_MAX_EXP + DBL_MANT_DIG - 1));
 
     int i, ix;
     int notbig;
@@ -202,3 +192,6 @@ void dlassq(
         *sumsq = amed;
     }
 }
+
+#undef CEIL_HALF
+#undef FLOOR_HALF
