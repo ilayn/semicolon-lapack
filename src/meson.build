@@ -3,8 +3,15 @@
 
 # Precision-independent utilities
 common_sources = files(
-  'xerbla.c',
   'lapack_tuning.c',
+)
+
+# Precision-independent auxiliary routines
+auxiliary_sources = files(
+  'auxiliary/xerbla.c',
+  'auxiliary/ieeeck.c',
+  'auxiliary/ilaenv2stage.c',
+  'auxiliary/iparam2stage.c',
 )
 
 # Double precision routines
@@ -480,8 +487,6 @@ d_sources = files(
   'd/dtpmqrt.c',
   'd/dtpmlqt.c',
   # 2-Stage symmetric eigenvalue
-  'd/iparam2stage.c',
-  'd/ilaenv2stage.c',
   'd/dsb2st_kernels.c',
   'd/dsytrd_sb2st.c',
   'd/dsytrd_sy2sb.c',
@@ -575,12 +580,9 @@ d_sources = files(
   'd/dlabad.c',
   'd/iladlc.c',
   'd/iladlr.c',
-  'd/ieeeck.c',
 )
 
 # Single precision routines
-# Note: ieeeck.c, ilaenv2stage.c, iparam2stage.c, iparmq.c are
-# precision-independent integer utilities already built via d_sources.
 s_sources = files(
   's/ilaslc.c',
   's/ilaslr.c',
@@ -1066,7 +1068,7 @@ s_sources = files(
   's/stzrzf.c',
 )
 
-all_sources = common_sources + d_sources + s_sources
+all_sources = common_sources + auxiliary_sources + d_sources + s_sources
 
 # Build as static library
 libsemilapack = static_library('semilapack',

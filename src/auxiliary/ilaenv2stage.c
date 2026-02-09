@@ -3,7 +3,7 @@
  * @brief ILAENV2STAGE chooses problem-dependent parameters for 2-stage algorithms.
  */
 
-#include "semicolon_lapack_single.h"
+#include "semicolon_lapack_auxiliary.h"
 
 int ilaenv2stage(const int ispec, const char* name, const char* opts,
                  const int n1, const int n2, const int n3, const int n4)

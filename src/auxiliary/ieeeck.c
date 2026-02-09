@@ -3,7 +3,7 @@
  * @brief IEEECK verifies IEEE infinity and NaN arithmetic is safe.
  */
 
-#include "semicolon_lapack_single.h"
+#include "semicolon_lapack_auxiliary.h"
 
 /**
  * IEEECK is called from the ILAENV to verify that Infinity and

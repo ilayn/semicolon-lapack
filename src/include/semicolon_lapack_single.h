@@ -3,6 +3,7 @@
 
 #include <float.h>
 #include "semicolon_lapack/semicolon_lapack.h"
+#include "semicolon_lapack_auxiliary.h"
 
 /* Eigenvalue selection callback types for Schur decomposition drivers */
 /* Returns nonzero if eigenvalue wr + i*wi should be selected.
@@ -11,11 +12,6 @@ typedef int (*sselect2_t)(const float* wr, const float* wi);
 /* Returns nonzero if generalized eigenvalue (alphar + i*alphai)/beta should be selected.
  * Arguments are passed by pointer to match Fortran calling convention. */
 typedef int (*sselect3_t)(const float* alphar, const float* alphai, const float* beta);
-
-#ifndef XERBLA_DECLARED
-#define XERBLA_DECLARED
-SEMICOLON_API void   xerbla(const char* srname, int info);
-#endif
 
 SEMICOLON_API float  sladiv2(const float a, const float b, const float c, const float d, const float r, const float t);
 SEMICOLON_API float  slamch(const char* cmach);
@@ -40,18 +36,6 @@ SEMICOLON_API int    slaneg(const int n, const float* D, const float* lld, const
 SEMICOLON_API int    ilaslc(const int m, const int n, const float* const restrict A, const int lda);
 SEMICOLON_API int    ilaslr(const int m, const int n, const float* const restrict A, const int lda);
 SEMICOLON_API void   slag2d(const int m, const int n, const float* const restrict SA, const int ldsa, double* const restrict A, const int lda, int* info);
-#ifndef ILAENV2STAGE_DECLARED
-#define ILAENV2STAGE_DECLARED
-SEMICOLON_API int    ilaenv2stage(const int ispec, const char* name, const char* opts, const int n1, const int n2, const int n3, const int n4);
-#endif
-#ifndef IPARAM2STAGE_DECLARED
-#define IPARAM2STAGE_DECLARED
-SEMICOLON_API int    iparam2stage(const int ispec, const char* name, const char* opts, const int ni, const int nbi, const int ibi, const int nxi);
-#endif
-#ifndef IPARMQ_DECLARED
-#define IPARMQ_DECLARED
-SEMICOLON_API int    iparmq(const int ispec, const char* name, const char* opts, const int n, const int ilo, const int ihi, const int lwork);
-#endif
 SEMICOLON_API void   sbbcsd(const char* jobu1, const char* jobu2, const char* jobv1t, const char* jobv2t, const char* trans, const int m, const int p, const int q, float* restrict theta, float* restrict phi, float* restrict U1, const int ldu1, float* restrict U2, const int ldu2, float* restrict V1T, const int ldv1t, float* restrict V2T, const int ldv2t, float* restrict B11D, float* restrict B11E, float* restrict B12D, float* restrict B12E, float* restrict B21D, float* restrict B21E, float* restrict B22D, float* restrict B22E, float* restrict work, const int lwork, int* info);
 SEMICOLON_API void   sbdsdc(const char* uplo, const char* compq, const int n, float* const restrict D, float* const restrict E, float* const restrict U, const int ldu, float* const restrict VT, const int ldvt, float* const restrict Q, int* const restrict IQ, float* const restrict work, int* const restrict IWORK, int* info);
 SEMICOLON_API void   sbdsqr(const char* uplo, const int n, const int ncvt, const int nru, const int ncc, float* const restrict D, float* const restrict E, float* const restrict VT, const int ldvt, float* const restrict U, const int ldu, float* const restrict C, const int ldc, float* const restrict work, int* info);
