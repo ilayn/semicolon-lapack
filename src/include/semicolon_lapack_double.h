@@ -40,9 +40,18 @@ SEMICOLON_API int    dlaneg(const int n, const double* D, const double* lld, con
 SEMICOLON_API int    ieeeck(const int ispec, const float zero, const float one);
 SEMICOLON_API int    iladlc(const int m, const int n, const double* const restrict A, const int lda);
 SEMICOLON_API int    iladlr(const int m, const int n, const double* const restrict A, const int lda);
+#ifndef ILAENV2STAGE_DECLARED
+#define ILAENV2STAGE_DECLARED
 SEMICOLON_API int    ilaenv2stage(const int ispec, const char* name, const char* opts, const int n1, const int n2, const int n3, const int n4);
+#endif
+#ifndef IPARAM2STAGE_DECLARED
+#define IPARAM2STAGE_DECLARED
 SEMICOLON_API int    iparam2stage(const int ispec, const char* name, const char* opts, const int ni, const int nbi, const int ibi, const int nxi);
+#endif
+#ifndef IPARMQ_DECLARED
+#define IPARMQ_DECLARED
 SEMICOLON_API int    iparmq(const int ispec, const char* name, const char* opts, const int n, const int ilo, const int ihi, const int lwork);
+#endif
 SEMICOLON_API void   dbbcsd(const char* jobu1, const char* jobu2, const char* jobv1t, const char* jobv2t, const char* trans, const int m, const int p, const int q, double* restrict theta, double* restrict phi, double* restrict U1, const int ldu1, double* restrict U2, const int ldu2, double* restrict V1T, const int ldv1t, double* restrict V2T, const int ldv2t, double* restrict B11D, double* restrict B11E, double* restrict B12D, double* restrict B12E, double* restrict B21D, double* restrict B21E, double* restrict B22D, double* restrict B22E, double* restrict work, const int lwork, int* info);
 SEMICOLON_API void   dbdsdc(const char* uplo, const char* compq, const int n, double* const restrict D, double* const restrict E, double* const restrict U, const int ldu, double* const restrict VT, const int ldvt, double* const restrict Q, int* const restrict IQ, double* const restrict work, int* const restrict IWORK, int* info);
 SEMICOLON_API void   dbdsqr(const char* uplo, const int n, const int ncvt, const int nru, const int ncc, double* const restrict D, double* const restrict E, double* const restrict VT, const int ldvt, double* const restrict U, const int ldu, double* const restrict C, const int ldc, double* const restrict work, int* info);
