@@ -57,11 +57,12 @@
  *                       lwork >= 3*min(m,n) + max(2*min(m,n), max(m,n), nrhs).
  *                       For good performance, lwork should generally be larger.
  *                       If lwork = -1, a workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: the algorithm for computing the SVD failed to converge;
- *                            if info = i, i off-diagonal elements of an intermediate
- *                            bidiagonal form did not converge to zero.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: the algorithm for computing the SVD failed to converge;
+ *                           if info = i, i off-diagonal elements of an intermediate
+ *                           bidiagonal form did not converge to zero.
  */
 void dgelss(const int m, const int n, const int nrhs,
             double* const restrict A, const int lda,

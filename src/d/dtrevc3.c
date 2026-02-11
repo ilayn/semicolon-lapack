@@ -42,8 +42,9 @@
  * @param[in] lwork   Dimension of work. lwork >= max(1, 3*n).
  *                    For optimum performance, lwork >= n + 2*n*nb.
  *                    If lwork = -1, workspace query.
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                            const int n, double* T, const int ldt,

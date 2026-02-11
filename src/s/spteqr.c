@@ -56,16 +56,17 @@
  * @param[in]     ldz   The leading dimension of the array Z. ldz >= 1, and if
  *                      compz = 'V' or 'I', ldz >= max(1, n).
  * @param[out]    work  Double precision array, dimension (4*n).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit.
- *                      - < 0: if info = -i, the i-th argument had an illegal value.
- *                      - > 0: if info = i, and i is:
- *                             <= n  the Cholesky factorization of the matrix could
- *                                   not be performed because the leading principal
- *                                   minor of order i was not positive.
- *                             > n   the SVD algorithm failed to converge;
- *                                   if info = n+i, i off-diagonal elements of the
- *                                   bidiagonal factor did not converge to zero.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit.
+ *                           - < 0: if info = -i, the i-th argument had an illegal value.
+ *                           - > 0: if info = i, and i is:
+ *                         - <= n  the Cholesky factorization of the matrix could
+ *                           not be performed because the leading principal
+ *                           minor of order i was not positive.
+ *                         - > n   the SVD algorithm failed to converge;
+ *                           if info = n+i, i off-diagonal elements of the
+ *                           bidiagonal factor did not converge to zero.
  */
 void spteqr(
     const char* compz,

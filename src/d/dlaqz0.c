@@ -32,7 +32,8 @@
  * @param[out]    work     Workspace array.
  * @param[in]     lwork    Dimension of workspace. If lwork = -1, workspace query.
  * @param[in]     rec      Current recursion level. Should be set to 0 on first call.
- * @param[out]    info     = 0: successful exit.
+ * @param[out]    info
+ *                         - = 0: successful exit.
  */
 void dlaqz0(
     const char* wants,

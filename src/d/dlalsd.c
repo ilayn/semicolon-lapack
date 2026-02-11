@@ -42,9 +42,10 @@ static const double TWO = 2.0;
  * @param[out]    work     Array of dimension at least
  *                          (9*n + 2*n*smlsiz + 8*n*nlvl + n*nrhs + (smlsiz+1)^2).
  * @param[out]    iwork    Integer array of dimension at least (3*n*nlvl + 11*n).
- * @param[out]    info     = 0: successful exit.
- *                          < 0: if info = -i, the i-th argument had illegal value.
- *                          > 0: The algorithm failed to compute a singular value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had illegal value.
+ *                         - > 0: The algorithm failed to compute a singular value.
  */
 void dlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
             double* const restrict D, double* const restrict E,

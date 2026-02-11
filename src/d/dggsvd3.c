@@ -42,9 +42,10 @@
  * @param[out]    work    Workspace of dimension lwork.
  * @param[in]     lwork   Dimension of work. If lwork = -1, workspace query.
  * @param[out]    iwork   Integer workspace of dimension n. Stores sorting info.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        = 1: the Jacobi-type procedure failed to converge.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: the Jacobi-type procedure failed to converge.
  */
 void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int n, const int p,

@@ -47,8 +47,9 @@
  * @param[in]     lwork  The dimension of the array work.
  *                       lwork >= 1, if min(m,n) = 0, and lwork >= nb*n, otherwise.
  *                       If lwork = -1, then a workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void slatsqr(const int m, const int n, const int mb, const int nb,
              float* const restrict A, const int lda,

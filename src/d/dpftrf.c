@@ -34,11 +34,11 @@
  *          On exit, the factor U or L from the Cholesky factorization.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, the leading principal minor of order i
- *               is not positive, and the factorization could not be
- *               completed.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the leading principal minor of order i
+ *                           is not positive, and the factorization could not be
+ *                           completed.
  */
 void dpftrf(
     const char* transr,

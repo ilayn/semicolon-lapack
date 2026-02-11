@@ -25,11 +25,12 @@
  *                       the Cholesky factorization A = U**T*U or A = L*L**T,
  *                       in the same storage format as A.
  *                       Array of dimension (n*(n+1)/2).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the leading principal minor of order i
- *                            is not positive, and the factorization could not be
- *                            completed.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the leading principal minor of order i
+ *                           is not positive, and the factorization could not be
+ *                           completed.
  */
 void dpptrf(
     const char* uplo,

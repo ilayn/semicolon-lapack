@@ -72,15 +72,16 @@
  *                   if sense = 'V' or 'B', liwork >= sdim*(n-sdim).
  *                   If liwork = -1, a workspace query is assumed.
  * @param[out] bwork Integer array, dimension (n). Not referenced if sort = 'N'.
- * @param[out] info  = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   > 0: if info = i, and i is
- *                       <= n: the QR algorithm failed to compute all eigenvalues;
- *                       = n+1: eigenvalues could not be reordered because some
- *                              eigenvalues were too close to separate;
- *                       = n+2: after reordering, roundoff changed values of some
- *                              complex eigenvalues so that leading eigenvalues in
- *                              the Schur form no longer satisfy select=true.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, and i is
+ *                         - <= n: the QR algorithm failed to compute all eigenvalues;
+ *                         - = n+1: eigenvalues could not be reordered because some
+ *                           eigenvalues were too close to separate;
+ *                         - = n+2: after reordering, roundoff changed values of some
+ *                           complex eigenvalues so that leading eigenvalues in
+ *                           the Schur form no longer satisfy select=true.
  */
 void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
             const char* sense, const int n, float* A, const int lda, int* sdim,

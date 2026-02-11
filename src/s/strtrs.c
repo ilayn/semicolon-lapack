@@ -48,9 +48,10 @@
  *                      On entry, the right hand side matrix B.
  *                      On exit, if info = 0, the solution matrix X.
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, the i-th diagonal element of A is exactly
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element of A is exactly
  *                           zero, indicating that the matrix is singular and the
  *                           solutions X have not been computed.
  */

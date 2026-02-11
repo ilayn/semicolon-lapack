@@ -19,9 +19,10 @@
  * @param[in,out] E     Double precision array, dimension (n).
  *                      On entry, the first (n-1) entries contain the subdiagonal
  *                      elements of the tridiagonal matrix T; E(n-1) is set to zero.
- * @param[out]    info  = 0: the matrix warrants computations preserving
+ * @param[out]    info
+ *                         - = 0: the matrix warrants computations preserving
  *                           relative accuracy.
- *                      = 1: the matrix warrants computations guaranteeing
+ *                         - = 1: the matrix warrants computations guaranteeing
  *                           only absolute accuracy.
  */
 void dlarrr(const int n, const double* D, double* E, int* info)

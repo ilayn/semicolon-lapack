@@ -43,10 +43,11 @@
  *                      eigenvectors are desired, then ldz >= max(1,n).
  * @param[out]    work  Double precision array, dimension (max(1,2*n-2)).
  *                      If compz = 'N', then work is not referenced.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value
- *                      > 0: the algorithm has failed to find all the
+ *                         - > 0: the algorithm has failed to find all the
  *                           eigenvalues in a total of 30*N iterations;
  *                           if info = i, then i elements of E have not
  *                           converged to zero.

@@ -60,8 +60,9 @@
  *                      only calculates the optimal size of the work array, returns
  *                      this value as the first entry of the work array, and no error
  *                      message related to lwork is issued by xerbla.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dorgbr(const char* vect, const int m, const int n, const int k,
             double* const restrict A, const int lda,

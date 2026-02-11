@@ -38,7 +38,8 @@
  *                       lwork >= 1 if min(m,n) = 0, lwork >= n otherwise.
  *                       For optimal performance, lwork >= n*nb.
  *                       If lwork == -1, workspace query only.
- * @param[out]    info   = 0: success; < 0: -i means i-th argument was illegal.
+ * @param[out]    info
+ *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void sgeqrfp(const int m, const int n,
              float * const restrict A, const int lda,

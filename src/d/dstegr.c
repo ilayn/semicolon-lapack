@@ -105,13 +105,14 @@
  *                       array, returns this value as the first entry of the
  *                       iwork array, and no error message related to liwork is
  *                       issued by xerbla.
- * @param[out]    info   Exit status:
- *                       - = 0: successful exit
- *                       - < 0: if info = -i, the i-th argument had an illegal value
- *                       - > 0: if info = 1X, internal error in DLARRE,
- *                              if info = 2X, internal error in DLARRV.
- *                              Here, the digit X = ABS(iinfo) < 10, where iinfo is
- *                              the nonzero error code returned by DLARRE or DLARRV.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                           - > 0: if info = 1X, internal error in DLARRE,
+ *                           if info = 2X, internal error in DLARRV.
+ *                           Here, the digit X = ABS(iinfo) < 10, where iinfo is
+ *                           the nonzero error code returned by DLARRE or DLARRV.
  */
 void dstegr(
     const char* jobz,

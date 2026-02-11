@@ -75,19 +75,20 @@
  * @param[out]    pivmin  The minimum pivot in the Sturm sequence for T.
  * @param[out]    work    Double precision array, dimension (6*N). Workspace.
  * @param[out]    iwork   Integer array, dimension (5*N). Workspace.
- * @param[out]    info    = 0: successful exit.
- *                        > 0: A problem occurred in SLARRE.
- *                        < 0: One of the called subroutines signaled an internal
- *                             problem.
- *                        = -1: Problem in SLARRD.
- *                        = 2: No base representation could be found in MAXTRY
- *                             iterations.
- *                        = -3: Problem in SLARRB when computing the refined root
- *                              representation for SLASQ2.
- *                        = -4: Problem in SLARRB when performing bisection on the
- *                              desired part of the spectrum.
- *                        = -5: Problem in SLASQ2.
- *                        = -6: Problem in SLASQ2.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - > 0: A problem occurred in SLARRE.
+ *                         - < 0: One of the called subroutines signaled an internal
+ *                           problem.
+ *                         - = -1: Problem in SLARRD.
+ *                         - = 2: No base representation could be found in MAXTRY
+ *                           iterations.
+ *                         - = -3: Problem in SLARRB when computing the refined root
+ *                           representation for SLASQ2.
+ *                         - = -4: Problem in SLARRB when performing bisection on the
+ *                           desired part of the spectrum.
+ *                         - = -5: Problem in SLASQ2.
+ *                         - = -6: Problem in SLASQ2.
  */
 void slarre(const char* range, const int n, float* vl, float* vu,
             const int il, const int iu,

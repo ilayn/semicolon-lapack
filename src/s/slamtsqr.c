@@ -42,8 +42,9 @@
  *                       If SIDE = 'L', lwork >= max(1, n*nb).
  *                       If SIDE = 'R', lwork >= max(1, mb*nb).
  *                       If lwork = -1, workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void slamtsqr(const char* side, const char* trans,
               const int m, const int n, const int k, const int mb, const int nb,

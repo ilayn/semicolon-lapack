@@ -23,9 +23,10 @@
  * @param[out]    S      The scale factors for A. Array of dimension (n).
  * @param[out]    scond  Ratio of smallest to largest S(i).
  * @param[out]    amax   Absolute value of largest matrix element.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the i-th diagonal element is nonpositive.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void dpbequ(
     const char* uplo,

@@ -45,8 +45,9 @@
  *                                = P(j)    for j = IHI+1,...,N-1.
  *                       The order in which the interchanges are made is N-1 to IHI+1,
  *                       then 0 to ILO-1. Permutation indices are 0-based.
- * @param[out]    info   = 0: successful exit.
- *                       < 0: if INFO = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void dgebal(const char* job, const int n, double* A, const int lda,
             int* ilo, int* ihi, double* scale, int* info)

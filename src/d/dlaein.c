@@ -35,9 +35,10 @@
  *                        close eigenvalues and replace zero pivots.
  * @param[in]     smlnum  A machine-dependent value close to underflow threshold.
  * @param[in]     bignum  A machine-dependent value close to overflow threshold.
- * @param[out]    info    = 0: successful exit
- *                        = 1: inverse iteration did not converge; vr is set
- *                             to the last iterate.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - = 1: inverse iteration did not converge; vr is set
+ *                           to the last iterate.
  */
 void dlaein(
     const int rightv,

@@ -63,11 +63,12 @@
  * @param[in] ldswork The leading dimension of the array swork.
  *                    ldswork >= MAX(2, rows), where rows = ((m + nb - 1) / nb + 1).
  *                    If ldswork = -1, then a workspace query is assumed.
- * @param[out] info  = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   = 1: A and B have common or very close eigenvalues; perturbed
- *                        values were used to solve the equation (but the matrices
- *                        A and B are unchanged).
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: A and B have common or very close eigenvalues; perturbed
+ *                           values were used to solve the equation (but the matrices
+ *                           A and B are unchanged).
  */
 void strsyl3(const char* trana, const char* tranb, const int isgn,
              const int m, const int n,

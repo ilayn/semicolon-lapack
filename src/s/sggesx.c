@@ -59,9 +59,10 @@
  * @param[out]    iwork   Integer workspace array.
  * @param[in]     liwork  The dimension of iwork.
  * @param[out]    bwork   Integer array, dimension (n).
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: errors from QZ iteration or reordering
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: errors from QZ iteration or reordering
  */
 void sggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             sselect3_t selctg, const char* sense, const int n,

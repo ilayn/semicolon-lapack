@@ -44,8 +44,8 @@
  *          The leading dimension of W. ldw >= max(1, n).
  *
  * @param[out] info
- *          = 0: successful exit
- *          > 0: if info = k, D(k,k) is exactly zero.
+ *                         - = 0: successful exit
+ *                         - > 0: if info = k, D(k,k) is exactly zero.
  */
 void slasyf_rook(
     const char* uplo,

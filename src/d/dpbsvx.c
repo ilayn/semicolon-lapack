@@ -43,10 +43,11 @@
  * @param[out]    berr   The backward error. Array of dimension (nrhs).
  * @param[out]    work   Workspace array of dimension (3*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the leading minor of order i is not
- *                            positive definite; if info = n+1, rcond is too small.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the leading minor of order i is not
+ *                           positive definite; if info = n+1, rcond is too small.
  */
 void dpbsvx(
     const char* fact,

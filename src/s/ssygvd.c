@@ -26,7 +26,8 @@
  * @param[in]     lwork   Length of work. If -1, workspace query.
  * @param[out]    iwork   Integer workspace array.
  * @param[in]     liwork  Length of iwork. If -1, workspace query.
- * @param[out]    info    = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEVD error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEVD error.
  */
 void ssygvd(
     const int itype,

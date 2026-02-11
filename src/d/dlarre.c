@@ -75,19 +75,20 @@
  * @param[out]    pivmin  The minimum pivot in the Sturm sequence for T.
  * @param[out]    work    Double precision array, dimension (6*N). Workspace.
  * @param[out]    iwork   Integer array, dimension (5*N). Workspace.
- * @param[out]    info    = 0: successful exit.
- *                        > 0: A problem occurred in DLARRE.
- *                        < 0: One of the called subroutines signaled an internal
- *                             problem.
- *                        = -1: Problem in DLARRD.
- *                        = 2: No base representation could be found in MAXTRY
- *                             iterations.
- *                        = -3: Problem in DLARRB when computing the refined root
- *                              representation for DLASQ2.
- *                        = -4: Problem in DLARRB when performing bisection on the
- *                              desired part of the spectrum.
- *                        = -5: Problem in DLASQ2.
- *                        = -6: Problem in DLASQ2.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - > 0: A problem occurred in DLARRE.
+ *                         - < 0: One of the called subroutines signaled an internal
+ *                           problem.
+ *                         - = -1: Problem in DLARRD.
+ *                         - = 2: No base representation could be found in MAXTRY
+ *                           iterations.
+ *                         - = -3: Problem in DLARRB when computing the refined root
+ *                           representation for DLASQ2.
+ *                         - = -4: Problem in DLARRB when performing bisection on the
+ *                           desired part of the spectrum.
+ *                         - = -5: Problem in DLASQ2.
+ *                         - = -6: Problem in DLASQ2.
  */
 void dlarre(const char* range, const int n, double* vl, double* vu,
             const int il, const int iu,

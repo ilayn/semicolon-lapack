@@ -34,7 +34,8 @@
  * @param[in]     ldzc     Leading dimension of ZC.
  * @param[out]    work     Workspace array.
  * @param[in]     lwork    Dimension of workspace. If lwork = -1, workspace query.
- * @param[out]    info     = 0: successful exit, < 0: illegal argument.
+ * @param[out]    info
+ *                         - = 0: successful exit, < 0: illegal argument.
  */
 void dlaqz4(
     const int ilschur,

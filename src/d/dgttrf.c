@@ -35,9 +35,10 @@
  *                      i or i+1; ipiv[i] = i indicates a row interchange was not
  *                      required.
  *                      Array of dimension (n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
- *                      > 0: if info = k, U(k-1,k-1) is exactly zero (0-based).
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: if info = k, U(k-1,k-1) is exactly zero (0-based).
  *                           The factorization has been completed, but the factor U
  *                           is exactly singular, and division by zero will occur
  *                           if it is used to solve a system of equations.

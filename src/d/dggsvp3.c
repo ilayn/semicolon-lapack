@@ -55,8 +55,9 @@
  * @param[out]    tau     Workspace of dimension n.
  * @param[out]    work    Workspace of dimension lwork.
  * @param[in]     lwork   Dimension of work. If lwork = -1, workspace query.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int p, const int n,

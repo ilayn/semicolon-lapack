@@ -42,7 +42,8 @@
  *                        Workspace.
  * @param[in]     pivmin  The minimum pivot in the Sturm sequence for T.
  * @param[in]     spdiam  The spectral diameter of T.
- * @param[out]    info    Error flag.
+ * @param[out]    info
+ *                           Error flag.
  */
 void dlarrj(const int n, const double* D, const double* E2,
             const int ifirst, const int ilast, const double rtol,

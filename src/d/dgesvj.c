@@ -176,11 +176,11 @@
  *          length of work.
  *
  * @param[out] info
- *          = 0: successful exit.
- *          < 0: if info = -i, then the i-th argument had an illegal value
- *          > 0: DGESVJ did not converge in the maximal allowed number (30)
- *               of sweeps. The output may still be useful. See the
- *               description of work.
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, then the i-th argument had an illegal value
+ *                         - > 0: DGESVJ did not converge in the maximal allowed number (30)
+ *                           of sweeps. The output may still be useful. See the
+ *                           description of work.
  */
 
 #include "semicolon_lapack_double.h"

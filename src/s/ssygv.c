@@ -25,7 +25,8 @@
  * @param[out]    W      Eigenvalues in ascending order.
  * @param[out]    work   Workspace array.
  * @param[in]     lwork  Length of work. lwork >= max(1, 3*n-1). If -1, workspace query.
- * @param[out]    info   = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEV error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEV error.
  */
 void ssygv(
     const int itype,

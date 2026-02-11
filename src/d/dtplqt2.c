@@ -33,8 +33,9 @@
  *                      The n-by-n upper triangular factor T of the block
  *                      reflector. See Further Details.
  * @param[in]     ldt   The leading dimension of T. ldt >= max(1,m).
- * @param[out]    info  = 0: successful exit.
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtplqt2(const int m, const int n, const int l,
              double* const restrict A, const int lda,

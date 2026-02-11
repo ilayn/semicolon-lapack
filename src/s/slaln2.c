@@ -56,8 +56,9 @@
  * @param[in] ldx     The leading dimension of X. ldx >= na.
  * @param[out] scale  The scale factor that B must be multiplied by. At most 1.
  * @param[out] xnorm  The infinity-norm of X.
- * @param[out] info   = 0: No error, (ca A - w D) did not have to be perturbed.
- *                    = 1: (ca A - w D) had to be perturbed.
+ * @param[out] info
+ *                         - = 0: No error, (ca A - w D) did not have to be perturbed.
+ *                         - = 1: (ca A - w D) had to be perturbed.
  */
 void slaln2(const int ltrans, const int na, const int nw, const float smin,
             const float ca, const float* A, const int lda,

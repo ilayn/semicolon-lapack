@@ -45,8 +45,9 @@
  * @param[in]     ldc    Leading dimension of C. ldc >= max(1, m).
  * @param[out]    work   Workspace, dimension (n) if SIDE = "L",
  *                                   dimension (m) if SIDE = 'R'.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dormr2(const char* side, const char* trans,
             const int m, const int n, const int k,

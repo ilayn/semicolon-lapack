@@ -29,9 +29,10 @@
  * @param[in]     lwork  The dimension of work. If lwork=-1, workspace query.
  * @param[out]    iwork  Integer workspace array of dimension (liwork).
  * @param[in]     liwork The dimension of iwork. If liwork=-1, workspace query.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the algorithm failed to converge
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the algorithm failed to converge
  */
 void dsbevd(
     const char* jobz,

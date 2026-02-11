@@ -25,8 +25,9 @@
  * @param[out]    rcond  The reciprocal of the condition number of the matrix A.
  * @param[out]    work   Workspace array of dimension (2*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sspcon(
     const char* uplo,

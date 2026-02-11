@@ -34,9 +34,10 @@
  * @param[out]    work    Array of dimension (lwork).
  * @param[in]     lwork   The dimension of work. lwork >= 4*n+16 for n > 1, else >= 1.
  *                        If lwork = -1, workspace query.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        = 1: swap failed, matrices partially reordered
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: swap failed, matrices partially reordered
  */
 void dtgexc(
     const int wantq,

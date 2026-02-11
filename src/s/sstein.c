@@ -55,12 +55,13 @@
  *                        If one or more eigenvectors fail to converge after
  *                        MAXITS iterations, then their indices are stored in
  *                        array ifail (0-based indices).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal
- *                             value.
- *                        > 0: if info = i, then i eigenvectors failed to
- *                             converge in MAXITS iterations. Their indices are
- *                             stored in array ifail.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal
+ *                           value.
+ *                         - > 0: if info = i, then i eigenvectors failed to
+ *                           converge in MAXITS iterations. Their indices are
+ *                           stored in array ifail.
  */
 void sstein(
     const int n,

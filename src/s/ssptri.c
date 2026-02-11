@@ -26,11 +26,12 @@
  * @param[in]     ipiv   Details of the interchanges and the block structure of D
  *                       as determined by SSPTRF. Array of dimension n.
  * @param[out]    work   Workspace array of dimension n.
- * @param[out]    info   Exit status:
- *                       - = 0: successful exit
- *                       - < 0: if info = -i, the i-th argument had an illegal value
- *                       - > 0: if info = i, D(i,i) = 0; the matrix is singular and
- *                              its inverse could not be computed.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                           - > 0: if info = i, D(i,i) = 0; the matrix is singular and
+ *                           its inverse could not be computed.
  */
 void ssptri(
     const char* uplo,

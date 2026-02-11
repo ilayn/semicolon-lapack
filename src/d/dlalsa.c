@@ -51,8 +51,9 @@
  * @param[in]     S        Array of dimension n.
  * @param[out]    work     Array of dimension n.
  * @param[out]    iwork    Integer array of dimension 3*n.
- * @param[out]    info     = 0: successful exit.
- *                         < 0: if info = -i, the i-th argument had illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had illegal value.
  */
 void dlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
             double* const restrict B, const int ldb,

@@ -35,8 +35,9 @@
  *                       For optimum performance lwork >= (n-1)*nb, where nb is
  *                       the optimal blocksize.
  *                       If lwork = -1, then a workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorgtr(const char* uplo, const int n,
             float* const restrict A, const int lda,

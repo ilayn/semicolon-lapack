@@ -29,7 +29,8 @@
  * @param[in]     lwork   Length of work. See documentation for requirements.
  * @param[out]    iwork   Integer workspace. On exit, iwork[0] = required LIWORK.
  * @param[in]     liwork  Length of iwork. See documentation for requirements.
- * @param[out]    info    = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEVD error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEVD error.
  */
 void sspgvd(
     const int itype,

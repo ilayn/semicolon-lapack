@@ -43,10 +43,11 @@
  *                       If jobz='N' or n <= 1, liwork >= 1.
  *                       If jobz='V' and n > 1, liwork >= 3 + 5*n.
  *                       If liwork = -1, workspace query mode.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, for i <= n, the algorithm failed to converge
- *                            if info = n + i, dpbstf returned info = i (B not positive definite)
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, for i <= n, the algorithm failed to converge
+ *                           if info = n + i, dpbstf returned info = i (B not positive definite)
  */
 void dsbgvd(
     const char* jobz,

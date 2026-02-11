@@ -64,9 +64,9 @@
  *          If lwork = -1, then a workspace query is assumed.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, the matrix A is singular.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the matrix A is singular.
  */
 void ssytrf_rk(
     const char* uplo,

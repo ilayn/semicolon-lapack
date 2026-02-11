@@ -44,9 +44,10 @@
  * @param[in]     lwork   The dimension of work. lwork >= 4*n+16.
  * @param[out]    iwork   Integer array of dimension (liwork).
  * @param[in]     liwork  The dimension of iwork. liwork >= 1.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        = 1: reordering failed
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: reordering failed
  */
 void stgsen(
     const int ijob,

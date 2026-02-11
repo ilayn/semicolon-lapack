@@ -34,7 +34,8 @@
  * @param[in]     lwork   Length of work. If -1, workspace query.
  * @param[out]    iwork   Integer workspace, dimension (5*n).
  * @param[out]    ifail   Indices of eigenvectors that failed to converge.
- * @param[out]    info    = 0: success; < 0: illegal argument; > 0: convergence failure.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: convergence failure.
  */
 void dsyevx_2stage(
     const char* jobz,

@@ -50,11 +50,12 @@
  * @param[out]    ifail  Integer array, dimension (n). If jobz='V', on normal
  *                       exit all elements are zero. If info > 0, contains
  *                       indices of eigenvectors that failed to converge.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal
- *                            value
- *                       > 0: if info = i, then i eigenvectors failed to
- *                            converge.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal
+ *                           value
+ *                         - > 0: if info = i, then i eigenvectors failed to
+ *                           converge.
  */
 void dstevx(const char* jobz, const char* range, const int n,
             double* const restrict D, double* const restrict E,

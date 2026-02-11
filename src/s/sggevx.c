@@ -60,9 +60,10 @@
  * @param[in]     lwork   The dimension of work.
  * @param[out]    iwork   Integer workspace array.
  * @param[out]    bwork   Integer array, dimension (n).
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: errors from QZ iteration or eigenvector computation
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: errors from QZ iteration or eigenvector computation
  */
 void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
             const char* sense, const int n,

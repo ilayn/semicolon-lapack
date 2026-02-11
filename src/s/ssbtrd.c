@@ -31,8 +31,9 @@
  *                       Array of dimension (ldq, n).
  * @param[in]     ldq    The leading dimension of Q. ldq >= 1, and ldq >= n if vect='V' or 'U'.
  * @param[out]    work   Workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void ssbtrd(
     const char* vect,

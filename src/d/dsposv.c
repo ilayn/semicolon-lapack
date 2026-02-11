@@ -69,23 +69,24 @@
  *                      and the right-hand sides or solutions in single precision.
  * @param[out]    iter  Iteration count:
  *                      - < 0: iterative refinement has failed, double precision
- *                             factorization has been performed
- *                        - -1: the routine fell back to full precision for
- *                              implementation- or machine-specific reasons
- *                        - -2: narrowing the precision induced an overflow,
- *                              the routine fell back to full precision
- *                        - -3: failure of SPOTRF
+ *                        factorization has been performed
+ *                        - -1 : the routine fell back to full precision for
+ *                          implementation- or machine-specific reasons
+ *                        - -2 : narrowing the precision induced an overflow,
+ *                          the routine fell back to full precision
+ *                        - -3 : failure of SPOTRF
  *                        - -31: stop the iterative refinement after the 30th
- *                               iteration
+ *                          iterations
  *                      - > 0: iterative refinement has been successfully used.
- *                             Returns the number of iterations
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit
- *                      - < 0: if info = -i, the i-th argument had an illegal value
- *                      - > 0: if info = i, the leading principal minor of order i
- *                             of (DOUBLE PRECISION) A is not positive, so the
- *                             factorization could not be completed, and the
- *                             solution has not been computed.
+ *                        Returns the number of iterations
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                           - > 0: if info = i, the leading principal minor of order i
+ *                           of (DOUBLE PRECISION) A is not positive, so the
+ *                           factorization could not be completed, and the
+ *                           solution has not been computed.
  */
 void dsposv(
     const char* uplo,

@@ -44,9 +44,10 @@
  *                        If jobz = 'N' or n <= 1, liwork must be at least 1.
  *                        If jobz = 'V' and n > 1, liwork must be at least 3 + 5*n.
  *                        If liwork = -1, a workspace query is assumed.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: if info = i, the algorithm failed to converge.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if info = i, the algorithm failed to converge.
  */
 void sspevd(const char* jobz, const char* uplo, const int n,
             float* const restrict AP, float* const restrict W,

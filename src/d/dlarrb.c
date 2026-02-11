@@ -56,7 +56,8 @@
  *                        TWIST = N-1: Compute negcount from L D L^T - LAMBDA I = L+ D+ L+^T
  *                        TWIST = 0:   Compute negcount from L D L^T - LAMBDA I = U- D- U-^T
  *                        TWIST = R:   Compute negcount from L D L^T - LAMBDA I = N(r) D(r) N(r)
- * @param[out]    info    Error flag.
+ * @param[out]    info
+ *                           Error flag.
  */
 void dlarrb(const int n, const double* D, const double* lld,
             const int ifirst, const int ilast,

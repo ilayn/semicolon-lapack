@@ -63,9 +63,10 @@
  *                      equal to the minimum divide size, usually 25, then liwork
  *                      need only be 1.
  *                      If liwork = -1, then a workspace query is assumed.
- * @param[out]    info  = 0: successful exit.
- *                      < 0: if info = -i, the i-th argument had an illegal value.
- *                      > 0: The algorithm failed to compute an eigenvalue while
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: The algorithm failed to compute an eigenvalue while
  *                           working on the submatrix lying in rows and columns
  *                           info/(n+1) through mod(info,n+1).
  */

@@ -44,8 +44,9 @@
  *                      The elements on and above the diagonal contain the block
  *                      reflector T; the elements below the diagonal are not used.
  * @param[in]     ldt   The leading dimension of the array T. ldt >= max(1, n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgeqrt3(const int m, const int n,
              float * const restrict A, const int lda,

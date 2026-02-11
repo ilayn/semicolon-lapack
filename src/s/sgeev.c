@@ -50,12 +50,13 @@
  * @param[in] lwork  The dimension of work. lwork >= max(1, 3*n), and
  *                   if jobvl = 'V' or jobvr = 'V', lwork >= 4*n.
  *                   If lwork = -1, a workspace query is assumed.
- * @param[out] info  = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   > 0: if info = i, the QR algorithm failed to compute all
- *                        eigenvalues, and no eigenvectors have been computed;
- *                        elements i:n-1 of wr and wi contain eigenvalues which
- *                        have converged.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the QR algorithm failed to compute all
+ *                           eigenvalues, and no eigenvectors have been computed;
+ *                           elements i:n-1 of wr and wi contain eigenvalues which
+ *                           have converged.
  */
 void sgeev(const char* jobvl, const char* jobvr, const int n,
            float* A, const int lda,

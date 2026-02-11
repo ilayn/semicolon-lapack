@@ -35,7 +35,8 @@ static const float ONE = 1.0f;
  * @param[in]     nsweep  Number of sweeps of Jacobi rotations.
  * @param[out]    work    Workspace array of dimension lwork.
  * @param[in]     lwork   Dimension of work. lwork >= m.
- * @param[out]    info    = 0: success. < 0: illegal argument.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument.
  */
 void sgsvj0(const char* jobv, const int m, const int n,
             float* const restrict A, const int lda,

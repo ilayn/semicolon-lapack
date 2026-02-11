@@ -36,7 +36,8 @@
  * @param[in]     IDXC    Integer array of dimension n. Column permutation.
  * @param[in]     CTOT    Integer array of dimension 4. Column type counts.
  * @param[in,out] Z       Array of dimension k. Deflation-adjusted updating row.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasd3(const int nl, const int nr, const int sqre, const int k,
             double* const restrict D, double* const restrict Q, const int ldq,

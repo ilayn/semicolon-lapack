@@ -33,8 +33,9 @@
  * @param[in]     BP     Double precision array, dimension (n*(n+1)/2).
  *                       The triangular factor from the Cholesky factorization
  *                       of B, stored in the same format as A.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dspgst(const int itype, const char* uplo, const int n,
             double* const restrict AP, const double* const restrict BP,

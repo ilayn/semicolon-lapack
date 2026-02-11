@@ -33,7 +33,8 @@
  * @param[in]     smlsiz  Maximum size of subproblems at bottom of tree.
  * @param[out]    IWORK   Integer array of dimension 8*n.
  * @param[out]    work    Double array of dimension 3*m^2 + 2*m.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasd0(const int n, const int sqre, double* const restrict D,
             double* const restrict E, double* const restrict U, const int ldu,

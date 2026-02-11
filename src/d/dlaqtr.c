@@ -52,11 +52,12 @@
  * @param[in,out] X   Array, dimension (2*n). On entry, the right hand side.
  *                    On exit, overwritten by the solution.
  * @param[out] work   Workspace array, dimension (n).
- * @param[out] info   = 0: successful exit.
- *                    = 1: some diagonal 1 by 1 block has been perturbed by
- *                         a small number SMIN to keep nonsingularity.
- *                    = 2: some diagonal 2 by 2 block has been perturbed by
- *                         a small number in DLALN2 to keep nonsingularity.
+ * @param[out] info
+ *                         - = 0: successful exit.
+ *                         - = 1: some diagonal 1 by 1 block has been perturbed by
+ *                           a small number SMIN to keep nonsingularity.
+ *                         - = 2: some diagonal 2 by 2 block has been perturbed by
+ *                           a small number in DLALN2 to keep nonsingularity.
  */
 void dlaqtr(const int ltran, const int lreal, const int n,
             const double* T, const int ldt,

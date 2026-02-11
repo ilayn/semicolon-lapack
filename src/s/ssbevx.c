@@ -38,9 +38,10 @@
  * @param[out]    work   Workspace array of dimension (7*n).
  * @param[out]    iwork  Integer workspace array of dimension (5*n).
  * @param[out]    ifail  If jobz='V', indices of eigenvectors that failed to converge.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, then i eigenvectors failed to converge
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, then i eigenvectors failed to converge
  */
 void ssbevx(
     const char* jobz,

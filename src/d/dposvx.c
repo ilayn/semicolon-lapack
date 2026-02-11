@@ -47,11 +47,12 @@
  * @param[out]    berr   Backward error. Array of dimension (nrhs).
  * @param[out]    work   Workspace, dimension (3*n).
  * @param[out]    iwork  Integer workspace, dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -k, the k-th argument had an illegal value
- *                       > 0, <= n: the leading principal minor of order info is not
- *                            positive; rcond = 0 is returned.
- *                       = n+1: the matrix is singular to working precision.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0, <= n: the leading principal minor of order info is not
+ *                           positive; rcond = 0 is returned.
+ *                         - = n+1: the matrix is singular to working precision.
  */
 void dposvx(
     const char* fact,

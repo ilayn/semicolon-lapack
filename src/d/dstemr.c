@@ -36,7 +36,8 @@
  * @param[in]     lwork   Dimension of work. -1 for query.
  * @param[out]    iwork   Integer workspace, dimension (liwork).
  * @param[in]     liwork  Dimension of iwork. -1 for query.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: internal error.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: internal error.
  */
 void dstemr(const char* jobz, const char* range, const int n,
             double* D, double* E, const double vl, const double vu,

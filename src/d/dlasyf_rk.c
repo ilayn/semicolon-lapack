@@ -74,9 +74,9 @@
  *          The leading dimension of the array W. ldw >= max(1, n).
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: If info = -k, the k-th argument had an illegal value
- *          > 0: If info = k, the matrix A is singular.
+ *                         - = 0: successful exit
+ *                         - < 0: If info = -k, the k-th argument had an illegal value
+ *                         - > 0: If info = k, the matrix A is singular.
  */
 void dlasyf_rk(
     const char* uplo,

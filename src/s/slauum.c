@@ -31,8 +31,9 @@
  *                      if UPLO = 'L', the lower triangle of A is overwritten with
  *                      the lower triangle of the product L**T * L.
  * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
  */
 void slauum(
     const char* uplo,

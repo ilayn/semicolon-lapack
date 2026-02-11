@@ -43,10 +43,11 @@
  *                    matrix Z of transformations, and on exit Z has been
  *                    updated; transformations applied only to Z(iloz:ihiz, ilo:ihi).
  * @param[in] ldz     Leading dimension of Z. ldz >= max(1, n).
- * @param[out] info   = 0: successful exit
- *                    > 0: If info = i (1-based), DLAHQR failed to compute all
- *                         eigenvalues; elements i:ihi of wr and wi contain
- *                         those eigenvalues which have been successfully computed.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - > 0: If info = i (1-based), DLAHQR failed to compute all
+ *                           eigenvalues; elements i:ihi of wr and wi contain
+ *                           those eigenvalues which have been successfully computed.
  */
 SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
                           const int ilo, const int ihi,

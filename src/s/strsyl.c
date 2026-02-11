@@ -49,11 +49,12 @@
  *                   On exit, C is overwritten by the solution matrix X.
  * @param[in] ldc    The leading dimension of the array C. ldc >= max(1, m).
  * @param[out] scale The scale factor, scale, set <= 1 to avoid overflow in X.
- * @param[out] info  = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   = 1: A and B have common or very close eigenvalues; perturbed
- *                        values were used to solve the equation (but the matrices
- *                        A and B are unchanged).
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: A and B have common or very close eigenvalues; perturbed
+ *                           values were used to solve the equation (but the matrices
+ *                           A and B are unchanged).
  */
 void strsyl(const char* trana, const char* tranb, const int isgn,
             const int m, const int n,

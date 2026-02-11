@@ -56,17 +56,18 @@
  * @param[in] lwork  The dimension of work. lwork >= max(1, 3*n).
  *                   If lwork = -1, a workspace query is assumed.
  * @param[out] bwork Integer array, dimension (n). Not referenced if sort = 'N'.
- * @param[out] info  = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   > 0: if info = i, and i is
- *                       <= n: the QR algorithm failed to compute all eigenvalues;
- *                             elements 0:ilo-1 and i:n-1 of wr and wi contain those
- *                             eigenvalues which have converged;
- *                       = n+1: eigenvalues could not be reordered because some
- *                              eigenvalues were too close to separate;
- *                       = n+2: after reordering, roundoff changed values of some
- *                              complex eigenvalues so that leading eigenvalues in
- *                              the Schur form no longer satisfy select=true.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, and i is
+ *                         - <= n: the QR algorithm failed to compute all eigenvalues;
+ *                           elements 0:ilo-1 and i:n-1 of wr and wi contain those
+ *                           eigenvalues which have converged;
+ *                         - = n+1: eigenvalues could not be reordered because some
+ *                           eigenvalues were too close to separate;
+ *                         - = n+2: after reordering, roundoff changed values of some
+ *                           complex eigenvalues so that leading eigenvalues in
+ *                           the Schur form no longer satisfy select=true.
  */
 void dgees(const char* jobvs, const char* sort, dselect2_t select,
            const int n, double* A, const int lda, int* sdim,

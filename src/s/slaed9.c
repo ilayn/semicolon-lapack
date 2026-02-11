@@ -42,9 +42,10 @@
  *                        and multiplied by the previously accumulated eigenvectors
  *                        to update the system.
  * @param[in]     lds     The leading dimension of S. lds >= max(1, k).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: if info = 1, an eigenvalue did not converge.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
 void slaed9(const int k, const int kstart, const int kstop, const int n,
             float* D, float* Q, const int ldq, const float rho,

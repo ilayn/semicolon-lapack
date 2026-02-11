@@ -21,10 +21,11 @@
  *                      On entry, the (n-1) subdiagonal elements of the
  *                      tridiagonal matrix.
  *                      On exit, E has been destroyed.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value
- *                      > 0: the algorithm failed to find all of the
+ *                         - > 0: the algorithm failed to find all of the
  *                           eigenvalues in a total of 30*N iterations;
  *                           if info = i, then i elements of E have not
  *                           converged to zero.

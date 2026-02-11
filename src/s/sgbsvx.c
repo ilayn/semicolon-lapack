@@ -58,10 +58,11 @@
  * @param[out]    work    Workspace array of dimension (3*n).
  *                        On exit, work[0] contains the reciprocal pivot growth factor.
  * @param[out]    iwork   Integer workspace array of dimension (n).
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: if info = i, U(i,i) is exactly zero (1-based).
- *                             if info = n+1, U is nonsingular but RCOND < machine precision.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, U(i,i) is exactly zero (1-based).
+ *                           if info = n+1, U is nonsingular but RCOND < machine precision.
  */
 void sgbsvx(
     const char* fact,

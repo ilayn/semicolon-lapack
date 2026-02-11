@@ -36,9 +36,10 @@
  * @param[in]     n2      The order of the second block. n2 = 0, 1, or 2.
  * @param[out]    work    Array of dimension (lwork).
  * @param[in]     lwork   The dimension of work. lwork >= max(1, n*(n2+n1), (n2+n1)^2 * 2).
- * @param[out]    info    = 0: successful exit
- *                        = 1: the swap was rejected; blocks not swapped
- *                        = -16: lwork too small
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - = 1: the swap was rejected; blocks not swapped
+ *                         - = -16: lwork too small
  */
 void dtgex2(
     const int wantq,

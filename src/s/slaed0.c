@@ -58,12 +58,13 @@
  *                        If icompq = 0 or 1, dimension at least
  *                        6 + 6*n + 5*n*lg(n).
  *                        If icompq = 2, dimension at least 3 + 5*n.
- * @param[out]    info   = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal
- *                             value.
- *                        > 0: The algorithm failed to compute an eigenvalue
- *                             while working on the submatrix lying in rows and
- *                             columns info/(n+1) through mod(info,n+1).
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal
+ *                           value.
+ *                         - > 0: The algorithm failed to compute an eigenvalue
+ *                           while working on the submatrix lying in rows and
+ *                           columns info/(n+1) through mod(info,n+1).
  */
 void slaed0(const int icompq, const int qsiz, const int n,
             float* D, float* E, float* Q, const int ldq,

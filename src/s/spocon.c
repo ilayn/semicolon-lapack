@@ -29,8 +29,9 @@
  *                       computed as RCOND = 1/(ANORM * AINVNM).
  * @param[out]    work   Double precision array, dimension (3*n).
  * @param[out]    iwork  Integer array, dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -k, the k-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
  */
 void spocon(
     const char* uplo,

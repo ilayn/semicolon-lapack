@@ -53,10 +53,11 @@
  * @param[out] work   Workspace array, dimension (max(1,lwork)).
  * @param[in] lwork   The dimension of work. lwork >= max(1,8*n).
  *                   If lwork = -1, a workspace query is assumed.
- * @param[out] info   = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   = 1,...,n: the QZ iteration failed
- *                   > n: other errors
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1,...,n: the QZ iteration failed
+ *                         - > n: other errors
  */
 void dggev(const char* jobvl, const char* jobvr, const int n,
            double* const restrict A, const int lda,

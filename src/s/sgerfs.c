@@ -37,9 +37,10 @@
  *                       vector X(j). Array of dimension nrhs.
  * @param[out]    work   Workspace array of dimension (3*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   Exit status:
- *                       - = 0: successful exit
- *                       - < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sgerfs(
     const char* trans,

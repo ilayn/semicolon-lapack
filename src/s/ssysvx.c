@@ -77,16 +77,17 @@
  *                      performance lwork >= max(1, 3*n, n*nb).
  *                      If lwork = -1, a workspace query is assumed.
  * @param[out]    iwork Integer array, dimension (n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, and i is
- *                           <= N: D(i,i) is exactly zero. The factorization has
- *                                 been completed but D is exactly singular, so
- *                                 the solution and error bounds could not be
- *                                 computed. RCOND = 0 is returned.
- *                           = N+1: D is nonsingular, but RCOND is less than
- *                                  machine precision, meaning that the matrix
- *                                  is singular to working precision.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, and i is
+ *                         - <= N: D(i,i) is exactly zero. The factorization has
+ *                           been completed but D is exactly singular, so
+ *                           the solution and error bounds could not be
+ *                           computed. RCOND = 0 is returned.
+ *                         - = N+1: D is nonsingular, but RCOND is less than
+ *                           machine precision, meaning that the matrix
+ *                           is singular to working precision.
  */
 void ssysvx(
     const char* fact,

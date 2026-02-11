@@ -41,16 +41,22 @@
  * @param[out]    swork Single precision workspace for matrix and solutions.
  *                      Array of dimension n*(n+nrhs).
  * @param[out]    iter  Iteration count:
- *                      - < 0: iterative refinement failed, used double precision
- *                        - -1: fell back for implementation reasons
- *                        - -2: overflow during conversion
- *                        - -3: SGETRF failed
- *                        - -31: exceeded max iterations
- *                      - >= 0: number of refinement iterations
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit
- *                      - < 0: if info = -i, argument i had an illegal value
- *                      - > 0: if info = i, U(i-1,i-1) is exactly zero
+ *                      - < 0: iterative refinement has failed, double precision
+ *                        factorization has been performed
+ *                        - -1 : the routine fell back to full precision for
+ *                          implementation- or machine-specific reasons
+ *                        - -2 : narrowing the precision induced an overflow,
+ *                          the routine fell back to full precision
+ *                        - -3 : failure of SGETRF
+ *                        - -31: stop the iterative refinement after the 30th
+ *                          iterations
+ *                      - > 0: iterative refinement has been successfully used.
+ *                        Returns the number of iterations
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, argument i had an illegal value
+ *                           - > 0: if info = i, U(i-1,i-1) is exactly zero
  */
 void dsgesv(
     const int n,

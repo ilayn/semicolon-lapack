@@ -54,10 +54,11 @@
  *                        and IWORK arrays, returns these values as the first
  *                        entries of the WORK and IWORK arrays, and no error
  *                        message related to LWORK or LIWORK is issued by XERBLA.
- * @param[out]    info   = 0:  successful exit
- *                        < 0:  if INFO = -i, the i-th argument had an illegal value
- *                        > 0:  if INFO = i, the algorithm failed to converge; i
- *                              off-diagonal elements of E did not converge to zero.
+ * @param[out]    info
+ *                         - = 0:  successful exit
+ *                         - < 0:  if INFO = -i, the i-th argument had an illegal value
+ *                         - > 0:  if INFO = i, the algorithm failed to converge; i
+ *                           off-diagonal elements of E did not converge to zero.
  */
 void sstevd(const char* jobz, const int n, float* D, float* E,
             float* Z, const int ldz, float* work, const int lwork,

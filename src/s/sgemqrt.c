@@ -53,8 +53,9 @@
  * @param[in]     ldc    The leading dimension of the array C. ldc >= max(1, m).
  * @param[out]    work   Double precision workspace array.
  *                       Dimension is n*nb if SIDE = "L", or m*nb if SIDE = 'R'.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgemqrt(const char* side, const char* trans,
              const int m, const int n, const int k, const int nb,

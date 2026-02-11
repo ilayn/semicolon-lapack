@@ -95,8 +95,9 @@
  * @param[out]    indx    Integer array, dimension (N).
  *                        The permutation used to sort the contents of D into
  *                        ascending order.
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dlaed8(const int icompq, int* K, const int n, const int qsiz,
             double* D, double* Q, const int ldq, int* indxq, double* rho,

@@ -43,7 +43,8 @@
  * @param[out]    s       S-value of Givens rotation.
  * @param[out]    work    Double array of dimension 4*m.
  * @param[out]    IWORK   Integer array of dimension 3*n.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void slasd6(const int icompq, const int nl, const int nr, const int sqre,
             float* const restrict D, float* const restrict VF,

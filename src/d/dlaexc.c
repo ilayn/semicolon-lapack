@@ -34,10 +34,11 @@
  * @param[in]     n1     The order of the first block T11. n1 = 0, 1 or 2.
  * @param[in]     n2     The order of the second block T22. n2 = 0, 1 or 2.
  * @param[out]    work   Workspace array, dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       = 1: the transformed matrix T would be too far from
- *                            Schur form; the blocks are not swapped and T and
- *                            Q are unchanged.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - = 1: the transformed matrix T would be too far from
+ *                           Schur form; the blocks are not swapped and T and
+ *                           Q are unchanged.
  */
 void dlaexc(const int wantq, const int n, double* T, const int ldt,
             double* Q, const int ldq, const int j1, const int n1,

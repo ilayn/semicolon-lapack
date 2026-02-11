@@ -42,8 +42,8 @@
  *          or 2-by-2 block diagonal matrix D in LDLT.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dsyconv(
     const char* uplo,

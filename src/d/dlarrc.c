@@ -26,7 +26,8 @@
  * @param[out]    eigcnt  The number of eigenvalues in the interval (VL,VU].
  * @param[out]    lcnt    The left negcount of the interval.
  * @param[out]    rcnt    The right negcount of the interval.
- * @param[out]    info    = 0: successful exit.
+ * @param[out]    info
+ *                         - = 0: successful exit.
  */
 void dlarrc(const char* jobt, const int n, const double vl, const double vu,
             const double* const restrict D, const double* const restrict E,

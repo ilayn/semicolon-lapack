@@ -61,8 +61,8 @@
  *          Integer array, dimension (n).
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void ssycon_3(
     const char* uplo,

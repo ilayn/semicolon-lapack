@@ -26,9 +26,10 @@
  *                       Array of dimension (ldz, n).
  * @param[in]     ldz    The leading dimension of Z. ldz >= 1, and >= n if jobz='V'.
  * @param[out]    work   Workspace array of dimension (max(1, 3*n-2)).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the algorithm failed to converge
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the algorithm failed to converge
  */
 void dsbev(
     const char* jobz,

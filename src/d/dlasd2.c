@@ -42,7 +42,8 @@
  * @param[out]    IDXC    Integer array of dimension n. Column arrangement permutation.
  * @param[in,out] IDXQ    Integer array of dimension n. Sorting permutation for subproblems.
  * @param[out]    COLTYP  Integer array of dimension n. Column type labels.
- * @param[out]    info    = 0: successful exit. < 0: illegal argument.
+ * @param[out]    info
+ *                         - = 0: successful exit. < 0: illegal argument.
  */
 void dlasd2(const int nl, const int nr, const int sqre, int* k,
             double* const restrict D, double* const restrict Z,

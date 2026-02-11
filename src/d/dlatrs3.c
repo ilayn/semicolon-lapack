@@ -56,9 +56,10 @@
  *                        lwork >= 2*NBA * max(NBA, min(nrhs, 32)), where
  *                        NBA = (n + NB - 1)/NB and NB is the optimal block size.
  *                        If lwork = -1, a workspace query is performed.
- * @param[out]    info    Exit status:
- *                        = 0: successful exit
- *                        < 0: if info = -k, the k-th argument had an illegal value
+ * @param[out]    info
+ *                           Exit status:
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
  */
 void dlatrs3(
     const char* uplo,

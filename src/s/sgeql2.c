@@ -33,8 +33,9 @@
  * @param[out]    tau   Array of dimension min(m, n). The scalar factors of the
  *                      elementary reflectors.
  * @param[out]    work  Workspace, dimension (n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgeql2(const int m, const int n,
             float * const restrict A, const int lda,

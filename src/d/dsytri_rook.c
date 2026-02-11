@@ -40,10 +40,10 @@
  *          Double precision array, dimension (n).
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, D(i,i) = 0; the matrix is singular and its
- *               inverse could not be computed.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular and its
+ *                           inverse could not be computed.
  */
 void dsytri_rook(
     const char* uplo,

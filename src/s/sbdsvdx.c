@@ -54,9 +54,10 @@ static const float FUDGE = 2.0f;
  * @param[in]     ldz     Leading dimension of Z. ldz >= 1, ldz >= 2*n if jobz='V'.
  * @param[out]    work    Array of dimension 14*n.
  * @param[out]    iwork   Integer array of dimension 12*n.
- * @param[out]    info    = 0: success.
- *                        < 0: illegal argument.
- *                        > 0: i eigenvectors failed to converge in SSTEVX.
+ * @param[out]    info
+ *                         - = 0: success.
+ *                         - < 0: illegal argument.
+ *                         - > 0: i eigenvectors failed to converge in SSTEVX.
  */
 void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
              float* const restrict D, float* const restrict E,

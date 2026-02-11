@@ -51,7 +51,8 @@ static const int SMLSIZ = 25;
  *                        if compq='P': 6*n
  *                        if compq='I': 3*n^2 + 4*n
  * @param[out]    IWORK   Integer array of dimension 8*n.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dbdsdc(const char* uplo, const char* compq, const int n,
             double* const restrict D, double* const restrict E,

@@ -38,10 +38,10 @@ static const int bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
  * @param[out] X       N1 by N2 solution matrix, dimension (ldx, 2).
  * @param[in]  ldx     Leading dimension of X. ldx >= max(1, n1).
  * @param[out] xnorm   Infinity-norm of the solution.
- * @param[out] info    = 0: successful exit.
- *                      = 1: TL and TR have too close eigenvalues, so TL or
+ * @param[out] info
+ *                         - = 0: successful exit.
+ *                         - = 1: TL and TR have too close eigenvalues, so TL or
  *                           TR is perturbed to get a nonsingular equation.
- *
  * @note In the interests of speed, this routine does not check the inputs
  *       for errors.
  */

@@ -35,9 +35,10 @@
  * @param[in]     lwork The length of work. lwork >= 1. For best performance
  *                      lwork >= n*nb, where nb is the block size.
  *                      If lwork = -1, a workspace query is assumed.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, D(i,i) is exactly zero.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, D(i,i) is exactly zero.
  */
 void ssytrf(
     const char* uplo,

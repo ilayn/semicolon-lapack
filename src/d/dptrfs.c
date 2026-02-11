@@ -41,8 +41,9 @@
  *                      The componentwise relative backward error of each
  *                      solution vector X(j).
  * @param[out]    work  Double precision array, dimension (2*n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dptrfs(
     const int n,

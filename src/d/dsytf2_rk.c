@@ -53,9 +53,9 @@
  *          IPIV describes the permutation matrix P in the factorization.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: If info = -k, the k-th argument had an illegal value
- *          > 0: If info = k, the matrix A is singular.
+ *                         - = 0: successful exit
+ *                         - < 0: If info = -k, the k-th argument had an illegal value
+ *                         - > 0: If info = k, the matrix A is singular.
  */
 void dsytf2_rk(
     const char* uplo,

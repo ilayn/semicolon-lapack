@@ -58,8 +58,9 @@
  * @param[in]     ldc   The leading dimension of the array C.
  *                      ldc >= max(1,m) if ncc > 0; ldc >= 1 if ncc = 0.
  * @param[out]    work  Double precision array, dimension (2*max(m,n)).
- * @param[out]    info  = 0: successful exit.
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,

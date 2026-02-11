@@ -37,9 +37,10 @@
  *                      On exit, if info = 0, the N by NRHS solution matrix X.
  *                      Array of dimension (ldb, nrhs).
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1, n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, U(i-1,i-1) is exactly zero (0-based), and the
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, U(i-1,i-1) is exactly zero (0-based), and the
  *                           solution has not been computed. The factorization has not
  *                           been completed unless i = n.
  */

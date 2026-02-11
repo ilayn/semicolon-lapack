@@ -58,9 +58,10 @@
  *                        Will contain the eigenvectors of the repaired matrix
  *                        which will be multiplied by the previously accumulated
  *                        eigenvectors to update the system.
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: if info = 1, an eigenvalue did not converge.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
 void dlaed3(const int k, const int n, const int n1, double* D,
             double* Q, const int ldq, const double rho,

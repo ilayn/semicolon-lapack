@@ -31,8 +31,9 @@
  *                      system of linear equations.
  *                      On exit, the solution vectors, X.
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
  */
 void spttrs(
     const int n,

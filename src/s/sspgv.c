@@ -24,7 +24,8 @@
  * @param[out]    Z      Eigenvectors if jobz='V'; not referenced if jobz='N'.
  * @param[in]     ldz    Leading dimension of Z. ldz >= 1, or ldz >= n if jobz='V'.
  * @param[out]    work   Workspace array, dimension (3*n).
- * @param[out]    info   = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEV error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEV error.
  */
 void sspgv(
     const int itype,

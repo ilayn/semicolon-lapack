@@ -39,13 +39,14 @@
  *                       - If uplo = 'L' and ipiv[k] = ipiv[k+1] < 0, then rows and
  *                         columns k+1 and -ipiv[k]-1 were interchanged and
  *                         D(k:k+1,k:k+1) is a 2-by-2 diagonal block.
- * @param[out]    info   Exit status:
- *                       - = 0: successful exit
- *                       - < 0: if info = -i, the i-th argument had an illegal value
- *                       - > 0: if info = i, D(i,i) is exactly zero. The factorization
- *                              has been completed, but the block diagonal matrix D is
- *                              exactly singular, and division by zero will occur if
- *                              it is used to solve a system of equations.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                           - > 0: if info = i, D(i,i) is exactly zero. The factorization
+ *                           has been completed, but the block diagonal matrix D is
+ *                           exactly singular, and division by zero will occur if
+ *                           it is used to solve a system of equations.
  */
 void ssptrf(
     const char* uplo,

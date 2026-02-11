@@ -57,10 +57,11 @@
  * @param[out]    work    Workspace array of dimension (lwork).
  * @param[in]     lwork   The dimension of work. lwork >= max(1,n).
  *                        If lwork = -1, workspace query is performed.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        = 1,...,N: the QZ iteration did not converge.
- *                        = N+1,...,2*N: the shift calculation failed.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1,...,N: the QZ iteration did not converge.
+ *                         - = N+1,...,2*N: the shift calculation failed.
  */
 void shgeqz(
     const char* job,

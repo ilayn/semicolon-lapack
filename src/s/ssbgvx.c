@@ -50,10 +50,11 @@
  * @param[out]    iwork  Integer workspace array of dimension (5*n).
  * @param[out]    ifail  If jobz='V', indices of eigenvectors that failed to converge.
  *                       Array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       <= n: i eigenvectors failed to converge
- *                       > n: spbstf returned info = i (B not positive definite)
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - <= n: i eigenvectors failed to converge
+ *                         - > n: spbstf returned info = i (B not positive definite)
  */
 void ssbgvx(
     const char* jobz,

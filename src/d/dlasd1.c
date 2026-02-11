@@ -30,7 +30,8 @@
  * @param[in,out] IDXQ    Integer array of dimension n. Sorting permutation.
  * @param[out]    IWORK   Integer array of dimension 4*n.
  * @param[out]    work    Double array of dimension 3*m^2 + 2*m.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasd1(const int nl, const int nr, const int sqre,
             double* const restrict D, double* alpha, double* beta,

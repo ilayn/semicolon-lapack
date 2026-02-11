@@ -56,8 +56,9 @@
  * @param[in] mm      The number of columns in VL and/or VR. mm >= m.
  * @param[out] m      The number of columns actually used to store eigenvectors.
  * @param[out] work   Double precision array, dimension (3*n).
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrevc(const char* side, const char* howmny, int* select, const int n,
             const double* T, const int ldt, double* VL, const int ldvl,

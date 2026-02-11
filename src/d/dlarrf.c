@@ -48,8 +48,9 @@
  *                        elements of the unit bidiagonal matrix L(+).
  * @param[out]    work    Double precision array, dimension (2*n).
  *                        Workspace.
- * @param[out]    info    = 0: successful exit
- *                        = 1: failure
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - = 1: failure
  */
 void dlarrf(const int n, const double* const restrict D,
             const double* const restrict L, const double* const restrict LD,

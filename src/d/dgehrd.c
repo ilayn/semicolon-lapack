@@ -34,8 +34,9 @@
  * @param[in]     lwork  The length of work. lwork >= max(1, n).
  *                       For good performance, lwork should generally be larger.
  *                       If lwork = -1, a workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgehrd(const int n, const int ilo, const int ihi,
             double* A, const int lda, double* tau,

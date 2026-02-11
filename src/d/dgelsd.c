@@ -78,11 +78,12 @@
  *                       liwork >= max(1, 3 * MINMN * NLVL + 11 * MINMN),
  *                       where MINMN = MIN( M,N ).
  *                       On exit, if INFO = 0, IWORK(1) returns the minimum LIWORK.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: the algorithm for computing the SVD failed to converge;
- *                            if info = i, i off-diagonal elements of an intermediate
- *                            bidiagonal form did not converge to zero.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: the algorithm for computing the SVD failed to converge;
+ *                           if info = i, i off-diagonal elements of an intermediate
+ *                           bidiagonal form did not converge to zero.
  */
 void dgelsd(const int m, const int n, const int nrhs,
             double* const restrict A, const int lda,

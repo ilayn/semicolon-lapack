@@ -63,9 +63,10 @@
  *                        sub-matrix. min(1,N) <= CUTPNT <= N/2.
  * @param[out]    work    Double precision array, dimension (4*N + N**2).
  * @param[out]    iwork   Integer array, dimension (4*N).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: if info = 1, an eigenvalue did not converge.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
 void dlaed1(const int n, double* D, double* Q, const int ldq,
             int* indxq, const double rho, const int cutpnt,

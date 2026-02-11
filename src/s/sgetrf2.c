@@ -38,11 +38,12 @@
  * @param[out]    ipiv  The pivot indices; row i was interchanged with row
  *                      ipiv[i]. Array of dimension min(m,n), 0-based.
  *
- * @param[out]   info  Exit status.
- *                      - = 0: successful exit
- *                      - < 0: if info = -i, the i-th argument had an illegal value
- *                      - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
- *                             has been completed, but U is exactly singular.
+ * @param[out]   info
+ *                           Exit status.
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                           - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
+ *                           has been completed, but U is exactly singular.
  */
 void sgetrf2(
     const int m,

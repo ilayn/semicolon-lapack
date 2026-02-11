@@ -26,7 +26,8 @@
  * @param[out]    W      Eigenvalues in ascending order.
  * @param[out]    work   Workspace. On exit, work[0] = optimal LWORK.
  * @param[in]     lwork  Length of work. If -1, workspace query.
- * @param[out]    info   = 0: success; < 0: illegal argument; > 0: DPOTRF/DSYEV error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: DPOTRF/DSYEV error.
  */
 void dsygv_2stage(
     const int itype,

@@ -59,9 +59,9 @@
  *          If lwork = -1, then a workspace query is assumed.
  *
  * @param[out] info
- *          = 0:  successful exit
- *          < 0:  if info = -i, the i-th argument had an illegal value.
- *          > 0:  if info = i, band LU factorization failed on i-th column
+ *                         - = 0:  successful exit
+ *                         - < 0:  if info = -i, the i-th argument had an illegal value.
+ *                         - > 0:  if info = i, band LU factorization failed on i-th column
  */
 void dsytrf_aa_2stage(
     const char* uplo,

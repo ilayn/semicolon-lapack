@@ -41,8 +41,9 @@
  *                       If lwork = -1 or -2, then a workspace query is assumed.
  *                       If lwork = -1, calculates optimal size for work.
  *                       If lwork = -2, calculates minimal size for work.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgelq(const int m, const int n,
            float* const restrict A, const int lda,

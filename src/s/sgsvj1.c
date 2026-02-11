@@ -41,7 +41,8 @@ static const float ONE = 1.0f;
  * @param[in]     nsweep  Number of sweeps.
  * @param[out]    work    Workspace of dimension lwork.
  * @param[in]     lwork   lwork >= m.
- * @param[out]    info    = 0: success. < 0: illegal argument.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument.
  */
 void sgsvj1(const char* jobv, const int m, const int n, const int n1,
             float* const restrict A, const int lda,

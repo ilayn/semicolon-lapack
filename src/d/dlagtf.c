@@ -53,8 +53,9 @@
  *                        where norm(A(j)) denotes the sum of absolute values of
  *                        the j-th row of A. If no such j exists then in[n-1]
  *                        is returned as zero. (Note: in[n-1] uses 1-based indexing.)
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -k, the k-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value.
  */
 void dlagtf(
     const int n,

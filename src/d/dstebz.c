@@ -41,9 +41,10 @@
  * @param[out]    isplit  Integer array, dimension (n). The splitting points (0-based endpoints).
  * @param[out]    work    Double precision array, dimension (4*n).
  * @param[out]    iwork   Integer array, dimension (3*n).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: some eigenvalues failed to converge or were not computed.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
 void dstebz(const char* range, const char* order, const int n,
             const double vl, const double vu, const int il, const int iu,

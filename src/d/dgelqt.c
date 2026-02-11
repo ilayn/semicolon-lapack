@@ -44,8 +44,9 @@
  *                      as a sequence of upper triangular blocks.
  * @param[in]     ldt   The leading dimension of the array T. ldt >= mb.
  * @param[out]    work  Double precision array, dimension (mb*m).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgelqt(const int m, const int n, const int mb,
             double* const restrict A, const int lda,

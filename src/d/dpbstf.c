@@ -25,9 +25,10 @@
  *                       On exit, the factor S from A = S**T*S.
  *                       Array of dimension (ldab, n).
  * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the matrix is not positive definite.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the matrix is not positive definite.
  */
 void dpbstf(
     const char* uplo,

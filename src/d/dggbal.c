@@ -41,8 +41,9 @@
  * @param[out]    rscale  Array of dimension (n). Details of permutations and
  *                        scaling factors applied to the right side of A and B.
  * @param[out]    work    Workspace array of dimension (6*n).
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dggbal(
     const char* job,

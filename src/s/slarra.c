@@ -32,7 +32,8 @@
  *                        The first block consists of rows/columns 0 to ISPLIT(0),
  *                        the second of rows/columns ISPLIT(0)+1 through ISPLIT(1),
  *                        etc.
- * @param[out]    info    = 0: successful exit.
+ * @param[out]    info
+ *                         - = 0: successful exit.
  */
 void slarra(const int n, const float* const restrict D,
             float* const restrict E, float* const restrict E2,

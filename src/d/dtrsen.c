@@ -67,12 +67,13 @@
  *                   If job = 'N' or 'E', liwork >= 1;
  *                   if job = 'V' or 'B', liwork >= max(1, m*(n-m)).
  *                   If liwork = -1, a workspace query is assumed.
- * @param[out] info  = 0: successful exit
- *                   < 0: if info = -i, the i-th argument had an illegal value
- *                   = 1: reordering of T failed because some eigenvalues are
- *                        too close to separate; T may have been partially
- *                        reordered, and wr and wi contain the eigenvalues in
- *                        the same order as in T; s and sep are set to zero.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: reordering of T failed because some eigenvalues are
+ *                           too close to separate; T may have been partially
+ *                           reordered, and wr and wi contain the eigenvalues in
+ *                           the same order as in T; s and sep are set to zero.
  */
 void dtrsen(const char* job, const char* compq, const int* select,
             const int n, double* T, const int ldt,

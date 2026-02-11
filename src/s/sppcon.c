@@ -28,8 +28,9 @@
  *                       computed as RCOND = 1/(ANORM * AINVNM).
  * @param[out]    work   Workspace array of dimension (3*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sppcon(
     const char* uplo,

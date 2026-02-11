@@ -63,16 +63,17 @@
  *                       The componentwise relative backward error of each
  *                       solution vector X(j).
  * @param[out]    work   Double precision array, dimension (2*n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, and i is
- *                            <= n: the leading principal minor of order i of A
- *                                  is not positive, so the factorization could
- *                                  not be completed, and the solution has not
- *                                  been computed. rcond = 0 is returned.
- *                            = n+1: U is nonsingular, but rcond is less than
- *                                   machine precision, meaning that the matrix
- *                                   is singular to working precision.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, and i is
+ *                         - <= n: the leading principal minor of order i of A
+ *                           is not positive, so the factorization could
+ *                           not be completed, and the solution has not
+ *                           been computed. rcond = 0 is returned.
+ *                         - = n+1: U is nonsingular, but rcond is less than
+ *                           machine precision, meaning that the matrix
+ *                           is singular to working precision.
  */
 void dptsvx(
     const char* fact,

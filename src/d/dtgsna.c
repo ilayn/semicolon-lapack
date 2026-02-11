@@ -37,8 +37,9 @@
  * @param[in]     lwork   The dimension of work. lwork >= max(1, n).
  *                        If job = 'V' or 'B', lwork >= 2*n*(n+2)+16.
  * @param[out]    iwork   Integer array of dimension (n+6).
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dtgsna(
     const char* job,

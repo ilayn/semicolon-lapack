@@ -67,16 +67,17 @@
  *                        isuppz[2*i] through isuppz[2*i+1].
  * @param[out]    work    Double precision array, dimension (12*n).
  * @param[out]    iwork   Integer array, dimension (7*n).
- * @param[out]    info    = 0: successful exit
- *                        > 0: a problem occurred in SLARRV.
- *                        < 0: one of the called subroutines signaled an internal
- *                             problem.
- *                        = -1: problem in SLARRB when refining a child's eigenvalues.
- *                        = -2: problem in SLARRF when computing the RRR of a child.
- *                        = -3: problem in SLARRB when refining a single eigenvalue
- *                              after the Rayleigh correction was rejected.
- *                        = 5: the Rayleigh Quotient Iteration failed to converge to
- *                             full accuracy in MAXITR steps.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - > 0: a problem occurred in SLARRV.
+ *                         - < 0: one of the called subroutines signaled an internal
+ *                           problem.
+ *                         - = -1: problem in SLARRB when refining a child's eigenvalues.
+ *                         - = -2: problem in SLARRF when computing the RRR of a child.
+ *                         - = -3: problem in SLARRB when refining a single eigenvalue
+ *                           after the Rayleigh correction was rejected.
+ *                         - = 5: the Rayleigh Quotient Iteration failed to converge to
+ *                           full accuracy in MAXITR steps.
  */
 void slarrv(const int n, const float vl, const float vu,
             float* D, float* L, const float pivmin,

@@ -34,8 +34,9 @@
  *                    On exit, B is overwritten by the solution vectors X.
  *                    Array of dimension (ldb, nrhs).
  * @param[in] ldb     The leading dimension of the array B. ldb >= max(1, n).
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sgttrs(
     const char* trans,

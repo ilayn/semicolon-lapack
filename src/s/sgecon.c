@@ -31,15 +31,16 @@
  *                      computed as RCOND = 1/(norm(A) * norm(inv(A))).
  * @param[out]    work  Workspace array of dimension (4*n).
  * @param[out]    iwork Integer workspace array of dimension (n).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit
- *                      - < 0: if info = -i, the i-th argument had an illegal value.
- *                             NaNs are illegal values for anorm, and they propagate
- *                             to the output parameter rcond.
- *                             Infinity is illegal for anorm, and it propagates to the
- *                             output parameter rcond as 0.
- *                      - = 1: if rcond = NaN, or rcond = Inf, or the computed norm
- *                             of the inverse of A is 0. In the latter, rcond = 0.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value.
+ *                           NaNs are illegal values for anorm, and they propagate
+ *                           to the output parameter rcond.
+ *                           Infinity is illegal for anorm, and it propagates to the
+ *                           output parameter rcond as 0.
+ *                           - = 1: if rcond = NaN, or rcond = Inf, or the computed norm
+ *                           of the inverse of A is 0. In the latter, rcond = 0.
  */
 void sgecon(
     const char* norm,

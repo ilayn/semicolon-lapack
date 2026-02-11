@@ -33,10 +33,10 @@
  *          On exit, the (triangular) inverse of the original matrix.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, A(i,i) is exactly zero. The triangular
- *               matrix is singular and its inverse can not be computed.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, A(i,i) is exactly zero. The triangular
+ *                           matrix is singular and its inverse can not be computed.
  */
 void stftri(
     const char* transr,

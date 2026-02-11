@@ -41,9 +41,10 @@
  *                      will be used. The algorithm terminates at the (k-1)st step
  *                      if the pivot <= tol.
  * @param[out]    work  Double precision array, dimension (2*n). Work space.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
- *                      > 0: the matrix A is either rank deficient with computed rank
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: the matrix A is either rank deficient with computed rank
  *                           as returned in rank, or is not positive semidefinite.
  */
 void dpstrf(

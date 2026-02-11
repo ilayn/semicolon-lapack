@@ -36,8 +36,9 @@
  *                       transformed, as returned by SHSEIN or STREVC.
  *                       On exit, V is overwritten by the transformed eigenvectors.
  * @param[in]     ldv    The leading dimension of the array V. LDV >= max(1,N).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if INFO = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void sgebak(const char* job, const char* side, const int n, const int ilo,
             const int ihi, const float* scale, const int m, float* V,

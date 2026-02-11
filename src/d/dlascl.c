@@ -48,9 +48,10 @@
  *                          TYPE = "B", LDA >= KL+1;
  *                          TYPE = "Q", LDA >= KU+1;
  *                          TYPE = "Z", LDA >= 2*KL+KU+1.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal
- *                            value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal
+ *                           value.
  */
 void dlascl(const char* type, const int kl, const int ku,
             const double cfrom, const double cto,

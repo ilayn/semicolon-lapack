@@ -85,9 +85,10 @@
  *                        4: deflated.
  *                        On exit, COLTYP(i) is the number of columns of type i,
  *                        for i=0 to 3 only.
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal
- *                        value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal
+ *                           value.
  */
 void dlaed2(int* K, const int n, const int n1, double* D, double* Q,
             const int ldq, int* indxq, double* rho, double* Z,

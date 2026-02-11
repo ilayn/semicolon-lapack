@@ -54,10 +54,11 @@
  *                        corresponding to eigenvalue k failed).
  * @param[out]    ifailr  Array of dimension mm. Convergence status for right
  *                        eigenvectors.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: info is the number of eigenvectors which failed
- *                             to converge.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: info is the number of eigenvectors which failed
+ *                           to converge.
  */
 void shsein(
     const char* side,

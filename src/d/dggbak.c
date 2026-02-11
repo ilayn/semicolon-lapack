@@ -31,8 +31,9 @@
  *                        eigenvectors to be transformed. On exit, V is overwritten
  *                        by the transformed eigenvectors.
  * @param[in]     ldv     The leading dimension of V. ldv >= max(1,n).
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dggbak(
     const char* job,

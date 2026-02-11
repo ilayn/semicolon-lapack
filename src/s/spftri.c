@@ -28,9 +28,9 @@
  *          On exit, the inverse of the original matrix.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, the (i,i) element of the factor is zero
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the (i,i) element of the factor is zero
  */
 void spftri(
     const char* transr,

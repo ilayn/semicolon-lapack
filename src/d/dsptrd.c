@@ -37,8 +37,9 @@
  *                       The off-diagonal elements of the tridiagonal matrix T.
  * @param[out]    tau    Double precision array, dimension (n-1).
  *                       The scalar factors of the elementary reflectors.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dsptrd(const char* uplo, const int n, double* const restrict AP,
             double* const restrict D, double* const restrict E,

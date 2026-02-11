@@ -23,9 +23,10 @@
  *                      factor L from the L*D*L**T factorization of A.
  *                      E can also be regarded as the superdiagonal of the unit
  *                      bidiagonal factor U from the U**T*D*U factorization of A.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
- *                      > 0: if info = k, the leading principal minor of order k
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: if info = k, the leading principal minor of order k
  *                           is not positive; if k < n, the factorization could not
  *                           be completed, while if k = n, the factorization was
  *                           completed, but D(n-1) <= 0 (0-based).

@@ -94,17 +94,17 @@
  *          message related to lwork is issued by xerbla.
  *
  * @param[out] info
- *          = 0: successful exit.
- *          < 0: if info = -i, the i-th argument had an illegal value.
- *          = 1: the upper triangular factor R associated with A in the
- *               generalized QR factorization of the pair (A, B) is exactly
- *               singular, so that rank(A) < M; the least squares
- *               solution could not be computed.
- *          = 2: the bottom (N-M) by (N-M) part of the upper trapezoidal
- *               factor T associated with B in the generalized QR
- *               factorization of the pair (A, B) is exactly singular, so that
- *               rank( A B ) < N; the least squares solution could not
- *               be computed.
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - = 1: the upper triangular factor R associated with A in the
+ *                           generalized QR factorization of the pair (A, B) is exactly
+ *                           singular, so that rank(A) < M; the least squares
+ *                           solution could not be computed.
+ *                         - = 2: the bottom (N-M) by (N-M) part of the upper trapezoidal
+ *                           factor T associated with B in the generalized QR
+ *                           factorization of the pair (A, B) is exactly singular, so that
+ *                           rank( A B ) < N; the least squares solution could not
+ *                           be computed.
  */
 void sggglm(
     const int n,

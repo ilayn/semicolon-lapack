@@ -19,9 +19,10 @@
  *                      On exit, the (triangular) inverse of the original matrix.
  *                      Array of dimension (lda, n).
  * @param[in]     lda   The leading dimension of the array A (lda >= max(1,n)).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit
- *                      - < 0: if info = -k, the k-th argument had an illegal value
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -k, the k-th argument had an illegal value
  */
 void dtrti2(
     const char* uplo,

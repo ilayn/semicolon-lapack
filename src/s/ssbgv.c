@@ -31,10 +31,11 @@
  * @param[in]     ldz    The leading dimension of Z.
  *                       ldz >= 1, and if jobz='V', ldz >= n.
  * @param[out]    work   Workspace array of dimension (3*n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, for i <= n, the algorithm failed to converge
- *                            if info = n + i, spbstf returned info = i (B not positive definite)
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, for i <= n, the algorithm failed to converge
+ *                           if info = n + i, spbstf returned info = i (B not positive definite)
  */
 void ssbgv(
     const char* jobz,

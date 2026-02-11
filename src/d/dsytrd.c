@@ -58,8 +58,9 @@
  *                       array, returns this value as the first entry of the work
  *                       array, and no error message related to lwork is issued
  *                       by xerbla.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dsytrd(const char* uplo, const int n, double* A, const int lda,
             double* D, double* E, double* tau, double* work,

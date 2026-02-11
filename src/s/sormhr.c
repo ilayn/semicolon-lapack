@@ -36,8 +36,9 @@
  * @param[out] work   Workspace array, dimension (max(1, lwork)).
  * @param[in] lwork   Dimension of work array.
  *                    If lwork = -1, workspace query is assumed.
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 SEMICOLON_API void sormhr(const char* side, const char* trans,
                           const int m, const int n,

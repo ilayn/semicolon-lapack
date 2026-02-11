@@ -99,9 +99,10 @@
  *                        corresponding Givens rotation.
  * @param[out]    work    Double precision array, dimension (3*N+2*QSIZ*N).
  * @param[out]    iwork   Integer array, dimension (4*N).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: if info = 1, an eigenvalue did not converge.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
 void dlaed7(const int icompq, const int n, const int qsiz,
             const int tlvls, const int curlvl, const int curpbm,

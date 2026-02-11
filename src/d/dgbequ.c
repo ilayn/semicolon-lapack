@@ -42,12 +42,13 @@
  * @param[out]    amax    Absolute value of largest matrix element. If amax is very
  *                        close to overflow or very close to underflow, the matrix
  *                        should be scaled.
- * @param[out]    info    Exit status:
- *                        - = 0: successful exit
- *                        - < 0: if info = -i, the i-th argument had an illegal value
- *                        - > 0: if info = i, and i is
- *                               <= m: the i-th row of A is exactly zero (1-based)
- *                               > m: the (i-m)-th column of A is exactly zero (1-based)
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                           - > 0: if info = i, and i is
+ *                         - <= m: the i-th row of A is exactly zero (1-based)
+ *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
  */
 void dgbequ(
     const int m,

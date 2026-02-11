@@ -27,21 +27,17 @@
  * @param[out]    tau    The scalar factors of the elementary reflectors.
  *                       Dimension (n-1).
  * @param[out]    work   Workspace array, dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
- *
- * The matrix Q is represented as a product of (ihi-ilo) elementary
- * reflectors
- *
- *    Q = H(ilo) H(ilo+1) . . . H(ihi-1).
- *
- * Each H(i) has the form
- *
- *    H(i) = I - tau * v * v**T
- *
- * where tau is a real scalar, and v is a real vector with
- * v(0:i) = 0, v(i+1) = 1 and v(ihi+1:n-1) = 0; v(i+2:ihi) is stored on
- * exit in A(i+2:ihi,i), and tau in tau(i).
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                           The matrix Q is represented as a product of (ihi-ilo) elementary
+ *                           reflectors
+ *                           Q = H(ilo) H(ilo+1) . . . H(ihi-1).
+ *                           Each H(i) has the form
+ *                           H(i) = I - tau * v * v**T
+ *                           where tau is a real scalar, and v is a real vector with
+ *                           v(0:i) = 0, v(i+1) = 1 and v(ihi+1:n-1) = 0; v(i+2:ihi) is stored on
+ *                           exit in A(i+2:ihi,i), and tau in tau(i).
  */
 void sgehd2(const int n, const int ilo, const int ihi,
             float* A, const int lda, float* tau,

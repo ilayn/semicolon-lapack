@@ -88,18 +88,18 @@
  *          message related to lwork is issued by xerbla.
  *
  * @param[out] info
- *          = 0: successful exit.
- *          < 0: if info = -i, the i-th argument had an illegal value.
- *          = 1: the upper triangular factor R associated with B in the
- *               generalized RQ factorization of the pair (B, A) is exactly
- *               singular, so that rank(B) < P; the least squares
- *               solution could not be computed.
- *          = 2: the (N-P) by (N-P) part of the upper trapezoidal factor
- *               T associated with A in the generalized RQ factorization
- *               of the pair (B, A) is exactly singular, so that
- *               rank( (A) ) < N; the least squares solution could not
- *                   ( (B) )
- *               be computed.
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - = 1: the upper triangular factor R associated with B in the
+ *                           generalized RQ factorization of the pair (B, A) is exactly
+ *                           singular, so that rank(B) < P; the least squares
+ *                           solution could not be computed.
+ *                         - = 2: the (N-P) by (N-P) part of the upper trapezoidal factor
+ *                           T associated with A in the generalized RQ factorization
+ *                           of the pair (B, A) is exactly singular, so that
+ *                           rank( (A) ) < N; the least squares solution could not
+ *                           ( (B) )
+ *                           be computed.
  */
 void dgglse(
     const int m,

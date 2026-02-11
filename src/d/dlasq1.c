@@ -28,17 +28,18 @@
  *                      of the bidiagonal matrix whose SVD is desired.
  *                      On exit, E is overwritten.
  * @param[out]    work  Double precision array, dimension (4*n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: the algorithm failed
- *                           = 1, a split was marked by a positive value in E
- *                           = 2, current block of Z not diagonalized after 100*N
- *                                iterations (in inner while loop). On exit D and E
- *                                represent a matrix with the same singular values
- *                                which the calling subroutine could use to finish the
- *                                computation, or even feed back into DLASQ1
- *                           = 3, termination criterion of outer while loop not met
- *                                (program created more than N unreduced blocks)
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: the algorithm failed
+ *                         - = 1, a split was marked by a positive value in E
+ *                         - = 2, current block of Z not diagonalized after 100*N
+ *                           iterations (in inner while loop). On exit D and E
+ *                           represent a matrix with the same singular values
+ *                           which the calling subroutine could use to finish the
+ *                           computation, or even feed back into DLASQ1
+ *                         - = 3, termination criterion of outer while loop not met
+ *                           (program created more than N unreduced blocks)
  */
 void dlasq1(const int n, double* const restrict D, double* const restrict E,
             double* const restrict work, int* info)

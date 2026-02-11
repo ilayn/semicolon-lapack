@@ -102,10 +102,10 @@
  *          If lwork = -1, then a workspace query is assumed.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if DBBCSD did not converge, info specifies the number
- *               of nonzero entries in PHI.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if DBBCSD did not converge, info specifies the number
+ *                           of nonzero entries in PHI.
  */
 void dbbcsd(
     const char* jobu1,

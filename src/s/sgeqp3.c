@@ -52,8 +52,9 @@
  *                      array, returns this value as the first entry of the work
  *                      array, and no error message related to lwork is issued
  *                      by xerbla.
- * @param[out]    info  = 0: successful exit.
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgeqp3(const int m, const int n,
             float * const restrict A, const int lda,

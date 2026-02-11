@@ -34,7 +34,8 @@ static const float ZERO = 0.0f;
  * @param[in,out] C       Array (ldc, ncc). Premultiplied by Q^T.
  * @param[in]     ldc     Leading dimension of C. ldc >= 1, >= n if ncc > 0.
  * @param[out]    work    Array of dimension 4*n.
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: not converged.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void slasdq(const char* uplo, const int sqre, const int n, const int ncvt,
             const int nru, const int ncc, float* const restrict D,

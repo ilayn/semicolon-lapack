@@ -45,9 +45,10 @@ static const float ALPHA_BK = 0.6403882032022076f;
  *                          -ipiv[k]-1 were interchanged,
  *                          D(k:k+1,k:k+1) is a 2-by-2 block,
  *                          and ipiv[k+1] = ipiv[k].
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = k, D(k,k) is exactly zero. The
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = k, D(k,k) is exactly zero. The
  *                           factorization has been completed, but D is exactly
  *                           singular, and division by zero will occur if it is
  *                           used to solve a system of equations.

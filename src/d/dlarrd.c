@@ -60,9 +60,10 @@
  *                        Local index (0-based) within block for each eigenvalue.
  * @param[out]    work    Double precision workspace, dimension (4*n).
  * @param[out]    iwork   Integer workspace, dimension (3*n).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: some eigenvalues failed to converge or were not computed.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
 void dlarrd(const char* range, const char* order, const int n,
             const double vl, const double vu, const int il, const int iu,

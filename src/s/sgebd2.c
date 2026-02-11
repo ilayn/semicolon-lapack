@@ -45,8 +45,9 @@
  *                      The scalar factors of the elementary reflectors which
  *                      represent the orthogonal matrix P.
  * @param[out]    work  Double precision array, dimension (max(m,n)).
- * @param[out]    info  = 0: successful exit.
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgebd2(const int m, const int n, float* const restrict A, const int lda,
             float* const restrict D, float* const restrict E,

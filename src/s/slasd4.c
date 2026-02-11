@@ -34,7 +34,8 @@ static const int MAXIT = 400;
  * @param[in]     rho     The scalar in the symmetric updating formula.
  * @param[out]    sigma   The computed sigma_i, the i-th updated eigenvalue.
  * @param[out]    work    Array of dimension n. Contains (D[j] + sigma_i) in component j.
- * @param[out]    info    = 0: successful exit. > 0: if info = 1, the updating process failed.
+ * @param[out]    info
+ *                         - = 0: successful exit. > 0: if info = 1, the updating process failed.
  */
 void slasd4(const int n, const int i, const float* const restrict D,
             const float* const restrict Z, float* const restrict delta,

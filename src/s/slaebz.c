@@ -71,9 +71,10 @@
  *                        The eigenvalue counts at the interval endpoints.
  * @param[out]    work    Double precision workspace, dimension (mmax).
  * @param[out]    iwork   Integer workspace, dimension (mmax).
- * @param[out]    info    = 0: All intervals converged.
- *                        = 1..MMAX: The last info intervals did not converge.
- *                        = MMAX+1: More than MMAX intervals were generated.
+ * @param[out]    info
+ *                         - = 0: All intervals converged.
+ *                         - = 1..MMAX: The last info intervals did not converge.
+ *                         - = MMAX+1: More than MMAX intervals were generated.
  */
 void slaebz(const int ijob, const int nitmax, const int n,
             const int mmax, const int minp, const int nbmin,

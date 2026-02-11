@@ -35,7 +35,8 @@
  * @param[out]    work    Workspace array, dimension (8*n).
  * @param[out]    iwork   Integer workspace, dimension (5*n).
  * @param[out]    ifail   Indices of eigenvectors that failed to converge.
- * @param[out]    info    = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEVX error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEVX error.
  */
 void sspgvx(
     const int itype,

@@ -37,7 +37,8 @@
  * @param[in]     lwork   Length of work. lwork >= max(1, 8*n). If -1, workspace query.
  * @param[out]    iwork   Integer workspace array, dimension (5*n).
  * @param[out]    ifail   Indices of eigenvectors that failed to converge.
- * @param[out]    info    = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEVX error.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEVX error.
  */
 void ssygvx(
     const int itype,

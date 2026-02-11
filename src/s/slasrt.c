@@ -20,8 +20,9 @@
  *                      On exit, D has been sorted into increasing order
  *                      (D[0] <= ... <= D[n-1]) or into decreasing order
  *                      (D[0] >= ... >= D[n-1]), depending on ID.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void slasrt(const char* id, const int n, float* const restrict D, int* info)
 {

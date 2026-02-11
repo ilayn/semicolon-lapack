@@ -27,7 +27,8 @@
  * @param[in]     lda   The leading dimension of A. lda >= max(1, n).
  * @param[in]     B     The triangular factor from Cholesky factorization of B.
  * @param[in]     ldb   The leading dimension of B. ldb >= max(1, n).
- * @param[out]    info  = 0: successful exit; < 0: if -i, the i-th argument was illegal.
+ * @param[out]    info
+ *                         - = 0: successful exit; < 0: if -i, the i-th argument was illegal.
  */
 void ssygs2(
     const int itype,

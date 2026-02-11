@@ -30,8 +30,9 @@
  *                       The n-by-n orthogonal matrix Q.
  * @param[in]     ldq    The leading dimension of the array Q. ldq >= max(1, n).
  * @param[out]    work   Double precision array, dimension (n-1).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sopgtr(const char* uplo, const int n, const float* const restrict AP,
             const float* const restrict tau, float* const restrict Q,

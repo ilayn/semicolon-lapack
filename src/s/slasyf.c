@@ -63,8 +63,9 @@ static const float ALPHA_BK = 0.6403882032022076f;
  * @param[out]    W     Double precision array, dimension (ldw, nb).
  *                      Workspace for storing updated columns during factorization.
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1, n).
- * @param[out]    info  = 0: successful exit
- *                      > 0: if info = k+1, D(k,k) is exactly zero. The
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - > 0: if info = k+1, D(k,k) is exactly zero. The
  *                           factorization has been completed, but the block
  *                           diagonal matrix D is exactly singular.
  */

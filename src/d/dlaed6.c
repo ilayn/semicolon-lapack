@@ -34,8 +34,9 @@
  * @param[in]     finit  The value of f at 0. It is more accurate than the one
  *                       evaluated inside this routine.
  * @param[out]    tau    The root of the equation f(x).
- * @param[out]    info   = 0: successful exit
- *                       > 0: if info = 1, failure to converge
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - > 0: if info = 1, failure to converge
  */
 void dlaed6(const int kniter, const int orgati, const double rho,
             const double* const restrict D, const double* const restrict Z,

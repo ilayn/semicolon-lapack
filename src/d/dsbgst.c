@@ -36,8 +36,9 @@
  * @param[in]     ldx    The leading dimension of X.
  *                       ldx >= max(1,n) if vect='V'; ldx >= 1 otherwise.
  * @param[out]    work   Workspace array of dimension (2*n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dsbgst(
     const char* vect,

@@ -29,11 +29,12 @@
  * @param[out]    jpiv  The pivot indices; for 0 <= j < n, column j of the
  *                      matrix has been interchanged with column jpiv[j].
  *                      Array of dimension n, 0-based.
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit
- *                      - > 0: if info = k, U(k-1, k-1) is likely to produce overflow if
- *                             we try to solve for x in Ax = b. So U is perturbed to
- *                             avoid the overflow.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - > 0: if info = k, U(k-1, k-1) is likely to produce overflow if
+ *                           we try to solve for x in Ax = b. So U is perturbed to
+ *                           avoid the overflow.
  */
 void dgetc2(
     const int n,

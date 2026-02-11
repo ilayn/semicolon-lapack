@@ -54,9 +54,10 @@ static const double FUDGE = 2.0;
  * @param[in]     ldz     Leading dimension of Z. ldz >= 1, ldz >= 2*n if jobz='V'.
  * @param[out]    work    Array of dimension 14*n.
  * @param[out]    iwork   Integer array of dimension 12*n.
- * @param[out]    info    = 0: success.
- *                        < 0: illegal argument.
- *                        > 0: i eigenvectors failed to converge in DSTEVX.
+ * @param[out]    info
+ *                         - = 0: success.
+ *                         - < 0: illegal argument.
+ *                         - > 0: i eigenvectors failed to converge in DSTEVX.
  */
 void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
              double* const restrict D, double* const restrict E,

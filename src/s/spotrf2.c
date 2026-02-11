@@ -37,9 +37,10 @@
  *                      On exit, if info = 0, the factor U or L from the
  *                      Cholesky factorization A = U**T*U or A = L*L**T.
  * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
- *                      > 0: if info = k, the leading principal minor of order k
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: if info = k, the leading principal minor of order k
  *                           is not positive, and the factorization could not be
  *                           completed.
  */

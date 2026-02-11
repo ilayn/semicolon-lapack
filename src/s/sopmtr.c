@@ -46,8 +46,9 @@
  * @param[in]     ldc    The leading dimension of the array C. ldc >= max(1, m).
  * @param[out]    work   Double precision array, dimension (n) if side = 'L'
  *                       or (m) if side = 'R'.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sopmtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n, float* const restrict AP,

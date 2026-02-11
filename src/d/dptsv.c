@@ -34,9 +34,10 @@
  *                      On entry, the N-by-NRHS right hand side matrix B.
  *                      On exit, if info = 0, the N-by-NRHS solution matrix X.
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, the leading principal minor of order i
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the leading principal minor of order i
  *                           is not positive, and the solution has not been
  *                           computed. The factorization has not been completed
  *                           unless i = n.

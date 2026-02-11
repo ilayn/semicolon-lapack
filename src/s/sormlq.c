@@ -50,8 +50,9 @@
  *                       If SIDE = "L", lwork >= max(1, n);
  *                       if SIDE = "R", lwork >= max(1, m).
  *                       If lwork == -1, workspace query only.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sormlq(const char* side, const char* trans,
             const int m, const int n, const int k,

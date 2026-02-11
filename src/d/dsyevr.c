@@ -50,9 +50,10 @@
  *                        On exit, if info = 0, iwork[0] returns the optimal liwork.
  * @param[in]     liwork  The dimension of iwork. If N <= 1, LIWORK >= 1, else LIWORK >= 10*N.
  *                        If liwork = -1, workspace query only.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: Internal error
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: Internal error
  */
 void dsyevr(const char* jobz, const char* range, const char* uplo,
             const int n, double* const restrict A, const int lda,

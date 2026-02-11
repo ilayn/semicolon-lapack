@@ -30,8 +30,9 @@
  *                      factor of the elementary reflector H(i), as returned
  *                      by SGEQRF.
  * @param[out]    work  Workspace, dimension (n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorg2r(const int m, const int n, const int k,
             float * const restrict A, const int lda,

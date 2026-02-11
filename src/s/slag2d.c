@@ -23,8 +23,9 @@
  * @param[out]    A     Double precision array, dimension (lda, n).
  *                      On exit, the M-by-N coefficient matrix A.
  * @param[in]     lda   The leading dimension of the array A. lda >= max(1, m).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit (always succeeds).
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit (always succeeds).
  */
 void slag2d(
     const int m,

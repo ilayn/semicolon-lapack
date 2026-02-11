@@ -58,9 +58,10 @@
  *                       of ifail are zero. If info > 0, then ifail contains
  *                       the indices of the eigenvectors that failed to converge.
  *                       If jobz = 'N', then ifail is not referenced.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, then i eigenvectors failed to converge.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void sspevx(const char* jobz, const char* range, const char* uplo,
             const int n, float* const restrict AP,

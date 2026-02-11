@@ -49,9 +49,10 @@
  * @param[out] work   Workspace array, dimension (max(1,lwork)).
  * @param[in] lwork   The dimension of work.
  * @param[out] bwork  Integer array, dimension (n). Not referenced if sort = 'N'.
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
- *                    > 0: errors from QZ iteration or reordering
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: errors from QZ iteration or reordering
  */
 void dgges(const char* jobvsl, const char* jobvsr, const char* sort,
            dselect3_t selctg, const int n,

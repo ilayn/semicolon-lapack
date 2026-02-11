@@ -58,8 +58,9 @@
  *                       On exit, work[0] returns the optimal lwork.
  * @param[in]     lwork  Dimension of work.
  *                       If lwork == -1, workspace query only.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgelsy(const int m, const int n, const int nrhs,
             double * const restrict A, const int lda,

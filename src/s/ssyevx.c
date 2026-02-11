@@ -44,9 +44,10 @@
  * @param[out]    iwork   Integer workspace array, dimension (5*N).
  * @param[out]    ifail   If JOBZ = 'V', indices of eigenvectors that failed to converge.
  *                        If JOBZ = 'N', IFAIL is not referenced.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: if info = i, then i eigenvectors failed to converge.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void ssyevx(const char* jobz, const char* range, const char* uplo,
             const int n, float* const restrict A, const int lda,

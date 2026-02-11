@@ -24,7 +24,8 @@
  * @param[in]     ldz    Leading dimension of Z. ldz >= 1, or ldz >= n if jobz='V'.
  * @param[out]    work   Workspace. On exit, work[0] = optimal LWORK.
  * @param[in]     lwork  Length of work. If -1, workspace query.
- * @param[out]    info   = 0: success; < 0: illegal argument; > 0: convergence failure.
+ * @param[out]    info
+ *                         - = 0: success; < 0: illegal argument; > 0: convergence failure.
  */
 void ssbev_2stage(
     const char* jobz,

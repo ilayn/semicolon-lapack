@@ -44,8 +44,9 @@
  * @param[in]     ldq     The leading dimension of Q. ldq >= N if COMPQ='V' or 'I'.
  * @param[in,out] Z       Array of dimension (ldz, n). The orthogonal matrix Z.
  * @param[in]     ldz     The leading dimension of Z. ldz >= N if COMPZ='V' or 'I'.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgghrd(
     const char* compq,

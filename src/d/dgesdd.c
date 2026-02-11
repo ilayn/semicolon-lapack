@@ -50,7 +50,8 @@ static const double ONE = 1.0;
  * @param[out]    work    Array of dimension max(1, lwork).
  * @param[in]     lwork   Dimension of work. If lwork=-1, workspace query.
  * @param[out]    IWORK   Integer array of dimension 8*min(m,n).
- * @param[out]    info    = 0: success. < 0: illegal argument. > 0: DC did not converge.
+ * @param[out]    info
+ *                         - = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
 void dgesdd(const char* jobz, const int m, const int n,
             double* const restrict A, const int lda,

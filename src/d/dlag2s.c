@@ -26,11 +26,12 @@
  *                      On exit, if info=0, the M-by-N coefficient matrix SA;
  *                      if info>0, the content of SA is unspecified.
  * @param[in]     ldsa  The leading dimension of the array SA. ldsa >= max(1, m).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit.
- *                      - > 0: if info = 1, an entry of the matrix A is greater
- *                             than the SINGLE PRECISION overflow threshold,
- *                             in this case, the content of SA is unspecified.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit.
+ *                           - > 0: if info = 1, an entry of the matrix A is greater
+ *                           than the SINGLE PRECISION overflow threshold,
+ *                           in this case, the content of SA is unspecified.
  */
 void dlag2s(
     const int m,

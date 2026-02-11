@@ -85,11 +85,11 @@
  *          message related to lwork is issued by xerbla.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, D(i,i) is exactly zero. The factorization
- *               has been completed, but the block diagonal matrix D is
- *               exactly singular, so the solution could not be computed.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, D(i,i) is exactly zero. The factorization
+ *                           has been completed, but the block diagonal matrix D is
+ *                           exactly singular, so the solution could not be computed.
  */
 void ssysv_rook(
     const char* uplo,

@@ -31,8 +31,9 @@
  *                       an estimate of the 1-norm of inv(A) computed in this routine.
  * @param[out]    work   Double precision array, dimension (2*n).
  * @param[out]    iwork  Integer array, dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void ssycon(
     const char* uplo,

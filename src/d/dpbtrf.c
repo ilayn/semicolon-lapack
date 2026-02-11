@@ -26,10 +26,11 @@
  * @param[in,out] AB     The banded matrix A. Array of dimension (ldab, n).
  *                       On exit, the factor U or L.
  * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = k, the leading minor of order k is not
- *                            positive definite.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = k, the leading minor of order k is not
+ *                           positive definite.
  */
 void dpbtrf(
     const char* uplo,

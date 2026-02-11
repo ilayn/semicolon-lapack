@@ -53,8 +53,8 @@
  *          be only plus or minus one.
  *
  * @param[out] info
- *          = 0:  successful exit
- *          < 0:  if info = -i, the i-th argument had an illegal value
+ *                         - = 0:  successful exit
+ *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void dlaorhr_col_getrfnp(
     const int m,

@@ -46,8 +46,9 @@
  *                       E[i] = A[(i+1) + i*lda] if uplo = 'L'.
  * @param[out]    tau    Double precision array, dimension (n-1).
  *                       The scalar factors of the elementary reflectors.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dsytd2(const char* uplo, const int n, double* const restrict A,
             const int lda, double* const restrict D, double* const restrict E,

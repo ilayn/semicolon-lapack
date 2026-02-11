@@ -110,9 +110,10 @@
  *                        this value as the first entry of the work array, and no error
  *                        message related to lwork is issued by XERBLA.
  * @param[out]    iwork   Integer array of dimension (m+n+6).
- * @param[out]    info    = 0: successful exit
- *                        < 0: If info = -i, the i-th argument had an illegal value.
- *                        > 0: (A, D) and (B, E) have common or close eigenvalues.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: If info = -i, the i-th argument had an illegal value.
+ *                         - > 0: (A, D) and (B, E) have common or close eigenvalues.
  */
 void dtgsyl(
     const char* trans,

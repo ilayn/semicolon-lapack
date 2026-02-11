@@ -28,9 +28,10 @@
  *                       On exit, the solution matrix X.
  *                       Array of dimension (ldb, nrhs).
  * @param[in]     ldb    The leading dimension of B. ldb >= max(1,n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the i-th diagonal element is exactly zero
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element is exactly zero
  */
 void dtptrs(
     const char* uplo,

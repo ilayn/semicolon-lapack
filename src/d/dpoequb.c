@@ -49,9 +49,9 @@
  *          should be scaled.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, the i-th diagonal element is nonpositive.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void dpoequb(
     const int n,

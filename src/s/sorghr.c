@@ -31,8 +31,9 @@
  * @param[in]     lwork  The dimension of work. lwork >= ihi-ilo.
  *                       For optimum performance lwork >= (ihi-ilo)*NB.
  *                       If lwork = -1, a workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorghr(const int n, const int ilo, const int ihi,
             float* A, const int lda, const float* tau,

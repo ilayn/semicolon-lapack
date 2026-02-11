@@ -52,11 +52,12 @@ static int iparmq_nmin(void)
  * @param[out] work   Double precision array, dimension (lwork).
  * @param[in] lwork   Dimension of work array. lwork >= max(1, n).
  *                    If lwork = -1, workspace query is assumed.
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
- *                    > 0: if info = i, SHSEQR failed to compute all eigenvalues.
- *                         Elements 0:ilo-1 and i+1:n-1 of WR and WI contain those
- *                         eigenvalues which have been successfully computed.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, SHSEQR failed to compute all eigenvalues.
+ *                           Elements 0:ilo-1 and i+1:n-1 of WR and WI contain those
+ *                           eigenvalues which have been successfully computed.
  */
 void shseqr(const char* job, const char* compz, const int n,
                           const int ilo, const int ihi,

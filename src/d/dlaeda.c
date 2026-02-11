@@ -50,8 +50,9 @@
  *                        row of the first sub-eigenvector matrix and the first row of
  *                        the second sub-eigenvector matrix).
  * @param[out]    ztemp   Double precision array, dimension (N).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dlaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
             int* prmptr, int* perm, int* givptr, int* givcol,

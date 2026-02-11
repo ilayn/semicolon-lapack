@@ -34,8 +34,9 @@
  *                       Contains (D(j) - lambda_I) in its j-th component.
  * @param[in]     rho    The scalar in the symmetric updating formula.
  * @param[out]    dlam   The computed lambda_I, the I-th updated eigenvalue.
- * @param[out]    info   = 0: successful exit
- *                       > 0: if info = 1, the updating process failed.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - > 0: if info = 1, the updating process failed.
  */
 void dlaed4(const int n, const int i, const double* const restrict D,
             const double* const restrict Z, double* const restrict delta,

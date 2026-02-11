@@ -51,10 +51,11 @@
  * @param[in,out] rdscal  On entry/exit, scaling factor for rdsum.
  * @param[out]    iwork   Integer array of dimension (m+n+2).
  * @param[out]    pq      Number of subsystems solved.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: The matrix pairs (A, D) and (B, E) have common or very
- *                             close eigenvalues.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: The matrix pairs (A, D) and (B, E) have common or very
+ *                           close eigenvalues.
  */
 void stgsy2(
     const char* trans,

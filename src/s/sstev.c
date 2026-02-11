@@ -32,10 +32,11 @@
  *                      if jobz = 'V', ldz >= max(1,n).
  * @param[out]    work  Double precision array, dimension (max(1,2*n-2)).
  *                      If jobz = 'N', work is not referenced.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value
- *                      > 0: if info = i, the algorithm failed to converge;
+ *                         - > 0: if info = i, the algorithm failed to converge;
  *                           i off-diagonal elements of E did not converge to
  *                           zero.
  */

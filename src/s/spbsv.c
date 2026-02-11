@@ -30,10 +30,11 @@
  *                       On exit, the solution matrix X.
  *                       Array of dimension (ldb, nrhs).
  * @param[in]     ldb    The leading dimension of B. ldb >= max(1,n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the leading minor of order i is not
- *                            positive definite.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the leading minor of order i is not
+ *                           positive definite.
  */
 void spbsv(
     const char* uplo,

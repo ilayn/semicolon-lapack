@@ -40,12 +40,13 @@
  *                       On exit, points to the first row of the block in its
  *                       final position.
  * @param[out]    work   Workspace array, dimension (n).
- * @param[out]    info   = 0: successful exit.
- *                       < 0: if info = -i, the i-th argument had an illegal value.
- *                       = 1: two adjacent blocks were too close to swap; T may
- *                            have been partially reordered, and ilst points to
- *                            the first row of the current position of the block
- *                            being moved.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - = 1: two adjacent blocks were too close to swap; T may
+ *                           have been partially reordered, and ilst points to
+ *                           the first row of the current position of the block
+ *                           being moved.
  */
 void strexc(const char* compq, const int n, float* T, const int ldt,
             float* Q, const int ldq, int* ifst, int* ilst,

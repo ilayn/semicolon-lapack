@@ -60,9 +60,9 @@
  *          If lwork = -1, then a workspace query is assumed.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -i, the i-th argument had an illegal value
- *          > 0: if info = i, D(i,i) is exactly zero.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, D(i,i) is exactly zero.
  */
 void ssysv_aa(
     const char* uplo,

@@ -91,11 +91,12 @@
  *                    If lwork = -1, a workspace query is assumed.
  * @param[out] iwork  Integer array, dimension (2*n-2).
  *                    If sense = 'N' or 'E', not referenced.
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
- *                    > 0: if info = i, the QR algorithm failed to compute all
- *                         eigenvalues; elements 0:ilo-2 and i:n-1 of wr and wi
- *                         contain eigenvalues which have converged.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the QR algorithm failed to compute all
+ *                           eigenvalues; elements 0:ilo-2 and i:n-1 of wr and wi
+ *                           contain eigenvalues which have converged.
  */
 void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
             const char* sense, const int n, double* A, const int lda,

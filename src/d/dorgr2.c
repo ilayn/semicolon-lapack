@@ -30,8 +30,9 @@
  *                      factor of the elementary reflector H(i), as returned
  *                      by DGERQF.
  * @param[out]    work  Workspace, dimension (m).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgr2(const int m, const int n, const int k,
             double * const restrict A, const int lda,

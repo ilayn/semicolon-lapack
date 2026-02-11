@@ -58,9 +58,10 @@
  *                      work array, returns this value as the first entry
  *                      of the work array, and no error message related to
  *                      lwork is issued by XERBLA.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, D(i,i) is exactly zero.  The
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, D(i,i) is exactly zero.  The
  *                           factorization has been completed, but the block
  *                           diagonal matrix D is exactly singular, so the
  *                           solution could not be computed.

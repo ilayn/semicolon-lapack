@@ -47,10 +47,11 @@
  * @param[out]    berr   Backward error for each solution vector. Array of dimension (nrhs).
  * @param[out]    work   Workspace array of dimension (3*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i (i <= n), U(i,i) is exactly zero
- *                       = n+1: U is nonsingular, but rcond < machine precision
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i (i <= n), U(i,i) is exactly zero
+ *                         - = n+1: U is nonsingular, but rcond < machine precision
  */
 void dgtsvx(
     const char* fact,

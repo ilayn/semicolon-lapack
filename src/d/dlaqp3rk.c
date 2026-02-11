@@ -94,9 +94,9 @@
  *          Integer array, dimension (n-1).
  *
  * @param[out] info
- *          = 0: successful exit
- *          = j (1 <= j <= n): NaN detected in column j
- *          = j (n+1 <= j <= 2*n): Inf detected in column j-n
+ *                         - = 0: successful exit
+ *                         - = j (1 <= j <= n): NaN detected in column j
+ *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void dlaqp3rk(
     const int m,

@@ -31,11 +31,12 @@
  * @param[in]     ldz    The leading dimension of the array Z. ldz >= 1, and if
  *                       jobz = 'V', ldz >= max(1, n).
  * @param[out]    work   Double precision array, dimension (3*n).
- * @param[out]    info   = 0: successful exit.
- *                       < 0: if info = -i, the i-th argument had an illegal value.
- *                       > 0: if info = i, the algorithm failed to converge; i
- *                            off-diagonal elements of an intermediate tridiagonal
- *                            form did not converge to zero.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if info = i, the algorithm failed to converge; i
+ *                           off-diagonal elements of an intermediate tridiagonal
+ *                           form did not converge to zero.
  */
 void dspev(const char* jobz, const char* uplo, const int n,
            double* const restrict AP, double* const restrict W,

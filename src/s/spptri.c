@@ -20,10 +20,11 @@
  *                       On exit, the upper or lower triangle of the (symmetric)
  *                       inverse of A, overwriting the input factor U or L.
  *                       Array of dimension (n*(n+1)/2).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the (i,i) element of the factor U or L is
- *                            zero, and the inverse could not be computed.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the (i,i) element of the factor U or L is
+ *                           zero, and the inverse could not be computed.
  */
 void spptri(
     const char* uplo,

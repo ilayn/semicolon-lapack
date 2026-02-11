@@ -31,9 +31,10 @@
  * @param[in]     lwork The dimension of the array work.
  *                      If n = 0, lwork >= 1, else lwork >= (n+nb+1)*(nb+3).
  *                      If lwork = -1, then a workspace query is assumed.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
  */
 void dsytri2(
     const char* uplo,

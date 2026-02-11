@@ -99,9 +99,9 @@
  *          Integer array, dimension (m - min(p, m-p, q, m-q)).
  *
  * @param[out] info
- *          = 0: successful exit.
- *          < 0: if info = -i, the i-th argument had an illegal value.
- *          > 0: DBBCSD did not converge.
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: DBBCSD did not converge.
  */
 void dorcsd2by1(
     const char* jobu1,

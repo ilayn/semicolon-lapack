@@ -32,8 +32,9 @@
  * @param[in]     reltol  The minimum relative width of an interval.
  * @param[out]    w       The eigenvalue approximation.
  * @param[out]    werr    The error bound on the corresponding eigenvalue approximation in W.
- * @param[out]    info    = 0: Eigenvalue converged.
- *                        = -1: Eigenvalue did NOT converge.
+ * @param[out]    info
+ *                         - = 0: Eigenvalue converged.
+ *                         - = -1: Eigenvalue did NOT converge.
  */
 void dlarrk(const int n, const int iw, const double gl, const double gu,
             const double* const restrict D, const double* const restrict E2,

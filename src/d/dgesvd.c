@@ -60,9 +60,10 @@
  *                       On exit, if info = 0, work[0] returns the optimal lwork.
  * @param[in]     lwork  The dimension of the array work.
  *                       If lwork = -1, a workspace query is assumed.
- * @param[out]    info   = 0: successful exit.
- *                       < 0: if info = -i, the i-th argument had an illegal value.
- *                       > 0: if DBDSQR did not converge.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: if DBDSQR did not converge.
  */
 void dgesvd(const char* jobu, const char* jobvt,
             const int m, const int n,

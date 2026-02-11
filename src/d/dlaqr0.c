@@ -112,10 +112,11 @@ static int iparmq_kacc22(int ns)
  * @param[out] work   Double precision array, dimension (lwork).
  * @param[in] lwork   Dimension of work array. lwork >= max(1, n).
  *                    If lwork = -1, workspace query is assumed.
- * @param[out] info   = 0: successful exit
- *                    > 0: if info = i, DLAQR0 failed to compute all of the
- *                         eigenvalues. Elements ilo:info contain those
- *                         eigenvalues which have been successfully computed.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - > 0: if info = i, DLAQR0 failed to compute all of the
+ *                           eigenvalues. Elements ilo:info contain those
+ *                           eigenvalues which have been successfully computed.
  */
 SEMICOLON_API void dlaqr0(const int wantt, const int wantz, const int n,
                           const int ilo, const int ihi,

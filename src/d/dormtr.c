@@ -54,8 +54,9 @@
  *                       For optimum performance lwork >= n*nb if SIDE = 'L', and
  *                       lwork >= m*nb if SIDE = 'R', where nb is the optimal blocksize.
  *                       If lwork = -1, then a workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dormtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n,

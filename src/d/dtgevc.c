@@ -50,10 +50,11 @@
  * @param[in]     mm      The number of columns in VL and/or VR. mm >= m.
  * @param[out]    m       The number of columns in VL and/or VR actually used.
  * @param[out]    work    Workspace array of dimension (6*n).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
- *                        > 0: the 2-by-2 block (info:info+1) does not have a complex
- *                             eigenvalue.
+ * @param[out]    info
+ *                         - = 0: successful exit.
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ *                         - > 0: the 2-by-2 block (info:info+1) does not have a complex
+ *                           eigenvalue.
  */
 void dtgevc(
     const char* side,

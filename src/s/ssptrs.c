@@ -27,9 +27,10 @@
  * @param[in,out] B      On entry, the right hand side matrix B of dimension (ldb, nrhs).
  *                       On exit, the solution matrix X.
  * @param[in]     ldb    The leading dimension of the array B. ldb >= max(1,n).
- * @param[out]    info   Exit status:
- *                       - = 0: successful exit
- *                       - < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -i, the i-th argument had an illegal value
  */
 void ssptrs(
     const char* uplo,

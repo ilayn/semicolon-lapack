@@ -67,9 +67,10 @@
  * @param[out]    work  Double precision array, dimension (lwork).
  *                      lwork = 4*n if ncvt = nru = ncc = 0,
  *                      lwork = 4*(n-1) otherwise.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: the algorithm did not converge; D and E contain the
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: the algorithm did not converge; D and E contain the
  *                           elements of a bidiagonal matrix which is orthogonally
  *                           similar to the input matrix B; if info = i, i
  *                           elements of E have not converged to zero.

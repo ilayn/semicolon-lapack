@@ -55,8 +55,9 @@
  *                    if job = 'V' or 'B', ldwork >= n.
  * @param[out] iwork  Integer array, dimension (2*(n-1)).
  *                    If job = 'E', iwork is not referenced.
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value.
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrsna(const char* job, const char* howmny, const int* select,
             const int n, const double* T, const int ldt,

@@ -26,8 +26,9 @@
  * @param[out]    rcond  The reciprocal condition number.
  * @param[out]    work   Workspace array of dimension (3*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dtpcon(
     const char* norm,

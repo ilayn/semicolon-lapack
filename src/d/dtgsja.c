@@ -69,9 +69,10 @@
  * @param[in]     ldq     Leading dimension of Q.
  * @param[out]    work    Workspace of dimension 2*n.
  * @param[out]    ncycle  Number of cycles for convergence.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        = 1: the procedure does not converge after MAXIT cycles.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - = 1: the procedure does not converge after MAXIT cycles.
  */
 void dtgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,

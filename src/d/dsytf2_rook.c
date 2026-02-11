@@ -35,9 +35,9 @@
  *          Details of the interchanges and block structure.
  *
  * @param[out] info
- *          = 0: successful exit
- *          < 0: if info = -k, the k-th argument had an illegal value
- *          > 0: if info = k, D(k,k) is exactly zero.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: if info = k, D(k,k) is exactly zero.
  */
 void dsytf2_rook(
     const char* uplo,

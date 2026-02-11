@@ -276,11 +276,10 @@ static inline int max3i(int a, int b, int c) {
  *                    is not warranted by the data.
  *
  * @param[out] info
- *        - < 0: if info = -i, then the i-th argument had an illegal value.
- *        - = 0: successful exit.
- *        - > 0: SGEJSV did not converge in the maximal allowed number
- *              of sweeps. The computed values may be inaccurate.
- *
+ *                           - < 0: if info = -i, then the i-th argument had an illegal value.
+ *                           - = 0: successful exit.
+ *                           - > 0: SGEJSV did not converge in the maximal allowed number
+ *                           of sweeps. The computed values may be inaccurate.
  * @par Further Details:
  *
  * SGEJSV implements a preconditioned Jacobi SVD algorithm. It uses SGEQP3,

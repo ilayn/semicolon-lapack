@@ -107,9 +107,10 @@
  *                        On exit, if info = 0, iwork[0] returns the optimal liwork.
  * @param[in]     liwork  The dimension of the array iwork. liwork >= max(1,10*n).
  *                        If liwork = -1, then a workspace query is assumed.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: Internal error
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: Internal error
  */
 void dstevr(const char* jobz, const char* range, const int n,
             double* D, double* E,

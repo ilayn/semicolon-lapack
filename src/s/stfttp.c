@@ -34,8 +34,8 @@
  *          if UPLO = 'L', AP(i + (j-1)*(2n-j)/2) = A(i,j) for j<=i<=n.
  *
  * @param[out] info
- *          = 0:  successful exit
- *          < 0:  if info = -i, the i-th argument had an illegal value
+ *                         - = 0:  successful exit
+ *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void stfttp(
     const char* transr,

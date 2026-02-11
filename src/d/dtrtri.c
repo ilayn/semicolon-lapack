@@ -20,11 +20,12 @@
  *                      On exit, the (triangular) inverse of the original matrix.
  *                      Array of dimension (lda, n).
  * @param[in]     lda   The leading dimension of the array A (lda >= max(1,n)).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit
- *                      - < 0: if info = -k, the k-th argument had an illegal value
- *                      - > 0: if info = i, A(i-1,i-1) is exactly zero. The triangular
- *                             matrix is singular and its inverse cannot be computed.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit
+ *                           - < 0: if info = -k, the k-th argument had an illegal value
+ *                           - > 0: if info = i, A(i-1,i-1) is exactly zero. The triangular
+ *                           matrix is singular and its inverse cannot be computed.
  */
 void dtrtri(
     const char* uplo,

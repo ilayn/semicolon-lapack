@@ -26,18 +26,19 @@
  *                      If n > 2, then Z(2*n+3) holds the iteration count,
  *                      Z(2*n+4) holds NDIVS/NIN^2, and Z(2*n+5) holds the
  *                      percentage of shifts that failed.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if the i-th argument is a scalar and had an illegal
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if the i-th argument is a scalar and had an illegal
  *                           value, then info = -i, if the i-th argument is an
  *                           array and the j-entry had an illegal value, then
  *                           info = -(i*100+j)
- *                      > 0: the algorithm failed
- *                           = 1, a split was marked by a positive value in E
- *                           = 2, current block of Z not diagonalized after 100*N
- *                                iterations (in inner while loop). On exit Z holds
- *                                a qd array with the same eigenvalues as the given Z.
- *                           = 3, termination criterion of outer while loop not met
- *                                (program created more than N unreduced blocks)
+ *                         - > 0: the algorithm failed
+ *                         - = 1, a split was marked by a positive value in E
+ *                         - = 2, current block of Z not diagonalized after 100*N
+ *                           iterations (in inner while loop). On exit Z holds
+ *                           a qd array with the same eigenvalues as the given Z.
+ *                         - = 3, termination criterion of outer while loop not met
+ *                           (program created more than N unreduced blocks)
  */
 void slasq2(const int n, float* const restrict Z, int* info)
 {

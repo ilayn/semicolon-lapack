@@ -31,8 +31,9 @@
  *                    computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is
  *                    the 1-norm of inv(A) computed in this routine.
  * @param[out] work   Double precision array, dimension (n).
- * @param[out] info   = 0: successful exit
- *                    < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sptcon(
     const int n,

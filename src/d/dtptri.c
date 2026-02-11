@@ -20,10 +20,11 @@
  *                       On exit, the (triangular) inverse of the original
  *                       matrix, in the same packed storage format.
  *                       Array of dimension (n*(n+1)/2).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, A(i,i) is exactly zero. The triangular
- *                            matrix is singular and its inverse cannot be computed.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, A(i,i) is exactly zero. The triangular
+ *                           matrix is singular and its inverse cannot be computed.
  */
 void dtptri(
     const char* uplo,

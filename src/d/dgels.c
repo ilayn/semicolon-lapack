@@ -48,11 +48,12 @@
  *                       On exit, work[0] returns the optimal lwork.
  * @param[in]     lwork  Dimension of work. lwork >= max(1, mn + max(mn, nrhs)).
  *                       If lwork == -1, workspace query only.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the i-th diagonal element of the
- *                            triangular factor of A is zero, so A does not have
- *                            full rank.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element of the
+ *                           triangular factor of A is zero, so A does not have
+ *                           full rank.
  */
 void dgels(const char* trans,
            const int m, const int n, const int nrhs,

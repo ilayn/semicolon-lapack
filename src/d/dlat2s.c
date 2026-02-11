@@ -30,11 +30,12 @@
  *                      the N-by-N coefficient matrix SA; if info>0, the content of
  *                      the UPLO part of SA is unspecified.
  * @param[in]     ldsa  The leading dimension of the array SA. ldsa >= max(1, n).
- * @param[out]    info  Exit status:
- *                      - = 0: successful exit.
- *                      - = 1: an entry of the matrix A is greater than the
- *                             SINGLE PRECISION overflow threshold, in this case,
- *                             the content of the UPLO part of SA is unspecified.
+ * @param[out]    info
+ *                           Exit status:
+ *                           - = 0: successful exit.
+ *                           - = 1: an entry of the matrix A is greater than the
+ *                           SINGLE PRECISION overflow threshold, in this case,
+ *                           the content of the UPLO part of SA is unspecified.
  */
 void dlat2s(
     const char* uplo,

@@ -37,8 +37,9 @@
  *                       On exit, if info = 0, work[0] contains optimal (or minimal) lwork.
  * @param[in]     lwork  The dimension of array work. lwork >= 1.
  *                       If lwork = -1 or -2, workspace query is assumed.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dgeqr(const int m, const int n,
            double* const restrict A, const int lda,

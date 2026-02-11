@@ -47,11 +47,12 @@
  * @param[out]    berr   Backward error bounds. Array of dimension (nrhs).
  * @param[out]    work   Workspace array of dimension (3*n).
  * @param[out]    iwork  Integer workspace array of dimension (n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i and i <= n, the leading principal minor
- *                            of order i is not positive; if info = n+1, the matrix
- *                            is singular to working precision.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i and i <= n, the leading principal minor
+ *                           of order i is not positive; if info = n+1, the matrix
+ *                           is singular to working precision.
  */
 void sppsvx(
     const char* fact,

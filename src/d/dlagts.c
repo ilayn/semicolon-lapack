@@ -51,9 +51,10 @@
  *                      If job > 0 then tol is not referenced.
  *                      On exit, tol is changed as described above, only if
  *                      tol is non-positive on entry.
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -i, the i-th argument had an illegal value
- *                      > 0: overflow would occur when computing the info-th
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: overflow would occur when computing the info-th
  *                           element of the solution vector x (job > 0 only).
  */
 void dlagts(

@@ -35,9 +35,10 @@
  * @param[in,out] cnorm   If normin='Y', cnorm contains column norms on entry.
  *                        If normin='N', cnorm returns the 1-norm of offdiagonal
  *                        part of column j. Array of dimension n.
- * @param[out]    info    Exit status:
- *                        = 0: successful exit
- *                        < 0: if info = -k, the k-th argument had an illegal value
+ * @param[out]    info
+ *                           Exit status:
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
  */
 void slatrs(
     const char* uplo,

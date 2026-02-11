@@ -57,9 +57,10 @@ static const float ONE = 1.0f;
  * @param[out]    work    Workspace array of dimension lwork.
  * @param[in]     lwork   Dimension of work. If lwork = -1, workspace query.
  * @param[out]    iwork   Integer workspace of dimension 12*min(m,n).
- * @param[out]    info    = 0: success.
- *                        < 0: illegal argument.
- *                        > 0: i eigenvectors failed to converge in SBDSVDX.
+ * @param[out]    info
+ *                         - = 0: success.
+ *                         - < 0: illegal argument.
+ *                         - > 0: i eigenvectors failed to converge in SBDSVDX.
  */
 void sgesvdx(const char* jobu, const char* jobvt, const char* range,
              const int m, const int n, float* const restrict A, const int lda,

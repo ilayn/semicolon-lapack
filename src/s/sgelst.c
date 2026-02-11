@@ -52,10 +52,10 @@
  *          If lwork = -1, then a workspace query is assumed.
  *
  * @param[out] info
- *          = 0:  successful exit
- *          < 0:  if info = -i, the i-th argument had an illegal value
- *          > 0:  if info = i, the i-th diagonal element of the triangular
- *                factor is zero.
+ *                         - = 0:  successful exit
+ *                         - < 0:  if info = -i, the i-th argument had an illegal value
+ *                         - > 0:  if info = i, the i-th diagonal element of the triangular
+ *                           factor is zero.
  */
 void sgelst(
     const char* trans,

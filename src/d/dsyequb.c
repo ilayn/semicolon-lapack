@@ -34,13 +34,13 @@
  *                       very close to overflow or very close to underflow, the
  *                       matrix should be scaled.
  * @param[out]    work   Double precision array, dimension (2*n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the i-th diagonal element is nonpositive.
- *
- * References:
- *   Livne, O.E. and Golub, G.H., "Scaling by Binormalization",
- *   Numerical Algorithms, vol. 35, no. 1, pp. 97-120, January 2004.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
+ *                           References:
+ *                           Livne, O.E. and Golub, G.H., "Scaling by Binormalization",
+ *                           Numerical Algorithms, vol. 35, no. 1, pp. 97-120, January 2004.
  */
 void dsyequb(
     const char* uplo,

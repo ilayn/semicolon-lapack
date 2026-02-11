@@ -35,10 +35,11 @@
  *                       For optimal efficiency, lwork >= (NB+2)*N where NB is
  *                       the blocksize for DSYTRD.
  *                       If lwork = -1, workspace query only.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the algorithm failed to converge; i
- *                            off-diagonal elements did not converge to zero.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the algorithm failed to converge; i
+ *                           off-diagonal elements did not converge to zero.
  */
 void dsyev(const char* jobz, const char* uplo, const int n,
            double* const restrict A, const int lda,

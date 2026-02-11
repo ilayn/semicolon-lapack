@@ -27,7 +27,8 @@
  * @param[in]     lwork  Dimension of work. lwork >= max(1, n).
  *                       For optimal performance, lwork >= n*nb.
  *                       If lwork == -1, workspace query only.
- * @param[out]    info   = 0: success; < 0: -i means i-th argument was illegal.
+ * @param[out]    info
+ *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void sgeqrf(const int m, const int n,
             float * const restrict A, const int lda,

@@ -22,9 +22,10 @@
  *                      inverse of A, overwriting the input factor U or L.
  *                      Array of dimension (lda, n).
  * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[out]    info  = 0: successful exit
- *                      < 0: if info = -k, the k-th argument had an illegal value
- *                      > 0: if info = k, the (k,k) element of the factor U or L
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: if info = k, the (k,k) element of the factor U or L
  *                           is zero, and the inverse could not be computed.
  */
 void spotri(

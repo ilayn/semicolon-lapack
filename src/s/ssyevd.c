@@ -42,14 +42,15 @@
  *                        If JOBZ = 'N' and N > 1, LIWORK >= 1.
  *                        If JOBZ = 'V' and N > 1, LIWORK >= 3 + 5*N.
  *                        If liwork = -1, workspace query only.
- * @param[out]    info    = 0: successful exit
- *                        < 0: if info = -i, the i-th argument had an illegal value
- *                        > 0: if info = i and JOBZ = 'N', the algorithm failed to
- *                             converge; i off-diagonal elements did not converge
- *                             to zero; if info = i and JOBZ = 'V', the algorithm
- *                             failed to compute an eigenvalue while working on
- *                             the submatrix lying in rows and columns INFO/(N+1)
- *                             through mod(INFO,N+1).
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i and JOBZ = 'N', the algorithm failed to
+ *                           converge; i off-diagonal elements did not converge
+ *                           to zero; if info = i and JOBZ = 'V', the algorithm
+ *                           failed to compute an eigenvalue while working on
+ *                           the submatrix lying in rows and columns INFO/(N+1)
+ *                           through mod(INFO,N+1).
  */
 void ssyevd(const char* jobz, const char* uplo, const int n,
             float* const restrict A, const int lda,

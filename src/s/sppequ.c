@@ -34,9 +34,10 @@
  * @param[out]    amax   Absolute value of largest matrix element. If amax is
  *                       very close to overflow or very close to underflow, the
  *                       matrix should be scaled.
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the i-th diagonal element is nonpositive.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void sppequ(
     const char* uplo,

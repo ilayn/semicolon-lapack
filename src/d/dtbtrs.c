@@ -29,10 +29,11 @@
  * @param[in,out] B      On entry, the right hand side matrix B.
  *                       On exit, the solution matrix X. Array of dimension (ldb, nrhs).
  * @param[in]     ldb    The leading dimension of B. ldb >= max(1,n).
- * @param[out]    info   = 0: successful exit
- *                       < 0: if info = -i, the i-th argument had an illegal value
- *                       > 0: if info = i, the i-th diagonal element is zero,
- *                            indicating the matrix is singular
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, the i-th diagonal element is zero,
+ *                           indicating the matrix is singular
  */
 void dtbtrs(
     const char* uplo,
