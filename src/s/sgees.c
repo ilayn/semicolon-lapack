@@ -231,16 +231,16 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
              * underflows.
              */
             if (ieval > 0) {
-                i1 = ieval;  /* Already 0-based adjustment from shseqr */
-                i2 = ihi - 2;
-                slascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wi,
-                       (ilo - 1) > 1 ? (ilo - 1) : 1, &ierr);
+                i1 = ieval;
+                i2 = ihi - 1;
+                slascl("G", 0, 0, cscale, anrm, ilo, 1, wi,
+                       ilo > 1 ? ilo : 1, &ierr);
             } else if (wantst) {
                 i1 = 0;
                 i2 = n - 2;
             } else {
-                i1 = ilo - 1;  /* Convert to 0-based */
-                i2 = ihi - 2;
+                i1 = ilo;
+                i2 = ihi - 1;
             }
             inxt = i1 - 1;
             for (i = i1; i <= i2; i++) {

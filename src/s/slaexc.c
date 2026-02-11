@@ -112,7 +112,7 @@ void slaexc(const int wantq, const int n, float* T, const int ldt,
         /* Swap the adjacent diagonal blocks. */
         k = n1 + n1 + n2 - 3;
 
-        if (k == 0) {
+        if (k == 1) {
             /* N1 = 1, N2 = 2: generate elementary reflector H so that:
                ( scale, X11, X12 ) H = ( 0, 0, * ) */
             U[0] = scale;
@@ -147,7 +147,7 @@ void slaexc(const int wantq, const int n, float* T, const int ldt,
                 slarfx("R", n, 3, U, tau, &Q[j1 * ldq], ldq, work);
             }
 
-        } else if (k == 1) {
+        } else if (k == 2) {
             /* N1 = 2, N2 = 1: generate elementary reflector H so that:
                H ( -X11 ) = ( * )
                  ( -X21 )   ( 0 )

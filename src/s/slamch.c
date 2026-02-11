@@ -57,19 +57,19 @@ float slamch(const char* cmach)
         rmach = eps * (float)FLT_RADIX;
     } else if (cmach[0] == 'N' || cmach[0] == 'n') {
         // Number of (base) digits in the mantissa
-        rmach = (float)DBL_MANT_DIG;
+        rmach = (float)FLT_MANT_DIG;
     } else if (cmach[0] == 'R' || cmach[0] == 'r') {
         // Rounding mode (1.0 for rounding)
         rmach = ONE;
     } else if (cmach[0] == 'M' || cmach[0] == 'm') {
         // Minimum exponent before underflow
-        rmach = (float)DBL_MIN_EXP;
+        rmach = (float)FLT_MIN_EXP;
     } else if (cmach[0] == 'U' || cmach[0] == 'u') {
         // Underflow threshold
         rmach = FLT_MIN;
     } else if (cmach[0] == 'L' || cmach[0] == 'l') {
         // Largest exponent before overflow
-        rmach = (float)DBL_MAX_EXP;
+        rmach = (float)FLT_MAX_EXP;
     } else if (cmach[0] == 'O' || cmach[0] == 'o') {
         // Overflow threshold
         rmach = FLT_MAX;
