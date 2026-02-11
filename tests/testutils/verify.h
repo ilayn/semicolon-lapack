@@ -599,6 +599,20 @@ void dlatmr(const int m, const int n, const char* dist, const char* sym,
             double* A, const int lda, int* iwork, int* info,
             uint64_t state[static 4]);
 
+/* GLM verification routines */
+void dglmts(const int n, const int m, const int p,
+            const double* A, double* AF, const int lda,
+            const double* B, double* BF, const int ldb,
+            const double* D, double* DF, double* X, double* U,
+            double* work, const int lwork, double* rwork,
+            double* result);
+
+/* Matrix parameter setup for GLM/GQR/GRQ/GSV/LSE tests */
+void dlatb9(const char* path, const int imat, const int m, const int p, const int n,
+            char* type, int* kla, int* kua, int* klb, int* kub,
+            double* anorm, double* bnorm, int* modea, int* modeb,
+            double* cndnma, double* cndnmb, char* dista, char* distb);
+
 /* GSVD verification routines */
 void dgsvts3(const int m, const int p, const int n,
              const double* A, double* AF, const int lda,

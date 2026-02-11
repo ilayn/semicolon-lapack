@@ -160,9 +160,13 @@ testutils_sources = files(
   # GSVD verification
   'dgsvts3.c',  # GSVD: |U'*A*Q - D1*R|, |V'*B*Q - D2*R|, orthogonality, sorting
 
+  # GLM verification
+  'dglmts.c',   # GLM: |d - A*x - B*u| / ((|A|+|B|)*(|x|+|u|)*eps)
+
   # Matrix generation
   'dlatb4.c',   # Matrix parameter setup (11 types)
   'dlatb5.c',   # Matrix parameter setup for tridiag/banded tests
+  'dlatb9.c',   # Matrix parameter setup for GLM/GQR/GRQ/GSV/LSE tests
   'dlatms.c',   # Matrix generator with specified singular values
   'dlatm1.c',   # Diagonal value generator (for dlatms)
   'dlagge.c',   # Generate nonsymmetric matrix with random orthogonal transforms
