@@ -25,6 +25,7 @@ lapack_tests = {
   'dchksy': ['test_dchksy.c', 'symmetric'],  # Symmetric indefinite
   'dchksy_aa': ['test_dchksy_aa.c', 'symmetric'],  # Symmetric indefinite (Aasen)
   'dchksy_aa_2stage': ['test_dchksy_aa_2stage.c', 'symmetric'],  # Symmetric indefinite (Aasen 2-stage)
+  'dchksy_rk': ['test_dchksy_rk.c', 'symmetric'],  # Symmetric indefinite (RK/bounded BK pivot)
   'dchksp': ['test_dchksp.c', 'symmetric'],    # Symmetric indefinite packed
   'dchkqr': ['test_dchkqr.c', 'qr'],         # QR factorization
   'dchklq': ['test_dchklq.c', 'qr'],         # LQ factorization

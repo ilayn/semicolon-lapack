@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <stdlib.h>
 #include <cblas.h>
 #include "verify.h"
 
@@ -130,11 +131,11 @@ void dlavsy_rook(
                         cblas_dger(CblasColMajor, k, nrhs, ONE, &A[0 + (k + 1) * lda], 1,
                                    &B[k + 1], ldb, &B[0], ldb);
 
-                        kp = (ipiv[k] < 0) ? -(ipiv[k] + 1) : ipiv[k];
+                        kp = abs(ipiv[k]) - 1;
                         if (kp != k)
                             cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
 
-                        kp = (ipiv[k + 1] < 0) ? -(ipiv[k + 1] + 1) : ipiv[k + 1];
+                        kp = abs(ipiv[k + 1]) - 1;
                         if (kp != k + 1)
                             cblas_dswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
                     }
@@ -185,11 +186,11 @@ void dlavsy_rook(
                         cblas_dger(CblasColMajor, n - k - 1, nrhs, ONE, &A[(k + 1) + (k - 1) * lda], 1,
                                    &B[k - 1], ldb, &B[k + 1], ldb);
 
-                        kp = (ipiv[k] < 0) ? -(ipiv[k] + 1) : ipiv[k];
+                        kp = abs(ipiv[k]) - 1;
                         if (kp != k)
                             cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
 
-                        kp = (ipiv[k - 1] < 0) ? -(ipiv[k - 1] + 1) : ipiv[k - 1];
+                        kp = abs(ipiv[k - 1]) - 1;
                         if (kp != k - 1)
                             cblas_dswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
                     }
@@ -222,11 +223,11 @@ void dlavsy_rook(
                 } else {
                     if (k > 1) {
 
-                        kp = (ipiv[k] < 0) ? -(ipiv[k] + 1) : ipiv[k];
+                        kp = abs(ipiv[k]) - 1;
                         if (kp != k)
                             cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
 
-                        kp = (ipiv[k - 1] < 0) ? -(ipiv[k - 1] + 1) : ipiv[k - 1];
+                        kp = abs(ipiv[k - 1]) - 1;
                         if (kp != k - 1)
                             cblas_dswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
 
@@ -274,11 +275,11 @@ void dlavsy_rook(
                 } else {
                     if (k < n - 2) {
 
-                        kp = (ipiv[k] < 0) ? -(ipiv[k] + 1) : ipiv[k];
+                        kp = abs(ipiv[k]) - 1;
                         if (kp != k)
                             cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
 
-                        kp = (ipiv[k + 1] < 0) ? -(ipiv[k + 1] + 1) : ipiv[k + 1];
+                        kp = abs(ipiv[k + 1]) - 1;
                         if (kp != k + 1)
                             cblas_dswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
 
