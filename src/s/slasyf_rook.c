@@ -255,15 +255,13 @@ void slasyf_rook(
             jj = j;
             jp2 = ipiv[j];
             if (jp2 < 0) {
-                jp2 = -jp2;
+                jp2 = -(jp2 + 1);
                 j = j + 1;
-                jp1 = -ipiv[j];
+                jp1 = -(ipiv[j] + 1);
                 kstep = 2;
             }
 
             j = j + 1;
-            jp2 = jp2 - 1;
-            jp1 = jp1 - 1;
             if (jp2 != jj && j < n) {
                 cblas_sswap(n - j, &A[jp2 + j * lda], lda, &A[jj + j * lda], lda);
             }
@@ -454,15 +452,13 @@ void slasyf_rook(
             jj = j;
             jp2 = ipiv[j];
             if (jp2 < 0) {
-                jp2 = -jp2;
+                jp2 = -(jp2 + 1);
                 j = j - 1;
-                jp1 = -ipiv[j];
+                jp1 = -(ipiv[j] + 1);
                 kstep = 2;
             }
 
             j = j - 1;
-            jp2 = jp2 - 1;
-            jp1 = jp1 - 1;
             if (jp2 != jj && j >= 0) {
                 cblas_sswap(j + 1, &A[jp2 + 0 * lda], lda, &A[jj + 0 * lda], lda);
             }
