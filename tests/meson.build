@@ -58,8 +58,12 @@ lapack_tests = {
   'ddrvbd': ['test_ddrvbd.c', 'svd'],        # SVD drivers
   'ddrves': ['test_ddrves.c', 'eigen'],      # Non-symmetric Schur (DGEES)
   'ddrvev': ['test_ddrvev.c', 'eigen'],      # Non-symmetric eigenvalue (DGEEV)
+  'ddrvsx': ['test_ddrvsx.c', 'eigen'],      # Non-symmetric Schur form expert (DGEESX)
+  'ddrvvx': ['test_ddrvvx.c', 'eigen'],      # Non-symmetric eigenvalue expert (DGEEVX)
   'ddrvst': ['test_ddrvst.c', 'eigen'],      # Symmetric eigenvalue drivers
   'dckglm': ['test_dckglm.c', 'glm'],       # GLM solver (DGGGLM)
+  'dckgqr': ['test_dckgqr.c', 'gqr'],       # GQR/GRQ factorization (DGGQRF/DGGRQF)
+  'dckgsv': ['test_dckgsv.c', 'gsv'],       # GSVD (DGGSVD3)
   'ddrvab': ['test_ddrvab.c', 'solve'],      # DSGESV mixed-precision solver
   'ddrvac': ['test_ddrvac.c', 'solve'],      # DSPOSV mixed-precision solver
   'ddrvrf1': ['test_ddrvrf1.c', 'rfp'],     # DLANSF (RFP norm)

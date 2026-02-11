@@ -507,7 +507,7 @@ label_250:
             ipnt[kmin] = itmp;
         }
         for (i = 0; i < nslct; i++) {
-            g_selval[ipnt[islct[i] - 1]] = 1;
+            g_selval[ipnt[islct[i]]] = 1;
         }
 
         /* Compute condition numbers */

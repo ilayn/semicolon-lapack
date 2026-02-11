@@ -163,6 +163,10 @@ testutils_sources = files(
   # GLM verification
   'dglmts.c',   # GLM: |d - A*x - B*u| / ((|A|+|B|)*(|x|+|u|)*eps)
 
+  # GQR/GRQ verification
+  'dgqrts.c',   # GQR: |R - Q'A|, |TZ - Q'B|, |I - Q'Q|, |I - Z'Z|
+  'dgrqts.c',   # GRQ: |R - AQ'|, |TQ - Z'B|, |I - QQ'|, |I - Z'Z|
+
   # Matrix generation
   'dlatb4.c',   # Matrix parameter setup (11 types)
   'dlatb5.c',   # Matrix parameter setup for tridiag/banded tests

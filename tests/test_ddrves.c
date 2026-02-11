@@ -480,11 +480,7 @@ static void run_ddrves_single(ddrves_params_t* params)
         }
     }
 
-    /* Type 18 (KMAGN=3) is scaled near underflow, so eigenvalue accuracy
-     * test can fail due to extreme scaling. Skip assertion for this type. */
-    if (jtype != 18) {
-        assert_residual_ok(ws->result[rsub + 3]);
-    }
+    assert_residual_ok(ws->result[rsub + 3]);
 
     /* Tests 5-6 (or 11-12): Compare with and without VS */
     /* Copy A to HT for Schur decomposition without VS */

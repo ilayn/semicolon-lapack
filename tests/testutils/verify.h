@@ -613,6 +613,23 @@ void dlatb9(const char* path, const int imat, const int m, const int p, const in
             double* anorm, double* bnorm, int* modea, int* modeb,
             double* cndnma, double* cndnmb, char* dista, char* distb);
 
+/* GQR/GRQ verification routines */
+void dgqrts(const int n, const int m, const int p,
+            const double* A, double* AF, double* Q, double* R,
+            const int lda, double* taua,
+            const double* B, double* BF, double* Z, double* T,
+            double* BWK, const int ldb, double* taub,
+            double* work, const int lwork, double* rwork,
+            double* result);
+
+void dgrqts(const int m, const int p, const int n,
+            const double* A, double* AF, double* Q, double* R,
+            const int lda, double* taua,
+            const double* B, double* BF, double* Z, double* T,
+            double* BWK, const int ldb, double* taub,
+            double* work, const int lwork, double* rwork,
+            double* result);
+
 /* GSVD verification routines */
 void dgsvts3(const int m, const int p, const int n,
              const double* A, double* AF, const int lda,
