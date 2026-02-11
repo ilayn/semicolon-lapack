@@ -104,7 +104,7 @@ void dsytri_3x(
     if (upper) {
 
         for (*info = n - 1; *info >= 0; (*info)--) {
-            if (ipiv[*info] > 0 && A[*info + (*info) * lda] == ZERO) {
+            if (ipiv[*info] >= 0 && A[*info + (*info) * lda] == ZERO) {
                 (*info)++;
                 return;
             }
@@ -112,7 +112,7 @@ void dsytri_3x(
     } else {
 
         for (*info = 0; *info < n; (*info)++) {
-            if (ipiv[*info] > 0 && A[*info + (*info) * lda] == ZERO) {
+            if (ipiv[*info] >= 0 && A[*info + (*info) * lda] == ZERO) {
                 (*info)++;
                 return;
             }
@@ -131,7 +131,7 @@ void dsytri_3x(
 
         k = 0;
         while (k < n) {
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
                 work[k + invd * ldwork] = ONE / A[k + k * lda];
                 work[k + (invd + 1) * ldwork] = ZERO;
             } else {
@@ -186,7 +186,7 @@ void dsytri_3x(
 
             i = 0;
             while (i < cut) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
                     for (j = 0; j < nnb; j++) {
                         work[i + j * ldwork] = work[i + invd * ldwork] * work[i + j * ldwork];
                     }
@@ -206,7 +206,7 @@ void dsytri_3x(
 
             i = 0;
             while (i < nnb) {
-                if (ipiv[cut + i] > 0) {
+                if (ipiv[cut + i] >= 0) {
                     for (j = i; j < nnb; j++) {
                         work[u11 + i + j * ldwork] = work[cut + i + invd * ldwork] * work[u11 + i + j * ldwork];
                     }
@@ -254,7 +254,7 @@ void dsytri_3x(
         }
 
         for (i = 0; i < n; i++) {
-            ip = abs(ipiv[i]) - 1;
+            ip = (ipiv[i] >= 0) ? ipiv[i] : -(ipiv[i] + 1);
             if (ip != i) {
                 if (i < ip) {
                     dsyswapr(uplo, n, A, lda, i, ip);
@@ -271,7 +271,7 @@ void dsytri_3x(
 
         k = n - 1;
         while (k >= 0) {
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
                 work[k + invd * ldwork] = ONE / A[k + k * lda];
                 work[k + (invd + 1) * ldwork] = ZERO;
             } else {
@@ -324,7 +324,7 @@ void dsytri_3x(
 
             i = n - cut - nnb - 1;
             while (i >= 0) {
-                if (ipiv[cut + nnb + i] > 0) {
+                if (ipiv[cut + nnb + i] >= 0) {
                     for (j = 0; j < nnb; j++) {
                         work[i + j * ldwork] = work[cut + nnb + i + invd * ldwork] * work[i + j * ldwork];
                     }
@@ -344,7 +344,7 @@ void dsytri_3x(
 
             i = nnb - 1;
             while (i >= 0) {
-                if (ipiv[cut + i] > 0) {
+                if (ipiv[cut + i] >= 0) {
                     for (j = 0; j < nnb; j++) {
                         work[u11 + i + j * ldwork] = work[cut + i + invd * ldwork] * work[u11 + i + j * ldwork];
                     }
@@ -407,7 +407,7 @@ void dsytri_3x(
         }
 
         for (i = n - 1; i >= 0; i--) {
-            ip = abs(ipiv[i]) - 1;
+            ip = (ipiv[i] >= 0) ? ipiv[i] : -(ipiv[i] + 1);
             if (ip != i) {
                 if (i < ip) {
                     dsyswapr(uplo, n, A, lda, i, ip);

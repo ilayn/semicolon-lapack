@@ -80,7 +80,7 @@ void dsytri_rook(
     if (upper) {
 
         for (*info = n - 1; *info >= 0; (*info)--) {
-            if (ipiv[*info] > 0 && A[*info + (*info) * lda] == 0.0) {
+            if (ipiv[*info] >= 0 && A[*info + (*info) * lda] == 0.0) {
                 (*info)++;
                 return;
             }
@@ -89,7 +89,7 @@ void dsytri_rook(
     } else {
 
         for (*info = 0; *info < n; (*info)++) {
-            if (ipiv[*info] > 0 && A[*info + (*info) * lda] == 0.0) {
+            if (ipiv[*info] >= 0 && A[*info + (*info) * lda] == 0.0) {
                 (*info)++;
                 return;
             }
@@ -102,7 +102,7 @@ void dsytri_rook(
         k = 0;
         while (k < n) {
 
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
 
                 A[k + k * lda] = 1.0 / A[k + k * lda];
 
@@ -143,7 +143,7 @@ void dsytri_rook(
 
             if (kstep == 1) {
 
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     if (kp > 0) {
                         cblas_dswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
@@ -192,7 +192,7 @@ void dsytri_rook(
         k = n - 1;
         while (k >= 0) {
 
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
 
                 A[k + k * lda] = 1.0 / A[k + k * lda];
 
@@ -233,7 +233,7 @@ void dsytri_rook(
 
             if (kstep == 1) {
 
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     if (kp < n - 1) {
                         cblas_dswap(n - kp - 1, &A[kp + 1 + k * lda], 1, &A[kp + 1 + kp * lda], 1);

@@ -92,9 +92,9 @@ void dsytrs_rook(
         k = n - 1;
         while (k >= 0) {
 
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
 
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -141,14 +141,14 @@ void dsytrs_rook(
         k = 0;
         while (k < n) {
 
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
 
                 if (k > 0) {
                     cblas_dgemv(CblasColMajor, CblasTrans, k, nrhs, -1.0, B,
                                 ldb, &A[0 + k * lda], 1, 1.0, &B[k], ldb);
                 }
 
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -182,9 +182,9 @@ void dsytrs_rook(
         k = 0;
         while (k < n) {
 
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
 
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -233,14 +233,14 @@ void dsytrs_rook(
         k = n - 1;
         while (k >= 0) {
 
-            if (ipiv[k] > 0) {
+            if (ipiv[k] >= 0) {
 
                 if (k < n - 1) {
                     cblas_dgemv(CblasColMajor, CblasTrans, n - k - 1, nrhs, -1.0,
                                 &B[k + 1], ldb, &A[k + 1 + k * lda], 1, 1.0, &B[k], ldb);
                 }
 
-                kp = ipiv[k] - 1;
+                kp = ipiv[k];
                 if (kp != k) {
                     cblas_dswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }

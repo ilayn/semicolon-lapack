@@ -109,9 +109,9 @@ void dsyconvf(
 
             i = n - 1;
             while (i >= 0) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i < n - 1) {
                         if (ip != i) {
                             cblas_dswap(n - i - 1, &A[i + (i + 1) * lda], lda,
@@ -141,9 +141,9 @@ void dsyconvf(
 
             i = 0;
             while (i < n) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i < n - 1) {
                         if (ip != i) {
                             cblas_dswap(n - i - 1, &A[ip + (i + 1) * lda], lda,
@@ -199,9 +199,9 @@ void dsyconvf(
 
             i = 0;
             while (i < n) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i > 0) {
                         if (ip != i) {
                             cblas_dswap(i, &A[i + 0 * lda], lda,
@@ -231,9 +231,9 @@ void dsyconvf(
 
             i = n - 1;
             while (i >= 0) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i > 0) {
                         if (ip != i) {
                             cblas_dswap(i, &A[ip + 0 * lda], lda,

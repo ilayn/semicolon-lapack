@@ -152,7 +152,7 @@ void dsytrf_rk(
 
             if (k < n - 1) {
                 for (i = k; i >= k - kb + 1; i--) {
-                    ip = abs(ipiv[i]) - 1;
+                    ip = (ipiv[i] >= 0) ? ipiv[i] : -(ipiv[i] + 1);
                     if (ip != i) {
                         cblas_dswap(n - k - 1, &A[i + (k + 1) * lda], lda, &A[ip + (k + 1) * lda], lda);
                     }
@@ -184,7 +184,7 @@ void dsytrf_rk(
             }
 
             for (i = k; i < k + kb; i++) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
                     ipiv[i] = ipiv[i] + k;
                 } else {
                     ipiv[i] = ipiv[i] - k;
@@ -193,7 +193,7 @@ void dsytrf_rk(
 
             if (k > 0) {
                 for (i = k; i < k + kb; i++) {
-                    ip = abs(ipiv[i]) - 1;
+                    ip = (ipiv[i] >= 0) ? ipiv[i] : -(ipiv[i] + 1);
                     if (ip != i) {
                         cblas_dswap(k, &A[i + 0 * lda], lda, &A[ip + 0 * lda], lda);
                     }

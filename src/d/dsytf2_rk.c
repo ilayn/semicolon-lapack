@@ -138,7 +138,7 @@ void dsytf2_rk(
                     while (!done) {
 
                         if (imax != k) {
-                            jmax = imax + 1 + cblas_idamax(k - imax - 1, &A[imax + (imax + 1) * lda], lda);
+                            jmax = imax + 1 + cblas_idamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                             rowmax = fabs(A[imax + jmax * lda]);
                         } else {
                             rowmax = ZERO;
@@ -270,7 +270,7 @@ void dsytf2_rk(
             }
 
             if (kstep == 1) {
-                ipiv[k] = kp + 1;
+                ipiv[k] = kp;
             } else {
                 ipiv[k] = -(p + 1);
                 ipiv[k - 1] = -(kp + 1);
@@ -457,7 +457,7 @@ void dsytf2_rk(
             }
 
             if (kstep == 1) {
-                ipiv[k] = kp + 1;
+                ipiv[k] = kp;
             } else {
                 ipiv[k] = -(p + 1);
                 ipiv[k + 1] = -(kp + 1);
