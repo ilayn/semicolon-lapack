@@ -107,7 +107,7 @@ void ssytrs_3(
     if (upper) {
 
         for (k = n - 1; k >= 0; k--) {
-            kp = abs(ipiv[k]) - 1;
+            kp = (ipiv[k] >= 0) ? ipiv[k] : -(ipiv[k] + 1);
             if (kp != k) {
                 cblas_sswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
             }
@@ -118,7 +118,7 @@ void ssytrs_3(
 
         i = n - 1;
         while (i >= 0) {
-            if (ipiv[i] > 0) {
+            if (ipiv[i] >= 0) {
                 cblas_sscal(nrhs, ONE / A[i + i * lda], &B[i + 0 * ldb], ldb);
             } else if (i > 0) {
                 akm1k = E[i];
@@ -140,7 +140,7 @@ void ssytrs_3(
                     n, nrhs, ONE, A, lda, B, ldb);
 
         for (k = 0; k < n; k++) {
-            kp = abs(ipiv[k]) - 1;
+            kp = (ipiv[k] >= 0) ? ipiv[k] : -(ipiv[k] + 1);
             if (kp != k) {
                 cblas_sswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
             }
@@ -149,7 +149,7 @@ void ssytrs_3(
     } else {
 
         for (k = 0; k < n; k++) {
-            kp = abs(ipiv[k]) - 1;
+            kp = (ipiv[k] >= 0) ? ipiv[k] : -(ipiv[k] + 1);
             if (kp != k) {
                 cblas_sswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
             }
@@ -160,7 +160,7 @@ void ssytrs_3(
 
         i = 0;
         while (i < n) {
-            if (ipiv[i] > 0) {
+            if (ipiv[i] >= 0) {
                 cblas_sscal(nrhs, ONE / A[i + i * lda], &B[i + 0 * ldb], ldb);
             } else if (i < n - 1) {
                 akm1k = E[i];
@@ -182,7 +182,7 @@ void ssytrs_3(
                     n, nrhs, ONE, A, lda, B, ldb);
 
         for (k = n - 1; k >= 0; k--) {
-            kp = abs(ipiv[k]) - 1;
+            kp = (ipiv[k] >= 0) ? ipiv[k] : -(ipiv[k] + 1);
             if (kp != k) {
                 cblas_sswap(nrhs, &B[k + 0 * ldb], ldb, &B[kp + 0 * ldb], ldb);
             }

@@ -159,7 +159,7 @@ void ssytrf_rook(
             }
 
             for (j = k; j < k + kb; j++) {
-                if (ipiv[j] > 0) {
+                if (ipiv[j] >= 0) {
                     ipiv[j] = ipiv[j] + k;
                 } else {
                     ipiv[j] = ipiv[j] - k;

@@ -174,7 +174,7 @@ void slasyf_rk(
                         }
 
                         if (imax != k) {
-                            jmax = imax + 1 + cblas_isamax(k - imax - 1, &W[imax + 1 + (kw - 1) * ldw], 1);
+                            jmax = imax + 1 + cblas_isamax(k - imax, &W[imax + 1 + (kw - 1) * ldw], 1);
                             rowmax = fabsf(W[jmax + (kw - 1) * ldw]);
                         } else {
                             rowmax = ZERO;
@@ -278,7 +278,7 @@ void slasyf_rk(
             }
 
             if (kstep == 1) {
-                ipiv[k] = kp + 1;
+                ipiv[k] = kp;
             } else {
                 ipiv[k] = -(p + 1);
                 ipiv[k - 1] = -(kp + 1);
@@ -468,7 +468,7 @@ void slasyf_rk(
             }
 
             if (kstep == 1) {
-                ipiv[k] = kp + 1;
+                ipiv[k] = kp;
             } else {
                 ipiv[k] = -(p + 1);
                 ipiv[k + 1] = -(kp + 1);

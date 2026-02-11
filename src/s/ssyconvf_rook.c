@@ -107,9 +107,9 @@ void ssyconvf_rook(
 
             i = n - 1;
             while (i >= 0) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i < n - 1) {
                         if (ip != i) {
                             cblas_sswap(n - i - 1, &A[i + (i + 1) * lda], lda,
@@ -141,9 +141,9 @@ void ssyconvf_rook(
 
             i = 0;
             while (i < n) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i < n - 1) {
                         if (ip != i) {
                             cblas_sswap(n - i - 1, &A[ip + (i + 1) * lda], lda,
@@ -202,9 +202,9 @@ void ssyconvf_rook(
 
             i = 0;
             while (i < n) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i > 0) {
                         if (ip != i) {
                             cblas_sswap(i, &A[i + 0 * lda], lda,
@@ -236,9 +236,9 @@ void ssyconvf_rook(
 
             i = n - 1;
             while (i >= 0) {
-                if (ipiv[i] > 0) {
+                if (ipiv[i] >= 0) {
 
-                    ip = ipiv[i] - 1;
+                    ip = ipiv[i];
                     if (i > 0) {
                         if (ip != i) {
                             cblas_sswap(i, &A[ip + 0 * lda], lda,

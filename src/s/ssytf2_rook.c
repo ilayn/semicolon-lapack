@@ -108,7 +108,7 @@ void ssytf2_rook(
                     while (!done) {
 
                         if (imax != k) {
-                            jmax = imax + 1 + cblas_isamax(k - imax - 1, &A[imax + (imax + 1) * lda], lda);
+                            jmax = imax + 1 + cblas_isamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                             rowmax = fabsf(A[imax + jmax * lda]);
                         } else {
                             rowmax = 0.0f;
@@ -224,7 +224,7 @@ void ssytf2_rook(
             }
 
             if (kstep == 1) {
-                ipiv[k] = kp + 1;
+                ipiv[k] = kp;
             } else {
                 ipiv[k] = -(p + 1);
                 ipiv[k - 1] = -(kp + 1);
@@ -388,7 +388,7 @@ void ssytf2_rook(
             }
 
             if (kstep == 1) {
-                ipiv[k] = kp + 1;
+                ipiv[k] = kp;
             } else {
                 ipiv[k] = -(p + 1);
                 ipiv[k + 1] = -(kp + 1);

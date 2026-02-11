@@ -99,7 +99,7 @@ void ssycon_rook(
     if (upper) {
 
         for (i = n - 1; i >= 0; i--) {
-            if (ipiv[i] > 0 && A[i + i * lda] == 0.0f) {
+            if (ipiv[i] >= 0 && A[i + i * lda] == 0.0f) {
                 return;
             }
         }
@@ -107,7 +107,7 @@ void ssycon_rook(
     } else {
 
         for (i = 0; i < n; i++) {
-            if (ipiv[i] > 0 && A[i + i * lda] == 0.0f) {
+            if (ipiv[i] >= 0 && A[i + i * lda] == 0.0f) {
                 return;
             }
         }
