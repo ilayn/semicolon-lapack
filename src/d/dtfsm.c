@@ -87,8 +87,8 @@ void dtfsm(
     const int m,
     const int n,
     const f64 alpha,
-    const f64* const restrict A,
-    f64* const restrict B,
+    const f64* restrict A,
+    f64* restrict B,
     const int ldb)
 {
     const f64 ONE = 1.0;

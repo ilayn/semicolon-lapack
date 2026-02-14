@@ -21,12 +21,12 @@
  */
 void dlar2v(
     const int n,
-    f64* const restrict X,
-    f64* const restrict Y,
-    f64* const restrict Z,
+    f64* restrict X,
+    f64* restrict Y,
+    f64* restrict Z,
     const int incx,
-    const f64* const restrict C,
-    const f64* const restrict S,
+    const f64* restrict C,
+    const f64* restrict S,
     const int incc)
 {
     int i, ic, ix;

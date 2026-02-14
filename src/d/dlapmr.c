@@ -44,7 +44,7 @@ void dlapmr(
     const int forwrd,
     const int m,
     const int n,
-    f64* const restrict X,
+    f64* restrict X,
     const int ldx,
     int* restrict K)
 {

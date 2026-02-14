@@ -34,9 +34,9 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dopgtr(const char* uplo, const int n, const f64* const restrict AP,
-            const f64* const restrict tau, f64* const restrict Q,
-            const int ldq, f64* const restrict work, int* info)
+void dopgtr(const char* uplo, const int n, const f64* restrict AP,
+            const f64* restrict tau, f64* restrict Q,
+            const int ldq, f64* restrict work, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

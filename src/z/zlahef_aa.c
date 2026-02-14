@@ -64,7 +64,7 @@ void zlahef_aa(
     const int j1,
     const int m,
     const int nb,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
     c128* restrict H,

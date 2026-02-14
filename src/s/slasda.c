@@ -9,16 +9,16 @@
 #include <cblas.h>
 
 void slasda(const int icompq, const int smlsiz, const int n, const int sqre,
-            f32* const restrict D, f32* const restrict E,
-            f32* const restrict U, const int ldu,
-            f32* const restrict VT, int* const restrict K,
-            f32* const restrict DIFL, f32* const restrict DIFR,
-            f32* const restrict Z, f32* const restrict POLES,
-            int* const restrict GIVPTR, int* const restrict GIVCOL,
-            const int ldgcol, int* const restrict PERM,
-            f32* const restrict GIVNUM,
-            f32* const restrict C, f32* const restrict S,
-            f32* const restrict work, int* const restrict IWORK, int* info)
+            f32* restrict D, f32* restrict E,
+            f32* restrict U, const int ldu,
+            f32* restrict VT, int* restrict K,
+            f32* restrict DIFL, f32* restrict DIFR,
+            f32* restrict Z, f32* restrict POLES,
+            int* restrict GIVPTR, int* restrict GIVCOL,
+            const int ldgcol, int* restrict PERM,
+            f32* restrict GIVNUM,
+            f32* restrict C, f32* restrict S,
+            f32* restrict work, int* restrict IWORK, int* info)
 {
     int i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk;
     int j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr;

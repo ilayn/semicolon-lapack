@@ -30,9 +30,9 @@ void zlaqsb(
     const char* uplo,
     const int n,
     const int kd,
-    c128* const restrict AB,
+    c128* restrict AB,
     const int ldab,
-    const f64* const restrict S,
+    const f64* restrict S,
     const f64 scond,
     const f64 amax,
     char* equed)

@@ -36,12 +36,12 @@
  */
 void sgetri(
     const int n,
-    f32 * const restrict A,
+    f32* restrict A,
     const int lda,
-    const int * const restrict ipiv,
-    f32 * const restrict work,
+    const int* restrict ipiv,
+    f32* restrict work,
     const int lwork,
-    int *info)
+    int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

@@ -57,11 +57,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgeqp3(const int m, const int n,
-            f32 * const restrict A, const int lda,
-            int * const restrict jpvt,
-            f32 * const restrict tau,
-            f32 * const restrict work, const int lwork,
-            int *info)
+            f32* restrict A, const int lda,
+            int* restrict jpvt,
+            f32* restrict tau,
+            f32* restrict work, const int lwork,
+            int* info)
 {
     int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
     int sm, sn, sminmn, topbmn;

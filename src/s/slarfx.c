@@ -35,9 +35,9 @@
  *                       Not referenced if H has order < 11.
  */
 void slarfx(const char* side, const int m, const int n,
-            const f32 * const restrict v, const f32 tau,
-            f32 * const restrict C, const int ldc,
-            f32 * restrict work)
+            const f32* restrict v, const f32 tau,
+            f32* restrict C, const int ldc,
+            f32* restrict work)
 {
     int j;
     f32 sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;

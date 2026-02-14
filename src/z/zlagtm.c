@@ -43,13 +43,13 @@ void zlagtm(
     const int n,
     const int nrhs,
     const f64 alpha,
-    const c128* const restrict DL,
-    const c128* const restrict D,
-    const c128* const restrict DU,
-    const c128* const restrict X,
+    const c128* restrict DL,
+    const c128* restrict D,
+    const c128* restrict DU,
+    const c128* restrict X,
     const int ldx,
     const f64 beta,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb)
 {
     const f64 ONE = 1.0;

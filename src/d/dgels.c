@@ -57,10 +57,10 @@
  */
 void dgels(const char* trans,
            const int m, const int n, const int nrhs,
-           f64 * const restrict A, const int lda,
-           f64 * const restrict B, const int ldb,
-           f64 * const restrict work, const int lwork,
-           int *info)
+           f64* restrict A, const int lda,
+           f64* restrict B, const int ldb,
+           f64* restrict work, const int lwork,
+           int* info)
 {
     int lquery, tpsd;
     int brow, iascl, ibscl, mn, nb, scllen, wsize;

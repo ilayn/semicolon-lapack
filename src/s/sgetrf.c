@@ -40,10 +40,10 @@
 void sgetrf(
     const int m,
     const int n,
-    f32 * const restrict A,
+    f32* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    int *info)
+    int* restrict ipiv,
+    int* info)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;

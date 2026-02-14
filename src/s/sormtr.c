@@ -60,10 +60,10 @@
  */
 void sormtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n,
-            const f32* const restrict A, const int lda,
-            const f32* const restrict tau,
-            f32* const restrict C, const int ldc,
-            f32* const restrict work, const int lwork,
+            const f32* restrict A, const int lda,
+            const f32* restrict tau,
+            f32* restrict C, const int ldc,
+            f32* restrict work, const int lwork,
             int* info)
 {
     int left, upper, lquery;

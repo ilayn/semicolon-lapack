@@ -30,8 +30,8 @@ f32 slantp(
     const char* uplo,
     const char* diag,
     const int n,
-    const f32* const restrict AP,
-    f32* const restrict work)
+    const f32* restrict AP,
+    f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

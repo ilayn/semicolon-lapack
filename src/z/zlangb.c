@@ -40,9 +40,9 @@ f64 zlangb(
     const int n,
     const int kl,
     const int ku,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
-    f64* const restrict work)
+    f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

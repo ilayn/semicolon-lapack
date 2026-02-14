@@ -35,7 +35,7 @@
 void dpptrf(
     const char* uplo,
     const int n,
-    f64* const restrict AP,
+    f64* restrict AP,
     int* info)
 {
     // dpptrf.f lines 134-135: Parameters

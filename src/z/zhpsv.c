@@ -41,9 +41,9 @@ void zhpsv(
     const char* uplo,
     const int n,
     const int nrhs,
-    c128* const restrict AP,
-    int* const restrict ipiv,
-    c128* const restrict B,
+    c128* restrict AP,
+    int* restrict ipiv,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

@@ -42,7 +42,7 @@
 void dsytf2_rook(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)

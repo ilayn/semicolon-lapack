@@ -63,12 +63,12 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgelsy(const int m, const int n, const int nrhs,
-            f64 * const restrict A, const int lda,
-            f64 * const restrict B, const int ldb,
-            int * const restrict jpvt, const f64 rcond,
-            int *rank,
-            f64 * const restrict work, const int lwork,
-            int *info)
+            f64* restrict A, const int lda,
+            f64* restrict B, const int ldb,
+            int* restrict jpvt, const f64 rcond,
+            int* rank,
+            f64* restrict work, const int lwork,
+            int* info)
 {
     /* Constants from Fortran source: IMAX=1, IMIN=2 */
     const int IMAX = 1;

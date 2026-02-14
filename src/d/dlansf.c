@@ -48,8 +48,8 @@ f64 dlansf(
     const char* transr,
     const char* uplo,
     const int n,
-    const f64* const restrict A,
-    f64* const restrict work)
+    const f64* restrict A,
+    f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

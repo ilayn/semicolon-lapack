@@ -43,14 +43,14 @@ void dsbgv(
     const int n,
     const int ka,
     const int kb,
-    f64* const restrict AB,
+    f64* restrict AB,
     const int ldab,
-    f64* const restrict BB,
+    f64* restrict BB,
     const int ldbb,
-    f64* const restrict W,
-    f64* const restrict Z,
+    f64* restrict W,
+    f64* restrict Z,
     const int ldz,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     int upper, wantz;

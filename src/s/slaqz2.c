@@ -39,17 +39,17 @@ void slaqz2(
     const int istartm,
     const int istopm,
     const int ihi,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    f32* const restrict B,
+    f32* restrict B,
     const int ldb,
     const int nq,
     const int qstart,
-    f32* const restrict Q,
+    f32* restrict Q,
     const int ldq,
     const int nz,
     const int zstart,
-    f32* const restrict Z,
+    f32* restrict Z,
     const int ldz)
 {
     const f32 ZERO = 0.0f;

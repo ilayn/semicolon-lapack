@@ -57,10 +57,10 @@
  */
 void sgels(const char* trans,
            const int m, const int n, const int nrhs,
-           f32 * const restrict A, const int lda,
-           f32 * const restrict B, const int ldb,
-           f32 * const restrict work, const int lwork,
-           int *info)
+           f32* restrict A, const int lda,
+           f32* restrict B, const int ldb,
+           f32* restrict work, const int lwork,
+           int* info)
 {
     int lquery, tpsd;
     int brow, iascl, ibscl, mn, nb, scllen, wsize;

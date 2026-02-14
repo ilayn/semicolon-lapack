@@ -23,7 +23,7 @@
  * @param[out]    dnm1   d(N0-1).
  * @param[out]    dnm2   d(N0-2).
  */
-void slasq6(const int i0, const int n0, f32* const restrict Z,
+void slasq6(const int i0, const int n0, f32* restrict Z,
             const int pp, f32* dmin, f32* dmin1, f32* dmin2,
             f32* dn, f32* dnm1, f32* dnm2)
 {

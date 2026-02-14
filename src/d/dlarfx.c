@@ -35,9 +35,9 @@
  *                       Not referenced if H has order < 11.
  */
 void dlarfx(const char* side, const int m, const int n,
-            const f64 * const restrict v, const f64 tau,
-            f64 * const restrict C, const int ldc,
-            f64 * restrict work)
+            const f64* restrict v, const f64 tau,
+            f64* restrict C, const int ldc,
+            f64* restrict work)
 {
     int j;
     f64 sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;

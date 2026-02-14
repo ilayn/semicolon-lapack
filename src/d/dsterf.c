@@ -30,8 +30,8 @@
  *                           if info = i, then i elements of E have not
  *                           converged to zero.
  */
-void dsterf(const int n, f64* const restrict D,
-            f64* const restrict E, int* info)
+void dsterf(const int n, f64* restrict D,
+            f64* restrict E, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

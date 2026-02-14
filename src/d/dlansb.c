@@ -30,9 +30,9 @@ f64 dlansb(
     const char* uplo,
     const int n,
     const int k,
-    const f64* const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    f64* const restrict work)
+    f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

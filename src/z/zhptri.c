@@ -36,9 +36,9 @@
 void zhptri(
     const char* uplo,
     const int n,
-    c128* const restrict AP,
-    const int* const restrict ipiv,
-    c128* const restrict work,
+    c128* restrict AP,
+    const int* restrict ipiv,
+    c128* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

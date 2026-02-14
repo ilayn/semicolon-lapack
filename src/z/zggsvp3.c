@@ -63,17 +63,17 @@
  */
 void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int p, const int n,
-             c128* const restrict A, const int lda,
-             c128* const restrict B, const int ldb,
+             c128* restrict A, const int lda,
+             c128* restrict B, const int ldb,
              const f64 tola, const f64 tolb,
              int* k, int* l,
-             c128* const restrict U, const int ldu,
-             c128* const restrict V, const int ldv,
-             c128* const restrict Q, const int ldq,
-             int* const restrict iwork,
-             f64* const restrict rwork,
-             c128* const restrict tau,
-             c128* const restrict work, const int lwork,
+             c128* restrict U, const int ldu,
+             c128* restrict V, const int ldv,
+             c128* restrict Q, const int ldq,
+             int* restrict iwork,
+             f64* restrict rwork,
+             c128* restrict tau,
+             c128* restrict work, const int lwork,
              int* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);

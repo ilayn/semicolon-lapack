@@ -52,9 +52,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dlatsqr(const int m, const int n, const int mb, const int nb,
-             f64* const restrict A, const int lda,
-             f64* const restrict T, const int ldt,
-             f64* const restrict work, const int lwork,
+             f64* restrict A, const int lda,
+             f64* restrict T, const int ldt,
+             f64* restrict work, const int lwork,
              int* info)
 {
     int lquery;

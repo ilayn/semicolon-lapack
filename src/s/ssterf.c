@@ -30,8 +30,8 @@
  *                           if info = i, then i elements of E have not
  *                           converged to zero.
  */
-void ssterf(const int n, f32* const restrict D,
-            f32* const restrict E, int* info)
+void ssterf(const int n, f32* restrict D,
+            f32* restrict E, int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

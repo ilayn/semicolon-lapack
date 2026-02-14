@@ -43,9 +43,9 @@ void dposv(
     const char* uplo,
     const int n,
     const int nrhs,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

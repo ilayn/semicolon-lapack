@@ -50,9 +50,9 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dsytd2(const char* uplo, const int n, f64* const restrict A,
-            const int lda, f64* const restrict D, f64* const restrict E,
-            f64* const restrict tau, int* info)
+void dsytd2(const char* uplo, const int n, f64* restrict A,
+            const int lda, f64* restrict D, f64* restrict E,
+            f64* restrict tau, int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

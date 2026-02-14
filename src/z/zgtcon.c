@@ -43,14 +43,14 @@
 void zgtcon(
     const char* norm,
     const int n,
-    const c128* const restrict DL,
-    const c128* const restrict D,
-    const c128* const restrict DU,
-    const c128* const restrict DU2,
-    const int* const restrict ipiv,
+    const c128* restrict DL,
+    const c128* restrict D,
+    const c128* restrict DU,
+    const c128* restrict DU2,
+    const int* restrict ipiv,
     const f64 anorm,
     f64* rcond,
-    c128* const restrict work,
+    c128* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

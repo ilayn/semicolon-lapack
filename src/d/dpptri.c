@@ -29,7 +29,7 @@
 void dpptri(
     const char* uplo,
     const int n,
-    f64* const restrict AP,
+    f64* restrict AP,
     int* info)
 {
     // dpptri.f lines 108-109: Parameters

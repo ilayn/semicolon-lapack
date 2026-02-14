@@ -39,11 +39,11 @@ void stbcon(
     const char* diag,
     const int n,
     const int kd,
-    const f32* const restrict AB,
+    const f32* restrict AB,
     const int ldab,
     f32* rcond,
-    f32* const restrict work,
-    int* const restrict iwork,
+    f32* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f32 ONE = 1.0f;

@@ -58,13 +58,13 @@ void zhbev(
     const char* uplo,
     const int n,
     const int kd,
-    c128* const restrict AB,
+    c128* restrict AB,
     const int ldab,
-    f64* const restrict W,
-    c128* const restrict Z,
+    f64* restrict W,
+    c128* restrict Z,
     const int ldz,
-    c128* const restrict work,
-    f64* const restrict rwork,
+    c128* restrict work,
+    f64* restrict rwork,
     int* info)
 {
     const f64 ZERO = 0.0;

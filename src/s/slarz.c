@@ -43,10 +43,10 @@
  *                      or (m) if side = 'R'.
  */
 void slarz(const char* side, const int m, const int n, const int l,
-           const f32 * const restrict v, const int incv,
+           const f32* restrict v, const int incv,
            const f32 tau,
-           f32 * const restrict C, const int ldc,
-           f32 * restrict work)
+           f32* restrict C, const int ldc,
+           f32* restrict work)
 {
     if (side[0] == 'L' || side[0] == 'l') {
 

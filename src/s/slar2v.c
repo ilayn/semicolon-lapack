@@ -21,12 +21,12 @@
  */
 void slar2v(
     const int n,
-    f32* const restrict X,
-    f32* const restrict Y,
-    f32* const restrict Z,
+    f32* restrict X,
+    f32* restrict Y,
+    f32* restrict Z,
     const int incx,
-    const f32* const restrict C,
-    const f32* const restrict S,
+    const f32* restrict C,
+    const f32* restrict S,
     const int incc)
 {
     int i, ic, ix;

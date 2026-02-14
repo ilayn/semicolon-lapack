@@ -36,9 +36,9 @@ f64 zlange(
     const char* norm,
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    f64* const restrict work)
+    f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

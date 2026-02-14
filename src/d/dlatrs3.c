@@ -68,13 +68,13 @@ void dlatrs3(
     const char* normin,
     const int n,
     const int nrhs,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64* const restrict X,
+    f64* restrict X,
     const int ldx,
-    f64* const restrict scale,
-    f64* const restrict cnorm,
-    f64* const restrict work,
+    f64* restrict scale,
+    f64* restrict cnorm,
+    f64* restrict work,
     const int lwork,
     int* info)
 {

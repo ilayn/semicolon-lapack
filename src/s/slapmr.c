@@ -44,7 +44,7 @@ void slapmr(
     const int forwrd,
     const int m,
     const int n,
-    f32* const restrict X,
+    f32* restrict X,
     const int ldx,
     int* restrict K)
 {

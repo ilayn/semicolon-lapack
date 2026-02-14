@@ -46,11 +46,11 @@
  */
 void zgttrf(
     const int n,
-    c128* const restrict DL,
-    c128* const restrict D,
-    c128* const restrict DU,
-    c128* const restrict DU2,
-    int* const restrict ipiv,
+    c128* restrict DL,
+    c128* restrict D,
+    c128* restrict DU,
+    c128* restrict DU2,
+    int* restrict ipiv,
     int* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);

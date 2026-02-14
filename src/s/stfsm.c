@@ -87,8 +87,8 @@ void stfsm(
     const int m,
     const int n,
     const f32 alpha,
-    const f32* const restrict A,
-    f32* const restrict B,
+    const f32* restrict A,
+    f32* restrict B,
     const int ldb)
 {
     const f32 ONE = 1.0f;

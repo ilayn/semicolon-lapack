@@ -56,7 +56,7 @@
 void dsytrf_aa(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* restrict ipiv,
     f64* restrict work,

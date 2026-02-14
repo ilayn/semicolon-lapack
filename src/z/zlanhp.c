@@ -48,8 +48,8 @@ f64 zlanhp(
     const char* norm,
     const char* uplo,
     const int n,
-    const c128* const restrict AP,
-    f64* const restrict work)
+    const c128* restrict AP,
+    f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

@@ -56,7 +56,7 @@
 void dsycon_rook(
     const char* uplo,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     const int* restrict ipiv,
     const f64 anorm,

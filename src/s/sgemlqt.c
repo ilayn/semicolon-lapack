@@ -58,10 +58,10 @@
  */
 void sgemlqt(const char* side, const char* trans,
              const int m, const int n, const int k, const int mb,
-             const f32* const restrict V, const int ldv,
-             const f32* const restrict T, const int ldt,
-             f32* const restrict C, const int ldc,
-             f32* const restrict work, int* info)
+             const f32* restrict V, const int ldv,
+             const f32* restrict T, const int ldt,
+             f32* restrict C, const int ldc,
+             f32* restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, ldwork, kf, q;

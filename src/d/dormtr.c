@@ -60,10 +60,10 @@
  */
 void dormtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n,
-            const f64* const restrict A, const int lda,
-            const f64* const restrict tau,
-            f64* const restrict C, const int ldc,
-            f64* const restrict work, const int lwork,
+            const f64* restrict A, const int lda,
+            const f64* restrict tau,
+            f64* restrict C, const int ldc,
+            f64* restrict work, const int lwork,
             int* info)
 {
     int left, upper, lquery;

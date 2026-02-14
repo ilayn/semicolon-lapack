@@ -27,7 +27,7 @@
  * @return The norm value.
  */
 f32 slanst(const char* norm, const int n,
-              const f32* const restrict D, const f32* const restrict E)
+              const f32* restrict D, const f32* restrict E)
 {
     f32 anorm;
 

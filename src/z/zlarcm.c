@@ -32,13 +32,13 @@
 void zlarcm(
     const int m,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    const c128* const restrict B,
+    const c128* restrict B,
     const int ldb,
-    c128* const restrict C,
+    c128* restrict C,
     const int ldc,
-    f64* const restrict rwork)
+    f64* restrict rwork)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

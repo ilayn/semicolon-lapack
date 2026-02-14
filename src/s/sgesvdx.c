@@ -63,12 +63,12 @@ static const f32 ONE = 1.0f;
  *                         - > 0: i eigenvectors failed to converge in SBDSVDX.
  */
 void sgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, f32* const restrict A, const int lda,
+             const int m, const int n, f32* restrict A, const int lda,
              const f32 vl, const f32 vu, const int il, const int iu,
-             int* ns, f32* const restrict S, f32* const restrict U,
-             const int ldu, f32* const restrict VT, const int ldvt,
-             f32* const restrict work, const int lwork,
-             int* const restrict iwork, int* info)
+             int* ns, f32* restrict S, f32* restrict U,
+             const int ldu, f32* restrict VT, const int ldvt,
+             f32* restrict work, const int lwork,
+             int* restrict iwork, int* info)
 {
     int alls, inds, lquery, vals, wantu, wantvt;
     int i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;

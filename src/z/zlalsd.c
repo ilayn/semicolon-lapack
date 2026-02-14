@@ -61,10 +61,10 @@
  *                             INFO/(N+1) through MOD(INFO,N+1).
  */
 void zlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
-            f64* const restrict D, f64* const restrict E,
-            c128* const restrict B, const int ldb, const f64 rcond,
-            int* rank, c128* const restrict work,
-            f64* const restrict rwork, int* const restrict iwork, int* info)
+            f64* restrict D, f64* restrict E,
+            c128* restrict B, const int ldb, const f64 rcond,
+            int* rank, c128* restrict work,
+            f64* restrict rwork, int* restrict iwork, int* info)
 {
     int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
     int givptr, i, icmpq1, icmpq2, irwb, irwib, irwrb;

@@ -27,7 +27,7 @@
 int iladlc(
     const int m,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda)
 {
     const f64 zero = 0.0;

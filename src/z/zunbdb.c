@@ -116,16 +116,16 @@
  */
 void zunbdb(const char* trans, const char* signs,
             const int m, const int p, const int q,
-            c128* const restrict X11, const int ldx11,
-            c128* const restrict X12, const int ldx12,
-            c128* const restrict X21, const int ldx21,
-            c128* const restrict X22, const int ldx22,
-            f64* const restrict theta, f64* const restrict phi,
-            c128* const restrict taup1,
-            c128* const restrict taup2,
-            c128* const restrict tauq1,
-            c128* const restrict tauq2,
-            c128* const restrict work, const int lwork,
+            c128* restrict X11, const int ldx11,
+            c128* restrict X12, const int ldx12,
+            c128* restrict X21, const int ldx21,
+            c128* restrict X22, const int ldx22,
+            f64* restrict theta, f64* restrict phi,
+            c128* restrict taup1,
+            c128* restrict taup2,
+            c128* restrict tauq1,
+            c128* restrict tauq2,
+            c128* restrict work, const int lwork,
             int* info)
 {
     int colmajor, lquery;

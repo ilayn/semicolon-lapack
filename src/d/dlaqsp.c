@@ -28,8 +28,8 @@
 void dlaqsp(
     const char* uplo,
     const int n,
-    f64* const restrict AP,
-    const f64* const restrict S,
+    f64* restrict AP,
+    const f64* restrict S,
     const f64 scond,
     const f64 amax,
     char* equed)

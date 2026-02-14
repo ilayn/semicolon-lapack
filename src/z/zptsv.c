@@ -46,9 +46,9 @@
 void zptsv(
     const int n,
     const int nrhs,
-    f64* const restrict D,
-    c128* const restrict E,
-    c128* const restrict B,
+    f64* restrict D,
+    c128* restrict E,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

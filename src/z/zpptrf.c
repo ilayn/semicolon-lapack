@@ -36,7 +36,7 @@
 void zpptrf(
     const char* uplo,
     const int n,
-    c128* const restrict AP,
+    c128* restrict AP,
     int* info)
 {
     const f64 ONE = 1.0;

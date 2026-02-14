@@ -30,9 +30,9 @@
  * @param[out]    wi      Imaginary part of eigenvalues (scaled by scale1). Non-negative.
  */
 void slag2(
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    const f32* const restrict B,
+    const f32* restrict B,
     const int ldb,
     const f32 safmin,
     f32* scale1,

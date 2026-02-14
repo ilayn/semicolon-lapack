@@ -48,13 +48,13 @@
  * @param[out]    snr     The sine of the right rotation matrix.
  */
 void slagv2(
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    f32* const restrict B,
+    f32* restrict B,
     const int ldb,
-    f32* const restrict alphar,
-    f32* const restrict alphai,
-    f32* const restrict beta,
+    f32* restrict alphar,
+    f32* restrict alphai,
+    f32* restrict beta,
     f32* csl,
     f32* snl,
     f32* csr,

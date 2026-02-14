@@ -61,16 +61,16 @@
  */
 void sggsvp3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int p, const int n,
-             f32* const restrict A, const int lda,
-             f32* const restrict B, const int ldb,
+             f32* restrict A, const int lda,
+             f32* restrict B, const int ldb,
              const f32 tola, const f32 tolb,
              int* k, int* l,
-             f32* const restrict U, const int ldu,
-             f32* const restrict V, const int ldv,
-             f32* const restrict Q, const int ldq,
-             int* const restrict iwork,
-             f32* const restrict tau,
-             f32* const restrict work, const int lwork,
+             f32* restrict U, const int ldu,
+             f32* restrict V, const int ldv,
+             f32* restrict Q, const int ldq,
+             int* restrict iwork,
+             f32* restrict tau,
+             f32* restrict work, const int lwork,
              int* info)
 {
     const f32 ZERO = 0.0f;

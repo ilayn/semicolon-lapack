@@ -76,11 +76,11 @@
  *                           elements of E have not converged to zero.
  */
 void sbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
-            const int ncc, f32* const restrict D, f32* const restrict E,
-            f32* const restrict VT, const int ldvt,
-            f32* const restrict U, const int ldu,
-            f32* const restrict C, const int ldc,
-            f32* const restrict work, int* info)
+            const int ncc, f32* restrict D, f32* restrict E,
+            f32* restrict VT, const int ldvt,
+            f32* restrict U, const int ldu,
+            f32* restrict C, const int ldc,
+            f32* restrict work, int* info)
 {
     /* Constants from LAPACK */
     const f32 ZERO = 0.0f;

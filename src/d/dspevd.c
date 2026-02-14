@@ -50,10 +50,10 @@
  *                         - > 0: if info = i, the algorithm failed to converge.
  */
 void dspevd(const char* jobz, const char* uplo, const int n,
-            f64* const restrict AP, f64* const restrict W,
-            f64* const restrict Z, const int ldz,
-            f64* const restrict work, const int lwork,
-            int* const restrict iwork, const int liwork, int* info)
+            f64* restrict AP, f64* restrict W,
+            f64* restrict Z, const int ldz,
+            f64* restrict work, const int lwork,
+            int* restrict iwork, const int liwork, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

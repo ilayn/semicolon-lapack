@@ -39,17 +39,17 @@ void dlaqz2(
     const int istartm,
     const int istopm,
     const int ihi,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     const int nq,
     const int qstart,
-    f64* const restrict Q,
+    f64* restrict Q,
     const int ldq,
     const int nz,
     const int zstart,
-    f64* const restrict Z,
+    f64* restrict Z,
     const int ldz)
 {
     const f64 ZERO = 0.0;

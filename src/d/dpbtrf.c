@@ -36,7 +36,7 @@ void dpbtrf(
     const char* uplo,
     const int n,
     const int kd,
-    f64* const restrict AB,
+    f64* restrict AB,
     const int ldab,
     int* info)
 {

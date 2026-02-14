@@ -38,10 +38,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgerq2(const int m, const int n,
-            f32 * const restrict A, const int lda,
-            f32 * const restrict tau,
-            f32 * const restrict work,
-            int *info)
+            f32* restrict A, const int lda,
+            f32* restrict tau,
+            f32* restrict work,
+            int* info)
 {
     int i, k;
     f32 aii;

@@ -59,19 +59,19 @@
 void stgevc(
     const char* side,
     const char* howmny,
-    const int* const restrict select,
+    const int* restrict select,
     const int n,
-    const f32* const restrict S,
+    const f32* restrict S,
     const int lds,
-    const f32* const restrict P,
+    const f32* restrict P,
     const int ldp,
-    f32* const restrict VL,
+    f32* restrict VL,
     const int ldvl,
-    f32* const restrict VR,
+    f32* restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ZERO = 0.0f;

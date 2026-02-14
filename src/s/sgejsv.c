@@ -352,12 +352,12 @@ static inline int max3i(int a, int b, int c) {
 void sgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
             const int m, const int n,
-            f32* const restrict A, const int lda,
-            f32* const restrict SVA,
-            f32* const restrict U, const int ldu,
-            f32* const restrict V, const int ldv,
-            f32* const restrict work, const int lwork,
-            int* const restrict iwork, int* info)
+            f32* restrict A, const int lda,
+            f32* restrict SVA,
+            f32* restrict U, const int ldu,
+            f32* restrict V, const int ldv,
+            f32* restrict work, const int lwork,
+            int* restrict iwork, int* info)
 {
     /* Local variables */
     f32 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;

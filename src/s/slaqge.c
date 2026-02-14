@@ -35,14 +35,14 @@
 void slaqge(
     const int m,
     const int n,
-    f32 * const restrict A,
+    f32* restrict A,
     const int lda,
-    const f32 * const restrict R,
-    const f32 * const restrict C,
+    const f32* restrict R,
+    const f32* restrict C,
     const f32 rowcnd,
     const f32 colcnd,
     const f32 amax,
-    char *equed)
+    char* equed)
 {
     const f32 ONE = 1.0f;
     const f32 THRESH = 0.1f;

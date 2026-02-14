@@ -20,7 +20,7 @@
  *                   first element of maximum absolute value.
  * @param[in] incx  The spacing between successive values of ZX. incx >= 1.
  */
-int izmax1(const int n, const c128* const restrict ZX, const int incx)
+int izmax1(const int n, const c128* restrict ZX, const int incx)
 {
     f64 dmax;
     int i, ix, imax;

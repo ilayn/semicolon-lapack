@@ -52,9 +52,9 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zhetd2(const char* uplo, const int n, c128* const restrict A,
-            const int lda, f64* const restrict D, f64* const restrict E,
-            c128* const restrict tau, int* info)
+void zhetd2(const char* uplo, const int n, c128* restrict A,
+            const int lda, f64* restrict D, f64* restrict E,
+            c128* restrict tau, int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);

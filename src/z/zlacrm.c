@@ -32,13 +32,13 @@
 void zlacrm(
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    const f64* const restrict B,
+    const f64* restrict B,
     const int ldb,
-    c128* const restrict C,
+    c128* restrict C,
     const int ldc,
-    f64* const restrict rwork)
+    f64* restrict rwork)
 {
     int i, j, l;
 

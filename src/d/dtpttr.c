@@ -44,8 +44,8 @@
 void dtpttr(
     const char* uplo,
     const int n,
-    const f64* const restrict AP,
-    f64* const restrict A,
+    const f64* restrict AP,
+    f64* restrict A,
     const int lda,
     int* info)
 {

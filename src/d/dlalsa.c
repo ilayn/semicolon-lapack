@@ -56,17 +56,17 @@
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  */
 void dlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            f64* const restrict B, const int ldb,
-            f64* const restrict BX, const int ldbx,
-            const f64* const restrict U, const int ldu,
-            const f64* const restrict VT, const int* const restrict K,
-            const f64* const restrict difl, const f64* const restrict difr,
-            const f64* const restrict Z, const f64* const restrict poles,
-            const int* const restrict givptr, const int* const restrict givcol,
-            const int ldgcol, const int* const restrict perm,
-            const f64* const restrict givnum,
-            const f64* const restrict C, const f64* const restrict S,
-            f64* const restrict work, int* const restrict iwork, int* info)
+            f64* restrict B, const int ldb,
+            f64* restrict BX, const int ldbx,
+            const f64* restrict U, const int ldu,
+            const f64* restrict VT, const int* restrict K,
+            const f64* restrict difl, const f64* restrict difr,
+            const f64* restrict Z, const f64* restrict poles,
+            const int* restrict givptr, const int* restrict givcol,
+            const int ldgcol, const int* restrict perm,
+            const f64* restrict givnum,
+            const f64* restrict C, const f64* restrict S,
+            f64* restrict work, int* restrict iwork, int* info)
 {
     int i, ic, im1, inode, j, lf, ll, lvl, lvl2;
     int nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;

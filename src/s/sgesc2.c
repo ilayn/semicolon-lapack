@@ -34,12 +34,12 @@
  */
 void sgesc2(
     const int n,
-    const f32 * const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32 * const restrict rhs,
-    const int * const restrict ipiv,
-    const int * const restrict jpiv,
-    f32 *scale)
+    f32* restrict rhs,
+    const int* restrict ipiv,
+    const int* restrict jpiv,
+    f32* scale)
 {
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;

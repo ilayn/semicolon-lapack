@@ -27,8 +27,8 @@
  * @param[in]     incy   The increment between successive elements of Y. INCY > 0.
  * @param[out]    ssmin  The smallest singular value of the N-by-2 matrix A = ( X Y ).
  */
-void zlapll(const int n, c128* const restrict x, const int incx,
-            c128* const restrict y, const int incy, f64* ssmin)
+void zlapll(const int n, c128* restrict x, const int incx,
+            c128* restrict y, const int incy, f64* ssmin)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     c128 a11, a12, a22, c, tau, dot;

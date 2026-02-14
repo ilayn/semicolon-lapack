@@ -47,16 +47,16 @@ void ztrrfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    const c128* const restrict B,
+    const c128* restrict B,
     const int ldb,
-    const c128* const restrict X,
+    const c128* restrict X,
     const int ldx,
-    f64* const restrict ferr,
-    f64* const restrict berr,
-    c128* const restrict work,
-    f64* const restrict rwork,
+    f64* restrict ferr,
+    f64* restrict berr,
+    c128* restrict work,
+    f64* restrict rwork,
     int* info)
 {
     const f64 ZERO = 0.0;

@@ -76,14 +76,14 @@
  */
 void stgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,
-            f32* const restrict A, const int lda,
-            f32* const restrict B, const int ldb,
+            f32* restrict A, const int lda,
+            f32* restrict B, const int ldb,
             const f32 tola, const f32 tolb,
-            f32* const restrict alpha, f32* const restrict beta,
-            f32* const restrict U, const int ldu,
-            f32* const restrict V, const int ldv,
-            f32* const restrict Q, const int ldq,
-            f32* const restrict work, int* ncycle, int* info)
+            f32* restrict alpha, f32* restrict beta,
+            f32* restrict U, const int ldu,
+            f32* restrict V, const int ldv,
+            f32* restrict Q, const int ldq,
+            f32* restrict work, int* ncycle, int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

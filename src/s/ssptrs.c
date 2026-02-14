@@ -36,9 +36,9 @@ void ssptrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f32* const restrict AP,
-    const int* const restrict ipiv,
-    f32* const restrict B,
+    const f32* restrict AP,
+    const int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
     int* info)
 {

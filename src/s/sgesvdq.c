@@ -22,12 +22,12 @@ static const f32 ONE = 1.0f;
  */
 void sgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, f32* const restrict A, const int lda,
-             f32* const restrict S, f32* const restrict U, const int ldu,
-             f32* const restrict V, const int ldv, int* numrank,
-             int* const restrict iwork, const int liwork,
-             f32* const restrict work, const int lwork,
-             f32* const restrict rwork, const int lrwork, int* info)
+             const int m, const int n, f32* restrict A, const int lda,
+             f32* restrict S, f32* restrict U, const int ldu,
+             f32* restrict V, const int ldv, int* numrank,
+             int* restrict iwork, const int liwork,
+             f32* restrict work, const int lwork,
+             f32* restrict rwork, const int lrwork, int* info)
 {
     int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
     int wntvr, wntva, rsvec, dntwv;

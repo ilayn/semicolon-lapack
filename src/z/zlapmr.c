@@ -45,7 +45,7 @@ void zlapmr(
     const int forwrd,
     const int m,
     const int n,
-    c128* const restrict X,
+    c128* restrict X,
     const int ldx,
     int* restrict K)
 {

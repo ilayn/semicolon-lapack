@@ -42,9 +42,9 @@
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
 void zlatrd(const char* uplo, const int n, const int nb,
-            c128* const restrict A, const int lda,
-            f64* const restrict E, c128* const restrict tau,
-            c128* const restrict W, const int ldw)
+            c128* restrict A, const int lda,
+            f64* restrict E, c128* restrict tau,
+            c128* restrict W, const int ldw)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE  = CMPLX(1.0, 0.0);

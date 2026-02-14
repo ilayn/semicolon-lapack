@@ -76,12 +76,12 @@
  *                           bidiagonal form did not converge to zero.
  */
 void zgelsd(const int m, const int n, const int nrhs,
-            c128* const restrict A, const int lda,
-            c128* const restrict B, const int ldb,
-            f64* const restrict S, const f64 rcond, int* rank,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork,
-            int* const restrict iwork, int* info)
+            c128* restrict A, const int lda,
+            c128* restrict B, const int ldb,
+            f64* restrict S, const f64 rcond, int* rank,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork,
+            int* restrict iwork, int* info)
 {
     int lquery;
     int iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork, lrwork;

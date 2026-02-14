@@ -51,12 +51,12 @@ void dlatbs(
     const char* normin,
     const int n,
     const int kd,
-    const f64 * const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    f64 * const restrict X,
-    f64 *scale,
-    f64 * const restrict cnorm,
-    int *info)
+    f64* restrict X,
+    f64* scale,
+    f64* restrict cnorm,
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;

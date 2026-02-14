@@ -55,10 +55,10 @@
  */
 void dlassq(
     const int n,
-    const f64 * const restrict X,
+    const f64* restrict X,
     const int incx,
-    f64 *scale,
-    f64 *sumsq)
+    f64* scale,
+    f64* sumsq)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

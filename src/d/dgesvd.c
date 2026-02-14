@@ -67,11 +67,11 @@
  */
 void dgesvd(const char* jobu, const char* jobvt,
             const int m, const int n,
-            f64* const restrict A, const int lda,
-            f64* const restrict S,
-            f64* const restrict U, const int ldu,
-            f64* const restrict VT, const int ldvt,
-            f64* const restrict work, const int lwork,
+            f64* restrict A, const int lda,
+            f64* restrict S,
+            f64* restrict U, const int ldu,
+            f64* restrict VT, const int ldvt,
+            f64* restrict work, const int lwork,
             int* info)
 {
     /* Constants */

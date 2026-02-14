@@ -56,10 +56,10 @@ static const f64 ALPHA_BK = 0.6403882032022076;
 void dsytf2(
     const char* uplo,
     const int n,
-    f64 * restrict A,
+    f64* restrict A,
     const int lda,
-    int * restrict ipiv,
-    int *info)
+    int* restrict ipiv,
+    int* info)
 {
     /* Test the input parameters */
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');

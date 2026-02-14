@@ -56,9 +56,9 @@
  * @param[out]    work  Complex array, dimension (m).
  */
 void zlatrz(const int m, const int n, const int l,
-            c128* const restrict A, const int lda,
-            c128* const restrict tau,
-            c128* const restrict work)
+            c128* restrict A, const int lda,
+            c128* restrict tau,
+            c128* restrict work)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     int i;

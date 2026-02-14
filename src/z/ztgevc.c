@@ -70,20 +70,20 @@
 void ztgevc(
     const char* side,
     const char* howmny,
-    const int* const restrict select,
+    const int* restrict select,
     const int n,
-    const c128* const restrict S,
+    const c128* restrict S,
     const int lds,
-    const c128* const restrict P,
+    const c128* restrict P,
     const int ldp,
-    c128* const restrict VL,
+    c128* restrict VL,
     const int ldvl,
-    c128* const restrict VR,
+    c128* restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    c128* const restrict work,
-    f64* const restrict rwork,
+    c128* restrict work,
+    f64* restrict rwork,
     int* info)
 {
     const f64 ZERO = 0.0;

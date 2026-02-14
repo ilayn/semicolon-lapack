@@ -58,13 +58,13 @@
  *                           converge.
  */
 void dstevx(const char* jobz, const char* range, const int n,
-            f64* const restrict D, f64* const restrict E,
+            f64* restrict D, f64* restrict E,
             const f64 vl, const f64 vu,
             const int il, const int iu, const f64 abstol,
-            int* m, f64* const restrict W,
-            f64* const restrict Z, const int ldz,
-            f64* const restrict work, int* const restrict iwork,
-            int* const restrict ifail, int* info)
+            int* m, f64* restrict W,
+            f64* restrict Z, const int ldz,
+            f64* restrict work, int* restrict iwork,
+            int* restrict ifail, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

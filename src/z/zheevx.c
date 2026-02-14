@@ -73,15 +73,15 @@
  *                           Their indices are stored in array IFAIL.
  */
 void zheevx(const char* jobz, const char* range, const char* uplo,
-            const int n, c128* const restrict A, const int lda,
+            const int n, c128* restrict A, const int lda,
             const f64 vl, const f64 vu, const int il, const int iu,
             const f64 abstol, int* m,
-            f64* const restrict W,
-            c128* const restrict Z, const int ldz,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork,
-            int* const restrict iwork,
-            int* const restrict ifail,
+            f64* restrict W,
+            c128* restrict Z, const int ldz,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork,
+            int* restrict iwork,
+            int* restrict ifail,
             int* info)
 {
     const f64 ZERO = 0.0;

@@ -72,17 +72,17 @@
  */
 void zstein(
     const int n,
-    const f64* const restrict D,
-    const f64* const restrict E,
+    const f64* restrict D,
+    const f64* restrict E,
     const int m,
-    const f64* const restrict W,
-    const int* const restrict iblock,
-    const int* const restrict isplit,
-    c128* const restrict Z,
+    const f64* restrict W,
+    const int* restrict iblock,
+    const int* restrict isplit,
+    c128* restrict Z,
     const int ldz,
-    f64* const restrict work,
-    int* const restrict iwork,
-    int* const restrict ifail,
+    f64* restrict work,
+    int* restrict iwork,
+    int* restrict ifail,
     int* info)
 {
     const int MAXITS = 5;

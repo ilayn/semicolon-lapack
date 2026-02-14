@@ -56,7 +56,7 @@
 void ssycon_rook(
     const char* uplo,
     const int n,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
     const int* restrict ipiv,
     const f32 anorm,

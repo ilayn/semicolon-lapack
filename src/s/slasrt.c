@@ -24,7 +24,7 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void slasrt(const char* id, const int n, f32* const restrict D, int* info)
+void slasrt(const char* id, const int n, f32* restrict D, int* info)
 {
     const int SELECT = 20;
 

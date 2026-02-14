@@ -28,8 +28,8 @@
 void slaqsp(
     const char* uplo,
     const int n,
-    f32* const restrict AP,
-    const f32* const restrict S,
+    f32* restrict AP,
+    const f32* restrict S,
     const f32 scond,
     const f32 amax,
     char* equed)

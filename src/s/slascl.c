@@ -56,8 +56,8 @@
 void slascl(const char* type, const int kl, const int ku,
             const f32 cfrom, const f32 cto,
             const int m, const int n,
-            f32 * const restrict A, const int lda,
-            int *info)
+            f32* restrict A, const int lda,
+            int* info)
 {
     const f32 ZERO = 0.0f, ONE = 1.0f;
     int i, j, itype, k1, k2, k3, k4;

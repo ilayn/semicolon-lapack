@@ -51,9 +51,9 @@ f32 slantb(
     const char* diag,
     const int n,
     const int k,
-    const f32 * const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    f32 * const restrict work)
+    f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

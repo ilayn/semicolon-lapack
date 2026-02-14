@@ -66,7 +66,7 @@
 void zsytri_3(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     const c128* restrict E,
     const int* restrict ipiv,

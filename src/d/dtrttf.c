@@ -45,9 +45,9 @@ void dtrttf(
     const char* transr,
     const char* uplo,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64* const restrict ARF,
+    f64* restrict ARF,
     int* info)
 {
     int lower, nisodd, normaltransr;

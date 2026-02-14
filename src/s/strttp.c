@@ -44,9 +44,9 @@
 void strttp(
     const char* uplo,
     const int n,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32* const restrict AP,
+    f32* restrict AP,
     int* info)
 {
     int lower;

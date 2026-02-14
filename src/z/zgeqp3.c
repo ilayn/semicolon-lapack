@@ -59,11 +59,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgeqp3(const int m, const int n,
-            c128* const restrict A, const int lda,
-            int* const restrict jpvt,
-            c128* const restrict tau,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork,
+            c128* restrict A, const int lda,
+            int* restrict jpvt,
+            c128* restrict tau,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork,
             int* info)
 {
     int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;

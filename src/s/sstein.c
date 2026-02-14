@@ -65,17 +65,17 @@
  */
 void sstein(
     const int n,
-    const f32* const restrict D,
-    const f32* const restrict E,
+    const f32* restrict D,
+    const f32* restrict E,
     const int m,
-    const f32* const restrict W,
-    const int* const restrict iblock,
-    const int* const restrict isplit,
-    f32* const restrict Z,
+    const f32* restrict W,
+    const int* restrict iblock,
+    const int* restrict isplit,
+    f32* restrict Z,
     const int ldz,
-    f32* const restrict work,
-    int* const restrict iwork,
-    int* const restrict ifail,
+    f32* restrict work,
+    int* restrict iwork,
+    int* restrict ifail,
     int* info)
 {
     const int MAXITS = 5;

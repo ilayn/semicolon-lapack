@@ -22,12 +22,12 @@ static const f64 ONE = 1.0;
  */
 void dgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, f64* const restrict A, const int lda,
-             f64* const restrict S, f64* const restrict U, const int ldu,
-             f64* const restrict V, const int ldv, int* numrank,
-             int* const restrict iwork, const int liwork,
-             f64* const restrict work, const int lwork,
-             f64* const restrict rwork, const int lrwork, int* info)
+             const int m, const int n, f64* restrict A, const int lda,
+             f64* restrict S, f64* restrict U, const int ldu,
+             f64* restrict V, const int ldv, int* numrank,
+             int* restrict iwork, const int liwork,
+             f64* restrict work, const int lwork,
+             f64* restrict rwork, const int lrwork, int* info)
 {
     int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
     int wntvr, wntva, rsvec, dntwv;

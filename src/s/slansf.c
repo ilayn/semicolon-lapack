@@ -48,8 +48,8 @@ f32 slansf(
     const char* transr,
     const char* uplo,
     const int n,
-    const f32* const restrict A,
-    f32* const restrict work)
+    const f32* restrict A,
+    f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

@@ -40,9 +40,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgtr(const char* uplo, const int n,
-            f64* const restrict A, const int lda,
-            const f64* const restrict tau,
-            f64* const restrict work, const int lwork,
+            f64* restrict A, const int lda,
+            const f64* restrict tau,
+            f64* restrict work, const int lwork,
             int* info)
 {
     const f64 ZERO = 0.0;

@@ -54,13 +54,13 @@
 void zlatdf(
     const int ijob,
     const int n,
-    const c128* const restrict Z,
+    const c128* restrict Z,
     const int ldz,
-    c128* const restrict rhs,
+    c128* restrict rhs,
     f64* rdsum,
     f64* rdscal,
-    const int* const restrict ipiv,
-    const int* const restrict jpiv)
+    const int* restrict ipiv,
+    const int* restrict jpiv)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

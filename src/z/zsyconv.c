@@ -50,7 +50,7 @@ void zsyconv(
     const char* uplo,
     const char* way,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     const int* restrict ipiv,
     c128* restrict E,

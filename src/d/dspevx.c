@@ -64,12 +64,12 @@
  *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void dspevx(const char* jobz, const char* range, const char* uplo,
-            const int n, f64* const restrict AP,
+            const int n, f64* restrict AP,
             const f64 vl, const f64 vu, const int il, const int iu,
-            const f64 abstol, int* m, f64* const restrict W,
-            f64* const restrict Z, const int ldz,
-            f64* const restrict work, int* const restrict iwork,
-            int* const restrict ifail, int* info)
+            const f64 abstol, int* m, f64* restrict W,
+            f64* restrict Z, const int ldz,
+            f64* restrict work, int* restrict iwork,
+            int* restrict ifail, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

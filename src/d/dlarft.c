@@ -36,9 +36,9 @@
  */
 void dlarft(const char* direct, const char* storev,
             const int n, const int k,
-            const f64 * const restrict V, const int ldv,
-            const f64 * const restrict tau,
-            f64 * const restrict T, const int ldt)
+            const f64* restrict V, const int ldv,
+            const f64* restrict tau,
+            f64* restrict T, const int ldt)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;

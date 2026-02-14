@@ -67,13 +67,13 @@
  * @param[out]    work    Double precision array, dimension (4*n).
  */
 void dlar1v(const int n, const int b1, const int bn, const f64 lambda,
-            const f64* const restrict D, const f64* const restrict L,
-            const f64* const restrict LD, const f64* const restrict LLD,
+            const f64* restrict D, const f64* restrict L,
+            const f64* restrict LD, const f64* restrict LLD,
             const f64 pivmin, const f64 gaptol,
-            f64* const restrict Z, const int wantnc, int* negcnt,
+            f64* restrict Z, const int wantnc, int* negcnt,
             f64* ztz, f64* mingma, int* r,
-            int* const restrict isuppz, f64* nrminv, f64* resid,
-            f64* rqcorr, f64* const restrict work)
+            int* restrict isuppz, f64* nrminv, f64* resid,
+            f64* rqcorr, f64* restrict work)
 {
     /* Local variables */
     int i, r1, r2, neg1, neg2;

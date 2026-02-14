@@ -34,10 +34,10 @@ void ssytrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    f32* const restrict B,
+    const int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
     int* info)
 {

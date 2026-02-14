@@ -36,10 +36,10 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void dlasd0(const int n, const int sqre, f64* const restrict D,
-            f64* const restrict E, f64* const restrict U, const int ldu,
-            f64* const restrict VT, const int ldvt, const int smlsiz,
-            int* const restrict IWORK, f64* const restrict work, int* info)
+void dlasd0(const int n, const int sqre, f64* restrict D,
+            f64* restrict E, f64* restrict U, const int ldu,
+            f64* restrict VT, const int ldvt, const int smlsiz,
+            int* restrict IWORK, f64* restrict work, int* info)
 {
     int i, ic, idxq, idxqc, inode, itemp, iwk;
     int j, lf, ll, lvl, m, ncc, nd, ndb1, ndiml, ndimr;

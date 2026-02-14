@@ -25,9 +25,9 @@
  *                      The sines of the plane rotations.
  * @param[in]     incc  The increment between elements of C and S. incc > 0.
  */
-void dlartv(const int n, f64* const restrict X, const int incx,
-            f64* const restrict Y, const int incy,
-            const f64* const restrict C, const f64* const restrict S,
+void dlartv(const int n, f64* restrict X, const int incx,
+            f64* restrict Y, const int incy,
+            const f64* restrict C, const f64* restrict S,
             const int incc)
 {
     int ix = 0;

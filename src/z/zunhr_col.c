@@ -57,9 +57,9 @@
  *                      < 0: if info = -i, the i-th argument had an illegal value
  */
 void zunhr_col(const int m, const int n, const int nb,
-               c128* const restrict A, const int lda,
-               c128* const restrict T, const int ldt,
-               c128* const restrict D,
+               c128* restrict A, const int lda,
+               c128* restrict T, const int ldt,
+               c128* restrict D,
                int* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);

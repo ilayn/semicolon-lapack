@@ -51,14 +51,14 @@
  * @param[in]     ldf     The leading dimension of the array F. ldf >= max(1, n).
  */
 void dlaqps(const int m, const int n, const int offset, const int nb,
-            int *kb,
-            f64 * const restrict A, const int lda,
-            int * const restrict jpvt,
-            f64 * const restrict tau,
-            f64 * const restrict vn1,
-            f64 * const restrict vn2,
-            f64 * const restrict auxv,
-            f64 * const restrict F, const int ldf)
+            int* kb,
+            f64* restrict A, const int lda,
+            int* restrict jpvt,
+            f64* restrict tau,
+            f64* restrict vn1,
+            f64* restrict vn2,
+            f64* restrict auxv,
+            f64* restrict F, const int ldf)
 {
     int itemp, j, k, lastrk, lsticc, pvt, rk;
     f64 akk, temp, temp2, tol3z;

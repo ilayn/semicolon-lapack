@@ -42,9 +42,9 @@ void stbtrs(
     const int n,
     const int kd,
     const int nrhs,
-    const f32* const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    f32* const restrict B,
+    f32* restrict B,
     const int ldb,
     int* info)
 {

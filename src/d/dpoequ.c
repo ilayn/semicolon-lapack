@@ -37,9 +37,9 @@
  */
 void dpoequ(
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64* const restrict S,
+    f64* restrict S,
     f64* scond,
     f64* amax,
     int* info)

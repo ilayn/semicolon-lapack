@@ -67,9 +67,9 @@
 void zlaunhr_col_getrfnp(
     const int m,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    c128* const restrict D,
+    c128* restrict D,
     int* info)
 {
     *info = 0;

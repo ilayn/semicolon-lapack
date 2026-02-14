@@ -28,16 +28,16 @@
  * @param[out]    v       Output vector of length 3.
  */
 void dlaqz1(
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    const f64* const restrict B,
+    const f64* restrict B,
     const int ldb,
     const f64 sr1,
     const f64 sr2,
     const f64 si,
     const f64 beta1,
     const f64 beta2,
-    f64* const restrict v)
+    f64* restrict v)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

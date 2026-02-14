@@ -29,9 +29,9 @@
 f64 zlangt(
     const char* norm,
     const int n,
-    const c128* const restrict DL,
-    const c128* const restrict D,
-    const c128* const restrict DU)
+    const c128* restrict DL,
+    const c128* restrict D,
+    const c128* restrict DU)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

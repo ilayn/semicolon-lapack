@@ -39,8 +39,8 @@ void dtptrs(
     const char* diag,
     const int n,
     const int nrhs,
-    const f64* const restrict AP,
-    f64* const restrict B,
+    const f64* restrict AP,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

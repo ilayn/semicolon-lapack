@@ -42,10 +42,10 @@
 void dgetf2(
     const int m,
     const int n,
-    f64 * const restrict A,
+    f64* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    int *info)
+    int* restrict ipiv,
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 sfmin = DBL_MIN;

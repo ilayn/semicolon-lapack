@@ -23,7 +23,7 @@
 void srscl(
     const int n,
     const f32 sa,
-    f32 * const restrict sx,
+    f32* restrict sx,
     const int incx)
 {
     const f32 ONE = 1.0f;

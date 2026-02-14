@@ -56,7 +56,7 @@
  */
 void zlassq(
     const int n,
-    const c128* const restrict X,
+    const c128* restrict X,
     const int incx,
     f64* scale,
     f64* sumsq)

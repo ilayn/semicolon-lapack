@@ -70,10 +70,10 @@
  */
 void zunmrz(const char* side, const char* trans,
             const int m, const int n, const int k, const int l,
-            c128* const restrict A, const int lda,
-            const c128* const restrict tau,
-            c128* const restrict C, const int ldc,
-            c128* const restrict work, const int lwork,
+            c128* restrict A, const int lda,
+            const c128* restrict tau,
+            c128* restrict C, const int ldc,
+            c128* restrict work, const int lwork,
             int* info)
 {
     const int nbmax = 64;

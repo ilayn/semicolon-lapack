@@ -42,9 +42,9 @@
 void zlat2c(
     const char* uplo,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    float complex* const restrict SA,
+    float complex* restrict SA,
     const int ldsa,
     int* info)
 {

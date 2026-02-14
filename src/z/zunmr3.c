@@ -65,10 +65,10 @@
  *                              value
  */
 void zunmr3(const char* side, const char* trans, const int m, const int n,
-            const int k, const int l, c128* const restrict A,
-            const int lda, const c128* const restrict tau,
-            c128* const restrict C, const int ldc,
-            c128* const restrict work, int* info)
+            const int k, const int l, c128* restrict A,
+            const int lda, const c128* restrict tau,
+            c128* restrict C, const int ldc,
+            c128* restrict work, int* info)
 {
     int left, notran;
     int i, i1, i2, i3, ic, ja, jc, mi = 0, ni = 0, nq;

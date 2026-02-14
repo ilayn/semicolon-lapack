@@ -45,9 +45,9 @@ void strttf(
     const char* transr,
     const char* uplo,
     const int n,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32* const restrict ARF,
+    f32* restrict ARF,
     int* info)
 {
     int lower, nisodd, normaltransr;

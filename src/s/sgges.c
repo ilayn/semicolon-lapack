@@ -56,15 +56,15 @@
  */
 void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
            sselect3_t selctg, const int n,
-           f32* const restrict A, const int lda,
-           f32* const restrict B, const int ldb,
+           f32* restrict A, const int lda,
+           f32* restrict B, const int ldb,
            int* sdim,
-           f32* const restrict alphar, f32* const restrict alphai,
-           f32* const restrict beta,
-           f32* const restrict VSL, const int ldvsl,
-           f32* const restrict VSR, const int ldvsr,
-           f32* const restrict work, const int lwork,
-           int* const restrict bwork, int* info)
+           f32* restrict alphar, f32* restrict alphai,
+           f32* restrict beta,
+           f32* restrict VSL, const int ldvsl,
+           f32* restrict VSR, const int ldvsr,
+           f32* restrict work, const int lwork,
+           int* restrict bwork, int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

@@ -53,13 +53,13 @@
 void slatdf(
     const int ijob,
     const int n,
-    const f32* const restrict Z,
+    const f32* restrict Z,
     const int ldz,
-    f32* const restrict rhs,
+    f32* restrict rhs,
     f32* rdsum,
     f32* rdscal,
-    const int* const restrict ipiv,
-    const int* const restrict jpiv)
+    const int* restrict ipiv,
+    const int* restrict jpiv)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

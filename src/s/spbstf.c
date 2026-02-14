@@ -34,7 +34,7 @@ void spbstf(
     const char* uplo,
     const int n,
     const int kd,
-    f32* const restrict AB,
+    f32* restrict AB,
     const int ldab,
     int* info)
 {

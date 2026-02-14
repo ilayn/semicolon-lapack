@@ -38,11 +38,11 @@
  */
 void zptcon(
     const int n,
-    const f64* const restrict D,
-    const c128* const restrict E,
+    const f64* restrict D,
+    const c128* restrict E,
     const f64 anorm,
     f64* rcond,
-    f64* const restrict rwork,
+    f64* restrict rwork,
     int* info)
 {
     const f64 ONE = 1.0;

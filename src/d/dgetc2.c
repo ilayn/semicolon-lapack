@@ -38,11 +38,11 @@
  */
 void dgetc2(
     const int n,
-    f64 * const restrict A,
+    f64* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    int * const restrict jpiv,
-    int *info)
+    int* restrict ipiv,
+    int* restrict jpiv,
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

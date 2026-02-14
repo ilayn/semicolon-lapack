@@ -29,9 +29,9 @@ void ztrti2(
     const char* uplo,
     const char* diag,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    int *info)
+    int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 

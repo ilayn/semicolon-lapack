@@ -40,9 +40,9 @@
 void zlaqhe(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    const f64* const restrict S,
+    const f64* restrict S,
     const f64 scond,
     const f64 amax,
     char* equed)

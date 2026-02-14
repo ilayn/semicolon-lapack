@@ -38,8 +38,8 @@
  */
 void dlasr(const char* side, const char* pivot, const char* direct,
            const int m, const int n,
-           const f64* const restrict C_rot, const f64* const restrict S_rot,
-           f64* const restrict A, const int lda)
+           const f64* restrict C_rot, const f64* restrict S_rot,
+           f64* restrict A, const int lda)
 {
     int i, j;
     f64 ctemp, stemp, temp;

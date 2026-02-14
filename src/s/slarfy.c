@@ -34,9 +34,9 @@
  * @param[in]     ldc    The leading dimension of the array C. LDC >= max(1, N).
  * @param[out]    work   Double precision array, dimension (N).
  */
-void slarfy(const char* uplo, const int n, const f32* const restrict V,
-            const int incv, const f32 tau, f32* const restrict C,
-            const int ldc, f32* const restrict work)
+void slarfy(const char* uplo, const int n, const f32* restrict V,
+            const int incv, const f32 tau, f32* restrict C,
+            const int ldc, f32* restrict work)
 {
     f32 alpha;
     CBLAS_UPLO cblas_uplo;

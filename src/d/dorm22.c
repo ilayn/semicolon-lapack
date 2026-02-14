@@ -56,11 +56,11 @@ void dorm22(
     const int n,
     const int n1,
     const int n2,
-    const f64* const restrict Q,
+    const f64* restrict Q,
     const int ldq,
-    f64* const restrict C,
+    f64* restrict C,
     const int ldc,
-    f64* const restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {

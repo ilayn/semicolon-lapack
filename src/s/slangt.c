@@ -28,9 +28,9 @@
 f32 slangt(
     const char* norm,
     const int n,
-    const f32 * const restrict DL,
-    const f32 * const restrict D,
-    const f32 * const restrict DU)
+    const f32* restrict DL,
+    const f32* restrict D,
+    const f32* restrict DU)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

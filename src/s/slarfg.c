@@ -36,8 +36,8 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void slarfg(const int n, f32 *alpha, f32 * const x,
-            const int incx, f32 *tau)
+void slarfg(const int n, f32* alpha, f32* x,
+            const int incx, f32* tau)
 {
     const f32 ONE = 1.0f;
     f32 xnorm, beta, safmin, rsafmn;

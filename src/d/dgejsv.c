@@ -352,12 +352,12 @@ static inline int max3i(int a, int b, int c) {
 void dgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
             const int m, const int n,
-            f64* const restrict A, const int lda,
-            f64* const restrict SVA,
-            f64* const restrict U, const int ldu,
-            f64* const restrict V, const int ldv,
-            f64* const restrict work, const int lwork,
-            int* const restrict iwork, int* info)
+            f64* restrict A, const int lda,
+            f64* restrict SVA,
+            f64* restrict U, const int ldu,
+            f64* restrict V, const int ldv,
+            f64* restrict work, const int lwork,
+            int* restrict iwork, int* info)
 {
     /* Local variables */
     f64 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;

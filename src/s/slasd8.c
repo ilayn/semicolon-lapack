@@ -25,11 +25,11 @@ static inline f32 dlamc3(f32 a, f32 b)
  * SLASD8 is called from SLASD6.
  */
 void slasd8(const int icompq, const int k,
-            f32* const restrict D, f32* const restrict Z,
-            f32* const restrict VF, f32* const restrict VL,
-            f32* const restrict DIFL, f32* const restrict DIFR,
-            const int lddifr, const f32* const restrict DSIGMA,
-            f32* const restrict work, int* info)
+            f32* restrict D, f32* restrict Z,
+            f32* restrict VF, f32* restrict VL,
+            f32* restrict DIFL, f32* restrict DIFR,
+            const int lddifr, const f32* restrict DSIGMA,
+            f32* restrict work, int* info)
 {
     const f32 ONE = 1.0f;
 

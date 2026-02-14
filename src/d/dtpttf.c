@@ -41,8 +41,8 @@ void dtpttf(
     const char* transr,
     const char* uplo,
     const int n,
-    const f64* const restrict AP,
-    f64* const restrict ARF,
+    const f64* restrict AP,
+    f64* restrict ARF,
     int* info)
 {
     int lower, nisodd, normaltransr;

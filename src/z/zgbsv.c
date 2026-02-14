@@ -54,10 +54,10 @@ void zgbsv(
     const int kl,
     const int ku,
     const int nrhs,
-    c128* const restrict AB,
+    c128* restrict AB,
     const int ldab,
-    int* const restrict ipiv,
-    c128* const restrict B,
+    int* restrict ipiv,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

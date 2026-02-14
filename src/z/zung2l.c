@@ -36,9 +36,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zung2l(const int m, const int n, const int k,
-            c128* const restrict A, const int lda,
-            const c128* const restrict tau,
-            c128* const restrict work,
+            c128* restrict A, const int lda,
+            const c128* restrict tau,
+            c128* restrict work,
             int* info)
 {
     int i, ii, j, l;

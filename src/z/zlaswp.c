@@ -40,11 +40,11 @@
  */
 void zlaswp(
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     const int k1,
     const int k2,
-    const int* const restrict ipiv,
+    const int* restrict ipiv,
     const int incx)
 {
     int i, i1, i2, inc, ip, ix, ix0, j, k, n32;

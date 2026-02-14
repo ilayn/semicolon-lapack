@@ -52,15 +52,15 @@
  *                         - = 0: successful exit
  *                         - = 1: failure
  */
-void slarrf(const int n, const f32* const restrict D,
-            const f32* const restrict L, const f32* const restrict LD,
+void slarrf(const int n, const f32* restrict D,
+            const f32* restrict L, const f32* restrict LD,
             const int clstrt, const int clend,
-            const f32* const restrict W, f32* const restrict wgap,
-            const f32* const restrict werr,
+            const f32* restrict W, f32* restrict wgap,
+            const f32* restrict werr,
             const f32 spdiam, const f32 clgapl, const f32 clgapr,
             const f32 pivmin, f32* sigma,
-            f32* const restrict dplus, f32* const restrict lplus,
-            f32* const restrict work, int* info)
+            f32* restrict dplus, f32* restrict lplus,
+            f32* restrict work, int* info)
 {
     /* Constants */
     const f32 ONE = 1.0f;

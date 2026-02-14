@@ -48,9 +48,9 @@ void zhegs2(
     const int itype,
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

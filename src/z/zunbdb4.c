@@ -70,15 +70,15 @@
  *                         < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zunbdb4(const int m, const int p, const int q,
-             c128* const restrict X11, const int ldx11,
-             c128* const restrict X21, const int ldx21,
-             f64* const restrict theta,
-             f64* const restrict phi,
-             c128* const restrict taup1,
-             c128* const restrict taup2,
-             c128* const restrict tauq1,
-             c128* const restrict phantom,
-             c128* const restrict work, const int lwork,
+             c128* restrict X11, const int ldx11,
+             c128* restrict X21, const int ldx21,
+             f64* restrict theta,
+             f64* restrict phi,
+             c128* restrict taup1,
+             c128* restrict taup2,
+             c128* restrict tauq1,
+             c128* restrict phantom,
+             c128* restrict work, const int lwork,
              int* info)
 {
     const c128 NEGONE = CMPLX(-1.0, 0.0);

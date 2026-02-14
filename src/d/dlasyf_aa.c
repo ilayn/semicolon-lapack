@@ -63,7 +63,7 @@ void dlasyf_aa(
     const int j1,
     const int m,
     const int nb,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* restrict ipiv,
     f64* restrict H,

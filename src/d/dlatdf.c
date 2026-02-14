@@ -53,13 +53,13 @@
 void dlatdf(
     const int ijob,
     const int n,
-    const f64* const restrict Z,
+    const f64* restrict Z,
     const int ldz,
-    f64* const restrict rhs,
+    f64* restrict rhs,
     f64* rdsum,
     f64* rdscal,
-    const int* const restrict ipiv,
-    const int* const restrict jpiv)
+    const int* restrict ipiv,
+    const int* restrict jpiv)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

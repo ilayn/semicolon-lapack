@@ -30,7 +30,7 @@
  *                         - = 0: successful exit.
  */
 void slarrc(const char* jobt, const int n, const f32 vl, const f32 vu,
-            const f32* const restrict D, const f32* const restrict E,
+            const f32* restrict D, const f32* restrict E,
             const f32 pivmin, int* eigcnt, int* lcnt, int* rcnt, int* info)
 {
     int i;

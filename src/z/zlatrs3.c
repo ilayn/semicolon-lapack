@@ -72,13 +72,13 @@ void zlatrs3(
     const char* normin,
     const int n,
     const int nrhs,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    c128* const restrict X,
+    c128* restrict X,
     const int ldx,
-    f64* const restrict scale,
-    f64* const restrict cnorm,
-    f64* const restrict work,
+    f64* restrict scale,
+    f64* restrict cnorm,
+    f64* restrict work,
     const int lwork,
     int* info)
 {

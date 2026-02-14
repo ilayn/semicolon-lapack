@@ -53,10 +53,10 @@ void dsytrs_rook(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     const int* restrict ipiv,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

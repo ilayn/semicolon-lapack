@@ -40,7 +40,7 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void slasq2(const int n, f32* const restrict Z, int* info)
+void slasq2(const int n, f32* restrict Z, int* info)
 {
     /* Constants from the Fortran source */
     const f32 CBIAS  = 1.50f;

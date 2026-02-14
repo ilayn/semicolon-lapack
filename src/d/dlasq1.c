@@ -41,8 +41,8 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void dlasq1(const int n, f64* const restrict D, f64* const restrict E,
-            f64* const restrict work, int* info)
+void dlasq1(const int n, f64* restrict D, f64* restrict E,
+            f64* restrict work, int* info)
 {
     int i, iinfo;
     f64 eps, scale, safmin, sigmn, sigmx;

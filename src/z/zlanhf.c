@@ -50,8 +50,8 @@ f64 zlanhf(
     const char* transr,
     const char* uplo,
     const int n,
-    const c128* const restrict A,
-    f64* const restrict work)
+    const c128* restrict A,
+    f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

@@ -37,7 +37,7 @@
  *                        value between calls to DLASQ3.
  * @param[in,out] tau    This is the shift.
  */
-void dlasq3(const int i0, int* n0, f64* const restrict Z,
+void dlasq3(const int i0, int* n0, f64* restrict Z,
             int* pp, f64* dmin, f64* sigma, f64* desig,
             const f64 qmax, int* nfail, int* iter, int* ndiv,
             const int ieee, int* ttype, f64* dmin1, f64* dmin2,

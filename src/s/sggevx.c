@@ -67,18 +67,18 @@
  */
 void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
             const char* sense, const int n,
-            f32* const restrict A, const int lda,
-            f32* const restrict B, const int ldb,
-            f32* const restrict alphar, f32* const restrict alphai,
-            f32* const restrict beta,
-            f32* const restrict VL, const int ldvl,
-            f32* const restrict VR, const int ldvr,
+            f32* restrict A, const int lda,
+            f32* restrict B, const int ldb,
+            f32* restrict alphar, f32* restrict alphai,
+            f32* restrict beta,
+            f32* restrict VL, const int ldvl,
+            f32* restrict VR, const int ldvr,
             int* ilo, int* ihi,
-            f32* const restrict lscale, f32* const restrict rscale,
+            f32* restrict lscale, f32* restrict rscale,
             f32* abnrm, f32* bbnrm,
-            f32* const restrict rconde, f32* const restrict rcondv,
-            f32* const restrict work, const int lwork,
-            int* const restrict iwork, int* const restrict bwork,
+            f32* restrict rconde, f32* restrict rcondv,
+            f32* restrict work, const int lwork,
+            int* restrict iwork, int* restrict bwork,
             int* info)
 {
     const f32 ZERO = 0.0f;

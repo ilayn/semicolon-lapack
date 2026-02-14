@@ -41,9 +41,9 @@
 void zgetrf(
     const int m,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    int* const restrict ipiv,
+    int* restrict ipiv,
     int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

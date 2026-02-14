@@ -67,11 +67,11 @@ void dsytrs_3(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     const f64* restrict E,
     const int* restrict ipiv,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

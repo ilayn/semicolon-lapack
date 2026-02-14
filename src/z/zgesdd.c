@@ -54,12 +54,12 @@ static const c128 CONE = CMPLX(1.0, 0.0);
  * @param[out]    info    = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
 void zgesdd(const char* jobz, const int m, const int n,
-            c128* const restrict A, const int lda,
-            f64* const restrict S,
-            c128* const restrict U, const int ldu,
-            c128* const restrict VT, const int ldvt,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork, int* const restrict iwork, int* info)
+            c128* restrict A, const int lda,
+            f64* restrict S,
+            c128* restrict U, const int ldu,
+            c128* restrict VT, const int ldvt,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork, int* restrict iwork, int* info)
 {
     int lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
     int blk, chunk, i, ie, ierr, il, ir, iru, irvt;

@@ -27,7 +27,7 @@
  */
 void dlaset(const char* uplo, const int m, const int n,
             const f64 alpha, const f64 beta,
-            f64 * const restrict A, const int lda)
+            f64* restrict A, const int lda)
 {
     int i, j;
     int minmn = m < n ? m : n;

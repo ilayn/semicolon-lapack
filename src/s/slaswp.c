@@ -39,11 +39,11 @@
  */
 void slaswp(
     const int n,
-    f32 * const restrict A,
+    f32* restrict A,
     const int lda,
     const int k1,
     const int k2,
-    const int * const restrict ipiv,
+    const int* restrict ipiv,
     const int incx)
 {
     int i, i1, i2, inc, ip, ix, ix0, j, k, n32;

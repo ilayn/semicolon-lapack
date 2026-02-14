@@ -193,10 +193,10 @@ static const f64 ONE = 1.0;
 static const int NSWEEP = 30;
 
 void dgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, f64* const restrict A, const int lda,
-            f64* const restrict SVA, const int mv,
-            f64* const restrict V, const int ldv,
-            f64* const restrict work, const int lwork, int* info)
+            const int m, const int n, f64* restrict A, const int lda,
+            f64* restrict SVA, const int mv,
+            f64* restrict V, const int ldv,
+            f64* restrict work, const int lwork, int* info)
 {
     int lsvec, uctol, rsvec, applv, upper, lower, lquery;
     int minmn, lwmin, mvl = 0;

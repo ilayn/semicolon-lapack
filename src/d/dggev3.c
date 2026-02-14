@@ -60,13 +60,13 @@
  *                         - > n: other errors
  */
 void dggev3(const char* jobvl, const char* jobvr, const int n,
-            f64* const restrict A, const int lda,
-            f64* const restrict B, const int ldb,
-            f64* const restrict alphar, f64* const restrict alphai,
-            f64* const restrict beta,
-            f64* const restrict VL, const int ldvl,
-            f64* const restrict VR, const int ldvr,
-            f64* const restrict work, const int lwork, int* info)
+            f64* restrict A, const int lda,
+            f64* restrict B, const int ldb,
+            f64* restrict alphar, f64* restrict alphai,
+            f64* restrict beta,
+            f64* restrict VL, const int ldvl,
+            f64* restrict VR, const int ldvr,
+            f64* restrict work, const int lwork, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

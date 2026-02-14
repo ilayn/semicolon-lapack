@@ -66,12 +66,12 @@ static const c128 CZERO = CMPLX(0.0, 0.0);
  *                         - > 0: i eigenvectors failed to converge in DBDSVDX.
  */
 void zgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, c128* const restrict A, const int lda,
+             const int m, const int n, c128* restrict A, const int lda,
              const f64 vl, const f64 vu, const int il, const int iu,
-             int* ns, f64* const restrict S, c128* const restrict U,
-             const int ldu, c128* const restrict VT, const int ldvt,
-             c128* const restrict work, const int lwork,
-             f64* const restrict rwork, int* const restrict iwork, int* info)
+             int* ns, f64* restrict S, c128* restrict U,
+             const int ldu, c128* restrict VT, const int ldvt,
+             c128* restrict work, const int lwork,
+             f64* restrict rwork, int* restrict iwork, int* info)
 {
     int alls, inds, lquery, vals, wantu, wantvt;
     int i, id, ie, ierr, ilqf, iltgk, iutgk, iqrf, iscl, itau, itaup, itauq;

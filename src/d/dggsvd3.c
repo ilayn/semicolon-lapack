@@ -50,14 +50,14 @@
 void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int n, const int p,
              int* k, int* l,
-             f64* const restrict A, const int lda,
-             f64* const restrict B, const int ldb,
-             f64* const restrict alpha, f64* const restrict beta,
-             f64* const restrict U, const int ldu,
-             f64* const restrict V, const int ldv,
-             f64* const restrict Q, const int ldq,
-             f64* const restrict work, const int lwork,
-             int* const restrict iwork, int* info)
+             f64* restrict A, const int lda,
+             f64* restrict B, const int ldb,
+             f64* restrict alpha, f64* restrict beta,
+             f64* restrict U, const int ldu,
+             f64* restrict V, const int ldv,
+             f64* restrict Q, const int ldq,
+             f64* restrict work, const int lwork,
+             int* restrict iwork, int* info)
 {
     int wantu, wantv, wantq, lquery;
     int i, j, ibnd, isub, ncycle, lwkopt;

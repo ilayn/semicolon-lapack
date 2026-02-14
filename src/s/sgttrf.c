@@ -45,12 +45,12 @@
  */
 void sgttrf(
     const int n,
-    f32 * const restrict DL,
-    f32 * const restrict D,
-    f32 * const restrict DU,
-    f32 * const restrict DU2,
-    int * const restrict ipiv,
-    int *info)
+    f32* restrict DL,
+    f32* restrict D,
+    f32* restrict DU,
+    f32* restrict DU2,
+    int* restrict ipiv,
+    int* info)
 {
     const f32 ZERO = 0.0f;
     int i;

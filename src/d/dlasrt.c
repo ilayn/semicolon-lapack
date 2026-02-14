@@ -24,7 +24,7 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void dlasrt(const char* id, const int n, f64* const restrict D, int* info)
+void dlasrt(const char* id, const int n, f64* restrict D, int* info)
 {
     const int SELECT = 20;
 

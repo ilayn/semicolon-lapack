@@ -42,9 +42,9 @@ void dtbtrs(
     const int n,
     const int kd,
     const int nrhs,
-    const f64* const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

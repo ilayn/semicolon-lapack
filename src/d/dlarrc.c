@@ -30,7 +30,7 @@
  *                         - = 0: successful exit.
  */
 void dlarrc(const char* jobt, const int n, const f64 vl, const f64 vu,
-            const f64* const restrict D, const f64* const restrict E,
+            const f64* restrict D, const f64* restrict E,
             const f64 pivmin, int* eigcnt, int* lcnt, int* rcnt, int* info)
 {
     int i;

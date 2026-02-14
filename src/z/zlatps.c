@@ -47,10 +47,10 @@ void zlatps(
     const char* diag,
     const char* normin,
     const int n,
-    const c128* const restrict AP,
-    c128* const restrict X,
+    const c128* restrict AP,
+    c128* restrict X,
     f64* scale,
-    f64* const restrict cnorm,
+    f64* restrict cnorm,
     int* info)
 {
     const f64 ZERO = 0.0;

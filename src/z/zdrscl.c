@@ -25,7 +25,7 @@
 void zdrscl(
     const int n,
     const f64 sa,
-    c128* const restrict sx,
+    c128* restrict sx,
     const int incx)
 {
     const f64 ONE = 1.0;

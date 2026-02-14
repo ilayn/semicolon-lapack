@@ -66,7 +66,7 @@
 void dsytrf_aa_2stage(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     f64* restrict TB,
     const int ltb,

@@ -26,8 +26,8 @@
 void zlascl2(
     const int m,
     const int n,
-    const f64* const restrict D,
-    c128* const restrict X,
+    const f64* restrict D,
+    c128* restrict X,
     const int ldx)
 {
     int i, j;

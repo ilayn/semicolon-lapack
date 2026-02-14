@@ -27,7 +27,7 @@
  * @return The norm value.
  */
 f64 dlanst(const char* norm, const int n,
-              const f64* const restrict D, const f64* const restrict E)
+              const f64* restrict D, const f64* restrict E)
 {
     f64 anorm;
 

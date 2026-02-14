@@ -57,14 +57,14 @@ void zhegv(
     const char* jobz,
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb,
-    f64* const restrict W,
-    c128* const restrict work,
+    f64* restrict W,
+    c128* restrict work,
     const int lwork,
-    f64* const restrict rwork,
+    f64* restrict rwork,
     int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

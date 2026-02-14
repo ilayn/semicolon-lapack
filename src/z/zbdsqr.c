@@ -77,11 +77,11 @@
  *                           elements of E have not converged to zero.
  */
 void zbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
-            const int ncc, f64* const restrict D, f64* const restrict E,
-            c128* const restrict VT, const int ldvt,
-            c128* const restrict U, const int ldu,
-            c128* const restrict C, const int ldc,
-            f64* const restrict rwork, int* info)
+            const int ncc, f64* restrict D, f64* restrict E,
+            c128* restrict VT, const int ldvt,
+            c128* restrict U, const int ldu,
+            c128* restrict C, const int ldc,
+            f64* restrict rwork, int* info)
 {
     /* Constants from LAPACK */
     const f64 ZERO = 0.0;

@@ -42,7 +42,7 @@
 void ssytf2_rook(
     const char* uplo,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)

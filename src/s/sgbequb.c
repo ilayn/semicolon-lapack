@@ -62,14 +62,14 @@ void sgbequb(
     const int n,
     const int kl,
     const int ku,
-    const f32 * const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    f32 * const restrict R,
-    f32 * const restrict C,
-    f32 *rowcnd,
-    f32 *colcnd,
-    f32 *amax,
-    int *info)
+    f32* restrict R,
+    f32* restrict C,
+    f32* rowcnd,
+    f32* colcnd,
+    f32* amax,
+    int* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

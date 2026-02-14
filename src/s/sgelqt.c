@@ -49,9 +49,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgelqt(const int m, const int n, const int mb,
-            f32* const restrict A, const int lda,
-            f32* const restrict T, const int ldt,
-            f32* const restrict work,
+            f32* restrict A, const int lda,
+            f32* restrict T, const int ldt,
+            f32* restrict work,
             int* info)
 {
     int k, i, ib, iinfo;

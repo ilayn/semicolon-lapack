@@ -32,10 +32,10 @@
 void zsytri(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    c128* const restrict work,
+    const int* restrict ipiv,
+    c128* restrict work,
     int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

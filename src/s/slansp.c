@@ -45,8 +45,8 @@ f32 slansp(
     const char* norm,
     const char* uplo,
     const int n,
-    const f32* const restrict AP,
-    f32* const restrict work)
+    const f32* restrict AP,
+    f32* restrict work)
 {
     // slansp.f lines 129-130: Parameters
     const f32 ONE = 1.0f;

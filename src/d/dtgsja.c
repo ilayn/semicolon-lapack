@@ -76,14 +76,14 @@
  */
 void dtgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,
-            f64* const restrict A, const int lda,
-            f64* const restrict B, const int ldb,
+            f64* restrict A, const int lda,
+            f64* restrict B, const int ldb,
             const f64 tola, const f64 tolb,
-            f64* const restrict alpha, f64* const restrict beta,
-            f64* const restrict U, const int ldu,
-            f64* const restrict V, const int ldv,
-            f64* const restrict Q, const int ldq,
-            f64* const restrict work, int* ncycle, int* info)
+            f64* restrict alpha, f64* restrict beta,
+            f64* restrict U, const int ldu,
+            f64* restrict V, const int ldv,
+            f64* restrict Q, const int ldq,
+            f64* restrict work, int* ncycle, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

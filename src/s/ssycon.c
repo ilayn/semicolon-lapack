@@ -38,13 +38,13 @@
 void ssycon(
     const char* uplo,
     const int n,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    const int* const restrict ipiv,
+    const int* restrict ipiv,
     const f32 anorm,
     f32* rcond,
-    f32* const restrict work,
-    int* const restrict iwork,
+    f32* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f32 ONE = 1.0f;

@@ -67,10 +67,10 @@ void zhfrk(
     const int n,
     const int k,
     const f64 alpha,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
     const f64 beta,
-    c128* const restrict C)
+    c128* restrict C)
 {
     int lower, normaltransr, nisodd, notrans;
     int nrowa, j, nk, n1, n2;

@@ -35,11 +35,11 @@
 void dppcon(
     const char* uplo,
     const int n,
-    const f64* const restrict AP,
+    const f64* restrict AP,
     const f64 anorm,
     f64* rcond,
-    f64* const restrict work,
-    int* const restrict iwork,
+    f64* restrict work,
+    int* restrict iwork,
     int* info)
 {
     // dppcon.f lines 136-137: Parameters

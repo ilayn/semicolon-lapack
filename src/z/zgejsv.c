@@ -29,13 +29,13 @@ static inline int max5i(int a, int b, int c, int d, int e) {
 void zgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
             const int m, const int n,
-            c128* const restrict A, const int lda,
-            f64* const restrict SVA,
-            c128* const restrict U, const int ldu,
-            c128* const restrict V, const int ldv,
-            c128* const restrict cwork, const int lwork,
-            f64* const restrict rwork, const int lrwork,
-            int* const restrict iwork, int* info)
+            c128* restrict A, const int lda,
+            f64* restrict SVA,
+            c128* restrict U, const int ldu,
+            c128* restrict V, const int ldv,
+            c128* restrict cwork, const int lwork,
+            f64* restrict rwork, const int lrwork,
+            int* restrict iwork, int* info)
 {
     /* Local variables */
     c128 ctemp;

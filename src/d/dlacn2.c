@@ -34,12 +34,12 @@
  */
 void dlacn2(
     const int n,
-    f64 * const restrict V,
-    f64 * const restrict X,
-    int * const restrict isgn,
-    f64 *est,
-    int *kase,
-    int * const restrict isave)
+    f64* restrict V,
+    f64* restrict X,
+    int* restrict isgn,
+    f64* est,
+    int* kase,
+    int* restrict isave)
 {
     const int ITMAX = 5;
     const f64 ZERO = 0.0;

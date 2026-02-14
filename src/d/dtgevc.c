@@ -59,19 +59,19 @@
 void dtgevc(
     const char* side,
     const char* howmny,
-    const int* const restrict select,
+    const int* restrict select,
     const int n,
-    const f64* const restrict S,
+    const f64* restrict S,
     const int lds,
-    const f64* const restrict P,
+    const f64* restrict P,
     const int ldp,
-    f64* const restrict VL,
+    f64* restrict VL,
     const int ldvl,
-    f64* const restrict VR,
+    f64* restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

@@ -67,10 +67,10 @@
  *                           solution could not be computed.
  */
 void dsysv(const char* uplo, const int n, const int nrhs,
-           f64* const restrict A, const int lda,
-           int* const restrict ipiv,
-           f64* const restrict B, const int ldb,
-           f64* const restrict work, const int lwork,
+           f64* restrict A, const int lda,
+           int* restrict ipiv,
+           f64* restrict B, const int ldb,
+           f64* restrict work, const int lwork,
            int* info)
 {
     int lwkopt;

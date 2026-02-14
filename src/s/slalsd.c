@@ -48,9 +48,9 @@ static const f32 TWO = 2.0f;
  *                         - > 0: The algorithm failed to compute a singular value.
  */
 void slalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
-            f32* const restrict D, f32* const restrict E,
-            f32* const restrict B, const int ldb, const f32 rcond,
-            int* rank, f32* const restrict work, int* const restrict iwork,
+            f32* restrict D, f32* restrict E,
+            f32* restrict B, const int ldb, const f32 rcond,
+            int* rank, f32* restrict work, int* restrict iwork,
             int* info)
 {
     int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;

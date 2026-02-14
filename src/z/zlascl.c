@@ -57,7 +57,7 @@
 void zlascl(const char* type, const int kl, const int ku,
             const f64 cfrom, const f64 cto,
             const int m, const int n,
-            c128* const restrict A, const int lda,
+            c128* restrict A, const int lda,
             int* info)
 {
     const f64 ZERO = 0.0, ONE = 1.0;

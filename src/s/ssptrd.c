@@ -41,9 +41,9 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ssptrd(const char* uplo, const int n, f32* const restrict AP,
-            f32* const restrict D, f32* const restrict E,
-            f32* const restrict tau, int* info)
+void ssptrd(const char* uplo, const int n, f32* restrict AP,
+            f32* restrict D, f32* restrict E,
+            f32* restrict tau, int* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

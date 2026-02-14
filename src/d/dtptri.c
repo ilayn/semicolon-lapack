@@ -30,7 +30,7 @@ void dtptri(
     const char* uplo,
     const char* diag,
     const int n,
-    f64* const restrict AP,
+    f64* restrict AP,
     int* info)
 {
     // dtptri.f lines 132-133: Parameters

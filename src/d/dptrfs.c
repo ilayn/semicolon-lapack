@@ -48,17 +48,17 @@
 void dptrfs(
     const int n,
     const int nrhs,
-    const f64* const restrict D,
-    const f64* const restrict E,
-    const f64* const restrict DF,
-    const f64* const restrict EF,
-    const f64* const restrict B,
+    const f64* restrict D,
+    const f64* restrict E,
+    const f64* restrict DF,
+    const f64* restrict EF,
+    const f64* restrict B,
     const int ldb,
-    f64* const restrict X,
+    f64* restrict X,
     const int ldx,
-    f64* const restrict ferr,
-    f64* const restrict berr,
-    f64* const restrict work,
+    f64* restrict ferr,
+    f64* restrict berr,
+    f64* restrict work,
     int* info)
 {
     const int ITMAX = 5;

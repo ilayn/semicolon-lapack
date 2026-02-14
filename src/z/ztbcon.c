@@ -40,11 +40,11 @@ void ztbcon(
     const char* diag,
     const int n,
     const int kd,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
     f64* rcond,
-    c128* const restrict work,
-    f64* const restrict rwork,
+    c128* restrict work,
+    f64* restrict rwork,
     int* info)
 {
     const f64 ONE = 1.0;

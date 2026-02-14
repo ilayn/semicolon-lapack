@@ -55,11 +55,11 @@ static const int SMLSIZ = 25;
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void sbdsdc(const char* uplo, const char* compq, const int n,
-            f32* const restrict D, f32* const restrict E,
-            f32* const restrict U, const int ldu,
-            f32* const restrict VT, const int ldvt,
-            f32* const restrict Q, int* const restrict IQ,
-            f32* const restrict work, int* const restrict IWORK, int* info)
+            f32* restrict D, f32* restrict E,
+            f32* restrict U, const int ldu,
+            f32* restrict VT, const int ldvt,
+            f32* restrict Q, int* restrict IQ,
+            f32* restrict work, int* restrict IWORK, int* info)
 {
     int difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
     int ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;

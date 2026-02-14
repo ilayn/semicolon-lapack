@@ -83,7 +83,7 @@ void sgeqp3rk(
     const int kmax,
     f32 abstol,
     f32 reltol,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     int* K,
     f32* maxc2nrmk,

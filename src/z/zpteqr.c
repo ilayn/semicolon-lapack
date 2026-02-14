@@ -72,11 +72,11 @@
 void zpteqr(
     const char* compz,
     const int n,
-    f64* const restrict D,
-    f64* const restrict E,
-    c128* const restrict Z,
+    f64* restrict D,
+    f64* restrict E,
+    c128* restrict Z,
     const int ldz,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);

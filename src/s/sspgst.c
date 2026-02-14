@@ -38,7 +38,7 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sspgst(const int itype, const char* uplo, const int n,
-            f32* const restrict AP, const f32* const restrict BP,
+            f32* restrict AP, const f32* restrict BP,
             int* info)
 {
     const f32 ONE = 1.0f;

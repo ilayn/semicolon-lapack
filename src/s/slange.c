@@ -35,9 +35,9 @@ f32 slange(
     const char* norm,
     const int m,
     const int n,
-    const f32 * const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32 * const restrict work)
+    f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

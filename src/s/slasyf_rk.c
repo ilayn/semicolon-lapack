@@ -83,11 +83,11 @@ void slasyf_rk(
     const int n,
     const int nb,
     int* kb,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     f32* restrict E,
     int* restrict ipiv,
-    f32* const restrict W,
+    f32* restrict W,
     const int ldw,
     int* info)
 {

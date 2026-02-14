@@ -52,9 +52,9 @@
 void zlaic1(
     const int job,
     const int j,
-    const c128* const restrict x,
+    const c128* restrict x,
     const f64 sest,
-    const c128* const restrict w,
+    const c128* restrict w,
     const c128 gamma_,
     f64* sestpr,
     c128* s,

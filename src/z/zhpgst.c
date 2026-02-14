@@ -41,8 +41,8 @@ void zhpgst(
     const int itype,
     const char* uplo,
     const int n,
-    c128* const restrict AP,
-    const c128* const restrict BP,
+    c128* restrict AP,
+    const c128* restrict BP,
     int* info)
 {
     const f64 ONE = 1.0;

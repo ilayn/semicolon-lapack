@@ -43,12 +43,12 @@
 void sgesv(
     const int n,
     const int nrhs,
-    f32 * const restrict A,
+    f32* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    f32 * const restrict B,
+    int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     // Test the input parameters
     *info = 0;

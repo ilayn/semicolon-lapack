@@ -27,7 +27,7 @@
  * @param[in,out] g      G is passed as an argument in order to save its
  *                        value between calls to DLASQ4.
  */
-void dlasq4(const int i0, const int n0, const f64* const restrict Z,
+void dlasq4(const int i0, const int n0, const f64* restrict Z,
             const int pp, const int n0in, const f64 dmin,
             const f64 dmin1, const f64 dmin2, const f64 dn,
             const f64 dn1, const f64 dn2, f64* tau,

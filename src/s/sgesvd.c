@@ -67,11 +67,11 @@
  */
 void sgesvd(const char* jobu, const char* jobvt,
             const int m, const int n,
-            f32* const restrict A, const int lda,
-            f32* const restrict S,
-            f32* const restrict U, const int ldu,
-            f32* const restrict VT, const int ldvt,
-            f32* const restrict work, const int lwork,
+            f32* restrict A, const int lda,
+            f32* restrict S,
+            f32* restrict U, const int ldu,
+            f32* restrict VT, const int ldvt,
+            f32* restrict work, const int lwork,
             int* info)
 {
     /* Constants */

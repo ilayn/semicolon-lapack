@@ -38,10 +38,10 @@
  */
 void zsymv(const char* uplo, const int n,
            const c128 alpha,
-           const c128* const restrict A, const int lda,
-           const c128* const restrict X, const int incx,
+           const c128* restrict A, const int lda,
+           const c128* restrict X, const int incx,
            const c128 beta,
-           c128* const restrict Y, const int incy)
+           c128* restrict Y, const int incy)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);

@@ -72,10 +72,10 @@ void zlahef_rook(
     const int n,
     const int nb,
     int* kb,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
-    c128* const restrict W,
+    c128* restrict W,
     const int ldw,
     int* info)
 {

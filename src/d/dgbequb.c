@@ -62,14 +62,14 @@ void dgbequb(
     const int n,
     const int kl,
     const int ku,
-    const f64 * const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    f64 * const restrict R,
-    f64 * const restrict C,
-    f64 *rowcnd,
-    f64 *colcnd,
-    f64 *amax,
-    int *info)
+    f64* restrict R,
+    f64* restrict C,
+    f64* rowcnd,
+    f64* colcnd,
+    f64* amax,
+    int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

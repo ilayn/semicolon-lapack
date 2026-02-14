@@ -46,11 +46,11 @@ static const f64 ONE = 1.0;
  *                         - = 0: success. < 0: illegal argument.
  */
 void zgsvj1(const char* jobv, const int m, const int n, const int n1,
-            c128* const restrict A, const int lda,
-            c128* const restrict D, f64* const restrict SVA,
-            const int mv, c128* const restrict V, const int ldv,
+            c128* restrict A, const int lda,
+            c128* restrict D, f64* restrict SVA,
+            const int mv, c128* restrict V, const int ldv,
             const f64 eps, const f64 sfmin, const f64 tol,
-            const int nsweep, c128* const restrict work, const int lwork,
+            const int nsweep, c128* restrict work, const int lwork,
             int* info)
 {
     int applv, rsvec, mvl;

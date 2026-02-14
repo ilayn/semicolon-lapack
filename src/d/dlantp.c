@@ -30,8 +30,8 @@ f64 dlantp(
     const char* uplo,
     const char* diag,
     const int n,
-    const f64* const restrict AP,
-    f64* const restrict work)
+    const f64* restrict AP,
+    f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

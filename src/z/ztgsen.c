@@ -67,7 +67,7 @@ void ztgsen(
     const int ijob,
     const int wantq,
     const int wantz,
-    const int* const restrict select,
+    const int* restrict select,
     const int n,
     c128* A,
     const int lda,

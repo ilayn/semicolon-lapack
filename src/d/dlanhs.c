@@ -33,9 +33,9 @@
 f64 dlanhs(
     const char* norm,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64* const restrict work)
+    f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

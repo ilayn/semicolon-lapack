@@ -60,14 +60,14 @@ void zhbgst(
     const int n,
     const int ka,
     const int kb,
-    c128* const restrict AB,
+    c128* restrict AB,
     const int ldab,
-    const c128* const restrict BB,
+    const c128* restrict BB,
     const int ldbb,
-    c128* const restrict X,
+    c128* restrict X,
     const int ldx,
-    c128* const restrict work,
-    f64* const restrict rwork,
+    c128* restrict work,
+    f64* restrict rwork,
     int* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);

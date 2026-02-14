@@ -35,9 +35,9 @@
  */
 void zlarft_lvl2(const char* direct, const char* storev,
                  const int n, const int k,
-                 const c128* const restrict V, const int ldv,
-                 const c128* const restrict tau,
-                 c128* const restrict T, const int ldt)
+                 const c128* restrict V, const int ldv,
+                 const c128* restrict tau,
+                 c128* restrict T, const int ldt)
 {
     const c128 ONE  = 1.0;
     const c128 ZERO = 0.0;

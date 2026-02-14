@@ -51,11 +51,11 @@
  */
 void sormr2(const char* side, const char* trans,
             const int m, const int n, const int k,
-            f32 * const restrict A, const int lda,
-            const f32 * const restrict tau,
-            f32 * const restrict C, const int ldc,
-            f32 * const restrict work,
-            int *info)
+            f32* restrict A, const int lda,
+            const f32* restrict tau,
+            f32* restrict C, const int ldc,
+            f32* restrict work,
+            int* info)
 {
     int i, mi, ni, nq;
     int left, notran;

@@ -37,12 +37,12 @@
 void zpocon(
     const char* uplo,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
     const f64 anorm,
     f64* rcond,
-    c128* const restrict work,
-    f64* const restrict rwork,
+    c128* restrict work,
+    f64* restrict rwork,
     int* info)
 {
     const f64 ONE = 1.0;

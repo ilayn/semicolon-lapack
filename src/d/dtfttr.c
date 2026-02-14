@@ -47,8 +47,8 @@ void dtfttr(
     const char* transr,
     const char* uplo,
     const int n,
-    const f64* const restrict ARF,
-    f64* const restrict A,
+    const f64* restrict ARF,
+    f64* restrict A,
     const int lda,
     int* info)
 {

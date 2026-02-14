@@ -23,7 +23,7 @@
 void drscl(
     const int n,
     const f64 sa,
-    f64 * const restrict sx,
+    f64* restrict sx,
     const int incx)
 {
     const f64 ONE = 1.0;

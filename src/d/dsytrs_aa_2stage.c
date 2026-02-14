@@ -62,13 +62,13 @@ void dsytrs_aa_2stage(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     f64* restrict TB,
     const int ltb,
     const int* restrict ipiv,
     const int* restrict ipiv2,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

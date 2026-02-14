@@ -34,12 +34,12 @@ void dpbcon(
     const char* uplo,
     const int n,
     const int kd,
-    const f64* const restrict AB,
+    const f64* restrict AB,
     const int ldab,
     const f64 anorm,
     f64* rcond,
-    f64* const restrict work,
-    int* const restrict iwork,
+    f64* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f64 ONE = 1.0;

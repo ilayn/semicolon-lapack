@@ -30,11 +30,11 @@
 void slag2d(
     const int m,
     const int n,
-    const f32 * const restrict SA,
+    const f32* restrict SA,
     const int ldsa,
-    double * const restrict A,
+    double* restrict A,
     const int lda,
-    int *info)
+    int* info)
 {
     *info = 0;
 

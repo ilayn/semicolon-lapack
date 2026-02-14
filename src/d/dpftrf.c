@@ -44,7 +44,7 @@ void dpftrf(
     const char* transr,
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     int* info)
 {
     int lower, nisodd, normaltransr;

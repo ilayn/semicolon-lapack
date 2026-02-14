@@ -34,12 +34,12 @@
  */
 void dgesc2(
     const int n,
-    const f64 * const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64 * const restrict rhs,
-    const int * const restrict ipiv,
-    const int * const restrict jpiv,
-    f64 *scale)
+    f64* restrict rhs,
+    const int* restrict ipiv,
+    const int* restrict jpiv,
+    f64* scale)
 {
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;

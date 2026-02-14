@@ -35,7 +35,7 @@
 void spptrf(
     const char* uplo,
     const int n,
-    f32* const restrict AP,
+    f32* restrict AP,
     int* info)
 {
     // spptrf.f lines 134-135: Parameters

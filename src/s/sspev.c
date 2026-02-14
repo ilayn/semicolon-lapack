@@ -39,9 +39,9 @@
  *                           form did not converge to zero.
  */
 void sspev(const char* jobz, const char* uplo, const int n,
-           f32* const restrict AP, f32* const restrict W,
-           f32* const restrict Z, const int ldz,
-           f32* const restrict work, int* info)
+           f32* restrict AP, f32* restrict W,
+           f32* restrict Z, const int ldz,
+           f32* restrict work, int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

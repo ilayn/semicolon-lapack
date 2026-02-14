@@ -71,12 +71,12 @@
  */
 void zgesvd(const char* jobu, const char* jobvt,
             const int m, const int n,
-            c128* const restrict A, const int lda,
-            f64* const restrict S,
-            c128* const restrict U, const int ldu,
-            c128* const restrict VT, const int ldvt,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork, int* info)
+            c128* restrict A, const int lda,
+            f64* restrict S,
+            c128* restrict U, const int ldu,
+            c128* restrict VT, const int ldvt,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork, int* info)
 {
     /* Constants */
     static const f64 ZERO = 0.0;

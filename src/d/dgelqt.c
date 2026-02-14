@@ -49,9 +49,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgelqt(const int m, const int n, const int mb,
-            f64* const restrict A, const int lda,
-            f64* const restrict T, const int ldt,
-            f64* const restrict work,
+            f64* restrict A, const int lda,
+            f64* restrict T, const int ldt,
+            f64* restrict work,
             int* info)
 {
     int k, i, ib, iinfo;

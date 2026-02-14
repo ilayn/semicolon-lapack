@@ -44,10 +44,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void stzrzf(const int m, const int n,
-            f32 * const restrict A, const int lda,
-            f32 * const restrict tau,
-            f32 * const restrict work, const int lwork,
-            int *info)
+            f32* restrict A, const int lda,
+            f32* restrict tau,
+            f32* restrict work, const int lwork,
+            int* info)
 {
     int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
     int lquery;

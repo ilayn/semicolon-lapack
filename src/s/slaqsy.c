@@ -39,9 +39,9 @@
 void slaqsy(
     const char* uplo,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    const f32* const restrict S,
+    const f32* restrict S,
     const f32 scond,
     const f32 amax,
     char* equed)

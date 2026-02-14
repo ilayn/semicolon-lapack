@@ -36,12 +36,12 @@ void zhb2st_kernels(
     const int n,
     const int nb,
     const int ib,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    c128* const restrict V,
-    c128* const restrict TAU,
+    c128* restrict V,
+    c128* restrict TAU,
     const int ldvt,
-    c128* const restrict WORK)
+    c128* restrict WORK)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);

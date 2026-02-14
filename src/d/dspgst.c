@@ -38,7 +38,7 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dspgst(const int itype, const char* uplo, const int n,
-            f64* const restrict AP, const f64* const restrict BP,
+            f64* restrict AP, const f64* restrict BP,
             int* info)
 {
     const f64 ONE = 1.0;

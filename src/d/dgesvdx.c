@@ -63,12 +63,12 @@ static const f64 ONE = 1.0;
  *                         - > 0: i eigenvectors failed to converge in DBDSVDX.
  */
 void dgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, f64* const restrict A, const int lda,
+             const int m, const int n, f64* restrict A, const int lda,
              const f64 vl, const f64 vu, const int il, const int iu,
-             int* ns, f64* const restrict S, f64* const restrict U,
-             const int ldu, f64* const restrict VT, const int ldvt,
-             f64* const restrict work, const int lwork,
-             int* const restrict iwork, int* info)
+             int* ns, f64* restrict S, f64* restrict U,
+             const int ldu, f64* restrict VT, const int ldvt,
+             f64* restrict work, const int lwork,
+             int* restrict iwork, int* info)
 {
     int alls, inds, lquery, vals, wantu, wantvt;
     int i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;

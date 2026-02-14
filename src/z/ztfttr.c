@@ -48,8 +48,8 @@ void ztfttr(
     const char* transr,
     const char* uplo,
     const int n,
-    const c128* const restrict ARF,
-    c128* const restrict A,
+    const c128* restrict ARF,
+    c128* restrict A,
     const int lda,
     int* info)
 {

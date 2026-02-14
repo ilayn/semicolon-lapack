@@ -29,9 +29,9 @@ void slaqsb(
     const char* uplo,
     const int n,
     const int kd,
-    f32* const restrict AB,
+    f32* restrict AB,
     const int ldab,
-    const f32* const restrict S,
+    const f32* restrict S,
     const f32 scond,
     const f32 amax,
     char* equed)

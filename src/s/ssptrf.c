@@ -51,8 +51,8 @@
 void ssptrf(
     const char* uplo,
     const int n,
-    f32* const restrict AP,
-    int* const restrict ipiv,
+    f32* restrict AP,
+    int* restrict ipiv,
     int* info)
 {
     const f32 ZERO = 0.0f;

@@ -56,10 +56,10 @@
 void slamswlq(const char* side, const char* trans,
               const int m, const int n, const int k,
               const int mb, const int nb,
-              const f32* const restrict A, const int lda,
-              const f32* const restrict T, const int ldt,
-              f32* const restrict C, const int ldc,
-              f32* const restrict work, const int lwork,
+              const f32* restrict A, const int lda,
+              const f32* restrict T, const int ldt,
+              f32* restrict C, const int ldc,
+              f32* restrict work, const int lwork,
               int* info)
 {
     int left, right, tran, notran, lquery;

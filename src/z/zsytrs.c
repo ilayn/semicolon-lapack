@@ -35,10 +35,10 @@ void zsytrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    c128* const restrict B,
+    const int* restrict ipiv,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

@@ -67,18 +67,18 @@
  */
 void dggevx(const char* balanc, const char* jobvl, const char* jobvr,
             const char* sense, const int n,
-            f64* const restrict A, const int lda,
-            f64* const restrict B, const int ldb,
-            f64* const restrict alphar, f64* const restrict alphai,
-            f64* const restrict beta,
-            f64* const restrict VL, const int ldvl,
-            f64* const restrict VR, const int ldvr,
+            f64* restrict A, const int lda,
+            f64* restrict B, const int ldb,
+            f64* restrict alphar, f64* restrict alphai,
+            f64* restrict beta,
+            f64* restrict VL, const int ldvl,
+            f64* restrict VR, const int ldvr,
             int* ilo, int* ihi,
-            f64* const restrict lscale, f64* const restrict rscale,
+            f64* restrict lscale, f64* restrict rscale,
             f64* abnrm, f64* bbnrm,
-            f64* const restrict rconde, f64* const restrict rcondv,
-            f64* const restrict work, const int lwork,
-            int* const restrict iwork, int* const restrict bwork,
+            f64* restrict rconde, f64* restrict rcondv,
+            f64* restrict work, const int lwork,
+            int* restrict iwork, int* restrict bwork,
             int* info)
 {
     const f64 ZERO = 0.0;

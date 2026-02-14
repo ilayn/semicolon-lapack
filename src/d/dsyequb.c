@@ -45,12 +45,12 @@
 void dsyequb(
     const char* uplo,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64* const restrict S,
+    f64* restrict S,
     f64* scond,
     f64* amax,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

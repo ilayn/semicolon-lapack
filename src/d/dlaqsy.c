@@ -39,9 +39,9 @@
 void dlaqsy(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    const f64* const restrict S,
+    const f64* restrict S,
     const f64 scond,
     const f64 amax,
     char* equed)

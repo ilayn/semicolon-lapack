@@ -30,7 +30,7 @@ void stptri(
     const char* uplo,
     const char* diag,
     const int n,
-    f32* const restrict AP,
+    f32* restrict AP,
     int* info)
 {
     // stptri.f lines 132-133: Parameters

@@ -37,9 +37,9 @@ void zhptrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const c128* const restrict AP,
-    const int* const restrict ipiv,
-    c128* const restrict B,
+    const c128* restrict AP,
+    const int* restrict ipiv,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

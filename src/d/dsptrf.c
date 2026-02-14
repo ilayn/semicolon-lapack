@@ -51,8 +51,8 @@
 void dsptrf(
     const char* uplo,
     const int n,
-    f64* const restrict AP,
-    int* const restrict ipiv,
+    f64* restrict AP,
+    int* restrict ipiv,
     int* info)
 {
     const f64 ZERO = 0.0;

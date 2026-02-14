@@ -29,9 +29,9 @@ void zlacpy(
     const char* uplo,
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb)
 {
     int i, j;

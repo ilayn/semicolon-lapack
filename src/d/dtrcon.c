@@ -39,9 +39,9 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const f64* const restrict A, const int lda,
-            f64* rcond, f64* const restrict work,
-            int* const restrict iwork, int* info)
+            const int n, const f64* restrict A, const int lda,
+            f64* rcond, f64* restrict work,
+            int* restrict iwork, int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

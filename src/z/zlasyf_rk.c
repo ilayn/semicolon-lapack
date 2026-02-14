@@ -84,11 +84,11 @@ void zlasyf_rk(
     const int n,
     const int nb,
     int* kb,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     c128* restrict E,
     int* restrict ipiv,
-    c128* const restrict W,
+    c128* restrict W,
     const int ldw,
     int* info)
 {

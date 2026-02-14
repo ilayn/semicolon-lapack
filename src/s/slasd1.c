@@ -34,11 +34,11 @@
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void slasd1(const int nl, const int nr, const int sqre,
-            f32* const restrict D, f32* alpha, f32* beta,
-            f32* const restrict U, const int ldu,
-            f32* const restrict VT, const int ldvt,
-            int* const restrict IDXQ, int* const restrict IWORK,
-            f32* const restrict work, int* info)
+            f32* restrict D, f32* alpha, f32* beta,
+            f32* restrict U, const int ldu,
+            f32* restrict VT, const int ldvt,
+            int* restrict IDXQ, int* restrict IWORK,
+            f32* restrict work, int* info)
 {
     int coltyp, i, idx, idxc, idxp, iq, isigma, iu2, ivt2, iz;
     int k, ldq, ldu2, ldvt2, m, n, n1, n2;

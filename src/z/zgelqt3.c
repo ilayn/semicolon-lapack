@@ -48,8 +48,8 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelqt3(const int m, const int n,
-             c128* const restrict A, const int lda,
-             c128* const restrict T, const int ldt,
+             c128* restrict A, const int lda,
+             c128* restrict T, const int ldt,
              int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

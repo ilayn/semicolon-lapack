@@ -55,7 +55,7 @@ void ssyconvf_rook(
     const char* uplo,
     const char* way,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     f32* restrict E,
     const int* restrict ipiv,

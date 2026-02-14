@@ -39,9 +39,9 @@ void sspsv(
     const char* uplo,
     const int n,
     const int nrhs,
-    f32* const restrict AP,
-    int* const restrict ipiv,
-    f32* const restrict B,
+    f32* restrict AP,
+    int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
     int* info)
 {

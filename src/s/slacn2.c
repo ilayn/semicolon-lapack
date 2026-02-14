@@ -34,12 +34,12 @@
  */
 void slacn2(
     const int n,
-    f32 * const restrict V,
-    f32 * const restrict X,
-    int * const restrict isgn,
-    f32 *est,
-    int *kase,
-    int * const restrict isave)
+    f32* restrict V,
+    f32* restrict X,
+    int* restrict isgn,
+    f32* est,
+    int* kase,
+    int* restrict isave)
 {
     const int ITMAX = 5;
     const f32 ZERO = 0.0f;

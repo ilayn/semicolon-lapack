@@ -60,12 +60,12 @@
  *                               tridiagonal form did not converge to zero.
  */
 void zhbevd_2stage(const char* jobz, const char* uplo, const int n,
-                   const int kd, c128* const restrict AB,
-                   const int ldab, f64* const restrict W,
-                   c128* const restrict Z, const int ldz,
-                   c128* const restrict work, const int lwork,
-                   f64* const restrict rwork, const int lrwork,
-                   int* const restrict iwork, const int liwork,
+                   const int kd, c128* restrict AB,
+                   const int ldab, f64* restrict W,
+                   c128* restrict Z, const int ldz,
+                   c128* restrict work, const int lwork,
+                   f64* restrict rwork, const int lrwork,
+                   int* restrict iwork, const int liwork,
                    int* info)
 {
     const f64 ZERO = 0.0;

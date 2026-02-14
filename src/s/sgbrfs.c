@@ -55,20 +55,20 @@ void sgbrfs(
     const int kl,
     const int ku,
     const int nrhs,
-    const f32 * const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    const f32 * const restrict AFB,
+    const f32* restrict AFB,
     const int ldafb,
-    const int * const restrict ipiv,
-    const f32 * const restrict B,
+    const int* restrict ipiv,
+    const f32* restrict B,
     const int ldb,
-    f32 * const restrict X,
+    f32* restrict X,
     const int ldx,
-    f32 * const restrict ferr,
-    f32 * const restrict berr,
-    f32 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f32* restrict ferr,
+    f32* restrict berr,
+    f32* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const int ITMAX = 5;
     const f32 ZERO = 0.0f;

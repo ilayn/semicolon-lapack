@@ -177,7 +177,7 @@ static const int MM[128][4] = {
     {  545, 2366, 3801, 1537}
 };
 
-void slaruv(int* const restrict iseed, const int n, f32* const restrict X)
+void slaruv(int* restrict iseed, const int n, f32* restrict X)
 {
     int i, it1, it2, it3, it4;
     int i1, i2, i3, i4;

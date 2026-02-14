@@ -64,12 +64,12 @@
  */
 void sgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,
-            f32* const restrict AB, const int ldab,
-            f32* const restrict D, f32* const restrict E,
-            f32* const restrict Q, const int ldq,
-            f32* const restrict PT, const int ldpt,
-            f32* const restrict C, const int ldc,
-            f32* const restrict work, int* info)
+            f32* restrict AB, const int ldab,
+            f32* restrict D, f32* restrict E,
+            f32* restrict Q, const int ldq,
+            f32* restrict PT, const int ldpt,
+            f32* restrict C, const int ldc,
+            f32* restrict work, int* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;

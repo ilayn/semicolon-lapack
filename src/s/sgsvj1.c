@@ -45,11 +45,11 @@ static const f32 ONE = 1.0f;
  *                         - = 0: success. < 0: illegal argument.
  */
 void sgsvj1(const char* jobv, const int m, const int n, const int n1,
-            f32* const restrict A, const int lda,
-            f32* const restrict D, f32* const restrict SVA,
-            const int mv, f32* const restrict V, const int ldv,
+            f32* restrict A, const int lda,
+            f32* restrict D, f32* restrict SVA,
+            const int mv, f32* restrict V, const int ldv,
             const f32 eps, const f32 sfmin, const f32 tol,
-            const int nsweep, f32* const restrict work, const int lwork,
+            const int nsweep, f32* restrict work, const int lwork,
             int* info)
 {
     int applv, rsvec, mvl;

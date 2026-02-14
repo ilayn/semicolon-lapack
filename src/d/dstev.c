@@ -41,9 +41,9 @@
  *                           zero.
  */
 void dstev(const char* jobz, const int n,
-           f64* const restrict D, f64* const restrict E,
-           f64* const restrict Z, const int ldz,
-           f64* const restrict work, int* info)
+           f64* restrict D, f64* restrict E,
+           f64* restrict Z, const int ldz,
+           f64* restrict work, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

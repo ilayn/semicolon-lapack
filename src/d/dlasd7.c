@@ -9,15 +9,15 @@
 #include <cblas.h>
 
 void dlasd7(const int icompq, const int nl, const int nr, const int sqre,
-            int* k, f64* const restrict D, f64* const restrict Z,
-            f64* const restrict ZW, f64* const restrict VF,
-            f64* const restrict VFW, f64* const restrict VL,
-            f64* const restrict VLW, const f64 alpha, const f64 beta,
-            f64* const restrict DSIGMA, int* const restrict IDX,
-            int* const restrict IDXP, int* const restrict IDXQ,
-            int* const restrict PERM, int* givptr,
-            int* const restrict GIVCOL, const int ldgcol,
-            f64* const restrict GIVNUM, const int ldgnum,
+            int* k, f64* restrict D, f64* restrict Z,
+            f64* restrict ZW, f64* restrict VF,
+            f64* restrict VFW, f64* restrict VL,
+            f64* restrict VLW, const f64 alpha, const f64 beta,
+            f64* restrict DSIGMA, int* restrict IDX,
+            int* restrict IDXP, int* restrict IDXQ,
+            int* restrict PERM, int* givptr,
+            int* restrict GIVCOL, const int ldgcol,
+            f64* restrict GIVNUM, const int ldgnum,
             f64* c, f64* s, int* info)
 {
     const f64 ZERO = 0.0;

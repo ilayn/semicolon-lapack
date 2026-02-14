@@ -46,12 +46,12 @@ void dlatrs(
     const char* diag,
     const char* normin,
     const int n,
-    const f64 * const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64 * const restrict X,
-    f64 *scale,
-    f64 * const restrict cnorm,
-    int *info)
+    f64* restrict X,
+    f64* scale,
+    f64* restrict cnorm,
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;

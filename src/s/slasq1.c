@@ -41,8 +41,8 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void slasq1(const int n, f32* const restrict D, f32* const restrict E,
-            f32* const restrict work, int* info)
+void slasq1(const int n, f32* restrict D, f32* restrict E,
+            f32* restrict work, int* info)
 {
     int i, iinfo;
     f32 eps, scale, safmin, sigmn, sigmx;

@@ -66,7 +66,7 @@
 void ssytrf_aa_2stage(
     const char* uplo,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     f32* restrict TB,
     const int ltb,

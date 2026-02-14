@@ -27,7 +27,7 @@
 int ilaslr(
     const int m,
     const int n,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda)
 {
     const f32 zero = 0.0f;

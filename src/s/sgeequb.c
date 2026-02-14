@@ -56,14 +56,14 @@
 void sgeequb(
     const int m,
     const int n,
-    const f32 * const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32 * const restrict R,
-    f32 * const restrict C,
-    f32 *rowcnd,
-    f32 *colcnd,
-    f32 *amax,
-    int *info)
+    f32* restrict R,
+    f32* restrict C,
+    f32* rowcnd,
+    f32* colcnd,
+    f32* amax,
+    int* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

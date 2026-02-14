@@ -58,11 +58,11 @@
  *                           through mod(INFO,N+1).
  */
 void zheevd(const char* jobz, const char* uplo, const int n,
-            c128* const restrict A, const int lda,
-            f64* const restrict W,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork, const int lrwork,
-            int* const restrict iwork, const int liwork,
+            c128* restrict A, const int lda,
+            f64* restrict W,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork, const int lrwork,
+            int* restrict iwork, const int liwork,
             int* info)
 {
     const f64 ZERO = 0.0;

@@ -68,7 +68,7 @@ void zgetsqrhrt(
     const int mb1,
     const int nb1,
     const int nb2,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     c128* restrict T,
     const int ldt,

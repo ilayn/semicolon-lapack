@@ -56,11 +56,11 @@
  */
 void dormrq(const char* side, const char* trans,
             const int m, const int n, const int k,
-            f64 * const restrict A, const int lda,
-            const f64 * const restrict tau,
-            f64 * const restrict C, const int ldc,
-            f64 * const restrict work, const int lwork,
-            int *info)
+            f64* restrict A, const int lda,
+            const f64* restrict tau,
+            f64* restrict C, const int ldc,
+            f64* restrict work, const int lwork,
+            int* info)
 {
     const int NBMAX = 64;
     const int LDT = NBMAX + 1;

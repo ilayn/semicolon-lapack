@@ -48,9 +48,9 @@ static const f64 TWO = 2.0;
  *                         - > 0: The algorithm failed to compute a singular value.
  */
 void dlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
-            f64* const restrict D, f64* const restrict E,
-            f64* const restrict B, const int ldb, const f64 rcond,
-            int* rank, f64* const restrict work, int* const restrict iwork,
+            f64* restrict D, f64* restrict E,
+            f64* restrict B, const int ldb, const f64 rcond,
+            int* rank, f64* restrict work, int* restrict iwork,
             int* info)
 {
     int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;

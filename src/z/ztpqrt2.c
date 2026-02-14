@@ -39,9 +39,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztpqrt2(const int m, const int n, const int l,
-             c128* const restrict A, const int lda,
-             c128* const restrict B, const int ldb,
-             c128* const restrict T, const int ldt, int* info)
+             c128* restrict A, const int lda,
+             c128* restrict B, const int ldb,
+             c128* restrict T, const int ldt, int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);

@@ -66,17 +66,17 @@
  */
 void dggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             dselect3_t selctg, const char* sense, const int n,
-            f64* const restrict A, const int lda,
-            f64* const restrict B, const int ldb,
+            f64* restrict A, const int lda,
+            f64* restrict B, const int ldb,
             int* sdim,
-            f64* const restrict alphar, f64* const restrict alphai,
-            f64* const restrict beta,
-            f64* const restrict VSL, const int ldvsl,
-            f64* const restrict VSR, const int ldvsr,
-            f64* const restrict rconde, f64* const restrict rcondv,
-            f64* const restrict work, const int lwork,
-            int* const restrict iwork, const int liwork,
-            int* const restrict bwork, int* info)
+            f64* restrict alphar, f64* restrict alphai,
+            f64* restrict beta,
+            f64* restrict VSL, const int ldvsl,
+            f64* restrict VSR, const int ldvsr,
+            f64* restrict rconde, f64* restrict rcondv,
+            f64* restrict work, const int lwork,
+            int* restrict iwork, const int liwork,
+            int* restrict bwork, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

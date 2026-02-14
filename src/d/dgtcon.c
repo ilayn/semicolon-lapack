@@ -43,16 +43,16 @@
 void dgtcon(
     const char* norm,
     const int n,
-    const f64 * const restrict DL,
-    const f64 * const restrict D,
-    const f64 * const restrict DU,
-    const f64 * const restrict DU2,
-    const int * const restrict ipiv,
+    const f64* restrict DL,
+    const f64* restrict D,
+    const f64* restrict DU,
+    const f64* restrict DU2,
+    const int* restrict ipiv,
     const f64 anorm,
-    f64 *rcond,
-    f64 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f64* rcond,
+    f64* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

@@ -29,9 +29,9 @@ void zlacp2(
     const char* uplo,
     const int m,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb)
 {
     int i, j;

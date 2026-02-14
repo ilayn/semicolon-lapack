@@ -46,13 +46,13 @@ void ssbgst(
     const int n,
     const int ka,
     const int kb,
-    f32* const restrict AB,
+    f32* restrict AB,
     const int ldab,
-    const f32* const restrict BB,
+    const f32* restrict BB,
     const int ldbb,
-    f32* const restrict X,
+    f32* restrict X,
     const int ldx,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ZERO = 0.0f;

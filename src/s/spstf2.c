@@ -49,12 +49,12 @@
 void spstf2(
     const char* uplo,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    int* const restrict piv,
+    int* restrict piv,
     int* rank,
     const f32 tol,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ONE = 1.0f;

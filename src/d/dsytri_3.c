@@ -65,7 +65,7 @@
 void dsytri_3(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     const f64* restrict E,
     const int* restrict ipiv,

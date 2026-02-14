@@ -58,11 +58,11 @@
  */
 void stpmqrt(const char* side, const char* trans, const int m, const int n,
              const int k, const int l, const int nb,
-             const f32* const restrict V, const int ldv,
-             const f32* const restrict T, const int ldt,
-             f32* const restrict A, const int lda,
-             f32* const restrict B, const int ldb,
-             f32* const restrict work, int* info)
+             const f32* restrict V, const int ldv,
+             const f32* restrict T, const int ldt,
+             f32* restrict A, const int lda,
+             f32* restrict B, const int ldb,
+             f32* restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, mb, lb, kf, ldaq, ldvq;

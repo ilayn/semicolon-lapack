@@ -55,9 +55,9 @@
  * @param[out]    work  Double precision array, dimension (m).
  */
 void dlatrz(const int m, const int n, const int l,
-            f64 * const restrict A, const int lda,
-            f64 * const restrict tau,
-            f64 * const restrict work)
+            f64* restrict A, const int lda,
+            f64* restrict tau,
+            f64* restrict work)
 {
     int i;
 

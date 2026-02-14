@@ -46,13 +46,13 @@ void dsbgst(
     const int n,
     const int ka,
     const int kb,
-    f64* const restrict AB,
+    f64* restrict AB,
     const int ldab,
-    const f64* const restrict BB,
+    const f64* restrict BB,
     const int ldbb,
-    f64* const restrict X,
+    f64* restrict X,
     const int ldx,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

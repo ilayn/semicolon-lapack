@@ -45,8 +45,8 @@ void zppsv(
     const char* uplo,
     const int n,
     const int nrhs,
-    c128* const restrict AP,
-    c128* const restrict B,
+    c128* restrict AP,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

@@ -48,14 +48,14 @@ void dgbcon(
     const int n,
     const int kl,
     const int ku,
-    const f64 * const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    const int * const restrict ipiv,
+    const int* restrict ipiv,
     const f64 anorm,
-    f64 *rcond,
-    f64 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f64* rcond,
+    f64* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

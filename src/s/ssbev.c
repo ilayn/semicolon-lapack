@@ -36,12 +36,12 @@ void ssbev(
     const char* uplo,
     const int n,
     const int kd,
-    f32* const restrict AB,
+    f32* restrict AB,
     const int ldab,
-    f32* const restrict W,
-    f32* const restrict Z,
+    f32* restrict W,
+    f32* restrict Z,
     const int ldz,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ZERO = 0.0f;

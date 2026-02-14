@@ -47,12 +47,12 @@ void sgbtrs(
     const int kl,
     const int ku,
     const int nrhs,
-    const f32 * const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    const int * const restrict ipiv,
-    f32 * const restrict B,
+    const int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;

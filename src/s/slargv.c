@@ -28,9 +28,9 @@
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void slargv(const int n, f32* const restrict X, const int incx,
-            f32* const restrict Y, const int incy,
-            f32* const restrict C, const int incc)
+void slargv(const int n, f32* restrict X, const int incx,
+            f32* restrict Y, const int incy,
+            f32* restrict C, const int incc)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;

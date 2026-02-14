@@ -42,10 +42,10 @@ void zggbak(
     const int n,
     const int ilo,
     const int ihi,
-    const f64* const restrict lscale,
-    const f64* const restrict rscale,
+    const f64* restrict lscale,
+    const f64* restrict rscale,
     const int m,
-    c128* const restrict V,
+    c128* restrict V,
     const int ldv,
     int* info)
 {

@@ -79,10 +79,10 @@
  *                           solution could not be computed.
  */
 void zhesv(const char* uplo, const int n, const int nrhs,
-           c128* const restrict A, const int lda,
-           int* const restrict ipiv,
-           c128* const restrict B, const int ldb,
-           c128* const restrict work, const int lwork,
+           c128* restrict A, const int lda,
+           int* restrict ipiv,
+           c128* restrict B, const int ldb,
+           c128* restrict work, const int lwork,
            int* info)
 {
     int lwkopt;

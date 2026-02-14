@@ -56,14 +56,14 @@
  *                         - > 0: Internal error
  */
 void ssyevr(const char* jobz, const char* range, const char* uplo,
-            const int n, f32* const restrict A, const int lda,
+            const int n, f32* restrict A, const int lda,
             const f32 vl, const f32 vu, const int il, const int iu,
             const f32 abstol, int* m,
-            f32* const restrict W,
-            f32* const restrict Z, const int ldz,
-            int* const restrict isuppz,
-            f32* const restrict work, const int lwork,
-            int* const restrict iwork, const int liwork,
+            f32* restrict W,
+            f32* restrict Z, const int ldz,
+            int* restrict isuppz,
+            f32* restrict work, const int lwork,
+            int* restrict iwork, const int liwork,
             int* info)
 {
     const f32 ZERO = 0.0f;

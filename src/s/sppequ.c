@@ -42,8 +42,8 @@
 void sppequ(
     const char* uplo,
     const int n,
-    const f32* const restrict AP,
-    f32* const restrict S,
+    const f32* restrict AP,
+    f32* restrict S,
     f32* scond,
     f32* amax,
     int* info)

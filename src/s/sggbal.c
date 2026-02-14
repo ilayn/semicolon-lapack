@@ -48,15 +48,15 @@
 void sggbal(
     const char* job,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    f32* const restrict B,
+    f32* restrict B,
     const int ldb,
     int* ilo,
     int* ihi,
-    f32* const restrict lscale,
-    f32* const restrict rscale,
-    f32* const restrict work,
+    f32* restrict lscale,
+    f32* restrict rscale,
+    f32* restrict work,
     int* info)
 {
     const f32 ZERO = 0.0f;

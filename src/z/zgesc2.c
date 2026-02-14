@@ -36,11 +36,11 @@
  */
 void zgesc2(
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    c128* const restrict rhs,
-    const int* const restrict ipiv,
-    const int* const restrict jpiv,
+    c128* restrict rhs,
+    const int* restrict ipiv,
+    const int* restrict jpiv,
     f64* scale)
 {
     const f64 ONE = 1.0;

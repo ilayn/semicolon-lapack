@@ -47,15 +47,15 @@
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasd6(const int icompq, const int nl, const int nr, const int sqre,
-            f64* const restrict D, f64* const restrict VF,
-            f64* const restrict VL, f64* alpha, f64* beta,
-            int* const restrict IDXQ, int* const restrict PERM,
-            int* givptr, int* const restrict GIVCOL, const int ldgcol,
-            f64* const restrict GIVNUM, const int ldgnum,
-            f64* const restrict POLES, f64* const restrict DIFL,
-            f64* const restrict DIFR, f64* const restrict Z,
+            f64* restrict D, f64* restrict VF,
+            f64* restrict VL, f64* alpha, f64* beta,
+            int* restrict IDXQ, int* restrict PERM,
+            int* givptr, int* restrict GIVCOL, const int ldgcol,
+            f64* restrict GIVNUM, const int ldgnum,
+            f64* restrict POLES, f64* restrict DIFL,
+            f64* restrict DIFR, f64* restrict Z,
             int* k, f64* c, f64* s,
-            f64* const restrict work, int* const restrict IWORK, int* info)
+            f64* restrict work, int* restrict IWORK, int* info)
 {
     int i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n, n1, n2;
     f64 orgnrm;

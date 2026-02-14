@@ -37,7 +37,7 @@ void zpbstf(
     const char* uplo,
     const int n,
     const int kd,
-    c128* const restrict AB,
+    c128* restrict AB,
     const int ldab,
     int* info)
 {

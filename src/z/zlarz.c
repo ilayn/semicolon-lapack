@@ -47,9 +47,9 @@
  *                      or (m) if side = 'R'.
  */
 void zlarz(const char* side, const int m, const int n, const int l,
-           const c128* const restrict v, const int incv,
+           const c128* restrict v, const int incv,
            const c128 tau,
-           c128* const restrict C, const int ldc,
+           c128* restrict C, const int ldc,
            c128* restrict work)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

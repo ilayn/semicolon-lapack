@@ -52,10 +52,10 @@ void dlasyf_rook(
     const int n,
     const int nb,
     int* kb,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* restrict ipiv,
-    f64* const restrict W,
+    f64* restrict W,
     const int ldw,
     int* info)
 {

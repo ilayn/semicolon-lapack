@@ -48,15 +48,15 @@
 void dggbal(
     const char* job,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
     int* ilo,
     int* ihi,
-    f64* const restrict lscale,
-    f64* const restrict rscale,
-    f64* const restrict work,
+    f64* restrict lscale,
+    f64* restrict rscale,
+    f64* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

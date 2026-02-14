@@ -55,9 +55,9 @@
  * @param[out]    work  Double precision array, dimension (m).
  */
 void slatrz(const int m, const int n, const int l,
-            f32 * const restrict A, const int lda,
-            f32 * const restrict tau,
-            f32 * const restrict work)
+            f32* restrict A, const int lda,
+            f32* restrict tau,
+            f32* restrict work)
 {
     int i;
 

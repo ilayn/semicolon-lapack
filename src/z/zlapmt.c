@@ -26,8 +26,8 @@
  *                        On exit, modified internally and then restored.
  */
 void zlapmt(const int forwrd, const int m, const int n,
-            c128* const restrict X, const int ldx,
-            int* const restrict K)
+            c128* restrict X, const int ldx,
+            int* restrict K)
 {
     int i, j, in;
 

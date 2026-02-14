@@ -45,13 +45,13 @@
 void sgecon(
     const char* norm,
     const int n,
-    const f32 * const restrict A,
+    const f32* restrict A,
     const int lda,
     const f32 anorm,
-    f32 *rcond,
-    f32 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f32* rcond,
+    f32* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

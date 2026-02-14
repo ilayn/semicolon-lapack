@@ -42,12 +42,12 @@ void dsytrs2(
     const char* uplo,
     const int n,
     const int nrhs,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    f64* const restrict B,
+    const int* restrict ipiv,
+    f64* restrict B,
     const int ldb,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

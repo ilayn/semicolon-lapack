@@ -46,12 +46,12 @@ void slatrs(
     const char* diag,
     const char* normin,
     const int n,
-    const f32 * const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32 * const restrict X,
-    f32 *scale,
-    f32 * const restrict cnorm,
-    int *info)
+    f32* restrict X,
+    f32* scale,
+    f32* restrict cnorm,
+    int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;

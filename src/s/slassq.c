@@ -55,10 +55,10 @@
  */
 void slassq(
     const int n,
-    const f32 * const restrict X,
+    const f32* restrict X,
     const int incx,
-    f32 *scale,
-    f32 *sumsq)
+    f32* scale,
+    f32* sumsq)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

@@ -40,7 +40,7 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void dlasq2(const int n, f64* const restrict Z, int* info)
+void dlasq2(const int n, f64* restrict Z, int* info)
 {
     /* Constants from the Fortran source */
     const f64 CBIAS  = 1.50;

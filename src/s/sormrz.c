@@ -68,11 +68,11 @@
  */
 void sormrz(const char* side, const char* trans,
             const int m, const int n, const int k, const int l,
-            f32 * const restrict A, const int lda,
-            const f32 * const restrict tau,
-            f32 * const restrict C, const int ldc,
-            f32 * const restrict work, const int lwork,
-            int *info)
+            f32* restrict A, const int lda,
+            const f32* restrict tau,
+            f32* restrict C, const int ldc,
+            f32* restrict work, const int lwork,
+            int* info)
 {
     /* NBMAX is the maximum block size (hardcoded in LAPACK Fortran source);
      * LDT is the leading dimension of the T array stored in WORK;

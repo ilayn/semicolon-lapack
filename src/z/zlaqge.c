@@ -36,14 +36,14 @@
 void zlaqge(
     const int m,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    const f64* const restrict R,
-    const f64* const restrict C,
+    const f64* restrict R,
+    const f64* restrict C,
     const f64 rowcnd,
     const f64 colcnd,
     const f64 amax,
-    char *equed)
+    char* equed)
 {
     const f64 ONE = 1.0;
     const f64 THRESH = 0.1;

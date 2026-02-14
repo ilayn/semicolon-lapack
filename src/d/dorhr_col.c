@@ -54,7 +54,7 @@ void dorhr_col(
     const int m,
     const int n,
     const int nb,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     f64* restrict T,
     const int ldt,

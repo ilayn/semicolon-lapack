@@ -35,9 +35,9 @@ void zspr(
     const char* uplo,
     const int n,
     const c128 alpha,
-    const c128* const restrict X,
+    const c128* restrict X,
     const int incx,
-    c128* const restrict AP)
+    c128* restrict AP)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
 

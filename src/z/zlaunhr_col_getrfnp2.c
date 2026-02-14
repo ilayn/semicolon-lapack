@@ -89,8 +89,8 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zlaunhr_col_getrfnp2(const int m, const int n,
-                           c128* const restrict A, const int lda,
-                           c128* const restrict D,
+                           c128* restrict A, const int lda,
+                           c128* restrict D,
                            int* info)
 {
     const f64 ONE = 1.0;

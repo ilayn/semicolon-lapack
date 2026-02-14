@@ -7,9 +7,9 @@
 #include "lapack_tuning.h"
 
 void dggqrf(const int n, const int m, const int p,
-            f64* const restrict A, const int lda, f64* const restrict taua,
-            f64* const restrict B, const int ldb, f64* const restrict taub,
-            f64* const restrict work, const int lwork, int* info)
+            f64* restrict A, const int lda, f64* restrict taua,
+            f64* restrict B, const int ldb, f64* restrict taub,
+            f64* restrict work, const int lwork, int* info)
 {
     int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
     int minval;

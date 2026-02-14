@@ -39,10 +39,10 @@
  */
 void zgetc2(
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    int* const restrict ipiv,
-    int* const restrict jpiv,
+    int* restrict ipiv,
+    int* restrict jpiv,
     int* info)
 {
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);

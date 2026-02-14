@@ -40,9 +40,9 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztrcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const c128* const restrict A, const int lda,
-            f64* rcond, c128* const restrict work,
-            f64* const restrict rwork, int* info)
+            const int n, const c128* restrict A, const int lda,
+            f64* rcond, c128* restrict work,
+            f64* restrict rwork, int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

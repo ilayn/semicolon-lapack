@@ -54,12 +54,12 @@ static const f32 ONE = 1.0f;
  *                         - = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
 void sgesdd(const char* jobz, const int m, const int n,
-            f32* const restrict A, const int lda,
-            f32* const restrict S,
-            f32* const restrict U, const int ldu,
-            f32* const restrict VT, const int ldvt,
-            f32* const restrict work, const int lwork,
-            int* const restrict IWORK, int* info)
+            f32* restrict A, const int lda,
+            f32* restrict S,
+            f32* restrict U, const int ldu,
+            f32* restrict VT, const int ldvt,
+            f32* restrict work, const int lwork,
+            int* restrict IWORK, int* info)
 {
     int lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
     int bdspac, blk, chunk, i, ie, ierr, il, ir, iscl;

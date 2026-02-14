@@ -38,9 +38,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zungqr(const int m, const int n, const int k,
-            c128* const restrict A, const int lda,
-            const c128* const restrict tau,
-            c128* const restrict work, const int lwork,
+            c128* restrict A, const int lda,
+            const c128* restrict tau,
+            c128* restrict work, const int lwork,
             int* info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;

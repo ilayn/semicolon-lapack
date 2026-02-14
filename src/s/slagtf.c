@@ -59,13 +59,13 @@
  */
 void slagtf(
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const f32 lambda,
-    f32* const restrict B,
-    f32* const restrict C,
+    f32* restrict B,
+    f32* restrict C,
     const f32 tol,
-    f32* const restrict D,
-    int* const restrict in,
+    f32* restrict D,
+    int* restrict in,
     int* info)
 {
     int k;

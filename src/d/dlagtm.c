@@ -42,13 +42,13 @@ void dlagtm(
     const int n,
     const int nrhs,
     const f64 alpha,
-    const f64 * const restrict DL,
-    const f64 * const restrict D,
-    const f64 * const restrict DU,
-    const f64 * const restrict X,
+    const f64* restrict DL,
+    const f64* restrict D,
+    const f64* restrict DU,
+    const f64* restrict X,
     const int ldx,
     const f64 beta,
-    f64 * const restrict B,
+    f64* restrict B,
     const int ldb)
 {
     const f64 ZERO = 0.0;

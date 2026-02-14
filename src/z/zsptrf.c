@@ -52,8 +52,8 @@
 void zsptrf(
     const char* uplo,
     const int n,
-    c128* const restrict AP,
-    int* const restrict ipiv,
+    c128* restrict AP,
+    int* restrict ipiv,
     int* info)
 {
     const f64 ZERO = 0.0;

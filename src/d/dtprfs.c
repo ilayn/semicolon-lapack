@@ -40,15 +40,15 @@ void dtprfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const f64* const restrict AP,
-    const f64* const restrict B,
+    const f64* restrict AP,
+    const f64* restrict B,
     const int ldb,
-    const f64* const restrict X,
+    const f64* restrict X,
     const int ldx,
-    f64* const restrict ferr,
-    f64* const restrict berr,
-    f64* const restrict work,
-    int* const restrict iwork,
+    f64* restrict ferr,
+    f64* restrict berr,
+    f64* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f64 ZERO = 0.0;

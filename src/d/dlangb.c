@@ -39,9 +39,9 @@ f64 dlangb(
     const int n,
     const int kl,
     const int ku,
-    const f64 * const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    f64 * const restrict work)
+    f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

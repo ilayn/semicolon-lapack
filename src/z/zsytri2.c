@@ -40,10 +40,10 @@
 void zsytri2(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    c128* const restrict work,
+    const int* restrict ipiv,
+    c128* restrict work,
     const int lwork,
     int* info)
 {

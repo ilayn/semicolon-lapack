@@ -42,9 +42,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sgeqr(const int m, const int n,
-           f32* const restrict A, const int lda,
-           f32* const restrict T, const int tsize,
-           f32* const restrict work, const int lwork,
+           f32* restrict A, const int lda,
+           f32* restrict T, const int tsize,
+           f32* restrict work, const int lwork,
            int* info)
 {
     int lquery, lminws, mint, minw;

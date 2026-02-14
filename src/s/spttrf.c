@@ -33,8 +33,8 @@
  */
 void spttrf(
     const int n,
-    f32* const restrict D,
-    f32* const restrict E,
+    f32* restrict D,
+    f32* restrict E,
     int* info)
 {
     const f32 ZERO = 0.0f;

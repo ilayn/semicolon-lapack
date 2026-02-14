@@ -28,16 +28,16 @@
  * @param[out]    v       Output vector of length 3.
  */
 void slaqz1(
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    const f32* const restrict B,
+    const f32* restrict B,
     const int ldb,
     const f32 sr1,
     const f32 sr2,
     const f32 si,
     const f32 beta1,
     const f32 beta2,
-    f32* const restrict v)
+    f32* restrict v)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

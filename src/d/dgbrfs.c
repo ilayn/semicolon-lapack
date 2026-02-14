@@ -55,20 +55,20 @@ void dgbrfs(
     const int kl,
     const int ku,
     const int nrhs,
-    const f64 * const restrict AB,
+    const f64* restrict AB,
     const int ldab,
-    const f64 * const restrict AFB,
+    const f64* restrict AFB,
     const int ldafb,
-    const int * const restrict ipiv,
-    const f64 * const restrict B,
+    const int* restrict ipiv,
+    const f64* restrict B,
     const int ldb,
-    f64 * const restrict X,
+    f64* restrict X,
     const int ldx,
-    f64 * const restrict ferr,
-    f64 * const restrict berr,
-    f64 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f64* restrict ferr,
+    f64* restrict berr,
+    f64* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const int ITMAX = 5;
     const f64 ZERO = 0.0;

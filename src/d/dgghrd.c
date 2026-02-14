@@ -54,13 +54,13 @@ void dgghrd(
     const int n,
     const int ilo,
     const int ihi,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
-    f64* const restrict Q,
+    f64* restrict Q,
     const int ldq,
-    f64* const restrict Z,
+    f64* restrict Z,
     const int ldz,
     int* info)
 {

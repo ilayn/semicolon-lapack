@@ -54,7 +54,7 @@
 void zsycon_rook(
     const char* uplo,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
     const int* restrict ipiv,
     const f64 anorm,

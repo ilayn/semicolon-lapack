@@ -108,7 +108,7 @@ void slaqp3rk(
     const f32 reltol,
     const int kp1,
     const f32 maxc2nrm,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     int* done,
     int* KB,

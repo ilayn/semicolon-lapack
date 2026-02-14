@@ -46,16 +46,16 @@ void strrfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    const f32* const restrict B,
+    const f32* restrict B,
     const int ldb,
-    const f32* const restrict X,
+    const f32* restrict X,
     const int ldx,
-    f32* const restrict ferr,
-    f32* const restrict berr,
-    f32* const restrict work,
-    int* const restrict iwork,
+    f32* restrict ferr,
+    f32* restrict berr,
+    f32* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f32 ZERO = 0.0f;

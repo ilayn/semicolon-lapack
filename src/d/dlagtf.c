@@ -59,13 +59,13 @@
  */
 void dlagtf(
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const f64 lambda,
-    f64* const restrict B,
-    f64* const restrict C,
+    f64* restrict B,
+    f64* restrict C,
     const f64 tol,
-    f64* const restrict D,
-    int* const restrict in,
+    f64* restrict D,
+    int* restrict in,
     int* info)
 {
     int k;

@@ -48,10 +48,10 @@
 void dgetrf2(
     const int m,
     const int n,
-    f64 * const restrict A,
+    f64* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    int *info)
+    int* restrict ipiv,
+    int* info)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;

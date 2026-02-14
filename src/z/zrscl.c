@@ -25,7 +25,7 @@
 void zrscl(
     const int n,
     const c128 a,
-    c128* const restrict x,
+    c128* restrict x,
     const int incx)
 {
     const f64 ZERO = 0.0;

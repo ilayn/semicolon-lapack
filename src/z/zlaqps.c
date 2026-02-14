@@ -53,13 +53,13 @@
  */
 void zlaqps(const int m, const int n, const int offset, const int nb,
             int* kb,
-            c128* const restrict A, const int lda,
-            int* const restrict jpvt,
-            c128* const restrict tau,
-            f64* const restrict vn1,
-            f64* const restrict vn2,
-            c128* const restrict auxv,
-            c128* const restrict F, const int ldf)
+            c128* restrict A, const int lda,
+            int* restrict jpvt,
+            c128* restrict tau,
+            f64* restrict vn1,
+            f64* restrict vn2,
+            c128* restrict auxv,
+            c128* restrict F, const int ldf)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);

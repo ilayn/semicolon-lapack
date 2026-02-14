@@ -43,7 +43,7 @@ void dtftri(
     const char* uplo,
     const char* diag,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     int* info)
 {
     int lower, nisodd, normaltransr;

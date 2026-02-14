@@ -206,11 +206,11 @@ static const int NSWEEP = 30;
  *                           description of rwork.
  */
 void zgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, c128* const restrict A, const int lda,
-            f64* const restrict SVA, const int mv,
-            c128* const restrict V, const int ldv,
-            c128* const restrict cwork, const int lwork,
-            f64* const restrict rwork, const int lrwork, int* info)
+            const int m, const int n, c128* restrict A, const int lda,
+            f64* restrict SVA, const int mv,
+            c128* restrict V, const int ldv,
+            c128* restrict cwork, const int lwork,
+            f64* restrict rwork, const int lrwork, int* info)
 {
     int lsvec, uctol, rsvec, applv, upper, lower, lquery;
     int minmn, lwmin, lrwmin, mvl = 0;

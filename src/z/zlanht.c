@@ -29,8 +29,8 @@
  * @return The norm value.
  */
 f64 zlanht(const char* norm, const int n,
-              const f64* const restrict D,
-              const c128* const restrict E)
+              const f64* restrict D,
+              const c128* restrict E)
 {
     f64 anorm;
 

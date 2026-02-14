@@ -61,16 +61,16 @@
  */
 void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int p, const int n,
-             f64* const restrict A, const int lda,
-             f64* const restrict B, const int ldb,
+             f64* restrict A, const int lda,
+             f64* restrict B, const int ldb,
              const f64 tola, const f64 tolb,
              int* k, int* l,
-             f64* const restrict U, const int ldu,
-             f64* const restrict V, const int ldv,
-             f64* const restrict Q, const int ldq,
-             int* const restrict iwork,
-             f64* const restrict tau,
-             f64* const restrict work, const int lwork,
+             f64* restrict U, const int ldu,
+             f64* restrict V, const int ldv,
+             f64* restrict Q, const int ldq,
+             int* restrict iwork,
+             f64* restrict tau,
+             f64* restrict work, const int lwork,
              int* info)
 {
     const f64 ZERO = 0.0;

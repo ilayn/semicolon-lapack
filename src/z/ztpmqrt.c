@@ -59,11 +59,11 @@
  */
 void ztpmqrt(const char* side, const char* trans, const int m, const int n,
              const int k, const int l, const int nb,
-             const c128* const restrict V, const int ldv,
-             const c128* const restrict T, const int ldt,
-             c128* const restrict A, const int lda,
-             c128* const restrict B, const int ldb,
-             c128* const restrict work, int* info)
+             const c128* restrict V, const int ldv,
+             const c128* restrict T, const int ldt,
+             c128* restrict A, const int lda,
+             c128* restrict B, const int ldb,
+             c128* restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, mb, lb, kf, ldaq, ldvq;

@@ -31,9 +31,9 @@
  */
 void zlacrt(
     const int n,
-    c128* const restrict cx,
+    c128* restrict cx,
     const int incx,
-    c128* const restrict cy,
+    c128* restrict cy,
     const int incy,
     const c128 c,
     const c128 s)

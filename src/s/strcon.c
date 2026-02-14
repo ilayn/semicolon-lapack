@@ -39,9 +39,9 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void strcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const f32* const restrict A, const int lda,
-            f32* rcond, f32* const restrict work,
-            int* const restrict iwork, int* info)
+            const int n, const f32* restrict A, const int lda,
+            f32* rcond, f32* restrict work,
+            int* restrict iwork, int* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

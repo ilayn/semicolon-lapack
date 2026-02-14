@@ -45,17 +45,17 @@
  */
 void zlaqz2(const int ilschur, const int ilq, const int ilz,
             const int n, const int ilo, const int ihi, const int nw,
-            c128* const restrict A, const int lda,
-            c128* const restrict B, const int ldb,
-            c128* const restrict Q, const int ldq,
-            c128* const restrict Z, const int ldz,
+            c128* restrict A, const int lda,
+            c128* restrict B, const int ldb,
+            c128* restrict Q, const int ldq,
+            c128* restrict Z, const int ldz,
             int* ns, int* nd,
-            c128* const restrict alpha,
-            c128* const restrict beta,
-            c128* const restrict QC, const int ldqc,
-            c128* const restrict ZC, const int ldzc,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork, const int rec, int* info)
+            c128* restrict alpha,
+            c128* restrict beta,
+            c128* restrict QC, const int ldqc,
+            c128* restrict ZC, const int ldzc,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork, const int rec, int* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);

@@ -35,10 +35,10 @@ void stpcon(
     const char* uplo,
     const char* diag,
     const int n,
-    const f32* const restrict AP,
+    const f32* restrict AP,
     f32* rcond,
-    f32* const restrict work,
-    int* const restrict iwork,
+    f32* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f32 ONE = 1.0f;

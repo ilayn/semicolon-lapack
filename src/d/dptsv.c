@@ -45,9 +45,9 @@
 void dptsv(
     const int n,
     const int nrhs,
-    f64* const restrict D,
-    f64* const restrict E,
-    f64* const restrict B,
+    f64* restrict D,
+    f64* restrict E,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

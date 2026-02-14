@@ -88,7 +88,7 @@ void zgeqp3rk(
     const int kmax,
     f64 abstol,
     f64 reltol,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     int* K,
     f64* maxc2nrmk,

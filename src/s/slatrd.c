@@ -41,9 +41,9 @@
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
 void slatrd(const char* uplo, const int n, const int nb,
-            f32* const restrict A, const int lda,
-            f32* const restrict E, f32* const restrict tau,
-            f32* const restrict W, const int ldw)
+            f32* restrict A, const int lda,
+            f32* restrict E, f32* restrict tau,
+            f32* restrict W, const int ldw)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE  = 1.0f;

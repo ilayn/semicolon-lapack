@@ -47,7 +47,7 @@
 void zhetf2_rook(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)

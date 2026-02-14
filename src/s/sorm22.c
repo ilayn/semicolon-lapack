@@ -56,11 +56,11 @@ void sorm22(
     const int n,
     const int n1,
     const int n2,
-    const f32* const restrict Q,
+    const f32* restrict Q,
     const int ldq,
-    f32* const restrict C,
+    f32* restrict C,
     const int ldc,
-    f32* const restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {

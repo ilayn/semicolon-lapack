@@ -42,12 +42,12 @@ void ssytrs2(
     const char* uplo,
     const int n,
     const int nrhs,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    f32* const restrict B,
+    const int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ONE = 1.0f;

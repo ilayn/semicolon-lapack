@@ -45,8 +45,8 @@ void dpftrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f64* const restrict A,
-    f64* const restrict B,
+    const f64* restrict A,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

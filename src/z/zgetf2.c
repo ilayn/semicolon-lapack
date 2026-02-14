@@ -41,9 +41,9 @@
 void zgetf2(
     const int m,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    int* const restrict ipiv,
+    int* restrict ipiv,
     int* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);

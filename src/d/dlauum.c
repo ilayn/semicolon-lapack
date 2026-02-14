@@ -38,7 +38,7 @@
 void dlauum(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* info)
 {

@@ -37,9 +37,9 @@ static const int MAXIT = 400;
  * @param[out]    info
  *                         - = 0: successful exit. > 0: if info = 1, the updating process failed.
  */
-void dlasd4(const int n, const int i, const f64* const restrict D,
-            const f64* const restrict Z, f64* const restrict delta,
-            const f64 rho, f64* sigma, f64* const restrict work,
+void dlasd4(const int n, const int i, const f64* restrict D,
+            const f64* restrict Z, f64* restrict delta,
+            const f64 rho, f64* sigma, f64* restrict work,
             int* info)
 {
     /* Local variables */

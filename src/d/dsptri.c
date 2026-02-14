@@ -36,9 +36,9 @@
 void dsptri(
     const char* uplo,
     const int n,
-    f64* const restrict AP,
-    const int* const restrict ipiv,
-    f64* const restrict work,
+    f64* restrict AP,
+    const int* restrict ipiv,
+    f64* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

@@ -28,9 +28,9 @@
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void dlargv(const int n, f64* const restrict X, const int incx,
-            f64* const restrict Y, const int incy,
-            f64* const restrict C, const int incc)
+void dlargv(const int n, f64* restrict X, const int incx,
+            f64* restrict Y, const int incy,
+            f64* restrict C, const int incc)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;

@@ -52,15 +52,15 @@
 void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int n, const int p,
              int* k, int* l,
-             c128* const restrict A, const int lda,
-             c128* const restrict B, const int ldb,
-             f64* const restrict alpha, f64* const restrict beta,
-             c128* const restrict U, const int ldu,
-             c128* const restrict V, const int ldv,
-             c128* const restrict Q, const int ldq,
-             c128* const restrict work, const int lwork,
-             f64* const restrict rwork,
-             int* const restrict iwork, int* info)
+             c128* restrict A, const int lda,
+             c128* restrict B, const int ldb,
+             f64* restrict alpha, f64* restrict beta,
+             c128* restrict U, const int ldu,
+             c128* restrict V, const int ldv,
+             c128* restrict Q, const int ldq,
+             c128* restrict work, const int lwork,
+             f64* restrict rwork,
+             int* restrict iwork, int* info)
 {
     int wantu, wantv, wantq, lquery;
     int i, j, ibnd, isub, ncycle, lwkopt;

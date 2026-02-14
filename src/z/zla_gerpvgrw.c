@@ -31,9 +31,9 @@
 f64 zla_gerpvgrw(
     const int n,
     const int ncols,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    const c128* const restrict AF,
+    const c128* restrict AF,
     const int ldaf)
 {
     int i, j;

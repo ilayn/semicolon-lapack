@@ -49,7 +49,7 @@
 void zsytri_rook(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     const int* restrict ipiv,
     c128* restrict work,

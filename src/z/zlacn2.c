@@ -43,11 +43,11 @@
  */
 void zlacn2(
     const int n,
-    c128* const restrict V,
-    c128* const restrict X,
+    c128* restrict V,
+    c128* restrict X,
     f64* est,
     int* kase,
-    int* const restrict isave)
+    int* restrict isave)
 {
     const int ITMAX = 5;
     const f64 ONE = 1.0;

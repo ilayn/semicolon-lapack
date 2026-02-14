@@ -63,10 +63,10 @@ void ssfrk(
     const int n,
     const int k,
     const f32 alpha,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
     const f32 beta,
-    f32* const restrict C)
+    f32* restrict C)
 {
     int lower, normaltransr, nisodd, notrans;
     int nrowa, j, nk, n1, n2;

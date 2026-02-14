@@ -41,9 +41,9 @@ void spbsv(
     const int n,
     const int kd,
     const int nrhs,
-    f32* const restrict AB,
+    f32* restrict AB,
     const int ldab,
-    f32* const restrict B,
+    f32* restrict B,
     const int ldb,
     int* info)
 {

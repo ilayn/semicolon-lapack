@@ -47,12 +47,12 @@
 void sgtsv(
     const int n,
     const int nrhs,
-    f32 * const restrict DL,
-    f32 * const restrict D,
-    f32 * const restrict DU,
-    f32 * const restrict B,
+    f32* restrict DL,
+    f32* restrict D,
+    f32* restrict DU,
+    f32* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     const f32 ZERO = 0.0f;
     int i, j;

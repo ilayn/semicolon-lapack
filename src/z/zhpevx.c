@@ -67,14 +67,14 @@
  *                           Their indices are stored in array IFAIL.
  */
 void zhpevx(const char* jobz, const char* range, const char* uplo,
-            const int n, c128* const restrict AP,
+            const int n, c128* restrict AP,
             const f64 vl, const f64 vu, const int il, const int iu,
-            const f64 abstol, int* m, f64* const restrict W,
-            c128* const restrict Z, const int ldz,
-            c128* const restrict work,
-            f64* const restrict rwork,
-            int* const restrict iwork,
-            int* const restrict ifail,
+            const f64 abstol, int* m, f64* restrict W,
+            c128* restrict Z, const int ldz,
+            c128* restrict work,
+            f64* restrict rwork,
+            int* restrict iwork,
+            int* restrict ifail,
             int* info)
 {
     const f64 ZERO = 0.0;

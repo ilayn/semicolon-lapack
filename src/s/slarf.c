@@ -30,10 +30,10 @@
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
 void slarf(const char* side, const int m, const int n,
-           const f32 * const restrict v, const int incv,
+           const f32* restrict v, const int incv,
            const f32 tau,
-           f32 * const restrict C, const int ldc,
-           f32 * const restrict work)
+           f32* restrict C, const int ldc,
+           f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

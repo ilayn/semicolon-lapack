@@ -50,11 +50,11 @@ void zlatbs(
     const char* normin,
     const int n,
     const int kd,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
-    c128* const restrict X,
+    c128* restrict X,
     f64* scale,
-    f64* const restrict cnorm,
+    f64* restrict cnorm,
     int* info)
 {
     const f64 ZERO = 0.0;

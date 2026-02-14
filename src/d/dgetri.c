@@ -36,12 +36,12 @@
  */
 void dgetri(
     const int n,
-    f64 * const restrict A,
+    f64* restrict A,
     const int lda,
-    const int * const restrict ipiv,
-    f64 * const restrict work,
+    const int* restrict ipiv,
+    f64* restrict work,
     const int lwork,
-    int *info)
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

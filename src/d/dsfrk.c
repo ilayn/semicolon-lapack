@@ -63,10 +63,10 @@ void dsfrk(
     const int n,
     const int k,
     const f64 alpha,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     const f64 beta,
-    f64* const restrict C)
+    f64* restrict C)
 {
     int lower, normaltransr, nisodd, notrans;
     int nrowa, j, nk, n1, n2;

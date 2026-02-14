@@ -60,10 +60,10 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgebrd(const int m, const int n, f32* const restrict A, const int lda,
-            f32* const restrict D, f32* const restrict E,
-            f32* const restrict tauq, f32* const restrict taup,
-            f32* const restrict work, const int lwork, int* info)
+void sgebrd(const int m, const int n, f32* restrict A, const int lda,
+            f32* restrict D, f32* restrict E,
+            f32* restrict tauq, f32* restrict taup,
+            f32* restrict work, const int lwork, int* info)
 {
     int i, j, iinfo;
     int lquery, minmn, nb, nbmin, nx;

@@ -45,9 +45,9 @@ static inline f64 abssq(c128 ff) {
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void zlargv(const int n, c128* const restrict X, const int incx,
-            c128* const restrict Y, const int incy,
-            f64* const restrict C, const int incc)
+void zlargv(const int n, c128* restrict X, const int incx,
+            c128* restrict Y, const int incy,
+            f64* restrict C, const int incc)
 {
     const f64 two = 2.0;
     const f64 one = 1.0;

@@ -45,9 +45,9 @@
 void ztrttp(
     const char* uplo,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    c128* const restrict AP,
+    c128* restrict AP,
     int* info)
 {
     int lower;

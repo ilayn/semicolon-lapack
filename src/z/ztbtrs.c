@@ -43,9 +43,9 @@ void ztbtrs(
     const int n,
     const int kd,
     const int nrhs,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

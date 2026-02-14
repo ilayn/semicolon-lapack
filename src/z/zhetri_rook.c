@@ -32,10 +32,10 @@
 void zhetri_rook(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    c128* const restrict work,
+    const int* restrict ipiv,
+    c128* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

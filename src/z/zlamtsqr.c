@@ -49,10 +49,10 @@
  */
 void zlamtsqr(const char* side, const char* trans,
               const int m, const int n, const int k, const int mb, const int nb,
-              const c128* const restrict A, const int lda,
-              const c128* const restrict T, const int ldt,
-              c128* const restrict C, const int ldc,
-              c128* const restrict work, const int lwork,
+              const c128* restrict A, const int lda,
+              const c128* restrict T, const int ldt,
+              c128* restrict C, const int ldc,
+              c128* restrict work, const int lwork,
               int* info)
 {
     int left, right, tran, notran, lquery;

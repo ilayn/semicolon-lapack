@@ -38,11 +38,11 @@ static const f64 ZERO = 0.0;
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasdq(const char* uplo, const int sqre, const int n, const int ncvt,
-            const int nru, const int ncc, f64* const restrict D,
-            f64* const restrict E, f64* const restrict VT, const int ldvt,
-            f64* const restrict U, const int ldu,
-            f64* const restrict C, const int ldc,
-            f64* const restrict work, int* info)
+            const int nru, const int ncc, f64* restrict D,
+            f64* restrict E, f64* restrict VT, const int ldvt,
+            f64* restrict U, const int ldu,
+            f64* restrict C, const int ldc,
+            f64* restrict work, int* info)
 {
     int rotate;
     int i, isub, iuplo, j, np1, sqre1;

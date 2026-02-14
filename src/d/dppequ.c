@@ -42,8 +42,8 @@
 void dppequ(
     const char* uplo,
     const int n,
-    const f64* const restrict AP,
-    f64* const restrict S,
+    const f64* restrict AP,
+    f64* restrict S,
     f64* scond,
     f64* amax,
     int* info)

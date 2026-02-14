@@ -33,9 +33,9 @@ void zpbequ(
     const char* uplo,
     const int n,
     const int kd,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
-    f64* const restrict S,
+    f64* restrict S,
     f64* scond,
     f64* amax,
     int* info)

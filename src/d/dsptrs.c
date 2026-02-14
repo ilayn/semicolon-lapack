@@ -36,9 +36,9 @@ void dsptrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f64* const restrict AP,
-    const int* const restrict ipiv,
-    f64* const restrict B,
+    const f64* restrict AP,
+    const int* restrict ipiv,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

@@ -51,9 +51,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sopmtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n, f32* const restrict AP,
-            const f32* const restrict tau, f32* const restrict C,
-            const int ldc, f32* const restrict work, int* info)
+            const int m, const int n, f32* restrict AP,
+            const f32* restrict tau, f32* restrict C,
+            const int ldc, f32* restrict work, int* info)
 {
     const f32 ONE = 1.0f;
 

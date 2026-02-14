@@ -57,10 +57,10 @@ void zgbtrf(
     const int n,
     const int kl,
     const int ku,
-    c128 * const restrict AB,
+    c128* restrict AB,
     const int ldab,
-    int * const restrict ipiv,
-    int *info)
+    int* restrict ipiv,
+    int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);

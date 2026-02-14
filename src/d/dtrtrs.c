@@ -61,11 +61,11 @@ void dtrtrs(
     const char* diag,
     const int n,
     const int nrhs,
-    const f64 * const restrict A,
+    const f64* restrict A,
     const int lda,
-    f64 * const restrict B,
+    f64* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

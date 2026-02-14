@@ -45,8 +45,8 @@ f64 dlansp(
     const char* norm,
     const char* uplo,
     const int n,
-    const f64* const restrict AP,
-    f64* const restrict work)
+    const f64* restrict AP,
+    f64* restrict work)
 {
     // dlansp.f lines 129-130: Parameters
     const f64 ONE = 1.0;

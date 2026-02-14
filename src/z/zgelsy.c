@@ -70,12 +70,12 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelsy(const int m, const int n, const int nrhs,
-            c128* const restrict A, const int lda,
-            c128* const restrict B, const int ldb,
-            int* const restrict jpvt, const f64 rcond,
+            c128* restrict A, const int lda,
+            c128* restrict B, const int ldb,
+            int* restrict jpvt, const f64 rcond,
             int* rank,
-            c128* const restrict work, const int lwork,
-            f64* const restrict rwork,
+            c128* restrict work, const int lwork,
+            f64* restrict rwork,
             int* info)
 {
     /* Constants from Fortran source: IMAX=1, IMIN=2 */

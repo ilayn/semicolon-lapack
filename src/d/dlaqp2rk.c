@@ -89,7 +89,7 @@ void dlaqp2rk(
     const f64 reltol,
     const int kp1,
     const f64 maxc2nrm,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* K,
     f64* maxc2nrmk,

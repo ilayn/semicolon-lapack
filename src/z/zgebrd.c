@@ -61,10 +61,10 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgebrd(const int m, const int n, c128* const restrict A, const int lda,
-            f64* const restrict D, f64* const restrict E,
-            c128* const restrict tauq, c128* const restrict taup,
-            c128* const restrict work, const int lwork, int* info)
+void zgebrd(const int m, const int n, c128* restrict A, const int lda,
+            f64* restrict D, f64* restrict E,
+            c128* restrict tauq, c128* restrict taup,
+            c128* restrict work, const int lwork, int* info)
 {
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);

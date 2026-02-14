@@ -76,11 +76,11 @@
  *                           elements of E have not converged to zero.
  */
 void dbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
-            const int ncc, f64* const restrict D, f64* const restrict E,
-            f64* const restrict VT, const int ldvt,
-            f64* const restrict U, const int ldu,
-            f64* const restrict C, const int ldc,
-            f64* const restrict work, int* info)
+            const int ncc, f64* restrict D, f64* restrict E,
+            f64* restrict VT, const int ldvt,
+            f64* restrict U, const int ldu,
+            f64* restrict C, const int ldc,
+            f64* restrict work, int* info)
 {
     /* Constants from LAPACK */
     const f64 ZERO = 0.0;

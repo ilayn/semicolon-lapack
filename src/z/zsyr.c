@@ -66,9 +66,9 @@ void zsyr(
     const char* uplo,
     const int n,
     const c128 alpha,
-    const c128* const restrict X,
+    const c128* restrict X,
     const int incx,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);

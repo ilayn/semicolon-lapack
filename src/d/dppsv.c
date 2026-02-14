@@ -44,8 +44,8 @@ void dppsv(
     const char* uplo,
     const int n,
     const int nrhs,
-    f64* const restrict AP,
-    f64* const restrict B,
+    f64* restrict AP,
+    f64* restrict B,
     const int ldb,
     int* info)
 {

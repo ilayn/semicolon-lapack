@@ -37,7 +37,7 @@
  *                         - = -1: Eigenvalue did NOT converge.
  */
 void slarrk(const int n, const int iw, const f32 gl, const f32 gu,
-            const f32* const restrict D, const f32* const restrict E2,
+            const f32* restrict D, const f32* restrict E2,
             const f32 pivmin, const f32 reltol,
             f32* w, f32* werr, int* info)
 {

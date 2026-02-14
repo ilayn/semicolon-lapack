@@ -40,10 +40,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorglq(const int m, const int n, const int k,
-            f64 * const restrict A, const int lda,
-            const f64 * const restrict tau,
-            f64 * const restrict work, const int lwork,
-            int *info)
+            f64* restrict A, const int lda,
+            const f64* restrict tau,
+            f64* restrict work, const int lwork,
+            int* info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;
     int i, ib, iinfo, j, l;

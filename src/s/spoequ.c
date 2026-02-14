@@ -37,9 +37,9 @@
  */
 void spoequ(
     const int n,
-    const f32* const restrict A,
+    const f32* restrict A,
     const int lda,
-    f32* const restrict S,
+    f32* restrict S,
     f32* scond,
     f32* amax,
     int* info)

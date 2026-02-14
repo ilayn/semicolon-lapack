@@ -38,8 +38,8 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, the updating process failed.
  */
-void dlaed4(const int n, const int i, const f64* const restrict D,
-            const f64* const restrict Z, f64* const restrict delta,
+void dlaed4(const int n, const int i, const f64* restrict D,
+            const f64* restrict Z, f64* restrict delta,
             const f64 rho, f64* dlam, int* info)
 {
     const int MAXIT = 30;

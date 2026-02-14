@@ -65,10 +65,10 @@
  *                           bidiagonal form did not converge to zero.
  */
 void dgelss(const int m, const int n, const int nrhs,
-            f64* const restrict A, const int lda,
-            f64* const restrict B, const int ldb,
-            f64* const restrict S, const f64 rcond, int* rank,
-            f64* const restrict work, const int lwork,
+            f64* restrict A, const int lda,
+            f64* restrict B, const int ldb,
+            f64* restrict S, const f64 rcond, int* rank,
+            f64* restrict work, const int lwork,
             int* info)
 {
     int lquery;

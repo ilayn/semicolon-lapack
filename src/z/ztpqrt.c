@@ -41,10 +41,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztpqrt(const int m, const int n, const int l, const int nb,
-            c128* const restrict A, const int lda,
-            c128* const restrict B, const int ldb,
-            c128* const restrict T, const int ldt,
-            c128* const restrict work, int* info)
+            c128* restrict A, const int lda,
+            c128* restrict B, const int ldb,
+            c128* restrict T, const int ldt,
+            c128* restrict work, int* info)
 {
     int i, ib, lb, mb, iinfo;
     int minmn;

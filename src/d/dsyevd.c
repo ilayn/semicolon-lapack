@@ -53,10 +53,10 @@
  *                           through mod(INFO,N+1).
  */
 void dsyevd(const char* jobz, const char* uplo, const int n,
-            f64* const restrict A, const int lda,
-            f64* const restrict W,
-            f64* const restrict work, const int lwork,
-            int* const restrict iwork, const int liwork,
+            f64* restrict A, const int lda,
+            f64* restrict W,
+            f64* restrict work, const int lwork,
+            int* restrict iwork, const int liwork,
             int* info)
 {
     const f64 ZERO = 0.0;

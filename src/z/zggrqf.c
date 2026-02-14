@@ -8,9 +8,9 @@
 #include <complex.h>
 
 void zggrqf(const int m, const int p, const int n,
-            c128* const restrict A, const int lda, c128* const restrict taua,
-            c128* const restrict B, const int ldb, c128* const restrict taub,
-            c128* const restrict work, const int lwork, int* info)
+            c128* restrict A, const int lda, c128* restrict taua,
+            c128* restrict B, const int ldb, c128* restrict taub,
+            c128* restrict work, const int lwork, int* info)
 {
     int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
     int minval, arow;

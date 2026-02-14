@@ -28,9 +28,9 @@
 f64 dlangt(
     const char* norm,
     const int n,
-    const f64 * const restrict DL,
-    const f64 * const restrict D,
-    const f64 * const restrict DU)
+    const f64* restrict DL,
+    const f64* restrict D,
+    const f64* restrict DU)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

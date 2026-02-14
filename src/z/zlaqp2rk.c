@@ -90,7 +90,7 @@ void zlaqp2rk(
     const f64 reltol,
     const int kp1,
     const f64 maxc2nrm,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     int* K,
     f64* maxc2nrmk,

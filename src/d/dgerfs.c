@@ -46,20 +46,20 @@ void dgerfs(
     const char* trans,
     const int n,
     const int nrhs,
-    const f64 * const restrict A,
+    const f64* restrict A,
     const int lda,
-    const f64 * const restrict AF,
+    const f64* restrict AF,
     const int ldaf,
-    const int * const restrict ipiv,
-    const f64 * const restrict B,
+    const int* restrict ipiv,
+    const f64* restrict B,
     const int ldb,
-    f64 * const restrict X,
+    f64* restrict X,
     const int ldx,
-    f64 * const restrict ferr,
-    f64 * const restrict berr,
-    f64 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f64* restrict ferr,
+    f64* restrict berr,
+    f64* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const int ITMAX = 5;
     const f64 ZERO = 0.0;

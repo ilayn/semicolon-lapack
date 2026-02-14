@@ -34,8 +34,8 @@
  */
 void zpttrf(
     const int n,
-    f64* const restrict D,
-    c128* const restrict E,
+    f64* restrict D,
+    c128* restrict E,
     int* info)
 {
     const f64 ZERO = 0.0;

@@ -42,9 +42,9 @@
  *                           off-diagonal elements did not converge to zero.
  */
 void dsyev(const char* jobz, const char* uplo, const int n,
-           f64* const restrict A, const int lda,
-           f64* const restrict W,
-           f64* const restrict work, const int lwork,
+           f64* restrict A, const int lda,
+           f64* restrict W,
+           f64* restrict work, const int lwork,
            int* info)
 {
     const f64 ZERO = 0.0;

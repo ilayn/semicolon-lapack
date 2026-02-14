@@ -57,11 +57,11 @@
  */
 void dormqr(const char* side, const char* trans,
             const int m, const int n, const int k,
-            const f64 * const restrict A, const int lda,
-            const f64 * const restrict tau,
-            f64 * const restrict C, const int ldc,
-            f64 * const restrict work, const int lwork,
-            int *info)
+            const f64* restrict A, const int lda,
+            const f64* restrict tau,
+            f64* restrict C, const int ldc,
+            f64* restrict work, const int lwork,
+            int* info)
 {
     /* NBMAX is the maximum block size; LDT is the leading dimension of
      * the T array stored in WORK; TSIZE is the size of the T array. */

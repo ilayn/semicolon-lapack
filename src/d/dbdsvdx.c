@@ -60,10 +60,10 @@ static const f64 FUDGE = 2.0;
  *                         - > 0: i eigenvectors failed to converge in DSTEVX.
  */
 void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
-             f64* const restrict D, f64* const restrict E,
+             f64* restrict D, f64* restrict E,
              const f64 vl, const f64 vu, const int il, const int iu,
-             int* ns, f64* const restrict S, f64* const restrict Z,
-             const int ldz, f64* const restrict work, int* const restrict iwork,
+             int* ns, f64* restrict S, f64* restrict Z,
+             const int ldz, f64* restrict work, int* restrict iwork,
              int* info)
 {
     int allsv, indsv, lower, split, sveq0, valsv, wantz;

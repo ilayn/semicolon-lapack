@@ -44,12 +44,12 @@
  * @param[out]    work    Double complex array, dimension (n).
  */
 void zlaqp2(const int m, const int n, const int offset,
-            c128* const restrict A, const int lda,
-            int* const restrict jpvt,
-            c128* const restrict tau,
-            f64* const restrict vn1,
-            f64* const restrict vn2,
-            c128* const restrict work)
+            c128* restrict A, const int lda,
+            int* restrict jpvt,
+            c128* restrict tau,
+            f64* restrict vn1,
+            f64* restrict vn2,
+            c128* restrict work)
 {
     int mn = (m - offset) < n ? (m - offset) : n;
     f64 tol3z = sqrt(DBL_EPSILON);

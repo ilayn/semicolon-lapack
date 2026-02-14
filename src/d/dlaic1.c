@@ -51,13 +51,13 @@
 void dlaic1(
     const int job,
     const int j,
-    const f64 * const restrict x,
+    const f64* restrict x,
     const f64 sest,
-    const f64 * const restrict w,
+    const f64* restrict w,
     const f64 gamma,
-    f64 *sestpr,
-    f64 *s,
-    f64 *c)
+    f64* sestpr,
+    f64* s,
+    f64* c)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

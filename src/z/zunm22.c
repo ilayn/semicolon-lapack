@@ -54,9 +54,9 @@
  */
 void zunm22(const char* side, const char* trans,
             const int m, const int n, const int n1, const int n2,
-            const c128* const restrict Q, const int ldq,
-            c128* const restrict C, const int ldc,
-            c128* const restrict work, const int lwork,
+            const c128* restrict Q, const int ldq,
+            c128* restrict C, const int ldc,
+            c128* restrict work, const int lwork,
             int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

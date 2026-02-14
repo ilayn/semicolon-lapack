@@ -67,7 +67,7 @@
 void dsycon_3(
     const char* uplo,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     const f64* restrict E,
     const int* restrict ipiv,

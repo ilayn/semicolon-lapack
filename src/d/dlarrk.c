@@ -37,7 +37,7 @@
  *                         - = -1: Eigenvalue did NOT converge.
  */
 void dlarrk(const int n, const int iw, const f64 gl, const f64 gu,
-            const f64* const restrict D, const f64* const restrict E2,
+            const f64* restrict D, const f64* restrict E2,
             const f64 pivmin, const f64 reltol,
             f64* w, f64* werr, int* info)
 {

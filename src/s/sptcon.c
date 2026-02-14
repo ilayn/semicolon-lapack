@@ -37,11 +37,11 @@
  */
 void sptcon(
     const int n,
-    const f32* const restrict D,
-    const f32* const restrict E,
+    const f32* restrict D,
+    const f32* restrict E,
     const f32 anorm,
     f32* rcond,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ONE = 1.0f;

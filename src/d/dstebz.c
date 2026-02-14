@@ -49,14 +49,14 @@
 void dstebz(const char* range, const char* order, const int n,
             const f64 vl, const f64 vu, const int il, const int iu,
             const f64 abstol,
-            const f64* const restrict D,
-            const f64* const restrict E,
+            const f64* restrict D,
+            const f64* restrict E,
             int* m, int* nsplit,
-            f64* const restrict W,
-            int* const restrict iblock,
-            int* const restrict isplit,
-            f64* const restrict work,
-            int* const restrict iwork,
+            f64* restrict W,
+            int* restrict iblock,
+            int* restrict isplit,
+            f64* restrict work,
+            int* restrict iwork,
             int* info)
 {
     /* Internal parameters from the Fortran source */

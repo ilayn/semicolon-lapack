@@ -32,9 +32,9 @@ void spbequ(
     const char* uplo,
     const int n,
     const int kd,
-    const f32* const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    f32* const restrict S,
+    f32* restrict S,
     f32* scond,
     f32* amax,
     int* info)

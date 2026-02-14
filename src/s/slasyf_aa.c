@@ -63,7 +63,7 @@ void slasyf_aa(
     const int j1,
     const int m,
     const int nb,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     int* restrict ipiv,
     f32* restrict H,

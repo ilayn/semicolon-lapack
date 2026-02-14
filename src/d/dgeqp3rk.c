@@ -83,7 +83,7 @@ void dgeqp3rk(
     const int kmax,
     f64 abstol,
     f64 reltol,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     int* K,
     f64* maxc2nrmk,

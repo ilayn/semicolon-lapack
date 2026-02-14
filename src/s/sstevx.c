@@ -58,13 +58,13 @@
  *                           converge.
  */
 void sstevx(const char* jobz, const char* range, const int n,
-            f32* const restrict D, f32* const restrict E,
+            f32* restrict D, f32* restrict E,
             const f32 vl, const f32 vu,
             const int il, const int iu, const f32 abstol,
-            int* m, f32* const restrict W,
-            f32* const restrict Z, const int ldz,
-            f32* const restrict work, int* const restrict iwork,
-            int* const restrict ifail, int* info)
+            int* m, f32* restrict W,
+            f32* restrict Z, const int ldz,
+            f32* restrict work, int* restrict iwork,
+            int* restrict ifail, int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

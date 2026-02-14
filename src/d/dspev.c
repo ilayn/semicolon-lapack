@@ -39,9 +39,9 @@
  *                           form did not converge to zero.
  */
 void dspev(const char* jobz, const char* uplo, const int n,
-           f64* const restrict AP, f64* const restrict W,
-           f64* const restrict Z, const int ldz,
-           f64* const restrict work, int* info)
+           f64* restrict AP, f64* restrict W,
+           f64* restrict Z, const int ldz,
+           f64* restrict work, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

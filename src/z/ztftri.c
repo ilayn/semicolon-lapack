@@ -44,7 +44,7 @@ void ztftri(
     const char* uplo,
     const char* diag,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     int* info)
 {
     const c128 cone = CMPLX(1.0, 0.0);

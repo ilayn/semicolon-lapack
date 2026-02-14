@@ -51,11 +51,11 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zunbdb6(const int m1, const int m2, const int n,
-             c128* const restrict X1, const int incx1,
-             c128* const restrict X2, const int incx2,
-             const c128* const restrict Q1, const int ldq1,
-             const c128* const restrict Q2, const int ldq2,
-             c128* const restrict work, const int lwork,
+             c128* restrict X1, const int incx1,
+             c128* restrict X2, const int incx2,
+             const c128* restrict Q1, const int ldq1,
+             const c128* restrict Q2, const int ldq2,
+             c128* restrict work, const int lwork,
              int* info)
 {
     const f64 ALPHA = 0.83;

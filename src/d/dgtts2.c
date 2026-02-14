@@ -40,12 +40,12 @@ void dgtts2(
     const int itrans,
     const int n,
     const int nrhs,
-    const f64 * const restrict DL,
-    const f64 * const restrict D,
-    const f64 * const restrict DU,
-    const f64 * const restrict DU2,
-    const int * const restrict ipiv,
-    f64 * const restrict B,
+    const f64* restrict DL,
+    const f64* restrict D,
+    const f64* restrict DU,
+    const f64* restrict DU2,
+    const int* restrict ipiv,
+    f64* restrict B,
     const int ldb)
 {
     int i, j;

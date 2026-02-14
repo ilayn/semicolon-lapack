@@ -30,9 +30,9 @@ static const f32 FOUR = 4.0f;
  * @param[out]    dsigma  The computed sigma_i, the i-th updated eigenvalue.
  * @param[out]    work    Array of dimension 2. Contains (D[j] + sigma_i) in its j-th component.
  */
-void slasd5(const int i, const f32* const restrict D, const f32* const restrict Z,
-            f32* const restrict delta, const f32 rho, f32* dsigma,
-            f32* const restrict work)
+void slasd5(const int i, const f32* restrict D, const f32* restrict Z,
+            f32* restrict delta, const f32 rho, f32* dsigma,
+            f32* restrict work)
 {
     f32 b, c, del, delsq, tau, w;
 

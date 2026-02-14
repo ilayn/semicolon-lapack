@@ -62,11 +62,11 @@ void ztrtrs(
     const char* diag,
     const int n,
     const int nrhs,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);

@@ -29,8 +29,8 @@
 void zlaqsp(
     const char* uplo,
     const int n,
-    c128* const restrict AP,
-    const f64* const restrict S,
+    c128* restrict AP,
+    const f64* restrict S,
     const f64 scond,
     const f64 amax,
     char* equed)

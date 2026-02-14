@@ -9,15 +9,15 @@
 #include <cblas.h>
 
 void slasd7(const int icompq, const int nl, const int nr, const int sqre,
-            int* k, f32* const restrict D, f32* const restrict Z,
-            f32* const restrict ZW, f32* const restrict VF,
-            f32* const restrict VFW, f32* const restrict VL,
-            f32* const restrict VLW, const f32 alpha, const f32 beta,
-            f32* const restrict DSIGMA, int* const restrict IDX,
-            int* const restrict IDXP, int* const restrict IDXQ,
-            int* const restrict PERM, int* givptr,
-            int* const restrict GIVCOL, const int ldgcol,
-            f32* const restrict GIVNUM, const int ldgnum,
+            int* k, f32* restrict D, f32* restrict Z,
+            f32* restrict ZW, f32* restrict VF,
+            f32* restrict VFW, f32* restrict VL,
+            f32* restrict VLW, const f32 alpha, const f32 beta,
+            f32* restrict DSIGMA, int* restrict IDX,
+            int* restrict IDXP, int* restrict IDXQ,
+            int* restrict PERM, int* givptr,
+            int* restrict GIVCOL, const int ldgcol,
+            f32* restrict GIVNUM, const int ldgnum,
             f32* c, f32* s, int* info)
 {
     const f32 ZERO = 0.0f;

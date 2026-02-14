@@ -27,7 +27,7 @@
  * @param[in]     ieee   Flag for IEEE or non IEEE arithmetic (1=IEEE, 0=non-IEEE).
  * @param[in]     eps    This is the value of epsilon used.
  */
-void dlasq5(const int i0, const int n0, f64* const restrict Z,
+void dlasq5(const int i0, const int n0, f64* restrict Z,
             const int pp, f64 tau, f64 sigma,
             f64* dmin, f64* dmin1, f64* dmin2,
             f64* dn, f64* dnm1, f64* dnm2,

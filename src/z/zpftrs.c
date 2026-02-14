@@ -46,8 +46,8 @@ void zpftrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const c128* const restrict A,
-    c128* const restrict B,
+    const c128* restrict A,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

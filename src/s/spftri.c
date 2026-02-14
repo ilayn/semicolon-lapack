@@ -36,7 +36,7 @@ void spftri(
     const char* transr,
     const char* uplo,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     int* info)
 {
     int lower, nisodd, normaltransr;

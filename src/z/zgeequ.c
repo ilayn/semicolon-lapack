@@ -50,10 +50,10 @@
 void zgeequ(
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    f64* const restrict R,
-    f64* const restrict C,
+    f64* restrict R,
+    f64* restrict C,
     f64* rowcnd,
     f64* colcnd,
     f64* amax,

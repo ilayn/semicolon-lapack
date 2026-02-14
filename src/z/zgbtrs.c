@@ -48,10 +48,10 @@ void zgbtrs(
     const int kl,
     const int ku,
     const int nrhs,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
-    const int* const restrict ipiv,
-    c128* const restrict B,
+    const int* restrict ipiv,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

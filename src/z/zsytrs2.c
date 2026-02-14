@@ -43,12 +43,12 @@ void zsytrs2(
     const char* uplo,
     const int n,
     const int nrhs,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    c128* const restrict B,
+    const int* restrict ipiv,
+    c128* restrict B,
     const int ldb,
-    c128* const restrict work,
+    c128* restrict work,
     int* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

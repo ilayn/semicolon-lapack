@@ -53,12 +53,12 @@ void dgbsv(
     const int kl,
     const int ku,
     const int nrhs,
-    f64 * const restrict AB,
+    f64* restrict AB,
     const int ldab,
-    int * const restrict ipiv,
-    f64 * const restrict B,
+    int* restrict ipiv,
+    f64* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     /* Test the input parameters */
     *info = 0;

@@ -41,8 +41,8 @@ void dtfttp(
     const char* transr,
     const char* uplo,
     const int n,
-    const f64* const restrict ARF,
-    f64* const restrict AP,
+    const f64* restrict ARF,
+    f64* restrict AP,
     int* info)
 {
     int lower, nisodd, normaltransr;

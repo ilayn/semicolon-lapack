@@ -47,10 +47,10 @@
  *                           form did not converge to zero.
  */
 void zheev(const char* jobz, const char* uplo, const int n,
-           c128* const restrict A, const int lda,
-           f64* const restrict W,
-           c128* const restrict work, const int lwork,
-           f64* const restrict rwork,
+           c128* restrict A, const int lda,
+           f64* restrict W,
+           c128* restrict work, const int lwork,
+           f64* restrict rwork,
            int* info)
 {
     const f64 ZERO = 0.0;

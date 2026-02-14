@@ -51,13 +51,13 @@
 void slaic1(
     const int job,
     const int j,
-    const f32 * const restrict x,
+    const f32* restrict x,
     const f32 sest,
-    const f32 * const restrict w,
+    const f32* restrict w,
     const f32 gamma,
-    f32 *sestpr,
-    f32 *s,
-    f32 *c)
+    f32* sestpr,
+    f32* s,
+    f32* c)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

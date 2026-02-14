@@ -28,7 +28,7 @@
  */
 void zlaset(const char* uplo, const int m, const int n,
             const c128 alpha, const c128 beta,
-            c128* const restrict A, const int lda)
+            c128* restrict A, const int lda)
 {
     int i, j;
     int minmn = m < n ? m : n;

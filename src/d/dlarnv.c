@@ -34,8 +34,8 @@
 
 #define TWO_PI 6.2831853071795864769252867665590057683943
 
-void dlarnv(const int idist, int* const restrict iseed, const int n,
-            f64* const restrict X)
+void dlarnv(const int idist, int* restrict iseed, const int n,
+            f64* restrict X)
 {
     f64 U[LV];
     int i, iv, il, il2;

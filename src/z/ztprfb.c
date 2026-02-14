@@ -50,11 +50,11 @@
  */
 void ztprfb(const char* side, const char* trans, const char* direct,
             const char* storev, const int m, const int n, const int k,
-            const int l, const c128* const restrict V, const int ldv,
-            const c128* const restrict T, const int ldt,
-            c128* const restrict A, const int lda,
-            c128* const restrict B, const int ldb,
-            c128* const restrict work, const int ldwork)
+            const int l, const c128* restrict V, const int ldv,
+            const c128* restrict T, const int ldt,
+            c128* restrict A, const int lda,
+            c128* restrict B, const int ldb,
+            c128* restrict work, const int ldwork)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);

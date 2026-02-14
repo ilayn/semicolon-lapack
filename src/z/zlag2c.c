@@ -36,9 +36,9 @@
 void zlag2c(
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    float complex* const restrict SA,
+    float complex* restrict SA,
     const int ldsa,
     int* info)
 {

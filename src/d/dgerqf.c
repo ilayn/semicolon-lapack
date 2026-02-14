@@ -31,10 +31,10 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void dgerqf(const int m, const int n,
-            f64 * const restrict A, const int lda,
-            f64 * const restrict tau,
-            f64 * const restrict work, const int lwork,
-            int *info)
+            f64* restrict A, const int lda,
+            f64* restrict tau,
+            f64* restrict work, const int lwork,
+            int* info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
     int i, ib, iinfo;

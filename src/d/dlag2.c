@@ -30,9 +30,9 @@
  * @param[out]    wi      Imaginary part of eigenvalues (scaled by scale1). Non-negative.
  */
 void dlag2(
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    const f64* const restrict B,
+    const f64* restrict B,
     const int ldb,
     const f64 safmin,
     f64* scale1,

@@ -11,7 +11,7 @@
 static int ilazlc(
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda)
 {
     const c128 zero = CMPLX(0.0, 0.0);
@@ -36,7 +36,7 @@ static int ilazlc(
 static int ilazlr(
     const int m,
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda)
 {
     const c128 zero = CMPLX(0.0, 0.0);
@@ -89,10 +89,10 @@ static int ilazlr(
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
 void zlarf1l(const char* side, const int m, const int n,
-             const c128* const restrict v, const int incv,
+             const c128* restrict v, const int incv,
              const c128 tau,
-             c128* const restrict C, const int ldc,
-             c128* const restrict work)
+             c128* restrict C, const int ldc,
+             c128* restrict work)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);

@@ -32,10 +32,10 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void zgerqf(const int m, const int n,
-            c128 * const restrict A, const int lda,
-            c128 * const restrict tau,
-            c128 * const restrict work, const int lwork,
-            int *info)
+            c128* restrict A, const int lda,
+            c128* restrict tau,
+            c128* restrict work, const int lwork,
+            int* info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
     int i, ib, iinfo;

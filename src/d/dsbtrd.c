@@ -40,13 +40,13 @@ void dsbtrd(
     const char* uplo,
     const int n,
     const int kd,
-    f64* const restrict AB,
+    f64* restrict AB,
     const int ldab,
-    f64* const restrict D,
-    f64* const restrict E,
-    f64* const restrict Q,
+    f64* restrict D,
+    f64* restrict E,
+    f64* restrict Q,
     const int ldq,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

@@ -60,12 +60,12 @@
 void dlagts(
     const int job,
     const int n,
-    const f64* const restrict A,
-    const f64* const restrict B,
-    const f64* const restrict C,
-    const f64* const restrict D,
-    const int* const restrict in,
-    f64* const restrict Y,
+    const f64* restrict A,
+    const f64* restrict B,
+    const f64* restrict C,
+    const f64* restrict D,
+    const int* restrict in,
+    f64* restrict Y,
     f64* tol,
     int* info)
 {

@@ -35,10 +35,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgr2(const int m, const int n, const int k,
-            f64 * const restrict A, const int lda,
-            const f64 * const restrict tau,
-            f64 * const restrict work,
-            int *info)
+            f64* restrict A, const int lda,
+            const f64* restrict tau,
+            f64* restrict work,
+            int* info)
 {
     int i, ii, j, l;
     const f64 ZERO = 0.0;

@@ -77,14 +77,14 @@
  */
 void ztgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,
-            c128* const restrict A, const int lda,
-            c128* const restrict B, const int ldb,
+            c128* restrict A, const int lda,
+            c128* restrict B, const int ldb,
             const f64 tola, const f64 tolb,
-            f64* const restrict alpha, f64* const restrict beta,
-            c128* const restrict U, const int ldu,
-            c128* const restrict V, const int ldv,
-            c128* const restrict Q, const int ldq,
-            c128* const restrict work, int* ncycle, int* info)
+            f64* restrict alpha, f64* restrict beta,
+            c128* restrict U, const int ldu,
+            c128* restrict V, const int ldv,
+            c128* restrict Q, const int ldq,
+            c128* restrict work, int* ncycle, int* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

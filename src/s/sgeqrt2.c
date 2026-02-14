@@ -46,9 +46,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgeqrt2(const int m, const int n,
-             f32 * const restrict A, const int lda,
-             f32 * const restrict T, const int ldt,
-             int *info)
+             f32* restrict A, const int lda,
+             f32* restrict T, const int ldt,
+             int* info)
 {
     int i, k;
     f32 aii, alpha;

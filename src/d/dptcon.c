@@ -37,11 +37,11 @@
  */
 void dptcon(
     const int n,
-    const f64* const restrict D,
-    const f64* const restrict E,
+    const f64* restrict D,
+    const f64* restrict E,
     const f64 anorm,
     f64* rcond,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

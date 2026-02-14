@@ -42,9 +42,9 @@ f64 zla_gbrpvgrw(
     const int kl,
     const int ku,
     const int ncols,
-    const c128* const restrict AB,
+    const c128* restrict AB,
     const int ldab,
-    const c128* const restrict AFB,
+    const c128* restrict AFB,
     const int ldafb)
 {
     int i, j, kd;

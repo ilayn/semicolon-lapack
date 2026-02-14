@@ -67,7 +67,7 @@
 void zhetrf_aa_2stage(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
     c128* restrict TB,
     const int ltb,

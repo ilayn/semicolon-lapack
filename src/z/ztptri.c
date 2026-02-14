@@ -31,7 +31,7 @@ void ztptri(
     const char* uplo,
     const char* diag,
     const int n,
-    c128* const restrict AP,
+    c128* restrict AP,
     int* info)
 {
     // ztptri.f lines 132-133: Parameters

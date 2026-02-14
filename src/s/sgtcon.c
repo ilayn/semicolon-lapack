@@ -43,16 +43,16 @@
 void sgtcon(
     const char* norm,
     const int n,
-    const f32 * const restrict DL,
-    const f32 * const restrict D,
-    const f32 * const restrict DU,
-    const f32 * const restrict DU2,
-    const int * const restrict ipiv,
+    const f32* restrict DL,
+    const f32* restrict D,
+    const f32* restrict DU,
+    const f32* restrict DU2,
+    const int* restrict ipiv,
     const f32 anorm,
-    f32 *rcond,
-    f32 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f32* rcond,
+    f32* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

@@ -60,13 +60,13 @@ void zgghrd(
     const int n,
     const int ilo,
     const int ihi,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb,
-    c128* const restrict Q,
+    c128* restrict Q,
     const int ldq,
-    c128* const restrict Z,
+    c128* restrict Z,
     const int ldz,
     int* info)
 {

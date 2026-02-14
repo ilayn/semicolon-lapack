@@ -49,9 +49,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgeqrt3(const int m, const int n,
-             f64 * const restrict A, const int lda,
-             f64 * const restrict T, const int ldt,
-             int *info)
+             f64* restrict A, const int lda,
+             f64* restrict T, const int ldt,
+             int* info)
 {
     int i, j, n1, n2, iinfo;
 

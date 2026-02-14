@@ -193,10 +193,10 @@ static const f32 ONE = 1.0f;
 static const int NSWEEP = 30;
 
 void sgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, f32* const restrict A, const int lda,
-            f32* const restrict SVA, const int mv,
-            f32* const restrict V, const int ldv,
-            f32* const restrict work, const int lwork, int* info)
+            const int m, const int n, f32* restrict A, const int lda,
+            f32* restrict SVA, const int mv,
+            f32* restrict V, const int ldv,
+            f32* restrict work, const int lwork, int* info)
 {
     int lsvec, uctol, rsvec, applv, upper, lower, lquery;
     int minmn, lwmin, mvl = 0;

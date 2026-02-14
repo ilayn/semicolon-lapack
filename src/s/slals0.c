@@ -15,15 +15,15 @@ static inline f32 dlamc3(f32 a, f32 b)
 }
 
 void slals0(const int icompq, const int nl, const int nr, const int sqre,
-            const int nrhs, f32* const restrict B, const int ldb,
-            f32* const restrict BX, const int ldbx,
-            const int* const restrict perm, const int givptr,
-            const int* const restrict givcol, const int ldgcol,
-            const f32* const restrict givnum, const int ldgnum,
-            const f32* const restrict poles, const f32* const restrict difl,
-            const f32* const restrict difr, const f32* const restrict Z,
+            const int nrhs, f32* restrict B, const int ldb,
+            f32* restrict BX, const int ldbx,
+            const int* restrict perm, const int givptr,
+            const int* restrict givcol, const int ldgcol,
+            const f32* restrict givnum, const int ldgnum,
+            const f32* restrict poles, const f32* restrict difl,
+            const f32* restrict difr, const f32* restrict Z,
             const int k, const f32 c, const f32 s,
-            f32* const restrict work, int* info)
+            f32* restrict work, int* info)
 {
     int i, j, m, n, nlp1;
     f32 diflj, difrj = 0.0f, dj, dsigj, dsigjp = 0.0f, temp;

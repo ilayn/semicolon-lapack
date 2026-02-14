@@ -44,9 +44,9 @@ void zpttrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const f64* const restrict D,
-    const c128* const restrict E,
-    c128* const restrict B,
+    const f64* restrict D,
+    const c128* restrict E,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

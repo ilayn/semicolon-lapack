@@ -60,10 +60,10 @@ static const f32 FUDGE = 2.0f;
  *                         - > 0: i eigenvectors failed to converge in SSTEVX.
  */
 void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
-             f32* const restrict D, f32* const restrict E,
+             f32* restrict D, f32* restrict E,
              const f32 vl, const f32 vu, const int il, const int iu,
-             int* ns, f32* const restrict S, f32* const restrict Z,
-             const int ldz, f32* const restrict work, int* const restrict iwork,
+             int* ns, f32* restrict S, f32* restrict Z,
+             const int ldz, f32* restrict work, int* restrict iwork,
              int* info)
 {
     int allsv, indsv, lower, split, sveq0, valsv, wantz;

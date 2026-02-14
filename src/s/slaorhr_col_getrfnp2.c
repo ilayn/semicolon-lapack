@@ -62,7 +62,7 @@
 void slaorhr_col_getrfnp2(
     const int m,
     const int n,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     f32* restrict D,
     int* info)

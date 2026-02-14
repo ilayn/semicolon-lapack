@@ -51,9 +51,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dopmtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n, f64* const restrict AP,
-            const f64* const restrict tau, f64* const restrict C,
-            const int ldc, f64* const restrict work, int* info)
+            const int m, const int n, f64* restrict AP,
+            const f64* restrict tau, f64* restrict C,
+            const int ldc, f64* restrict work, int* info)
 {
     const f64 ONE = 1.0;
 

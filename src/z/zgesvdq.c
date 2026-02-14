@@ -25,12 +25,12 @@ static const c128 CONE = CMPLX(1.0, 0.0);
  */
 void zgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, c128* const restrict A, const int lda,
-             f64* const restrict S, c128* const restrict U, const int ldu,
-             c128* const restrict V, const int ldv, int* numrank,
-             int* const restrict iwork, const int liwork,
-             c128* const restrict cwork, const int lcwork,
-             f64* const restrict rwork, const int lrwork, int* info)
+             const int m, const int n, c128* restrict A, const int lda,
+             f64* restrict S, c128* restrict U, const int ldu,
+             c128* restrict V, const int ldv, int* numrank,
+             int* restrict iwork, const int liwork,
+             c128* restrict cwork, const int lcwork,
+             f64* restrict rwork, const int lrwork, int* info)
 {
     int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
     int wntvr, wntva, rsvec, dntwv;

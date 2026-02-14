@@ -65,13 +65,13 @@
  */
 void zgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,
-            c128* const restrict AB, const int ldab,
-            f64* const restrict D, f64* const restrict E,
-            c128* const restrict Q, const int ldq,
-            c128* const restrict PT, const int ldpt,
-            c128* const restrict C, const int ldc,
-            c128* const restrict work,
-            f64* const restrict rwork, int* info)
+            c128* restrict AB, const int ldab,
+            f64* restrict D, f64* restrict E,
+            c128* restrict Q, const int ldq,
+            c128* restrict PT, const int ldpt,
+            c128* restrict C, const int ldc,
+            c128* restrict work,
+            f64* restrict rwork, int* info)
 {
     const f64 ZERO = 0.0;
     const c128 CZERO = CMPLX(0.0, 0.0);

@@ -48,10 +48,10 @@
 void zgtsv(
     const int n,
     const int nrhs,
-    c128* const restrict DL,
-    c128* const restrict D,
-    c128* const restrict DU,
-    c128* const restrict B,
+    c128* restrict DL,
+    c128* restrict D,
+    c128* restrict DU,
+    c128* restrict B,
     const int ldb,
     int* info)
 {

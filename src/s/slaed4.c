@@ -38,8 +38,8 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, the updating process failed.
  */
-void slaed4(const int n, const int i, const f32* const restrict D,
-            const f32* const restrict Z, f32* const restrict delta,
+void slaed4(const int n, const int i, const f32* restrict D,
+            const f32* restrict Z, f32* restrict delta,
             const f32 rho, f32* dlam, int* info)
 {
     const int MAXIT = 30;

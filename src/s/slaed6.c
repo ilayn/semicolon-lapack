@@ -39,7 +39,7 @@
  *                         - > 0: if info = 1, failure to converge
  */
 void slaed6(const int kniter, const int orgati, const f32 rho,
-            const f32* const restrict D, const f32* const restrict Z,
+            const f32* restrict D, const f32* restrict Z,
             const f32 finit, f32* tau, int* info)
 {
     const int MAXIT = 40;

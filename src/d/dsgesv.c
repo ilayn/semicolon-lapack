@@ -61,17 +61,17 @@
 void dsgesv(
     const int n,
     const int nrhs,
-    f64 * const restrict A,
+    f64* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    const f64 * const restrict B,
+    int* restrict ipiv,
+    const f64* restrict B,
     const int ldb,
-    f64 * const restrict X,
+    f64* restrict X,
     const int ldx,
-    f64 * const restrict work,
-    float * const restrict swork,
-    int *iter,
-    int *info)
+    f64* restrict work,
+    float * restrict swork,
+    int* iter,
+    int* info)
 {
     const int ITERMAX = 30;
     const f64 BWDMAX = 1.0;

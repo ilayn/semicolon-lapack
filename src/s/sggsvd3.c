@@ -50,14 +50,14 @@
 void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int n, const int p,
              int* k, int* l,
-             f32* const restrict A, const int lda,
-             f32* const restrict B, const int ldb,
-             f32* const restrict alpha, f32* const restrict beta,
-             f32* const restrict U, const int ldu,
-             f32* const restrict V, const int ldv,
-             f32* const restrict Q, const int ldq,
-             f32* const restrict work, const int lwork,
-             int* const restrict iwork, int* info)
+             f32* restrict A, const int lda,
+             f32* restrict B, const int ldb,
+             f32* restrict alpha, f32* restrict beta,
+             f32* restrict U, const int ldu,
+             f32* restrict V, const int ldv,
+             f32* restrict Q, const int ldq,
+             f32* restrict work, const int lwork,
+             int* restrict iwork, int* info)
 {
     int wantu, wantv, wantq, lquery;
     int i, j, ibnd, isub, ncycle, lwkopt;

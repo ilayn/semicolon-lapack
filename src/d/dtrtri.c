@@ -31,9 +31,9 @@ void dtrtri(
     const char* uplo,
     const char* diag,
     const int n,
-    f64 * const restrict A,
+    f64* restrict A,
     const int lda,
-    int *info)
+    int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

@@ -36,11 +36,11 @@
 void dlag2s(
     const int m,
     const int n,
-    const f64 * const restrict A,
+    const f64* restrict A,
     const int lda,
-    float * const restrict SA,
+    float * restrict SA,
     const int ldsa,
-    int *info)
+    int* info)
 {
     // Maximum single precision value
     const f64 rmax = (f64)FLT_MAX;

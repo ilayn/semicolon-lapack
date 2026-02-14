@@ -33,8 +33,8 @@
  */
 void dpttrf(
     const int n,
-    f64* const restrict D,
-    f64* const restrict E,
+    f64* restrict D,
+    f64* restrict E,
     int* info)
 {
     const f64 ZERO = 0.0;

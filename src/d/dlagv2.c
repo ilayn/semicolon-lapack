@@ -48,13 +48,13 @@
  * @param[out]    snr     The sine of the right rotation matrix.
  */
 void dlagv2(
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    f64* const restrict B,
+    f64* restrict B,
     const int ldb,
-    f64* const restrict alphar,
-    f64* const restrict alphai,
-    f64* const restrict beta,
+    f64* restrict alphar,
+    f64* restrict alphai,
+    f64* restrict beta,
     f64* csl,
     f64* snl,
     f64* csr,

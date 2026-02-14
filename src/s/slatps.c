@@ -46,10 +46,10 @@ void slatps(
     const char* diag,
     const char* normin,
     const int n,
-    const f32* const restrict AP,
-    f32* const restrict X,
+    const f32* restrict AP,
+    f32* restrict X,
     f32* scale,
-    f32* const restrict cnorm,
+    f32* restrict cnorm,
     int* info)
 {
     // slatps.f lines 245-246: Parameters

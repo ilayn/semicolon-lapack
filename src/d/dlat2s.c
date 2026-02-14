@@ -40,9 +40,9 @@
 void dlat2s(
     const char* uplo,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
-    float* const restrict SA,
+    float* restrict SA,
     const int ldsa,
     int* info)
 {

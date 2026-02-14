@@ -33,12 +33,12 @@
  */
 void zlar2v(
     const int n,
-    c128* const restrict X,
-    c128* const restrict Y,
-    c128* const restrict Z,
+    c128* restrict X,
+    c128* restrict Y,
+    c128* restrict Z,
     const int incx,
-    const f64* const restrict C,
-    const c128* const restrict S,
+    const f64* restrict C,
+    const c128* restrict S,
     const int incc)
 {
     int i, ic, ix;

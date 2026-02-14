@@ -43,12 +43,12 @@
  * @param[out]    work    Double precision array, dimension (n).
  */
 void slaqp2(const int m, const int n, const int offset,
-            f32 * const restrict A, const int lda,
-            int * const restrict jpvt,
-            f32 * const restrict tau,
-            f32 * const restrict vn1,
-            f32 * const restrict vn2,
-            f32 * const restrict work)
+            f32* restrict A, const int lda,
+            int* restrict jpvt,
+            f32* restrict tau,
+            f32* restrict vn1,
+            f32* restrict vn2,
+            f32* restrict work)
 {
     int mn = (m - offset) < n ? (m - offset) : n;
     f32 tol3z = sqrtf(FLT_EPSILON);

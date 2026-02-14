@@ -35,11 +35,11 @@
 void sppcon(
     const char* uplo,
     const int n,
-    const f32* const restrict AP,
+    const f32* restrict AP,
     const f32 anorm,
     f32* rcond,
-    f32* const restrict work,
-    int* const restrict iwork,
+    f32* restrict work,
+    int* restrict iwork,
     int* info)
 {
     // sppcon.f lines 136-137: Parameters

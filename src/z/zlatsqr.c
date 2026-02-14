@@ -53,9 +53,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void zlatsqr(const int m, const int n, const int mb, const int nb,
-             c128* const restrict A, const int lda,
-             c128* const restrict T, const int ldt,
-             c128* const restrict work, const int lwork,
+             c128* restrict A, const int lda,
+             c128* restrict T, const int ldt,
+             c128* restrict work, const int lwork,
              int* info)
 {
     int lquery;

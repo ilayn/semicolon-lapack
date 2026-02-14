@@ -48,7 +48,7 @@
 void dsytri_rook(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     const int* restrict ipiv,
     f64* restrict work,

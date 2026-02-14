@@ -88,8 +88,8 @@ void ztfsm(
     const int m,
     const int n,
     const c128 alpha,
-    const c128* const restrict A,
-    c128* const restrict B,
+    const c128* restrict A,
+    c128* restrict B,
     const int ldb)
 {
     const c128 CONE = CMPLX(1.0, 0.0);

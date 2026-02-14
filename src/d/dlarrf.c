@@ -52,15 +52,15 @@
  *                         - = 0: successful exit
  *                         - = 1: failure
  */
-void dlarrf(const int n, const f64* const restrict D,
-            const f64* const restrict L, const f64* const restrict LD,
+void dlarrf(const int n, const f64* restrict D,
+            const f64* restrict L, const f64* restrict LD,
             const int clstrt, const int clend,
-            const f64* const restrict W, f64* const restrict wgap,
-            const f64* const restrict werr,
+            const f64* restrict W, f64* restrict wgap,
+            const f64* restrict werr,
             const f64 spdiam, const f64 clgapl, const f64 clgapr,
             const f64 pivmin, f64* sigma,
-            f64* const restrict dplus, f64* const restrict lplus,
-            f64* const restrict work, int* info)
+            f64* restrict dplus, f64* restrict lplus,
+            f64* restrict work, int* info)
 {
     /* Constants */
     const f64 ONE = 1.0;

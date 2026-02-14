@@ -47,12 +47,12 @@
 void dgtsv(
     const int n,
     const int nrhs,
-    f64 * const restrict DL,
-    f64 * const restrict D,
-    f64 * const restrict DU,
-    f64 * const restrict B,
+    f64* restrict DL,
+    f64* restrict D,
+    f64* restrict DU,
+    f64* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     const f64 ZERO = 0.0;
     int i, j;

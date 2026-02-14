@@ -60,12 +60,12 @@
 void slagts(
     const int job,
     const int n,
-    const f32* const restrict A,
-    const f32* const restrict B,
-    const f32* const restrict C,
-    const f32* const restrict D,
-    const int* const restrict in,
-    f32* const restrict Y,
+    const f32* restrict A,
+    const f32* restrict B,
+    const f32* restrict C,
+    const f32* restrict D,
+    const int* restrict in,
+    f32* restrict Y,
     f32* tol,
     int* info)
 {

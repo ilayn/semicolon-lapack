@@ -42,10 +42,10 @@
 void sgetf2(
     const int m,
     const int n,
-    f32 * const restrict A,
+    f32* restrict A,
     const int lda,
-    int * const restrict ipiv,
-    int *info)
+    int* restrict ipiv,
+    int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 sfmin = FLT_MIN;

@@ -59,7 +59,7 @@
 void dlaorhr_col_getrfnp(
     const int m,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
     f64* restrict D,
     int* info)

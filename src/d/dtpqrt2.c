@@ -38,9 +38,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtpqrt2(const int m, const int n, const int l,
-             f64* const restrict A, const int lda,
-             f64* const restrict B, const int ldb,
-             f64* const restrict T, const int ldt, int* info)
+             f64* restrict A, const int lda,
+             f64* restrict B, const int ldb,
+             f64* restrict T, const int ldt, int* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

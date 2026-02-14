@@ -37,7 +37,7 @@ void zpftri(
     const char* transr,
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     int* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);

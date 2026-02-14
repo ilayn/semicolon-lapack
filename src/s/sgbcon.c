@@ -48,14 +48,14 @@ void sgbcon(
     const int n,
     const int kl,
     const int ku,
-    const f32 * const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    const int * const restrict ipiv,
+    const int* restrict ipiv,
     const f32 anorm,
-    f32 *rcond,
-    f32 * const restrict work,
-    int * const restrict iwork,
-    int *info)
+    f32* rcond,
+    f32* restrict work,
+    int* restrict iwork,
+    int* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;

@@ -60,13 +60,13 @@
  *                         - > n: other errors
  */
 void sggev(const char* jobvl, const char* jobvr, const int n,
-           f32* const restrict A, const int lda,
-           f32* const restrict B, const int ldb,
-           f32* const restrict alphar, f32* const restrict alphai,
-           f32* const restrict beta,
-           f32* const restrict VL, const int ldvl,
-           f32* const restrict VR, const int ldvr,
-           f32* const restrict work, const int lwork, int* info)
+           f32* restrict A, const int lda,
+           f32* restrict B, const int ldb,
+           f32* restrict alphar, f32* restrict alphai,
+           f32* restrict beta,
+           f32* restrict VL, const int ldvl,
+           f32* restrict VR, const int ldvr,
+           f32* restrict work, const int lwork, int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

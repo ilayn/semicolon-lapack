@@ -53,12 +53,12 @@ void sgbsv(
     const int kl,
     const int ku,
     const int nrhs,
-    f32 * const restrict AB,
+    f32* restrict AB,
     const int ldab,
-    int * const restrict ipiv,
-    f32 * const restrict B,
+    int* restrict ipiv,
+    f32* restrict B,
     const int ldb,
-    int *info)
+    int* info)
 {
     /* Test the input parameters */
     *info = 0;

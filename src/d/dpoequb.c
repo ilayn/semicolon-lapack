@@ -55,7 +55,7 @@
  */
 void dpoequb(
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     f64* restrict S,
     f64* scond,

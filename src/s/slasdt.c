@@ -18,7 +18,7 @@
  * @param[in]     msub   The maximum row dimension each subproblem at the bottom of the tree can be of.
  */
 void slasdt(const int n, int* lvl, int* nd,
-            int* const restrict inode, int* const restrict ndiml, int* const restrict ndimr,
+            int* restrict inode, int* restrict ndiml, int* restrict ndimr,
             const int msub)
 {
     int maxn = (n > 1) ? n : 1;

@@ -27,8 +27,8 @@
  *                         [ -conjg(S)   C  ]
  *                      where C*C + S*CONJG(S) = 1.0.
  */
-void zrot(const int n, c128* const restrict CX, const int incx,
-          c128* const restrict CY, const int incy,
+void zrot(const int n, c128* restrict CX, const int incx,
+          c128* restrict CY, const int incy,
           const f64 c, const c128 s)
 {
     int i, ix, iy;

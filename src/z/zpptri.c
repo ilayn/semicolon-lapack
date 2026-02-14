@@ -30,7 +30,7 @@
 void zpptri(
     const char* uplo,
     const int n,
-    c128* const restrict AP,
+    c128* restrict AP,
     int* info)
 {
     // zpptri.f lines 108-109: Parameters

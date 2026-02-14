@@ -35,8 +35,8 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void dlarfgp(const int n, f64 *alpha, f64 * const restrict x,
-             const int incx, f64 *tau)
+void dlarfgp(const int n, f64* alpha, f64* restrict x,
+             const int incx, f64* tau)
 {
     const f64 TWO = 2.0;
     const f64 ONE = 1.0;

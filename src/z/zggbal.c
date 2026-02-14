@@ -49,15 +49,15 @@
 void zggbal(
     const char* job,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    c128* const restrict B,
+    c128* restrict B,
     const int ldb,
     int* ilo,
     int* ihi,
-    f64* const restrict lscale,
-    f64* const restrict rscale,
-    f64* const restrict work,
+    f64* restrict lscale,
+    f64* restrict rscale,
+    f64* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

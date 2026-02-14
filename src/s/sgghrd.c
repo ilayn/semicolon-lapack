@@ -54,13 +54,13 @@ void sgghrd(
     const int n,
     const int ilo,
     const int ihi,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
-    f32* const restrict B,
+    f32* restrict B,
     const int ldb,
-    f32* const restrict Q,
+    f32* restrict Q,
     const int ldq,
-    f32* const restrict Z,
+    f32* restrict Z,
     const int ldz,
     int* info)
 {

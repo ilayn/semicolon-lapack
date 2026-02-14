@@ -51,12 +51,12 @@ void slatbs(
     const char* normin,
     const int n,
     const int kd,
-    const f32 * const restrict AB,
+    const f32* restrict AB,
     const int ldab,
-    f32 * const restrict X,
-    f32 *scale,
-    f32 * const restrict cnorm,
-    int *info)
+    f32* restrict X,
+    f32* scale,
+    f32* restrict cnorm,
+    int* info)
 {
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;

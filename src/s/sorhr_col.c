@@ -54,7 +54,7 @@ void sorhr_col(
     const int m,
     const int n,
     const int nb,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     f32* restrict T,
     const int ldt,

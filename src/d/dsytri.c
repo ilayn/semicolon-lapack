@@ -31,10 +31,10 @@
 void dsytri(
     const char* uplo,
     const int n,
-    f64* const restrict A,
+    f64* restrict A,
     const int lda,
-    const int* const restrict ipiv,
-    f64* const restrict work,
+    const int* restrict ipiv,
+    f64* restrict work,
     int* info)
 {
     *info = 0;

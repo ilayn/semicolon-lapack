@@ -64,12 +64,12 @@
  */
 void dgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,
-            f64* const restrict AB, const int ldab,
-            f64* const restrict D, f64* const restrict E,
-            f64* const restrict Q, const int ldq,
-            f64* const restrict PT, const int ldpt,
-            f64* const restrict C, const int ldc,
-            f64* const restrict work, int* info)
+            f64* restrict AB, const int ldab,
+            f64* restrict D, f64* restrict E,
+            f64* restrict Q, const int ldq,
+            f64* restrict PT, const int ldpt,
+            f64* restrict C, const int ldc,
+            f64* restrict work, int* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;

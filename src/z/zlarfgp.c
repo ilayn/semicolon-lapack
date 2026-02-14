@@ -38,7 +38,7 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void zlarfgp(const int n, c128* alpha, c128* const restrict x,
+void zlarfgp(const int n, c128* alpha, c128* restrict x,
              const int incx, c128* tau)
 {
     const f64 TWO = 2.0;

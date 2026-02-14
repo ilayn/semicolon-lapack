@@ -47,11 +47,11 @@
  * @param[in]     ldy   The leading dimension of the array Y. ldy >= max(1,n).
  */
 void dlabrd(const int m, const int n, const int nb,
-            f64* const restrict A, const int lda,
-            f64* const restrict D, f64* const restrict E,
-            f64* const restrict tauq, f64* const restrict taup,
-            f64* const restrict X, const int ldx,
-            f64* const restrict Y, const int ldy)
+            f64* restrict A, const int lda,
+            f64* restrict D, f64* restrict E,
+            f64* restrict tauq, f64* restrict taup,
+            f64* restrict X, const int ldx,
+            f64* restrict Y, const int ldy)
 {
     int i;
 

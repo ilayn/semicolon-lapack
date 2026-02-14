@@ -35,9 +35,9 @@ void zla_lin_berr(
     const int n,
     const int nz,
     const int nrhs,
-    const c128* const restrict RES,
-    const f64* const restrict AYB,
-    f64* const restrict BERR)
+    const c128* restrict RES,
+    const f64* restrict AYB,
+    f64* restrict BERR)
 {
     int i, j;
     f64 tmp;

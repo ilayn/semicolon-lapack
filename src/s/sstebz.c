@@ -49,14 +49,14 @@
 void sstebz(const char* range, const char* order, const int n,
             const f32 vl, const f32 vu, const int il, const int iu,
             const f32 abstol,
-            const f32* const restrict D,
-            const f32* const restrict E,
+            const f32* restrict D,
+            const f32* restrict E,
             int* m, int* nsplit,
-            f32* const restrict W,
-            int* const restrict iblock,
-            int* const restrict isplit,
-            f32* const restrict work,
-            int* const restrict iwork,
+            f32* restrict W,
+            int* restrict iblock,
+            int* restrict isplit,
+            f32* restrict work,
+            int* restrict iwork,
             int* info)
 {
     /* Internal parameters from the Fortran source */

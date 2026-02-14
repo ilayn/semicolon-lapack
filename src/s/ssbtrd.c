@@ -40,13 +40,13 @@ void ssbtrd(
     const char* uplo,
     const int n,
     const int kd,
-    f32* const restrict AB,
+    f32* restrict AB,
     const int ldab,
-    f32* const restrict D,
-    f32* const restrict E,
-    f32* const restrict Q,
+    f32* restrict D,
+    f32* restrict E,
+    f32* restrict Q,
     const int ldq,
-    f32* const restrict work,
+    f32* restrict work,
     int* info)
 {
     const f32 ZERO = 0.0f;

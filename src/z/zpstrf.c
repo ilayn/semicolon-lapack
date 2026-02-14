@@ -51,12 +51,12 @@
 void zpstrf(
     const char* uplo,
     const int n,
-    c128* const restrict A,
+    c128* restrict A,
     const int lda,
-    int* const restrict piv,
+    int* restrict piv,
     int* rank,
     const f64 tol,
-    f64* const restrict work,
+    f64* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

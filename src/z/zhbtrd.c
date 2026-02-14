@@ -53,13 +53,13 @@ void zhbtrd(
     const char* uplo,
     const int n,
     const int kd,
-    c128* const restrict AB,
+    c128* restrict AB,
     const int ldab,
-    f64* const restrict D,
-    f64* const restrict E,
-    c128* const restrict Q,
+    f64* restrict D,
+    f64* restrict E,
+    c128* restrict Q,
     const int ldq,
-    c128* const restrict work,
+    c128* restrict work,
     int* info)
 {
     const f64 ZERO = 0.0;

@@ -67,7 +67,7 @@ void sgetsqrhrt(
     const int mb1,
     const int nb1,
     const int nb2,
-    f32* const restrict A,
+    f32* restrict A,
     const int lda,
     f32* restrict T,
     const int ldt,

@@ -46,10 +46,10 @@ void dlatps(
     const char* diag,
     const char* normin,
     const int n,
-    const f64* const restrict AP,
-    f64* const restrict X,
+    const f64* restrict AP,
+    f64* restrict X,
     f64* scale,
-    f64* const restrict cnorm,
+    f64* restrict cnorm,
     int* info)
 {
     // dlatps.f lines 245-246: Parameters

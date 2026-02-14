@@ -41,12 +41,12 @@ void zgtts2(
     const int itrans,
     const int n,
     const int nrhs,
-    const c128* const restrict DL,
-    const c128* const restrict D,
-    const c128* const restrict DU,
-    const c128* const restrict DU2,
-    const int* const restrict ipiv,
-    c128* const restrict B,
+    const c128* restrict DL,
+    const c128* restrict D,
+    const c128* restrict DU,
+    const c128* restrict DU2,
+    const int* restrict ipiv,
+    c128* restrict B,
     const int ldb)
 {
     int i, j;

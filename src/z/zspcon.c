@@ -32,11 +32,11 @@
 void zspcon(
     const char* uplo,
     const int n,
-    const c128* const restrict AP,
-    const int* const restrict ipiv,
+    const c128* restrict AP,
+    const int* restrict ipiv,
     const f64 anorm,
     f64* rcond,
-    c128* const restrict work,
+    c128* restrict work,
     int* info)
 {
     const f64 ONE = 1.0;

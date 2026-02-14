@@ -38,9 +38,9 @@
  */
 void zpoequ(
     const int n,
-    const c128* const restrict A,
+    const c128* restrict A,
     const int lda,
-    f64* const restrict S,
+    f64* restrict S,
     f64* scond,
     f64* amax,
     int* info)

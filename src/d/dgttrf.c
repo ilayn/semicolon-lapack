@@ -45,12 +45,12 @@
  */
 void dgttrf(
     const int n,
-    f64 * const restrict DL,
-    f64 * const restrict D,
-    f64 * const restrict DU,
-    f64 * const restrict DU2,
-    int * const restrict ipiv,
-    int *info)
+    f64* restrict DL,
+    f64* restrict D,
+    f64* restrict DU,
+    f64* restrict DU2,
+    int* restrict ipiv,
+    int* info)
 {
     const f64 ZERO = 0.0;
     int i;

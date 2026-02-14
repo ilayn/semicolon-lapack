@@ -44,8 +44,8 @@ void sppsv(
     const char* uplo,
     const int n,
     const int nrhs,
-    f32* const restrict AP,
-    f32* const restrict B,
+    f32* restrict AP,
+    f32* restrict B,
     const int ldb,
     int* info)
 {

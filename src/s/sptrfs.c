@@ -48,17 +48,17 @@
 void sptrfs(
     const int n,
     const int nrhs,
-    const f32* const restrict D,
-    const f32* const restrict E,
-    const f32* const restrict DF,
-    const f32* const restrict EF,
-    const f32* const restrict B,
+    const f32* restrict D,
+    const f32* restrict E,
+    const f32* restrict DF,
+    const f32* restrict EF,
+    const f32* restrict B,
     const int ldb,
-    f32* const restrict X,
+    f32* restrict X,
     const int ldx,
-    f32* const restrict ferr,
-    f32* const restrict berr,
-    f32* const restrict work,
+    f32* restrict ferr,
+    f32* restrict berr,
+    f32* restrict work,
     int* info)
 {
     const int ITMAX = 5;

@@ -36,12 +36,12 @@
 void dpocon(
     const char* uplo,
     const int n,
-    const f64* const restrict A,
+    const f64* restrict A,
     const int lda,
     const f64 anorm,
     f64* rcond,
-    f64* const restrict work,
-    int* const restrict iwork,
+    f64* restrict work,
+    int* restrict iwork,
     int* info)
 {
     const f64 ONE = 1.0;

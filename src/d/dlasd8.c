@@ -25,11 +25,11 @@ static inline f64 dlamc3(f64 a, f64 b)
  * DLASD8 is called from DLASD6.
  */
 void dlasd8(const int icompq, const int k,
-            f64* const restrict D, f64* const restrict Z,
-            f64* const restrict VF, f64* const restrict VL,
-            f64* const restrict DIFL, f64* const restrict DIFR,
-            const int lddifr, const f64* const restrict DSIGMA,
-            f64* const restrict work, int* info)
+            f64* restrict D, f64* restrict Z,
+            f64* restrict VF, f64* restrict VL,
+            f64* restrict DIFL, f64* restrict DIFR,
+            const int lddifr, const f64* restrict DSIGMA,
+            f64* restrict work, int* info)
 {
     const f64 ONE = 1.0;
 
