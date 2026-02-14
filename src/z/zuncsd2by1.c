@@ -146,7 +146,6 @@ void zuncsd2by1(
     int lorglqopt, lorgqr, lorgqrmin, lorgqropt;
     int lworkmin, lworkopt, lrworkmin, lrworkopt, r;
     int lquery, wantu1, wantu2, wantv1t;
-    f64 dum[1];
     c128 cdum[1];
 
     *info = 0;
@@ -202,7 +201,7 @@ void zuncsd2by1(
 
         if (r == q) {
             zunbdb1(m, p, q, X11, ldx11, X21, ldx21, theta,
-                    dum, cdum, cdum, cdum, work, -1, &childinfo);
+                    NULL, NULL, NULL, NULL, work, -1, &childinfo);
             lorbdb = (int)creal(work[0]);
             if (wantu1 && p > 0) {
                 zungqr(p, p, q, U1, ldu1, cdum, work, -1, &childinfo);
@@ -220,13 +219,13 @@ void zuncsd2by1(
                 lorglqopt = lorglqopt > (int)creal(work[0]) ? lorglqopt : (int)creal(work[0]);
             }
             zbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta,
-                   dum, U1, ldu1, U2, ldu2, V1T, ldv1t,
-                   cdum, 1, dum, dum, dum, dum, dum, dum, dum, dum,
+                   NULL, U1, ldu1, U2, ldu2, V1T, ldv1t,
+                   cdum, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    rwork, -1, &childinfo);
             lbbcsd = (int)rwork[0];
         } else if (r == p) {
             zunbdb2(m, p, q, X11, ldx11, X21, ldx21, theta,
-                    dum, cdum, cdum, cdum, work, -1, &childinfo);
+                    NULL, NULL, NULL, NULL, work, -1, &childinfo);
             lorbdb = (int)creal(work[0]);
             if (wantu1 && p > 0) {
                 zungqr(p - 1, p - 1, p - 1, &U1[1 + 1 * ldu1], ldu1, cdum, work, -1, &childinfo);
@@ -244,13 +243,13 @@ void zuncsd2by1(
                 lorglqopt = lorglqopt > (int)creal(work[0]) ? lorglqopt : (int)creal(work[0]);
             }
             zbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta,
-                   dum, V1T, ldv1t, cdum, 1, U1, ldu1, U2, ldu2,
-                   dum, dum, dum, dum, dum, dum, dum, dum,
+                   NULL, V1T, ldv1t, cdum, 1, U1, ldu1, U2, ldu2,
+                   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    rwork, -1, &childinfo);
             lbbcsd = (int)rwork[0];
         } else if (r == m - p) {
             zunbdb3(m, p, q, X11, ldx11, X21, ldx21, theta,
-                    dum, cdum, cdum, cdum, work, -1, &childinfo);
+                    NULL, NULL, NULL, NULL, work, -1, &childinfo);
             lorbdb = (int)creal(work[0]);
             if (wantu1 && p > 0) {
                 zungqr(p, p, q, U1, ldu1, cdum, work, -1, &childinfo);
@@ -269,13 +268,13 @@ void zuncsd2by1(
                 lorglqopt = lorglqopt > (int)creal(work[0]) ? lorglqopt : (int)creal(work[0]);
             }
             zbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p,
-                   theta, dum, cdum, 1, V1T, ldv1t, U2, ldu2, U1, ldu1,
-                   dum, dum, dum, dum, dum, dum, dum, dum,
+                   theta, NULL, cdum, 1, V1T, ldv1t, U2, ldu2, U1, ldu1,
+                   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    rwork, -1, &childinfo);
             lbbcsd = (int)rwork[0];
         } else {
             zunbdb4(m, p, q, X11, ldx11, X21, ldx21, theta,
-                    dum, cdum, cdum, cdum, cdum, work, -1, &childinfo);
+                    NULL, NULL, NULL, NULL, NULL, work, -1, &childinfo);
             lorbdb = m + (int)creal(work[0]);
             if (wantu1 && p > 0) {
                 zungqr(p, p, m - q, U1, ldu1, cdum, work, -1, &childinfo);
@@ -293,8 +292,8 @@ void zuncsd2by1(
                 lorglqopt = lorglqopt > (int)creal(work[0]) ? lorglqopt : (int)creal(work[0]);
             }
             zbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q,
-                   theta, dum, U2, ldu2, U1, ldu1, cdum, 1, V1T, ldv1t,
-                   dum, dum, dum, dum, dum, dum, dum, dum,
+                   theta, NULL, U2, ldu2, U1, ldu1, cdum, 1, V1T, ldv1t,
+                   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    rwork, -1, &childinfo);
             lbbcsd = (int)rwork[0];
         }

@@ -102,7 +102,7 @@ void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
     if (*info == 0) {
         zggsvp3(jobu, jobv, jobq, m, p, n, A, lda, B, ldb,
                 tola, tolb, k, l, U, ldu, V, ldv, Q, ldq,
-                iwork, rwork, work, work, -1, info);
+                iwork, rwork, NULL, work, -1, info);
         lwkopt = n + (int)creal(work[0]);
         if (2 * n > lwkopt) lwkopt = 2 * n;
         if (lwkopt < 1) lwkopt = 1;

@@ -446,7 +446,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                 irwork = ie + n;
 
                 zbdsqr("U", n, ncvt, 0, 0, S, &rwork[ie], A, lda,
-                       cdum, 1, cdum, 1, &rwork[irwork], info);
+                       NULL, 1, NULL, 1, &rwork[irwork], info);
 
                 if (wntvas) {
                     zlacpy("F", n, n, A, lda, VT, ldvt);
@@ -484,8 +484,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                            &work[iwork], lwork - iwork, &ierr);
                     irwork = ie + n;
 
-                    zbdsqr("U", n, 0, n, 0, S, &rwork[ie], cdum, 1,
-                           &work[ir], ldwrkr, cdum, 1, &rwork[irwork], info);
+                    zbdsqr("U", n, 0, n, 0, S, &rwork[ie], NULL, 1,
+                           &work[ir], ldwrkr, NULL, 1, &rwork[irwork], info);
                     iu = itauq;
 
                     for (i = 0; i < m; i += ldwrku) {
@@ -507,8 +507,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                            &work[iwork], lwork - iwork, &ierr);
                     irwork = ie + n;
 
-                    zbdsqr("U", n, 0, m, 0, S, &rwork[ie], cdum, 1,
-                           A, lda, cdum, 1, &rwork[irwork], info);
+                    zbdsqr("U", n, 0, m, 0, S, &rwork[ie], NULL, 1,
+                           A, lda, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntuo && wntvas) {
                 /* Path 3: U overwritten on A, V^H in VT */
@@ -549,7 +549,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                     irwork = ie + n;
 
                     zbdsqr("U", n, n, n, 0, S, &rwork[ie], VT, ldvt,
-                           &work[ir], ldwrkr, cdum, 1, &rwork[irwork], info);
+                           &work[ir], ldwrkr, NULL, 1, &rwork[irwork], info);
                     iu = itauq;
 
                     for (i = 0; i < m; i += ldwrku) {
@@ -584,7 +584,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                     irwork = ie + n;
 
                     zbdsqr("U", n, n, m, 0, S, &rwork[ie], VT, ldvt,
-                           A, lda, cdum, 1, &rwork[irwork], info);
+                           A, lda, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntus) {
                 /* Paths 4, 5, 6: U in U array */
@@ -612,8 +612,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                                &work[iwork], lwork - iwork, &ierr);
                         irwork = ie + n;
 
-                        zbdsqr("U", n, 0, n, 0, S, &rwork[ie], cdum, 1,
-                               &work[ir], ldwrkr, cdum, 1, &rwork[irwork], info);
+                        zbdsqr("U", n, 0, n, 0, S, &rwork[ie], NULL, 1,
+                               &work[ir], ldwrkr, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, n, &CONE, A, lda, &work[ir], ldwrkr, &CZERO, U, ldu);
@@ -639,8 +639,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                                U, ldu, &work[iwork], lwork - iwork, &ierr);
                         irwork = ie + n;
 
-                        zbdsqr("U", n, 0, m, 0, S, &rwork[ie], cdum, 1,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                        zbdsqr("U", n, 0, m, 0, S, &rwork[ie], NULL, 1,
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvo) {
                     /* Path 5: U in U, V^H overwritten on A */
@@ -682,7 +682,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, n, 0, S, &rwork[ie], &work[ir], ldwrkr,
-                               &work[iu], ldwrku, cdum, 1, &rwork[irwork], info);
+                               &work[iu], ldwrku, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, n, &CONE, A, lda, &work[iu], ldwrku, &CZERO, U, ldu);
@@ -712,7 +712,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, m, 0, S, &rwork[ie], A, lda,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvas) {
                     /* Path 6: U in U, V^H in VT */
@@ -742,7 +742,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, n, 0, S, &rwork[ie], VT, ldvt,
-                               &work[iu], ldwrku, cdum, 1, &rwork[irwork], info);
+                               &work[iu], ldwrku, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, n, &CONE, A, lda, &work[iu], ldwrku, &CZERO, U, ldu);
@@ -773,7 +773,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, m, 0, S, &rwork[ie], VT, ldvt,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 }
             } else if (wntua) {
@@ -803,8 +803,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                                &work[iwork], lwork - iwork, &ierr);
                         irwork = ie + n;
 
-                        zbdsqr("U", n, 0, n, 0, S, &rwork[ie], cdum, 1,
-                               &work[ir], ldwrkr, cdum, 1, &rwork[irwork], info);
+                        zbdsqr("U", n, 0, n, 0, S, &rwork[ie], NULL, 1,
+                               &work[ir], ldwrkr, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, n, &CONE, U, ldu, &work[ir], ldwrkr, &CZERO, A, lda);
@@ -831,8 +831,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                                U, ldu, &work[iwork], lwork - iwork, &ierr);
                         irwork = ie + n;
 
-                        zbdsqr("U", n, 0, m, 0, S, &rwork[ie], cdum, 1,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                        zbdsqr("U", n, 0, m, 0, S, &rwork[ie], NULL, 1,
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvo) {
                     /* Path 8: Full U, V^H overwritten on A */
@@ -875,7 +875,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, n, 0, S, &rwork[ie], &work[ir], ldwrkr,
-                               &work[iu], ldwrku, cdum, 1, &rwork[irwork], info);
+                               &work[iu], ldwrku, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, n, &CONE, U, ldu, &work[iu], ldwrku, &CZERO, A, lda);
@@ -906,7 +906,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, m, 0, S, &rwork[ie], A, lda,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntvas) {
                     /* Path 9: Full U, V^H in VT */
@@ -937,7 +937,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, n, 0, S, &rwork[ie], VT, ldvt,
-                               &work[iu], ldwrku, cdum, 1, &rwork[irwork], info);
+                               &work[iu], ldwrku, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, n, &CONE, U, ldu, &work[iu], ldwrku, &CZERO, A, lda);
@@ -969,7 +969,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + n;
 
                         zbdsqr("U", n, n, m, 0, S, &rwork[ie], VT, ldvt,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 }
             }
@@ -1009,13 +1009,13 @@ void zgesvd(const char* jobu, const char* jobvt,
 
             if (!wntuo && !wntvo) {
                 zbdsqr("U", n, ncvt, nru, 0, S, &rwork[ie], VT, ldvt,
-                       U, ldu, cdum, 1, &rwork[irwork], info);
+                       U, ldu, NULL, 1, &rwork[irwork], info);
             } else if (!wntuo && wntvo) {
                 zbdsqr("U", n, ncvt, nru, 0, S, &rwork[ie], A, lda,
-                       U, ldu, cdum, 1, &rwork[irwork], info);
+                       U, ldu, NULL, 1, &rwork[irwork], info);
             } else {
                 zbdsqr("U", n, ncvt, nru, 0, S, &rwork[ie], VT, ldvt,
-                       A, lda, cdum, 1, &rwork[irwork], info);
+                       A, lda, NULL, 1, &rwork[irwork], info);
             }
         }
     } else {
@@ -1048,8 +1048,8 @@ void zgesvd(const char* jobu, const char* jobvt,
                 irwork = ie + m;
                 nru = (wntuo || wntuas) ? m : 0;
 
-                zbdsqr("U", m, 0, nru, 0, S, &rwork[ie], cdum, 1,
-                       A, lda, cdum, 1, &rwork[irwork], info);
+                zbdsqr("U", m, 0, nru, 0, S, &rwork[ie], NULL, 1,
+                       A, lda, NULL, 1, &rwork[irwork], info);
 
                 if (wntuas) {
                     zlacpy("F", m, m, A, lda, U, ldu);
@@ -1091,7 +1091,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                     irwork = ie + m;
 
                     zbdsqr("U", m, m, 0, 0, S, &rwork[ie], &work[ir], ldwrkr,
-                           cdum, 1, cdum, 1, &rwork[irwork], info);
+                           NULL, 1, NULL, 1, &rwork[irwork], info);
                     iu = itauq;
 
                     for (i = 0; i < n; i += chunk) {
@@ -1114,7 +1114,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                     irwork = ie + m;
 
                     zbdsqr("L", m, n, 0, 0, S, &rwork[ie], A, lda,
-                           cdum, 1, cdum, 1, &rwork[irwork], info);
+                           NULL, 1, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntvo && wntuas) {
                 /* Path 3t: V^H overwritten on A, U in U */
@@ -1158,7 +1158,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                     irwork = ie + m;
 
                     zbdsqr("U", m, m, m, 0, S, &rwork[ie], &work[ir], ldwrkr,
-                           U, ldu, cdum, 1, &rwork[irwork], info);
+                           U, ldu, NULL, 1, &rwork[irwork], info);
                     iu = itauq;
 
                     for (i = 0; i < n; i += chunk) {
@@ -1193,7 +1193,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                     irwork = ie + m;
 
                     zbdsqr("U", m, n, m, 0, S, &rwork[ie], A, lda,
-                           U, ldu, cdum, 1, &rwork[irwork], info);
+                           U, ldu, NULL, 1, &rwork[irwork], info);
                 }
             } else if (wntvs) {
                 /* Paths 4t, 5t, 6t: V^H in VT */
@@ -1222,7 +1222,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, m, 0, 0, S, &rwork[ie], &work[ir], ldwrkr,
-                               cdum, 1, cdum, 1, &rwork[irwork], info);
+                               NULL, 1, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, m, &CONE, &work[ir], ldwrkr, A, lda, &CZERO, VT, ldvt);
@@ -1247,7 +1247,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, n, 0, 0, S, &rwork[ie], VT, ldvt,
-                               cdum, 1, cdum, 1, &rwork[irwork], info);
+                               NULL, 1, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuo) {
                     /* Path 5t: V^H in VT, U overwritten on A */
@@ -1289,7 +1289,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, m, m, 0, S, &rwork[ie], &work[iu], ldwrku,
-                               &work[ir], ldwrkr, cdum, 1, &rwork[irwork], info);
+                               &work[ir], ldwrkr, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, m, &CONE, &work[iu], ldwrku, A, lda, &CZERO, VT, ldvt);
@@ -1317,7 +1317,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, n, m, 0, S, &rwork[ie], VT, ldvt,
-                               A, lda, cdum, 1, &rwork[irwork], info);
+                               A, lda, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuas) {
                     /* Path 6t: V^H in VT, U in U */
@@ -1347,7 +1347,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, m, m, 0, S, &rwork[ie], &work[iu], ldwrku,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, m, &CONE, &work[iu], ldwrku, A, lda, &CZERO, VT, ldvt);
@@ -1378,7 +1378,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, n, m, 0, S, &rwork[ie], VT, ldvt,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 }
             } else if (wntva) {
@@ -1409,7 +1409,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, m, 0, 0, S, &rwork[ie], &work[ir], ldwrkr,
-                               cdum, 1, cdum, 1, &rwork[irwork], info);
+                               NULL, 1, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, m, &CONE, &work[ir], ldwrkr, VT, ldvt, &CZERO, A, lda);
@@ -1435,7 +1435,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, n, 0, 0, S, &rwork[ie], VT, ldvt,
-                               cdum, 1, cdum, 1, &rwork[irwork], info);
+                               NULL, 1, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuo) {
                     /* Path 8t: Full V^H, U overwritten on A */
@@ -1478,7 +1478,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, m, m, 0, S, &rwork[ie], &work[iu], ldwrku,
-                               &work[ir], ldwrkr, cdum, 1, &rwork[irwork], info);
+                               &work[ir], ldwrkr, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, m, &CONE, &work[iu], ldwrku, VT, ldvt, &CZERO, A, lda);
@@ -1507,7 +1507,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, n, m, 0, S, &rwork[ie], VT, ldvt,
-                               A, lda, cdum, 1, &rwork[irwork], info);
+                               A, lda, NULL, 1, &rwork[irwork], info);
                     }
                 } else if (wntuas) {
                     /* Path 9t: Full V^H, U in U */
@@ -1538,7 +1538,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, m, m, 0, S, &rwork[ie], &work[iu], ldwrku,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
 
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n, m, &CONE, &work[iu], ldwrku, VT, ldvt, &CZERO, A, lda);
@@ -1570,7 +1570,7 @@ void zgesvd(const char* jobu, const char* jobvt,
                         irwork = ie + m;
 
                         zbdsqr("U", m, n, m, 0, S, &rwork[ie], VT, ldvt,
-                               U, ldu, cdum, 1, &rwork[irwork], info);
+                               U, ldu, NULL, 1, &rwork[irwork], info);
                     }
                 }
             }
@@ -1610,13 +1610,13 @@ void zgesvd(const char* jobu, const char* jobvt,
 
             if (!wntuo && !wntvo) {
                 zbdsqr("L", m, ncvt, nru, 0, S, &rwork[ie], VT, ldvt,
-                       U, ldu, cdum, 1, &rwork[irwork], info);
+                       U, ldu, NULL, 1, &rwork[irwork], info);
             } else if (!wntuo && wntvo) {
                 zbdsqr("L", m, ncvt, nru, 0, S, &rwork[ie], A, lda,
-                       U, ldu, cdum, 1, &rwork[irwork], info);
+                       U, ldu, NULL, 1, &rwork[irwork], info);
             } else {
                 zbdsqr("L", m, ncvt, nru, 0, S, &rwork[ie], VT, ldvt,
-                       A, lda, cdum, 1, &rwork[irwork], info);
+                       A, lda, NULL, 1, &rwork[irwork], info);
             }
         }
     }

@@ -133,15 +133,15 @@ void zggev3(const char* jobvl, const char* jobvr, const int n,
     }
 
     if (*info == 0) {
-        zgeqrf(n, n, B, ldb, work, work, -1, &ierr);
+        zgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
         lwkopt = lwkmin > (n + (int)creal(work[0])) ?
                  lwkmin : (n + (int)creal(work[0]));
-        zunmqr("L", "C", n, n, n, B, ldb, work, A, lda, work,
+        zunmqr("L", "C", n, n, n, B, ldb, NULL, A, lda, work,
                -1, &ierr);
         lwkopt = lwkopt > (n + (int)creal(work[0])) ?
                  lwkopt : (n + (int)creal(work[0]));
         if (ilvl) {
-            zungqr(n, n, n, VL, ldvl, work, work, -1, &ierr);
+            zungqr(n, n, n, VL, ldvl, NULL, work, -1, &ierr);
             lwkopt = lwkopt > (n + (int)creal(work[0])) ?
                      lwkopt : (n + (int)creal(work[0]));
         }

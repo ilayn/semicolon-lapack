@@ -269,9 +269,9 @@ void zuncsd(
         ibbcsd = ib22e + (1 > (q - 1) ? 1 : (q - 1));
 
         zbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q,
-               theta, theta, U1, ldu1, U2, ldu2, V1T, ldv1t,
-               V2T, ldv2t, theta, theta, theta, theta, theta,
-               theta, theta, theta, rwork, -1, &childinfo);
+               NULL, NULL, NULL, ldu1, NULL, ldu2, NULL, ldv1t,
+               NULL, ldv2t, NULL, NULL, NULL, NULL, NULL,
+               NULL, NULL, NULL, rwork, -1, &childinfo);
         lbbcsdworkopt = (int)rwork[0];
         lbbcsdworkmin = lbbcsdworkopt;
         lrworkopt = ibbcsd + lbbcsdworkopt - 1;
@@ -286,19 +286,19 @@ void zuncsd(
         iorgqr = itauq2 + (1 > (m - q) ? 1 : (m - q));
 
         int ld_temp = (1 > (m - q)) ? 1 : (m - q);
-        zungqr(m - q, m - q, m - q, U1, ld_temp, U1, work, -1, &childinfo);
+        zungqr(m - q, m - q, m - q, NULL, ld_temp, NULL, work, -1, &childinfo);
         lorgqrworkopt = (int)creal(work[0]);
         lorgqrworkmin = (1 > (m - q)) ? 1 : (m - q);
 
         iorglq = itauq2 + (1 > (m - q) ? 1 : (m - q));
-        zunglq(m - q, m - q, m - q, U1, ld_temp, U1, work, -1, &childinfo);
+        zunglq(m - q, m - q, m - q, NULL, ld_temp, NULL, work, -1, &childinfo);
         lorglqworkopt = (int)creal(work[0]);
         lorglqworkmin = (1 > (m - q)) ? 1 : (m - q);
 
         iorbdb = itauq2 + (1 > (m - q) ? 1 : (m - q));
         zunbdb(trans, signs, m, p, q, X11, ldx11, X12, ldx12,
-               X21, ldx21, X22, ldx22, theta, theta, U1, U2,
-               V1T, V2T, work, -1, &childinfo);
+               X21, ldx21, X22, ldx22, theta, NULL, NULL, NULL,
+               NULL, NULL, work, -1, &childinfo);
         lorbdbworkopt = (int)creal(work[0]);
 
         lworkopt = iorgqr + lorgqrworkopt;

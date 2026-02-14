@@ -121,14 +121,14 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
         lwcon = 2 * n;
         lwsvd = (3 * n > 1) ? 3 * n : 1;
         if (lquery) {
-            zgeqp3(m, n, A, lda, iwork, cdummy, cdummy, -1, rdummy, &ierr);
+            zgeqp3(m, n, A, lda, iwork, NULL, cdummy, -1, rdummy, &ierr);
             lwrk_zgeqp3 = (int)creal(cdummy[0]);
             if (wntus || wntur) {
-                zunmqr("L", "N", m, n, n, A, lda, cdummy, U,
+                zunmqr("L", "N", m, n, n, A, lda, NULL, U,
                         ldu, cdummy, -1, &ierr);
                 lwrk_zunmqr = (int)creal(cdummy[0]);
             } else if (wntua) {
-                zunmqr("L", "N", m, m, n, A, lda, cdummy, U,
+                zunmqr("L", "N", m, m, n, A, lda, NULL, U,
                         ldu, cdummy, -1, &ierr);
                 lwrk_zunmqr = (int)creal(cdummy[0]);
             } else {
@@ -268,12 +268,12 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     if (conda && optwrk < lwcon) optwrk = lwcon;
                     optwrk = n + optwrk;
                     if (wntva) {
-                        zgeqrf(n, n / 2, U, ldu, cdummy, cdummy, -1, &ierr);
+                        zgeqrf(n, n / 2, U, ldu, NULL, cdummy, -1, &ierr);
                         lwrk_zgeqrf = (int)creal(cdummy[0]);
                         zgesvd("S", "O", n / 2, n / 2, V, ldv, S, U,
-                                ldu, V, ldv, cdummy, -1, rdummy, &ierr);
+                                ldu, NULL, 1, cdummy, -1, rdummy, &ierr);
                         lwrk_zgesvd2 = (int)creal(cdummy[0]);
-                        zunmqr("R", "C", n, n, n / 2, U, ldu, cdummy,
+                        zunmqr("R", "C", n, n, n / 2, U, ldu, NULL,
                                 V, ldv, cdummy, -1, &ierr);
                         lwrk_zunmqr2 = (int)creal(cdummy[0]);
                         optwrk2 = lwrk_zgeqp3;
@@ -294,12 +294,12 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     if (conda && optwrk < lwcon) optwrk = lwcon;
                     optwrk = n + optwrk;
                     if (wntva) {
-                        zgelqf(n / 2, n, U, ldu, cdummy, cdummy, -1, &ierr);
+                        zgelqf(n / 2, n, U, ldu, NULL, cdummy, -1, &ierr);
                         lwrk_zgelqf = (int)creal(cdummy[0]);
                         zgesvd("S", "O", n / 2, n / 2, V, ldv, S, U,
-                                ldu, V, ldv, cdummy, -1, rdummy, &ierr);
+                                ldu, NULL, 1, cdummy, -1, rdummy, &ierr);
                         lwrk_zgesvd2 = (int)creal(cdummy[0]);
-                        zunmlq("R", "N", n, n, n / 2, U, ldu, cdummy,
+                        zunmlq("R", "N", n, n, n / 2, U, ldu, NULL,
                                 V, ldv, cdummy, -1, &ierr);
                         lwrk_zunmlq = (int)creal(cdummy[0]);
                         optwrk2 = lwrk_zgeqp3;
@@ -499,8 +499,8 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
             }
             if (nr > 1)
                 zlaset("U", nr - 1, nr - 1, CZERO, CZERO, &U[ldu], ldu);
-            zgesvd("N", "O", n, nr, U, ldu, S, U, ldu,
-                    U, ldu, &cwork[n], lcwork - n, rwork, info);
+            zgesvd("N", "O", n, nr, U, ldu, S, NULL, 1,
+                    NULL, 1, &cwork[n], lcwork - n, rwork, info);
 
             for (p = 0; p < nr; p++) {
                 U[p + p * ldu] = conj(U[p + p * ldu]);
@@ -515,8 +515,8 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
             zlacpy("U", nr, n, A, lda, U, ldu);
             if (nr > 1)
                 zlaset("L", nr - 1, nr - 1, CZERO, CZERO, &U[1], ldu);
-            zgesvd("O", "N", nr, n, U, ldu, S, U, ldu,
-                    V, ldv, &cwork[n], lcwork - n, rwork, info);
+            zgesvd("O", "N", nr, n, U, ldu, S, NULL, 1,
+                    NULL, 1, &cwork[n], lcwork - n, rwork, info);
         }
 
         if (nr < m && !wntuf) {
@@ -549,7 +549,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
 
             if (wntvr || nr == n) {
                 zgesvd("O", "N", n, nr, V, ldv, S, U, ldu,
-                        U, ldu, &cwork[n], lcwork - n, rwork, info);
+                        NULL, 1, &cwork[n], lcwork - n, rwork, info);
 
                 for (p = 0; p < nr; p++) {
                     V[p + p * ldv] = conj(V[p + p * ldv]);
@@ -571,7 +571,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
             } else {
                 zlaset("G", n, n - nr, CZERO, CZERO, &V[nr * ldv], ldv);
                 zgesvd("O", "N", n, n, V, ldv, S, U, ldu,
-                        U, ldu, &cwork[n], lcwork - n, rwork, info);
+                        NULL, 1, &cwork[n], lcwork - n, rwork, info);
 
                 for (p = 0; p < n; p++) {
                     V[p + p * ldv] = conj(V[p + p * ldv]);
@@ -590,13 +590,13 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                 zlaset("L", nr - 1, nr - 1, CZERO, CZERO, &V[1], ldv);
 
             if (wntvr || nr == n) {
-                zgesvd("N", "O", nr, n, V, ldv, S, U, ldu,
-                        V, ldv, &cwork[n], lcwork - n, rwork, info);
+                zgesvd("N", "O", nr, n, V, ldv, S, NULL, 1,
+                        NULL, 1, &cwork[n], lcwork - n, rwork, info);
                 zlapmt(0, nr, n, V, ldv, iwork);
             } else {
                 zlaset("G", n - nr, n, CZERO, CZERO, &V[nr], ldv);
-                zgesvd("N", "O", n, n, V, ldv, S, U, ldu,
-                        V, ldv, &cwork[n], lcwork - n, rwork, info);
+                zgesvd("N", "O", n, n, V, ldv, S, NULL, 1,
+                        NULL, 1, &cwork[n], lcwork - n, rwork, info);
                 zlapmt(0, n, n, V, ldv, iwork);
             }
         }
@@ -616,7 +616,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                 if (nr > 1)
                     zlaset("U", nr - 1, nr - 1, CZERO, CZERO, &V[ldv], ldv);
 
-                zgesvd("O", "A", n, nr, V, ldv, S, V, ldv,
+                zgesvd("O", "A", n, nr, V, ldv, S, NULL, 1,
                         U, ldu, &cwork[n], lcwork - n, rwork, info);
 
                 for (p = 0; p < nr; p++) {
@@ -666,7 +666,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                         zlaset("U", nr - 1, nr - 1, CZERO, CZERO, &V[ldv], ldv);
 
                     zlaset("A", n, n - nr, CZERO, CZERO, &V[nr * ldv], ldv);
-                    zgesvd("O", "A", n, n, V, ldv, S, V, ldv,
+                    zgesvd("O", "A", n, n, V, ldv, S, NULL, 1,
                             U, ldu, &cwork[n], lcwork - n, rwork, info);
 
                     for (p = 0; p < n; p++) {
@@ -714,7 +714,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     }
                     zlaset("U", nr - 1, nr - 1, CZERO, CZERO, &V[ldv], ldv);
                     zgesvd("S", "O", nr, nr, V, ldv, S, U, ldu,
-                            V, ldv, &cwork[n + nr], lcwork - n - nr, rwork, info);
+                            NULL, 1, &cwork[n + nr], lcwork - n - nr, rwork, info);
                     zlaset("A", n - nr, nr, CZERO, CZERO, &V[nr], ldv);
                     zlaset("A", nr, n - nr, CZERO, CZERO, &V[nr * ldv], ldv);
                     zlaset("A", n - nr, n - nr, CZERO, CONE,
@@ -743,7 +743,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     zlaset("L", nr - 1, nr - 1, CZERO, CZERO, &V[1], ldv);
 
                 zgesvd("S", "O", nr, n, V, ldv, S, U, ldu,
-                        V, ldv, &cwork[n], lcwork - n, rwork, info);
+                        NULL, 1, &cwork[n], lcwork - n, rwork, info);
                 zlapmt(0, nr, n, V, ldv, iwork);
 
                 if (nr < m && !wntuf) {
@@ -765,7 +765,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
 
                     zlaset("A", n - nr, n, CZERO, CZERO, &V[nr], ldv);
                     zgesvd("S", "O", n, n, V, ldv, S, U, ldu,
-                            V, ldv, &cwork[n], lcwork - n, rwork, info);
+                            NULL, 1, &cwork[n], lcwork - n, rwork, info);
                     zlapmt(0, n, n, V, ldv, iwork);
 
                     if (n < m && !wntuf) {
@@ -788,7 +788,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     if (nr > 1)
                         zlaset("U", nr - 1, nr - 1, CZERO, CZERO, &V[ldv], ldv);
                     zgesvd("S", "O", nr, nr, V, ldv, S, U, ldu,
-                            V, ldv, &cwork[n + nr], lcwork - n - nr, rwork, info);
+                            NULL, 1, &cwork[n + nr], lcwork - n - nr, rwork, info);
                     zlaset("A", n - nr, nr, CZERO, CZERO, &V[nr], ldv);
                     zlaset("A", nr, n - nr, CZERO, CZERO, &V[nr * ldv], ldv);
                     zlaset("A", n - nr, n - nr, CZERO, CONE,

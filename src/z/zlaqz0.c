@@ -203,12 +203,12 @@ void zlaqz0(
     nw = (nwr > nmin) ? nwr : nmin;
     zlaqz2(ilschur, ilq, ilz, n, ilo, ihi, nw, A, lda, B, ldb,
            Q, ldq, Z, ldz, &n_undeflated, &n_deflated, alpha, beta,
-           work, nw, work, nw, work, -1, rwork, rec, &aed_info);
+           NULL, nw, NULL, nw, work, -1, rwork, rec, &aed_info);
     itemp1 = (int)creal(work[0]);
 
     /* Workspace query to ZLAQZ3 */
     zlaqz3(ilschur, ilq, ilz, n, ilo, ihi, nsr, nbr, alpha, beta,
-           A, lda, B, ldb, Q, ldq, Z, ldz, work, nbr, work, nbr,
+           A, lda, B, ldb, Q, ldq, Z, ldz, NULL, nbr, NULL, nbr,
            work, -1, &sweep_info);
     itemp2 = (int)creal(work[0]);
 

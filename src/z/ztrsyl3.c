@@ -49,7 +49,8 @@
  *                   On exit, if info = 0, swork[0] returns the optimal value ROWS
  *                   and swork[1] returns the optimal COLS.
  * @param[in] ldswork The leading dimension of the array swork.
- *                    ldswork >= MAX(2, ROWS), where ROWS = ((m + nb - 1) / nb + 1).
+ *                    ldswork >= MAX(2, ROWS) + MAX(m, n),
+ *                    where ROWS = ((m + nb - 1) / nb + 1).
  *                    If ldswork = -1, then a workspace query is assumed.
  * @param[out] info
  *                   = 0: successful exit
@@ -80,7 +81,6 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
 
     int max_mn = (m > n) ? m : n;
     if (max_mn < 1) max_mn = 1;
-    f64 wnrm[max_mn];
 
     /* Decode and Test input parameters */
     notrna = (trana[0] == 'N' || trana[0] == 'n');
@@ -109,7 +109,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
     *info = 0;
     lquery = (ldswork == -1);
     if (lquery) {
-        swork[0] = (nba > nbb) ? nba : nbb;
+        swork[0] = ((nba > nbb) ? nba : nbb) + max_mn;
         swork[1] = 2 * nbb + nba;
     }
 
@@ -149,12 +149,16 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
     {
         int min_nba_nbb = (nba < nbb) ? nba : nbb;
         int max_nba_nbb = (nba > nbb) ? nba : nbb;
-        if (min_nba_nbb == 1 || ldswork < max_nba_nbb) {
+        if (min_nba_nbb == 1 || ldswork < max_nba_nbb + max_mn) {
             ztrsyl(trana, tranb, isgn, m, n, A, lda, B, ldb,
                    C, ldc, scale, info);
             return;
         }
     }
+
+    /* Use the tail of column 0 in swork as zlange workspace */
+    int rows = (nba > nbb) ? nba : nbb;
+    f64* wnrm = &swork[rows];
 
     /* Set constants to control overflow */
     smlnum = dlamch("S");

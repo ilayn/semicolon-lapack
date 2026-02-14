@@ -6,6 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
+#include <stdlib.h>
 #include <math.h>
 #include <cblas.h>
 
@@ -75,9 +76,8 @@ void zgesdd(const char* jobz, const int m, const int n,
     int lwork_zunmbr_prc_mn, lwork_zunmbr_qln_mn;
     int lwork_zunmbr_prc_nn, lwork_zunmbr_qln_nn;
     f64 anrm, bignum, eps, smlnum;
-    int idum[1];
-    f64 dum[1];
-    c128 cdum[1];
+    f64 dum[1];   /* For zlange work */
+    c128 wkopt[1]; /* For workspace query results */
 
     *info = 0;
     minmn = (m < n) ? m : n;
@@ -112,41 +112,41 @@ void zgesdd(const char* jobz, const int m, const int n,
         maxwrk = 1;
         if (m >= n && minmn > 0) {
 
-            zgebrd(m, n, cdum, m, dum, dum, cdum, cdum, cdum, -1, &ierr);
-            lwork_zgebrd_mn = (int)creal(cdum[0]);
+            zgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
+            lwork_zgebrd_mn = (int)creal(wkopt[0]);
 
-            zgebrd(n, n, cdum, n, dum, dum, cdum, cdum, cdum, -1, &ierr);
-            lwork_zgebrd_nn = (int)creal(cdum[0]);
+            zgebrd(n, n, NULL, n, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
+            lwork_zgebrd_nn = (int)creal(wkopt[0]);
 
-            zgeqrf(m, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zgeqrf_mn = (int)creal(cdum[0]);
+            zgeqrf(m, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zgeqrf_mn = (int)creal(wkopt[0]);
 
-            zungbr("P", n, n, n, cdum, n, cdum, cdum, -1, &ierr);
-            lwork_zungbr_p_nn = (int)creal(cdum[0]);
+            zungbr("P", n, n, n, NULL, n, NULL, wkopt, -1, &ierr);
+            lwork_zungbr_p_nn = (int)creal(wkopt[0]);
 
-            zungbr("Q", m, m, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zungbr_q_mm = (int)creal(cdum[0]);
+            zungbr("Q", m, m, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zungbr_q_mm = (int)creal(wkopt[0]);
 
-            zungbr("Q", m, n, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zungbr_q_mn = (int)creal(cdum[0]);
+            zungbr("Q", m, n, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zungbr_q_mn = (int)creal(wkopt[0]);
 
-            zungqr(m, m, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zungqr_mm = (int)creal(cdum[0]);
+            zungqr(m, m, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zungqr_mm = (int)creal(wkopt[0]);
 
-            zungqr(m, n, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zungqr_mn = (int)creal(cdum[0]);
+            zungqr(m, n, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zungqr_mn = (int)creal(wkopt[0]);
 
-            zunmbr("P", "R", "C", n, n, n, cdum, n, cdum, cdum, n, cdum, -1, &ierr);
-            lwork_zunmbr_prc_nn = (int)creal(cdum[0]);
+            zunmbr("P", "R", "C", n, n, n, NULL, n, NULL, NULL, n, wkopt, -1, &ierr);
+            lwork_zunmbr_prc_nn = (int)creal(wkopt[0]);
 
-            zunmbr("Q", "L", "N", m, m, n, cdum, m, cdum, cdum, m, cdum, -1, &ierr);
-            lwork_zunmbr_qln_mm = (int)creal(cdum[0]);
+            zunmbr("Q", "L", "N", m, m, n, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
+            lwork_zunmbr_qln_mm = (int)creal(wkopt[0]);
 
-            zunmbr("Q", "L", "N", m, n, n, cdum, m, cdum, cdum, m, cdum, -1, &ierr);
-            lwork_zunmbr_qln_mn = (int)creal(cdum[0]);
+            zunmbr("Q", "L", "N", m, n, n, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
+            lwork_zunmbr_qln_mn = (int)creal(wkopt[0]);
 
-            zunmbr("Q", "L", "N", n, n, n, cdum, n, cdum, cdum, n, cdum, -1, &ierr);
-            lwork_zunmbr_qln_nn = (int)creal(cdum[0]);
+            zunmbr("Q", "L", "N", n, n, n, NULL, n, NULL, NULL, n, wkopt, -1, &ierr);
+            lwork_zunmbr_qln_nn = (int)creal(wkopt[0]);
 
             if (m >= mnthr1) {
                 if (wntqn) {
@@ -229,41 +229,41 @@ void zgesdd(const char* jobz, const int m, const int n,
             }
         } else if (minmn > 0) {
 
-            zgebrd(m, n, cdum, m, dum, dum, cdum, cdum, cdum, -1, &ierr);
-            lwork_zgebrd_mn = (int)creal(cdum[0]);
+            zgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
+            lwork_zgebrd_mn = (int)creal(wkopt[0]);
 
-            zgebrd(m, m, cdum, m, dum, dum, cdum, cdum, cdum, -1, &ierr);
-            lwork_zgebrd_mm = (int)creal(cdum[0]);
+            zgebrd(m, m, NULL, m, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
+            lwork_zgebrd_mm = (int)creal(wkopt[0]);
 
-            zgelqf(m, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zgelqf_mn = (int)creal(cdum[0]);
+            zgelqf(m, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zgelqf_mn = (int)creal(wkopt[0]);
 
-            zungbr("P", m, n, m, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zungbr_p_mn = (int)creal(cdum[0]);
+            zungbr("P", m, n, m, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zungbr_p_mn = (int)creal(wkopt[0]);
 
-            zungbr("P", n, n, m, cdum, n, cdum, cdum, -1, &ierr);
-            lwork_zungbr_p_nn = (int)creal(cdum[0]);
+            zungbr("P", n, n, m, NULL, n, NULL, wkopt, -1, &ierr);
+            lwork_zungbr_p_nn = (int)creal(wkopt[0]);
 
-            zungbr("Q", m, m, n, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zungbr_q_mm = (int)creal(cdum[0]);
+            zungbr("Q", m, m, n, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zungbr_q_mm = (int)creal(wkopt[0]);
 
-            zunglq(m, n, m, cdum, m, cdum, cdum, -1, &ierr);
-            lwork_zunglq_mn = (int)creal(cdum[0]);
+            zunglq(m, n, m, NULL, m, NULL, wkopt, -1, &ierr);
+            lwork_zunglq_mn = (int)creal(wkopt[0]);
 
-            zunglq(n, n, m, cdum, n, cdum, cdum, -1, &ierr);
-            lwork_zunglq_nn = (int)creal(cdum[0]);
+            zunglq(n, n, m, NULL, n, NULL, wkopt, -1, &ierr);
+            lwork_zunglq_nn = (int)creal(wkopt[0]);
 
-            zunmbr("P", "R", "C", m, m, m, cdum, m, cdum, cdum, m, cdum, -1, &ierr);
-            lwork_zunmbr_prc_mm = (int)creal(cdum[0]);
+            zunmbr("P", "R", "C", m, m, m, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
+            lwork_zunmbr_prc_mm = (int)creal(wkopt[0]);
 
-            zunmbr("P", "R", "C", m, n, m, cdum, m, cdum, cdum, m, cdum, -1, &ierr);
-            lwork_zunmbr_prc_mn = (int)creal(cdum[0]);
+            zunmbr("P", "R", "C", m, n, m, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
+            lwork_zunmbr_prc_mn = (int)creal(wkopt[0]);
 
-            zunmbr("P", "R", "C", n, n, m, cdum, n, cdum, cdum, n, cdum, -1, &ierr);
-            lwork_zunmbr_prc_nn = (int)creal(cdum[0]);
+            zunmbr("P", "R", "C", n, n, m, NULL, n, NULL, NULL, n, wkopt, -1, &ierr);
+            lwork_zunmbr_prc_nn = (int)creal(wkopt[0]);
 
-            zunmbr("Q", "L", "N", m, m, m, cdum, m, cdum, cdum, m, cdum, -1, &ierr);
-            lwork_zunmbr_qln_mm = (int)creal(cdum[0]);
+            zunmbr("Q", "L", "N", m, m, m, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
+            lwork_zunmbr_qln_mm = (int)creal(wkopt[0]);
 
             if (n >= mnthr1) {
                 if (wntqn) {
@@ -409,8 +409,8 @@ void zgesdd(const char* jobz, const int m, const int n,
                        &work[itaup], &work[nwork], lwork - nwork, &ierr);
                 nrwork = ie + n;
 
-                dbdsdc("U", "N", n, S, &rwork[ie], dum, 1, dum, 1,
-                       dum, idum, &rwork[nrwork], iwork, info);
+                dbdsdc("U", "N", n, S, &rwork[ie], NULL, 1, NULL, 1,
+                       NULL, NULL, &rwork[nrwork], iwork, info);
 
             } else if (wntqo) {
 
@@ -449,7 +449,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + n * n;
                 nrwork = irvt + n * n;
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", n, n, &rwork[iru], n, &work[iu], ldwrku);
@@ -501,7 +501,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + n * n;
                 nrwork = irvt + n * n;
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", n, n, &rwork[iru], n, U, ldu);
@@ -548,7 +548,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 nrwork = irvt + n * n;
 
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", n, n, &rwork[iru], n, &work[iu], ldwrku);
@@ -583,8 +583,8 @@ void zgesdd(const char* jobz, const int m, const int n,
             if (wntqn) {
 
                 /* Path 5n (M >> N, JOBZ='N') */
-                dbdsdc("U", "N", n, S, &rwork[ie], dum, 1, dum, 1,
-                       dum, idum, &rwork[nrwork], iwork, info);
+                dbdsdc("U", "N", n, S, &rwork[ie], NULL, 1, NULL, 1,
+                       NULL, NULL, &rwork[nrwork], iwork, info);
             } else if (wntqo) {
                 iu = nwork;
                 iru = nrwork;
@@ -607,7 +607,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 nwork = iu + ldwrku * n;
 
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlarcm(n, n, &rwork[irvt], n, VT, ldvt,
@@ -638,7 +638,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + n * n;
                 nrwork = irvt + n * n;
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlarcm(n, n, &rwork[irvt], n, VT, ldvt, A, lda,
@@ -664,7 +664,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + n * n;
                 nrwork = irvt + n * n;
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlarcm(n, n, &rwork[irvt], n, VT, ldvt, A, lda,
@@ -691,8 +691,8 @@ void zgesdd(const char* jobz, const int m, const int n,
             if (wntqn) {
 
                 /* Path 6n (M >= N, JOBZ='N') */
-                dbdsdc("U", "N", n, S, &rwork[ie], dum, 1, dum, 1,
-                       dum, idum, &rwork[nrwork], iwork, info);
+                dbdsdc("U", "N", n, S, &rwork[ie], NULL, 1, NULL, 1,
+                       NULL, NULL, &rwork[nrwork], iwork, info);
             } else if (wntqo) {
                 iu = nwork;
                 iru = nrwork;
@@ -707,7 +707,7 @@ void zgesdd(const char* jobz, const int m, const int n,
 
                 /* Path 6o (M >= N, JOBZ='O') */
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", n, n, &rwork[irvt], n, VT, ldvt);
@@ -747,7 +747,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + n * n;
                 nrwork = irvt + n * n;
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlaset("F", m, n, CZERO, CZERO, U, ldu);
@@ -767,7 +767,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + n * n;
                 nrwork = irvt + n * n;
                 dbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
-                       n, &rwork[irvt], n, dum, idum,
+                       n, &rwork[irvt], n, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlaset("F", m, m, CZERO, CZERO, U, ldu);
@@ -812,8 +812,8 @@ void zgesdd(const char* jobz, const int m, const int n,
                        &work[itaup], &work[nwork], lwork - nwork, &ierr);
                 nrwork = ie + m;
 
-                dbdsdc("U", "N", m, S, &rwork[ie], dum, 1, dum, 1,
-                       dum, idum, &rwork[nrwork], iwork, info);
+                dbdsdc("U", "N", m, S, &rwork[ie], NULL, 1, NULL, 1,
+                       NULL, NULL, &rwork[nrwork], iwork, info);
 
             } else if (wntqo) {
 
@@ -854,7 +854,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + m * m;
                 nrwork = irvt + m * m;
                 dbdsdc("U", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", m, m, &rwork[iru], m, U, ldu);
@@ -906,7 +906,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + m * m;
                 nrwork = irvt + m * m;
                 dbdsdc("U", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", m, m, &rwork[iru], m, U, ldu);
@@ -953,7 +953,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 irvt = iru + m * m;
                 nrwork = irvt + m * m;
                 dbdsdc("U", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", m, m, &rwork[iru], m, U, ldu);
@@ -989,8 +989,8 @@ void zgesdd(const char* jobz, const int m, const int n,
             if (wntqn) {
 
                 /* Path 5tn (N >> M, JOBZ='N') */
-                dbdsdc("L", "N", m, S, &rwork[ie], dum, 1, dum, 1,
-                       dum, idum, &rwork[nrwork], iwork, info);
+                dbdsdc("L", "N", m, S, &rwork[ie], NULL, 1, NULL, 1,
+                       NULL, NULL, &rwork[nrwork], iwork, info);
             } else if (wntqo) {
                 irvt = nrwork;
                 iru = irvt + m * m;
@@ -1015,7 +1015,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 }
 
                 dbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacrm(m, m, U, ldu, &rwork[iru], m,
@@ -1045,7 +1045,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 iru = irvt + m * m;
                 nrwork = iru + m * m;
                 dbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacrm(m, m, U, ldu, &rwork[iru], m, A, lda,
@@ -1071,7 +1071,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 iru = irvt + m * m;
                 nrwork = iru + m * m;
                 dbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacrm(m, m, U, ldu, &rwork[iru], m, A, lda,
@@ -1098,8 +1098,8 @@ void zgesdd(const char* jobz, const int m, const int n,
             if (wntqn) {
 
                 /* Path 6tn (N > M, JOBZ='N') */
-                dbdsdc("L", "N", m, S, &rwork[ie], dum, 1, dum, 1,
-                       dum, idum, &rwork[nrwork], iwork, info);
+                dbdsdc("L", "N", m, S, &rwork[ie], NULL, 1, NULL, 1,
+                       NULL, NULL, &rwork[nrwork], iwork, info);
             } else if (wntqo) {
                 /* Path 6to (N > M, JOBZ='O') */
                 ldwkvt = m;
@@ -1116,7 +1116,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 iru = irvt + m * m;
                 nrwork = iru + m * m;
                 dbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", m, m, &rwork[iru], m, U, ldu);
@@ -1156,7 +1156,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 iru = irvt + m * m;
                 nrwork = iru + m * m;
                 dbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", m, m, &rwork[iru], m, U, ldu);
@@ -1177,7 +1177,7 @@ void zgesdd(const char* jobz, const int m, const int n,
                 nrwork = iru + m * m;
 
                 dbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],
-                       m, &rwork[irvt], m, dum, idum,
+                       m, &rwork[irvt], m, NULL, NULL,
                        &rwork[nrwork], iwork, info);
 
                 zlacp2("F", m, m, &rwork[iru], m, U, ldu);

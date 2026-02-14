@@ -130,11 +130,11 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
         lrwsvdj  = n;
 
         if (lquery) {
-            zgeqp3(m, n, A, lda, iwork, cdummy, cdummy, -1, rdummy, &ierr);
+            zgeqp3(m, n, A, lda, iwork, NULL, cdummy, -1, rdummy, &ierr);
             lwrk_zgeqp3 = (int)creal(cdummy[0]);
-            zgeqrf(n, n, A, lda, cdummy, cdummy, -1, &ierr);
+            zgeqrf(n, n, A, lda, NULL, cdummy, -1, &ierr);
             lwrk_zgeqrf = (int)creal(cdummy[0]);
-            zgelqf(n, n, A, lda, cdummy, cdummy, -1, &ierr);
+            zgelqf(n, n, A, lda, NULL, cdummy, -1, &ierr);
             lwrk_zgelqf = (int)creal(cdummy[0]);
         }
 
@@ -204,7 +204,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                 zgesvj("L", "U", "N", n, n, U, ldu, SVA, n, A,
                        lda, cdummy, -1, rdummy, -1, &ierr);
                 lwrk_zgesvj = (int)creal(cdummy[0]);
-                zunmlq("L", "C", n, n, n, A, lda, cdummy,
+                zunmlq("L", "C", n, n, n, A, lda, NULL,
                        V, ldv, cdummy, -1, &ierr);
                 lwrk_zunmlq = (int)creal(cdummy[0]);
                 if (errest) {
@@ -253,7 +253,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                 zgesvj("L", "U", "N", n, n, U, ldu, SVA, n, A,
                        lda, cdummy, -1, rdummy, -1, &ierr);
                 lwrk_zgesvj = (int)creal(cdummy[0]);
-                zunmqr("L", "N", m, n, n, A, lda, cdummy, U,
+                zunmqr("L", "N", m, n, n, A, lda, NULL, U,
                        ldu, cdummy, -1, &ierr);
                 lwrk_zunmqrm = (int)creal(cdummy[0]);
                 if (errest) {
@@ -370,14 +370,14 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                 if (rowpiv || l2tran) miniwrk = miniwrk + m;
             }
             if (lquery) {
-                zunmqr("L", "N", m, n, n, A, lda, cdummy, U,
+                zunmqr("L", "N", m, n, n, A, lda, NULL, U,
                        ldu, cdummy, -1, &ierr);
                 lwrk_zunmqrm = (int)creal(cdummy[0]);
-                zunmqr("L", "N", n, n, n, A, lda, cdummy, U,
+                zunmqr("L", "N", n, n, n, A, lda, NULL, U,
                        ldu, cdummy, -1, &ierr);
                 lwrk_zunmqr = (int)creal(cdummy[0]);
                 if (!jracc) {
-                    zgeqp3(n, n, A, lda, iwork, cdummy, cdummy,
+                    zgeqp3(n, n, A, lda, iwork, NULL, cdummy,
                            -1, rdummy, &ierr);
                     lwrk_zgeqp3n = (int)creal(cdummy[0]);
                     zgesvj("L", "U", "N", n, n, U, ldu, SVA,
@@ -389,7 +389,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                     zgesvj("L", "U", "V", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
                     lwrk_zgesvjv = (int)creal(cdummy[0]);
-                    zunmlq("L", "C", n, n, n, A, lda, cdummy,
+                    zunmlq("L", "C", n, n, n, A, lda, NULL,
                            V, ldv, cdummy, -1, &ierr);
                     lwrk_zunmlq = (int)creal(cdummy[0]);
                     if (errest) {
@@ -450,10 +450,10 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                     zgesvj("L", "U", "V", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
                     lwrk_zgesvjv = (int)creal(cdummy[0]);
-                    zunmqr("L", "N", n, n, n, cdummy, n, cdummy,
+                    zunmqr("L", "N", n, n, n, NULL, n, NULL,
                            V, ldv, cdummy, -1, &ierr);
                     lwrk_zunmqr = (int)creal(cdummy[0]);
-                    zunmqr("L", "N", m, n, n, A, lda, cdummy, U,
+                    zunmqr("L", "N", m, n, n, A, lda, NULL, U,
                            ldu, cdummy, -1, &ierr);
                     lwrk_zunmqrm = (int)creal(cdummy[0]);
                     if (errest) {

@@ -220,15 +220,15 @@ void zunbdb(const char* trans, const char* signs,
                 zlarfgp(p - i, &X11[i + i * ldx11],
                         &X11[(i + 1) + i * ldx11], 1, &taup1[i]);
             } else if (p == i + 1) {
-                zlarfgp(p - i, &X11[i + i * ldx11],
-                        &X11[i + i * ldx11], 1, &taup1[i]);
+                zlarfgp(1, &X11[i + i * ldx11],
+                        NULL, 1, &taup1[i]);
             }
             if (m - p > i + 1) {
                 zlarfgp(m - p - i, &X21[i + i * ldx21],
                         &X21[(i + 1) + i * ldx21], 1, &taup2[i]);
             } else if (m - p == i + 1) {
-                zlarfgp(m - p - i, &X21[i + i * ldx21],
-                        &X21[i + i * ldx21], 1, &taup2[i]);
+                zlarfgp(1, &X21[i + i * ldx21],
+                        NULL, 1, &taup2[i]);
             }
 
             if (q > i + 1) {
@@ -270,8 +270,8 @@ void zunbdb(const char* trans, const char* signs,
             if (i < q - 1) {
                 zlacgv(q - i - 1, &X11[i + (i + 1) * ldx11], ldx11);
                 if (i == q - 2) {
-                    zlarfgp(q - i - 1, &X11[i + (i + 1) * ldx11],
-                            &X11[i + (i + 1) * ldx11], ldx11, &tauq1[i]);
+                    zlarfgp(1, &X11[i + (i + 1) * ldx11],
+                            NULL, ldx11, &tauq1[i]);
                 } else {
                     zlarfgp(q - i - 1, &X11[i + (i + 1) * ldx11],
                             &X11[i + (i + 2) * ldx11], ldx11, &tauq1[i]);
@@ -280,8 +280,8 @@ void zunbdb(const char* trans, const char* signs,
             if (m - q >= i + 1) {
                 zlacgv(m - q - i, &X12[i + i * ldx12], ldx12);
                 if (m - q == i + 1) {
-                    zlarfgp(m - q - i, &X12[i + i * ldx12],
-                            &X12[i + i * ldx12], ldx12, &tauq2[i]);
+                    zlarfgp(1, &X12[i + i * ldx12],
+                            NULL, ldx12, &tauq2[i]);
                 } else {
                     zlarfgp(m - q - i, &X12[i + i * ldx12],
                             &X12[i + (i + 1) * ldx12], ldx12, &tauq2[i]);
@@ -318,8 +318,8 @@ void zunbdb(const char* trans, const char* signs,
             }
             zlacgv(m - q - i, &X12[i + i * ldx12], ldx12);
             if (i >= m - q - 1) {
-                zlarfgp(m - q - i, &X12[i + i * ldx12],
-                        &X12[i + i * ldx12], ldx12, &tauq2[i]);
+                zlarfgp(1, &X12[i + i * ldx12],
+                        NULL, ldx12, &tauq2[i]);
             } else {
                 zlarfgp(m - q - i, &X12[i + i * ldx12],
                         &X12[i + (i + 1) * ldx12], ldx12, &tauq2[i]);
@@ -390,8 +390,8 @@ void zunbdb(const char* trans, const char* signs,
             zlarfgp(p - i, &X11[i + i * ldx11],
                     &X11[i + (i + 1) * ldx11], ldx11, &taup1[i]);
             if (m - p == i + 1) {
-                zlarfgp(m - p - i, &X21[i + i * ldx21],
-                        &X21[i + i * ldx21], ldx21, &taup2[i]);
+                zlarfgp(1, &X21[i + i * ldx21],
+                        NULL, ldx21, &taup2[i]);
             } else {
                 zlarfgp(m - p - i, &X21[i + i * ldx21],
                         &X21[i + (i + 1) * ldx21], ldx21, &taup2[i]);
