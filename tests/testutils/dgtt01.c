@@ -9,11 +9,11 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlangt(const char* norm, const int n,
-                     const double* const restrict DL,
-                     const double* const restrict D,
-                     const double* const restrict DU);
+extern f64 dlamch(const char* cmach);
+extern f64 dlangt(const char* norm, const int n,
+                     const f64* const restrict DL,
+                     const f64* const restrict D,
+                     const f64* const restrict DU);
 
 /**
  * DGTT01 reconstructs a tridiagonal matrix A from its LU factorization
@@ -36,24 +36,24 @@ extern double dlangt(const char* norm, const int n,
  */
 void dgtt01(
     const int n,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU,
-    const double * const restrict DLF,
-    const double * const restrict DF,
-    const double * const restrict DUF,
-    const double * const restrict DU2,
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU,
+    const f64 * const restrict DLF,
+    const f64 * const restrict DF,
+    const f64 * const restrict DUF,
+    const f64 * const restrict DU2,
     const int * const restrict ipiv,
-    double * const restrict work,
+    f64 * const restrict work,
     const int ldwork,
-    double *resid)
+    f64 *resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, ip, lastj;
-    double anorm, eps, li;
-    double wnorm;
+    f64 anorm, eps, li;
+    f64 wnorm;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -102,7 +102,7 @@ void dgtt01(
         } else {
             /* Swap rows i and i+1 in columns i:lastj */
             for (j = i; j <= lastj; j++) {
-                double temp = work[i + j * ldwork];
+                f64 temp = work[i + j * ldwork];
                 work[i + j * ldwork] = work[(i + 1) + j * ldwork];
                 work[(i + 1) + j * ldwork] = temp;
             }
@@ -129,7 +129,7 @@ void dgtt01(
     /* Since the result is upper Hessenberg, compute column sums manually */
     wnorm = ZERO;
     for (j = 0; j < n; j++) {
-        double colsum = ZERO;
+        f64 colsum = ZERO;
         /* Upper Hessenberg: nonzeros in column j are rows 0 to min(j+1, n-1) */
         int imax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
         for (i = 0; i <= imax; i++) {

@@ -43,7 +43,7 @@ static const int NVAL[] = { 3, 10, 15, 12,  8, 20,  8, 20 };
 #define MAX_TESTS (NM * NTYPES)
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -54,18 +54,18 @@ typedef struct {
 
 /* Global workspace - allocated once, shared across all tests */
 typedef struct {
-    double* A;
-    double* AF;
-    double* B;
-    double* BF;
-    double* U;
-    double* V;
-    double* Q;
-    double* R;
-    double* alpha;
-    double* beta;
-    double* work;
-    double* rwork;
+    f64* A;
+    f64* AF;
+    f64* B;
+    f64* BF;
+    f64* U;
+    f64* V;
+    f64* Q;
+    f64* R;
+    f64* alpha;
+    f64* beta;
+    f64* work;
+    f64* rwork;
     int* iwork;
 } dckgsv_workspace_t;
 
@@ -80,18 +80,18 @@ static int group_setup(void** state)
 
     int lwork = NMAX * NMAX;
 
-    g_ws->A     = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->AF    = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->B     = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->BF    = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->U     = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->V     = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->Q     = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->R     = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->alpha = malloc(NMAX * sizeof(double));
-    g_ws->beta  = malloc(NMAX * sizeof(double));
-    g_ws->work  = malloc(lwork * sizeof(double));
-    g_ws->rwork = malloc(NMAX * sizeof(double));
+    g_ws->A     = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->AF    = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->B     = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->BF    = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->U     = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->V     = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->Q     = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->R     = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->alpha = malloc(NMAX * sizeof(f64));
+    g_ws->beta  = malloc(NMAX * sizeof(f64));
+    g_ws->work  = malloc(lwork * sizeof(f64));
+    g_ws->rwork = malloc(NMAX * sizeof(f64));
     g_ws->iwork = malloc(NMAX * sizeof(int));
 
     if (!g_ws->A || !g_ws->AF || !g_ws->B || !g_ws->BF ||
@@ -146,11 +146,11 @@ static void test_dckgsv_case(void** state)
 
     char type;
     int kla, kua, klb, kub;
-    double anorm, bnorm, cndnma, cndnmb;
+    f64 anorm, bnorm, cndnma, cndnmb;
     int modea, modeb;
     char dista, distb;
     int iinfo;
-    double result[NTESTS];
+    f64 result[NTESTS];
 
     /* Seed RNG for reproducibility */
     uint64_t rng_state[4];

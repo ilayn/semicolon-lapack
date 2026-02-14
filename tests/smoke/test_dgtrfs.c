@@ -18,42 +18,42 @@
 #include "testutils/verify.h"
 
 /* Routines under test */
-extern void dgttrf(const int n, double * const restrict DL,
-                   double * const restrict D, double * const restrict DU,
-                   double * const restrict DU2, int * const restrict ipiv,
+extern void dgttrf(const int n, f64 * const restrict DL,
+                   f64 * const restrict D, f64 * const restrict DU,
+                   f64 * const restrict DU2, int * const restrict ipiv,
                    int *info);
 extern void dgttrs(const char *trans, const int n, const int nrhs,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict DU2,
+                   const f64 * const restrict DL,
+                   const f64 * const restrict D,
+                   const f64 * const restrict DU,
+                   const f64 * const restrict DU2,
                    const int * const restrict ipiv,
-                   double * const restrict B, const int ldb, int *info);
+                   f64 * const restrict B, const int ldb, int *info);
 extern void dgtrfs(const char *trans, const int n, const int nrhs,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict DLF,
-                   const double * const restrict DF,
-                   const double * const restrict DUF,
-                   const double * const restrict DU2,
+                   const f64 * const restrict DL,
+                   const f64 * const restrict D,
+                   const f64 * const restrict DU,
+                   const f64 * const restrict DLF,
+                   const f64 * const restrict DF,
+                   const f64 * const restrict DUF,
+                   const f64 * const restrict DU2,
                    const int * const restrict ipiv,
-                   const double * const restrict B, const int ldb,
-                   double * const restrict X, const int ldx,
-                   double * const restrict ferr, double * const restrict berr,
-                   double * const restrict work, int * const restrict iwork,
+                   const f64 * const restrict B, const int ldb,
+                   f64 * const restrict X, const int ldx,
+                   f64 * const restrict ferr, f64 * const restrict berr,
+                   f64 * const restrict work, int * const restrict iwork,
                    int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
+extern f64 dlamch(const char *cmach);
 extern void dlagtm(const char *trans, const int n, const int nrhs,
-                   const double alpha,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict X, const int ldx,
-                   const double beta,
-                   double * const restrict B, const int ldb);
+                   const f64 alpha,
+                   const f64 * const restrict DL,
+                   const f64 * const restrict D,
+                   const f64 * const restrict DU,
+                   const f64 * const restrict X, const int ldx,
+                   const f64 beta,
+                   f64 * const restrict B, const int ldb);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -61,20 +61,20 @@ extern void dlagtm(const char *trans, const int n, const int nrhs,
 typedef struct {
     int n, nrhs;
     int ldb;
-    double *DL;      /* Original sub-diagonal */
-    double *D;       /* Original diagonal */
-    double *DU;      /* Original super-diagonal */
-    double *DLF;     /* Factored sub-diagonal */
-    double *DF;      /* Factored diagonal */
-    double *DUF;     /* Factored super-diagonal */
-    double *DU2;     /* Second super-diagonal from factorization */
+    f64 *DL;      /* Original sub-diagonal */
+    f64 *D;       /* Original diagonal */
+    f64 *DU;      /* Original super-diagonal */
+    f64 *DLF;     /* Factored sub-diagonal */
+    f64 *DF;      /* Factored diagonal */
+    f64 *DUF;     /* Factored super-diagonal */
+    f64 *DU2;     /* Second super-diagonal from factorization */
     int *ipiv;       /* Pivot indices */
-    double *XACT;    /* Exact solution */
-    double *X;       /* Computed/refined solution */
-    double *B;       /* Right-hand side */
-    double *ferr;    /* Forward error estimates */
-    double *berr;    /* Backward error estimates */
-    double *work;    /* Workspace for dgtrfs */
+    f64 *XACT;    /* Exact solution */
+    f64 *X;       /* Computed/refined solution */
+    f64 *B;       /* Right-hand side */
+    f64 *ferr;    /* Forward error estimates */
+    f64 *berr;    /* Backward error estimates */
+    f64 *work;    /* Workspace for dgtrfs */
     int *iwork;      /* Integer workspace for dgtrfs */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
@@ -86,12 +86,12 @@ static uint64_t g_seed = 2718;
 /**
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
+static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int i;
 
     if (n <= 0) return;
@@ -136,20 +136,20 @@ static int dgtrfs_setup(void **state, int n, int nrhs)
     fix->seed = g_seed++;
     rng_seed(fix->rng_state, fix->seed);
 
-    fix->DL = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->D = malloc(n * sizeof(double));
-    fix->DU = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DLF = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DF = malloc(n * sizeof(double));
-    fix->DUF = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(double));
+    fix->DL = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->D = malloc(n * sizeof(f64));
+    fix->DU = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DLF = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DF = malloc(n * sizeof(f64));
+    fix->DUF = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
-    fix->XACT = malloc(ldb * nrhs * sizeof(double));
-    fix->X = malloc(ldb * nrhs * sizeof(double));
-    fix->B = malloc(ldb * nrhs * sizeof(double));
-    fix->ferr = malloc(nrhs * sizeof(double));
-    fix->berr = malloc(nrhs * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
+    fix->XACT = malloc(ldb * nrhs * sizeof(f64));
+    fix->X = malloc(ldb * nrhs * sizeof(f64));
+    fix->B = malloc(ldb * nrhs * sizeof(f64));
+    fix->ferr = malloc(nrhs * sizeof(f64));
+    fix->berr = malloc(nrhs * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
 
     assert_non_null(fix->DL);
@@ -225,7 +225,7 @@ static int setup_n50_nrhs15(void **state) { return dgtrfs_setup(state, 50, 15); 
  * Returns true on success, false if factorization was singular.
  */
 static int run_dgtrfs_test(dgtrfs_fixture_t *fix, int imat, const char* trans,
-                           double *reslts)
+                           f64 *reslts)
 {
     int info;
     int n = fix->n;
@@ -239,9 +239,9 @@ static int run_dgtrfs_test(dgtrfs_fixture_t *fix, int imat, const char* trans,
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Copy to factored arrays */
-    memcpy(fix->DLF, fix->DL, (m > 0 ? m : 1) * sizeof(double));
-    memcpy(fix->DF, fix->D, n * sizeof(double));
-    memcpy(fix->DUF, fix->DU, (m > 0 ? m : 1) * sizeof(double));
+    memcpy(fix->DLF, fix->DL, (m > 0 ? m : 1) * sizeof(f64));
+    memcpy(fix->DF, fix->D, n * sizeof(f64));
+    memcpy(fix->DUF, fix->DU, (m > 0 ? m : 1) * sizeof(f64));
 
     /* Factor */
     dgttrf(n, fix->DLF, fix->DF, fix->DUF, fix->DU2, fix->ipiv, &info);
@@ -266,7 +266,7 @@ static int run_dgtrfs_test(dgtrfs_fixture_t *fix, int imat, const char* trans,
            0.0, fix->B, ldb);
 
     /* Solve op(A)*X = B to get initial solution */
-    memcpy(fix->X, fix->B, ldx * nrhs * sizeof(double));
+    memcpy(fix->X, fix->B, ldx * nrhs * sizeof(f64));
     dgttrs(trans, n, nrhs, fix->DLF, fix->DF, fix->DUF, fix->DU2, fix->ipiv,
             fix->X, ldx, &info);
     assert_info_success(info);
@@ -290,7 +290,7 @@ static int run_dgtrfs_test(dgtrfs_fixture_t *fix, int imat, const char* trans,
 static void test_dgtrfs_notrans(void **state)
 {
     dgtrfs_fixture_t *fix = *state;
-    double reslts[2];
+    f64 reslts[2];
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
@@ -308,7 +308,7 @@ static void test_dgtrfs_notrans(void **state)
 static void test_dgtrfs_trans(void **state)
 {
     dgtrfs_fixture_t *fix = *state;
-    double reslts[2];
+    f64 reslts[2];
 
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;

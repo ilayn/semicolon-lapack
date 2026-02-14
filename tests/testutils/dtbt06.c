@@ -9,10 +9,10 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int kd, const double* AB, const int ldab,
-                     double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
+                     const int n, const int kd, const f64* AB, const int ldab,
+                     f64* work);
 
 /**
  * DTBT06 computes a test ratio comparing RCOND (the reciprocal
@@ -43,13 +43,13 @@ extern double dlantb(const char* norm, const char* uplo, const char* diag,
  *                        RAT = MAX( RCOND, RCONDC )/MIN( RCOND, RCONDC ) - 1.
  *                        If RAT = 0, the two estimates are exactly the same.
  */
-void dtbt06(const double rcond, const double rcondc,
+void dtbt06(const f64 rcond, const f64 rcondc,
             const char* uplo, const char* diag, const int n, const int kd,
-            const double* AB, const int ldab, double* work, double* rat)
+            const f64* AB, const int ldab, f64* work, f64* rat)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    double anorm, bignum, eps, rmax, rmin, smlnum;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    f64 anorm, bignum, eps, rmax, rmin, smlnum;
 
     eps = dlamch("E");
     rmax = fmax(rcond, rcondc);

@@ -8,13 +8,13 @@
 #include "verify.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansp(const char* norm, const char* uplo, const int n,
-                     const double* const restrict AP,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansp(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict AP,
+                     f64* const restrict work);
 
 /**
  * DPPT03 computes the residual for a symmetric packed matrix times its
@@ -54,14 +54,14 @@ extern double dlansp(const char* norm, const char* uplo, const int n,
  *          norm(I - A*AINV) / ( N * norm(A) * norm(AINV) * EPS )
  */
 void dppt03(const char* uplo, const int n,
-            const double* const restrict A,
-            const double* const restrict AINV,
-            double* const restrict work, const int ldwork,
-            double* const restrict rwork,
-            double* rcond, double* resid)
+            const f64* const restrict A,
+            const f64* const restrict AINV,
+            f64* const restrict work, const int ldwork,
+            f64* const restrict rwork,
+            f64* rcond, f64* resid)
 {
     int i, j, jj;
-    double ainvnm, anorm, eps;
+    f64 ainvnm, anorm, eps;
 
     if (n <= 0) {
         *rcond = 1.0;
@@ -126,5 +126,5 @@ void dppt03(const char* uplo, const int n,
 
     *resid = dlange("1", n, n, work, ldwork, rwork);
 
-    *resid = ((*resid * (*rcond)) / eps) / (double)n;
+    *resid = ((*resid * (*rcond)) / eps) / (f64)n;
 }

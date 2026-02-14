@@ -16,32 +16,32 @@
 
 extern void xerbla(const char* srname, const int info);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern void dlartg(const double f, const double g,
-                   double* c, double* s, double* r);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern void dlartg(const f64 f, const f64 g,
+                   f64* c, f64* s, f64* r);
 
 void dlatms(
     const int m,
     const int n,
     const char* dist,
     const char* sym,
-    double* d,
+    f64* d,
     const int mode,
-    const double cond,
-    const double dmax,
+    const f64 cond,
+    const f64 dmax,
     const int kl,
     const int ku,
     const char* pack,
-    double* A,
+    f64* A,
     const int lda,
-    double* work,
+    f64* work,
     int* info,
     uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWOPI = 6.28318530717958647692528676655900576839;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWOPI = 6.28318530717958647692528676655900576839;
 
     int givens;
     int i, ic, icol = 0, idist, iendch, iinfo, il, ilda,
@@ -50,7 +50,7 @@ void dlatms(
         jkl, jku, jr, k, llb, minlda, mnmin, mr, nc,
         uub;
     int topdwn, ilextr, iltemp;
-    double alpha, angle, c, dummy, extra, s, temp;
+    f64 alpha, angle, c, dummy, extra, s, temp;
 
     *info = 0;
 
@@ -127,7 +127,7 @@ void dlatms(
 
     givens = 0;
     if (isym == 1) {
-        if ((double)(llb + uub) < 0.3 * (double)((1 > mr + nc) ? 1 : mr + nc))
+        if ((f64)(llb + uub) < 0.3 * (f64)((1 > mr + nc) ? 1 : mr + nc))
             givens = 1;
     } else {
         if (2 * llb < m)

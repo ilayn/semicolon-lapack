@@ -32,17 +32,17 @@
 void dlaptm(
     const int n,
     const int nrhs,
-    const double alpha,
-    const double* const restrict D,
-    const double* const restrict E,
-    const double* const restrict X,
+    const f64 alpha,
+    const f64* const restrict D,
+    const f64* const restrict E,
+    const f64* const restrict X,
     const int ldx,
-    const double beta,
-    double* const restrict B,
+    const f64 beta,
+    f64* const restrict B,
     const int ldb)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     if (n == 0) {
         return;

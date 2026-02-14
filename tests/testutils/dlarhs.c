@@ -12,7 +12,7 @@
 #include "verify.h"
 
 /* Local helper for generating random vectors */
-static void dlarhs_dlarnv(const int idist, const int n, double* x,
+static void dlarhs_dlarnv(const int idist, const int n, f64* x,
                           uint64_t state[static 4]);
 
 /**
@@ -46,12 +46,12 @@ static void dlarhs_dlarnv(const int idist, const int n, double* x,
  */
 void dlarhs(const char* path, const char* xtype, const char* uplo,
             const char* trans, const int m, const int n, const int kl,
-            const int ku, const int nrhs, const double* A, const int lda,
-            double* X, const int ldx, double* B, const int ldb,
+            const int ku, const int nrhs, const f64* A, const int lda,
+            f64* X, const int ldx, f64* B, const int ldb,
             int* info, uint64_t state[static 4])
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int tran, notran, gen, sym, tri, qrs, band;
     char c2[3];
@@ -172,7 +172,7 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
          * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
         /* First copy X to B, then multiply */
         for (j = 0; j < nrhs; j++) {
-            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(double));
+            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(f64));
         }
         CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
         CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
@@ -184,7 +184,7 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
          * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
         /* First copy X to B, then multiply each column */
         for (j = 0; j < nrhs; j++) {
-            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(double));
+            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(f64));
         }
         CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
         CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
@@ -197,7 +197,7 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
         /* Triangular banded - use DTBMV (one column at a time)
          * ku encodes diagonal type: ku=2 => unit triangular, ku=1 => non-unit */
         for (j = 0; j < nrhs; j++) {
-            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(double));
+            memcpy(&B[j * ldb], &X[j * ldx], n * sizeof(f64));
         }
         CBLAS_UPLO uploC = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
         CBLAS_TRANSPOSE transA = tran ? CblasTrans : CblasNoTrans;
@@ -232,7 +232,7 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
  * @param[in] n      Length of vector.
  * @param[out] x     Output vector.
  */
-static void dlarhs_dlarnv(const int idist, const int n, double* x,
+static void dlarhs_dlarnv(const int idist, const int n, f64* x,
                           uint64_t state[static 4])
 {
     int i;

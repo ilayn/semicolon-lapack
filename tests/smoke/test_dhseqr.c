@@ -25,40 +25,40 @@
 /* Test fixture */
 typedef struct {
     int n;
-    double* A;       /* Original matrix */
-    double* H;       /* Hessenberg matrix */
-    double* T1;      /* Schur form (with Z) */
-    double* T2;      /* Schur form (without Z) */
-    double* Z;       /* Schur vectors */
-    double* wr1;     /* Real eigenvalues (with Z) */
-    double* wi1;     /* Imaginary eigenvalues (with Z) */
-    double* wr2;     /* Real eigenvalues (without Z) */
-    double* wi2;     /* Imaginary eigenvalues (without Z) */
-    double* work;    /* Workspace */
-    double* tau;     /* Householder reflectors */
+    f64* A;       /* Original matrix */
+    f64* H;       /* Hessenberg matrix */
+    f64* T1;      /* Schur form (with Z) */
+    f64* T2;      /* Schur form (without Z) */
+    f64* Z;       /* Schur vectors */
+    f64* wr1;     /* Real eigenvalues (with Z) */
+    f64* wi1;     /* Imaginary eigenvalues (with Z) */
+    f64* wr2;     /* Real eigenvalues (without Z) */
+    f64* wi2;     /* Imaginary eigenvalues (without Z) */
+    f64* work;    /* Workspace */
+    f64* tau;     /* Householder reflectors */
     uint64_t seed;
     uint64_t rng_state[4];
 } dhseqr_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
 extern void dgehrd(const int n, const int ilo, const int ihi,
-                   double* A, const int lda, double* tau,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* tau,
+                   f64* work, const int lwork, int* info);
 extern void dorghr(const int n, const int ilo, const int ihi,
-                   double* A, const int lda, const double* tau,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, const f64* tau,
+                   f64* work, const int lwork, int* info);
 extern void dhseqr(const char* job, const char* compz, const int n,
-                   const int ilo, const int ihi, double* H, const int ldh,
-                   double* wr, double* wi, double* Z, const int ldz,
-                   double* work, const int lwork, int* info);
+                   const int ilo, const int ihi, f64* H, const int ldh,
+                   f64* wr, f64* wi, f64* Z, const int ldz,
+                   f64* work, const int lwork, int* info);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
@@ -69,20 +69,20 @@ static int setup_N(void** state, int n) {
     fix->seed = 0x87654321ULL;
 
     /* Allocate matrices */
-    fix->A = malloc(n * n * sizeof(double));
-    fix->H = malloc(n * n * sizeof(double));
-    fix->T1 = malloc(n * n * sizeof(double));
-    fix->T2 = malloc(n * n * sizeof(double));
-    fix->Z = malloc(n * n * sizeof(double));
-    fix->wr1 = malloc(n * sizeof(double));
-    fix->wi1 = malloc(n * sizeof(double));
-    fix->wr2 = malloc(n * sizeof(double));
-    fix->wi2 = malloc(n * sizeof(double));
-    fix->tau = malloc(n * sizeof(double));
+    fix->A = malloc(n * n * sizeof(f64));
+    fix->H = malloc(n * n * sizeof(f64));
+    fix->T1 = malloc(n * n * sizeof(f64));
+    fix->T2 = malloc(n * n * sizeof(f64));
+    fix->Z = malloc(n * n * sizeof(f64));
+    fix->wr1 = malloc(n * sizeof(f64));
+    fix->wi1 = malloc(n * sizeof(f64));
+    fix->wr2 = malloc(n * sizeof(f64));
+    fix->wi2 = malloc(n * sizeof(f64));
+    fix->tau = malloc(n * sizeof(f64));
 
     /* Workspace: need at least 2*n*n for verification + lwork for routines */
     int lwork = 6 * n * n + 2 * n;
-    fix->work = malloc(lwork * sizeof(double));
+    fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->H || !fix->T1 || !fix->T2 || !fix->Z ||
         !fix->wr1 || !fix->wi1 || !fix->wr2 || !fix->wi2 ||
@@ -127,7 +127,7 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate upper Hessenberg test matrix.
  */
-static void generate_hessenberg_matrix(int n, double* H, int ldh, double anorm,
+static void generate_hessenberg_matrix(int n, f64* H, int ldh, f64 anorm,
                                        uint64_t state[static 4])
 {
     /* Generate random Hessenberg matrix directly */
@@ -145,10 +145,10 @@ static void generate_hessenberg_matrix(int n, double* H, int ldh, double anorm,
  * Compare two Schur forms T1 and T2.
  * Returns | T1 - T2 | / ( |T1| ulp )
  */
-static double compare_schur_forms(int n, const double* T1, const double* T2, int ldt, double* work)
+static f64 compare_schur_forms(int n, const f64* T1, const f64* T2, int ldt, f64* work)
 {
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
 
     /* Compute T1 - T2 in work */
     for (int j = 0; j < n; j++) {
@@ -157,8 +157,8 @@ static double compare_schur_forms(int n, const double* T1, const double* T2, int
         }
     }
 
-    double diff = dlange("1", n, n, work, n, &work[n * n]);
-    double tnorm = dlange("1", n, n, T1, ldt, &work[n * n]);
+    f64 diff = dlange("1", n, n, work, n, &work[n * n]);
+    f64 tnorm = dlange("1", n, n, T1, ldt, &work[n * n]);
 
     if (tnorm < unfl) tnorm = unfl;
 
@@ -169,19 +169,19 @@ static double compare_schur_forms(int n, const double* T1, const double* T2, int
  * Compare two eigenvalue sets.
  * Returns max | W1 - W2 | / ( max(|W1|, |W2|) ulp )
  */
-static double compare_eigenvalues(int n, const double* wr1, const double* wi1,
-                                  const double* wr2, const double* wi2)
+static f64 compare_eigenvalues(int n, const f64* wr1, const f64* wi1,
+                                  const f64* wr2, const f64* wi2)
 {
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
 
-    double maxw = 0.0;
-    double maxdiff = 0.0;
+    f64 maxw = 0.0;
+    f64 maxdiff = 0.0;
 
     for (int j = 0; j < n; j++) {
-        double w1 = fabs(wr1[j]) + fabs(wi1[j]);
-        double w2 = fabs(wr2[j]) + fabs(wi2[j]);
-        double diff = fabs(wr1[j] - wr2[j]) + fabs(wi1[j] - wi2[j]);
+        f64 w1 = fabs(wr1[j]) + fabs(wi1[j]);
+        f64 w2 = fabs(wr2[j]) + fabs(wi2[j]);
+        f64 diff = fabs(wr1[j] - wr2[j]) + fabs(wi1[j] - wi2[j]);
 
         if (w1 > maxw) maxw = w1;
         if (w2 > maxw) maxw = w2;
@@ -201,10 +201,10 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
     int n = fix->n;
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     /* Generate Hessenberg matrix */
     generate_hessenberg_matrix(n, fix->H, lda, ONE, fix->rng_state);
@@ -249,11 +249,11 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
     assert_residual_ok(result[1]);  /* Z orthogonality */
 
     /* Test 7: | T2 - T1 | / ( |T| ulp ) */
-    double resid7 = compare_schur_forms(n, fix->T1, fix->T2, lda, fix->work);
+    f64 resid7 = compare_schur_forms(n, fix->T1, fix->T2, lda, fix->work);
     assert_residual_ok(resid7);
 
     /* Test 8: | W2 - W1 | / ( max|W| ulp ) */
-    double resid8 = compare_eigenvalues(n, fix->wr1, fix->wi1, fix->wr2, fix->wi2);
+    f64 resid8 = compare_eigenvalues(n, fix->wr1, fix->wi1, fix->wr2, fix->wi2);
     assert_residual_ok(resid8);
 }
 
@@ -325,14 +325,14 @@ static void test_workspace_query(void** state)
     dhseqr_fixture_t* fix = *state;
     int n = fix->n;
     int info;
-    double work_query;
+    f64 work_query;
 
     /* Query optimal workspace (0-based indexing) */
     dhseqr("S", "I", n, 0, n - 1, fix->H, n, fix->wr1, fix->wi1,
            fix->Z, n, &work_query, -1, &info);
 
     assert_info_success(info);
-    assert_true(work_query >= (double)n);
+    assert_true(work_query >= (f64)n);
 }
 
 /**
@@ -345,13 +345,13 @@ static void test_diagonal_matrix(void** state)
     int lda = n;
     int info;
 
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Create diagonal matrix */
     dlaset("F", n, n, ZERO, ZERO, fix->H, lda);
     for (int j = 0; j < n; j++) {
-        fix->H[j + j * lda] = (double)(j + 1);
+        fix->H[j + j * lda] = (f64)(j + 1);
     }
 
     dlacpy(" ", n, n, fix->H, lda, fix->T1, lda);
@@ -373,11 +373,11 @@ static void test_diagonal_matrix(void** state)
     }
 
     /* Z should still be close to identity for diagonal input */
-    double resid = 0.0;
+    f64 resid = 0.0;
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
-            double expected = (i == j) ? ONE : ZERO;
-            double err = fabs(fix->Z[i + j * lda] - expected);
+            f64 expected = (i == j) ? ONE : ZERO;
+            f64 err = fabs(fix->Z[i + j * lda] - expected);
             if (err > resid) resid = err;
         }
     }

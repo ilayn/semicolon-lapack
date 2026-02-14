@@ -26,30 +26,30 @@
 /* Test fixture */
 typedef struct {
     int n;
-    double* A;       /* Original matrix */
-    double* H;       /* Hessenberg result */
-    double* Q;       /* Orthogonal matrix */
-    double* work;    /* Workspace */
-    double* tau;     /* Householder reflectors */
+    f64* A;       /* Original matrix */
+    f64* H;       /* Hessenberg result */
+    f64* Q;       /* Orthogonal matrix */
+    f64* work;    /* Workspace */
+    f64* tau;     /* Householder reflectors */
     uint64_t seed;
     uint64_t rng_state[4];
 } dgehrd_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
 extern void dgehrd(const int n, const int ilo, const int ihi,
-                   double* A, const int lda, double* tau,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* tau,
+                   f64* work, const int lwork, int* info);
 extern void dorghr(const int n, const int ilo, const int ihi,
-                   double* A, const int lda, const double* tau,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, const f64* tau,
+                   f64* work, const int lwork, int* info);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
@@ -60,14 +60,14 @@ static int setup_N(void** state, int n) {
     fix->seed = 0x12345678ULL;
 
     /* Allocate matrices */
-    fix->A = malloc(n * n * sizeof(double));
-    fix->H = malloc(n * n * sizeof(double));
-    fix->Q = malloc(n * n * sizeof(double));
-    fix->tau = malloc(n * sizeof(double));
+    fix->A = malloc(n * n * sizeof(f64));
+    fix->H = malloc(n * n * sizeof(f64));
+    fix->Q = malloc(n * n * sizeof(f64));
+    fix->tau = malloc(n * sizeof(f64));
 
     /* Workspace: need at least 2*n*n for verification + lwork for routines */
     int lwork = 4 * n * n + 2 * n;
-    fix->work = malloc(lwork * sizeof(double));
+    fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->H || !fix->Q || !fix->tau || !fix->work) {
         free(fix->A); free(fix->H); free(fix->Q);
@@ -109,13 +109,13 @@ static int setup_32(void** state) { return setup_N(state, 32); }
  * @param lda    Leading dimension
  * @param anorm  Desired matrix norm
  */
-static void generate_test_matrix(int itype, int n, double* A, int lda, double anorm,
+static void generate_test_matrix(int itype, int n, f64* A, int lda, f64 anorm,
                                  uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double ulp = dlamch("P");
+    f64 ulp = dlamch("P");
     (void)ulp;  /* Used in some matrix types via dlatm4 */
 
     /* Initialize to zero */
@@ -158,8 +158,8 @@ static void generate_test_matrix(int itype, int n, double* A, int lda, double an
         case 8:
             /* Scaled diagonal matrices */
             {
-                double scale = (itype == 7) ? sqrt(dlamch("O")) * ulp / (double)n
-                                            : sqrt(dlamch("U")) * (double)n / ulp;
+                f64 scale = (itype == 7) ? sqrt(dlamch("O")) * ulp / (f64)n
+                                            : sqrt(dlamch("U")) * (f64)n / ulp;
                 dlatm4(4, n, 0, 0, 1, scale, ulp, ZERO, 2, A, lda, state);
             }
             break;
@@ -184,10 +184,10 @@ static void test_hessenberg_reduction(dgehrd_fixture_t* fix, int itype)
     int n = fix->n;
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
-    const double ONE = 1.0;
-    double anorm = ONE;
+    const f64 ONE = 1.0;
+    f64 anorm = ONE;
 
     /* Generate test matrix */
     generate_test_matrix(itype, n, fix->A, lda, anorm, fix->rng_state);
@@ -283,12 +283,12 @@ static void test_workspace_query(void** state)
     dgehrd_fixture_t* fix = *state;
     int n = fix->n;
     int info;
-    double work_query;
+    f64 work_query;
 
     /* Query optimal workspace */
     dgehrd(n, 0, n - 1, fix->H, n, fix->tau, &work_query, -1, &info);
     assert_info_success(info);
-    assert_true(work_query >= (double)n);
+    assert_true(work_query >= (f64)n);
 
     /* Also test dorghr workspace query */
     dlacpy(" ", n, n, fix->A, n, fix->H, n);
@@ -298,7 +298,7 @@ static void test_workspace_query(void** state)
     dlacpy(" ", n, n, fix->H, n, fix->Q, n);
     dorghr(n, 0, n - 1, fix->Q, n, fix->tau, &work_query, -1, &info);
     assert_info_success(info);
-    assert_true(work_query >= (double)n);
+    assert_true(work_query >= (f64)n);
 }
 
 /**
@@ -324,9 +324,9 @@ static void test_partial_range(void** state)
 
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     /* Reduce only the middle portion (0-based: from column 1 to n-2) */
     int ilo = 1;

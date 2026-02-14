@@ -20,40 +20,40 @@
 #define NPOW  (2*NSZ + 1)   /* Number of powers: 11 */
 
 /* Equilibration routines under test */
-extern void dgeequ(const int m, const int n, const double* A, const int lda,
-                   double* r, double* c, double* rowcnd, double* colcnd,
-                   double* amax, int* info);
+extern void dgeequ(const int m, const int n, const f64* A, const int lda,
+                   f64* r, f64* c, f64* rowcnd, f64* colcnd,
+                   f64* amax, int* info);
 
 extern void dgbequ(const int m, const int n, const int kl, const int ku,
-                   const double* AB, const int ldab,
-                   double* r, double* c, double* rowcnd, double* colcnd,
-                   double* amax, int* info);
+                   const f64* AB, const int ldab,
+                   f64* r, f64* c, f64* rowcnd, f64* colcnd,
+                   f64* amax, int* info);
 
-extern void dpoequ(const int n, const double* A, const int lda,
-                   double* s, double* scond, double* amax, int* info);
+extern void dpoequ(const int n, const f64* A, const int lda,
+                   f64* s, f64* scond, f64* amax, int* info);
 
-extern void dppequ(const char* uplo, const int n, const double* AP,
-                   double* s, double* scond, double* amax, int* info);
+extern void dppequ(const char* uplo, const int n, const f64* AP,
+                   f64* s, f64* scond, f64* amax, int* info);
 
 extern void dpbequ(const char* uplo, const int n, const int kd,
-                   const double* AB, const int ldab,
-                   double* s, double* scond, double* amax, int* info);
+                   const f64* AB, const int ldab,
+                   f64* s, f64* scond, f64* amax, int* info);
 
 /* Utility */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * Test workspace - shared across all tests.
  */
 typedef struct {
-    double A[NSZ * NSZ];        /* General dense matrix */
-    double AB[NSZB * NSZ];      /* Band matrix storage */
-    double AP[NSZP];            /* Packed matrix storage */
-    double R[NSZ];              /* Row scale factors */
-    double C[NSZ];              /* Column scale factors */
-    double POW[NPOW];           /* POW[i] = 10^i */
-    double RPOW[NPOW];          /* RPOW[i] = 10^(-i) */
-    double eps;                 /* Machine epsilon */
+    f64 A[NSZ * NSZ];        /* General dense matrix */
+    f64 AB[NSZB * NSZ];      /* Band matrix storage */
+    f64 AP[NSZP];            /* Packed matrix storage */
+    f64 R[NSZ];              /* Row scale factors */
+    f64 C[NSZ];              /* Column scale factors */
+    f64 POW[NPOW];           /* POW[i] = 10^i */
+    f64 RPOW[NPOW];          /* RPOW[i] = 10^(-i) */
+    f64 eps;                 /* Machine epsilon */
 } dchkeq_workspace_t;
 
 static dchkeq_workspace_t* g_ws = NULL;
@@ -70,7 +70,7 @@ static int group_setup(void** state)
 
     /* Initialize power arrays: POW[i] = 10^i, RPOW[i] = 10^(-i) */
     for (int i = 0; i < NPOW; i++) {
-        g_ws->POW[i] = pow(10.0, (double)i);
+        g_ws->POW[i] = pow(10.0, (f64)i);
         g_ws->RPOW[i] = 1.0 / g_ws->POW[i];
     }
 
@@ -104,8 +104,8 @@ static void test_dgeequ(void** state)
 {
     (void)state;
 
-    double resid = 0.0;
-    double rcond, ccond, norm;
+    f64 resid = 0.0;
+    f64 rcond, ccond, norm;
     int info;
 
     /* Test all M x N combinations */
@@ -145,23 +145,23 @@ static void test_dgeequ(void** state)
                 /* Our RPOW[k] = 10^(-k), so RPOW(M) = RPOW[M-1] with 0-based */
                 /* But m here is the actual dimension (0 to NSZ), not 1-based */
                 /* For m>0, RPOW(m) in Fortran = 10^(-(m-1)) = g_ws->RPOW[m-1] */
-                double expected_rcond = g_ws->RPOW[m - 1];
+                f64 expected_rcond = g_ws->RPOW[m - 1];
                 resid = fmax(resid, fabs((rcond - expected_rcond) / expected_rcond));
 
                 /* Check CCOND = RPOW(N) */
-                double expected_ccond = g_ws->RPOW[n - 1];
+                f64 expected_ccond = g_ws->RPOW[n - 1];
                 resid = fmax(resid, fabs((ccond - expected_ccond) / expected_ccond));
 
                 /* Check NORM = POW(N+M+1) */
                 /* Fortran POW(N+M+1) = 10^(N+M+1-1) = 10^(N+M) = g_ws->POW[n+m] */
-                double expected_norm = g_ws->POW[n + m];
+                f64 expected_norm = g_ws->POW[n + m];
                 resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
                 /* Check row scalings R(I) = RPOW(I+N+1) */
                 /* Fortran I=1..M: RPOW(I+N+1) = 10^(-(I+N+1-1)) = 10^(-(I+N)) */
                 /* 0-based i=0..m-1: expected = 10^(-(i+1+n)) = g_ws->RPOW[i+1+n] */
                 for (int i = 0; i < m; i++) {
-                    double expected_r = g_ws->RPOW[i + 1 + n];
+                    f64 expected_r = g_ws->RPOW[i + 1 + n];
                     resid = fmax(resid, fabs((g_ws->R[i] - expected_r) / expected_r));
                 }
 
@@ -169,7 +169,7 @@ static void test_dgeequ(void** state)
                 /* Fortran J=1..N: POW(N-J+1) = 10^(N-J+1-1) = 10^(N-J) */
                 /* 0-based j=0..n-1: expected = 10^(n-(j+1)) = 10^(n-j-1) = g_ws->POW[n-j-1] */
                 for (int j = 0; j < n; j++) {
-                    double expected_c = g_ws->POW[n - j - 1];
+                    f64 expected_c = g_ws->POW[n - j - 1];
                     resid = fmax(resid, fabs((g_ws->C[j] - expected_c) / expected_c));
                 }
             }
@@ -217,8 +217,8 @@ static void test_dgbequ(void** state)
 {
     (void)state;
 
-    double resid = 0.0;
-    double rcond, ccond, norm;
+    f64 resid = 0.0;
+    f64 rcond, ccond, norm;
     int info;
 
     for (int n = 0; n <= NSZ; n++) {
@@ -269,13 +269,13 @@ static void test_dgbequ(void** state)
                         }
                     } else if (n != 0 && m != 0) {
                         /* Check RCOND = min(R)/max(R) */
-                        double rcmin = g_ws->R[0];
-                        double rcmax = g_ws->R[0];
+                        f64 rcmin = g_ws->R[0];
+                        f64 rcmax = g_ws->R[0];
                         for (int i = 0; i < m; i++) {
                             rcmin = fmin(rcmin, g_ws->R[i]);
                             rcmax = fmax(rcmax, g_ws->R[i]);
                         }
-                        double ratio = rcmin / rcmax;
+                        f64 ratio = rcmin / rcmax;
                         resid = fmax(resid, fabs((rcond - ratio) / ratio));
 
                         /* Check CCOND = min(C)/max(C) */
@@ -289,7 +289,7 @@ static void test_dgbequ(void** state)
                         resid = fmax(resid, fabs((ccond - ratio) / ratio));
 
                         /* Check NORM = POW(N+M+1) */
-                        double expected_norm = g_ws->POW[n + m];
+                        f64 expected_norm = g_ws->POW[n + m];
                         resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
                         /* Check that equilibrated matrix has max element ~1 per row */
@@ -336,8 +336,8 @@ static void test_dpoequ(void** state)
 {
     (void)state;
 
-    double resid = 0.0;
-    double scond, norm;
+    f64 resid = 0.0;
+    f64 scond, norm;
     int info;
 
     for (int n = 0; n <= NSZ; n++) {
@@ -362,16 +362,16 @@ static void test_dpoequ(void** state)
             resid = 1.0;
         } else if (n != 0) {
             /* Check SCOND = RPOW(N) = 10^(-(N-1)) = g_ws->RPOW[n-1] */
-            double expected_scond = g_ws->RPOW[n - 1];
+            f64 expected_scond = g_ws->RPOW[n - 1];
             resid = fmax(resid, fabs((scond - expected_scond) / expected_scond));
 
             /* Check NORM = POW(2*N+1) = 10^(2*N) = g_ws->POW[2*n] */
-            double expected_norm = g_ws->POW[2 * n];
+            f64 expected_norm = g_ws->POW[2 * n];
             resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
             /* Check S(I) = RPOW(I+1) = 10^(-I) = g_ws->RPOW[i+1] for 0-based i */
             for (int i = 0; i < n; i++) {
-                double expected_s = g_ws->RPOW[i + 1];
+                f64 expected_s = g_ws->RPOW[i + 1];
                 resid = fmax(resid, fabs((g_ws->R[i] - expected_s) / expected_s));
             }
         }
@@ -397,8 +397,8 @@ static void test_dppequ(void** state)
 {
     (void)state;
 
-    double resid = 0.0;
-    double scond, norm;
+    f64 resid = 0.0;
+    f64 scond, norm;
     int info;
 
     for (int n = 0; n <= NSZ; n++) {
@@ -420,14 +420,14 @@ static void test_dppequ(void** state)
         if (info != 0) {
             resid = 1.0;
         } else if (n != 0) {
-            double expected_scond = g_ws->RPOW[n - 1];
+            f64 expected_scond = g_ws->RPOW[n - 1];
             resid = fmax(resid, fabs((scond - expected_scond) / expected_scond));
 
-            double expected_norm = g_ws->POW[2 * n];
+            f64 expected_norm = g_ws->POW[2 * n];
             resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
             for (int i = 0; i < n; i++) {
-                double expected_s = g_ws->RPOW[i + 1];
+                f64 expected_s = g_ws->RPOW[i + 1];
                 resid = fmax(resid, fabs((g_ws->R[i] - expected_s) / expected_s));
             }
         }
@@ -450,14 +450,14 @@ static void test_dppequ(void** state)
         if (info != 0) {
             resid = 1.0;
         } else if (n != 0) {
-            double expected_scond = g_ws->RPOW[n - 1];
+            f64 expected_scond = g_ws->RPOW[n - 1];
             resid = fmax(resid, fabs((scond - expected_scond) / expected_scond));
 
-            double expected_norm = g_ws->POW[2 * n];
+            f64 expected_norm = g_ws->POW[2 * n];
             resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
             for (int i = 0; i < n; i++) {
-                double expected_s = g_ws->RPOW[i + 1];
+                f64 expected_s = g_ws->RPOW[i + 1];
                 resid = fmax(resid, fabs((g_ws->R[i] - expected_s) / expected_s));
             }
         }
@@ -485,8 +485,8 @@ static void test_dpbequ(void** state)
 {
     (void)state;
 
-    double resid = 0.0;
-    double scond, norm;
+    f64 resid = 0.0;
+    f64 scond, norm;
     int info;
 
     for (int n = 0; n <= NSZ; n++) {
@@ -510,14 +510,14 @@ static void test_dpbequ(void** state)
             if (info != 0) {
                 resid = 1.0;
             } else if (n != 0) {
-                double expected_scond = g_ws->RPOW[n - 1];
+                f64 expected_scond = g_ws->RPOW[n - 1];
                 resid = fmax(resid, fabs((scond - expected_scond) / expected_scond));
 
-                double expected_norm = g_ws->POW[2 * n];
+                f64 expected_norm = g_ws->POW[2 * n];
                 resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
                 for (int i = 0; i < n; i++) {
-                    double expected_s = g_ws->RPOW[i + 1];
+                    f64 expected_s = g_ws->RPOW[i + 1];
                     resid = fmax(resid, fabs((g_ws->R[i] - expected_s) / expected_s));
                 }
             }
@@ -550,14 +550,14 @@ static void test_dpbequ(void** state)
             if (info != 0) {
                 resid = 1.0;
             } else if (n != 0) {
-                double expected_scond = g_ws->RPOW[n - 1];
+                f64 expected_scond = g_ws->RPOW[n - 1];
                 resid = fmax(resid, fabs((scond - expected_scond) / expected_scond));
 
-                double expected_norm = g_ws->POW[2 * n];
+                f64 expected_norm = g_ws->POW[2 * n];
                 resid = fmax(resid, fabs((norm - expected_norm) / expected_norm));
 
                 for (int i = 0; i < n; i++) {
-                    double expected_s = g_ws->RPOW[i + 1];
+                    f64 expected_s = g_ws->RPOW[i + 1];
                     resid = fmax(resid, fabs((g_ws->R[i] - expected_s) / expected_s));
                 }
             }

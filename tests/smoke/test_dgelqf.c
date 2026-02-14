@@ -18,9 +18,9 @@
 typedef struct {
     int m, n;
     int lda;
-    double *A, *AF, *Q, *L;
-    double *tau, *work, *rwork;
-    double *d, *genwork;
+    f64 *A, *AF, *Q, *L;
+    f64 *tau, *work, *rwork;
+    f64 *d, *genwork;
     int lwork;
     uint64_t seed;
 } lq_fixture_t;
@@ -41,15 +41,15 @@ static int lq_setup(void **state, int m, int n)
     int minmn = m < n ? m : n;
     fix->lwork = maxmn * 64;
 
-    fix->A = calloc(fix->lda * maxmn, sizeof(double));
-    fix->AF = calloc(fix->lda * maxmn, sizeof(double));
-    fix->Q = calloc(fix->lda * maxmn, sizeof(double));
-    fix->L = calloc(fix->lda * maxmn, sizeof(double));
-    fix->tau = calloc(minmn, sizeof(double));
-    fix->work = calloc(fix->lwork, sizeof(double));
-    fix->rwork = calloc(maxmn, sizeof(double));
-    fix->d = calloc(minmn, sizeof(double));
-    fix->genwork = calloc(3 * maxmn, sizeof(double));
+    fix->A = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->AF = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->Q = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->L = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->tau = calloc(minmn, sizeof(f64));
+    fix->work = calloc(fix->lwork, sizeof(f64));
+    fix->rwork = calloc(maxmn, sizeof(f64));
+    fix->d = calloc(minmn, sizeof(f64));
+    fix->genwork = calloc(3 * maxmn, sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -90,8 +90,8 @@ static void run_lqt01(lq_fixture_t *fix, int imat)
 {
     char type, dist;
     int kl, ku, mode, info;
-    double anorm, cndnum;
-    double result[2];
+    f64 anorm, cndnum;
+    f64 result[2];
 
     dlatb4("DGE", imat, fix->m, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 

@@ -22,72 +22,72 @@
 
 /* Routines under test */
 extern void dpbsv(const char* uplo, const int n, const int kd, const int nrhs,
-                  double* AB, const int ldab, double* B, const int ldb, int* info);
+                  f64* AB, const int ldab, f64* B, const int ldb, int* info);
 extern void dpbsvx(const char* fact, const char* uplo, const int n, const int kd,
-                   const int nrhs, double* AB, const int ldab,
-                   double* AFB, const int ldafb, char* equed, double* S,
-                   double* B, const int ldb, double* X, const int ldx,
-                   double* rcond, double* ferr, double* berr,
-                   double* work, int* iwork, int* info);
+                   const int nrhs, f64* AB, const int ldab,
+                   f64* AFB, const int ldafb, char* equed, f64* S,
+                   f64* B, const int ldb, f64* X, const int ldx,
+                   f64* rcond, f64* ferr, f64* berr,
+                   f64* work, int* iwork, int* info);
 
 /* Supporting routines */
 extern void dpbtrf(const char* uplo, const int n, const int kd,
-                   double* AB, const int ldab, int* info);
+                   f64* AB, const int ldab, int* info);
 extern void dpbtrs(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* AB, const int ldab, double* B, const int ldb,
+                   const f64* AB, const int ldab, f64* B, const int ldb,
                    int* info);
 extern void dpbequ(const char* uplo, const int n, const int kd,
-                   const double* AB, const int ldab, double* S,
-                   double* scond, double* amax, int* info);
+                   const f64* AB, const int ldab, f64* S,
+                   f64* scond, f64* amax, int* info);
 extern void dlaqsb(const char* uplo, const int n, const int kd,
-                   double* AB, const int ldab, const double* S,
-                   const double scond, const double amax, char* equed);
-extern double dlansb(const char* norm, const char* uplo, const int n,
-                     const int k, const double* AB, const int ldab,
-                     double* work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   f64* AB, const int ldab, const f64* S,
+                   const f64 scond, const f64 amax, char* equed);
+extern f64 dlansb(const char* norm, const char* uplo, const int n,
+                     const int k, const f64* AB, const int ldab,
+                     f64* work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
 
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku,
-                   const char* pack, double* A, const int lda,
-                   double* work, int* info, uint64_t state[static 4]);
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku,
+                   const char* pack, f64* A, const int lda,
+                   f64* work, int* info, uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n,
                    const int kl, const int ku, const int nrhs,
-                   const double* A, const int lda, double* X, const int ldx,
-                   double* B, const int ldb, int* info,
+                   const f64* A, const int lda, f64* X, const int ldx,
+                   f64* B, const int ldb, int* info,
                    uint64_t state[static 4]);
 
 /* Verification routines */
 extern void dpbt01(const char* uplo, const int n, const int kd,
-                   const double* A, const int lda, double* AFAC,
-                   const int ldafac, double* rwork, double* resid);
+                   const f64* A, const int lda, f64* AFAC,
+                   const int ldafac, f64* rwork, f64* resid);
 extern void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* A, const int lda, const double* X,
-                   const int ldx, double* B, const int ldb,
-                   double* rwork, double* resid);
+                   const f64* A, const int lda, const f64* X,
+                   const int ldx, f64* B, const int ldb,
+                   f64* rwork, f64* resid);
 extern void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* AB, const int ldab,
-                   const double* B, const int ldb,
-                   const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr,
-                   double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* AB, const int ldab,
+                   const f64* B, const int ldb,
+                   const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr,
+                   f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 
 typedef struct {
@@ -101,16 +101,16 @@ typedef struct {
 } ddrvpb_params_t;
 
 typedef struct {
-    double* A;
-    double* AFAC;
-    double* ASAV;
-    double* B;
-    double* BSAV;
-    double* X;
-    double* XACT;
-    double* S;
-    double* WORK;
-    double* RWORK;
+    f64* A;
+    f64* AFAC;
+    f64* ASAV;
+    f64* B;
+    f64* BSAV;
+    f64* X;
+    f64* XACT;
+    f64* S;
+    f64* WORK;
+    f64* RWORK;
     int* IWORK;
 } ddrvpb_workspace_t;
 
@@ -127,16 +127,16 @@ static int group_setup(void** state) {
     if (lwork < NMAX * NRHS) lwork = NMAX * NRHS;
 
     /* A needs extra space for KOFF offset in upper triangular packing */
-    ws->A     = calloc(band_sz + LDAB_MAX, sizeof(double));
-    ws->AFAC  = calloc(band_sz, sizeof(double));
-    ws->ASAV  = calloc(band_sz, sizeof(double));
-    ws->B     = calloc(NMAX * NRHS, sizeof(double));
-    ws->BSAV  = calloc(NMAX * NRHS, sizeof(double));
-    ws->X     = calloc(NMAX * NRHS, sizeof(double));
-    ws->XACT  = calloc(NMAX * NRHS, sizeof(double));
-    ws->S     = calloc(NMAX, sizeof(double));
-    ws->WORK  = calloc(lwork, sizeof(double));
-    ws->RWORK = calloc(NMAX + 2 * NRHS, sizeof(double));
+    ws->A     = calloc(band_sz + LDAB_MAX, sizeof(f64));
+    ws->AFAC  = calloc(band_sz, sizeof(f64));
+    ws->ASAV  = calloc(band_sz, sizeof(f64));
+    ws->B     = calloc(NMAX * NRHS, sizeof(f64));
+    ws->BSAV  = calloc(NMAX * NRHS, sizeof(f64));
+    ws->X     = calloc(NMAX * NRHS, sizeof(f64));
+    ws->XACT  = calloc(NMAX * NRHS, sizeof(f64));
+    ws->S     = calloc(NMAX, sizeof(f64));
+    ws->WORK  = calloc(lwork, sizeof(f64));
+    ws->RWORK = calloc(NMAX + 2 * NRHS, sizeof(f64));
     ws->IWORK = calloc(NMAX, sizeof(int));
 
     if (!ws->A || !ws->AFAC || !ws->ASAV || !ws->B || !ws->BSAV ||
@@ -198,13 +198,13 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
     int zerot = (imat >= 2 && imat <= 4);
     int izero = 0;
 
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Get matrix parameters from dlatb4 */
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DPB", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Seed RNG deterministically */
@@ -272,8 +272,8 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
     /*
      * Compute condition number independently per test case.
      */
-    double rcondc = 0.0, roldc = 0.0;
-    double scond = 0.0, amax = 0.0;
+    f64 rcondc = 0.0, roldc = 0.0;
+    f64 scond = 0.0, amax = 0.0;
     char equed = EQUEDS[iequed][0];
 
     if (zerot) {
@@ -291,13 +291,13 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
 
         if (equil) roldc = rcondc;
 
-        double anrm = dlansb("1", uplo, n, kd, ws->AFAC, ldab, ws->RWORK);
+        f64 anrm = dlansb("1", uplo, n, kd, ws->AFAC, ldab, ws->RWORK);
         dpbtrf(uplo, n, kd, ws->AFAC, ldab, &info);
 
         dlaset("Full", n, n, 0.0, 1.0, ws->WORK, lda);
         dpbtrs(uplo, n, kd, n, ws->AFAC, ldab, ws->WORK, lda, &info);
 
-        double ainvnm = dlange("1", n, n, ws->WORK, lda, ws->RWORK);
+        f64 ainvnm = dlange("1", n, n, ws->WORK, lda, ws->RWORK);
         if (anrm <= 0.0 || ainvnm <= 0.0)
             rcondc = 1.0;
         else
@@ -370,7 +370,7 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
     /* Restore B from BSAV */
     dlacpy("Full", n, NRHS, ws->BSAV, lda, ws->B, lda);
 
-    double rcond;
+    f64 rcond;
     dpbsvx(fact, uplo, n, kd, NRHS, ws->A, ldab, ws->AFAC, ldab,
            &equed, ws->S, ws->B, lda, ws->X, lda, &rcond,
            ws->RWORK, &ws->RWORK[NRHS], ws->WORK, ws->IWORK, &info);

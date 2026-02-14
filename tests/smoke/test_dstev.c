@@ -27,34 +27,34 @@
 
 /* Routine under test */
 extern void dstev(const char* jobz, const int n,
-                  double* const restrict D, double* const restrict E,
-                  double* const restrict Z, const int ldz,
-                  double* const restrict work, int* info);
+                  f64* const restrict D, f64* const restrict E,
+                  f64* const restrict Z, const int ldz,
+                  f64* const restrict work, int* info);
 
 /* Verification routines */
 extern void dstt21(const int n, const int kband,
-                   const double* AD, const double* AE,
-                   const double* SD, const double* SE,
-                   const double* U, const int ldu,
-                   double* work, double* result);
-extern void dstech(const int n, const double* A, const double* B,
-                   const double* eig, const double tol, double* work, int* info);
+                   const f64* AD, const f64* AE,
+                   const f64* SD, const f64* SE,
+                   const f64* U, const int ldu,
+                   f64* work, f64* result);
+extern void dstech(const int n, const f64* A, const f64* B,
+                   const f64* eig, const f64 tol, f64* work, int* info);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /* ---------- Test fixture ---------- */
 typedef struct {
     int n;
-    double* AD;     /* original diagonal */
-    double* AE;     /* original off-diagonal */
-    double* D;      /* diagonal (overwritten by dstev) */
-    double* E;      /* off-diagonal (overwritten by dstev) */
-    double* D2;     /* second copy for JOBZ='N' */
-    double* E2;     /* second copy for JOBZ='N' */
-    double* Z;      /* eigenvectors (n x n) */
-    double* work;   /* workspace: max(2*(n-1) for dstev, n*(n+1) for dstt21) */
-    double* result; /* dstt21 results (2) */
+    f64* AD;     /* original diagonal */
+    f64* AE;     /* original off-diagonal */
+    f64* D;      /* diagonal (overwritten by dstev) */
+    f64* E;      /* off-diagonal (overwritten by dstev) */
+    f64* D2;     /* second copy for JOBZ='N' */
+    f64* E2;     /* second copy for JOBZ='N' */
+    f64* Z;      /* eigenvectors (n x n) */
+    f64* work;   /* workspace: max(2*(n-1) for dstev, n*(n+1) for dstt21) */
+    f64* result; /* dstt21 results (2) */
     uint64_t seed;
     uint64_t rng_state[4];
 } dstev_fixture_t;
@@ -70,13 +70,13 @@ static int dstev_setup(void** state, int n)
     fix->n = n;
     fix->seed = g_seed++;
 
-    fix->AD = malloc(n * sizeof(double));
-    fix->AE = malloc((n > 1 ? n - 1 : 1) * sizeof(double));
-    fix->D = malloc(n * sizeof(double));
-    fix->E = malloc((n > 1 ? n - 1 : 1) * sizeof(double));
-    fix->D2 = malloc(n * sizeof(double));
-    fix->E2 = malloc((n > 1 ? n - 1 : 1) * sizeof(double));
-    fix->Z = malloc(n * n * sizeof(double));
+    fix->AD = malloc(n * sizeof(f64));
+    fix->AE = malloc((n > 1 ? n - 1 : 1) * sizeof(f64));
+    fix->D = malloc(n * sizeof(f64));
+    fix->E = malloc((n > 1 ? n - 1 : 1) * sizeof(f64));
+    fix->D2 = malloc(n * sizeof(f64));
+    fix->E2 = malloc((n > 1 ? n - 1 : 1) * sizeof(f64));
+    fix->Z = malloc(n * n * sizeof(f64));
 
     /* workspace: max(2*(n-1), n*(n+1)) */
     int work_stev = (n > 1) ? 2 * (n - 1) : 1;
@@ -85,9 +85,9 @@ static int dstev_setup(void** state, int n)
     int work_sz = work_stev;
     if (work_stt21 > work_sz) work_sz = work_stt21;
     if (work_stech > work_sz) work_sz = work_stech;
-    fix->work = malloc(work_sz * sizeof(double));
+    fix->work = malloc(work_sz * sizeof(f64));
 
-    fix->result = malloc(2 * sizeof(double));
+    fix->result = malloc(2 * sizeof(f64));
 
     assert_non_null(fix->AD);
     assert_non_null(fix->AE);
@@ -132,37 +132,37 @@ static int setup_50(void** state) { return dstev_setup(state, 50); }
 /* ---------- Matrix generation helpers ---------- */
 
 /* Type 1: Zero matrix */
-static void gen_zero(int n, double* D, double* E)
+static void gen_zero(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) D[i] = 0.0;
     for (int i = 0; i < n - 1; i++) E[i] = 0.0;
 }
 
 /* Type 2: Identity (D=1, E=0) */
-static void gen_identity(int n, double* D, double* E)
+static void gen_identity(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) D[i] = 1.0;
     for (int i = 0; i < n - 1; i++) E[i] = 0.0;
 }
 
 /* Type 3: 1-2-1 Toeplitz (D=2, E=1) */
-static void gen_toeplitz_121(int n, double* D, double* E)
+static void gen_toeplitz_121(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) D[i] = 2.0;
     for (int i = 0; i < n - 1; i++) E[i] = 1.0;
 }
 
 /* Type 4: Wilkinson (D[i]=|i - n/2|, E[i]=1) */
-static void gen_wilkinson(int n, double* D, double* E)
+static void gen_wilkinson(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) {
-        D[i] = fabs((double)i - (double)(n / 2));
+        D[i] = fabs((f64)i - (f64)(n / 2));
     }
     for (int i = 0; i < n - 1; i++) E[i] = 1.0;
 }
 
 /* Type 5: Random symmetric tridiagonal */
-static void gen_random(int n, double* D, double* E, uint64_t state[static 4])
+static void gen_random(int n, f64* D, f64* E, uint64_t state[static 4])
 {
     for (int i = 0; i < n; i++) {
         D[i] = rng_uniform_symmetric(state);
@@ -173,10 +173,10 @@ static void gen_random(int n, double* D, double* E, uint64_t state[static 4])
 }
 
 /* Type 6: Graded diagonal (D[i]=2^(-i), E[i]=1) */
-static void gen_graded(int n, double* D, double* E)
+static void gen_graded(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) {
-        D[i] = pow(2.0, -(double)i);
+        D[i] = pow(2.0, -(f64)i);
     }
     for (int i = 0; i < n - 1; i++) E[i] = 1.0;
 }
@@ -201,9 +201,9 @@ static void gen_matrix(dstev_fixture_t* fix, int imat)
     }
 
     /* Copy to working arrays */
-    memcpy(fix->D, fix->AD, n * sizeof(double));
+    memcpy(fix->D, fix->AD, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->E, fix->AE, (n - 1) * sizeof(double));
+        memcpy(fix->E, fix->AE, (n - 1) * sizeof(f64));
     }
 }
 
@@ -243,7 +243,7 @@ static void test_jobz_N(void** state)
     dstev_fixture_t* fix = *state;
     int n = fix->n;
     int info;
-    double ulp = dlamch("P");
+    f64 ulp = dlamch("P");
 
     for (int imat = 1; imat <= 6; imat++) {
         gen_matrix(fix, imat);
@@ -254,9 +254,9 @@ static void test_jobz_N(void** state)
 
         /* Re-generate and compute with JOBZ='N' */
         gen_matrix(fix, imat);
-        memcpy(fix->D2, fix->D, n * sizeof(double));
+        memcpy(fix->D2, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(fix->E2, fix->E, (n - 1) * sizeof(double));
+            memcpy(fix->E2, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* First call overwrites D with eigenvalues */
@@ -268,23 +268,23 @@ static void test_jobz_N(void** state)
         assert_info_success(info);
 
         /* Compare eigenvalues: max|D[i]-D2[i]| / (n * ulp * max|D|) */
-        double maxd = 0.0;
+        f64 maxd = 0.0;
         for (int i = 0; i < n; i++) {
-            double ad = fabs(fix->D[i]);
+            f64 ad = fabs(fix->D[i]);
             if (ad > maxd) maxd = ad;
         }
 
-        double maxdiff = 0.0;
+        f64 maxdiff = 0.0;
         for (int i = 0; i < n; i++) {
-            double diff = fabs(fix->D[i] - fix->D2[i]);
+            f64 diff = fabs(fix->D[i] - fix->D2[i]);
             if (diff > maxdiff) maxdiff = diff;
         }
 
-        double resid;
+        f64 resid;
         if (maxd == 0.0) {
             resid = maxdiff / ulp;
         } else {
-            resid = maxdiff / ((double)n * ulp * maxd);
+            resid = maxdiff / ((f64)n * ulp * maxd);
         }
         assert_residual_ok(resid);
     }

@@ -42,39 +42,39 @@ static const char UPLOS[] = {'U', 'L'};
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dsytrf_aa_2stage(const char* uplo, const int n, double* A,
-                             const int lda, double* TB, const int ltb,
-                             int* ipiv, int* ipiv2, double* work,
+extern void dsytrf_aa_2stage(const char* uplo, const int n, f64* A,
+                             const int lda, f64* TB, const int ltb,
+                             int* ipiv, int* ipiv2, f64* work,
                              const int lwork, int* info);
 extern void dsytrs_aa_2stage(const char* uplo, const int n, const int nrhs,
-                             const double* A, const int lda, double* TB,
+                             const f64* A, const int lda, f64* TB,
                              const int ltb, const int* ipiv, const int* ipiv2,
-                             double* B, const int ldb, int* info);
+                             f64* B, const int ldb, int* info);
 
 /* Verification routines */
 extern void dpot02(const char* uplo, const int n, const int nrhs,
-                   const double* A, const int lda, const double* X,
-                   const int ldx, double* B, const int ldb,
-                   double* rwork, double* resid);
+                   const f64* A, const int lda, const f64* X,
+                   const int ldx, f64* B, const int ldb,
+                   f64* rwork, f64* resid);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   double* X, const int ldx, double* B,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   f64* X, const int ldx, f64* B,
                    const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * Test parameters for a single test case.
@@ -91,15 +91,15 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AFAC;   /* Factored matrix (NMAX x NMAX) */
-    double* AINV;   /* TB storage for band matrix factors */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* D;      /* Singular values for dlatms */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f64* AINV;   /* TB storage for band matrix factors */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* D;      /* Singular values for dlatms */
     int* IWORK;     /* Integer workspace: ipiv(N) + ipiv2(N) */
 } dchksy_aa_2stage_workspace_t;
 
@@ -120,15 +120,15 @@ static int group_setup(void** state)
     int ltb_max = (3 * 20 + 1) * NMAX;  /* (3*NBMAX+1)*NMAX */
     int lwork = 3 * NMAX * NMAX;
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AINV = malloc(ltb_max * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->WORK = malloc(lwork * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AINV = malloc(ltb_max * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->WORK = malloc(lwork * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
@@ -174,19 +174,19 @@ static int group_teardown(void** state)
  */
 static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     dchksy_aa_2stage_workspace_t* ws = g_workspace;
 
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info, izero;
     int lda = (n > 1) ? n : 1;
     int nb = NBVAL[inb];
     int lwork, ltb;
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
 
     /* Set block size via xlaenv */

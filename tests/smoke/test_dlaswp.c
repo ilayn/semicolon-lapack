@@ -17,15 +17,15 @@
 #define THRESH 20.0
 
 /* Routine under test */
-extern void dlaswp(const int n, double * const restrict A, const int lda,
+extern void dlaswp(const int n, f64 * const restrict A, const int lda,
                    const int k1, const int k2,
                    const int * const restrict ipiv, const int incx);
 
 /**
  * Check if two matrices are equal (within tolerance)
  */
-static int matrices_equal(int m, int n, const double *A, int lda,
-                          const double *B, int ldb, double tol)
+static int matrices_equal(int m, int n, const f64 *A, int lda,
+                          const f64 *B, int ldb, f64 tol)
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
@@ -45,7 +45,7 @@ static void test_simple_swap(void **state)
     (void)state;
 
     /* 3x3 matrix, swap row 0 with row 2 */
-    double A[9] = {
+    f64 A[9] = {
         1, 2, 3,   /* Column 0 */
         4, 5, 6,   /* Column 1 */
         7, 8, 9    /* Column 2 */
@@ -57,7 +57,7 @@ static void test_simple_swap(void **state)
     int ipiv[1] = {2};
 
     /* Expected result after swap */
-    double expected[9] = {
+    f64 expected[9] = {
         3, 2, 1,   /* Row 0 and row 2 swapped in column 0 */
         6, 5, 4,   /* Row 0 and row 2 swapped in column 1 */
         9, 8, 7    /* Row 0 and row 2 swapped in column 2 */
@@ -76,7 +76,7 @@ static void test_multiple_swaps(void **state)
     (void)state;
 
     /* 4x3 matrix */
-    double A[12] = {
+    f64 A[12] = {
         1, 2, 3, 4,   /* Column 0 */
         5, 6, 7, 8,   /* Column 1 */
         9, 10, 11, 12 /* Column 2 */
@@ -93,7 +93,7 @@ static void test_multiple_swaps(void **state)
     /* Expected: After swap 0<->1: [2,1,3,4], [6,5,7,8], [10,9,11,12]
      *           After swap 1<->3: [2,4,3,1], [6,8,7,5], [10,12,11,9]
      *           After swap 2<->2: no change */
-    double expected[12] = {
+    f64 expected[12] = {
         2, 4, 3, 1,
         6, 8, 7, 5,
         10, 12, 11, 9
@@ -110,7 +110,7 @@ static void test_reverse_order(void **state)
     (void)state;
 
     /* 4x3 matrix */
-    double A[12] = {
+    f64 A[12] = {
         1, 2, 3, 4,
         5, 6, 7, 8,
         9, 10, 11, 12
@@ -129,7 +129,7 @@ static void test_reverse_order(void **state)
      *   i=2, ix=2: swap row 2 <-> ipiv[2]=2 (no change)
      *   i=1, ix=1: swap row 1 <-> ipiv[1]=3: [1,4,3,2]
      *   i=0, ix=0: swap row 0 <-> ipiv[0]=1: [4,1,3,2] */
-    double expected[12] = {
+    f64 expected[12] = {
         4, 1, 3, 2,
         8, 5, 7, 6,
         12, 9, 11, 10
@@ -146,13 +146,13 @@ static void test_identity_permutation(void **state)
     (void)state;
 
     /* 3x3 matrix */
-    double A[9] = {
+    f64 A[9] = {
         1, 2, 3,
         4, 5, 6,
         7, 8, 9
     };
-    double A_orig[9];
-    memcpy(A_orig, A, 9 * sizeof(double));
+    f64 A_orig[9];
+    memcpy(A_orig, A, 9 * sizeof(f64));
     int lda = 3;
     int n = 3;
 
@@ -171,9 +171,9 @@ static void test_incx_zero(void **state)
 {
     (void)state;
 
-    double A[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    double A_orig[9];
-    memcpy(A_orig, A, 9 * sizeof(double));
+    f64 A[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    f64 A_orig[9];
+    memcpy(A_orig, A, 9 * sizeof(f64));
     int ipiv[3] = {2, 0, 1};
 
     dlaswp(3, A, 3, 0, 2, ipiv, 0);
@@ -189,7 +189,7 @@ static void test_partial_range(void **state)
     (void)state;
 
     /* 4x4 matrix */
-    double A[16] = {
+    f64 A[16] = {
         1, 2, 3, 4,
         5, 6, 7, 8,
         9, 10, 11, 12,
@@ -218,7 +218,7 @@ static void test_partial_range(void **state)
                 A[3 + 2*lda] == 10.0 && A[3 + 3*lda] == 14.0);
 
     /* Full expected result: rows 1,2 contain swapped values */
-    double expected[16] = {
+    f64 expected[16] = {
         1, 3, 4, 2,
         5, 7, 8, 6,
         9, 11, 12, 10,
@@ -238,8 +238,8 @@ static void test_large_matrix(void **state)
     int n = 64;  /* Force multiple blocks of 32 */
     int lda = m;
 
-    double *A = malloc(lda * n * sizeof(double));
-    double *A_copy = malloc(lda * n * sizeof(double));
+    f64 *A = malloc(lda * n * sizeof(f64));
+    f64 *A_copy = malloc(lda * n * sizeof(f64));
     int *ipiv = malloc(m * sizeof(int));
 
     assert_non_null(A);
@@ -249,10 +249,10 @@ static void test_large_matrix(void **state)
     /* Initialize matrix with distinct values */
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            A[i + j * lda] = (double)(i * n + j + 1);
+            A[i + j * lda] = (f64)(i * n + j + 1);
         }
     }
-    memcpy(A_copy, A, lda * n * sizeof(double));
+    memcpy(A_copy, A, lda * n * sizeof(f64));
 
     /* Create a cyclic permutation pattern */
     for (int i = 0; i < m; i++) {
@@ -283,7 +283,7 @@ static void test_lu_pivot_consistency(void **state)
      * This test simulates applying LU pivots to a right-hand side */
 
     int n = 4;
-    double B[4] = {1.0, 2.0, 3.0, 4.0};  /* RHS vector as 4x1 matrix */
+    f64 B[4] = {1.0, 2.0, 3.0, 4.0};  /* RHS vector as 4x1 matrix */
 
     /* Typical LU pivot pattern: each pivot >= current row */
     int ipiv[4] = {2, 1, 3, 3};  /* row 0<->2, row 1<->1, row 2<->3, row 3<->3 */
@@ -295,7 +295,7 @@ static void test_lu_pivot_consistency(void **state)
      * After swap 1<->1: [3,2,1,4] (no change)
      * After swap 2<->3: [3,2,4,1]
      * After swap 3<->3: [3,2,4,1] (no change) */
-    double expected[4] = {3.0, 2.0, 4.0, 1.0};
+    f64 expected[4] = {3.0, 2.0, 4.0, 1.0};
 
     for (int i = 0; i < n; i++) {
         assert_true(fabs(B[i] - expected[i]) <= 1e-14);
@@ -313,8 +313,8 @@ static void test_wide_matrix(void **state)
     int n = 100;  /* More than 3 blocks of 32 */
     int lda = m;
 
-    double *A = malloc(lda * n * sizeof(double));
-    double *expected = malloc(lda * n * sizeof(double));
+    f64 *A = malloc(lda * n * sizeof(f64));
+    f64 *expected = malloc(lda * n * sizeof(f64));
     int ipiv[4] = {3, 2, 3, 3};
 
     assert_non_null(A);
@@ -323,7 +323,7 @@ static void test_wide_matrix(void **state)
     /* Initialize */
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            A[i + j * lda] = (double)(i + 1);  /* Each column is [1,2,3,4] */
+            A[i + j * lda] = (f64)(i + 1);  /* Each column is [1,2,3,4] */
         }
     }
 

@@ -25,13 +25,13 @@
 #include "testutils/verify.h"
 
 /* Routine under test */
-extern void dgttrf(const int n, double * const restrict DL,
-                   double * const restrict D, double * const restrict DU,
-                   double * const restrict DU2, int * const restrict ipiv,
+extern void dgttrf(const int n, f64 * const restrict DL,
+                   f64 * const restrict D, f64 * const restrict DU,
+                   f64 * const restrict DU2, int * const restrict ipiv,
                    int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
+extern f64 dlamch(const char *cmach);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -39,15 +39,15 @@ extern double dlamch(const char *cmach);
  */
 typedef struct {
     int n;
-    double *DL;      /* Original sub-diagonal */
-    double *D;       /* Original diagonal */
-    double *DU;      /* Original super-diagonal */
-    double *DLF;     /* Factored sub-diagonal */
-    double *DF;      /* Factored diagonal */
-    double *DUF;     /* Factored super-diagonal */
-    double *DU2;     /* Second super-diagonal from factorization */
+    f64 *DL;      /* Original sub-diagonal */
+    f64 *D;       /* Original diagonal */
+    f64 *DU;      /* Original super-diagonal */
+    f64 *DLF;     /* Factored sub-diagonal */
+    f64 *DF;      /* Factored diagonal */
+    f64 *DUF;     /* Factored super-diagonal */
+    f64 *DU2;     /* Second super-diagonal from factorization */
     int *ipiv;       /* Pivot indices */
-    double *work;    /* Workspace for dgtt01 */
+    f64 *work;    /* Workspace for dgtt01 */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
 } dgttrf_fixture_t;
@@ -61,12 +61,12 @@ static uint64_t g_seed = 1988;
  * For types 1-6: Use dlatms with controlled singular values.
  * For types 7-12: Generate random tridiagonal directly.
  */
-static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
+static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int i;
 
@@ -78,9 +78,9 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
         /* Types 1-6: Use dlatms to generate matrix with controlled condition */
         /* Generate in band storage: 3 rows (sub, diag, super) */
         int lda = 3;
-        double *AB = calloc(lda * n, sizeof(double));
-        double *d_sing = malloc(n * sizeof(double));
-        double *work = malloc(3 * n * sizeof(double));
+        f64 *AB = calloc(lda * n, sizeof(f64));
+        f64 *d_sing = malloc(n * sizeof(f64));
+        f64 *work = malloc(3 * n * sizeof(f64));
 
         assert_non_null(AB);
         assert_non_null(d_sing);
@@ -171,15 +171,15 @@ static int dgttrf_setup(void **state, int n)
     int du2_size = (n > 2) ? n - 2 : 1;
     int work_size = (n > 0) ? n * n : 1;  /* ldwork = n for dgtt01 */
 
-    fix->DL = malloc(m_alloc * sizeof(double));
-    fix->D = malloc((n > 0 ? n : 1) * sizeof(double));
-    fix->DU = malloc(m_alloc * sizeof(double));
-    fix->DLF = malloc(m_alloc * sizeof(double));
-    fix->DF = malloc((n > 0 ? n : 1) * sizeof(double));
-    fix->DUF = malloc(m_alloc * sizeof(double));
-    fix->DU2 = malloc(du2_size * sizeof(double));
+    fix->DL = malloc(m_alloc * sizeof(f64));
+    fix->D = malloc((n > 0 ? n : 1) * sizeof(f64));
+    fix->DU = malloc(m_alloc * sizeof(f64));
+    fix->DLF = malloc(m_alloc * sizeof(f64));
+    fix->DF = malloc((n > 0 ? n : 1) * sizeof(f64));
+    fix->DUF = malloc(m_alloc * sizeof(f64));
+    fix->DU2 = malloc(du2_size * sizeof(f64));
     fix->ipiv = malloc((n > 0 ? n : 1) * sizeof(int));
-    fix->work = malloc(work_size * sizeof(double));
+    fix->work = malloc(work_size * sizeof(f64));
 
     assert_non_null(fix->DL);
     assert_non_null(fix->D);
@@ -230,7 +230,7 @@ static int setup_50(void **state) { return dgttrf_setup(state, 50); }
  * Core test logic: generate matrix, factorize, verify.
  * Returns residual for the caller to assert on.
  */
-static double run_dgttrf_test(dgttrf_fixture_t *fix, int imat)
+static f64 run_dgttrf_test(dgttrf_fixture_t *fix, int imat)
 {
     int info;
     int n = fix->n;
@@ -240,9 +240,9 @@ static double run_dgttrf_test(dgttrf_fixture_t *fix, int imat)
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Copy to factored arrays */
-    memcpy(fix->DLF, fix->DL, m * sizeof(double));
-    memcpy(fix->DF, fix->D, n * sizeof(double));
-    memcpy(fix->DUF, fix->DU, m * sizeof(double));
+    memcpy(fix->DLF, fix->DL, m * sizeof(f64));
+    memcpy(fix->DF, fix->D, n * sizeof(f64));
+    memcpy(fix->DUF, fix->DU, m * sizeof(f64));
 
     /* Factorize */
     dgttrf(n, fix->DLF, fix->DF, fix->DUF, fix->DU2, fix->ipiv, &info);
@@ -251,7 +251,7 @@ static double run_dgttrf_test(dgttrf_fixture_t *fix, int imat)
     assert_true(info >= 0);
 
     /* Verify factorization using dgtt01 */
-    double resid;
+    f64 resid;
     dgtt01(n, fix->DL, fix->D, fix->DU, fix->DLF, fix->DF, fix->DUF,
            fix->DU2, fix->ipiv, fix->work, n, &resid);
 
@@ -273,7 +273,7 @@ static void test_dgttrf_structured(void **state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        double resid = run_dgttrf_test(fix, imat);
+        f64 resid = run_dgttrf_test(fix, imat);
         assert_residual_ok(resid);
     }
 }
@@ -293,7 +293,7 @@ static void test_dgttrf_random(void **state)
     for (int imat = 7; imat <= 12; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        double resid = run_dgttrf_test(fix, imat);
+        f64 resid = run_dgttrf_test(fix, imat);
         assert_residual_ok(resid);
     }
 }

@@ -41,14 +41,14 @@
  *                   norm(B - op(A)*X) / (norm(op(A)) * norm(X) * EPS).
  */
 void dgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
-            const double* A, int lda,
-            const double* X, int ldx,
-            double* B, int ldb,
-            double* rwork,
-            double* resid)
+            const f64* A, int lda,
+            const f64* X, int ldx,
+            f64* B, int ldb,
+            f64* rwork,
+            f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Quick return if m = 0 or n = 0 or nrhs = 0 */
     if (m <= 0 || n <= 0 || nrhs <= 0) {
@@ -57,8 +57,8 @@ void dgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
     }
 
     /* Determine EPS and the norm of A. */
-    double eps = dlamch("Epsilon");
-    double anorm = ZERO;
+    f64 eps = dlamch("Epsilon");
+    f64 anorm = ZERO;
     int notran = (trans[0] == 'N' || trans[0] == 'n');
 
     if (notran) {
@@ -68,7 +68,7 @@ void dgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
             int i1 = (kd + 1 - j - 1 > 0) ? kd + 1 - j - 1 : 0;
             int i2_excl = (kd + m - j < kl + kd + 1) ? kd + m - j : kl + kd + 1;
             if (i2_excl > i1) {
-                double temp = cblas_dasum(i2_excl - i1, &A[i1 + j * lda], 1);
+                f64 temp = cblas_dasum(i2_excl - i1, &A[i1 + j * lda], 1);
                 if (temp > anorm || isnan(temp)) {
                     anorm = temp;
                 }
@@ -86,7 +86,7 @@ void dgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
             }
         }
         for (int i = 0; i < m; i++) {
-            double temp = rwork[i];
+            f64 temp = rwork[i];
             if (temp > anorm || isnan(temp)) {
                 anorm = temp;
             }
@@ -115,12 +115,12 @@ void dgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
        norm(B - op(A)*X) / (norm(op(A)) * norm(X) * EPS). */
     *resid = ZERO;
     for (int j = 0; j < nrhs; j++) {
-        double bnorm = cblas_dasum(n1, &B[j * ldb], 1);
-        double xnorm = cblas_dasum(n1, &X[j * ldx], 1);
+        f64 bnorm = cblas_dasum(n1, &B[j * ldb], 1);
+        f64 xnorm = cblas_dasum(n1, &X[j * ldx], 1);
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            double temp = ((bnorm / anorm) / xnorm) / eps;
+            f64 temp = ((bnorm / anorm) / xnorm) / eps;
             if (temp > *resid) {
                 *resid = temp;
             }

@@ -49,79 +49,79 @@ static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
 
 /* Routines under test */
 extern void dtptri(const char* uplo, const char* diag, const int n,
-                   double* AP, int* info);
+                   f64* AP, int* info);
 extern void dtptrs(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs, const double* AP,
-                   double* B, const int ldb, int* info);
+                   const int n, const int nrhs, const f64* AP,
+                   f64* B, const int ldb, int* info);
 extern void dtpcon(const char* norm, const char* uplo, const char* diag,
-                   const int n, const double* AP,
-                   double* rcond, double* work, int* iwork, int* info);
+                   const int n, const f64* AP,
+                   f64* rcond, f64* work, int* iwork, int* info);
 extern void dtprfs(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs, const double* AP,
-                   const double* B, const int ldb, const double* X, const int ldx,
-                   double* ferr, double* berr, double* work, int* iwork, int* info);
+                   const int n, const int nrhs, const f64* AP,
+                   const f64* B, const int ldb, const f64* X, const int ldx,
+                   f64* ferr, f64* berr, f64* work, int* iwork, int* info);
 extern void dlatps(const char* uplo, const char* trans, const char* diag,
-                   const char* normin, const int n, const double* AP,
-                   double* X, double* scale, double* cnorm, int* info);
+                   const char* normin, const int n, const f64* AP,
+                   f64* X, f64* scale, f64* cnorm, int* info);
 
 /* Verification routines */
 extern void dtpt01(const char* uplo, const char* diag, const int n,
-                   const double* AP, double* AINVP,
-                   double* rcond, double* work, double* resid);
+                   const f64* AP, f64* AINVP,
+                   f64* rcond, f64* work, f64* resid);
 extern void dtpt02(const char* uplo, const char* trans, const char* diag,
                    const int n, const int nrhs,
-                   const double* AP, const double* X, const int ldx,
-                   const double* B, const int ldb,
-                   double* work, double* resid);
+                   const f64* AP, const f64* X, const int ldx,
+                   const f64* B, const int ldb,
+                   f64* work, f64* resid);
 extern void dtpt03(const char* uplo, const char* trans, const char* diag,
                    const int n, const int nrhs,
-                   const double* AP, const double scale, const double* cnorm,
-                   const double tscal, const double* X, const int ldx,
-                   const double* B, const int ldb,
-                   double* work, double* resid);
+                   const f64* AP, const f64 scale, const f64* cnorm,
+                   const f64 tscal, const f64* X, const int ldx,
+                   const f64* B, const int ldb,
+                   f64* work, f64* resid);
 extern void dtpt05(const char* uplo, const char* trans, const char* diag,
                    const int n, const int nrhs,
-                   const double* AP, const double* B, const int ldb,
-                   const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr,
-                   double* reslts);
-extern void dtpt06(const double rcond, const double rcondc,
+                   const f64* AP, const f64* B, const int ldb,
+                   const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr,
+                   f64* reslts);
+extern void dtpt06(const f64 rcond, const f64 rcondc,
                    const char* uplo, const char* diag, const int n,
-                   const double* AP, double* work, double* rat);
+                   const f64* AP, f64* work, f64* rat);
 
 /* Matrix generation */
 extern void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-                   const int n, double* AP, double* B, double* work,
+                   const int n, f64* AP, f64* B, f64* work,
                    int* info, uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   double* XACT, const int ldxact, double* B, const int ldb,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   f64* XACT, const int ldxact, f64* B, const int ldb,
                    int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
-extern double dlamch(const char* cmach);
-extern double dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const double* AP, double* work);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
+                   const f64* A, const int lda, f64* B, const int ldb);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
+                     const int n, const f64* AP, f64* work);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
 
 /**
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* AP;     /* Original packed matrix (LAP_MAX) */
-    double* AINVP;  /* Inverse packed matrix (LAP_MAX) */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* CNORM;  /* Column norms (NMAX) */
+    f64* AP;     /* Original packed matrix (LAP_MAX) */
+    f64* AINVP;  /* Inverse packed matrix (LAP_MAX) */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* CNORM;  /* Column norms (NMAX) */
     int* IWORK;     /* Integer workspace */
 } dchktp_workspace_t;
 
@@ -170,14 +170,14 @@ static int group_setup(void** state)
 
     int lwork = NMAX * 3;
 
-    g_workspace->AP = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AINVP = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->WORK = malloc(lwork * sizeof(double));
-    g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(double));
-    g_workspace->CNORM = malloc(NMAX * sizeof(double));
+    g_workspace->AP = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AINVP = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->WORK = malloc(lwork * sizeof(f64));
+    g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(f64));
+    g_workspace->CNORM = malloc(NMAX * sizeof(f64));
     g_workspace->IWORK = malloc(NMAX * sizeof(int));
 
     if (!g_workspace->AP || !g_workspace->AINVP ||
@@ -225,14 +225,14 @@ static void test_standard(void** state)
     int imat = p->imat;
     const char* uplo = UPLOS[p->iuplo];
 
-    double result[NTESTS];
+    f64 result[NTESTS];
     char diag;
     int info, lda, lap;
-    double rcondo, rcondi, rcond, rcondc, anorm, ainvnm;
+    f64 rcondo, rcondi, rcond, rcondc, anorm, ainvnm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10);
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     lda = (n > 1) ? n : 1;
     lap = (n * (n + 1)) / 2;
@@ -362,14 +362,14 @@ static void test_latps(void** state)
     int imat = p->imat;
     const char* uplo = UPLOS[p->iuplo];
 
-    double result[NTESTS];
+    f64 result[NTESTS];
     char diag;
     int info, lda;
-    double scale;
+    f64 scale;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10);
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     lda = (n > 1) ? n : 1;
 

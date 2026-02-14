@@ -12,10 +12,10 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DBDT01 reconstructs a general matrix A from its bidiagonal form
@@ -46,17 +46,17 @@ extern double dlange(const char* norm, const int m, const int n,
  * @param[out]    resid  The test ratio.
  */
 void dbdt01(const int m, const int n, const int kd,
-            const double* const restrict A, const int lda,
-            const double* const restrict Q, const int ldq,
-            const double* const restrict D, const double* const restrict E,
-            const double* const restrict PT, const int ldpt,
-            double* const restrict work, double* resid)
+            const f64* const restrict A, const int lda,
+            const f64* const restrict Q, const int ldq,
+            const f64* const restrict D, const f64* const restrict E,
+            const f64* const restrict PT, const int ldpt,
+            f64* const restrict work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double anorm, eps;
+    f64 anorm, eps;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {
@@ -91,7 +91,7 @@ void dbdt01(const int m, const int n, const int kd,
                             Q, ldq, &work[m], 1, ONE, work, 1);
 
                 /* Accumulate max absolute column sum */
-                double colsum = ZERO;
+                f64 colsum = ZERO;
                 for (i = 0; i < m; i++) {
                     colsum += fabs(work[i]);
                 }
@@ -118,7 +118,7 @@ void dbdt01(const int m, const int n, const int kd,
                             Q, ldq, &work[m], 1, ONE, work, 1);
 
                 /* Accumulate max absolute column sum */
-                double colsum = ZERO;
+                f64 colsum = ZERO;
                 for (i = 0; i < m; i++) {
                     colsum += fabs(work[i]);
                 }
@@ -145,7 +145,7 @@ void dbdt01(const int m, const int n, const int kd,
                             Q, ldq, &work[m], 1, ONE, work, 1);
 
                 /* Accumulate max absolute column sum */
-                double colsum = ZERO;
+                f64 colsum = ZERO;
                 for (i = 0; i < m; i++) {
                     colsum += fabs(work[i]);
                 }
@@ -173,7 +173,7 @@ void dbdt01(const int m, const int n, const int kd,
                             Q, ldq, &work[m], 1, ONE, work, 1);
 
                 /* Accumulate max absolute column sum */
-                double colsum = ZERO;
+                f64 colsum = ZERO;
                 for (i = 0; i < m; i++) {
                     colsum += fabs(work[i]);
                 }
@@ -198,7 +198,7 @@ void dbdt01(const int m, const int n, const int kd,
                             Q, ldq, &work[m], 1, ONE, work, 1);
 
                 /* Accumulate max absolute column sum */
-                double colsum = ZERO;
+                f64 colsum = ZERO;
                 for (i = 0; i < m; i++) {
                     colsum += fabs(work[i]);
                 }
@@ -219,14 +219,14 @@ void dbdt01(const int m, const int n, const int kd,
         }
     } else {
         if (anorm >= *resid) {
-            *resid = (*resid / anorm) / ((double)n * eps);
+            *resid = (*resid / anorm) / ((f64)n * eps);
         } else {
             if (anorm < ONE) {
-                double tmp = fmin(*resid, (double)n * anorm);
-                *resid = (tmp / anorm) / ((double)n * eps);
+                f64 tmp = fmin(*resid, (f64)n * anorm);
+                *resid = (tmp / anorm) / ((f64)n * eps);
             } else {
-                double tmp = fmin(*resid / anorm, (double)n);
-                *resid = tmp / ((double)n * eps);
+                f64 tmp = fmin(*resid / anorm, (f64)n);
+                *resid = tmp / ((f64)n * eps);
             }
         }
     }

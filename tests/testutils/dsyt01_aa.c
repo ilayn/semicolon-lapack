@@ -11,15 +11,15 @@
 #include "verify.h"
 
 /* Forward declarations for LAPACK routines */
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* const restrict A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* const restrict A, const int lda);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb);
 
 /**
  * DSYT01_AA reconstructs a symmetric indefinite matrix A from its
@@ -53,21 +53,21 @@ extern void dlacpy(const char* uplo, const int m, const int n,
 void dsyt01_aa(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict AFAC,
+    const f64* const restrict AFAC,
     const int ldafac,
     const int* const restrict ipiv,
-    double* const restrict C,
+    f64* const restrict C,
     const int ldc,
-    double* const restrict rwork,
-    double* resid)
+    f64* const restrict rwork,
+    f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double anorm, eps;
+    f64 anorm, eps;
 
     /* Quick exit if N = 0. */
     if (n <= 0) {
@@ -95,7 +95,7 @@ void dsyt01_aa(
              * Fortran: DLACPY('F', 1, N-1, AFAC(1,2), LDAFAC+1, C(1,2), LDC+1)
              *          DLACPY('F', 1, N-1, AFAC(1,2), LDAFAC+1, C(2,1), LDC+1) */
             for (j = 0; j < n - 1; j++) {
-                double val = AFAC[j + (j + 1) * ldafac];
+                f64 val = AFAC[j + (j + 1) * ldafac];
                 C[j + (j + 1) * ldc] = val;
                 C[(j + 1) + j * ldc] = val;
             }
@@ -104,7 +104,7 @@ void dsyt01_aa(
              * Fortran: DLACPY('F', 1, N-1, AFAC(2,1), LDAFAC+1, C(1,2), LDC+1)
              *          DLACPY('F', 1, N-1, AFAC(2,1), LDAFAC+1, C(2,1), LDC+1) */
             for (j = 0; j < n - 1; j++) {
-                double val = AFAC[(j + 1) + j * ldafac];
+                f64 val = AFAC[(j + 1) + j * ldafac];
                 C[j + (j + 1) * ldc] = val;
                 C[(j + 1) + j * ldc] = val;
             }
@@ -170,6 +170,6 @@ void dsyt01_aa(
             *resid = ONE / eps;
         }
     } else {
-        *resid = ((*resid / (double)n) / anorm) / eps;
+        *resid = ((*resid / (f64)n) / anorm) / eps;
     }
 }

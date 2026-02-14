@@ -17,50 +17,50 @@
 #include "testutils/verify.h"
 
 /* Routines under test */
-extern void dgttrf(const int n, double * const restrict DL,
-                   double * const restrict D, double * const restrict DU,
-                   double * const restrict DU2, int * const restrict ipiv,
+extern void dgttrf(const int n, f64 * const restrict DL,
+                   f64 * const restrict D, f64 * const restrict DU,
+                   f64 * const restrict DU2, int * const restrict ipiv,
                    int *info);
 extern void dgtcon(const char *norm, const int n,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict DU2,
+                   const f64 * const restrict DL,
+                   const f64 * const restrict D,
+                   const f64 * const restrict DU,
+                   const f64 * const restrict DU2,
                    const int * const restrict ipiv,
-                   const double anorm, double *rcond,
-                   double * const restrict work, int * const restrict iwork,
+                   const f64 anorm, f64 *rcond,
+                   f64 * const restrict work, int * const restrict iwork,
                    int *info);
 extern void dgttrs(const char *trans, const int n, const int nrhs,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict DU2,
+                   const f64 * const restrict DL,
+                   const f64 * const restrict D,
+                   const f64 * const restrict DU,
+                   const f64 * const restrict DU2,
                    const int * const restrict ipiv,
-                   double * const restrict B, const int ldb, int *info);
+                   f64 * const restrict B, const int ldb, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
-extern double dlangt(const char *norm, const int n,
-                     const double * const restrict DL,
-                     const double * const restrict D,
-                     const double * const restrict DU);
+extern f64 dlamch(const char *cmach);
+extern f64 dlangt(const char *norm, const int n,
+                     const f64 * const restrict DL,
+                     const f64 * const restrict D,
+                     const f64 * const restrict DU);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
     int n;
-    double *DL;      /* Original sub-diagonal */
-    double *D;       /* Original diagonal */
-    double *DU;      /* Original super-diagonal */
-    double *DLF;     /* Factored sub-diagonal */
-    double *DF;      /* Factored diagonal */
-    double *DUF;     /* Factored super-diagonal */
-    double *DU2;     /* Second super-diagonal from factorization */
+    f64 *DL;      /* Original sub-diagonal */
+    f64 *D;       /* Original diagonal */
+    f64 *DU;      /* Original super-diagonal */
+    f64 *DLF;     /* Factored sub-diagonal */
+    f64 *DF;      /* Factored diagonal */
+    f64 *DUF;     /* Factored super-diagonal */
+    f64 *DU2;     /* Second super-diagonal from factorization */
     int *ipiv;       /* Pivot indices */
-    double *work;    /* Workspace for dgtcon */
+    f64 *work;    /* Workspace for dgtcon */
     int *iwork;      /* Integer workspace for dgtcon */
-    double *AINV;    /* Workspace for explicit inverse computation */
+    f64 *AINV;    /* Workspace for explicit inverse computation */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
 } dgtcon_fixture_t;
@@ -71,12 +71,12 @@ static uint64_t g_seed = 3141;
 /**
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
+static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int i;
 
     if (n <= 0) return;
@@ -110,14 +110,14 @@ static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *D
  * For a tridiagonal matrix, we compute the inverse by solving
  * A * e_i = col_i for each column of the identity.
  */
-static double compute_true_rcond(int n, char norm_char,
-                                 const double *DLF, const double *DF,
-                                 const double *DUF, const double *DU2,
-                                 const int *ipiv, double anorm,
-                                 double *AINV)
+static f64 compute_true_rcond(int n, char norm_char,
+                                 const f64 *DLF, const f64 *DF,
+                                 const f64 *DUF, const f64 *DU2,
+                                 const int *ipiv, f64 anorm,
+                                 f64 *AINV)
 {
     int i, j, info;
-    double ainvnm = 0.0;
+    f64 ainvnm = 0.0;
     int ldb = (n > 1) ? n : 1;
 
     /* Compute inverse by solving A * X = I */
@@ -134,7 +134,7 @@ static double compute_true_rcond(int n, char norm_char,
     if (norm_char == '1' || norm_char == 'O' || norm_char == 'o') {
         /* 1-norm: max column sum */
         for (j = 0; j < n; j++) {
-            double colsum = 0.0;
+            f64 colsum = 0.0;
             for (i = 0; i < n; i++) {
                 colsum += fabs(AINV[i + j * n]);
             }
@@ -143,7 +143,7 @@ static double compute_true_rcond(int n, char norm_char,
     } else {
         /* Infinity-norm: max row sum */
         for (i = 0; i < n; i++) {
-            double rowsum = 0.0;
+            f64 rowsum = 0.0;
             for (j = 0; j < n; j++) {
                 rowsum += fabs(AINV[i + j * n]);
             }
@@ -172,17 +172,17 @@ static int dgtcon_setup(void **state, int n)
     fix->seed = g_seed++;
     rng_seed(fix->rng_state, fix->seed);
 
-    fix->DL = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->D = malloc(n * sizeof(double));
-    fix->DU = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DLF = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DF = malloc(n * sizeof(double));
-    fix->DUF = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(double));
+    fix->DL = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->D = malloc(n * sizeof(f64));
+    fix->DU = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DLF = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DF = malloc(n * sizeof(f64));
+    fix->DUF = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
-    fix->work = malloc(2 * n * sizeof(double));
+    fix->work = malloc(2 * n * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
-    fix->AINV = malloc(n * n * sizeof(double));
+    fix->AINV = malloc(n * n * sizeof(f64));
 
     assert_non_null(fix->DL);
     assert_non_null(fix->D);
@@ -236,7 +236,7 @@ static int setup_n20(void **state) { return dgtcon_setup(state, 20); }
  * Returns the dget06 ratio for the given norm type.
  * Returns -1.0 if the true rcond is zero (degenerate case).
  */
-static double run_dgtcon_test(dgtcon_fixture_t *fix, int imat, const char* norm_char)
+static f64 run_dgtcon_test(dgtcon_fixture_t *fix, int imat, const char* norm_char)
 {
     int info;
     int n = fix->n;
@@ -246,25 +246,25 @@ static double run_dgtcon_test(dgtcon_fixture_t *fix, int imat, const char* norm_
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Copy to factored arrays */
-    memcpy(fix->DLF, fix->DL, (m > 0 ? m : 1) * sizeof(double));
-    memcpy(fix->DF, fix->D, n * sizeof(double));
-    memcpy(fix->DUF, fix->DU, (m > 0 ? m : 1) * sizeof(double));
+    memcpy(fix->DLF, fix->DL, (m > 0 ? m : 1) * sizeof(f64));
+    memcpy(fix->DF, fix->D, n * sizeof(f64));
+    memcpy(fix->DUF, fix->DU, (m > 0 ? m : 1) * sizeof(f64));
 
     /* Factor */
     dgttrf(n, fix->DLF, fix->DF, fix->DUF, fix->DU2, fix->ipiv, &info);
     assert_info_success(info);
 
     /* Compute norm of original matrix */
-    double anorm = dlangt(norm_char, n, fix->DL, fix->D, fix->DU);
+    f64 anorm = dlangt(norm_char, n, fix->DL, fix->D, fix->DU);
 
     /* Estimate condition number */
-    double rcond_est;
+    f64 rcond_est;
     dgtcon(norm_char, n, fix->DLF, fix->DF, fix->DUF, fix->DU2, fix->ipiv,
            anorm, &rcond_est, fix->work, fix->iwork, &info);
     assert_info_success(info);
 
     /* Compute true condition number by explicit inversion */
-    double rcondc = compute_true_rcond(n, norm_char[0], fix->DLF, fix->DF, fix->DUF,
+    f64 rcondc = compute_true_rcond(n, norm_char[0], fix->DLF, fix->DF, fix->DUF,
                                        fix->DU2, fix->ipiv, anorm, fix->AINV);
 
     if (rcondc <= 0.0) {
@@ -285,7 +285,7 @@ static void test_dgtcon_onenorm(void **state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        double ratio = run_dgtcon_test(fix, imat, "1");
+        f64 ratio = run_dgtcon_test(fix, imat, "1");
         if (ratio < 0.0) continue; /* degenerate case */
         assert_residual_ok(ratio);
     }
@@ -301,7 +301,7 @@ static void test_dgtcon_infnorm(void **state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        double ratio = run_dgtcon_test(fix, imat, "I");
+        f64 ratio = run_dgtcon_test(fix, imat, "I");
         if (ratio < 0.0) continue; /* degenerate case */
         assert_residual_ok(ratio);
     }

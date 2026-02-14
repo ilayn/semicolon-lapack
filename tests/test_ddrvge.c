@@ -23,72 +23,72 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routines under test */
-extern void dgesv(const int n, const int nrhs, double* A, const int lda,
-                  int* ipiv, double* B, const int ldb, int* info);
+extern void dgesv(const int n, const int nrhs, f64* A, const int lda,
+                  int* ipiv, f64* B, const int ldb, int* info);
 extern void dgesvx(const char* fact, const char* trans, const int n, const int nrhs,
-                   double* A, const int lda, double* AF, const int ldaf,
-                   int* ipiv, char* equed, double* R, double* C,
-                   double* B, const int ldb, double* X, const int ldx,
-                   double* rcond, double* ferr, double* berr,
-                   double* work, int* iwork, int* info);
+                   f64* A, const int lda, f64* AF, const int ldaf,
+                   int* ipiv, char* equed, f64* R, f64* C,
+                   f64* B, const int ldb, f64* X, const int ldx,
+                   f64* rcond, f64* ferr, f64* berr,
+                   f64* work, int* iwork, int* info);
 
 /* Supporting routines */
-extern void dgetrf(const int m, const int n, double* A, const int lda,
+extern void dgetrf(const int m, const int n, f64* A, const int lda,
                    int* ipiv, int* info);
-extern void dgetri(const int n, double* A, const int lda, const int* ipiv,
-                   double* work, const int lwork, int* info);
-extern void dgeequ(const int m, const int n, const double* A, const int lda,
-                   double* R, double* C, double* rowcnd, double* colcnd,
-                   double* amax, int* info);
-extern void dlaqge(const int m, const int n, double* A, const int lda,
-                   const double* R, const double* C, const double rowcnd,
-                   const double colcnd, const double amax, char* equed);
+extern void dgetri(const int n, f64* A, const int lda, const int* ipiv,
+                   f64* work, const int lwork, int* info);
+extern void dgeequ(const int m, const int n, const f64* A, const int lda,
+                   f64* R, f64* C, f64* rowcnd, f64* colcnd,
+                   f64* amax, int* info);
+extern void dlaqge(const int m, const int n, f64* A, const int lda,
+                   const f64* R, const f64* C, const f64 rowcnd,
+                   const f64 colcnd, const f64 amax, char* equed);
 
 /* Verification routines */
-extern void dget01(const int m, const int n, const double* A, const int lda,
-                   const double* AFAC, const int ldafac, const int* ipiv,
-                   double* rwork, double* resid);
+extern void dget01(const int m, const int n, const f64* A, const int lda,
+                   const f64* AFAC, const int ldafac, const int* ipiv,
+                   f64* rwork, f64* resid);
 extern void dget02(const char* trans, const int m, const int n, const int nrhs,
-                   const double* A, const int lda, const double* X, const int ldx,
-                   double* B, const int ldb, double* rwork, double* resid);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* A, const int lda, const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* rwork, f64* resid);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 extern void dget07(const char* trans, const int n, const int nrhs,
-                   const double* A, const int lda, const double* B, const int ldb,
-                   const double* X, const int ldx, const double* XACT, const int ldxact,
-                   const double* ferr, const int chkferr, const double* berr,
-                   double* reslts);
+                   const f64* A, const int lda, const f64* B, const int ldb,
+                   const f64* X, const int ldx, const f64* XACT, const int ldxact,
+                   const f64* ferr, const int chkferr, const f64* berr,
+                   f64* reslts);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
+                   const char* sym, f64* d,
+                   const int mode, const f64 cond, const f64 dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n,
                    const int kl, const int ku, const int nrhs,
-                   const double* A, const int lda, const double* XACT, const int ldxact,
-                   double* B, const int ldb, int* info, uint64_t state[static 4]);
+                   const f64* A, const int lda, const f64* XACT, const int ldxact,
+                   f64* B, const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const double* A, const int lda,
-                     double* work);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
+                     const int m, const int n, const f64* A, const int lda,
+                     f64* work);
+extern f64 dlamch(const char* cmach);
 
 typedef struct {
     int n;
@@ -100,16 +100,16 @@ typedef struct {
 } ddrvge_params_t;
 
 typedef struct {
-    double* A;
-    double* AFAC;
-    double* ASAV;
-    double* B;
-    double* BSAV;
-    double* X;
-    double* XACT;
-    double* S;
-    double* WORK;
-    double* RWORK;
+    f64* A;
+    f64* AFAC;
+    f64* ASAV;
+    f64* B;
+    f64* BSAV;
+    f64* X;
+    f64* XACT;
+    f64* S;
+    f64* WORK;
+    f64* RWORK;
     int* IWORK;
     int lwork;
 } ddrvge_workspace_t;
@@ -127,16 +127,16 @@ static int group_setup(void** state)
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
     g_workspace->lwork = lwork;
-    g_workspace->A = calloc(nmax * nmax, sizeof(double));
-    g_workspace->AFAC = calloc(nmax * nmax, sizeof(double));
-    g_workspace->ASAV = calloc(nmax * nmax, sizeof(double));
-    g_workspace->B = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->BSAV = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->X = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->XACT = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->S = calloc(2 * nmax, sizeof(double));
-    g_workspace->WORK = calloc(lwork, sizeof(double));
-    g_workspace->RWORK = calloc(2 * NRHS + nmax, sizeof(double));
+    g_workspace->A = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->AFAC = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->ASAV = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->B = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->BSAV = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->X = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->XACT = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->S = calloc(2 * nmax, sizeof(f64));
+    g_workspace->WORK = calloc(lwork, sizeof(f64));
+    g_workspace->RWORK = calloc(2 * NRHS + nmax, sizeof(f64));
     g_workspace->IWORK = calloc(2 * nmax, sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->ASAV ||
@@ -173,12 +173,12 @@ static int group_teardown(void** state)
  * Compute condition number of matrix A by explicit inversion.
  * Returns rcond for the given norm ('1' or 'I').
  */
-static double compute_rcond(ddrvge_workspace_t* ws, int n, int lda, const char* norm)
+static f64 compute_rcond(ddrvge_workspace_t* ws, int n, int lda, const char* norm)
 {
     if (n == 0) return 1.0;
 
     int info;
-    double anrm = dlange(norm, n, n, ws->AFAC, lda, ws->RWORK);
+    f64 anrm = dlange(norm, n, n, ws->AFAC, lda, ws->RWORK);
 
     dgetrf(n, n, ws->AFAC, lda, ws->IWORK, &info);
     if (info != 0) return 0.0;
@@ -188,7 +188,7 @@ static double compute_rcond(ddrvge_workspace_t* ws, int n, int lda, const char* 
     dgetri(n, ws->A, lda, ws->IWORK, ws->WORK, lwork_getri, &info);
     if (info != 0) return 0.0;
 
-    double ainvnm = dlange(norm, n, n, ws->A, lda, ws->RWORK);
+    f64 ainvnm = dlange(norm, n, n, ws->A, lda, ws->RWORK);
     if (anrm <= 0.0 || ainvnm <= 0.0) return 1.0;
 
     return (1.0 / anrm) / ainvnm;
@@ -210,13 +210,13 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
     int equil = (fact[0] == 'E');
 
     int lda = (n > 1) ? n : 1;
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Set up parameters with DLATB4 */
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DGE", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix with DLATMS */
@@ -263,9 +263,9 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
      *
      * For parameterized tests, we compute both as needed.
      */
-    double rcondo = 0.0, rcondi = 0.0;
-    double roldo = 0.0, roldi = 0.0;
-    double rowcnd = 0.0, colcnd = 0.0, amax = 0.0;
+    f64 rcondo = 0.0, rcondi = 0.0;
+    f64 roldo = 0.0, roldi = 0.0;
+    f64 rowcnd = 0.0, colcnd = 0.0, amax = 0.0;
 
     if (zerot) {
         rcondo = 0.0;
@@ -321,7 +321,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
     }
 
     /* Select condition number based on TRANS (lines 440-444) */
-    double rcondc, roldc;
+    f64 rcondc, roldc;
     if (n == 0) {
         /* For n=0, use RCONDC = 1/CNDNUM from dlatb4 (line 294) */
         rcondc = 1.0 / cndnum;
@@ -394,7 +394,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
 
     /* Call DGESVX (lines 537-541) */
     char equed_inout = equed;
-    double rcond;
+    f64 rcond;
     dgesvx(fact, trans, n, NRHS, ws->A, lda, ws->AFAC, lda,
            ws->IWORK, &equed_inout, ws->S, &ws->S[n],
            ws->B, lda, ws->X, lda, &rcond,
@@ -409,7 +409,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
     }
 
     /* TEST 7: Compare RPVGRW (lines 553-574) */
-    double rpvgrw;
+    f64 rpvgrw;
     if (info != 0 && info <= n) {
         rpvgrw = dlantr("M", "U", "N", info, info, ws->AFAC, lda, ws->WORK);
         if (rpvgrw == 0.0) {
@@ -425,7 +425,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
             rpvgrw = dlange("M", n, n, ws->A, lda, ws->WORK) / rpvgrw;
         }
     }
-    double work0 = ws->WORK[0];
+    f64 work0 = ws->WORK[0];
     result[6] = fabs(rpvgrw - work0) / fmax(work0, rpvgrw) / dlamch("E");
 
     /* TEST 1: Reconstruct matrix from factors (lines 576-586)
@@ -453,7 +453,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
          * Use RCONDC for:  NOFACT, or PREFAC with EQUED='N'
          * Use ROLDC for:   EQUIL, or PREFAC with EQUED!='N'
          */
-        double rcond_for_get04;
+        f64 rcond_for_get04;
         if (nofact || (prefac && (equed == 'N' || equed == 'n'))) {
             rcond_for_get04 = rcondc;
         } else {

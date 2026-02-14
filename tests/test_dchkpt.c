@@ -42,58 +42,58 @@ static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dpttrf(const int n, double* D, double* E, int* info);
+extern void dpttrf(const int n, f64* D, f64* E, int* info);
 extern void dpttrs(const int n, const int nrhs,
-                   const double* D, const double* E,
-                   double* B, const int ldb, int* info);
+                   const f64* D, const f64* E,
+                   f64* B, const int ldb, int* info);
 extern void dptrfs(const int n, const int nrhs,
-                   const double* D, const double* E,
-                   const double* DF, const double* EF,
-                   const double* B, const int ldb,
-                   double* X, const int ldx,
-                   double* ferr, double* berr,
-                   double* work, int* info);
-extern void dptcon(const int n, const double* D, const double* E,
-                   const double anorm, double* rcond,
-                   double* work, int* info);
+                   const f64* D, const f64* E,
+                   const f64* DF, const f64* EF,
+                   const f64* B, const int ldb,
+                   f64* X, const int ldx,
+                   f64* ferr, f64* berr,
+                   f64* work, int* info);
+extern void dptcon(const int n, const f64* D, const f64* E,
+                   const f64 anorm, f64* rcond,
+                   f64* work, int* info);
 
 /* Verification routines */
-extern void dptt01(const int n, const double* D, const double* E,
-                   const double* DF, const double* EF,
-                   double* work, double* resid);
-extern void dptt02(const int n, const int nrhs, const double* D,
-                   const double* E, const double* X, const int ldx,
-                   double* B, const int ldb, double* resid);
-extern void dptt05(const int n, const int nrhs, const double* D,
-                   const double* E, const double* B, const int ldb,
-                   const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+extern void dptt01(const int n, const f64* D, const f64* E,
+                   const f64* DF, const f64* EF,
+                   f64* work, f64* resid);
+extern void dptt02(const int n, const int nrhs, const f64* D,
+                   const f64* E, const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* resid);
+extern void dptt05(const int n, const int nrhs, const f64* D,
+                   const f64* E, const f64* B, const int ldb,
+                   const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
-extern double dlanst(const char* norm, const int n,
-                     const double* D, const double* E);
-extern double dlamch(const char* cmach);
-extern void dlaptm(const int n, const int nrhs, const double alpha,
-                   const double* D, const double* E,
-                   const double* X, const int ldx, const double beta,
-                   double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
+extern f64 dlanst(const char* norm, const int n,
+                     const f64* D, const f64* E);
+extern f64 dlamch(const char* cmach);
+extern void dlaptm(const int n, const int nrhs, const f64 alpha,
+                   const f64* D, const f64* E,
+                   const f64* X, const int ldx, const f64 beta,
+                   f64* B, const int ldb);
 
 /**
  * Test parameters for a single test case.
@@ -108,18 +108,18 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* D;      /* Original diagonal (NMAX) */
-    double* E;      /* Original subdiagonal (NMAX-1) */
-    double* DF;     /* Factored diagonal (NMAX) */
-    double* EF;     /* Factored subdiagonal (NMAX-1) */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace for error bounds */
-    double* FERR;   /* Forward error bounds */
-    double* BERR;   /* Backward error bounds */
-    double* Z;      /* Storage for zeroed elements (3) */
+    f64* D;      /* Original diagonal (NMAX) */
+    f64* E;      /* Original subdiagonal (NMAX-1) */
+    f64* DF;     /* Factored diagonal (NMAX) */
+    f64* EF;     /* Factored subdiagonal (NMAX-1) */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace for error bounds */
+    f64* FERR;   /* Forward error bounds */
+    f64* BERR;   /* Backward error bounds */
+    f64* Z;      /* Storage for zeroed elements (3) */
 } dchkpt_workspace_t;
 
 static dchkpt_workspace_t* g_workspace = NULL;
@@ -133,20 +133,20 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchkpt_workspace_t));
     if (!g_workspace) return -1;
 
-    g_workspace->D = malloc(2 * NMAX * sizeof(double));
-    g_workspace->E = malloc(2 * NMAX * sizeof(double));
+    g_workspace->D = malloc(2 * NMAX * sizeof(f64));
+    g_workspace->E = malloc(2 * NMAX * sizeof(f64));
     g_workspace->DF = g_workspace->D + NMAX;
     g_workspace->EF = g_workspace->E + NMAX;
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
     /* WORK: NMAX * max(3, NSMAX) per dchkpt.f */
-    g_workspace->WORK = malloc(NMAX * NSMAX * sizeof(double));
+    g_workspace->WORK = malloc(NMAX * NSMAX * sizeof(f64));
     /* RWORK: max(NMAX, 2*NSMAX) per dchkpt.f */
-    g_workspace->RWORK = malloc((NMAX > 2 * NSMAX ? NMAX : 2 * NSMAX) * sizeof(double));
-    g_workspace->FERR = malloc(NSMAX * sizeof(double));
-    g_workspace->BERR = malloc(NSMAX * sizeof(double));
-    g_workspace->Z = malloc(3 * sizeof(double));
+    g_workspace->RWORK = malloc((NMAX > 2 * NSMAX ? NMAX : 2 * NSMAX) * sizeof(f64));
+    g_workspace->FERR = malloc(NSMAX * sizeof(f64));
+    g_workspace->BERR = malloc(NSMAX * sizeof(f64));
+    g_workspace->Z = malloc(3 * sizeof(f64));
 
     if (!g_workspace->D || !g_workspace->E ||
         !g_workspace->B || !g_workspace->X ||
@@ -187,13 +187,13 @@ static int group_teardown(void** state)
  * For types 1-6: Use dlatms with controlled singular values.
  * For types 7-12: Generate diagonally dominant tridiagonal directly.
  */
-static void generate_pt_matrix(int n, int imat, double* D, double* E,
-                                uint64_t state[static 4], int* izero, double* Z)
+static void generate_pt_matrix(int n, int imat, f64* D, f64* E,
+                                uint64_t state[static 4], int* izero, f64* Z)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
-    const double ZERO = 0.0;
+    f64 anorm, cndnum;
+    const f64 ZERO = 0.0;
     (void)ZERO;  /* Used in assignments below */
 
     if (n <= 0) {
@@ -231,7 +231,7 @@ static void generate_pt_matrix(int n, int imat, double* D, double* E,
 
         /* Scale so maximum diagonal is anorm */
         int ix = cblas_idamax(n, D, 1);
-        double dmax = D[ix];
+        f64 dmax = D[ix];
         cblas_dscal(n, anorm / dmax, D, 1);
         if (n > 1) {
             cblas_dscal(n - 1, anorm / dmax, E, 1);
@@ -271,7 +271,7 @@ static void generate_pt_matrix(int n, int imat, double* D, double* E,
 
             /* Scale D and E so the maximum element is ANORM. */
             int ix = cblas_idamax(n, D, 1);
-            double dmax = D[ix];
+            f64 dmax = D[ix];
             cblas_dscal(n, anorm / dmax, D, 1);
             if (n > 1) {
                 cblas_dscal(n - 1, anorm / dmax, E, 1);
@@ -334,15 +334,15 @@ static void generate_pt_matrix(int n, int imat, double* D, double* E,
  */
 static void run_dchkpt_single(int n, int imat)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     dchkpt_workspace_t* ws = g_workspace;
 
     int info, izero;
     int lda = (n > 1) ? n : 1;
-    double anorm = ZERO, rcond, rcondc, ainvnm;
-    double result[NTESTS];
-    double reslts[2];
+    f64 anorm = ZERO, rcond, rcondc, ainvnm;
+    f64 result[NTESTS];
+    f64 reslts[2];
     char ctx[128];
 
     /* Seed based on (n, imat) for reproducibility */

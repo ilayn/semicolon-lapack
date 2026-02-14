@@ -20,35 +20,35 @@
 
 /* Routine under test */
 extern void dgeqp3(const int m, const int n,
-                   double * restrict A, const int lda,
+                   f64 * restrict A, const int lda,
                    int * restrict jpvt,
-                   double * restrict tau,
-                   double * restrict work, const int lwork,
+                   f64 * restrict tau,
+                   f64 * restrict work, const int lwork,
                    int *info);
 
 /* Auxiliary routines for verification */
 extern void dorgqr(const int m, const int n, const int k,
-                   double * restrict A, const int lda,
-                   const double * restrict tau,
-                   double * restrict work, const int lwork,
+                   f64 * restrict A, const int lda,
+                   const f64 * restrict tau,
+                   f64 * restrict work, const int lwork,
                    int *info);
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * restrict A, const int lda,
-                     double *work);
-extern double dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * restrict A, const int lda,
+                     f64 *work);
+extern f64 dlamch(const char *cmach);
 
 typedef struct {
     int m, n;
     int lda;
-    double *A;      /* original matrix */
-    double *AF;     /* factored output */
-    double *Q;      /* orthogonal factor */
-    double *R;      /* upper triangular factor */
-    double *AP;     /* A * P (permuted original) */
-    double *tau;
-    double *work;
-    double *d;
-    double *genwork;
+    f64 *A;      /* original matrix */
+    f64 *AF;     /* factored output */
+    f64 *Q;      /* orthogonal factor */
+    f64 *R;      /* upper triangular factor */
+    f64 *AP;     /* A * P (permuted original) */
+    f64 *tau;
+    f64 *work;
+    f64 *d;
+    f64 *genwork;
     int *jpvt;
     int lwork;
     uint64_t seed;
@@ -70,15 +70,15 @@ static int qp_setup(void **state, int m, int n)
 
     fix->lwork = maxmn * 64 + 3 * n;  /* generous workspace */
 
-    fix->A = calloc(fix->lda * n, sizeof(double));
-    fix->AF = calloc(fix->lda * n, sizeof(double));
-    fix->Q = calloc(m * minmn, sizeof(double));
-    fix->R = calloc(minmn * n, sizeof(double));
-    fix->AP = calloc(fix->lda * n, sizeof(double));
-    fix->tau = calloc(minmn, sizeof(double));
-    fix->work = calloc(fix->lwork, sizeof(double));
-    fix->d = calloc(minmn, sizeof(double));
-    fix->genwork = calloc(3 * maxmn, sizeof(double));
+    fix->A = calloc(fix->lda * n, sizeof(f64));
+    fix->AF = calloc(fix->lda * n, sizeof(f64));
+    fix->Q = calloc(m * minmn, sizeof(f64));
+    fix->R = calloc(minmn * n, sizeof(f64));
+    fix->AP = calloc(fix->lda * n, sizeof(f64));
+    fix->tau = calloc(minmn, sizeof(f64));
+    fix->work = calloc(fix->lwork, sizeof(f64));
+    fix->d = calloc(minmn, sizeof(f64));
+    fix->genwork = calloc(3 * maxmn, sizeof(f64));
     fix->jpvt = calloc(n, sizeof(int));
 
     assert_non_null(fix->A);
@@ -139,10 +139,10 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
     int m = fix->m, n = fix->n;
     int lda = fix->lda;
     int minmn = m < n ? m : n;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
 
     /* Generate matrix A */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -173,7 +173,7 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
     assert_info_success(info);
 
     /* Extract R (minmn x n) from upper triangular part of AF */
-    memset(fix->R, 0, minmn * n * sizeof(double));
+    memset(fix->R, 0, minmn * n * sizeof(f64));
     for (int j = 0; j < n; j++) {
         int imax = j < minmn ? j + 1 : minmn;
         for (int i = 0; i < imax; i++) {
@@ -193,19 +193,19 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
                 fix->R, minmn, 1.0, fix->AP, lda);
 
     /* Residual 1: ||A*P - Q*R|| / (M * ||A|| * eps) */
-    double anorm = dlange("1", m, n, fix->A, lda, NULL);
-    double res_norm = dlange("1", m, n, fix->AP, lda, NULL);
-    double resid1;
+    f64 anorm = dlange("1", m, n, fix->A, lda, NULL);
+    f64 res_norm = dlange("1", m, n, fix->AP, lda, NULL);
+    f64 resid1;
     if (anorm == 0.0) {
         resid1 = res_norm > 0.0 ? 1.0 / eps : 0.0;
     } else {
-        resid1 = res_norm / ((double)m * anorm * eps);
+        resid1 = res_norm / ((f64)m * anorm * eps);
     }
     assert_residual_ok(resid1);
 
     /* Residual 2: ||I - Q'*Q|| / (minmn * eps)
      * Compute Q'*Q - I */
-    double *QtQ = fix->AP;  /* reuse AP as workspace (minmn x minmn, fits in m*n) */
+    f64 *QtQ = fix->AP;  /* reuse AP as workspace (minmn x minmn, fits in m*n) */
     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                 minmn, minmn, m, 1.0, fix->Q, m,
                 fix->Q, m, 0.0, QtQ, minmn);
@@ -213,14 +213,14 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
     for (int i = 0; i < minmn; i++)
         QtQ[i + i * minmn] -= 1.0;
 
-    double orth_norm = dlange("1", minmn, minmn, QtQ, minmn, NULL);
-    double resid2 = orth_norm / ((double)minmn * eps);
+    f64 orth_norm = dlange("1", minmn, minmn, QtQ, minmn, NULL);
+    f64 resid2 = orth_norm / ((f64)minmn * eps);
     assert_residual_ok(resid2);
 
     /* Check 3: |R(i,i)| >= |R(i+1,i+1)| for i = 0, ..., minmn-2 */
     for (int i = 0; i < minmn - 1; i++) {
-        double ri = fabs(fix->R[i + i * minmn]);
-        double ri1 = fabs(fix->R[(i + 1) + (i + 1) * minmn]);
+        f64 ri = fabs(fix->R[i + i * minmn]);
+        f64 ri1 = fabs(fix->R[(i + 1) + (i + 1) * minmn]);
         /* Allow small tolerance for floating point */
         assert_true(ri + eps * anorm >= ri1);
     }
@@ -260,7 +260,7 @@ static void test_scaled(void **state)
 static void test_workspace_query(void **state)
 {
     qp_fixture_t *fix = *state;
-    double wkopt;
+    f64 wkopt;
     int info;
     int *jpvt = fix->jpvt;
     for (int i = 0; i < fix->n; i++) jpvt[i] = 0;

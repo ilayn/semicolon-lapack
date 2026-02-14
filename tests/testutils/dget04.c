@@ -9,7 +9,7 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DGET04 computes the difference between a computed solution and the
@@ -40,17 +40,17 @@ extern double dlamch(const char* cmach);
 void dget04(
     const int n,
     const int nrhs,
-    const double * const restrict X,
+    const f64 * const restrict X,
     const int ldx,
-    const double * const restrict XACT,
+    const f64 * const restrict XACT,
     const int ldxact,
-    const double rcond,
-    double *resid)
+    const f64 rcond,
+    f64 *resid)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int i, ix, j;
-    double diffnm, eps, xnorm;
+    f64 diffnm, eps, xnorm;
 
     // Quick exit if n = 0 or nrhs = 0
     if (n <= 0 || nrhs <= 0) {
@@ -78,7 +78,7 @@ void dget04(
         // Compute infinity-norm of X(:,j) - XACT(:,j)
         diffnm = ZERO;
         for (i = 0; i < n; i++) {
-            double diff = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 diff = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (diff > diffnm) {
                 diffnm = diff;
             }
@@ -89,7 +89,7 @@ void dget04(
                 *resid = 1.0 / eps;
             }
         } else {
-            double ratio = (diffnm / xnorm) * rcond;
+            f64 ratio = (diffnm / xnorm) * rcond;
             if (ratio > *resid) {
                 *resid = ratio;
             }

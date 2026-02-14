@@ -18,12 +18,12 @@
 #include <cblas.h>
 
 /* Routine under test */
-extern void dpoequ(const int n, const double* const restrict A, const int lda,
-                   double* const restrict S, double* scond, double* amax,
+extern void dpoequ(const int n, const f64* const restrict A, const int lda,
+                   f64* const restrict S, f64* scond, f64* amax,
                    int* info);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /*
  * Test fixture
@@ -31,10 +31,10 @@ extern double dlamch(const char* cmach);
 typedef struct {
     int n;
     int lda;
-    double* A;
-    double* S;
-    double* d;
-    double* work;
+    f64* A;
+    f64* S;
+    f64* d;
+    f64* work;
     uint64_t seed;
 } dpoequ_fixture_t;
 
@@ -49,10 +49,10 @@ static int dpoequ_setup(void** state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->S = malloc(n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->S = malloc(n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->S);
@@ -86,13 +86,13 @@ static int setup_10(void** state) { return dpoequ_setup(state, 10); }
 static void test_dpoequ_wellcond(void** state)
 {
     dpoequ_fixture_t* fix = *state;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
 
     for (int imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         char type, dist;
         int kl, ku, mode;
-        double anorm, cndnum;
+        f64 anorm, cndnum;
         int info;
 
         dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -104,25 +104,25 @@ static void test_dpoequ_wellcond(void** state)
                kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
         assert_int_equal(info, 0);
 
-        double scond, amax_out;
+        f64 scond, amax_out;
         dpoequ(fix->n, fix->A, fix->lda, fix->S, &scond, &amax_out, &info);
         assert_info_success(info);
 
         /* Verify S(i) = 1/sqrt(A(i,i)) */
         for (int i = 0; i < fix->n; i++) {
-            double expected = 1.0 / sqrt(fix->A[i + i * fix->lda]);
-            double diff = fabs(fix->S[i] - expected);
-            double resid = diff / (expected * eps);
+            f64 expected = 1.0 / sqrt(fix->A[i + i * fix->lda]);
+            f64 diff = fabs(fix->S[i] - expected);
+            f64 resid = diff / (expected * eps);
             assert_residual_ok(resid);
         }
 
         /* Verify amax = max(A(i,i)) */
-        double amax_expected = 0.0;
+        f64 amax_expected = 0.0;
         for (int i = 0; i < fix->n; i++) {
             if (fix->A[i + i * fix->lda] > amax_expected)
                 amax_expected = fix->A[i + i * fix->lda];
         }
-        double amax_diff = fabs(amax_out - amax_expected);
+        f64 amax_diff = fabs(amax_out - amax_expected);
         assert_true(amax_diff <= eps * amax_expected);
 
         /* Verify scond is reasonable (should be > 0 for well-conditioned) */
@@ -144,7 +144,7 @@ static void test_dpoequ_zero_diag(void** state)
     fix->seed = g_seed++;
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
 
     dlatb4("DPO", 4, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -159,7 +159,7 @@ static void test_dpoequ_zero_diag(void** state)
     int bad_idx = fix->n / 2;
     fix->A[bad_idx + bad_idx * fix->lda] = 0.0;
 
-    double scond, amax_out;
+    f64 scond, amax_out;
     dpoequ(fix->n, fix->A, fix->lda, fix->S, &scond, &amax_out, &info);
 
     /* info should be bad_idx + 1 (1-based index of first non-positive diagonal) */
@@ -172,9 +172,9 @@ static void test_dpoequ_zero_diag(void** state)
 static void test_dpoequ_n1(void** state)
 {
     (void)state;
-    double A[1] = {4.0};
-    double S[1];
-    double scond, amax_out;
+    f64 A[1] = {4.0};
+    f64 S[1];
+    f64 scond, amax_out;
     int info;
 
     dpoequ(1, A, 1, S, &scond, &amax_out, &info);

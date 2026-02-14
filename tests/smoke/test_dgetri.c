@@ -17,14 +17,14 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dgetrf(const int m, const int n, double * const restrict A,
+extern void dgetrf(const int m, const int n, f64 * const restrict A,
                    const int lda, int * const restrict ipiv, int *info);
-extern void dgetri(const int n, double * const restrict A, const int lda,
-                   const int * const restrict ipiv, double * const restrict work,
+extern void dgetri(const int n, f64 * const restrict A, const int lda,
+                   const int * const restrict ipiv, f64 * const restrict work,
                    const int lwork, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
+extern f64 dlamch(const char *cmach);
 
 /*
  * Test fixture
@@ -32,11 +32,11 @@ extern double dlamch(const char *cmach);
 typedef struct {
     int n;
     int lda;
-    double *A;       /* Original matrix */
-    double *AINV;    /* Inverse */
-    double *d;       /* Singular values for dlatms */
-    double *work;    /* Workspace */
-    double *rwork;   /* Workspace for dget03 */
+    f64 *A;       /* Original matrix */
+    f64 *AINV;    /* Inverse */
+    f64 *d;       /* Singular values for dlatms */
+    f64 *work;    /* Workspace */
+    f64 *rwork;   /* Workspace for dget03 */
     int *ipiv;       /* Pivot indices */
     uint64_t seed;
 } dgetri_fixture_t;
@@ -54,11 +54,11 @@ static int dgetri_setup(void **state, int n)
 
     int lwork = n * n;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AINV = malloc(fix->lda * n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(lwork * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AINV = malloc(fix->lda * n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(lwork * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -96,11 +96,11 @@ static int setup_20(void **state) { return dgetri_setup(state, 20); }
 /**
  * Core test logic: generate matrix, factorize, invert, verify.
  */
-static double run_dgetri_test(dgetri_fixture_t *fix, int imat)
+static f64 run_dgetri_test(dgetri_fixture_t *fix, int imat)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int lwork = fix->n * fix->n;
 
@@ -113,7 +113,7 @@ static double run_dgetri_test(dgetri_fixture_t *fix, int imat)
     assert_int_equal(info, 0);
 
     /* Copy A to AINV for factorization */
-    memcpy(fix->AINV, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AINV, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Factor */
     dgetrf(fix->n, fix->n, fix->AINV, fix->lda, fix->ipiv, &info);
@@ -124,7 +124,7 @@ static double run_dgetri_test(dgetri_fixture_t *fix, int imat)
     assert_info_success(info);
 
     /* Verify */
-    double rcond, resid;
+    f64 rcond, resid;
     dget03(fix->n, fix->A, fix->lda, fix->AINV, fix->lda,
            fix->work, fix->n, fix->rwork, &rcond, &resid);
 
@@ -137,7 +137,7 @@ static double run_dgetri_test(dgetri_fixture_t *fix, int imat)
 static void test_dgetri_wellcond(void **state)
 {
     dgetri_fixture_t *fix = *state;
-    double resid;
+    f64 resid;
 
     for (int imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
@@ -158,7 +158,7 @@ static void test_dgetri_illcond(void **state)
         skip();
     }
 
-    double resid;
+    f64 resid;
     for (int imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         resid = run_dgetri_test(fix, imat);
@@ -178,7 +178,7 @@ static void test_dgetri_scaled(void **state)
         skip();
     }
 
-    double resid;
+    f64 resid;
     for (int imat = 10; imat <= 11; imat++) {
         fix->seed = g_seed++;
         resid = run_dgetri_test(fix, imat);

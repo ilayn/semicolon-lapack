@@ -48,38 +48,38 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in 
 /* Routines under test - declared in semicolon_lapack_double.h */
 
 /* Verification routines */
-extern void drqt01(const int m, const int n, const double* A, double* AF,
-                   double* Q, double* R, const int lda, double* tau,
-                   double* work, const int lwork, double* rwork,
-                   double* result);
+extern void drqt01(const int m, const int n, const f64* A, f64* AF,
+                   f64* Q, f64* R, const int lda, f64* tau,
+                   f64* work, const int lwork, f64* rwork,
+                   f64* result);
 extern void drqt02(const int m, const int n, const int k,
-                   const double* A, const double* AF, double* Q, double* R,
-                   const int lda, const double* tau,
-                   double* work, const int lwork, double* rwork,
-                   double* result);
+                   const f64* A, const f64* AF, f64* Q, f64* R,
+                   const int lda, const f64* tau,
+                   f64* work, const int lwork, f64* rwork,
+                   f64* result);
 extern void drqt03(const int m, const int n, const int k,
-                   const double* AF, double* C, double* CC, double* Q,
-                   const int lda, const double* tau,
-                   double* work, const int lwork, double* rwork,
-                   double* result);
+                   const f64* AF, f64* C, f64* CC, f64* Q,
+                   const int lda, const f64* tau,
+                   f64* work, const int lwork, f64* rwork,
+                   f64* result);
 extern void dget02(const char* trans, const int m, const int n, const int nrhs,
-                   const double* A, const int lda, const double* X,
-                   const int ldx, double* B, const int ldb,
-                   double* rwork, double* resid);
+                   const f64* A, const int lda, const f64* X,
+                   const int ldx, f64* B, const int ldb,
+                   f64* rwork, f64* resid);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   const double* XACT, const int ldxact, double* B,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   const f64* XACT, const int ldxact, f64* B,
                    const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities - declared in semicolon_lapack_double.h */
@@ -87,9 +87,9 @@ extern void dlarhs(const char* path, const char* xtype, const char* uplo,
 /* DGERQS - solve using RQ factorization (not a standard LAPACK routine,
  * but used in LAPACK testing). We implement it inline here. */
 static void dgerqs(const int m, const int n, const int nrhs,
-                   double* A, const int lda, const double* tau,
-                   double* B, const int ldb,
-                   double* work, const int lwork, int* info)
+                   f64* A, const int lda, const f64* tau,
+                   f64* B, const int ldb,
+                   f64* work, const int lwork, int* info)
 {
     *info = 0;
     if (m < 0) *info = -1;
@@ -140,19 +140,19 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AF;     /* Factored matrix (NMAX x NMAX) */
-    double* Q;      /* Orthogonal matrix Q (NMAX x NMAX) */
-    double* R;      /* Upper triangular R (NMAX x NMAX) */
-    double* C;      /* Workspace for drqt03 (NMAX x NMAX) */
-    double* CC;     /* Another workspace for drqt03 (NMAX x NMAX) */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* TAU;    /* Scalar factors of elementary reflectors */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* D;      /* Singular values for dlatms */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AF;     /* Factored matrix (NMAX x NMAX) */
+    f64* Q;      /* Orthogonal matrix Q (NMAX x NMAX) */
+    f64* R;      /* Upper triangular R (NMAX x NMAX) */
+    f64* C;      /* Workspace for drqt03 (NMAX x NMAX) */
+    f64* CC;     /* Another workspace for drqt03 (NMAX x NMAX) */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* TAU;    /* Scalar factors of elementary reflectors */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* D;      /* Singular values for dlatms */
     int* IWORK;     /* Integer workspace */
 } dchkrq_workspace_t;
 
@@ -169,19 +169,19 @@ static int group_setup(void** state)
 
     int lwork = NMAX * NMAX;
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AF = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->Q = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->R = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->C = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->CC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->TAU = malloc(NMAX * sizeof(double));
-    g_workspace->WORK = malloc(lwork * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AF = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->Q = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->R = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->C = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->CC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->TAU = malloc(NMAX * sizeof(f64));
+    g_workspace->WORK = malloc(lwork * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->IWORK = malloc(NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AF || !g_workspace->Q ||
@@ -231,17 +231,17 @@ static int group_teardown(void** state)
  */
 static void run_dchkrq_single(int m, int n, int imat, int inb)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     dchkrq_workspace_t* ws = g_workspace;
 
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int lda = NMAX;
     int lwork = NMAX * NMAX;
     int minmn = (m < n) ? m : n;
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];  /* Context string for error messages */
 
     /* Set block size and crossover point for this test via xlaenv */

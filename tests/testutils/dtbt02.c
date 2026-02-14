@@ -11,10 +11,10 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int kd, const double* AB, const int ldab,
-                     double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
+                     const int n, const int kd, const f64* AB, const int ldab,
+                     f64* work);
 
 /**
  * DTBT02 computes the residual for the computed solution to a
@@ -53,15 +53,15 @@ extern double dlantb(const char* norm, const char* uplo, const char* diag,
  */
 void dtbt02(const char* uplo, const char* trans, const char* diag,
             const int n, const int kd, const int nrhs,
-            const double* AB, const int ldab,
-            const double* X, const int ldx,
-            const double* B, const int ldb,
-            double* work, double* resid)
+            const f64* AB, const int ldab,
+            const f64* X, const int ldx,
+            const f64* B, const int ldb,
+            f64* work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int j;
-    double anorm, bnorm, eps, xnorm;
+    f64 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -106,7 +106,7 @@ void dtbt02(const char* uplo, const char* trans, const char* diag,
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            double r = ((bnorm / anorm) / xnorm) / eps;
+            f64 r = ((bnorm / anorm) / xnorm) / eps;
             if (r > *resid) {
                 *resid = r;
             }

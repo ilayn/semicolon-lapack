@@ -31,33 +31,33 @@
 /* Routine under test */
 extern void dgesvd(const char* jobu, const char* jobvt,
                    const int m, const int n,
-                   double* A, const int lda,
-                   double* S,
-                   double* U, const int ldu,
-                   double* VT, const int ldvt,
-                   double* work, const int lwork,
+                   f64* A, const int lda,
+                   f64* S,
+                   f64* U, const int ldu,
+                   f64* VT, const int ldvt,
+                   f64* work, const int lwork,
                    int* info);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
     int m, n;
-    double* A;          /* original matrix (preserved) */
-    double* Acopy;      /* working copy (overwritten by dgesvd) */
-    double* S;          /* singular values */
-    double* U;          /* left singular vectors */
-    double* VT;         /* right singular vectors (transposed) */
-    double* work;       /* workspace */
+    f64* A;          /* original matrix (preserved) */
+    f64* Acopy;      /* working copy (overwritten by dgesvd) */
+    f64* S;          /* singular values */
+    f64* U;          /* left singular vectors */
+    f64* VT;         /* right singular vectors (transposed) */
+    f64* work;       /* workspace */
     int lwork;          /* workspace size */
-    double* temp;       /* temporary workspace for verification */
+    f64* temp;       /* temporary workspace for verification */
     uint64_t rng_state[4];
 } dgesvd_fixture_t;
 
@@ -80,7 +80,7 @@ static int dgesvd_setup(void** state, int m, int n)
     int maxmn = (m > n) ? m : n;
 
     /* Query optimal workspace size */
-    double work_query;
+    f64 work_query;
     int info;
     dgesvd("A", "A", m, n, NULL, m, NULL, NULL, m, NULL, n,
            &work_query, -1, &info);
@@ -88,13 +88,13 @@ static int dgesvd_setup(void** state, int m, int n)
     if (fix->lwork < 1) fix->lwork = 5 * maxmn;
 
     /* Allocate arrays */
-    fix->A = malloc(m * n * sizeof(double));
-    fix->Acopy = malloc(m * n * sizeof(double));
-    fix->S = malloc(minmn * sizeof(double));
-    fix->U = malloc(m * m * sizeof(double));
-    fix->VT = malloc(n * n * sizeof(double));
-    fix->work = malloc(fix->lwork * sizeof(double));
-    fix->temp = malloc(maxmn * maxmn * sizeof(double));
+    fix->A = malloc(m * n * sizeof(f64));
+    fix->Acopy = malloc(m * n * sizeof(f64));
+    fix->S = malloc(minmn * sizeof(f64));
+    fix->U = malloc(m * m * sizeof(f64));
+    fix->VT = malloc(n * n * sizeof(f64));
+    fix->work = malloc(fix->lwork * sizeof(f64));
+    fix->temp = malloc(maxmn * maxmn * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->Acopy);
@@ -140,7 +140,7 @@ static int setup_30x50(void** state) { return dgesvd_setup(state, 30, 50); }
 /**
  * Helper: generate random m x n matrix
  */
-static void generate_random_matrix(double* A, int m, int n, uint64_t state[static 4])
+static void generate_random_matrix(f64* A, int m, int n, uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
@@ -152,7 +152,7 @@ static void generate_random_matrix(double* A, int m, int n, uint64_t state[stati
 /**
  * Helper: generate random matrix with specified singular values
  */
-static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
+static void generate_matrix_with_sv(f64* A, int m, int n, const f64* sv,
                                     uint64_t state[static 4])
 {
     int minmn = (m < n) ? m : n;
@@ -170,12 +170,12 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
 
     /* Apply random orthogonal transformations from left and right */
     /* For simplicity, just use Householder reflections */
-    double* v = malloc(((m > n) ? m : n) * sizeof(double));
+    f64* v = malloc(((m > n) ? m : n) * sizeof(f64));
 
     /* Left transformations */
     for (int k = 0; k < minmn; k++) {
         /* Random Householder vector */
-        double nrm = 0.0;
+        f64 nrm = 0.0;
         for (int i = 0; i < m; i++) {
             v[i] = rng_uniform_symmetric(state);
             nrm += v[i] * v[i];
@@ -187,7 +187,7 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
 
         /* Apply H = I - 2*v*v' to A from left */
         for (int j = 0; j < n; j++) {
-            double dot = 0.0;
+            f64 dot = 0.0;
             for (int i = 0; i < m; i++) {
                 dot += v[i] * A[i + j * m];
             }
@@ -200,7 +200,7 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
     /* Right transformations */
     for (int k = 0; k < minmn; k++) {
         /* Random Householder vector */
-        double nrm = 0.0;
+        f64 nrm = 0.0;
         for (int j = 0; j < n; j++) {
             v[j] = rng_uniform_symmetric(state);
             nrm += v[j] * v[j];
@@ -212,7 +212,7 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
 
         /* Apply H = I - 2*v*v' to A from right */
         for (int i = 0; i < m; i++) {
-            double dot = 0.0;
+            f64 dot = 0.0;
             for (int j = 0; j < n; j++) {
                 dot += A[i + j * m] * v[j];
             }
@@ -228,7 +228,7 @@ static void generate_matrix_with_sv(double* A, int m, int n, const double* sv,
 /**
  * Helper: check singular values are non-negative and sorted descending
  */
-static int check_sv_sorted(const double* S, int n)
+static int check_sv_sorted(const f64* S, int n)
 {
     for (int i = 0; i < n; i++) {
         if (S[i] < 0.0) return 0;  /* negative singular value */
@@ -242,23 +242,23 @@ static int check_sv_sorted(const double* S, int n)
 /**
  * Helper: compute ||A - U*diag(S)*VT|| / (||A||*max(m,n)*eps)
  */
-static double compute_svd_residual(const double* A, int m, int n,
-                                   const double* U, int ldu,
-                                   const double* S,
-                                   const double* VT, int ldvt,
-                                   double* temp)
+static f64 compute_svd_residual(const f64* A, int m, int n,
+                                   const f64* U, int ldu,
+                                   const f64* S,
+                                   const f64* VT, int ldvt,
+                                   f64* temp)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     int minmn = (m < n) ? m : n;
     int maxmn = (m > n) ? m : n;
 
     /* Compute ||A|| */
-    double anrm = dlange("F", m, n, A, m, NULL);
+    f64 anrm = dlange("F", m, n, A, m, NULL);
     if (anrm == 0.0) anrm = 1.0;
 
     /* Compute U*diag(S)*VT into temp */
     /* First: temp2 = diag(S)*VT (scale rows of VT by S) */
-    double* temp2 = malloc(minmn * n * sizeof(double));
+    f64* temp2 = malloc(minmn * n * sizeof(f64));
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < minmn; i++) {
             temp2[i + j * minmn] = S[i] * VT[i + j * ldvt];
@@ -279,7 +279,7 @@ static double compute_svd_residual(const double* A, int m, int n,
     }
 
     /* Compute ||A - U*S*VT|| */
-    double resid = dlange("F", m, n, temp, m, NULL);
+    f64 resid = dlange("F", m, n, temp, m, NULL);
 
     return resid / (anrm * maxmn * eps);
 }
@@ -287,9 +287,9 @@ static double compute_svd_residual(const double* A, int m, int n,
 /**
  * Helper: compute ||I - U'*U|| / (k*eps) where U is m x k
  */
-static double compute_orthogonality_UtU(const double* U, int m, int k, double* temp)
+static f64 compute_orthogonality_UtU(const f64* U, int m, int k, f64* temp)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
 
     /* Compute U'*U into temp (k x k) */
     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
@@ -300,16 +300,16 @@ static double compute_orthogonality_UtU(const double* U, int m, int k, double* t
         temp[i + i * k] -= 1.0;
     }
 
-    double resid = dlange("F", k, k, temp, k, NULL);
+    f64 resid = dlange("F", k, k, temp, k, NULL);
     return resid / (k * eps);
 }
 
 /**
  * Helper: compute ||I - VT*VT'|| / (k*eps) where VT is k x n with leading dim ldvt
  */
-static double compute_orthogonality_VTVTt(const double* VT, int k, int n, int ldvt, double* temp)
+static f64 compute_orthogonality_VTVTt(const f64* VT, int k, int n, int ldvt, f64* temp)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
 
     /* Compute VT*VT' into temp (k x k) */
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
@@ -320,7 +320,7 @@ static double compute_orthogonality_VTVTt(const double* VT, int k, int n, int ld
         temp[i + i * k] -= 1.0;
     }
 
-    double resid = dlange("F", k, k, temp, k, NULL);
+    f64 resid = dlange("F", k, k, temp, k, NULL);
     return resid / (k * eps);
 }
 
@@ -333,7 +333,7 @@ static void test_workspace_query(void** state)
 {
     dgesvd_fixture_t* fix = *state;
     int m = fix->m, n = fix->n;
-    double work_query;
+    f64 work_query;
     int info;
 
     /* Query with jobu='A', jobvt='A' */
@@ -366,7 +366,7 @@ static void test_zero_matrix(void** state)
     int info;
 
     /* Zero matrix */
-    memset(fix->A, 0, m * n * sizeof(double));
+    memset(fix->A, 0, m * n * sizeof(f64));
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
 
     dgesvd("A", "A", m, n, fix->Acopy, m, fix->S,
@@ -390,7 +390,7 @@ static void test_identity_like(void** state)
     int info;
 
     /* Identity-like: diag(1,1,...,1) */
-    memset(fix->A, 0, m * n * sizeof(double));
+    memset(fix->A, 0, m * n * sizeof(f64));
     for (int i = 0; i < minmn; i++) {
         fix->A[i + i * m] = 1.0;
     }
@@ -406,7 +406,7 @@ static void test_identity_like(void** state)
     }
 
     /* Check SVD residual */
-    double resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
+    f64 resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
                                         fix->VT, n, fix->temp);
     assert_residual_below(resid, THRESH);
 }
@@ -433,16 +433,16 @@ static void test_random_wellcond(void** state)
     assert_true(check_sv_sorted(fix->S, minmn));
 
     /* Check SVD residual: ||A - U*S*VT|| */
-    double resid1 = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
+    f64 resid1 = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
                                          fix->VT, n, fix->temp);
     assert_residual_below(resid1, THRESH);
 
     /* Check U orthogonality: ||I - U'*U|| */
-    double resid2 = compute_orthogonality_UtU(fix->U, m, minmn, fix->temp);
+    f64 resid2 = compute_orthogonality_UtU(fix->U, m, minmn, fix->temp);
     assert_residual_below(resid2, THRESH);
 
     /* Check VT orthogonality: ||I - VT*VT'|| */
-    double resid3 = compute_orthogonality_VTVTt(fix->VT, minmn, n, n, fix->temp);
+    f64 resid3 = compute_orthogonality_VTVTt(fix->VT, minmn, n, n, fix->temp);
     assert_residual_below(resid3, THRESH);
 }
 
@@ -455,13 +455,13 @@ static void test_known_sv(void** state)
     int m = fix->m, n = fix->n;
     int minmn = (m < n) ? m : n;
     int info;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
 
     /* Specify known singular values */
-    double* sv_known = malloc(minmn * sizeof(double));
+    f64* sv_known = malloc(minmn * sizeof(f64));
     assert_non_null(sv_known);
     for (int i = 0; i < minmn; i++) {
-        sv_known[i] = (double)(minmn - i);  /* minmn, minmn-1, ..., 1 */
+        sv_known[i] = (f64)(minmn - i);  /* minmn, minmn-1, ..., 1 */
     }
 
     /* Generate matrix with these singular values */
@@ -474,12 +474,12 @@ static void test_known_sv(void** state)
 
     /* Check computed singular values match expected */
     for (int i = 0; i < minmn; i++) {
-        double relerr = fabs(fix->S[i] - sv_known[i]) / sv_known[i];
+        f64 relerr = fabs(fix->S[i] - sv_known[i]) / sv_known[i];
         assert_true(relerr < THRESH * eps * minmn);
     }
 
     /* Check SVD residual */
-    double resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
+    f64 resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
                                         fix->VT, n, fix->temp);
     assert_residual_below(resid, THRESH);
 
@@ -499,9 +499,9 @@ static void test_rank_deficient(void** state)
     int info;
 
     /* Specify singular values with zeros */
-    double* sv_known = malloc(minmn * sizeof(double));
+    f64* sv_known = malloc(minmn * sizeof(f64));
     for (int i = 0; i < rank; i++) {
-        sv_known[i] = (double)(rank - i);
+        sv_known[i] = (f64)(rank - i);
     }
     for (int i = rank; i < minmn; i++) {
         sv_known[i] = 0.0;
@@ -518,13 +518,13 @@ static void test_rank_deficient(void** state)
     assert_true(check_sv_sorted(fix->S, minmn));
 
     /* Check that small singular values are indeed small */
-    double tol = THRESH * dlamch("E") * fix->S[0] * minmn;
+    f64 tol = THRESH * dlamch("E") * fix->S[0] * minmn;
     for (int i = rank; i < minmn; i++) {
         assert_true(fix->S[i] < tol);
     }
 
     /* Check SVD residual */
-    double resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
+    f64 resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
                                         fix->VT, n, fix->temp);
     assert_residual_below(resid, THRESH);
 
@@ -553,7 +553,7 @@ static void test_economy_svd(void** state)
     assert_true(check_sv_sorted(fix->S, minmn));
 
     /* Check SVD residual (U is m x minmn, VT is minmn x n) */
-    double resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
+    f64 resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
                                         fix->VT, minmn, fix->temp);
     assert_residual_below(resid, THRESH);
 }
@@ -581,17 +581,17 @@ static void test_sv_only(void** state)
 
     /* Now compute full SVD to verify values match */
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
-    double* S2 = malloc(minmn * sizeof(double));
+    f64* S2 = malloc(minmn * sizeof(f64));
 
     dgesvd("A", "A", m, n, fix->Acopy, m, S2,
            fix->U, m, fix->VT, n, fix->work, fix->lwork, &info);
     assert_info_success(info);
 
     /* Compare singular values */
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     for (int i = 0; i < minmn; i++) {
-        double diff = fabs(fix->S[i] - S2[i]);
-        double denom = (S2[i] > 0) ? S2[i] : 1.0;
+        f64 diff = fabs(fix->S[i] - S2[i]);
+        f64 denom = (S2[i] > 0) ? S2[i] : 1.0;
         assert_true(diff / denom < THRESH * eps);
     }
 
@@ -626,7 +626,7 @@ static void test_overwrite_U(void** state)
     assert_true(check_sv_sorted(fix->S, minmn));
 
     /* Check SVD residual using Acopy as U */
-    double resid = compute_svd_residual(fix->A, m, n, fix->Acopy, m, fix->S,
+    f64 resid = compute_svd_residual(fix->A, m, n, fix->Acopy, m, fix->S,
                                         fix->VT, n, fix->temp);
     assert_residual_below(resid, THRESH);
 }
@@ -659,7 +659,7 @@ static void test_overwrite_VT(void** state)
     assert_true(check_sv_sorted(fix->S, minmn));
 
     /* Check SVD residual using Acopy as VT (leading dimension is m = lda) */
-    double resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
+    f64 resid = compute_svd_residual(fix->A, m, n, fix->U, m, fix->S,
                                         fix->Acopy, m, fix->temp);
     assert_residual_below(resid, THRESH);
 }

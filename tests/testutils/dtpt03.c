@@ -11,7 +11,7 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DTPT03 computes the residual for the solution to a scaled triangular
@@ -39,15 +39,15 @@ extern double dlamch(const char* cmach);
  */
 void dtpt03(const char* uplo, const char* trans, const char* diag,
             const int n, const int nrhs,
-            const double* AP, const double scale, const double* cnorm,
-            const double tscal, const double* X, const int ldx,
-            const double* B, const int ldb,
-            double* work, double* resid)
+            const f64* AP, const f64 scale, const f64* cnorm,
+            const f64 tscal, const f64* X, const int ldx,
+            const f64* B, const int ldb,
+            f64* work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int ix, j, jj;
-    double eps, err, smlnum, tnorm, xnorm, xscal;
+    f64 eps, err, smlnum, tnorm, xnorm, xscal;
 
     /* Quick exit if N = 0 or NRHS = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -65,21 +65,21 @@ void dtpt03(const char* uplo, const char* trans, const char* diag,
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             jj = 0;
             for (j = 0; j < n; j++) {
-                double t = tscal * fabs(AP[jj]) + cnorm[j];
+                f64 t = tscal * fabs(AP[jj]) + cnorm[j];
                 if (t > tnorm) tnorm = t;
                 jj += j + 2;
             }
         } else {
             jj = 0;
             for (j = 0; j < n; j++) {
-                double t = tscal * fabs(AP[jj]) + cnorm[j];
+                f64 t = tscal * fabs(AP[jj]) + cnorm[j];
                 if (t > tnorm) tnorm = t;
                 jj += n - j;
             }
         }
     } else {
         for (j = 0; j < n; j++) {
-            double t = tscal + cnorm[j];
+            f64 t = tscal + cnorm[j];
             if (t > tnorm) tnorm = t;
         }
     }
@@ -101,7 +101,7 @@ void dtpt03(const char* uplo, const char* trans, const char* diag,
         cblas_dcopy(n, &X[j * ldx], 1, work, 1);
         ix = cblas_idamax(n, work, 1);
         xnorm = fmax(ONE, fabs(X[ix + j * ldx]));
-        xscal = (ONE / xnorm) / (double)n;
+        xscal = (ONE / xnorm) / (f64)n;
         cblas_dscal(n, xscal, work, 1);
         cblas_dtpmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                    n, AP, work, 1);

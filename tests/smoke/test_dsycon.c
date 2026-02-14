@@ -22,17 +22,17 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dsytrf(const char* uplo, const int n, double* const restrict A,
+extern void dsytrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* const restrict ipiv,
-                   double* const restrict work, const int lwork, int* info);
+                   f64* const restrict work, const int lwork, int* info);
 extern void dsycon(const char* uplo, const int n,
-                   const double* const restrict A, const int lda,
-                   const int* const restrict ipiv, const double anorm,
-                   double* rcond, double* const restrict work,
+                   const f64* const restrict A, const int lda,
+                   const int* const restrict ipiv, const f64 anorm,
+                   f64* rcond, f64* const restrict work,
                    int* const restrict iwork, int* info);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /*
  * Test fixture
@@ -40,12 +40,12 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 typedef struct {
     int n;
     int lda;
-    double* A;       /* Original matrix */
-    double* AFAC;    /* Factored matrix */
+    f64* A;       /* Original matrix */
+    f64* AFAC;    /* Factored matrix */
     int* ipiv;       /* Pivot indices from dsytrf */
-    double* d;       /* Singular values for dlatms */
-    double* work;    /* Workspace */
-    double* rwork;   /* Workspace for dlansy */
+    f64* d;       /* Singular values for dlatms */
+    f64* work;    /* Workspace */
+    f64* rwork;   /* Workspace for dlansy */
     int* iwork;      /* Integer workspace for dsycon */
     uint64_t seed;
 } dsycon_fixture_t;
@@ -70,12 +70,12 @@ static int dsycon_setup(void** state, int n)
         lwork = 3 * n;
     }
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AFAC = malloc(fix->lda * n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AFAC = malloc(fix->lda * n * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(lwork * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(lwork * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -119,7 +119,7 @@ static void run_dsycon_test(dsycon_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
     int lwork = fix->n * 64;
     if (lwork < 2 * fix->n) {
@@ -137,7 +137,7 @@ static void run_dsycon_test(dsycon_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Copy A into AFAC for factoring */
-    memcpy(fix->AFAC, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AFAC, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Factor A via Bunch-Kaufman */
     dsytrf(uplo, fix->n, fix->AFAC, fix->lda, fix->ipiv, fix->work, lwork,
@@ -145,19 +145,19 @@ static void run_dsycon_test(dsycon_fixture_t* fix, int imat, const char* uplo)
     assert_info_success(info);
 
     /* Compute norm of original matrix */
-    double anorm_1 = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
+    f64 anorm_1 = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
 
     /* True reciprocal condition number: 1/cndnum from dlatb4 */
-    double rcondc = 1.0 / cndnum;
+    f64 rcondc = 1.0 / cndnum;
 
     /* Estimate condition number via dsycon */
-    double rcond_est;
+    f64 rcond_est;
     dsycon(uplo, fix->n, fix->AFAC, fix->lda, fix->ipiv, anorm_1, &rcond_est,
            fix->work, fix->iwork, &info);
     assert_info_success(info);
 
     if (rcondc > 0.0) {
-        double ratio = dget06(rcond_est, rcondc);
+        f64 ratio = dget06(rcond_est, rcondc);
         assert_residual_ok(ratio);
     }
 }

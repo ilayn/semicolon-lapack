@@ -9,7 +9,7 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DGTT05 tests the error bounds from iterative refinement for the
@@ -55,25 +55,25 @@ void dgtt05(
     const char* trans,
     const int n,
     const int nrhs,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU,
-    const double * const restrict B,
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU,
+    const f64 * const restrict B,
     const int ldb,
-    const double * const restrict X,
+    const f64 * const restrict X,
     const int ldx,
-    const double * const restrict XACT,
+    const f64 * const restrict XACT,
     const int ldxact,
-    const double * const restrict ferr,
-    const double * const restrict berr,
-    double * const restrict reslts)
+    const f64 * const restrict ferr,
+    const f64 * const restrict berr,
+    f64 * const restrict reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notran;
     int i, imax, j, k, nz;
-    double axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
+    f64 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     /* Quick exit if n = 0 or nrhs = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -103,7 +103,7 @@ void dgtt05(
         /* Compute infinity-norm of X - XACT */
         diff = ZERO;
         for (i = 0; i < n; i++) {
-            double d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) diff = d;
         }
 
@@ -117,7 +117,7 @@ void dgtt05(
         }
 
         if (diff / xnorm <= ferr[j]) {
-            double ratio = (diff / xnorm) / ferr[j];
+            f64 ratio = (diff / xnorm) / ferr[j];
             if (ratio > errbnd) errbnd = ratio;
         } else {
             errbnd = ONE / eps;
@@ -169,7 +169,7 @@ void dgtt05(
             }
         }
 
-        double denom = nz * eps + nz * unfl / (axbi > nz * unfl ? axbi : nz * unfl);
+        f64 denom = nz * eps + nz * unfl / (axbi > nz * unfl ? axbi : nz * unfl);
         tmp = berr[k] / denom;
 
         if (tmp > reslts[1]) {

@@ -10,7 +10,7 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DTRT03 computes the residual for the solution to a scaled triangular
@@ -40,16 +40,16 @@ extern double dlamch(const char* cmach);
  * @param[out]    resid   The maximum residual over all right hand sides.
  */
 void dtrt03(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs, const double* A, const int lda,
-            const double scale, const double* cnorm, const double tscal,
-            const double* X, const int ldx, const double* B, const int ldb,
-            double* work, double* resid)
+            const int n, const int nrhs, const f64* A, const int lda,
+            const f64 scale, const f64* cnorm, const f64 tscal,
+            const f64* X, const int ldx, const f64* B, const int ldb,
+            f64* work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int j, ix;
-    double eps, smlnum, tnorm, xnorm, xscal, err;
+    f64 eps, smlnum, tnorm, xnorm, xscal, err;
 
     /* Quick exit if n = 0 or nrhs = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -66,12 +66,12 @@ void dtrt03(const char* uplo, const char* trans, const char* diag,
     tnorm = ZERO;
     if (diag[0] == 'N' || diag[0] == 'n') {
         for (j = 0; j < n; j++) {
-            double val = tscal * fabs(A[j * lda + j]) + cnorm[j];
+            f64 val = tscal * fabs(A[j * lda + j]) + cnorm[j];
             if (val > tnorm) tnorm = val;
         }
     } else {
         for (j = 0; j < n; j++) {
-            double val = tscal + cnorm[j];
+            f64 val = tscal + cnorm[j];
             if (val > tnorm) tnorm = val;
         }
     }
@@ -89,7 +89,7 @@ void dtrt03(const char* uplo, const char* trans, const char* diag,
         xnorm = fabs(X[j * ldx + ix]);
         if (xnorm < ONE) xnorm = ONE;
 
-        xscal = (ONE / xnorm) / (double)n;
+        xscal = (ONE / xnorm) / (f64)n;
         cblas_dscal(n, xscal, work, 1);
 
         /* Compute work = op(A) * work */

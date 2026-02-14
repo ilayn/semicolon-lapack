@@ -11,23 +11,23 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dlascl(const char* type, const int kl, const int ku,
-                   const double cfrom, const double cto,
-                   const int m, const int n, double* A, const int lda,
+                   const f64 cfrom, const f64 cto,
+                   const int m, const int n, f64* A, const int lda,
                    int* info);
-extern void dgebd2(const int m, const int n, double* A, const int lda,
-                   double* D, double* E, double* tauq, double* taup,
-                   double* work, int* info);
+extern void dgebd2(const int m, const int n, f64* A, const int lda,
+                   f64* D, f64* E, f64* tauq, f64* taup,
+                   f64* work, int* info);
 extern void dbdsqr(const char* uplo, const int n, const int ncvt,
-                   const int nru, const int ncc, double* D, double* E,
-                   double* VT, const int ldvt, double* U, const int ldu,
-                   double* C, const int ldc, double* work, int* info);
+                   const int nru, const int ncc, f64* D, f64* E,
+                   f64* VT, const int ldvt, f64* U, const int ldu,
+                   f64* C, const int ldc, f64* work, int* info);
 
 /**
  * DQRT12 computes the singular values of the upper trapezoid
@@ -46,14 +46,14 @@ extern void dbdsqr(const char* uplo, const int n, const int ncvt,
  *
  * @return The test ratio || svd(R) - s || / (||s|| * eps * max(M,N)).
  */
-double dqrt12(const int m, const int n, const double* A, const int lda,
-              const double* S, double* work, const int lwork)
+f64 dqrt12(const int m, const int n, const f64* A, const int lda,
+              const f64* S, f64* work, const int lwork)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int i, j, mn, info, iscl;
-    double anrm, bignum, smlnum, nrmsvl;
-    double dummy[1];
+    f64 anrm, bignum, smlnum, nrmsvl;
+    f64 dummy[1];
 
     /* Quick return if possible */
     mn = (m < n) ? m : n;
@@ -134,8 +134,8 @@ double dqrt12(const int m, const int n, const double* A, const int lda,
     cblas_daxpy(mn, -ONE, S, 1, &work[m * n], 1);
 
     /* Return || diff || / (eps * max(M,N)) / ||S|| */
-    double result = cblas_dasum(mn, &work[m * n], 1) /
-                    (dlamch("E") * (double)((m > n) ? m : n));
+    f64 result = cblas_dasum(mn, &work[m * n], 1) /
+                    (dlamch("E") * (f64)((m > n) ? m : n));
     if (nrmsvl != ZERO) {
         result /= nrmsvl;
     }

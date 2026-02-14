@@ -14,7 +14,7 @@
  * @param[in] lda Leading dimension of A.
  * @return 1 if diagonal is non-negative, 0 otherwise.
  */
-int dgennd(const int m, const int n, const double* const restrict A, const int lda)
+int dgennd(const int m, const int n, const f64* const restrict A, const int lda)
 {
     int k = m < n ? m : n;
     for (int i = 0; i < k; i++) {

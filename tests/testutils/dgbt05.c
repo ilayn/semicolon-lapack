@@ -46,16 +46,16 @@
  * @param[out] reslts Results array, dimension (2).
  */
 void dgbt05(const char* trans, int n, int kl, int ku, int nrhs,
-            const double* AB, int ldab,
-            const double* B, int ldb,
-            const double* X, int ldx,
-            const double* XACT, int ldxact,
-            const double* FERR,
-            const double* BERR,
-            double* reslts)
+            const f64* AB, int ldab,
+            const f64* B, int ldb,
+            const f64* X, int ldx,
+            const f64* XACT, int ldxact,
+            const f64* FERR,
+            const f64* BERR,
+            f64* reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Quick exit if n = 0 or nrhs = 0. */
     if (n <= 0 || nrhs <= 0) {
@@ -64,26 +64,26 @@ void dgbt05(const char* trans, int n, int kl, int ku, int nrhs,
         return;
     }
 
-    double eps = dlamch("Epsilon");
-    double unfl = dlamch("Safe minimum");
-    double ovfl = ONE / unfl;
+    f64 eps = dlamch("Epsilon");
+    f64 unfl = dlamch("Safe minimum");
+    f64 ovfl = ONE / unfl;
     int notran = (trans[0] == 'N' || trans[0] == 'n');
     int nz = (kl + ku + 2 < n + 1) ? kl + ku + 2 : n + 1;
 
     /* Test 1: Compute the maximum of
        norm(X - XACT) / (norm(X) * FERR)
        over all the vectors X and XACT using the infinity-norm. */
-    double errbnd = ZERO;
+    f64 errbnd = ZERO;
     for (int j = 0; j < nrhs; j++) {
         int imax = cblas_idamax(n, &X[j * ldx], 1);
-        double xnorm = fabs(X[imax + j * ldx]);
+        f64 xnorm = fabs(X[imax + j * ldx]);
         if (xnorm < unfl) {
             xnorm = unfl;
         }
 
-        double diff = ZERO;
+        f64 diff = ZERO;
         for (int i = 0; i < n; i++) {
-            double d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) {
                 diff = d;
             }
@@ -99,7 +99,7 @@ void dgbt05(const char* trans, int n, int kl, int ku, int nrhs,
         }
 
         if (diff / xnorm <= FERR[j]) {
-            double temp = (diff / xnorm) / FERR[j];
+            f64 temp = (diff / xnorm) / FERR[j];
             if (temp > errbnd) {
                 errbnd = temp;
             }
@@ -113,9 +113,9 @@ void dgbt05(const char* trans, int n, int kl, int ku, int nrhs,
        (*) = NZ*UNFL / (min_i (abs(op(A))*abs(X) + abs(b))_i ) */
     reslts[1] = ZERO;
     for (int k = 0; k < nrhs; k++) {
-        double axbi = ZERO;
+        f64 axbi = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = fabs(B[i + k * ldb]);
+            f64 tmp = fabs(B[i + k * ldb]);
             if (notran) {
                 int j_start = (i - kl > 0) ? i - kl : 0;
                 int j_end = (i + ku + 1 < n) ? i + ku + 1 : n;
@@ -137,8 +137,8 @@ void dgbt05(const char* trans, int n, int kl, int ku, int nrhs,
                 }
             }
         }
-        double denom = nz * eps + nz * unfl / ((axbi > nz * unfl) ? axbi : nz * unfl);
-        double tmp = BERR[k] / denom;
+        f64 denom = nz * eps + nz * unfl / ((axbi > nz * unfl) ? axbi : nz * unfl);
+        f64 tmp = BERR[k] / denom;
         if (k == 0) {
             reslts[1] = tmp;
         } else {

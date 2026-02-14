@@ -11,10 +11,10 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DGET10 compares two matrices A and B and computes the ratio
@@ -30,15 +30,15 @@ extern double dlange(const char* norm, const int m, const int n,
  * @param[out]    result  The computed ratio.
  */
 void dget10(const int m, const int n,
-            const double* const restrict A, const int lda,
-            const double* const restrict B, const int ldb,
-            double* const restrict work, double* result)
+            const f64* const restrict A, const int lda,
+            const f64* const restrict B, const int ldb,
+            f64* const restrict work, f64* result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int j;
-    double anorm, eps, unfl, wnorm;
+    f64 anorm, eps, unfl, wnorm;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {
@@ -59,12 +59,12 @@ void dget10(const int m, const int n,
     anorm = fmax(dlange("1", m, n, A, lda, work), unfl);
 
     if (anorm > wnorm) {
-        *result = (wnorm / anorm) / ((double)m * eps);
+        *result = (wnorm / anorm) / ((f64)m * eps);
     } else {
         if (anorm < ONE) {
-            *result = (fmin(wnorm, (double)m * anorm) / anorm) / ((double)m * eps);
+            *result = (fmin(wnorm, (f64)m * anorm) / anorm) / ((f64)m * eps);
         } else {
-            *result = fmin(wnorm / anorm, (double)m) / ((double)m * eps);
+            *result = fmin(wnorm / anorm, (f64)m) / ((f64)m * eps);
         }
     }
 }

@@ -11,13 +11,13 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dormqr(const char* side, const char* trans,
                    const int m, const int n, const int k,
-                   const double* A, const int lda, const double* tau,
-                   double* C, const int ldc, double* work, const int lwork,
+                   const f64* A, const int lda, const f64* tau,
+                   f64* C, const int ldc, f64* work, const int lwork,
                    int* info);
 
 /**
@@ -45,16 +45,16 @@ extern void dormqr(const char* side, const char* trans,
  *
  * @return ||A*P - Q*R|| / (||norm(A)|| * eps * max(M,N)).
  */
-double dqpt01(const int m, const int n, const int k,
-              const double* A, const double* AF, const int lda,
-              const double* tau, const int* jpvt,
-              double* work, const int lwork)
+f64 dqpt01(const int m, const int n, const int k,
+              const f64* A, const f64* AF, const int lda,
+              const f64* tau, const int* jpvt,
+              f64* work, const int lwork)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int i, j, info;
-    double norma;
-    double rwork[1];
+    f64 norma;
+    f64 rwork[1];
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {
@@ -101,8 +101,8 @@ double dqpt01(const int m, const int n, const int k,
     }
 
     /* Compute ||Q*R - A*P|| / (max(M,N) * ||A|| * eps) */
-    double result = dlange("1", m, n, work, m, rwork) /
-                    ((double)((m > n) ? m : n) * dlamch("E"));
+    f64 result = dlange("1", m, n, work, m, rwork) /
+                    ((f64)((m > n) ? m : n) * dlamch("E"));
     if (norma != ZERO) {
         result /= norma;
     }

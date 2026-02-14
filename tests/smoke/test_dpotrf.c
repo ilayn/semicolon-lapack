@@ -36,16 +36,16 @@ static const char UPLOS[] = {'U', 'L'};
 #define NMAX    50
 
 /* Routines under test */
-extern void dpotf2(const char* uplo, const int n, double* A,
+extern void dpotf2(const char* uplo, const int n, f64* A,
                    const int lda, int* info);
-extern void dpotrf2(const char* uplo, const int n, double* A,
+extern void dpotrf2(const char* uplo, const int n, f64* A,
                     const int lda, int* info);
-extern void dpotrf(const char* uplo, const int n, double* A,
+extern void dpotrf(const char* uplo, const int n, f64* A,
                    const int lda, int* info);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * Test parameters for a single test case.
@@ -62,11 +62,11 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AFAC;   /* Factored matrix (NMAX x NMAX) */
-    double* D;      /* Singular values for dlatms */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f64* D;      /* Singular values for dlatms */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
 } dpotrf_workspace_t;
 
 static dpotrf_workspace_t* g_workspace = NULL;
@@ -80,11 +80,11 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dpotrf_workspace_t));
     if (!g_workspace) return -1;
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
-    g_workspace->WORK = malloc(3 * NMAX * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
+    g_workspace->WORK = malloc(3 * NMAX * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->D ||
         !g_workspace->WORK || !g_workspace->RWORK) {
@@ -124,7 +124,7 @@ static void run_dpotrf_single(int n, int iuplo, int imat, int iroutine)
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int lda = (n > 1) ? n : 1;
 
@@ -170,7 +170,7 @@ static void run_dpotrf_single(int n, int iuplo, int imat, int iroutine)
     }
 
     /* Verify factorization using dpot01 */
-    double resid;
+    f64 resid;
     dpot01(uplo_str, n, ws->A, lda, ws->AFAC, lda, ws->RWORK, &resid);
 
     assert_residual_below(resid, THRESH);

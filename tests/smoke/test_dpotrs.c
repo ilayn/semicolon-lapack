@@ -19,11 +19,11 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, double* const restrict A,
+extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
 extern void dpotrs(const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb, int* info);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb, int* info);
 
 /*
  * Test fixture
@@ -31,14 +31,14 @@ extern void dpotrs(const char* uplo, const int n, const int nrhs,
 typedef struct {
     int n, nrhs;
     int lda, ldb;
-    double* A;       /* Original matrix */
-    double* AF;      /* Factored matrix */
-    double* B;       /* RHS (overwritten with solution) */
-    double* B_orig;  /* Original B for verification */
-    double* X;       /* Known solution */
-    double* d;       /* Singular values for dlatms */
-    double* work;    /* Workspace for dlatms */
-    double* rwork;   /* Workspace for dpot02 */
+    f64* A;       /* Original matrix */
+    f64* AF;      /* Factored matrix */
+    f64* B;       /* RHS (overwritten with solution) */
+    f64* B_orig;  /* Original B for verification */
+    f64* X;       /* Known solution */
+    f64* d;       /* Singular values for dlatms */
+    f64* work;    /* Workspace for dlatms */
+    f64* rwork;   /* Workspace for dpot02 */
     uint64_t seed;
 } dpotrs_fixture_t;
 
@@ -55,14 +55,14 @@ static int dpotrs_setup(void** state, int n, int nrhs)
     fix->ldb = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AF = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->X = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AF = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->X = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -107,11 +107,11 @@ static int setup_20_nrhs5(void** state) { return dpotrs_setup(state, 20, 5); }
 /**
  * Core test logic: generate matrix, factorize, solve, verify.
  */
-static double run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -126,7 +126,7 @@ static double run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
     /* Generate known solution X */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->X[i + j * fix->ldb] = 1.0 + (double)i / fix->n;
+            fix->X[i + j * fix->ldb] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -135,10 +135,10 @@ static double run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
     cblas_dsymm(CblasColMajor, CblasLeft, cblas_uplo,
                 fix->n, fix->nrhs, 1.0, fix->A, fix->lda,
                 fix->X, fix->ldb, 0.0, fix->B, fix->ldb);
-    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
 
     /* Factor A */
-    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(f64));
     dpotrf(uplo, fix->n, fix->AF, fix->lda, &info);
     assert_info_success(info);
 
@@ -148,7 +148,7 @@ static double run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
     assert_info_success(info);
 
     /* Verify: dpot02 computes ||B_orig - A*X_computed|| / (||A||*||X||*eps) */
-    double resid;
+    f64 resid;
     dpot02(uplo, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->B, fix->ldb, fix->B_orig, fix->ldb, fix->rwork, &resid);
     return resid;
@@ -162,7 +162,7 @@ static void test_dpotrs_wellcond_upper(void** state)
     dpotrs_fixture_t* fix = *state;
     for (int imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dpotrs_test(fix, imat, "U");
+        f64 resid = run_dpotrs_test(fix, imat, "U");
         assert_residual_ok(resid);
     }
 }
@@ -172,7 +172,7 @@ static void test_dpotrs_wellcond_lower(void** state)
     dpotrs_fixture_t* fix = *state;
     for (int imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dpotrs_test(fix, imat, "L");
+        f64 resid = run_dpotrs_test(fix, imat, "L");
         assert_residual_ok(resid);
     }
 }

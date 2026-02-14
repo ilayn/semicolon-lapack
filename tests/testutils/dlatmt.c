@@ -13,14 +13,14 @@
 /* Forward declarations */
 extern void xerbla(const char* srname, const int info);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern void dlartg(const double f, const double g, double* c, double* s, double* r);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern void dlartg(const f64 f, const f64 g, f64* c, f64* s, f64* r);
 
 /* Constants */
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double TWOPI = 6.28318530717958647692528676655900576839;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const f64 TWOPI = 6.28318530717958647692528676655900576839;
 
 /**
  * DLATMT generates random matrices with specified singular values
@@ -72,14 +72,14 @@ static const double TWOPI = 6.28318530717958647692528676655900576839;
  * @param[out] info   0=success, <0=argument error, >0=other error.
  */
 void dlatmt(const int m, const int n, const char* dist,
-            const char* sym, double* d, const int mode,
-            const double cond, const double dmax, const int rank,
+            const char* sym, f64* d, const int mode,
+            const f64 cond, const f64 dmax, const int rank,
             const int kl, const int ku, const char* pack,
-            double* A, const int lda, double* work, int* info,
+            f64* A, const int lda, f64* work, int* info,
             uint64_t state[static 4])
 {
     /* Local scalars */
-    double alpha, angle, c, dummy, extra, s, temp;
+    f64 alpha, angle, c, dummy, extra, s, temp;
     int i, ic, icol = 0, idist, iendch, iinfo, il, ilda;
     int ioffg, ioffst, ipack, ipackg, ir, ir1, ir2;
     int irow = 0, irsign, iskew, isym, isympk, j, jc, jch;
@@ -167,7 +167,7 @@ void dlatmt(const int m, const int n, const char* dist,
      * or if LDA is too small to store the matrix unpacked. */
     givens = 0;
     if (isym == 1) {
-        if ((double)(llb + uub) < 0.3 * (double)((mr + nc > 1) ? mr + nc : 1)) {
+        if ((f64)(llb + uub) < 0.3 * (f64)((mr + nc > 1) ? mr + nc : 1)) {
             givens = 1;
         }
     } else {

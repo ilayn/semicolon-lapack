@@ -20,16 +20,16 @@
 static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const double* A, const int lda, double* ARF, int* info);
+                   const f64* A, const int lda, f64* ARF, int* info);
 extern void dtfttr(const char* transr, const char* uplo, const int n,
-                   const double* ARF, double* A, const int lda, int* info);
+                   const f64* ARF, f64* A, const int lda, int* info);
 extern void dsfrk(const char* transr, const char* uplo, const char* trans,
-                  const int n, const int k, const double alpha,
-                  const double* A, const int lda, const double beta, double* C);
+                  const int n, const int k, const f64 alpha,
+                  const f64* A, const int lda, const f64 beta, f64* C);
 
 typedef struct {
     int in;
@@ -51,13 +51,13 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988);
 
-    double eps = dlamch("P");
+    f64 eps = dlamch("P");
 
     const char* cform = (iform == 0) ? "N" : "T";
     const char* uplo  = (iuplo == 0) ? "U" : "L";
     const char* trans = (itrans == 0) ? "N" : "T";
 
-    double alpha, beta;
+    f64 alpha, beta;
     if (ialpha == 1) {
         alpha = 0.0; beta = 0.0;
     } else if (ialpha == 2) {
@@ -69,11 +69,11 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
         beta = rng_uniform_symmetric(rng_state);
     }
 
-    double A[NMAX * NMAX];
-    double C1[NMAX * NMAX];
-    double C2[NMAX * NMAX];
-    double CRF[NMAX * (NMAX + 1) / 2];
-    double D_WORK_DLANGE[NMAX];
+    f64 A[NMAX * NMAX];
+    f64 C1[NMAX * NMAX];
+    f64 C2[NMAX * NMAX];
+    f64 CRF[NMAX * (NMAX + 1) / 2];
+    f64 D_WORK_DLANGE[NMAX];
 
     int rows_a, cols_a;
     if (itrans == 0) {
@@ -88,7 +88,7 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
         for (int i = 0; i < rows_a; i++)
             A[i + j * lda] = rng_uniform_symmetric(rng_state);
 
-    double norma = dlange("I", rows_a, cols_a, A, lda, D_WORK_DLANGE);
+    f64 norma = dlange("I", rows_a, cols_a, A, lda, D_WORK_DLANGE);
 
     for (int j = 0; j < n; j++)
         for (int i = 0; i < n; i++) {
@@ -112,9 +112,9 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
         for (int i = 0; i < n; i++)
             C1[i + j * ldc] -= C2[i + j * ldc];
 
-    double result = dlange("I", n, n, C1, ldc, D_WORK_DLANGE);
+    f64 result = dlange("I", n, n, C1, ldc, D_WORK_DLANGE);
 
-    double denom = fabs(alpha) * norma + fabs(beta);
+    f64 denom = fabs(alpha) * norma + fabs(beta);
     if (denom < 1.0) denom = 1.0;
     int n_max = (n > 1) ? n : 1;
     result = result / denom / n_max / eps;

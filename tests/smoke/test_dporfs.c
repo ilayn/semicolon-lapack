@@ -19,18 +19,18 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, double* const restrict A,
+extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
 extern void dpotrs(const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb, int* info);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb, int* info);
 extern void dporfs(const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
-                   const double* const restrict AF, const int ldaf,
-                   const double* const restrict B, const int ldb,
-                   double* const restrict X, const int ldx,
-                   double* const restrict ferr, double* const restrict berr,
-                   double* const restrict work, int* const restrict iwork,
+                   const f64* const restrict A, const int lda,
+                   const f64* const restrict AF, const int ldaf,
+                   const f64* const restrict B, const int ldb,
+                   f64* const restrict X, const int ldx,
+                   f64* const restrict ferr, f64* const restrict berr,
+                   f64* const restrict work, int* const restrict iwork,
                    int* info);
 
 /*
@@ -39,17 +39,17 @@ extern void dporfs(const char* uplo, const int n, const int nrhs,
 typedef struct {
     int n, nrhs;
     int lda, ldb;
-    double* A;       /* Original matrix */
-    double* AF;      /* Factored matrix */
-    double* B;       /* RHS */
-    double* X;       /* Computed solution */
-    double* XACT;    /* Exact solution */
-    double* ferr;
-    double* berr;
-    double* d;
-    double* work;
+    f64* A;       /* Original matrix */
+    f64* AF;      /* Factored matrix */
+    f64* B;       /* RHS */
+    f64* X;       /* Computed solution */
+    f64* XACT;    /* Exact solution */
+    f64* ferr;
+    f64* berr;
+    f64* d;
+    f64* work;
     int* iwork;
-    double reslts[2];
+    f64 reslts[2];
     uint64_t seed;
 } dporfs_fixture_t;
 
@@ -66,15 +66,15 @@ static int dporfs_setup(void** state, int n, int nrhs)
     fix->ldb = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AF = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->X = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->XACT = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->ferr = malloc(nrhs * sizeof(double));
-    fix->berr = malloc(nrhs * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AF = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->X = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->XACT = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->ferr = malloc(nrhs * sizeof(f64));
+    fix->berr = malloc(nrhs * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -128,7 +128,7 @@ static void run_dporfs_test(dporfs_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -143,7 +143,7 @@ static void run_dporfs_test(dporfs_fixture_t* fix, int imat, const char* uplo)
     /* Generate exact solution */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->ldb] = 1.0 + (double)i / fix->n;
+            fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -154,12 +154,12 @@ static void run_dporfs_test(dporfs_fixture_t* fix, int imat, const char* uplo)
                 fix->XACT, fix->ldb, 0.0, fix->B, fix->ldb);
 
     /* Factor A */
-    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(f64));
     dpotrf(uplo, fix->n, fix->AF, fix->lda, &info);
     assert_info_success(info);
 
     /* Solve A*X = B */
-    memcpy(fix->X, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->X, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
     dpotrs(uplo, fix->n, fix->nrhs, fix->AF, fix->lda,
            fix->X, fix->ldb, &info);
     assert_info_success(info);

@@ -18,8 +18,8 @@
 /* Forward declaration */
 extern void xerbla(const char* srname, const int info);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 
 /**
  * DLAROR pre- or post-multiplies an M by N matrix A by a random
@@ -67,16 +67,16 @@ extern void dlaset(const char* uplo, const int m, const int n,
  */
 void dlaror(const char* side, const char* init,
             const int m, const int n,
-            double* A, const int lda,
-            double* X, int* info,
+            f64* A, const int lda,
+            f64* X, int* info,
             uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TOOSML = 1.0e-20;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TOOSML = 1.0e-20;
 
     int irow, itype, ixfrm, j, jcol, kbeg, nxfrm;
-    double factor, xnorm, xnorms;
+    f64 factor, xnorm, xnorms;
 
     *info = 0;
     if (n == 0 || m == 0) {

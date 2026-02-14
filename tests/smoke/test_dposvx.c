@@ -20,25 +20,25 @@
 
 /* Routine under test */
 extern void dposvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   double* const restrict A, const int lda,
-                   double* const restrict AF, const int ldaf,
-                   char* equed, double* const restrict S,
-                   double* const restrict B, const int ldb,
-                   double* const restrict X, const int ldx,
-                   double* rcond,
-                   double* const restrict ferr, double* const restrict berr,
-                   double* const restrict work, int* const restrict iwork,
+                   f64* const restrict A, const int lda,
+                   f64* const restrict AF, const int ldaf,
+                   char* equed, f64* const restrict S,
+                   f64* const restrict B, const int ldb,
+                   f64* const restrict X, const int ldx,
+                   f64* rcond,
+                   f64* const restrict ferr, f64* const restrict berr,
+                   f64* const restrict work, int* const restrict iwork,
                    int* info);
 
 /* Utilities */
-extern void dpotrf(const char* uplo, const int n, double* const restrict A,
+extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
-extern void dpotri(const char* uplo, const int n, double* const restrict A,
+extern void dpotri(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /*
  * Test fixture
@@ -46,19 +46,19 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 typedef struct {
     int n, nrhs;
     int lda, ldb, ldx;
-    double* A;       /* Original matrix */
-    double* A_save;  /* Saved copy (dposvx modifies A when FACT='E') */
-    double* AF;      /* Factored matrix */
-    double* B;       /* RHS */
-    double* B_save;  /* Saved RHS */
-    double* X;       /* Computed solution */
-    double* XACT;    /* Exact solution */
-    double* S;       /* Scale factors */
-    double* ferr;
-    double* berr;
-    double* d;
-    double* work;
-    double* rwork;
+    f64* A;       /* Original matrix */
+    f64* A_save;  /* Saved copy (dposvx modifies A when FACT='E') */
+    f64* AF;      /* Factored matrix */
+    f64* B;       /* RHS */
+    f64* B_save;  /* Saved RHS */
+    f64* X;       /* Computed solution */
+    f64* XACT;    /* Exact solution */
+    f64* S;       /* Scale factors */
+    f64* ferr;
+    f64* berr;
+    f64* d;
+    f64* work;
+    f64* rwork;
     int* iwork;
     uint64_t seed;
 } dposvx_fixture_t;
@@ -77,19 +77,19 @@ static int dposvx_setup(void** state, int n, int nrhs)
     fix->ldx = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->A_save = malloc(fix->lda * n * sizeof(double));
-    fix->AF = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->B_save = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->X = malloc(fix->ldx * nrhs * sizeof(double));
-    fix->XACT = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->S = malloc(n * sizeof(double));
-    fix->ferr = malloc(nrhs * sizeof(double));
-    fix->berr = malloc(nrhs * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->A_save = malloc(fix->lda * n * sizeof(f64));
+    fix->AF = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->B_save = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->X = malloc(fix->ldx * nrhs * sizeof(f64));
+    fix->XACT = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->S = malloc(n * sizeof(f64));
+    fix->ferr = malloc(nrhs * sizeof(f64));
+    fix->berr = malloc(nrhs * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -148,7 +148,7 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -161,12 +161,12 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Save original A */
-    memcpy(fix->A_save, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->A_save, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Generate exact solution */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->ldb] = 1.0 + (double)i / fix->n;
+            fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -175,11 +175,11 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
     cblas_dsymm(CblasColMajor, CblasLeft, cblas_uplo,
                 fix->n, fix->nrhs, 1.0, fix->A, fix->lda,
                 fix->XACT, fix->ldb, 0.0, fix->B, fix->ldb);
-    memcpy(fix->B_save, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->B_save, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
 
     /* Call dposvx with FACT='N' */
     char equed = 'N';
-    double rcond;
+    f64 rcond;
     dposvx("N", uplo, fix->n, fix->nrhs, fix->A, fix->lda,
             fix->AF, fix->lda, &equed, fix->S,
             fix->B, fix->ldb, fix->X, fix->ldx, &rcond,
@@ -193,15 +193,15 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
 
     /* Test 1: Verify solution residual */
     /* Restore B for dpot02 */
-    memcpy(fix->B, fix->B_save, fix->ldb * fix->nrhs * sizeof(double));
-    double resid;
+    memcpy(fix->B, fix->B_save, fix->ldb * fix->nrhs * sizeof(f64));
+    f64 resid;
     dpot02(uplo, fix->n, fix->nrhs, fix->A_save, fix->lda,
            fix->X, fix->ldx, fix->B, fix->ldb, fix->rwork, &resid);
     assert_residual_ok(resid);
 
     /* Test 2: Verify error bounds (only for well-conditioned) */
     if (imat <= 5) {
-        double reslts[2];
+        f64 reslts[2];
         dpot05(uplo, fix->n, fix->nrhs, fix->A_save, fix->lda,
                fix->B_save, fix->ldb, fix->X, fix->ldx, fix->XACT, fix->ldb,
                fix->ferr, fix->berr, reslts);
@@ -212,18 +212,18 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
     /* Test 3: Verify condition number estimate */
     if (info == 0) {
         /* Compute true condition number via inverse */
-        double* AINV = malloc(fix->lda * fix->n * sizeof(double));
+        f64* AINV = malloc(fix->lda * fix->n * sizeof(f64));
         assert_non_null(AINV);
-        memcpy(AINV, fix->AF, fix->lda * fix->n * sizeof(double));
+        memcpy(AINV, fix->AF, fix->lda * fix->n * sizeof(f64));
         int info2;
         dpotri(uplo, fix->n, AINV, fix->lda, &info2);
         if (info2 == 0) {
-            double anorm_1 = dlansy("1", uplo, fix->n, fix->A_save, fix->lda, fix->rwork);
-            double ainvnm_1 = dlansy("1", uplo, fix->n, AINV, fix->lda, fix->rwork);
-            double rcondc = (anorm_1 > 0.0 && ainvnm_1 > 0.0) ?
+            f64 anorm_1 = dlansy("1", uplo, fix->n, fix->A_save, fix->lda, fix->rwork);
+            f64 ainvnm_1 = dlansy("1", uplo, fix->n, AINV, fix->lda, fix->rwork);
+            f64 rcondc = (anorm_1 > 0.0 && ainvnm_1 > 0.0) ?
                             (1.0 / anorm_1) / ainvnm_1 : 0.0;
             if (rcondc > 0.0) {
-                double ratio = dget06(rcond, rcondc);
+                f64 ratio = dget06(rcond, rcondc);
                 assert_residual_ok(ratio);
             }
         }
@@ -238,7 +238,7 @@ static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -251,12 +251,12 @@ static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Save original A */
-    memcpy(fix->A_save, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->A_save, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Generate exact solution */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->ldb] = 1.0 + (double)i / fix->n;
+            fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -265,11 +265,11 @@ static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
     cblas_dsymm(CblasColMajor, CblasLeft, cblas_uplo,
                 fix->n, fix->nrhs, 1.0, fix->A, fix->lda,
                 fix->XACT, fix->ldb, 0.0, fix->B, fix->ldb);
-    memcpy(fix->B_save, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->B_save, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
 
     /* Call dposvx with FACT='E' */
     char equed = 'N';
-    double rcond;
+    f64 rcond;
     dposvx("E", uplo, fix->n, fix->nrhs, fix->A, fix->lda,
             fix->AF, fix->lda, &equed, fix->S,
             fix->B, fix->ldb, fix->X, fix->ldx, &rcond,
@@ -281,8 +281,8 @@ static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
     assert_true(info == 0 || info == fix->n + 1);
 
     /* Verify solution residual using original A and B */
-    memcpy(fix->B, fix->B_save, fix->ldb * fix->nrhs * sizeof(double));
-    double resid;
+    memcpy(fix->B, fix->B_save, fix->ldb * fix->nrhs * sizeof(f64));
+    f64 resid;
     dpot02(uplo, fix->n, fix->nrhs, fix->A_save, fix->lda,
            fix->X, fix->ldx, fix->B, fix->ldb, fix->rwork, &resid);
     assert_residual_ok(resid);

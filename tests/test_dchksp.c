@@ -40,61 +40,61 @@ static const char* PACKS[] = {"C", "R"};  /* Column packed for U, Row packed for
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dsptrf(const char* uplo, const int n, double* AP, int* ipiv, int* info);
-extern void dsptri(const char* uplo, const int n, double* AP, const int* ipiv,
-                   double* work, int* info);
+extern void dsptrf(const char* uplo, const int n, f64* AP, int* ipiv, int* info);
+extern void dsptri(const char* uplo, const int n, f64* AP, const int* ipiv,
+                   f64* work, int* info);
 extern void dsptrs(const char* uplo, const int n, const int nrhs,
-                   const double* AP, const int* ipiv, double* B, const int ldb, int* info);
+                   const f64* AP, const int* ipiv, f64* B, const int ldb, int* info);
 extern void dsprfs(const char* uplo, const int n, const int nrhs,
-                   const double* AP, const double* AFP, const int* ipiv,
-                   const double* B, const int ldb,
-                   double* X, const int ldx, double* ferr, double* berr,
-                   double* work, int* iwork, int* info);
-extern void dspcon(const char* uplo, const int n, const double* AP, const int* ipiv,
-                   const double anorm, double* rcond,
-                   double* work, int* iwork, int* info);
+                   const f64* AP, const f64* AFP, const int* ipiv,
+                   const f64* B, const int ldb,
+                   f64* X, const int ldx, f64* ferr, f64* berr,
+                   f64* work, int* iwork, int* info);
+extern void dspcon(const char* uplo, const int n, const f64* AP, const int* ipiv,
+                   const f64 anorm, f64* rcond,
+                   f64* work, int* iwork, int* info);
 
 /* Verification routines */
-extern void dspt01(const char* uplo, const int n, const double* A,
-                   const double* AFAC, const int* ipiv, double* C, const int ldc,
-                   double* rwork, double* resid);
+extern void dspt01(const char* uplo, const int n, const f64* A,
+                   const f64* AFAC, const int* ipiv, f64* C, const int ldc,
+                   f64* rwork, f64* resid);
 extern void dppt02(const char* uplo, const int n, const int nrhs,
-                   const double* A, const double* X, const int ldx,
-                   double* B, const int ldb, double* rwork, double* resid);
-extern void dppt03(const char* uplo, const int n, const double* A,
-                   const double* AINV, double* work, const int ldwork,
-                   double* rwork, double* rcond, double* resid);
+                   const f64* A, const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* rwork, f64* resid);
+extern void dppt03(const char* uplo, const int n, const f64* A,
+                   const f64* AINV, f64* work, const int ldwork,
+                   f64* rwork, f64* rcond, f64* resid);
 extern void dppt05(const char* uplo, const int n, const int nrhs,
-                   const double* AP, const double* B, const int ldb,
-                   const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* AP, const f64* B, const int ldb,
+                   const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   const double* XACT, const int ldxact, double* B,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   const f64* XACT, const int ldxact, f64* B,
                    const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
-extern double dlansp(const char* norm, const char* uplo, const int n,
-                     const double* AP, double* work);
-extern double dlamch(const char* cmach);
+                   const f64* A, const int lda, f64* B, const int ldb);
+extern f64 dlansp(const char* norm, const char* uplo, const int n,
+                     const f64* AP, f64* work);
+extern f64 dlamch(const char* cmach);
 
 /**
  * Test parameters for a single test case.
@@ -110,18 +110,18 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original packed matrix (NMAX*(NMAX+1)/2) */
-    double* AFAC;   /* Factored packed matrix (NMAX*(NMAX+1)/2) */
-    double* AINV;   /* Inverse packed matrix (NMAX*(NMAX+1)/2) */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* D;      /* Singular values for dlatms */
-    double* C;      /* Full format workspace for dspt01 */
-    double* FERR;   /* Forward error bounds */
-    double* BERR;   /* Backward error bounds */
+    f64* A;      /* Original packed matrix (NMAX*(NMAX+1)/2) */
+    f64* AFAC;   /* Factored packed matrix (NMAX*(NMAX+1)/2) */
+    f64* AINV;   /* Inverse packed matrix (NMAX*(NMAX+1)/2) */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* D;      /* Singular values for dlatms */
+    f64* C;      /* Full format workspace for dspt01 */
+    f64* FERR;   /* Forward error bounds */
+    f64* BERR;   /* Backward error bounds */
     int* IWORK;     /* Integer workspace (also serves as IPIV) */
 } dchksp_workspace_t;
 
@@ -138,18 +138,18 @@ static int group_setup(void** state)
 
     int npp = NMAX * (NMAX + 1) / 2;
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(npp * sizeof(double));
-    g_workspace->AINV = malloc(npp * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->WORK = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
-    g_workspace->C = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->FERR = malloc(NSMAX * sizeof(double));
-    g_workspace->BERR = malloc(NSMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(npp * sizeof(f64));
+    g_workspace->AINV = malloc(npp * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->WORK = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
+    g_workspace->C = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->FERR = malloc(NSMAX * sizeof(f64));
+    g_workspace->BERR = malloc(NSMAX * sizeof(f64));
     g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
@@ -195,7 +195,7 @@ static int group_teardown(void** state)
  */
 static void run_dchksp_single(int n, int iuplo, int imat)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     dchksp_workspace_t* ws = g_workspace;
 
     char type, dist;
@@ -203,16 +203,16 @@ static void run_dchksp_single(int n, int iuplo, int imat)
     char uplo_str[2] = {uplo, '\0'};
     const char* packit = PACKS[iuplo];
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info, izero;
     int lda = (n > 1) ? n : 1;
     int npp = n * (n + 1) / 2;
-    double rcondc, rcond;
+    f64 rcondc, rcond;
     int trfcon;
     int k;
     int* ipiv = ws->IWORK;  /* First n elements for pivot indices */
 
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
 
     /* Seed based on (n, uplo, imat) for reproducibility */

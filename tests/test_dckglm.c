@@ -40,7 +40,7 @@ static const int NVAL[] = { 5,  5, 10, 25, 30, 40};
 #define MAX_TESTS (NN * NTYPES)
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -51,16 +51,16 @@ typedef struct {
 
 /* Global workspace - allocated once, shared across all tests */
 typedef struct {
-    double* A;
-    double* AF;
-    double* B;
-    double* BF;
-    double* D;
-    double* DF;
-    double* X;
-    double* U;
-    double* work;
-    double* rwork;
+    f64* A;
+    f64* AF;
+    f64* B;
+    f64* BF;
+    f64* D;
+    f64* DF;
+    f64* X;
+    f64* U;
+    f64* work;
+    f64* rwork;
 } dckglm_workspace_t;
 
 static dckglm_workspace_t* g_ws = NULL;
@@ -76,16 +76,16 @@ static int group_setup(void** state)
     int ldb = NMAX;
     int lwork = NMAX * NMAX;
 
-    g_ws->A     = malloc(lda * NMAX * sizeof(double));
-    g_ws->AF    = malloc(lda * NMAX * sizeof(double));
-    g_ws->B     = malloc(ldb * NMAX * sizeof(double));
-    g_ws->BF    = malloc(ldb * NMAX * sizeof(double));
-    g_ws->D     = malloc(NMAX * sizeof(double));
-    g_ws->DF    = malloc(NMAX * sizeof(double));
-    g_ws->X     = malloc(NMAX * sizeof(double));
-    g_ws->U     = malloc(NMAX * sizeof(double));
-    g_ws->work  = malloc(lwork * sizeof(double));
-    g_ws->rwork = malloc(NMAX * sizeof(double));
+    g_ws->A     = malloc(lda * NMAX * sizeof(f64));
+    g_ws->AF    = malloc(lda * NMAX * sizeof(f64));
+    g_ws->B     = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->BF    = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->D     = malloc(NMAX * sizeof(f64));
+    g_ws->DF    = malloc(NMAX * sizeof(f64));
+    g_ws->X     = malloc(NMAX * sizeof(f64));
+    g_ws->U     = malloc(NMAX * sizeof(f64));
+    g_ws->work  = malloc(lwork * sizeof(f64));
+    g_ws->rwork = malloc(NMAX * sizeof(f64));
 
     if (!g_ws->A || !g_ws->AF || !g_ws->B || !g_ws->BF ||
         !g_ws->D || !g_ws->DF || !g_ws->X || !g_ws->U ||
@@ -139,7 +139,7 @@ static void test_dckglm_case(void** state)
     /* Set up parameters with DLATB9 */
     char type;
     int kla, kua, klb, kub;
-    double anorm, bnorm, cndnma, cndnmb;
+    f64 anorm, bnorm, cndnma, cndnmb;
     int modea, modeb;
     char dista, distb;
 
@@ -171,7 +171,7 @@ static void test_dckglm_case(void** state)
     dlarnv_rng(2, n, g_ws->D, rng_state);
 
     /* Test DGGGLM */
-    double resid;
+    f64 resid;
     dglmts(n, m, p, g_ws->A, g_ws->AF, lda, g_ws->B, g_ws->BF, ldb,
            g_ws->D, g_ws->DF, g_ws->X, g_ws->U,
            g_ws->work, lwork, g_ws->rwork, &resid);

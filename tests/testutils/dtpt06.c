@@ -10,9 +10,9 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const double* AP, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
+                     const int n, const f64* AP, f64* work);
 
 /**
  * DTPT06 computes a test ratio comparing RCOND (the reciprocal
@@ -34,13 +34,13 @@ extern double dlantp(const char* norm, const char* uplo, const char* diag,
  *                        If both are zero: 0.
  *                        If one is zero: scaled version of the nonzero estimate.
  */
-void dtpt06(const double rcond, const double rcondc,
+void dtpt06(const f64 rcond, const f64 rcondc,
             const char* uplo, const char* diag, const int n,
-            const double* AP, double* work, double* rat)
+            const f64* AP, f64* work, f64* rat)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    double anorm, bignum, eps, rmax, rmin, smlnum;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    f64 anorm, bignum, eps, rmax, rmin, smlnum;
 
     eps = dlamch("E");
     rmax = fmax(rcond, rcondc);

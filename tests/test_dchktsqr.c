@@ -43,7 +43,7 @@ static const int NBVAL[] = {1, 3, 3, 3, 20};
 
 /* Verification routine */
 extern void dtsqr01(const char* tssw, const int m, const int n, const int mb,
-                    const int nb, double* result);
+                    const int nb, f64* result);
 
 /**
  * Test parameters for a single test case.
@@ -71,7 +71,7 @@ static int g_num_tests = 0;
 static void test_dchktsqr_case(void** state)
 {
     dchktsqr_params_t* p = *state;
-    double result[NTESTS];
+    f64 result[NTESTS];
 
     int mb = NBVAL[p->imb];
     int nb = NBVAL[p->inb];

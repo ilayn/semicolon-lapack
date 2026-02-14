@@ -12,12 +12,12 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 
 /**
  * DGET22 does an eigenvector check.
@@ -62,13 +62,13 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *                    result[1] = max | m-norm(E(j)) - 1 | / ( n ulp )
  */
 void dget22(const char* transa, const char* transe, const char* transw,
-            const int n, const double* A, const int lda,
-            const double* E, const int lde,
-            const double* wr, const double* wi,
-            double* work, double* result)
+            const int n, const f64* A, const int lda,
+            const f64* E, const int lde,
+            const f64* wr, const f64* wi,
+            f64* work, f64* result)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Initialize RESULT (in case n=0) */
     result[0] = zero;
@@ -76,8 +76,8 @@ void dget22(const char* transa, const char* transe, const char* transw,
     if (n <= 0)
         return;
 
-    double unfl = dlamch("S");
-    double ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ulp = dlamch("P");
 
     int itrnse = 0;
     int ince = 1;
@@ -101,21 +101,21 @@ void dget22(const char* transa, const char* transe, const char* transw,
     }
 
     /* Check normalization of E */
-    double enrmin = one / ulp;
-    double enrmax = zero;
+    f64 enrmin = one / ulp;
+    f64 enrmax = zero;
 
     if (itrnse == 0) {
         /* Eigenvectors are column vectors */
         int ipair = 0;
         for (int jvec = 0; jvec < n; jvec++) {
-            double temp1 = zero;
+            f64 temp1 = zero;
             if (ipair == 0 && jvec < n - 1 && wi[jvec] != zero)
                 ipair = 1;
 
             if (ipair == 1) {
                 /* Complex eigenvector */
                 for (int j = 0; j < n; j++) {
-                    double val = fabs(E[j + jvec * lde]) + fabs(E[j + (jvec + 1) * lde]);
+                    f64 val = fabs(E[j + jvec * lde]) + fabs(E[j + (jvec + 1) * lde]);
                     if (val > temp1) temp1 = val;
                 }
                 if (temp1 < enrmin) enrmin = temp1;
@@ -126,7 +126,7 @@ void dget22(const char* transa, const char* transe, const char* transw,
             } else {
                 /* Real eigenvector */
                 for (int j = 0; j < n; j++) {
-                    double val = fabs(E[j + jvec * lde]);
+                    f64 val = fabs(E[j + jvec * lde]);
                     if (val > temp1) temp1 = val;
                 }
                 if (temp1 < enrmin) enrmin = temp1;
@@ -147,13 +147,13 @@ void dget22(const char* transa, const char* transe, const char* transw,
                     ipair = 1;
 
                 if (ipair == 1) {
-                    double val = fabs(E[j + jvec * lde]) + fabs(E[j + (jvec + 1) * lde]);
+                    f64 val = fabs(E[j + jvec * lde]) + fabs(E[j + (jvec + 1) * lde]);
                     if (val > work[jvec]) work[jvec] = val;
                     work[jvec + 1] = work[jvec];
                 } else if (ipair == 2) {
                     ipair = 0;
                 } else {
-                    double val = fabs(E[j + jvec * lde]);
+                    f64 val = fabs(E[j + jvec * lde]);
                     if (val > work[jvec]) work[jvec] = val;
                     ipair = 0;
                 }
@@ -168,12 +168,12 @@ void dget22(const char* transa, const char* transe, const char* transw,
 
     /* Norm of A */
     char norma_str[2] = {norma, '\0'};
-    double anorm = dlange(norma_str, n, n, A, lda, work);
+    f64 anorm = dlange(norma_str, n, n, A, lda, work);
     if (anorm < unfl) anorm = unfl;
 
     /* Norm of E */
     char norme_str[2] = {norme, '\0'};
-    double enorm = dlange(norme_str, n, n, E, lde, work);
+    f64 enorm = dlange(norme_str, n, n, E, lde, work);
     if (enorm < ulp) enorm = ulp;
 
     /* Compute Error = AE - EW
@@ -205,7 +205,7 @@ void dget22(const char* transa, const char* transe, const char* transw,
              *
              * The TRANSW is handled by DGEMM, not by negating WI.
              */
-            double wmat[4];  /* Column-major 2x2 */
+            f64 wmat[4];  /* Column-major 2x2 */
             wmat[0] = wr[jcol];     /* W(0,0) = wr */
             wmat[1] = -wi[jcol];    /* W(1,0) = -wi */
             wmat[2] = wi[jcol];     /* W(0,1) = wi */
@@ -253,7 +253,7 @@ void dget22(const char* transa, const char* transe, const char* transw,
                 n, n, n, one, A, lda, E, lde, -one, work, n);
 
     /* Norm of error */
-    double errnrm = dlange("O", n, n, work, n, &work[n * n]) / enorm;
+    f64 errnrm = dlange("O", n, n, work, n, &work[n * n]) / enorm;
 
     /* Compute RESULT[0] (avoiding under/overflow) */
     if (anorm > errnrm) {
@@ -262,14 +262,14 @@ void dget22(const char* transa, const char* transe, const char* transw,
         if (anorm < one) {
             result[0] = one / ulp;
         } else {
-            double ratio = errnrm / anorm;
+            f64 ratio = errnrm / anorm;
             if (ratio > one) ratio = one;
             result[0] = ratio / ulp;
         }
     }
 
     /* Compute RESULT[1]: the normalization error in E */
-    double err1 = fabs(enrmax - one);
-    double err2 = fabs(enrmin - one);
-    result[1] = (err1 > err2 ? err1 : err2) / ((double)n * ulp);
+    f64 err1 = fabs(enrmax - one);
+    f64 err2 = fabs(enrmin - one);
+    result[1] = (err1 > err2 ? err1 : err2) / ((f64)n * ulp);
 }

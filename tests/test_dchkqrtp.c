@@ -36,7 +36,7 @@ static const int NBVAL[] = {1, 2, 3, 5, 10, 16};
 #define THRESH  30.0
 
 extern void dqrt05(const int m, const int n, const int l, const int nb,
-                   double* restrict result);
+                   f64* restrict result);
 
 typedef struct {
     int m;
@@ -48,7 +48,7 @@ typedef struct {
 
 static void run_dchkqrtp_single(int m, int n, int l, int nb)
 {
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
 
     if (nb > n || nb <= 0) {

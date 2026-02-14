@@ -11,10 +11,10 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DBDT02 tests the change of basis C = U' * B by computing the
@@ -39,22 +39,22 @@ extern double dlange(const char* norm, const int m, const int n,
  * @param[out]    resid  The test ratio.
  */
 void dbdt02(const int m, const int n,
-            const double* const restrict B, const int ldb,
-            const double* const restrict C, const int ldc,
-            const double* const restrict U, const int ldu,
-            double* const restrict work, double* resid)
+            const f64* const restrict B, const int ldb,
+            const f64* const restrict C, const int ldc,
+            const f64* const restrict U, const int ldu,
+            f64* const restrict work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int j;
-    double bnorm, eps, realmn;
+    f64 bnorm, eps, realmn;
 
     /* Quick return if possible */
     *resid = ZERO;
     if (m <= 0 || n <= 0)
         return;
-    realmn = (double)(m > n ? m : n);
+    realmn = (f64)(m > n ? m : n);
     eps = dlamch("P");
 
     /* Compute norm(B - U * C) */
@@ -62,7 +62,7 @@ void dbdt02(const int m, const int n,
         cblas_dcopy(m, &B[j * ldb], 1, work, 1);
         cblas_dgemv(CblasColMajor, CblasNoTrans, m, m, -ONE, U, ldu,
                     &C[j * ldc], 1, ONE, work, 1);
-        double colsum = cblas_dasum(m, work, 1);
+        f64 colsum = cblas_dasum(m, work, 1);
         if (colsum > *resid)
             *resid = colsum;
     }
@@ -78,10 +78,10 @@ void dbdt02(const int m, const int n,
             *resid = (*resid / bnorm) / (realmn * eps);
         } else {
             if (bnorm < ONE) {
-                double tmp = fmin(*resid, realmn * bnorm);
+                f64 tmp = fmin(*resid, realmn * bnorm);
                 *resid = (tmp / bnorm) / (realmn * eps);
             } else {
-                double tmp = fmin(*resid / bnorm, realmn);
+                f64 tmp = fmin(*resid / bnorm, realmn);
                 *resid = tmp / (realmn * eps);
             }
         }

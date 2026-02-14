@@ -7,7 +7,7 @@
 #include "verify.h"
 
 // Forward declaration
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DGET06 computes a test ratio to compare two values for RCOND.
@@ -29,19 +29,19 @@ extern double dlamch(const char* cmach);
  *
  * @return The test ratio.
  */
-double dget06(const double rcond, const double rcondc)
+f64 dget06(const f64 rcond, const f64 rcondc)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double eps = dlamch("E");
-    double rat;
+    f64 eps = dlamch("E");
+    f64 rat;
 
     if (rcond > ZERO) {
         if (rcondc > ZERO) {
             // Both positive: compute ratio of larger to smaller, subtract (1-eps)
-            double maxval = (rcond > rcondc) ? rcond : rcondc;
-            double minval = (rcond < rcondc) ? rcond : rcondc;
+            f64 maxval = (rcond > rcondc) ? rcond : rcondc;
+            f64 minval = (rcond < rcondc) ? rcond : rcondc;
             rat = maxval / minval - (ONE - eps);
         } else {
             // rcond > 0, rcondc <= 0

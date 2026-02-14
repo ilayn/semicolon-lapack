@@ -45,18 +45,18 @@ void dlavsy(
     const char* diag,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int nounit;
     int j, k, kp;
-    double d11, d12, d21, d22, t1, t2;
+    f64 d11, d12, d21, d22, t1, t2;
 
     /* Test the input parameters. */
     *info = 0;

@@ -8,10 +8,10 @@
 #include "verify.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
-extern double dlansp(const char* norm, const char* uplo, const int n,
-                     const double* const restrict AP,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansp(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict AP,
+                     f64* const restrict work);
 
 /**
  * DPPT02 computes the residual in the solution of a symmetric system
@@ -60,14 +60,14 @@ extern double dlansp(const char* norm, const char* uplo, const int n,
  *          norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
 void dppt02(const char* uplo, const int n, const int nrhs,
-            const double* const restrict A,
-            const double* const restrict X, const int ldx,
-            double* const restrict B, const int ldb,
-            double* const restrict rwork,
-            double* resid)
+            const f64* const restrict A,
+            const f64* const restrict X, const int ldx,
+            f64* const restrict B, const int ldb,
+            f64* const restrict rwork,
+            f64* resid)
 {
     int j;
-    double anorm, bnorm, eps, xnorm;
+    f64 anorm, bnorm, eps, xnorm;
     CBLAS_UPLO cblas_uplo;
 
     if (n <= 0 || nrhs <= 0) {
@@ -96,7 +96,7 @@ void dppt02(const char* uplo, const int n, const int nrhs,
         if (xnorm <= 0.0) {
             *resid = 1.0 / eps;
         } else {
-            double tmp = ((bnorm / anorm) / xnorm) / eps;
+            f64 tmp = ((bnorm / anorm) / xnorm) / eps;
             if (tmp > *resid) {
                 *resid = tmp;
             }

@@ -29,23 +29,23 @@
 
 /* Routine under test */
 extern void dsysvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
-                   double* const restrict AF, const int ldaf,
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict AF, const int ldaf,
                    int* const restrict ipiv,
-                   const double* const restrict B, const int ldb,
-                   double* const restrict X, const int ldx,
-                   double* rcond,
-                   double* const restrict ferr, double* const restrict berr,
-                   double* const restrict work, const int lwork,
+                   const f64* const restrict B, const int ldb,
+                   f64* const restrict X, const int ldx,
+                   f64* rcond,
+                   f64* const restrict ferr, f64* const restrict berr,
+                   f64* const restrict work, const int lwork,
                    int* const restrict iwork, int* info);
 
 /* Norm computation */
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /*
  * Test fixture
@@ -53,19 +53,19 @@ extern double dlange(const char* norm, const int m, const int n,
 typedef struct {
     int n, nrhs;
     int lda;
-    double* A;       /* Original matrix (const input to dsysvx) */
-    double* AF;      /* Factored matrix output */
-    double* B;       /* Right-hand side (const input to dsysvx) */
-    double* X;       /* Solution output */
-    double* XACT;    /* Known exact solution */
+    f64* A;       /* Original matrix (const input to dsysvx) */
+    f64* AF;      /* Factored matrix output */
+    f64* B;       /* Right-hand side (const input to dsysvx) */
+    f64* X;       /* Solution output */
+    f64* XACT;    /* Known exact solution */
     int* ipiv;       /* Pivot indices */
-    double* d;       /* Singular values for dlatms */
-    double* ferr;    /* Forward error bounds */
-    double* berr;    /* Backward error bounds */
-    double* work;    /* Workspace */
+    f64* d;       /* Singular values for dlatms */
+    f64* ferr;    /* Forward error bounds */
+    f64* berr;    /* Backward error bounds */
+    f64* work;    /* Workspace */
     int* iwork;      /* Integer workspace */
-    double* rwork;   /* Workspace for norm computation */
-    double rcond;    /* Reciprocal condition number */
+    f64* rwork;   /* Workspace for norm computation */
+    f64 rcond;    /* Reciprocal condition number */
     uint64_t seed;
 } dsysvx_fixture_t;
 
@@ -83,18 +83,18 @@ static int dsysvx_setup(void** state, int n, int nrhs)
 
     int lwork = (n * 64 > 3 * n) ? n * 64 : 3 * n;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AF = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->lda * nrhs * sizeof(double));
-    fix->X = malloc(fix->lda * nrhs * sizeof(double));
-    fix->XACT = malloc(fix->lda * nrhs * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AF = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->lda * nrhs * sizeof(f64));
+    fix->X = malloc(fix->lda * nrhs * sizeof(f64));
+    fix->XACT = malloc(fix->lda * nrhs * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
-    fix->d = malloc(n * sizeof(double));
-    fix->ferr = malloc(nrhs * sizeof(double));
-    fix->berr = malloc(nrhs * sizeof(double));
-    fix->work = malloc(lwork * sizeof(double));
+    fix->d = malloc(n * sizeof(f64));
+    fix->ferr = malloc(nrhs * sizeof(f64));
+    fix->berr = malloc(nrhs * sizeof(f64));
+    fix->work = malloc(lwork * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->rwork = malloc(n * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -151,12 +151,12 @@ static int setup_50_5(void** state) { return dsysvx_setup(state, 50, 5); }
  * Returns the normalized residual ||B - A*X|| / (||A|| * ||X|| * N * EPS).
  * Sets *out_info to the info value returned by dsysvx.
  */
-static double run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
+static f64 run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
                               int* out_info)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
 
     dlatb4("DSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -171,7 +171,7 @@ static double run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
     /* Generate known exact solution XACT = 1 + i/n */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->lda] = 1.0 + (double)i / fix->n;
+            fix->XACT[i + j * fix->lda] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -182,7 +182,7 @@ static double run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
                 fix->XACT, fix->lda, 0.0, fix->B, fix->lda);
 
     /* Clear AF and ipiv so dsysvx computes fresh factorization */
-    memset(fix->AF, 0, fix->lda * fix->n * sizeof(double));
+    memset(fix->AF, 0, fix->lda * fix->n * sizeof(f64));
     memset(fix->ipiv, 0, fix->n * sizeof(int));
 
     /* Call dsysvx with fact="N" */
@@ -201,24 +201,24 @@ static double run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
     }
 
     /* Compute residual: ||B - A*X|| / (||A|| * ||X|| * N * EPS) */
-    double eps = DBL_EPSILON;
+    f64 eps = DBL_EPSILON;
 
-    double anorm_val = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
-    double xnorm = dlange("1", fix->n, fix->nrhs, fix->X, fix->lda, fix->rwork);
+    f64 anorm_val = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
+    f64 xnorm = dlange("1", fix->n, fix->nrhs, fix->X, fix->lda, fix->rwork);
 
     /* Compute B - A*X in a temporary buffer */
-    double* resid_vec = malloc(fix->lda * fix->nrhs * sizeof(double));
+    f64* resid_vec = malloc(fix->lda * fix->nrhs * sizeof(f64));
     assert_non_null(resid_vec);
-    memcpy(resid_vec, fix->B, fix->lda * fix->nrhs * sizeof(double));
+    memcpy(resid_vec, fix->B, fix->lda * fix->nrhs * sizeof(f64));
 
     cblas_dsymm(CblasColMajor, CblasLeft, cblas_uplo,
                 fix->n, fix->nrhs, -1.0, fix->A, fix->lda,
                 fix->X, fix->lda, 1.0, resid_vec, fix->lda);
 
-    double rnorm = dlange("1", fix->n, fix->nrhs, resid_vec, fix->lda, fix->rwork);
+    f64 rnorm = dlange("1", fix->n, fix->nrhs, resid_vec, fix->lda, fix->rwork);
     free(resid_vec);
 
-    double resid;
+    f64 resid;
     if (anorm_val <= 0.0 || xnorm <= 0.0) {
         resid = (rnorm > 0.0) ? 1.0 / eps : 0.0;
     } else {
@@ -233,12 +233,12 @@ static double run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
  *
  * Returns the normalized residual for the fact="F" solve.
  */
-static double run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
+static f64 run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
                                        int* out_info)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
 
     dlatb4("DSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -253,7 +253,7 @@ static double run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const ch
     /* Generate known exact solution XACT = 1 + i/n */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->lda] = 1.0 + (double)i / fix->n;
+            fix->XACT[i + j * fix->lda] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -264,11 +264,11 @@ static double run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const ch
                 fix->XACT, fix->lda, 0.0, fix->B, fix->lda);
 
     /* First: call dsysvx with fact="N" to obtain AF and ipiv */
-    memset(fix->AF, 0, fix->lda * fix->n * sizeof(double));
+    memset(fix->AF, 0, fix->lda * fix->n * sizeof(f64));
     memset(fix->ipiv, 0, fix->n * sizeof(int));
 
     int lwork = fix->n * 64;
-    double rcond_first;
+    f64 rcond_first;
     dsysvx("N", uplo, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->AF, fix->lda, fix->ipiv,
            fix->B, fix->lda, fix->X, fix->lda,
@@ -295,22 +295,22 @@ static double run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const ch
     }
 
     /* Compute residual */
-    double eps = DBL_EPSILON;
-    double anorm_val = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
-    double xnorm = dlange("1", fix->n, fix->nrhs, fix->X, fix->lda, fix->rwork);
+    f64 eps = DBL_EPSILON;
+    f64 anorm_val = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
+    f64 xnorm = dlange("1", fix->n, fix->nrhs, fix->X, fix->lda, fix->rwork);
 
-    double* resid_vec = malloc(fix->lda * fix->nrhs * sizeof(double));
+    f64* resid_vec = malloc(fix->lda * fix->nrhs * sizeof(f64));
     assert_non_null(resid_vec);
-    memcpy(resid_vec, fix->B, fix->lda * fix->nrhs * sizeof(double));
+    memcpy(resid_vec, fix->B, fix->lda * fix->nrhs * sizeof(f64));
 
     cblas_dsymm(CblasColMajor, CblasLeft, cblas_uplo,
                 fix->n, fix->nrhs, -1.0, fix->A, fix->lda,
                 fix->X, fix->lda, 1.0, resid_vec, fix->lda);
 
-    double rnorm = dlange("1", fix->n, fix->nrhs, resid_vec, fix->lda, fix->rwork);
+    f64 rnorm = dlange("1", fix->n, fix->nrhs, resid_vec, fix->lda, fix->rwork);
     free(resid_vec);
 
-    double resid;
+    f64 resid;
     if (anorm_val <= 0.0 || xnorm <= 0.0) {
         resid = (rnorm > 0.0) ? 1.0 / eps : 0.0;
     } else {
@@ -329,7 +329,7 @@ static void test_dsysvx_upper_wellcond(void** state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         int info;
-        double resid = run_dsysvx_test(fix, imat, "U", &info);
+        f64 resid = run_dsysvx_test(fix, imat, "U", &info);
         assert_true(info == 0 || info == fix->n + 1);
         if (info == 0) {
             assert_true(fix->rcond > 0.0);
@@ -351,7 +351,7 @@ static void test_dsysvx_lower_wellcond(void** state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         int info;
-        double resid = run_dsysvx_test(fix, imat, "L", &info);
+        f64 resid = run_dsysvx_test(fix, imat, "L", &info);
         assert_true(info == 0 || info == fix->n + 1);
         if (info == 0) {
             assert_true(fix->rcond > 0.0);
@@ -373,7 +373,7 @@ static void test_dsysvx_upper_illcond(void** state)
     for (int imat = 7; imat <= 8; imat++) {
         fix->seed = g_seed++;
         int info;
-        double resid = run_dsysvx_test(fix, imat, "U", &info);
+        f64 resid = run_dsysvx_test(fix, imat, "U", &info);
         /* info can be 0, n+1 (ill-conditioned), or 1..n (singular) */
         assert_true(info >= 0);
         if (info > 0 && info <= fix->n) {
@@ -394,7 +394,7 @@ static void test_dsysvx_lower_illcond(void** state)
     for (int imat = 7; imat <= 8; imat++) {
         fix->seed = g_seed++;
         int info;
-        double resid = run_dsysvx_test(fix, imat, "L", &info);
+        f64 resid = run_dsysvx_test(fix, imat, "L", &info);
         assert_true(info >= 0);
         if (info > 0 && info <= fix->n) {
             continue;
@@ -412,7 +412,7 @@ static void test_dsysvx_upper_factored(void** state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         int info;
-        double resid = run_dsysvx_factored_test(fix, imat, "U", &info);
+        f64 resid = run_dsysvx_factored_test(fix, imat, "U", &info);
         if (info > 0 && info <= fix->n) {
             continue;
         }
@@ -433,7 +433,7 @@ static void test_dsysvx_lower_factored(void** state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         int info;
-        double resid = run_dsysvx_factored_test(fix, imat, "L", &info);
+        f64 resid = run_dsysvx_factored_test(fix, imat, "L", &info);
         if (info > 0 && info <= fix->n) {
             continue;
         }

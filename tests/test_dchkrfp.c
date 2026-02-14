@@ -49,51 +49,51 @@ static const int NSVAL[] = {1, 2, 5, 10};
 #define NMAX    50
 #define MAXRHS  16
 
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* a, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* a, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   double* X, const int ldx, double* B, const int ldb,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   f64* X, const int ldx, f64* B, const int ldb,
                    int* info, uint64_t state[static 4]);
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dpftrf(const char* transr, const char* uplo, const int n,
-                   double* arf, int* info);
+                   f64* arf, int* info);
 extern void dpftrs(const char* transr, const char* uplo, const int n,
-                   const int nrhs, const double* arf, double* b, const int ldb,
+                   const int nrhs, const f64* arf, f64* b, const int ldb,
                    int* info);
 extern void dpftri(const char* transr, const char* uplo, const int n,
-                   double* arf, int* info);
-extern void dpotrf(const char* uplo, const int n, double* a, const int lda,
+                   f64* arf, int* info);
+extern void dpotrf(const char* uplo, const int n, f64* a, const int lda,
                    int* info);
-extern void dpotri(const char* uplo, const int n, double* a, const int lda,
+extern void dpotri(const char* uplo, const int n, f64* a, const int lda,
                    int* info);
 extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const double* a, const int lda, double* arf, int* info);
+                   const f64* a, const int lda, f64* arf, int* info);
 extern void dtfttr(const char* transr, const char* uplo, const int n,
-                   const double* arf, double* a, const int lda, int* info);
-void dpot01(const char* uplo, int n, const double* A, int lda,
-            double* AFAC, int ldafac, double* rwork, double* resid);
-void dpot02(const char* uplo, int n, int nrhs, const double* A, int lda,
-            const double* X, int ldx, double* B, int ldb,
-            double* rwork, double* resid);
-void dpot03(const char* uplo, int n, const double* A, int lda,
-            const double* AINV, int ldainv, double* work, int ldwork,
-            double* rwork, double* rcond, double* resid);
-void dget04(int n, int nrhs, const double* X, int ldx,
-            const double* XACT, int ldxact, double rcond, double* resid);
+                   const f64* arf, f64* a, const int lda, int* info);
+void dpot01(const char* uplo, int n, const f64* A, int lda,
+            f64* AFAC, int ldafac, f64* rwork, f64* resid);
+void dpot02(const char* uplo, int n, int nrhs, const f64* A, int lda,
+            const f64* X, int ldx, f64* B, int ldb,
+            f64* rwork, f64* resid);
+void dpot03(const char* uplo, int n, const f64* A, int lda,
+            const f64* AINV, int ldainv, f64* work, int ldwork,
+            f64* rwork, f64* rcond, f64* resid);
+void dget04(int n, int nrhs, const f64* X, int ldx,
+            const f64* XACT, int ldxact, f64 rcond, f64* resid);
 
 typedef struct {
     int n;
@@ -106,7 +106,7 @@ typedef struct {
 
 static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
 {
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
     int info;
     int lda = (n > 1) ? n : 1;
@@ -117,8 +117,8 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
     char cform = (iform == 0) ? 'N' : 'T';
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
-    double rcondc, ainvnm;
+    f64 anorm, cndnum;
+    f64 rcondc, ainvnm;
     int rfp_size = (n * (n + 1)) / 2;
     int k;
     int zerot, izero;
@@ -127,19 +127,19 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
     if (imat == 4 && n <= 1) return;
     if (imat == 5 && n <= 2) return;
 
-    double* A = calloc(NMAX * NMAX, sizeof(double));
-    double* ASAV = calloc(NMAX * NMAX, sizeof(double));
-    double* AFAC = calloc(NMAX * NMAX, sizeof(double));
-    double* AINV = calloc(NMAX * NMAX, sizeof(double));
-    double* B = calloc(NMAX * MAXRHS, sizeof(double));
-    double* BSAV = calloc(NMAX * MAXRHS, sizeof(double));
-    double* X = calloc(NMAX * MAXRHS, sizeof(double));
-    double* XACT = calloc(NMAX * MAXRHS, sizeof(double));
-    double* ARF = calloc(rfp_size + 1, sizeof(double));
-    double* ARFINV = calloc(rfp_size + 1, sizeof(double));
-    double* work = calloc(3 * NMAX, sizeof(double));
-    double* rwork = calloc(NMAX, sizeof(double));
-    double* temp = calloc(NMAX * NMAX, sizeof(double));
+    f64* A = calloc(NMAX * NMAX, sizeof(f64));
+    f64* ASAV = calloc(NMAX * NMAX, sizeof(f64));
+    f64* AFAC = calloc(NMAX * NMAX, sizeof(f64));
+    f64* AINV = calloc(NMAX * NMAX, sizeof(f64));
+    f64* B = calloc(NMAX * MAXRHS, sizeof(f64));
+    f64* BSAV = calloc(NMAX * MAXRHS, sizeof(f64));
+    f64* X = calloc(NMAX * MAXRHS, sizeof(f64));
+    f64* XACT = calloc(NMAX * MAXRHS, sizeof(f64));
+    f64* ARF = calloc(rfp_size + 1, sizeof(f64));
+    f64* ARFINV = calloc(rfp_size + 1, sizeof(f64));
+    f64* work = calloc(3 * NMAX, sizeof(f64));
+    f64* rwork = calloc(NMAX, sizeof(f64));
+    f64* temp = calloc(NMAX * NMAX, sizeof(f64));
 
     dlatb4("DPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -181,7 +181,7 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
     if (zerot) {
         rcondc = 0.0;
     } else {
-        double norm_a = dlansy("1", &uplo, n, A, lda, rwork);
+        f64 norm_a = dlansy("1", &uplo, n, A, lda, rwork);
         dlacpy(&uplo, n, n, A, lda, AFAC, lda);
         dpotrf(&uplo, n, AFAC, lda, &info);
         if (info == 0) {

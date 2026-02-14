@@ -8,12 +8,12 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 
 /**
  * DORT01 checks that the matrix U is orthogonal by computing the ratio
@@ -49,15 +49,15 @@ extern void dlaset(const char* uplo, const int m, const int n,
  * @param[out] resid  The computed residual.
  */
 void dort01(const char* rowcol, const int m, const int n,
-            const double* U, const int ldu,
-            double* work, const int lwork, double* resid)
+            const f64* U, const int ldu,
+            f64* work, const int lwork, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     char transu;
     int i, j, k, ldwork, mnmin;
-    double eps, tmp;
+    f64 eps, tmp;
 
     *resid = ZERO;
 
@@ -105,7 +105,7 @@ void dort01(const char* rowcol, const int m, const int n,
         /* Compute norm( I - U*U' ) / ( K * EPS ) */
         *resid = dlansy("1", "U", mnmin, work, ldwork,
                         &work[ldwork * mnmin]);
-        *resid = (*resid / (double)k) / eps;
+        *resid = (*resid / (f64)k) / eps;
 
     } else if (transu == 'T') {
         /*
@@ -126,7 +126,7 @@ void dort01(const char* rowcol, const int m, const int n,
                 }
             }
         }
-        *resid = (*resid / (double)m) / eps;
+        *resid = (*resid / (f64)m) / eps;
 
     } else {
         /*
@@ -147,6 +147,6 @@ void dort01(const char* rowcol, const int m, const int n,
                 }
             }
         }
-        *resid = (*resid / (double)n) / eps;
+        *resid = (*resid / (f64)n) / eps;
     }
 }

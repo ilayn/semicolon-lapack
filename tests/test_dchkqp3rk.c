@@ -46,45 +46,45 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};
 
 /* Routine under test */
 extern void dgeqp3rk(const int m, const int n, const int nrhs, const int kmax,
-                     double abstol, double reltol, double* A, const int lda,
-                     int* K, double* maxc2nrmk, double* relmaxc2nrmk,
-                     int* jpiv, double* tau, double* work, const int lwork,
+                     f64 abstol, f64 reltol, f64* A, const int lda,
+                     int* K, f64* maxc2nrmk, f64* relmaxc2nrmk,
+                     int* jpiv, f64* tau, f64* work, const int lwork,
                      int* iwork, int* info);
 
 /* Verification routines */
-extern double dqrt11(const int m, const int k, const double* A, const int lda,
-                     const double* tau, double* work, const int lwork);
-extern double dqrt12(const int m, const int n, const double* A, const int lda,
-                     const double* S, double* work, const int lwork);
-extern double dqpt01(const int m, const int n, const int k,
-                     const double* A, const double* AF, const int lda,
-                     const double* tau, const int* jpvt,
-                     double* work, const int lwork);
+extern f64 dqrt11(const int m, const int k, const f64* A, const int lda,
+                     const f64* tau, f64* work, const int lwork);
+extern f64 dqrt12(const int m, const int n, const f64* A, const int lda,
+                     const f64* S, f64* work, const int lwork);
+extern f64 dqpt01(const int m, const int n, const int k,
+                     const f64* A, const f64* AF, const int lda,
+                     const f64* tau, const int* jpvt,
+                     f64* work, const int lwork);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
-extern void dlaord(const char* job, const int n, double* X, const int incx);
+extern void dlaord(const char* job, const int n, f64* X, const int incx);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dormqr(const char* side, const char* trans,
                    const int m, const int n, const int k,
-                   const double* A, const int lda, const double* tau,
-                   double* C, const int ldc, double* work, const int lwork,
+                   const f64* A, const int lda, const f64* tau,
+                   f64* C, const int ldc, f64* work, const int lwork,
                    int* info);
 
 /**
@@ -104,13 +104,13 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;       /* Working matrix (NMAX * (NMAX + NSMAX)) - holds A and appended B */
-    double* COPYA;   /* Copy of original A (NMAX * NMAX) */
-    double* B;       /* RHS matrix (NMAX * NSMAX) */
-    double* COPYB;   /* Copy of original B (NMAX * NSMAX) */
-    double* S;       /* Singular values (NMAX) */
-    double* TAU;     /* Scalar factors of elementary reflectors (NMAX) */
-    double* WORK;    /* General workspace */
+    f64* A;       /* Working matrix (NMAX * (NMAX + NSMAX)) - holds A and appended B */
+    f64* COPYA;   /* Copy of original A (NMAX * NMAX) */
+    f64* B;       /* RHS matrix (NMAX * NSMAX) */
+    f64* COPYB;   /* Copy of original B (NMAX * NSMAX) */
+    f64* S;       /* Singular values (NMAX) */
+    f64* TAU;     /* Scalar factors of elementary reflectors (NMAX) */
+    f64* WORK;    /* General workspace */
     int* IWORK;      /* Integer workspace for pivot indicators + pivot array + internal */
     int lwork;
 } dchkqp3rk_workspace_t;
@@ -135,13 +135,13 @@ static int group_setup(void** state)
     g_workspace->lwork = lwork;
 
     /* A holds M-by-N matrix plus appended M-by-NRHS for RHS */
-    g_workspace->A = malloc(NMAX * (NMAX + NSMAX) * sizeof(double));
-    g_workspace->COPYA = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->COPYB = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->S = malloc(NMAX * sizeof(double));
-    g_workspace->TAU = malloc(NMAX * sizeof(double));
-    g_workspace->WORK = malloc(lwork * sizeof(double));
+    g_workspace->A = malloc(NMAX * (NMAX + NSMAX) * sizeof(f64));
+    g_workspace->COPYA = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->COPYB = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->S = malloc(NMAX * sizeof(f64));
+    g_workspace->TAU = malloc(NMAX * sizeof(f64));
+    g_workspace->WORK = malloc(lwork * sizeof(f64));
     /* IWORK: N for zero indicators + N for pivot array + N for internal work */
     g_workspace->IWORK = malloc(3 * NMAX * sizeof(int));
 
@@ -204,15 +204,15 @@ static int group_teardown(void** state)
  *
  * @return 0 on success, -1 if this IMAT should be skipped for this size
  */
-static int generate_matrix(int m, int n, int imat, double* COPYA, int lda,
-                           double* S, double* WORK, uint64_t rng_state[static 4])
+static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
+                           f64* S, f64* WORK, uint64_t rng_state[static 4])
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     int minmn = (m < n) ? m : n;
     int info;
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
 
     if (imat == 1) {
         /* Matrix 1: Zero matrix */
@@ -359,15 +359,15 @@ static int generate_matrix(int m, int n, int imat, double* COPYA, int lda,
  */
 static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int kmax)
 {
-    const double ZERO = 0.0;
-    const double NEGONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 NEGONE = -1.0;
     dchkqp3rk_workspace_t* ws = g_workspace;
 
     int info;
     int lda = (m > 1) ? m : 1;
     int minmn = (m < n) ? m : n;
-    double eps = dlamch("E");
-    double result[NTESTS];
+    f64 eps = dlamch("E");
+    f64 result[NTESTS];
     char ctx[256];
 
     /* Set block size and crossover point */
@@ -389,7 +389,7 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     {
         char type, dist;
         int kl, ku, mode;
-        double anorm, cndnum;
+        f64 anorm, cndnum;
         dlatb4("DQK", 14, m, nrhs, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
         char dist_str[2] = {dist, '\0'};
         char type_str[2] = {type, '\0'};
@@ -436,12 +436,12 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     }
 
     /* Tolerance values: -1.0 means auto-compute */
-    double abstol = -1.0;
-    double reltol = -1.0;
+    f64 abstol = -1.0;
+    f64 reltol = -1.0;
 
     /* Call DGEQP3RK */
     int kfact;
-    double maxc2nrmk, relmaxc2nrmk;
+    f64 maxc2nrmk, relmaxc2nrmk;
     dgeqp3rk(m, n, nrhs, kmax, abstol, reltol, ws->A, lda,
              &kfact, &maxc2nrmk, &relmaxc2nrmk, &ws->IWORK[n], ws->TAU,
              ws->WORK, lw, &ws->IWORK[2 * n], &info);
@@ -484,13 +484,13 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     int ktest4 = (kfact < minmn) ? kfact : minmn;
     if (ktest4 >= 2) {
         result[3] = ZERO;
-        double r11 = ws->A[0];  /* R(0,0) */
+        f64 r11 = ws->A[0];  /* R(0,0) */
         if (fabs(r11) > ZERO) {
             for (int j = 0; j < kfact - 1; j++) {
                 /* R(j,j) is at A[j + j*lda], R(j+1,j+1) is at A[(j+1) + (j+1)*lda] */
-                double rjj = fabs(ws->A[j + j * lda]);
-                double rjj1 = fabs(ws->A[(j + 1) + (j + 1) * lda]);
-                double dtemp = (rjj - rjj1) / fabs(r11);
+                f64 rjj = fabs(ws->A[j + j * lda]);
+                f64 rjj1 = fabs(ws->A[(j + 1) + (j + 1) * lda]);
+                f64 dtemp = (rjj - rjj1) / fabs(r11);
                 if (dtemp < ZERO) {
                     result[3] = BIGNUM;
                     break;
@@ -520,9 +520,9 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
             }
 
             /* result[4] = ||B|| / (M * eps) */
-            double rdummy[1];
-            double bnorm = dlange("1", m, nrhs, ws->B, lda, rdummy);
-            result[4] = fabs(bnorm / ((double)m * eps));
+            f64 rdummy[1];
+            f64 bnorm = dlange("1", m, nrhs, ws->B, lda, rdummy);
+            result[4] = fabs(bnorm / ((f64)m * eps));
 
             snprintf(ctx, sizeof(ctx), "m=%d n=%d nrhs=%d kmax=%d type=%d nb=%d TEST 5 (Q**T * B)",
                      m, n, nrhs, kmax, imat, nb);

@@ -7,10 +7,10 @@
 #include <math.h>
 #include "verify.h"
 
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 static int first = 1;
-static double eps, small, large, badc1, badc2;
+static f64 eps, small, large, badc1, badc2;
 
 /**
  * DLATB9 sets parameters for the matrix generator based on the type of
@@ -46,19 +46,19 @@ void dlatb9(
     int* kua,
     int* klb,
     int* kub,
-    double* anorm,
-    double* bnorm,
+    f64* anorm,
+    f64* bnorm,
     int* modea,
     int* modeb,
-    double* cndnma,
-    double* cndnmb,
+    f64* cndnma,
+    f64* cndnmb,
     char* dista,
     char* distb)
 {
-    const double SHRINK = 0.25;
-    const double TENTH = 0.1;
-    const double ONE = 1.0;
-    const double TEN = 10.0;
+    const f64 SHRINK = 0.25;
+    const f64 TENTH = 0.1;
+    const f64 ONE = 1.0;
+    const f64 TEN = 10.0;
 
     if (first) {
         first = 0;

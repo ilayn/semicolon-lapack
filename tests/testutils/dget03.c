@@ -8,10 +8,10 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
 
 /**
  * DGET03 computes the residual for a general matrix times its inverse:
@@ -37,21 +37,21 @@ extern double dlange(const char* norm, const int m, const int n,
  */
 void dget03(
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    const double * const restrict AINV,
+    const f64 * const restrict AINV,
     const int ldainv,
-    double * const restrict work,
+    f64 * const restrict work,
     const int ldwork,
-    double * const restrict rwork,
-    double *rcond,
-    double *resid)
+    f64 * const restrict rwork,
+    f64 *rcond,
+    f64 *resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i;
-    double ainvnm, anorm, eps;
+    f64 ainvnm, anorm, eps;
 
     // Quick exit if n = 0
     if (n <= 0) {
@@ -84,5 +84,5 @@ void dget03(
     // Compute norm(I - AINV*A) / (N * norm(A) * norm(AINV) * EPS)
     *resid = dlange("1", n, n, work, ldwork, rwork);
 
-    *resid = ((*resid * (*rcond)) / eps) / (double)n;
+    *resid = ((*resid * (*rcond)) / eps) / (f64)n;
 }

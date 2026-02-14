@@ -39,12 +39,12 @@
  *                        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
 void dget08(const char* trans, const int m, const int n, const int nrhs,
-            const double* A, const int lda, const double* X, const int ldx,
-            double* B, const int ldb, double* rwork, double* resid)
+            const f64* A, const int lda, const f64* X, const int ldx,
+            f64* B, const int ldb, f64* rwork, f64* resid)
 {
     (void)rwork;
     int n1, n2;
-    double anorm, bnorm, xnorm, eps;
+    f64 anorm, bnorm, xnorm, eps;
 
     /* Quick exit if m = 0 or n = 0 or nrhs = 0 */
     if (m <= 0 || n <= 0 || nrhs == 0) {
@@ -68,7 +68,7 @@ void dget08(const char* trans, const int m, const int n, const int nrhs,
     /* ||A||_inf = max over rows of sum of absolute values */
     anorm = 0.0;
     for (int i = 0; i < n1; i++) {
-        double row_sum = 0.0;
+        f64 row_sum = 0.0;
         for (int j = 0; j < n2; j++) {
             row_sum += fabs(A[i + j * lda]);
         }
@@ -108,7 +108,7 @@ void dget08(const char* trans, const int m, const int n, const int nrhs,
         if (xnorm <= 0.0) {
             *resid = 1.0 / eps;
         } else {
-            double ratio = ((bnorm / anorm) / xnorm) / eps;
+            f64 ratio = ((bnorm / anorm) / xnorm) / eps;
             if (ratio > *resid) *resid = ratio;
         }
     }

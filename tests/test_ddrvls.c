@@ -55,60 +55,60 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};
 
 /* Routines under test */
 extern void dgels(const char* trans, const int m, const int n, const int nrhs,
-                  double* A, const int lda, double* B, const int ldb,
-                  double* work, const int lwork, int* info);
+                  f64* A, const int lda, f64* B, const int ldb,
+                  f64* work, const int lwork, int* info);
 extern void dgelst(const char* trans, const int m, const int n, const int nrhs,
-                   double* A, const int lda, double* B, const int ldb,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* B, const int ldb,
+                   f64* work, const int lwork, int* info);
 extern void dgelsy(const int m, const int n, const int nrhs,
-                   double* A, const int lda, double* B, const int ldb,
-                   int* jpvt, const double rcond, int* rank,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* B, const int ldb,
+                   int* jpvt, const f64 rcond, int* rank,
+                   f64* work, const int lwork, int* info);
 extern void dgelss(const int m, const int n, const int nrhs,
-                   double* A, const int lda, double* B, const int ldb,
-                   double* S, const double rcond, int* rank,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* B, const int ldb,
+                   f64* S, const f64 rcond, int* rank,
+                   f64* work, const int lwork, int* info);
 extern void dgelsd(const int m, const int n, const int nrhs,
-                   double* A, const int lda, double* B, const int ldb,
-                   double* S, const double rcond, int* rank,
-                   double* work, const int lwork, int* iwork, int* info);
+                   f64* A, const int lda, f64* B, const int ldb,
+                   f64* S, const f64 rcond, int* rank,
+                   f64* work, const int lwork, int* iwork, int* info);
 extern void dgetsls(const char* trans, const int m, const int n, const int nrhs,
-                    double* A, const int lda, double* B, const int ldb,
-                    double* work, const int lwork, int* info);
+                    f64* A, const int lda, f64* B, const int ldb,
+                    f64* work, const int lwork, int* info);
 
 /* Verification routines */
 extern void dqrt13(const int scale, const int m, const int n,
-                   double* A, const int lda, double* norma,
+                   f64* A, const int lda, f64* norma,
                    uint64_t state[static 4]);
 extern void dqrt16(const char* trans, const int m, const int n, const int nrhs,
-                   const double* A, const int lda,
-                   const double* X, const int ldx,
-                   double* B, const int ldb,
-                   double* rwork, double* resid);
-extern double dqrt17(const char* trans, const int iresid,
+                   const f64* A, const int lda,
+                   const f64* X, const int ldx,
+                   f64* B, const int ldb,
+                   f64* rwork, f64* resid);
+extern f64 dqrt17(const char* trans, const int iresid,
                      const int m, const int n, const int nrhs,
-                     const double* A, const int lda,
-                     const double* X, const int ldx,
-                     const double* B, const int ldb,
-                     double* C,
-                     double* work, const int lwork);
-extern double dqrt14(const char* trans, const int m, const int n, const int nrhs,
-                     const double* A, const int lda, const double* X, const int ldx,
-                     double* work, const int lwork);
-extern double dqrt12(const int m, const int n, const double* A, const int lda,
-                     const double* S, double* work, const int lwork);
+                     const f64* A, const int lda,
+                     const f64* X, const int ldx,
+                     const f64* B, const int ldb,
+                     f64* C,
+                     f64* work, const int lwork);
+extern f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
+                     const f64* A, const int lda, const f64* X, const int ldx,
+                     f64* work, const int lwork);
+extern f64 dqrt12(const int m, const int n, const f64* A, const int lda,
+                     const f64* S, f64* work, const int lwork);
 extern void dqrt15(const int scale, const int rksel,
                    const int m, const int n, const int nrhs,
-                   double* A, const int lda, double* B, const int ldb,
-                   double* S, int* rank, double* norma, double* normb,
-                   double* work, const int lwork,
+                   f64* A, const int lda, f64* B, const int ldb,
+                   f64* S, int* rank, f64* norma, f64* normb,
+                   f64* work, const int lwork,
                    uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
-extern void dlarnv(const int idist, uint64_t* iseed, const int n, double* x);
-extern double dlamch(const char* cmach);
+                   const f64* A, const int lda, f64* B, const int ldb);
+extern void dlarnv(const int idist, uint64_t* iseed, const int n, f64* x);
+extern f64 dlamch(const char* cmach);
 
 /**
  * Test parameters for a single test case.
@@ -127,14 +127,14 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;       /* Matrix (MMAX x NMAX) */
-    double* COPYA;   /* Copy of A (MMAX x NMAX) */
-    double* B;       /* RHS matrix (max(MMAX,NMAX) x NSMAX) */
-    double* COPYB;   /* Copy of B */
-    double* C;       /* Workspace for residual computation */
-    double* S;       /* Singular values (min(MMAX,NMAX)) */
-    double* COPYS;   /* Copy of S for rank-deficient tests */
-    double* WORK;    /* General workspace */
+    f64* A;       /* Matrix (MMAX x NMAX) */
+    f64* COPYA;   /* Copy of A (MMAX x NMAX) */
+    f64* B;       /* RHS matrix (max(MMAX,NMAX) x NSMAX) */
+    f64* COPYB;   /* Copy of B */
+    f64* C;       /* Workspace for residual computation */
+    f64* S;       /* Singular values (min(MMAX,NMAX)) */
+    f64* COPYS;   /* Copy of S for rank-deficient tests */
+    f64* WORK;    /* General workspace */
     int* IWORK;      /* Integer workspace */
     int* JPVT;       /* Pivot array for DGELSY */
     int lwork;       /* Workspace size */
@@ -192,7 +192,7 @@ static int group_setup(void** state)
 
     /* LIWORK for DGELSY and DGELSD (ddrvls.f line 331, 385) */
     int liwork = 1;
-    int nlvl = (int)(log((double)minmn / (double)(SMLSIZ + 1)) / log(2.0)) + 1;
+    int nlvl = (int)(log((f64)minmn / (f64)(SMLSIZ + 1)) / log(2.0)) + 1;
     if (nlvl < 1) nlvl = 1;
     int liwork_gelsd = 3 * minmn * nlvl + 11 * minmn;
     if (liwork_gelsd > liwork) liwork = liwork_gelsd;
@@ -229,14 +229,14 @@ static int group_setup(void** state)
     g_workspace->lwlsy = lwork;
     g_workspace->liwork = liwork;
 
-    g_workspace->A = calloc(mmax * nmax, sizeof(double));
-    g_workspace->COPYA = calloc(mmax * nmax, sizeof(double));
-    g_workspace->B = calloc(mnmax * NSMAX, sizeof(double));
-    g_workspace->COPYB = calloc(mnmax * NSMAX, sizeof(double));
-    g_workspace->C = calloc(mnmax * NSMAX, sizeof(double));
-    g_workspace->S = calloc(minmn, sizeof(double));
-    g_workspace->COPYS = calloc(minmn, sizeof(double));
-    g_workspace->WORK = calloc(lwork, sizeof(double));
+    g_workspace->A = calloc(mmax * nmax, sizeof(f64));
+    g_workspace->COPYA = calloc(mmax * nmax, sizeof(f64));
+    g_workspace->B = calloc(mnmax * NSMAX, sizeof(f64));
+    g_workspace->COPYB = calloc(mnmax * NSMAX, sizeof(f64));
+    g_workspace->C = calloc(mnmax * NSMAX, sizeof(f64));
+    g_workspace->S = calloc(minmn, sizeof(f64));
+    g_workspace->COPYS = calloc(minmn, sizeof(f64));
+    g_workspace->WORK = calloc(lwork, sizeof(f64));
     g_workspace->IWORK = calloc(liwork, sizeof(int));
     g_workspace->JPVT = calloc(nmax, sizeof(int));
 
@@ -283,11 +283,11 @@ static int group_teardown(void** state)
 static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int nx)
 {
     ddrvls_workspace_t* ws = g_workspace;
-    double result[6];
-    double norma;
+    f64 result[6];
+    f64 norma;
     int info, lda, ldb;
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     char ctx[128];
     uint64_t rng_state[4];
 
@@ -314,10 +314,10 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
             rng_seed(rng_state, 1989 + m * 100 + n * 10 + iscale + itran + nb);
             for (int j = 0; j < nrhs; j++) {
                 for (int i = 0; i < ncols; i++) {
-                    ws->WORK[i + j * ldwork] = ((double)(i + j * ncols + 1)) / (ncols * nrhs + 1);
+                    ws->WORK[i + j * ldwork] = ((f64)(i + j * ncols + 1)) / (ncols * nrhs + 1);
                 }
             }
-            cblas_dscal(ncols * nrhs, ONE / (double)ncols, ws->WORK, 1);
+            cblas_dscal(ncols * nrhs, ONE / (f64)ncols, ws->WORK, 1);
         }
         cblas_dgemm(CblasColMajor,
                     (itran == 1) ? CblasNoTrans : CblasTrans,
@@ -358,10 +358,10 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
             rng_seed(rng_state, 2989 + m * 100 + n * 10 + iscale + itran + nb);
             for (int j = 0; j < nrhs; j++) {
                 for (int i = 0; i < ncols; i++) {
-                    ws->WORK[i + j * ldwork] = ((double)(i + j * ncols + 1)) / (ncols * nrhs + 1);
+                    ws->WORK[i + j * ldwork] = ((f64)(i + j * ncols + 1)) / (ncols * nrhs + 1);
                 }
             }
-            cblas_dscal(ncols * nrhs, ONE / (double)ncols, ws->WORK, 1);
+            cblas_dscal(ncols * nrhs, ONE / (f64)ncols, ws->WORK, 1);
         }
         cblas_dgemm(CblasColMajor,
                     (itran == 1) ? CblasNoTrans : CblasTrans,
@@ -402,10 +402,10 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
             rng_seed(rng_state, 3989 + m * 100 + n * 10 + iscale + itran + nb);
             for (int j = 0; j < nrhs; j++) {
                 for (int i = 0; i < ncols; i++) {
-                    ws->WORK[i + j * ldwork] = ((double)(i + j * ncols + 1)) / (ncols * nrhs + 1);
+                    ws->WORK[i + j * ldwork] = ((f64)(i + j * ncols + 1)) / (ncols * nrhs + 1);
                 }
             }
-            cblas_dscal(ncols * nrhs, ONE / (double)ncols, ws->WORK, 1);
+            cblas_dscal(ncols * nrhs, ONE / (f64)ncols, ws->WORK, 1);
         }
         cblas_dgemm(CblasColMajor,
                     (itran == 1) ? CblasNoTrans : CblasTrans,
@@ -441,13 +441,13 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
 static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int nb, int nx)
 {
     ddrvls_workspace_t* ws = g_workspace;
-    double result[NTESTS];
-    double norma, normb, rcond;
+    f64 result[NTESTS];
+    f64 norma, normb, rcond;
     int info, lda, ldb, crank, rank;
-    double eps;
+    f64 eps;
     int mnmin = (m < n) ? m : n;
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     char ctx[128];
     uint64_t rng_state[4];
 
@@ -519,7 +519,7 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
         cblas_daxpy(mnmin, -ONE, ws->COPYS, 1, ws->S, 1);
         result[10] = cblas_dasum(mnmin, ws->S, 1) /
                      cblas_dasum(mnmin, ws->COPYS, 1) /
-                     (eps * (double)mnmin);
+                     (eps * (f64)mnmin);
     }
 
     dlacpy("F", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
@@ -563,7 +563,7 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
         cblas_daxpy(mnmin, -ONE, ws->COPYS, 1, ws->S, 1);
         result[14] = cblas_dasum(mnmin, ws->S, 1) /
                      cblas_dasum(mnmin, ws->COPYS, 1) /
-                     (eps * (double)mnmin);
+                     (eps * (f64)mnmin);
     }
 
     dlacpy("F", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);

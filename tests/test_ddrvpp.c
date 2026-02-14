@@ -24,61 +24,61 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 
 /* Routines under test */
 extern void dppsv(const char* uplo, const int n, const int nrhs,
-                  double* AP, double* B, const int ldb, int* info);
+                  f64* AP, f64* B, const int ldb, int* info);
 extern void dppsvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   double* AP, double* AFP, char* equed, double* S,
-                   double* B, const int ldb, double* X, const int ldx,
-                   double* rcond, double* ferr, double* berr,
-                   double* work, int* iwork, int* info);
+                   f64* AP, f64* AFP, char* equed, f64* S,
+                   f64* B, const int ldb, f64* X, const int ldx,
+                   f64* rcond, f64* ferr, f64* berr,
+                   f64* work, int* iwork, int* info);
 
 /* Supporting routines */
-extern void dpptrf(const char* uplo, const int n, double* AP, int* info);
-extern void dpptri(const char* uplo, const int n, double* AP, int* info);
-extern void dppequ(const char* uplo, const int n, const double* AP,
-                   double* S, double* scond, double* amax, int* info);
-extern void dlaqsp(const char* uplo, const int n, double* AP,
-                   const double* S, const double scond, const double amax, char* equed);
+extern void dpptrf(const char* uplo, const int n, f64* AP, int* info);
+extern void dpptri(const char* uplo, const int n, f64* AP, int* info);
+extern void dppequ(const char* uplo, const int n, const f64* AP,
+                   f64* S, f64* scond, f64* amax, int* info);
+extern void dlaqsp(const char* uplo, const int n, f64* AP,
+                   const f64* S, const f64 scond, const f64 amax, char* equed);
 
 /* Verification routines */
-extern void dppt01(const char* uplo, const int n, const double* A,
-                   double* AFAC, double* rwork, double* resid);
+extern void dppt01(const char* uplo, const int n, const f64* A,
+                   f64* AFAC, f64* rwork, f64* resid);
 extern void dppt02(const char* uplo, const int n, const int nrhs,
-                   const double* A, const double* X, const int ldx,
-                   double* B, const int ldb, double* rwork, double* resid);
+                   const f64* A, const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* rwork, f64* resid);
 extern void dppt05(const char* uplo, const int n, const int nrhs,
-                   const double* AP, const double* B, const int ldb,
-                   const double* X, const int ldx, const double* XACT, const int ldxact,
-                   const double* FERR, const double* BERR, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* AP, const f64* B, const int ldb,
+                   const f64* X, const int ldx, const f64* XACT, const int ldxact,
+                   const f64* FERR, const f64* BERR, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
+                   const char* sym, f64* d,
+                   const int mode, const f64 cond, const f64 dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n,
                    const int kl, const int ku, const int nrhs,
-                   const double* A, const int lda, double* XACT, const int ldxact,
-                   double* B, const int ldb, int* info, uint64_t state[static 4]);
+                   const f64* A, const int lda, f64* XACT, const int ldxact,
+                   f64* B, const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlansp(const char* norm, const char* uplo, const int n,
-                     const double* AP, double* work);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlansp(const char* norm, const char* uplo, const int n,
+                     const f64* AP, f64* work);
+extern f64 dlamch(const char* cmach);
 
 typedef struct {
     int n;
@@ -90,16 +90,16 @@ typedef struct {
 } ddrvpp_params_t;
 
 typedef struct {
-    double* A;
-    double* AFAC;
-    double* ASAV;
-    double* B;
-    double* BSAV;
-    double* X;
-    double* XACT;
-    double* S;
-    double* WORK;
-    double* RWORK;
+    f64* A;
+    f64* AFAC;
+    f64* ASAV;
+    f64* B;
+    f64* BSAV;
+    f64* X;
+    f64* XACT;
+    f64* S;
+    f64* WORK;
+    f64* RWORK;
     int* IWORK;
     int lwork;
 } ddrvpp_workspace_t;
@@ -117,16 +117,16 @@ static int group_setup(void** state)
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
     g_workspace->lwork = lwork;
-    g_workspace->A = calloc(nmax * nmax, sizeof(double));
-    g_workspace->AFAC = calloc(NPP_MAX, sizeof(double));
-    g_workspace->ASAV = calloc(NPP_MAX, sizeof(double));
-    g_workspace->B = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->BSAV = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->X = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->XACT = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->S = calloc(nmax, sizeof(double));
-    g_workspace->WORK = calloc(lwork, sizeof(double));
-    g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(double));
+    g_workspace->A = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->AFAC = calloc(NPP_MAX, sizeof(f64));
+    g_workspace->ASAV = calloc(NPP_MAX, sizeof(f64));
+    g_workspace->B = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->BSAV = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->X = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->XACT = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->S = calloc(nmax, sizeof(f64));
+    g_workspace->WORK = calloc(lwork, sizeof(f64));
+    g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(f64));
     g_workspace->IWORK = calloc(nmax, sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->ASAV ||
@@ -176,7 +176,7 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
 
     int lda = (n > 1) ? n : 1;
     int npp = n * (n + 1) / 2;
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     int zerot = (imat >= 3 && imat <= 5);
@@ -188,10 +188,10 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
     /* Set up parameters with DLATB4 */
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DPP", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    double rcondc = 1.0 / cndnum;
+    f64 rcondc = 1.0 / cndnum;
 
     /* Generate test matrix with DLATMS */
     uint64_t rng_state[4];
@@ -249,8 +249,8 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
         return;
     }
 
-    double roldc = 0.0;
-    double scond = 0.0, amax = 0.0;
+    f64 roldc = 0.0;
+    f64 scond = 0.0, amax = 0.0;
 
     if (zerot) {
         rcondc = 0.0;
@@ -273,14 +273,14 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
             roldc = rcondc;
         }
 
-        double anrm = dlansp("1", uplo, n, ws->AFAC, ws->RWORK);
+        f64 anrm = dlansp("1", uplo, n, ws->AFAC, ws->RWORK);
 
         dpptrf(uplo, n, ws->AFAC, &info);
 
         cblas_dcopy(npp, ws->AFAC, 1, ws->A, 1);
         dpptri(uplo, n, ws->A, &info);
 
-        double ainvnm = dlansp("1", uplo, n, ws->A, ws->RWORK);
+        f64 ainvnm = dlansp("1", uplo, n, ws->A, ws->RWORK);
         if (anrm <= 0.0 || ainvnm <= 0.0) {
             rcondc = 1.0;
         } else {
@@ -350,7 +350,7 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
     /* Restore B */
     dlacpy("Full", n, NRHS, ws->BSAV, lda, ws->B, lda);
 
-    double rcond;
+    f64 rcond;
     dppsvx(fact, uplo, n, NRHS, ws->A, ws->AFAC, &equed_inout, ws->S,
            ws->B, lda, ws->X, lda, &rcond,
            ws->RWORK, &ws->RWORK[NRHS], ws->WORK, ws->IWORK, &info);

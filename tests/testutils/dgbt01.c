@@ -33,14 +33,14 @@
  * @param[out] resid norm(L*U - A) / (N * norm(A) * EPS)
  */
 void dgbt01(int m, int n, int kl, int ku,
-            const double* A, int lda,
-            const double* AFAC, int ldafac,
+            const f64* A, int lda,
+            const f64* AFAC, int ldafac,
             const int* ipiv,
-            double* work,
-            double* resid)
+            f64* work,
+            f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Quick exit if m = 0 or n = 0. */
     *resid = ZERO;
@@ -49,9 +49,9 @@ void dgbt01(int m, int n, int kl, int ku,
     }
 
     /* Determine EPS and the norm of A. */
-    double eps = dlamch("Epsilon");
+    f64 eps = dlamch("Epsilon");
     int kd = ku;  /* Row index of diagonal in A storage (0-based: row ku) */
-    double anorm = ZERO;
+    f64 anorm = ZERO;
 
     for (int j = 0; j < n; j++) {
         /* For column j, the band elements are in rows i1 to i2 of A */
@@ -59,7 +59,7 @@ void dgbt01(int m, int n, int kl, int ku,
         int i2_excl = (kd + m - j < kl + kd + 1) ? kd + m - j : kl + kd + 1; /* min(kd+m-j, kl+kd+1) in 0-based */
 
         if (i2_excl > i1) {
-            double col_sum = cblas_dasum(i2_excl - i1, &A[i1 + j * lda], 1);
+            f64 col_sum = cblas_dasum(i2_excl - i1, &A[i1 + j * lda], 1);
             if (col_sum > anorm) {
                 anorm = col_sum;
             }
@@ -91,7 +91,7 @@ void dgbt01(int m, int n, int kl, int ku,
                 int il = (kl < m - i - 1) ? kl : m - i - 1;  /* min(kl, m-i-1) */
                 if (il > 0) {
                     int iw = i - j + ju;  /* 0-based work index */
-                    double t = work[iw];
+                    f64 t = work[iw];
                     cblas_daxpy(il, t, &AFAC[(kd + 1) + i * ldafac], 1, &work[iw + 1], 1);
 
                     int ip = ipiv[i];  /* ipiv is 0-based in our implementation */
@@ -112,7 +112,7 @@ void dgbt01(int m, int n, int kl, int ku,
             }
 
             /* Compute the 1-norm of the column. */
-            double col_resid = cblas_dasum(ju + jl + 1, work, 1);
+            f64 col_resid = cblas_dasum(ju + jl + 1, work, 1);
             if (col_resid > *resid) {
                 *resid = col_resid;
             }
@@ -125,6 +125,6 @@ void dgbt01(int m, int n, int kl, int ku,
             *resid = ONE / eps;
         }
     } else {
-        *resid = ((*resid / (double)n) / anorm) / eps;
+        *resid = ((*resid / (f64)n) / anorm) / eps;
     }
 }

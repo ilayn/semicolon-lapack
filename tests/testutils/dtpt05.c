@@ -11,7 +11,7 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DTPT05 tests the error bounds from iterative refinement for the
@@ -43,17 +43,17 @@ extern double dlamch(const char* cmach);
  */
 void dtpt05(const char* uplo, const char* trans, const char* diag,
             const int n, const int nrhs,
-            const double* AP, const double* B, const int ldb,
-            const double* X, const int ldx,
-            const double* XACT, const int ldxact,
-            const double* ferr, const double* berr,
-            double* reslts)
+            const f64* AP, const f64* B, const int ldb,
+            const f64* X, const int ldx,
+            const f64* XACT, const int ldxact,
+            const f64* ferr, const f64* berr,
+            f64* reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int notran, unit, upper;
     int i, ifu, imax, j, jc, k;
-    double axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
+    f64 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -78,7 +78,7 @@ void dtpt05(const char* uplo, const char* trans, const char* diag,
         xnorm = fmax(fabs(X[imax + j * ldx]), unfl);
         diff = ZERO;
         for (i = 0; i < n; i++) {
-            double d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) diff = d;
         }
 
@@ -92,7 +92,7 @@ void dtpt05(const char* uplo, const char* trans, const char* diag,
         }
 
         if (diff / xnorm <= ferr[j]) {
-            double r = (diff / xnorm) / ferr[j];
+            f64 r = (diff / xnorm) / ferr[j];
             if (r > errbnd) errbnd = r;
         } else {
             errbnd = ONE / eps;

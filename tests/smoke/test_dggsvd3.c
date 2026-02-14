@@ -38,51 +38,51 @@
 extern void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
                     const int m, const int n, const int p,
                     int* k, int* l,
-                    double* A, const int lda,
-                    double* B, const int ldb,
-                    double* alpha, double* beta,
-                    double* U, const int ldu,
-                    double* V, const int ldv,
-                    double* Q, const int ldq,
-                    double* work, const int lwork,
+                    f64* A, const int lda,
+                    f64* B, const int ldb,
+                    f64* alpha, f64* beta,
+                    f64* U, const int ldu,
+                    f64* V, const int ldv,
+                    f64* Q, const int ldq,
+                    f64* work, const int lwork,
                     int* iwork, int* info);
 
 /* Verification routine */
 extern void dgsvts3(const int m, const int p, const int n,
-                    const double* A, double* AF, const int lda,
-                    const double* B, double* BF, const int ldb,
-                    double* U, const int ldu,
-                    double* V, const int ldv,
-                    double* Q, const int ldq,
-                    double* alpha, double* beta,
-                    double* R, const int ldr,
+                    const f64* A, f64* AF, const int lda,
+                    const f64* B, f64* BF, const int ldb,
+                    f64* U, const int ldu,
+                    f64* V, const int ldv,
+                    f64* Q, const int ldq,
+                    f64* alpha, f64* beta,
+                    f64* R, const int ldr,
                     int* iwork,
-                    double* work, const int lwork,
-                    double* rwork,
-                    double* result);
+                    f64* work, const int lwork,
+                    f64* rwork,
+                    f64* result);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
     int m, p, n;
-    double* A;
-    double* AF;
-    double* B;
-    double* BF;
-    double* U;
-    double* V;
-    double* Q;
-    double* alpha;
-    double* beta;
-    double* R;
-    double* work;
-    double* rwork;
+    f64* A;
+    f64* AF;
+    f64* B;
+    f64* BF;
+    f64* U;
+    f64* V;
+    f64* Q;
+    f64* alpha;
+    f64* beta;
+    f64* R;
+    f64* work;
+    f64* rwork;
     int* iwork;
     int lwork;
     uint64_t seed;
@@ -115,7 +115,7 @@ static int dggsvd3_setup(void** state, int m, int p, int n)
     int ldq = (n > 1) ? n : 1;
     int ldr = (n > 1) ? n : 1;
 
-    double work_query;
+    f64 work_query;
     int k_dummy, l_dummy, info;
     dggsvd3("U", "V", "Q", m, n, p, &k_dummy, &l_dummy,
             NULL, lda, NULL, ldb, NULL, NULL,
@@ -125,18 +125,18 @@ static int dggsvd3_setup(void** state, int m, int p, int n)
     if (fix->lwork < maxmpn * maxmpn) fix->lwork = maxmpn * maxmpn;
     if (fix->lwork < 1) fix->lwork = 1;
 
-    fix->A = malloc(lda * n * sizeof(double));
-    fix->AF = malloc(lda * n * sizeof(double));
-    fix->B = malloc(ldb * n * sizeof(double));
-    fix->BF = malloc(ldb * n * sizeof(double));
-    fix->U = malloc(ldu * m * sizeof(double));
-    fix->V = malloc(ldv * p * sizeof(double));
-    fix->Q = malloc(ldq * n * sizeof(double));
-    fix->alpha = malloc(n * sizeof(double));
-    fix->beta = malloc(n * sizeof(double));
-    fix->R = malloc(ldr * n * sizeof(double));
-    fix->work = malloc(fix->lwork * sizeof(double));
-    fix->rwork = malloc(maxmpn * sizeof(double));
+    fix->A = malloc(lda * n * sizeof(f64));
+    fix->AF = malloc(lda * n * sizeof(f64));
+    fix->B = malloc(ldb * n * sizeof(f64));
+    fix->BF = malloc(ldb * n * sizeof(f64));
+    fix->U = malloc(ldu * m * sizeof(f64));
+    fix->V = malloc(ldv * p * sizeof(f64));
+    fix->Q = malloc(ldq * n * sizeof(f64));
+    fix->alpha = malloc(n * sizeof(f64));
+    fix->beta = malloc(n * sizeof(f64));
+    fix->R = malloc(ldr * n * sizeof(f64));
+    fix->work = malloc(fix->lwork * sizeof(f64));
+    fix->rwork = malloc(maxmpn * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -192,7 +192,7 @@ static int setup_40_15_20(void** state) { return dggsvd3_setup(state, 40, 15, 20
 /**
  * Helper: generate random m x n matrix
  */
-static void generate_random_matrix(double* A, int m, int n, int lda,
+static void generate_random_matrix(f64* A, int m, int n, int lda,
                                    uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
@@ -209,7 +209,7 @@ static void test_workspace_query(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
     int m = fix->m, p = fix->p, n = fix->n;
-    double work_query;
+    f64 work_query;
     int k, l, info;
     int lda = (m > 1) ? m : 1;
     int ldb = (p > 1) ? p : 1;
@@ -250,9 +250,9 @@ static void test_random_wellcond(void** state)
     generate_random_matrix(fix->A, m, n, lda, fix->rng_state);
     generate_random_matrix(fix->B, p, n, ldb, fix->rng_state);
 
-    memset(fix->R, 0, ldr * n * sizeof(double));
+    memset(fix->R, 0, ldr * n * sizeof(f64));
 
-    double result[6];
+    f64 result[6];
     dgsvts3(m, p, n, fix->A, fix->AF, lda, fix->B, fix->BF, ldb,
             fix->U, ldu, fix->V, ldv, fix->Q, ldq,
             fix->alpha, fix->beta, fix->R, ldr,
@@ -288,8 +288,8 @@ static void test_diagonal_matrices(void** state)
     int ldq = (n > 1) ? n : 1;
     int ldr = (n > 1) ? n : 1;
 
-    memset(fix->A, 0, lda * n * sizeof(double));
-    memset(fix->B, 0, ldb * n * sizeof(double));
+    memset(fix->A, 0, lda * n * sizeof(f64));
+    memset(fix->B, 0, ldb * n * sizeof(f64));
 
     int minmn = (m < n) ? m : n;
     int minpn = (p < n) ? p : n;
@@ -301,9 +301,9 @@ static void test_diagonal_matrices(void** state)
         fix->B[i + i * ldb] = rng_uniform(fix->rng_state) + 0.1;
     }
 
-    memset(fix->R, 0, ldr * n * sizeof(double));
+    memset(fix->R, 0, ldr * n * sizeof(f64));
 
-    double result[6];
+    f64 result[6];
     dgsvts3(m, p, n, fix->A, fix->AF, lda, fix->B, fix->BF, ldb,
             fix->U, ldu, fix->V, ldv, fix->Q, ldq,
             fix->alpha, fix->beta, fix->R, ldr,
@@ -339,8 +339,8 @@ static void test_triangular_matrices(void** state)
     int ldq = (n > 1) ? n : 1;
     int ldr = (n > 1) ? n : 1;
 
-    memset(fix->A, 0, lda * n * sizeof(double));
-    memset(fix->B, 0, ldb * n * sizeof(double));
+    memset(fix->A, 0, lda * n * sizeof(f64));
+    memset(fix->B, 0, ldb * n * sizeof(f64));
 
     for (int j = 0; j < n; j++) {
         for (int i = 0; i <= j && i < m; i++) {
@@ -351,9 +351,9 @@ static void test_triangular_matrices(void** state)
         }
     }
 
-    memset(fix->R, 0, ldr * n * sizeof(double));
+    memset(fix->R, 0, ldr * n * sizeof(f64));
 
-    double result[6];
+    f64 result[6];
     dgsvts3(m, p, n, fix->A, fix->AF, lda, fix->B, fix->BF, ldb,
             fix->U, ldu, fix->V, ldv, fix->Q, ldq,
             fix->alpha, fix->beta, fix->R, ldr,
@@ -389,12 +389,12 @@ static void test_zero_A(void** state)
     int ldq = (n > 1) ? n : 1;
     int ldr = (n > 1) ? n : 1;
 
-    memset(fix->A, 0, lda * n * sizeof(double));
+    memset(fix->A, 0, lda * n * sizeof(f64));
     generate_random_matrix(fix->B, p, n, ldb, fix->rng_state);
 
-    memset(fix->R, 0, ldr * n * sizeof(double));
+    memset(fix->R, 0, ldr * n * sizeof(f64));
 
-    double result[6];
+    f64 result[6];
     dgsvts3(m, p, n, fix->A, fix->AF, lda, fix->B, fix->BF, ldb,
             fix->U, ldu, fix->V, ldv, fix->Q, ldq,
             fix->alpha, fix->beta, fix->R, ldr,
@@ -431,11 +431,11 @@ static void test_zero_B(void** state)
     int ldr = (n > 1) ? n : 1;
 
     generate_random_matrix(fix->A, m, n, lda, fix->rng_state);
-    memset(fix->B, 0, ldb * n * sizeof(double));
+    memset(fix->B, 0, ldb * n * sizeof(f64));
 
-    memset(fix->R, 0, ldr * n * sizeof(double));
+    memset(fix->R, 0, ldr * n * sizeof(f64));
 
-    double result[6];
+    f64 result[6];
     dgsvts3(m, p, n, fix->A, fix->AF, lda, fix->B, fix->BF, ldb,
             fix->U, ldu, fix->V, ldv, fix->Q, ldq,
             fix->alpha, fix->beta, fix->R, ldr,

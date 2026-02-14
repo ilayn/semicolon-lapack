@@ -8,26 +8,26 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
                     const int m, const int n, const int p,
                     int* k, int* l,
-                    double* A, const int lda,
-                    double* B, const int ldb,
-                    double* alpha, double* beta,
-                    double* U, const int ldu,
-                    double* V, const int ldv,
-                    double* Q, const int ldq,
-                    double* work, const int lwork,
+                    f64* A, const int lda,
+                    f64* B, const int ldb,
+                    f64* alpha, f64* beta,
+                    f64* U, const int ldu,
+                    f64* V, const int ldv,
+                    f64* Q, const int ldq,
+                    f64* work, const int lwork,
                     int* iwork, int* info);
 
 /**
@@ -67,24 +67,24 @@ extern void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
  *                        result[5] = 0 if alpha is in decreasing order, ulpinv otherwise
  */
 void dgsvts3(const int m, const int p, const int n,
-             const double* A, double* AF, const int lda,
-             const double* B, double* BF, const int ldb,
-             double* U, const int ldu,
-             double* V, const int ldv,
-             double* Q, const int ldq,
-             double* alpha, double* beta,
-             double* R, const int ldr,
+             const f64* A, f64* AF, const int lda,
+             const f64* B, f64* BF, const int ldb,
+             f64* U, const int ldu,
+             f64* V, const int ldv,
+             f64* Q, const int ldq,
+             f64* alpha, f64* beta,
+             f64* R, const int ldr,
              int* iwork,
-             double* work, const int lwork,
-             double* rwork,
-             double* result)
+             f64* work, const int lwork,
+             f64* rwork,
+             f64* result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, k, l, info;
     int minval;
-    double anorm, bnorm, resid, temp, ulp, ulpinv, unfl;
+    f64 anorm, bnorm, resid, temp, ulp, ulpinv, unfl;
 
     ulp = dlamch("P");
     ulpinv = ONE / ulp;
@@ -142,7 +142,7 @@ void dgsvts3(const int m, const int p, const int n,
     if (anorm > ZERO) {
         int maxmn = (m > n) ? m : n;
         if (maxmn < 1) maxmn = 1;
-        result[0] = ((resid / (double)maxmn) / anorm) / ulp;
+        result[0] = ((resid / (f64)maxmn) / anorm) / ulp;
     } else {
         result[0] = ZERO;
     }
@@ -163,7 +163,7 @@ void dgsvts3(const int m, const int p, const int n,
     if (bnorm > ZERO) {
         int maxpn = (p > n) ? p : n;
         if (maxpn < 1) maxpn = 1;
-        result[1] = ((resid / (double)maxpn) / bnorm) / ulp;
+        result[1] = ((resid / (f64)maxpn) / bnorm) / ulp;
     } else {
         result[1] = ZERO;
     }
@@ -173,21 +173,21 @@ void dgsvts3(const int m, const int p, const int n,
                 m, m, -ONE, U, ldu, ONE, work, ldu);
 
     resid = dlansy("1", "U", m, work, ldu, rwork);
-    result[2] = (resid / (double)(m > 1 ? m : 1)) / ulp;
+    result[2] = (resid / (f64)(m > 1 ? m : 1)) / ulp;
 
     dlaset("F", p, p, ZERO, ONE, work, ldv);
     cblas_dsyrk(CblasColMajor, CblasUpper, CblasTrans,
                 p, p, -ONE, V, ldv, ONE, work, ldv);
 
     resid = dlansy("1", "U", p, work, ldv, rwork);
-    result[3] = (resid / (double)(p > 1 ? p : 1)) / ulp;
+    result[3] = (resid / (f64)(p > 1 ? p : 1)) / ulp;
 
     dlaset("F", n, n, ZERO, ONE, work, ldq);
     cblas_dsyrk(CblasColMajor, CblasUpper, CblasTrans,
                 n, n, -ONE, Q, ldq, ONE, work, ldq);
 
     resid = dlansy("1", "U", n, work, ldq, rwork);
-    result[4] = (resid / (double)(n > 1 ? n : 1)) / ulp;
+    result[4] = (resid / (f64)(n > 1 ? n : 1)) / ulp;
 
     cblas_dcopy(n, alpha, 1, work, 1);
     minval = k + l;

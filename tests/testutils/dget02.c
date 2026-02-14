@@ -9,10 +9,10 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
 
 /**
  * DGET02 computes the residual for a solution of a system of linear
@@ -53,20 +53,20 @@ void dget02(
     const int m,
     const int n,
     const int nrhs,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    const double * const restrict X,
+    const f64 * const restrict X,
     const int ldx,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb,
-    double * const restrict rwork,
-    double *resid)
+    f64 * const restrict rwork,
+    f64 *resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int j, n1, n2;
-    double anorm, bnorm, eps, xnorm;
+    f64 anorm, bnorm, eps, xnorm;
     int notran = (trans[0] == 'N' || trans[0] == 'n');
 
     // Quick exit if m = 0 or n = 0 or nrhs = 0
@@ -109,7 +109,7 @@ void dget02(
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            double ratio = ((bnorm / anorm) / xnorm) / eps;
+            f64 ratio = ((bnorm / anorm) / xnorm) / eps;
             if (ratio > *resid) {
                 *resid = ratio;
             }

@@ -9,29 +9,29 @@
 #include "test_rng.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* const restrict A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* const restrict A, const int lda);
 extern void dgeqrt(const int m, const int n, const int nb,
-                   double* const restrict A, const int lda,
-                   double* const restrict T, const int ldt,
-                   double* const restrict work, int* info);
+                   f64* const restrict A, const int lda,
+                   f64* const restrict T, const int ldt,
+                   f64* const restrict work, int* info);
 extern void dgemqrt(const char* side, const char* trans,
                     const int m, const int n, const int k, const int nb,
-                    const double* const restrict V, const int ldv,
-                    const double* const restrict T, const int ldt,
-                    double* const restrict C, const int ldc,
-                    double* const restrict work, int* info);
+                    const f64* const restrict V, const int ldv,
+                    const f64* const restrict T, const int ldt,
+                    f64* const restrict C, const int ldc,
+                    f64* const restrict work, int* info);
 /**
  * DQRT04 tests DGEQRT and DGEMQRT.
  *
@@ -46,30 +46,30 @@ extern void dgemqrt(const char* side, const char* trans,
  *                     result[4] = | C Q - C Q |
  *                     result[5] = | C Q^H - C Q^H |
  */
-void dqrt04(const int m, const int n, const int nb, double* restrict result)
+void dqrt04(const int m, const int n, const int nb, f64* restrict result)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     int k = m < n ? m : n;
     int ll = m > n ? m : n;
     int lwork = (ll > 2 ? ll : 2) * (ll > 2 ? ll : 2) * nb;
     int ldt = nb;
     int info;
     int j;
-    double anorm, resid, cnorm, dnorm;
+    f64 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
 
-    double* A = malloc(m * n * sizeof(double));
-    double* AF = malloc(m * n * sizeof(double));
-    double* Q = malloc(m * m * sizeof(double));
-    double* R = malloc(m * ll * sizeof(double));
-    double* rwork = malloc(ll * sizeof(double));
-    double* work = malloc(lwork * sizeof(double));
-    double* T = malloc(nb * n * sizeof(double));
-    double* C = malloc(m * n * sizeof(double));
-    double* CF = malloc(m * n * sizeof(double));
-    double* D = malloc(n * m * sizeof(double));
-    double* DF = malloc(n * m * sizeof(double));
+    f64* A = malloc(m * n * sizeof(f64));
+    f64* AF = malloc(m * n * sizeof(f64));
+    f64* Q = malloc(m * m * sizeof(f64));
+    f64* R = malloc(m * ll * sizeof(f64));
+    f64* rwork = malloc(ll * sizeof(f64));
+    f64* work = malloc(lwork * sizeof(f64));
+    f64* T = malloc(nb * n * sizeof(f64));
+    f64* C = malloc(m * n * sizeof(f64));
+    f64* CF = malloc(m * n * sizeof(f64));
+    f64* D = malloc(n * m * sizeof(f64));
+    f64* DF = malloc(n * m * sizeof(f64));
 
     for (j = 0; j < n; j++) {
         dlarnv_rng(2, m, &A[j * m], rng_state);

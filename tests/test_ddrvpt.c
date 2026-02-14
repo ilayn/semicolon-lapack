@@ -22,61 +22,61 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routines under test */
-extern void dptsv(const int n, const int nrhs, double* D, double* E,
-                  double* B, const int ldb, int* info);
+extern void dptsv(const int n, const int nrhs, f64* D, f64* E,
+                  f64* B, const int ldb, int* info);
 extern void dptsvx(const char* fact, const int n, const int nrhs,
-                   const double* D, const double* E,
-                   double* DF, double* EF,
-                   const double* B, const int ldb,
-                   double* X, const int ldx, double* rcond,
-                   double* ferr, double* berr, double* work, int* info);
+                   const f64* D, const f64* E,
+                   f64* DF, f64* EF,
+                   const f64* B, const int ldb,
+                   f64* X, const int ldx, f64* rcond,
+                   f64* ferr, f64* berr, f64* work, int* info);
 
 /* Supporting routines */
-extern void dpttrf(const int n, double* D, double* E, int* info);
+extern void dpttrf(const int n, f64* D, f64* E, int* info);
 extern void dpttrs(const int n, const int nrhs,
-                   const double* D, const double* E,
-                   double* B, const int ldb, int* info);
+                   const f64* D, const f64* E,
+                   f64* B, const int ldb, int* info);
 extern void dlaptm(const int n, const int nrhs,
-                   const double alpha, const double* D, const double* E,
-                   const double* X, const int ldx,
-                   const double beta, double* B, const int ldb);
+                   const f64 alpha, const f64* D, const f64* E,
+                   const f64* X, const int ldx,
+                   const f64 beta, f64* B, const int ldb);
 
 /* Verification routines */
-extern void dptt01(const int n, const double* D, const double* E,
-                   const double* DF, const double* EF,
-                   double* work, double* resid);
+extern void dptt01(const int n, const f64* D, const f64* E,
+                   const f64* DF, const f64* EF,
+                   f64* work, f64* resid);
 extern void dptt02(const int n, const int nrhs,
-                   const double* D, const double* E,
-                   const double* X, const int ldx,
-                   double* B, const int ldb, double* resid);
+                   const f64* D, const f64* E,
+                   const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* resid);
 extern void dptt05(const int n, const int nrhs,
-                   const double* D, const double* E,
-                   const double* B, const int ldb,
-                   const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond, double* resid);
-extern double dget06(const double rcond, const double rcondc);
-extern double dlanst(const char* norm, const int n, const double* D, const double* E);
+                   const f64* D, const f64* E,
+                   const f64* B, const int ldb,
+                   const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond, f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
+extern f64 dlanst(const char* norm, const int n, const f64* D, const f64* E);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
+                   const char* sym, f64* d,
+                   const int mode, const f64 cond, const f64 dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
 
 typedef struct {
     int n;
@@ -86,16 +86,16 @@ typedef struct {
 } ddrvpt_params_t;
 
 typedef struct {
-    double* D;      /* Diagonal (N) */
-    double* E;      /* Off-diagonal (N-1) */
-    double* DF;     /* Factored diagonal (N) */
-    double* EF;     /* Factored off-diagonal (N-1) */
-    double* B;
-    double* X;
-    double* XACT;
-    double* WORK;
-    double* RWORK;
-    double* A;      /* Band storage for dlatms (2 x N) */
+    f64* D;      /* Diagonal (N) */
+    f64* E;      /* Off-diagonal (N-1) */
+    f64* DF;     /* Factored diagonal (N) */
+    f64* EF;     /* Factored off-diagonal (N-1) */
+    f64* B;
+    f64* X;
+    f64* XACT;
+    f64* WORK;
+    f64* RWORK;
+    f64* A;      /* Band storage for dlatms (2 x N) */
 } ddrvpt_workspace_t;
 
 static ddrvpt_workspace_t* g_workspace = NULL;
@@ -112,16 +112,16 @@ static int group_setup(void** state)
     int lwork = nmax * nmax + 4 * nmax;
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
-    g_workspace->D = calloc(2 * nmax, sizeof(double));
-    g_workspace->E = calloc(2 * nmax, sizeof(double));
+    g_workspace->D = calloc(2 * nmax, sizeof(f64));
+    g_workspace->E = calloc(2 * nmax, sizeof(f64));
     g_workspace->DF = g_workspace->D + nmax;  /* Use second half */
     g_workspace->EF = g_workspace->E + nmax;  /* Use second half */
-    g_workspace->B = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->X = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->XACT = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->WORK = calloc(lwork, sizeof(double));
-    g_workspace->RWORK = calloc(nmax > 2 * NRHS ? nmax : 2 * NRHS, sizeof(double));
-    g_workspace->A = calloc(2 * nmax, sizeof(double));
+    g_workspace->B = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->X = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->XACT = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->WORK = calloc(lwork, sizeof(f64));
+    g_workspace->RWORK = calloc(nmax > 2 * NRHS ? nmax : 2 * NRHS, sizeof(f64));
+    g_workspace->A = calloc(2 * nmax, sizeof(f64));
 
     if (!g_workspace->D || !g_workspace->E || !g_workspace->B ||
         !g_workspace->X || !g_workspace->XACT || !g_workspace->WORK ||
@@ -157,18 +157,18 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     const char* fact = FACTS[ifact];
 
     int lda = (n > 1) ? n : 1;
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Clear workspace to prevent stale data from previous tests */
-    memset(ws->D, 0, 2 * NMAX * sizeof(double));
-    memset(ws->E, 0, 2 * NMAX * sizeof(double));
-    memset(ws->A, 0, 2 * NMAX * sizeof(double));
+    memset(ws->D, 0, 2 * NMAX * sizeof(f64));
+    memset(ws->E, 0, 2 * NMAX * sizeof(f64));
+    memset(ws->A, 0, 2 * NMAX * sizeof(f64));
 
-    double* D = ws->D;
-    double* E = ws->E;
-    double* DF = ws->DF;
-    double* EF = ws->EF;
+    f64* D = ws->D;
+    f64* E = ws->E;
+    f64* DF = ws->DF;
+    f64* EF = ws->EF;
 
     int zerot = (imat >= 8 && imat <= 10);
     int izero = 0;
@@ -176,7 +176,7 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     /* Set up parameters with DLATB4 */
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DPT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix.
@@ -252,7 +252,7 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
 
             /* Scale D and E so the maximum element is ANORM */
             int ix = cblas_idamax(n, D, 1);
-            double dmax = D[ix];
+            f64 dmax = D[ix];
             cblas_dscal(n, anorm / dmax, D, 1);
             if (n > 1) {
                 cblas_dscal(n - 1, anorm / dmax, E, 1);
@@ -303,7 +303,7 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
      * For FACT='N', reuse the value computed for FACT='F'.
      * Since tests are independent, we always compute it.
      */
-    double rcondc = 0.0;
+    f64 rcondc = 0.0;
 
     if (zerot) {
         rcondc = 0.0;
@@ -311,7 +311,7 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
         rcondc = 1.0 / cndnum;
     } else {
         /* Compute the 1-norm of A */
-        double anorm_1 = dlanst("1", n, D, E);
+        f64 anorm_1 = dlanst("1", n, D, E);
 
         /* Copy D and E to DF and EF, then factor */
         cblas_dcopy(n, D, 1, DF, 1);
@@ -321,12 +321,12 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
 
         /* Use DPTTRS to solve for one column at a time of inv(A),
          * computing the maximum column sum as we go */
-        double ainvnm = 0.0;
+        f64 ainvnm = 0.0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) ws->X[j] = 0.0;
             ws->X[i] = 1.0;
             dpttrs(n, 1, DF, EF, ws->X, lda, &info);
-            double colsum = cblas_dasum(n, ws->X, 1);
+            f64 colsum = cblas_dasum(n, ws->X, 1);
             if (colsum > ainvnm) ainvnm = colsum;
         }
 
@@ -393,7 +393,7 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     }
     dlaset("Full", n, NRHS, 0.0, 0.0, ws->X, lda);
 
-    double rcond;
+    f64 rcond;
     dptsvx(fact, n, NRHS, D, E, DF, EF, ws->B, lda, ws->X, lda, &rcond,
            ws->RWORK, &ws->RWORK[NRHS], ws->WORK, &info);
 

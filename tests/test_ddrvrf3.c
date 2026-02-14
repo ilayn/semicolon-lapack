@@ -21,18 +21,18 @@
 static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const double* A, const int lda, double* ARF, int* info);
+                   const f64* A, const int lda, f64* ARF, int* info);
 extern void dtfsm(const char* transr, const char* side, const char* uplo,
                   const char* trans, const char* diag, const int m, const int n,
-                  const double alpha, const double* A, double* B, const int ldb);
-extern void dgeqrf(const int m, const int n, double* A, const int lda,
-                   double* tau, double* work, const int lwork, int* info);
-extern void dgelqf(const int m, const int n, double* A, const int lda,
-                   double* tau, double* work, const int lwork, int* info);
+                  const f64 alpha, const f64* A, f64* B, const int ldb);
+extern void dgeqrf(const int m, const int n, f64* A, const int lda,
+                   f64* tau, f64* work, const int lwork, int* info);
+extern void dgelqf(const int m, const int n, f64* A, const int lda,
+                   f64* tau, f64* work, const int lwork, int* info);
 
 typedef struct {
     int im;
@@ -55,7 +55,7 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988);
 
-    double eps = dlamch("P");
+    f64 eps = dlamch("P");
 
     const char* cform = (iform == 0) ? "N" : "T";
     const char* uplo  = (iuplo == 0) ? "U" : "L";
@@ -63,7 +63,7 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
     const char* trans = (itrans == 0) ? "N" : "T";
     const char* diag  = (idiag == 0) ? "N" : "U";
 
-    double alpha;
+    f64 alpha;
     if (ialpha == 1)
         alpha = 0.0;
     else if (ialpha == 2)
@@ -73,13 +73,13 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
 
     int na = (iside == 0) ? m : n;
 
-    double A[NMAX * NMAX];
-    double ARF[NMAX * (NMAX + 1) / 2];
-    double B1[NMAX * NMAX];
-    double B2[NMAX * NMAX];
-    double TAU[NMAX];
-    double D_WORK_DGEQRF[NMAX];
-    double D_WORK_DLANGE[NMAX];
+    f64 A[NMAX * NMAX];
+    f64 ARF[NMAX * (NMAX + 1) / 2];
+    f64 B1[NMAX * NMAX];
+    f64 B2[NMAX * NMAX];
+    f64 TAU[NMAX];
+    f64 D_WORK_DGEQRF[NMAX];
+    f64 D_WORK_DLANGE[NMAX];
 
     for (int j = 0; j < na; j++)
         for (int i = 0; i < na; i++)
@@ -125,7 +125,7 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
         for (int i = 0; i < m; i++)
             B1[i + j * lda] = B2[i + j * lda] - B1[i + j * lda];
 
-    double result = dlange("I", m, n, B1, lda, D_WORK_DLANGE);
+    f64 result = dlange("I", m, n, B1, lda, D_WORK_DLANGE);
 
     int mn_max = (m > n) ? m : n;
     if (mn_max < 1) mn_max = 1;

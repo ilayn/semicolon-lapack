@@ -20,17 +20,17 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
 extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const double* A, const int lda, double* ARF, int* info);
+                   const f64* A, const int lda, f64* ARF, int* info);
 extern void dtfttp(const char* transr, const char* uplo, const int n,
-                   const double* ARF, double* AP, int* info);
-extern void dtpttr(const char* uplo, const int n, const double* AP,
-                   double* A, const int lda, int* info);
-extern void dtrttp(const char* uplo, const int n, const double* A,
-                   const int lda, double* AP, int* info);
+                   const f64* ARF, f64* AP, int* info);
+extern void dtpttr(const char* uplo, const int n, const f64* AP,
+                   f64* A, const int lda, int* info);
+extern void dtrttp(const char* uplo, const int n, const f64* A,
+                   const int lda, f64* AP, int* info);
 extern void dtpttf(const char* transr, const char* uplo, const int n,
-                   const double* AP, double* ARF, int* info);
+                   const f64* AP, f64* ARF, int* info);
 extern void dtfttr(const char* transr, const char* uplo, const int n,
-                   const double* ARF, double* A, const int lda, int* info);
+                   const f64* ARF, f64* A, const int lda, int* info);
 
 typedef struct {
     int in;
@@ -51,10 +51,10 @@ static void run_ddrvrf2_single(int n, int iuplo, int iform)
     const char* cform = (iform == 0) ? "N" : "T";
     int lower = (iuplo == 1);
 
-    double A[NMAX * NMAX] = {0};
-    double ASAV[NMAX * NMAX];
-    double ARF[NPP_MAX];
-    double AP[NPP_MAX];
+    f64 A[NMAX * NMAX] = {0};
+    f64 ASAV[NMAX * NMAX];
+    f64 ARF[NPP_MAX];
+    f64 AP[NPP_MAX];
 
     for (int j = 0; j < n; j++)
         for (int i = 0; i < n; i++)

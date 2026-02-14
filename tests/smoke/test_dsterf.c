@@ -26,18 +26,18 @@
 #include "testutils/test_rng.h"
 
 /* Routine under test */
-extern void dsterf(const int n, double* D, double* E, int* info);
+extern void dsterf(const int n, f64* D, f64* E, int* info);
 
 /* Reference eigenvalue computation */
-extern void dsteqr(const char* compz, const int n, double* D, double* E,
-                   double* Z, const int ldz, double* work, int* info);
+extern void dsteqr(const char* compz, const int n, f64* D, f64* E,
+                   f64* Z, const int ldz, f64* work, int* info);
 
 /* Verification routine: Sturm count check */
-extern void dstech(const int n, const double* A, const double* B,
-                   const double* eig, const double tol, double* work, int* info);
+extern void dstech(const int n, const f64* A, const f64* B,
+                   const f64* eig, const f64 tol, f64* work, int* info);
 
 /* Machine parameters */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -45,14 +45,14 @@ extern double dlamch(const char* cmach);
  */
 typedef struct {
     int n;
-    double* D;      /* diagonal (input to dsterf, overwritten with eigenvalues) */
-    double* E;      /* off-diagonal (input to dsterf, destroyed) */
-    double* D_orig; /* saved copy of diagonal */
-    double* E_orig; /* saved copy of off-diagonal */
-    double* D2;     /* copy for dsteqr comparison */
-    double* E2;     /* copy for dsteqr comparison */
-    double* Z;      /* eigenvector workspace for dsteqr */
-    double* work;   /* workspace for dsteqr and dstech */
+    f64* D;      /* diagonal (input to dsterf, overwritten with eigenvalues) */
+    f64* E;      /* off-diagonal (input to dsterf, destroyed) */
+    f64* D_orig; /* saved copy of diagonal */
+    f64* E_orig; /* saved copy of off-diagonal */
+    f64* D2;     /* copy for dsteqr comparison */
+    f64* E2;     /* copy for dsteqr comparison */
+    f64* Z;      /* eigenvector workspace for dsteqr */
+    f64* work;   /* workspace for dsteqr and dstech */
     uint64_t seed;  /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
 } dsterf_fixture_t;
@@ -69,7 +69,7 @@ static uint64_t g_seed = 2024;
  * @param E     Output off-diagonal array, dimension n-1
  * @param seed  RNG seed (incremented after use)
  */
-static void generate_st_matrix(int n, int imat, double* D, double* E,
+static void generate_st_matrix(int n, int imat, f64* D, f64* E,
                                uint64_t state[static 4])
 {
     int i;
@@ -99,7 +99,7 @@ static void generate_st_matrix(int n, int imat, double* D, double* E,
         case 4:
             /* Wilkinson-like: D[i]=|i - n/2|, E[i]=1 */
             for (i = 0; i < n; i++) {
-                D[i] = fabs((double)(i - n / 2));
+                D[i] = fabs((f64)(i - n / 2));
             }
             for (i = 0; i < n - 1; i++) E[i] = 1.0;
             break;
@@ -114,7 +114,7 @@ static void generate_st_matrix(int n, int imat, double* D, double* E,
         case 6:
             /* Random symmetric tridiagonal (well-conditioned) */
             for (i = 0; i < n; i++) {
-                D[i] = rng_uniform_symmetric(state) * 5.0 + (double)n;
+                D[i] = rng_uniform_symmetric(state) * 5.0 + (f64)n;
             }
             for (i = 0; i < n - 1; i++) {
                 E[i] = rng_uniform_symmetric(state);
@@ -125,7 +125,7 @@ static void generate_st_matrix(int n, int imat, double* D, double* E,
             /* Graded diagonal: D[i]=2^(-i), E[i]=1 */
             /* Tests scaling behavior */
             for (i = 0; i < n; i++) {
-                D[i] = pow(2.0, -(double)i);
+                D[i] = pow(2.0, -(f64)i);
             }
             for (i = 0; i < n - 1; i++) E[i] = 1.0;
             break;
@@ -139,13 +139,13 @@ static void generate_st_matrix(int n, int imat, double* D, double* E,
 }
 
 /**
- * Simple insertion sort for double array (ascending order).
+ * Simple insertion sort for f64 array (ascending order).
  * Used to ensure eigenvalue arrays are sorted for comparison.
  */
-static void sort_ascending(int n, double* x)
+static void sort_ascending(int n, f64* x)
 {
     int i, j;
-    double tmp;
+    f64 tmp;
     for (i = 1; i < n; i++) {
         tmp = x[i];
         j = i - 1;
@@ -177,14 +177,14 @@ static int dsterf_setup(void** state, int n)
     /* dstech also needs n workspace, take max */
     if (n_alloc > work_size) work_size = n_alloc;
 
-    fix->D = malloc(n_alloc * sizeof(double));
-    fix->E = malloc(e_alloc * sizeof(double));
-    fix->D_orig = malloc(n_alloc * sizeof(double));
-    fix->E_orig = malloc(e_alloc * sizeof(double));
-    fix->D2 = malloc(n_alloc * sizeof(double));
-    fix->E2 = malloc(e_alloc * sizeof(double));
-    fix->Z = malloc(n_alloc * n_alloc * sizeof(double));
-    fix->work = malloc(work_size * sizeof(double));
+    fix->D = malloc(n_alloc * sizeof(f64));
+    fix->E = malloc(e_alloc * sizeof(f64));
+    fix->D_orig = malloc(n_alloc * sizeof(f64));
+    fix->E_orig = malloc(e_alloc * sizeof(f64));
+    fix->D2 = malloc(n_alloc * sizeof(f64));
+    fix->E2 = malloc(e_alloc * sizeof(f64));
+    fix->Z = malloc(n_alloc * n_alloc * sizeof(f64));
+    fix->work = malloc(work_size * sizeof(f64));
 
     assert_non_null(fix->D);
     assert_non_null(fix->E);
@@ -237,7 +237,7 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
 {
     int info;
     int n = fix->n;
-    double ulp = dlamch("P");  /* unit roundoff (eps * base) */
+    f64 ulp = dlamch("P");  /* unit roundoff (eps * base) */
 
     if (n <= 0) return;
 
@@ -245,15 +245,15 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
     generate_st_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
     /* Save originals (dsterf destroys D and E) */
-    memcpy(fix->D_orig, fix->D, n * sizeof(double));
+    memcpy(fix->D_orig, fix->D, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->E_orig, fix->E, (n - 1) * sizeof(double));
+        memcpy(fix->E_orig, fix->E, (n - 1) * sizeof(f64));
     }
 
     /* Make copies for dsteqr */
-    memcpy(fix->D2, fix->D, n * sizeof(double));
+    memcpy(fix->D2, fix->D, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->E2, fix->E, (n - 1) * sizeof(double));
+        memcpy(fix->E2, fix->E, (n - 1) * sizeof(f64));
     }
 
     /* Compute eigenvalues with dsterf */
@@ -276,24 +276,24 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
 
     /* Verification 2: Compare dsterf vs dsteqr eigenvalues */
     /* Compute max|D[i] - D2[i]| / (|max_eig| * n * ulp) */
-    double max_eig = 0.0;
+    f64 max_eig = 0.0;
     for (int i = 0; i < n; i++) {
-        double abs_val = fabs(fix->D[i]);
+        f64 abs_val = fabs(fix->D[i]);
         if (abs_val > max_eig) max_eig = abs_val;
     }
 
-    double max_diff = 0.0;
+    f64 max_diff = 0.0;
     for (int i = 0; i < n; i++) {
-        double diff = fabs(fix->D[i] - fix->D2[i]);
+        f64 diff = fabs(fix->D[i] - fix->D2[i]);
         if (diff > max_diff) max_diff = diff;
     }
 
-    double resid;
+    f64 resid;
     if (max_eig == 0.0) {
         /* Zero matrix: eigenvalues should be exactly zero */
         resid = max_diff / ulp;
     } else {
-        resid = max_diff / (max_eig * (double)n * ulp);
+        resid = max_diff / (max_eig * (f64)n * ulp);
     }
 
     assert_residual_ok(resid);
@@ -313,9 +313,9 @@ static void run_dsterf_exact_test(dsterf_fixture_t* fix, int imat)
     generate_st_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
     /* Save originals */
-    memcpy(fix->D_orig, fix->D, n * sizeof(double));
+    memcpy(fix->D_orig, fix->D, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->E_orig, fix->E, (n - 1) * sizeof(double));
+        memcpy(fix->E_orig, fix->E, (n - 1) * sizeof(f64));
     }
 
     /* Compute eigenvalues with dsterf */
@@ -336,30 +336,30 @@ static void run_dsterf_exact_test(dsterf_fixture_t* fix, int imat)
         }
     } else if (imat == 3) {
         /* 1-2-1 Toeplitz: eigenvalues = 2 - 2*cos(k*pi/(n+1)), k=1..n */
-        double ulp = dlamch("P");
-        double pi = 3.14159265358979323846264338327950288;
-        double* exact = malloc(n * sizeof(double));
+        f64 ulp = dlamch("P");
+        f64 pi = 3.14159265358979323846264338327950288;
+        f64* exact = malloc(n * sizeof(f64));
         assert_non_null(exact);
 
         for (int k = 1; k <= n; k++) {
-            exact[k - 1] = 2.0 - 2.0 * cos((double)k * pi / (double)(n + 1));
+            exact[k - 1] = 2.0 - 2.0 * cos((f64)k * pi / (f64)(n + 1));
         }
         sort_ascending(n, exact);
 
-        double max_eig = 0.0;
+        f64 max_eig = 0.0;
         for (int i = 0; i < n; i++) {
-            double abs_val = fabs(exact[i]);
+            f64 abs_val = fabs(exact[i]);
             if (abs_val > max_eig) max_eig = abs_val;
         }
 
-        double max_diff = 0.0;
+        f64 max_diff = 0.0;
         for (int i = 0; i < n; i++) {
-            double diff = fabs(fix->D[i] - exact[i]);
+            f64 diff = fabs(fix->D[i] - exact[i]);
             if (diff > max_diff) max_diff = diff;
         }
 
-        double resid = (max_eig > 0.0) ?
-            max_diff / (max_eig * (double)n * ulp) : max_diff / ulp;
+        f64 resid = (max_eig > 0.0) ?
+            max_diff / (max_eig * (f64)n * ulp) : max_diff / ulp;
         assert_residual_ok(resid);
 
         free(exact);

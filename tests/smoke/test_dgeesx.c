@@ -22,12 +22,12 @@
 /* Test fixture */
 typedef struct {
     int n;
-    double* A;        /* Original matrix */
-    double* Acopy;    /* Copy for verification */
-    double* VS;       /* Schur vectors */
-    double* wr;       /* Real eigenvalues */
-    double* wi;       /* Imaginary eigenvalues */
-    double* work;     /* Workspace */
+    f64* A;        /* Original matrix */
+    f64* Acopy;    /* Copy for verification */
+    f64* VS;       /* Schur vectors */
+    f64* wr;       /* Real eigenvalues */
+    f64* wi;       /* Imaginary eigenvalues */
+    f64* work;     /* Workspace */
     int* iwork;       /* Integer workspace */
     int* bwork;       /* Boolean work for SELECT */
     uint64_t seed;
@@ -35,34 +35,34 @@ typedef struct {
 } dgeesx_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-typedef int (*dselect2_t)(const double* wr, const double* wi);
+typedef int (*dselect2_t)(const f64* wr, const f64* wi);
 
 extern void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
-                   const char* sense, const int n, double* A, const int lda,
-                   int* sdim, double* wr, double* wi, double* VS, const int ldvs,
-                   double* rconde, double* rcondv,
-                   double* work, const int lwork,
+                   const char* sense, const int n, f64* A, const int lda,
+                   int* sdim, f64* wr, f64* wi, f64* VS, const int ldvs,
+                   f64* rconde, f64* rcondv,
+                   f64* work, const int lwork,
                    int* iwork, const int liwork, int* bwork, int* info);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /* Selection function: select eigenvalues with negative real part */
-static int select_negative_real(const double* wr, const double* wi)
+static int select_negative_real(const f64* wr, const f64* wi)
 {
     (void)wi;
     return (*wr < 0.0) ? 1 : 0;
 }
 
 /* Selection function: select eigenvalues inside unit circle */
-static int select_inside_unit_circle(const double* wr, const double* wi)
+static int select_inside_unit_circle(const f64* wr, const f64* wi)
 {
-    double magnitude = sqrt((*wr) * (*wr) + (*wi) * (*wi));
+    f64 magnitude = sqrt((*wr) * (*wr) + (*wi) * (*wi));
     return (magnitude < 1.0) ? 1 : 0;
 }
 
@@ -75,11 +75,11 @@ static int setup_N(void** state, int n) {
     fix->seed = 0xBADC0FFEULL;
 
     /* Allocate matrices */
-    fix->A = malloc(n * n * sizeof(double));
-    fix->Acopy = malloc(n * n * sizeof(double));
-    fix->VS = malloc(n * n * sizeof(double));
-    fix->wr = malloc(n * sizeof(double));
-    fix->wi = malloc(n * sizeof(double));
+    fix->A = malloc(n * n * sizeof(f64));
+    fix->Acopy = malloc(n * n * sizeof(f64));
+    fix->VS = malloc(n * n * sizeof(f64));
+    fix->wr = malloc(n * sizeof(f64));
+    fix->wi = malloc(n * sizeof(f64));
     fix->bwork = malloc(n * sizeof(int));
 
     /* Integer workspace for condition number computation */
@@ -89,7 +89,7 @@ static int setup_N(void** state, int n) {
 
     /* Workspace: generous allocation */
     int lwork = 12 * n * n;
-    fix->work = malloc(lwork * sizeof(double));
+    fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->Acopy || !fix->VS ||
         !fix->wr || !fix->wi || !fix->bwork ||
@@ -130,7 +130,7 @@ static int setup_20(void** state) { return setup_N(state, 20); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, double* A, int lda, double anorm,
+static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
                                    uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
@@ -149,8 +149,8 @@ static void test_basic(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
-    double result[2];
+    f64 rconde, rcondv;
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -193,8 +193,8 @@ static void test_with_ordering(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
-    double result[2];
+    f64 rconde, rcondv;
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -247,7 +247,7 @@ static void test_condition_eigenvalue(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
+    f64 rconde, rcondv;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -288,7 +288,7 @@ static void test_condition_subspace(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
+    f64 rconde, rcondv;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -329,8 +329,8 @@ static void test_condition_both(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
-    double result[2];
+    f64 rconde, rcondv;
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -380,8 +380,8 @@ static void test_workspace_query(void** state)
     dgeesx_fixture_t* fix = *state;
     int n = fix->n;
     int sdim, info;
-    double rconde, rcondv;
-    double work_query;
+    f64 rconde, rcondv;
+    f64 work_query;
     int iwork_query;
 
     /* Query optimal workspace */
@@ -390,7 +390,7 @@ static void test_workspace_query(void** state)
            &work_query, -1, &iwork_query, -1, fix->bwork, &info);
 
     assert_info_success(info);
-    assert_true(work_query >= (double)(3 * n));
+    assert_true(work_query >= (f64)(3 * n));
 }
 
 /**
@@ -402,7 +402,7 @@ static void test_no_vectors(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
+    f64 rconde, rcondv;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -434,12 +434,12 @@ static void test_symmetric_matrix(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double rconde, rcondv;
+    f64 rconde, rcondv;
 
     /* Generate symmetric matrix */
     for (int j = 0; j < n; j++) {
         for (int i = j; i < n; i++) {
-            double val = rng_uniform_symmetric(fix->rng_state);
+            f64 val = rng_uniform_symmetric(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
         }

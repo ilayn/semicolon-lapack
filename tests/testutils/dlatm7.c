@@ -72,15 +72,15 @@ extern void xerbla(const char* srname, const int info);
  *    -4  => if MODE equals 6 or -6 and IDIST not in range 1 to 3
  *    -7  => if N negative
  */
-void dlatm7(const int mode, const double cond, const int irsign,
-            const int idist, double* d, const int n, const int rank,
+void dlatm7(const int mode, const f64 cond, const int irsign,
+            const int idist, f64* d, const int n, const int rank,
             int* info, uint64_t state[static 4])
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
 
-    double alpha, temp;
+    f64 alpha, temp;
     int i;
     int absmode;
 
@@ -141,9 +141,9 @@ void dlatm7(const int mode, const double cond, const int irsign,
                 /* Exponentially distributed D values: D[i]=cond^(-i/(rank-1)) */
                 d[0] = ONE;
                 if (n > 1 && rank > 1) {
-                    alpha = pow(cond, -ONE / (double)(rank - 1));
+                    alpha = pow(cond, -ONE / (f64)(rank - 1));
                     for (i = 1; i < rank; i++) {
-                        d[i] = pow(alpha, (double)i);
+                        d[i] = pow(alpha, (f64)i);
                     }
                     for (i = rank; i < n; i++) {
                         d[i] = ZERO;
@@ -157,9 +157,9 @@ void dlatm7(const int mode, const double cond, const int irsign,
                 d[0] = ONE;
                 if (n > 1) {
                     temp = ONE / cond;
-                    alpha = (ONE - temp) / (double)(n - 1);
+                    alpha = (ONE - temp) / (f64)(n - 1);
                     for (i = 1; i < n; i++) {
-                        d[i] = (double)(n - 1 - i) * alpha + temp;
+                        d[i] = (f64)(n - 1 - i) * alpha + temp;
                     }
                 }
                 break;

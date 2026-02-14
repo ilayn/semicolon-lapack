@@ -26,15 +26,15 @@
  */
 void dptt01(
     const int n,
-    const double* const restrict D,
-    const double* const restrict E,
-    const double* const restrict DF,
-    const double* const restrict EF,
-    double* const restrict work,
-    double* resid)
+    const f64* const restrict D,
+    const f64* const restrict E,
+    const f64* const restrict DF,
+    const f64* const restrict EF,
+    f64* const restrict work,
+    f64* resid)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -42,7 +42,7 @@ void dptt01(
         return;
     }
 
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
 
     /* Construct the difference L*D*L' - A.
      * work[0..n-1] = diagonal differences
@@ -50,13 +50,13 @@ void dptt01(
      */
     work[0] = DF[0] - D[0];
     for (int i = 0; i < n - 1; i++) {
-        double de = DF[i] * EF[i];
+        f64 de = DF[i] * EF[i];
         work[n + i] = de - E[i];
         work[i + 1] = de * EF[i] + DF[i + 1] - D[i + 1];
     }
 
     /* Compute the 1-norms of the tridiagonal matrices A and WORK. */
-    double anorm, residval;
+    f64 anorm, residval;
     if (n == 1) {
         anorm = D[0];
         residval = fabs(work[0]);
@@ -79,6 +79,6 @@ void dptt01(
             *resid = ZERO;
         }
     } else {
-        *resid = ((residval / (double)n) / anorm) / eps;
+        *resid = ((residval / (f64)n) / anorm) / eps;
     }
 }

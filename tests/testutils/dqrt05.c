@@ -9,37 +9,37 @@
 #include "test_rng.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* const restrict A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* const restrict A, const int lda);
 extern void dtpqrt(const int m, const int n, const int l, const int nb,
-                   double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb,
-                   double* const restrict T, const int ldt,
-                   double* const restrict work, int* info);
+                   f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb,
+                   f64* const restrict T, const int ldt,
+                   f64* const restrict work, int* info);
 extern void dgemqrt(const char* side, const char* trans,
                     const int m, const int n, const int k, const int nb,
-                    const double* const restrict V, const int ldv,
-                    const double* const restrict T, const int ldt,
-                    double* const restrict C, const int ldc,
-                    double* const restrict work, int* info);
+                    const f64* const restrict V, const int ldv,
+                    const f64* const restrict T, const int ldt,
+                    f64* const restrict C, const int ldc,
+                    f64* const restrict work, int* info);
 extern void dtpmqrt(const char* side, const char* trans,
                     const int m, const int n, const int k, const int l, const int nb,
-                    const double* const restrict V, const int ldv,
-                    const double* const restrict T, const int ldt,
-                    double* const restrict A, const int lda,
-                    double* const restrict B, const int ldb,
-                    double* const restrict work, int* info);
+                    const f64* const restrict V, const int ldv,
+                    const f64* const restrict T, const int ldt,
+                    f64* const restrict A, const int lda,
+                    f64* const restrict B, const int ldb,
+                    f64* const restrict work, int* info);
 /**
  * DQRT05 tests DTPQRT and DTPMQRT.
  *
@@ -56,9 +56,9 @@ extern void dtpmqrt(const char* side, const char* trans,
  *                     result[4] = | C Q - C Q |
  *                     result[5] = | C Q^H - C Q^H |
  */
-void dqrt05(const int m, const int n, const int l, const int nb, double* restrict result)
+void dqrt05(const int m, const int n, const int l, const int nb, f64* restrict result)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     int k = n;
     int m2 = m + n;
     int np1 = (m > 0) ? n : 0;
@@ -66,21 +66,21 @@ void dqrt05(const int m, const int n, const int l, const int nb, double* restric
     int ldt = nb;
     int info;
     int j;
-    double anorm, resid, cnorm, dnorm;
+    f64 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
 
-    double* A = malloc(m2 * n * sizeof(double));
-    double* AF = malloc(m2 * n * sizeof(double));
-    double* Q = malloc(m2 * m2 * sizeof(double));
-    double* R = malloc(m2 * m2 * sizeof(double));
-    double* rwork = malloc(m2 * sizeof(double));
-    double* work = malloc(lwork * sizeof(double));
-    double* T = malloc(nb * n * sizeof(double));
-    double* C = malloc(m2 * n * sizeof(double));
-    double* CF = malloc(m2 * n * sizeof(double));
-    double* D = malloc(n * m2 * sizeof(double));
-    double* DF = malloc(n * m2 * sizeof(double));
+    f64* A = malloc(m2 * n * sizeof(f64));
+    f64* AF = malloc(m2 * n * sizeof(f64));
+    f64* Q = malloc(m2 * m2 * sizeof(f64));
+    f64* R = malloc(m2 * m2 * sizeof(f64));
+    f64* rwork = malloc(m2 * sizeof(f64));
+    f64* work = malloc(lwork * sizeof(f64));
+    f64* T = malloc(nb * n * sizeof(f64));
+    f64* C = malloc(m2 * n * sizeof(f64));
+    f64* CF = malloc(m2 * n * sizeof(f64));
+    f64* D = malloc(n * m2 * sizeof(f64));
+    f64* DF = malloc(n * m2 * sizeof(f64));
 
     dlaset("F", m2, n, 0.0, 0.0, A, m2);
     dlaset("F", nb, n, 0.0, 0.0, T, nb);

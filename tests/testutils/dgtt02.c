@@ -9,19 +9,19 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlangt(const char* norm, const int n,
-                     const double* const restrict DL,
-                     const double* const restrict D,
-                     const double* const restrict DU);
+extern f64 dlamch(const char* cmach);
+extern f64 dlangt(const char* norm, const int n,
+                     const f64* const restrict DL,
+                     const f64* const restrict D,
+                     const f64* const restrict DU);
 extern void dlagtm(const char* trans, const int n, const int nrhs,
-                   const double alpha,
-                   const double* const restrict DL,
-                   const double* const restrict D,
-                   const double* const restrict DU,
-                   const double* const restrict X, const int ldx,
-                   const double beta,
-                   double* const restrict B, const int ldb);
+                   const f64 alpha,
+                   const f64* const restrict DL,
+                   const f64* const restrict D,
+                   const f64* const restrict DU,
+                   const f64* const restrict X, const int ldx,
+                   const f64 beta,
+                   f64* const restrict B, const int ldb);
 
 /**
  * DGTT02 computes the residual for the solution to a tridiagonal
@@ -52,21 +52,21 @@ void dgtt02(
     const char* trans,
     const int n,
     const int nrhs,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU,
-    const double * const restrict X,
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU,
+    const f64 * const restrict X,
     const int ldx,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb,
-    double *resid)
+    f64 *resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
 
     int j;
-    double anorm, bnorm, eps, xnorm;
+    f64 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if n = 0 or nrhs = 0 */
     *resid = ZERO;
@@ -98,7 +98,7 @@ void dgtt02(
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            double ratio = ((bnorm / anorm) / xnorm) / eps;
+            f64 ratio = ((bnorm / anorm) / xnorm) / eps;
             if (ratio > *resid) {
                 *resid = ratio;
             }

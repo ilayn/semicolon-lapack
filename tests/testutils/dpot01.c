@@ -9,10 +9,10 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DPOT01 reconstructs a symmetric positive definite matrix A from
@@ -43,15 +43,15 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 void dpot01(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict AFAC,
+    f64* const restrict AFAC,
     const int ldafac,
-    double* const restrict rwork,
-    double* resid)
+    f64* const restrict rwork,
+    f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // Quick exit if n = 0
     if (n <= 0) {
@@ -60,8 +60,8 @@ void dpot01(
     }
 
     // Determine EPS and the norm of A
-    double eps = dlamch("E");
-    double anorm = dlansy("1", uplo, n, A, lda, rwork);
+    f64 eps = dlamch("E");
+    f64 anorm = dlansy("1", uplo, n, A, lda, rwork);
     if (anorm <= ZERO) {
         *resid = ONE / eps;
         return;
@@ -74,7 +74,7 @@ void dpot01(
             // Compute the (k,k) element of the result.
             // AFAC(k,k) = dot(column k of AFAC, rows 0..k)
             // Fortran: T = DDOT(K, AFAC(1,K), 1, AFAC(1,K), 1)
-            double t = cblas_ddot(k + 1, &AFAC[k * ldafac], 1,
+            f64 t = cblas_ddot(k + 1, &AFAC[k * ldafac], 1,
                                   &AFAC[k * ldafac], 1);
             AFAC[k + k * ldafac] = t;
 
@@ -101,7 +101,7 @@ void dpot01(
 
             // Scale column k by the diagonal element.
             // Fortran: T = AFAC(K,K); DSCAL(N-K+1, T, AFAC(K,K), 1)
-            double t = AFAC[k + k * ldafac];
+            f64 t = AFAC[k + k * ldafac];
             cblas_dscal(n - k, t, &AFAC[k + k * ldafac], 1);
         }
     }
@@ -123,5 +123,5 @@ void dpot01(
 
     // Compute norm(L*L' - A) / (N * norm(A) * EPS)
     *resid = dlansy("1", uplo, n, AFAC, ldafac, rwork);
-    *resid = ((*resid / (double)n) / anorm) / eps;
+    *resid = ((*resid / (f64)n) / anorm) / eps;
 }

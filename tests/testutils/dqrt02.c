@@ -17,23 +17,23 @@
 #include <cblas.h>
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* const restrict A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* const restrict A, const int lda);
 extern void dorgqr(const int m, const int n, const int k,
-                   double* const restrict A, const int lda,
-                   const double* const restrict tau,
-                   double* const restrict work, const int lwork, int* info);
+                   f64* const restrict A, const int lda,
+                   const f64* const restrict tau,
+                   f64* const restrict work, const int lwork, int* info);
 
 /**
  * @param[in]     m       Number of rows of Q to be generated. m >= 0.
@@ -51,17 +51,17 @@ extern void dorgqr(const int m, const int n, const int k,
  * @param[out]    result  Array of dimension 2.
  */
 void dqrt02(const int m, const int n, const int k,
-            const double * const restrict A,
-            const double * const restrict AF,
-            double * const restrict Q,
-            double * const restrict R,
+            const f64 * const restrict A,
+            const f64 * const restrict AF,
+            f64 * const restrict Q,
+            f64 * const restrict R,
             const int lda,
-            const double * const restrict tau,
-            double * const restrict work, const int lwork,
-            double * const restrict rwork,
-            double * restrict result)
+            const f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
+            f64 * const restrict rwork,
+            f64 * restrict result)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     int info;
 
     /* Copy the first k columns of the factorization to Q */
@@ -82,10 +82,10 @@ void dqrt02(const int m, const int n, const int k,
                 n, k, m, -1.0, Q, lda, A, lda, 1.0, R, lda);
 
     /* Compute norm( R - Q'*A ) / ( M * norm(A) * EPS ) */
-    double anorm = dlange("1", m, k, A, lda, rwork);
-    double resid = dlange("1", n, k, R, lda, rwork);
+    f64 anorm = dlange("1", m, k, A, lda, rwork);
+    f64 resid = dlange("1", n, k, R, lda, rwork);
     if (anorm > 0.0) {
-        result[0] = ((resid / (double)(m > 1 ? m : 1)) / anorm) / eps;
+        result[0] = ((resid / (f64)(m > 1 ? m : 1)) / anorm) / eps;
     } else {
         result[0] = 0.0;
     }
@@ -97,5 +97,5 @@ void dqrt02(const int m, const int n, const int k,
 
     /* Compute norm( I - Q'*Q ) / ( M * EPS ) */
     resid = dlansy("1", "U", n, R, lda, rwork);
-    result[1] = (resid / (double)(m > 1 ? m : 1)) / eps;
+    result[1] = (resid / (f64)(m > 1 ? m : 1)) / eps;
 }

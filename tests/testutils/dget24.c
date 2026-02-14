@@ -11,27 +11,27 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlapy2(const double x, const double y);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlapy2(const f64 x, const f64 y);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /* Forward declaration - defined in semicolon_lapack_double.h */
-typedef int (*dselect2_t_local)(const double* wr, const double* wi);
+typedef int (*dselect2_t_local)(const f64* wr, const f64* wi);
 extern void dgeesx(const char* jobvs, const char* sort, dselect2_t_local select,
-                   const char* sense, const int n, double* A, const int lda,
-                   int* sdim, double* wr, double* wi, double* VS, const int ldvs,
-                   double* rconde, double* rcondv, double* work, const int lwork,
+                   const char* sense, const int n, f64* A, const int lda,
+                   int* sdim, f64* wr, f64* wi, f64* VS, const int ldvs,
+                   f64* rconde, f64* rcondv, f64* work, const int lwork,
                    int* iwork, const int liwork, int* bwork, int* info);
 
 /* File-static globals for SSLCT COMMON block */
 static int g_selopt;
 static int g_seldim;
 static int g_selval[20];
-static double g_selwr[20];
-static double g_selwi[20];
+static f64 g_selwr[20];
+static f64 g_selwi[20];
 
 /**
  * DSLECT returns .TRUE. if the eigenvalue ZR+sqrt(-1)*ZI is to be
@@ -39,10 +39,10 @@ static double g_selwi[20];
  * It is used by DGEESX to test whether the j-th eigenvalue is to be
  * reordered to the top left corner of the Schur form.
  */
-static int dslect(const double* zr, const double* zi)
+static int dslect(const f64* zr, const f64* zi)
 {
     int i;
-    double rmin, x;
+    f64 rmin, x;
 
     if (g_selopt == 0) {
         return (*zr < 0.0);
@@ -87,27 +87,27 @@ static int dslect(const double* zr, const double* zi)
  *   (16)     |RCONDE - RCDEIN| / cond(RCONDE)
  *   (17)     |RCONDV - RCDVIN| / cond(RCONDV)
  */
-void dget24(const int comp, const int jtype, const double thresh,
-            const int n, double* A, const int lda,
-            double* H, double* HT,
-            double* wr, double* wi, double* wrt, double* wit,
-            double* wrtmp, double* witmp,
-            double* VS, const int ldvs, double* VS1,
-            const double rcdein, const double rcdvin,
+void dget24(const int comp, const int jtype, const f64 thresh,
+            const int n, f64* A, const int lda,
+            f64* H, f64* HT,
+            f64* wr, f64* wi, f64* wrt, f64* wit,
+            f64* wrtmp, f64* witmp,
+            f64* VS, const int ldvs, f64* VS1,
+            const f64 rcdein, const f64 rcdvin,
             const int nslct, const int* islct,
-            double* result, double* work, const int lwork,
+            f64* result, f64* work, const int lwork,
             int* iwork, int* bwork, int* info)
 {
     (void)jtype;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double EPSIN = 5.9605e-8;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 EPSIN = 5.9605e-8;
 
     int i, j, kmin, knteig, liwork, rsub, sdim, sdim1;
     int iinfo, isort, itmp;
-    double anorm, eps, rcnde1, rcndv1, rconde, rcondv;
-    double smlnum, tmp, tol, tolin, ulp, ulpinv, v;
-    double vimin, vrmin, wnorm;
+    f64 anorm, eps, rcnde1, rcndv1, rconde, rcondv;
+    f64 smlnum, tmp, tol, tolin, ulp, ulpinv, v;
+    f64 vimin, vrmin, wnorm;
     int ipnt[20];
 
     /* Check for errors */
@@ -207,7 +207,7 @@ void dget24(const int comp, const int jtype, const double thresh,
             if (anorm < ONE) {
                 result[1 + rsub] = (fmin(wnorm, n * anorm) / anorm) / (n * ulp);
             } else {
-                result[1 + rsub] = fmin(wnorm / anorm, (double)n) / (n * ulp);
+                result[1 + rsub] = fmin(wnorm / anorm, (f64)n) / (n * ulp);
             }
         }
 
@@ -272,13 +272,13 @@ void dget24(const int comp, const int jtype, const double thresh,
             result[12] = ZERO;
             knteig = 0;
             for (i = 0; i < n; i++) {
-                if (dslect(&wr[i], &wi[i]) || dslect(&wr[i], &(double){-wi[i]}))
+                if (dslect(&wr[i], &wi[i]) || dslect(&wr[i], &(f64){-wi[i]}))
                     knteig = knteig + 1;
                 if (i < n - 1) {
                     if ((dslect(&wr[i + 1], &wi[i + 1]) ||
-                         dslect(&wr[i + 1], &(double){-wi[i + 1]})) &&
+                         dslect(&wr[i + 1], &(f64){-wi[i + 1]})) &&
                         (!(dslect(&wr[i], &wi[i]) ||
-                           dslect(&wr[i], &(double){-wi[i]}))) &&
+                           dslect(&wr[i], &(f64){-wi[i]}))) &&
                         iinfo != n + 2)
                         result[12] = ulpinv;
                 }
@@ -525,7 +525,7 @@ label_250:
         /* Compare condition number for average of selected eigenvalues
          * taking its condition number into account */
         anorm = dlange("1", n, n, A, lda, work);
-        v = fmax((double)n * eps * anorm, smlnum);
+        v = fmax((f64)n * eps * anorm, smlnum);
         if (anorm == ZERO)
             v = ONE;
         if (v > rcondv) {

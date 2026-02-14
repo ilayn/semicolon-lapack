@@ -11,13 +11,13 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DSTT22 checks a set of M eigenvalues and eigenvectors,
@@ -46,17 +46,17 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
  * @param[out]    result  Array of dimension (2). The two test ratios.
  */
 void dstt22(const int n, const int m, const int kband,
-            const double* const restrict AD, const double* const restrict AE,
-            const double* const restrict SD, const double* const restrict SE,
-            const double* const restrict U, const int ldu,
-            double* const restrict work, const int ldwork,
-            double* restrict result)
+            const f64* const restrict AD, const f64* const restrict AE,
+            const f64* const restrict SD, const f64* const restrict SE,
+            const f64* const restrict U, const int ldu,
+            f64* const restrict work, const int ldwork,
+            f64* restrict result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, k;
-    double anorm, aukj, ulp, unfl, wnorm;
+    f64 anorm, aukj, ulp, unfl, wnorm;
 
     result[0] = ZERO;
     result[1] = ZERO;
@@ -105,12 +105,12 @@ void dstt22(const int n, const int m, const int kband,
     wnorm = dlansy("1", "L", m, work, m, &work[m * ldwork]);
 
     if (anorm > wnorm) {
-        result[0] = (wnorm / anorm) / ((double)m * ulp);
+        result[0] = (wnorm / anorm) / ((f64)m * ulp);
     } else {
         if (anorm < ONE) {
-            result[0] = (fmin(wnorm, (double)m * anorm) / anorm) / ((double)m * ulp);
+            result[0] = (fmin(wnorm, (f64)m * anorm) / anorm) / ((f64)m * ulp);
         } else {
-            result[0] = fmin(wnorm / anorm, (double)m) / ((double)m * ulp);
+            result[0] = fmin(wnorm / anorm, (f64)m) / ((f64)m * ulp);
         }
     }
 
@@ -124,6 +124,6 @@ void dstt22(const int n, const int m, const int kband,
         work[j + j * m] = work[j + j * m] - ONE;
     }
 
-    result[1] = fmin((double)m,
-                     dlange("1", m, m, work, m, &work[m * ldwork])) / ((double)m * ulp);
+    result[1] = fmin((f64)m,
+                     dlange("1", m, m, work, m, &work[m * ldwork])) / ((f64)m * ulp);
 }

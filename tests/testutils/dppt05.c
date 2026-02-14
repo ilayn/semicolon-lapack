@@ -8,7 +8,7 @@
 #include "verify.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DPPT05 tests the error bounds from iterative refinement for the
@@ -68,17 +68,17 @@ extern double dlamch(const char* cmach);
  *          Dimension (2).
  */
 void dppt05(const char* uplo, const int n, const int nrhs,
-            const double* const restrict AP,
-            const double* const restrict B, const int ldb,
-            const double* const restrict X, const int ldx,
-            const double* const restrict XACT, const int ldxact,
-            const double* const restrict FERR,
-            const double* const restrict BERR,
-            double* const restrict reslts)
+            const f64* const restrict AP,
+            const f64* const restrict B, const int ldb,
+            const f64* const restrict X, const int ldx,
+            const f64* const restrict XACT, const int ldxact,
+            const f64* const restrict FERR,
+            const f64* const restrict BERR,
+            f64* const restrict reslts)
 {
     int upper;
     int i, imax, j, jc, k;
-    double axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
+    f64 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     if (n <= 0 || nrhs <= 0) {
         reslts[0] = 0.0;
@@ -98,7 +98,7 @@ void dppt05(const char* uplo, const int n, const int nrhs,
         if (xnorm < unfl) xnorm = unfl;
         diff = 0.0;
         for (i = 0; i < n; i++) {
-            double d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) diff = d;
         }
 
@@ -112,7 +112,7 @@ void dppt05(const char* uplo, const int n, const int nrhs,
         }
 
         if (diff / xnorm <= FERR[j]) {
-            double ratio = (diff / xnorm) / FERR[j];
+            f64 ratio = (diff / xnorm) / FERR[j];
             if (ratio > errbnd) errbnd = ratio;
         } else {
             errbnd = 1.0 / eps;
@@ -150,7 +150,7 @@ void dppt05(const char* uplo, const int n, const int nrhs,
                 if (tmp < axbi) axbi = tmp;
             }
         }
-        double denom = (n + 1) * unfl;
+        f64 denom = (n + 1) * unfl;
         if (axbi > denom) denom = axbi;
         tmp = BERR[k] / ((n + 1) * eps + (n + 1) * unfl / denom);
         if (k == 0) {

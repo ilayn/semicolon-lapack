@@ -36,12 +36,12 @@
  *                        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
 void dpot06(const char* uplo, const int n, const int nrhs,
-            const double* A, const int lda, const double* X, const int ldx,
-            double* B, const int ldb, double* rwork, double* resid)
+            const f64* A, const int lda, const f64* X, const int ldx,
+            f64* B, const int ldb, f64* rwork, f64* resid)
 {
     (void)rwork;  /* unused in this implementation */
 
-    double anorm, bnorm, xnorm, eps;
+    f64 anorm, bnorm, xnorm, eps;
 
     /* Quick exit if n = 0 or nrhs = 0 */
     if (n <= 0 || nrhs == 0) {
@@ -59,7 +59,7 @@ void dpot06(const char* uplo, const int n, const int nrhs,
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         /* Upper triangular stored */
         for (int i = 0; i < n; i++) {
-            double row_sum = 0.0;
+            f64 row_sum = 0.0;
             /* Elements in column j >= i are stored (upper triangle) */
             for (int j = 0; j < i; j++) {
                 /* A[j,i] is in upper part but corresponds to A[i,j] */
@@ -74,7 +74,7 @@ void dpot06(const char* uplo, const int n, const int nrhs,
     } else {
         /* Lower triangular stored */
         for (int i = 0; i < n; i++) {
-            double row_sum = 0.0;
+            f64 row_sum = 0.0;
             /* Elements in column j <= i are stored (lower triangle) */
             for (int j = 0; j <= i; j++) {
                 /* A[i,j] is stored */
@@ -116,7 +116,7 @@ void dpot06(const char* uplo, const int n, const int nrhs,
         if (xnorm <= 0.0) {
             *resid = 1.0 / eps;
         } else {
-            double ratio = ((bnorm / anorm) / xnorm) / eps;
+            f64 ratio = ((bnorm / anorm) / xnorm) / eps;
             if (ratio > *resid) *resid = ratio;
         }
     }

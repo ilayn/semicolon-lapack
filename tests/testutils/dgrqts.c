@@ -8,26 +8,26 @@
 #include <cblas.h>
 #include "verify.h"
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dggrqf(const int m, const int p, const int n,
-                   double* A, const int lda, double* taua,
-                   double* B, const int ldb, double* taub,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* taua,
+                   f64* B, const int ldb, f64* taub,
+                   f64* work, const int lwork, int* info);
 extern void dorgqr(const int m, const int n, const int k,
-                   double* A, const int lda, const double* tau,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, const f64* tau,
+                   f64* work, const int lwork, int* info);
 extern void dorgrq(const int m, const int n, const int k,
-                   double* A, const int lda, const double* tau,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, const f64* tau,
+                   f64* work, const int lwork, int* info);
 
 /**
  * DGRQTS tests DGGRQF, which computes the GRQ factorization of an
@@ -58,29 +58,29 @@ void dgrqts(
     const int m,
     const int p,
     const int n,
-    const double* A,
-    double* AF,
-    double* Q,
-    double* R,
+    const f64* A,
+    f64* AF,
+    f64* Q,
+    f64* R,
     const int lda,
-    double* taua,
-    const double* B,
-    double* BF,
-    double* Z,
-    double* T,
-    double* BWK,
+    f64* taua,
+    const f64* B,
+    f64* BF,
+    f64* Z,
+    f64* T,
+    f64* BWK,
     const int ldb,
-    double* taub,
-    double* work,
+    f64* taub,
+    f64* work,
     const int lwork,
-    double* rwork,
-    double* result)
+    f64* rwork,
+    f64* result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double ROGUE = -1.0e+10;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ROGUE = -1.0e+10;
     int info;
-    double anorm, bnorm, resid, ulp, unfl;
+    f64 anorm, bnorm, resid, ulp, unfl;
     int mn, mp;
 
     ulp = dlamch("P");
@@ -150,7 +150,7 @@ void dgrqts(
     if (m > mn) mn = m;
     if (n > mn) mn = n;
     if (anorm > ZERO) {
-        result[0] = ((resid / (double)mn) / anorm) / ulp;
+        result[0] = ((resid / (f64)mn) / anorm) / ulp;
     } else {
         result[0] = ZERO;
     }
@@ -169,7 +169,7 @@ void dgrqts(
     if (p > mp) mp = p;
     if (m > mp) mp = m;
     if (bnorm > ZERO) {
-        result[1] = ((resid / (double)mp) / bnorm) / ulp;
+        result[1] = ((resid / (f64)mp) / bnorm) / ulp;
     } else {
         result[1] = ZERO;
     }
@@ -183,7 +183,7 @@ void dgrqts(
     /* Compute norm( I - Q*Q' ) / ( N * ULP ) . */
 
     resid = dlansy("1", "U", n, R, lda, rwork);
-    result[2] = (resid / (double)(n > 1 ? n : 1)) / ulp;
+    result[2] = (resid / (f64)(n > 1 ? n : 1)) / ulp;
 
     /* Compute I - Z'*Z */
 
@@ -194,5 +194,5 @@ void dgrqts(
     /* Compute norm( I - Z'*Z ) / ( P*ULP ) . */
 
     resid = dlansy("1", "U", p, T, ldb, rwork);
-    result[3] = (resid / (double)(p > 1 ? p : 1)) / ulp;
+    result[3] = (resid / (f64)(p > 1 ? p : 1)) / ulp;
 }

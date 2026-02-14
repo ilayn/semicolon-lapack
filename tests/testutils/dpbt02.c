@@ -40,21 +40,21 @@
  *                        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
 void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
-            const double* A, const int lda,
-            const double* X, const int ldx,
-            double* B, const int ldb,
-            double* rwork, double* resid)
+            const f64* A, const int lda,
+            const f64* X, const int ldx,
+            f64* B, const int ldb,
+            f64* rwork, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     *resid = ZERO;
     if (n <= 0 || nrhs <= 0) {
         return;
     }
 
-    double eps = dlamch("Epsilon");
-    double anorm = dlansb("1", uplo, n, kd, A, lda, rwork);
+    f64 eps = dlamch("Epsilon");
+    f64 anorm = dlansb("1", uplo, n, kd, A, lda, rwork);
     if (anorm <= ZERO) {
         *resid = ONE / eps;
         return;
@@ -69,12 +69,12 @@ void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
 
     *resid = ZERO;
     for (int j = 0; j < nrhs; j++) {
-        double bnorm = cblas_dasum(n, &B[j * ldb], 1);
-        double xnorm = cblas_dasum(n, &X[j * ldx], 1);
+        f64 bnorm = cblas_dasum(n, &B[j * ldb], 1);
+        f64 xnorm = cblas_dasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            double tmp = ((bnorm / anorm) / xnorm) / eps;
+            f64 tmp = ((bnorm / anorm) / xnorm) / eps;
             if (tmp > *resid) {
                 *resid = tmp;
             }

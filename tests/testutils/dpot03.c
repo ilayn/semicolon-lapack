@@ -8,13 +8,13 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DPOT03 computes the residual for a symmetric matrix times its inverse:
@@ -45,18 +45,18 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 void dpot03(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict AINV,
+    f64* const restrict AINV,
     const int ldainv,
-    double* const restrict work,
+    f64* const restrict work,
     const int ldwork,
-    double* const restrict rwork,
-    double* rcond,
-    double* resid)
+    f64* const restrict rwork,
+    f64* rcond,
+    f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // Quick exit if n = 0
     if (n <= 0) {
@@ -66,9 +66,9 @@ void dpot03(
     }
 
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0
-    double eps = dlamch("E");
-    double anorm = dlansy("1", uplo, n, A, lda, rwork);
-    double ainvnm = dlansy("1", uplo, n, AINV, ldainv, rwork);
+    f64 eps = dlamch("E");
+    f64 anorm = dlansy("1", uplo, n, A, lda, rwork);
+    f64 ainvnm = dlansy("1", uplo, n, AINV, ldainv, rwork);
     if (anorm <= ZERO || ainvnm <= ZERO) {
         *rcond = ZERO;
         *resid = ONE / eps;
@@ -103,5 +103,5 @@ void dpot03(
 
     // Compute norm(I - A*AINV) / (N * norm(A) * norm(AINV) * EPS)
     *resid = dlange("1", n, n, work, ldwork, rwork);
-    *resid = ((*resid * (*rcond)) / eps) / (double)n;
+    *resid = ((*resid * (*rcond)) / eps) / (f64)n;
 }

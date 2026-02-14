@@ -20,23 +20,23 @@
 
 /* Factorization routines */
 extern void dgeqrf(const int m, const int n,
-                   double * const restrict A, const int lda,
-                   double * const restrict tau,
-                   double * const restrict work, const int lwork, int *info);
+                   f64 * const restrict A, const int lda,
+                   f64 * const restrict tau,
+                   f64 * const restrict work, const int lwork, int *info);
 extern void dgelqf(const int m, const int n,
-                   double * const restrict A, const int lda,
-                   double * const restrict tau,
-                   double * const restrict work, const int lwork, int *info);
+                   f64 * const restrict A, const int lda,
+                   f64 * const restrict tau,
+                   f64 * const restrict work, const int lwork, int *info);
 extern void dlacpy(const char *uplo, const int m, const int n,
-                   const double * const restrict A, const int lda,
-                   double * const restrict B, const int ldb);
+                   const f64 * const restrict A, const int lda,
+                   f64 * const restrict B, const int ldb);
 
 typedef struct {
     int m, n;
     int lda;
-    double *A, *AF, *Q, *R;
-    double *tau, *work, *rwork;
-    double *d, *genwork;
+    f64 *A, *AF, *Q, *R;
+    f64 *tau, *work, *rwork;
+    f64 *d, *genwork;
     int lwork;
     uint64_t seed;
 } org_fixture_t;
@@ -57,15 +57,15 @@ static int org_setup(void **state, int m, int n)
     int minmn = m < n ? m : n;
     fix->lwork = maxmn * 64;
 
-    fix->A = calloc(fix->lda * maxmn, sizeof(double));
-    fix->AF = calloc(fix->lda * maxmn, sizeof(double));
-    fix->Q = calloc(fix->lda * maxmn, sizeof(double));
-    fix->R = calloc(fix->lda * maxmn, sizeof(double));
-    fix->tau = calloc(minmn, sizeof(double));
-    fix->work = calloc(fix->lwork, sizeof(double));
-    fix->rwork = calloc(maxmn, sizeof(double));
-    fix->d = calloc(minmn, sizeof(double));
-    fix->genwork = calloc(3 * maxmn, sizeof(double));
+    fix->A = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->AF = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->Q = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->R = calloc(fix->lda * maxmn, sizeof(f64));
+    fix->tau = calloc(minmn, sizeof(f64));
+    fix->work = calloc(fix->lwork, sizeof(f64));
+    fix->rwork = calloc(maxmn, sizeof(f64));
+    fix->d = calloc(minmn, sizeof(f64));
+    fix->genwork = calloc(3 * maxmn, sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -109,14 +109,14 @@ static void test_dorgqr(void **state)
     org_fixture_t *fix = *state;
     int m = fix->m, n = fix->n;
     int minmn = m < n ? m : n;
-    double result[2];
+    f64 result[2];
     int info;
 
     for (int imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         char type, dist;
         int kl, ku, mode;
-        double anorm, cndnum;
+        f64 anorm, cndnum;
 
         dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
         uint64_t rng_state[4];
@@ -147,14 +147,14 @@ static void test_dorglq(void **state)
     org_fixture_t *fix = *state;
     int m = fix->m, n = fix->n;
     int minmn = m < n ? m : n;
-    double result[2];
+    f64 result[2];
     int info;
 
     for (int imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         char type, dist;
         int kl, ku, mode;
-        double anorm, cndnum;
+        f64 anorm, cndnum;
 
         dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
         uint64_t rng_state[4];

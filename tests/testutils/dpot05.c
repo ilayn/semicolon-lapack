@@ -9,7 +9,7 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DPOT05 tests the error bounds from iterative refinement for the
@@ -56,20 +56,20 @@ void dpot05(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    const double* const restrict X,
+    const f64* const restrict X,
     const int ldx,
-    const double* const restrict XACT,
+    const f64* const restrict XACT,
     const int ldxact,
-    const double* const restrict ferr,
-    const double* const restrict berr,
-    double* const restrict reslts)
+    const f64* const restrict ferr,
+    const f64* const restrict berr,
+    f64* const restrict reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // Quick exit if n = 0 or nrhs = 0
     if (n <= 0 || nrhs <= 0) {
@@ -78,24 +78,24 @@ void dpot05(
         return;
     }
 
-    double eps = dlamch("E");
-    double unfl = dlamch("S");
-    double ovfl = ONE / unfl;
+    f64 eps = dlamch("E");
+    f64 unfl = dlamch("S");
+    f64 ovfl = ONE / unfl;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     // Test 1: Compute the maximum of
     //   norm(X - XACT) / ( norm(X) * FERR )
     // over all the vectors X and XACT using the infinity-norm.
-    double errbnd = ZERO;
+    f64 errbnd = ZERO;
     for (int j = 0; j < nrhs; j++) {
         // Find infinity norm of X(:,j)
         int imax = cblas_idamax(n, &X[j * ldx], 1);
-        double xnorm = fabs(X[imax + j * ldx]);
+        f64 xnorm = fabs(X[imax + j * ldx]);
         if (xnorm < unfl) xnorm = unfl;
 
-        double diff = ZERO;
+        f64 diff = ZERO;
         for (int i = 0; i < n; i++) {
-            double d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) diff = d;
         }
 
@@ -109,7 +109,7 @@ void dpot05(
         }
 
         if (diff / xnorm <= ferr[j]) {
-            double tmp = (diff / xnorm) / ferr[j];
+            f64 tmp = (diff / xnorm) / ferr[j];
             if (tmp > errbnd) errbnd = tmp;
         } else {
             errbnd = ONE / eps;
@@ -120,9 +120,9 @@ void dpot05(
     // Test 2: Compute the maximum of BERR / ( (n+1)*EPS + (*) ), where
     // (*) = (n+1)*UNFL / (min_i (abs(A)*abs(X) + abs(b))_i )
     for (int k = 0; k < nrhs; k++) {
-        double axbi = ZERO;
+        f64 axbi = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = fabs(B[i + k * ldb]);
+            f64 tmp = fabs(B[i + k * ldb]);
             if (upper) {
                 // Upper: A(j,i) for j<=i stored as A(j,i), A(i,j) for j>i
                 for (int j = 0; j <= i; j++) {
@@ -146,9 +146,9 @@ void dpot05(
                 if (tmp < axbi) axbi = tmp;
             }
         }
-        double np1 = (double)(n + 1);
-        double denom = np1 * eps + np1 * unfl / (axbi > np1 * unfl ? axbi : np1 * unfl);
-        double tmp2 = berr[k] / denom;
+        f64 np1 = (f64)(n + 1);
+        f64 denom = np1 * eps + np1 * unfl / (axbi > np1 * unfl ? axbi : np1 * unfl);
+        f64 tmp2 = berr[k] / denom;
         if (k == 0) {
             reslts[1] = tmp2;
         } else {

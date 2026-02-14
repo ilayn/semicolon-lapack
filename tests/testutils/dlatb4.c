@@ -9,11 +9,11 @@
 #include <string.h>
 
 // Forward declaration
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 // Static variables to cache machine-dependent values
 static int first = 1;
-static double eps, small, large, badc1, badc2;
+static f64 eps, small, large, badc1, badc2;
 
 /**
  * DLATB4 sets parameters for the matrix generator based on the type of
@@ -40,15 +40,15 @@ void dlatb4(
     char *type,
     int *kl,
     int *ku,
-    double *anorm,
+    f64 *anorm,
     int *mode,
-    double *cndnum,
+    f64 *cndnum,
     char *dist)
 {
-    const double SHRINK = 0.25;
-    const double TENTH = 0.1;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 SHRINK = 0.25;
+    const f64 TENTH = 0.1;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     char c2[3];
 

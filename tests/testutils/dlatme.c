@@ -15,12 +15,12 @@
 /* Forward declarations for library functions */
 extern void xerbla(const char* srname, const int info);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern void dlarfg(const int n, double* alpha, double* x, const int incx,
-                   double* tau);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern void dlarfg(const int n, f64* alpha, f64* x, const int incx,
+                   f64* tau);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /**
  * DLATME generates random non-symmetric square matrices with
@@ -123,21 +123,21 @@ extern double dlange(const char* norm, const int m, const int n,
  *     < 0: illegal argument
  *     > 0: error in called routine
  */
-void dlatme(const int n, const char* dist, double* D,
-            const int mode, const double cond, const double dmax,
+void dlatme(const int n, const char* dist, f64* D,
+            const int mode, const f64 cond, const f64 dmax,
             const char* ei, const char* rsign, const char* upper,
-            const char* sim, double* DS, const int modes, const double conds,
-            const int kl, const int ku, const double anorm,
-            double* A, const int lda, double* work, int* info,
+            const char* sim, f64* DS, const int modes, const f64 conds,
+            const int kl, const int ku, const f64 anorm,
+            f64* A, const int lda, f64* work, int* info,
             uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double HALF = 0.5;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
 
     int badei, bads, useei;
     int i, ic, icols, idist, iinfo, ir, irows, irsign, isim, iupper, j, jc, jcr, jr;
-    double alpha, tau, temp, xnorms;
+    f64 alpha, tau, temp, xnorms;
 
     *info = 0;
 

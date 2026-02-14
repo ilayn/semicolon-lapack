@@ -11,36 +11,36 @@
 #include "verify.h"
 
 /* External declarations for LAPACK routines */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda,
-                   double* B, const int ldb);
-extern void dgeqr(const int m, const int n, double* A, const int lda,
-                  double* T, const int tsize, double* work, const int lwork,
+                   const f64* A, const int lda,
+                   f64* B, const int ldb);
+extern void dgeqr(const int m, const int n, f64* A, const int lda,
+                  f64* T, const int tsize, f64* work, const int lwork,
                   int* info);
-extern void dgelq(const int m, const int n, double* A, const int lda,
-                  double* T, const int tsize, double* work, const int lwork,
+extern void dgelq(const int m, const int n, f64* A, const int lda,
+                  f64* T, const int tsize, f64* work, const int lwork,
                   int* info);
 extern void dgemqr(const char* side, const char* trans,
                    const int m, const int n, const int k,
-                   const double* A, const int lda,
-                   const double* T, const int tsize,
-                   double* C, const int ldc,
-                   double* work, const int lwork, int* info);
+                   const f64* A, const int lda,
+                   const f64* T, const int tsize,
+                   f64* C, const int ldc,
+                   f64* work, const int lwork, int* info);
 extern void dgemlq(const char* side, const char* trans,
                    const int m, const int n, const int k,
-                   const double* A, const int lda,
-                   const double* T, const int tsize,
-                   double* C, const int ldc,
-                   double* work, const int lwork, int* info);
-extern void dlarnv(const int idist, int* iseed, const int n, double* x);
+                   const f64* A, const int lda,
+                   const f64* T, const int tsize,
+                   f64* C, const int ldc,
+                   f64* work, const int lwork, int* info);
+extern void dlarnv(const int idist, int* iseed, const int n, f64* x);
 
 /**
  * DTSQR01 tests DGEQR, DGELQ, DGEMLQ and DGEMQR.
@@ -60,30 +60,30 @@ extern void dlarnv(const int idist, int* iseed, const int n, double* x);
  *                        RESULT[5] = | C Q^H - C Q^H |
  */
 void dtsqr01(const char* tssw, const int m, const int n, const int mb,
-             const int nb, double* result)
+             const int nb, f64* result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int ts, testzeros;
     int info, j, k, l, lwork, tsize, mnb;
-    double anorm, eps, resid, cnorm, dnorm;
+    f64 anorm, eps, resid, cnorm, dnorm;
 
     int iseed[4] = {1988, 1989, 1990, 1991};
-    double tquery[5], workquery[1];
+    f64 tquery[5], workquery[1];
 
-    double* A = NULL;
-    double* AF = NULL;
-    double* Q = NULL;
-    double* R = NULL;
-    double* rwork = NULL;
-    double* work = NULL;
-    double* T = NULL;
-    double* C = NULL;
-    double* CF = NULL;
-    double* D = NULL;
-    double* DF = NULL;
-    double* LQ = NULL;
+    f64* A = NULL;
+    f64* AF = NULL;
+    f64* Q = NULL;
+    f64* R = NULL;
+    f64* rwork = NULL;
+    f64* work = NULL;
+    f64* T = NULL;
+    f64* C = NULL;
+    f64* CF = NULL;
+    f64* D = NULL;
+    f64* DF = NULL;
+    f64* LQ = NULL;
 
     /* TEST TALL SKINNY OR SHORT WIDE */
     ts = (tssw[0] == 'T' || tssw[0] == 't') && (tssw[1] == 'S' || tssw[1] == 's');
@@ -100,16 +100,16 @@ void dtsqr01(const char* tssw, const int m, const int n, const int mb,
     lwork = (3 > l ? 3 : l) * mnb;
 
     /* Dynamically allocate local arrays */
-    A = (double*)malloc(m * n * sizeof(double));
-    AF = (double*)malloc(m * n * sizeof(double));
-    Q = (double*)malloc(l * l * sizeof(double));
-    R = (double*)malloc(m * l * sizeof(double));
-    rwork = (double*)malloc(l * sizeof(double));
-    C = (double*)malloc(m * n * sizeof(double));
-    CF = (double*)malloc(m * n * sizeof(double));
-    D = (double*)malloc(n * m * sizeof(double));
-    DF = (double*)malloc(n * m * sizeof(double));
-    LQ = (double*)malloc(l * n * sizeof(double));
+    A = (f64*)malloc(m * n * sizeof(f64));
+    AF = (f64*)malloc(m * n * sizeof(f64));
+    Q = (f64*)malloc(l * l * sizeof(f64));
+    R = (f64*)malloc(m * l * sizeof(f64));
+    rwork = (f64*)malloc(l * sizeof(f64));
+    C = (f64*)malloc(m * n * sizeof(f64));
+    CF = (f64*)malloc(m * n * sizeof(f64));
+    D = (f64*)malloc(n * m * sizeof(f64));
+    DF = (f64*)malloc(n * m * sizeof(f64));
+    LQ = (f64*)malloc(l * n * sizeof(f64));
 
     /* Put random numbers into A and copy to AF */
     for (j = 0; j < n; j++) {
@@ -140,8 +140,8 @@ void dtsqr01(const char* tssw, const int m, const int n, const int mb,
         dgemqr("R", "T", n, m, k, AF, m, tquery, tsize, DF, n, workquery, -1, &info);
         if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
 
-        T = (double*)malloc(tsize * sizeof(double));
-        work = (double*)malloc(lwork * sizeof(double));
+        T = (f64*)malloc(tsize * sizeof(f64));
+        work = (f64*)malloc(lwork * sizeof(f64));
 
         dgeqr(m, n, AF, m, T, tsize, work, lwork, &info);
 
@@ -258,8 +258,8 @@ void dtsqr01(const char* tssw, const int m, const int n, const int mb,
         dgemlq("R", "T", m, n, k, AF, m, tquery, tsize, CF, m, workquery, -1, &info);
         if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
 
-        T = (double*)malloc(tsize * sizeof(double));
-        work = (double*)malloc(lwork * sizeof(double));
+        T = (f64*)malloc(tsize * sizeof(f64));
+        work = (f64*)malloc(lwork * sizeof(f64));
 
         dgelq(m, n, AF, m, T, tsize, work, lwork, &info);
 

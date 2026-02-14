@@ -60,18 +60,18 @@ void dlagge(
     const int n,
     const int kl,
     const int ku,
-    const double* d,
-    double* A,
+    const f64* d,
+    f64* A,
     const int lda,
-    double* work,
+    f64* work,
     int* info,
     uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double tau, wa, wb, wn;
+    f64 tau, wa, wb, wn;
     int minmn = (m < n) ? m : n;
 
     /* Test the input arguments */

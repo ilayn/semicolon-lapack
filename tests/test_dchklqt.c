@@ -34,7 +34,7 @@ static const int NBVAL[] = {1, 2, 3, 5, 10, 16};
 #define NTESTS  6
 #define THRESH  30.0
 
-extern void dlqt04(const int m, const int n, const int nb, double* restrict result);
+extern void dlqt04(const int m, const int n, const int nb, f64* restrict result);
 
 typedef struct {
     int m;
@@ -45,7 +45,7 @@ typedef struct {
 
 static void run_dchklqt_single(int m, int n, int nb)
 {
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
     int minmn = (m < n) ? m : n;
 

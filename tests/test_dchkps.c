@@ -44,32 +44,32 @@ static const char UPLOS[] = {'U', 'L'};
 #define NMAX    50  /* Maximum matrix dimension */
 
 /* Routine under test */
-extern void dpstrf(const char* uplo, const int n, double* A, const int lda,
-                   int* piv, int* rank, const double tol, double* work,
+extern void dpstrf(const char* uplo, const int n, f64* A, const int lda,
+                   int* piv, int* rank, const f64 tol, f64* work,
                    int* info);
 
 /* Verification routine */
 extern void dpst01(const char* uplo, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict AFAC, const int ldafac,
-                   double* const restrict PERM, const int ldperm,
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict AFAC, const int ldafac,
+                   f64* const restrict PERM, const int ldperm,
                    const int* const restrict piv,
-                   double* const restrict rwork, double* resid, const int rank);
+                   f64* const restrict rwork, f64* resid, const int rank);
 
 /* Matrix generation */
 extern void dlatb5(const char* path, const int imat, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatmt(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode,
-                   const double cond, const double dmax, const int rank,
+                   const char* sym, f64* d, const int mode,
+                   const f64 cond, const f64 dmax, const int rank,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * Test parameters for a single test case.
@@ -87,12 +87,12 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AFAC;   /* Factored matrix (NMAX x NMAX) */
-    double* PERM;   /* Permuted reconstruction (NMAX x NMAX) */
-    double* WORK;   /* General workspace (2*NMAX for dpstrf, 3*NMAX total) */
-    double* RWORK;  /* Real workspace for dlansy in dpst01 */
-    double* D;      /* Singular values for dlatmt */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f64* PERM;   /* Permuted reconstruction (NMAX x NMAX) */
+    f64* WORK;   /* General workspace (2*NMAX for dpstrf, 3*NMAX total) */
+    f64* RWORK;  /* Real workspace for dlansy in dpst01 */
+    f64* D;      /* Singular values for dlatmt */
     int* PIV;       /* Pivot indices */
 } dchkps_workspace_t;
 
@@ -107,12 +107,12 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchkps_workspace_t));
     if (!g_workspace) return -1;
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->PERM = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->WORK = malloc(3 * NMAX * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->PERM = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->WORK = malloc(3 * NMAX * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->PIV = malloc(NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->PERM ||
@@ -155,10 +155,10 @@ static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int lda = (n > 1) ? n : 1;
-    double result;
+    f64 result;
     char ctx[128];
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat * 10 + irank));
@@ -168,7 +168,7 @@ static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
     xlaenv(1, nb);
 
     /* Compute expected rank from percentage */
-    int rank = (int)ceil((n * (double)RANKVAL[irank]) / 100.0);
+    int rank = (int)ceil((n * (f64)RANKVAL[irank]) / 100.0);
     if (rank < 1 && n > 0) rank = 1;
     if (rank > n) rank = n;
 
@@ -197,7 +197,7 @@ static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
     set_test_context(ctx);
 
     /* Compute pivoted Cholesky factorization with default tolerance */
-    double tol = -1.0;
+    f64 tol = -1.0;
     int comprank;
     dpstrf(uplo_str, n, ws->AFAC, lda, ws->PIV, &comprank, tol, ws->WORK, &info);
 
@@ -286,7 +286,7 @@ static void build_test_array(void)
                     continue;
                 }
 
-                int rank = (int)ceil((n * (double)RANKVAL[irank]) / 100.0);
+                int rank = (int)ceil((n * (f64)RANKVAL[irank]) / 100.0);
                 if (rank < 1 && n > 0) rank = 1;
                 if (rank > n) rank = n;
 

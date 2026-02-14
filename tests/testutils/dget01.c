@@ -9,11 +9,11 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
-extern void dlaswp(const int n, double * const restrict A, const int lda,
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
+extern void dlaswp(const int n, f64 * const restrict A, const int lda,
                    const int k1, const int k2,
                    const int * const restrict ipiv, const int incx);
 
@@ -43,19 +43,19 @@ extern void dlaswp(const int n, double * const restrict A, const int lda,
 void dget01(
     const int m,
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    double * const restrict AFAC,
+    f64 * const restrict AFAC,
     const int ldafac,
     const int * const restrict ipiv,
-    double * const restrict rwork,
-    double *resid)
+    f64 * const restrict rwork,
+    f64 *resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, k;
-    double anorm, eps, t;
+    f64 anorm, eps, t;
     int minmn;
 
     // Quick exit if m = 0 or n = 0
@@ -127,6 +127,6 @@ void dget01(
             *resid = ONE / eps;
         }
     } else {
-        *resid = ((*resid / (double)n) / anorm) / eps;
+        *resid = ((*resid / (f64)n) / anorm) / eps;
     }
 }

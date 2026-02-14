@@ -47,7 +47,7 @@
  *
  * @return The (isub,jsub) entry of the matrix.
  */
-double dlatm3(
+f64 dlatm3(
     const int m,
     const int n,
     const int i,
@@ -57,18 +57,18 @@ double dlatm3(
     const int kl,
     const int ku,
     const int idist,
-    const double* d,
+    const f64* d,
     const int igrade,
-    const double* dl,
-    const double* dr,
+    const f64* dl,
+    const f64* dr,
     const int ipvtng,
     const int* iwork,
-    const double sparse,
+    const f64 sparse,
     uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
-    double temp;
+    f64 temp;
 
     if (i < 1 || i > m || j < 1 || j > n) {
         *isub = i;

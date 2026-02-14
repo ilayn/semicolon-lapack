@@ -24,35 +24,35 @@
 /* Test fixture */
 typedef struct {
     int n;
-    double* A;       /* Original matrix */
-    double* Acopy;   /* Copy for verification */
-    double* VS;      /* Schur vectors */
-    double* wr;      /* Real eigenvalues */
-    double* wi;      /* Imaginary eigenvalues */
-    double* work;    /* Workspace */
+    f64* A;       /* Original matrix */
+    f64* Acopy;   /* Copy for verification */
+    f64* VS;      /* Schur vectors */
+    f64* wr;      /* Real eigenvalues */
+    f64* wi;      /* Imaginary eigenvalues */
+    f64* work;    /* Workspace */
     int* bwork;      /* Boolean work for SELECT */
     uint64_t seed;
     uint64_t rng_state[4];
 } dgees_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-typedef int (*dselect2_t)(const double* wr, const double* wi);
+typedef int (*dselect2_t)(const f64* wr, const f64* wi);
 
 extern void dgees(const char* jobvs, const char* sort, dselect2_t select,
-                  const int n, double* A, const int lda, int* sdim,
-                  double* wr, double* wi, double* VS, const int ldvs,
-                  double* work, const int lwork, int* bwork, int* info);
+                  const int n, f64* A, const int lda, int* sdim,
+                  f64* wr, f64* wi, f64* VS, const int ldvs,
+                  f64* work, const int lwork, int* bwork, int* info);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /* Selection function: select eigenvalues with negative real part */
-static int select_negative_real(const double* wr, const double* wi)
+static int select_negative_real(const f64* wr, const f64* wi)
 {
     (void)wi;  /* unused */
     return (*wr < 0.0) ? 1 : 0;
@@ -68,16 +68,16 @@ static int setup_N(void** state, int n) {
     fix->seed = 0xCAFEBABEULL;
 
     /* Allocate matrices */
-    fix->A = malloc(n * n * sizeof(double));
-    fix->Acopy = malloc(n * n * sizeof(double));
-    fix->VS = malloc(n * n * sizeof(double));
-    fix->wr = malloc(n * sizeof(double));
-    fix->wi = malloc(n * sizeof(double));
+    fix->A = malloc(n * n * sizeof(f64));
+    fix->Acopy = malloc(n * n * sizeof(f64));
+    fix->VS = malloc(n * n * sizeof(f64));
+    fix->wr = malloc(n * sizeof(f64));
+    fix->wi = malloc(n * sizeof(f64));
     fix->bwork = malloc(n * sizeof(int));
 
     /* Workspace: generous allocation */
     int lwork = 10 * n * n;
-    fix->work = malloc(lwork * sizeof(double));
+    fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->Acopy || !fix->VS ||
         !fix->wr || !fix->wi || !fix->bwork || !fix->work) {
@@ -116,7 +116,7 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, double* A, int lda, double anorm,
+static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
                                    uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
@@ -134,7 +134,7 @@ static void test_schur_with_vectors(dgees_fixture_t* fix)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double result[2];
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -165,7 +165,7 @@ static void test_schur_with_vectors(dgees_fixture_t* fix)
     assert_residual_ok(result[1]);  /* VS orthogonality */
 
     /* Verify that T is quasi-triangular (2x2 blocks on diagonal for complex eigenvalues) */
-    double ulp = dlamch("P");
+    f64 ulp = dlamch("P");
     for (int j = 0; j < n - 1; j++) {
         /* Elements below subdiagonal should be zero */
         for (int i = j + 2; i < n; i++) {
@@ -269,14 +269,14 @@ static void test_workspace_query(void** state)
     dgees_fixture_t* fix = *state;
     int n = fix->n;
     int sdim, info;
-    double work_query;
+    f64 work_query;
 
     /* Query optimal workspace */
     dgees("V", "S", select_negative_real, n, fix->A, n, &sdim,
           fix->wr, fix->wi, fix->VS, n, &work_query, -1, fix->bwork, &info);
 
     assert_info_success(info);
-    assert_true(work_query >= (double)(3 * n));
+    assert_true(work_query >= (f64)(3 * n));
 }
 
 /**
@@ -288,12 +288,12 @@ static void test_symmetric_matrix(void** state)
     int n = fix->n;
     int lda = n;
     int sdim, info;
-    double result[2];
+    f64 result[2];
 
     /* Generate symmetric random matrix */
     for (int j = 0; j < n; j++) {
         for (int i = j; i < n; i++) {
-            double val = rng_uniform_symmetric(fix->rng_state);
+            f64 val = rng_uniform_symmetric(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
         }
@@ -315,7 +315,7 @@ static void test_symmetric_matrix(void** state)
     }
 
     /* Schur form should be diagonal (since all eigenvalues are real) */
-    double ulp = dlamch("P");
+    f64 ulp = dlamch("P");
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
             if (i != j) {
@@ -343,8 +343,8 @@ static void test_identity_matrix(void** state)
     int lda = n;
     int sdim, info;
 
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Create identity matrix */
     dlaset("F", n, n, ZERO, ONE, fix->A, lda);
@@ -364,7 +364,7 @@ static void test_identity_matrix(void** state)
 
     /* VS should be identity (or permutation of identity) */
     /* At minimum, it should be orthogonal */
-    double resid;
+    f64 resid;
     dort01("C", n, n, fix->VS, lda, fix->work, n * n, &resid);
     assert_residual_ok(resid);
 }

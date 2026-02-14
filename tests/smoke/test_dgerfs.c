@@ -20,24 +20,24 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dgetrf(const int m, const int n, double * const restrict A,
+extern void dgetrf(const int m, const int n, f64 * const restrict A,
                    const int lda, int * const restrict ipiv, int *info);
 extern void dgetrs(const char *trans, const int n, const int nrhs,
-                   const double * const restrict A, const int lda,
-                   const int * const restrict ipiv, double * const restrict B,
+                   const f64 * const restrict A, const int lda,
+                   const int * const restrict ipiv, f64 * const restrict B,
                    const int ldb, int *info);
 extern void dgerfs(const char *trans, const int n, const int nrhs,
-                   const double * const restrict A, const int lda,
-                   const double * const restrict AF, const int ldaf,
+                   const f64 * const restrict A, const int lda,
+                   const f64 * const restrict AF, const int ldaf,
                    const int * const restrict ipiv,
-                   const double * const restrict B, const int ldb,
-                   double * const restrict X, const int ldx,
-                   double * const restrict ferr, double * const restrict berr,
-                   double * const restrict work, int * const restrict iwork,
+                   const f64 * const restrict B, const int ldb,
+                   f64 * const restrict X, const int ldx,
+                   f64 * const restrict ferr, f64 * const restrict berr,
+                   f64 * const restrict work, int * const restrict iwork,
                    int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
+extern f64 dlamch(const char *cmach);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -46,18 +46,18 @@ extern double dlamch(const char *cmach);
 typedef struct {
     int n, nrhs;
     int lda, ldb;
-    double *A;       /* Original matrix */
-    double *AF;      /* Factored matrix */
-    double *B;       /* Right-hand side */
-    double *B_orig;  /* Original B for verification */
-    double *X;       /* Computed solution */
-    double *XACT;    /* Known exact solution */
-    double *d;       /* Singular values for dlatms */
-    double *work;    /* Workspace for dgerfs / dlatms */
-    double *rwork;   /* Workspace for dget02 */
-    double *ferr;    /* Forward error bounds */
-    double *berr;    /* Backward error bounds */
-    double *reslts;  /* Results from dget07 */
+    f64 *A;       /* Original matrix */
+    f64 *AF;      /* Factored matrix */
+    f64 *B;       /* Right-hand side */
+    f64 *B_orig;  /* Original B for verification */
+    f64 *X;       /* Computed solution */
+    f64 *XACT;    /* Known exact solution */
+    f64 *d;       /* Singular values for dlatms */
+    f64 *work;    /* Workspace for dgerfs / dlatms */
+    f64 *rwork;   /* Workspace for dget02 */
+    f64 *ferr;    /* Forward error bounds */
+    f64 *berr;    /* Backward error bounds */
+    f64 *reslts;  /* Results from dget07 */
     int *ipiv;       /* Pivot indices */
     int *iwork;      /* Integer workspace for dgerfs */
     uint64_t seed;   /* RNG seed */
@@ -81,18 +81,18 @@ static int dgerfs_setup(void **state, int n, int nrhs)
     fix->ldb = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AF = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->X = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->XACT = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
-    fix->ferr = malloc(nrhs * sizeof(double));
-    fix->berr = malloc(nrhs * sizeof(double));
-    fix->reslts = malloc(2 * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AF = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->X = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->XACT = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
+    fix->ferr = malloc(nrhs * sizeof(f64));
+    fix->berr = malloc(nrhs * sizeof(f64));
+    fix->reslts = malloc(2 * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
     fix->iwork = malloc(n * sizeof(int));
 
@@ -154,11 +154,11 @@ static int setup_20(void **state) { return dgerfs_setup(state, 20, 1); }
  *
  * Populates fix->reslts with dget07 output and returns the dget02 residual.
  */
-static double run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
+static f64 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
 
     /* Get matrix parameters */
@@ -174,7 +174,7 @@ static double run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans
     /* Generate known exact solution XACT */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->ldb] = 1.0 + (double)i / fix->n + (double)j / fix->nrhs;
+            fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n + (f64)j / fix->nrhs;
         }
     }
 
@@ -183,15 +183,15 @@ static double run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans
     cblas_dgemm(CblasColMajor, cblas_trans, CblasNoTrans,
                 fix->n, fix->nrhs, fix->n, 1.0, fix->A, fix->lda,
                 fix->XACT, fix->ldb, 0.0, fix->B, fix->ldb);
-    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
 
     /* Factor A = P*L*U */
-    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(f64));
     dgetrf(fix->n, fix->n, fix->AF, fix->lda, fix->ipiv, &info);
     assert_info_success(info);
 
     /* Solve op(A) * X = B using factored AF */
-    memcpy(fix->X, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->X, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
     dgetrs(trans, fix->n, fix->nrhs, fix->AF, fix->lda, fix->ipiv,
            fix->X, fix->ldb, &info);
     assert_info_success(info);
@@ -203,11 +203,11 @@ static double run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans
     assert_info_success(info);
 
     /* Compute solution residual using dget02 */
-    double *B_copy = malloc(fix->ldb * fix->nrhs * sizeof(double));
+    f64 *B_copy = malloc(fix->ldb * fix->nrhs * sizeof(f64));
     assert_non_null(B_copy);
-    memcpy(B_copy, fix->B_orig, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(B_copy, fix->B_orig, fix->ldb * fix->nrhs * sizeof(f64));
 
-    double resid;
+    f64 resid;
     dget02(trans, fix->n, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->X, fix->ldb, B_copy, fix->ldb, fix->rwork, &resid);
     free(B_copy);
@@ -229,7 +229,7 @@ static void test_dgerfs_wellcond_notrans(void **state)
     dgerfs_fixture_t *fix = *state;
     fix->seed = g_seed++;
 
-    double resid = run_dgerfs_test(fix, 4, "N");
+    f64 resid = run_dgerfs_test(fix, 4, "N");
     assert_residual_ok(resid);
 
     /* FERR check for well-conditioned */
@@ -246,7 +246,7 @@ static void test_dgerfs_wellcond_trans(void **state)
     dgerfs_fixture_t *fix = *state;
     fix->seed = g_seed++;
 
-    double resid = run_dgerfs_test(fix, 4, "T");
+    f64 resid = run_dgerfs_test(fix, 4, "T");
     assert_residual_ok(resid);
 
     /* FERR check for well-conditioned */
@@ -270,7 +270,7 @@ static void test_dgerfs_illcond(void **state)
 
     /* No transpose */
     fix->seed = g_seed++;
-    double resid = run_dgerfs_test(fix, 8, "N");
+    f64 resid = run_dgerfs_test(fix, 8, "N");
     assert_residual_ok(resid);
     assert_residual_ok(fix->reslts[1]);
 
@@ -302,17 +302,17 @@ static void test_simple(void **state)
     int nrhs = 1;
 
     /* System: A * x = b where solution is x = [1, 1, 1]' */
-    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
-    double AF[9];
-    memcpy(AF, A, 9 * sizeof(double));
+    f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
+    f64 AF[9];
+    memcpy(AF, A, 9 * sizeof(f64));
 
-    double B[3] = {4, 10, 24};
-    double B_orig[3];
-    memcpy(B_orig, B, 3 * sizeof(double));
+    f64 B[3] = {4, 10, 24};
+    f64 B_orig[3];
+    memcpy(B_orig, B, 3 * sizeof(f64));
 
-    double X[3];
-    double ferr[1], berr[1];
-    double work[9];
+    f64 X[3];
+    f64 ferr[1], berr[1];
+    f64 work[9];
     int iwork[3];
     int ipiv[3];
     int info;
@@ -322,7 +322,7 @@ static void test_simple(void **state)
     assert_info_success(info);
 
     /* Initial solve */
-    memcpy(X, B, 3 * sizeof(double));
+    memcpy(X, B, 3 * sizeof(f64));
     dgetrs("N", n, nrhs, AF, n, ipiv, X, n, &info);
     assert_info_success(info);
 
@@ -331,7 +331,7 @@ static void test_simple(void **state)
            ferr, berr, work, iwork, &info);
     assert_info_success(info);
 
-    double tol = 1e-10;
+    f64 tol = 1e-10;
     assert_true(fabs(X[0] - 1.0) < tol);
     assert_true(fabs(X[1] - 1.0) < tol);
     assert_true(fabs(X[2] - 1.0) < tol);
@@ -348,22 +348,22 @@ static void test_transpose(void **state)
     int nrhs = 1;
 
     /* System: A' * x = b */
-    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
-    double AF[9];
-    memcpy(AF, A, 9 * sizeof(double));
+    f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
+    f64 AF[9];
+    memcpy(AF, A, 9 * sizeof(f64));
 
     /* Known solution x = [1, 1, 1]' */
-    double xact[3] = {1.0, 1.0, 1.0};
+    f64 xact[3] = {1.0, 1.0, 1.0};
 
     /* Compute B = A' * xact */
-    double B[3];
+    f64 B[3];
     cblas_dgemv(CblasColMajor, CblasTrans, n, n, 1.0, A, n, xact, 1, 0.0, B, 1);
-    double B_orig[3];
-    memcpy(B_orig, B, 3 * sizeof(double));
+    f64 B_orig[3];
+    memcpy(B_orig, B, 3 * sizeof(f64));
 
-    double X[3];
-    double ferr[1], berr[1];
-    double work[9];
+    f64 X[3];
+    f64 ferr[1], berr[1];
+    f64 work[9];
     int iwork[3];
     int ipiv[3];
     int info;
@@ -373,7 +373,7 @@ static void test_transpose(void **state)
     assert_info_success(info);
 
     /* Initial solve with transpose */
-    memcpy(X, B, 3 * sizeof(double));
+    memcpy(X, B, 3 * sizeof(f64));
     dgetrs("T", n, nrhs, AF, n, ipiv, X, n, &info);
     assert_info_success(info);
 
@@ -382,7 +382,7 @@ static void test_transpose(void **state)
            ferr, berr, work, iwork, &info);
     assert_info_success(info);
 
-    double tol = 1e-10;
+    f64 tol = 1e-10;
     assert_true(fabs(X[0] - 1.0) < tol);
     assert_true(fabs(X[1] - 1.0) < tol);
     assert_true(fabs(X[2] - 1.0) < tol);
@@ -398,14 +398,14 @@ static void test_multiple_rhs(void **state)
     int n = 4;
     int nrhs = 3;
 
-    double *A = calloc(n * n, sizeof(double));
-    double *AF = malloc(n * n * sizeof(double));
-    double *B = malloc(n * nrhs * sizeof(double));
-    double *B_orig = malloc(n * nrhs * sizeof(double));
-    double *X = malloc(n * nrhs * sizeof(double));
-    double *ferr = malloc(nrhs * sizeof(double));
-    double *berr = malloc(nrhs * sizeof(double));
-    double *work = malloc(3 * n * sizeof(double));
+    f64 *A = calloc(n * n, sizeof(f64));
+    f64 *AF = malloc(n * n * sizeof(f64));
+    f64 *B = malloc(n * nrhs * sizeof(f64));
+    f64 *B_orig = malloc(n * nrhs * sizeof(f64));
+    f64 *X = malloc(n * nrhs * sizeof(f64));
+    f64 *ferr = malloc(nrhs * sizeof(f64));
+    f64 *berr = malloc(nrhs * sizeof(f64));
+    f64 *work = malloc(3 * n * sizeof(f64));
     int *iwork = malloc(n * sizeof(int));
     int *ipiv = malloc(n * sizeof(int));
     int info;
@@ -418,33 +418,33 @@ static void test_multiple_rhs(void **state)
 
     /* Well-conditioned diagonal dominant matrix */
     for (int i = 0; i < n; i++) {
-        A[i + i * n] = (double)(n + 1);
+        A[i + i * n] = (f64)(n + 1);
         for (int j = 0; j < n; j++) {
             if (i != j) {
                 A[i + j * n] = 1.0;
             }
         }
     }
-    memcpy(AF, A, n * n * sizeof(double));
+    memcpy(AF, A, n * n * sizeof(f64));
 
     /* Multiple RHS with known solutions */
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
             B[i + j * n] = 0.0;
             for (int k = 0; k < n; k++) {
-                double xk = (double)(k + 1) + (double)j;
+                f64 xk = (f64)(k + 1) + (f64)j;
                 B[i + j * n] += A[i + k * n] * xk;
             }
         }
     }
-    memcpy(B_orig, B, n * nrhs * sizeof(double));
+    memcpy(B_orig, B, n * nrhs * sizeof(f64));
 
     /* Factor */
     dgetrf(n, n, AF, n, ipiv, &info);
     assert_info_success(info);
 
     /* Solve */
-    memcpy(X, B, n * nrhs * sizeof(double));
+    memcpy(X, B, n * nrhs * sizeof(f64));
     dgetrs("N", n, nrhs, AF, n, ipiv, X, n, &info);
     assert_info_success(info);
 
@@ -453,10 +453,10 @@ static void test_multiple_rhs(void **state)
            ferr, berr, work, iwork, &info);
     assert_info_success(info);
 
-    double tol = 1e-10;
+    f64 tol = 1e-10;
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
-            double expected = (double)(i + 1) + (double)j;
+            f64 expected = (f64)(i + 1) + (f64)j;
             assert_true(fabs(X[i + j * n] - expected) < tol);
         }
     }

@@ -22,16 +22,16 @@
 /* Test fixture */
 typedef struct {
     int n;
-    double* A;        /* Original matrix */
-    double* Acopy;    /* Copy for verification */
-    double* VL;       /* Left eigenvectors */
-    double* VR;       /* Right eigenvectors */
-    double* wr;       /* Real eigenvalues */
-    double* wi;       /* Imaginary eigenvalues */
-    double* scale;    /* Scaling factors from balancing */
-    double* rconde;   /* Reciprocal condition numbers for eigenvalues */
-    double* rcondv;   /* Reciprocal condition numbers for eigenvectors */
-    double* work;     /* Workspace */
+    f64* A;        /* Original matrix */
+    f64* Acopy;    /* Copy for verification */
+    f64* VL;       /* Left eigenvectors */
+    f64* VR;       /* Right eigenvectors */
+    f64* wr;       /* Real eigenvalues */
+    f64* wi;       /* Imaginary eigenvalues */
+    f64* scale;    /* Scaling factors from balancing */
+    f64* rconde;   /* Reciprocal condition numbers for eigenvalues */
+    f64* rcondv;   /* Reciprocal condition numbers for eigenvectors */
+    f64* work;     /* Workspace */
     int* iwork;       /* Integer workspace */
     uint64_t seed;
     uint64_t rng_state[4];
@@ -39,20 +39,20 @@ typedef struct {
 
 /* Forward declarations from semicolon_lapack */
 extern void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-                   const char* sense, const int n, double* A, const int lda,
-                   double* wr, double* wi,
-                   double* VL, const int ldvl, double* VR, const int ldvr,
-                   int* ilo, int* ihi, double* scale, double* abnrm,
-                   double* rconde, double* rcondv,
-                   double* work, const int lwork, int* iwork, int* info);
+                   const char* sense, const int n, f64* A, const int lda,
+                   f64* wr, f64* wi,
+                   f64* VL, const int ldvl, f64* VR, const int ldvr,
+                   int* ilo, int* ihi, f64* scale, f64* abnrm,
+                   f64* rconde, f64* rcondv,
+                   f64* work, const int lwork, int* iwork, int* info);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
@@ -63,20 +63,20 @@ static int setup_N(void** state, int n) {
     fix->seed = 0xFEEDFACEULL;
 
     /* Allocate matrices */
-    fix->A = malloc(n * n * sizeof(double));
-    fix->Acopy = malloc(n * n * sizeof(double));
-    fix->VL = malloc(n * n * sizeof(double));
-    fix->VR = malloc(n * n * sizeof(double));
-    fix->wr = malloc(n * sizeof(double));
-    fix->wi = malloc(n * sizeof(double));
-    fix->scale = malloc(n * sizeof(double));
-    fix->rconde = malloc(n * sizeof(double));
-    fix->rcondv = malloc(n * sizeof(double));
+    fix->A = malloc(n * n * sizeof(f64));
+    fix->Acopy = malloc(n * n * sizeof(f64));
+    fix->VL = malloc(n * n * sizeof(f64));
+    fix->VR = malloc(n * n * sizeof(f64));
+    fix->wr = malloc(n * sizeof(f64));
+    fix->wi = malloc(n * sizeof(f64));
+    fix->scale = malloc(n * sizeof(f64));
+    fix->rconde = malloc(n * sizeof(f64));
+    fix->rcondv = malloc(n * sizeof(f64));
     fix->iwork = malloc(2 * n * sizeof(int));
 
     /* Workspace: generous allocation */
     int lwork = 12 * n * n;
-    fix->work = malloc(lwork * sizeof(double));
+    fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->Acopy || !fix->VL || !fix->VR ||
         !fix->wr || !fix->wi || !fix->scale ||
@@ -121,7 +121,7 @@ static int setup_20(void** state) { return setup_N(state, 20); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, double* A, int lda, double anorm,
+static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
                                    uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
@@ -140,8 +140,8 @@ static void test_basic(void** state)
     int n = fix->n;
     int lda = n;
     int ilo, ihi, info;
-    double abnrm;
-    double result[2];
+    f64 abnrm;
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -192,13 +192,13 @@ static void test_with_balancing(void** state)
     int n = fix->n;
     int lda = n;
     int ilo, ihi, info;
-    double abnrm;
-    double result[2];
+    f64 abnrm;
+    f64 result[2];
 
     /* Generate matrix with varying magnitudes to benefit from balancing */
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
-            double scale_factor = pow(10.0, (double)(j - i));
+            f64 scale_factor = pow(10.0, (f64)(j - i));
             fix->A[i + j * lda] = scale_factor * rng_uniform_symmetric(fix->rng_state);
         }
     }
@@ -239,7 +239,7 @@ static void test_condition_eigenvalues(void** state)
     int n = fix->n;
     int lda = n;
     int ilo, ihi, info;
-    double abnrm;
+    f64 abnrm;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -268,7 +268,7 @@ static void test_condition_eigenvectors(void** state)
     int n = fix->n;
     int lda = n;
     int ilo, ihi, info;
-    double abnrm;
+    f64 abnrm;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -297,8 +297,8 @@ static void test_condition_both(void** state)
     int n = fix->n;
     int lda = n;
     int ilo, ihi, info;
-    double abnrm;
-    double result[2];
+    f64 abnrm;
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -334,8 +334,8 @@ static void test_workspace_query(void** state)
     dgeevx_fixture_t* fix = *state;
     int n = fix->n;
     int ilo, ihi, info;
-    double abnrm;
-    double work_query;
+    f64 abnrm;
+    f64 work_query;
 
     /* Query optimal workspace for various configurations */
     dgeevx("B", "V", "V", "B", n, fix->A, n, fix->wr, fix->wi,
@@ -343,7 +343,7 @@ static void test_workspace_query(void** state)
            fix->rconde, fix->rcondv, &work_query, -1, fix->iwork, &info);
 
     assert_info_success(info);
-    assert_true(work_query >= (double)n);
+    assert_true(work_query >= (f64)n);
 }
 
 /**
@@ -355,14 +355,14 @@ static void test_diagonal_matrix(void** state)
     int n = fix->n;
     int lda = n;
     int ilo, ihi, info;
-    double abnrm;
+    f64 abnrm;
 
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     /* Create diagonal matrix with known eigenvalues */
     dlaset("F", n, n, ZERO, ZERO, fix->A, lda);
     for (int j = 0; j < n; j++) {
-        fix->A[j + j * lda] = (double)(j + 1);
+        fix->A[j + j * lda] = (f64)(j + 1);
     }
 
     /* Compute eigenvalues and condition numbers */

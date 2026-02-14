@@ -32,13 +32,13 @@
  *
  * @return The computed difference between eigenvalue sets.
  */
-double dsxt1(const int ijob,
-             const double* const restrict D1, const int n1,
-             const double* const restrict D2, const int n2,
-             const double abstol, const double ulp, const double unfl)
+f64 dsxt1(const int ijob,
+             const f64* const restrict D1, const int n1,
+             const f64* const restrict D2, const int n2,
+             const f64 abstol, const f64 ulp, const f64 unfl)
 {
-    const double ZERO = 0.0;
-    double temp1, temp2;
+    const f64 ZERO = 0.0;
+    f64 temp1, temp2;
     int i, j;
 
     temp1 = ZERO;
@@ -54,14 +54,14 @@ double dsxt1(const int ijob,
             /* Only one candidate: D2[0] */
             temp2 = fabs(D2[0] - D1[i]);
             if (ijob == 2) {
-                double denom = fmax(unfl, abstol + ulp * fabs(D1[i]));
+                f64 denom = fmax(unfl, abstol + ulp * fabs(D1[i]));
                 temp2 = temp2 / denom;
             }
         } else {
             /* Two candidates: D2[j] and D2[j-1] */
             temp2 = fmin(fabs(D2[j] - D1[i]), fabs(D1[i] - D2[j - 1]));
             if (ijob == 2) {
-                double denom = fmax(unfl, abstol + ulp * fabs(D1[i]));
+                f64 denom = fmax(unfl, abstol + ulp * fabs(D1[i]));
                 temp2 = temp2 / denom;
             }
         }

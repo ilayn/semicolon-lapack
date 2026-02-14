@@ -10,16 +10,16 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlapy2(const double x, const double y);
+extern f64 dlamch(const char* cmach);
+extern f64 dlapy2(const f64 x, const f64 y);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-                   const char* sense, const int n, double* A, const int lda,
-                   double* wr, double* wi, double* VL, const int ldvl,
-                   double* VR, const int ldvr, int* ilo, int* ihi,
-                   double* scale, double* abnrm, double* rconde, double* rcondv,
-                   double* work, const int lwork, int* iwork, int* info);
+                   const char* sense, const int n, f64* A, const int lda,
+                   f64* wr, f64* wi, f64* VL, const int ldvl,
+                   f64* VR, const int ldvr, int* ilo, int* ihi,
+                   f64* scale, f64* abnrm, f64* rconde, f64* rcondv,
+                   f64* work, const int lwork, int* iwork, int* info);
 
 /**
  * DGET23 checks the nonsymmetric eigenvalue problem driver DGEEVX.
@@ -43,29 +43,29 @@ extern void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
  *   (11)     |RCONDE - RCDEIN| / cond(RCONDE)
  */
 void dget23(const int comp, const char* balanc, const int jtype,
-            const double thresh, const int n,
-            double* A, const int lda, double* H,
-            double* wr, double* wi, double* wr1, double* wi1,
-            double* VL, const int ldvl, double* VR, const int ldvr,
-            double* LRE, const int ldlre,
-            double* rcondv, double* rcndv1, const double* rcdvin,
-            double* rconde, double* rcnde1, const double* rcdein,
-            double* scale, double* scale1, double* result,
-            double* work, const int lwork, int* iwork, int* info)
+            const f64 thresh, const int n,
+            f64* A, const int lda, f64* H,
+            f64* wr, f64* wi, f64* wr1, f64* wi1,
+            f64* VL, const int ldvl, f64* VR, const int ldvr,
+            f64* LRE, const int ldlre,
+            f64* rcondv, f64* rcndv1, const f64* rcdvin,
+            f64* rconde, f64* rcnde1, const f64* rcdein,
+            f64* scale, f64* scale1, f64* result,
+            f64* work, const int lwork, int* iwork, int* info)
 {
     (void)jtype;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double EPSIN = 5.9605e-8;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 EPSIN = 5.9605e-8;
 
     int nobal, balok;
     int i, j, jj, kmin;
     int ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
-    double abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
-    double ulp, ulpinv, v, vimin, vmax, vmx, vrmin, vrmx, vtst;
+    f64 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
+    f64 ulp, ulpinv, v, vimin, vmax, vmx, vrmin, vrmx, vtst;
     const char* sens[2] = {"N", "V"};
-    double dum[1], res[2];
+    f64 dum[1], res[2];
     char sense_str[2];
 
     /* Check for errors */
@@ -371,7 +371,7 @@ label_190:
          * taking their condition numbers into account */
         result[9] = ZERO;
         eps = fmax(EPSIN, ulp);
-        v = fmax((double)n * eps * abnrm, smlnum);
+        v = fmax((f64)n * eps * abnrm, smlnum);
         if (abnrm == ZERO)
             v = ONE;
         for (i = 0; i < n; i++) {

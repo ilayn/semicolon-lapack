@@ -8,10 +8,10 @@
 #include "verify.h"
 
 // Forward declarations
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DPOT02 computes the residual for the solution of a symmetric system
@@ -45,17 +45,17 @@ void dpot02(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict X,
+    const f64* const restrict X,
     const int ldx,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict rwork,
-    double* resid)
+    f64* const restrict rwork,
+    f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // Quick exit if n = 0 or nrhs = 0
     if (n <= 0 || nrhs <= 0) {
@@ -64,8 +64,8 @@ void dpot02(
     }
 
     // Exit with RESID = 1/EPS if ANORM = 0
-    double eps = dlamch("E");
-    double anorm = dlansy("1", uplo, n, A, lda, rwork);
+    f64 eps = dlamch("E");
+    f64 anorm = dlansy("1", uplo, n, A, lda, rwork);
     if (anorm <= ZERO) {
         *resid = ONE / eps;
         return;
@@ -81,12 +81,12 @@ void dpot02(
     //   norm(B - A*X) / (norm(A) * norm(X) * EPS)
     *resid = ZERO;
     for (int j = 0; j < nrhs; j++) {
-        double bnorm = cblas_dasum(n, &B[j * ldb], 1);
-        double xnorm = cblas_dasum(n, &X[j * ldx], 1);
+        f64 bnorm = cblas_dasum(n, &B[j * ldb], 1);
+        f64 xnorm = cblas_dasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            double tmp = ((bnorm / anorm) / xnorm) / eps;
+            f64 tmp = ((bnorm / anorm) / xnorm) / eps;
             if (tmp > *resid) *resid = tmp;
         }
     }

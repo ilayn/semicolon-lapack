@@ -38,20 +38,20 @@
  *                        If uplo = 'U', norm(U'*U - A) / ( N * norm(A) * EPS )
  */
 void dpbt01(const char* uplo, const int n, const int kd,
-            const double* A, const int lda,
-            double* AFAC, const int ldafac,
-            double* rwork, double* resid)
+            const f64* A, const int lda,
+            f64* AFAC, const int ldafac,
+            f64* rwork, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     *resid = ZERO;
     if (n <= 0) {
         return;
     }
 
-    double eps = dlamch("Epsilon");
-    double anorm = dlansb("1", uplo, n, kd, A, lda, rwork);
+    f64 eps = dlamch("Epsilon");
+    f64 anorm = dlansb("1", uplo, n, kd, A, lda, rwork);
     if (anorm <= ZERO) {
         *resid = ONE / eps;
         return;
@@ -62,7 +62,7 @@ void dpbt01(const char* uplo, const int n, const int kd,
             int kc = (kd - k > 0) ? kd - k : 0;
             int klen = kd - kc;
 
-            double t = cblas_ddot(klen + 1, &AFAC[kc + k * ldafac], 1,
+            f64 t = cblas_ddot(klen + 1, &AFAC[kc + k * ldafac], 1,
                                   &AFAC[kc + k * ldafac], 1);
             AFAC[kd + k * ldafac] = t;
 
@@ -89,7 +89,7 @@ void dpbt01(const char* uplo, const int n, const int kd,
                            &AFAC[0 + (k + 1) * ldafac], ldafac - 1);
             }
 
-            double t = AFAC[0 + k * ldafac];
+            f64 t = AFAC[0 + k * ldafac];
             cblas_dscal(klen + 1, t, &AFAC[0 + k * ldafac], 1);
         }
 
@@ -103,5 +103,5 @@ void dpbt01(const char* uplo, const int n, const int kd,
 
     *resid = dlansb("I", uplo, n, kd, AFAC, ldafac, rwork);
 
-    *resid = ((*resid / (double)n) / anorm) / eps;
+    *resid = ((*resid / (f64)n) / anorm) / eps;
 }

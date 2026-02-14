@@ -11,7 +11,7 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DTBT03 computes the residual for the solution to a scaled triangular
@@ -50,16 +50,16 @@ extern double dlamch(const char* cmach);
  */
 void dtbt03(const char* uplo, const char* trans, const char* diag,
             const int n, const int kd, const int nrhs,
-            const double* AB, const int ldab,
-            const double scale, const double* cnorm, const double tscal,
-            const double* X, const int ldx,
-            const double* B, const int ldb,
-            double* work, double* resid)
+            const f64* AB, const int ldab,
+            const f64 scale, const f64* cnorm, const f64 tscal,
+            const f64* X, const int ldx,
+            const f64* B, const int ldb,
+            f64* work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int ix, j;
-    double eps, err, smlnum, tnorm, xnorm, xscal;
+    f64 eps, err, smlnum, tnorm, xnorm, xscal;
 
     /* Quick exit if N = 0 */
     if (n <= 0 || nrhs <= 0) {
@@ -76,18 +76,18 @@ void dtbt03(const char* uplo, const char* trans, const char* diag,
     if (diag[0] == 'N' || diag[0] == 'n') {
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 0; j < n; j++) {
-                double t = tscal * fabs(AB[kd + j * ldab]) + cnorm[j];
+                f64 t = tscal * fabs(AB[kd + j * ldab]) + cnorm[j];
                 if (t > tnorm) tnorm = t;
             }
         } else {
             for (j = 0; j < n; j++) {
-                double t = tscal * fabs(AB[j * ldab]) + cnorm[j];
+                f64 t = tscal * fabs(AB[j * ldab]) + cnorm[j];
                 if (t > tnorm) tnorm = t;
             }
         }
     } else {
         for (j = 0; j < n; j++) {
-            double t = tscal + cnorm[j];
+            f64 t = tscal + cnorm[j];
             if (t > tnorm) tnorm = t;
         }
     }
@@ -109,7 +109,7 @@ void dtbt03(const char* uplo, const char* trans, const char* diag,
         cblas_dcopy(n, &X[j * ldx], 1, work, 1);
         ix = cblas_idamax(n, work, 1);
         xnorm = fmax(ONE, fabs(X[ix + j * ldx]));
-        xscal = (ONE / xnorm) / (double)(kd + 1);
+        xscal = (ONE / xnorm) / (f64)(kd + 1);
         cblas_dscal(n, xscal, work, 1);
         cblas_dtbmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, kd, AB, ldab, work, 1);

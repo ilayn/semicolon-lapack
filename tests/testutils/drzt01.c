@@ -10,16 +10,16 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dormrz(const char* side, const char* trans,
                    const int m, const int n, const int k, const int l,
-                   const double* A, const int lda, const double* tau,
-                   double* C, const int ldc, double* work, const int lwork,
+                   const f64* A, const int lda, const f64* tau,
+                   f64* C, const int ldc, f64* work, const int lwork,
                    int* info);
 
 /**
@@ -39,14 +39,14 @@ extern void dormrz(const char* side, const char* trans,
  *
  * @return || A - R*Q || / (M * eps * ||A||).
  */
-double drzt01(const int m, const int n, const double* A, const double* AF,
-              const int lda, const double* tau, double* work, const int lwork)
+f64 drzt01(const int m, const int n, const f64* A, const f64* AF,
+              const int lda, const f64* tau, f64* work, const int lwork)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int i, j, info;
-    double norma;
-    double rwork[1];
+    f64 norma;
+    f64 rwork[1];
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {
@@ -81,8 +81,8 @@ double drzt01(const int m, const int n, const double* A, const double* AF,
     }
 
     /* Compute ||R - A|| / (eps * max(M,N)) */
-    double result = dlange("1", m, n, work, m, rwork);
-    result /= dlamch("E") * (double)((m > n) ? m : n);
+    f64 result = dlange("1", m, n, work, m, rwork);
+    result /= dlamch("E") * (f64)((m > n) ? m : n);
     if (norma != ZERO) {
         result /= norma;
     }

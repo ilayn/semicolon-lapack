@@ -38,6 +38,7 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
+#include "semicolon_lapack/types.h"
 
 /*
  * Test context tracking for better error messages.

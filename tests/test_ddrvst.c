@@ -44,51 +44,51 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* External function declarations - Tridiagonal eigenvalue routines */
-extern void dstev(const char* jobz, const int n, double* D, double* E,
-                  double* Z, const int ldz, double* work, int* info);
-extern void dstevd(const char* jobz, const int n, double* D, double* E,
-                   double* Z, const int ldz, double* work, const int lwork,
+extern void dstev(const char* jobz, const int n, f64* D, f64* E,
+                  f64* Z, const int ldz, f64* work, int* info);
+extern void dstevd(const char* jobz, const int n, f64* D, f64* E,
+                   f64* Z, const int ldz, f64* work, const int lwork,
                    int* iwork, const int liwork, int* info);
 extern void dstevx(const char* jobz, const char* range, const int n,
-                   double* D, double* E, const double vl, const double vu,
-                   const int il, const int iu, const double abstol, int* m,
-                   double* W, double* Z, const int ldz, double* work,
+                   f64* D, f64* E, const f64 vl, const f64 vu,
+                   const int il, const int iu, const f64 abstol, int* m,
+                   f64* W, f64* Z, const int ldz, f64* work,
                    int* iwork, int* ifail, int* info);
 extern void dstevr(const char* jobz, const char* range, const int n,
-                   double* D, double* E, const double vl, const double vu,
-                   const int il, const int iu, const double abstol, int* m,
-                   double* W, double* Z, const int ldz, int* isuppz,
-                   double* work, const int lwork, int* iwork, const int liwork,
+                   f64* D, f64* E, const f64 vl, const f64 vu,
+                   const int il, const int iu, const f64 abstol, int* m,
+                   f64* W, f64* Z, const int ldz, int* isuppz,
+                   f64* work, const int lwork, int* iwork, const int liwork,
                    int* info);
 
 /* External function declarations - Full symmetric eigenvalue routines */
 extern void dsyev(const char* jobz, const char* uplo, const int n,
-                  double* A, const int lda, double* W, double* work,
+                  f64* A, const int lda, f64* W, f64* work,
                   const int lwork, int* info);
 extern void dsyevd(const char* jobz, const char* uplo, const int n,
-                   double* A, const int lda, double* W, double* work,
+                   f64* A, const int lda, f64* W, f64* work,
                    const int lwork, int* iwork, const int liwork, int* info);
 extern void dsyevx(const char* jobz, const char* range, const char* uplo,
-                   const int n, double* A, const int lda, const double vl,
-                   const double vu, const int il, const int iu,
-                   const double abstol, int* m, double* W, double* Z,
-                   const int ldz, double* work, const int lwork, int* iwork,
+                   const int n, f64* A, const int lda, const f64 vl,
+                   const f64 vu, const int il, const int iu,
+                   const f64 abstol, int* m, f64* W, f64* Z,
+                   const int ldz, f64* work, const int lwork, int* iwork,
                    int* ifail, int* info);
 extern void dsyevr(const char* jobz, const char* range, const char* uplo,
-                   const int n, double* A, const int lda, const double vl,
-                   const double vu, const int il, const int iu,
-                   const double abstol, int* m, double* W, double* Z,
-                   const int ldz, int* isuppz, double* work, const int lwork,
+                   const int n, f64* A, const int lda, const f64 vl,
+                   const f64 vu, const int il, const int iu,
+                   const f64 abstol, int* m, f64* W, f64* Z,
+                   const int ldz, int* isuppz, f64* work, const int lwork,
                    int* iwork, const int liwork, int* info);
 
 /* Utility routines */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -102,30 +102,30 @@ typedef struct {
     int nmax;
 
     /* Matrices (all nmax x nmax) */
-    double* A;      /* Original/working matrix */
-    double* U;      /* Band matrix storage / orthogonal matrix */
-    double* V;      /* Workspace matrix */
-    double* Z;      /* Eigenvectors */
+    f64* A;      /* Original/working matrix */
+    f64* U;      /* Band matrix storage / orthogonal matrix */
+    f64* V;      /* Workspace matrix */
+    f64* Z;      /* Eigenvectors */
 
     /* Eigenvalues */
-    double* D1;     /* Eigenvalues (with Z) */
-    double* D2;     /* Off-diagonal / work */
-    double* D3;     /* Eigenvalues (without Z) */
-    double* D4;     /* Off-diagonal work */
-    double* WA1;    /* Eigenvalues for partial computation */
-    double* WA2;    /* Eigenvalues for comparison */
-    double* WA3;    /* Eigenvalues for comparison */
-    double* EVEIGS; /* Expected eigenvalues */
-    double* TAU;    /* Householder scalars */
+    f64* D1;     /* Eigenvalues (with Z) */
+    f64* D2;     /* Off-diagonal / work */
+    f64* D3;     /* Eigenvalues (without Z) */
+    f64* D4;     /* Off-diagonal work */
+    f64* WA1;    /* Eigenvalues for partial computation */
+    f64* WA2;    /* Eigenvalues for comparison */
+    f64* WA3;    /* Eigenvalues for comparison */
+    f64* EVEIGS; /* Expected eigenvalues */
+    f64* TAU;    /* Householder scalars */
 
     /* Work arrays */
-    double* work;
+    f64* work;
     int* iwork;
     int lwork;
     int liwork;
 
     /* Test results */
-    double result[80];
+    f64 result[80];
 
     /* RNG state */
     uint64_t rng_state[4];
@@ -166,7 +166,7 @@ static int group_setup(void** state)
     /* Compute workspace sizes (from ddrvst.f lines 602-608) */
     int lgn = 0;
     if (nmax > 0) {
-        lgn = (int)(log((double)nmax) / log(2.0));
+        lgn = (int)(log((f64)nmax) / log(2.0));
         if ((1 << lgn) < nmax) lgn++;
         g_ws->lwork = 1 + 4 * nmax + 2 * nmax * lgn + 4 * n2;
         /* IWORK needs: 5*NMAX (for DSTEVX) + NMAX (for IFAIL) = 6*NMAX
@@ -178,28 +178,28 @@ static int group_setup(void** state)
     }
 
     /* Allocate matrices */
-    g_ws->A   = malloc(n2 * sizeof(double));
+    g_ws->A   = malloc(n2 * sizeof(f64));
     /* U needs extra rows for band storage with PACK='Z' in dlatms.
      * For symmetric band with half-bandwidth up to nmax-1,
      * LDA >= 2*(nmax-1)+1 = 2*nmax - 1 */
     int ldu_band = 2 * nmax - 1;
-    g_ws->U   = malloc(ldu_band * nmax * sizeof(double));
-    g_ws->V   = malloc(n2 * sizeof(double));
-    g_ws->Z   = malloc(n2 * sizeof(double));
+    g_ws->U   = malloc(ldu_band * nmax * sizeof(f64));
+    g_ws->V   = malloc(n2 * sizeof(f64));
+    g_ws->Z   = malloc(n2 * sizeof(f64));
 
     /* Allocate eigenvalue arrays */
-    g_ws->D1  = malloc(nmax * sizeof(double));
-    g_ws->D2  = malloc(nmax * sizeof(double));
-    g_ws->D3  = malloc(nmax * sizeof(double));
-    g_ws->D4  = malloc(nmax * sizeof(double));
-    g_ws->WA1 = malloc(nmax * sizeof(double));
-    g_ws->WA2 = malloc(nmax * sizeof(double));
-    g_ws->WA3 = malloc(nmax * sizeof(double));
-    g_ws->EVEIGS = malloc(nmax * sizeof(double));
-    g_ws->TAU = malloc(nmax * sizeof(double));
+    g_ws->D1  = malloc(nmax * sizeof(f64));
+    g_ws->D2  = malloc(nmax * sizeof(f64));
+    g_ws->D3  = malloc(nmax * sizeof(f64));
+    g_ws->D4  = malloc(nmax * sizeof(f64));
+    g_ws->WA1 = malloc(nmax * sizeof(f64));
+    g_ws->WA2 = malloc(nmax * sizeof(f64));
+    g_ws->WA3 = malloc(nmax * sizeof(f64));
+    g_ws->EVEIGS = malloc(nmax * sizeof(f64));
+    g_ws->TAU = malloc(nmax * sizeof(f64));
 
     /* Allocate work arrays */
-    g_ws->work  = malloc(g_ws->lwork * sizeof(double));
+    g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
     g_ws->iwork = malloc(g_ws->liwork * sizeof(int));
 
     if (!g_ws->A || !g_ws->U || !g_ws->V || !g_ws->Z ||
@@ -247,23 +247,23 @@ static int group_teardown(void** state)
  *
  * Based on ddrvst.f lines 647-746.
  */
-static int generate_matrix(int n, int jtype, double* A, int lda,
-                           double* U, int ldu, double* work, int* iwork,
+static int generate_matrix(int n, int jtype, f64* A, int lda,
+                           f64* U, int ldu, f64* work, int* iwork,
                            uint64_t state[static 4])
 {
     (void)ldu;
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
-    double anorm, cond;
+    f64 anorm, cond;
     int iinfo = 0;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ovfl = 1.0 / unfl;
-    double ulpinv = 1.0 / ulp;
-    double rtunfl = sqrt(unfl);
-    double rtovfl = sqrt(ovfl);
-    double aninv = 1.0 / (double)(n > 1 ? n : 1);
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ovfl = 1.0 / unfl;
+    f64 ulpinv = 1.0 / ulp;
+    f64 rtunfl = sqrt(unfl);
+    f64 rtovfl = sqrt(ovfl);
+    f64 aninv = 1.0 / (f64)(n > 1 ? n : 1);
 
     /* Compute norm based on KMAGN (lines 652-664) */
     switch (KMAGN[jtype - 1]) {
@@ -360,23 +360,23 @@ static void run_tridiag_tests(ddrvst_params_t* params)
     int lda = ws->nmax;
     int ldu = ws->nmax;
 
-    double* A = ws->A;
-    double* Z = ws->Z;
-    double* D1 = ws->D1;
-    double* D2 = ws->D2;
-    double* D3 = ws->D3;
-    double* D4 = ws->D4;
-    double* WA1 = ws->WA1;
-    double* WA2 = ws->WA2;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* Z = ws->Z;
+    f64* D1 = ws->D1;
+    f64* D2 = ws->D2;
+    f64* D3 = ws->D3;
+    f64* D4 = ws->D4;
+    f64* WA1 = ws->WA1;
+    f64* WA2 = ws->WA2;
+    f64* work = ws->work;
     int* iwork = ws->iwork;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ulpinv = 1.0 / ulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ulpinv = 1.0 / ulp;
 
     int iinfo;
-    double temp1, temp2;
+    f64 temp1, temp2;
 
     /* Initialize results to -1 (not computed) */
     for (int j = 0; j < 24; j++) {
@@ -451,8 +451,8 @@ static void run_tridiag_tests(ddrvst_params_t* params)
     }
 
     /* ========== Test DSTEVX with RANGE='A' (Tests 4-6) ========== */
-    double abstol = unfl + unfl;
-    double vl = 0.0, vu = 0.0;
+    f64 abstol = unfl + unfl;
+    f64 vl = 0.0, vu = 0.0;
     int il = 1, iu = n;
     int m;
 
@@ -527,21 +527,21 @@ static void run_symmetric_tests(ddrvst_params_t* params)
     int lda = ws->nmax;
     int ldu = ws->nmax;
 
-    double* A = ws->A;
-    double* V = ws->V;
-    double* Z = ws->Z;
-    double* D1 = ws->D1;
-    double* D2 = ws->D2;
-    double* TAU = ws->TAU;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* V = ws->V;
+    f64* Z = ws->Z;
+    f64* D1 = ws->D1;
+    f64* D2 = ws->D2;
+    f64* TAU = ws->TAU;
+    f64* work = ws->work;
     int* iwork = ws->iwork;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ulpinv = 1.0 / ulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ulpinv = 1.0 / ulp;
 
     int iinfo;
-    double temp1, temp2;
+    f64 temp1, temp2;
 
     /* Initialize results */
     for (int j = 24; j < 48; j++) {

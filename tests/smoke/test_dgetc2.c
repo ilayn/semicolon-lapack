@@ -17,14 +17,14 @@
 #include <cblas.h>
 
 /* Routine under test */
-extern void dgetc2(const int n, double * const restrict A, const int lda,
+extern void dgetc2(const int n, f64 * const restrict A, const int lda,
                    int * const restrict ipiv, int * const restrict jpiv, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
+extern f64 dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
 
 /*
  * Test fixture
@@ -32,10 +32,10 @@ extern double dlange(const char *norm, const int m, const int n,
 typedef struct {
     int n;
     int lda;
-    double *A;       /* Factored matrix (overwritten by dgetc2) */
-    double *A_orig;  /* Original matrix */
-    double *d;       /* Singular values for dlatms */
-    double *work;    /* Workspace */
+    f64 *A;       /* Factored matrix (overwritten by dgetc2) */
+    f64 *A_orig;  /* Original matrix */
+    f64 *d;       /* Singular values for dlatms */
+    f64 *work;    /* Workspace */
     int *ipiv;       /* Row pivot indices */
     int *jpiv;       /* Column pivot indices */
     uint64_t seed;
@@ -46,7 +46,7 @@ static uint64_t g_seed = 1729;
 /**
  * Apply row permutation to matrix.
  */
-static void apply_row_perm(int n, double *A, int lda, const int *ipiv, int dir)
+static void apply_row_perm(int n, f64 *A, int lda, const int *ipiv, int dir)
 {
     if (dir > 0) {
         for (int i = 0; i < n - 1; i++) {
@@ -66,7 +66,7 @@ static void apply_row_perm(int n, double *A, int lda, const int *ipiv, int dir)
 /**
  * Apply column permutation to matrix.
  */
-static void apply_col_perm(int n, double *A, int lda, const int *jpiv, int dir)
+static void apply_col_perm(int n, f64 *A, int lda, const int *jpiv, int dir)
 {
     if (dir > 0) {
         for (int j = 0; j < n - 1; j++) {
@@ -87,15 +87,15 @@ static void apply_col_perm(int n, double *A, int lda, const int *jpiv, int dir)
  * Verify LU factorization with complete pivoting.
  * Computes ||P*L*U*Q - A|| / (n * ||A|| * eps)
  */
-static double verify_lu(int n, const double *A_orig, const double *LU,
+static f64 verify_lu(int n, const f64 *A_orig, const f64 *LU,
                         int lda, const int *ipiv, const int *jpiv)
 {
-    double eps = dlamch("E");
-    double *lwork = malloc(n * sizeof(double));
-    double *L = calloc(n * n, sizeof(double));
-    double *U = calloc(n * n, sizeof(double));
-    double *PLU = malloc(n * n * sizeof(double));
-    double *PLUQ = malloc(n * n * sizeof(double));
+    f64 eps = dlamch("E");
+    f64 *lwork = malloc(n * sizeof(f64));
+    f64 *L = calloc(n * n, sizeof(f64));
+    f64 *U = calloc(n * n, sizeof(f64));
+    f64 *PLU = malloc(n * n * sizeof(f64));
+    f64 *PLUQ = malloc(n * n * sizeof(f64));
 
     assert_non_null(lwork);
     assert_non_null(L);
@@ -126,7 +126,7 @@ static double verify_lu(int n, const double *A_orig, const double *LU,
     apply_row_perm(n, PLU, n, ipiv, -1);
 
     /* Apply Q^{-1} (reverse column permutation) */
-    memcpy(PLUQ, PLU, n * n * sizeof(double));
+    memcpy(PLUQ, PLU, n * n * sizeof(f64));
     apply_col_perm(n, PLUQ, n, jpiv, -1);
 
     /* Compute PLUQ - A */
@@ -137,10 +137,10 @@ static double verify_lu(int n, const double *A_orig, const double *LU,
     }
 
     /* Compute ||PLUQ - A|| / (n * ||A|| * eps) */
-    double anorm = dlange("1", n, n, A_orig, lda, lwork);
-    double resid_norm = dlange("1", n, n, PLUQ, n, lwork);
+    f64 anorm = dlange("1", n, n, A_orig, lda, lwork);
+    f64 resid_norm = dlange("1", n, n, PLUQ, n, lwork);
 
-    double resid;
+    f64 resid;
     if (anorm <= 0.0) {
         resid = resid_norm / eps;
     } else {
@@ -165,10 +165,10 @@ static int dgetc2_setup(void **state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->A_orig = malloc(fix->lda * n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->A_orig = malloc(fix->lda * n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
     fix->jpiv = malloc(n * sizeof(int));
 
@@ -207,11 +207,11 @@ static int setup_8(void **state) { return dgetc2_setup(state, 8); }
 /**
  * Core test logic: generate matrix, factorize, verify.
  */
-static double run_dgetc2_test(dgetc2_fixture_t *fix, int imat)
+static f64 run_dgetc2_test(dgetc2_fixture_t *fix, int imat)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
 
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -222,7 +222,7 @@ static double run_dgetc2_test(dgetc2_fixture_t *fix, int imat)
            kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
 
-    memcpy(fix->A_orig, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->A_orig, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Factor A using complete pivoting */
     dgetc2(fix->n, fix->A, fix->lda, fix->ipiv, fix->jpiv, &info);
@@ -238,7 +238,7 @@ static double run_dgetc2_test(dgetc2_fixture_t *fix, int imat)
 static void test_dgetc2_wellcond(void **state)
 {
     dgetc2_fixture_t *fix = *state;
-    double resid;
+    f64 resid;
 
     for (int imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
@@ -254,7 +254,7 @@ static void test_dgetc2_illcond(void **state)
 {
     dgetc2_fixture_t *fix = *state;
     fix->seed = g_seed++;
-    double resid = run_dgetc2_test(fix, 8);
+    f64 resid = run_dgetc2_test(fix, 8);
     assert_residual_ok(resid);
 }
 
@@ -266,8 +266,8 @@ static void test_dgetc2_identity(void **state)
     (void)state;
 
     int n = 4;
-    double *A = calloc(n * n, sizeof(double));
-    double *A_orig = calloc(n * n, sizeof(double));
+    f64 *A = calloc(n * n, sizeof(f64));
+    f64 *A_orig = calloc(n * n, sizeof(f64));
     int *ipiv = malloc(n * sizeof(int));
     int *jpiv = malloc(n * sizeof(int));
     int info;
@@ -284,7 +284,7 @@ static void test_dgetc2_identity(void **state)
 
     dgetc2(n, A, n, ipiv, jpiv, &info);
 
-    double resid = verify_lu(n, A_orig, A, n, ipiv, jpiv);
+    f64 resid = verify_lu(n, A_orig, A, n, ipiv, jpiv);
     assert_residual_ok(resid);
 
     free(A);
@@ -300,16 +300,16 @@ static void test_dgetc2_simple(void **state)
 {
     (void)state;
 
-    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
-    double A_orig[9];
-    memcpy(A_orig, A, 9 * sizeof(double));
+    f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
+    f64 A_orig[9];
+    memcpy(A_orig, A, 9 * sizeof(f64));
 
     int ipiv[3], jpiv[3];
     int info;
 
     dgetc2(3, A, 3, ipiv, jpiv, &info);
 
-    double resid = verify_lu(3, A_orig, A, 3, ipiv, jpiv);
+    f64 resid = verify_lu(3, A_orig, A, 3, ipiv, jpiv);
     assert_residual_ok(resid);
 }
 

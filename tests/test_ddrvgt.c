@@ -22,59 +22,59 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routines under test */
-extern void dgtsv(const int n, const int nrhs, double* DL, double* D, double* DU,
-                  double* B, const int ldb, int* info);
+extern void dgtsv(const int n, const int nrhs, f64* DL, f64* D, f64* DU,
+                  f64* B, const int ldb, int* info);
 extern void dgtsvx(const char* fact, const char* trans, const int n, const int nrhs,
-                   const double* DL, const double* D, const double* DU,
-                   double* DLF, double* DF, double* DUF, double* DU2,
-                   int* ipiv, const double* B, const int ldb,
-                   double* X, const int ldx, double* rcond,
-                   double* ferr, double* berr, double* work, int* iwork, int* info);
+                   const f64* DL, const f64* D, const f64* DU,
+                   f64* DLF, f64* DF, f64* DUF, f64* DU2,
+                   int* ipiv, const f64* B, const int ldb,
+                   f64* X, const int ldx, f64* rcond,
+                   f64* ferr, f64* berr, f64* work, int* iwork, int* info);
 
 /* Supporting routines */
-extern void dgttrf(const int n, double* DL, double* D, double* DU, double* DU2,
+extern void dgttrf(const int n, f64* DL, f64* D, f64* DU, f64* DU2,
                    int* ipiv, int* info);
 extern void dgttrs(const char* trans, const int n, const int nrhs,
-                   const double* DL, const double* D, const double* DU,
-                   const double* DU2, const int* ipiv, double* B, const int ldb, int* info);
+                   const f64* DL, const f64* D, const f64* DU,
+                   const f64* DU2, const int* ipiv, f64* B, const int ldb, int* info);
 extern void dlagtm(const char* trans, const int n, const int nrhs,
-                   const double alpha, const double* DL, const double* D, const double* DU,
-                   const double* X, const int ldx, const double beta, double* B, const int ldb);
+                   const f64 alpha, const f64* DL, const f64* D, const f64* DU,
+                   const f64* X, const int ldx, const f64 beta, f64* B, const int ldb);
 
 /* Verification routines */
-extern void dgtt01(const int n, const double* DL, const double* D, const double* DU,
-                   const double* DLF, const double* DF, const double* DUF, const double* DU2,
-                   const int* ipiv, double* work, const int ldwork, double* resid);
+extern void dgtt01(const int n, const f64* DL, const f64* D, const f64* DU,
+                   const f64* DLF, const f64* DF, const f64* DUF, const f64* DU2,
+                   const int* ipiv, f64* work, const int ldwork, f64* resid);
 extern void dgtt02(const char* trans, const int n, const int nrhs,
-                   const double* DL, const double* D, const double* DU,
-                   const double* X, const int ldx, double* B, const int ldb, double* resid);
+                   const f64* DL, const f64* D, const f64* DU,
+                   const f64* X, const int ldx, f64* B, const int ldb, f64* resid);
 extern void dgtt05(const char* trans, const int n, const int nrhs,
-                   const double* DL, const double* D, const double* DU,
-                   const double* B, const int ldb, const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond, double* resid);
-extern double dget06(const double rcond, const double rcondc);
-extern double dlangt(const char* norm, const int n, const double* DL, const double* D, const double* DU);
+                   const f64* DL, const f64* D, const f64* DU,
+                   const f64* B, const int ldb, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond, f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
+extern f64 dlangt(const char* norm, const int n, const f64* DL, const f64* D, const f64* DU);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
+                   const char* sym, f64* d,
+                   const int mode, const f64 cond, const f64 dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
 
 typedef struct {
     int n;
@@ -85,13 +85,13 @@ typedef struct {
 } ddrvgt_params_t;
 
 typedef struct {
-    double* A;      /* Tridiagonal storage: DL, D, DU = 3*N */
-    double* AF;     /* Factored: DLF, DF, DUF, DU2 = 4*N */
-    double* B;
-    double* X;
-    double* XACT;
-    double* WORK;
-    double* RWORK;
+    f64* A;      /* Tridiagonal storage: DL, D, DU = 3*N */
+    f64* AF;     /* Factored: DLF, DF, DUF, DU2 = 4*N */
+    f64* B;
+    f64* X;
+    f64* XACT;
+    f64* WORK;
+    f64* RWORK;
     int* IWORK;
 } ddrvgt_workspace_t;
 
@@ -109,13 +109,13 @@ static int group_setup(void** state)
     int lwork = nmax * nmax + 4 * nmax;
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
-    g_workspace->A = calloc(3 * nmax, sizeof(double));
-    g_workspace->AF = calloc(4 * nmax, sizeof(double));
-    g_workspace->B = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->X = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->XACT = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->WORK = calloc(lwork, sizeof(double));
-    g_workspace->RWORK = calloc(nmax > 2 * NRHS ? nmax : 2 * NRHS, sizeof(double));
+    g_workspace->A = calloc(3 * nmax, sizeof(f64));
+    g_workspace->AF = calloc(4 * nmax, sizeof(f64));
+    g_workspace->B = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->X = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->XACT = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->WORK = calloc(lwork, sizeof(f64));
+    g_workspace->RWORK = calloc(nmax > 2 * NRHS ? nmax : 2 * NRHS, sizeof(f64));
     g_workspace->IWORK = calloc(2 * nmax, sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AF || !g_workspace->B ||
@@ -155,22 +155,22 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
 
     int m = (n > 1) ? n - 1 : 0;
     int lda = (n > 1) ? n : 1;
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Pointers to tridiagonal components in A:
      * A[0..m-1] = DL (subdiagonal)
      * A[m..m+n-1] = D (diagonal)
      * A[m+n..m+2n-2] = DU (superdiagonal) */
-    double* DL = ws->A;
-    double* D = ws->A + m;
-    double* DU = ws->A + m + n;
+    f64* DL = ws->A;
+    f64* D = ws->A + m;
+    f64* DU = ws->A + m + n;
 
     /* Pointers to factored components in AF */
-    double* DLF = ws->AF;
-    double* DF = ws->AF + m;
-    double* DUF = ws->AF + m + n;
-    double* DU2 = ws->AF + m + 2 * n;
+    f64* DLF = ws->AF;
+    f64* DF = ws->AF + m;
+    f64* DUF = ws->AF + m + n;
+    f64* DU2 = ws->AF + m + 2 * n;
 
     int zerot = (imat >= 8 && imat <= 10);
     int izero = 0;
@@ -178,7 +178,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     /* Set up parameters with DLATB4 */
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix.
@@ -275,7 +275,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
      * For FACT='N', reuse values from FACT='F' iteration.
      * Since tests are independent, we always compute them.
      */
-    double rcondo = 0.0, rcondi = 0.0;
+    f64 rcondo = 0.0, rcondi = 0.0;
 
     if (zerot) {
         rcondo = 0.0;
@@ -287,18 +287,18 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
         /* Copy tridiagonal to AF and factor */
         cblas_dcopy(n + 2 * m, ws->A, 1, ws->AF, 1);
 
-        double anormo = dlangt("1", n, DL, D, DU);
-        double anormi = dlangt("I", n, DL, D, DU);
+        f64 anormo = dlangt("1", n, DL, D, DU);
+        f64 anormi = dlangt("I", n, DL, D, DU);
 
         dgttrf(n, DLF, DF, DUF, DU2, ws->IWORK, &info);
 
         /* Compute inverse norm using DGTTRS */
-        double ainvnm = 0.0;
+        f64 ainvnm = 0.0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) ws->X[j] = 0.0;
             ws->X[i] = 1.0;
             dgttrs("N", n, 1, DLF, DF, DUF, DU2, ws->IWORK, ws->X, lda, &info);
-            double colsum = cblas_dasum(n, ws->X, 1);
+            f64 colsum = cblas_dasum(n, ws->X, 1);
             if (colsum > ainvnm) ainvnm = colsum;
         }
 
@@ -314,7 +314,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
             for (int j = 0; j < n; j++) ws->X[j] = 0.0;
             ws->X[i] = 1.0;
             dgttrs("T", n, 1, DLF, DF, DUF, DU2, ws->IWORK, ws->X, lda, &info);
-            double colsum = cblas_dasum(n, ws->X, 1);
+            f64 colsum = cblas_dasum(n, ws->X, 1);
             if (colsum > ainvnm) ainvnm = colsum;
         }
 
@@ -325,7 +325,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
         }
     }
 
-    double rcondc = (itran == 0) ? rcondo : rcondi;
+    f64 rcondc = (itran == 0) ? rcondo : rcondi;
 
     /* Generate NRHS random solution vectors */
     rng_seed(rng_state, seed + (uint64_t)itran);
@@ -381,7 +381,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     }
     dlaset("Full", n, NRHS, 0.0, 0.0, ws->X, lda);
 
-    double rcond;
+    f64 rcond;
     dgtsvx(fact, trans, n, NRHS, DL, D, DU, DLF, DF, DUF, DU2,
            ws->IWORK, ws->B, lda, ws->X, lda, &rcond,
            ws->RWORK, &ws->RWORK[NRHS], ws->WORK, &ws->IWORK[n], &info);

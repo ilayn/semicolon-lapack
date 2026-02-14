@@ -31,16 +31,16 @@
 void dptt02(
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double* const restrict E,
-    const double* const restrict X,
+    const f64* const restrict D,
+    const f64* const restrict E,
+    const f64* const restrict X,
     const int ldx,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* resid)
+    f64* resid)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -49,10 +49,10 @@ void dptt02(
     }
 
     /* Compute the 1-norm of the tridiagonal matrix A. */
-    double anorm = dlanst("1", n, D, E);
+    f64 anorm = dlanst("1", n, D, E);
 
     /* Exit with RESID = 1/EPS if ANORM = 0. */
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     if (anorm <= ZERO) {
         *resid = ONE / eps;
         return;
@@ -65,8 +65,8 @@ void dptt02(
        norm(B - A*X) / ( norm(A) * norm(X) * EPS ). */
     *resid = ZERO;
     for (int j = 0; j < nrhs; j++) {
-        double bnorm = cblas_dasum(n, &B[j * ldb], 1);
-        double xnorm = cblas_dasum(n, &X[j * ldx], 1);
+        f64 bnorm = cblas_dasum(n, &B[j * ldb], 1);
+        f64 xnorm = cblas_dasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {

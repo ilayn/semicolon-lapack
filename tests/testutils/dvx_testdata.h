@@ -11,94 +11,94 @@
 
 typedef struct {
     int n;
-    const double* A;
-    const double* wr;
-    const double* wi;
-    const double* rcdein;
-    const double* rcdvin;
+    const f64* A;
+    const f64* wr;
+    const f64* wi;
+    const f64* rcdein;
+    const f64* rcdvin;
 } dvx_precomputed_t;
 
-static const double dvx_A_0[1] = {
+static const f64 dvx_A_0[1] = {
     0.0000e+00
 };
-static const double dvx_wr_0[1] = {
+static const f64 dvx_wr_0[1] = {
     0.0000e+00
 };
-static const double dvx_wi_0[1] = {
+static const f64 dvx_wi_0[1] = {
     0.0000e+00
 };
-static const double dvx_rcdein_0[1] = {
+static const f64 dvx_rcdein_0[1] = {
     1.0000e+00
 };
-static const double dvx_rcdvin_0[1] = {
+static const f64 dvx_rcdvin_0[1] = {
     0.0000e+00
 };
 
-static const double dvx_A_1[1] = {
+static const f64 dvx_A_1[1] = {
     1.0000e+00
 };
-static const double dvx_wr_1[1] = {
+static const f64 dvx_wr_1[1] = {
     1.0000e+00
 };
-static const double dvx_wi_1[1] = {
+static const f64 dvx_wi_1[1] = {
     0.0000e+00
 };
-static const double dvx_rcdein_1[1] = {
+static const f64 dvx_rcdein_1[1] = {
     1.0000e+00
 };
-static const double dvx_rcdvin_1[1] = {
+static const f64 dvx_rcdvin_1[1] = {
     1.0000e+00
 };
 
-static const double dvx_A_2[4] = {
+static const f64 dvx_A_2[4] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_wr_2[2] = {
+static const f64 dvx_wr_2[2] = {
     0.0000e+00, 0.0000e+00
 };
-static const double dvx_wi_2[2] = {
+static const f64 dvx_wi_2[2] = {
     0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_2[2] = {
+static const f64 dvx_rcdein_2[2] = {
     1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_2[2] = {
+static const f64 dvx_rcdvin_2[2] = {
     0.0000e+00, 0.0000e+00
 };
 
-static const double dvx_A_3[4] = {
+static const f64 dvx_A_3[4] = {
     3.0000e+00, 2.0000e+00, 2.0000e+00, 3.0000e+00
 };
-static const double dvx_wr_3[2] = {
+static const f64 dvx_wr_3[2] = {
     1.0000e+00, 5.0000e+00
 };
-static const double dvx_wi_3[2] = {
+static const f64 dvx_wi_3[2] = {
     0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_3[2] = {
+static const f64 dvx_rcdein_3[2] = {
     1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_3[2] = {
+static const f64 dvx_rcdvin_3[2] = {
     4.0000e+00, 4.0000e+00
 };
 
-static const double dvx_A_4[4] = {
+static const f64 dvx_A_4[4] = {
     3.0000e+00, 2.0000e+00, -2.0000e+00, 3.0000e+00
 };
-static const double dvx_wr_4[2] = {
+static const f64 dvx_wr_4[2] = {
     3.0000e+00, 3.0000e+00
 };
-static const double dvx_wi_4[2] = {
+static const f64 dvx_wi_4[2] = {
     2.0000e+00, -2.0000e+00
 };
-static const double dvx_rcdein_4[2] = {
+static const f64 dvx_rcdein_4[2] = {
     1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_4[2] = {
+static const f64 dvx_rcdvin_4[2] = {
     4.0000e+00, 4.0000e+00
 };
 
-static const double dvx_A_5[36] = {
+static const f64 dvx_A_5[36] = {
     1.0000e-07, 3.0000e-07, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, -1.0000e-07, 1.0000e-07,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -109,39 +109,39 @@ static const double dvx_A_5[36] = {
     4.0000e-06, 3.0000e+00, 3.7000e+00, -7.7000e+00,
     3.3000e+00, 1.6000e+00, 5.0000e+00, 4.0000e-06
 };
-static const double dvx_wr_5[6] = {
+static const f64 dvx_wr_5[6] = {
     -3.8730e+00, 1.0000e-07, 1.0000e-07, 3.0000e-07, 3.0000e-07, 3.8730e+00
 };
-static const double dvx_wi_5[6] = {
+static const f64 dvx_wi_5[6] = {
     0.0000e+00, 1.7321e-07, -1.7321e-07, 1.0000e-07, -1.0000e-07, 0.0000e+00
 };
-static const double dvx_rcdein_5[6] = {
+static const f64 dvx_rcdein_5[6] = {
     6.9855e-01, 9.7611e-08, 9.7611e-08, 1.0000e-07, 1.0000e-07, 4.0659e-01
 };
-static const double dvx_rcdvin_5[6] = {
+static const f64 dvx_rcdvin_5[6] = {
     2.2823e+00, 5.0060e-14, 5.0060e-14, 9.4094e-14, 9.4094e-14, 1.5283e+00
 };
 
-static const double dvx_A_6[16] = {
+static const f64 dvx_A_6[16] = {
     7.0000e+00, -1.0000e+00, -1.0000e+00, 1.0000e+00,
     1.0000e+00, 1.0000e+00, 1.0000e+00, -1.0000e+00,
     1.0000e+00, 1.0000e+00, 5.0000e+00, 3.0000e+00,
     1.0000e+00, 1.0000e+00, -3.0000e+00, 3.0000e+00
 };
-static const double dvx_wr_6[4] = {
+static const f64 dvx_wr_6[4] = {
     3.9603e+00, 3.9603e+00, 4.0397e+00, 4.0397e+00
 };
-static const double dvx_wi_6[4] = {
+static const f64 dvx_wi_6[4] = {
     4.0425e-02, -4.0425e-02, 3.8854e-02, -3.8854e-02
 };
-static const double dvx_rcdein_6[4] = {
+static const f64 dvx_rcdein_6[4] = {
     1.1244e-05, 1.1244e-05, 1.0807e-05, 1.0807e-05
 };
-static const double dvx_rcdvin_6[4] = {
+static const f64 dvx_rcdvin_6[4] = {
     3.1179e-05, 3.1179e-05, 2.9981e-05, 2.9981e-05
 };
 
-static const double dvx_A_7[25] = {
+static const f64 dvx_A_7[25] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -150,20 +150,20 @@ static const double dvx_A_7[25] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00
 };
-static const double dvx_wr_7[5] = {
+static const f64 dvx_wr_7[5] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_wi_7[5] = {
+static const f64 dvx_wi_7[5] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_7[5] = {
+static const f64 dvx_rcdein_7[5] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_7[5] = {
+static const f64 dvx_rcdvin_7[5] = {
     1.9722e-31, 1.9722e-31, 1.9722e-31, 1.9722e-31, 1.9722e-31
 };
 
-static const double dvx_A_8[25] = {
+static const f64 dvx_A_8[25] = {
     1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -172,20 +172,20 @@ static const double dvx_A_8[25] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     1.0000e+00
 };
-static const double dvx_wr_8[5] = {
+static const f64 dvx_wr_8[5] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_wi_8[5] = {
+static const f64 dvx_wi_8[5] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_8[5] = {
+static const f64 dvx_rcdein_8[5] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_8[5] = {
+static const f64 dvx_rcdvin_8[5] = {
     1.9722e-31, 1.9722e-31, 1.9722e-31, 1.9722e-31, 1.9722e-31
 };
 
-static const double dvx_A_9[36] = {
+static const f64 dvx_A_9[36] = {
     1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.0000e+00, 1.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -196,20 +196,20 @@ static const double dvx_A_9[36] = {
     1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_wr_9[6] = {
+static const f64 dvx_wr_9[6] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_wi_9[6] = {
+static const f64 dvx_wi_9[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_9[6] = {
+static const f64 dvx_rcdein_9[6] = {
     2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35
 };
-static const double dvx_rcdvin_9[6] = {
+static const f64 dvx_rcdvin_9[6] = {
     2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35
 };
 
-static const double dvx_A_10[36] = {
+static const f64 dvx_A_10[36] = {
     1.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00,
     1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -220,20 +220,20 @@ static const double dvx_A_10[36] = {
     1.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00
 };
-static const double dvx_wr_10[6] = {
+static const f64 dvx_wr_10[6] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_wi_10[6] = {
+static const f64 dvx_wi_10[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_10[6] = {
+static const f64 dvx_rcdein_10[6] = {
     2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35
 };
-static const double dvx_rcdvin_10[6] = {
+static const f64 dvx_rcdvin_10[6] = {
     2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35, 2.4074e-35
 };
 
-static const double dvx_A_11[36] = {
+static const f64 dvx_A_11[36] = {
     1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 2.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -244,39 +244,39 @@ static const double dvx_A_11[36] = {
     5.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 6.0000e+00
 };
-static const double dvx_wr_11[6] = {
+static const f64 dvx_wr_11[6] = {
     1.0000e+00, 2.0000e+00, 3.0000e+00, 4.0000e+00, 5.0000e+00, 6.0000e+00
 };
-static const double dvx_wi_11[6] = {
+static const f64 dvx_wi_11[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_11[6] = {
+static const f64 dvx_rcdein_11[6] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_11[6] = {
+static const f64 dvx_rcdvin_11[6] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
 
-static const double dvx_A_12[16] = {
+static const f64 dvx_A_12[16] = {
     9.4480e-01, 5.8760e-01, 7.2560e-01, 2.8490e-01,
     6.7670e-01, 8.6420e-01, 1.9430e-01, 5.8000e-02,
     6.9080e-01, 6.7690e-01, 9.6870e-01, 4.8450e-01,
     5.9650e-01, 7.2600e-02, 2.8310e-01, 7.3610e-01
 };
-static const double dvx_wr_12[4] = {
+static const f64 dvx_wr_12[4] = {
     2.4326e-01, 2.4326e-01, 7.4091e-01, 2.2864e+00
 };
-static const double dvx_wi_12[4] = {
+static const f64 dvx_wi_12[4] = {
     2.1409e-01, -2.1409e-01, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_12[4] = {
+static const f64 dvx_rcdein_12[4] = {
     8.7105e-01, 8.7105e-01, 9.8194e-01, 9.7723e-01
 };
-static const double dvx_rcdvin_12[4] = {
+static const f64 dvx_rcdvin_12[4] = {
     3.5073e-01, 3.5073e-01, 4.6989e-01, 1.5455e+00
 };
 
-static const double dvx_A_13[36] = {
+static const f64 dvx_A_13[36] = {
     5.0410e-01, 1.5740e-01, 4.4170e-01, 2.0080e-01,
     9.3610e-01, 5.5990e-01, 6.6520e-01, 3.7340e-01,
     7.2300e-02, 6.0800e-01, 7.4130e-01, 9.3360e-01,
@@ -287,20 +287,20 @@ static const double dvx_A_13[36] = {
     1.4280e-01, 6.7140e-01, 6.1310e-01, 6.5900e-02,
     3.0040e-01, 5.7680e-01, 7.2630e-01, 5.6170e-01
 };
-static const double dvx_wr_13[6] = {
+static const f64 dvx_wr_13[6] = {
     -5.2278e-01, -3.5380e-01, -8.0876e-03, 3.4760e-01, 3.4760e-01, 2.7698e+00
 };
-static const double dvx_wi_13[6] = {
+static const f64 dvx_wi_13[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 3.0525e-01, -3.0525e-01, 0.0000e+00
 };
-static const double dvx_rcdein_13[6] = {
+static const f64 dvx_rcdein_13[6] = {
     2.7888e-01, 3.5427e-01, 3.4558e-01, 5.4661e-01, 5.4661e-01, 9.6635e-01
 };
-static const double dvx_rcdvin_13[6] = {
+static const f64 dvx_rcdvin_13[6] = {
     1.1793e-01, 6.8911e-02, 1.3489e-01, 1.7729e-01, 1.7729e-01, 1.8270e+00
 };
 
-static const double dvx_A_14[25] = {
+static const f64 dvx_A_14[25] = {
     2.0000e-03, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 1.0000e+00, 1.0000e-03, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00,
@@ -309,20 +309,20 @@ static const double dvx_A_14[25] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00,
     0.0000e+00
 };
-static const double dvx_wr_14[5] = {
+static const f64 dvx_wr_14[5] = {
     -2.0000e-03, -1.0000e-03, 0.0000e+00, 1.0000e-03, 2.0000e-03
 };
-static const double dvx_wi_14[5] = {
+static const f64 dvx_wi_14[5] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_14[5] = {
+static const f64 dvx_rcdein_14[5] = {
     2.4000e-11, 6.0000e-12, 4.0000e-12, 6.0000e-12, 2.4000e-11
 };
-static const double dvx_rcdvin_14[5] = {
+static const f64 dvx_rcdvin_14[5] = {
     2.3952e-11, 5.9940e-12, 3.9920e-12, 5.9940e-12, 2.3952e-11
 };
 
-static const double dvx_A_15[100] = {
+static const f64 dvx_A_15[100] = {
     4.8630e-01, 7.1500e-01, 2.1210e-01, 7.1510e-01,
     5.6800e-01, 7.7210e-01, 7.3960e-01, 5.6370e-01,
     8.6560e-01, 5.3320e-01, 9.1260e-01, 2.6480e-01,
@@ -349,39 +349,39 @@ static const double dvx_A_15[100] = {
     1.0910e-01, 8.6840e-01, 1.7430e-01, 5.0270e-01,
     3.8910e-01, 2.9170e-01, 4.0790e-01, 2.5660e-01
 };
-static const double dvx_wr_15[10] = {
+static const f64 dvx_wr_15[10] = {
     -4.6121e-01, -4.6121e-01, -4.5164e-01, -1.4922e-01, -1.4922e-01, 3.3062e-02, 3.0849e-01, 3.0849e-01, 5.4509e-01, 5.0352e+00
 };
-static const double dvx_wi_15[10] = {
+static const f64 dvx_wi_15[10] = {
     7.2657e-01, -7.2657e-01, 0.0000e+00, 4.8255e-01, -4.8255e-01, 0.0000e+00, 1.1953e-01, -1.1953e-01, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_15[10] = {
+static const f64 dvx_rcdein_15[10] = {
     4.7781e-01, 4.7781e-01, 4.6034e-01, 4.7500e-01, 4.7500e-01, 2.9729e-01, 4.2947e-01, 4.2947e-01, 7.0777e-01, 9.7257e-01
 };
-static const double dvx_rcdvin_15[10] = {
+static const f64 dvx_rcdvin_15[10] = {
     1.5842e-01, 1.5842e-01, 1.9931e-01, 9.1686e-02, 9.1686e-02, 8.2469e-02, 3.9688e-02, 3.9688e-02, 1.5033e-01, 3.5548e+00
 };
 
-static const double dvx_A_16[16] = {
+static const f64 dvx_A_16[16] = {
     -3.8730e-01, 5.5230e-01, 1.6746e+00, -5.2500e-01,
     3.6560e-01, -1.1854e+00, -1.9900e-02, 3.5340e-01,
     3.1200e-02, 9.8330e-01, -1.8293e+00, -2.7210e-01,
     -5.8340e-01, 7.6670e-01, 5.7180e-01, -8.8300e-02
 };
-static const double dvx_wr_16[4] = {
+static const f64 dvx_wr_16[4] = {
     -1.8952e+00, -1.8952e+00, -9.5162e-02, 3.9520e-01
 };
-static const double dvx_wi_16[4] = {
+static const f64 dvx_wi_16[4] = {
     7.5059e-01, -7.5059e-01, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_16[4] = {
+static const f64 dvx_rcdein_16[4] = {
     8.1913e-01, 8.1913e-01, 8.0499e-01, 9.8222e-01
 };
-static const double dvx_rcdvin_16[4] = {
+static const f64 dvx_rcdvin_16[4] = {
     7.7090e-01, 7.7090e-01, 4.9037e-01, 4.9037e-01
 };
 
-static const double dvx_A_17[36] = {
+static const f64 dvx_A_17[36] = {
     -1.0777e+00, -1.3400e-02, 1.5230e-01, 1.4470e-01,
     -7.6510e-01, 8.1940e-01, 1.7027e+00, 3.9030e-01,
     3.0680e-01, -6.0570e-01, -1.7889e+00, 2.1100e-01,
@@ -392,20 +392,20 @@ static const double dvx_A_17[36] = {
     5.2170e-01, 1.7130e-01, 2.5710e-01, -1.3844e+00,
     -1.5416e+00, 6.2410e-01, 6.4700e-01, 5.5400e-01
 };
-static const double dvx_wr_17[6] = {
+static const f64 dvx_wr_17[6] = {
     -1.7029e+00, -1.0307e+00, 2.8487e-01, 2.8487e-01, 1.1675e+00, 1.1675e+00
 };
-static const double dvx_wi_17[6] = {
+static const f64 dvx_wi_17[6] = {
     0.0000e+00, 0.0000e+00, 1.2101e+00, -1.2101e+00, 4.6631e-01, -4.6631e-01
 };
-static const double dvx_rcdein_17[6] = {
+static const f64 dvx_rcdein_17[6] = {
     6.7909e-01, 7.2671e-01, 3.9757e-01, 3.9757e-01, 4.2334e-01, 4.2334e-01
 };
-static const double dvx_rcdvin_17[6] = {
+static const f64 dvx_rcdvin_17[6] = {
     6.7220e-01, 2.0436e-01, 4.9797e-01, 4.9797e-01, 1.9048e-01, 1.9048e-01
 };
 
-static const double dvx_A_18[100] = {
+static const f64 dvx_A_18[100] = {
     -1.0639e+00, -8.4400e-01, 1.5988e+00, -2.2960e-01,
     -3.6040e-01, 4.6150e-01, 1.2934e+00, -3.4710e-01,
     1.0190e+00, 1.2670e+00, 1.6120e-01, -2.2439e+00,
@@ -432,39 +432,39 @@ static const double dvx_A_18[100] = {
     8.6460e-01, -1.1150e-01, 2.9220e-01, -2.5480e-01,
     -1.8490e-01, 5.5180e-01, -4.9000e-03, 1.9700e-02
 };
-static const double dvx_wr_18[10] = {
+static const f64 dvx_wr_18[10] = {
     -2.6992e+00, -2.6992e+00, -2.4366e+00, -1.2882e+00, -1.2882e+00, 9.0275e-01, 9.0442e-01, 9.0442e-01, 1.6774e+00, 3.0060e+00
 };
-static const double dvx_wi_18[10] = {
+static const f64 dvx_wi_18[10] = {
     9.0387e-01, -9.0387e-01, 0.0000e+00, 8.8930e-01, -8.8930e-01, 0.0000e+00, 2.5661e+00, -2.5661e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_18[10] = {
+static const f64 dvx_rcdein_18[10] = {
     6.4005e-01, 6.4005e-01, 6.9083e-01, 5.3435e-01, 5.3435e-01, 2.9802e-01, 7.3193e-01, 7.3193e-01, 3.0743e-01, 8.5623e-01
 };
-static const double dvx_rcdvin_18[10] = {
+static const f64 dvx_rcdvin_18[10] = {
     4.1615e-01, 4.1615e-01, 2.5476e-01, 6.0878e-01, 6.0878e-01, 4.7530e-01, 6.2016e-01, 6.2016e-01, 4.1726e-01, 4.3175e-01
 };
 
-static const double dvx_A_19[16] = {
+static const f64 dvx_A_19[16] = {
     -1.2298e+00, 2.0390e-01, 0.0000e+00, 0.0000e+00,
     -2.3142e+00, -1.2298e+00, 0.0000e+00, 0.0000e+00,
     -6.9800e-02, 8.0500e-02, 2.5600e-01, 2.7480e-01,
     1.0523e+00, 9.7860e-01, -8.9100e-01, 2.5600e-01
 };
-static const double dvx_wr_19[4] = {
+static const f64 dvx_wr_19[4] = {
     -1.2298e+00, -1.2298e+00, 2.5600e-01, 2.5600e-01
 };
-static const double dvx_wi_19[4] = {
+static const f64 dvx_wi_19[4] = {
     6.8692e-01, -6.8692e-01, 4.9482e-01, -4.9482e-01
 };
-static const double dvx_rcdein_19[4] = {
+static const f64 dvx_rcdein_19[4] = {
     4.7136e-01, 4.7136e-01, 8.0960e-01, 8.0960e-01
 };
-static const double dvx_rcdvin_19[4] = {
+static const f64 dvx_rcdvin_19[4] = {
     7.1772e-01, 7.1772e-01, 5.1408e-01, 5.1408e-01
 };
 
-static const double dvx_A_20[36] = {
+static const f64 dvx_A_20[36] = {
     5.9930e-01, -2.2049e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.9372e+00, 5.9930e-01,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -475,57 +475,57 @@ static const double dvx_A_20[36] = {
     -1.0034e+00, -1.3400e-01, 2.7120e+00, -2.2110e-01,
     6.4960e-01, -1.5190e-01, 1.1954e+00, -1.0034e+00
 };
-static const double dvx_wr_20[6] = {
+static const f64 dvx_wr_20[6] = {
     -2.4567e+00, -1.0034e+00, -1.0034e+00, 5.9930e-01, 5.9930e-01, 7.3620e-01
 };
-static const double dvx_wi_20[6] = {
+static const f64 dvx_wi_20[6] = {
     0.0000e+00, 4.0023e-01, -4.0023e-01, 2.0667e+00, -2.0667e+00, 0.0000e+00
 };
-static const double dvx_rcdein_20[6] = {
+static const f64 dvx_rcdein_20[6] = {
     4.7091e-01, 3.6889e-01, 3.6889e-01, 5.8849e-01, 5.8849e-01, 6.0845e-01
 };
-static const double dvx_rcdvin_20[6] = {
+static const f64 dvx_rcdvin_20[6] = {
     8.5788e-01, 1.8909e-01, 1.8909e-01, 1.3299e+00, 1.3299e+00, 9.6725e-01
 };
 
-static const double dvx_A_21[16] = {
+static const f64 dvx_A_21[16] = {
     1.0000e-04, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     1.0000e+00, -1.0000e-04, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 1.0000e+00, 1.0000e-02, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.0000e+00, -5.0000e-03
 };
-static const double dvx_wr_21[4] = {
+static const f64 dvx_wr_21[4] = {
     -5.0000e-03, -1.0000e-04, 1.0000e-04, 1.0000e-02
 };
-static const double dvx_wi_21[4] = {
+static const f64 dvx_wi_21[4] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_21[4] = {
+static const f64 dvx_rcdein_21[4] = {
     3.7485e-07, 9.8979e-09, 1.0098e-08, 1.4996e-06
 };
-static const double dvx_rcdvin_21[4] = {
+static const f64 dvx_rcdvin_21[4] = {
     3.6932e-07, 9.8493e-09, 1.0046e-08, 1.4773e-06
 };
 
-static const double dvx_A_22[9] = {
+static const f64 dvx_A_22[9] = {
     2.0000e-06, 1.0000e-06, 0.0000e+00, 1.0000e+00,
     -2.0000e+00, 1.0000e+00, -2.0000e+00, 4.0000e+00,
     -2.0000e+00
 };
-static const double dvx_wr_22[3] = {
+static const f64 dvx_wr_22[3] = {
     -4.0000e+00, 0.0000e+00, 2.2096e-06
 };
-static const double dvx_wi_22[3] = {
+static const f64 dvx_wi_22[3] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_22[3] = {
+static const f64 dvx_rcdein_22[3] = {
     7.3030e-01, 7.2801e-01, 8.2763e-01
 };
-static const double dvx_rcdvin_22[3] = {
+static const f64 dvx_rcdvin_22[3] = {
     4.0000e+00, 1.3726e-06, 2.2096e-06
 };
 
-static const double dvx_A_23[36] = {
+static const f64 dvx_A_23[36] = {
     2.4080e-01, 6.9070e-01, 1.0620e-01, 2.6400e-01,
     7.0340e-01, 4.0210e-01, 6.5530e-01, 9.7000e-01,
     3.8000e-02, 9.8800e-02, 2.5600e-01, 5.5980e-01,
@@ -536,20 +536,20 @@ static const double dvx_A_23[36] = {
     5.8000e-02, 6.9080e-01, 2.4080e-01, 6.9070e-01,
     1.0620e-01, 2.6400e-01, 7.0340e-01, 4.0210e-01
 };
-static const double dvx_wr_23[6] = {
+static const f64 dvx_wr_23[6] = {
     -3.4008e-01, -3.4008e-01, -1.6998e-07, 7.2311e-01, 7.2311e-01, 2.5551e+00
 };
-static const double dvx_wi_23[6] = {
+static const f64 dvx_wi_23[6] = {
     3.2133e-01, -3.2133e-01, 0.0000e+00, 5.9389e-02, -5.9389e-02, 0.0000e+00
 };
-static const double dvx_rcdein_23[6] = {
+static const f64 dvx_rcdein_23[6] = {
     5.7839e-01, 5.7839e-01, 4.9641e-01, 7.0039e-01, 7.0039e-01, 9.2518e-01
 };
-static const double dvx_rcdvin_23[6] = {
+static const f64 dvx_rcdvin_23[6] = {
     2.0310e-01, 2.0310e-01, 2.1574e-01, 4.1945e-02, 4.1945e-02, 1.7390e+00
 };
 
-static const double dvx_A_24[36] = {
+static const f64 dvx_A_24[36] = {
     3.4800e+00, -4.9000e-01, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, -2.9900e+00, 2.4800e+00,
     -4.9000e-01, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -560,20 +560,20 @@ static const double dvx_A_24[36] = {
     2.4800e+00, -2.9900e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, -4.9000e-01, 3.4800e+00
 };
-static const double dvx_wr_24[6] = {
+static const f64 dvx_wr_24[6] = {
     1.3034e-02, 1.1294e+00, 2.0644e+00, 2.8388e+00, 4.3726e+00, 4.4618e+00
 };
-static const double dvx_wi_24[6] = {
+static const f64 dvx_wi_24[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_24[6] = {
+static const f64 dvx_rcdein_24[6] = {
     7.5301e-01, 6.0479e-01, 5.4665e-01, 4.2771e-01, 6.6370e-01, 5.7388e-01
 };
-static const double dvx_rcdvin_24[6] = {
+static const f64 dvx_rcdvin_24[6] = {
     6.0533e-01, 2.8613e-01, 1.7376e-01, 3.0915e-01, 7.6443e-02, 8.9227e-02
 };
 
-static const double dvx_A_25[36] = {
+static const f64 dvx_A_25[36] = {
     0.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, -1.0000e+00, 1.0000e+00, 0.0000e+00,
     1.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -584,20 +584,20 @@ static const double dvx_A_25[36] = {
     0.0000e+00, 1.0000e+00, 1.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.0000e+00, 0.0000e+00
 };
-static const double dvx_wr_25[6] = {
+static const f64 dvx_wr_25[6] = {
     -1.7321e+00, -1.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00, 1.7321e+00
 };
-static const double dvx_wi_25[6] = {
+static const f64 dvx_wi_25[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_25[6] = {
+static const f64 dvx_rcdein_25[6] = {
     8.6603e-01, 5.0000e-01, 2.9582e-31, 2.9582e-31, 5.0000e-01, 8.6603e-01
 };
-static const double dvx_rcdvin_25[6] = {
+static const f64 dvx_rcdvin_25[6] = {
     7.2597e-01, 2.6417e-01, 1.4600e-07, 6.2446e-08, 2.6417e-01, 3.7896e-01
 };
 
-static const double dvx_A_26[36] = {
+static const f64 dvx_A_26[36] = {
     3.5345e-01, 9.3545e-01, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 9.3023e-01, -3.5147e-01,
     -1.0555e-01, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -608,20 +608,20 @@ static const double dvx_A_26[36] = {
     -1.1398e-01, 6.8144e-01, -4.3480e-02, 1.6428e-02,
     -4.3789e-01, 5.0911e-01, 1.0612e-01, 7.3187e-01
 };
-static const double dvx_wr_26[6] = {
+static const f64 dvx_wr_26[6] = {
     -9.9980e-01, -9.9980e-01, 7.4539e-01, 7.4539e-01, 9.9929e-01, 9.9929e-01
 };
-static const double dvx_wi_26[6] = {
+static const f64 dvx_wi_26[6] = {
     1.9645e-02, -1.9645e-02, 6.6663e-01, -6.6663e-01, 3.7545e-02, -3.7545e-02
 };
-static const double dvx_rcdein_26[6] = {
+static const f64 dvx_rcdein_26[6] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_26[6] = {
+static const f64 dvx_rcdvin_26[6] = {
     3.9290e-02, 3.9290e-02, 5.2120e-01, 5.2120e-01, 7.5089e-02, 7.5089e-02
 };
 
-static const double dvx_A_27[36] = {
+static const f64 dvx_A_27[36] = {
     1.0000e+00, 5.0000e-01, 3.3330e-01, 2.5000e-01,
     2.0000e-01, 1.6670e-01, 1.0000e+00, 3.3330e-01,
     2.5000e-01, 2.0000e-01, 1.6670e-01, 1.4290e-01,
@@ -632,20 +632,20 @@ static const double dvx_A_27[36] = {
     1.1110e-01, 1.0000e-01, 1.0000e+00, 1.4290e-01,
     1.2500e-01, 1.1110e-01, 1.0000e-01, 9.0900e-02
 };
-static const double dvx_wr_27[6] = {
+static const f64 dvx_wr_27[6] = {
     -2.2135e-01, -3.1956e-02, -8.5031e-04, -5.8584e-05, 1.3895e-05, 2.1324e+00
 };
-static const double dvx_wi_27[6] = {
+static const f64 dvx_wi_27[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_27[6] = {
+static const f64 dvx_rcdein_27[6] = {
     4.0841e-01, 3.7927e-01, 6.2793e-01, 8.1156e-01, 9.7087e-01, 8.4325e-01
 };
-static const double dvx_rcdvin_27[6] = {
+static const f64 dvx_rcdvin_27[6] = {
     1.6605e-01, 3.0531e-02, 7.8195e-04, 7.2478e-05, 7.2478e-05, 1.8048e+00
 };
 
-static const double dvx_A_28[144] = {
+static const f64 dvx_A_28[144] = {
     1.2000e+01, 1.1000e+01, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -683,20 +683,20 @@ static const double dvx_A_28[144] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00,
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_wr_28[12] = {
+static const f64 dvx_wr_28[12] = {
     -2.8234e-02, 7.2587e-02, 7.2587e-02, 1.8533e-01, 2.8828e-01, 6.4315e-01, 1.5539e+00, 3.5119e+00, 6.9615e+00, 1.2311e+01, 2.0199e+01, 3.2229e+01
 };
-static const double dvx_wi_28[12] = {
+static const f64 dvx_wi_28[12] = {
     0.0000e+00, 9.0746e-02, -9.0746e-02, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_28[12] = {
+static const f64 dvx_rcdein_28[12] = {
     2.8690e-06, 1.5885e-06, 1.5885e-06, 6.5757e-07, 1.8324e-06, 6.8640e-05, 4.6255e-03, 1.4447e-01, 5.8447e-01, 3.1823e-01, 2.0079e-01, 3.0424e-01
 };
-static const double dvx_rcdvin_28[12] = {
+static const f64 dvx_rcdvin_28[12] = {
     3.2094e-06, 9.9934e-07, 9.9934e-07, 7.8673e-07, 2.0796e-06, 6.1058e-05, 6.4028e-03, 1.9470e-01, 1.2016e+00, 1.4273e+00, 2.4358e+00, 5.6865e+00
 };
 
-static const double dvx_A_29[36] = {
+static const f64 dvx_A_29[36] = {
     0.0000e+00, 5.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 1.0000e+00, 0.0000e+00,
     4.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
@@ -707,20 +707,20 @@ static const double dvx_A_29[36] = {
     0.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 5.0000e+00, 0.0000e+00
 };
-static const double dvx_wr_29[6] = {
+static const f64 dvx_wr_29[6] = {
     -5.0000e+00, -3.0000e+00, -1.0000e+00, 1.0000e+00, 3.0000e+00, 5.0000e+00
 };
-static const double dvx_wi_29[6] = {
+static const f64 dvx_wi_29[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_29[6] = {
+static const f64 dvx_rcdein_29[6] = {
     8.2295e-01, 7.2281e-01, 6.2854e-01, 6.2854e-01, 7.2281e-01, 8.2295e-01
 };
-static const double dvx_rcdvin_29[6] = {
+static const f64 dvx_rcdvin_29[6] = {
     1.2318e+00, 7.5970e-01, 6.9666e-01, 6.9666e-01, 7.5970e-01, 1.2318e+00
 };
 
-static const double dvx_A_30[36] = {
+static const f64 dvx_A_30[36] = {
     1.0000e+00, -1.0000e+00, -1.0000e+00, -1.0000e+00,
     -1.0000e+00, -1.0000e+00, 0.0000e+00, 1.0000e+00,
     -1.0000e+00, -1.0000e+00, -1.0000e+00, -1.0000e+00,
@@ -731,20 +731,20 @@ static const double dvx_A_30[36] = {
     1.0000e+00, -1.0000e+00, 1.0000e+00, 1.0000e+00,
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_wr_30[6] = {
+static const f64 dvx_wr_30[6] = {
     8.0298e-02, 8.0298e-02, 1.4415e+00, 1.4415e+00, 1.4782e+00, 1.4782e+00
 };
-static const double dvx_wi_30[6] = {
+static const f64 dvx_wi_30[6] = {
     2.4187e+00, -2.4187e+00, 6.2850e-01, -6.2850e-01, 1.5638e-01, -1.5638e-01
 };
-static const double dvx_rcdein_30[6] = {
+static const f64 dvx_rcdein_30[6] = {
     8.9968e-01, 8.9968e-01, 9.6734e-01, 9.6734e-01, 9.7605e-01, 9.7605e-01
 };
-static const double dvx_rcdvin_30[6] = {
+static const f64 dvx_rcdvin_30[6] = {
     1.5236e+00, 1.5236e+00, 4.2793e-01, 4.2793e-01, 2.2005e-01, 2.2005e-01
 };
 
-static const double dvx_A_31[36] = {
+static const f64 dvx_A_31[36] = {
     0.0000e+00, 1.0000e+00, 0.0000e+00, 1.0000e+00,
     1.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00,
     1.0000e+00, 0.0000e+00, 0.0000e+00, 1.0000e+00,
@@ -755,20 +755,20 @@ static const double dvx_A_31[36] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00,
     1.0000e+00, 1.0000e+00, 0.0000e+00, 1.0000e+00
 };
-static const double dvx_wr_31[6] = {
+static const f64 dvx_wr_31[6] = {
     -3.5343e-02, -3.5343e-02, 5.8440e-07, 6.4087e-01, 6.4087e-01, 3.7889e+00
 };
-static const double dvx_wi_31[6] = {
+static const f64 dvx_wi_31[6] = {
     7.4812e-01, -7.4812e-01, 0.0000e+00, 7.2822e-01, -7.2822e-01, 0.0000e+00
 };
-static const double dvx_rcdein_31[6] = {
+static const f64 dvx_rcdein_31[6] = {
     3.9345e-01, 3.9345e-01, 2.8868e-01, 4.5013e-01, 4.5013e-01, 9.6305e-01
 };
-static const double dvx_rcdvin_31[6] = {
+static const f64 dvx_rcdvin_31[6] = {
     1.8415e-01, 1.8415e-01, 1.7003e-01, 2.9425e-01, 2.9425e-01, 2.2469e+00
 };
 
-static const double dvx_A_32[36] = {
+static const f64 dvx_A_32[36] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00,
     1.0000e+00, 1.0000e+00, 4.0112e+00, 3.2616e+00,
     3.1500e+00, 3.2755e+00, 2.8214e+00, 2.6406e+00,
@@ -779,20 +779,20 @@ static const double dvx_A_32[36] = {
     8.2443e+01, 8.3558e+01, 3.9788e+02, 3.2936e+02,
     3.0215e+02, 3.2616e+02, 2.5893e+02, 2.6268e+02
 };
-static const double dvx_wr_32[6] = {
+static const f64 dvx_wr_32[6] = {
     -5.3220e-01, -1.0118e-01, -9.8749e-03, 2.9861e-03, 1.8075e-01, 3.9260e+02
 };
-static const double dvx_wi_32[6] = {
+static const f64 dvx_wi_32[6] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_32[6] = {
+static const f64 dvx_rcdein_32[6] = {
     5.3287e-01, 7.2342e-01, 7.3708e-01, 4.4610e-01, 4.2881e-01, 4.8057e-01
 };
-static const double dvx_rcdvin_32[6] = {
+static const f64 dvx_rcdvin_32[6] = {
     3.8557e-01, 9.1303e-02, 1.1032e-02, 1.2861e-02, 1.7378e-01, 3.9201e+02
 };
 
-static const double dvx_A_33[64] = {
+static const f64 dvx_A_33[64] = {
     0.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     4.0000e+00, 0.0000e+00, 1.0000e+00, 0.0000e+00,
@@ -810,20 +810,20 @@ static const double dvx_A_33[64] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 4.0000e+00, 0.0000e+00
 };
-static const double dvx_wr_33[8] = {
+static const f64 dvx_wr_33[8] = {
     -3.7588e+00, -3.0642e+00, -2.0000e+00, -6.9459e-01, 6.9459e-01, 2.0000e+00, 3.0642e+00, 3.7588e+00
 };
-static const double dvx_wi_33[8] = {
+static const f64 dvx_wi_33[8] = {
     0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_33[8] = {
+static const f64 dvx_rcdein_33[8] = {
     1.2253e-01, 4.9811e-02, 3.6914e-02, 3.3328e-02, 3.3328e-02, 3.6914e-02, 4.9811e-02, 1.2253e-01
 };
-static const double dvx_rcdvin_33[8] = {
+static const f64 dvx_rcdvin_33[8] = {
     1.2978e-01, 8.0162e-02, 8.2942e-02, 1.3738e-01, 1.1171e-01, 7.2156e-02, 6.8352e-02, 1.1527e-01
 };
 
-static const double dvx_A_34[36] = {
+static const f64 dvx_A_34[36] = {
     8.5000e+00, 2.6180e+00, -7.2360e-01, 3.8200e-01,
     -2.7640e-01, 5.0000e-01, -1.0472e+01, -1.1708e+00,
     2.0000e+00, -8.9440e-01, 6.1800e-01, -1.1056e+00,
@@ -834,39 +834,39 @@ static const double dvx_A_34[36] = {
     1.1708e+00, 1.0472e+01, -5.0000e-01, 2.7640e-01,
     -3.8200e-01, 7.2360e-01, -2.6180e+00, -8.5000e+00
 };
-static const double dvx_wr_34[6] = {
+static const f64 dvx_wr_34[6] = {
     -5.8930e-01, -2.7627e-01, -2.7627e-01, 2.7509e-01, 2.7509e-01, 5.9167e-01
 };
-static const double dvx_wi_34[6] = {
+static const f64 dvx_wi_34[6] = {
     0.0000e+00, 4.9852e-01, -4.9852e-01, 5.0059e-01, -5.0059e-01, 0.0000e+00
 };
-static const double dvx_rcdein_34[6] = {
+static const f64 dvx_rcdein_34[6] = {
     1.7357e-04, 1.7486e-04, 1.7486e-04, 1.7635e-04, 1.7635e-04, 1.7623e-04
 };
-static const double dvx_rcdvin_34[6] = {
+static const f64 dvx_rcdvin_34[6] = {
     2.8157e-04, 1.6704e-04, 1.6704e-04, 1.6828e-04, 1.6828e-04, 3.0778e-04
 };
 
-static const double dvx_A_35[16] = {
+static const f64 dvx_A_35[16] = {
     4.0000e+00, 0.0000e+00, 5.0000e+00, 3.0000e+00,
     -5.0000e+00, 4.0000e+00, -3.0000e+00, 0.0000e+00,
     0.0000e+00, -3.0000e+00, 4.0000e+00, 5.0000e+00,
     3.0000e+00, -5.0000e+00, 0.0000e+00, 4.0000e+00
 };
-static const double dvx_wr_35[4] = {
+static const f64 dvx_wr_35[4] = {
     1.0000e+00, 1.0000e+00, 2.0000e+00, 1.2000e+01
 };
-static const double dvx_wi_35[4] = {
+static const f64 dvx_wi_35[4] = {
     5.0000e+00, -5.0000e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_35[4] = {
+static const f64 dvx_rcdein_35[4] = {
     1.0000e+00, 1.0000e+00, 1.0000e+00, 1.0000e+00
 };
-static const double dvx_rcdvin_35[4] = {
+static const f64 dvx_rcdvin_35[4] = {
     4.3333e+00, 4.3333e+00, 4.3333e+00, 9.1250e+00
 };
 
-static const double dvx_A_36[25] = {
+static const f64 dvx_A_36[25] = {
     1.5000e+01, 1.0000e+00, 7.0000e+00, 7.0000e+00,
     1.7000e+01, 1.1000e+01, 3.0000e+00, 6.0000e+00,
     7.0000e+00, 1.2000e+01, 6.0000e+00, 9.0000e+00,
@@ -875,20 +875,20 @@ static const double dvx_A_36[25] = {
     -1.5000e+01, -8.0000e+00, -1.1000e+01, -1.1000e+01,
     -1.6000e+01
 };
-static const double dvx_wr_36[5] = {
+static const f64 dvx_wr_36[5] = {
     -9.9999e-01, 1.4980e+00, 1.4980e+00, 1.5020e+00, 1.5020e+00
 };
-static const double dvx_wi_36[5] = {
+static const f64 dvx_wi_36[5] = {
     0.0000e+00, 3.5752e+00, -3.5752e+00, 3.5662e+00, -3.5662e+00
 };
-static const double dvx_rcdein_36[5] = {
+static const f64 dvx_rcdein_36[5] = {
     2.1768e-01, 3.9966e-04, 3.9966e-04, 3.9976e-04, 3.9976e-04
 };
-static const double dvx_rcdvin_36[5] = {
+static const f64 dvx_rcdvin_36[5] = {
     5.2263e-01, 6.0947e-03, 6.0947e-03, 6.0960e-03, 6.0960e-03
 };
 
-static const double dvx_A_37[36] = {
+static const f64 dvx_A_37[36] = {
     -9.0000e+00, -1.0000e+01, -8.0000e+00, -6.0000e+00,
     -4.0000e+00, -2.0000e+00, 2.1000e+01, 2.1000e+01,
     1.6000e+01, 1.2000e+01, 8.0000e+00, 4.0000e+00,
@@ -899,20 +899,20 @@ static const double dvx_A_37[36] = {
     5.0000e+00, 1.0000e+00, 0.0000e+00, 0.0000e+00,
     0.0000e+00, 0.0000e+00, 0.0000e+00, 3.0000e+00
 };
-static const double dvx_wr_37[6] = {
+static const f64 dvx_wr_37[6] = {
     1.0000e+00, 1.0000e+00, 2.0000e+00, 2.0000e+00, 3.0000e+00, 3.0000e+00
 };
-static const double dvx_wi_37[6] = {
+static const f64 dvx_wi_37[6] = {
     6.2559e-04, -6.2559e-04, 1.0001e+00, -1.0001e+00, 0.0000e+00, 0.0000e+00
 };
-static const double dvx_rcdein_37[6] = {
+static const f64 dvx_rcdein_37[6] = {
     6.4875e-05, 6.4875e-05, 5.4076e-02, 5.4076e-02, 8.6149e-01, 1.2425e-01
 };
-static const double dvx_rcdvin_37[6] = {
+static const f64 dvx_rcdvin_37[6] = {
     5.0367e-04, 5.0367e-04, 2.3507e-01, 2.3507e-01, 5.4838e-07, 1.2770e-06
 };
 
-static const double dvx_A_38[100] = {
+static const f64 dvx_A_38[100] = {
     1.0000e+00, -1.0000e+00, -1.0000e+00, -1.0000e+00,
     -1.0000e+00, -1.0000e+00, -1.0000e+00, -1.0000e+00,
     -1.0000e+00, -1.0000e+00, 1.0000e+00, 2.0000e+00,
@@ -939,16 +939,16 @@ static const double dvx_A_38[100] = {
     -9.0000e+00, -1.2000e+01, -1.5000e+01, -1.8000e+01,
     -2.1000e+01, -2.4000e+01, -2.6000e+01, -2.5000e+01
 };
-static const double dvx_wr_38[10] = {
+static const f64 dvx_wr_38[10] = {
     1.0000e+00, 1.9867e+00, 2.0000e+00, 2.0000e+00, 2.0067e+00, 2.0067e+00, 2.9970e+00, 3.0000e+00, 3.0000e+00, 3.0030e+00
 };
-static const double dvx_wi_38[10] = {
+static const f64 dvx_wi_38[10] = {
     0.0000e+00, 0.0000e+00, 2.5052e-03, -2.5052e-03, 1.1763e-02, -1.1763e-02, 0.0000e+00, 8.7028e-04, -8.7028e-04, 0.0000e+00
 };
-static const double dvx_rcdein_38[10] = {
+static const f64 dvx_rcdein_38[10] = {
     3.6037e-02, 7.4283e-05, 1.4346e-04, 1.4346e-04, 6.7873e-05, 6.7873e-05, 9.2779e-05, 2.7358e-04, 2.7358e-04, 9.2696e-05
 };
-static const double dvx_rcdvin_38[10] = {
+static const f64 dvx_rcdvin_38[10] = {
     7.9613e-02, 7.4025e-06, 6.7839e-07, 6.7839e-07, 5.7496e-06, 5.7496e-06, 2.6519e-06, 1.9407e-07, 1.9407e-07, 2.6477e-06
 };
 

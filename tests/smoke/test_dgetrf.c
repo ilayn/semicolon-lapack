@@ -39,15 +39,15 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NMAX    50
 
 /* Routine under test */
-extern void dgetrf(const int m, const int n, double* A,
+extern void dgetrf(const int m, const int n, f64* A,
                    const int lda, int* ipiv, int* info);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 
 /**
  * Test parameters for a single test case.
@@ -63,11 +63,11 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AFAC;   /* Factored matrix (NMAX x NMAX) */
-    double* D;      /* Singular values for dlatms */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f64* D;      /* Singular values for dlatms */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
     int* IPIV;      /* Pivot indices */
 } dgetrf_workspace_t;
 
@@ -82,11 +82,11 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dgetrf_workspace_t));
     if (!g_workspace) return -1;
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
-    g_workspace->WORK = malloc(3 * NMAX * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
+    g_workspace->WORK = malloc(3 * NMAX * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
     g_workspace->IPIV = malloc(NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->D ||
@@ -125,7 +125,7 @@ static void run_dgetrf_single(int m, int n, int imat)
 
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int lda = (m > 1) ? m : 1;
     int minmn = (m < n) ? m : n;
@@ -175,10 +175,10 @@ static void run_dgetrf_single(int m, int n, int imat)
     }
 
     /* Verify factorization using dget01 */
-    double resid;
-    double* AFAC_copy = malloc(lda * n * sizeof(double));
+    f64 resid;
+    f64* AFAC_copy = malloc(lda * n * sizeof(f64));
     assert_non_null(AFAC_copy);
-    memcpy(AFAC_copy, ws->AFAC, lda * n * sizeof(double));
+    memcpy(AFAC_copy, ws->AFAC, lda * n * sizeof(f64));
 
     dget01(m, n, ws->A, lda, AFAC_copy, lda, ws->IPIV, ws->RWORK, &resid);
     free(AFAC_copy);

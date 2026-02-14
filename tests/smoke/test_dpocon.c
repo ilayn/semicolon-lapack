@@ -20,21 +20,21 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, double* const restrict A,
+extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
-extern void dpotri(const char* uplo, const int n, double* const restrict A,
+extern void dpotri(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
 extern void dpocon(const char* uplo, const int n,
-                   const double* const restrict A, const int lda,
-                   const double anorm, double* rcond,
-                   double* const restrict work, int* const restrict iwork,
+                   const f64* const restrict A, const int lda,
+                   const f64 anorm, f64* rcond,
+                   f64* const restrict work, int* const restrict iwork,
                    int* info);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /*
  * Test fixture
@@ -42,12 +42,12 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 typedef struct {
     int n;
     int lda;
-    double* A;       /* Original matrix */
-    double* AFAC;    /* Factored matrix */
-    double* AINV;    /* Inverse for true condition number */
-    double* d;
-    double* work;
-    double* rwork;
+    f64* A;       /* Original matrix */
+    f64* AFAC;    /* Factored matrix */
+    f64* AINV;    /* Inverse for true condition number */
+    f64* d;
+    f64* work;
+    f64* rwork;
     int* iwork;
     uint64_t seed;
 } dpocon_fixture_t;
@@ -63,12 +63,12 @@ static int dpocon_setup(void** state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AFAC = malloc(fix->lda * n * sizeof(double));
-    fix->AINV = malloc(fix->lda * n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AFAC = malloc(fix->lda * n * sizeof(f64));
+    fix->AINV = malloc(fix->lda * n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -110,7 +110,7 @@ static void run_dpocon_test(dpocon_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -123,29 +123,29 @@ static void run_dpocon_test(dpocon_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Factor A */
-    memcpy(fix->AFAC, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AFAC, fix->A, fix->lda * fix->n * sizeof(f64));
     dpotrf(uplo, fix->n, fix->AFAC, fix->lda, &info);
     assert_info_success(info);
 
     /* Compute inverse for true condition number */
-    memcpy(fix->AINV, fix->AFAC, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AINV, fix->AFAC, fix->lda * fix->n * sizeof(f64));
     dpotri(uplo, fix->n, fix->AINV, fix->lda, &info);
     assert_info_success(info);
 
     /* Compute true reciprocal condition number */
-    double anorm_1 = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
-    double ainvnm_1 = dlansy("1", uplo, fix->n, fix->AINV, fix->lda, fix->rwork);
-    double rcondc = (anorm_1 > 0.0 && ainvnm_1 > 0.0) ?
+    f64 anorm_1 = dlansy("1", uplo, fix->n, fix->A, fix->lda, fix->rwork);
+    f64 ainvnm_1 = dlansy("1", uplo, fix->n, fix->AINV, fix->lda, fix->rwork);
+    f64 rcondc = (anorm_1 > 0.0 && ainvnm_1 > 0.0) ?
                     (1.0 / anorm_1) / ainvnm_1 : 0.0;
 
     /* Estimate condition number */
-    double rcond_est;
+    f64 rcond_est;
     dpocon(uplo, fix->n, fix->AFAC, fix->lda, anorm_1, &rcond_est,
            fix->work, fix->iwork, &info);
     assert_info_success(info);
 
     if (rcondc > 0.0) {
-        double ratio = dget06(rcond_est, rcondc);
+        f64 ratio = dget06(rcond_est, rcondc);
         assert_residual_ok(ratio);
     }
 }

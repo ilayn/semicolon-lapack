@@ -17,9 +17,9 @@ static void test_diagonal_matrix(void** state)
 
     int n = 5;
     int lda = n;
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -27,7 +27,7 @@ static void test_diagonal_matrix(void** state)
 
     /* Set known diagonal values */
     for (int i = 0; i < n; i++) {
-        d[i] = (double)(i + 1);
+        d[i] = (f64)(i + 1);
     }
 
     /* Generate diagonal matrix (kl=ku=0) */
@@ -62,9 +62,9 @@ static void test_nonsym_banded_givens(void** state)
     int m = 10, n = 10;
     int kl = 2, ku = 2;
     int lda = m;
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -104,9 +104,9 @@ static void test_symmetric_givens(void** state)
     int n = 8;
     int k = 2;  /* bandwidth */
     int lda = n;
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -118,10 +118,10 @@ static void test_symmetric_givens(void** state)
     assert_info_success(info);
 
     /* Check symmetry */
-    double max_diff = 0.0;
+    f64 max_diff = 0.0;
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
-            double diff = fabs(A[i + j * lda] - A[j + i * lda]);
+            f64 diff = fabs(A[i + j * lda] - A[j + i * lda]);
             if (diff > max_diff) max_diff = diff;
         }
     }
@@ -153,9 +153,9 @@ static void test_band_storage_B(void** state)
     int n = 6;
     int k = 2;  /* bandwidth */
     int lda = k + 1;  /* band storage: kl + 1 rows */
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -163,7 +163,7 @@ static void test_band_storage_B(void** state)
 
     /* Set known eigenvalues */
     for (int i = 0; i < n; i++) {
-        d[i] = (double)(n - i);
+        d[i] = (f64)(n - i);
     }
 
     /* Generate symmetric matrix in band storage */
@@ -196,9 +196,9 @@ static void test_band_storage_Q(void** state)
     int n = 6;
     int k = 2;  /* bandwidth */
     int lda = k + 1;  /* band storage: ku + 1 rows */
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -206,7 +206,7 @@ static void test_band_storage_Q(void** state)
 
     /* Set known eigenvalues */
     for (int i = 0; i < n; i++) {
-        d[i] = (double)(n - i);
+        d[i] = (f64)(n - i);
     }
 
     /* Generate symmetric matrix in band storage */
@@ -239,9 +239,9 @@ static void test_band_storage_Z(void** state)
     int n = 6;
     int kl = 2, ku = 1;
     int lda = kl + ku + 1;
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -277,9 +277,9 @@ static void test_householder_path(void** state)
     int n = 10;
     int kl = 8, ku = 8;  /* Large bandwidth triggers Householder */
     int lda = n;
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -291,7 +291,7 @@ static void test_householder_path(void** state)
     assert_info_success(info);
 
     /* Check matrix is not all zeros */
-    double sum = 0.0;
+    f64 sum = 0.0;
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
             sum += fabs(A[i + j * lda]);
@@ -311,9 +311,9 @@ static void test_pack_C(void** state)
 
     int n = 5;
     int lda = n * (n + 1) / 2;  /* packed storage size */
-    double* A = calloc(lda, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
 
     uint64_t rng_state[4];
@@ -325,7 +325,7 @@ static void test_pack_C(void** state)
     assert_info_success(info);
 
     /* Check not all zeros */
-    double sum = 0.0;
+    f64 sum = 0.0;
     for (int i = 0; i < n * (n + 1) / 2; i++) {
         sum += fabs(A[i]);
     }
@@ -343,9 +343,9 @@ static void test_error_handling(void** state)
 
     int n = 5;
     int lda = n;
-    double* A = calloc(lda * n, sizeof(double));
-    double* d = malloc(n * sizeof(double));
-    double* work = malloc(3 * n * sizeof(double));
+    f64* A = calloc(lda * n, sizeof(f64));
+    f64* d = malloc(n * sizeof(f64));
+    f64* work = malloc(3 * n * sizeof(f64));
     int info;
     uint64_t rng_state[4];
     rng_seed(rng_state, 50ULL);

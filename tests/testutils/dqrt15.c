@@ -13,19 +13,19 @@
 #include "test_rng.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dlascl(const char* type, const int kl, const int ku,
-                   const double cfrom, const double cto,
-                   const int m, const int n, double* A, const int lda,
+                   const f64 cfrom, const f64 cto,
+                   const int m, const int n, f64* A, const int lda,
                    int* info);
 extern void dlarf(const char* side, const int m, const int n,
-                  const double* v, const int incv, const double tau,
-                  double* C, const int ldc, double* work);
+                  const f64* v, const int incv, const f64 tau,
+                  f64* C, const int ldc, f64* work);
 extern void xerbla(const char* srname, const int info);
 /* dlaror declared in verify.h */
 
@@ -83,19 +83,19 @@ extern void xerbla(const char* srname, const int info);
  */
 void dqrt15(const int scale, const int rksel,
             const int m, const int n, const int nrhs,
-            double* A, const int lda, double* B, const int ldb,
-            double* S, int* rank, double* norma, double* normb,
-            double* work, const int lwork,
+            f64* A, const int lda, f64* B, const int ldb,
+            f64* S, int* rank, f64* norma, f64* normb,
+            f64* work, const int lwork,
             uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double SVMIN = 0.1;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 SVMIN = 0.1;
 
     int info, j, mn;
-    double bignum, eps, smlnum, temp;
-    double dummy[1];
+    f64 bignum, eps, smlnum, temp;
+    f64 dummy[1];
 
     mn = (m < n) ? m : n;
 
@@ -143,7 +143,7 @@ void dqrt15(const int scale, const int rksel,
 
         /* Generate 'rank' columns of a random orthogonal matrix in A */
         rng_fill(state, 2, m, work);  /* Uniform(-1,1) */
-        double nrm = cblas_dnrm2(m, work, 1);
+        f64 nrm = cblas_dnrm2(m, work, 1);
         cblas_dscal(m, ONE / nrm, work, 1);
         dlaset("F", m, *rank, ZERO, ONE, A, lda);
         dlarf("L", m, *rank, work, 1, TWO, A, lda, &work[m]);

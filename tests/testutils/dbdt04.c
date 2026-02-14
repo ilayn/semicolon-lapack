@@ -11,7 +11,7 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DBDT04 reconstructs a bidiagonal matrix B from its (partial) SVD:
@@ -38,17 +38,17 @@ extern double dlamch(const char* cmach);
  * @param[out]    resid  The test ratio.
  */
 void dbdt04(const char* uplo, const int n,
-            const double* const restrict D, const double* const restrict E,
-            const double* const restrict S, const int ns,
-            const double* const restrict U, const int ldu,
-            const double* const restrict VT, const int ldvt,
-            double* const restrict work, double* resid)
+            const f64* const restrict D, const f64* const restrict E,
+            const f64* const restrict S, const int ns,
+            const f64* const restrict U, const int ldu,
+            const f64* const restrict VT, const int ldvt,
+            f64* const restrict work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, k;
-    double bnorm, eps;
+    f64 bnorm, eps;
 
     /* Quick return if possible. */
     *resid = ZERO;
@@ -99,7 +99,7 @@ void dbdt04(const char* uplo, const int n,
     k = n * ns;
     for (i = 0; i < ns; i++) {
         work[k + i] = work[k + i] + S[i];
-        double colsum = cblas_dasum(ns, &work[k], 1);
+        f64 colsum = cblas_dasum(ns, &work[k], 1);
         if (colsum > *resid)
             *resid = colsum;
         k += ns;
@@ -110,14 +110,14 @@ void dbdt04(const char* uplo, const int n,
             *resid = ONE / eps;
     } else {
         if (bnorm >= *resid) {
-            *resid = (*resid / bnorm) / ((double)n * eps);
+            *resid = (*resid / bnorm) / ((f64)n * eps);
         } else {
             if (bnorm < ONE) {
-                double tmp = fmin(*resid, (double)n * bnorm);
-                *resid = (tmp / bnorm) / ((double)n * eps);
+                f64 tmp = fmin(*resid, (f64)n * bnorm);
+                *resid = (tmp / bnorm) / ((f64)n * eps);
             } else {
-                double tmp = fmin(*resid / bnorm, (double)n);
-                *resid = tmp / ((double)n * eps);
+                f64 tmp = fmin(*resid / bnorm, (f64)n);
+                *resid = tmp / ((f64)n * eps);
             }
         }
     }

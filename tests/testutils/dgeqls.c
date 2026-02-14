@@ -39,16 +39,16 @@ void dgeqls(
     const int m,
     const int n,
     const int nrhs,
-    double* A,
+    f64* A,
     const int lda,
-    const double* tau,
-    double* B,
+    const f64* tau,
+    f64* B,
     const int ldb,
-    double* work,
+    f64* work,
     const int lwork,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     *info = 0;
     if (m < 0) {

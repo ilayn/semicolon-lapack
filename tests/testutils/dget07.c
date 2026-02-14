@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 // Forward declarations
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DGET07 tests the error bounds from iterative refinement for the
@@ -68,24 +68,24 @@ void dget07(
     const char* trans,
     const int n,
     const int nrhs,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    const double * const restrict B,
+    const f64 * const restrict B,
     const int ldb,
-    const double * const restrict X,
+    const f64 * const restrict X,
     const int ldx,
-    const double * const restrict XACT,
+    const f64 * const restrict XACT,
     const int ldxact,
-    const double * const restrict ferr,
+    const f64 * const restrict ferr,
     const bool chkferr,
-    const double * const restrict berr,
-    double * const restrict reslts)
+    const f64 * const restrict berr,
+    f64 * const restrict reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, imax, j, k;
-    double axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
+    f64 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
     int notran = (trans[0] == 'N' || trans[0] == 'n');
 
     // Quick exit if n = 0 or nrhs = 0
@@ -116,7 +116,7 @@ void dget07(
             // Compute infinity-norm of X(:,j) - XACT(:,j)
             diff = ZERO;
             for (i = 0; i < n; i++) {
-                double d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+                f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
                 if (d > diff) {
                     diff = d;
                 }
@@ -125,7 +125,7 @@ void dget07(
             if (xnorm > ONE) {
                 // Normal case
                 if (diff / xnorm <= ferr[j]) {
-                    double ratio = (diff / xnorm) / ferr[j];
+                    f64 ratio = (diff / xnorm) / ferr[j];
                     if (ratio > errbnd) {
                         errbnd = ratio;
                     }
@@ -135,7 +135,7 @@ void dget07(
             } else if (diff <= ovfl * xnorm) {
                 // Avoid overflow
                 if (diff / xnorm <= ferr[j]) {
-                    double ratio = (diff / xnorm) / ferr[j];
+                    f64 ratio = (diff / xnorm) / ferr[j];
                     if (ratio > errbnd) {
                         errbnd = ratio;
                     }
@@ -172,7 +172,7 @@ void dget07(
             }
         }
 
-        double denom = (n + 1) * eps + (n + 1) * unfl / fmax(axbi, (n + 1) * unfl);
+        f64 denom = (n + 1) * eps + (n + 1) * unfl / fmax(axbi, (n + 1) * unfl);
         tmp = berr[k] / denom;
 
         if (k == 0) {

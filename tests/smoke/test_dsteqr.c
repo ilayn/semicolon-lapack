@@ -27,20 +27,20 @@
 #include <cblas.h>
 
 /* Routine under test */
-extern void dsteqr(const char* compz, const int n, double* D, double* E,
-                   double* Z, const int ldz, double* work, int* info);
+extern void dsteqr(const char* compz, const int n, f64* D, f64* E,
+                   f64* Z, const int ldz, f64* work, int* info);
 
 /* Verification routines */
 extern void dstt21(const int n, const int kband,
-                   const double* AD, const double* AE,
-                   const double* SD, const double* SE,
-                   const double* U, const int ldu,
-                   double* work, double* result);
-extern void dstech(const int n, const double* A, const double* B,
-                   const double* eig, const double tol, double* work, int* info);
+                   const f64* AD, const f64* AE,
+                   const f64* SD, const f64* SE,
+                   const f64* U, const int ldu,
+                   f64* work, f64* result);
+extern void dstech(const int n, const f64* A, const f64* B,
+                   const f64* eig, const f64 tol, f64* work, int* info);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -48,14 +48,14 @@ extern double dlamch(const char* cmach);
  */
 typedef struct {
     int n;
-    double* AD;         /* original diagonal (preserved) */
-    double* AE;         /* original off-diagonal (preserved) */
-    double* D;          /* diagonal for dsteqr (overwritten) */
-    double* E;          /* off-diagonal for dsteqr (overwritten) */
-    double* Z;          /* eigenvectors (n x n) */
-    double* work;       /* workspace for dsteqr: max(1, 2*(n-1)) */
-    double* work_dstt21;/* workspace for dstt21: n*(n+1) */
-    double* result;     /* dstt21 results (2 elements) */
+    f64* AD;         /* original diagonal (preserved) */
+    f64* AE;         /* original off-diagonal (preserved) */
+    f64* D;          /* diagonal for dsteqr (overwritten) */
+    f64* E;          /* off-diagonal for dsteqr (overwritten) */
+    f64* Z;          /* eigenvectors (n x n) */
+    f64* work;       /* workspace for dsteqr: max(1, 2*(n-1)) */
+    f64* work_dstt21;/* workspace for dstt21: n*(n+1) */
+    f64* result;     /* dstt21 results (2 elements) */
     uint64_t seed;
     uint64_t rng_state[4];
 } dsteqr_fixture_t;
@@ -80,14 +80,14 @@ static int dsteqr_setup(void** state, int n)
     int work_steqr = (n > 2) ? 2 * (n - 1) : 1;
     int work_stt21 = (n > 0) ? n * (n + 1) : 1;
 
-    fix->AD = malloc(n_alloc * sizeof(double));
-    fix->AE = malloc(e_alloc * sizeof(double));
-    fix->D = malloc(n_alloc * sizeof(double));
-    fix->E = malloc(e_alloc * sizeof(double));
-    fix->Z = malloc(n_alloc * n_alloc * sizeof(double));
-    fix->work = malloc(work_steqr * sizeof(double));
-    fix->work_dstt21 = malloc(work_stt21 * sizeof(double));
-    fix->result = malloc(2 * sizeof(double));
+    fix->AD = malloc(n_alloc * sizeof(f64));
+    fix->AE = malloc(e_alloc * sizeof(f64));
+    fix->D = malloc(n_alloc * sizeof(f64));
+    fix->E = malloc(e_alloc * sizeof(f64));
+    fix->Z = malloc(n_alloc * n_alloc * sizeof(f64));
+    fix->work = malloc(work_steqr * sizeof(f64));
+    fix->work_dstt21 = malloc(work_stt21 * sizeof(f64));
+    fix->result = malloc(2 * sizeof(f64));
 
     assert_non_null(fix->AD);
     assert_non_null(fix->AE);
@@ -140,7 +140,7 @@ static int setup_50(void** state) { return dsteqr_setup(state, 50); }
  * @param E     Off-diagonal array (length n-1)
  * @param seed  RNG seed (used for types 5-6)
  */
-static void generate_steqr_matrix(int n, int imat, double* D, double* E,
+static void generate_steqr_matrix(int n, int imat, f64* D, f64* E,
                                    uint64_t state[static 4])
 {
     int i;
@@ -166,7 +166,7 @@ static void generate_steqr_matrix(int n, int imat, double* D, double* E,
 
     case 4:
         /* Wilkinson-like: D[i]=|i - n/2|, E[i]=1 */
-        for (i = 0; i < n; i++) D[i] = fabs((double)i - (double)(n / 2));
+        for (i = 0; i < n; i++) D[i] = fabs((f64)i - (f64)(n / 2));
         for (i = 0; i < n - 1; i++) E[i] = 1.0;
         break;
 
@@ -184,7 +184,7 @@ static void generate_steqr_matrix(int n, int imat, double* D, double* E,
 
     case 7:
         /* Graded diagonal: D[i] = 2^(-i), E[i] = 1 */
-        for (i = 0; i < n; i++) D[i] = pow(2.0, -(double)i);
+        for (i = 0; i < n; i++) D[i] = pow(2.0, -(f64)i);
         for (i = 0; i < n - 1; i++) E[i] = 1.0;
         break;
 
@@ -216,9 +216,9 @@ static void test_compz_I(void** state)
         generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original for verification */
-        memcpy(fix->AD, fix->D, n * sizeof(double));
+        memcpy(fix->AD, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(fix->AE, fix->E, (n - 1) * sizeof(double));
+            memcpy(fix->AE, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* Compute eigenvalues and eigenvectors */
@@ -245,13 +245,13 @@ static void test_compz_N(void** state)
     dsteqr_fixture_t* fix = *state;
     int n = fix->n;
     int info;
-    double ulp = dlamch("E");
+    f64 ulp = dlamch("E");
 
     /* Allocate temporary arrays for the COMPZ='I' computation */
     int n_alloc = (n > 0) ? n : 1;
     int e_alloc = (n > 1) ? n - 1 : 1;
-    double* D_I = malloc(n_alloc * sizeof(double));
-    double* E_I = malloc(e_alloc * sizeof(double));
+    f64* D_I = malloc(n_alloc * sizeof(f64));
+    f64* E_I = malloc(e_alloc * sizeof(f64));
     assert_non_null(D_I);
     assert_non_null(E_I);
 
@@ -263,9 +263,9 @@ static void test_compz_N(void** state)
         generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Copy for COMPZ='I' run */
-        memcpy(D_I, fix->D, n * sizeof(double));
+        memcpy(D_I, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(E_I, fix->E, (n - 1) * sizeof(double));
+            memcpy(E_I, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* Compute with COMPZ='I' for reference eigenvalues */
@@ -282,21 +282,21 @@ static void test_compz_N(void** state)
 
         /* Compare eigenvalues: both should be sorted, so direct comparison.
          * Compute max|D_N[i] - D_I[i]| / (n * max|D_I| * ulp) */
-        double max_eig = 0.0;
+        f64 max_eig = 0.0;
         for (int i = 0; i < n; i++) {
-            double a = fabs(D_I[i]);
+            f64 a = fabs(D_I[i]);
             if (a > max_eig) max_eig = a;
         }
 
-        double max_diff = 0.0;
+        f64 max_diff = 0.0;
         for (int i = 0; i < n; i++) {
-            double d = fabs(fix->D[i] - D_I[i]);
+            f64 d = fabs(fix->D[i] - D_I[i]);
             if (d > max_diff) max_diff = d;
         }
 
-        double denom = (double)n * ulp;
+        f64 denom = (f64)n * ulp;
         if (max_eig > 0.0) denom *= max_eig;
-        double resid = (denom > 0.0) ? max_diff / denom : 0.0;
+        f64 resid = (denom > 0.0) ? max_diff / denom : 0.0;
 
         assert_residual_ok(resid);
     }
@@ -317,7 +317,7 @@ static void test_sturm(void** state)
 
     /* Allocate workspace for dstech: length n */
     int n_alloc = (n > 0) ? n : 1;
-    double* stech_work = malloc(n_alloc * sizeof(double));
+    f64* stech_work = malloc(n_alloc * sizeof(f64));
     assert_non_null(stech_work);
 
     for (int imat = 1; imat <= 7; imat++) {
@@ -328,9 +328,9 @@ static void test_sturm(void** state)
         generate_steqr_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original diagonal and off-diagonal */
-        memcpy(fix->AD, fix->D, n * sizeof(double));
+        memcpy(fix->AD, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(fix->AE, fix->E, (n - 1) * sizeof(double));
+            memcpy(fix->AE, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* Compute eigenvalues */

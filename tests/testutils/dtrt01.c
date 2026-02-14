@@ -10,10 +10,10 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const double* A, const int lda,
-                     double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
+                     const int m, const int n, const f64* A, const int lda,
+                     f64* work);
 
 /**
  * DTRT01 computes the residual for a triangular matrix A times its inverse:
@@ -33,14 +33,14 @@ extern double dlantr(const char* norm, const char* uplo, const char* diag,
  * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
  */
 void dtrt01(const char* uplo, const char* diag, const int n,
-            const double* A, const int lda,
-            double* AINV, const int ldainv,
-            double* rcond, double* work, double* resid)
+            const f64* A, const int lda,
+            f64* AINV, const int ldainv,
+            f64* rcond, f64* work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int j;
-    double ainvnm, anorm, eps;
+    f64 ainvnm, anorm, eps;
 
     /* Quick exit if N = 0 */
     if (n <= 0) {
@@ -94,5 +94,5 @@ void dtrt01(const char* uplo, const char* diag, const int n,
 
     /* Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS) */
     *resid = dlantr("1", uplo, "N", n, n, AINV, ldainv, work);
-    *resid = ((*resid) * (*rcond) / (double)n) / eps;
+    *resid = ((*resid) * (*rcond) / (f64)n) / eps;
 }

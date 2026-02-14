@@ -20,16 +20,16 @@
 #define THRESH 20.0
 
 /* Routine under test */
-extern void dgeequ(const int m, const int n, const double * const restrict A,
-                   const int lda, double * const restrict R,
-                   double * const restrict C, double *rowcnd, double *colcnd,
-                   double *amax, int *info);
+extern void dgeequ(const int m, const int n, const f64 * const restrict A,
+                   const int lda, f64 * const restrict R,
+                   f64 * const restrict C, f64 *rowcnd, f64 *colcnd,
+                   f64 *amax, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
+extern f64 dlamch(const char *cmach);
 
 /* Equilibration quality threshold */
-static const double DGEEQU_THRESH = 0.1;
+static const f64 DGEEQU_THRESH = 0.1;
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -38,25 +38,25 @@ static const double DGEEQU_THRESH = 0.1;
 typedef struct {
     int m, n;
     int lda;
-    double *A;       /* Matrix */
-    double *R;       /* Row scaling factors */
-    double *C;       /* Column scaling factors */
-    double *row_max; /* Workspace for row max verification */
-    double *col_max; /* Workspace for column max verification */
+    f64 *A;       /* Matrix */
+    f64 *R;       /* Row scaling factors */
+    f64 *C;       /* Column scaling factors */
+    f64 *row_max; /* Workspace for row max verification */
+    f64 *col_max; /* Workspace for column max verification */
 } dgeequ_fixture_t;
 
 /**
  * Generate a matrix with varying row/column magnitudes.
  * Each row is scaled by row_scale^i and each column by col_scale^j.
  */
-static void generate_unbalanced_matrix(int m, int n, double *A, int lda,
-                                       double row_scale, double col_scale)
+static void generate_unbalanced_matrix(int m, int n, f64 *A, int lda,
+                                       f64 row_scale, f64 col_scale)
 {
     for (int j = 0; j < n; j++) {
-        double cscale = pow(col_scale, j);
+        f64 cscale = pow(col_scale, j);
         for (int i = 0; i < m; i++) {
-            double rscale = pow(row_scale, i);
-            A[i + j * lda] = rscale * cscale * (1.0 + (double)(i + j) / (m + n));
+            f64 rscale = pow(row_scale, i);
+            A[i + j * lda] = rscale * cscale * (1.0 + (f64)(i + j) / (m + n));
         }
     }
 }
@@ -74,11 +74,11 @@ static int dgeequ_setup(void **state, int m, int n)
     fix->n = n;
     fix->lda = m;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->R = malloc(m * sizeof(double));
-    fix->C = malloc(n * sizeof(double));
-    fix->row_max = calloc(m, sizeof(double));
-    fix->col_max = calloc(n, sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->R = malloc(m * sizeof(f64));
+    fix->C = malloc(n * sizeof(f64));
+    fix->row_max = calloc(m, sizeof(f64));
+    fix->col_max = calloc(n, sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->R);
@@ -132,17 +132,17 @@ static void test_dgeequ_equilibration(void **state)
 {
     dgeequ_fixture_t *fix = *state;
     int m = fix->m, n = fix->n, lda = fix->lda;
-    double rowcnd, colcnd, amax;
+    f64 rowcnd, colcnd, amax;
     int info;
 
     /* Generate matrix with exponentially varying row/column magnitudes */
     generate_unbalanced_matrix(m, n, fix->A, lda, 10.0, 10.0);
 
     /* Compute expected amax (largest element) */
-    double expected_amax = 0.0;
+    f64 expected_amax = 0.0;
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            double val = fabs(fix->A[i + j * lda]);
+            f64 val = fabs(fix->A[i + j * lda]);
             if (val > expected_amax) expected_amax = val;
         }
     }
@@ -154,7 +154,7 @@ static void test_dgeequ_equilibration(void **state)
     assert_int_equal(info, 0);
 
     /* Verify amax matches expected */
-    double amax_err = fabs(amax - expected_amax) / expected_amax;
+    f64 amax_err = fabs(amax - expected_amax) / expected_amax;
     assert_residual_below(amax_err, 1e-10);
 
     /* Verify that scaling factors are positive */
@@ -171,10 +171,10 @@ static void test_dgeequ_equilibration(void **state)
     assert_true(c_positive);
 
     /* Verify that after scaling by R, each row's max is approximately 1 */
-    memset(fix->row_max, 0, m * sizeof(double));
+    memset(fix->row_max, 0, m * sizeof(f64));
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            double scaled = fabs(fix->A[i + j * lda]) * fix->R[i];
+            f64 scaled = fabs(fix->A[i + j * lda]) * fix->R[i];
             if (scaled > fix->row_max[i]) fix->row_max[i] = scaled;
         }
     }
@@ -188,10 +188,10 @@ static void test_dgeequ_equilibration(void **state)
     /* Verify that after scaling by R and C, each column's max is approximately 1.
      * C is computed to equilibrate the row-scaled matrix, so the correct
      * check is R(i)*A(i,j)*C(j), not just A(i,j)*C(j). */
-    memset(fix->col_max, 0, n * sizeof(double));
+    memset(fix->col_max, 0, n * sizeof(f64));
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            double scaled = fabs(fix->A[i + j * lda]) * fix->R[i] * fix->C[j];
+            f64 scaled = fabs(fix->A[i + j * lda]) * fix->R[i] * fix->C[j];
             if (scaled > fix->col_max[j]) fix->col_max[j] = scaled;
         }
     }
@@ -212,7 +212,7 @@ static void test_dgeequ_identity(void **state)
     dgeequ_fixture_t *fix = *state;
     int n = fix->n;
     int lda = fix->lda;
-    double rowcnd, colcnd, amax;
+    f64 rowcnd, colcnd, amax;
     int info;
 
     /* Only applicable for square matrices */
@@ -221,7 +221,7 @@ static void test_dgeequ_identity(void **state)
     }
 
     /* Set up identity matrix */
-    memset(fix->A, 0, lda * n * sizeof(double));
+    memset(fix->A, 0, lda * n * sizeof(f64));
     for (int i = 0; i < n; i++) {
         fix->A[i + i * lda] = 1.0;
     }
@@ -245,7 +245,7 @@ static void test_dgeequ_zero_row(void **state)
 {
     dgeequ_fixture_t *fix = *state;
     int m = fix->m, n = fix->n, lda = fix->lda;
-    double rowcnd, colcnd, amax;
+    f64 rowcnd, colcnd, amax;
     int info;
 
     /* Only applicable for matrices with m >= 2 */

@@ -29,86 +29,86 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 
 /* Routines under test */
 extern void dgbsv(const int n, const int kl, const int ku, const int nrhs,
-                   double* AB, const int ldab, int* ipiv,
-                   double* B, const int ldb, int* info);
+                   f64* AB, const int ldab, int* ipiv,
+                   f64* B, const int ldb, int* info);
 extern void dgbsvx(const char* fact, const char* trans, const int n,
                     const int kl, const int ku, const int nrhs,
-                    double* AB, const int ldab, double* AFB, const int ldafb,
-                    int* ipiv, char* equed, double* R, double* C,
-                    double* B, const int ldb, double* X, const int ldx,
-                    double* rcond, double* ferr, double* berr,
-                    double* work, int* iwork, int* info);
+                    f64* AB, const int ldab, f64* AFB, const int ldafb,
+                    int* ipiv, char* equed, f64* R, f64* C,
+                    f64* B, const int ldb, f64* X, const int ldx,
+                    f64* rcond, f64* ferr, f64* berr,
+                    f64* work, int* iwork, int* info);
 
 /* Supporting routines */
 extern void dgbtrf(const int m, const int n, const int kl, const int ku,
-                    double* AB, const int ldab, int* ipiv, int* info);
+                    f64* AB, const int ldab, int* ipiv, int* info);
 extern void dgbtrs(const char* trans, const int n, const int kl, const int ku,
-                    const int nrhs, const double* AB, const int ldab,
-                    const int* ipiv, double* B, const int ldb, int* info);
+                    const int nrhs, const f64* AB, const int ldab,
+                    const int* ipiv, f64* B, const int ldb, int* info);
 extern void dgbequ(const int m, const int n, const int kl, const int ku,
-                    const double* AB, const int ldab,
-                    double* R, double* C, double* rowcnd, double* colcnd,
-                    double* amax, int* info);
+                    const f64* AB, const int ldab,
+                    f64* R, f64* C, f64* rowcnd, f64* colcnd,
+                    f64* amax, int* info);
 extern void dlaqgb(const int m, const int n, const int kl, const int ku,
-                    double* AB, const int ldab,
-                    const double* R, const double* C,
-                    const double rowcnd, const double colcnd,
-                    const double amax, char* equed);
-extern double dlangb(const char* norm, const int n, const int kl, const int ku,
-                     const double* AB, const int ldab, double* work);
-extern double dlantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int k, const double* AB, const int ldab,
-                     double* work);
+                    f64* AB, const int ldab,
+                    const f64* R, const f64* C,
+                    const f64 rowcnd, const f64 colcnd,
+                    const f64 amax, char* equed);
+extern f64 dlangb(const char* norm, const int n, const int kl, const int ku,
+                     const f64* AB, const int ldab, f64* work);
+extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
+                     const int n, const int k, const f64* AB, const int ldab,
+                     f64* work);
 
 /* Verification routines */
 extern void dgbt01(const int m, const int n, const int kl, const int ku,
-                    const double* A, const int lda,
-                    const double* AFAC, const int ldafac,
-                    const int* ipiv, double* work, double* resid);
+                    const f64* A, const int lda,
+                    const f64* AFAC, const int ldafac,
+                    const int* ipiv, f64* work, f64* resid);
 extern void dgbt02(const char* trans, const int m, const int n,
                     const int kl, const int ku, const int nrhs,
-                    const double* A, const int lda,
-                    const double* X, const int ldx,
-                    double* B, const int ldb,
-                    double* rwork, double* resid);
+                    const f64* A, const int lda,
+                    const f64* X, const int ldx,
+                    f64* B, const int ldb,
+                    f64* rwork, f64* resid);
 extern void dgbt05(const char* trans, const int n, const int kl, const int ku,
                     const int nrhs,
-                    const double* AB, const int ldab,
-                    const double* B, const int ldb,
-                    const double* X, const int ldx,
-                    const double* XACT, const int ldxact,
-                    const double* ferr, const double* berr,
-                    double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                    const double* XACT, const int ldxact, const double rcond,
-                    double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                    const f64* AB, const int ldab,
+                    const f64* B, const int ldb,
+                    const f64* X, const int ldx,
+                    const f64* XACT, const int ldxact,
+                    const f64* ferr, const f64* berr,
+                    f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                    const f64* XACT, const int ldxact, const f64 rcond,
+                    f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                    char* type, int* kl, int* ku, double* anorm, int* mode,
-                    double* cndnum, char* dist);
+                    char* type, int* kl, int* ku, f64* anorm, int* mode,
+                    f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                    const char* sym, double* d,
-                    const int mode, const double cond, const double dmax,
+                    const char* sym, f64* d,
+                    const int mode, const f64 cond, const f64 dmax,
                     const int kl, const int ku, const char* pack,
-                    double* A, const int lda, double* work, int* info,
+                    f64* A, const int lda, f64* work, int* info,
                     uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                     const char* trans, const int m, const int n,
                     const int kl, const int ku, const int nrhs,
-                    const double* A, const int lda, const double* XACT, const int ldxact,
-                    double* B, const int ldb, int* info, uint64_t state[static 4]);
+                    const f64* A, const int lda, const f64* XACT, const int ldxact,
+                    f64* B, const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                    const double* A, const int lda, double* B, const int ldb);
+                    const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                    const double alpha, const double beta,
-                    double* A, const int lda);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlamch(const char* cmach);
+                    const f64 alpha, const f64 beta,
+                    f64* A, const int lda);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlamch(const char* cmach);
 
 typedef struct {
     int n;
@@ -122,16 +122,16 @@ typedef struct {
 } ddrvgb_params_t;
 
 typedef struct {
-    double* A;
-    double* AFB;
-    double* ASAV;
-    double* B;
-    double* BSAV;
-    double* X;
-    double* XACT;
-    double* S;
-    double* WORK;
-    double* RWORK;
+    f64* A;
+    f64* AFB;
+    f64* ASAV;
+    f64* B;
+    f64* BSAV;
+    f64* X;
+    f64* XACT;
+    f64* S;
+    f64* WORK;
+    f64* RWORK;
     int* IWORK;
 } ddrvgb_workspace_t;
 
@@ -147,16 +147,16 @@ static int group_setup(void** state)
     if (lwork < 3 * NMAX) lwork = 3 * NMAX;
     if (lwork < NMAX * NRHS) lwork = NMAX * NRHS;
 
-    g_workspace->A     = calloc(LA, sizeof(double));
-    g_workspace->AFB   = calloc(LAFB, sizeof(double));
-    g_workspace->ASAV  = calloc(LA, sizeof(double));
-    g_workspace->B     = calloc(NMAX * NRHS, sizeof(double));
-    g_workspace->BSAV  = calloc(NMAX * NRHS, sizeof(double));
-    g_workspace->X     = calloc(NMAX * NRHS, sizeof(double));
-    g_workspace->XACT  = calloc(NMAX * NRHS, sizeof(double));
-    g_workspace->S     = calloc(2 * NMAX, sizeof(double));
-    g_workspace->WORK  = calloc(lwork, sizeof(double));
-    g_workspace->RWORK = calloc(NMAX + 2 * NRHS, sizeof(double));
+    g_workspace->A     = calloc(LA, sizeof(f64));
+    g_workspace->AFB   = calloc(LAFB, sizeof(f64));
+    g_workspace->ASAV  = calloc(LA, sizeof(f64));
+    g_workspace->B     = calloc(NMAX * NRHS, sizeof(f64));
+    g_workspace->BSAV  = calloc(NMAX * NRHS, sizeof(f64));
+    g_workspace->X     = calloc(NMAX * NRHS, sizeof(f64));
+    g_workspace->XACT  = calloc(NMAX * NRHS, sizeof(f64));
+    g_workspace->S     = calloc(2 * NMAX, sizeof(f64));
+    g_workspace->WORK  = calloc(lwork, sizeof(f64));
+    g_workspace->RWORK = calloc(NMAX + 2 * NRHS, sizeof(f64));
     g_workspace->IWORK = calloc(2 * NMAX, sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFB || !g_workspace->ASAV ||
@@ -193,8 +193,8 @@ static int group_teardown(void** state)
  * Copy band matrix A (lda rows) into AFB (ldafb rows) with KL row offset.
  * A has rows 0..kl+ku, AFB has rows kl..2*kl+ku for the same data.
  */
-static void copy_band_to_factor(const double* A, int lda,
-                                 double* AFB, int ldafb,
+static void copy_band_to_factor(const f64* A, int lda,
+                                 f64* AFB, int ldafb,
                                  int kl, int ku, int n)
 {
     for (int j = 0; j < n; j++) {
@@ -224,13 +224,13 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
     int ldafb = 2 * kl + ku + 1;
     int ldb   = (n > 1) ? n : 1;
 
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Set up parameters with DLATB4 */
     char type, dist;
     int kl_out = kl, ku_out = ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DGB", imat, n, n, &type, &kl_out, &ku_out, &anorm, &mode,
            &cndnum, &dist);
 
@@ -288,9 +288,9 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         return;
     }
 
-    double rcondo = 0.0, rcondi = 0.0;
-    double roldo = 0.0, roldi = 0.0;
-    double rowcnd = 0.0, colcnd = 0.0, amax = 0.0;
+    f64 rcondo = 0.0, rcondi = 0.0;
+    f64 roldo = 0.0, roldi = 0.0;
+    f64 rowcnd = 0.0, colcnd = 0.0, amax = 0.0;
 
     if (zerot) {
         rcondo = 0.0;
@@ -308,8 +308,8 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         /* First compute condition of non-equilibrated matrix */
         copy_band_to_factor(ws->ASAV, lda, ws->AFB, ldafb, kl, ku, n);
 
-        double anormo = dlangb("1", n, kl, ku, &ws->AFB[kl], ldafb, ws->RWORK);
-        double anormi = dlangb("I", n, kl, ku, &ws->AFB[kl], ldafb, ws->RWORK);
+        f64 anormo = dlangb("1", n, kl, ku, &ws->AFB[kl], ldafb, ws->RWORK);
+        f64 anormi = dlangb("I", n, kl, ku, &ws->AFB[kl], ldafb, ws->RWORK);
 
         dgbtrf(n, n, kl, ku, ws->AFB, ldafb, ws->IWORK, &info);
 
@@ -318,7 +318,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         dgbtrs("N", n, kl, ku, n, ws->AFB, ldafb,
                ws->IWORK, ws->WORK, ldb, &info);
 
-        double ainvnm = dlange("1", n, n, ws->WORK, ldb, ws->RWORK);
+        f64 ainvnm = dlange("1", n, n, ws->WORK, ldb, ws->RWORK);
         if (anormo <= 0.0 || ainvnm <= 0.0)
             rcondo = 1.0;
         else
@@ -378,7 +378,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
     }
 
     /* Select condition number based on TRANS */
-    double rcondc = (itran == 0) ? rcondo : rcondi;
+    f64 rcondc = (itran == 0) ? rcondo : rcondi;
 
     /* Restore the matrix A */
     dlacpy("Full", kl + ku + 1, n, ws->ASAV, lda, ws->A, lda);
@@ -441,7 +441,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
 
     /* Call DGBSVX */
     char equed_inout = equed;
-    double rcond;
+    f64 rcond;
     dgbsvx(fact, trans, n, kl, ku, NRHS, ws->A, lda, ws->AFB, ldafb,
            ws->IWORK, &equed_inout, ws->S, &ws->S[n],
            ws->B, ldb, ws->X, ldb, &rcond,
@@ -461,12 +461,12 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
      * Note: 'M' norm does not use the work array, so work[0] is preserved,
      * but we save it defensively.
      */
-    double rpvgrw_svx = ws->WORK[0];
-    double rpvgrw;
+    f64 rpvgrw_svx = ws->WORK[0];
+    f64 rpvgrw;
 
     if (info != 0 && info <= n) {
         /* Singularity detected at column INFO (1-based) */
-        double anrmpv = 0.0;
+        f64 anrmpv = 0.0;
         for (int j = 0; j < info; j++) {
             /* Fortran: DO I = MAX(KU+2-J, 1), MIN(N+KU+1-J, KL+KU+1) */
             int i1_f = ku + 2 - (j + 1);
@@ -474,7 +474,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
             int i1 = (i1_f > 1) ? i1_f - 1 : 0;
             int i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
             for (int i = i1; i < i2; i++) {
-                double val = fabs(ws->A[i + j * lda]);
+                f64 val = fabs(ws->A[i + j * lda]);
                 if (val > anrmpv) anrmpv = val;
             }
         }
@@ -498,7 +498,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
             rpvgrw = dlangb("M", n, kl, ku, ws->A, lda, ws->WORK) / rpvgrw;
         }
     }
-    double denom = fmax(rpvgrw_svx, rpvgrw);
+    f64 denom = fmax(rpvgrw_svx, rpvgrw);
     if (denom > 0.0)
         result[6] = fabs(rpvgrw - rpvgrw_svx) / denom / dlamch("E");
     else
@@ -525,11 +525,11 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
                &result[1]);
 
         /* TEST 3: Check solution from generated exact solution */
-        double rcond_for_get04;
+        f64 rcond_for_get04;
         if (nofact || (prefac && (equed_inout == 'N' || equed_inout == 'n'))) {
             rcond_for_get04 = rcondc;
         } else {
-            double roldc = (itran == 0) ? roldo : roldi;
+            f64 roldc = (itran == 0) ? roldo : roldi;
             rcond_for_get04 = roldc;
         }
         dget04(n, NRHS, ws->X, ldb, ws->XACT, ldb,

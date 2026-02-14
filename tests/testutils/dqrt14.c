@@ -16,19 +16,19 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlascl(const char* type, const int kl, const int ku,
-                   const double cfrom, const double cto,
-                   const int m, const int n, double* A, const int lda,
+                   const f64 cfrom, const f64 cto,
+                   const int m, const int n, f64* A, const int lda,
                    int* info);
-extern void dgeqr2(const int m, const int n, double* A, const int lda,
-                   double* tau, double* work, int* info);
-extern void dgelq2(const int m, const int n, double* A, const int lda,
-                   double* tau, double* work, int* info);
+extern void dgeqr2(const int m, const int n, f64* A, const int lda,
+                   f64* tau, f64* work, int* info);
+extern void dgelq2(const int m, const int n, f64* A, const int lda,
+                   f64* tau, f64* work, int* info);
 extern void xerbla(const char* srname, const int info);
 
 /**
@@ -71,17 +71,17 @@ extern void xerbla(const char* srname, const int info);
  * @return
  *     The computed residual: norm of trailing triangle / (max(M,N,NRHS) * eps)
  */
-double dqrt14(const char* trans, const int m, const int n, const int nrhs,
-              const double* A, const int lda, const double* X, const int ldx,
-              double* work, const int lwork)
+f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
+              const f64* A, const int lda, const f64* X, const int ldx,
+              f64* work, const int lwork)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int tpsd;
     int i, info, j, ldwork;
-    double anrm, err, xnrm;
-    double rwork[1];
+    f64 anrm, err, xnrm;
+    f64 rwork[1];
 
     if (trans[0] == 'N' || trans[0] == 'n') {
         ldwork = m + nrhs;
@@ -136,7 +136,7 @@ double dqrt14(const char* trans, const int m, const int n, const int nrhs,
         for (j = n; j < n + nrhs; j++) {
             int iend = (m < j + 1) ? m : j + 1;  /* min(m, j+1) */
             for (i = n; i < iend; i++) {
-                double val = fabs(work[i + j * ldwork]);
+                f64 val = fabs(work[i + j * ldwork]);
                 if (val > err) err = val;
             }
         }
@@ -163,7 +163,7 @@ double dqrt14(const char* trans, const int m, const int n, const int nrhs,
         err = ZERO;
         for (j = m; j < n; j++) {
             for (i = j; i < ldwork; i++) {
-                double val = fabs(work[i + j * ldwork]);
+                f64 val = fabs(work[i + j * ldwork]);
                 if (val > err) err = val;
             }
         }
@@ -174,5 +174,5 @@ double dqrt14(const char* trans, const int m, const int n, const int nrhs,
     if (n > maxmnr) maxmnr = n;
     if (nrhs > maxmnr) maxmnr = nrhs;
 
-    return err / ((double)maxmnr * dlamch("E"));
+    return err / ((f64)maxmnr * dlamch("E"));
 }

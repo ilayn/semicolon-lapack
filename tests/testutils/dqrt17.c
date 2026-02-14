@@ -13,14 +13,14 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlascl(const char* type, const int kl, const int ku,
-                   const double cfrom, const double cto,
-                   const int m, const int n, double* A, const int lda,
+                   const f64 cfrom, const f64 cto,
+                   const int m, const int n, f64* A, const int lda,
                    int* info);
 extern void xerbla(const char* srname, const int info);
 
@@ -95,20 +95,20 @@ extern void xerbla(const char* srname, const int info);
  * @return
  *     The computed ratio.
  */
-double dqrt17(const char* trans, const int iresid,
+f64 dqrt17(const char* trans, const int iresid,
               const int m, const int n, const int nrhs,
-              const double* A, const int lda,
-              const double* X, const int ldx,
-              const double* B, const int ldb,
-              double* C,
-              double* work, const int lwork)
+              const f64* A, const int lda,
+              const f64* X, const int ldx,
+              const f64* B, const int ldb,
+              f64* C,
+              f64* work, const int lwork)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int info, iscl, ncols, nrows;
-    double err, norma, normb, normrs, smlnum;
-    double rwork[1];
+    f64 err, norma, normb, normrs, smlnum;
+    f64 rwork[1];
     int tpsd;
 
     tpsd = (trans[0] == 'T' || trans[0] == 't');
@@ -180,5 +180,5 @@ double dqrt17(const char* trans, const int iresid,
     if (n > maxmnr) maxmnr = n;
     if (nrhs > maxmnr) maxmnr = nrhs;
 
-    return err / (dlamch("E") * (double)maxmnr);
+    return err / (dlamch("E") * (f64)maxmnr);
 }

@@ -18,7 +18,7 @@
 #include "test_rng.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DLATTP generates a triangular test matrix in packed storage.
@@ -38,22 +38,22 @@ extern double dlamch(const char* cmach);
  * @param[out]    info    0 = successful exit, < 0 = illegal argument.
  */
 void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-            const int n, double* A, double* B, double* work,
+            const int n, f64* A, f64* B, f64* work,
             int* info, uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
-    double unfl, ulp, smlnum, bignum;
+    f64 unfl, ulp, smlnum, bignum;
     int upper;
     char type, dist, packit;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int i, j, jc, jcnext, jcount, jj, jl, jr, jx, iy;
-    double bnorm, bscal, tscal, texp, tleft;
-    double plus1, plus2, star1, sfac, rexp;
-    double x, y, z, c, s, ra, rb, stemp, t;
+    f64 bnorm, bscal, tscal, texp, tleft;
+    f64 plus1, plus2, star1, sfac, rexp;
+    f64 x, y, z, c, s, ra, rb, stemp, t;
 
     *info = 0;
 
@@ -105,13 +105,13 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
                 for (i = 0; i < j; i++) {
                     A[jc + i] = ZERO;
                 }
-                A[jc + j] = (double)(j + 1);
+                A[jc + j] = (f64)(j + 1);
                 jc += j + 1;
             }
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                A[jc] = (double)(j + 1);
+                A[jc] = (f64)(j + 1);
                 for (i = j + 1; i < n; i++) {
                     A[jc + i - j] = ZERO;
                 }
@@ -128,13 +128,13 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
                 for (i = 0; i < j; i++) {
                     A[jc + i] = ZERO;
                 }
-                A[jc + j] = (double)(j + 1);
+                A[jc + j] = (f64)(j + 1);
                 jc += j + 1;
             }
         } else {
             jc = 0;
             for (j = 0; j < n; j++) {
-                A[jc] = (double)(j + 1);
+                A[jc] = (f64)(j + 1);
                 for (i = j + 1; i < n; i++) {
                     A[jc + i - j] = ZERO;
                 }
@@ -169,7 +169,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
 
         x = sqrt(cndnum) - ONE / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(TWO / (double)(n - 2)) * x;
+            y = sqrt(TWO / (f64)(n - 2)) * x;
         } else {
             y = ZERO;
         }
@@ -303,7 +303,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
      * In type 12, the offdiagonal elements are small (CNORM(j) < 1). */
     else if (imat == 12) {
         dlarnv_rng(2, n, B, state);
-        tscal = ONE / fmax(ONE, (double)(n - 1));
+        tscal = ONE / fmax(ONE, (f64)(n - 1));
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {
@@ -408,7 +408,7 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
      * overflow when dividing by T(j,j). To control the amount of
      * scaling needed, the matrix is bidiagonal. */
     else if (imat == 15) {
-        texp = ONE / fmax(ONE, (double)(n - 1));
+        texp = ONE / fmax(ONE, (f64)(n - 1));
         tscal = pow(smlnum, texp);
         dlarnv_rng(2, n, B, state);
         if (upper) {
@@ -482,31 +482,31 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
         if (upper) {
             jc = (n - 1) * n / 2;
             for (j = n - 1; j >= 1; j -= 2) {
-                A[jc] = -tscal / (double)(n + 1);
+                A[jc] = -tscal / (f64)(n + 1);
                 A[jc + j] = ONE;
                 B[j] = texp * (ONE - ulp);
                 jc -= j;
-                A[jc] = -(tscal / (double)(n + 1)) / (double)(n + 2);
+                A[jc] = -(tscal / (f64)(n + 1)) / (f64)(n + 2);
                 A[jc + j - 1] = ONE;
-                B[j - 1] = texp * (double)(n * n + n - 1);
+                B[j - 1] = texp * (f64)(n * n + n - 1);
                 texp *= TWO;
                 jc -= j - 1;
             }
-            B[0] = ((double)(n + 1) / (double)(n + 2)) * tscal;
+            B[0] = ((f64)(n + 1) / (f64)(n + 2)) * tscal;
         } else {
             jc = 0;
             for (j = 0; j < n - 1; j += 2) {
-                A[jc + n - j - 1] = -tscal / (double)(n + 1);
+                A[jc + n - j - 1] = -tscal / (f64)(n + 1);
                 A[jc] = ONE;
                 B[j] = texp * (ONE - ulp);
                 jc += n - j;
-                A[jc + n - j - 2] = -(tscal / (double)(n + 1)) / (double)(n + 2);
+                A[jc + n - j - 2] = -(tscal / (f64)(n + 1)) / (f64)(n + 2);
                 A[jc] = ONE;
-                B[j + 1] = texp * (double)(n * n + n - 1);
+                B[j + 1] = texp * (f64)(n * n + n - 1);
                 texp *= TWO;
                 jc += n - j - 1;
             }
-            B[n - 1] = ((double)(n + 1) / (double)(n + 2)) * tscal;
+            B[n - 1] = ((f64)(n + 1) / (f64)(n + 2)) * tscal;
         }
     }
     /* IMAT = 18: Generate a unit triangular matrix with elements
@@ -542,8 +542,8 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
      * BIGNUM/(n-1) and BIGNUM so that at least one of the column
      * norms will exceed BIGNUM. */
     else if (imat == 19) {
-        tleft = bignum / fmax(ONE, (double)(n - 1));
-        tscal = bignum * ((double)(n - 1) / fmax(ONE, (double)n));
+        tleft = bignum / fmax(ONE, (f64)(n - 1));
+        tscal = bignum * ((f64)(n - 1) / fmax(ONE, (f64)n));
         if (upper) {
             jc = 0;
             for (j = 0; j < n; j++) {

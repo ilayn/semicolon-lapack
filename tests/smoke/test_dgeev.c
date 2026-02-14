@@ -23,30 +23,30 @@
 /* Test fixture */
 typedef struct {
     int n;
-    double* A;       /* Original matrix */
-    double* Acopy;   /* Copy for verification */
-    double* VL;      /* Left eigenvectors */
-    double* VR;      /* Right eigenvectors */
-    double* wr;      /* Real eigenvalues */
-    double* wi;      /* Imaginary eigenvalues */
-    double* work;    /* Workspace */
+    f64* A;       /* Original matrix */
+    f64* Acopy;   /* Copy for verification */
+    f64* VL;      /* Left eigenvectors */
+    f64* VR;      /* Right eigenvectors */
+    f64* wr;      /* Real eigenvalues */
+    f64* wi;      /* Imaginary eigenvalues */
+    f64* work;    /* Workspace */
     uint64_t seed;
     uint64_t rng_state[4];
 } dgeev_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
 extern void dgeev(const char* jobvl, const char* jobvr, const int n,
-                  double* A, const int lda, double* wr, double* wi,
-                  double* VL, const int ldvl, double* VR, const int ldvr,
-                  double* work, const int lwork, int* info);
+                  f64* A, const int lda, f64* wr, f64* wi,
+                  f64* VL, const int ldvl, f64* VR, const int ldvr,
+                  f64* work, const int lwork, int* info);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
@@ -57,16 +57,16 @@ static int setup_N(void** state, int n) {
     fix->seed = 0xDEADBEEFULL;
 
     /* Allocate matrices */
-    fix->A = malloc(n * n * sizeof(double));
-    fix->Acopy = malloc(n * n * sizeof(double));
-    fix->VL = malloc(n * n * sizeof(double));
-    fix->VR = malloc(n * n * sizeof(double));
-    fix->wr = malloc(n * sizeof(double));
-    fix->wi = malloc(n * sizeof(double));
+    fix->A = malloc(n * n * sizeof(f64));
+    fix->Acopy = malloc(n * n * sizeof(f64));
+    fix->VL = malloc(n * n * sizeof(f64));
+    fix->VR = malloc(n * n * sizeof(f64));
+    fix->wr = malloc(n * sizeof(f64));
+    fix->wi = malloc(n * sizeof(f64));
 
     /* Workspace: generous allocation */
     int lwork = 10 * n * n;
-    fix->work = malloc(lwork * sizeof(double));
+    fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->Acopy || !fix->VL || !fix->VR ||
         !fix->wr || !fix->wi || !fix->work) {
@@ -105,7 +105,7 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, double* A, int lda, double anorm,
+static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
                                    uint64_t state[static 4])
 {
     for (int j = 0; j < n; j++) {
@@ -123,7 +123,7 @@ static void test_eigenvectors_both(dgeev_fixture_t* fix)
     int n = fix->n;
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -168,7 +168,7 @@ static void test_eigenvectors_right(dgeev_fixture_t* fix)
     int n = fix->n;
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -198,7 +198,7 @@ static void test_eigenvectors_left(dgeev_fixture_t* fix)
     int n = fix->n;
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -255,23 +255,23 @@ static void test_workspace_query(void** state)
     dgeev_fixture_t* fix = *state;
     int n = fix->n;
     int info;
-    double work_query;
+    f64 work_query;
 
     /* Query optimal workspace for various configurations */
     dgeev("V", "V", n, fix->A, n, fix->wr, fix->wi,
           fix->VL, n, fix->VR, n, &work_query, -1, &info);
     assert_info_success(info);
-    assert_true(work_query >= (double)(3 * n));
+    assert_true(work_query >= (f64)(3 * n));
 
     dgeev("N", "V", n, fix->A, n, fix->wr, fix->wi,
           NULL, 1, fix->VR, n, &work_query, -1, &info);
     assert_info_success(info);
-    assert_true(work_query >= (double)(3 * n));
+    assert_true(work_query >= (f64)(3 * n));
 
     dgeev("N", "N", n, fix->A, n, fix->wr, fix->wi,
           NULL, 1, NULL, 1, &work_query, -1, &info);
     assert_info_success(info);
-    assert_true(work_query >= (double)(3 * n));
+    assert_true(work_query >= (f64)(3 * n));
 }
 
 /**
@@ -283,12 +283,12 @@ static void test_symmetric_matrix(void** state)
     int n = fix->n;
     int lda = n;
     int info;
-    double result[2];
+    f64 result[2];
 
     /* Generate symmetric random matrix */
     for (int j = 0; j < n; j++) {
         for (int i = j; i < n; i++) {
-            double val = rng_uniform_symmetric(fix->rng_state);
+            f64 val = rng_uniform_symmetric(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
         }
@@ -326,12 +326,12 @@ static void test_diagonal_matrix(void** state)
     int lda = n;
     int info;
 
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     /* Create diagonal matrix with known eigenvalues */
     dlaset("F", n, n, ZERO, ZERO, fix->A, lda);
     for (int j = 0; j < n; j++) {
-        fix->A[j + j * lda] = (double)(j + 1);
+        fix->A[j + j * lda] = (f64)(j + 1);
     }
 
     /* Keep a copy */

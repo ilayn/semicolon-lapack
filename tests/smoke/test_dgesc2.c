@@ -16,41 +16,41 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dgetc2(const int n, double * const restrict A, const int lda,
+extern void dgetc2(const int n, f64 * const restrict A, const int lda,
                    int * const restrict ipiv, int * const restrict jpiv, int *info);
-extern void dgesc2(const int n, const double * const restrict A, const int lda,
-                   double * const restrict rhs, const int * const restrict ipiv,
-                   const int * const restrict jpiv, double *scale);
+extern void dgesc2(const int n, const f64 * const restrict A, const int lda,
+                   f64 * const restrict rhs, const int * const restrict ipiv,
+                   const int * const restrict jpiv, f64 *scale);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
+extern f64 dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
 
 /*
  * Compute ||b - A*x/scale|| / (||A|| * ||x|| * eps)
  */
-static double compute_residual(int n, const double *A, int lda,
-                               const double *x, const double *b,
-                               double scale)
+static f64 compute_residual(int n, const f64 *A, int lda,
+                               const f64 *x, const f64 *b,
+                               f64 scale)
 {
-    double eps = dlamch("E");
-    double *work = malloc(n * sizeof(double));
-    double *resid_vec = malloc(n * sizeof(double));
+    f64 eps = dlamch("E");
+    f64 *work = malloc(n * sizeof(f64));
+    f64 *resid_vec = malloc(n * sizeof(f64));
 
     assert_non_null(work);
     assert_non_null(resid_vec);
 
-    memcpy(resid_vec, b, n * sizeof(double));
+    memcpy(resid_vec, b, n * sizeof(f64));
     cblas_dgemv(CblasColMajor, CblasNoTrans, n, n,
                 -1.0 / scale, A, lda, x, 1, 1.0, resid_vec, 1);
 
-    double anorm = dlange("1", n, n, A, lda, work);
-    double xnorm = cblas_dnrm2(n, x, 1);
-    double rnorm = cblas_dnrm2(n, resid_vec, 1);
+    f64 anorm = dlange("1", n, n, A, lda, work);
+    f64 xnorm = cblas_dnrm2(n, x, 1);
+    f64 rnorm = cblas_dnrm2(n, resid_vec, 1);
 
-    double result;
+    f64 result;
     if (anorm <= 0.0 || xnorm <= 0.0) {
         result = rnorm / eps;
     } else {
@@ -69,13 +69,13 @@ static double compute_residual(int n, const double *A, int lda,
 typedef struct {
     int n;
     int lda;
-    double *A;       /* Factored matrix */
-    double *A_orig;  /* Original matrix */
-    double *b;       /* RHS (overwritten with solution) */
-    double *b_orig;  /* Original RHS */
-    double *x_exact; /* Known exact solution */
-    double *d;       /* Singular values for dlatms */
-    double *work;    /* Workspace */
+    f64 *A;       /* Factored matrix */
+    f64 *A_orig;  /* Original matrix */
+    f64 *b;       /* RHS (overwritten with solution) */
+    f64 *b_orig;  /* Original RHS */
+    f64 *x_exact; /* Known exact solution */
+    f64 *d;       /* Singular values for dlatms */
+    f64 *work;    /* Workspace */
     int *ipiv;       /* Row pivot indices */
     int *jpiv;       /* Column pivot indices */
     uint64_t seed;
@@ -92,13 +92,13 @@ static int dgesc2_setup(void **state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->A_orig = malloc(fix->lda * n * sizeof(double));
-    fix->b = malloc(n * sizeof(double));
-    fix->b_orig = malloc(n * sizeof(double));
-    fix->x_exact = malloc(n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->A_orig = malloc(fix->lda * n * sizeof(f64));
+    fix->b = malloc(n * sizeof(f64));
+    fix->b_orig = malloc(n * sizeof(f64));
+    fix->x_exact = malloc(n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
     fix->jpiv = malloc(n * sizeof(int));
 
@@ -143,11 +143,11 @@ static int setup_8(void **state) { return dgesc2_setup(state, 8); }
 /**
  * Core test logic.
  */
-static double run_dgesc2_test(dgesc2_fixture_t *fix, int imat)
+static f64 run_dgesc2_test(dgesc2_fixture_t *fix, int imat)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
 
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -158,23 +158,23 @@ static double run_dgesc2_test(dgesc2_fixture_t *fix, int imat)
            kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
 
-    memcpy(fix->A_orig, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->A_orig, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Generate known exact solution */
     for (int i = 0; i < fix->n; i++) {
-        fix->x_exact[i] = 1.0 + (double)i / fix->n;
+        fix->x_exact[i] = 1.0 + (f64)i / fix->n;
     }
 
     /* Compute b = A * x_exact */
     cblas_dgemv(CblasColMajor, CblasNoTrans, fix->n, fix->n,
                 1.0, fix->A_orig, fix->lda, fix->x_exact, 1, 0.0, fix->b, 1);
-    memcpy(fix->b_orig, fix->b, fix->n * sizeof(double));
+    memcpy(fix->b_orig, fix->b, fix->n * sizeof(f64));
 
     /* Factor A using complete pivoting */
     dgetc2(fix->n, fix->A, fix->lda, fix->ipiv, fix->jpiv, &info);
 
     /* Solve A * x = scale * b */
-    double scale;
+    f64 scale;
     dgesc2(fix->n, fix->A, fix->lda, fix->b, fix->ipiv, fix->jpiv, &scale);
 
     /* Verify solution (b now contains x) */
@@ -187,7 +187,7 @@ static double run_dgesc2_test(dgesc2_fixture_t *fix, int imat)
 static void test_dgesc2_wellcond(void **state)
 {
     dgesc2_fixture_t *fix = *state;
-    double resid;
+    f64 resid;
 
     for (int imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
@@ -203,7 +203,7 @@ static void test_dgesc2_illcond(void **state)
 {
     dgesc2_fixture_t *fix = *state;
     fix->seed = g_seed++;
-    double resid = run_dgesc2_test(fix, 8);
+    f64 resid = run_dgesc2_test(fix, 8);
     assert_residual_ok(resid);
 }
 
@@ -214,22 +214,22 @@ static void test_dgesc2_simple(void **state)
 {
     (void)state;
 
-    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
-    double A_orig[9];
-    memcpy(A_orig, A, 9 * sizeof(double));
+    f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
+    f64 A_orig[9];
+    memcpy(A_orig, A, 9 * sizeof(f64));
 
-    double b[3] = {4, 10, 24};
-    double b_orig[3];
-    memcpy(b_orig, b, 3 * sizeof(double));
+    f64 b[3] = {4, 10, 24};
+    f64 b_orig[3];
+    memcpy(b_orig, b, 3 * sizeof(f64));
 
     int ipiv[3], jpiv[3];
     int info;
-    double scale;
+    f64 scale;
 
     dgetc2(3, A, 3, ipiv, jpiv, &info);
     dgesc2(3, A, 3, b, ipiv, jpiv, &scale);
 
-    double resid = compute_residual(3, A_orig, 3, b, b_orig, scale);
+    f64 resid = compute_residual(3, A_orig, 3, b, b_orig, scale);
     assert_residual_ok(resid);
 }
 
@@ -241,14 +241,14 @@ static void test_dgesc2_identity(void **state)
     (void)state;
 
     int n = 4;
-    double *A = calloc(n * n, sizeof(double));
-    double *A_orig = calloc(n * n, sizeof(double));
-    double *b = malloc(n * sizeof(double));
-    double *b_orig = malloc(n * sizeof(double));
+    f64 *A = calloc(n * n, sizeof(f64));
+    f64 *A_orig = calloc(n * n, sizeof(f64));
+    f64 *b = malloc(n * sizeof(f64));
+    f64 *b_orig = malloc(n * sizeof(f64));
     int *ipiv = malloc(n * sizeof(int));
     int *jpiv = malloc(n * sizeof(int));
     int info;
-    double scale;
+    f64 scale;
 
     assert_non_null(A);
     assert_non_null(A_orig);
@@ -258,14 +258,14 @@ static void test_dgesc2_identity(void **state)
     for (int i = 0; i < n; i++) {
         A[i + i * n] = 1.0;
         A_orig[i + i * n] = 1.0;
-        b[i] = (double)(i + 1);
-        b_orig[i] = (double)(i + 1);
+        b[i] = (f64)(i + 1);
+        b_orig[i] = (f64)(i + 1);
     }
 
     dgetc2(n, A, n, ipiv, jpiv, &info);
     dgesc2(n, A, n, b, ipiv, jpiv, &scale);
 
-    double resid = compute_residual(n, A_orig, n, b, b_orig, scale);
+    f64 resid = compute_residual(n, A_orig, n, b, b_orig, scale);
     assert_residual_ok(resid);
     assert_true(fabs(scale - 1.0) < 1e-14);
 

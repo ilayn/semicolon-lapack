@@ -48,63 +48,63 @@ static const char UPLOS[] = {'U', 'L'};
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dsytrf_rook(const char* uplo, const int n, double* A, const int lda,
-                        int* ipiv, double* work, const int lwork, int* info);
-extern void dsytri_rook(const char* uplo, const int n, double* A, const int lda,
-                        const int* ipiv, double* work, int* info);
+extern void dsytrf_rook(const char* uplo, const int n, f64* A, const int lda,
+                        int* ipiv, f64* work, const int lwork, int* info);
+extern void dsytri_rook(const char* uplo, const int n, f64* A, const int lda,
+                        const int* ipiv, f64* work, int* info);
 extern void dsytrs_rook(const char* uplo, const int n, const int nrhs,
-                        const double* A, const int lda, const int* ipiv,
-                        double* B, const int ldb, int* info);
-extern void dsycon_rook(const char* uplo, const int n, const double* A,
-                        const int lda, const int* ipiv, const double anorm,
-                        double* rcond, double* work, int* iwork, int* info);
+                        const f64* A, const int lda, const int* ipiv,
+                        f64* B, const int ldb, int* info);
+extern void dsycon_rook(const char* uplo, const int n, const f64* A,
+                        const int lda, const int* ipiv, const f64 anorm,
+                        f64* rcond, f64* work, int* iwork, int* info);
 
 /* Verification routines */
-extern void dsyt01_rook(const char* uplo, const int n, const double* A,
-                        const int lda, const double* AFAC, const int ldafac,
-                        const int* ipiv, double* C, const int ldc,
-                        double* rwork, double* resid);
+extern void dsyt01_rook(const char* uplo, const int n, const f64* A,
+                        const int lda, const f64* AFAC, const int ldafac,
+                        const int* ipiv, f64* C, const int ldc,
+                        f64* rwork, f64* resid);
 extern void dpot02(const char* uplo, const int n, const int nrhs,
-                   const double* A, const int lda, const double* X,
-                   const int ldx, double* B, const int ldb,
-                   double* rwork, double* resid);
-extern void dpot03(const char* uplo, const int n, const double* A,
-                   const int lda, const double* AINV, const int ldainv,
-                   double* work, const int ldwork, double* rwork,
-                   double* rcond, double* resid);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* A, const int lda, const f64* X,
+                   const int ldx, f64* B, const int ldb,
+                   f64* rwork, f64* resid);
+extern void dpot03(const char* uplo, const int n, const f64* A,
+                   const int lda, const f64* AINV, const int ldainv,
+                   f64* work, const int ldwork, f64* rwork,
+                   f64* rcond, f64* resid);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Utility routines */
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dgesvd(const char* jobu, const char* jobvt, const int m, const int n,
-                   double* A, const int lda, double* S,
-                   double* U, const int ldu, double* VT, const int ldvt,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* S,
+                   f64* U, const int ldu, f64* VT, const int ldvt,
+                   f64* work, const int lwork, int* info);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   const double* XACT, const int ldxact, double* B,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   const f64* XACT, const int ldxact, f64* B,
                    const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+                   const f64* A, const int lda, f64* B, const int ldb);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /**
  * Test parameters for a single test case.
@@ -121,15 +121,15 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AFAC;   /* Factored matrix (NMAX x NMAX) */
-    double* AINV;   /* Inverse matrix (NMAX x NMAX) */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* D;      /* Singular values for dlatms */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f64* AINV;   /* Inverse matrix (NMAX x NMAX) */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* D;      /* Singular values for dlatms */
     int* IPIV;      /* Pivot indices */
     int* IWORK;     /* Integer workspace */
 } dchksy_rook_workspace_t;
@@ -147,15 +147,15 @@ static int group_setup(void** state)
 
     int lwork = NMAX * 64;  /* Generous workspace */
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AINV = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->WORK = malloc(lwork * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AINV = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->WORK = malloc(lwork * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->IPIV = malloc(NMAX * sizeof(int));
     g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
 
@@ -202,25 +202,25 @@ static int group_teardown(void** state)
  */
 static void run_dchksy_rook_single(int n, int iuplo, int imat, int inb)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double EIGHT = 8.0;
-    const double SEVTEN = 17.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 EIGHT = 8.0;
+    const f64 SEVTEN = 17.0;
     dchksy_rook_workspace_t* ws = g_workspace;
 
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info, izero;
     int lda = (n > 1) ? n : 1;
     int trfcon;
-    double rcondc, rcond;
-    double result[NTESTS];
+    f64 rcondc, rcond;
+    f64 result[NTESTS];
     char ctx[128];
 
-    double alpha = (ONE + sqrt(SEVTEN)) / EIGHT;
+    f64 alpha = (ONE + sqrt(SEVTEN)) / EIGHT;
 
     /* Set block size for this test via xlaenv */
     int nb = NBVAL[inb];
@@ -378,8 +378,8 @@ static void run_dchksy_rook_single(int n, int iuplo, int imat, int inb)
      * TEST 3: Compute largest element in U or L
      */
     {
-        double dtemp;
-        double const_val = ONE / (ONE - alpha);
+        f64 dtemp;
+        f64 const_val = ONE / (ONE - alpha);
 
         result[2] = ZERO;
 
@@ -429,8 +429,8 @@ static void run_dchksy_rook_single(int n, int iuplo, int imat, int inb)
      * of 2-by-2 diag blocks
      */
     {
-        double const_val = (ONE + alpha) / (ONE - alpha);
-        double dtemp;
+        f64 const_val = (ONE + alpha) / (ONE - alpha);
+        f64 dtemp;
 
         result[3] = ZERO;
         dlacpy(uplo_str, n, n, ws->AFAC, lda, ws->AINV, lda);
@@ -441,8 +441,8 @@ static void run_dchksy_rook_single(int n, int iuplo, int imat, int inb)
             while (k >= 1) {
                 if (ws->IPIV[k] < 0) {
                     /* Get the two singular values of a 2-by-2 block */
-                    double block[4];
-                    double sv[2], ddummy[1], work_svd[10];
+                    f64 block[4];
+                    f64 sv[2], ddummy[1], work_svd[10];
                     int svd_info;
 
                     block[0] = ws->AFAC[(k - 1) + (k - 1) * lda];
@@ -469,8 +469,8 @@ static void run_dchksy_rook_single(int n, int iuplo, int imat, int inb)
             while (k < n - 1) {
                 if (ws->IPIV[k] < 0) {
                     /* Get the two singular values of a 2-by-2 block */
-                    double block[4];
-                    double sv[2], ddummy[1], work_svd[10];
+                    f64 block[4];
+                    f64 sv[2], ddummy[1], work_svd[10];
                     int svd_info;
 
                     block[0] = ws->AFAC[k + k * lda];

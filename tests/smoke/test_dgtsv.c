@@ -17,20 +17,20 @@
 
 /* Routine under test */
 extern void dgtsv(const int n, const int nrhs,
-                  double * const restrict DL, double * const restrict D,
-                  double * const restrict DU, double * const restrict B,
+                  f64 * const restrict DL, f64 * const restrict D,
+                  f64 * const restrict DU, f64 * const restrict B,
                   const int ldb, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
+extern f64 dlamch(const char *cmach);
 extern void dlagtm(const char *trans, const int n, const int nrhs,
-                   const double alpha,
-                   const double * const restrict DL,
-                   const double * const restrict D,
-                   const double * const restrict DU,
-                   const double * const restrict X, const int ldx,
-                   const double beta,
-                   double * const restrict B, const int ldb);
+                   const f64 alpha,
+                   const f64 * const restrict DL,
+                   const f64 * const restrict D,
+                   const f64 * const restrict DU,
+                   const f64 * const restrict X, const int ldx,
+                   const f64 beta,
+                   f64 * const restrict B, const int ldb);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -38,15 +38,15 @@ extern void dlagtm(const char *trans, const int n, const int nrhs,
 typedef struct {
     int n, nrhs;
     int ldb;
-    double *DL;       /* Sub-diagonal (will be overwritten by dgtsv) */
-    double *D;        /* Diagonal (will be overwritten by dgtsv) */
-    double *DU;       /* Super-diagonal (will be overwritten by dgtsv) */
-    double *DL_copy;  /* Original sub-diagonal for verification */
-    double *D_copy;   /* Original diagonal for verification */
-    double *DU_copy;  /* Original super-diagonal for verification */
-    double *XACT;     /* Exact solution */
-    double *B;        /* Right-hand side / computed solution */
-    double *B_copy;   /* Copy of RHS for verification */
+    f64 *DL;       /* Sub-diagonal (will be overwritten by dgtsv) */
+    f64 *D;        /* Diagonal (will be overwritten by dgtsv) */
+    f64 *DU;       /* Super-diagonal (will be overwritten by dgtsv) */
+    f64 *DL_copy;  /* Original sub-diagonal for verification */
+    f64 *D_copy;   /* Original diagonal for verification */
+    f64 *DU_copy;  /* Original super-diagonal for verification */
+    f64 *XACT;     /* Exact solution */
+    f64 *B;        /* Right-hand side / computed solution */
+    f64 *B_copy;   /* Copy of RHS for verification */
     uint64_t seed;    /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
 } dgtsv_fixture_t;
@@ -57,12 +57,12 @@ static uint64_t g_seed = 2718;
 /**
  * Generate a tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, double *DL, double *D, double *DU,
+static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int i;
 
     if (n <= 0) return;
@@ -117,15 +117,15 @@ static int dgtsv_setup(void **state, int n, int nrhs)
     fix->seed = g_seed++;
     rng_seed(fix->rng_state, fix->seed);
 
-    fix->DL = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->D = malloc(n * sizeof(double));
-    fix->DU = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->DL_copy = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->D_copy = malloc(n * sizeof(double));
-    fix->DU_copy = malloc((m > 0 ? m : 1) * sizeof(double));
-    fix->XACT = malloc(ldb * nrhs * sizeof(double));
-    fix->B = malloc(ldb * nrhs * sizeof(double));
-    fix->B_copy = malloc(ldb * nrhs * sizeof(double));
+    fix->DL = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->D = malloc(n * sizeof(f64));
+    fix->DU = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->DL_copy = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->D_copy = malloc(n * sizeof(f64));
+    fix->DU_copy = malloc((m > 0 ? m : 1) * sizeof(f64));
+    fix->XACT = malloc(ldb * nrhs * sizeof(f64));
+    fix->B = malloc(ldb * nrhs * sizeof(f64));
+    fix->B_copy = malloc(ldb * nrhs * sizeof(f64));
 
     assert_non_null(fix->DL);
     assert_non_null(fix->D);
@@ -187,7 +187,7 @@ static int setup_n50_nrhs15(void **state) { return dgtsv_setup(state, 50, 15); }
  * Returns residual for the caller to assert on.
  * Returns -1.0 if the matrix is singular (info > 0).
  */
-static double run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
+static f64 run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
 {
     int info;
     int n = fix->n;
@@ -200,9 +200,9 @@ static double run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
 
     /* Save original matrix */
-    memcpy(fix->DL_copy, fix->DL, (m > 0 ? m : 1) * sizeof(double));
-    memcpy(fix->D_copy, fix->D, n * sizeof(double));
-    memcpy(fix->DU_copy, fix->DU, (m > 0 ? m : 1) * sizeof(double));
+    memcpy(fix->DL_copy, fix->DL, (m > 0 ? m : 1) * sizeof(f64));
+    memcpy(fix->D_copy, fix->D, n * sizeof(f64));
+    memcpy(fix->DU_copy, fix->DU, (m > 0 ? m : 1) * sizeof(f64));
 
     /* Generate random solution XACT */
     for (j = 0; j < nrhs; j++) {
@@ -221,7 +221,7 @@ static double run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
            fix->XACT, ldb, 0.0, fix->B, ldb);
 
     /* Save B for residual check */
-    memcpy(fix->B_copy, fix->B, ldb * nrhs * sizeof(double));
+    memcpy(fix->B_copy, fix->B, ldb * nrhs * sizeof(f64));
 
     /* Solve A*X = B (overwrites D, DL, DU, B) */
     dgtsv(n, nrhs, fix->DL, fix->D, fix->DU, fix->B, ldb, &info);
@@ -235,7 +235,7 @@ static double run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
     }
 
     /* Verify solution using dgtt02: ||B_copy - A*X|| / (||A|| * ||X|| * eps) */
-    double resid;
+    f64 resid;
     dgtt02("N", n, nrhs, fix->DL_copy, fix->D_copy, fix->DU_copy,
            fix->B, ldb, fix->B_copy, ldb, &resid);
 
@@ -252,7 +252,7 @@ static void test_dgtsv_wellcond(void **state)
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        double resid = run_dgtsv_test(fix, imat);
+        f64 resid = run_dgtsv_test(fix, imat);
         assert_true(resid >= 0.0); /* not singular */
         assert_residual_ok(resid);
     }
@@ -274,7 +274,7 @@ static void test_dgtsv_random(void **state)
     for (int k = 0; k < 3; k++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        double resid = run_dgtsv_test(fix, random_types[k]);
+        f64 resid = run_dgtsv_test(fix, random_types[k]);
         if (resid < 0.0) {
             /* Singular - acceptable for these types */
             continue;

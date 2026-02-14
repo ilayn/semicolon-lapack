@@ -29,31 +29,31 @@
 
 /* Routine under test */
 extern void dstevx(const char* jobz, const char* range, const int n,
-                   double* const restrict D, double* const restrict E,
-                   const double vl, const double vu,
-                   const int il, const int iu, const double abstol,
-                   int* m, double* const restrict W,
-                   double* const restrict Z, const int ldz,
-                   double* const restrict work, int* const restrict iwork,
+                   f64* const restrict D, f64* const restrict E,
+                   const f64 vl, const f64 vu,
+                   const int il, const int iu, const f64 abstol,
+                   int* m, f64* const restrict W,
+                   f64* const restrict Z, const int ldz,
+                   f64* const restrict work, int* const restrict iwork,
                    int* const restrict ifail, int* info);
 
 /* Reference routine for eigenvalue comparison */
 extern void dstev(const char* jobz, const int n,
-                  double* const restrict D, double* const restrict E,
-                  double* const restrict Z, const int ldz,
-                  double* const restrict work, int* info);
+                  f64* const restrict D, f64* const restrict E,
+                  f64* const restrict Z, const int ldz,
+                  f64* const restrict work, int* info);
 
 /* Verification routines */
 extern void dstt21(const int n, const int kband,
-                   const double* AD, const double* AE,
-                   const double* SD, const double* SE,
-                   const double* U, const int ldu,
-                   double* work, double* result);
-extern void dstech(const int n, const double* A, const double* B,
-                   const double* eig, const double tol, double* work, int* info);
+                   const f64* AD, const f64* AE,
+                   const f64* SD, const f64* SE,
+                   const f64* U, const int ldu,
+                   f64* work, f64* result);
+extern void dstech(const int n, const f64* A, const f64* B,
+                   const f64* eig, const f64 tol, f64* work, int* info);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /*
  * Test fixture: holds all allocated memory for a single test case.
@@ -61,17 +61,17 @@ extern double dlamch(const char* cmach);
  */
 typedef struct {
     int n;
-    double* AD;         /* original diagonal (preserved) */
-    double* AE;         /* original off-diagonal (preserved) */
-    double* D;          /* diagonal for dstevx (overwritten) */
-    double* E;          /* off-diagonal for dstevx (overwritten) */
-    double* W;          /* eigenvalues output */
-    double* W_ref;      /* reference eigenvalues from dstev */
-    double* Z;          /* eigenvectors (n x n) */
-    double* work;       /* workspace: max(5*n, n*(n+1)) for dstevx + dstt21 */
+    f64* AD;         /* original diagonal (preserved) */
+    f64* AE;         /* original off-diagonal (preserved) */
+    f64* D;          /* diagonal for dstevx (overwritten) */
+    f64* E;          /* off-diagonal for dstevx (overwritten) */
+    f64* W;          /* eigenvalues output */
+    f64* W_ref;      /* reference eigenvalues from dstev */
+    f64* Z;          /* eigenvectors (n x n) */
+    f64* work;       /* workspace: max(5*n, n*(n+1)) for dstevx + dstt21 */
     int* iwork;         /* int workspace (5*n) */
     int* ifail;         /* convergence info (n) */
-    double* result;     /* dstt21 results (2 elements) */
+    f64* result;     /* dstt21 results (2 elements) */
     uint64_t seed;
     uint64_t rng_state[4];
 } dstevx_fixture_t;
@@ -97,17 +97,17 @@ static int dstevx_setup(void** state, int n)
     int work_stt21 = n_alloc * (n_alloc + 1);
     int work_total = (work_stevx > work_stt21) ? work_stevx : work_stt21;
 
-    fix->AD = malloc(n_alloc * sizeof(double));
-    fix->AE = malloc(e_alloc * sizeof(double));
-    fix->D = malloc(n_alloc * sizeof(double));
-    fix->E = malloc(e_alloc * sizeof(double));
-    fix->W = malloc(n_alloc * sizeof(double));
-    fix->W_ref = malloc(n_alloc * sizeof(double));
-    fix->Z = malloc(n_alloc * n_alloc * sizeof(double));
-    fix->work = malloc(work_total * sizeof(double));
+    fix->AD = malloc(n_alloc * sizeof(f64));
+    fix->AE = malloc(e_alloc * sizeof(f64));
+    fix->D = malloc(n_alloc * sizeof(f64));
+    fix->E = malloc(e_alloc * sizeof(f64));
+    fix->W = malloc(n_alloc * sizeof(f64));
+    fix->W_ref = malloc(n_alloc * sizeof(f64));
+    fix->Z = malloc(n_alloc * n_alloc * sizeof(f64));
+    fix->work = malloc(work_total * sizeof(f64));
     fix->iwork = malloc(5 * n_alloc * sizeof(int));
     fix->ifail = malloc(n_alloc * sizeof(int));
-    fix->result = malloc(2 * sizeof(double));
+    fix->result = malloc(2 * sizeof(f64));
 
     assert_non_null(fix->AD);
     assert_non_null(fix->AE);
@@ -165,7 +165,7 @@ static int setup_50(void** state) { return dstevx_setup(state, 50); }
  * @param E     Off-diagonal array (length n-1)
  * @param seed  RNG seed (used for type 4)
  */
-static void generate_stevx_matrix(int n, int imat, double* D, double* E,
+static void generate_stevx_matrix(int n, int imat, f64* D, f64* E,
                                    uint64_t state[static 4])
 {
     int i;
@@ -185,7 +185,7 @@ static void generate_stevx_matrix(int n, int imat, double* D, double* E,
 
     case 3:
         /* Wilkinson-like: D[i]=|i - n/2|, E[i]=1 */
-        for (i = 0; i < n; i++) D[i] = fabs((double)i - (double)(n / 2));
+        for (i = 0; i < n; i++) D[i] = fabs((f64)i - (f64)(n / 2));
         for (i = 0; i < n - 1; i++) E[i] = 1.0;
         break;
 
@@ -197,7 +197,7 @@ static void generate_stevx_matrix(int n, int imat, double* D, double* E,
 
     case 5:
         /* Graded diagonal: D[i]=2^(-i), E[i]=1 */
-        for (i = 0; i < n; i++) D[i] = pow(2.0, -(double)i);
+        for (i = 0; i < n; i++) D[i] = pow(2.0, -(f64)i);
         for (i = 0; i < n - 1; i++) E[i] = 1.0;
         break;
 
@@ -231,9 +231,9 @@ static void test_range_all_V(void** state)
         generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original for verification */
-        memcpy(fix->AD, fix->D, n * sizeof(double));
+        memcpy(fix->AD, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(fix->AE, fix->E, (n - 1) * sizeof(double));
+            memcpy(fix->AE, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* Compute all eigenvalues and eigenvectors (abstol=0.0: fast path) */
@@ -270,14 +270,14 @@ static void test_range_all_N(void** state)
     int n = fix->n;
     int info;
     int m;
-    double ulp = dlamch("E");
+    f64 ulp = dlamch("E");
 
     /* Allocate temporaries for dstev reference computation */
     int n_alloc = (n > 0) ? n : 1;
     int e_alloc = (n > 1) ? n - 1 : 1;
-    double* D_ref = malloc(n_alloc * sizeof(double));
-    double* E_ref = malloc(e_alloc * sizeof(double));
-    double* work_ref = malloc((2 * n_alloc) * sizeof(double));
+    f64* D_ref = malloc(n_alloc * sizeof(f64));
+    f64* E_ref = malloc(e_alloc * sizeof(f64));
+    f64* work_ref = malloc((2 * n_alloc) * sizeof(f64));
     assert_non_null(D_ref);
     assert_non_null(E_ref);
     assert_non_null(work_ref);
@@ -290,9 +290,9 @@ static void test_range_all_N(void** state)
         generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Copy for dstev reference */
-        memcpy(D_ref, fix->D, n * sizeof(double));
+        memcpy(D_ref, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(E_ref, fix->E, (n - 1) * sizeof(double));
+            memcpy(E_ref, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* Compute reference eigenvalues with dstev */
@@ -313,21 +313,21 @@ static void test_range_all_N(void** state)
 
         /* Compare eigenvalues: both should be sorted ascending.
          * Compute max|W[i] - D_ref[i]| / (n * max|D_ref| * ulp) */
-        double max_eig = 0.0;
+        f64 max_eig = 0.0;
         for (int i = 0; i < n; i++) {
-            double a = fabs(D_ref[i]);
+            f64 a = fabs(D_ref[i]);
             if (a > max_eig) max_eig = a;
         }
 
-        double max_diff = 0.0;
+        f64 max_diff = 0.0;
         for (int i = 0; i < n; i++) {
-            double d = fabs(fix->W[i] - D_ref[i]);
+            f64 d = fabs(fix->W[i] - D_ref[i]);
             if (d > max_diff) max_diff = d;
         }
 
-        double denom = (double)n * ulp;
+        f64 denom = (f64)n * ulp;
         if (max_eig > 0.0) denom *= max_eig;
-        double resid = (denom > 0.0) ? max_diff / denom : 0.0;
+        f64 resid = (denom > 0.0) ? max_diff / denom : 0.0;
 
         assert_residual_ok(resid);
     }
@@ -350,9 +350,9 @@ static void test_range_value(void** state)
     int n = fix->n;
     int info;
     int m;
-    double ulp = dlamch("E");
-    double safmin = dlamch("S");
-    double abstol = 2.0 * safmin;
+    f64 ulp = dlamch("E");
+    f64 safmin = dlamch("S");
+    f64 abstol = 2.0 * safmin;
 
     if (n < 10) {
         skip_test("RANGE='V' test requires n >= 10");
@@ -363,42 +363,42 @@ static void test_range_value(void** state)
     generate_stevx_matrix(n, 2, fix->D, fix->E, fix->rng_state);
 
     /* Save original */
-    memcpy(fix->AD, fix->D, n * sizeof(double));
+    memcpy(fix->AD, fix->D, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->AE, fix->E, (n - 1) * sizeof(double));
+        memcpy(fix->AE, fix->E, (n - 1) * sizeof(f64));
     }
 
     /* First, compute all eigenvalues with dstev to get reference */
     int n_alloc = (n > 0) ? n : 1;
     int e_alloc = (n > 1) ? n - 1 : 1;
-    double* D_tmp = malloc(n_alloc * sizeof(double));
-    double* E_tmp = malloc(e_alloc * sizeof(double));
-    double* work_tmp = malloc((2 * n_alloc) * sizeof(double));
+    f64* D_tmp = malloc(n_alloc * sizeof(f64));
+    f64* E_tmp = malloc(e_alloc * sizeof(f64));
+    f64* work_tmp = malloc((2 * n_alloc) * sizeof(f64));
     assert_non_null(D_tmp);
     assert_non_null(E_tmp);
     assert_non_null(work_tmp);
 
-    memcpy(D_tmp, fix->AD, n * sizeof(double));
+    memcpy(D_tmp, fix->AD, n * sizeof(f64));
     if (n > 1) {
-        memcpy(E_tmp, fix->AE, (n - 1) * sizeof(double));
+        memcpy(E_tmp, fix->AE, (n - 1) * sizeof(f64));
     }
 
     dstev("N", n, D_tmp, E_tmp, NULL, 1, work_tmp, &info);
     assert_info_success(info);
 
     /* Copy reference eigenvalues */
-    memcpy(fix->W_ref, D_tmp, n * sizeof(double));
+    memcpy(fix->W_ref, D_tmp, n * sizeof(f64));
 
     /* Pick value range: middle subset */
     int idx_lo = n / 4;       /* roughly 25% from bottom */
     int idx_hi = 3 * n / 4;   /* roughly 75% from bottom */
-    double vl = fix->W_ref[idx_lo];
-    double vu = fix->W_ref[idx_hi];
+    f64 vl = fix->W_ref[idx_lo];
+    f64 vu = fix->W_ref[idx_hi];
 
     /* Reset D, E from originals */
-    memcpy(fix->D, fix->AD, n * sizeof(double));
+    memcpy(fix->D, fix->AD, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->E, fix->AE, (n - 1) * sizeof(double));
+        memcpy(fix->E, fix->AE, (n - 1) * sizeof(f64));
     }
 
     /* Compute eigenvalues in (vl, vu] with eigenvectors */
@@ -417,7 +417,7 @@ static void test_range_value(void** state)
     /* Verify eigenvector orthogonality: compute Z(:,1:m)' * Z(:,1:m) into
      * an m x m matrix, then check |I - Z'Z| / (m * ulp) */
     if (m > 0) {
-        double* ZtZ = malloc(m * m * sizeof(double));
+        f64* ZtZ = malloc(m * m * sizeof(f64));
         assert_non_null(ZtZ);
 
         /* ZtZ = Z(:,1:m)' * Z(:,1:m)  (m x n) * (n x m) = m x m */
@@ -434,13 +434,13 @@ static void test_range_value(void** state)
         }
 
         /* Find max absolute entry */
-        double max_val = 0.0;
+        f64 max_val = 0.0;
         for (int i = 0; i < m * m; i++) {
-            double a = fabs(ZtZ[i]);
+            f64 a = fabs(ZtZ[i]);
             if (a > max_val) max_val = a;
         }
 
-        double resid = max_val / ((double)m * ulp);
+        f64 resid = max_val / ((f64)m * ulp);
         assert_residual_ok(resid);
 
         free(ZtZ);
@@ -470,9 +470,9 @@ static void test_range_index(void** state)
     int n = fix->n;
     int info;
     int m;
-    double ulp = dlamch("E");
-    double safmin = dlamch("S");
-    double abstol = 2.0 * safmin;
+    f64 ulp = dlamch("E");
+    f64 safmin = dlamch("S");
+    f64 abstol = 2.0 * safmin;
 
     if (n < 10) {
         skip_test("RANGE='I' test requires n >= 10");
@@ -488,36 +488,36 @@ static void test_range_index(void** state)
     generate_stevx_matrix(n, 2, fix->D, fix->E, fix->rng_state);
 
     /* Save original */
-    memcpy(fix->AD, fix->D, n * sizeof(double));
+    memcpy(fix->AD, fix->D, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->AE, fix->E, (n - 1) * sizeof(double));
+        memcpy(fix->AE, fix->E, (n - 1) * sizeof(f64));
     }
 
     /* Compute reference eigenvalues with dstev */
     int n_alloc = (n > 0) ? n : 1;
     int e_alloc = (n > 1) ? n - 1 : 1;
-    double* D_tmp = malloc(n_alloc * sizeof(double));
-    double* E_tmp = malloc(e_alloc * sizeof(double));
-    double* work_tmp = malloc((2 * n_alloc) * sizeof(double));
+    f64* D_tmp = malloc(n_alloc * sizeof(f64));
+    f64* E_tmp = malloc(e_alloc * sizeof(f64));
+    f64* work_tmp = malloc((2 * n_alloc) * sizeof(f64));
     assert_non_null(D_tmp);
     assert_non_null(E_tmp);
     assert_non_null(work_tmp);
 
-    memcpy(D_tmp, fix->AD, n * sizeof(double));
+    memcpy(D_tmp, fix->AD, n * sizeof(f64));
     if (n > 1) {
-        memcpy(E_tmp, fix->AE, (n - 1) * sizeof(double));
+        memcpy(E_tmp, fix->AE, (n - 1) * sizeof(f64));
     }
 
     dstev("N", n, D_tmp, E_tmp, NULL, 1, work_tmp, &info);
     assert_info_success(info);
 
     /* Copy reference eigenvalues */
-    memcpy(fix->W_ref, D_tmp, n * sizeof(double));
+    memcpy(fix->W_ref, D_tmp, n * sizeof(f64));
 
     /* Reset D, E from originals */
-    memcpy(fix->D, fix->AD, n * sizeof(double));
+    memcpy(fix->D, fix->AD, n * sizeof(f64));
     if (n > 1) {
-        memcpy(fix->E, fix->AE, (n - 1) * sizeof(double));
+        memcpy(fix->E, fix->AE, (n - 1) * sizeof(f64));
     }
 
     /* Compute eigenvalues il..iu with eigenvectors */
@@ -529,26 +529,26 @@ static void test_range_index(void** state)
     assert_int_equal(m, m_expected);
 
     /* Compare eigenvalues with reference (il..iu are 1-based) */
-    double max_eig = 0.0;
+    f64 max_eig = 0.0;
     for (int i = 0; i < m; i++) {
-        double a = fabs(fix->W_ref[il - 1 + i]);
+        f64 a = fabs(fix->W_ref[il - 1 + i]);
         if (a > max_eig) max_eig = a;
     }
 
-    double max_diff = 0.0;
+    f64 max_diff = 0.0;
     for (int i = 0; i < m; i++) {
-        double d = fabs(fix->W[i] - fix->W_ref[il - 1 + i]);
+        f64 d = fabs(fix->W[i] - fix->W_ref[il - 1 + i]);
         if (d > max_diff) max_diff = d;
     }
 
-    double denom = (double)n * ulp;
+    f64 denom = (f64)n * ulp;
     if (max_eig > 0.0) denom *= max_eig;
-    double resid = (denom > 0.0) ? max_diff / denom : 0.0;
+    f64 resid = (denom > 0.0) ? max_diff / denom : 0.0;
     assert_residual_ok(resid);
 
     /* Verify eigenvector orthogonality: |I - Z(:,1:m)'*Z(:,1:m)| / (m*ulp) */
     if (m > 0) {
-        double* ZtZ = malloc(m * m * sizeof(double));
+        f64* ZtZ = malloc(m * m * sizeof(f64));
         assert_non_null(ZtZ);
 
         cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
@@ -562,13 +562,13 @@ static void test_range_index(void** state)
             ZtZ[i + i * m] -= 1.0;
         }
 
-        double max_val = 0.0;
+        f64 max_val = 0.0;
         for (int i = 0; i < m * m; i++) {
-            double a = fabs(ZtZ[i]);
+            f64 a = fabs(ZtZ[i]);
             if (a > max_val) max_val = a;
         }
 
-        double orth_resid = max_val / ((double)m * ulp);
+        f64 orth_resid = max_val / ((f64)m * ulp);
         assert_residual_ok(orth_resid);
 
         free(ZtZ);
@@ -598,7 +598,7 @@ static void test_sturm(void** state)
 
     /* Allocate workspace for dstech: length n */
     int n_alloc = (n > 0) ? n : 1;
-    double* stech_work = malloc(n_alloc * sizeof(double));
+    f64* stech_work = malloc(n_alloc * sizeof(f64));
     assert_non_null(stech_work);
 
     for (int imat = 1; imat <= 5; imat++) {
@@ -609,9 +609,9 @@ static void test_sturm(void** state)
         generate_stevx_matrix(n, imat, fix->D, fix->E, fix->rng_state);
 
         /* Save original diagonal and off-diagonal */
-        memcpy(fix->AD, fix->D, n * sizeof(double));
+        memcpy(fix->AD, fix->D, n * sizeof(f64));
         if (n > 1) {
-            memcpy(fix->AE, fix->E, (n - 1) * sizeof(double));
+            memcpy(fix->AE, fix->E, (n - 1) * sizeof(f64));
         }
 
         /* Compute all eigenvalues with dstevx (eigenvalues only) */

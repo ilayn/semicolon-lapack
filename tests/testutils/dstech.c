@@ -9,7 +9,7 @@
 #include "verify.h"
 
 /* Forward declaration */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DSTECT counts the number of eigenvalues of a tridiagonal matrix T
@@ -22,19 +22,19 @@ extern double dlamch(const char* cmach);
  * @param[in]  shift The shift value.
  * @param[out] num   Number of eigenvalues <= shift.
  */
-static void dstect(const int n, const double* const restrict A,
-                   const double* const restrict B,
-                   const double shift, int* num)
+static void dstect(const int n, const f64* const restrict A,
+                   const f64* const restrict B,
+                   const f64 shift, int* num)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 THREE = 3.0;
 
-    double unfl = dlamch("S");
-    double ovfl = dlamch("O");
+    f64 unfl = dlamch("S");
+    f64 ovfl = dlamch("O");
 
     /* Find largest entry */
-    double mx = fabs(A[0]);
+    f64 mx = fabs(A[0]);
     for (int i = 0; i < n - 1; i++) {
         mx = fmax(mx, fmax(fabs(A[i + 1]), fabs(B[i])));
     }
@@ -50,12 +50,12 @@ static void dstect(const int n, const double* const restrict A,
     }
 
     /* Compute scale factors as in Kahan's report */
-    double sun = sqrt(unfl);
-    double ssun = sqrt(sun);
-    double sov = sqrt(ovfl);
-    double tom = ssun * sov;
+    f64 sun = sqrt(unfl);
+    f64 ssun = sqrt(sun);
+    f64 sov = sqrt(ovfl);
+    f64 tom = ssun * sov;
 
-    double m1, m2;
+    f64 m1, m2;
     if (mx <= ONE) {
         m1 = ONE / mx;
         m2 = tom;
@@ -66,8 +66,8 @@ static void dstect(const int n, const double* const restrict A,
 
     /* Begin counting via Sturm sequence */
     *num = 0;
-    double sshift = (shift * m1) * m2;
-    double u = (A[0] * m1) * m2 - sshift;
+    f64 sshift = (shift * m1) * m2;
+    f64 u = (A[0] * m1) * m2 - sshift;
     if (u <= sun) {
         if (u <= ZERO) {
             (*num)++;
@@ -78,7 +78,7 @@ static void dstect(const int n, const double* const restrict A,
         }
     }
     for (int i = 1; i < n; i++) {
-        double tmp = (B[i - 1] * m1) * m2;
+        f64 tmp = (B[i - 1] * m1) * m2;
         u = ((A[i] * m1) * m2 - tmp * (tmp / u)) - sshift;
         if (u <= sun) {
             if (u <= ZERO) {
@@ -109,12 +109,12 @@ static void dstect(const int n, const double* const restrict A,
  * @param[out]    info 0 if all eigenvalues correct; >0 if interval
  *                     containing the info-th eigenvalue has wrong count.
  */
-void dstech(const int n, const double* const restrict A,
-            const double* const restrict B,
-            const double* const restrict eig, const double tol,
-            double* const restrict work, int* info)
+void dstech(const int n, const f64* const restrict A,
+            const f64* const restrict B,
+            const f64* const restrict eig, const f64 tol,
+            f64* const restrict work, int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     *info = 0;
     if (n == 0)
@@ -129,12 +129,12 @@ void dstech(const int n, const double* const restrict A,
     }
 
     /* Get machine constants */
-    double eps = dlamch("E") * dlamch("B");  /* Epsilon * Base = ulp */
-    double unflep = dlamch("S") / eps;
+    f64 eps = dlamch("E") * dlamch("B");  /* Epsilon * Base = ulp */
+    f64 unflep = dlamch("S") / eps;
     eps = tol * eps;
 
     /* Compute maximum absolute eigenvalue */
-    double mx = fabs(eig[0]);
+    f64 mx = fabs(eig[0]);
     for (int i = 1; i < n; i++) {
         mx = fmax(mx, fabs(eig[i]));
     }
@@ -146,7 +146,7 @@ void dstech(const int n, const double* const restrict A,
     }
     for (int i = 0; i < n - 1; i++) {
         int isub = 0;
-        double emin = work[0];
+        f64 emin = work[0];
         for (int j = 1; j < n - i; j++) {
             if (work[j] < emin) {
                 isub = j;
@@ -171,12 +171,12 @@ void dstech(const int n, const double* const restrict A,
 
     /* Loop over all intervals */
     while (tpnt < n) {
-        double upper = work[tpnt] + eps;
-        double lower = work[bpnt] - eps;
+        f64 upper = work[tpnt] + eps;
+        f64 lower = work[bpnt] - eps;
 
         /* Merge overlapping intervals */
         while (bpnt < n - 1) {
-            double tuppr = work[bpnt + 1] + eps;
+            f64 tuppr = work[bpnt + 1] + eps;
             if (tuppr < lower)
                 break;
             bpnt++;

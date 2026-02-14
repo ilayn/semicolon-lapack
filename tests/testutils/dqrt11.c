@@ -10,16 +10,16 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 extern void dorm2r(const char* side, const char* trans,
                    const int m, const int n, const int k,
-                   const double* A, const int lda, const double* tau,
-                   double* C, const int ldc, double* work, int* info);
+                   const f64* A, const int lda, const f64* tau,
+                   f64* C, const int ldc, f64* work, int* info);
 
 /**
  * DQRT11 computes the test ratio
@@ -48,13 +48,13 @@ extern void dorm2r(const char* side, const char* trans,
  *
  * @return The test ratio || Q'*Q - I || / (eps * m).
  */
-double dqrt11(const int m, const int k, const double* A, const int lda,
-              const double* tau, double* work, const int lwork)
+f64 dqrt11(const int m, const int k, const f64* A, const int lda,
+              const f64* tau, f64* work, const int lwork)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int info, j;
-    double rdummy[1];
+    f64 rdummy[1];
 
     /* Quick return if possible */
     if (m <= 0) {
@@ -81,5 +81,5 @@ double dqrt11(const int m, const int k, const double* A, const int lda,
     }
 
     /* Return || Q'*Q - I || / (eps * m) */
-    return dlange("1", m, m, work, m, rdummy) / ((double)m * dlamch("E"));
+    return dlange("1", m, m, work, m, rdummy) / ((f64)m * dlamch("E"));
 }

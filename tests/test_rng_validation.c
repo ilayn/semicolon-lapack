@@ -91,12 +91,12 @@ static void test_uniform_stats(void** cmocka_state) {
     uint64_t state[4];
     rng_seed(state, 12345);
 
-    double sum = 0.0, sum2 = 0.0;
+    f64 sum = 0.0, sum2 = 0.0;
     int bins[100];
     memset(bins, 0, sizeof(bins));
 
     for (int i = 0; i < N; i++) {
-        double u = rng_uniform(state);
+        f64 u = rng_uniform(state);
         assert_true(u > 0.0 && u < 1.0);
         sum += u;
         sum2 += u * u;
@@ -105,8 +105,8 @@ static void test_uniform_stats(void** cmocka_state) {
         bins[bin]++;
     }
 
-    double mean = sum / N;
-    double var = sum2 / N - mean * mean;
+    f64 mean = sum / N;
+    f64 var = sum2 / N - mean * mean;
 
     /* For N=100000, std(mean) ~ 1/sqrt(12*N) ~ 0.00091 */
     assert_true(fabs(mean - 0.5) < 0.01);
@@ -114,10 +114,10 @@ static void test_uniform_stats(void** cmocka_state) {
     assert_true(fabs(var - 1.0 / 12.0) < 0.005);
 
     /* Chi-square goodness-of-fit: K=100 bins, expected count = N/K = 1000 */
-    double expected = (double)N / K;
-    double chi2 = 0.0;
+    f64 expected = (f64)N / K;
+    f64 chi2 = 0.0;
     for (int b = 0; b < K; b++) {
-        double diff = bins[b] - expected;
+        f64 diff = bins[b] - expected;
         chi2 += diff * diff / expected;
     }
     /* chi-square with 99 df: P(chi2 > 150) < 0.0003, P(chi2 < 50) < 0.0001 */
@@ -135,16 +135,16 @@ static void test_uniform_symmetric_stats(void** cmocka_state) {
     uint64_t state[4];
     rng_seed(state, 54321);
 
-    double sum = 0.0, sum2 = 0.0;
+    f64 sum = 0.0, sum2 = 0.0;
     for (int i = 0; i < N; i++) {
-        double u = rng_uniform_symmetric(state);
+        f64 u = rng_uniform_symmetric(state);
         assert_true(u > -1.0 && u < 1.0);
         sum += u;
         sum2 += u * u;
     }
 
-    double mean = sum / N;
-    double var = sum2 / N - mean * mean;
+    f64 mean = sum / N;
+    f64 var = sum2 / N - mean * mean;
 
     /* For N=100000, std(mean) ~ 1/sqrt(3*N) ~ 0.0018 */
     assert_true(fabs(mean) < 0.02);
@@ -163,11 +163,11 @@ static void test_normal_stats(void** cmocka_state) {
     uint64_t state[4];
     rng_seed(state, 99999);
 
-    double sum = 0.0, sum2 = 0.0;
+    f64 sum = 0.0, sum2 = 0.0;
     int n_pos = 0, n_neg = 0;
 
     for (int i = 0; i < N; i++) {
-        double x = rng_normal(state);
+        f64 x = rng_normal(state);
         /* Sanity: values beyond 10 sigma are vanishingly unlikely */
         assert_true(x > -10.0 && x < 10.0);
         sum += x;
@@ -176,8 +176,8 @@ static void test_normal_stats(void** cmocka_state) {
         else n_neg++;
     }
 
-    double mean = sum / N;
-    double var = sum2 / N - mean * mean;
+    f64 mean = sum / N;
+    f64 var = sum2 / N - mean * mean;
 
     /* std(mean) ~ 1/sqrt(N) ~ 0.003 */
     assert_true(fabs(mean) < 0.02);
@@ -186,7 +186,7 @@ static void test_normal_stats(void** cmocka_state) {
     /* Symmetry: |n_pos - N/2| should be small relative to sqrt(N/4) */
     int sym_dev = n_pos - N / 2;
     if (sym_dev < 0) sym_dev = -sym_dev;
-    assert_true(sym_dev < 4 * (int)sqrt((double)N / 4.0));
+    assert_true(sym_dev < 4 * (int)sqrt((f64)N / 4.0));
 }
 
 /* ========================================================================= */
@@ -201,7 +201,7 @@ static void test_fill_consistency(void** cmocka_state) {
         rng_seed(s1, 777 + (uint64_t)idist);
         rng_seed(s2, 777 + (uint64_t)idist);
 
-        double x_fill[50], x_loop[50];
+        f64 x_fill[50], x_loop[50];
         rng_fill(s1, idist, 50, x_fill);
         for (int i = 0; i < 50; i++) {
             x_loop[i] = rng_dist(s2, idist);

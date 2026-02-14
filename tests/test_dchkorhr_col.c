@@ -39,9 +39,9 @@ static const int NBVAL[] = {1, 2, 5, 10, 16, 32, 64};
 #define THRESH  30.0
 
 extern void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
-                        const int nb2, double* restrict result);
+                        const int nb2, f64* restrict result);
 extern void dorhr_col02(const int m, const int n, const int mb1, const int nb1,
-                        const int nb2, double* restrict result);
+                        const int nb2, f64* restrict result);
 
 typedef struct {
     int m;
@@ -55,7 +55,7 @@ typedef struct {
 
 static void run_dchkorhr_col_single(int m, int n, int mb1, int nb1, int nb2, int variant)
 {
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
     int minmn = (m < n) ? m : n;
 

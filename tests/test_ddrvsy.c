@@ -24,62 +24,62 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 
 /* Routines under test */
 extern void dsysv(const char* uplo, const int n, const int nrhs,
-                  double* A, const int lda, int* ipiv,
-                  double* B, const int ldb, double* work, const int lwork, int* info);
+                  f64* A, const int lda, int* ipiv,
+                  f64* B, const int ldb, f64* work, const int lwork, int* info);
 extern void dsysvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   const double* A, const int lda, double* AF, const int ldaf,
-                   int* ipiv, const double* B, const int ldb,
-                   double* X, const int ldx, double* rcond,
-                   double* ferr, double* berr, double* work, const int lwork,
+                   const f64* A, const int lda, f64* AF, const int ldaf,
+                   int* ipiv, const f64* B, const int ldb,
+                   f64* X, const int ldx, f64* rcond,
+                   f64* ferr, f64* berr, f64* work, const int lwork,
                    int* iwork, int* info);
 
 /* Supporting routines */
-extern void dsytrf(const char* uplo, const int n, double* A, const int lda,
-                   int* ipiv, double* work, const int lwork, int* info);
-extern void dsytri(const char* uplo, const int n, double* A, const int lda,
-                   const int* ipiv, double* work, int* info);
+extern void dsytrf(const char* uplo, const int n, f64* A, const int lda,
+                   int* ipiv, f64* work, const int lwork, int* info);
+extern void dsytri(const char* uplo, const int n, f64* A, const int lda,
+                   const int* ipiv, f64* work, int* info);
 
 /* Verification routines */
-extern void dsyt01(const char* uplo, const int n, const double* A, const int lda,
-                   const double* AFAC, const int ldafac, const int* ipiv,
-                   double* C, const int ldc, double* rwork, double* resid);
+extern void dsyt01(const char* uplo, const int n, const f64* A, const int lda,
+                   const f64* AFAC, const int ldafac, const int* ipiv,
+                   f64* C, const int ldc, f64* rwork, f64* resid);
 extern void dpot02(const char* uplo, const int n, const int nrhs,
-                   const double* A, const int lda, const double* X, const int ldx,
-                   double* B, const int ldb, double* rwork, double* resid);
+                   const f64* A, const int lda, const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* rwork, f64* resid);
 extern void dpot05(const char* uplo, const int n, const int nrhs,
-                   const double* A, const int lda, const double* B, const int ldb,
-                   const double* X, const int ldx, const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* A, const int lda, const f64* B, const int ldb,
+                   const f64* X, const int ldx, const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d,
-                   const int mode, const double cond, const double dmax,
+                   const char* sym, f64* d,
+                   const int mode, const f64 cond, const f64 dmax,
                    const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n,
                    const int kl, const int ku, const int nrhs,
-                   const double* A, const int lda, double* XACT, const int ldxact,
-                   double* B, const int ldb, int* info, uint64_t state[static 4]);
+                   const f64* A, const int lda, f64* XACT, const int ldxact,
+                   f64* B, const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlamch(const char* cmach);
 
 typedef struct {
     int n;
@@ -90,14 +90,14 @@ typedef struct {
 } ddrvsy_params_t;
 
 typedef struct {
-    double* A;
-    double* AFAC;
-    double* AINV;
-    double* B;
-    double* X;
-    double* XACT;
-    double* WORK;
-    double* RWORK;
+    f64* A;
+    f64* AFAC;
+    f64* AINV;
+    f64* B;
+    f64* X;
+    f64* XACT;
+    f64* WORK;
+    f64* RWORK;
     int* IWORK;
     int lwork;
 } ddrvsy_workspace_t;
@@ -118,14 +118,14 @@ static int group_setup(void** state)
     if (lwork < lwork_tri) lwork = lwork_tri;
 
     g_workspace->lwork = lwork;
-    g_workspace->A = calloc(nmax * nmax, sizeof(double));
-    g_workspace->AFAC = calloc(nmax * nmax, sizeof(double));
-    g_workspace->AINV = calloc(nmax * nmax, sizeof(double));
-    g_workspace->B = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->X = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->XACT = calloc(nmax * NRHS, sizeof(double));
-    g_workspace->WORK = calloc(lwork, sizeof(double));
-    g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(double));
+    g_workspace->A = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->AFAC = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->AINV = calloc(nmax * nmax, sizeof(f64));
+    g_workspace->B = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->X = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->XACT = calloc(nmax * NRHS, sizeof(f64));
+    g_workspace->WORK = calloc(lwork, sizeof(f64));
+    g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(f64));
     g_workspace->IWORK = calloc(2 * nmax, sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
@@ -165,7 +165,7 @@ static void run_ddrvsy_single(int n, int imat, int iuplo, int ifact)
     const char* fact = FACTS[ifact];
 
     int lda = (n > 1) ? n : 1;
-    double result[NTESTS];
+    f64 result[NTESTS];
     for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     int zerot = (imat >= 3 && imat <= 6);
@@ -174,7 +174,7 @@ static void run_ddrvsy_single(int n, int imat, int iuplo, int ifact)
     /* Set up parameters with DLATB4 */
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     dlatb4("DSY", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix with DLATMS */
@@ -254,21 +254,21 @@ static void run_ddrvsy_single(int n, int imat, int iuplo, int ifact)
      * In LAPACK's nested loops, FACT='N' reuses RCONDC from FACT='F'.
      * Since CMocka tests are independent, we always compute it.
      */
-    double rcondc = 0.0;
+    f64 rcondc = 0.0;
 
     if (zerot) {
         rcondc = 0.0;
     } else if (n == 0) {
         rcondc = 1.0 / cndnum;
     } else {
-        double anrm = dlansy("1", uplo, n, ws->A, lda, ws->RWORK);
+        f64 anrm = dlansy("1", uplo, n, ws->A, lda, ws->RWORK);
 
         dlacpy(uplo, n, n, ws->A, lda, ws->AFAC, lda);
         dsytrf(uplo, n, ws->AFAC, lda, ws->IWORK, ws->WORK, ws->lwork, &info);
 
         dlacpy(uplo, n, n, ws->AFAC, lda, ws->AINV, lda);
         dsytri(uplo, n, ws->AINV, lda, ws->IWORK, ws->WORK, &info);
-        double ainvnm = dlansy("1", uplo, n, ws->AINV, lda, ws->RWORK);
+        f64 ainvnm = dlansy("1", uplo, n, ws->AINV, lda, ws->RWORK);
 
         if (anrm <= 0.0 || ainvnm <= 0.0) {
             rcondc = 1.0;
@@ -333,7 +333,7 @@ static void run_ddrvsy_single(int n, int imat, int iuplo, int ifact)
     }
     dlaset("Full", n, NRHS, 0.0, 0.0, ws->X, lda);
 
-    double rcond;
+    f64 rcond;
     dsysvx(fact, uplo, n, NRHS, ws->A, lda, ws->AFAC, lda,
            ws->IWORK, ws->B, lda, ws->X, lda, &rcond,
            ws->RWORK, &ws->RWORK[NRHS], ws->WORK, ws->lwork,

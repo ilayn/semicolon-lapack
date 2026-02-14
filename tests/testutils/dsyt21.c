@@ -11,33 +11,33 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void   dlaset(const char* uplo, const int m, const int n,
-                     const double alpha, const double beta,
-                     double* const restrict A, const int lda);
+                     const f64 alpha, const f64 beta,
+                     f64* const restrict A, const int lda);
 extern void   dlacpy(const char* uplo, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict B, const int ldb);
-extern void   dlarfy(const char* uplo, const int n, const double* const restrict V,
-                     const int incv, const double tau,
-                     double* const restrict C, const int ldc,
-                     double* const restrict work);
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict B, const int ldb);
+extern void   dlarfy(const char* uplo, const int n, const f64* const restrict V,
+                     const int incv, const f64 tau,
+                     f64* const restrict C, const int ldc,
+                     f64* const restrict work);
 extern void   dorm2r(const char* side, const char* trans, const int m, const int n,
-                     const int k, const double* const restrict A, const int lda,
-                     const double* const restrict tau,
-                     double* const restrict C, const int ldc,
-                     double* const restrict work, int* info);
+                     const int k, const f64* const restrict A, const int lda,
+                     const f64* const restrict tau,
+                     f64* const restrict C, const int ldc,
+                     f64* const restrict work, int* info);
 extern void   dorm2l(const char* side, const char* trans, const int m, const int n,
-                     const int k, const double* const restrict A, const int lda,
-                     const double* const restrict tau,
-                     double* const restrict C, const int ldc,
-                     double* const restrict work, int* info);
+                     const int k, const f64* const restrict A, const int lda,
+                     const f64* const restrict tau,
+                     f64* const restrict C, const int ldc,
+                     f64* const restrict work, int* info);
 
 /**
  * DSYT21 generally checks a decomposition of the form
@@ -81,21 +81,21 @@ extern void   dorm2l(const char* side, const char* trans, const int m, const int
  * @param[out]    result Test ratios, dimension (2). result[1] only set if itype=1.
  */
 void dsyt21(const int itype, const char* uplo, const int n, const int kband,
-            const double* const restrict A, const int lda,
-            const double* const restrict D, const double* const restrict E,
-            const double* const restrict U, const int ldu,
-            double* restrict V, const int ldv,
-            const double* const restrict tau,
-            double* const restrict work, double* restrict result)
+            const f64* const restrict A, const int lda,
+            const f64* const restrict D, const f64* const restrict E,
+            const f64* const restrict U, const int ldu,
+            f64* restrict V, const int ldv,
+            const f64* const restrict tau,
+            f64* const restrict work, f64* restrict result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TEN = 10.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TEN = 10.0;
 
     int lower;
     char cuplo;
     int j, jcol, jrow, iinfo;
-    double anorm, ulp, unfl, wnorm, vsave;
+    f64 anorm, ulp, unfl, wnorm, vsave;
 
     result[0] = ZERO;
     if (itype == 1)
@@ -252,10 +252,10 @@ void dsyt21(const int itype, const char* uplo, const int n, const int kband,
         result[0] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < ONE) {
-            double tmp = fmin(wnorm, (double)n * anorm);
+            f64 tmp = fmin(wnorm, (f64)n * anorm);
             result[0] = (tmp / anorm) / (n * ulp);
         } else {
-            double tmp = fmin(wnorm / anorm, (double)n);
+            f64 tmp = fmin(wnorm / anorm, (f64)n);
             result[0] = tmp / (n * ulp);
         }
     }
@@ -269,7 +269,7 @@ void dsyt21(const int itype, const char* uplo, const int n, const int kband,
             work[(n + 1) * j] -= ONE;
         }
 
-        double tmp = dlange("1", n, n, work, n, &work[n * n]);
-        result[1] = fmin((double)n, tmp) / (n * ulp);
+        f64 tmp = dlange("1", n, n, work, n, &work[n * n]);
+        result[1] = fmin((f64)n, tmp) / (n * ulp);
     }
 }

@@ -66,50 +66,50 @@ static const dim_pair_t DIM_PAIRS[] = {
 
 /* SVD driver declarations */
 extern void dgesvd(const char* jobu, const char* jobvt, const int m, const int n,
-                   double* A, const int lda, double* S,
-                   double* U, const int ldu, double* VT, const int ldvt,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* S,
+                   f64* U, const int ldu, f64* VT, const int ldvt,
+                   f64* work, const int lwork, int* info);
 
 extern void dgesdd(const char* jobz, const int m, const int n,
-                   double* A, const int lda, double* S,
-                   double* U, const int ldu, double* VT, const int ldvt,
-                   double* work, const int lwork, int* iwork, int* info);
+                   f64* A, const int lda, f64* S,
+                   f64* U, const int ldu, f64* VT, const int ldvt,
+                   f64* work, const int lwork, int* iwork, int* info);
 
 extern void dgesvdx(const char* jobu, const char* jobvt, const char* range,
-                    const int m, const int n, double* A, const int lda,
-                    const double vl, const double vu, const int il, const int iu,
-                    int* ns, double* S, double* U, const int ldu,
-                    double* VT, const int ldvt, double* work, const int lwork,
+                    const int m, const int n, f64* A, const int lda,
+                    const f64 vl, const f64 vu, const int il, const int iu,
+                    int* ns, f64* S, f64* U, const int ldu,
+                    f64* VT, const int ldvt, f64* work, const int lwork,
                     int* iwork, int* info);
 
 extern void dgesvdq(const char* joba, const char* jobp, const char* jobr,
                     const char* jobu, const char* jobv,
-                    const int m, const int n, double* A, const int lda,
-                    double* S, double* U, const int ldu, double* V, const int ldv,
+                    const int m, const int n, f64* A, const int lda,
+                    f64* S, f64* U, const int ldu, f64* V, const int ldv,
                     int* numrank, int* iwork, const int liwork,
-                    double* work, const int lwork, double* rwork, const int lrwork,
+                    f64* work, const int lwork, f64* rwork, const int lrwork,
                     int* info);
 
 extern void dgesvj(const char* joba, const char* jobu, const char* jobv,
-                   const int m, const int n, double* A, const int lda,
-                   double* SVA, const int mv, double* V, const int ldv,
-                   double* work, const int lwork, int* info);
+                   const int m, const int n, f64* A, const int lda,
+                   f64* SVA, const int mv, f64* V, const int ldv,
+                   f64* work, const int lwork, int* info);
 
 extern void dgejsv(const char* joba, const char* jobu, const char* jobv,
                    const char* jobr, const char* jobt, const char* jobp,
-                   const int m, const int n, double* A, const int lda,
-                   double* SVA, double* U, const int ldu, double* V, const int ldv,
-                   double* work, const int lwork, int* iwork, int* info);
+                   const int m, const int n, f64* A, const int lda,
+                   f64* SVA, f64* U, const int ldu, f64* V, const int ldv,
+                   f64* work, const int lwork, int* iwork, int* info);
 
 /* Utility routines */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
 extern void dlascl(const char* type, const int kl, const int ku,
-                   const double cfrom, const double cto, const int m, const int n,
-                   double* A, const int lda, int* info);
+                   const f64 cfrom, const f64 cto, const int m, const int n,
+                   f64* A, const int lda, int* info);
 
 /* Matrix generation and verification routines from verify.h */
 
@@ -131,27 +131,27 @@ typedef struct {
     int mmax, nmax, mnmax;
 
     /* Matrices */
-    double* A;      /* m x n working copy */
-    double* ASAV;   /* m x n saved copy */
-    double* U;      /* m x m left singular vectors */
-    double* USAV;   /* m x m saved U */
-    double* VT;     /* n x n right singular vectors */
-    double* VTSAV;  /* n x n saved VT */
+    f64* A;      /* m x n working copy */
+    f64* ASAV;   /* m x n saved copy */
+    f64* U;      /* m x m left singular vectors */
+    f64* USAV;   /* m x m saved U */
+    f64* VT;     /* n x n right singular vectors */
+    f64* VTSAV;  /* n x n saved VT */
 
     /* Singular values */
-    double* S;      /* min(m,n) computed singular values */
-    double* SSAV;   /* min(m,n) saved singular values */
+    f64* S;      /* min(m,n) computed singular values */
+    f64* SSAV;   /* min(m,n) saved singular values */
 
     /* Work arrays */
-    double* work;   /* general workspace */
-    double* rwork;  /* real workspace for dgesvdq */
+    f64* work;   /* general workspace */
+    f64* rwork;  /* real workspace for dgesvdq */
     int* iwork;     /* integer workspace */
     int lwork;      /* workspace size */
     int liwork;     /* integer workspace size */
     int lrwork;     /* real workspace size */
 
     /* Test results */
-    double result[NRESULTS];
+    f64 result[NRESULTS];
 
     /* RNG state */
     uint64_t rng_state[4];
@@ -197,7 +197,7 @@ static int compute_lwork(int mmax, int nmax)
  * Check that singular values are non-negative and decreasing.
  * Returns 0.0 if valid, 1/ULP if invalid.
  */
-static double check_sv_order(const double* S, int n, double ulpinv)
+static f64 check_sv_order(const f64* S, int n, f64 ulpinv)
 {
     for (int i = 0; i < n; i++) {
         if (S[i] < 0.0) return ulpinv;
@@ -218,13 +218,13 @@ static double check_sv_order(const double* S, int n, double ulpinv)
  *   4: Same as 3, scaled near underflow
  *   5: Same as 3, scaled near overflow
  */
-static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
-                                 double* S, double* work, int* info,
+static void generate_test_matrix(int itype, int m, int n, f64* A, int lda,
+                                 f64* S, f64* work, int* info,
                                  uint64_t state[static 4])
 {
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ovfl = 1.0 / unfl;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ovfl = 1.0 / unfl;
     int mnmin = (m < n) ? m : n;
 
     *info = 0;
@@ -249,8 +249,8 @@ static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
         /* Generate singular values: evenly spaced from 1 to 1/cond */
         /* mode=4 in dlatms gives evenly spaced SV from 1 to 1/cond */
         /* LAPACK uses cond = mnmin (see ddrvbd.f line 553) */
-        double cond = (double)mnmin;
-        double anorm = 1.0;
+        f64 cond = (f64)mnmin;
+        f64 anorm = 1.0;
 
         if (itype == 4) {
             /* Scale near underflow */
@@ -273,7 +273,7 @@ static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
         /* dlatms with mode=4 gives SV from 1 to 1/cond */
         /* We need to know what values to expect */
         for (int i = 0; i < mnmin; i++) {
-            double t = (double)i / (double)(mnmin > 1 ? mnmin - 1 : 1);
+            f64 t = (f64)i / (f64)(mnmin > 1 ? mnmin - 1 : 1);
             S[i] = anorm * (1.0 - t * (1.0 - 1.0 / cond));
         }
     }
@@ -309,13 +309,13 @@ static void generate_test_matrix(int itype, int m, int n, double* A, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesvd(int m, int n, const double* ASAV, int lda,
+static void test_dgesvd(int m, int n, const f64* ASAV, int lda,
                         int lswork, ddrvbd_workspace_t* ws)
 {
     int mnmin = (m < n) ? m : n;
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
-    double unfl = dlamch("S");
+    f64 ulp = dlamch("P");
+    f64 ulpinv = 1.0 / ulp;
+    f64 unfl = dlamch("S");
     int info;
 
     /* Initialize results to 0 */
@@ -368,7 +368,7 @@ static void test_dgesvd(int m, int n, const double* ASAV, int lda,
             if (info != 0) continue;
 
             /* Compare U */
-            double dif = 0.0;
+            f64 dif = 0.0;
             if (m > 0 && n > 0) {
                 if (iju == 1) {
                     /* JOBU='O': U stored in A */
@@ -407,11 +407,11 @@ static void test_dgesvd(int m, int n, const double* ASAV, int lda,
 
             /* Compare S */
             dif = 0.0;
-            double div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
+            f64 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
             for (int i = 0; i < mnmin - 1; i++) {
                 if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
                 if (ws->SSAV[i] < 0.0) dif = ulpinv;
-                double d = fabs(ws->SSAV[i] - ws->S[i]) / div;
+                f64 d = fabs(ws->SSAV[i] - ws->S[i]) / div;
                 if (d > dif) dif = d;
             }
             if (dif > ws->result[6]) ws->result[6] = dif;
@@ -435,13 +435,13 @@ static void test_dgesvd(int m, int n, const double* ASAV, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesdd(int m, int n, const double* ASAV, int lda,
+static void test_dgesdd(int m, int n, const f64* ASAV, int lda,
                         int lswork, ddrvbd_workspace_t* ws)
 {
     int mnmin = (m < n) ? m : n;
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
-    double unfl = dlamch("S");
+    f64 ulp = dlamch("P");
+    f64 ulpinv = 1.0 / ulp;
+    f64 unfl = dlamch("S");
     int info;
 
     /* Initialize results to 0 */
@@ -489,7 +489,7 @@ static void test_dgesdd(int m, int n, const double* ASAV, int lda,
         if (info != 0) continue;
 
         /* Compare U */
-        double dif = 0.0;
+        f64 dif = 0.0;
         if (m > 0 && n > 0) {
             if (ijq == 1) {
                 /* JOBZ='O': U or VT in A depending on M >= N */
@@ -530,11 +530,11 @@ static void test_dgesdd(int m, int n, const double* ASAV, int lda,
 
         /* Compare S */
         dif = 0.0;
-        double div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
+        f64 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
         for (int i = 0; i < mnmin - 1; i++) {
             if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
             if (ws->SSAV[i] < 0.0) dif = ulpinv;
-            double d = fabs(ws->SSAV[i] - ws->S[i]) / div;
+            f64 d = fabs(ws->SSAV[i] - ws->S[i]) / div;
             if (d > dif) dif = d;
         }
         if (dif > ws->result[13]) ws->result[13] = dif;
@@ -555,10 +555,10 @@ static void test_dgesdd(int m, int n, const double* ASAV, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesvj(int m, int n, const double* ASAV, int lda,
+static void test_dgesvj(int m, int n, const f64* ASAV, int lda,
                         ddrvbd_workspace_t* ws)
 {
-    double ulpinv = 1.0 / dlamch("P");
+    f64 ulpinv = 1.0 / dlamch("P");
     int info;
 
     /* Initialize results to 0 */
@@ -607,10 +607,10 @@ static void test_dgesvj(int m, int n, const double* ASAV, int lda,
  * Only works for M >= N.
  * Returns V (not VT), so we need to transpose.
  */
-static void test_dgejsv(int m, int n, const double* ASAV, int lda,
+static void test_dgejsv(int m, int n, const f64* ASAV, int lda,
                         ddrvbd_workspace_t* ws)
 {
-    double ulpinv = 1.0 / dlamch("P");
+    f64 ulpinv = 1.0 / dlamch("P");
     int info;
 
     /* Initialize results to 0 */
@@ -662,13 +662,13 @@ static void test_dgejsv(int m, int n, const double* ASAV, int lda,
  * Tests 30-32: RANGE='I' (index range)
  * Tests 33-35: RANGE='V' (value range)
  */
-static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
+static void test_dgesvdx(int m, int n, const f64* ASAV, int lda,
                          ddrvbd_workspace_t* ws)
 {
     int mnmin = (m < n) ? m : n;
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
-    double unfl = dlamch("S");
+    f64 ulp = dlamch("P");
+    f64 ulpinv = 1.0 / ulp;
+    f64 unfl = dlamch("S");
     int info;
     int ns;
     int lwork = ws->lwork;
@@ -727,7 +727,7 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
             if (info != 0) continue;
 
             /* Compare U */
-            double dif = 0.0;
+            f64 dif = 0.0;
             if (m > 0 && n > 0 && iju == 1) {
                 dort03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->U, m,
                        ws->work, ws->lwork, &dif, &info);
@@ -744,11 +744,11 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
 
             /* Compare S */
             dif = 0.0;
-            double div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
+            f64 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
             for (int i = 0; i < mnmin - 1; i++) {
                 if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
                 if (ws->SSAV[i] < 0.0) dif = ulpinv;
-                double d = fabs(ws->SSAV[i] - ws->S[i]) / div;
+                f64 d = fabs(ws->SSAV[i] - ws->S[i]) / div;
                 if (d > dif) dif = d;
             }
             if (dif > ws->result[28]) ws->result[28] = dif;
@@ -788,8 +788,8 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
 
     /* === RANGE='V' (value range) === */
     if (mnmin > 1 && ws->SSAV[0] > ws->SSAV[mnmin - 1]) {
-        double vl = ws->SSAV[mnmin - 1] - ulp * ws->SSAV[0];
-        double vu = ws->SSAV[0] + ulp * ws->SSAV[0];
+        f64 vl = ws->SSAV[mnmin - 1] - ulp * ws->SSAV[0];
+        f64 vu = ws->SSAV[0] + ulp * ws->SSAV[0];
 
         int mid = mnmin / 2;
         if (mid > 0 && mid < mnmin - 1) {
@@ -834,12 +834,12 @@ static void test_dgesvdx(int m, int n, const double* ASAV, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesvdq(int m, int n, const double* ASAV, int lda,
+static void test_dgesvdq(int m, int n, const f64* ASAV, int lda,
                          int lswork, ddrvbd_workspace_t* ws)
 {
     (void)lswork;  /* DGESVDQ uses ws->lwork directly for now */
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
+    f64 ulp = dlamch("P");
+    f64 ulpinv = 1.0 / ulp;
     int info;
     int numrank;
 
@@ -910,16 +910,16 @@ static int group_setup(void** state)
     rng_seed(g_ws->rng_state, 2024);
 
     /* Allocate arrays */
-    g_ws->A = malloc(mmax * nmax * sizeof(double));
-    g_ws->ASAV = malloc(mmax * nmax * sizeof(double));
-    g_ws->U = malloc(mmax * mmax * sizeof(double));
-    g_ws->USAV = malloc(mmax * mmax * sizeof(double));
-    g_ws->VT = malloc(nmax * nmax * sizeof(double));
-    g_ws->VTSAV = malloc(nmax * nmax * sizeof(double));
-    g_ws->S = malloc(2 * mnmax * sizeof(double));
-    g_ws->SSAV = malloc(2 * mnmax * sizeof(double));
-    g_ws->work = malloc(g_ws->lwork * sizeof(double));
-    g_ws->rwork = malloc(g_ws->lrwork * sizeof(double));
+    g_ws->A = malloc(mmax * nmax * sizeof(f64));
+    g_ws->ASAV = malloc(mmax * nmax * sizeof(f64));
+    g_ws->U = malloc(mmax * mmax * sizeof(f64));
+    g_ws->USAV = malloc(mmax * mmax * sizeof(f64));
+    g_ws->VT = malloc(nmax * nmax * sizeof(f64));
+    g_ws->VTSAV = malloc(nmax * nmax * sizeof(f64));
+    g_ws->S = malloc(2 * mnmax * sizeof(f64));
+    g_ws->SSAV = malloc(2 * mnmax * sizeof(f64));
+    g_ws->work = malloc(g_ws->lwork * sizeof(f64));
+    g_ws->rwork = malloc(g_ws->lrwork * sizeof(f64));
     g_ws->iwork = malloc(g_ws->liwork * sizeof(int));
 
     if (!g_ws->A || !g_ws->ASAV || !g_ws->U || !g_ws->USAV ||

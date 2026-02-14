@@ -164,24 +164,24 @@
  *  PRTYPE = 5 special case common and/or close eigs.
  */
 void dlatm5(const int prtype, const int m, const int n,
-            double* A, const int lda,
-            double* B, const int ldb,
-            double* C, const int ldc,
-            double* D, const int ldd,
-            double* E, const int lde,
-            double* F, const int ldf,
-            double* R, const int ldr,
-            double* L, const int ldl,
-            const double alpha, int qblcka, int qblckb)
+            f64* A, const int lda,
+            f64* B, const int ldb,
+            f64* C, const int ldc,
+            f64* D, const int ldd,
+            f64* E, const int lde,
+            f64* F, const int ldf,
+            f64* R, const int ldr,
+            f64* L, const int ldl,
+            const f64 alpha, int qblcka, int qblckb)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double TWENTY = 20.0;
-    const double HALF = 0.5;
-    const double TWO = 2.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 TWENTY = 20.0;
+    const f64 HALF = 0.5;
+    const f64 TWO = 2.0;
 
     int i, j, k;
-    double imeps, reeps;
+    f64 imeps, reeps;
 
     if (prtype == 1) {
         for (i = 0; i < m; i++) {
@@ -219,7 +219,7 @@ void dlatm5(const int prtype, const int m, const int n,
                 /* Fortran: (HALF - SIN(DBLE(I/J))) * TWENTY
                  * with 1-based I,J. In C with 0-based:
                  * use (i+1)/(j+1) to match Fortran integer division */
-                R[i + j * ldr] = (HALF - sin((double)((i + 1) / (j + 1)))) * TWENTY;
+                R[i + j * ldr] = (HALF - sin((f64)((i + 1) / (j + 1)))) * TWENTY;
                 L[i + j * ldl] = R[i + j * ldr];
             }
         }
@@ -228,8 +228,8 @@ void dlatm5(const int prtype, const int m, const int n,
         for (i = 0; i < m; i++) {
             for (j = 0; j < m; j++) {
                 if (i <= j) {
-                    A[i + j * lda] = (HALF - sin((double)(i + 1))) * TWO;
-                    D[i + j * ldd] = (HALF - sin((double)((i + 1) * (j + 1)))) * TWO;
+                    A[i + j * lda] = (HALF - sin((f64)(i + 1))) * TWO;
+                    D[i + j * ldd] = (HALF - sin((f64)((i + 1) * (j + 1)))) * TWO;
                 } else {
                     A[i + j * lda] = ZERO;
                     D[i + j * ldd] = ZERO;
@@ -240,8 +240,8 @@ void dlatm5(const int prtype, const int m, const int n,
         for (i = 0; i < n; i++) {
             for (j = 0; j < n; j++) {
                 if (i <= j) {
-                    B[i + j * ldb] = (HALF - sin((double)((i + 1) + (j + 1)))) * TWO;
-                    E[i + j * lde] = (HALF - sin((double)(j + 1))) * TWO;
+                    B[i + j * ldb] = (HALF - sin((f64)((i + 1) + (j + 1)))) * TWO;
+                    E[i + j * lde] = (HALF - sin((f64)(j + 1))) * TWO;
                 } else {
                     B[i + j * ldb] = ZERO;
                     E[i + j * lde] = ZERO;
@@ -251,8 +251,8 @@ void dlatm5(const int prtype, const int m, const int n,
 
         for (i = 0; i < m; i++) {
             for (j = 0; j < n; j++) {
-                R[i + j * ldr] = (HALF - sin((double)((i + 1) * (j + 1)))) * TWENTY;
-                L[i + j * ldl] = (HALF - sin((double)((i + 1) + (j + 1)))) * TWENTY;
+                R[i + j * ldr] = (HALF - sin((f64)((i + 1) * (j + 1)))) * TWENTY;
+                L[i + j * ldl] = (HALF - sin((f64)((i + 1) + (j + 1)))) * TWENTY;
             }
         }
 
@@ -279,15 +279,15 @@ void dlatm5(const int prtype, const int m, const int n,
     } else if (prtype == 4) {
         for (i = 0; i < m; i++) {
             for (j = 0; j < m; j++) {
-                A[i + j * lda] = (HALF - sin((double)((i + 1) * (j + 1)))) * TWENTY;
-                D[i + j * ldd] = (HALF - sin((double)((i + 1) + (j + 1)))) * TWO;
+                A[i + j * lda] = (HALF - sin((f64)((i + 1) * (j + 1)))) * TWENTY;
+                D[i + j * ldd] = (HALF - sin((f64)((i + 1) + (j + 1)))) * TWO;
             }
         }
 
         for (i = 0; i < n; i++) {
             for (j = 0; j < n; j++) {
-                B[i + j * ldb] = (HALF - sin((double)((i + 1) + (j + 1)))) * TWENTY;
-                E[i + j * lde] = (HALF - sin((double)((i + 1) * (j + 1)))) * TWO;
+                B[i + j * ldb] = (HALF - sin((f64)((i + 1) + (j + 1)))) * TWENTY;
+                E[i + j * lde] = (HALF - sin((f64)((i + 1) * (j + 1)))) * TWO;
             }
         }
 
@@ -295,8 +295,8 @@ void dlatm5(const int prtype, const int m, const int n,
             for (j = 0; j < n; j++) {
                 /* Fortran: (HALF - SIN(DBLE(J/I))) * TWENTY
                  * with 1-based indices */
-                R[i + j * ldr] = (HALF - sin((double)((j + 1) / (i + 1)))) * TWENTY;
-                L[i + j * ldl] = (HALF - sin((double)((i + 1) * (j + 1)))) * TWO;
+                R[i + j * ldr] = (HALF - sin((f64)((j + 1) / (i + 1)))) * TWENTY;
+                L[i + j * ldl] = (HALF - sin((f64)((i + 1) * (j + 1)))) * TWO;
             }
         }
 
@@ -306,8 +306,8 @@ void dlatm5(const int prtype, const int m, const int n,
 
         for (i = 0; i < m; i++) {
             for (j = 0; j < n; j++) {
-                R[i + j * ldr] = (HALF - sin((double)((i + 1) * (j + 1)))) * alpha / TWENTY;
-                L[i + j * ldl] = (HALF - sin((double)((i + 1) + (j + 1)))) * alpha / TWENTY;
+                R[i + j * ldr] = (HALF - sin((f64)((i + 1) * (j + 1)))) * alpha / TWENTY;
+                L[i + j * ldl] = (HALF - sin((f64)((i + 1) + (j + 1)))) * alpha / TWENTY;
             }
         }
 

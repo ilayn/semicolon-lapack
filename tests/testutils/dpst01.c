@@ -9,9 +9,9 @@
 #include <cblas.h>
 #include "verify.h"
 
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /**
  * DPST01 reconstructs a symmetric positive semidefinite matrix A
@@ -50,27 +50,27 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
 void dpst01(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict AFAC,
+    f64* const restrict AFAC,
     const int ldafac,
-    double* const restrict PERM,
+    f64* const restrict PERM,
     const int ldperm,
     const int* const restrict piv,
-    double* const restrict rwork,
-    double* resid,
+    f64* const restrict rwork,
+    f64* resid,
     const int rank)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     if (n <= 0) {
         *resid = ZERO;
         return;
     }
 
-    double eps = dlamch("E");
-    double anorm = dlansy("1", uplo, n, A, lda, rwork);
+    f64 eps = dlamch("E");
+    f64 anorm = dlansy("1", uplo, n, A, lda, rwork);
     if (anorm <= ZERO) {
         *resid = ONE / eps;
         return;
@@ -88,7 +88,7 @@ void dpst01(
         }
 
         for (int k = n - 1; k >= 0; k--) {
-            double t = cblas_ddot(k + 1, &AFAC[k * ldafac], 1,
+            f64 t = cblas_ddot(k + 1, &AFAC[k * ldafac], 1,
                                   &AFAC[k * ldafac], 1);
             AFAC[k + k * ldafac] = t;
 
@@ -113,7 +113,7 @@ void dpst01(
                            &AFAC[(k + 1) + (k + 1) * ldafac], ldafac);
             }
 
-            double t = AFAC[k + k * ldafac];
+            f64 t = AFAC[k + k * ldafac];
             cblas_dscal(n - k, t, &AFAC[k + k * ldafac], 1);
         }
     }
@@ -160,5 +160,5 @@ void dpst01(
 
     *resid = dlansy("1", uplo, n, PERM, ldperm, rwork);
 
-    *resid = ((*resid / (double)n) / anorm) / eps;
+    *resid = ((*resid / (f64)n) / anorm) / eps;
 }

@@ -18,21 +18,21 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dgetrf(const int m, const int n, double * const restrict A,
+extern void dgetrf(const int m, const int n, f64 * const restrict A,
                    const int lda, int * const restrict ipiv, int *info);
-extern void dgecon(const char *norm, const int n, const double * const restrict A,
-                   const int lda, const double anorm, double *rcond,
-                   double * const restrict work, int * const restrict iwork,
+extern void dgecon(const char *norm, const int n, const f64 * const restrict A,
+                   const int lda, const f64 anorm, f64 *rcond,
+                   f64 * const restrict work, int * const restrict iwork,
                    int *info);
-extern void dgetri(const int n, double * const restrict A, const int lda,
-                   const int * const restrict ipiv, double * const restrict work,
+extern void dgetri(const int n, f64 * const restrict A, const int lda,
+                   const int * const restrict ipiv, f64 * const restrict work,
                    const int lwork, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
+extern f64 dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
 
 /*
  * Test fixture
@@ -40,12 +40,12 @@ extern double dlange(const char *norm, const int m, const int n,
 typedef struct {
     int n;
     int lda;
-    double *A;       /* Original matrix */
-    double *AFAC;    /* Factored matrix */
-    double *AINV;    /* Inverse */
-    double *d;       /* Singular values for dlatms */
-    double *work;    /* Workspace */
-    double *rwork;   /* Workspace for dlange */
+    f64 *A;       /* Original matrix */
+    f64 *AFAC;    /* Factored matrix */
+    f64 *AINV;    /* Inverse */
+    f64 *d;       /* Singular values for dlatms */
+    f64 *work;    /* Workspace */
+    f64 *rwork;   /* Workspace for dlange */
     int *ipiv;       /* Pivot indices */
     int *iwork;      /* Integer workspace for dgecon */
     uint64_t seed;
@@ -65,12 +65,12 @@ static int dgecon_setup(void **state, int n)
     /* Workspace needs: dgetri needs n*n, dgecon needs 4*n, dlatms needs 3*n */
     int lwork = (n * n > 4 * n) ? n * n : 4 * n;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AFAC = malloc(fix->lda * n * sizeof(double));
-    fix->AINV = malloc(fix->lda * n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(lwork * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AFAC = malloc(fix->lda * n * sizeof(f64));
+    fix->AINV = malloc(fix->lda * n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(lwork * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
     fix->iwork = malloc(n * sizeof(int));
 
@@ -117,7 +117,7 @@ static void run_dgecon_test(dgecon_fixture_t *fix, int imat)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info;
     int lwork = fix->n * fix->n;
 
@@ -129,46 +129,46 @@ static void run_dgecon_test(dgecon_fixture_t *fix, int imat)
            kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
 
-    memcpy(fix->AFAC, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AFAC, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Factor A */
     dgetrf(fix->n, fix->n, fix->AFAC, fix->lda, fix->ipiv, &info);
     assert_info_success(info);
 
     /* Compute inverse for true condition number */
-    memcpy(fix->AINV, fix->AFAC, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AINV, fix->AFAC, fix->lda * fix->n * sizeof(f64));
     dgetri(fix->n, fix->AINV, fix->lda, fix->ipiv, fix->work, lwork, &info);
     assert_info_success(info);
 
     /* Test 1-norm condition number */
-    double anorm_1 = dlange("1", fix->n, fix->n, fix->A, fix->lda, fix->rwork);
-    double ainvnm_1 = dlange("1", fix->n, fix->n, fix->AINV, fix->lda, fix->rwork);
-    double rcondc_1 = (anorm_1 > 0.0 && ainvnm_1 > 0.0) ?
+    f64 anorm_1 = dlange("1", fix->n, fix->n, fix->A, fix->lda, fix->rwork);
+    f64 ainvnm_1 = dlange("1", fix->n, fix->n, fix->AINV, fix->lda, fix->rwork);
+    f64 rcondc_1 = (anorm_1 > 0.0 && ainvnm_1 > 0.0) ?
                       (1.0 / anorm_1) / ainvnm_1 : 0.0;
 
-    double rcond_est_1;
+    f64 rcond_est_1;
     dgecon("1", fix->n, fix->AFAC, fix->lda, anorm_1, &rcond_est_1,
            fix->work, fix->iwork, &info);
     assert_info_success(info);
 
     if (rcondc_1 > 0.0) {
-        double ratio_1 = dget06(rcond_est_1, rcondc_1);
+        f64 ratio_1 = dget06(rcond_est_1, rcondc_1);
         assert_residual_ok(ratio_1);
     }
 
     /* Test infinity-norm condition number */
-    double anorm_i = dlange("I", fix->n, fix->n, fix->A, fix->lda, fix->rwork);
-    double ainvnm_i = dlange("I", fix->n, fix->n, fix->AINV, fix->lda, fix->rwork);
-    double rcondc_i = (anorm_i > 0.0 && ainvnm_i > 0.0) ?
+    f64 anorm_i = dlange("I", fix->n, fix->n, fix->A, fix->lda, fix->rwork);
+    f64 ainvnm_i = dlange("I", fix->n, fix->n, fix->AINV, fix->lda, fix->rwork);
+    f64 rcondc_i = (anorm_i > 0.0 && ainvnm_i > 0.0) ?
                       (1.0 / anorm_i) / ainvnm_i : 0.0;
 
-    double rcond_est_i;
+    f64 rcond_est_i;
     dgecon("I", fix->n, fix->AFAC, fix->lda, anorm_i, &rcond_est_i,
            fix->work, fix->iwork, &info);
     assert_info_success(info);
 
     if (rcondc_i > 0.0) {
-        double ratio_i = dget06(rcond_est_i, rcondc_i);
+        f64 ratio_i = dget06(rcond_est_i, rcondc_i);
         assert_residual_ok(ratio_i);
     }
 }

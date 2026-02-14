@@ -55,13 +55,13 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* External function declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -77,28 +77,28 @@ typedef struct {
     int nmax;
 
     /* Matrices (all nmax x nmax) */
-    double* A;      /* Original matrix */
-    double* H;      /* Copy modified by DGEESX */
-    double* HT;     /* Copy for comparison */
-    double* VS;     /* Schur vectors */
-    double* VS1;    /* Schur vectors (backup) */
+    f64* A;      /* Original matrix */
+    f64* H;      /* Copy modified by DGEESX */
+    f64* HT;     /* Copy for comparison */
+    f64* VS;     /* Schur vectors */
+    f64* VS1;    /* Schur vectors (backup) */
 
     /* Eigenvalues */
-    double* wr;     /* Real parts */
-    double* wi;     /* Imaginary parts */
-    double* wrt;    /* Real parts (temp) */
-    double* wit;    /* Imaginary parts (temp) */
-    double* wrtmp;  /* Real parts (comparison) */
-    double* witmp;  /* Imaginary parts (comparison) */
+    f64* wr;     /* Real parts */
+    f64* wi;     /* Imaginary parts */
+    f64* wrt;    /* Real parts (temp) */
+    f64* wit;    /* Imaginary parts (temp) */
+    f64* wrtmp;  /* Real parts (comparison) */
+    f64* witmp;  /* Imaginary parts (comparison) */
 
     /* Work arrays */
-    double* work;
+    f64* work;
     int* iwork;
     int* bwork;
     int lwork;
 
     /* Test results */
-    double result[17];
+    f64 result[17];
 
     /* RNG state */
     uint64_t rng_state[4];
@@ -133,23 +133,23 @@ static int group_setup(void** state)
     int n2 = nmax * nmax;
 
     /* Allocate matrices */
-    g_ws->A   = malloc(n2 * sizeof(double));
-    g_ws->H   = malloc(n2 * sizeof(double));
-    g_ws->HT  = malloc(n2 * sizeof(double));
-    g_ws->VS  = malloc(n2 * sizeof(double));
-    g_ws->VS1 = malloc(n2 * sizeof(double));
-    g_ws->wr     = malloc(nmax * sizeof(double));
-    g_ws->wi     = malloc(nmax * sizeof(double));
-    g_ws->wrt    = malloc(nmax * sizeof(double));
-    g_ws->wit    = malloc(nmax * sizeof(double));
-    g_ws->wrtmp  = malloc(nmax * sizeof(double));
-    g_ws->witmp  = malloc(nmax * sizeof(double));
+    g_ws->A   = malloc(n2 * sizeof(f64));
+    g_ws->H   = malloc(n2 * sizeof(f64));
+    g_ws->HT  = malloc(n2 * sizeof(f64));
+    g_ws->VS  = malloc(n2 * sizeof(f64));
+    g_ws->VS1 = malloc(n2 * sizeof(f64));
+    g_ws->wr     = malloc(nmax * sizeof(f64));
+    g_ws->wi     = malloc(nmax * sizeof(f64));
+    g_ws->wrt    = malloc(nmax * sizeof(f64));
+    g_ws->wit    = malloc(nmax * sizeof(f64));
+    g_ws->wrtmp  = malloc(nmax * sizeof(f64));
+    g_ws->witmp  = malloc(nmax * sizeof(f64));
 
     /* Workspace: max(3*N, 2*N^2) (ddrvsx.f line 569) */
     g_ws->lwork = 2 * n2;
     if (g_ws->lwork < 3 * nmax) g_ws->lwork = 3 * nmax;
     if (g_ws->lwork < 1) g_ws->lwork = 1;
-    g_ws->work  = malloc(g_ws->lwork * sizeof(double));
+    g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
 
     /* IWORK dimension: N*N (dget24.c line 144: liwork = n*n) */
     g_ws->iwork = malloc(n2 * sizeof(int));
@@ -201,20 +201,20 @@ static int group_teardown(void** state)
  *
  * Based on ddrvsx.f lines 630-765.
  */
-static int generate_matrix(int n, int jtype, double* A, int lda,
-                           double* work, int* iwork, uint64_t state[static 4])
+static int generate_matrix(int n, int jtype, f64* A, int lda,
+                           f64* work, int* iwork, uint64_t state[static 4])
 {
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
-    double anorm, cond, conds;
+    f64 anorm, cond, conds;
     int iinfo = 0;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ovfl = 1.0 / unfl;
-    double ulpinv = 1.0 / ulp;
-    double rtulp = sqrt(ulp);
-    double rtulpi = 1.0 / rtulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ovfl = 1.0 / unfl;
+    f64 ulpinv = 1.0 / ulp;
+    f64 rtulp = sqrt(ulp);
+    f64 rtulpi = 1.0 / rtulp;
 
     switch (KMAGN[jtype - 1]) {
         case 1: anorm = 1.0; break;
@@ -321,23 +321,23 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
     int lda = ws->nmax;
     int ldvs = ws->nmax;
 
-    double* A = ws->A;
-    double* H = ws->H;
-    double* HT = ws->HT;
-    double* VS = ws->VS;
-    double* VS1 = ws->VS1;
-    double* wr = ws->wr;
-    double* wi = ws->wi;
-    double* wrt = ws->wrt;
-    double* wit = ws->wit;
-    double* wrtmp = ws->wrtmp;
-    double* witmp = ws->witmp;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* H = ws->H;
+    f64* HT = ws->HT;
+    f64* VS = ws->VS;
+    f64* VS1 = ws->VS1;
+    f64* wr = ws->wr;
+    f64* wi = ws->wi;
+    f64* wrt = ws->wrt;
+    f64* wit = ws->wit;
+    f64* wrtmp = ws->wrtmp;
+    f64* witmp = ws->witmp;
+    f64* work = ws->work;
     int* iwork = ws->iwork;
     int* bwork = ws->bwork;
-    double* result = ws->result;
+    f64* result = ws->result;
 
-    double ulpinv = 1.0 / dlamch("P");
+    f64 ulpinv = 1.0 / dlamch("P");
 
     for (int j = 0; j < 17; j++) {
         result[j] = -1.0;
@@ -403,21 +403,21 @@ static void run_ddrvsx_precomp(ddrvsx_params_t* params)
     int lda = ws->nmax;
     int ldvs = ws->nmax;
 
-    double* A = ws->A;
-    double* H = ws->H;
-    double* HT = ws->HT;
-    double* VS = ws->VS;
-    double* VS1 = ws->VS1;
-    double* wr = ws->wr;
-    double* wi = ws->wi;
-    double* wrt = ws->wrt;
-    double* wit = ws->wit;
-    double* wrtmp = ws->wrtmp;
-    double* witmp = ws->witmp;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* H = ws->H;
+    f64* HT = ws->HT;
+    f64* VS = ws->VS;
+    f64* VS1 = ws->VS1;
+    f64* wr = ws->wr;
+    f64* wi = ws->wi;
+    f64* wrt = ws->wrt;
+    f64* wit = ws->wit;
+    f64* wrtmp = ws->wrtmp;
+    f64* witmp = ws->witmp;
+    f64* work = ws->work;
     int* iwork = ws->iwork;
     int* bwork = ws->bwork;
-    double* result = ws->result;
+    f64* result = ws->result;
 
     const dsx_precomputed_t* pc = &DSX_PRECOMPUTED[idx];
     int n = pc->n;

@@ -14,7 +14,7 @@
 
 /* Forward declarations */
 extern void xerbla(const char* srname, const int info);
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DLAGSY generates a real symmetric matrix A, by pre- and post-
@@ -50,20 +50,20 @@ extern double dlamch(const char* cmach);
 void dlagsy(
     const int n,
     const int k,
-    const double* d,
-    double* A,
+    const f64* d,
+    f64* A,
     const int lda,
-    double* work,
+    f64* work,
     int* info,
     uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double HALF = 0.5;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
 
     int i, j;
-    double alpha, tau, wa, wb, wn;
-    double safmin = dlamch("S");
+    f64 alpha, tau, wa, wb, wn;
+    f64 safmin = dlamch("S");
 
     /* Test the input arguments */
     *info = 0;

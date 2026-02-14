@@ -10,7 +10,7 @@
 #include "verify.h"
 #include "test_rng.h"
 
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DLATTB generates a triangular test matrix in 2-dimensional banded storage.
@@ -41,21 +41,21 @@ extern double dlamch(const char* cmach);
  * @param[in,out] state   RNG state array of 4 uint64_t values.
  */
 void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
-            const int n, const int kd, double* AB, const int ldab,
-            double* B, double* work, int* info, uint64_t state[static 4])
+            const int n, const int kd, f64* AB, const int ldab,
+            f64* B, f64* work, int* info, uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int upper;
     char type, dist, packit;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int i, j, jcount, iy, lenj, ioff;
-    double unfl, ulp, smlnum, bignum;
-    double bnorm, bscal, tscal, texp, tleft, tnorm;
-    double plus1, plus2, star1, sfac, rexp;
+    f64 unfl, ulp, smlnum, bignum;
+    f64 bnorm, bscal, tscal, texp, tleft, tnorm;
+    f64 plus1, plus2, star1, sfac, rexp;
 
     *info = 0;
 
@@ -102,11 +102,11 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
                 for (i = (kd + 1 - j > 0 ? kd + 1 - j : 0); i < kd; i++) {
                     AB[i + j * ldab] = ZERO;
                 }
-                AB[kd + j * ldab] = (double)(j + 1);
+                AB[kd + j * ldab] = (f64)(j + 1);
             }
         } else {
             for (j = 0; j < n; j++) {
-                AB[0 + j * ldab] = (double)(j + 1);
+                AB[0 + j * ldab] = (f64)(j + 1);
                 for (i = 1; i < (kd + 1 < n - j ? kd + 1 : n - j); i++) {
                     AB[i + j * ldab] = ZERO;
                 }
@@ -121,14 +121,14 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
                 for (i = (kd + 1 - j > 0 ? kd + 1 - j : 0); i < kd; i++) {
                     AB[i + j * ldab] = ZERO;
                 }
-                AB[kd + j * ldab] = (double)(j + 1);
+                AB[kd + j * ldab] = (f64)(j + 1);
             }
         } else {
             for (j = 0; j < n; j++) {
                 for (i = 1; i < (kd + 1 < n - j ? kd + 1 : n - j); i++) {
                     AB[i + j * ldab] = ZERO;
                 }
-                AB[0 + j * ldab] = (double)(j + 1);
+                AB[0 + j * ldab] = (f64)(j + 1);
             }
         }
 
@@ -203,7 +203,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
 
     } else if (imat == 11) {
         dlarnv_rng(2, n, B, state);
-        tscal = ONE / (double)(kd + 1);
+        tscal = ONE / (f64)(kd + 1);
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);
@@ -289,7 +289,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         }
 
     } else if (imat == 14) {
-        texp = ONE / (double)(kd + 1);
+        texp = ONE / (f64)(kd + 1);
         tscal = pow(smlnum, texp);
         dlarnv_rng(2, n, B, state);
         if (upper) {
@@ -353,40 +353,40 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
             if (upper) {
                 for (j = n - 1; j >= 0; j -= kd) {
                     for (i = j; i >= (j - kd + 1 > 0 ? j - kd + 1 : 0); i -= 2) {
-                        AB[(j - i) + i * ldab] = -tscal / (double)(kd + 2);
+                        AB[(j - i) + i * ldab] = -tscal / (f64)(kd + 2);
                         AB[kd + i * ldab] = ONE;
                         B[i] = texp * (ONE - ulp);
                         if (i > (j - kd + 1 > 0 ? j - kd + 1 : 0)) {
-                            AB[(j - i + 1) + (i - 1) * ldab] = -(tscal / (double)(kd + 2)) / (double)(kd + 3);
+                            AB[(j - i + 1) + (i - 1) * ldab] = -(tscal / (f64)(kd + 2)) / (f64)(kd + 3);
                             AB[kd + (i - 1) * ldab] = ONE;
-                            B[i - 1] = texp * (double)((kd + 1) * (kd + 1) + kd);
+                            B[i - 1] = texp * (f64)((kd + 1) * (kd + 1) + kd);
                         }
                         texp = texp * TWO;
                     }
-                    B[(j - kd + 1 > 0 ? j - kd + 1 : 0)] = ((double)(kd + 2) / (double)(kd + 3)) * tscal;
+                    B[(j - kd + 1 > 0 ? j - kd + 1 : 0)] = ((f64)(kd + 2) / (f64)(kd + 3)) * tscal;
                 }
             } else {
                 for (j = 0; j < n; j += kd) {
                     texp = ONE;
                     lenj = (kd + 1 < n - j ? kd + 1 : n - j);
                     for (i = j; i < (n - 1 < j + kd - 1 ? n - 1 : j + kd - 1); i += 2) {
-                        AB[(lenj - 1 - (i - j)) + j * ldab] = -tscal / (double)(kd + 2);
+                        AB[(lenj - 1 - (i - j)) + j * ldab] = -tscal / (f64)(kd + 2);
                         AB[0 + j * ldab] = ONE;
                         B[j] = texp * (ONE - ulp);
                         if (i < (n - 1 < j + kd - 1 ? n - 1 : j + kd - 1)) {
-                            AB[(lenj - 1 - (i - j + 1)) + (i + 1) * ldab] = -(tscal / (double)(kd + 2)) / (double)(kd + 3);
+                            AB[(lenj - 1 - (i - j + 1)) + (i + 1) * ldab] = -(tscal / (f64)(kd + 2)) / (f64)(kd + 3);
                             AB[0 + (i + 1) * ldab] = ONE;
-                            B[i + 1] = texp * (double)((kd + 1) * (kd + 1) + kd);
+                            B[i + 1] = texp * (f64)((kd + 1) * (kd + 1) + kd);
                         }
                         texp = texp * TWO;
                     }
-                    B[(n - 1 < j + kd - 1 ? n - 1 : j + kd - 1)] = ((double)(kd + 2) / (double)(kd + 3)) * tscal;
+                    B[(n - 1 < j + kd - 1 ? n - 1 : j + kd - 1)] = ((f64)(kd + 2) / (f64)(kd + 3)) * tscal;
                 }
             }
         } else {
             for (j = 0; j < n; j++) {
                 AB[0 + j * ldab] = ONE;
-                B[j] = (double)(j + 1);
+                B[j] = (f64)(j + 1);
             }
         }
 
@@ -395,14 +395,14 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
             for (j = 0; j < n; j++) {
                 lenj = (j < kd ? j : kd);
                 dlarnv_rng(2, lenj, &AB[(kd - lenj) + j * ldab], state);
-                AB[kd + j * ldab] = (double)(j + 1);
+                AB[kd + j * ldab] = (f64)(j + 1);
             }
         } else {
             for (j = 0; j < n; j++) {
                 lenj = (n - j - 1 < kd ? n - j - 1 : kd);
                 if (lenj > 0)
                     dlarnv_rng(2, lenj, &AB[1 + j * ldab], state);
-                AB[0 + j * ldab] = (double)(j + 1);
+                AB[0 + j * ldab] = (f64)(j + 1);
             }
         }
 
@@ -413,8 +413,8 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         cblas_dscal(n, bscal, B, 1);
 
     } else if (imat == 18) {
-        tleft = bignum / (ONE > (double)kd ? ONE : (double)kd);
-        tscal = bignum * ((double)kd / (double)(kd + 1));
+        tleft = bignum / (ONE > (f64)kd ? ONE : (f64)kd);
+        tscal = bignum * ((f64)kd / (f64)(kd + 1));
         if (upper) {
             for (j = 0; j < n; j++) {
                 lenj = (j + 1 < kd + 1 ? j + 1 : kd + 1);

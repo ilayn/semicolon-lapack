@@ -43,67 +43,67 @@ static const char UPLOS[] = {'U', 'L'};
 #define NBW     4   /* Number of bandwidth values per N */
 
 /* Routines under test */
-extern void dpbtrf(const char* uplo, const int n, const int kd, double* AB,
+extern void dpbtrf(const char* uplo, const int n, const int kd, f64* AB,
                    const int ldab, int* info);
 extern void dpbtrs(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* AB, const int ldab, double* B, const int ldb,
+                   const f64* AB, const int ldab, f64* B, const int ldb,
                    int* info);
 extern void dpbrfs(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* AB, const int ldab, const double* AFB,
-                   const int ldafb, const double* B, const int ldb,
-                   double* X, const int ldx, double* ferr, double* berr,
-                   double* work, int* iwork, int* info);
+                   const f64* AB, const int ldab, const f64* AFB,
+                   const int ldafb, const f64* B, const int ldb,
+                   f64* X, const int ldx, f64* ferr, f64* berr,
+                   f64* work, int* iwork, int* info);
 extern void dpbcon(const char* uplo, const int n, const int kd,
-                   const double* AB, const int ldab, const double anorm,
-                   double* rcond, double* work, int* iwork, int* info);
+                   const f64* AB, const int ldab, const f64 anorm,
+                   f64* rcond, f64* work, int* iwork, int* info);
 
 /* Verification routines */
 extern void dpbt01(const char* uplo, const int n, const int kd,
-                   const double* A, const int lda,
-                   double* AFAC, const int ldafac,
-                   double* rwork, double* resid);
+                   const f64* A, const int lda,
+                   f64* AFAC, const int ldafac,
+                   f64* rwork, f64* resid);
 extern void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* A, const int lda,
-                   const double* X, const int ldx,
-                   double* B, const int ldb,
-                   double* rwork, double* resid);
+                   const f64* A, const int lda,
+                   const f64* X, const int ldx,
+                   f64* B, const int ldb,
+                   f64* rwork, f64* resid);
 extern void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
-                   const double* AB, const int ldab,
-                   const double* B, const int ldb,
-                   const double* X, const int ldx,
-                   const double* XACT, const int ldxact,
-                   const double* ferr, const double* berr,
-                   double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* AB, const int ldab,
+                   const f64* B, const int ldb,
+                   const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact,
+                   const f64* ferr, const f64* berr,
+                   f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   double* X, const int ldx, double* B, const int ldb,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   f64* X, const int ldx, f64* B, const int ldb,
                    int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
-extern double dlansb(const char* norm, const char* uplo, const int n,
-                     const int k, const double* AB, const int ldab, double* work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
+extern f64 dlansb(const char* norm, const char* uplo, const int n,
+                     const int k, const f64* AB, const int ldab, f64* work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlamch(const char* cmach);
 
 /**
  * Test parameters for a single test case.
@@ -121,17 +121,17 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original band matrix ((NMAX+1) * NMAX) */
-    double* AFAC;   /* Factored band matrix ((NMAX+1) * NMAX) */
-    double* AINV;   /* Full inverse matrix (NMAX * NMAX) */
-    double* B;      /* Right-hand side (NMAX * NSMAX) */
-    double* X;      /* Solution (NMAX * NSMAX) */
-    double* XACT;   /* Exact solution (NMAX * NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* D;      /* Singular values for dlatms */
-    double* FERR;   /* Forward error bounds */
-    double* BERR;   /* Backward error bounds */
+    f64* A;      /* Original band matrix ((NMAX+1) * NMAX) */
+    f64* AFAC;   /* Factored band matrix ((NMAX+1) * NMAX) */
+    f64* AINV;   /* Full inverse matrix (NMAX * NMAX) */
+    f64* B;      /* Right-hand side (NMAX * NSMAX) */
+    f64* X;      /* Solution (NMAX * NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX * NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* D;      /* Singular values for dlatms */
+    f64* FERR;   /* Forward error bounds */
+    f64* BERR;   /* Backward error bounds */
     int* IWORK;     /* Integer workspace */
 } dchkpb_workspace_t;
 
@@ -149,19 +149,19 @@ static int group_setup(void** state)
     /* Band storage: (KD+1) rows × N columns, with KD up to NMAX + (NMAX+1)/4 */
     /* Max ldab = NMAX + (NMAX+1)/4 + 1 = 50 + 12 + 1 = 63 for NMAX=50 */
     int max_ldab = NMAX + (NMAX + 1) / 4 + 1;
-    g_workspace->A = malloc(max_ldab * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(max_ldab * NMAX * sizeof(double));
-    g_workspace->AINV = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
+    g_workspace->A = malloc(max_ldab * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(max_ldab * NMAX * sizeof(f64));
+    g_workspace->AINV = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
     /* WORK needs NMAX * (3*NMAX + NSMAX + 30) for dlatms full matrix generation */
     int work_size = NMAX * (3 * NMAX + NSMAX + 30);
-    g_workspace->WORK = malloc(work_size * sizeof(double));
-    g_workspace->RWORK = malloc((NMAX > 2 * NSMAX ? NMAX : 2 * NSMAX) * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
-    g_workspace->FERR = malloc(NSMAX * sizeof(double));
-    g_workspace->BERR = malloc(NSMAX * sizeof(double));
+    g_workspace->WORK = malloc(work_size * sizeof(f64));
+    g_workspace->RWORK = malloc((NMAX > 2 * NSMAX ? NMAX : 2 * NSMAX) * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
+    g_workspace->FERR = malloc(NSMAX * sizeof(f64));
+    g_workspace->BERR = malloc(NSMAX * sizeof(f64));
     g_workspace->IWORK = malloc(NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
@@ -208,8 +208,8 @@ static int group_teardown(void** state)
  */
 static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     dchkpb_workspace_t* ws = g_workspace;
 
     char type, dist;
@@ -217,16 +217,16 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
     char uplo_str[2] = {uplo, '\0'};
     char packit;
     int kl, ku, mode, koff;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
     int info, izero;
     int lda = (n > 1) ? n : 1;
     int ldab = kd + 1;
-    double rcondc = 1.0, rcond, anorm, ainvnm;
+    f64 rcondc = 1.0, rcond, anorm, ainvnm;
 
     /* Set block size for this test via xlaenv */
     int nb = NBVAL[inb];
     xlaenv(1, nb);
-    double result[NTESTS];
+    f64 result[NTESTS];
     char ctx[128];
 
     /* Seed based on (n, kd, uplo, imat) for reproducibility */

@@ -43,17 +43,17 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 
 /* External function declarations */
 extern void dgeev(const char* jobvl, const char* jobvr, const int n,
-                  double* A, const int lda, double* wr, double* wi,
-                  double* VL, const int ldvl, double* VR, const int ldvr,
-                  double* work, const int lwork, int* info);
+                  f64* A, const int lda, f64* wr, f64* wi,
+                  f64* VL, const int ldvl, f64* VR, const int ldvr,
+                  f64* work, const int lwork, int* info);
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -68,25 +68,25 @@ typedef struct {
     int nmax;
 
     /* Matrices (all nmax x nmax) */
-    double* A;      /* Original matrix */
-    double* H;      /* Copy modified by DGEEV */
-    double* VL;     /* Left eigenvectors (full) */
-    double* VR;     /* Right eigenvectors (full) */
-    double* LRE;    /* Left/right eigenvectors (partial) */
+    f64* A;      /* Original matrix */
+    f64* H;      /* Copy modified by DGEEV */
+    f64* VL;     /* Left eigenvectors (full) */
+    f64* VR;     /* Right eigenvectors (full) */
+    f64* LRE;    /* Left/right eigenvectors (partial) */
 
     /* Eigenvalues */
-    double* WR;     /* Real parts (full) */
-    double* WI;     /* Imaginary parts (full) */
-    double* WR1;    /* Real parts (partial) */
-    double* WI1;    /* Imaginary parts (partial) */
+    f64* WR;     /* Real parts (full) */
+    f64* WI;     /* Imaginary parts (full) */
+    f64* WR1;    /* Real parts (partial) */
+    f64* WI1;    /* Imaginary parts (partial) */
 
     /* Work arrays */
-    double* work;
+    f64* work;
     int* iwork;
     int lwork;
 
     /* Test results */
-    double result[7];
+    f64 result[7];
 
     /* RNG state */
     uint64_t rng_state[4];
@@ -127,19 +127,19 @@ static int group_setup(void** state)
     int n2 = nmax * nmax;
 
     /* Allocate matrices */
-    g_ws->A   = malloc(n2 * sizeof(double));
-    g_ws->H   = malloc(n2 * sizeof(double));
-    g_ws->VL  = malloc(n2 * sizeof(double));
-    g_ws->VR  = malloc(n2 * sizeof(double));
-    g_ws->LRE = malloc(n2 * sizeof(double));
-    g_ws->WR  = malloc(nmax * sizeof(double));
-    g_ws->WI  = malloc(nmax * sizeof(double));
-    g_ws->WR1 = malloc(nmax * sizeof(double));
-    g_ws->WI1 = malloc(nmax * sizeof(double));
+    g_ws->A   = malloc(n2 * sizeof(f64));
+    g_ws->H   = malloc(n2 * sizeof(f64));
+    g_ws->VL  = malloc(n2 * sizeof(f64));
+    g_ws->VR  = malloc(n2 * sizeof(f64));
+    g_ws->LRE = malloc(n2 * sizeof(f64));
+    g_ws->WR  = malloc(nmax * sizeof(f64));
+    g_ws->WI  = malloc(nmax * sizeof(f64));
+    g_ws->WR1 = malloc(nmax * sizeof(f64));
+    g_ws->WI1 = malloc(nmax * sizeof(f64));
 
     /* Workspace: 5*N + 2*N^2 for generous allocation */
     g_ws->lwork = 5 * nmax + 2 * n2;
-    g_ws->work  = malloc(g_ws->lwork * sizeof(double));
+    g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
     g_ws->iwork = malloc(nmax * sizeof(int));
 
     if (!g_ws->A || !g_ws->H || !g_ws->VL || !g_ws->VR || !g_ws->LRE ||
@@ -182,20 +182,20 @@ static int group_teardown(void** state)
  *
  * Based on ddrvev.f lines 574-707.
  */
-static int generate_matrix(int n, int jtype, double* A, int lda,
-                           double* work, int* iwork, uint64_t state[static 4])
+static int generate_matrix(int n, int jtype, f64* A, int lda,
+                           f64* work, int* iwork, uint64_t state[static 4])
 {
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
-    double anorm, cond, conds;
+    f64 anorm, cond, conds;
     int iinfo = 0;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ovfl = 1.0 / unfl;
-    double ulpinv = 1.0 / ulp;
-    double rtulp = sqrt(ulp);
-    double rtulpi = 1.0 / rtulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ovfl = 1.0 / unfl;
+    f64 ulpinv = 1.0 / ulp;
+    f64 rtulp = sqrt(ulp);
+    f64 rtulpi = 1.0 / rtulp;
 
     /* Compute norm based on KMAGN */
     switch (KMAGN[jtype - 1]) {
@@ -286,17 +286,17 @@ static int generate_matrix(int n, int jtype, double* A, int lda,
 /**
  * Compute 2-norm using LAPACK's dlapy2 pattern.
  */
-static double dlapy2(double x, double y)
+static f64 dlapy2(f64 x, f64 y)
 {
-    double xabs = fabs(x);
-    double yabs = fabs(y);
-    double w = (xabs > yabs) ? xabs : yabs;
-    double z = (xabs < yabs) ? xabs : yabs;
+    f64 xabs = fabs(x);
+    f64 yabs = fabs(y);
+    f64 w = (xabs > yabs) ? xabs : yabs;
+    f64 z = (xabs < yabs) ? xabs : yabs;
 
     if (z == 0.0) {
         return w;
     }
-    double temp = z / w;
+    f64 temp = z / w;
     return w * sqrt(1.0 + temp * temp);
 }
 
@@ -317,19 +317,19 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     int ldvr = ws->nmax;
     int ldlre = ws->nmax;
 
-    double* A = ws->A;
-    double* H = ws->H;
-    double* VL = ws->VL;
-    double* VR = ws->VR;
-    double* LRE = ws->LRE;
-    double* WR = ws->WR;
-    double* WI = ws->WI;
-    double* WR1 = ws->WR1;
-    double* WI1 = ws->WI1;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* H = ws->H;
+    f64* VL = ws->VL;
+    f64* VR = ws->VR;
+    f64* LRE = ws->LRE;
+    f64* WR = ws->WR;
+    f64* WI = ws->WI;
+    f64* WR1 = ws->WR1;
+    f64* WI1 = ws->WI1;
+    f64* work = ws->work;
 
-    double ulp = dlamch("P");
-    double ulpinv = 1.0 / ulp;
+    f64 ulp = dlamch("P");
+    f64 ulpinv = 1.0 / ulp;
 
     /* Initialize results to -1 (not computed) */
     for (int j = 0; j < 7; j++) {
@@ -375,7 +375,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     }
 
     /* Test 1: | A * VR - VR * W | / ( n |A| ulp ) */
-    double res[2];
+    f64 res[2];
     dget22("N", "N", "N", n, A, lda, VR, ldvr, WR, WI, work, res);
     ws->result[0] = res[0];
 
@@ -386,17 +386,17 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     /* Test 3: | |VR(i)| - 1 | / ulp and largest component real */
     ws->result[2] = 0.0;
     for (int j = 0; j < n; j++) {
-        double tnrm = 1.0;
+        f64 tnrm = 1.0;
         if (WI[j] == 0.0) {
             /* Real eigenvalue - single column */
             tnrm = cblas_dnrm2(n, VR + j * ldvr, 1);
         } else if (WI[j] > 0.0) {
             /* Complex conjugate pair - two columns */
-            double nr1 = cblas_dnrm2(n, VR + j * ldvr, 1);
-            double nr2 = cblas_dnrm2(n, VR + (j + 1) * ldvr, 1);
+            f64 nr1 = cblas_dnrm2(n, VR + j * ldvr, 1);
+            f64 nr2 = cblas_dnrm2(n, VR + (j + 1) * ldvr, 1);
             tnrm = dlapy2(nr1, nr2);
         }
-        double diff = fabs(tnrm - 1.0) / ulp;
+        f64 diff = fabs(tnrm - 1.0) / ulp;
         if (diff < ulpinv) {
             if (diff > ws->result[2]) ws->result[2] = diff;
         } else {
@@ -405,10 +405,10 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
         /* Check that largest component is real for complex pairs */
         if (WI[j] > 0.0) {
-            double vmx = 0.0;
-            double vrmx = 0.0;
+            f64 vmx = 0.0;
+            f64 vrmx = 0.0;
             for (int jj = 0; jj < n; jj++) {
-                double vtst = dlapy2(VR[jj + j * ldvr], VR[jj + (j + 1) * ldvr]);
+                f64 vtst = dlapy2(VR[jj + j * ldvr], VR[jj + (j + 1) * ldvr]);
                 if (vtst > vmx) vmx = vtst;
                 if (VR[jj + (j + 1) * ldvr] == 0.0 && fabs(VR[jj + j * ldvr]) > vrmx) {
                     vrmx = fabs(VR[jj + j * ldvr]);
@@ -423,15 +423,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     /* Test 4: | |VL(i)| - 1 | / ulp and largest component real */
     ws->result[3] = 0.0;
     for (int j = 0; j < n; j++) {
-        double tnrm = 1.0;
+        f64 tnrm = 1.0;
         if (WI[j] == 0.0) {
             tnrm = cblas_dnrm2(n, VL + j * ldvl, 1);
         } else if (WI[j] > 0.0) {
-            double nr1 = cblas_dnrm2(n, VL + j * ldvl, 1);
-            double nr2 = cblas_dnrm2(n, VL + (j + 1) * ldvl, 1);
+            f64 nr1 = cblas_dnrm2(n, VL + j * ldvl, 1);
+            f64 nr2 = cblas_dnrm2(n, VL + (j + 1) * ldvl, 1);
             tnrm = dlapy2(nr1, nr2);
         }
-        double diff = fabs(tnrm - 1.0) / ulp;
+        f64 diff = fabs(tnrm - 1.0) / ulp;
         if (diff < ulpinv) {
             if (diff > ws->result[3]) ws->result[3] = diff;
         } else {
@@ -439,10 +439,10 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         }
 
         if (WI[j] > 0.0) {
-            double vmx = 0.0;
-            double vrmx = 0.0;
+            f64 vmx = 0.0;
+            f64 vrmx = 0.0;
             for (int jj = 0; jj < n; jj++) {
-                double vtst = dlapy2(VL[jj + j * ldvl], VL[jj + (j + 1) * ldvl]);
+                f64 vtst = dlapy2(VL[jj + j * ldvl], VL[jj + (j + 1) * ldvl]);
                 if (vtst > vmx) vmx = vtst;
                 if (VL[jj + (j + 1) * ldvl] == 0.0 && fabs(VL[jj + j * ldvl]) > vrmx) {
                     vrmx = fabs(VL[jj + j * ldvl]);
@@ -462,7 +462,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     /* ========== Test DGEEV with eigenvalues only ========== */
     dlacpy("F", n, n, A, lda, H, lda);
 
-    double dum[1];
+    f64 dum[1];
     dgeev("N", "N", n, H, lda, WR1, WI1, dum, 1, dum, 1,
           work, nnwork, &iinfo);
 

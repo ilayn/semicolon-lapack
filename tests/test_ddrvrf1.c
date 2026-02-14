@@ -19,13 +19,13 @@
 static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
-extern double dlamch(const char* cmach);
-extern double dlansf(const char* norm, const char* transr, const char* uplo,
-                     const int n, const double* A, double* work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansf(const char* norm, const char* transr, const char* uplo,
+                     const int n, const f64* A, f64* work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const double* A, const int lda, double* ARF, int* info);
+                   const f64* A, const int lda, f64* ARF, int* info);
 
 typedef struct {
     int in;
@@ -48,15 +48,15 @@ static void run_ddrvrf1_single(int n, int iit, int iuplo, int iform)
     const char* uplo = (iuplo == 0) ? "U" : "L";
     const char* cform = (iform == 0) ? "N" : "T";
 
-    double eps = dlamch("P");
-    double small_val = dlamch("S");
-    double large_val = 1.0 / small_val;
+    f64 eps = dlamch("P");
+    f64 small_val = dlamch("S");
+    f64 large_val = 1.0 / small_val;
     small_val = small_val * lda * lda;
     large_val = large_val / lda / lda;
 
-    double A[NMAX * NMAX];
-    double ARF[NMAX * (NMAX + 1) / 2];
-    double WORK[NMAX];
+    f64 A[NMAX * NMAX];
+    f64 ARF[NMAX * (NMAX + 1) / 2];
+    f64 WORK[NMAX];
 
     for (int j = 0; j < n; j++)
         for (int i = 0; i < n; i++)
@@ -87,10 +87,10 @@ static void run_ddrvrf1_single(int n, int iit, int iuplo, int iform)
     const char* norms[] = {"M", "1", "I", "F"};
 
     for (int inorm = 0; inorm < 4; inorm++) {
-        double normarf = dlansf(norms[inorm], cform, uplo, n, ARF, WORK);
-        double norma = dlansy(norms[inorm], uplo, n, A, lda, WORK);
+        f64 normarf = dlansf(norms[inorm], cform, uplo, n, ARF, WORK);
+        f64 norma = dlansy(norms[inorm], uplo, n, A, lda, WORK);
 
-        double result;
+        f64 result;
         if (norma == 0.0) {
             result = normarf / eps;
         } else {

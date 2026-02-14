@@ -25,27 +25,27 @@
 /* Routine under test */
 extern void dgels(const char *trans,
                   const int m, const int n, const int nrhs,
-                  double * restrict A, const int lda,
-                  double * restrict B, const int ldb,
-                  double * restrict work, const int lwork,
+                  f64 * restrict A, const int lda,
+                  f64 * restrict B, const int ldb,
+                  f64 * restrict work, const int lwork,
                   int *info);
 
 /* Utility routines */
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * restrict A, const int lda,
-                     double *work);
-extern double dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * restrict A, const int lda,
+                     f64 *work);
+extern f64 dlamch(const char *cmach);
 
 typedef struct {
     int m, n, nrhs;
     int lda, ldb;
-    double *A;      /* original matrix */
-    double *Acopy;  /* working copy for dgels */
-    double *B;      /* RHS / solution */
-    double *Xtrue;  /* true solution (for overdetermined) */
-    double *work;
-    double *d;
-    double *genwork;
+    f64 *A;      /* original matrix */
+    f64 *Acopy;  /* working copy for dgels */
+    f64 *B;      /* RHS / solution */
+    f64 *Xtrue;  /* true solution (for overdetermined) */
+    f64 *work;
+    f64 *d;
+    f64 *genwork;
     int lwork;
     uint64_t seed;
 } ls_fixture_t;
@@ -68,13 +68,13 @@ static int ls_setup(void **state, int m, int n, int nrhs)
     int minmn = m < n ? m : n;
     fix->lwork = maxmn * 64 + minmn;
 
-    fix->A = calloc((size_t)fix->lda * n, sizeof(double));
-    fix->Acopy = calloc((size_t)fix->lda * n, sizeof(double));
-    fix->B = calloc((size_t)fix->ldb * nrhs, sizeof(double));
-    fix->Xtrue = calloc((size_t)maxmn * nrhs, sizeof(double));
-    fix->work = calloc(fix->lwork, sizeof(double));
-    fix->d = calloc(minmn, sizeof(double));
-    fix->genwork = calloc(3 * maxmn, sizeof(double));
+    fix->A = calloc((size_t)fix->lda * n, sizeof(f64));
+    fix->Acopy = calloc((size_t)fix->lda * n, sizeof(f64));
+    fix->B = calloc((size_t)fix->ldb * nrhs, sizeof(f64));
+    fix->Xtrue = calloc((size_t)maxmn * nrhs, sizeof(f64));
+    fix->work = calloc(fix->lwork, sizeof(f64));
+    fix->d = calloc(minmn, sizeof(f64));
+    fix->genwork = calloc(3 * maxmn, sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->Acopy);
@@ -105,12 +105,12 @@ static int ls_teardown(void **state)
 }
 
 /* Simple PRNG for generating test data */
-static double prng_next(uint64_t *s)
+static f64 prng_next(uint64_t *s)
 {
     *s ^= *s << 13;
     *s ^= *s >> 7;
     *s ^= *s << 17;
-    return (double)(int64_t)(*s) / (double)INT64_MAX;
+    return (f64)(int64_t)(*s) / (f64)INT64_MAX;
 }
 
 /* Size-specific setups */
@@ -137,10 +137,10 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
     int info;
     int m = fix->m, n = fix->n, nrhs = fix->nrhs;
     int lda = fix->lda, ldb = fix->ldb;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
 
     /* Generate matrix A */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -157,7 +157,7 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
             fix->Xtrue[i + j * n] = prng_next(&s);
 
     /* Compute B = A * X_true (m x nrhs) */
-    memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(double));
+    memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(f64));
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                 m, nrhs, n, 1.0, fix->A, lda,
                 fix->Xtrue, n, 0.0, fix->B, ldb);
@@ -173,16 +173,16 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
 
     /* Verify: ||X_computed - X_true|| / (n * ||X_true|| * eps)
      * X_computed is in B[0:n-1, 0:nrhs-1] */
-    double err_norm = 0.0;
+    f64 err_norm = 0.0;
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
-            double diff = fix->B[i + j * ldb] - fix->Xtrue[i + j * n];
+            f64 diff = fix->B[i + j * ldb] - fix->Xtrue[i + j * n];
             err_norm += diff * diff;
         }
     }
     err_norm = sqrt(err_norm);
 
-    double xtrue_norm = 0.0;
+    f64 xtrue_norm = 0.0;
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
             xtrue_norm += fix->Xtrue[i + j * n] * fix->Xtrue[i + j * n];
@@ -190,13 +190,13 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
     }
     xtrue_norm = sqrt(xtrue_norm);
 
-    double resid;
+    f64 resid;
     if (xtrue_norm == 0.0) {
         resid = err_norm > 0.0 ? 1.0 / eps : 0.0;
     } else {
         /* Scale by condition number: for well-conditioned matrices, resid should be O(1).
          * For ill-conditioned, we expect larger residuals proportional to cndnum. */
-        resid = err_norm / ((double)n * xtrue_norm * eps);
+        resid = err_norm / ((f64)n * xtrue_norm * eps);
         /* Divide by cndnum to normalize: error should be bounded by cndnum * eps */
         resid = resid / cndnum;
     }
@@ -217,10 +217,10 @@ static void run_dgels_underdetermined(ls_fixture_t *fix, int imat)
     int m = fix->m, n = fix->n, nrhs = fix->nrhs;
     int lda = fix->lda, ldb = fix->ldb;
     int maxmn = m > n ? m : n;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
 
     /* Generate matrix A */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -232,7 +232,7 @@ static void run_dgels_underdetermined(ls_fixture_t *fix, int imat)
 
     /* Generate random B (m x nrhs) */
     uint64_t s = fix->seed + 2000;
-    memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(double));
+    memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(f64));
     for (int j = 0; j < nrhs; j++)
         for (int i = 0; i < m; i++)
             fix->B[i + j * ldb] = prng_next(&s);
@@ -255,15 +255,15 @@ static void run_dgels_underdetermined(ls_fixture_t *fix, int imat)
                 m, nrhs, n, -1.0, fix->Acopy, lda,
                 fix->B, ldb, 1.0, fix->Xtrue, maxmn);
 
-    double resid_norm = dlange("F", m, nrhs, fix->Xtrue, maxmn, NULL);
-    double anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
-    double xnorm = dlange("1", n, nrhs, fix->B, ldb, NULL);
+    f64 resid_norm = dlange("F", m, nrhs, fix->Xtrue, maxmn, NULL);
+    f64 anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
+    f64 xnorm = dlange("1", n, nrhs, fix->B, ldb, NULL);
 
-    double resid;
+    f64 resid;
     if (anorm == 0.0 || xnorm == 0.0) {
         resid = resid_norm > 0.0 ? 1.0 / eps : 0.0;
     } else {
-        resid = resid_norm / ((double)maxmn * anorm * xnorm * eps);
+        resid = resid_norm / ((f64)maxmn * anorm * xnorm * eps);
     }
 
     assert_residual_ok(resid);
@@ -280,10 +280,10 @@ static void run_dgels_trans_mgen(ls_fixture_t *fix, int imat)
     int m = fix->m, n = fix->n, nrhs = fix->nrhs;
     int lda = fix->lda, ldb = fix->ldb;
     int maxmn = m > n ? m : n;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
 
     /* Generate matrix A (m x n) */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -297,7 +297,7 @@ static void run_dgels_trans_mgen(ls_fixture_t *fix, int imat)
      * A^T is n-by-m, X is m-by-nrhs, B is n-by-nrhs
      * B is stored in first n rows of B array */
     uint64_t s = fix->seed + 3000;
-    memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(double));
+    memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(f64));
     for (int j = 0; j < nrhs; j++)
         for (int i = 0; i < n; i++)
             fix->B[i + j * ldb] = prng_next(&s);
@@ -320,15 +320,15 @@ static void run_dgels_trans_mgen(ls_fixture_t *fix, int imat)
                 n, nrhs, m, -1.0, fix->Acopy, lda,
                 fix->B, ldb, 1.0, fix->Xtrue, maxmn);
 
-    double resid_norm = dlange("F", n, nrhs, fix->Xtrue, maxmn, NULL);
-    double anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
-    double xnorm = dlange("1", m, nrhs, fix->B, ldb, NULL);
+    f64 resid_norm = dlange("F", n, nrhs, fix->Xtrue, maxmn, NULL);
+    f64 anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
+    f64 xnorm = dlange("1", m, nrhs, fix->B, ldb, NULL);
 
-    double resid;
+    f64 resid;
     if (anorm == 0.0 || xnorm == 0.0) {
         resid = resid_norm > 0.0 ? 1.0 / eps : 0.0;
     } else {
-        resid = resid_norm / ((double)maxmn * anorm * xnorm * eps);
+        resid = resid_norm / ((f64)maxmn * anorm * xnorm * eps);
     }
 
     assert_residual_ok(resid);
@@ -388,7 +388,7 @@ static void test_trans(void **state)
 static void test_workspace_query(void **state)
 {
     ls_fixture_t *fix = *state;
-    double wkopt;
+    f64 wkopt;
     int info;
 
     dgels("N", fix->m, fix->n, fix->nrhs, fix->A, fix->lda,

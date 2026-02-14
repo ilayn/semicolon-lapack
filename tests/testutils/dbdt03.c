@@ -11,7 +11,7 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DBDT03 reconstructs a bidiagonal matrix B from its SVD:
@@ -38,17 +38,17 @@ extern double dlamch(const char* cmach);
  * @param[out]    resid  The test ratio.
  */
 void dbdt03(const char* uplo, const int n, const int kd,
-            const double* const restrict D, const double* const restrict E,
-            const double* const restrict U, const int ldu,
-            const double* const restrict S,
-            const double* const restrict VT, const int ldvt,
-            double* const restrict work, double* resid)
+            const f64* const restrict D, const f64* const restrict E,
+            const f64* const restrict U, const int ldu,
+            const f64* const restrict S,
+            const f64* const restrict VT, const int ldvt,
+            f64* const restrict work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double bnorm, eps;
+    f64 bnorm, eps;
 
     /* Quick return if possible */
     *resid = ZERO;
@@ -74,7 +74,7 @@ void dbdt03(const char* uplo, const int n, const int kd,
                 } else {
                     bnorm = fmax(bnorm, fabs(D[j]));
                 }
-                double colsum = cblas_dasum(n, work, 1);
+                f64 colsum = cblas_dasum(n, work, 1);
                 if (colsum > *resid)
                     *resid = colsum;
             }
@@ -93,7 +93,7 @@ void dbdt03(const char* uplo, const int n, const int kd,
                 } else {
                     bnorm = fmax(bnorm, fabs(D[j]));
                 }
-                double colsum = cblas_dasum(n, work, 1);
+                f64 colsum = cblas_dasum(n, work, 1);
                 if (colsum > *resid)
                     *resid = colsum;
             }
@@ -107,7 +107,7 @@ void dbdt03(const char* uplo, const int n, const int kd,
             cblas_dgemv(CblasColMajor, CblasNoTrans, n, n, -ONE, U, ldu,
                         &work[n], 1, ZERO, work, 1);
             work[j] = work[j] + D[j];
-            double colsum = cblas_dasum(n, work, 1);
+            f64 colsum = cblas_dasum(n, work, 1);
             if (colsum > *resid)
                 *resid = colsum;
         }
@@ -123,14 +123,14 @@ void dbdt03(const char* uplo, const int n, const int kd,
             *resid = ONE / eps;
     } else {
         if (bnorm >= *resid) {
-            *resid = (*resid / bnorm) / ((double)n * eps);
+            *resid = (*resid / bnorm) / ((f64)n * eps);
         } else {
             if (bnorm < ONE) {
-                double tmp = fmin(*resid, (double)n * bnorm);
-                *resid = (tmp / bnorm) / ((double)n * eps);
+                f64 tmp = fmin(*resid, (f64)n * bnorm);
+                *resid = (tmp / bnorm) / ((f64)n * eps);
             } else {
-                double tmp = fmin(*resid / bnorm, (double)n);
-                *resid = tmp / ((double)n * eps);
+                f64 tmp = fmin(*resid / bnorm, (f64)n);
+                *resid = tmp / ((f64)n * eps);
             }
         }
     }

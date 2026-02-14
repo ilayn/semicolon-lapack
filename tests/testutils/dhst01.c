@@ -8,11 +8,11 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * DHST01 tests the reduction of a general matrix A to upper Hessenberg
@@ -44,16 +44,16 @@ extern void dlacpy(const char* uplo, const int m, const int n,
  * @param[out] result Array of 2 elements containing the test ratios.
  */
 void dhst01(const int n, const int ilo, const int ihi,
-            const double* A, const int lda,
-            const double* H, const int ldh,
-            const double* Q, const int ldq,
-            double* work, const int lwork, double* result)
+            const f64* A, const int lda,
+            const f64* H, const int ldh,
+            const f64* Q, const int ldq,
+            f64* work, const int lwork, f64* result)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int ldwork;
-    double anorm, eps, smlnum, unfl, wnorm;
+    f64 anorm, eps, smlnum, unfl, wnorm;
 
     /* Silence unused parameter warnings */
     (void)ilo;
@@ -98,8 +98,8 @@ void dhst01(const int n, const int ilo, const int ihi,
      * Note that RESULT[0] cannot overflow and is bounded by 1/(N*EPS)
      */
     {
-        double num = (wnorm < anorm) ? wnorm : anorm;
-        double denom = (smlnum > anorm * eps) ? smlnum : anorm * eps;
+        f64 num = (wnorm < anorm) ? wnorm : anorm;
+        f64 denom = (smlnum > anorm * eps) ? smlnum : anorm * eps;
         result[0] = num / denom / n;
     }
 

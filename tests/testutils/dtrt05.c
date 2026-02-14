@@ -10,7 +10,7 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DTRT05 tests the error bounds from iterative refinement for the
@@ -44,16 +44,16 @@ extern double dlamch(const char* cmach);
  * @param[out]    reslts  Array (2). The test results.
  */
 void dtrt05(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs, const double* A, const int lda,
-            const double* B, const int ldb, const double* X, const int ldx,
-            const double* XACT, const int ldxact,
-            const double* ferr, const double* berr, double* reslts)
+            const int n, const int nrhs, const f64* A, const int lda,
+            const f64* B, const int ldb, const f64* X, const int ldx,
+            const f64* XACT, const int ldxact,
+            const f64* ferr, const f64* berr, f64* reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, k, ifu, imax;
-    double eps, unfl, ovfl, tmp, diff, xnorm, errbnd, axbi;
+    f64 eps, unfl, ovfl, tmp, diff, xnorm, errbnd, axbi;
     int upper, notran, unit;
 
     /* Quick exit if n = 0 or nrhs = 0 */
@@ -82,7 +82,7 @@ void dtrt05(const char* uplo, const char* trans, const char* diag,
 
         diff = ZERO;
         for (i = 0; i < n; i++) {
-            double d = fabs(X[j * ldx + i] - XACT[j * ldxact + i]);
+            f64 d = fabs(X[j * ldx + i] - XACT[j * ldxact + i]);
             if (d > diff) diff = d;
         }
 
@@ -96,7 +96,7 @@ void dtrt05(const char* uplo, const char* trans, const char* diag,
         }
 
         if (diff / xnorm <= ferr[j]) {
-            double ratio = (diff / xnorm) / ferr[j];
+            f64 ratio = (diff / xnorm) / ferr[j];
             if (ratio > errbnd) errbnd = ratio;
         } else {
             errbnd = ONE / eps;
@@ -155,7 +155,7 @@ void dtrt05(const char* uplo, const char* trans, const char* diag,
             }
         }
 
-        double denom = (n + 1) * eps + (n + 1) * unfl / fmax(axbi, (n + 1) * unfl);
+        f64 denom = (n + 1) * eps + (n + 1) * unfl / fmax(axbi, (n + 1) * unfl);
         tmp = berr[k] / denom;
 
         if (k == 0) {

@@ -9,10 +9,10 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const double* A, const int lda,
-                     double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
+                     const int m, const int n, const f64* A, const int lda,
+                     f64* work);
 
 /**
  * DTRT06 computes a test ratio comparing RCOND (the reciprocal
@@ -34,14 +34,14 @@ extern double dlantr(const char* norm, const char* uplo, const char* diag,
  * @param[out]    work    Array (n). Workspace.
  * @param[out]    rat     The test ratio.
  */
-void dtrt06(const double rcond, const double rcondc,
+void dtrt06(const f64 rcond, const f64 rcondc,
             const char* uplo, const char* diag, const int n,
-            const double* A, const int lda, double* work, double* rat)
+            const f64* A, const int lda, f64* work, f64* rat)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double eps, smlnum, bignum, anorm, rmax, rmin;
+    f64 eps, smlnum, bignum, anorm, rmax, rmin;
 
     eps = dlamch("E");
     rmax = fmax(rcond, rcondc);

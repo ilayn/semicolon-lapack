@@ -20,30 +20,30 @@
 
 /* Routine under test */
 extern void dgelsy(const int m, const int n, const int nrhs,
-                   double * restrict A, const int lda,
-                   double * restrict B, const int ldb,
-                   int * restrict jpvt, const double rcond,
+                   f64 * restrict A, const int lda,
+                   f64 * restrict B, const int ldb,
+                   int * restrict jpvt, const f64 rcond,
                    int *rank,
-                   double * restrict work, const int lwork,
+                   f64 * restrict work, const int lwork,
                    int *info);
 
 /* Utility routines */
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * restrict A, const int lda,
-                     double *work);
-extern double dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * restrict A, const int lda,
+                     f64 *work);
+extern f64 dlamch(const char *cmach);
 
 typedef struct {
     int m, n, nrhs;
     int lda, ldb;
-    double *A;      /* original matrix */
-    double *Acopy;  /* working copy for dgelsy */
-    double *B;      /* RHS (= A * X_true) */
-    double *Bcopy;  /* working copy for residual computation */
-    double *X_true; /* true solution */
-    double *work;
-    double *d;
-    double *genwork;
+    f64 *A;      /* original matrix */
+    f64 *Acopy;  /* working copy for dgelsy */
+    f64 *B;      /* RHS (= A * X_true) */
+    f64 *Bcopy;  /* working copy for residual computation */
+    f64 *X_true; /* true solution */
+    f64 *work;
+    f64 *d;
+    f64 *genwork;
     int *jpvt;
     int lwork;
     uint64_t seed;
@@ -67,14 +67,14 @@ static int lsy_setup(void **state, int m, int n, int nrhs)
 
     fix->lwork = maxmn * 64 + 3 * minmn + maxmn;  /* generous workspace */
 
-    fix->A = calloc(fix->lda * n, sizeof(double));
-    fix->Acopy = calloc(fix->lda * n, sizeof(double));
-    fix->B = calloc(fix->ldb * nrhs, sizeof(double));
-    fix->Bcopy = calloc(fix->ldb * nrhs, sizeof(double));
-    fix->X_true = calloc(n * nrhs, sizeof(double));
-    fix->work = calloc(fix->lwork, sizeof(double));
-    fix->d = calloc(maxmn, sizeof(double));
-    fix->genwork = calloc(3 * maxmn, sizeof(double));
+    fix->A = calloc(fix->lda * n, sizeof(f64));
+    fix->Acopy = calloc(fix->lda * n, sizeof(f64));
+    fix->B = calloc(fix->ldb * nrhs, sizeof(f64));
+    fix->Bcopy = calloc(fix->ldb * nrhs, sizeof(f64));
+    fix->X_true = calloc(n * nrhs, sizeof(f64));
+    fix->work = calloc(fix->lwork, sizeof(f64));
+    fix->d = calloc(maxmn, sizeof(f64));
+    fix->genwork = calloc(3 * maxmn, sizeof(f64));
     fix->jpvt = calloc(n, sizeof(int));
 
     assert_non_null(fix->A);
@@ -129,10 +129,10 @@ static void run_dgelsy_fullrank(lsy_fixture_t *fix, int imat)
     int lda = fix->lda, ldb = fix->ldb;
     int maxmn = m > n ? m : n;
     int minmn = m < n ? m : n;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     char type, dist;
     int kl, ku, mode;
-    double anorm_param, cndnum;
+    f64 anorm_param, cndnum;
 
     /* Generate full-rank matrix A */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -147,7 +147,7 @@ static void run_dgelsy_fullrank(lsy_fixture_t *fix, int imat)
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
             s ^= s << 13; s ^= s >> 7; s ^= s << 17;
-            fix->X_true[i + j * n] = (double)(int64_t)s / (double)INT64_MAX;
+            fix->X_true[i + j * n] = (f64)(int64_t)s / (f64)INT64_MAX;
         }
     }
 
@@ -167,7 +167,7 @@ static void run_dgelsy_fullrank(lsy_fixture_t *fix, int imat)
         fix->jpvt[i] = 0;
 
     /* RCOND for rank determination - should detect full rank */
-    double rcond = eps * (double)maxmn;
+    f64 rcond = eps * (f64)maxmn;
 
     /* Call dgelsy */
     dgelsy(m, n, nrhs, fix->A, lda, fix->B, ldb,
@@ -183,15 +183,15 @@ static void run_dgelsy_fullrank(lsy_fixture_t *fix, int imat)
                 m, nrhs, n, -1.0, fix->Acopy, lda,
                 fix->B, ldb, 1.0, fix->Bcopy, ldb);
 
-    double resid_norm = dlange("1", m, nrhs, fix->Bcopy, ldb, NULL);
-    double anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
-    double xnorm = dlange("1", n, nrhs, fix->B, ldb, NULL);
+    f64 resid_norm = dlange("1", m, nrhs, fix->Bcopy, ldb, NULL);
+    f64 anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
+    f64 xnorm = dlange("1", n, nrhs, fix->B, ldb, NULL);
 
-    double resid;
+    f64 resid;
     if (anorm == 0.0 || xnorm == 0.0) {
         resid = resid_norm > 0.0 ? 1.0 / eps : 0.0;
     } else {
-        resid = resid_norm / ((double)maxmn * anorm * xnorm * eps);
+        resid = resid_norm / ((f64)maxmn * anorm * xnorm * eps);
     }
 
     assert_residual_ok(resid);
@@ -208,13 +208,13 @@ static void run_dgelsy_rankdef(lsy_fixture_t *fix, int def_rank)
     int lda = fix->lda, ldb = fix->ldb;
     int maxmn = m > n ? m : n;
     int minmn = m < n ? m : n;
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
 
     /* Generate rank-deficient matrix using dlatms with mode=0 and explicit
      * singular values. Set only def_rank singular values to be nonzero. */
     for (int i = 0; i < minmn; i++) {
         if (i < def_rank) {
-            fix->d[i] = 1.0 / (1.0 + (double)i);  /* decreasing from 1 to 1/(def_rank) */
+            fix->d[i] = 1.0 / (1.0 + (f64)i);  /* decreasing from 1 to 1/(def_rank) */
         } else {
             fix->d[i] = 0.0;  /* zero singular values -> rank deficiency */
         }
@@ -234,7 +234,7 @@ static void run_dgelsy_rankdef(lsy_fixture_t *fix, int def_rank)
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
             s ^= s << 13; s ^= s >> 7; s ^= s << 17;
-            fix->X_true[i + j * n] = (double)(int64_t)s / (double)INT64_MAX;
+            fix->X_true[i + j * n] = (f64)(int64_t)s / (f64)INT64_MAX;
         }
     }
 
@@ -258,7 +258,7 @@ static void run_dgelsy_rankdef(lsy_fixture_t *fix, int def_rank)
      * smallest nonzero sv is 1/def_rank, so condition = def_rank.
      * Use rcond small enough to detect exact zeros but large enough
      * to be numerically stable. */
-    double rcond = 0.5 / (double)(def_rank + 1);
+    f64 rcond = 0.5 / (f64)(def_rank + 1);
 
     /* Call dgelsy */
     dgelsy(m, n, nrhs, fix->A, lda, fix->B, ldb,
@@ -279,17 +279,17 @@ static void run_dgelsy_rankdef(lsy_fixture_t *fix, int def_rank)
                 m, nrhs, n, -1.0, fix->Acopy, lda,
                 fix->B, ldb, 1.0, fix->Bcopy, ldb);
 
-    double resid_norm = dlange("1", m, nrhs, fix->Bcopy, ldb, NULL);
-    double anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
-    double xnorm = dlange("1", n, nrhs, fix->B, ldb, NULL);
+    f64 resid_norm = dlange("1", m, nrhs, fix->Bcopy, ldb, NULL);
+    f64 anorm = dlange("1", m, n, fix->Acopy, lda, NULL);
+    f64 xnorm = dlange("1", n, nrhs, fix->B, ldb, NULL);
 
     /* Since B is in the column space of A, the residual should be small
      * even for rank-deficient matrices. Use the standard LAPACK formula. */
-    double resid;
+    f64 resid;
     if (anorm == 0.0 || xnorm == 0.0) {
         resid = resid_norm > 0.0 ? 1.0 / eps : 0.0;
     } else {
-        resid = resid_norm / ((double)maxmn * anorm * xnorm * eps);
+        resid = resid_norm / ((f64)maxmn * anorm * xnorm * eps);
     }
 
     assert_residual_ok(resid);
@@ -348,7 +348,7 @@ static void test_rankdef_one(void **state)
 static void test_workspace_query(void **state)
 {
     lsy_fixture_t *fix = *state;
-    double wkopt;
+    f64 wkopt;
     int info, rank;
 
     dgelsy(fix->m, fix->n, fix->nrhs, fix->A, fix->lda,

@@ -43,38 +43,38 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Selection function type for dgees */
-typedef int (*dselect2_t)(const double* wr, const double* wi);
+typedef int (*dselect2_t)(const f64* wr, const f64* wi);
 
 /* External function declarations */
 extern void dgees(const char* jobvs, const char* sort, dselect2_t select,
-                  const int n, double* A, const int lda, int* sdim,
-                  double* wr, double* wi, double* VS, const int ldvs,
-                  double* work, const int lwork, int* bwork, int* info);
+                  const int n, f64* A, const int lda, int* sdim,
+                  f64* wr, f64* wi, f64* VS, const int ldvs,
+                  f64* work, const int lwork, int* bwork, int* info);
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
 extern void xerbla(const char* srname, const int info);
 
 /* Common block for eigenvalue selection (mirrors SSLCT in ddrves.f) */
 static int g_selopt;       /* Selection option */
 static int g_seldim;       /* Dimension of selected eigenvalues */
 static int g_selval[20];   /* Selection indicators */
-static double g_selwr[20]; /* Real parts of selected eigenvalues */
-static double g_selwi[20]; /* Imaginary parts of selected eigenvalues */
+static f64 g_selwr[20]; /* Real parts of selected eigenvalues */
+static f64 g_selwi[20]; /* Imaginary parts of selected eigenvalues */
 
 /**
  * Selection function for dgees.
  * Selects eigenvalues based on global selection criteria.
  */
-static int dslect(const double* wr, const double* wi)
+static int dslect(const f64* wr, const f64* wi)
 {
     int j;
-    double eps = dlamch("P");
+    f64 eps = dlamch("P");
 
     if (g_selopt == 0) {
         /* Select all eigenvalues */
@@ -82,7 +82,7 @@ static int dslect(const double* wr, const double* wi)
     }
 
     for (j = 0; j < g_seldim; j++) {
-        double rmin = fabs(*wr - g_selwr[j]);
+        f64 rmin = fabs(*wr - g_selwr[j]);
         if (fabs(*wi - g_selwi[j]) < rmin) {
             rmin = fabs(*wi - g_selwi[j]);
         }
@@ -107,25 +107,25 @@ typedef struct {
     int nmax;
 
     /* Matrices (all nmax x nmax) */
-    double* A;      /* Working matrix */
-    double* H;      /* Schur form (with VS) */
-    double* HT;     /* Schur form (without VS) */
-    double* VS;     /* Schur vectors */
+    f64* A;      /* Working matrix */
+    f64* H;      /* Schur form (with VS) */
+    f64* HT;     /* Schur form (without VS) */
+    f64* VS;     /* Schur vectors */
 
     /* Eigenvalues */
-    double* WR;     /* Real parts (with VS) */
-    double* WI;     /* Imaginary parts (with VS) */
-    double* WRT;    /* Real parts (without VS) */
-    double* WIT;    /* Imaginary parts (without VS) */
+    f64* WR;     /* Real parts (with VS) */
+    f64* WI;     /* Imaginary parts (with VS) */
+    f64* WRT;    /* Real parts (without VS) */
+    f64* WIT;    /* Imaginary parts (without VS) */
 
     /* Work arrays */
-    double* work;
+    f64* work;
     int* iwork;
     int* bwork;
     int lwork;
 
     /* Test results */
-    double result[13];
+    f64 result[13];
 
     /* RNG state */
     uint64_t rng_state[4];
@@ -166,18 +166,18 @@ static int group_setup(void** state)
     int n2 = nmax * nmax;
 
     /* Allocate matrices */
-    g_ws->A   = malloc(n2 * sizeof(double));
-    g_ws->H   = malloc(n2 * sizeof(double));
-    g_ws->HT  = malloc(n2 * sizeof(double));
-    g_ws->VS  = malloc(n2 * sizeof(double));
-    g_ws->WR  = malloc(nmax * sizeof(double));
-    g_ws->WI  = malloc(nmax * sizeof(double));
-    g_ws->WRT = malloc(nmax * sizeof(double));
-    g_ws->WIT = malloc(nmax * sizeof(double));
+    g_ws->A   = malloc(n2 * sizeof(f64));
+    g_ws->H   = malloc(n2 * sizeof(f64));
+    g_ws->HT  = malloc(n2 * sizeof(f64));
+    g_ws->VS  = malloc(n2 * sizeof(f64));
+    g_ws->WR  = malloc(nmax * sizeof(f64));
+    g_ws->WI  = malloc(nmax * sizeof(f64));
+    g_ws->WRT = malloc(nmax * sizeof(f64));
+    g_ws->WIT = malloc(nmax * sizeof(f64));
 
     /* Workspace: 5*N + 2*N^2 for generous allocation */
     g_ws->lwork = 5 * nmax + 2 * n2;
-    g_ws->work  = malloc(g_ws->lwork * sizeof(double));
+    g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
     g_ws->iwork = malloc(nmax * sizeof(int));
     g_ws->bwork = malloc(nmax * sizeof(int));
 
@@ -221,20 +221,20 @@ static int group_teardown(void** state)
  *
  * Based on ddrves.f lines 583-700.
  */
-static int generate_matrix(int n, int jtype, double* A, int lda,
-                           double* work, int* iwork, uint64_t state[static 4])
+static int generate_matrix(int n, int jtype, f64* A, int lda,
+                           f64* work, int* iwork, uint64_t state[static 4])
 {
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
-    double anorm, cond, conds;
+    f64 anorm, cond, conds;
     int iinfo = 0;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ovfl = 1.0 / unfl;
-    double ulpinv = 1.0 / ulp;
-    double rtulp = sqrt(ulp);
-    double rtulpi = 1.0 / rtulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ovfl = 1.0 / unfl;
+    f64 ulpinv = 1.0 / ulp;
+    f64 rtulp = sqrt(ulp);
+    f64 rtulpi = 1.0 / rtulp;
 
     /* Compute norm based on KMAGN */
     switch (KMAGN[jtype - 1]) {
@@ -338,20 +338,20 @@ static void run_ddrves_single(ddrves_params_t* params)
     int lda = ws->nmax;
     int ldvs = ws->nmax;
 
-    double* A = ws->A;
-    double* H = ws->H;
-    double* HT = ws->HT;
-    double* VS = ws->VS;
-    double* WR = ws->WR;
-    double* WI = ws->WI;
-    double* WRT = ws->WRT;
-    double* WIT = ws->WIT;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* H = ws->H;
+    f64* HT = ws->HT;
+    f64* VS = ws->VS;
+    f64* WR = ws->WR;
+    f64* WI = ws->WI;
+    f64* WRT = ws->WRT;
+    f64* WIT = ws->WIT;
+    f64* work = ws->work;
     int* bwork = ws->bwork;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ulpinv = 1.0 / ulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ulpinv = 1.0 / ulp;
 
     int rsub = (isort == 0) ? 0 : 6;
     const char* sort = (isort == 0) ? "N" : "S";
@@ -441,7 +441,7 @@ static void run_ddrves_single(ddrves_params_t* params)
 
     /* Tests 2-3 (or 8-9): | A - VS*T*VS' | and | I - VS*VS' | */
     int lwork_hst = 2 * n * n > 1 ? 2 * n * n : 1;
-    double res[2];
+    f64 res[2];
     dhst01(n, 1, n, A, lda, H, lda, VS, ldvs, work, lwork_hst, res);
     ws->result[rsub + 1] = res[0];
     ws->result[rsub + 2] = res[1];
@@ -468,9 +468,9 @@ static void run_ddrves_single(ddrves_params_t* params)
 
     for (int i = 0; i < n - 1; i++) {
         if (H[i + 1 + i * lda] != 0.0) {
-            double tmp = sqrt(fabs(H[i + 1 + i * lda])) * sqrt(fabs(H[i + (i + 1) * lda]));
-            double wival = fabs(WI[i] - tmp) / (ulp * tmp > unfl ? ulp * tmp : unfl);
-            double wival1 = fabs(WI[i + 1] + tmp) / (ulp * tmp > unfl ? ulp * tmp : unfl);
+            f64 tmp = sqrt(fabs(H[i + 1 + i * lda])) * sqrt(fabs(H[i + (i + 1) * lda]));
+            f64 wival = fabs(WI[i] - tmp) / (ulp * tmp > unfl ? ulp * tmp : unfl);
+            f64 wival1 = fabs(WI[i + 1] + tmp) / (ulp * tmp > unfl ? ulp * tmp : unfl);
             if (wival > ws->result[rsub + 3]) ws->result[rsub + 3] = wival;
             if (wival1 > ws->result[rsub + 3]) ws->result[rsub + 3] = wival1;
         } else if (i > 0) {

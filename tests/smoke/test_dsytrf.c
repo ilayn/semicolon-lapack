@@ -47,11 +47,11 @@ static const char UPLOS[] = {'U', 'L'};
 #define NMAX    50  /* Maximum matrix dimension */
 
 /* Routines under test */
-extern void dsytf2(const char* uplo, const int n, double* restrict A,
+extern void dsytf2(const char* uplo, const int n, f64* restrict A,
                    const int lda, int* restrict ipiv, int* info);
-extern void dsytrf(const char* uplo, const int n, double* restrict A,
+extern void dsytrf(const char* uplo, const int n, f64* restrict A,
                    const int lda, int* restrict ipiv,
-                   double* restrict work, const int lwork, int* info);
+                   f64* restrict work, const int lwork, int* info);
 
 
 /**
@@ -69,12 +69,12 @@ typedef struct {
  * Workspace for test execution - shared across all tests via group setup.
  */
 typedef struct {
-    double* A;      /* Original matrix (NMAX x NMAX) */
-    double* AFAC;   /* Factored matrix (NMAX x NMAX) */
-    double* C;      /* Workspace for dsyt01 (NMAX x NMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace for dsyt01 */
-    double* D;      /* Singular values for dlatms */
+    f64* A;      /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f64* C;      /* Workspace for dsyt01 (NMAX x NMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace for dsyt01 */
+    f64* D;      /* Singular values for dlatms */
     int* IPIV;      /* Pivot indices */
 } dsytrf_workspace_t;
 
@@ -91,12 +91,12 @@ static int group_setup(void** state)
 
     int lwork = NMAX * 64;  /* Generous workspace for dsytrf */
 
-    g_workspace->A = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->C = malloc(NMAX * NMAX * sizeof(double));
-    g_workspace->WORK = malloc(lwork * sizeof(double));
-    g_workspace->RWORK = malloc(NMAX * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->C = malloc(NMAX * NMAX * sizeof(f64));
+    g_workspace->WORK = malloc(lwork * sizeof(f64));
+    g_workspace->RWORK = malloc(NMAX * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->IPIV = malloc(NMAX * sizeof(int));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->C ||
@@ -133,18 +133,18 @@ static int group_teardown(void** state)
  */
 static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     dsytrf_workspace_t* ws = g_workspace;
 
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info, izero;
     int lda = (n > 1) ? n : 1;
     int lwork = NMAX * 64;
-    double resid;
+    f64 resid;
     char ctx[128];
 
     /* Get matrix parameters for this type */
@@ -219,7 +219,7 @@ static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
     }
 
     /* Copy A to AFAC for factorization */
-    memcpy(ws->AFAC, ws->A, lda * n * sizeof(double));
+    memcpy(ws->AFAC, ws->A, lda * n * sizeof(f64));
 
     /* Set test context for error messages */
     snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d routine=%s",

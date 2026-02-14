@@ -13,9 +13,9 @@
 #include "verify.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 
 /**
  * DQRT16 computes the residual for a solution of a system of linear
@@ -67,16 +67,16 @@ extern double dlange(const char* norm, const int m, const int n,
  *     norm(B - A*X) / ( max(m, n) * norm(A) * norm(X) * EPS ).
  */
 void dqrt16(const char* trans, const int m, const int n, const int nrhs,
-            const double* A, const int lda,
-            const double* X, const int ldx,
-            double* B, const int ldb,
-            double* rwork, double* resid)
+            const f64* A, const int lda,
+            const f64* X, const int ldx,
+            f64* B, const int ldb,
+            f64* rwork, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int j, n1, n2;
-    double anorm, bnorm, eps, xnorm;
+    f64 anorm, bnorm, eps, xnorm;
     int tpsd;
 
     /* Quick exit if M = 0 or N = 0 or NRHS = 0 */
@@ -118,7 +118,7 @@ void dqrt16(const char* trans, const int m, const int n, const int nrhs,
             *resid = ONE / eps;
         } else {
             int maxmn = (m > n) ? m : n;
-            double temp = ((bnorm / anorm) / xnorm) / ((double)maxmn * eps);
+            f64 temp = ((bnorm / anorm) / xnorm) / ((f64)maxmn * eps);
             if (temp > *resid) {
                 *resid = temp;
             }

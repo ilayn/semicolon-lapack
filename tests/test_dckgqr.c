@@ -47,7 +47,7 @@ static const int NVAL[] = { 0,  3, 30 };
 #define MAX_TESTS (NM * NP * NN * NTYPES)
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -60,19 +60,19 @@ typedef struct {
 
 /* Global workspace - allocated once, shared across all tests */
 typedef struct {
-    double* A;
-    double* AF;
-    double* AQ;
-    double* AR;
-    double* taua;
-    double* B;
-    double* BF;
-    double* BZ;
-    double* BT;
-    double* BWK;
-    double* taub;
-    double* work;
-    double* rwork;
+    f64* A;
+    f64* AF;
+    f64* AQ;
+    f64* AR;
+    f64* taua;
+    f64* B;
+    f64* BF;
+    f64* BZ;
+    f64* BT;
+    f64* BWK;
+    f64* taub;
+    f64* work;
+    f64* rwork;
 } dckgqr_workspace_t;
 
 static dckgqr_workspace_t* g_ws = NULL;
@@ -88,19 +88,19 @@ static int group_setup(void** state)
     int ldb = NMAX;
     int lwork = NMAX * NMAX;
 
-    g_ws->A     = malloc(lda * NMAX * sizeof(double));
-    g_ws->AF    = malloc(lda * NMAX * sizeof(double));
-    g_ws->AQ    = malloc(lda * NMAX * sizeof(double));
-    g_ws->AR    = malloc(lda * NMAX * sizeof(double));
-    g_ws->taua  = malloc(NMAX * sizeof(double));
-    g_ws->B     = malloc(ldb * NMAX * sizeof(double));
-    g_ws->BF    = malloc(ldb * NMAX * sizeof(double));
-    g_ws->BZ    = malloc(ldb * NMAX * sizeof(double));
-    g_ws->BT    = malloc(ldb * NMAX * sizeof(double));
-    g_ws->BWK   = malloc(ldb * NMAX * sizeof(double));
-    g_ws->taub  = malloc(NMAX * sizeof(double));
-    g_ws->work  = malloc(lwork * sizeof(double));
-    g_ws->rwork = malloc(NMAX * sizeof(double));
+    g_ws->A     = malloc(lda * NMAX * sizeof(f64));
+    g_ws->AF    = malloc(lda * NMAX * sizeof(f64));
+    g_ws->AQ    = malloc(lda * NMAX * sizeof(f64));
+    g_ws->AR    = malloc(lda * NMAX * sizeof(f64));
+    g_ws->taua  = malloc(NMAX * sizeof(f64));
+    g_ws->B     = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->BF    = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->BZ    = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->BT    = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->BWK   = malloc(ldb * NMAX * sizeof(f64));
+    g_ws->taub  = malloc(NMAX * sizeof(f64));
+    g_ws->work  = malloc(lwork * sizeof(f64));
+    g_ws->rwork = malloc(NMAX * sizeof(f64));
 
     if (!g_ws->A || !g_ws->AF || !g_ws->AQ || !g_ws->AR ||
         !g_ws->taua || !g_ws->B || !g_ws->BF || !g_ws->BZ ||
@@ -150,11 +150,11 @@ static void test_dckgqr_case(void** state)
 
     char type;
     int kla, kua, klb, kub;
-    double anorm, bnorm, cndnma, cndnmb;
+    f64 anorm, bnorm, cndnma, cndnmb;
     int modea, modeb;
     char dista, distb;
     int iinfo;
-    double result[NTESTS];
+    f64 result[NTESTS];
 
     /* Seed RNG for reproducibility */
     uint64_t rng_state[4];

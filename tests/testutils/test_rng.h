@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <math.h>
+#include "semicolon_lapack/types.h"
 
 /**
  * Rotate left helper.
@@ -69,39 +70,39 @@ static inline uint64_t rng_next(uint64_t state[static 4]) {
 }
 
 /**
- * Generate uniform random double in (0, 1).
- * Uses upper 53 bits for full double precision mantissa.
+ * Generate uniform random f64 in (0, 1).
+ * Uses upper 53 bits for full f64 precision mantissa.
  * Excludes exactly 0.0 and 1.0 (matches LAPACK dlaran behavior).
  *
  * @param[in,out] state  The 4-element state array.
  */
-static inline double rng_uniform(uint64_t state[static 4]) {
+static inline f64 rng_uniform(uint64_t state[static 4]) {
     /* Convert to [0, 1) then shift to (0, 1) */
-    double u = (rng_next(state) >> 11) * 0x1.0p-53;
+    f64 u = (rng_next(state) >> 11) * 0x1.0p-53;
     /* Ensure we never return exactly 0 or 1 */
     if (u == 0.0) u = 0x1.0p-53;
     return u;
 }
 
 /**
- * Generate uniform random double in (-1, 1).
+ * Generate uniform random f64 in (-1, 1).
  *
  * @param[in,out] state  The 4-element state array.
  */
-static inline double rng_uniform_symmetric(uint64_t state[static 4]) {
+static inline f64 rng_uniform_symmetric(uint64_t state[static 4]) {
     return 2.0 * rng_uniform(state) - 1.0;
 }
 
 /**
- * Generate standard normal random double N(0,1).
+ * Generate standard normal random f64 N(0,1).
  * Uses Box-Muller transform (same as LAPACK dlarnd).
  *
  * @param[in,out] state  The 4-element state array.
  */
-static inline double rng_normal(uint64_t state[static 4]) {
-    static const double TWOPI = 6.28318530717958647692528676655900576839;
-    double u1 = rng_uniform(state);
-    double u2 = rng_uniform(state);
+static inline f64 rng_normal(uint64_t state[static 4]) {
+    static const f64 TWOPI = 6.28318530717958647692528676655900576839;
+    f64 u1 = rng_uniform(state);
+    f64 u2 = rng_uniform(state);
     return sqrt(-2.0 * log(u1)) * cos(TWOPI * u2);
 }
 
@@ -112,7 +113,7 @@ static inline double rng_normal(uint64_t state[static 4]) {
  * @param[in,out] state  The 4-element state array.
  * @param[in]     idist  1 = uniform(0,1), 2 = uniform(-1,1), 3 = normal(0,1)
  */
-static double rng_dist(uint64_t state[static 4], int idist) {
+static f64 rng_dist(uint64_t state[static 4], int idist) {
     switch (idist) {
         case 1: return rng_uniform(state);
         case 2: return rng_uniform_symmetric(state);
@@ -129,7 +130,7 @@ static double rng_dist(uint64_t state[static 4], int idist) {
  * @param[in]     n      Number of values to generate
  * @param[out]    x      Output array of dimension n
  */
-static inline void rng_fill(uint64_t state[static 4], int idist, int n, double* x) {
+static inline void rng_fill(uint64_t state[static 4], int idist, int n, f64* x) {
     for (int i = 0; i < n; i++) {
         x[i] = rng_dist(state, idist);
     }

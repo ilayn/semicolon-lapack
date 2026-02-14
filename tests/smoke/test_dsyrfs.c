@@ -20,21 +20,21 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dsytrf(const char* uplo, const int n, double* const restrict A,
+extern void dsytrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* const restrict ipiv,
-                   double* const restrict work, const int lwork, int* info);
+                   f64* const restrict work, const int lwork, int* info);
 extern void dsytrs(const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
+                   const f64* const restrict A, const int lda,
                    const int* const restrict ipiv,
-                   double* const restrict B, const int ldb, int* info);
+                   f64* const restrict B, const int ldb, int* info);
 extern void dsyrfs(const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
-                   const double* const restrict AF, const int ldaf,
+                   const f64* const restrict A, const int lda,
+                   const f64* const restrict AF, const int ldaf,
                    const int* const restrict ipiv,
-                   const double* const restrict B, const int ldb,
-                   double* const restrict X, const int ldx,
-                   double* const restrict ferr, double* const restrict berr,
-                   double* const restrict work, int* const restrict iwork,
+                   const f64* const restrict B, const int ldb,
+                   f64* const restrict X, const int ldx,
+                   f64* const restrict ferr, f64* const restrict berr,
+                   f64* const restrict work, int* const restrict iwork,
                    int* info);
 
 /*
@@ -43,18 +43,18 @@ extern void dsyrfs(const char* uplo, const int n, const int nrhs,
 typedef struct {
     int n, nrhs;
     int lda;
-    double* A;       /* Original matrix */
-    double* AF;      /* Factored matrix */
-    double* B;       /* RHS */
-    double* X;       /* Computed solution */
-    double* XACT;    /* Exact solution */
-    double* ferr;
-    double* berr;
+    f64* A;       /* Original matrix */
+    f64* AF;      /* Factored matrix */
+    f64* B;       /* RHS */
+    f64* X;       /* Computed solution */
+    f64* XACT;    /* Exact solution */
+    f64* ferr;
+    f64* berr;
     int* ipiv;
-    double* d;
-    double* work;
+    f64* d;
+    f64* work;
     int* iwork;
-    double* rwork;
+    f64* rwork;
     uint64_t seed;
 } dsyrfs_fixture_t;
 
@@ -73,18 +73,18 @@ static int dsyrfs_setup(void** state, int n, int nrhs)
     int worksize = n * 64;
     if (worksize < 3 * n) worksize = 3 * n;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AF = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->lda * nrhs * sizeof(double));
-    fix->X = malloc(fix->lda * nrhs * sizeof(double));
-    fix->XACT = malloc(fix->lda * nrhs * sizeof(double));
-    fix->ferr = malloc(nrhs * sizeof(double));
-    fix->berr = malloc(nrhs * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AF = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->lda * nrhs * sizeof(f64));
+    fix->X = malloc(fix->lda * nrhs * sizeof(f64));
+    fix->XACT = malloc(fix->lda * nrhs * sizeof(f64));
+    fix->ferr = malloc(nrhs * sizeof(f64));
+    fix->berr = malloc(nrhs * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(worksize * sizeof(double));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(worksize * sizeof(f64));
     fix->iwork = malloc(n * sizeof(int));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->rwork = malloc(n * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -141,9 +141,9 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
-    const double eps = DBL_EPSILON;
+    const f64 eps = DBL_EPSILON;
 
     dlatb4("DSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -157,7 +157,7 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
     /* Generate exact solution */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->lda] = 1.0 + (double)i / fix->n;
+            fix->XACT[i + j * fix->lda] = 1.0 + (f64)i / fix->n;
         }
     }
 
@@ -168,13 +168,13 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
                 fix->XACT, fix->lda, 0.0, fix->B, fix->lda);
 
     /* Factor A via Bunch-Kaufman: copy to AF first */
-    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(f64));
     int lwork = fix->n * 64;
     dsytrf(uplo, fix->n, fix->AF, fix->lda, fix->ipiv, fix->work, lwork, &info);
     assert_info_success(info);
 
     /* Solve AF*X = B via dsytrs */
-    memcpy(fix->X, fix->B, fix->lda * fix->nrhs * sizeof(double));
+    memcpy(fix->X, fix->B, fix->lda * fix->nrhs * sizeof(f64));
     dsytrs(uplo, fix->n, fix->nrhs, fix->AF, fix->lda, fix->ipiv,
            fix->X, fix->lda, &info);
     assert_info_success(info);
@@ -205,16 +205,16 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
                     1.0, fix->rwork, 1);
 
         /* ||R|| */
-        double rnorm = 0.0;
+        f64 rnorm = 0.0;
         for (int i = 0; i < fix->n; i++) {
-            double val = fabs(fix->rwork[i]);
+            f64 val = fabs(fix->rwork[i]);
             if (val > rnorm) rnorm = val;
         }
 
         /* ||A|| (infinity norm via row sums of full symmetric matrix) */
-        double anorm_comp = 0.0;
+        f64 anorm_comp = 0.0;
         for (int i = 0; i < fix->n; i++) {
-            double rowsum = 0.0;
+            f64 rowsum = 0.0;
             for (int k = 0; k < fix->n; k++) {
                 rowsum += fabs(fix->A[i + k * fix->lda]);
             }
@@ -222,14 +222,14 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
         }
 
         /* ||X(:,j)|| */
-        double xnorm = 0.0;
+        f64 xnorm = 0.0;
         for (int i = 0; i < fix->n; i++) {
-            double val = fabs(fix->X[i + j * fix->lda]);
+            f64 val = fabs(fix->X[i + j * fix->lda]);
             if (val > xnorm) xnorm = val;
         }
 
-        double denom = anorm_comp * xnorm * fix->n * eps;
-        double resid = (denom > 0.0) ? rnorm / denom : rnorm;
+        f64 denom = anorm_comp * xnorm * fix->n * eps;
+        f64 resid = (denom > 0.0) ? rnorm / denom : rnorm;
         assert_residual_ok(resid);
     }
 }

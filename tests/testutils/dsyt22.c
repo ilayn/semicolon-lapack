@@ -12,10 +12,10 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 
 /**
  * DSYT22 generally checks a decomposition of the form
@@ -51,18 +51,18 @@ extern double dlansy(const char* norm, const char* uplo, const int n,
  * @param[out]    result Test ratios, dimension (2).
  */
 void dsyt22(const int itype, const char* uplo, const int n, const int m,
-            const int kband, const double* const restrict A, const int lda,
-            const double* const restrict D, const double* const restrict E,
-            const double* const restrict U, const int ldu,
-            const double* const restrict V, const int ldv,
-            const double* const restrict tau,
-            double* const restrict work, double* restrict result)
+            const int kband, const f64* const restrict A, const int lda,
+            const f64* const restrict D, const f64* const restrict E,
+            const f64* const restrict U, const int ldu,
+            const f64* const restrict V, const int ldv,
+            const f64* const restrict tau,
+            f64* const restrict work, f64* restrict result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int j, jj, jj1, jj2, nn, nnp1;
-    double anorm, ulp, unfl, wnorm;
+    f64 anorm, ulp, unfl, wnorm;
 
     (void)V;    /* unused */
     (void)ldv;  /* unused */
@@ -121,10 +121,10 @@ void dsyt22(const int itype, const char* uplo, const int n, const int m,
         result[0] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < ONE) {
-            double tmp = fmin(wnorm, (double)m * anorm);
+            f64 tmp = fmin(wnorm, (f64)m * anorm);
             result[0] = (tmp / anorm) / (m * ulp);
         } else {
-            double tmp = fmin(wnorm / anorm, (double)m);
+            f64 tmp = fmin(wnorm / anorm, (f64)m);
             result[0] = tmp / (m * ulp);
         }
     }

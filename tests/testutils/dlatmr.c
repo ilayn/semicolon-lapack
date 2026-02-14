@@ -12,16 +12,16 @@
 
 /* Forward declarations */
 extern void xerbla(const char* srname, const int info);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlansp(const char* norm, const char* uplo, const int n,
-                     const double* AP, double* work);
-extern double dlansb(const char* norm, const char* uplo, const int n,
-                     const int k, const double* AB, const int ldab, double* work);
-extern double dlangb(const char* norm, const int n, const int kl, const int ku,
-                     const double* AB, const int ldab, double* work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlansp(const char* norm, const char* uplo, const int n,
+                     const f64* AP, f64* work);
+extern f64 dlansb(const char* norm, const char* uplo, const int n,
+                     const int k, const f64* AB, const int ldab, f64* work);
+extern f64 dlangb(const char* norm, const int n, const int kl, const int ku,
+                     const f64* AB, const int ldab, f64* work);
 
 /* Local helper: case-insensitive character comparison */
 static int lsame(char c1, char c2) {
@@ -33,7 +33,7 @@ static int lsame(char c1, char c2) {
 
 static int min_int(int a, int b) { return (a < b) ? a : b; }
 static int max_int(int a, int b) { return (a > b) ? a : b; }
-static double max_dbl(double a, double b) { return (a > b) ? a : b; }
+static f64 max_dbl(f64 a, f64 b) { return (a > b) ? a : b; }
 
 /**
  * DLATMR generates random matrices of various types for testing
@@ -44,40 +44,40 @@ void dlatmr(
     const int n,
     const char* dist,
     const char* sym,
-    double* d,
+    f64* d,
     const int mode,
-    const double cond,
-    const double dmax,
+    const f64 cond,
+    const f64 dmax,
     const char* rsign,
     const char* grade,
-    double* dl,
+    f64* dl,
     const int model,
-    const double condl,
-    double* dr,
+    const f64 condl,
+    f64* dr,
     const int moder,
-    const double condr,
+    const f64 condr,
     const char* pivtng,
     const int* ipivot,
     const int kl,
     const int ku,
-    const double sparse,
-    const double anorm,
+    const f64 sparse,
+    const f64 anorm,
     const char* pack,
-    double* A,
+    f64* A,
     const int lda,
     int* iwork,
     int* info,
     uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int badpvt, dzero, fulbnd;
     int i, idist, igrade, iisub, ipack, ipvtng, irsign;
     int isub, isym, j, jjsub, jsub, k, kll, kuu, mnmin;
     int mnsub, mxsub, npvts;
-    double alpha, onorm, temp;
-    double tempa[1];
+    f64 alpha, onorm, temp;
+    f64 tempa[1];
 
     *info = 0;
 

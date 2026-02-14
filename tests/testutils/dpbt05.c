@@ -58,15 +58,15 @@
  *                        Dimension (2).
  */
 void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
-            const double* AB, const int ldab,
-            const double* B, const int ldb,
-            const double* X, const int ldx,
-            const double* XACT, const int ldxact,
-            const double* ferr, const double* berr,
-            double* reslts)
+            const f64* AB, const int ldab,
+            const f64* B, const int ldb,
+            const f64* X, const int ldx,
+            const f64* XACT, const int ldxact,
+            const f64* ferr, const f64* berr,
+            f64* reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     if (n <= 0 || nrhs <= 0) {
         reslts[0] = ZERO;
@@ -74,23 +74,23 @@ void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
         return;
     }
 
-    double eps = dlamch("Epsilon");
-    double unfl = dlamch("Safe minimum");
-    double ovfl = ONE / unfl;
+    f64 eps = dlamch("Epsilon");
+    f64 unfl = dlamch("Safe minimum");
+    f64 ovfl = ONE / unfl;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
     int nz = 2 * ((kd > n - 1) ? kd : n - 1) + 1;
 
-    double errbnd = ZERO;
+    f64 errbnd = ZERO;
     for (int j = 0; j < nrhs; j++) {
         int imax = cblas_idamax(n, &X[j * ldx], 1);
-        double xnorm = fabs(X[imax + j * ldx]);
+        f64 xnorm = fabs(X[imax + j * ldx]);
         if (xnorm < unfl) {
             xnorm = unfl;
         }
 
-        double diff = ZERO;
+        f64 diff = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
+            f64 tmp = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (tmp > diff) {
                 diff = tmp;
             }
@@ -107,7 +107,7 @@ void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
 
 label20:
         if (diff / xnorm <= ferr[j]) {
-            double tmp = (diff / xnorm) / ferr[j];
+            f64 tmp = (diff / xnorm) / ferr[j];
             if (tmp > errbnd) {
                 errbnd = tmp;
             }
@@ -118,9 +118,9 @@ label20:
     reslts[0] = errbnd;
 
     for (int k = 0; k < nrhs; k++) {
-        double axbi = ZERO;
+        f64 axbi = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = fabs(B[i + k * ldb]);
+            f64 tmp = fabs(B[i + k * ldb]);
 
             if (upper) {
                 int j_start = (i - kd > 0) ? i - kd : 0;
@@ -150,8 +150,8 @@ label20:
                 }
             }
         }
-        double denom = nz * eps + nz * unfl / ((axbi > nz * unfl) ? axbi : nz * unfl);
-        double ratio = berr[k] / denom;
+        f64 denom = nz * eps + nz * unfl / ((axbi > nz * unfl) ? axbi : nz * unfl);
+        f64 ratio = berr[k] / denom;
         if (k == 0) {
             reslts[1] = ratio;
         } else {

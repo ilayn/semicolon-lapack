@@ -3,7 +3,7 @@
  * @brief Test suite for DSGESV mixed-precision iterative refinement solver.
  *
  * This is a faithful port of LAPACK's TESTING/LIN/ddrvab.f to C using CMocka.
- * Tests DSGESV which uses single precision factorization with double precision
+ * Tests DSGESV which uses single precision factorization with f64 precision
  * iterative refinement.
  *
  * Test parameters from dchkab.f data file:
@@ -29,39 +29,39 @@ static const int NSVAL[] = {2};  /* NRHS values */
 #define MAXRHS  16
 
 /* Routine under test */
-extern void dsgesv(const int n, const int nrhs, double* A, const int lda,
-                   int* ipiv, const double* B, const int ldb,
-                   double* X, const int ldx, double* work,
+extern void dsgesv(const int n, const int nrhs, f64* A, const int lda,
+                   int* ipiv, const f64* B, const int ldb,
+                   f64* X, const int ldx, f64* work,
                    float* swork, int* iter, int* info);
 
 /* Verification routine */
 extern void dget08(const char* trans, const int m, const int n, const int nrhs,
-                   const double* A, const int lda, const double* X, const int ldx,
-                   double* B, const int ldb, double* rwork, double* resid);
+                   const f64* A, const int lda, const f64* X, const int ldx,
+                   f64* B, const int ldb, f64* rwork, f64* resid);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   double* X, const int ldx, double* B, const int ldb,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   f64* X, const int ldx, f64* B, const int ldb,
                    int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 
 /**
  * Test parameters for a single test case.
@@ -77,12 +77,12 @@ typedef struct {
  * Workspace for test execution.
  */
 typedef struct {
-    double* A;          /* Original matrix (NMAX x NMAX) */
-    double* AFAC;       /* Copy of A for factorization (NMAX x NMAX) */
-    double* B;          /* Right-hand side (NMAX x MAXRHS) */
-    double* X;          /* Solution (NMAX x MAXRHS) */
-    double* WORK;       /* Double precision workspace */
-    double* RWORK;      /* Workspace for verification */
+    f64* A;          /* Original matrix (NMAX x NMAX) */
+    f64* AFAC;       /* Copy of A for factorization (NMAX x NMAX) */
+    f64* B;          /* Right-hand side (NMAX x MAXRHS) */
+    f64* X;          /* Solution (NMAX x MAXRHS) */
+    f64* WORK;       /* Double precision workspace */
+    f64* RWORK;      /* Workspace for verification */
     float* SWORK;       /* Single precision workspace */
     int* IWORK;         /* Integer workspace (pivot indices) */
 } ddrvab_workspace_t;
@@ -99,12 +99,12 @@ static int group_setup(void** state)
     g_ws = malloc(sizeof(ddrvab_workspace_t));
     if (!g_ws) return -1;
 
-    g_ws->A = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->AFAC = malloc(NMAX * NMAX * sizeof(double));
-    g_ws->B = malloc(NMAX * MAXRHS * sizeof(double));
-    g_ws->X = malloc(NMAX * MAXRHS * sizeof(double));
-    g_ws->WORK = malloc(NMAX * MAXRHS * 2 * sizeof(double));
-    g_ws->RWORK = malloc(2 * NMAX * sizeof(double));
+    g_ws->A = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->AFAC = malloc(NMAX * NMAX * sizeof(f64));
+    g_ws->B = malloc(NMAX * MAXRHS * sizeof(f64));
+    g_ws->X = malloc(NMAX * MAXRHS * sizeof(f64));
+    g_ws->WORK = malloc(NMAX * MAXRHS * 2 * sizeof(f64));
+    g_ws->RWORK = malloc(2 * NMAX * sizeof(f64));
     g_ws->SWORK = malloc(NMAX * (NMAX + MAXRHS) * sizeof(float));
     g_ws->IWORK = malloc(NMAX * sizeof(int));
 
@@ -144,7 +144,7 @@ static void run_test_single(int n, int nrhs, int imat)
 {
     char type, dist;
     int kl, ku, mode, info, iter;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int lda = (n > 1) ? n : 1;
     int izero = 0;
 
@@ -226,14 +226,14 @@ static void run_test_single(int n, int nrhs, int imat)
     /* Copy B to WORK for residual computation (dget08 overwrites it) */
     dlacpy("F", n, nrhs, g_ws->B, lda, g_ws->WORK, lda);
 
-    double resid;
+    f64 resid;
     dget08("N", n, n, nrhs, g_ws->AFAC, lda, g_ws->X, lda,
            g_ws->WORK, lda, g_ws->RWORK, &resid);
 
     /* Check the test result:
      * If iterative refinement was used (iter >= 0), we want:
      *   resid < sqrt(n)
-     * If double precision was used (iter < 0), we want:
+     * If f64 precision was used (iter < 0), we want:
      *   resid < THRESH
      */
     char context[128];
@@ -242,7 +242,7 @@ static void run_test_single(int n, int nrhs, int imat)
     set_test_context(context);
 
     if (iter >= 0 && n > 0) {
-        double thresh_iter = sqrt((double)n);
+        f64 thresh_iter = sqrt((f64)n);
         assert_residual_below(resid, thresh_iter);
     } else {
         assert_residual_ok(resid);

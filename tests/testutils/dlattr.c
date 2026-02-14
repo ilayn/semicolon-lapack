@@ -18,7 +18,7 @@
 #include "test_rng.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DLATTR generates a triangular test matrix.
@@ -37,22 +37,22 @@ extern double dlamch(const char* cmach);
  * @param[in,out] state   RNG state array of 4 uint64_t elements.
  */
 void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
-            const int n, double* A, const int lda,
-            double* B, double* work, int* info, uint64_t state[static 4])
+            const int n, f64* A, const int lda,
+            f64* B, f64* work, int* info, uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
-    double unfl, ulp, smlnum, bignum;
+    f64 unfl, ulp, smlnum, bignum;
     int upper;
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int i, j, jcount, iy;
-    double bnorm, bscal, tscal, texp, tleft;
-    double plus1, plus2, star1, sfac, rexp;
-    double x, y, z, c, s, ra, rb;
+    f64 bnorm, bscal, tscal, texp, tleft;
+    f64 plus1, plus2, star1, sfac, rexp;
+    f64 x, y, z, c, s, ra, rb;
 
     *info = 0;
 
@@ -99,11 +99,11 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
                 for (i = 0; i < j; i++) {
                     A[j * lda + i] = ZERO;
                 }
-                A[j * lda + j] = (double)(j + 1);
+                A[j * lda + j] = (f64)(j + 1);
             }
         } else {
             for (j = 0; j < n; j++) {
-                A[j * lda + j] = (double)(j + 1);
+                A[j * lda + j] = (f64)(j + 1);
                 for (i = j + 1; i < n; i++) {
                     A[j * lda + i] = ZERO;
                 }
@@ -118,11 +118,11 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
                 for (i = 0; i < j; i++) {
                     A[j * lda + i] = ZERO;
                 }
-                A[j * lda + j] = (double)(j + 1);
+                A[j * lda + j] = (f64)(j + 1);
             }
         } else {
             for (j = 0; j < n; j++) {
-                A[j * lda + j] = (double)(j + 1);
+                A[j * lda + j] = (f64)(j + 1);
                 for (i = j + 1; i < n; i++) {
                     A[j * lda + i] = ZERO;
                 }
@@ -158,7 +158,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
 
         x = sqrt(cndnum) - ONE / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(TWO / (double)(n - 2)) * x;
+            y = sqrt(TWO / (f64)(n - 2)) * x;
         } else {
             y = ZERO;
         }
@@ -278,7 +278,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     /* IMAT = 12: Small diagonal, small off-diagonal (CNORM < 1) */
     else if (imat == 12) {
         rng_fill(state, 2, n, B);
-        tscal = ONE / fmax(ONE, (double)(n - 1));
+        tscal = ONE / fmax(ONE, (f64)(n - 1));
 
         if (upper) {
             for (j = 0; j < n; j++) {
@@ -365,7 +365,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     }
     /* IMAT = 15: Bidiagonal with small diagonal causing gradual overflow */
     else if (imat == 15) {
-        texp = ONE / fmax(ONE, (double)(n - 1));
+        texp = ONE / fmax(ONE, (f64)(n - 1));
         tscal = pow(smlnum, texp);
         rng_fill(state, 2, n, B);
 
@@ -434,26 +434,26 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
         texp = ONE;
         if (upper) {
             for (j = n - 1; j >= 1; j -= 2) {
-                A[j * lda + 0] = -tscal / (double)(n + 1);
+                A[j * lda + 0] = -tscal / (f64)(n + 1);
                 A[j * lda + j] = ONE;
                 B[j] = texp * (ONE - ulp);
-                A[(j - 1) * lda + 0] = -(tscal / (double)(n + 1)) / (double)(n + 2);
+                A[(j - 1) * lda + 0] = -(tscal / (f64)(n + 1)) / (f64)(n + 2);
                 A[(j - 1) * lda + (j - 1)] = ONE;
-                B[j - 1] = texp * (double)(n * n + n - 1);
+                B[j - 1] = texp * (f64)(n * n + n - 1);
                 texp = texp * TWO;
             }
-            B[0] = ((double)(n + 1) / (double)(n + 2)) * tscal;
+            B[0] = ((f64)(n + 1) / (f64)(n + 2)) * tscal;
         } else {
             for (j = 0; j < n - 1; j += 2) {
-                A[j * lda + (n - 1)] = -tscal / (double)(n + 1);
+                A[j * lda + (n - 1)] = -tscal / (f64)(n + 1);
                 A[j * lda + j] = ONE;
                 B[j] = texp * (ONE - ulp);
-                A[(j + 1) * lda + (n - 1)] = -(tscal / (double)(n + 1)) / (double)(n + 2);
+                A[(j + 1) * lda + (n - 1)] = -(tscal / (f64)(n + 1)) / (f64)(n + 2);
                 A[(j + 1) * lda + (j + 1)] = ONE;
-                B[j + 1] = texp * (double)(n * n + n - 1);
+                B[j + 1] = texp * (f64)(n * n + n - 1);
                 texp = texp * TWO;
             }
-            B[n - 1] = ((double)(n + 1) / (double)(n + 2)) * tscal;
+            B[n - 1] = ((f64)(n + 1) / (f64)(n + 2)) * tscal;
         }
     }
     /* IMAT = 18: Unit triangular with large RHS */
@@ -483,14 +483,14 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     }
     /* IMAT = 19: Large elements causing column norm to exceed BIGNUM */
     else if (imat == 19) {
-        tleft = bignum / fmax(ONE, (double)(n - 1));
-        tscal = bignum * ((double)(n - 1) / fmax(ONE, (double)n));
+        tleft = bignum / fmax(ONE, (f64)(n - 1));
+        tscal = bignum * ((f64)(n - 1) / fmax(ONE, (f64)n));
 
         if (upper) {
             for (j = 0; j < n; j++) {
                 rng_fill(state, 2, j + 1, &A[j * lda]);
                 for (i = 0; i <= j; i++) {
-                    double sign = (A[j * lda + i] >= ZERO) ? ONE : -ONE;
+                    f64 sign = (A[j * lda + i] >= ZERO) ? ONE : -ONE;
                     A[j * lda + i] = sign * tleft + tscal * A[j * lda + i];
                 }
             }
@@ -498,7 +498,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
             for (j = 0; j < n; j++) {
                 rng_fill(state, 2, n - j, &A[j * lda + j]);
                 for (i = j; i < n; i++) {
-                    double sign = (A[j * lda + i] >= ZERO) ? ONE : -ONE;
+                    f64 sign = (A[j * lda + i] >= ZERO) ? ONE : -ONE;
                     A[j * lda + i] = sign * tleft + tscal * A[j * lda + i];
                 }
             }
@@ -518,7 +518,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
                 int len = n - 2 * j - 1;
                 for (int k = 0; k < len; k++) {
                     /* Swap A[j, j+k] (column j) with A[j+1+k, n-1-j-k] (row j+1+k, descending col) */
-                    double temp = A[j * lda + (j + k)];
+                    f64 temp = A[j * lda + (j + k)];
                     A[j * lda + (j + k)] = A[(n - 2 - j - k) * lda + (j + 1 + k)];
                     A[(n - 2 - j - k) * lda + (j + 1 + k)] = temp;
                 }
@@ -528,7 +528,7 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
                 int len = n - 2 * j - 1;
                 for (int k = 0; k < len; k++) {
                     /* Swap A[j+k, j] (row j) with A[n-2-j-k, j+1+k] (descending row, column j+1+k) */
-                    double temp = A[(j + k) * lda + j];
+                    f64 temp = A[(j + k) * lda + j];
                     A[(j + k) * lda + j] = A[(j + 1 + k) * lda + (n - 2 - j - k)];
                     A[(j + 1 + k) * lda + (n - 2 - j - k)] = temp;
                 }

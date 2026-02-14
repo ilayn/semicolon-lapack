@@ -18,9 +18,9 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, double* const restrict A,
+extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
-extern void dpotri(const char* uplo, const int n, double* const restrict A,
+extern void dpotri(const char* uplo, const int n, f64* const restrict A,
                    const int lda, int* info);
 
 /*
@@ -29,11 +29,11 @@ extern void dpotri(const char* uplo, const int n, double* const restrict A,
 typedef struct {
     int n;
     int lda;
-    double* A;       /* Original matrix */
-    double* AINV;    /* Inverse */
-    double* d;
-    double* work;    /* Workspace for dpot03 (n*n) and dlatms */
-    double* rwork;
+    f64* A;       /* Original matrix */
+    f64* AINV;    /* Inverse */
+    f64* d;
+    f64* work;    /* Workspace for dpot03 (n*n) and dlatms */
+    f64* rwork;
     uint64_t seed;
 } dpotri_fixture_t;
 
@@ -48,11 +48,11 @@ static int dpotri_setup(void** state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AINV = malloc(fix->lda * n * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(fix->lda * n * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AINV = malloc(fix->lda * n * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(fix->lda * n * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AINV);
@@ -85,11 +85,11 @@ static int setup_20(void** state) { return dpotri_setup(state, 20); }
 /**
  * Core test logic: generate matrix, factorize, invert, verify.
  */
-static double run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -102,7 +102,7 @@ static double run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Copy A to AINV for factorization */
-    memcpy(fix->AINV, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->AINV, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Factor */
     dpotrf(uplo, fix->n, fix->AINV, fix->lda, &info);
@@ -113,7 +113,7 @@ static double run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
     assert_info_success(info);
 
     /* Verify */
-    double rcond, resid;
+    f64 rcond, resid;
     dpot03(uplo, fix->n, fix->A, fix->lda, fix->AINV, fix->lda,
            fix->work, fix->n, fix->rwork, &rcond, &resid);
     return resid;
@@ -124,7 +124,7 @@ static void test_dpotri_wellcond_upper(void** state)
     dpotri_fixture_t* fix = *state;
     for (int imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dpotri_test(fix, imat, "U");
+        f64 resid = run_dpotri_test(fix, imat, "U");
         assert_residual_ok(resid);
     }
 }
@@ -134,7 +134,7 @@ static void test_dpotri_wellcond_lower(void** state)
     dpotri_fixture_t* fix = *state;
     for (int imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dpotri_test(fix, imat, "L");
+        f64 resid = run_dpotri_test(fix, imat, "L");
         assert_residual_ok(resid);
     }
 }
@@ -144,7 +144,7 @@ static void test_dpotri_illcond_upper(void** state)
     dpotri_fixture_t* fix = *state;
     for (int imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dpotri_test(fix, imat, "U");
+        f64 resid = run_dpotri_test(fix, imat, "U");
         assert_residual_ok(resid);
     }
 }
@@ -154,7 +154,7 @@ static void test_dpotri_illcond_lower(void** state)
     dpotri_fixture_t* fix = *state;
     for (int imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dpotri_test(fix, imat, "L");
+        f64 resid = run_dpotri_test(fix, imat, "L");
         assert_residual_ok(resid);
     }
 }

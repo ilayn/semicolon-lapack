@@ -21,21 +21,21 @@
 #include <cblas.h>
 
 /* Routines under test */
-extern void dsytrf(const char* uplo, const int n, double* restrict A,
-                   const int lda, int* restrict ipiv, double* restrict work,
+extern void dsytrf(const char* uplo, const int n, f64* restrict A,
+                   const int lda, int* restrict ipiv, f64* restrict work,
                    const int lwork, int* info);
 extern void dsytrs(const char* uplo, const int n, const int nrhs,
-                   const double* const restrict A, const int lda,
+                   const f64* const restrict A, const int lda,
                    const int* const restrict ipiv,
-                   double* const restrict B, const int ldb, int* info);
+                   f64* const restrict B, const int ldb, int* info);
 
 /* Norm routines */
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* restrict A, const int lda,
-                     double* restrict work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* restrict A, const int lda,
-                     double* restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* restrict A, const int lda,
+                     f64* restrict work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* restrict A, const int lda,
+                     f64* restrict work);
 
 /*
  * Test fixture
@@ -43,15 +43,15 @@ extern double dlange(const char* norm, const int m, const int n,
 typedef struct {
     int n, nrhs;
     int lda;
-    double* A;       /* Original matrix */
-    double* AFAC;    /* Factored matrix */
-    double* B;       /* RHS (overwritten with solution) */
-    double* X;       /* Computed solution (copy of B after solve) */
-    double* XACT;    /* Known exact solution */
+    f64* A;       /* Original matrix */
+    f64* AFAC;    /* Factored matrix */
+    f64* B;       /* RHS (overwritten with solution) */
+    f64* X;       /* Computed solution (copy of B after solve) */
+    f64* XACT;    /* Known exact solution */
     int* ipiv;       /* Pivot indices from dsytrf */
-    double* d;       /* Singular values for dlatms */
-    double* work;    /* Workspace for dlatms and dsytrf */
-    double* rwork;   /* Workspace for norm computations */
+    f64* d;       /* Singular values for dlatms */
+    f64* work;    /* Workspace for dlatms and dsytrf */
+    f64* rwork;   /* Workspace for norm computations */
     uint64_t seed;
 } dsytrs_fixture_t;
 
@@ -69,15 +69,15 @@ static int dsytrs_setup(void** state, int n, int nrhs)
 
     int lwork = n * 64;  /* NB=64 for SYTRF from lapack_tuning.h */
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->AFAC = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(n * nrhs * sizeof(double));
-    fix->X = malloc(n * nrhs * sizeof(double));
-    fix->XACT = malloc(n * nrhs * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->AFAC = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(n * nrhs * sizeof(f64));
+    fix->X = malloc(n * nrhs * sizeof(f64));
+    fix->XACT = malloc(n * nrhs * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc((3 * n > lwork ? 3 * n : lwork) * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc((3 * n > lwork ? 3 * n : lwork) * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AFAC);
@@ -127,11 +127,11 @@ static int setup_50_nrhs5(void** state) { return dsytrs_setup(state, 50, 5); }
  * Core test logic: generate symmetric matrix, factorize with dsytrf,
  * solve with dsytrs, verify residual.
  */
-static double run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
 {
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
     int info;
     int n = fix->n;
     int nrhs = fix->nrhs;
@@ -152,7 +152,7 @@ static double run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
     /* Generate known exact solution XACT */
     for (int j = 0; j < nrhs; j++) {
         for (int i = 0; i < n; i++) {
-            fix->XACT[i + j * n] = 1.0 + (double)i / n;
+            fix->XACT[i + j * n] = 1.0 + (f64)i / n;
         }
     }
 
@@ -163,10 +163,10 @@ static double run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
                 fix->XACT, n, 0.0, fix->B, n);
 
     /* Copy B into X (dsytrs will overwrite X with the solution) */
-    memcpy(fix->X, fix->B, n * nrhs * sizeof(double));
+    memcpy(fix->X, fix->B, n * nrhs * sizeof(f64));
 
     /* Factor A with dsytrf */
-    memcpy(fix->AFAC, fix->A, lda * n * sizeof(double));
+    memcpy(fix->AFAC, fix->A, lda * n * sizeof(f64));
     dsytrf(uplo, n, fix->AFAC, lda, fix->ipiv, fix->work, lwork, &info);
     assert_info_success(info);
 
@@ -178,7 +178,7 @@ static double run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
     /* Compute residual: ||B - A*X|| / (||A|| * ||X|| * N * EPS) */
 
     /* R = B (copy original B into work area, reuse fix->B as residual) */
-    double* residvec = malloc(n * nrhs * sizeof(double));
+    f64* residvec = malloc(n * nrhs * sizeof(f64));
     assert_non_null(residvec);
     cblas_dcopy(n * nrhs, fix->B, 1, residvec, 1);
 
@@ -188,19 +188,19 @@ static double run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
                 fix->X, n, 1.0, residvec, n);
 
     /* ||A|| in 1-norm */
-    double anorm_val = dlansy("1", uplo, n, fix->A, lda, fix->rwork);
+    f64 anorm_val = dlansy("1", uplo, n, fix->A, lda, fix->rwork);
 
     /* ||X|| in 1-norm */
-    double xnorm = dlange("1", n, nrhs, fix->X, n, fix->rwork);
+    f64 xnorm = dlange("1", n, nrhs, fix->X, n, fix->rwork);
 
     /* ||R|| in 1-norm */
-    double rnorm = dlange("1", n, nrhs, residvec, n, fix->rwork);
+    f64 rnorm = dlange("1", n, nrhs, residvec, n, fix->rwork);
 
     free(residvec);
 
     /* Compute normalized residual */
-    double eps = DBL_EPSILON;
-    double resid;
+    f64 eps = DBL_EPSILON;
+    f64 resid;
     if (anorm_val <= 0.0 || xnorm <= 0.0) {
         resid = (rnorm > 0.0) ? 1.0 / eps : 0.0;
     } else {
@@ -218,7 +218,7 @@ static void test_dsytrs_wellcond_upper(void** state)
     dsytrs_fixture_t* fix = *state;
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dsytrs_test(fix, imat, "U");
+        f64 resid = run_dsytrs_test(fix, imat, "U");
         assert_residual_ok(resid);
     }
 }
@@ -231,7 +231,7 @@ static void test_dsytrs_wellcond_lower(void** state)
     dsytrs_fixture_t* fix = *state;
     for (int imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        double resid = run_dsytrs_test(fix, imat, "L");
+        f64 resid = run_dsytrs_test(fix, imat, "L");
         assert_residual_ok(resid);
     }
 }

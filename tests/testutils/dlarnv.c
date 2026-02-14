@@ -33,7 +33,7 @@
  * @param[in,out] state
  *     The 4-element RNG state array, advanced on exit.
  */
-void dlarnv_rng(const int idist, const int n, double* x,
+void dlarnv_rng(const int idist, const int n, f64* x,
                 uint64_t state[static 4])
 {
     if (n <= 0) {
@@ -54,7 +54,7 @@ void dlarnv_rng(const int idist, const int n, double* x,
  *
  * @return A random real number in (0,1).
  */
-double dlaran_rng(uint64_t state[static 4])
+f64 dlaran_rng(uint64_t state[static 4])
 {
     return rng_uniform(state);
 }

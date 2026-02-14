@@ -8,7 +8,7 @@
 #include "test_rng.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DLATM4 generates basic square matrices, which may later be
@@ -66,18 +66,18 @@ extern double dlamch(const char* cmach);
  * @param[in] lda     Leading dimension of A. Must be at least 1 and at least n.
  */
 void dlatm4(const int itype, const int n, const int nz1, const int nz2,
-            const int isign, const double amagn, const double rcond,
-            const double triang, const int idist,
-            double* A, const int lda,
+            const int isign, const f64 amagn, const f64 rcond,
+            const f64 triang, const int idist,
+            f64* A, const int lda,
             uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HALF = 0.5;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = 0.5;
 
     int i, ioff, isdb, isde, jc, jd, jr, k, kbeg, kend, klen;
-    double alpha, cl, cr, safmin, sl, sr, sv1, sv2, temp;
+    f64 alpha, cl, cr, safmin, sl, sr, sv1, sv2, temp;
     int abstype;
 
     if (n <= 0) return;
@@ -141,7 +141,7 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
             case 4:
                 /* 1, ..., k */
                 for (jd = kbeg - 1; jd < kend; jd++) {
-                    A[jd + jd * lda] = (double)(jd - nz1 + 1);
+                    A[jd + jd * lda] = (f64)(jd - nz1 + 1);
                 }
                 break;
 
@@ -165,9 +165,9 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
                 /* Exponentially distributed D values */
                 A[(kbeg - 1) + (kbeg - 1) * lda] = ONE;
                 if (klen > 1) {
-                    alpha = pow(rcond, ONE / (double)(klen - 1));
+                    alpha = pow(rcond, ONE / (f64)(klen - 1));
                     for (i = 1; i < klen; i++) {
-                        A[(nz1 + i) + (nz1 + i) * lda] = pow(alpha, (double)i);
+                        A[(nz1 + i) + (nz1 + i) * lda] = pow(alpha, (f64)i);
                     }
                 }
                 break;
@@ -176,9 +176,9 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
                 /* Arithmetically distributed D values */
                 A[(kbeg - 1) + (kbeg - 1) * lda] = ONE;
                 if (klen > 1) {
-                    alpha = (ONE - rcond) / (double)(klen - 1);
+                    alpha = (ONE - rcond) / (f64)(klen - 1);
                     for (i = 1; i < klen; i++) {
-                        A[(nz1 + i) + (nz1 + i) * lda] = (double)(klen - 1 - i) * alpha + rcond;
+                        A[(nz1 + i) + (nz1 + i) * lda] = (f64)(klen - 1 - i) * alpha + rcond;
                     }
                 }
                 break;

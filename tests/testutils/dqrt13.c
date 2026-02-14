@@ -13,12 +13,12 @@
 #include "test_rng.h"
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlascl(const char* type, const int kl, const int ku,
-                   const double cfrom, const double cto,
-                   const int m, const int n, double* A, const int lda,
+                   const f64 cfrom, const f64 cto,
+                   const int m, const int n, f64* A, const int lda,
                    int* info);
 
 /**
@@ -46,15 +46,15 @@ extern void dlascl(const char* type, const int kl, const int ku,
  *     The one-norm of A.
  */
 void dqrt13(const int scale, const int m, const int n,
-            double* A, const int lda, double* norma,
+            f64* A, const int lda, f64* norma,
             uint64_t state[static 4])
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int info, j;
-    double bignum, smlnum;
+    f64 bignum, smlnum;
     (void)(m < n);  /* minmn was computed but unused */
-    double dummy[1];
+    f64 dummy[1];
 
     if (m <= 0 || n <= 0) {
         return;
@@ -67,7 +67,7 @@ void dqrt13(const int scale, const int m, const int n,
 
         /* Make diagonal dominant for well-conditioning */
         if (j < m) {
-            double asum = cblas_dasum(m, &A[j * lda], 1);
+            f64 asum = cblas_dasum(m, &A[j * lda], 1);
             if (A[j + j * lda] >= 0.0) {
                 A[j + j * lda] += asum;
             } else {

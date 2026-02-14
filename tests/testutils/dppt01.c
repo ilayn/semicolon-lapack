@@ -8,10 +8,10 @@
 #include "verify.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
-extern double dlansp(const char* norm, const char* uplo, const int n,
-                     const double* const restrict AP,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansp(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict AP,
+                     f64* const restrict work);
 
 /**
  * DPPT01 reconstructs a symmetric positive definite packed matrix A
@@ -45,13 +45,13 @@ extern double dlansp(const char* norm, const char* uplo, const int n,
  *          If uplo = 'U', norm(U'*U - A) / ( N * norm(A) * EPS )
  */
 void dppt01(const char* uplo, const int n,
-            const double* const restrict A,
-            double* const restrict AFAC,
-            double* const restrict rwork,
-            double* resid)
+            const f64* const restrict A,
+            f64* const restrict AFAC,
+            f64* const restrict rwork,
+            f64* resid)
 {
     int i, k, kc, npp;
-    double anorm, eps, t;
+    f64 anorm, eps, t;
 
     if (n <= 0) {
         *resid = 0.0;
@@ -102,5 +102,5 @@ void dppt01(const char* uplo, const int n,
 
     *resid = dlansp("1", uplo, n, AFAC, rwork);
 
-    *resid = ((*resid / (double)n) / anorm) / eps;
+    *resid = ((*resid / (f64)n) / anorm) / eps;
 }

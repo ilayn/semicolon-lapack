@@ -8,12 +8,12 @@
 #include "verify.h"
 
 /* Forward declarations for LAPACK routines not in verify.h */
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* const restrict A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* const restrict A, const int lda);
 
 /**
  * DSYT01 reconstructs a symmetric indefinite matrix A from its
@@ -40,21 +40,21 @@ extern void dlaset(const char* uplo, const int m, const int n,
 void dsyt01(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict AFAC,
+    const f64* const restrict AFAC,
     const int ldafac,
     const int* const restrict ipiv,
-    double* const restrict C,
+    f64* const restrict C,
     const int ldc,
-    double* const restrict rwork,
-    double* resid)
+    f64* const restrict rwork,
+    f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, info;
-    double anorm, eps;
+    f64 anorm, eps;
 
     /* Quick exit if N = 0. */
     if (n <= 0) {
@@ -98,6 +98,6 @@ void dsyt01(
             *resid = ONE / eps;
         }
     } else {
-        *resid = ((*resid / (double)n) / anorm) / eps;
+        *resid = ((*resid / (f64)n) / anorm) / eps;
     }
 }

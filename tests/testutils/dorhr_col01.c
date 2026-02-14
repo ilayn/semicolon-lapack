@@ -9,37 +9,37 @@
 #include "test_rng.h"
 #include <cblas.h>
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* const restrict A, const int lda,
-                   double* const restrict B, const int ldb);
+                   const f64* const restrict A, const int lda,
+                   f64* const restrict B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* const restrict A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* const restrict A, const int lda);
 extern void dlatsqr(const int m, const int n, const int mb, const int nb,
-                    double* const restrict A, const int lda,
-                    double* const restrict T, const int ldt,
-                    double* const restrict work, const int lwork, int* info);
+                    f64* const restrict A, const int lda,
+                    f64* const restrict T, const int ldt,
+                    f64* const restrict work, const int lwork, int* info);
 extern void dorgtsqr(const int m, const int n, const int mb, const int nb,
-                     double* const restrict A, const int lda,
-                     const double* const restrict T, const int ldt,
-                     double* restrict work, const int lwork, int* info);
+                     f64* const restrict A, const int lda,
+                     const f64* const restrict T, const int ldt,
+                     f64* restrict work, const int lwork, int* info);
 extern void dorhr_col(const int m, const int n, const int nb,
-                      double* const restrict A, const int lda,
-                      double* restrict T, const int ldt,
-                      double* restrict D, int* info);
+                      f64* const restrict A, const int lda,
+                      f64* restrict T, const int ldt,
+                      f64* restrict D, int* info);
 extern void dgemqrt(const char* side, const char* trans,
                     const int m, const int n, const int k, const int nb,
-                    const double* const restrict V, const int ldv,
-                    const double* const restrict T, const int ldt,
-                    double* const restrict C, const int ldc,
-                    double* const restrict work, int* info);
+                    const f64* const restrict V, const int ldv,
+                    const f64* const restrict T, const int ldt,
+                    f64* const restrict C, const int ldc,
+                    f64* const restrict work, int* info);
 /**
  * DORHR_COL01 tests DORGTSQR and DORHR_COL using DLATSQR, DGEMQRT.
  *
@@ -51,27 +51,27 @@ extern void dgemqrt(const char* side, const char* trans,
  * @param[out] result  Results of each of the six tests.
  */
 void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
-                 const int nb2, double* restrict result)
+                 const int nb2, f64* restrict result)
 {
-    double eps = dlamch("E");
+    f64 eps = dlamch("E");
     int k = m < n ? m : n;
     int l = m > n ? m : n;
     if (l < 1) l = 1;
     int info;
     int j, i;
-    double anorm, resid, cnorm, dnorm;
+    f64 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
 
-    double* A = malloc(m * n * sizeof(double));
-    double* AF = malloc(m * n * sizeof(double));
-    double* Q = malloc(l * l * sizeof(double));
-    double* R = malloc(m * l * sizeof(double));
-    double* rwork = malloc(l * sizeof(double));
-    double* C = malloc(m * n * sizeof(double));
-    double* CF = malloc(m * n * sizeof(double));
-    double* D = malloc(n * m * sizeof(double));
-    double* DF = malloc(n * m * sizeof(double));
+    f64* A = malloc(m * n * sizeof(f64));
+    f64* AF = malloc(m * n * sizeof(f64));
+    f64* Q = malloc(l * l * sizeof(f64));
+    f64* R = malloc(m * l * sizeof(f64));
+    f64* rwork = malloc(l * sizeof(f64));
+    f64* C = malloc(m * n * sizeof(f64));
+    f64* CF = malloc(m * n * sizeof(f64));
+    f64* D = malloc(n * m * sizeof(f64));
+    f64* DF = malloc(n * m * sizeof(f64));
 
     for (j = 0; j < n; j++) {
         dlarnv_rng(2, m, &A[j * m], rng_state);
@@ -86,14 +86,14 @@ void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
         nrb = 1;
     }
 
-    double* T1 = malloc(nb1 * n * nrb * sizeof(double));
-    double* T2 = malloc(nb2 * n * sizeof(double));
-    double* DIAG = malloc(n * sizeof(double));
+    f64* T1 = malloc(nb1 * n * nrb * sizeof(f64));
+    f64* T2 = malloc(nb2 * n * sizeof(f64));
+    f64* DIAG = malloc(n * sizeof(f64));
 
     int nb1_ub = nb1 < n ? nb1 : n;
     int nb2_ub = nb2 < n ? nb2 : n;
 
-    double workquery;
+    f64 workquery;
     int lwork;
 
     dlatsqr(m, n, mb1, nb1_ub, AF, m, T1, nb1, &workquery, -1, &info);
@@ -104,7 +104,7 @@ void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
     if (nb2_ub * n > lwork) lwork = nb2_ub * n;
     if (nb2_ub * m > lwork) lwork = nb2_ub * m;
 
-    double* work = malloc(lwork * sizeof(double));
+    f64* work = malloc(lwork * sizeof(f64));
 
     dlatsqr(m, n, mb1, nb1_ub, AF, m, T1, nb1, work, lwork, &info);
 

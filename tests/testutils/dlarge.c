@@ -41,14 +41,14 @@ extern void xerbla(const char* srname, const int info);
  *     On entry, the state of the random number generator.
  *     On exit, the state is updated.
  */
-void dlarge(const int n, double* A, const int lda,
-            double* work, int* info, uint64_t state[static 4])
+void dlarge(const int n, f64* A, const int lda,
+            f64* work, int* info, uint64_t state[static 4])
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i;
-    double tau, wa, wb, wn;
+    f64 tau, wa, wb, wn;
 
     *info = 0;
     if (n < 0) {

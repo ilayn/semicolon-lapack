@@ -9,8 +9,8 @@
 /* Forward declarations */
 extern void xerbla(const char* srname, const int info);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
 
 /*
  * NMAX_EXACT   the largest dimension where the generated data is exact.
@@ -37,7 +37,7 @@ extern void dlaset(const char* uplo, const int m, const int n,
  * 2 to the power of the number of bits in the fraction of the data type
  * used plus one, which is 24 for single precision.
  *
- * In double, the generated solution is exact for N <= 6 and has
+ * In f64, the generated solution is exact for N <= 6 and has
  * small componentwise error for 7 <= N <= 11.
  *
  * @param[in] n
@@ -79,10 +79,10 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *     < 0: if info = -i, the i-th argument had an illegal value
  */
 void dlahilb(const int n, const int nrhs,
-             double* A, const int lda,
-             double* X, const int ldx,
-             double* B, const int ldb,
-             double* work, int* info)
+             f64* A, const int lda,
+             f64* X, const int ldx,
+             f64* B, const int ldb,
+             f64* work, int* info)
 {
     int tm, ti, r;
     int m;
@@ -126,25 +126,25 @@ void dlahilb(const int n, const int nrhs,
     /* Generate the scaled Hilbert matrix in A */
     for (j = 0; j < n; j++) {
         for (i = 0; i < n; i++) {
-            A[i + j * lda] = (double)m / (i + j + 1);
+            A[i + j * lda] = (f64)m / (i + j + 1);
         }
     }
 
     /* Generate matrix B as simply the first NRHS columns of M * the
      * identity. */
-    dlaset("Full", n, nrhs, 0.0, (double)m, B, ldb);
+    dlaset("Full", n, nrhs, 0.0, (f64)m, B, ldb);
 
     /* Generate the true solutions in X. Because B = the first NRHS
      * columns of M*I, the true solutions are just the first NRHS columns
      * of the inverse Hilbert matrix. */
-    work[0] = (double)n;
+    work[0] = (f64)n;
     for (j = 1; j < n; j++) {
         /* Fortran: WORK(J) = ((WORK(J-1)/(J-1)) * (J-1 - N) / (J-1)) * (N+J-1)
          * With 0-based indexing: j_f = j+1, so j_f-1 = j
          * WORK(j+1) = ((WORK(j)/(j)) * (j - N) / (j)) * (N + j)
          */
-        work[j] = ((work[j - 1] / (double)j) * (double)(j - n) / (double)j)
-                  * (double)(n + j);
+        work[j] = ((work[j - 1] / (f64)j) * (f64)(j - n) / (f64)j)
+                  * (f64)(n + j);
     }
 
     for (j = 0; j < nrhs; j++) {

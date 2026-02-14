@@ -27,45 +27,45 @@
 #include <cblas.h>
 
 /* Routine under test */
-extern void dstein(const int n, const double* D, const double* E,
-                   const int m, const double* W,
+extern void dstein(const int n, const f64* D, const f64* E,
+                   const int m, const f64* W,
                    const int* iblock, const int* isplit,
-                   double* Z, const int ldz,
-                   double* work, int* iwork, int* ifail, int* info);
+                   f64* Z, const int ldz,
+                   f64* work, int* iwork, int* ifail, int* info);
 
 /* Eigenvalue computation */
 extern void dstebz(const char* range, const char* order, const int n,
-                   const double vl, const double vu,
-                   const int il, const int iu, const double abstol,
-                   const double* D, const double* E,
-                   int* m, int* nsplit, double* W,
+                   const f64 vl, const f64 vu,
+                   const int il, const int iu, const f64 abstol,
+                   const f64* D, const f64* E,
+                   int* m, int* nsplit, f64* W,
                    int* iblock, int* isplit,
-                   double* work, int* iwork, int* info);
+                   f64* work, int* iwork, int* info);
 
 /* Verification routine */
 extern void dstt21(const int n, const int kband,
-                   const double* AD, const double* AE,
-                   const double* SD, const double* SE,
-                   const double* U, const int ldu,
-                   double* work, double* result);
+                   const f64* AD, const f64* AE,
+                   const f64* SD, const f64* SE,
+                   const f64* U, const int ldu,
+                   f64* work, f64* result);
 
 /* Utilities */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /* ---------- Test fixture ---------- */
 
 typedef struct {
     int n;
-    double* D;       /* diagonal (n) */
-    double* E;       /* off-diagonal (n-1) */
-    double* W;       /* eigenvalues from dstebz (n) */
+    f64* D;       /* diagonal (n) */
+    f64* E;       /* off-diagonal (n-1) */
+    f64* W;       /* eigenvalues from dstebz (n) */
     int* iblock;     /* block indices from dstebz (n) */
     int* isplit;     /* split points from dstebz (n) */
-    double* Z;       /* eigenvectors (n x n) */
-    double* work;    /* workspace: max(5*n for dstein, n*(n+1) for dstt21, 4*n for dstebz) */
+    f64* Z;       /* eigenvectors (n x n) */
+    f64* work;    /* workspace: max(5*n for dstein, n*(n+1) for dstt21, 4*n for dstebz) */
     int* iwork;      /* int workspace: max(n for dstein, 3*n for dstebz) */
     int* ifail;      /* convergence info (n) */
-    double* result;  /* dstt21 results (2) */
+    f64* result;  /* dstt21 results (2) */
     uint64_t seed;
     uint64_t rng_state[4];
 } dstein_fixture_t;
@@ -81,23 +81,23 @@ static int dstein_setup(void** state, int n)
     fix->n = n;
     fix->seed = g_seed++;
 
-    fix->D = malloc(n * sizeof(double));
-    fix->E = malloc((n > 1 ? n - 1 : 1) * sizeof(double));
-    fix->W = malloc(n * sizeof(double));
+    fix->D = malloc(n * sizeof(f64));
+    fix->E = malloc((n > 1 ? n - 1 : 1) * sizeof(f64));
+    fix->W = malloc(n * sizeof(f64));
     fix->iblock = malloc(n * sizeof(int));
     fix->isplit = malloc(n * sizeof(int));
-    fix->Z = calloc(n * n, sizeof(double));
+    fix->Z = calloc(n * n, sizeof(f64));
 
     /* Workspace: max(5*n, n*(n+1), 4*n) = n*(n+1) for n >= 5 */
     int work_sz = n * (n + 1);
     if (work_sz < 5 * n) work_sz = 5 * n;
     if (work_sz < 4 * n) work_sz = 4 * n;
-    fix->work = malloc(work_sz * sizeof(double));
+    fix->work = malloc(work_sz * sizeof(f64));
 
     /* Integer workspace: max(n, 3*n) = 3*n */
     fix->iwork = malloc(3 * n * sizeof(int));
     fix->ifail = malloc(n * sizeof(int));
-    fix->result = malloc(2 * sizeof(double));
+    fix->result = malloc(2 * sizeof(f64));
 
     assert_non_null(fix->D);
     assert_non_null(fix->E);
@@ -146,7 +146,7 @@ static int setup_50(void** state) { return dstein_setup(state, 50); }
  * Type 1: Identity tridiagonal (D=1, E=0).
  * All eigenvalues are 1; eigenvectors are trivial (any orthonormal basis).
  */
-static void gen_identity(int n, double* D, double* E)
+static void gen_identity(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) D[i] = 1.0;
     for (int i = 0; i < n - 1; i++) E[i] = 0.0;
@@ -156,7 +156,7 @@ static void gen_identity(int n, double* D, double* E)
  * Type 2: 1-2-1 Toeplitz (D=2, E=1).
  * Eigenvalues are 2 + 2*cos(k*pi/(n+1)) for k=1..n, well-separated.
  */
-static void gen_toeplitz_121(int n, double* D, double* E)
+static void gen_toeplitz_121(int n, f64* D, f64* E)
 {
     for (int i = 0; i < n; i++) D[i] = 2.0;
     for (int i = 0; i < n - 1; i++) E[i] = 1.0;
@@ -166,11 +166,11 @@ static void gen_toeplitz_121(int n, double* D, double* E)
  * Type 3: Wilkinson matrix (D[i]=|i - n/2|, E[i]=1).
  * Has some clustered eigenvalues near zero for even n.
  */
-static void gen_wilkinson(int n, double* D, double* E)
+static void gen_wilkinson(int n, f64* D, f64* E)
 {
     int half = n / 2;
     for (int i = 0; i < n; i++) {
-        D[i] = (double)(i >= half ? i - half : half - i);
+        D[i] = (f64)(i >= half ? i - half : half - i);
     }
     for (int i = 0; i < n - 1; i++) E[i] = 1.0;
 }
@@ -179,7 +179,7 @@ static void gen_wilkinson(int n, double* D, double* E)
  * Type 4: Random symmetric tridiagonal.
  * D[i] uniform in [-1, 1], E[i] uniform in [-1, 1].
  */
-static void gen_random(int n, double* D, double* E, uint64_t state[static 4])
+static void gen_random(int n, f64* D, f64* E, uint64_t state[static 4])
 {
     for (int i = 0; i < n; i++) D[i] = rng_uniform_symmetric(state);
     for (int i = 0; i < n - 1; i++) E[i] = rng_uniform_symmetric(state);
@@ -189,9 +189,9 @@ static void gen_random(int n, double* D, double* E, uint64_t state[static 4])
  * Type 5: Graded diagonal (D[i]=2^(-i), E[i]=1).
  * Wide dynamic range in diagonal entries.
  */
-static void gen_graded(int n, double* D, double* E)
+static void gen_graded(int n, f64* D, f64* E)
 {
-    double scale = 1.0;
+    f64 scale = 1.0;
     for (int i = 0; i < n; i++) {
         D[i] = scale;
         scale *= 0.5;
@@ -211,7 +211,7 @@ static void run_dstein_test(dstein_fixture_t* fix, int imat)
     int n = fix->n;
     int info;
     int m, nsplit;
-    double abstol = 2.0 * dlamch("S");
+    f64 abstol = 2.0 * dlamch("S");
 
     /* Generate tridiagonal matrix */
     switch (imat) {
@@ -233,7 +233,7 @@ static void run_dstein_test(dstein_fixture_t* fix, int imat)
     assert_int_equal(m, n);
 
     /* Clear Z and ifail */
-    memset(fix->Z, 0, n * n * sizeof(double));
+    memset(fix->Z, 0, n * n * sizeof(f64));
     memset(fix->ifail, 0, n * sizeof(int));
 
     /* Compute eigenvectors via inverse iteration */
@@ -284,8 +284,8 @@ static void test_partial(void** state)
     int n = fix->n;
     int info;
     int m, nsplit;
-    double abstol = 2.0 * dlamch("S");
-    double ulp = dlamch("P");
+    f64 abstol = 2.0 * dlamch("S");
+    f64 ulp = dlamch("P");
 
     if (n < 4) {
         skip_test("partial test requires n >= 4");
@@ -308,7 +308,7 @@ static void test_partial(void** state)
     assert_int_equal(m, expected_m);
 
     /* Clear Z and ifail */
-    memset(fix->Z, 0, n * n * sizeof(double));
+    memset(fix->Z, 0, n * n * sizeof(f64));
     memset(fix->ifail, 0, n * sizeof(int));
 
     /* Compute eigenvectors for the subset */
@@ -323,22 +323,22 @@ static void test_partial(void** state)
 
     /* Verify T*z_j = lambda_j * z_j for each eigenvector */
     /* Compute residual: || T*z - lambda*z || / (||T|| * ||z|| * ulp) */
-    double* Tz = fix->work;  /* reuse workspace, needs n doubles */
-    double anorm = fabs(fix->D[0]);
+    f64* Tz = fix->work;  /* reuse workspace, needs n doubles */
+    f64 anorm = fabs(fix->D[0]);
     for (int i = 1; i < n; i++) {
-        double row_sum = fabs(fix->D[i]) + fabs(fix->E[i - 1]);
+        f64 row_sum = fabs(fix->D[i]) + fabs(fix->E[i - 1]);
         if (i < n - 1) row_sum += fabs(fix->E[i]);
         if (row_sum > anorm) anorm = row_sum;
     }
     /* Also check first row */
     {
-        double row0 = fabs(fix->D[0]);
+        f64 row0 = fabs(fix->D[0]);
         if (n > 1) row0 += fabs(fix->E[0]);
         if (row0 > anorm) anorm = row0;
     }
 
     for (int j = 0; j < m; j++) {
-        double* zj = fix->Z + j * n;  /* column j of Z (column-major) */
+        f64* zj = fix->Z + j * n;  /* column j of Z (column-major) */
 
         /* Compute T*zj */
         Tz[0] = fix->D[0] * zj[0];
@@ -351,24 +351,24 @@ static void test_partial(void** state)
         }
 
         /* Compute || T*z - lambda*z || */
-        double resid_norm = 0.0;
+        f64 resid_norm = 0.0;
         for (int i = 0; i < n; i++) {
-            double diff = Tz[i] - fix->W[j] * zj[i];
+            f64 diff = Tz[i] - fix->W[j] * zj[i];
             resid_norm += diff * diff;
         }
         resid_norm = sqrt(resid_norm);
 
         /* Compute ||z|| (should be ~1 for normalized eigenvectors) */
-        double znorm = cblas_dnrm2(n, zj, 1);
+        f64 znorm = cblas_dnrm2(n, zj, 1);
 
         /* Normalized residual */
-        double resid = resid_norm / (anorm * znorm * n * ulp);
+        f64 resid = resid_norm / (anorm * znorm * n * ulp);
         assert_residual_ok(resid);
     }
 
     /* Verify orthogonality: || Z'*Z - I || / (m * ulp)
      * where Z is n x m (the m computed eigenvectors) */
-    double* ZtZ = fix->work;  /* m*m, fits in n*(n+1) workspace */
+    f64* ZtZ = fix->work;  /* m*m, fits in n*(n+1) workspace */
     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                 m, m, n, 1.0, fix->Z, n, fix->Z, n, 0.0, ZtZ, m);
 
@@ -378,16 +378,16 @@ static void test_partial(void** state)
     }
 
     /* 1-norm of (Z'Z - I) */
-    double orth_norm = 0.0;
+    f64 orth_norm = 0.0;
     for (int j = 0; j < m; j++) {
-        double col_sum = 0.0;
+        f64 col_sum = 0.0;
         for (int i = 0; i < m; i++) {
             col_sum += fabs(ZtZ[i + j * m]);
         }
         if (col_sum > orth_norm) orth_norm = col_sum;
     }
 
-    double orth_resid = orth_norm / (m * ulp);
+    f64 orth_resid = orth_norm / (m * ulp);
     assert_residual_ok(orth_resid);
 }
 

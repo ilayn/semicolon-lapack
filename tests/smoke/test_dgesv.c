@@ -19,15 +19,15 @@
 #include <cblas.h>
 
 /* Routine under test */
-extern void dgesv(const int n, const int nrhs, double * const restrict A,
+extern void dgesv(const int n, const int nrhs, f64 * const restrict A,
                   const int lda, int * const restrict ipiv,
-                  double * const restrict B, const int ldb, int *info);
+                  f64 * const restrict B, const int ldb, int *info);
 
 /* Utilities */
-extern double dlamch(const char *cmach);
-extern double dlange(const char *norm, const int m, const int n,
-                     const double * const restrict A, const int lda,
-                     double * const restrict work);
+extern f64 dlamch(const char *cmach);
+extern f64 dlange(const char *norm, const int m, const int n,
+                     const f64 * const restrict A, const int lda,
+                     f64 * const restrict work);
 
 /*
  * Test fixture
@@ -35,14 +35,14 @@ extern double dlange(const char *norm, const int m, const int n,
 typedef struct {
     int n, nrhs;
     int lda, ldb;
-    double *A;       /* Original matrix */
-    double *A_copy;  /* Copy for dgesv (gets overwritten) */
-    double *B;       /* Right-hand side (gets overwritten with solution) */
-    double *B_orig;  /* Original B for verification */
-    double *XACT;    /* Known exact solution */
-    double *d;       /* Singular values for dlatms */
-    double *work;    /* Workspace */
-    double *rwork;   /* Workspace for dget02 */
+    f64 *A;       /* Original matrix */
+    f64 *A_copy;  /* Copy for dgesv (gets overwritten) */
+    f64 *B;       /* Right-hand side (gets overwritten with solution) */
+    f64 *B_orig;  /* Original B for verification */
+    f64 *XACT;    /* Known exact solution */
+    f64 *d;       /* Singular values for dlatms */
+    f64 *work;    /* Workspace */
+    f64 *rwork;   /* Workspace for dget02 */
     int *ipiv;       /* Pivot indices */
     uint64_t seed;
 } dgesv_fixture_t;
@@ -60,14 +60,14 @@ static int dgesv_setup(void **state, int n, int nrhs)
     fix->ldb = n;
     fix->seed = g_seed++;
 
-    fix->A = malloc(fix->lda * n * sizeof(double));
-    fix->A_copy = malloc(fix->lda * n * sizeof(double));
-    fix->B = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->XACT = malloc(fix->ldb * nrhs * sizeof(double));
-    fix->d = malloc(n * sizeof(double));
-    fix->work = malloc(3 * n * sizeof(double));
-    fix->rwork = malloc(n * sizeof(double));
+    fix->A = malloc(fix->lda * n * sizeof(f64));
+    fix->A_copy = malloc(fix->lda * n * sizeof(f64));
+    fix->B = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->B_orig = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->XACT = malloc(fix->ldb * nrhs * sizeof(f64));
+    fix->d = malloc(n * sizeof(f64));
+    fix->work = malloc(3 * n * sizeof(f64));
+    fix->rwork = malloc(n * sizeof(f64));
     fix->ipiv = malloc(n * sizeof(int));
 
     assert_non_null(fix->A);
@@ -127,7 +127,7 @@ static void test_dgesv_wellcond(void **state)
 
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
 
     dlatb4("DGE", 4, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -137,12 +137,12 @@ static void test_dgesv_wellcond(void **state)
     dlatms(fix->n, fix->n, &dist, &type, fix->d, mode, cndnum, anorm,
            kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
-    memcpy(fix->A_copy, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->A_copy, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Generate known exact solution */
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->ldb] = 1.0 + (double)i / fix->n + (double)j / fix->nrhs;
+            fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n + (f64)j / fix->nrhs;
         }
     }
 
@@ -150,7 +150,7 @@ static void test_dgesv_wellcond(void **state)
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                 fix->n, fix->nrhs, fix->n, 1.0, fix->A, fix->lda,
                 fix->XACT, fix->ldb, 0.0, fix->B, fix->ldb);
-    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
 
     /* Solve */
     dgesv(fix->n, fix->nrhs, fix->A_copy, fix->lda, fix->ipiv,
@@ -158,19 +158,19 @@ static void test_dgesv_wellcond(void **state)
     assert_info_success(info);
 
     /* Test 1: Solution residual */
-    double *B_copy = malloc(fix->ldb * fix->nrhs * sizeof(double));
+    f64 *B_copy = malloc(fix->ldb * fix->nrhs * sizeof(f64));
     assert_non_null(B_copy);
-    memcpy(B_copy, fix->B_orig, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(B_copy, fix->B_orig, fix->ldb * fix->nrhs * sizeof(f64));
 
-    double resid_02;
+    f64 resid_02;
     dget02("N", fix->n, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->B, fix->ldb, B_copy, fix->ldb, fix->rwork, &resid_02);
     assert_residual_ok(resid_02);
     free(B_copy);
 
     /* Test 2: Solution accuracy */
-    double rcond = 1.0 / (cndnum > 0.0 ? cndnum : 1.0);
-    double resid_04;
+    f64 rcond = 1.0 / (cndnum > 0.0 ? cndnum : 1.0);
+    f64 resid_04;
     dget04(fix->n, fix->nrhs, fix->B, fix->ldb, fix->XACT, fix->ldb,
            rcond, &resid_04);
     assert_residual_ok(resid_04);
@@ -193,7 +193,7 @@ static void test_dgesv_illcond(void **state)
 
     char type, dist;
     int kl, ku, mode;
-    double anorm, cndnum;
+    f64 anorm, cndnum;
 
     dlatb4("DGE", 8, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -202,28 +202,28 @@ static void test_dgesv_illcond(void **state)
     dlatms(fix->n, fix->n, &dist, &type, fix->d, mode, cndnum, anorm,
            kl, ku, "N", fix->A, fix->lda, fix->work, &info, rng_state);
     assert_int_equal(info, 0);
-    memcpy(fix->A_copy, fix->A, fix->lda * fix->n * sizeof(double));
+    memcpy(fix->A_copy, fix->A, fix->lda * fix->n * sizeof(f64));
 
     for (int j = 0; j < fix->nrhs; j++) {
         for (int i = 0; i < fix->n; i++) {
-            fix->XACT[i + j * fix->ldb] = 1.0 + (double)i / fix->n + (double)j / fix->nrhs;
+            fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n + (f64)j / fix->nrhs;
         }
     }
 
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                 fix->n, fix->nrhs, fix->n, 1.0, fix->A, fix->lda,
                 fix->XACT, fix->ldb, 0.0, fix->B, fix->ldb);
-    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(fix->B_orig, fix->B, fix->ldb * fix->nrhs * sizeof(f64));
 
     dgesv(fix->n, fix->nrhs, fix->A_copy, fix->lda, fix->ipiv,
           fix->B, fix->ldb, &info);
     assert_info_success(info);
 
-    double *B_copy = malloc(fix->ldb * fix->nrhs * sizeof(double));
+    f64 *B_copy = malloc(fix->ldb * fix->nrhs * sizeof(f64));
     assert_non_null(B_copy);
-    memcpy(B_copy, fix->B_orig, fix->ldb * fix->nrhs * sizeof(double));
+    memcpy(B_copy, fix->B_orig, fix->ldb * fix->nrhs * sizeof(f64));
 
-    double resid_02;
+    f64 resid_02;
     dget02("N", fix->n, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->B, fix->ldb, B_copy, fix->ldb, fix->rwork, &resid_02);
     assert_residual_ok(resid_02);
@@ -237,8 +237,8 @@ static void test_dgesv_simple(void **state)
 {
     (void)state;
 
-    double A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
-    double b[3] = {4, 10, 24};
+    f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
+    f64 b[3] = {4, 10, 24};
     int ipiv[3];
     int info;
 
@@ -257,8 +257,8 @@ static void test_dgesv_singular(void **state)
 {
     (void)state;
 
-    double A[9] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
-    double b[3] = {1, 2, 3};
+    f64 A[9] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
+    f64 b[3] = {1, 2, 3};
     int ipiv[3];
     int info;
 

@@ -53,63 +53,63 @@ static const char TRANSS[] = {'N', 'T', 'C'};
 
 /* Routines under test */
 extern void dgbtrf(const int m, const int n, const int kl, const int ku,
-                   double* AB, const int ldab, int* ipiv, int* info);
+                   f64* AB, const int ldab, int* ipiv, int* info);
 extern void dgbtrs(const char* trans, const int n, const int kl, const int ku,
-                   const int nrhs, const double* AB, const int ldab,
-                   const int* ipiv, double* B, const int ldb, int* info);
+                   const int nrhs, const f64* AB, const int ldab,
+                   const int* ipiv, f64* B, const int ldb, int* info);
 extern void dgbrfs(const char* trans, const int n, const int kl, const int ku,
-                   const int nrhs, const double* AB, const int ldab,
-                   const double* AFB, const int ldafb, const int* ipiv,
-                   const double* B, const int ldb, double* X, const int ldx,
-                   double* ferr, double* berr, double* work, int* iwork,
+                   const int nrhs, const f64* AB, const int ldab,
+                   const f64* AFB, const int ldafb, const int* ipiv,
+                   const f64* B, const int ldb, f64* X, const int ldx,
+                   f64* ferr, f64* berr, f64* work, int* iwork,
                    int* info);
 extern void dgbcon(const char* norm, const int n, const int kl, const int ku,
-                   const double* AB, const int ldab, const int* ipiv,
-                   const double anorm, double* rcond, double* work,
+                   const f64* AB, const int ldab, const int* ipiv,
+                   const f64 anorm, f64* rcond, f64* work,
                    int* iwork, int* info);
 
 /* Verification routines */
 extern void dgbt01(int m, int n, int kl, int ku,
-                   const double* A, int lda, const double* AFAC, int ldafac,
-                   const int* ipiv, double* work, double* resid);
+                   const f64* A, int lda, const f64* AFAC, int ldafac,
+                   const int* ipiv, f64* work, f64* resid);
 extern void dgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
-                   const double* A, int lda, const double* X, int ldx,
-                   double* B, int ldb, double* rwork, double* resid);
+                   const f64* A, int lda, const f64* X, int ldx,
+                   f64* B, int ldb, f64* rwork, f64* resid);
 extern void dgbt05(const char* trans, int n, int kl, int ku, int nrhs,
-                   const double* AB, int ldab, const double* B, int ldb,
-                   const double* X, int ldx, const double* XACT, int ldxact,
-                   const double* FERR, const double* BERR, double* reslts);
-extern void dget04(const int n, const int nrhs, const double* X, const int ldx,
-                   const double* XACT, const int ldxact, const double rcond,
-                   double* resid);
-extern double dget06(const double rcond, const double rcondc);
+                   const f64* AB, int ldab, const f64* B, int ldb,
+                   const f64* X, int ldx, const f64* XACT, int ldxact,
+                   const f64* FERR, const f64* BERR, f64* reslts);
+extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
+                   const f64* XACT, const int ldxact, const f64 rcond,
+                   f64* resid);
+extern f64 dget06(const f64 rcond, const f64 rcondc);
 
 /* Matrix generation */
 extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, double* anorm, int* mode,
-                   double* cndnum, char* dist);
+                   char* type, int* kl, int* ku, f64* anorm, int* mode,
+                   f64* cndnum, char* dist);
 extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, double* d, const int mode, const double cond,
-                   const double dmax, const int kl, const int ku, const char* pack,
-                   double* A, const int lda, double* work, int* info,
+                   const char* sym, f64* d, const int mode, const f64 cond,
+                   const f64 dmax, const int kl, const int ku, const char* pack,
+                   f64* A, const int lda, f64* work, int* info,
                    uint64_t state[static 4]);
 extern void dlarhs(const char* path, const char* xtype, const char* uplo,
                    const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const double* A, const int lda,
-                   const double* XACT, const int ldxact, double* B,
+                   const int ku, const int nrhs, const f64* A, const int lda,
+                   const f64* XACT, const int ldxact, f64* B,
                    const int ldb, int* info, uint64_t state[static 4]);
 
 /* Utilities */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta,
-                   double* A, const int lda);
-extern double dlangb(const char* norm, const int n, const int kl, const int ku,
-                     const double* AB, const int ldab, double* work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
-extern double dlamch(const char* cmach);
+                   const f64 alpha, const f64 beta,
+                   f64* A, const int lda);
+extern f64 dlangb(const char* norm, const int n, const int kl, const int ku,
+                     const f64* AB, const int ldab, f64* work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
+extern f64 dlamch(const char* cmach);
 
 /**
  * Test parameters for a single test case.
@@ -132,16 +132,16 @@ typedef struct {
  *   AFAC is stored in factored band format: (2*kl+ku+1) x n
  */
 typedef struct {
-    double* A;      /* Original band matrix */
-    double* AFAC;   /* Factored band matrix */
-    double* B;      /* Right-hand side (NMAX x NSMAX) */
-    double* X;      /* Solution (NMAX x NSMAX) */
-    double* XACT;   /* Exact solution (NMAX x NSMAX) */
-    double* WORK;   /* General workspace */
-    double* RWORK;  /* Real workspace */
-    double* D;      /* Singular values for dlatms */
-    double* FERR;   /* Forward error bounds */
-    double* BERR;   /* Backward error bounds */
+    f64* A;      /* Original band matrix */
+    f64* AFAC;   /* Factored band matrix */
+    f64* B;      /* Right-hand side (NMAX x NSMAX) */
+    f64* X;      /* Solution (NMAX x NSMAX) */
+    f64* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f64* WORK;   /* General workspace */
+    f64* RWORK;  /* Real workspace */
+    f64* D;      /* Singular values for dlatms */
+    f64* FERR;   /* Forward error bounds */
+    f64* BERR;   /* Backward error bounds */
     int* IPIV;      /* Pivot indices */
     int* IWORK;     /* Integer workspace */
 } dchkgb_workspace_t;
@@ -163,16 +163,16 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchkgb_workspace_t));
     if (!g_workspace) return -1;
 
-    g_workspace->A = malloc(LA * sizeof(double));
-    g_workspace->AFAC = malloc(LAFAC * sizeof(double));
-    g_workspace->B = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->X = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(double));
-    g_workspace->WORK = malloc(3 * NMAX * NMAX * sizeof(double));
-    g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(double));
-    g_workspace->D = malloc(NMAX * sizeof(double));
-    g_workspace->FERR = malloc(NSMAX * sizeof(double));
-    g_workspace->BERR = malloc(NSMAX * sizeof(double));
+    g_workspace->A = malloc(LA * sizeof(f64));
+    g_workspace->AFAC = malloc(LAFAC * sizeof(f64));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f64));
+    g_workspace->WORK = malloc(3 * NMAX * NMAX * sizeof(f64));
+    g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(f64));
+    g_workspace->D = malloc(NMAX * sizeof(f64));
+    g_workspace->FERR = malloc(NSMAX * sizeof(f64));
+    g_workspace->BERR = malloc(NSMAX * sizeof(f64));
     g_workspace->IPIV = malloc(NMAX * sizeof(int));
     g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
 
@@ -221,20 +221,20 @@ static int group_teardown(void** state)
  */
 static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     dchkgb_workspace_t* ws = g_workspace;
 
     char type, dist;
     int kl_gen, ku_gen, mode;
-    double anorm_gen, cndnum;
+    f64 anorm_gen, cndnum;
     int info, izero;
     int lda = kl + ku + 1;
     int ldafac = 2 * kl + ku + 1;
     int ldb = (n > 1) ? n : 1;
     int trfcon;
-    double anormo = 0.0, anormi = 0.0, rcondo = 0.0, rcondi = 0.0, rcond, rcondc;
-    double result[NTESTS];
+    f64 anormo = 0.0, anormi = 0.0, rcondo = 0.0, rcondi = 0.0, rcond, rcondc;
+    f64 result[NTESTS];
 
     /* Set block size for this test via xlaenv */
     int nb = NBVAL[inb];
@@ -354,7 +354,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
         dgbtrs("N", n, kl, ku, n, ws->AFAC, ldafac, ws->IPIV, ws->WORK, ldb_inv, &info);
 
         /* Compute the 1-norm condition number */
-        double ainvnm = dlange("O", n, n, ws->WORK, ldb_inv, ws->RWORK);
+        f64 ainvnm = dlange("O", n, n, ws->WORK, ldb_inv, ws->RWORK);
         if (anormo <= ZERO || ainvnm <= ZERO) {
             rcondo = ONE;
         } else {
@@ -430,7 +430,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
 
             dget04(n, nrhs, ws->X, ldb, ws->XACT, ldb, rcondc, &result[3]);
 
-            double reslts[2];
+            f64 reslts[2];
             dgbt05(trans, n, kl, ku, nrhs, ws->A, lda, ws->B, ldb,
                    ws->X, ldb, ws->XACT, ldb, ws->FERR, ws->BERR, reslts);
             result[4] = reslts[0];
@@ -458,7 +458,7 @@ test7:
     }
 
     for (int itran = 0; itran < 2; itran++) {
-        double anorm_est;
+        f64 anorm_est;
         char norm[2];
         if (itran == 0) {
             anorm_est = anormo;

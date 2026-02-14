@@ -10,16 +10,16 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
-extern double dlansy(const char* norm, const char* uplo, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* const restrict A, const int lda,
-                     double* const restrict work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlansy(const char* norm, const char* uplo, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* const restrict A, const int lda,
+                     f64* const restrict work);
 extern void   dlaset(const char* uplo, const int m, const int n,
-                     const double alpha, const double beta,
-                     double* const restrict A, const int lda);
+                     const f64 alpha, const f64 beta,
+                     f64* const restrict A, const int lda);
 
 /**
  * DSTT21 checks a decomposition of the form
@@ -45,21 +45,21 @@ extern void   dlaset(const char* uplo, const int m, const int n,
  * @param[out]    result Double array (2). The test ratios.
  */
 void dstt21(const int n, const int kband,
-            const double* const restrict AD, const double* const restrict AE,
-            const double* const restrict SD, const double* const restrict SE,
-            const double* const restrict U, const int ldu,
-            double* const restrict work, double* restrict result)
+            const f64* const restrict AD, const f64* const restrict AE,
+            const f64* const restrict SD, const f64* const restrict SE,
+            const f64* const restrict U, const int ldu,
+            f64* const restrict work, f64* restrict result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     result[0] = ZERO;
     result[1] = ZERO;
     if (n <= 0)
         return;
 
-    double unfl = dlamch("S");
-    double ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ulp = dlamch("P");
 
     /* ----------------------------------------------------------------
      * Test 1: RESULT[0] = | A - U S U' | / ( |A| n ulp )
@@ -70,13 +70,13 @@ void dstt21(const int n, const int kband,
     dlaset("F", n, n, ZERO, ZERO, work, n);
 
     /* Compute 1-norm of A as we fill it. */
-    double anorm = ZERO;
-    double temp1 = ZERO;
+    f64 anorm = ZERO;
+    f64 temp1 = ZERO;
     for (int j = 0; j < n - 1; j++) {
         /* work[(n+1)*j] is the diagonal A[j,j] in column-major */
         work[(n + 1) * j] = AD[j];
         work[(n + 1) * j + 1] = AE[j];
-        double temp2 = fabs(AE[j]);
+        f64 temp2 = fabs(AE[j]);
         anorm = fmax(anorm, fabs(AD[j]) + temp1 + temp2);
         temp1 = temp2;
     }
@@ -102,16 +102,16 @@ void dstt21(const int n, const int kband,
     }
 
     /* Compute || A - U S U' || using symmetric 1-norm (lower triangle). */
-    double wnorm = dlansy("1", "L", n, work, n, &work[n * n]);
+    f64 wnorm = dlansy("1", "L", n, work, n, &work[n * n]);
 
     if (anorm > wnorm) {
         result[0] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < ONE) {
-            double tmp = fmin(wnorm, (double)n * anorm);
+            f64 tmp = fmin(wnorm, (f64)n * anorm);
             result[0] = (tmp / anorm) / (n * ulp);
         } else {
-            double tmp = fmin(wnorm / anorm, (double)n);
+            f64 tmp = fmin(wnorm / anorm, (f64)n);
             result[0] = tmp / (n * ulp);
         }
     }
@@ -128,6 +128,6 @@ void dstt21(const int n, const int kband,
         work[(n + 1) * j] -= ONE;
     }
 
-    double tmp = dlange("1", n, n, work, n, &work[n * n]);
-    result[1] = fmin((double)n, tmp) / (n * ulp);
+    f64 tmp = dlange("1", n, n, work, n, &work[n * n]);
+    result[1] = fmin((f64)n, tmp) / (n * ulp);
 }

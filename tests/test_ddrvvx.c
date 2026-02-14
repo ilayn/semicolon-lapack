@@ -52,19 +52,19 @@ static const char* BAL[] = {"N", "P", "S", "B"};
 
 /* External function declarations */
 extern void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-                   const char* sense, const int n, double* A, const int lda,
-                   double* wr, double* wi, double* VL, const int ldvl,
-                   double* VR, const int ldvr, int* ilo, int* ihi,
-                   double* scale, double* abnrm, double* rconde, double* rcondv,
-                   double* work, const int lwork, int* iwork, int* info);
+                   const char* sense, const int n, f64* A, const int lda,
+                   f64* wr, f64* wi, f64* VL, const int ldvl,
+                   f64* VR, const int ldvr, int* ilo, int* ihi,
+                   f64* scale, f64* abnrm, f64* rconde, f64* rcondv,
+                   f64* work, const int lwork, int* iwork, int* info);
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dlaset(const char* uplo, const int m, const int n,
-                   const double alpha, const double beta, double* A, const int lda);
+                   const f64 alpha, const f64 beta, f64* A, const int lda);
 
 /* Test parameters for a single test case */
 typedef struct {
@@ -80,37 +80,37 @@ typedef struct {
     int nmax;
 
     /* Matrices (all nmax x nmax) */
-    double* A;      /* Original matrix */
-    double* H;      /* Copy modified by DGEEVX */
-    double* VL;     /* Left eigenvectors (full) */
-    double* VR;     /* Right eigenvectors (full) */
-    double* LRE;    /* Left/right eigenvectors (partial) */
+    f64* A;      /* Original matrix */
+    f64* H;      /* Copy modified by DGEEVX */
+    f64* VL;     /* Left eigenvectors (full) */
+    f64* VR;     /* Right eigenvectors (full) */
+    f64* LRE;    /* Left/right eigenvectors (partial) */
 
     /* Eigenvalues */
-    double* WR;     /* Real parts (full) */
-    double* WI;     /* Imaginary parts (full) */
-    double* WR1;    /* Real parts (partial) */
-    double* WI1;    /* Imaginary parts (partial) */
+    f64* WR;     /* Real parts (full) */
+    f64* WI;     /* Imaginary parts (full) */
+    f64* WR1;    /* Real parts (partial) */
+    f64* WI1;    /* Imaginary parts (partial) */
 
     /* Condition numbers */
-    double* rcondv;  /* Reciprocal eigenvector condition numbers */
-    double* rcndv1;  /* Partial eigenvector condition numbers */
-    double* rcdvin;  /* Precomputed eigenvector condition numbers */
-    double* rconde;  /* Reciprocal eigenvalue condition numbers */
-    double* rcnde1;  /* Partial eigenvalue condition numbers */
-    double* rcdein;  /* Precomputed eigenvalue condition numbers */
+    f64* rcondv;  /* Reciprocal eigenvector condition numbers */
+    f64* rcndv1;  /* Partial eigenvector condition numbers */
+    f64* rcdvin;  /* Precomputed eigenvector condition numbers */
+    f64* rconde;  /* Reciprocal eigenvalue condition numbers */
+    f64* rcnde1;  /* Partial eigenvalue condition numbers */
+    f64* rcdein;  /* Precomputed eigenvalue condition numbers */
 
     /* Balancing */
-    double* scale;
-    double* scale1;
+    f64* scale;
+    f64* scale1;
 
     /* Work arrays */
-    double* work;
+    f64* work;
     int* iwork;
     int lwork;
 
     /* Test results */
-    double result[11];
+    f64 result[11];
 
     /* RNG state */
     uint64_t rng_state[4];
@@ -150,32 +150,32 @@ static int group_setup(void** state)
     int n2 = nmax * nmax;
 
     /* Allocate matrices */
-    g_ws->A   = malloc(n2 * sizeof(double));
-    g_ws->H   = malloc(n2 * sizeof(double));
-    g_ws->VL  = malloc(n2 * sizeof(double));
-    g_ws->VR  = malloc(n2 * sizeof(double));
-    g_ws->LRE = malloc(n2 * sizeof(double));
-    g_ws->WR  = malloc(nmax * sizeof(double));
-    g_ws->WI  = malloc(nmax * sizeof(double));
-    g_ws->WR1 = malloc(nmax * sizeof(double));
-    g_ws->WI1 = malloc(nmax * sizeof(double));
+    g_ws->A   = malloc(n2 * sizeof(f64));
+    g_ws->H   = malloc(n2 * sizeof(f64));
+    g_ws->VL  = malloc(n2 * sizeof(f64));
+    g_ws->VR  = malloc(n2 * sizeof(f64));
+    g_ws->LRE = malloc(n2 * sizeof(f64));
+    g_ws->WR  = malloc(nmax * sizeof(f64));
+    g_ws->WI  = malloc(nmax * sizeof(f64));
+    g_ws->WR1 = malloc(nmax * sizeof(f64));
+    g_ws->WI1 = malloc(nmax * sizeof(f64));
 
     /* Condition numbers */
-    g_ws->rcondv = malloc(nmax * sizeof(double));
-    g_ws->rcndv1 = malloc(nmax * sizeof(double));
-    g_ws->rcdvin = malloc(nmax * sizeof(double));
-    g_ws->rconde = malloc(nmax * sizeof(double));
-    g_ws->rcnde1 = malloc(nmax * sizeof(double));
-    g_ws->rcdein = malloc(nmax * sizeof(double));
+    g_ws->rcondv = malloc(nmax * sizeof(f64));
+    g_ws->rcndv1 = malloc(nmax * sizeof(f64));
+    g_ws->rcdvin = malloc(nmax * sizeof(f64));
+    g_ws->rconde = malloc(nmax * sizeof(f64));
+    g_ws->rcnde1 = malloc(nmax * sizeof(f64));
+    g_ws->rcdein = malloc(nmax * sizeof(f64));
 
     /* Balancing */
-    g_ws->scale  = malloc(nmax * sizeof(double));
-    g_ws->scale1 = malloc(nmax * sizeof(double));
+    g_ws->scale  = malloc(nmax * sizeof(f64));
+    g_ws->scale1 = malloc(nmax * sizeof(f64));
 
     /* Workspace: 6*N + 2*N^2 (ddrvvx.f line 461) */
     g_ws->lwork = 6 * nmax + 2 * n2;
     if (g_ws->lwork < 360) g_ws->lwork = 360;
-    g_ws->work  = malloc(g_ws->lwork * sizeof(double));
+    g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
 
     /* IWORK dimension: 2*max(NN,12) (ddrvvx.f line 467) */
     g_ws->iwork = malloc(2 * nmax * sizeof(int));
@@ -231,20 +231,20 @@ static int group_teardown(void** state)
  *
  * Based on ddrvvx.f lines 694-826.
  */
-static int generate_matrix(int n, int jtype, double* A, int lda,
-                           double* work, int* iwork, uint64_t state[static 4])
+static int generate_matrix(int n, int jtype, f64* A, int lda,
+                           f64* work, int* iwork, uint64_t state[static 4])
 {
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
-    double anorm, cond, conds;
+    f64 anorm, cond, conds;
     int iinfo = 0;
 
-    double ulp = dlamch("P");
-    double unfl = dlamch("S");
-    double ovfl = 1.0 / unfl;
-    double ulpinv = 1.0 / ulp;
-    double rtulp = sqrt(ulp);
-    double rtulpi = 1.0 / rtulp;
+    f64 ulp = dlamch("P");
+    f64 unfl = dlamch("S");
+    f64 ovfl = 1.0 / unfl;
+    f64 ulpinv = 1.0 / ulp;
+    f64 rtulp = sqrt(ulp);
+    f64 rtulpi = 1.0 / rtulp;
 
     /* Compute norm based on KMAGN */
     switch (KMAGN[jtype - 1]) {
@@ -364,28 +364,28 @@ static void run_ddrvvx_random(ddrvvx_params_t* params)
     int ldvr = ws->nmax;
     int ldlre = ws->nmax;
 
-    double* A = ws->A;
-    double* H = ws->H;
-    double* VL = ws->VL;
-    double* VR = ws->VR;
-    double* LRE = ws->LRE;
-    double* WR = ws->WR;
-    double* WI = ws->WI;
-    double* WR1 = ws->WR1;
-    double* WI1 = ws->WI1;
-    double* rcondv = ws->rcondv;
-    double* rcndv1 = ws->rcndv1;
-    double* rcdvin = ws->rcdvin;
-    double* rconde = ws->rconde;
-    double* rcnde1 = ws->rcnde1;
-    double* rcdein = ws->rcdein;
-    double* scale_ = ws->scale;
-    double* scale1 = ws->scale1;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* H = ws->H;
+    f64* VL = ws->VL;
+    f64* VR = ws->VR;
+    f64* LRE = ws->LRE;
+    f64* WR = ws->WR;
+    f64* WI = ws->WI;
+    f64* WR1 = ws->WR1;
+    f64* WI1 = ws->WI1;
+    f64* rcondv = ws->rcondv;
+    f64* rcndv1 = ws->rcndv1;
+    f64* rcdvin = ws->rcdvin;
+    f64* rconde = ws->rconde;
+    f64* rcnde1 = ws->rcnde1;
+    f64* rcdein = ws->rcdein;
+    f64* scale_ = ws->scale;
+    f64* scale1 = ws->scale1;
+    f64* work = ws->work;
     int* iwork = ws->iwork;
-    double* result = ws->result;
+    f64* result = ws->result;
 
-    double ulpinv = 1.0 / dlamch("P");
+    f64 ulpinv = 1.0 / dlamch("P");
 
     for (int j = 0; j < 11; j++) {
         result[j] = -1.0;
@@ -455,26 +455,26 @@ static void run_ddrvvx_precomp(ddrvvx_params_t* params)
     int ldvr = ws->nmax;
     int ldlre = ws->nmax;
 
-    double* A = ws->A;
-    double* H = ws->H;
-    double* VL = ws->VL;
-    double* VR = ws->VR;
-    double* LRE = ws->LRE;
-    double* WR = ws->WR;
-    double* WI = ws->WI;
-    double* WR1 = ws->WR1;
-    double* WI1 = ws->WI1;
-    double* rcondv = ws->rcondv;
-    double* rcndv1 = ws->rcndv1;
-    double* rcdvin = ws->rcdvin;
-    double* rconde = ws->rconde;
-    double* rcnde1 = ws->rcnde1;
-    double* rcdein = ws->rcdein;
-    double* scale_ = ws->scale;
-    double* scale1 = ws->scale1;
-    double* work = ws->work;
+    f64* A = ws->A;
+    f64* H = ws->H;
+    f64* VL = ws->VL;
+    f64* VR = ws->VR;
+    f64* LRE = ws->LRE;
+    f64* WR = ws->WR;
+    f64* WI = ws->WI;
+    f64* WR1 = ws->WR1;
+    f64* WI1 = ws->WI1;
+    f64* rcondv = ws->rcondv;
+    f64* rcndv1 = ws->rcndv1;
+    f64* rcdvin = ws->rcdvin;
+    f64* rconde = ws->rconde;
+    f64* rcnde1 = ws->rcnde1;
+    f64* rcdein = ws->rcdein;
+    f64* scale_ = ws->scale;
+    f64* scale1 = ws->scale1;
+    f64* work = ws->work;
     int* iwork = ws->iwork;
-    double* result = ws->result;
+    f64* result = ws->result;
 
     const dvx_precomputed_t* pc = &DVX_PRECOMPUTED[idx];
     int n = pc->n;

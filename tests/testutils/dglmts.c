@@ -8,15 +8,15 @@
 #include <cblas.h>
 #include "verify.h"
 
-extern double dlamch(const char* cmach);
-extern double dlange(const char* norm, const int m, const int n,
-                     const double* A, const int lda, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlange(const char* norm, const int m, const int n,
+                     const f64* A, const int lda, f64* work);
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda, double* B, const int ldb);
+                   const f64* A, const int lda, f64* B, const int ldb);
 extern void dggglm(const int n, const int m, const int p,
-                   double* A, const int lda, double* B, const int ldb,
-                   double* D, double* X, double* Y,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* B, const int ldb,
+                   f64* D, f64* X, f64* Y,
+                   f64* work, const int lwork, int* info);
 
 /**
  * DGLMTS tests DGGGLM - a subroutine for solving the generalized
@@ -45,25 +45,25 @@ void dglmts(
     const int n,
     const int m,
     const int p,
-    const double* A,
-    double* AF,
+    const f64* A,
+    f64* AF,
     const int lda,
-    const double* B,
-    double* BF,
+    const f64* B,
+    f64* BF,
     const int ldb,
-    const double* D,
-    double* DF,
-    double* X,
-    double* U,
-    double* work,
+    const f64* D,
+    f64* DF,
+    f64* X,
+    f64* U,
+    f64* work,
     const int lwork,
-    double* rwork,
-    double* result)
+    f64* rwork,
+    f64* result)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int info;
-    double anorm, bnorm, dnorm, eps, unfl, xnorm, ynorm;
+    f64 anorm, bnorm, dnorm, eps, unfl, xnorm, ynorm;
 
     eps = dlamch("E");
     unfl = dlamch("S");

@@ -11,7 +11,7 @@
 #include <cblas.h>
 
 /* Forward declarations */
-extern double dlamch(const char* cmach);
+extern f64 dlamch(const char* cmach);
 
 /**
  * DORT03 compares two orthogonal matrices U and V to see if their
@@ -49,17 +49,17 @@ extern double dlamch(const char* cmach);
  * @param[out]    info   0 indicates successful exit, < 0 indicates illegal value.
  */
 void dort03(const char* rc, const int mu, const int mv, const int n,
-            const int k, const double* const restrict U, const int ldu,
-            const double* const restrict V, const int ldv,
-            double* const restrict work, const int lwork,
-            double* result, int* info)
+            const int k, const f64* const restrict U, const int ldu,
+            const f64* const restrict V, const int ldv,
+            f64* const restrict work, const int lwork,
+            f64* result, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int irc;
     int i, j, lmx;
-    double res1, res2, s, ulp;
+    f64 res1, res2, s, ulp;
 
     /* Check inputs */
     *info = 0;
@@ -113,13 +113,13 @@ void dort03(const char* rc, const int mu, const int mv, const int n,
 
             /* Compute max | U(i,j) - s*V(i,j) | */
             for (j = 0; j < n; j++) {
-                double diff = fabs(U[i + j * ldu] - s * V[i + j * ldv]);
+                f64 diff = fabs(U[i + j * ldu] - s * V[i + j * ldv]);
                 if (diff > res1) {
                     res1 = diff;
                 }
             }
         }
-        res1 = res1 / ((double)n * ulp);
+        res1 = res1 / ((f64)n * ulp);
 
         /* Compute orthogonality of rows of V. */
         dort01("R", mv, n, V, ldv, work, lwork, &res2);
@@ -136,18 +136,18 @@ void dort03(const char* rc, const int mu, const int mv, const int n,
 
             /* Compute max | U(j,i) - s*V(j,i) | */
             for (j = 0; j < n; j++) {
-                double diff = fabs(U[j + i * ldu] - s * V[j + i * ldv]);
+                f64 diff = fabs(U[j + i * ldu] - s * V[j + i * ldv]);
                 if (diff > res1) {
                     res1 = diff;
                 }
             }
         }
-        res1 = res1 / ((double)n * ulp);
+        res1 = res1 / ((f64)n * ulp);
 
         /* Compute orthogonality of columns of V. */
         dort01("C", n, mv, V, ldv, work, lwork, &res2);
     }
 
-    double maxres = (res1 > res2) ? res1 : res2;
+    f64 maxres = (res1 > res2) ? res1 : res2;
     *result = fmin(maxres, ONE / ulp);
 }

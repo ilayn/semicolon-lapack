@@ -79,15 +79,15 @@ void dlarot(
     const int lleft,
     const int lright,
     const int nl,
-    const double c,
-    const double s,
-    double* A,
+    const f64 c,
+    const f64 s,
+    f64* A,
     const int lda,
-    double* xleft,
-    double* xright)
+    f64* xleft,
+    f64* xright)
 {
     int iinc, inext, ix, iy, iyt, nt;
-    double xt[2], yt[2];
+    f64 xt[2], yt[2];
 
     /* Set up indices, arrays for ends */
     if (lrows) {

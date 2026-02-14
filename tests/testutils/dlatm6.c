@@ -8,12 +8,12 @@
 
 /* Forward declarations */
 extern void dlacpy(const char* uplo, const int m, const int n,
-                   const double* A, const int lda,
-                   double* B, const int ldb);
+                   const f64* A, const int lda,
+                   f64* B, const int ldb);
 extern void dgesvd(const char* jobu, const char* jobvt, const int m, const int n,
-                   double* A, const int lda, double* S,
-                   double* U, const int ldu, double* VT, const int ldvt,
-                   double* work, const int lwork, int* info);
+                   f64* A, const int lda, f64* S,
+                   f64* U, const int ldu, f64* VT, const int ldvt,
+                   f64* work, const int lwork, int* info);
 
 /**
  * DLATM6 generates test matrices for the generalized eigenvalue
@@ -107,27 +107,27 @@ extern void dgesvd(const char* jobu, const char* jobvt, const int m, const int n
  *     DIF(i) is the reciprocal condition number for eigenvector i.
  */
 void dlatm6(const int type, const int n,
-            double* A, const int lda, double* B,
-            double* X, const int ldx, double* Y, const int ldy,
-            const double alpha, const double beta,
-            const double wx, const double wy,
-            double* S, double* DIF)
+            f64* A, const int lda, f64* B,
+            f64* X, const int ldx, f64* Y, const int ldy,
+            const f64 alpha, const f64 beta,
+            const f64 wx, const f64 wy,
+            f64* S, f64* DIF)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int i, info, j;
-    double work[100];
-    double Z[12 * 12];
+    f64 work[100];
+    f64 Z[12 * 12];
 
     /* Generate test problem ...
      * (Da, Db) ... */
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             if (i == j) {
-                A[i + i * lda] = (double)(i + 1) + alpha;
+                A[i + i * lda] = (f64)(i + 1) + alpha;
                 B[i + i * lda] = ONE;
             } else {
                 A[i + j * lda] = ZERO;

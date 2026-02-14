@@ -43,20 +43,20 @@
 void dptt05(
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double* const restrict E,
-    const double* const restrict B,
+    const f64* const restrict D,
+    const f64* const restrict E,
+    const f64* const restrict B,
     const int ldb,
-    const double* const restrict X,
+    const f64* const restrict X,
     const int ldx,
-    const double* const restrict XACT,
+    const f64* const restrict XACT,
     const int ldxact,
-    const double* const restrict FERR,
-    const double* const restrict BERR,
-    double* const restrict reslts)
+    const f64* const restrict FERR,
+    const f64* const restrict BERR,
+    f64* const restrict reslts)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Quick exit if N = 0 or NRHS = 0. */
     if (n <= 0 || nrhs <= 0) {
@@ -65,19 +65,19 @@ void dptt05(
         return;
     }
 
-    double eps = dlamch("E");
-    double unfl = dlamch("S");
-    double ovfl = ONE / unfl;
+    f64 eps = dlamch("E");
+    f64 unfl = dlamch("S");
+    f64 ovfl = ONE / unfl;
     int nz = 4;
 
     /* Test 1: Compute the maximum of
        norm(X - XACT) / ( norm(X) * FERR )
        over all the vectors X and XACT using the infinity-norm. */
-    double errbnd = ZERO;
+    f64 errbnd = ZERO;
     for (int j = 0; j < nrhs; j++) {
         int imax = cblas_idamax(n, &X[j * ldx], 1);
-        double xnorm = fmax(fabs(X[imax + j * ldx]), unfl);
-        double diff = ZERO;
+        f64 xnorm = fmax(fabs(X[imax + j * ldx]), unfl);
+        f64 diff = ZERO;
         for (int i = 0; i < n; i++) {
             diff = fmax(diff, fabs(X[i + j * ldx] - XACT[i + j * ldxact]));
         }
@@ -102,25 +102,25 @@ void dptt05(
     /* Test 2: Compute the maximum of BERR / ( NZ*EPS + (*) ), where
        (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i ) */
     for (int k = 0; k < nrhs; k++) {
-        double axbi;
+        f64 axbi;
         if (n == 1) {
             axbi = fabs(B[k * ldb]) + fabs(D[0] * X[k * ldx]);
         } else {
             axbi = fabs(B[k * ldb]) + fabs(D[0] * X[k * ldx]) +
                    fabs(E[0] * X[1 + k * ldx]);
             for (int i = 1; i < n - 1; i++) {
-                double tmp = fabs(B[i + k * ldb]) +
+                f64 tmp = fabs(B[i + k * ldb]) +
                             fabs(E[i - 1] * X[i - 1 + k * ldx]) +
                             fabs(D[i] * X[i + k * ldx]) +
                             fabs(E[i] * X[i + 1 + k * ldx]);
                 axbi = fmin(axbi, tmp);
             }
-            double tmp = fabs(B[n - 1 + k * ldb]) +
+            f64 tmp = fabs(B[n - 1 + k * ldb]) +
                         fabs(E[n - 2] * X[n - 2 + k * ldx]) +
                         fabs(D[n - 1] * X[n - 1 + k * ldx]);
             axbi = fmin(axbi, tmp);
         }
-        double tmp = BERR[k] / (nz * eps + nz * unfl / fmax(axbi, nz * unfl));
+        f64 tmp = BERR[k] / (nz * eps + nz * unfl / fmax(axbi, nz * unfl));
         if (k == 0) {
             reslts[1] = tmp;
         } else {

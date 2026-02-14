@@ -11,9 +11,9 @@
 #include "verify.h"
 
 /* External declarations */
-extern double dlamch(const char* cmach);
-extern double dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const double* AP, double* work);
+extern f64 dlamch(const char* cmach);
+extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
+                     const int n, const f64* AP, f64* work);
 
 /**
  * DTPT01 computes the residual for a triangular matrix A times its inverse
@@ -32,13 +32,13 @@ extern double dlantp(const char* norm, const char* uplo, const char* diag,
  * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
  */
 void dtpt01(const char* uplo, const char* diag, const int n,
-            const double* AP, double* AINVP,
-            double* rcond, double* work, double* resid)
+            const f64* AP, f64* AINVP,
+            f64* rcond, f64* work, f64* resid)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int j, jc;
-    double ainvnm, anorm, eps;
+    f64 ainvnm, anorm, eps;
     int unitd;
 
     /* Quick exit if N = 0 */
@@ -99,5 +99,5 @@ void dtpt01(const char* uplo, const char* diag, const int n,
 
     /* Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS) */
     *resid = dlantp("1", uplo, "N", n, AINVP, work);
-    *resid = ((*resid) * (*rcond) / (double)n) / eps;
+    *resid = ((*resid) * (*rcond) / (f64)n) / eps;
 }
