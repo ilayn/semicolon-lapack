@@ -6,7 +6,7 @@ project('semicolon-lapack', 'c',
   license: 'BSD-3-Clause',
   meson_version: '>=1.1.0',
   default_options: [
-    'c_std=c99',
+    'c_std=c11',
     'warning_level=3',
     'buildtype=debugoptimized',
   ]
