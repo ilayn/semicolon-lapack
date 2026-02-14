@@ -38,26 +38,26 @@
  */
 void zlahqr(const int wantt, const int wantz, const int n,
             const int ilo, const int ihi,
-            double complex* H, const int ldh,
-            double complex* W,
+            c128* H, const int ldh,
+            c128* W,
             const int iloz, const int ihiz,
-            double complex* Z, const int ldz,
+            c128* Z, const int ldz,
             int* info)
 {
-    const double complex czero = 0.0;
-    const double complex cone = 1.0;
-    const double rzero = 0.0;
-    const double half = 0.5;
-    const double dat1 = 3.0 / 4.0;
+    const c128 czero = 0.0;
+    const c128 cone = 1.0;
+    const f64 rzero = 0.0;
+    const f64 half = 0.5;
+    const f64 dat1 = 3.0 / 4.0;
     const int kexsh = 10;
 
-    double complex sc, sum, t, t1, temp, u, v2, x, y;
-    double complex h11, h11s, h22;
-    double aa, ab, ba, bb, h10, h21, rtemp, s, safmin;
-    double smlnum, sx, t2, tst, ulp;
+    c128 sc, sum, t, t1, temp, u, v2, x, y;
+    c128 h11, h11s, h22;
+    f64 aa, ab, ba, bb, h10, h21, rtemp, s, safmin;
+    f64 smlnum, sx, t2, tst, ulp;
     int i, i1, i2, its, itmax, j, jhi, jlo, k, l, m, nh, nz, kdefl;
 
-    double complex v[2];
+    c128 v[2];
 
     *info = 0;
 
@@ -92,12 +92,12 @@ void zlahqr(const int wantt, const int wantz, const int n,
             H[i + (i - 1) * ldh] = cabs(H[i + (i - 1) * ldh]);
             cblas_zscal(jhi - i + 1, &sc, &H[i + i * ldh], ldh);
             {
-                double complex sc_conj = conj(sc);
+                c128 sc_conj = conj(sc);
                 int cnt = ((jhi < i + 1) ? jhi : i + 1) - jlo + 1;
                 cblas_zscal(cnt, &sc_conj, &H[jlo + i * ldh], 1);
             }
             if (wantz) {
-                double complex sc_conj = conj(sc);
+                c128 sc_conj = conj(sc);
                 cblas_zscal(ihiz - iloz + 1, &sc_conj, &Z[iloz + i * ldz], 1);
             }
         }
@@ -108,7 +108,7 @@ void zlahqr(const int wantt, const int wantz, const int n,
 
     safmin = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = safmin * ((double)nh / ulp);
+    smlnum = safmin * ((f64)nh / ulp);
 
     i1 = 0;
     i2 = 0;
@@ -275,11 +275,11 @@ void zlahqr(const int wantt, const int wantz, const int n,
                                 cblas_zscal(i2 - j, &temp, &H[j + (j + 1) * ldh], ldh);
                             }
                             {
-                                double complex ct = conj(temp);
+                                c128 ct = conj(temp);
                                 cblas_zscal(j - i1, &ct, &H[i1 + j * ldh], 1);
                             }
                             if (wantz) {
-                                double complex ct = conj(temp);
+                                c128 ct = conj(temp);
                                 cblas_zscal(nz, &ct, &Z[iloz + j * ldz], 1);
                             }
                         }
@@ -294,7 +294,7 @@ void zlahqr(const int wantt, const int wantz, const int n,
                 H[i + (i - 1) * ldh] = rtemp;
                 temp = temp / rtemp;
                 if (i2 > i) {
-                    double complex ct = conj(temp);
+                    c128 ct = conj(temp);
                     cblas_zscal(i2 - i, &ct, &H[i + (i + 1) * ldh], ldh);
                 }
                 cblas_zscal(i - i1, &temp, &H[i1 + i * ldh], 1);

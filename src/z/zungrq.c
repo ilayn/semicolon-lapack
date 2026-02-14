@@ -41,16 +41,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zungrq(const int m, const int n, const int k,
-            double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict work, const int lwork,
+            c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const int lwork,
             int* info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;
     int i, ib, ii, iinfo, j, l;
     int kk;
     int lquery;
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     /* Parameter validation */
     *info = 0;
@@ -73,7 +73,7 @@ void zungrq(const int m, const int n, const int k,
             nb = lapack_get_nb("ORGRQ");
             lwkopt = m * nb;
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
 
         if (lwork < (m > 1 ? m : 1) && !lquery) {
             *info = -8;
@@ -162,5 +162,5 @@ void zungrq(const int m, const int n, const int k,
         }
     }
 
-    work[0] = (double complex)iws;
+    work[0] = (c128)iws;
 }

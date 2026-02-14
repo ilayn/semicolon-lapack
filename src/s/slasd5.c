@@ -7,11 +7,11 @@
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
-static const float TWO = 2.0f;
-static const float THREE = 3.0f;
-static const float FOUR = 4.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
+static const f32 TWO = 2.0f;
+static const f32 THREE = 3.0f;
+static const f32 FOUR = 4.0f;
 
 /**
  * SLASD5 computes the square root of the I-th eigenvalue of a positive
@@ -30,11 +30,11 @@ static const float FOUR = 4.0f;
  * @param[out]    dsigma  The computed sigma_i, the i-th updated eigenvalue.
  * @param[out]    work    Array of dimension 2. Contains (D[j] + sigma_i) in its j-th component.
  */
-void slasd5(const int i, const float* const restrict D, const float* const restrict Z,
-            float* const restrict delta, const float rho, float* dsigma,
-            float* const restrict work)
+void slasd5(const int i, const f32* const restrict D, const f32* const restrict Z,
+            f32* const restrict delta, const f32 rho, f32* dsigma,
+            f32* const restrict work)
 {
-    float b, c, del, delsq, tau, w;
+    f32 b, c, del, delsq, tau, w;
 
     del = D[1] - D[0];
     delsq = del * (D[1] + D[0]);

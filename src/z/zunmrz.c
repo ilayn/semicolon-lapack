@@ -70,10 +70,10 @@
  */
 void zunmrz(const char* side, const char* trans,
             const int m, const int n, const int k, const int l,
-            double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work, const int lwork,
+            c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work, const int lwork,
             int* info)
 {
     const int nbmax = 64;
@@ -83,7 +83,7 @@ void zunmrz(const char* side, const char* trans,
     int left, notran, lquery;
     char transt;
     int i, i1, i2, i3, ib, ic, iinfo, iwt, ja, jc;
-    int ldwork, lwkopt, mi, nb, nbmin, ni, nq, nw;
+    int ldwork, lwkopt, mi = 0, nb, nbmin, ni = 0, nq, nw;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');
@@ -126,7 +126,7 @@ void zunmrz(const char* side, const char* trans,
             nb = nbmax < lapack_get_nb("ORMRQ") ? nbmax : lapack_get_nb("ORMRQ");
             lwkopt = nw * nb + tsize;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -230,5 +230,5 @@ void zunmrz(const char* side, const char* trans,
             }
         }
     }
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

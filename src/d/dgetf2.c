@@ -42,17 +42,17 @@
 void dgetf2(
     const int m,
     const int n,
-    double * const restrict A,
+    f64 * const restrict A,
     const int lda,
     int * const restrict ipiv,
     int *info)
 {
-    const double ZERO = 0.0;
-    const double sfmin = DBL_MIN;
+    const f64 ZERO = 0.0;
+    const f64 sfmin = DBL_MIN;
 
     int i, j, k, jp;
     int minmn = m < n ? m : n;
-    double abs_val, max_val, pivot, inv, tmp;
+    f64 abs_val, max_val, pivot, inv, tmp;
 
     *info = 0;
     if (m < 0) {

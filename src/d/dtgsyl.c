@@ -120,32 +120,32 @@ void dtgsyl(
     const int ijob,
     const int m,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict C,
+    f64* const restrict C,
     const int ldc,
-    const double* const restrict D,
+    const f64* const restrict D,
     const int ldd,
-    const double* const restrict E,
+    const f64* const restrict E,
     const int lde,
-    double* const restrict F,
+    f64* const restrict F,
     const int ldf,
-    double* scale,
-    double* dif,
-    double* const restrict work,
+    f64* scale,
+    f64* dif,
+    f64* const restrict work,
     const int lwork,
     int* const restrict iwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, notran;
     int i, ie, ifunc, iround, is, isolve, j, je, js, k;
     int linfo, lwmin, mb, nb, p, ppqq, pq, q;
-    double dscale, dsum, scale2, scaloc;
+    f64 dscale, dsum, scale2, scaloc;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');
@@ -188,7 +188,7 @@ void dtgsyl(
         } else {
             lwmin = 1;
         }
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -20;
@@ -239,9 +239,9 @@ void dtgsyl(
                    iwork, &pq, info);
             if (dscale != ZERO) {
                 if (ijob == 1 || ijob == 3) {
-                    *dif = sqrt((double)(2 * m * n)) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    *dif = sqrt((double)pq) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)pq) / (dscale * sqrt(dsum));
                 }
             }
 
@@ -374,9 +374,9 @@ void dtgsyl(
             }
             if (dscale != ZERO) {
                 if (ijob == 1 || ijob == 3) {
-                    *dif = sqrt((double)(2 * m * n)) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    *dif = sqrt((double)pq) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)pq) / (dscale * sqrt(dsum));
                 }
             }
             if (isolve == 2 && iround == 1) {
@@ -459,5 +459,5 @@ void dtgsyl(
 
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

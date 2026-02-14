@@ -40,22 +40,22 @@
  *                           Schur form; the blocks are not swapped and T and
  *                           Q are unchanged.
  */
-void slaexc(const int wantq, const int n, float* T, const int ldt,
-            float* Q, const int ldq, const int j1, const int n1,
-            const int n2, float* work, int* info)
+void slaexc(const int wantq, const int n, f32* T, const int ldt,
+            f32* Q, const int ldq, const int j1, const int n1,
+            const int n2, f32* work, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TEN = 10.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TEN = 10.0f;
     const int LDD = 4;
     const int LDX = 2;
 
     int ierr, j2, j3, j4, k, nd;
-    float cs, dnorm, eps, scale, smlnum, sn, t11, t22;
-    float t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
-    float wr1, wr2, xnorm;
-    float D[16];  /* 4x4 stored column-major */
-    float U[3], U1[3], U2[3], X[4];  /* X is 2x2 stored column-major */
+    f32 cs, dnorm, eps, scale, smlnum, sn, t11, t22;
+    f32 t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
+    f32 wr1, wr2, xnorm;
+    f32 D[16];  /* 4x4 stored column-major */
+    f32 U[3], U1[3], U2[3], X[4];  /* X is 2x2 stored column-major */
 
     *info = 0;
 

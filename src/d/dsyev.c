@@ -42,17 +42,17 @@
  *                           off-diagonal elements did not converge to zero.
  */
 void dsyev(const char* jobz, const char* uplo, const int n,
-           double* const restrict A, const int lda,
-           double* const restrict W,
-           double* const restrict work, const int lwork,
+           f64* const restrict A, const int lda,
+           f64* const restrict W,
+           f64* const restrict work, const int lwork,
            int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lower, wantz, lquery;
     int iinfo, imax, inde, indtau, indwrk, iscale, llwork, lwkopt, nb;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     /* Test the input parameters */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -73,7 +73,7 @@ void dsyev(const char* jobz, const char* uplo, const int n,
     if (*info == 0) {
         nb = lapack_get_nb("SYTRD");
         lwkopt = (n > 1) ? (nb + 2) * n : 1;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < (3 * n - 1 > 1 ? 3 * n - 1 : 1) && !lquery) {
             *info = -8;
@@ -152,5 +152,5 @@ void dsyev(const char* jobz, const char* uplo, const int n,
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

@@ -41,16 +41,16 @@
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
 void dlatrd(const char* uplo, const int n, const int nb,
-            double* const restrict A, const int lda,
-            double* const restrict E, double* const restrict tau,
-            double* const restrict W, const int ldw)
+            f64* const restrict A, const int lda,
+            f64* const restrict E, f64* const restrict tau,
+            f64* const restrict W, const int ldw)
 {
-    const double ZERO = 0.0;
-    const double ONE  = 1.0;
-    const double HALF = 0.5;
+    const f64 ZERO = 0.0;
+    const f64 ONE  = 1.0;
+    const f64 HALF = 0.5;
 
     int ii, iw;
-    double alpha;
+    f64 alpha;
 
     /* Quick return if possible */
     if (n <= 0) {

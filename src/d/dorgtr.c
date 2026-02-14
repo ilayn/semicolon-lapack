@@ -40,13 +40,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgtr(const char* uplo, const int n,
-            double* const restrict A, const int lda,
-            const double* const restrict tau,
-            double* const restrict work, const int lwork,
+            f64* const restrict A, const int lda,
+            const f64* const restrict tau,
+            f64* const restrict work, const int lwork,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int upper, lquery;
     int i, j, iinfo, lwkopt, nb;
@@ -73,7 +73,7 @@ void dorgtr(const char* uplo, const int n,
             nb = lapack_get_nb("ORGQR");
         }
         lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -137,5 +137,5 @@ void dorgtr(const char* uplo, const int n,
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

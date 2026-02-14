@@ -8,20 +8,20 @@
 #include <math.h>
 
 void dsyevd_2stage(const char* jobz, const char* uplo, const int n,
-                   double* A, const int lda,
-                   double* W,
-                   double* work, const int lwork,
+                   f64* A, const int lda,
+                   f64* W,
+                   f64* work, const int lwork,
                    int* iwork, const int liwork, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int lower, lquery, wantz;
     int iinfo, inde, indtau, indwrk, iscale;
     int liwmin, llwork, lwmin;
     /* int indwk2, llwrk2; - used only in eigenvector path (disabled) */
     int lhtrd = 0, lwtrd, kd, ib, indhous;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -55,7 +55,7 @@ void dsyevd_2stage(const char* jobz, const char* uplo, const int n,
                 lwmin = 2 * n + 1 + lhtrd + lwtrd;
             }
         }
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -135,6 +135,6 @@ void dsyevd_2stage(const char* jobz, const char* uplo, const int n,
         cblas_dscal(n, one / sigma, W, 1);
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

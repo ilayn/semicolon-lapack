@@ -86,25 +86,25 @@ void zgeqp3rk(
     const int n,
     const int nrhs,
     const int kmax,
-    double abstol,
-    double reltol,
-    double complex* const restrict A,
+    f64 abstol,
+    f64 reltol,
+    c128* const restrict A,
     const int lda,
     int* K,
-    double* maxc2nrmk,
-    double* relmaxc2nrmk,
+    f64* maxc2nrmk,
+    f64* relmaxc2nrmk,
     int* restrict jpiv,
-    double complex* restrict tau,
-    double complex* restrict work,
+    c128* restrict tau,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     int* restrict iwork,
     int* info)
 {
     int lquery, done;
     int iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
     int kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
-    double eps, hugeval, maxc2nrm, safmin;
+    f64 eps, hugeval, maxc2nrm, safmin;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -134,7 +134,7 @@ void zgeqp3rk(
             nb = 32;
             lwkopt = 2 * n + nb * (n + nrhs + 1);
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < iws && !lquery) {
             *info = -15;
@@ -152,7 +152,7 @@ void zgeqp3rk(
         *K = 0;
         *maxc2nrmk = 0.0;
         *relmaxc2nrmk = 0.0;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -176,7 +176,7 @@ void zgeqp3rk(
         *maxc2nrmk = maxc2nrm;
         *relmaxc2nrmk = maxc2nrm;
 
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -190,7 +190,7 @@ void zgeqp3rk(
             tau[j] = CMPLX(0.0, 0.0);
         }
 
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
 
     }
@@ -210,7 +210,7 @@ void zgeqp3rk(
         for (j = 0; j < minmn; j++) {
             tau[j] = CMPLX(0.0, 0.0);
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -237,7 +237,7 @@ void zgeqp3rk(
             tau[j] = CMPLX(0.0, 0.0);
         }
 
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -293,7 +293,7 @@ void zgeqp3rk(
                     *info = ioffset + iinfo;
                 }
 
-                work[0] = CMPLX((double)lwkopt, 0.0);
+                work[0] = CMPLX((f64)lwkopt, 0.0);
 
                 return;
 
@@ -345,5 +345,5 @@ void zgeqp3rk(
 
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

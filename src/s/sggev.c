@@ -60,21 +60,21 @@
  *                         - > n: other errors
  */
 void sggev(const char* jobvl, const char* jobvr, const int n,
-           float* const restrict A, const int lda,
-           float* const restrict B, const int ldb,
-           float* const restrict alphar, float* const restrict alphai,
-           float* const restrict beta,
-           float* const restrict VL, const int ldvl,
-           float* const restrict VR, const int ldvr,
-           float* const restrict work, const int lwork, int* info)
+           f32* const restrict A, const int lda,
+           f32* const restrict B, const int ldb,
+           f32* const restrict alphar, f32* const restrict alphai,
+           f32* const restrict beta,
+           f32* const restrict VL, const int ldvl,
+           f32* const restrict VR, const int ldvr,
+           f32* const restrict work, const int lwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
     int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
     int in, iright, irows, itau, iwrk, jc, jr, maxwrk, minwrk;
-    float anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
+    f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
     int ldumma[1];
     int nb_geqrf, nb_ormqr, nb_orgqr;
 
@@ -132,7 +132,7 @@ void sggev(const char* jobvl, const char* jobvr, const int n,
         if (ilvl) {
             maxwrk = maxwrk > n * (7 + nb_orgqr) ? maxwrk : n * (7 + nb_orgqr);
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -16;
@@ -355,6 +355,6 @@ L110:
         slascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
     }
 
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
     return;
 }

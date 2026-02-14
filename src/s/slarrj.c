@@ -45,18 +45,18 @@
  * @param[out]    info
  *                           Error flag.
  */
-void slarrj(const int n, const float* D, const float* E2,
-            const int ifirst, const int ilast, const float rtol,
-            const int offset, float* W, float* werr,
-            float* work, int* iwork, const float pivmin,
-            const float spdiam, int* info)
+void slarrj(const int n, const f32* D, const f32* E2,
+            const int ifirst, const int ilast, const f32 rtol,
+            const int offset, f32* W, f32* werr,
+            f32* work, int* iwork, const f32 pivmin,
+            const f32 spdiam, int* info)
 {
-    const float TWO = 2.0f;
-    const float HALF = 0.5f;
+    const f32 TWO = 2.0f;
+    const f32 HALF = 0.5f;
 
     int cnt, i, i1, i2, ii, iter, j, k, next, nint, olnint, p, prev, savi1;
     int maxitr;
-    float dplus, fac, left, mid, right, s, tmp, width;
+    f32 dplus, fac, left, mid, right, s, tmp, width;
 
     *info = 0;
 

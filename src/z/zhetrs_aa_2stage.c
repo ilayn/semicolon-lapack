@@ -63,17 +63,17 @@ void zhetrs_aa_2stage(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double complex* restrict TB,
+    c128* restrict TB,
     const int ltb,
     const int* restrict ipiv,
     const int* restrict ipiv2,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int ldtb, nb;
     int upper;

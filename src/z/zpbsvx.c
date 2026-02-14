@@ -56,29 +56,29 @@ void zpbsvx(
     const int n,
     const int kd,
     const int nrhs,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double complex* const restrict AFB,
+    c128* const restrict AFB,
     const int ldafb,
     char* equed,
-    double* const restrict S,
-    double complex* const restrict B,
+    f64* const restrict S,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int equil, nofact, rcequ, upper;
     int i, infequ, j, j1, j2;
-    double amax, anorm, bignum = 0.0, scond, smax, smin, smlnum = 0.0;
+    f64 amax, anorm, bignum = 0.0, scond, smax, smin, smlnum = 0.0;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

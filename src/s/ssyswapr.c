@@ -41,13 +41,13 @@
 void ssyswapr(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     const int i1,
     const int i2)
 {
     int upper;
-    float tmp;
+    f32 tmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (upper) {

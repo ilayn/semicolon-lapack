@@ -42,8 +42,8 @@ void ztfttp(
     const char* transr,
     const char* uplo,
     const int n,
-    const double complex* const restrict ARF,
-    double complex* const restrict AP,
+    const c128* const restrict ARF,
+    c128* const restrict AP,
     int* info)
 {
     int lower, nisodd, normaltransr;

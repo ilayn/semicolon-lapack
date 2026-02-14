@@ -66,16 +66,16 @@ void zhfrk(
     const char* trans,
     const int n,
     const int k,
-    const double alpha,
-    const double complex* const restrict A,
+    const f64 alpha,
+    const c128* const restrict A,
     const int lda,
-    const double beta,
-    double complex* const restrict C)
+    const f64 beta,
+    c128* const restrict C)
 {
     int lower, normaltransr, nisodd, notrans;
     int nrowa, j, nk, n1, n2;
     int info;
-    double complex calpha, cbeta;
+    c128 calpha, cbeta;
 
     info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

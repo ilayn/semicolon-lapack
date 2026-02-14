@@ -67,13 +67,13 @@ void dlarfb_gett(
     const int m,
     const int n,
     const int k,
-    const double* const restrict T,
+    const f64* const restrict T,
     const int ldt,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int ldwork)
 {
     int lnotident;

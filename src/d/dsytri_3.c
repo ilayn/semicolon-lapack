@@ -65,11 +65,11 @@
 void dsytri_3(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    const double* restrict E,
+    const f64* restrict E,
     const int* restrict ipiv,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -89,7 +89,7 @@ void dsytri_3(
         }
         lwkopt = (n + nb + 1) * (nb + 3);
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -114,5 +114,5 @@ void dsytri_3(
 
     dsytri_3x(uplo, n, A, lda, E, ipiv, work, nb, info);
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

@@ -58,30 +58,30 @@ void dgtsvx(
     const char* trans,
     const int n,
     const int nrhs,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU,
-    double * const restrict DLF,
-    double * const restrict DF,
-    double * const restrict DUF,
-    double * const restrict DU2,
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU,
+    f64 * const restrict DLF,
+    f64 * const restrict DF,
+    f64 * const restrict DUF,
+    f64 * const restrict DU2,
     int * const restrict ipiv,
-    const double * const restrict B,
+    const f64 * const restrict B,
     const int ldb,
-    double * const restrict X,
+    f64 * const restrict X,
     const int ldx,
-    double *rcond,
-    double * const restrict ferr,
-    double * const restrict berr,
-    double * const restrict work,
+    f64 *rcond,
+    f64 * const restrict ferr,
+    f64 * const restrict berr,
+    f64 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nofact, notran;
     char norm;
-    double anorm;
+    f64 anorm;
     int ldb_min, ldx_min;
     int j;
 

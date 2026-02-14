@@ -73,26 +73,26 @@
  *                           Their indices are stored in array IFAIL.
  */
 void zheevx(const char* jobz, const char* range, const char* uplo,
-            const int n, double complex* const restrict A, const int lda,
-            const double vl, const double vu, const int il, const int iu,
-            const double abstol, int* m,
-            double* const restrict W,
-            double complex* const restrict Z, const int ldz,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork,
+            const int n, c128* const restrict A, const int lda,
+            const f64 vl, const f64 vu, const int il, const int iu,
+            const f64 abstol, int* m,
+            f64* const restrict W,
+            c128* const restrict Z, const int ldz,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork,
             int* const restrict iwork,
             int* const restrict ifail,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int alleig, indeig, lower, lquery, test, valeig, wantz;
     int i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwk;
     int indrwk, indtau, indwrk, iscale, itmp1, j, jj;
     int llwork, lwkmin, lwkopt, nb, nsplit;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum,
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, vll = 0.0, vuu = 0.0;
 
     /* Test the input parameters */
@@ -142,7 +142,7 @@ void zheevx(const char* jobz, const char* range, const char* uplo,
             nb = lapack_get_nb("HETRD");
             lwkopt = (nb + 1) * n > lwkmin ? (nb + 1) * n : lwkmin;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < lwkmin && !lquery) {
             *info = -17;
@@ -336,5 +336,5 @@ L40:
     }
 
     /* Set WORK(1) to optimal complex workspace size */
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

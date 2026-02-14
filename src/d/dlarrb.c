@@ -59,21 +59,21 @@
  * @param[out]    info
  *                           Error flag.
  */
-void dlarrb(const int n, const double* D, const double* lld,
+void dlarrb(const int n, const f64* D, const f64* lld,
             const int ifirst, const int ilast,
-            const double rtol1, const double rtol2, const int offset,
-            double* W, double* wgap, double* werr,
-            double* work, int* iwork,
-            const double pivmin, const double spdiam,
+            const f64 rtol1, const f64 rtol2, const int offset,
+            f64* W, f64* wgap, f64* werr,
+            f64* work, int* iwork,
+            const f64 pivmin, const f64 spdiam,
             const int twist, int* info)
 {
-    const double ZERO = 0.0;
-    const double TWO = 2.0;
-    const double HALF = 0.5;
+    const f64 ZERO = 0.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = 0.5;
 
     int i, i1, ii, ip, iter, k, negcnt, next, nint, olnint, prev, r;
     int maxitr;
-    double back, cvrgd, gap, left, lgap, mid, mnwdth, rgap, right, tmp, width;
+    f64 back, cvrgd, gap, left, lgap, mid, mnwdth, rgap, right, tmp, width;
 
     *info = 0;
 

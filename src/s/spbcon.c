@@ -34,21 +34,21 @@ void spbcon(
     const char* uplo,
     const int n,
     const int kd,
-    const float* const restrict AB,
+    const f32* const restrict AB,
     const int ldab,
-    const float anorm,
-    float* rcond,
-    float* const restrict work,
+    const f32 anorm,
+    f32* rcond,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int upper;
     char normin;
     int ix, kase;
-    float ainvnm, scale, scalel, scaleu, smlnum;
+    f32 ainvnm, scale, scalel, scaleu, smlnum;
     int isave[3];
     int info_local;
 

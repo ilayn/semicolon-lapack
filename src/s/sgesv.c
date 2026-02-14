@@ -43,10 +43,10 @@
 void sgesv(
     const int n,
     const int nrhs,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
     int * const restrict ipiv,
-    float * const restrict B,
+    f32 * const restrict B,
     const int ldb,
     int *info)
 {

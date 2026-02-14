@@ -45,10 +45,10 @@ void zpftrf(
     const char* transr,
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lower, nisodd, normaltransr;
     int n1, n2, k;

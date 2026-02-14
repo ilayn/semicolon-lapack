@@ -60,19 +60,19 @@
  *                           a small number in SLALN2 to keep nonsingularity.
  */
 void slaqtr(const int ltran, const int lreal, const int n,
-            const float* T, const int ldt,
-            const float* B, const float w,
-            float* scale, float* X, float* work, int* info)
+            const f32* T, const int ldt,
+            const f32* B, const f32 w,
+            f32* scale, f32* X, f32* work, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int notran;
     int i, ierr, j, j1, j2, jnext, k, n1, n2;
-    float bignum, eps, rec, scaloc, si, smin, sminw;
-    float smlnum, sr, tjj, tmp, xj, xmax, xnorm, z;
-    float d[4];  /* 2x2 stored column-major: d[0]=d(1,1), d[1]=d(2,1), d[2]=d(1,2), d[3]=d(2,2) */
-    float v[4];  /* 2x2 stored column-major */
+    f32 bignum, eps, rec, scaloc, si, smin, sminw;
+    f32 smlnum, sr, tjj, tmp, xj, xmax, xnorm, z;
+    f32 d[4];  /* 2x2 stored column-major: d[0]=d(1,1), d[1]=d(2,1), d[2]=d(1,2), d[3]=d(2,2) */
+    f32 v[4];  /* 2x2 stored column-major */
 
     /* Do not test the input parameters for errors */
     notran = !ltran;

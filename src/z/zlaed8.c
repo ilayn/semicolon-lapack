@@ -94,19 +94,19 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zlaed8(int* K, const int n, const int qsiz,
-            double complex* Q, const int ldq, double* D, double* rho,
-            const int cutpnt, double* Z, double* dlambda, double complex* Q2,
-            const int ldq2, double* W, int* indxp, int* indx, int* indxq,
-            int* perm, int* givptr, int* givcol, double* givnum, int* info)
+            c128* Q, const int ldq, f64* D, f64* rho,
+            const int cutpnt, f64* Z, f64* dlambda, c128* Q2,
+            const int ldq2, f64* W, int* indxp, int* indx, int* indxq,
+            int* perm, int* givptr, int* givcol, f64* givnum, int* info)
 {
-    const double MONE = -1.0;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double EIGHT = 8.0;
+    const f64 MONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 EIGHT = 8.0;
 
     int i, imax, j, jlam, jmax, jp, k2, n1, n2;
-    double c, eps, s, t, tau, tol;
+    f64 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */
     *info = 0;

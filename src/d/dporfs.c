@@ -45,26 +45,26 @@ void dporfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict AF,
+    const f64* const restrict AF,
     const int ldaf,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // Parameters from the Fortran source
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     // Test the input parameters
     *info = 0;
@@ -100,17 +100,17 @@ void dporfs(
 
     // NZ = maximum number of nonzero elements in each row of A, plus 1
     int nz = n + 1;
-    double eps = dlamch("E");
-    double safmin = dlamch("S");
-    double safe1 = nz * safmin;
-    double safe2 = safe1 / eps;
+    f64 eps = dlamch("E");
+    f64 safmin = dlamch("S");
+    f64 safe1 = nz * safmin;
+    f64 safe2 = safe1 / eps;
 
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
 
     // Do for each right hand side
     for (int j = 0; j < nrhs; j++) {
         int count = 1;
-        double lstres = THREE;
+        f64 lstres = THREE;
 
         for (;;) {
             // Compute residual R = B - A * X
@@ -129,8 +129,8 @@ void dporfs(
             // Compute |A|*|X| + |B|
             if (upper) {
                 for (int k = 0; k < n; k++) {
-                    double s = ZERO;
-                    double xk = fabs(X[k + j * ldx]);
+                    f64 s = ZERO;
+                    f64 xk = fabs(X[k + j * ldx]);
                     for (int i = 0; i < k; i++) {
                         work[i] += fabs(A[i + k * lda]) * xk;
                         s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
@@ -139,8 +139,8 @@ void dporfs(
                 }
             } else {
                 for (int k = 0; k < n; k++) {
-                    double s = ZERO;
-                    double xk = fabs(X[k + j * ldx]);
+                    f64 s = ZERO;
+                    f64 xk = fabs(X[k + j * ldx]);
                     work[k] += fabs(A[k + k * lda]) * xk;
                     for (int i = k + 1; i < n; i++) {
                         work[i] += fabs(A[i + k * lda]) * xk;
@@ -150,13 +150,13 @@ void dporfs(
                 }
             }
 
-            double s = ZERO;
+            f64 s = ZERO;
             for (int i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    double tmp = fabs(work[n + i]) / work[i];
+                    f64 tmp = fabs(work[n + i]) / work[i];
                     if (tmp > s) s = tmp;
                 } else {
-                    double tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
+                    f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                     if (tmp > s) s = tmp;
                 }
             }
@@ -212,7 +212,7 @@ void dporfs(
         // Normalize error
         lstres = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = fabs(X[i + j * ldx]);
+            f64 tmp = fabs(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

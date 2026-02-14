@@ -52,17 +52,17 @@ void slasyf_rook(
     const int n,
     const int nb,
     int* kb,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* restrict ipiv,
-    float* const restrict W,
+    f32* const restrict W,
     const int ldw,
     int* info)
 {
     int done;
     int imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
-    float absakk, alpha, colmax, d11, d12, d21, d22;
-    float dtemp, r1, rowmax, t, sfmin;
+    f32 absakk, alpha, colmax, d11, d12, d21, d22;
+    f32 dtemp, r1, rowmax, t, sfmin;
 
     *info = 0;
 

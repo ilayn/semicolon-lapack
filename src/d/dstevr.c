@@ -113,22 +113,22 @@
  *                         - > 0: Internal error
  */
 void dstevr(const char* jobz, const char* range, const int n,
-            double* D, double* E,
-            const double vl, const double vu,
+            f64* D, f64* E,
+            const f64 vl, const f64 vu,
             const int il, const int iu,
-            const double abstol,
-            int* m, double* W, double* Z, const int ldz,
-            int* isuppz, double* work, const int lwork,
+            const f64 abstol,
+            int* m, f64* W, f64* Z, const int ldz,
+            int* isuppz, f64* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int wantz, alleig, valeig, indeig, lquery, test;
     int tryrac;
     int i, imax, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
-    double bignum, eps, rmax, rmin, safmin, sigma, smlnum,
+    f64 bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, tnrm, vll, vuu;
 
     /* Workspace indices for fallback path (DSTEBZ/DSTEIN) */
@@ -180,7 +180,7 @@ void dstevr(const char* jobz, const char* range, const int n,
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -360,7 +360,7 @@ L10:
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
     return;
 }

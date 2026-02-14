@@ -50,11 +50,11 @@
  */
 void zlarzt(const char* direct, const char* storev,
             const int n, const int k,
-            double complex* const restrict V, const int ldv,
-            const double complex* const restrict tau,
-            double complex* const restrict T, const int ldt)
+            c128* const restrict V, const int ldv,
+            const c128* const restrict tau,
+            c128* const restrict T, const int ldt)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int i, j, info;
 
     /* Check for currently supported options */
@@ -82,7 +82,7 @@ void zlarzt(const char* direct, const char* storev,
             if (i < k - 1) {
 
                 /* T(i+1:k-1, i) = -tau(i) * V(i+1:k-1, 0:n-1) * V(i, 0:n-1)**H */
-                double complex neg_tau = -tau[i];
+                c128 neg_tau = -tau[i];
                 zlacgv(n, &V[i + 0 * ldv], ldv);
                 cblas_zgemv(CblasColMajor, CblasNoTrans,
                             k - 1 - i, n, &neg_tau,

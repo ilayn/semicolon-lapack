@@ -47,13 +47,13 @@
  *                      or (m) if side = 'R'.
  */
 void zlarz(const char* side, const int m, const int n, const int l,
-           const double complex* const restrict v, const int incv,
-           const double complex tau,
-           double complex* const restrict C, const int ldc,
-           double complex* restrict work)
+           const c128* const restrict v, const int incv,
+           const c128 tau,
+           c128* const restrict C, const int ldc,
+           c128* restrict work)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     if (side[0] == 'L' || side[0] == 'l') {
 
@@ -73,13 +73,13 @@ void zlarz(const char* side, const int m, const int n, const int l,
 
             /* C(1, 1:n) = C(1, 1:n) - tau * w(1:n) */
             {
-                const double complex neg_tau = -tau;
+                const c128 neg_tau = -tau;
                 cblas_zaxpy(n, &neg_tau, work, 1, C, ldc);
             }
 
             /* C(m-l+1:m, 1:n) = C(m-l+1:m, 1:n) - tau * v(1:l) * w(1:n)**T */
             {
-                const double complex neg_tau = -tau;
+                const c128 neg_tau = -tau;
                 cblas_zgeru(CblasColMajor, l, n, &neg_tau, v, incv,
                             work, 1, &C[(m - l) + 0 * ldc], ldc);
             }
@@ -101,13 +101,13 @@ void zlarz(const char* side, const int m, const int n, const int l,
 
             /* C(1:m, 1) = C(1:m, 1) - tau * w(1:m) */
             {
-                const double complex neg_tau = -tau;
+                const c128 neg_tau = -tau;
                 cblas_zaxpy(m, &neg_tau, work, 1, C, 1);
             }
 
             /* C(1:m, n-l+1:n) = C(1:m, n-l+1:n) - tau * w(1:m) * v(1:l)**H */
             {
-                const double complex neg_tau = -tau;
+                const c128 neg_tau = -tau;
                 cblas_zgerc(CblasColMajor, m, l, &neg_tau, work, 1,
                             v, incv, &C[0 + (n - l) * ldc], ldc);
             }

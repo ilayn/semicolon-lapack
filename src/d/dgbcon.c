@@ -48,22 +48,22 @@ void dgbcon(
     const int n,
     const int kl,
     const int ku,
-    const double * const restrict AB,
+    const f64 * const restrict AB,
     const int ldab,
     const int * const restrict ipiv,
-    const double anorm,
-    double *rcond,
-    double * const restrict work,
+    const f64 anorm,
+    f64 *rcond,
+    f64 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int lnoti, onenrm;
     char normin;
     int ix, j, jp, kase, kase1, kd, lm;
-    double ainvnm, scale, smlnum, t;
+    f64 ainvnm, scale, smlnum, t;
     int isave[3];
     int linfo;
 

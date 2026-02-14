@@ -48,9 +48,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgeqr2p(const int m, const int n,
-             double * const restrict A, const int lda,
-             double * const restrict tau,
-             double * const restrict work,
+             f64 * const restrict A, const int lda,
+             f64 * const restrict tau,
+             f64 * const restrict work,
              int *info)
 {
     int i, k;

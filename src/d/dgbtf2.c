@@ -73,13 +73,13 @@ void dgbtf2(
     const int n,
     const int kl,
     const int ku,
-    double * const restrict AB,
+    f64 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
     int *info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j, jp, ju, km, kv;
 

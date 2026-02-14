@@ -46,31 +46,31 @@ void dlaqz4(
     const int ihi,
     const int nshifts,
     const int nblock_desired,
-    double* const restrict sr,
-    double* const restrict si,
-    double* const restrict ss,
-    double* const restrict A,
+    f64* const restrict sr,
+    f64* const restrict si,
+    f64* const restrict ss,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict QC,
+    f64* const restrict QC,
     const int ldqc,
-    double* const restrict ZC,
+    f64* const restrict ZC,
     const int ldzc,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, ns, istartm, istopm, sheight, swidth, k, np;
     int istartb, istopb, ishift, nblock, npos;
-    double temp, v[3], c1, s1, c2, s2, swap;
+    f64 temp, v[3], c1, s1, c2, s2, swap;
 
     *info = 0;
     if (nblock_desired < nshifts + 1) {
@@ -78,7 +78,7 @@ void dlaqz4(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = (double)(n * nblock_desired);
+        work[0] = (f64)(n * nblock_desired);
         return;
     } else if (lwork < n * nblock_desired) {
         *info = -25;

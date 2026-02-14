@@ -30,18 +30,18 @@
  *
  * @return The computed norm value.
  */
-float slanhs(
+f32 slanhs(
     const char* norm,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    float* const restrict work)
+    f32* const restrict work)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j;
-    float scale, sum, value, temp;
+    f32 scale, sum, value, temp;
     int jmax;
 
     if (n == 0) {

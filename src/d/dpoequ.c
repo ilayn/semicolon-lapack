@@ -37,15 +37,15 @@
  */
 void dpoequ(
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict S,
-    double* scond,
-    double* amax,
+    f64* const restrict S,
+    f64* scond,
+    f64* amax,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // Test the input parameters
     *info = 0;
@@ -68,7 +68,7 @@ void dpoequ(
 
     // Find the minimum and maximum diagonal elements.
     S[0] = A[0];
-    double smin = S[0];
+    f64 smin = S[0];
     *amax = S[0];
     for (int i = 1; i < n; i++) {
         S[i] = A[i + i * lda];

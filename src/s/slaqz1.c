@@ -28,22 +28,22 @@
  * @param[out]    v       Output vector of length 3.
  */
 void slaqz1(
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    const float sr1,
-    const float sr2,
-    const float si,
-    const float beta1,
-    const float beta2,
-    float* const restrict v)
+    const f32 sr1,
+    const f32 sr2,
+    const f32 si,
+    const f32 beta1,
+    const f32 beta2,
+    f32* const restrict v)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
-    float w[2];
-    float safmin, safmax, scale1, scale2;
+    f32 w[2];
+    f32 safmin, safmax, scale1, scale2;
 
     safmin = slamch("S");
     safmax = ONE / safmin;

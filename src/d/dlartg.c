@@ -27,15 +27,15 @@
  * @param[out] s  The sine of the rotation.
  * @param[out] r  The nonzero component of the rotated vector.
  */
-void dlartg(const double f, const double g, double* c, double* s, double* r)
+void dlartg(const f64 f, const f64 g, f64* c, f64* s, f64* r)
 {
-    double safmin = dlamch("S");
-    double safmax = 1.0 / safmin;
-    double rtmin = sqrt(safmin);
-    double rtmax = sqrt(safmax / 2.0);
+    f64 safmin = dlamch("S");
+    f64 safmax = 1.0 / safmin;
+    f64 rtmin = sqrt(safmin);
+    f64 rtmax = sqrt(safmax / 2.0);
 
-    double f1 = fabs(f);
-    double g1 = fabs(g);
+    f64 f1 = fabs(f);
+    f64 g1 = fabs(g);
 
     if (g == 0.0) {
         *c = 1.0;
@@ -48,16 +48,16 @@ void dlartg(const double f, const double g, double* c, double* s, double* r)
     } else if (f1 > rtmin && f1 < rtmax &&
                g1 > rtmin && g1 < rtmax) {
         /* Both f and g are in safe range */
-        double d = sqrt(f * f + g * g);
+        f64 d = sqrt(f * f + g * g);
         *c = f1 / d;
         *r = (f > 0.0) ? d : -d;
         *s = g / (*r);
     } else {
         /* Use scaled algorithm */
-        double u = fmin(safmax, fmax(safmin, fmax(f1, g1)));
-        double fs = f / u;
-        double gs = g / u;
-        double d = sqrt(fs * fs + gs * gs);
+        f64 u = fmin(safmax, fmax(safmin, fmax(f1, g1)));
+        f64 fs = f / u;
+        f64 gs = g / u;
+        f64 d = sqrt(fs * fs + gs * gs);
         *c = fabs(fs) / d;
         *r = (f > 0.0) ? d : -d;
         *s = gs / (*r);

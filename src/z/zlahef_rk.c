@@ -84,26 +84,26 @@ void zlahef_rk(
     const int n,
     const int nb,
     int* kb,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict E,
+    c128* restrict E,
     int* restrict ipiv,
-    double complex* const restrict W,
+    c128* const restrict W,
     const int ldw,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double EIGHT = 8.0;
-    const double SEVTEN = 17.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 EIGHT = 8.0;
+    const f64 SEVTEN = 17.0;
 
     int done;
     int imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
-    double absakk, alpha, colmax, dtemp, r1, rowmax, sfmin, t;
-    double complex d11, d21, d22;
+    f64 absakk, alpha, colmax, dtemp, r1, rowmax, sfmin, t;
+    c128 d11, d21, d22;
 
     *info = 0;
 

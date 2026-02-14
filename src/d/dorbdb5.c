@@ -73,22 +73,22 @@ void dorbdb5(
     const int m1,
     const int m2,
     const int n,
-    double* restrict X1,
+    f64* restrict X1,
     const int incx1,
-    double* restrict X2,
+    f64* restrict X2,
     const int incx2,
-    const double* const restrict Q1,
+    const f64* const restrict Q1,
     const int ldq1,
-    const double* const restrict Q2,
+    const f64* const restrict Q2,
     const int ldq2,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
     int childinfo, i, j;
-    double eps, norm, scl, ssq;
+    f64 eps, norm, scl, ssq;
 
     *info = 0;
     if (m1 < 0) {

@@ -35,9 +35,9 @@
 #define TWO_PI 6.2831853071795864769252867665590057683943
 
 void dlarnv(const int idist, int* const restrict iseed, const int n,
-            double* const restrict X)
+            f64* const restrict X)
 {
-    double U[LV];
+    f64 U[LV];
     int i, iv, il, il2;
 
     for (iv = 0; iv < n; iv += LV / 2) {

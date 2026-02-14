@@ -38,17 +38,17 @@
  */
 void dgetc2(
     const int n,
-    double * const restrict A,
+    f64 * const restrict A,
     const int lda,
     int * const restrict ipiv,
     int * const restrict jpiv,
     int *info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
 
-    double eps, smlnum, bignum, smin, xmax;
+    f64 eps, smlnum, bignum, smin, xmax;
     int i, ip, ipv, j, jp, jpv;
 
     *info = 0;

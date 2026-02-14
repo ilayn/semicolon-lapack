@@ -16,7 +16,7 @@
  *
  * scaling to avoid overflows and most underflows.
  *
- * This is useful for starting double implicit shift bulges in the QR algorithm.
+ * This is useful for starting f64 implicit shift bulges in the QR algorithm.
  *
  * @param[in] n       Order of the matrix H. n must be either 2 or 3.
  * @param[in] H       Complex array, dimension (ldh, n).
@@ -27,15 +27,15 @@
  * @param[out] v      Complex array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-void zlaqr1(const int n, const double complex* H, const int ldh,
-            const double complex s1, const double complex s2,
-            double complex* v)
+void zlaqr1(const int n, const c128* H, const int ldh,
+            const c128 s1, const c128 s2,
+            c128* v)
 {
-    const double complex zero = CMPLX(0.0, 0.0);
-    const double rzero = 0.0;
+    const c128 zero = CMPLX(0.0, 0.0);
+    const f64 rzero = 0.0;
 
-    double complex h21s, h31s;
-    double s;
+    c128 h21s, h31s;
+    f64 s;
 
     /* Quick return if possible */
     if (n != 2 && n != 3) {

@@ -71,20 +71,20 @@
 void spteqr(
     const char* compz,
     const int n,
-    float* const restrict D,
-    float* const restrict E,
-    float* const restrict Z,
+    f32* const restrict D,
+    f32* const restrict E,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
     int i, icompz, nru;
 
     // Dummy arrays for sbdsqr (ncvt=0 and ncc=0)
-    float VT_dummy[1];
-    float C_dummy[1];
+    f32 VT_dummy[1];
+    f32 C_dummy[1];
 
     // Test the input parameters
     *info = 0;

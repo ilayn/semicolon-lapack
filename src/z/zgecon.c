@@ -46,21 +46,21 @@
 void zgecon(
     const char* norm,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int onenrm;
     char normin;
     int ix, kase, kase1;
-    double ainvnm, scale, sl, smlnum, su, hugeval;
+    f64 ainvnm, scale, sl, smlnum, su, hugeval;
     int isave[3];
     int linfo;
 

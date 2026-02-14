@@ -49,16 +49,16 @@ void zhpev(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    double* const restrict W,
-    double complex* const restrict Z,
+    c128* const restrict AP,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 
@@ -94,18 +94,18 @@ void zhpev(
 
     /* Get machine constants. */
 
-    double safmin = dlamch("Safe minimum");
-    double eps = dlamch("Precision");
-    double smlnum = safmin / eps;
-    double bignum = ONE / smlnum;
-    double rmin = sqrt(smlnum);
-    double rmax = sqrt(bignum);
+    f64 safmin = dlamch("Safe minimum");
+    f64 eps = dlamch("Precision");
+    f64 smlnum = safmin / eps;
+    f64 bignum = ONE / smlnum;
+    f64 rmin = sqrt(smlnum);
+    f64 rmax = sqrt(bignum);
 
     /* Scale matrix to allowable range, if necessary. */
 
-    double anrm = zlanhp("M", uplo, n, AP, rwork);
+    f64 anrm = zlanhp("M", uplo, n, AP, rwork);
     int iscale = 0;
-    double sigma;
+    f64 sigma;
     if (anrm > ZERO && anrm < rmin) {
         iscale = 1;
         sigma = rmin / anrm;

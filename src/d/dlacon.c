@@ -43,23 +43,23 @@
  */
 void dlacon(
     const int n,
-    double* restrict V,
-    double* restrict X,
+    f64* restrict V,
+    f64* restrict X,
     int* restrict ISGN,
-    double* est,
+    f64* est,
     int* kase)
 {
     static const int ITMAX = 5;
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double two = 2.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const f64 two = 2.0;
 
     static int i, iter, j, jlast, jump;
-    static double altsgn, estold, temp;
+    static f64 altsgn, estold, temp;
 
     if (*kase == 0) {
         for (i = 0; i < n; i++) {
-            X[i] = one / (double)n;
+            X[i] = one / (f64)n;
         }
         *kase = 1;
         jump = 1;
@@ -146,7 +146,7 @@ L110:
 L120:
     altsgn = one;
     for (i = 0; i < n; i++) {
-        X[i] = altsgn * (one + (double)i / (double)(n - 1));
+        X[i] = altsgn * (one + (f64)i / (f64)(n - 1));
         altsgn = -altsgn;
     }
     *kase = 1;
@@ -154,7 +154,7 @@ L120:
     return;
 
 L140:
-    temp = two * (cblas_dasum(n, X, 1) / (double)(3 * n));
+    temp = two * (cblas_dasum(n, X, 1) / (f64)(3 * n));
     if (temp > *est) {
         cblas_dcopy(n, X, 1, V, 1);
         *est = temp;

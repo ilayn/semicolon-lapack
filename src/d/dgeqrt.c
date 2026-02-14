@@ -55,9 +55,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgeqrt(const int m, const int n, const int nb,
-            double * const restrict A, const int lda,
-            double * const restrict T, const int ldt,
-            double * const restrict work,
+            f64 * const restrict A, const int lda,
+            f64 * const restrict T, const int ldt,
+            f64 * const restrict work,
             int *info)
 {
     int k, i, ib, iinfo;

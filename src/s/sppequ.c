@@ -42,15 +42,15 @@
 void sppequ(
     const char* uplo,
     const int n,
-    const float* const restrict AP,
-    float* const restrict S,
-    float* scond,
-    float* amax,
+    const f32* const restrict AP,
+    f32* const restrict S,
+    f32* scond,
+    f32* amax,
     int* info)
 {
     // sppequ.f lines 131-133: Parameters
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     // sppequ.f lines 154-164: Test the input parameters
     *info = 0;
@@ -74,7 +74,7 @@ void sppequ(
 
     // sppequ.f lines 176-178: Initialize SMIN and AMAX
     S[0] = AP[0];
-    float smin = S[0];
+    f32 smin = S[0];
     *amax = S[0];
 
     if (upper) {

@@ -49,19 +49,19 @@
  *                         - = 0: successful exit.
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void dgebal(const char* job, const int n, double* A, const int lda,
-            int* ilo, int* ihi, double* scale, int* info)
+void dgebal(const char* job, const int n, f64* A, const int lda,
+            int* ilo, int* ihi, f64* scale, int* info)
 {
     /* Constants */
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double SCLFAC = 2.0;
-    const double FACTOR = 0.95;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 SCLFAC = 2.0;
+    const f64 FACTOR = 0.95;
 
     /* Local variables */
     int noconv, canswap;
     int i, ica, ira, j, k, l;
-    double c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
+    f64 c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
 
     /* Test the input parameters */
     *info = 0;
@@ -117,7 +117,7 @@ void dgebal(const char* job, const int n, double* A, const int lda,
                 }
 
                 if (canswap) {
-                    scale[l] = (double)i;  /* Store 0-based index */
+                    scale[l] = (f64)i;  /* Store 0-based index */
                     if (i != l) {
                         /* Swap columns i and l */
                         cblas_dswap(l + 1, &A[0 + i * lda], 1, &A[0 + l * lda], 1);
@@ -151,7 +151,7 @@ void dgebal(const char* job, const int n, double* A, const int lda,
                 }
 
                 if (canswap) {
-                    scale[k] = (double)j;  /* Store 0-based index */
+                    scale[k] = (f64)j;  /* Store 0-based index */
                     if (j != k) {
                         /* Swap columns j and k */
                         cblas_dswap(l + 1, &A[0 + j * lda], 1, &A[0 + k * lda], 1);
@@ -223,10 +223,10 @@ void dgebal(const char* job, const int n, double* A, const int lda,
                    (g < sfmin2 ? sfmin2 : g) > sfmin2 &&
                    (ra < sfmin2 ? sfmin2 : ra) > sfmin2) {
                 /* Re-check the actual condition from Fortran */
-                double maxfcca = f;
+                f64 maxfcca = f;
                 if (c > maxfcca) maxfcca = c;
                 if (ca > maxfcca) maxfcca = ca;
-                double minrgra = r;
+                f64 minrgra = r;
                 if (g < minrgra) minrgra = g;
                 if (ra < minrgra) minrgra = ra;
                 if (!(c < g && maxfcca < sfmax2 && minrgra > sfmin2)) break;
@@ -242,9 +242,9 @@ void dgebal(const char* job, const int n, double* A, const int lda,
             g = c / SCLFAC;
 
             while (g >= r) {
-                double maxrra = r;
+                f64 maxrra = r;
                 if (ra > maxrra) maxrra = ra;
-                double minfcgca = f;
+                f64 minfcgca = f;
                 if (c < minfcgca) minfcgca = c;
                 if (g < minfcgca) minfcgca = g;
                 if (ca < minfcgca) minfcgca = ca;

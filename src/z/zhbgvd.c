@@ -78,23 +78,23 @@ void zhbgvd(
     const int n,
     const int ka,
     const int kb,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double complex* const restrict BB,
+    c128* const restrict BB,
     const int ldbb,
-    double* const restrict W,
-    double complex* const restrict Z,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     const int lrwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int iinfo;
     int inde, indwk2, indwrk, liwmin, llrwk, llwk2, lrwmin, lwmin;
@@ -137,8 +137,8 @@ void zhbgvd(
     }
 
     if (*info == 0) {
-        work[0] = CMPLX((double)lwmin, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwmin, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -195,7 +195,7 @@ void zhbgvd(
         zlacpy("A", n, n, &work[indwk2], n, Z, ldz);
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwmin, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 }

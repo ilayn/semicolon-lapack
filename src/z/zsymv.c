@@ -37,17 +37,17 @@
  *                       be zero.
  */
 void zsymv(const char* uplo, const int n,
-           const double complex alpha,
-           const double complex* const restrict A, const int lda,
-           const double complex* const restrict X, const int incx,
-           const double complex beta,
-           double complex* const restrict Y, const int incy)
+           const c128 alpha,
+           const c128* const restrict A, const int lda,
+           const c128* const restrict X, const int incx,
+           const c128 beta,
+           c128* const restrict Y, const int incy)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, info, ix, iy, j, jx, jy, kx, ky;
-    double complex temp1, temp2;
+    c128 temp1, temp2;
 
     /* Test the input parameters. */
     info = 0;

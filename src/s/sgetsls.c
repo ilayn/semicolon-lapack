@@ -80,23 +80,23 @@ void sgetsls(
     const int m,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     int i, iascl, ibscl, j, maxmn, brow;
     int scllen, tszo = 0, tszm = 0, lwo = 0, lwm = 0, lw1, lw2;
     int wsizeo, wsizem, info2;
     int lquery, tran;
-    float anrm, bignum, bnrm, smlnum;
-    float tq[5], workq[1];
+    f32 anrm, bignum, bnrm, smlnum;
+    f32 tq[5], workq[1];
 
     *info = 0;
     maxmn = (m > n) ? m : n;
@@ -163,7 +163,7 @@ void sgetsls(
             *info = -10;
         }
 
-        work[0] = (float)wsizeo;
+        work[0] = (f32)wsizeo;
     }
 
     if (*info != 0) {
@@ -171,7 +171,7 @@ void sgetsls(
         return;
     }
     if (lquery) {
-        if (lwork == -2) work[0] = (float)wsizem;
+        if (lwork == -2) work[0] = (f32)wsizem;
         return;
     }
     if (lwork < wsizeo) {
@@ -205,7 +205,7 @@ void sgetsls(
         iascl = 2;
     } else if (anrm == zero) {
         slaset("F", maxmn, nrhs, zero, zero, B, ldb);
-        work[0] = (float)(tszo + lwo);
+        work[0] = (f32)(tszo + lwo);
         return;
     }
 
@@ -298,5 +298,5 @@ void sgetsls(
         slascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, info);
     }
 
-    work[0] = (float)(tszo + lwo);
+    work[0] = (f32)(tszo + lwo);
 }

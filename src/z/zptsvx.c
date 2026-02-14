@@ -81,24 +81,24 @@ void zptsvx(
     const char* fact,
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double complex* const restrict E,
-    double* const restrict DF,
-    double complex* const restrict EF,
-    const double complex* const restrict B,
+    const f64* const restrict D,
+    const c128* const restrict E,
+    f64* const restrict DF,
+    c128* const restrict EF,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     int nofact;
-    double anorm;
+    f64 anorm;
     int max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;

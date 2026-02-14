@@ -40,13 +40,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorgtr(const char* uplo, const int n,
-            float* const restrict A, const int lda,
-            const float* const restrict tau,
-            float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            const f32* const restrict tau,
+            f32* const restrict work, const int lwork,
             int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int upper, lquery;
     int i, j, iinfo, lwkopt, nb;
@@ -73,7 +73,7 @@ void sorgtr(const char* uplo, const int n,
             nb = lapack_get_nb("ORGQR");
         }
         lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -137,5 +137,5 @@ void sorgtr(const char* uplo, const int n,
         }
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

@@ -71,18 +71,18 @@
  */
 void zgesvd(const char* jobu, const char* jobvt,
             const int m, const int n,
-            double complex* const restrict A, const int lda,
-            double* const restrict S,
-            double complex* const restrict U, const int ldu,
-            double complex* const restrict VT, const int ldvt,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork, int* info)
+            c128* const restrict A, const int lda,
+            f64* const restrict S,
+            c128* const restrict U, const int ldu,
+            c128* const restrict VT, const int ldvt,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork, int* info)
 {
     /* Constants */
-    static const double ZERO = 0.0;
-    static const double ONE = 1.0;
-    static const double complex CZERO = CMPLX(0.0, 0.0);
-    static const double complex CONE = CMPLX(1.0, 0.0);
+    static const f64 ZERO = 0.0;
+    static const f64 ONE = 1.0;
+    static const c128 CZERO = CMPLX(0.0, 0.0);
+    static const c128 CONE = CMPLX(1.0, 0.0);
 
     /* Helper macro for 3-way max (matches Fortran MAX(a,b,c)) */
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
@@ -98,9 +98,9 @@ void zgesvd(const char* jobu, const char* jobvt,
     int ie = 0, irwork, itau, itauq, itaup, iwork, ir, iu, chunk, blk;
     int i, ierr, iscl, ncu, ncvt, nru, nrvt;
     int ldwrkr, ldwrku;
-    double anrm, bignum, eps, smlnum;
-    double dum[1];
-    double complex cdum[1];
+    f64 anrm, bignum, eps, smlnum;
+    f64 dum[1];
+    c128 cdum[1];
 
     /* Parse job options */
     wntua = (jobu[0] == 'A' || jobu[0] == 'a');
@@ -376,7 +376,7 @@ void zgesvd(const char* jobu, const char* jobvt,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = CMPLX((double)maxwrk, 0.0);
+        work[0] = CMPLX((f64)maxwrk, 0.0);
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -1638,7 +1638,7 @@ void zgesvd(const char* jobu, const char* jobvt,
     }
 
     /* Return optimal workspace */
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
 
     #undef MAX3
 }

@@ -61,14 +61,14 @@ void strtrs(
     const char* diag,
     const int n,
     const int nrhs,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    float * const restrict B,
+    f32 * const restrict B,
     const int ldb,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int nounit = (diag[0] == 'N' || diag[0] == 'n');
 

@@ -34,16 +34,16 @@
  *
  * @return The computed norm value.
  */
-float slansy(
+f32 slansy(
     const char* norm,
     const char* uplo,
     const int n,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    float * const restrict work)
+    f32 * const restrict work)
 {
     int i, j;
-    float absa, scale, sum, value, temp;
+    f32 absa, scale, sum, value, temp;
 
     /* Quick return if possible */
     if (n == 0) {

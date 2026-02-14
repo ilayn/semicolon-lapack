@@ -47,17 +47,17 @@
  * @param[out] snq    The desired orthogonal matrix Q.
  */
 void dlags2(const int upper,
-            const double a1, const double a2, const double a3,
-            const double b1, const double b2, const double b3,
-            double* csu, double* snu, double* csv, double* snv,
-            double* csq, double* snq)
+            const f64 a1, const f64 a2, const f64 a3,
+            const f64 b1, const f64 b2, const f64 b3,
+            f64* csu, f64* snu, f64* csv, f64* snv,
+            f64* csq, f64* snq)
 {
-    double a, b, c, d, r, s1, s2;
-    double csl, csr, snl, snr;
-    double ua11, ua11r, ua12, ua21, ua22, ua22r;
-    double vb11, vb11r, vb12, vb21, vb22, vb22r;
-    double aua11, aua12, aua21, aua22;
-    double avb11, avb12, avb21, avb22;
+    f64 a, b, c, d, r, s1, s2;
+    f64 csl, csr, snl, snr;
+    f64 ua11, ua11r, ua12, ua21, ua22, ua22r;
+    f64 vb11, vb11r, vb12, vb21, vb22, vb22r;
+    f64 aua11, aua12, aua21, aua22;
+    f64 avb11, avb12, avb21, avb22;
 
     if (upper) {
         a = a1 * b3;

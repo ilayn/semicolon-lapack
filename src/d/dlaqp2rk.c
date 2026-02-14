@@ -85,24 +85,24 @@ void dlaqp2rk(
     const int nrhs,
     const int ioffset,
     int kmax,
-    const double abstol,
-    const double reltol,
+    const f64 abstol,
+    const f64 reltol,
     const int kp1,
-    const double maxc2nrm,
-    double* const restrict A,
+    const f64 maxc2nrm,
+    f64* const restrict A,
     const int lda,
     int* K,
-    double* maxc2nrmk,
-    double* relmaxc2nrmk,
+    f64* maxc2nrmk,
+    f64* relmaxc2nrmk,
     int* restrict jpiv,
-    double* restrict tau,
-    double* restrict vn1,
-    double* restrict vn2,
-    double* restrict work,
+    f64* restrict tau,
+    f64* restrict vn1,
+    f64* restrict vn2,
+    f64* restrict work,
     int* info)
 {
     int i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
-    double hugeval, temp, temp2, tol3z;
+    f64 hugeval, temp, temp2, tol3z;
 
     *info = 0;
 

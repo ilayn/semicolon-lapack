@@ -32,9 +32,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void zgelqf(const int m, const int n,
-            double complex * const restrict A, const int lda,
-            double complex * const restrict tau,
-            double complex * const restrict work, const int lwork,
+            c128 * const restrict A, const int lda,
+            c128 * const restrict tau,
+            c128 * const restrict work, const int lwork,
             int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -59,7 +59,7 @@ void zgelqf(const int m, const int n,
             work[0] = 1.0;
         } else {
             nb = lapack_get_nb("GELQF");
-            work[0] = (double complex)(m * nb);
+            work[0] = (c128)(m * nb);
         }
         if (!lquery && lwork < (k > 0 ? (m > 1 ? m : 1) : 1)) {
             *info = -7;
@@ -130,5 +130,5 @@ void zgelqf(const int m, const int n,
         zgelq2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (double complex)iws;
+    work[0] = (c128)iws;
 }

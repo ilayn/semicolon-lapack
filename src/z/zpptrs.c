@@ -33,8 +33,8 @@ void zpptrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict AP,
-    double complex* const restrict B,
+    const c128* const restrict AP,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {

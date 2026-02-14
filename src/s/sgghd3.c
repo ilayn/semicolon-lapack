@@ -13,27 +13,27 @@ void sgghd3(
     const int n,
     const int ilo,
     const int ihi,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int blk22, initq, initz, lquery, wantq, wantz;
     char compq2, compz2;
     int cola, i, ierr, j, j0, jcol, jj, jrow, k,
         kacc22, len, lwkopt, n2nb, nb, nblst, nbmin,
         nh, nnb, nx, ppw, ppwo, pw, top, topq;
-    float c, c1, c2, s, s1, s2, temp, temp1, temp2, temp3;
+    f32 c, c1, c2, s, s1, s2, temp, temp1, temp2, temp3;
 
     *info = 0;
     nb = lapack_get_nb("GGHD3");
@@ -43,7 +43,7 @@ void sgghd3(
     } else {
         lwkopt = 6 * n * nb;
     }
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
     initq = (compq[0] == 'I' || compq[0] == 'i');
     wantq = initq || (compq[0] == 'V' || compq[0] == 'v');
     initz = (compz[0] == 'I' || compz[0] == 'i');
@@ -513,5 +513,5 @@ void sgghd3(
         sgghrd(cq2, cz2, n, jcol + 1, ihi, A, lda, B, ldb, Q, ldq, Z, ldz, &ierr);
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

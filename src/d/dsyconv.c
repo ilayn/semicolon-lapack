@@ -49,17 +49,17 @@ void dsyconv(
     const char* uplo,
     const char* way,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double* restrict E,
+    f64* restrict E,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int upper, convert;
     int i, ip, j;
-    double temp;
+    f64 temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -72,20 +72,20 @@
 void zpteqr(
     const char* compz,
     const int n,
-    double* const restrict D,
-    double* const restrict E,
-    double complex* const restrict Z,
+    f64* const restrict D,
+    f64* const restrict E,
+    c128* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
     int i, icompz, nru;
 
     // Dummy arrays for zbdsqr (ncvt=0 and ncc=0)
-    double complex VT_dummy[1];
-    double complex C_dummy[1];
+    c128 VT_dummy[1];
+    c128 C_dummy[1];
 
     // Test the input parameters
     *info = 0;

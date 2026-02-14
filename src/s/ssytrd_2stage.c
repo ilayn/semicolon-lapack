@@ -6,10 +6,10 @@
 #include "semicolon_lapack_single.h"
 
 void ssytrd_2stage(const char* vect, const char* uplo, const int n,
-                   float* A, const int lda,
-                   float* D, float* E, float* tau,
-                   float* hous2, const int lhous2,
-                   float* work, const int lwork, int* info)
+                   f32* A, const int lda,
+                   f32* D, f32* E, f32* tau,
+                   f32* hous2, const int lhous2,
+                   f32* work, const int lwork, int* info)
 {
     int lquery, upper;
     int kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
@@ -44,8 +44,8 @@ void ssytrd_2stage(const char* vect, const char* uplo, const int n,
     }
 
     if (*info == 0) {
-        hous2[0] = (float)lhmin;
-        work[0] = (float)lwmin;
+        hous2[0] = (f32)lhmin;
+        work[0] = (f32)lwmin;
     }
 
     if (*info != 0) {
@@ -80,5 +80,5 @@ void ssytrd_2stage(const char* vect, const char* uplo, const int n,
         return;
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

@@ -76,24 +76,24 @@
  *                           bidiagonal form did not converge to zero.
  */
 void zgelsd(const int m, const int n, const int nrhs,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict B, const int ldb,
-            double* const restrict S, const double rcond, int* rank,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork,
+            c128* const restrict A, const int lda,
+            c128* const restrict B, const int ldb,
+            f64* const restrict S, const f64 rcond, int* rank,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork,
             int* const restrict iwork, int* info)
 {
     int lquery;
     int iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork, lrwork;
     int maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nrwork, nwork, smlsiz;
-    double anrm, bignum, bnrm, eps, sfmin, smlnum;
+    f64 anrm, bignum, bnrm, eps, sfmin, smlnum;
     int iinfo;
     int nb;
 
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    static const double complex CZERO = CMPLX(0.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    static const c128 CZERO = CMPLX(0.0, 0.0);
 
     *info = 0;
     minmn = m < n ? m : n;
@@ -121,7 +121,7 @@ void zgelsd(const int m, const int n, const int nrhs,
     liwork = 1;
     lrwork = 1;
     if (minmn > 0) {
-        nlvl = (int)(log((double)minmn / (double)(smlsiz + 1)) / log(TWO)) + 1;
+        nlvl = (int)(log((f64)minmn / (f64)(smlsiz + 1)) / log(TWO)) + 1;
         if (nlvl < 0) nlvl = 0;
         liwork = 3 * minmn * nlvl + 11 * minmn;
         mm = m;
@@ -185,9 +185,9 @@ void zgelsd(const int m, const int n, const int nrhs,
         nlvl = 0;
     }
     if (minwrk > maxwrk) minwrk = maxwrk;
-    work[0] = (double complex)maxwrk;
+    work[0] = (c128)maxwrk;
     iwork[0] = liwork;
-    rwork[0] = (double)lrwork;
+    rwork[0] = (f64)lrwork;
 
     if (*info == 0) {
         if (lwork < minwrk && !lquery) {
@@ -393,7 +393,7 @@ void zgelsd(const int m, const int n, const int nrhs,
     }
 
 cleanup:
-    work[0] = (double complex)maxwrk;
+    work[0] = (c128)maxwrk;
     iwork[0] = liwork;
-    rwork[0] = (double)lrwork;
+    rwork[0] = (f64)lrwork;
 }

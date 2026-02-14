@@ -40,16 +40,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorgql(const int m, const int n, const int k,
-            float * const restrict A, const int lda,
-            const float * const restrict tau,
-            float * const restrict work, const int lwork,
+            f32 * const restrict A, const int lda,
+            const f32 * const restrict tau,
+            f32 * const restrict work, const int lwork,
             int *info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;
     int i, ib, iinfo, j, l;
     int kk;
     int lquery;
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     /* Parameter validation */
     *info = 0;
@@ -72,7 +72,7 @@ void sorgql(const int m, const int n, const int k,
             nb = lapack_get_nb("ORGQL");
             lwkopt = n * nb;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < (n > 1 ? n : 1) && !lquery) {
             *info = -8;
@@ -160,5 +160,5 @@ void sorgql(const int m, const int n, const int k,
         }
     }
 
-    work[0] = (float)iws;
+    work[0] = (f32)iws;
 }

@@ -43,21 +43,21 @@ void dtgexc(
     const int wantq,
     const int wantz,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
     int* ifst,
     int* ilst,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int lquery;
     int here, lwmin, nbf, nbl, nbnext;
@@ -87,7 +87,7 @@ void dtgexc(
         } else {
             lwmin = 4 * n + 16;
         }
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -15;
@@ -342,5 +342,5 @@ void dtgexc(
     }
 
     *ilst = here;
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

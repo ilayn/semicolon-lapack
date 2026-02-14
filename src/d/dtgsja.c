@@ -76,25 +76,25 @@
  */
 void dtgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,
-            double* const restrict A, const int lda,
-            double* const restrict B, const int ldb,
-            const double tola, const double tolb,
-            double* const restrict alpha, double* const restrict beta,
-            double* const restrict U, const int ldu,
-            double* const restrict V, const int ldv,
-            double* const restrict Q, const int ldq,
-            double* const restrict work, int* ncycle, int* info)
+            f64* const restrict A, const int lda,
+            f64* const restrict B, const int ldb,
+            const f64 tola, const f64 tolb,
+            f64* const restrict alpha, f64* const restrict beta,
+            f64* const restrict U, const int ldu,
+            f64* const restrict V, const int ldv,
+            f64* const restrict Q, const int ldq,
+            f64* const restrict work, int* ncycle, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double HUGENUM = DBL_MAX;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 HUGENUM = DBL_MAX;
 
     int initu, wantu, initv, wantv, initq, wantq;
     int upper;
     int i, j, kcycle;
-    double a1, a2, a3, b1, b2, b3;
-    double csu, snu, csv, snv, csq, snq;
-    double error, gamma, rwk, ssmin;
+    f64 a1, a2, a3, b1, b2, b3;
+    f64 csu, snu, csv, snv, csq, snq;
+    f64 error, gamma, rwk, ssmin;
     int minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');

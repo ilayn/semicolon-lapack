@@ -67,24 +67,24 @@
 void zsytrf_aa_2stage(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict TB,
+    c128* restrict TB,
     const int ltb,
     int* restrict ipiv,
     int* restrict ipiv2,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE  = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE  = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int upper, tquery, wquery;
     int i, j, k, i1, i2, td;
     int ldtb, nb, kb, jb, nt, iinfo;
-    double complex piv;
+    c128 piv;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -112,10 +112,10 @@ void zsytrf_aa_2stage(
 
     if (*info == 0) {
         if (tquery) {
-            TB[0] = CMPLX((double)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n), 0.0);
+            TB[0] = CMPLX((f64)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n), 0.0);
         }
         if (wquery) {
-            work[0] = CMPLX((double)((1 > n * nb) ? 1 : n * nb), 0.0);
+            work[0] = CMPLX((f64)((1 > n * nb) ? 1 : n * nb), 0.0);
         }
     }
     if (tquery || wquery) {
@@ -142,7 +142,7 @@ void zsytrf_aa_2stage(
         ipiv[j] = j;
     }
 
-    TB[0] = (double complex)nb;
+    TB[0] = (c128)nb;
 
     if (upper) {
 

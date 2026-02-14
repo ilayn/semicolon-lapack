@@ -55,10 +55,10 @@
  */
 void dormr3(const char* side, const char* trans,
             const int m, const int n, const int k, const int l,
-            const double * const restrict A, const int lda,
-            const double * const restrict tau,
-            double * const restrict C, const int ldc,
-            double * const restrict work,
+            const f64 * const restrict A, const int lda,
+            const f64 * const restrict tau,
+            f64 * const restrict C, const int ldc,
+            f64 * const restrict work,
             int *info)
 {
     int mi, ni, nq;

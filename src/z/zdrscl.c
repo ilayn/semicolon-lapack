@@ -24,15 +24,15 @@
  */
 void zdrscl(
     const int n,
-    const double sa,
-    double complex* const restrict sx,
+    const f64 sa,
+    c128* const restrict sx,
     const int incx)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int done;
-    double bignum, cden, cden1, cnum, cnum1, mul, smlnum;
+    f64 bignum, cden, cden1, cnum, cnum1, mul, smlnum;
 
     // Quick return if possible
     if (n <= 0) {

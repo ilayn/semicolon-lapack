@@ -31,7 +31,7 @@
 void spotri(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* info)
 {

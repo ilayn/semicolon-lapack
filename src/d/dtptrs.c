@@ -39,12 +39,12 @@ void dtptrs(
     const char* diag,
     const int n,
     const int nrhs,
-    const double* const restrict AP,
-    double* const restrict B,
+    const f64* const restrict AP,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nounit, upper;
     int j, jc;

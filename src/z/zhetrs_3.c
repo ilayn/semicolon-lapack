@@ -81,20 +81,20 @@ void zhetrs_3(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* restrict E,
+    const c128* restrict E,
     const int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int upper;
     int i, j, k, kp;
-    double s;
-    double complex ak, akm1, akm1k, bk, bkm1, denom;
+    f64 s;
+    c128 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

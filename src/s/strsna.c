@@ -60,24 +60,24 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void strsna(const char* job, const char* howmny, const int* select,
-            const int n, const float* T, const int ldt,
-            const float* VL, const int ldvl,
-            const float* VR, const int ldvr,
-            float* S, float* sep, const int mm, int* m,
-            float* work, const int ldwork,
+            const int n, const f32* T, const int ldt,
+            const f32* VL, const int ldvl,
+            const f32* VR, const int ldvr,
+            f32* S, f32* sep, const int mm, int* m,
+            f32* work, const int ldwork,
             int* iwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
 
     int wantbh, wants, wantsp, somcon;
     int i, ierr, ifst, ilst, j, k, kase, ks, n2, nn;
     int pair;
-    float bignum, cond, cs, delta, dumm = 0.0f, eps, est, lnrm;
-    float mu, prod, prod1, prod2, rnrm, scale, smlnum, sn;
+    f32 bignum, cond, cs, delta, dumm = 0.0f, eps, est, lnrm;
+    f32 mu, prod, prod1, prod2, rnrm, scale, smlnum, sn;
     int isave[3];
-    float dummy[1];
+    f32 dummy[1];
 
     /* Decode and test the input parameters */
     wantbh = (job[0] == 'B' || job[0] == 'b');

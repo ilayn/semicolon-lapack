@@ -47,19 +47,19 @@
  *                        < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void zunbdb5(const int m1, const int m2, const int n,
-             double complex* const restrict X1, const int incx1,
-             double complex* const restrict X2, const int incx2,
-             double complex* const restrict Q1, const int ldq1,
-             double complex* const restrict Q2, const int ldq2,
-             double complex* const restrict work, const int lwork,
+             c128* const restrict X1, const int incx1,
+             c128* const restrict X2, const int incx2,
+             c128* const restrict Q1, const int ldq1,
+             c128* const restrict Q2, const int ldq2,
+             c128* const restrict work, const int lwork,
              int* info)
 {
-    const double REALZERO = 0.0;
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const f64 REALZERO = 0.0;
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int childinfo, i, j;
-    double eps, norm, scl, ssq;
+    f64 eps, norm, scl, ssq;
 
     *info = 0;
     if (m1 < 0) {
@@ -100,7 +100,7 @@ void zunbdb5(const int m1, const int m2, const int n,
          *   * xLASCL cannot be used because of the vector increments and
          *   * the round-off error has a negligible impact on
          *     orthogonalization. */
-        double complex inv_norm = ONE / norm;
+        c128 inv_norm = ONE / norm;
         cblas_zscal(m1, &inv_norm, X1, incx1);
         cblas_zscal(m2, &inv_norm, X2, incx2);
         zunbdb6(m1, m2, n, X1, incx1, X2, incx2, Q1, ldq1, Q2,

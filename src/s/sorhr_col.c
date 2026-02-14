@@ -54,11 +54,11 @@ void sorhr_col(
     const int m,
     const int n,
     const int nb,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict T,
+    f32* restrict T,
     const int ldt,
-    float* restrict D,
+    f32* restrict D,
     int* info)
 {
     int i, iinfo, j, jb, jbtemp1, jbtemp2, jnb;

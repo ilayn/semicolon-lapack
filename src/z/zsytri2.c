@@ -40,10 +40,10 @@
 void zsytri2(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
     int* info)
 {
@@ -78,7 +78,7 @@ void zsytri2(
         xerbla("ZSYTRI2", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double complex)minsize;
+        work[0] = (c128)minsize;
         return;
     }
 

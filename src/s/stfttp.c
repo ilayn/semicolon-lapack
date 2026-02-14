@@ -41,8 +41,8 @@ void stfttp(
     const char* transr,
     const char* uplo,
     const int n,
-    const float* const restrict ARF,
-    float* const restrict AP,
+    const f32* const restrict ARF,
+    f32* const restrict AP,
     int* info)
 {
     int lower, nisodd, normaltransr;

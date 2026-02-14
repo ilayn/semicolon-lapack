@@ -51,13 +51,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void zungtsqr(const int m, const int n, const int mb, const int nb,
-              double complex* const restrict A, const int lda,
-              double complex* const restrict T, const int ldt,
-              double complex* const restrict work, const int lwork,
+              c128* const restrict A, const int lda,
+              c128* const restrict T, const int ldt,
+              c128* const restrict work, const int lwork,
               int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int lquery;
     int iinfo, ldc, lworkopt, lc, lw, nblocal, j;
@@ -118,14 +118,14 @@ void zungtsqr(const int m, const int n, const int mb, const int nb,
         xerbla("ZUNGTSQR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         return;
     }
 
     /* Quick return if possible */
 
     if ((m < n ? m : n) == 0) {
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         return;
     }
 
@@ -164,5 +164,5 @@ void zungtsqr(const int m, const int n, const int mb, const int nb,
         cblas_zcopy(m, &work[j * ldc], 1, &A[j * lda], 1);
     }
 
-    work[0] = CMPLX((double)lworkopt, 0.0);
+    work[0] = CMPLX((f64)lworkopt, 0.0);
 }

@@ -99,21 +99,21 @@
  *                           contain eigenvalues which have converged.
  */
 void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n, double* A, const int lda,
-            double* wr, double* wi,
-            double* VL, const int ldvl, double* VR, const int ldvr,
-            int* ilo, int* ihi, double* scale, double* abnrm,
-            double* rconde, double* rcondv,
-            double* work, const int lwork, int* iwork, int* info)
+            const char* sense, const int n, f64* A, const int lda,
+            f64* wr, f64* wi,
+            f64* VL, const int ldvl, f64* VR, const int ldvr,
+            int* ilo, int* ihi, f64* scale, f64* abnrm,
+            f64* rconde, f64* rcondv,
+            f64* work, const int lwork, int* iwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
     int hswork, i, icond, ierr, itau, iwrk, k;
     int lwork_trevc, maxwrk, minwrk, nout;
-    double anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
-    double dum[1];
+    f64 anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
+    f64 dum[1];
     int select[1];  /* Dummy for dtrevc3 workspace query */
     const char* side;
     char job_hseqr;
@@ -210,7 +210,7 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
             }
             maxwrk = maxwrk > minwrk ? maxwrk : minwrk;
         }
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -21;
@@ -395,5 +395,5 @@ L50:
         }
     }
 
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 }

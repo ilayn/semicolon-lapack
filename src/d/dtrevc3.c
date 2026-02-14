@@ -47,14 +47,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
-                           const int n, double* T, const int ldt,
-                           double* VL, const int ldvl,
-                           double* VR, const int ldvr,
+                           const int n, f64* T, const int ldt,
+                           f64* VL, const int ldvl,
+                           f64* VR, const int ldvr,
                            const int mm, int* m,
-                           double* work, const int lwork, int* info)
+                           f64* work, const int lwork, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Local variables */
     int bothv, rightv, leftv;
@@ -63,9 +63,9 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
     int i, j, k, ki, ki2, is, ip, ii;
     int j1, j2, jnxt, ierr;
     int iv, nb, maxwrk;
-    double beta, bignum, emax, rec, remax, scale;
-    double smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
-    double x[4];  /* 2x2 matrix, column-major */
+    f64 beta, bignum, emax, rec, remax, scale;
+    f64 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
+    f64 x[4];  /* 2x2 matrix, column-major */
     int iscomplex[NBMAX];
     int pair;
 
@@ -84,7 +84,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
     nb = 64;
     maxwrk = n + 2 * n * nb;
     if (maxwrk < 1) maxwrk = 1;
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
     lquery = (lwork == -1);
 
     if (!rightv && !leftv) {
@@ -162,7 +162,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
     unfl = dlamch("S");
     /* ovfl = one / unfl; -- not used in this routine */
     ulp = dlamch("P");
-    smlnum = unfl * ((double)n / ulp);
+    smlnum = unfl * ((f64)n / ulp);
     bignum = (one - ulp) / smlnum;
 
     /* Compute 1-norm of each column of strictly upper triangular
@@ -456,7 +456,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = 0; k < ki; k++) {
-                        double val = fabs(VR[k + (is - 1) * ldvr]) + fabs(VR[k + is * ldvr]);
+                        f64 val = fabs(VR[k + (is - 1) * ldvr]) + fabs(VR[k + is * ldvr]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -484,7 +484,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = 0; k < n; k++) {
-                        double val = fabs(VR[k + (ki - 1) * ldvr]) + fabs(VR[k + ki * ldvr]);
+                        f64 val = fabs(VR[k + (ki - 1) * ldvr]) + fabs(VR[k + ki * ldvr]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -537,7 +537,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                             /* First eigenvector of conjugate pair */
                             emax = zero;
                             for (ii = 0; ii < n; ii++) {
-                                double val = fabs(work[ii + (nb + k) * n]) +
+                                f64 val = fabs(work[ii + (nb + k) * n]) +
                                              fabs(work[ii + (nb + k + 1) * n]);
                                 if (val > emax) emax = val;
                             }
@@ -700,7 +700,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                         work[j + iv * n] = x[0];
                         work[(j + 1) + iv * n] = x[1];
 
-                        double tmp = fabs(work[j + iv * n]);
+                        f64 tmp = fabs(work[j + iv * n]);
                         if (fabs(work[(j + 1) + iv * n]) > tmp)
                             tmp = fabs(work[(j + 1) + iv * n]);
                         if (tmp > vmax) vmax = tmp;
@@ -881,7 +881,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = ki; k < n; k++) {
-                        double val = fabs(VL[k + is * ldvl]) + fabs(VL[k + (is + 1) * ldvl]);
+                        f64 val = fabs(VL[k + is * ldvl]) + fabs(VL[k + (is + 1) * ldvl]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -911,7 +911,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = 0; k < n; k++) {
-                        double val = fabs(VL[k + ki * ldvl]) + fabs(VL[k + (ki + 1) * ldvl]);
+                        f64 val = fabs(VL[k + ki * ldvl]) + fabs(VL[k + (ki + 1) * ldvl]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -964,7 +964,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                             /* First eigenvector of conjugate pair */
                             emax = zero;
                             for (ii = 0; ii < n; ii++) {
-                                double val = fabs(work[ii + (nb + k) * n]) +
+                                f64 val = fabs(work[ii + (nb + k) * n]) +
                                              fabs(work[ii + (nb + k + 1) * n]);
                                 if (val > emax) emax = val;
                             }

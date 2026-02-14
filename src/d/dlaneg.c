@@ -28,12 +28,12 @@
  *
  * @return The number of negative pivots (Sturm count).
  */
-int dlaneg(const int n, const double* D, const double* lld,
-           const double sigma, const double pivmin, const int r)
+int dlaneg(const int n, const f64* D, const f64* lld,
+           const f64 sigma, const f64 pivmin, const int r)
 {
     (void)pivmin;  /* Not used; requires IEEE-754 propagation */
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     const int BLKLEN = 128;
 
     int negcnt = 0;
@@ -41,16 +41,16 @@ int dlaneg(const int n, const double* D, const double* lld,
     /* I) upper part: L D L^T - SIGMA I = L+ D+ L+^T
      * Fortran loop: DO BJ = 1, R-1 with inner loop J = BJ to MIN(BJ+BLKLEN-1, R-1)
      * In 0-based C: bj goes from 0 to r-1 (when r>0), using indices 0..r-1. */
-    double t = -sigma;
+    f64 t = -sigma;
     for (int bj = 0; bj < r; bj += BLKLEN) {
         int neg1 = 0;
-        double bsav = t;
+        f64 bsav = t;
         int jend = bj + BLKLEN - 1;
         if (jend > r - 1) jend = r - 1;
         for (int j = bj; j <= jend; j++) {
-            double dplus = D[j] + t;
+            f64 dplus = D[j] + t;
             if (dplus < ZERO) neg1++;
-            double tmp = t / dplus;
+            f64 tmp = t / dplus;
             t = tmp * lld[j] - sigma;
         }
         int sawnan = disnan(t);
@@ -65,9 +65,9 @@ int dlaneg(const int n, const double* D, const double* lld,
             jend = bj + BLKLEN - 1;
             if (jend > r - 1) jend = r - 1;
             for (int j = bj; j <= jend; j++) {
-                double dplus = D[j] + t;
+                f64 dplus = D[j] + t;
                 if (dplus < ZERO) neg1++;
-                double tmp = t / dplus;
+                f64 tmp = t / dplus;
                 if (disnan(tmp)) tmp = ONE;
                 t = tmp * lld[j] - sigma;
             }
@@ -78,16 +78,16 @@ int dlaneg(const int n, const double* D, const double* lld,
     /* II) lower part: L D L^T - SIGMA I = U- D- U-^T
      * Fortran loop: DO BJ = N-1, R, -BLKLEN with inner loop J = BJ down to MAX(BJ-BLKLEN+1, R)
      * In 0-based C: bj goes from n-2 down to r (inclusive), using indices r..n-2. */
-    double p = D[n - 1] - sigma;
+    f64 p = D[n - 1] - sigma;
     for (int bj = n - 2; bj >= r; bj -= BLKLEN) {
         int neg2 = 0;
-        double bsav = p;
+        f64 bsav = p;
         int jend = bj - BLKLEN + 1;
         if (jend < r) jend = r;
         for (int j = bj; j >= jend; j--) {
-            double dminus = lld[j] + p;
+            f64 dminus = lld[j] + p;
             if (dminus < ZERO) neg2++;
-            double tmp = p / dminus;
+            f64 tmp = p / dminus;
             p = tmp * D[j] - sigma;
         }
         int sawnan = disnan(p);
@@ -96,9 +96,9 @@ int dlaneg(const int n, const double* D, const double* lld,
             neg2 = 0;
             p = bsav;
             for (int j = bj; j >= jend; j--) {
-                double dminus = lld[j] + p;
+                f64 dminus = lld[j] + p;
                 if (dminus < ZERO) neg2++;
-                double tmp = p / dminus;
+                f64 tmp = p / dminus;
                 if (disnan(tmp)) tmp = ONE;
                 p = tmp * D[j] - sigma;
             }
@@ -108,7 +108,7 @@ int dlaneg(const int n, const double* D, const double* lld,
 
     /* III) Twist index
        T was shifted by SIGMA initially. */
-    double gamma = (t + sigma) + p;
+    f64 gamma = (t + sigma) + p;
     if (gamma < ZERO) negcnt++;
 
     return negcnt;

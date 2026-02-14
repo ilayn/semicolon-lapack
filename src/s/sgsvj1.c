@@ -8,9 +8,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float HALF = 0.5f;
-static const float ONE = 1.0f;
+static const f32 ZERO = 0.0f;
+static const f32 HALF = 0.5f;
+static const f32 ONE = 1.0f;
 
 /**
  * SGSVJ1 is called from SGESVJ as a pre-processor. It applies Jacobi
@@ -45,11 +45,11 @@ static const float ONE = 1.0f;
  *                         - = 0: success. < 0: illegal argument.
  */
 void sgsvj1(const char* jobv, const int m, const int n, const int n1,
-            float* const restrict A, const int lda,
-            float* const restrict D, float* const restrict SVA,
-            const int mv, float* const restrict V, const int ldv,
-            const float eps, const float sfmin, const float tol,
-            const int nsweep, float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            f32* const restrict D, f32* const restrict SVA,
+            const int mv, f32* const restrict V, const int ldv,
+            const f32 eps, const f32 sfmin, const f32 tol,
+            const int nsweep, f32* const restrict work, const int lwork,
             int* info)
 {
     int applv, rsvec, mvl;
@@ -57,10 +57,10 @@ void sgsvj1(const char* jobv, const int m, const int n, const int n1,
     int blskip, rowskip, swband;
     int notrot, pskipped, iswrot, ijblsk, emptsw;
     int ierr, jbc, jgl;
-    float aapp, aapp0, aapq, aaqq, apoaq, aqoap;
-    float big, bigtheta, cs, sn, t, temp1, theta, thsign;
-    float mxaapq, mxsinj, rootbig, rooteps, rootsfmin, roottol, small;
-    float fastr[5];
+    f32 aapp, aapp0, aapq, aaqq, apoaq, aqoap;
+    f32 big, bigtheta, cs, sn, t, temp1, theta, thsign;
+    f32 mxaapq, mxsinj, rootbig, rooteps, rootsfmin, roottol, small;
+    f32 fastr[5];
 
     /* Test the input parameters */
     applv = (jobv[0] == 'A' || jobv[0] == 'a');
@@ -383,7 +383,7 @@ L2011:
             swband = i;
         }
 
-        if (i > swband + 1 && mxaapq < (float)n * tol && (float)n * mxaapq * mxsinj < tol) {
+        if (i > swband + 1 && mxaapq < (f32)n * tol && (f32)n * mxaapq * mxsinj < tol) {
             goto L1994;
         }
 

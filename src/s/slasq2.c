@@ -40,22 +40,22 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void slasq2(const int n, float* const restrict Z, int* info)
+void slasq2(const int n, f32* const restrict Z, int* info)
 {
     /* Constants from the Fortran source */
-    const float CBIAS  = 1.50f;
-    const float ZERO   = 0.0f;
-    const float HALF   = 0.5f;
-    const float ONE    = 1.0f;
-    const float TWO    = 2.0f;
-    const float FOUR   = 4.0f;
-    const float HUNDRD = 100.0f;
+    const f32 CBIAS  = 1.50f;
+    const f32 ZERO   = 0.0f;
+    const f32 HALF   = 0.5f;
+    const f32 ONE    = 1.0f;
+    const f32 TWO    = 2.0f;
+    const f32 FOUR   = 4.0f;
+    const f32 HUNDRD = 100.0f;
 
     /* Local scalars */
     int ieee;
     int i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb,
         k, kmin, n0, n1, nbig, ndiv, nfail, pp, splt, ttype;
-    float d, dee, deemin, desig, dmin, dmin1, dmin2, dn,
+    f32 d, dee, deemin, desig, dmin, dmin1, dmin2, dn,
            dn1, dn2, e, emax, emin, eps, g, oldemn, qmax,
            qmin, s, safmin, sigma, t, tau, temp, tol,
            tol2, trace, zmax, tempe, tempq;
@@ -477,8 +477,8 @@ L170:
     /* Store trace, sum(eigenvalues) and information on performance. */
     Z[2 * n] = trace;
     Z[2 * n + 1] = e;
-    Z[2 * n + 2] = (float)iter;
-    Z[2 * n + 3] = (float)ndiv / (float)(n * n);
-    Z[2 * n + 4] = HUNDRD * nfail / (float)iter;
+    Z[2 * n + 2] = (f32)iter;
+    Z[2 * n + 3] = (f32)ndiv / (f32)(n * n);
+    Z[2 * n + 4] = HUNDRD * nfail / (f32)iter;
     return;
 }

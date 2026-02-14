@@ -63,21 +63,21 @@
  */
 void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int p, const int n,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict B, const int ldb,
-             const double tola, const double tolb,
+             c128* const restrict A, const int lda,
+             c128* const restrict B, const int ldb,
+             const f64 tola, const f64 tolb,
              int* k, int* l,
-             double complex* const restrict U, const int ldu,
-             double complex* const restrict V, const int ldv,
-             double complex* const restrict Q, const int ldq,
+             c128* const restrict U, const int ldu,
+             c128* const restrict V, const int ldv,
+             c128* const restrict Q, const int ldq,
              int* const restrict iwork,
-             double* const restrict rwork,
-             double complex* const restrict tau,
-             double complex* const restrict work, const int lwork,
+             f64* const restrict rwork,
+             c128* const restrict tau,
+             c128* const restrict work, const int lwork,
              int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int wantu, wantv, wantq, lquery;
     int forwrd = 1;
@@ -132,7 +132,7 @@ void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
         zgeqp3(m, n, A, lda, iwork, tau, work, -1, rwork, &ierr);
         if ((int)creal(work[0]) > lwkopt) lwkopt = (int)creal(work[0]);
         if (lwkopt < 1) lwkopt = 1;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -267,5 +267,5 @@ void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

@@ -62,36 +62,36 @@ void zhgeqz(
     const int n,
     const int ilo,
     const int ihi,
-    double complex* const restrict H,
+    c128* const restrict H,
     const int ldh,
-    double complex* const restrict T,
+    c128* const restrict T,
     const int ldt,
-    double complex* const restrict alpha,
-    double complex* const restrict beta,
-    double complex* const restrict Q,
+    c128* const restrict alpha,
+    c128* const restrict beta,
+    c128* const restrict Q,
     const int ldq,
-    double complex* const restrict Z,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double HALF = 0.5;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
 
     int ilazr2, ilazro, ilq = 0, ilschr = 0, ilz = 0, lquery;
     int icompq, icompz, ifirst, ifrstm, iiter, ilast;
     int ilastm, in, ischur, istart, j, jc, jch, jiter;
     int jr, maxit;
-    double absb, anorm, ascale, atol, bnorm, bscale, btol;
-    double c, safmin, temp, temp2, tempr, ulp;
-    double complex ad11, ad12, ad21, ad22, abi22, abi12;
-    double complex ctemp, ctemp2, ctemp3, eshift, s, shift;
-    double complex signbc, u12, x, y;
+    f64 absb, anorm, ascale, atol, bnorm, bscale, btol;
+    f64 c, safmin, temp, temp2, tempr, ulp;
+    c128 ad11, ad12, ad21, ad22, abi22, abi12;
+    c128 ctemp, ctemp2, ctemp3, eshift, s, shift;
+    c128 signbc, u12, x, y;
 
     /* Decode JOB, COMPQ, COMPZ */
 
@@ -136,7 +136,7 @@ void zhgeqz(
 
     /* Check Argument Values */
     *info = 0;
-    work[0] = CMPLX((double)(1 > n ? 1 : n), 0.0);
+    work[0] = CMPLX((f64)(1 > n ? 1 : n), 0.0);
     lquery = (lwork == -1);
     if (ischur == 0) {
         *info = -1;
@@ -624,6 +624,6 @@ L190:
     /* Exit (other than argument error) -- return optimal workspace size */
 
 L210:
-    work[0] = CMPLX((double)n, 0.0);
+    work[0] = CMPLX((f64)n, 0.0);
     return;
 }

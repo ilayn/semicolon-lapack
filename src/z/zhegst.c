@@ -37,17 +37,17 @@ void zhegst(
     const int itype,
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
-    double complex* restrict B,
+    c128* restrict B,
     const int ldb,
     int* info)
 {
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex HALF = CMPLX(0.5, 0.0);
-    const double complex NEG_HALF = CMPLX(-0.5, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 HALF = CMPLX(0.5, 0.0);
+    const c128 NEG_HALF = CMPLX(-0.5, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
     int upper;
     int k, kb, nb;
 

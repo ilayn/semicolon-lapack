@@ -73,10 +73,10 @@
  */
 void dormbr(const char* vect, const char* side, const char* trans,
             const int m, const int n, const int k,
-            const double* const restrict A, const int lda,
-            const double* const restrict tau,
-            double* const restrict C, const int ldc,
-            double* const restrict work, const int lwork, int* info)
+            const f64* const restrict A, const int lda,
+            const f64* const restrict tau,
+            f64* const restrict C, const int ldc,
+            f64* const restrict work, const int lwork, int* info)
 {
     int applyq, left, lquery, notran;
     char transt;
@@ -127,7 +127,7 @@ void dormbr(const char* vect, const char* side, const char* trans,
         }
         if (nb < 1) nb = 1;
         lwkopt = nw * nb;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -191,5 +191,5 @@ void dormbr(const char* vect, const char* side, const char* trans,
                    &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
         }
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

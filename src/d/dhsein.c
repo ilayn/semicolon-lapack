@@ -66,27 +66,27 @@ void dhsein(
     const char* initv,
     int* const restrict select,
     const int n,
-    const double* const restrict H,
+    const f64* const restrict H,
     const int ldh,
-    double* const restrict wr,
-    const double* const restrict wi,
-    double* const restrict VL,
+    f64* const restrict wr,
+    const f64* const restrict wi,
+    f64* const restrict VL,
     const int ldvl,
-    double* const restrict VR,
+    f64* const restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    double* const restrict work,
+    f64* const restrict work,
     int* const restrict ifaill,
     int* const restrict ifailr,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int bothv, fromqr, leftv, noinit_flag, pair, rightv;
     int i, iinfo, k, kl, kln, kr, ksi, ksr, ldwork;
-    double bignum, eps3 = 0.0, hnorm, smlnum, ulp, unfl, wki, wkr;
+    f64 bignum, eps3 = 0.0, hnorm, smlnum, ulp, unfl, wki, wkr;
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -152,7 +152,7 @@ void dhsein(
     /* Set machine-dependent constants */
     unfl = dlamch("S");
     ulp = dlamch("P");
-    smlnum = unfl * ((double)n / ulp);
+    smlnum = unfl * ((f64)n / ulp);
     bignum = (ONE - ulp) / smlnum;
 
     ldwork = n + 1;

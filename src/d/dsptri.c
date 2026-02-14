@@ -36,17 +36,17 @@
 void dsptri(
     const char* uplo,
     const int n,
-    double* const restrict AP,
+    f64* const restrict AP,
     const int* const restrict ipiv,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper;
     int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
-    double ak, akkp1, akp1, d, t, temp;
+    f64 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

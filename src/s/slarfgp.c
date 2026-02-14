@@ -35,12 +35,12 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void slarfgp(const int n, float *alpha, float * const restrict x,
-             const int incx, float *tau)
+void slarfgp(const int n, f32 *alpha, f32 * const restrict x,
+             const int incx, f32 *tau)
 {
-    const float TWO = 2.0f;
-    const float ONE = 1.0f;
-    float xnorm, beta, bignum, eps, savealpha, smlnum;
+    const f32 TWO = 2.0f;
+    const f32 ONE = 1.0f;
+    f32 xnorm, beta, bignum, eps, savealpha, smlnum;
     int j, knt;
 
     if (n <= 0) {

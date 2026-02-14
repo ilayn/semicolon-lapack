@@ -53,19 +53,19 @@
  *                           through mod(INFO,N+1).
  */
 void dsyevd(const char* jobz, const char* uplo, const int n,
-            double* const restrict A, const int lda,
-            double* const restrict W,
-            double* const restrict work, const int lwork,
+            f64* const restrict A, const int lda,
+            f64* const restrict W,
+            f64* const restrict work, const int lwork,
             int* const restrict iwork, const int liwork,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lower, wantz, lquery;
     int iinfo, inde, indtau, indwrk, indwk2, iscale;
     int liopt, liwmin, llwork, llwrk2, lopt, lwmin;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     int nb;
 
     /* Test the input parameters */
@@ -102,7 +102,7 @@ void dsyevd(const char* jobz, const char* uplo, const int n,
             lopt = lwmin > 2 * n + n * nb ? lwmin : 2 * n + n * nb;
             liopt = liwmin;
         }
-        work[0] = (double)lopt;
+        work[0] = (f64)lopt;
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -184,6 +184,6 @@ void dsyevd(const char* jobz, const char* uplo, const int n,
         cblas_dscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (double)lopt;
+    work[0] = (f64)lopt;
     iwork[0] = liopt;
 }

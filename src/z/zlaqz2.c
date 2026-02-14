@@ -45,27 +45,26 @@
  */
 void zlaqz2(const int ilschur, const int ilq, const int ilz,
             const int n, const int ilo, const int ihi, const int nw,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict B, const int ldb,
-            double complex* const restrict Q, const int ldq,
-            double complex* const restrict Z, const int ldz,
+            c128* const restrict A, const int lda,
+            c128* const restrict B, const int ldb,
+            c128* const restrict Q, const int ldq,
+            c128* const restrict Z, const int ldz,
             int* ns, int* nd,
-            double complex* const restrict alpha,
-            double complex* const restrict beta,
-            double complex* const restrict QC, const int ldqc,
-            double complex* const restrict ZC, const int ldzc,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork, const int rec, int* info)
+            c128* const restrict alpha,
+            c128* const restrict beta,
+            c128* const restrict QC, const int ldqc,
+            c128* const restrict ZC, const int ldzc,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork, const int rec, int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
 
     int jw, kwtop, kwbot, istopm, istartm, k, k2, ztgexc_info,
         ifst, ilst, lworkreq, qz_small_info;
-    double smlnum, ulp, safmin, safmax, c1, tempr;
-    double complex s, s1, temp;
+    f64 smlnum, ulp, safmin, c1, tempr;
+    c128 s, s1, temp;
 
     *info = 0;
 
@@ -93,7 +92,7 @@ void zlaqz2(const int ilschur, const int ilq, const int ilz,
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = CMPLX((double)lworkreq, 0.0);
+        work[0] = CMPLX((f64)lworkreq, 0.0);
         return;
     } else if (lwork < lworkreq) {
         *info = -26;
@@ -106,9 +105,8 @@ void zlaqz2(const int ilschur, const int ilq, const int ilz,
 
     /* Get machine constants */
     safmin = dlamch("S");
-    safmax = ONE / safmin;
     ulp = dlamch("P");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     if (ihi == kwtop) {
         /* 1 by 1 deflation window, just try a regular deflation */

@@ -104,28 +104,28 @@ void dlaqp3rk(
     const int nrhs,
     const int ioffset,
     int* nb,
-    const double abstol,
-    const double reltol,
+    const f64 abstol,
+    const f64 reltol,
     const int kp1,
-    const double maxc2nrm,
-    double* const restrict A,
+    const f64 maxc2nrm,
+    f64* const restrict A,
     const int lda,
     int* done,
     int* KB,
-    double* maxc2nrmk,
-    double* relmaxc2nrmk,
+    f64* maxc2nrmk,
+    f64* relmaxc2nrmk,
     int* restrict jpiv,
-    double* restrict tau,
-    double* restrict vn1,
-    double* restrict vn2,
-    double* restrict auxv,
-    double* restrict F,
+    f64* restrict tau,
+    f64* restrict vn1,
+    f64* restrict vn2,
+    f64* restrict auxv,
+    f64* restrict F,
     const int ldf,
     int* restrict iwork,
     int* info)
 {
     int itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
-    double aik, hugeval, temp, temp2, tol3z;
+    f64 aik, hugeval, temp, temp2, tol3z;
     int nb_val;
 
     *info = 0;

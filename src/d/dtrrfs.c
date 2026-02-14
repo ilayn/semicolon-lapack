@@ -46,20 +46,20 @@ void dtrrfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    const double* const restrict X,
+    const f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Test the input parameters */
     *info = 0;
@@ -101,10 +101,10 @@ void dtrrfs(
 
     /* NZ = maximum number of nonzero elements in each row of A, plus 1 */
     int nz = n + 1;
-    double eps = dlamch("E");
-    double safmin = dlamch("S");
-    double safe1 = nz * safmin;
-    double safe2 = safe1 / eps;
+    f64 eps = dlamch("E");
+    f64 safmin = dlamch("S");
+    f64 safe1 = nz * safmin;
+    f64 safe2 = safe1 / eps;
 
     /* Set up CBLAS enums */
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
@@ -151,14 +151,14 @@ void dtrrfs(
             if (upper) {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double xk = fabs(X[k + j * ldx]);
+                        f64 xk = fabs(X[k + j * ldx]);
                         for (int i = 0; i <= k; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double xk = fabs(X[k + j * ldx]);
+                        f64 xk = fabs(X[k + j * ldx]);
                         for (int i = 0; i < k; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
@@ -168,14 +168,14 @@ void dtrrfs(
             } else {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double xk = fabs(X[k + j * ldx]);
+                        f64 xk = fabs(X[k + j * ldx]);
                         for (int i = k; i < n; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double xk = fabs(X[k + j * ldx]);
+                        f64 xk = fabs(X[k + j * ldx]);
                         for (int i = k + 1; i < n; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
@@ -188,7 +188,7 @@ void dtrrfs(
             if (upper) {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double s = ZERO;
+                        f64 s = ZERO;
                         for (int i = 0; i <= k; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
@@ -196,7 +196,7 @@ void dtrrfs(
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double s = fabs(X[k + j * ldx]);
+                        f64 s = fabs(X[k + j * ldx]);
                         for (int i = 0; i < k; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
@@ -206,7 +206,7 @@ void dtrrfs(
             } else {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double s = ZERO;
+                        f64 s = ZERO;
                         for (int i = k; i < n; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
@@ -214,7 +214,7 @@ void dtrrfs(
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double s = fabs(X[k + j * ldx]);
+                        f64 s = fabs(X[k + j * ldx]);
                         for (int i = k + 1; i < n; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
@@ -225,13 +225,13 @@ void dtrrfs(
         }
 
         /* Compute BERR(j) */
-        double s = ZERO;
+        f64 s = ZERO;
         for (int i = 0; i < n; i++) {
             if (work[i] > safe2) {
-                double tmp = fabs(work[n + i]) / work[i];
+                f64 tmp = fabs(work[n + i]) / work[i];
                 if (tmp > s) s = tmp;
             } else {
-                double tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
+                f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                 if (tmp > s) s = tmp;
             }
         }
@@ -290,9 +290,9 @@ void dtrrfs(
         }
 
         /* Normalize error */
-        double lstres = ZERO;
+        f64 lstres = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = fabs(X[i + j * ldx]);
+            f64 tmp = fabs(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

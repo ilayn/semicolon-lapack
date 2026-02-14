@@ -53,23 +53,23 @@ void zhbtrd(
     const char* uplo,
     const int n,
     const int kd,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double* const restrict D,
-    double* const restrict E,
-    double complex* const restrict Q,
+    f64* const restrict D,
+    f64* const restrict E,
+    c128* const restrict Q,
     const int ldq,
-    double complex* const restrict work,
+    c128* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double complex CONE = 1.0;
+    const f64 ZERO = 0.0;
+    const c128 CONE = 1.0;
 
     int initq, upper, wantq;
     int i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
     int jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
-    double abst;
-    double complex t, temp;
+    f64 abst;
+    c128 t, temp;
 
     initq = (vect[0] == 'V' || vect[0] == 'v');
     wantq = initq || (vect[0] == 'U' || vect[0] == 'u');
@@ -262,7 +262,7 @@ void zhbtrd(
                 if (i < n - 1)
                     AB[kd - 1 + (i + 1) * ldab] = AB[kd - 1 + (i + 1) * ldab] * t;
                 if (wantq) {
-                    double complex ct = conj(t);
+                    c128 ct = conj(t);
                     cblas_zscal(n, &ct, &Q[0 + i * ldq], 1);
                 }
             }

@@ -37,18 +37,18 @@ void zpbtrf(
     const char* uplo,
     const int n,
     const int kd,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
 
     int i, i2, i3, ib, ii, j, jj, nb;
-    double complex work[LDWORK * NBMAX];
+    c128 work[LDWORK * NBMAX];
     int upper;
 
     *info = 0;

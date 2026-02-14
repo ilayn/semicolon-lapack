@@ -41,16 +41,16 @@
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void dgebak(const char* job, const char* side, const int n, const int ilo,
-            const int ihi, const double* scale, const int m, double* V,
+            const int ihi, const f64* scale, const int m, f64* V,
             const int ldv, int* info)
 {
     /* Constants */
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     /* Local variables */
     int leftv, rightv;
     int i, ii, k;
-    double s;
+    f64 s;
 
     /* Decode and test the input parameters */
     rightv = (side[0] == 'R' || side[0] == 'r');

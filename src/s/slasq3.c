@@ -37,23 +37,23 @@
  *                        value between calls to SLASQ3.
  * @param[in,out] tau    This is the shift.
  */
-void slasq3(const int i0, int* n0, float* const restrict Z,
-            int* pp, float* dmin, float* sigma, float* desig,
-            const float qmax, int* nfail, int* iter, int* ndiv,
-            const int ieee, int* ttype, float* dmin1, float* dmin2,
-            float* dn, float* dn1, float* dn2, float* g, float* tau)
+void slasq3(const int i0, int* n0, f32* const restrict Z,
+            int* pp, f32* dmin, f32* sigma, f32* desig,
+            const f32 qmax, int* nfail, int* iter, int* ndiv,
+            const int ieee, int* ttype, f32* dmin1, f32* dmin2,
+            f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau)
 {
-    const float CBIAS = 1.50f;
-    const float ZERO = 0.0f;
-    const float QURTR = 0.250f;
-    const float HALF = 0.50f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float HUNDRD = 100.0f;
+    const f32 CBIAS = 1.50f;
+    const f32 ZERO = 0.0f;
+    const f32 QURTR = 0.250f;
+    const f32 HALF = 0.50f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 HUNDRD = 100.0f;
 
     int ipn4, j4, n0in, nn;
-    float eps, s, t, temp, tol, tol2;
-    float qmax_local;
+    f32 eps, s, t, temp, tol, tol2;
+    f32 qmax_local;
 
     n0in = *n0;
     eps = slamch("P");

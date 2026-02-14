@@ -60,10 +60,10 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgebrd(const int m, const int n, float* const restrict A, const int lda,
-            float* const restrict D, float* const restrict E,
-            float* const restrict tauq, float* const restrict taup,
-            float* const restrict work, const int lwork, int* info)
+void sgebrd(const int m, const int n, f32* const restrict A, const int lda,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict tauq, f32* const restrict taup,
+            f32* const restrict work, const int lwork, int* info)
 {
     int i, j, iinfo;
     int lquery, minmn, nb, nbmin, nx;
@@ -81,7 +81,7 @@ void sgebrd(const int m, const int n, float* const restrict A, const int lda,
         if (nb < 1) nb = 1;
         lwkopt = (m + n) * nb;
     }
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 
     lquery = (lwork == -1);
     if (m < 0) {
@@ -179,5 +179,5 @@ void sgebrd(const int m, const int n, float* const restrict A, const int lda,
     /* Use unblocked code to reduce the remainder of the matrix */
     sgebd2(m - i, n - i, &A[i + i * lda], lda, &D[i], &E[i],
            &tauq[i], &taup[i], work, &iinfo);
-    work[0] = (float)ws;
+    work[0] = (f32)ws;
 }

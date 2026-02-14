@@ -38,17 +38,17 @@
  */
 void zptcon(
     const int n,
-    const double* const restrict D,
-    const double complex* const restrict E,
-    const double anorm,
-    double* rcond,
-    double* const restrict rwork,
+    const f64* const restrict D,
+    const c128* const restrict E,
+    const f64 anorm,
+    f64* rcond,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     int i, ix;
-    double ainvnm;
+    f64 ainvnm;
 
     *info = 0;
     if (n < 0) {

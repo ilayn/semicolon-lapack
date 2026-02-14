@@ -39,23 +39,23 @@ void slaqz2(
     const int istartm,
     const int istopm,
     const int ihi,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     const int nq,
     const int qstart,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
     const int nz,
     const int zstart,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
-    float h[2 * 3];
-    float c1, s1, c2, s2, temp;
+    f32 h[2 * 3];
+    f32 c1, s1, c2, s2, temp;
 
     if (k + 2 == ihi) {
         /* Shift is located on the edge of the matrix, remove it */

@@ -71,31 +71,31 @@
  */
 void zggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             zselect2_t selctg, const char* sense, const int n,
-            double complex* A, const int lda,
-            double complex* B, const int ldb,
+            c128* A, const int lda,
+            c128* B, const int ldb,
             int* sdim,
-            double complex* alpha, double complex* beta,
-            double complex* VSL, const int ldvsl,
-            double complex* VSR, const int ldvsr,
-            double* rconde, double* rcondv,
-            double complex* work, const int lwork,
-            double* rwork,
+            c128* alpha, c128* beta,
+            c128* VSL, const int ldvsl,
+            c128* VSR, const int ldvsr,
+            f64* rconde, f64* rcondv,
+            c128* work, const int lwork,
+            f64* rwork,
             int* iwork, const int liwork,
             int* bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery;
     int wantsb, wantse, wantsn, wantst, wantsv;
     int i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
     int ileft, ilo, iright, irows, irwrk, itau, iwrk;
     int liwmin, lwrk, maxwrk, minwrk;
-    double anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
-    double pl, pr, smlnum;
-    double dif[2];
+    f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
+    f64 pl, pr, smlnum;
+    f64 dif[2];
     int nb_geqrf, nb_unmqr, nb_ungqr;
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
@@ -182,7 +182,7 @@ void zggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             maxwrk = 1;
             lwrk = 1;
         }
-        work[0] = CMPLX((double)lwrk, 0.0);
+        work[0] = CMPLX((f64)lwrk, 0.0);
         if (wantsn || n == 0) {
             liwmin = 1;
         } else {
@@ -364,7 +364,7 @@ void zggesx(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L40:
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
     iwork[0] = liwmin;
 
     return;

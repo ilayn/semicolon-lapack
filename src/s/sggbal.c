@@ -48,29 +48,29 @@
 void sggbal(
     const char* job,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* ilo,
     int* ihi,
-    float* const restrict lscale,
-    float* const restrict rscale,
-    float* const restrict work,
+    f32* const restrict lscale,
+    f32* const restrict rscale,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
-    const float ONE = 1.0f;
-    const float THREE = 3.0f;
-    const float SCLFAC = 10.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
+    const f32 ONE = 1.0f;
+    const f32 THREE = 3.0f;
+    const f32 SCLFAC = 10.0f;
 
     int i, icab, iflow, ip1, ir, irab, it, j, jc, jp1;
     int k, kount, l, lcab, lm1, lrab, lsfmax, lsfmin;
     int m, nr, nrp2;
-    float alpha, basl, beta, cab, cmax, coef, coef2;
-    float coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
-    float sfmin, sum, t, ta, tb, tc;
+    f32 alpha, basl, beta, cab, cmax, coef, coef2;
+    f32 coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
+    f32 sfmin, sum, t, ta, tb, tc;
 
     *info = 0;
     if (!(job[0] == 'N' || job[0] == 'n') &&
@@ -183,13 +183,13 @@ L100:
     goto L190;
 
 L160:
-    lscale[m - 1] = (float)(i + 1);
+    lscale[m - 1] = (f32)(i + 1);
     if (i != m - 1) {
         cblas_sswap(n - k + 1, &A[i + (k - 1) * lda], lda, &A[m - 1 + (k - 1) * lda], lda);
         cblas_sswap(n - k + 1, &B[i + (k - 1) * ldb], ldb, &B[m - 1 + (k - 1) * ldb], ldb);
     }
 
-    rscale[m - 1] = (float)(j + 1);
+    rscale[m - 1] = (f32)(j + 1);
     if (j != m - 1) {
         cblas_sswap(l, &A[j * lda], 1, &A[(m - 1) * lda], 1);
         cblas_sswap(l, &B[j * ldb], 1, &B[(m - 1) * ldb], 1);
@@ -246,7 +246,7 @@ L190:
         }
     }
 
-    coef = ONE / (float)(2 * nr);
+    coef = ONE / (f32)(2 * nr);
     coef2 = coef * coef;
     coef5 = HALF * coef2;
     nrp2 = nr + 2;
@@ -297,7 +297,7 @@ L250:
             kount = kount + 1;
             sum = sum + work[j];
         }
-        work[i + 2 * n] = (float)kount * work[i + n] + sum;
+        work[i + 2 * n] = (f32)kount * work[i + n] + sum;
     }
 
     for (j = k - 1; j < l; j++) {
@@ -314,7 +314,7 @@ L250:
             kount = kount + 1;
             sum = sum + work[i + n];
         }
-        work[j + 3 * n] = (float)kount * work[j] + sum;
+        work[j + 3 * n] = (f32)kount * work[j] + sum;
     }
 
     sum = cblas_sdot(nr, &work[k - 1 + n], 1, &work[k - 1 + 2 * n], 1) +
@@ -358,7 +358,7 @@ L350:
         ir = (ir > lsfmin) ? ir : lsfmin;
         ir = (ir < lsfmax) ? ir : lsfmax;
         ir = (ir < lsfmax - lrab) ? ir : lsfmax - lrab;
-        lscale[i] = powf(SCLFAC, (float)ir);
+        lscale[i] = powf(SCLFAC, (f32)ir);
         icab = cblas_isamax(l, &A[i * lda], 1);
         cab = fabsf(A[icab + i * lda]);
         icab = cblas_isamax(l, &B[i * ldb], 1);
@@ -368,7 +368,7 @@ L350:
         jc = (jc > lsfmin) ? jc : lsfmin;
         jc = (jc < lsfmax) ? jc : lsfmax;
         jc = (jc < lsfmax - lcab) ? jc : lsfmax - lcab;
-        rscale[i] = powf(SCLFAC, (float)jc);
+        rscale[i] = powf(SCLFAC, (f32)jc);
     }
 
     for (i = k - 1; i < l; i++) {

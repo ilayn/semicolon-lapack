@@ -31,7 +31,7 @@
 void dpotri(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     int* info)
 {

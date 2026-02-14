@@ -54,22 +54,22 @@ void sgghrd(
     const int n,
     const int ilo,
     const int ihi,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int ilq, ilz;
     int icompq, icompz, jcol, jrow;
-    float c, s, temp;
+    f32 c, s, temp;
 
     if (compq[0] == 'N' || compq[0] == 'n') {
         ilq = 0;

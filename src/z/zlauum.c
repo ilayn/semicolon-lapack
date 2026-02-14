@@ -39,12 +39,12 @@
 void zlauum(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 ONE = 1.0;
 
     // Test the input parameters
     *info = 0;

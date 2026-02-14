@@ -9,7 +9,7 @@
 #include "semicolon_lapack_single.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
-static const float ALPHA_BK = 0.6403882032022076f;
+static const f32 ALPHA_BK = 0.6403882032022076f;
 
 /**
  * SSYTF2 computes the factorization of a real symmetric matrix A using
@@ -56,7 +56,7 @@ static const float ALPHA_BK = 0.6403882032022076f;
 void ssytf2(
     const char* uplo,
     const int n,
-    float * restrict A,
+    f32 * restrict A,
     const int lda,
     int * restrict ipiv,
     int *info)
@@ -88,11 +88,11 @@ void ssytf2(
         int k = n - 1;
         while (k >= 0) {
             int kstep = 1;
-            float absakk = fabsf(A[k + k * lda]);
+            f32 absakk = fabsf(A[k + k * lda]);
 
             /* Find largest off-diagonal element in column k */
             int imax = 0;
-            float colmax = 0.0f;
+            f32 colmax = 0.0f;
             if (k > 0) {
                 imax = cblas_isamax(k, &A[0 + k * lda], 1);
                 colmax = fabsf(A[imax + k * lda]);
@@ -113,7 +113,7 @@ void ssytf2(
                 } else {
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row imax, and rowmax is its absolute value */
-                    float rowmax = 0.0f;
+                    f32 rowmax = 0.0f;
                     if (imax + 1 <= k) {
                         int jmax = imax + 1 + cblas_isamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                         rowmax = fabsf(A[imax + jmax * lda]);
@@ -149,7 +149,7 @@ void ssytf2(
                         cblas_sswap(kk - kp - 1, &A[(kp + 1) + kk * lda], 1,
                                     &A[kp + (kp + 1) * lda], lda);
                     }
-                    float t = A[kk + kk * lda];
+                    f32 t = A[kk + kk * lda];
                     A[kk + kk * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = t;
                     if (kstep == 2) {
@@ -166,7 +166,7 @@ void ssytf2(
                      * Perform a rank-1 update of A(0:k-1, 0:k-1) as
                      * A := A - U(k)*D(k)*U(k)**T = A - W(k)*(1/D(k))*W(k)**T */
                     if (k > 0) {
-                        float r1 = 1.0f / A[k + k * lda];
+                        f32 r1 = 1.0f / A[k + k * lda];
                         cblas_ssyr(CblasColMajor, CblasUpper, k, -r1,
                                    &A[0 + k * lda], 1, A, lda);
                         cblas_sscal(k, r1, &A[0 + k * lda], 1);
@@ -177,15 +177,15 @@ void ssytf2(
                      * Perform a rank-2 update of A(0:k-2, 0:k-2) as
                      * A := A - (W(k-1) W(k))*inv(D(k))*(W(k-1) W(k))**T */
                     if (k > 1) {
-                        float d12 = A[(k - 1) + k * lda];
-                        float d22 = A[(k - 1) + (k - 1) * lda] / d12;
-                        float d11 = A[k + k * lda] / d12;
-                        float t = 1.0f / (d11 * d22 - 1.0f);
+                        f32 d12 = A[(k - 1) + k * lda];
+                        f32 d22 = A[(k - 1) + (k - 1) * lda] / d12;
+                        f32 d11 = A[k + k * lda] / d12;
+                        f32 t = 1.0f / (d11 * d22 - 1.0f);
                         d12 = t / d12;
 
                         for (int j = k - 2; j >= 0; j--) {
-                            float wkm1 = d12 * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
-                            float wk = d12 * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
+                            f32 wkm1 = d12 * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
+                            f32 wk = d12 * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
                             for (int i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k - 1) * lda] * wkm1;
@@ -215,11 +215,11 @@ void ssytf2(
         int k = 0;
         while (k < n) {
             int kstep = 1;
-            float absakk = fabsf(A[k + k * lda]);
+            f32 absakk = fabsf(A[k + k * lda]);
 
             /* Find largest off-diagonal element in column k */
             int imax = k;
-            float colmax = 0.0f;
+            f32 colmax = 0.0f;
             if (k < n - 1) {
                 imax = k + 1 + cblas_isamax(n - k - 1, &A[(k + 1) + k * lda], 1);
                 colmax = fabsf(A[imax + k * lda]);
@@ -240,7 +240,7 @@ void ssytf2(
                 } else {
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row imax, and rowmax is its absolute value */
-                    float rowmax = 0.0f;
+                    f32 rowmax = 0.0f;
                     if (imax > k) {
                         int jmax = k + cblas_isamax(imax - k, &A[imax + k * lda], lda);
                         rowmax = fabsf(A[imax + jmax * lda]);
@@ -277,7 +277,7 @@ void ssytf2(
                         cblas_sswap(kp - kk - 1, &A[(kk + 1) + kk * lda], 1,
                                     &A[kp + (kk + 1) * lda], lda);
                     }
-                    float t = A[kk + kk * lda];
+                    f32 t = A[kk + kk * lda];
                     A[kk + kk * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = t;
                     if (kstep == 2) {
@@ -294,7 +294,7 @@ void ssytf2(
                      * Perform a rank-1 update of A(k+1:n-1, k+1:n-1) as
                      * A := A - L(k)*D(k)*L(k)**T = A - W(k)*(1/D(k))*W(k)**T */
                     if (k < n - 1) {
-                        float d11 = 1.0f / A[k + k * lda];
+                        f32 d11 = 1.0f / A[k + k * lda];
                         cblas_ssyr(CblasColMajor, CblasLower, n - k - 1, -d11,
                                    &A[(k + 1) + k * lda], 1, &A[(k + 1) + (k + 1) * lda], lda);
                         cblas_sscal(n - k - 1, d11, &A[(k + 1) + k * lda], 1);
@@ -305,15 +305,15 @@ void ssytf2(
                      * Perform a rank-2 update of A(k+2:n-1, k+2:n-1) as
                      * A := A - (W(k) W(k+1))*inv(D(k))*(W(k) W(k+1))**T */
                     if (k < n - 2) {
-                        float d21 = A[(k + 1) + k * lda];
-                        float d11 = A[(k + 1) + (k + 1) * lda] / d21;
-                        float d22 = A[k + k * lda] / d21;
-                        float t = 1.0f / (d11 * d22 - 1.0f);
+                        f32 d21 = A[(k + 1) + k * lda];
+                        f32 d11 = A[(k + 1) + (k + 1) * lda] / d21;
+                        f32 d22 = A[k + k * lda] / d21;
+                        f32 t = 1.0f / (d11 * d22 - 1.0f);
                         d21 = t / d21;
 
                         for (int j = k + 2; j < n; j++) {
-                            float wk = d21 * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
-                            float wkp1 = d21 * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
+                            f32 wk = d21 * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
+                            f32 wkp1 = d21 * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
                             for (int i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k + 1) * lda] * wkp1;

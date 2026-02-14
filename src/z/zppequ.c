@@ -43,14 +43,14 @@
 void zppequ(
     const char* uplo,
     const int n,
-    const double complex* const restrict AP,
-    double* const restrict S,
-    double* scond,
-    double* amax,
+    const c128* const restrict AP,
+    f64* const restrict S,
+    f64* scond,
+    f64* amax,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -71,7 +71,7 @@ void zppequ(
     }
 
     S[0] = creal(AP[0]);
-    double smin = S[0];
+    f64 smin = S[0];
     *amax = S[0];
 
     if (upper) {

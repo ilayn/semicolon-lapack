@@ -36,21 +36,21 @@ void zpbcon(
     const char* uplo,
     const int n,
     const int kd,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper;
     char normin;
     int ix, kase;
-    double ainvnm, scale, scalel, scaleu, smlnum;
+    f64 ainvnm, scale, scalel, scaleu, smlnum;
     int isave[3];
 
     *info = 0;

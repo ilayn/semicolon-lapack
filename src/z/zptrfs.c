@@ -58,30 +58,30 @@ void zptrfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double complex* const restrict E,
-    const double* const restrict DF,
-    const double complex* const restrict EF,
-    const double complex* const restrict B,
+    const f64* const restrict D,
+    const c128* const restrict E,
+    const f64* const restrict DF,
+    const c128* const restrict EF,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int upper;
     int count, i, ix, j, nz;
-    double eps, lstres, s, safe1, safe2, safmin;
-    double complex bi, cx, dx, ex;
+    f64 eps, lstres, s, safe1, safe2, safmin;
+    c128 bi, cx, dx, ex;
     int max_n_1 = (1 > n) ? 1 : n;
     int info_local;
 
@@ -232,7 +232,7 @@ refine:
             /* Update solution and try again. */
 
             zpttrs(uplo, n, 1, DF, EF, work, n, &info_local);
-            const double complex CONE = CMPLX(ONE, 0.0);
+            const c128 CONE = CMPLX(ONE, 0.0);
             cblas_zaxpy(n, &CONE, work, 1, &X[0 + j * ldx], 1);
             lstres = berr[j];
             count = count + 1;

@@ -41,18 +41,17 @@
 void zgetf2(
     const int m,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* const restrict ipiv,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double sfmin = dlamch("S");
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const f64 sfmin = dlamch("S");
 
     int i, j, jp;
     int minmn = m < n ? m : n;
-    double complex pivot, inv;
+    c128 pivot, inv;
 
     *info = 0;
     if (m < 0) {
@@ -99,7 +98,7 @@ void zgetf2(
         }
 
         if (j < minmn - 1) {
-            const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+            const c128 NEG_ONE = CMPLX(-1.0, 0.0);
             cblas_zgeru(CblasColMajor, m - j - 1, n - j - 1, &NEG_ONE,
                         &A[j + 1 + j * lda], 1,
                         &A[j + (j + 1) * lda], lda,

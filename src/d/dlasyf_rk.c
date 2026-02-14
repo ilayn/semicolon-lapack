@@ -83,22 +83,22 @@ void dlasyf_rk(
     const int n,
     const int nb,
     int* kb,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict E,
+    f64* restrict E,
     int* restrict ipiv,
-    double* const restrict W,
+    f64* const restrict W,
     const int ldw,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double EIGHT = 8.0;
-    const double SEVTEN = 17.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 EIGHT = 8.0;
+    const f64 SEVTEN = 17.0;
 
     int done;
     int imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
-    double absakk, alpha, colmax, d11, d12, d21, d22, dtemp, r1, rowmax, t, sfmin;
+    f64 absakk, alpha, colmax, d11, d12, d21, d22, dtemp, r1, rowmax, t, sfmin;
 
     *info = 0;
 

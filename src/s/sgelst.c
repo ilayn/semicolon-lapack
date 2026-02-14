@@ -62,17 +62,17 @@ void sgelst(
     const int m,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
     int lquery, tpsd;
     int brow, i, iascl, ibscl, j, lwopt, mn, mnnrhs, nb, nbmin, scllen;
-    float anrm, bignum, bnrm, smlnum;
+    f32 anrm, bignum, bnrm, smlnum;
     int max_mn, max_ldb;
 
     *info = 0;
@@ -112,7 +112,7 @@ void sgelst(
 
         mnnrhs = (mn > nrhs) ? mn : nrhs;
         lwopt = (1 > (mn + mnnrhs) * nb) ? 1 : ((mn + mnnrhs) * nb);
-        work[0] = (float)lwopt;
+        work[0] = (f32)lwopt;
 
     }
 
@@ -126,7 +126,7 @@ void sgelst(
     max_mn = (m > n) ? m : n;
     if (mn == 0 || nrhs == 0) {
         slaset("F", max_mn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (float)lwopt;
+        work[0] = (f32)lwopt;
         return;
     }
 
@@ -156,7 +156,7 @@ void sgelst(
     } else if (anrm == 0.0f) {
 
         slaset("F", max_mn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (float)lwopt;
+        work[0] = (f32)lwopt;
         return;
     }
 
@@ -264,5 +264,5 @@ void sgelst(
         slascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, info);
     }
 
-    work[0] = (float)lwopt;
+    work[0] = (f32)lwopt;
 }

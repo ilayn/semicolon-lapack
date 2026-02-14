@@ -35,12 +35,12 @@
  */
 void zlarft_lvl2(const char* direct, const char* storev,
                  const int n, const int k,
-                 const double complex* const restrict V, const int ldv,
-                 const double complex* const restrict tau,
-                 double complex* const restrict T, const int ldt)
+                 const c128* const restrict V, const int ldv,
+                 const c128* const restrict tau,
+                 c128* const restrict T, const int ldt)
 {
-    const double complex ONE  = 1.0;
-    const double complex ZERO = 0.0;
+    const c128 ONE  = 1.0;
+    const c128 ZERO = 0.0;
 
     int i, j, prevlastv, lastv;
 
@@ -67,7 +67,7 @@ void zlarft_lvl2(const char* direct, const char* storev,
                     }
                     j = (lastv < prevlastv) ? lastv : prevlastv;
 
-                    double complex neg_tau_i = -tau[i - 1];
+                    c128 neg_tau_i = -tau[i - 1];
                     cblas_zgemv(CblasColMajor, CblasConjTrans, j - i, i - 1,
                                 &neg_tau_i, &V[i + 0 * ldv], ldv,
                                 &V[i + (i - 1) * ldv], 1,
@@ -81,7 +81,7 @@ void zlarft_lvl2(const char* direct, const char* storev,
                     }
                     j = (lastv < prevlastv) ? lastv : prevlastv;
 
-                    double complex neg_tau_i = -tau[i - 1];
+                    c128 neg_tau_i = -tau[i - 1];
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
                                 i - 1, 1, j - i, &neg_tau_i,
                                 &V[0 + i * ldv], ldv,
@@ -119,7 +119,7 @@ void zlarft_lvl2(const char* direct, const char* storev,
                         }
                         j = (lastv > prevlastv) ? lastv : prevlastv;
 
-                        double complex neg_tau_i = -tau[i - 1];
+                        c128 neg_tau_i = -tau[i - 1];
                         cblas_zgemv(CblasColMajor, CblasConjTrans,
                                     n - k + i - j, k - i,
                                     &neg_tau_i, &V[(j - 1) + i * ldv], ldv,
@@ -134,7 +134,7 @@ void zlarft_lvl2(const char* direct, const char* storev,
                         }
                         j = (lastv > prevlastv) ? lastv : prevlastv;
 
-                        double complex neg_tau_i = -tau[i - 1];
+                        c128 neg_tau_i = -tau[i - 1];
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
                                     k - i, 1, n - k + i - j,
                                     &neg_tau_i,

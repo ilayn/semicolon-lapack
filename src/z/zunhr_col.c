@@ -57,16 +57,16 @@
  *                      < 0: if info = -i, the i-th argument had an illegal value
  */
 void zunhr_col(const int m, const int n, const int nb,
-               double complex* const restrict A, const int lda,
-               double complex* const restrict T, const int ldt,
-               double complex* const restrict D,
+               c128* const restrict A, const int lda,
+               c128* const restrict T, const int ldt,
+               c128* const restrict D,
                int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    int i, iinfo, j, jb, jbtemp1, jbtemp2, jnb, nplusone;
+    int i, iinfo, j, jb, jnb, nplusone;
 
     *info = 0;
     if (m < 0) {

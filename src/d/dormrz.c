@@ -68,10 +68,10 @@
  */
 void dormrz(const char* side, const char* trans,
             const int m, const int n, const int k, const int l,
-            double * const restrict A, const int lda,
-            const double * const restrict tau,
-            double * const restrict C, const int ldc,
-            double * const restrict work, const int lwork,
+            f64 * const restrict A, const int lda,
+            const f64 * const restrict tau,
+            f64 * const restrict C, const int ldc,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     /* NBMAX is the maximum block size (hardcoded in LAPACK Fortran source);
@@ -134,7 +134,7 @@ void dormrz(const char* side, const char* trans,
             }
             lwkopt = nw * nb + TSIZE;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -226,5 +226,5 @@ void dormrz(const char* side, const char* trans,
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

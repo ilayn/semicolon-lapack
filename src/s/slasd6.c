@@ -47,18 +47,18 @@
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void slasd6(const int icompq, const int nl, const int nr, const int sqre,
-            float* const restrict D, float* const restrict VF,
-            float* const restrict VL, float* alpha, float* beta,
+            f32* const restrict D, f32* const restrict VF,
+            f32* const restrict VL, f32* alpha, f32* beta,
             int* const restrict IDXQ, int* const restrict PERM,
             int* givptr, int* const restrict GIVCOL, const int ldgcol,
-            float* const restrict GIVNUM, const int ldgnum,
-            float* const restrict POLES, float* const restrict DIFL,
-            float* const restrict DIFR, float* const restrict Z,
-            int* k, float* c, float* s,
-            float* const restrict work, int* const restrict IWORK, int* info)
+            f32* const restrict GIVNUM, const int ldgnum,
+            f32* const restrict POLES, f32* const restrict DIFL,
+            f32* const restrict DIFR, f32* const restrict Z,
+            int* k, f32* c, f32* s,
+            f32* const restrict work, int* const restrict IWORK, int* info)
 {
     int i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n, n1, n2;
-    float orgnrm;
+    f32 orgnrm;
 
     *info = 0;
     n = nl + nr + 1;

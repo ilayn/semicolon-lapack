@@ -58,10 +58,10 @@
  */
 void dgemlqt(const char* side, const char* trans,
              const int m, const int n, const int k, const int mb,
-             const double* const restrict V, const int ldv,
-             const double* const restrict T, const int ldt,
-             double* const restrict C, const int ldc,
-             double* const restrict work, int* info)
+             const f64* const restrict V, const int ldv,
+             const f64* const restrict T, const int ldt,
+             f64* const restrict C, const int ldc,
+             f64* const restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, ldwork, kf, q;

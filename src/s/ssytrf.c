@@ -43,10 +43,10 @@
 void ssytrf(
     const char* uplo,
     const int n,
-    float* restrict A,
+    f32* restrict A,
     const int lda,
     int* restrict ipiv,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -70,7 +70,7 @@ void ssytrf(
     int lwkopt = n * nb > 1 ? n * nb : 1;
 
     if (*info == 0) {
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -206,5 +206,5 @@ void ssytrf(
         }
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

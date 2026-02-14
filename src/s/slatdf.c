@@ -53,24 +53,24 @@
 void slatdf(
     const int ijob,
     const int n,
-    const float* const restrict Z,
+    const f32* const restrict Z,
     const int ldz,
-    float* const restrict rhs,
-    float* rdsum,
-    float* rdscal,
+    f32* const restrict rhs,
+    f32* rdsum,
+    f32* rdscal,
     const int* const restrict ipiv,
     const int* const restrict jpiv)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, k, info;
-    float bm, bp, pmone, sminu, splus, temp;
+    f32 bm, bp, pmone, sminu, splus, temp;
 
     int iwork[MAXDIM];
-    float work[4 * MAXDIM];
-    float xm[MAXDIM];
-    float xp[MAXDIM];
+    f32 work[4 * MAXDIM];
+    f32 xm[MAXDIM];
+    f32 xp[MAXDIM];
 
     if (ijob != 2) {
 
@@ -169,7 +169,7 @@ void slatdf(
         /* Compute RHS */
         for (i = n - 2; i >= 0; i--) {
             if (ipiv[i] != i) {
-                float tmp = xm[i];
+                f32 tmp = xm[i];
                 xm[i] = xm[ipiv[i]];
                 xm[ipiv[i]] = tmp;
             }

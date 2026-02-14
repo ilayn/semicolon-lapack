@@ -63,16 +63,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void slaed3(const int k, const int n, const int n1, float* D,
-            float* Q, const int ldq, const float rho,
-            float* dlambda, float* Q2, int* indx, int* ctot,
-            float* W, float* S, int* info)
+void slaed3(const int k, const int n, const int n1, f32* D,
+            f32* Q, const int ldq, const f32 rho,
+            f32* dlambda, f32* Q2, int* indx, int* ctot,
+            f32* W, f32* S, int* info)
 {
-    const float one = 1.0f;
-    const float zero = 0.0f;
+    const f32 one = 1.0f;
+    const f32 zero = 0.0f;
 
     int i, ii, iq2, j, n12, n2, n23;
-    float temp;
+    f32 temp;
 
     /* Test the input parameters. */
     *info = 0;

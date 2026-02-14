@@ -42,19 +42,19 @@ void dsytrs2(
     const char* uplo,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int upper;
     int i, iinfo, j, k, kp;
-    double ak, akm1, akm1k, bk, bkm1, denom;
+    f64 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

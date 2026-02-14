@@ -60,7 +60,7 @@
  *                        The 0-based local indices of eigenvalues within each block.
  * @param[in]     gers    Double precision array, dimension (2*n).
  *                        The n Gerschgorin intervals (gers[2*i], gers[2*i+1]).
- * @param[out]    Z       Complex double array, dimension (ldz, max(1,m)).
+ * @param[out]    Z       Complex f64 array, dimension (ldz, max(1,m)).
  *                        The orthonormal eigenvectors of the matrix T.
  * @param[in]     ldz     The leading dimension of Z. ldz >= max(1,n).
  * @param[out]    isuppz  Integer array, dimension (2*max(1,m)).
@@ -80,24 +80,24 @@
  *                         - = 5: the Rayleigh Quotient Iteration failed to converge to
  *                           full accuracy in MAXITR steps.
  */
-void zlarrv(const int n, const double vl, const double vu,
-            double* D, double* L, const double pivmin,
+void zlarrv(const int n, const f64 vl, const f64 vu,
+            f64* D, f64* L, const f64 pivmin,
             const int* isplit, const int m, const int dol, const int dou,
-            const double minrgp, const double rtol1, const double rtol2,
-            double* W, double* werr, double* wgap,
-            const int* iblock, const int* indexw, const double* gers,
-            double complex* Z, const int ldz, int* isuppz,
-            double* work, int* iwork, int* info)
+            const f64 minrgp, const f64 rtol1, const f64 rtol2,
+            f64* W, f64* werr, f64* wgap,
+            const int* iblock, const int* indexw, const f64* gers,
+            c128* Z, const int ldz, int* isuppz,
+            f64* work, int* iwork, int* info)
 {
     /* Parameters */
     const int MAXITR = 10;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
-    const double FOUR = 4.0;
-    const double HALF = 0.5;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
+    const f64 FOUR = 4.0;
+    const f64 HALF = 0.5;
 
     /* Local Scalars */
     int eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
@@ -111,14 +111,14 @@ void zlarrv(const int n, const double vl, const double vu,
         oldncl, p, parity, q, wbegin, wend, windex,
         windmn, windpl, zfrom, zto, zusedl, zusedu,
         zusedw;
-    double bstres, bstw, eps, fudge, gap, gaptol, gl, gu,
+    f64 bstres, bstw, eps, fudge, gap, gaptol, gl, gu,
            lambda, left, lgap, mingma, nrminv, resid,
            rgap, right, rqcorr, rqtol, savgap, sgndef,
            sigma, spdiam, ssigma, tau, tmp, tol, ztz;
 
     /* Effective rtol values (may be overridden for partial eigenvector computation) */
-    double eff_rtol1 = rtol1;
-    double eff_rtol2 = rtol2;
+    f64 eff_rtol1 = rtol1;
+    f64 eff_rtol2 = rtol2;
 
     (void)vu; /* Currently unused */
 
@@ -137,7 +137,7 @@ void zlarrv(const int n, const double vl, const double vu,
     indwrk = 5 * n;
     minwsize = 12 * n;
 
-    memset(work, 0, minwsize * sizeof(double));
+    memset(work, 0, minwsize * sizeof(f64));
 
     /* IWORK(IINDR..IINDR+N-1) hold the twist indices R for the
      * factorization used to compute the FP vector */
@@ -550,7 +550,7 @@ void zlarrv(const int n, const double vl, const double vu,
                          */
                         iter = 0;
 
-                        tol = FOUR * log((double)in) * eps;
+                        tol = FOUR * log((f64)in) * eps;
 
                         k = newfst;
                         windex = wbegin + k;

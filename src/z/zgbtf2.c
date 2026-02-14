@@ -74,13 +74,13 @@ void zgbtf2(
     const int n,
     const int kl,
     const int ku,
-    double complex * const restrict AB,
+    c128 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
     int *info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, j, jp, ju, km, kv;
 
@@ -171,7 +171,7 @@ void zgbtf2(
             if (km > 0) {
                 /* Compute multipliers.
                    Scale elements in column j, rows kv+1 to kv+km (0-based) */
-                const double complex scale = ONE / AB[kv + j * ldab];
+                const c128 scale = ONE / AB[kv + j * ldab];
                 cblas_zscal(km, &scale, &AB[kv + 1 + j * ldab], 1);
 
                 /* Update trailing submatrix within the band.
@@ -181,7 +181,7 @@ void zgbtf2(
                    The column vector A[kv+1:kv+km, j] has stride 1.
                    The submatrix A[kv+1:kv+km, j+1:ju] has leading dimension ldab-1. */
                 if (ju > j) {
-                    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+                    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
                     cblas_zgeru(CblasColMajor, km, ju - j, &NEG_ONE,
                                &AB[kv + 1 + j * ldab], 1,           /* column vector */
                                &AB[kv - 1 + (j + 1) * ldab], ldab - 1,  /* row vector at row kv-1 of next col */

@@ -59,22 +59,22 @@
  *                           have converged.
  */
 void dgeev(const char* jobvl, const char* jobvr, const int n,
-           double* A, const int lda,
-           double* wr, double* wi,
-           double* VL, const int ldvl,
-           double* VR, const int ldvr,
-           double* work, const int lwork, int* info)
+           f64* A, const int lda,
+           f64* wr, f64* wi,
+           f64* VL, const int ldvl,
+           f64* VR, const int ldvr,
+           f64* work, const int lwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, scalea, wantvl, wantvr;
     char side[2];
     int hswork, i, ibal, ierr, ihi, ilo, itau, iwrk, k;
     int lwork_trevc, maxwrk, minwrk, nout;
-    double anrm, bignum, cs, cscale, eps, r, scl, smlnum, sn;
+    f64 anrm, bignum, cs, cscale, eps, r, scl, smlnum, sn;
     int select[1];  /* Dummy select array for dtrevc3 */
-    double dum[1];
+    f64 dum[1];
     int nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
@@ -151,7 +151,7 @@ void dgeev(const char* jobvl, const char* jobvr, const int n,
             }
             maxwrk = maxwrk > minwrk ? maxwrk : minwrk;
         }
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -314,5 +314,5 @@ L50:
         }
     }
 
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 }

@@ -48,21 +48,21 @@ void zhegs2(
     const int itype,
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double ONE = 1.0;
-    const double HALF = 0.5;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int upper;
     int k;
-    double akk, bkk;
-    double complex ct;
+    f64 akk, bkk;
+    c128 ct;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

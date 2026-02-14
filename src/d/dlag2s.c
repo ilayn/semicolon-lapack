@@ -1,6 +1,6 @@
 /**
  * @file dlag2s.c
- * @brief Convert double precision matrix to single precision.
+ * @brief Convert f64 precision matrix to single precision.
  */
 
 #include <math.h>
@@ -36,20 +36,20 @@
 void dlag2s(
     const int m,
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
     float * const restrict SA,
     const int ldsa,
     int *info)
 {
     // Maximum single precision value
-    const double rmax = (double)FLT_MAX;
+    const f64 rmax = (f64)FLT_MAX;
 
     *info = 0;
 
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            double val = A[i + j * lda];
+            f64 val = A[i + j * lda];
             if (fabs(val) > rmax) {
                 *info = 1;
                 return;

@@ -56,15 +56,15 @@ void dorm22(
     const int n,
     const int n1,
     const int n2,
-    const double* const restrict Q,
+    const f64* const restrict Q,
     const int ldq,
-    double* const restrict C,
+    f64* const restrict C,
     const int ldc,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int left, lquery, notran;
     int i, ldwork, len, lwkopt, nb, nq, nw;
@@ -105,7 +105,7 @@ void dorm22(
 
     if (*info == 0) {
         lwkopt = m * n;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -245,5 +245,5 @@ void dorm22(
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

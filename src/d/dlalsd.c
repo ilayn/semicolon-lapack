@@ -8,9 +8,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ONE = 1.0;
-static const double ZERO = 0.0;
-static const double TWO = 2.0;
+static const f64 ONE = 1.0;
+static const f64 ZERO = 0.0;
+static const f64 TWO = 2.0;
 
 /**
  * DLALSD uses the singular value decomposition of A to solve the least
@@ -48,16 +48,16 @@ static const double TWO = 2.0;
  *                         - > 0: The algorithm failed to compute a singular value.
  */
 void dlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
-            double* const restrict D, double* const restrict E,
-            double* const restrict B, const int ldb, const double rcond,
-            int* rank, double* const restrict work, int* const restrict iwork,
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict B, const int ldb, const f64 rcond,
+            int* rank, f64* const restrict work, int* const restrict iwork,
             int* info)
 {
     int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
     int givptr, i, icmpq1, icmpq2, iwk, j, k_idx, nlvl;
     int nm1, nsize, nsub, nwork, perm, poles, s_idx, sizei;
     int smlszp, sqre, st, st1, u_idx, vt_idx, z_idx;
-    double cs, eps, orgnrm, r, rcnd, sn, tol;
+    f64 cs, eps, orgnrm, r, rcnd, sn, tol;
 
     *info = 0;
 
@@ -171,7 +171,7 @@ void dlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
     }
 
     /* Book-keeping and setting up some constants. */
-    nlvl = (int)(log((double)n / (double)(smlsiz + 1)) / log(TWO)) + 1;
+    nlvl = (int)(log((f64)n / (f64)(smlsiz + 1)) / log(TWO)) + 1;
 
     smlszp = smlsiz + 1;
 

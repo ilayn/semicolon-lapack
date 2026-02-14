@@ -9,8 +9,8 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
 
 /**
  * DGESDD computes the singular value decomposition (SVD) of a real
@@ -54,11 +54,11 @@ static const double ONE = 1.0;
  *                         - = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
 void dgesdd(const char* jobz, const int m, const int n,
-            double* const restrict A, const int lda,
-            double* const restrict S,
-            double* const restrict U, const int ldu,
-            double* const restrict VT, const int ldvt,
-            double* const restrict work, const int lwork,
+            f64* const restrict A, const int lda,
+            f64* const restrict S,
+            f64* const restrict U, const int ldu,
+            f64* const restrict VT, const int ldvt,
+            f64* const restrict work, const int lwork,
             int* const restrict IWORK, int* info)
 {
     int lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
@@ -72,9 +72,9 @@ void dgesdd(const char* jobz, const int m, const int n,
     int lwork_dormbr_prt_mm, lwork_dormbr_qln_mm;
     int lwork_dormbr_prt_mn, lwork_dormbr_qln_mn;
     int lwork_dormbr_prt_nn, lwork_dormbr_qln_nn;
-    double anrm, bignum, eps, smlnum;
-    double dum[1];   /* For dlange work and dbdsdc Q when not used */
-    double dum1[1];  /* For workspace query results */
+    f64 anrm, bignum, eps, smlnum;
+    f64 dum[1];   /* For dlange work and dbdsdc Q when not used */
+    f64 dum1[1];  /* For workspace query results */
     int idum[1];     /* For dbdsdc IQ when not used */
 
     /* Test the input arguments */
@@ -313,7 +313,7 @@ void dgesdd(const char* jobz, const int m, const int n,
         }
 
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -773,5 +773,5 @@ void dgesdd(const char* jobz, const int m, const int n,
     }
 
     /* Return optimal workspace in WORK(1) */
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 }

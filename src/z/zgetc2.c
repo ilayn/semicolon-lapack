@@ -39,15 +39,15 @@
  */
 void zgetc2(
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* const restrict ipiv,
     int* const restrict jpiv,
     int* info)
 {
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    double eps, smlnum, bignum, smin, xmax;
+    f64 eps, smlnum, bignum, smin, xmax;
     int i, ip, ipv, j, jp, jpv;
 
     *info = 0;

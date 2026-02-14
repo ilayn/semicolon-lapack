@@ -36,16 +36,16 @@
 void spocon(
     const char* uplo,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float anorm,
-    float* rcond,
-    float* const restrict work,
+    const f32 anorm,
+    f32* rcond,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     // Test the input parameters
     *info = 0;
@@ -74,19 +74,19 @@ void spocon(
     }
 
     // Safe minimum
-    float smlnum = slamch("S");
+    f32 smlnum = slamch("S");
 
     // Estimate the 1-norm of inv(A).
     int kase = 0;
     char normin = 'N';
     int isave[3] = {0, 0, 0};
-    float ainvnm;
+    f32 ainvnm;
 
     for (;;) {
         slacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
         if (kase == 0) break;
 
-        float scalel, scaleu;
+        f32 scalel, scaleu;
         int linfo;
 
         if (upper) {
@@ -110,7 +110,7 @@ void spocon(
         }
 
         // Multiply by 1/SCALE if doing so will not cause overflow.
-        float scale = scalel * scaleu;
+        f32 scale = scalel * scaleu;
         if (scale != ONE) {
             int ix = cblas_isamax(n, work, 1);
             if (scale < fabsf(work[ix]) * smlnum || scale == ZERO) {

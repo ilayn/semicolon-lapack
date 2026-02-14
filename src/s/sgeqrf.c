@@ -31,9 +31,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void sgeqrf(const int m, const int n,
-            float * const restrict A, const int lda,
-            float * const restrict tau,
-            float * const restrict work, const int lwork,
+            f32 * const restrict A, const int lda,
+            f32 * const restrict tau,
+            f32 * const restrict work, const int lwork,
             int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -58,7 +58,7 @@ void sgeqrf(const int m, const int n,
             work[0] = 1.0f;
         } else {
             nb = lapack_get_nb("GEQRF");
-            work[0] = (float)(n * nb);
+            work[0] = (f32)(n * nb);
         }
         if (!lquery && lwork < (k > 0 ? (n > 1 ? n : 1) : 1)) {
             *info = -7;
@@ -131,5 +131,5 @@ void sgeqrf(const int m, const int n,
         sgeqr2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (float)iws;
+    work[0] = (f32)iws;
 }

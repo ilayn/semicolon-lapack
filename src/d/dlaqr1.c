@@ -19,7 +19,7 @@
  * or
  *    2) si1 = si2 = 0.
  *
- * This is useful for starting double implicit shift bulges in the QR algorithm.
+ * This is useful for starting f64 implicit shift bulges in the QR algorithm.
  *
  * @param[in] n       Order of the matrix H. n must be either 2 or 3.
  * @param[in] H       Double precision array, dimension (ldh, n).
@@ -32,14 +32,14 @@
  * @param[out] v      Double precision array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-SEMICOLON_API void dlaqr1(const int n, const double* H, const int ldh,
-                          const double sr1, const double si1,
-                          const double sr2, const double si2,
-                          double* v)
+SEMICOLON_API void dlaqr1(const int n, const f64* H, const int ldh,
+                          const f64 sr1, const f64 si1,
+                          const f64 sr2, const f64 si2,
+                          f64* v)
 {
-    const double zero = 0.0;
+    const f64 zero = 0.0;
 
-    double h21s, h31s, s;
+    f64 h21s, h31s, s;
 
     /* Quick return if possible */
     if (n != 2 && n != 3) {

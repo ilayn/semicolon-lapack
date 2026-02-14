@@ -37,11 +37,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zunghr(const int n, const int ilo, const int ihi,
-            double complex* A, const int lda, const double complex* tau,
-            double complex* work, const int lwork, int* info)
+            c128* A, const int lda, const c128* tau,
+            c128* work, const int lwork, int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int lquery;
     int i, iinfo, j, lwkopt, nb, nh;
@@ -71,7 +71,7 @@ void zunghr(const int n, const int ilo, const int ihi,
     if (*info == 0) {
         nb = lapack_get_nb("ORGQR");
         lwkopt = nh_max_1 * nb;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -119,5 +119,5 @@ void zunghr(const int n, const int ilo, const int ihi,
         zungqr(nh, nh, nh, &A[(ilo + 1) + (ilo + 1) * lda], lda,
                &tau[ilo], work, lwork, &iinfo);
     }
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

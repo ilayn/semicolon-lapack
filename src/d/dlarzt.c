@@ -49,11 +49,11 @@
  */
 void dlarzt(const char* direct, const char* storev,
             const int n, const int k,
-            double * const restrict V, const int ldv,
-            const double * const restrict tau,
-            double * const restrict T, const int ldt)
+            f64 * const restrict V, const int ldv,
+            const f64 * const restrict tau,
+            f64 * const restrict T, const int ldt)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     int i, j, info;
 
     /* Check for currently supported options */

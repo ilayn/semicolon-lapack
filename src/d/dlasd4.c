@@ -9,13 +9,13 @@
 
 /* dlaed6 is declared in semicolon_lapack_double.h */
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double TWO = 2.0;
-static const double THREE = 3.0;
-static const double FOUR = 4.0;
-static const double EIGHT = 8.0;
-static const double TEN = 10.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const f64 TWO = 2.0;
+static const f64 THREE = 3.0;
+static const f64 FOUR = 4.0;
+static const f64 EIGHT = 8.0;
+static const f64 TEN = 10.0;
 
 static const int MAXIT = 400;
 
@@ -37,19 +37,19 @@ static const int MAXIT = 400;
  * @param[out]    info
  *                         - = 0: successful exit. > 0: if info = 1, the updating process failed.
  */
-void dlasd4(const int n, const int i, const double* const restrict D,
-            const double* const restrict Z, double* const restrict delta,
-            const double rho, double* sigma, double* const restrict work,
+void dlasd4(const int n, const int i, const f64* const restrict D,
+            const f64* const restrict Z, f64* const restrict delta,
+            const f64 rho, f64* sigma, f64* const restrict work,
             int* info)
 {
     /* Local variables */
     int orgati, swtch, swtch3, geomavg;
     int ii, iim1, iip1, ip1, iter, j, niter;
-    double a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
-    double dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps;
-    double erretm, eta, phi, prew, psi, rhoinv, sglb;
-    double sgub, tau, tau2, temp, temp1, temp2, w;
-    double dd[3], zz[3];
+    f64 a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
+    f64 dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps;
+    f64 erretm, eta, phi, prew, psi, rhoinv, sglb;
+    f64 sgub, tau, tau2, temp, temp1, temp2, w;
+    f64 dd[3], zz[3];
     int iinfo;
 
     /* Quick return for n=1 and n=2 */

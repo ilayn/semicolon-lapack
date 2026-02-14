@@ -70,16 +70,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zhetrd_he2hb(const char* uplo, const int n, const int kd,
-                  double complex* A, const int lda,
-                  double complex* AB, const int ldab,
-                  double complex* tau,
-                  double complex* work, const int lwork, int* info)
+                  c128* A, const int lda,
+                  c128* AB, const int ldab,
+                  c128* tau,
+                  c128* work, const int lwork, int* info)
 {
-    const double rone = 1.0;
-    const double complex zero = CMPLX(0.0, 0.0);
-    const double complex one = CMPLX(1.0, 0.0);
-    const double complex mone = CMPLX(-1.0, 0.0);
-    const double complex mhalf = CMPLX(-0.5, 0.0);
+    const f64 rone = 1.0;
+    const c128 zero = CMPLX(0.0, 0.0);
+    const c128 one = CMPLX(1.0, 0.0);
+    const c128 mone = CMPLX(-1.0, 0.0);
+    const c128 mhalf = CMPLX(-0.5, 0.0);
 
     int lquery, upper;
     int i, j, iinfo, lwmin, pn, pk, lk;
@@ -115,7 +115,7 @@ void zhetrd_he2hb(const char* uplo, const int n, const int kd,
         xerbla("ZHETRD_HE2HB", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLX((double)lwmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
         return;
     }
 
@@ -272,5 +272,5 @@ void zhetrd_he2hb(const char* uplo, const int n, const int kd,
         }
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

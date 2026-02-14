@@ -51,21 +51,21 @@
 void slaic1(
     const int job,
     const int j,
-    const float * const restrict x,
-    const float sest,
-    const float * const restrict w,
-    const float gamma,
-    float *sestpr,
-    float *s,
-    float *c)
+    const f32 * const restrict x,
+    const f32 sest,
+    const f32 * const restrict w,
+    const f32 gamma,
+    f32 *sestpr,
+    f32 *s,
+    f32 *c)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float HALF = 0.5f;
-    const float FOUR = 4.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 HALF = 0.5f;
+    const f32 FOUR = 4.0f;
 
-    float absalp, absest, absgam, alpha, b, cosine, eps,
+    f32 absalp, absest, absgam, alpha, b, cosine, eps,
            norma, s1, s2, sine, t, test, tmp, zeta1, zeta2;
 
     eps = FLT_EPSILON;

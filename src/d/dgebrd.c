@@ -60,10 +60,10 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgebrd(const int m, const int n, double* const restrict A, const int lda,
-            double* const restrict D, double* const restrict E,
-            double* const restrict tauq, double* const restrict taup,
-            double* const restrict work, const int lwork, int* info)
+void dgebrd(const int m, const int n, f64* const restrict A, const int lda,
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict tauq, f64* const restrict taup,
+            f64* const restrict work, const int lwork, int* info)
 {
     int i, j, iinfo;
     int lquery, minmn, nb, nbmin, nx;
@@ -81,7 +81,7 @@ void dgebrd(const int m, const int n, double* const restrict A, const int lda,
         if (nb < 1) nb = 1;
         lwkopt = (m + n) * nb;
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 
     lquery = (lwork == -1);
     if (m < 0) {
@@ -179,5 +179,5 @@ void dgebrd(const int m, const int n, double* const restrict A, const int lda,
     /* Use unblocked code to reduce the remainder of the matrix */
     dgebd2(m - i, n - i, &A[i + i * lda], lda, &D[i], &E[i],
            &tauq[i], &taup[i], work, &iinfo);
-    work[0] = (double)ws;
+    work[0] = (f64)ws;
 }

@@ -58,17 +58,17 @@ void zhbev(
     const char* uplo,
     const int n,
     const int kd,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double* const restrict W,
-    double complex* const restrict Z,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     int lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -111,18 +111,18 @@ void zhbev(
 
     /* Get machine constants. */
 
-    double safmin = dlamch("Safe minimum");
-    double eps = dlamch("Precision");
-    double smlnum = safmin / eps;
-    double bignum = ONE / smlnum;
-    double rmin = sqrt(smlnum);
-    double rmax = sqrt(bignum);
+    f64 safmin = dlamch("Safe minimum");
+    f64 eps = dlamch("Precision");
+    f64 smlnum = safmin / eps;
+    f64 bignum = ONE / smlnum;
+    f64 rmin = sqrt(smlnum);
+    f64 rmax = sqrt(bignum);
 
     /* Scale matrix to allowable range, if necessary. */
 
-    double anrm = zlanhb("M", uplo, n, kd, AB, ldab, rwork);
+    f64 anrm = zlanhb("M", uplo, n, kd, AB, ldab, rwork);
     int iscale = 0;
-    double sigma;
+    f64 sigma;
     if (anrm > ZERO && anrm < rmin) {
         iscale = 1;
         sigma = rmin / anrm;

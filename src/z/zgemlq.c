@@ -48,10 +48,10 @@
  */
 void zgemlq(const char* side, const char* trans,
             const int m, const int n, const int k,
-            const double complex* const restrict A, const int lda,
-            const double complex* const restrict T, const int tsize,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work, const int lwork,
+            const c128* const restrict A, const int lda,
+            const c128* const restrict T, const int tsize,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work, const int lwork,
             int* info)
 {
     int left, right, tran, notran, lquery;
@@ -111,7 +111,7 @@ void zgemlq(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (double complex)lwmin;
+        work[0] = (c128)lwmin;
     }
 
     if (*info != 0) {
@@ -138,5 +138,5 @@ void zgemlq(const char* side, const char* trans,
                  A, lda, &T[5], mb, C, ldc, work, lwork, info);
     }
 
-    work[0] = (double complex)lwmin;
+    work[0] = (c128)lwmin;
 }

@@ -41,16 +41,16 @@ void zgtts2(
     const int itrans,
     const int n,
     const int nrhs,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU,
-    const double complex* const restrict DU2,
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU,
+    const c128* const restrict DU2,
     const int* const restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb)
 {
     int i, j;
-    double complex temp;
+    c128 temp;
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {

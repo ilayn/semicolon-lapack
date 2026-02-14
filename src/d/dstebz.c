@@ -47,27 +47,27 @@
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
 void dstebz(const char* range, const char* order, const int n,
-            const double vl, const double vu, const int il, const int iu,
-            const double abstol,
-            const double* const restrict D,
-            const double* const restrict E,
+            const f64 vl, const f64 vu, const int il, const int iu,
+            const f64 abstol,
+            const f64* const restrict D,
+            const f64* const restrict E,
             int* m, int* nsplit,
-            double* const restrict W,
+            f64* const restrict W,
             int* const restrict iblock,
             int* const restrict isplit,
-            double* const restrict work,
+            f64* const restrict work,
             int* const restrict iwork,
             int* info)
 {
     /* Internal parameters from the Fortran source */
-    const double FUDGE = 2.1;
-    const double RELFAC = 2.0;
+    const f64 FUDGE = 2.1;
+    const f64 RELFAC = 2.0;
 
     int ncnvrg, toofew;
     int ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
         im, in, iorder, iout, irange, itmax,
         itmp1, iw, iwoff, j, jb, jdisc, je, nb, nwl, nwu;
-    double atoli, bnorm, gl, gu, pivmin, rtoli, safemn,
+    f64 atoli, bnorm, gl, gu, pivmin, rtoli, safemn,
            tmp1, tmp2, tnorm, ulp, wkill, wl, wlu = 0.0, wu, wul = 0.0;
     int idumma[1];
     int m_val;
@@ -336,7 +336,7 @@ void dstebz(const char* range, const char* order, const int n,
          */
         tnorm = fabs(D[0]) + fabs(E[0]);
         {
-            double t = fabs(D[n - 1]) + fabs(E[n - 2]);
+            f64 t = fabs(D[n - 1]) + fabs(E[n - 2]);
             if (t > tnorm) tnorm = t;
         }
 
@@ -421,7 +421,7 @@ void dstebz(const char* range, const char* order, const int n,
 
             /* Compute ATOLI for the current submatrix */
             if (abstol <= 0.0) {
-                double agl = fabs(gl), agu = fabs(gu);
+                f64 agl = fabs(gl), agu = fabs(gu);
                 atoli = ulp * (agl > agu ? agl : agu);
             } else {
                 atoli = abstol;

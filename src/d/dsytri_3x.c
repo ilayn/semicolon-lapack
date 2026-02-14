@@ -63,20 +63,20 @@
 void dsytri_3x(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    const double* restrict E,
+    const f64* restrict E,
     const int* restrict ipiv,
-    double* restrict work,
+    f64* restrict work,
     const int nb,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper;
     int cut, i, icount, invd, ip, k, nnb, j, u11;
-    double ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
+    f64 ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
     int ldwork = n + nb + 1;
 
     *info = 0;

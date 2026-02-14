@@ -22,7 +22,7 @@ void slasdt(const int n, int* lvl, int* nd,
             const int msub)
 {
     int maxn = (n > 1) ? n : 1;
-    float temp = logf((float)maxn / (float)(msub + 1)) / logf(2.0f);
+    f32 temp = logf((f32)maxn / (f32)(msub + 1)) / logf(2.0f);
     *lvl = (int)temp + 1;
 
     int i = n / 2;

@@ -39,18 +39,18 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgehrd(const int n, const int ilo, const int ihi,
-            double* A, const int lda, double* tau,
-            double* work, const int lwork, int* info)
+            f64* A, const int lda, f64* tau,
+            f64* work, const int lwork, int* info)
 {
     const int NBMAX = 64;
     const int LDT = NBMAX + 1;
     const int TSIZE = LDT * NBMAX;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery;
     int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
-    double ei;
+    f64 ei;
     int max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
@@ -81,7 +81,7 @@ void dgehrd(const int n, const int ilo, const int ihi,
             if (nb > NBMAX) nb = NBMAX;
             lwkopt = n * nb + TSIZE;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -178,5 +178,5 @@ void dgehrd(const int n, const int ilo, const int ihi,
     /* Use unblocked code to reduce the rest of the matrix */
     dgehd2(n, i, ihi, A, lda, tau, work, &iinfo);
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

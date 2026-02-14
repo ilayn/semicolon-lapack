@@ -50,17 +50,17 @@
 void dpstrf(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     int* const restrict piv,
     int* rank,
-    const double tol,
-    double* const restrict work,
+    const f64 tol,
+    f64* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double NEG_ONE = -1.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 NEG_ONE = -1.0;
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -97,7 +97,7 @@ void dpstrf(
 
     // Compute stopping value
     int pvt = 0;
-    double ajj = A[0];
+    f64 ajj = A[0];
     for (int i = 1; i < n; i++) {
         if (A[i + i * lda] > ajj) {
             pvt = i;
@@ -111,7 +111,7 @@ void dpstrf(
     }
 
     // Compute stopping value if not supplied
-    double dstop;
+    f64 dstop;
     if (tol < ZERO) {
         dstop = n * dlamch("Epsilon") * ajj;
     } else {
@@ -137,7 +137,7 @@ void dpstrf(
                 // stored in the second half of WORK
                 for (int i = j; i < n; i++) {
                     if (j > k) {
-                        double tmp = A[(j - 1) + i * lda];
+                        f64 tmp = A[(j - 1) + i * lda];
                         work[i] = work[i] + tmp * tmp;
                     }
                     work[n + i] = A[i + i * lda] - work[i];
@@ -146,7 +146,7 @@ void dpstrf(
                 if (j > 0) {
                     // Find max in work[n+j : n+n-1]
                     int itemp = 0;
-                    double wmax = work[n + j];
+                    f64 wmax = work[n + j];
                     for (int i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
@@ -178,7 +178,7 @@ void dpstrf(
                     }
 
                     // Swap dot products and PIV
-                    double dtemp = work[j];
+                    f64 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
                     int itemp = piv[pvt];
@@ -229,7 +229,7 @@ void dpstrf(
                 // stored in the second half of WORK
                 for (int i = j; i < n; i++) {
                     if (j > k) {
-                        double tmp = A[i + (j - 1) * lda];
+                        f64 tmp = A[i + (j - 1) * lda];
                         work[i] = work[i] + tmp * tmp;
                     }
                     work[n + i] = A[i + i * lda] - work[i];
@@ -238,7 +238,7 @@ void dpstrf(
                 if (j > 0) {
                     // Find max in work[n+j : n+n-1]
                     int itemp = 0;
-                    double wmax = work[n + j];
+                    f64 wmax = work[n + j];
                     for (int i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
@@ -270,7 +270,7 @@ void dpstrf(
                     }
 
                     // Swap dot products and PIV
-                    double dtemp = work[j];
+                    f64 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
                     int itemp = piv[pvt];

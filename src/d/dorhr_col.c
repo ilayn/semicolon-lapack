@@ -54,11 +54,11 @@ void dorhr_col(
     const int m,
     const int n,
     const int nb,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict T,
+    f64* restrict T,
     const int ldt,
-    double* restrict D,
+    f64* restrict D,
     int* info)
 {
     int i, iinfo, j, jb, jbtemp1, jbtemp2, jnb;

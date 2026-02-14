@@ -32,16 +32,16 @@
 void zlarcm(
     const int m,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict C,
+    c128* const restrict C,
     const int ldc,
-    double* const restrict rwork)
+    f64* const restrict rwork)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     int i, j, l;
 
     if ((m == 0) || (n == 0)) {

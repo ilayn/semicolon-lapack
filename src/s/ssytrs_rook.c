@@ -53,16 +53,16 @@ void ssytrs_rook(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {
     int upper;
     int j, k, kp;
-    float ak, akm1, akm1k, bk, bkm1, denom;
+    f32 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

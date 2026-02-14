@@ -60,16 +60,16 @@
  *                         - > 0:  if INFO = i, the algorithm failed to converge; i
  *                           off-diagonal elements of E did not converge to zero.
  */
-void sstevd(const char* jobz, const int n, float* D, float* E,
-            float* Z, const int ldz, float* work, const int lwork,
+void sstevd(const char* jobz, const int n, f32* D, f32* E,
+            f32* Z, const int ldz, f32* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int wantz, lquery;
     int iscale, liwmin, lwmin;
-    float bignum, eps, rmax, rmin, safmin, sigma, smlnum, tnrm;
+    f32 bignum, eps, rmax, rmin, safmin, sigma, smlnum, tnrm;
 
     /* Test the input parameters. */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -92,7 +92,7 @@ void sstevd(const char* jobz, const int n, float* D, float* E,
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -157,6 +157,6 @@ void sstevd(const char* jobz, const int n, float* D, float* E,
         cblas_sscal(n, ONE / sigma, D, 1);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

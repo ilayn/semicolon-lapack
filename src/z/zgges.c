@@ -95,27 +95,27 @@
  */
 void zgges(const char* jobvsl, const char* jobvsr, const char* sort,
            zselect2_t selctg, const int n,
-           double complex* A, const int lda,
-           double complex* B, const int ldb,
+           c128* A, const int lda,
+           c128* B, const int ldb,
            int* sdim,
-           double complex* alpha, double complex* beta,
-           double complex* VSL, const int ldvsl,
-           double complex* VSR, const int ldvsr,
-           double complex* work, const int lwork,
-           double* rwork, int* bwork, int* info)
+           c128* alpha, c128* beta,
+           c128* VSL, const int ldvsl,
+           c128* VSR, const int ldvsr,
+           c128* work, const int lwork,
+           f64* rwork, int* bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
     int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
     int iright, irows, irwrk, itau, iwrk, lwkmin, lwkopt;
-    double anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps,
+    f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps,
            pvsl, pvsr, smlnum;
     int idum[1];
-    double dif[2];
+    f64 dif[2];
     int nb_geqrf, nb_unmqr, nb_ungqr;
 
     /* Decode the input arguments */
@@ -175,7 +175,7 @@ void zgges(const char* jobvsl, const char* jobvsr, const char* sort,
         if (ilvsl) {
             lwkopt = lwkopt > n + n * nb_ungqr ? lwkopt : n + n * nb_ungqr;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < lwkmin && !lquery) {
             *info = -18;
@@ -353,7 +353,7 @@ void zgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L30:
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 
     return;
 }

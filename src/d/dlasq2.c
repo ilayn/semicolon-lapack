@@ -40,22 +40,22 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void dlasq2(const int n, double* const restrict Z, int* info)
+void dlasq2(const int n, f64* const restrict Z, int* info)
 {
     /* Constants from the Fortran source */
-    const double CBIAS  = 1.50;
-    const double ZERO   = 0.0;
-    const double HALF   = 0.5;
-    const double ONE    = 1.0;
-    const double TWO    = 2.0;
-    const double FOUR   = 4.0;
-    const double HUNDRD = 100.0;
+    const f64 CBIAS  = 1.50;
+    const f64 ZERO   = 0.0;
+    const f64 HALF   = 0.5;
+    const f64 ONE    = 1.0;
+    const f64 TWO    = 2.0;
+    const f64 FOUR   = 4.0;
+    const f64 HUNDRD = 100.0;
 
     /* Local scalars */
     int ieee;
     int i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb,
         k, kmin, n0, n1, nbig, ndiv, nfail, pp, splt, ttype;
-    double d, dee, deemin, desig, dmin, dmin1, dmin2, dn,
+    f64 d, dee, deemin, desig, dmin, dmin1, dmin2, dn,
            dn1, dn2, e, emax, emin, eps, g, oldemn, qmax,
            qmin, s, safmin, sigma, t, tau, temp, tol,
            tol2, trace, zmax, tempe, tempq;
@@ -477,8 +477,8 @@ L170:
     /* Store trace, sum(eigenvalues) and information on performance. */
     Z[2 * n] = trace;
     Z[2 * n + 1] = e;
-    Z[2 * n + 2] = (double)iter;
-    Z[2 * n + 3] = (double)ndiv / (double)(n * n);
-    Z[2 * n + 4] = HUNDRD * nfail / (double)iter;
+    Z[2 * n + 2] = (f64)iter;
+    Z[2 * n + 3] = (f64)ndiv / (f64)(n * n);
+    Z[2 * n + 4] = HUNDRD * nfail / (f64)iter;
     return;
 }

@@ -8,13 +8,13 @@
 
 void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
                   const int n, const int kd,
-                  double* AB, const int ldab,
-                  double* D, double* E,
-                  double* hous, const int lhous,
-                  double* work, const int lwork, int* info)
+                  f64* AB, const int ldab,
+                  f64* D, f64* E,
+                  f64* hous, const int lhous,
+                  f64* work, const int lwork, int* info)
 {
-    const double rzero = 0.0;
-    const double zero = 0.0;
+    const f64 rzero = 0.0;
+    const f64 zero = 0.0;
 
     int lquery, wantq, upper, afters1;
     int i, m, k, ib, sweepid, myid, shift, stt, st;
@@ -60,8 +60,8 @@ void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     }
 
     if (*info == 0) {
-        hous[0] = (double)lhmin;
-        work[0] = (double)lwmin;
+        hous[0] = (f64)lhmin;
+        work[0] = (f64)lwmin;
     }
 
     if (*info != 0) {
@@ -139,9 +139,9 @@ void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     thgrsiz = n;
     grsiz = 1;
     shift = 3;
-    (void)ceil((double)n / (double)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceil((double)shift / (double)grsiz);
-    thgrnb = (int)ceil((double)(n - 1) / (double)thgrsiz);
+    (void)ceil((f64)n / (f64)kd);  /* nbtiles: unused OpenMP placeholder */
+    stepercol = (int)ceil((f64)shift / (f64)grsiz);
+    thgrnb = (int)ceil((f64)(n - 1) / (f64)thgrsiz);
 
     dlacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     dlaset("A", kd, n, zero, zero, &work[awpos], lda);
@@ -210,5 +210,5 @@ void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

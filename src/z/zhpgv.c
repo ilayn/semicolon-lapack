@@ -61,13 +61,13 @@ void zhpgv(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    double complex* const restrict BP,
-    double* const restrict W,
-    double complex* const restrict Z,
+    c128* const restrict AP,
+    c128* const restrict BP,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');

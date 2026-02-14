@@ -53,14 +53,14 @@
  *                           converged to zero.
  */
 void ssteqr(const char* compz, const int n,
-            float* const restrict D, float* const restrict E,
-            float* const restrict Z, const int ldz,
-            float* const restrict work, int* info)
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict Z, const int ldz,
+            f32* const restrict work, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
     const int MAXIT = 30;
 
     /* Test the input parameters. */
@@ -100,12 +100,12 @@ void ssteqr(const char* compz, const int n,
     }
 
     /* Determine the unit roundoff and over/underflow thresholds. */
-    float eps = slamch("E");
-    float eps2 = eps * eps;
-    float safmin = slamch("S");
-    float safmax = ONE / safmin;
-    float ssfmax = sqrtf(safmax) / THREE;
-    float ssfmin = sqrtf(safmin) / eps2;
+    f32 eps = slamch("E");
+    f32 eps2 = eps * eps;
+    f32 safmin = slamch("S");
+    f32 safmax = ONE / safmin;
+    f32 ssfmax = sqrtf(safmax) / THREE;
+    f32 ssfmin = sqrtf(safmin) / eps2;
 
     /* Compute the eigenvalues and eigenvectors of the tridiagonal matrix. */
     if (icompz == 2)
@@ -127,7 +127,7 @@ void ssteqr(const char* compz, const int n,
         int m;
         if (l1 <= nm1 - 1) {
             for (m = l1; m <= nm1 - 1; m++) {
-                float tst = fabsf(E[m]);
+                f32 tst = fabsf(E[m]);
                 if (tst == ZERO)
                     break;
                 if (tst <= (sqrtf(fabsf(D[m])) * sqrtf(fabsf(D[m + 1]))) * eps) {
@@ -151,7 +151,7 @@ void ssteqr(const char* compz, const int n,
 
         /* Scale submatrix in rows and columns l to lend */
         int subsize = lend - l + 1;
-        float anorm = slanst("M", subsize, &D[l], &E[l]);
+        f32 anorm = slanst("M", subsize, &D[l], &E[l]);
         int iscale = 0;
         if (anorm == ZERO)
             continue;
@@ -182,7 +182,7 @@ void ssteqr(const char* compz, const int n,
                 if (l != lend) {
                     int lendm1 = lend - 1;
                     for (mm = l; mm <= lendm1; mm++) {
-                        float tst = fabsf(E[mm]) * fabsf(E[mm]);
+                        f32 tst = fabsf(E[mm]) * fabsf(E[mm]);
                         if (tst <= (eps2 * fabsf(D[mm])) * fabsf(D[mm + 1]) + safmin)
                             break;
                     }
@@ -194,7 +194,7 @@ void ssteqr(const char* compz, const int n,
 
                 if (mm < lend)
                     E[mm] = ZERO;
-                float p = D[l];
+                f32 p = D[l];
                 if (mm == l) {
                     /* Eigenvalue found. */
                     D[l] = p;
@@ -207,9 +207,9 @@ void ssteqr(const char* compz, const int n,
                 /* If remaining matrix is 2-by-2, use SLAE2 or SLAEV2
                  * to compute its eigensystem. */
                 if (mm == l + 1) {
-                    float rt1, rt2;
+                    f32 rt1, rt2;
                     if (icompz > 0) {
-                        float c, s;
+                        f32 c, s;
                         slaev2(D[l], E[l], D[l + 1], &rt1, &rt2, &c, &s);
                         work[l] = c;
                         work[n - 1 + l] = s;
@@ -232,19 +232,19 @@ void ssteqr(const char* compz, const int n,
                 jtot = jtot + 1;
 
                 /* Form shift. */
-                float g = (D[l + 1] - p) / (TWO * E[l]);
-                float r = slapy2(g, ONE);
+                f32 g = (D[l + 1] - p) / (TWO * E[l]);
+                f32 r = slapy2(g, ONE);
                 g = D[mm] - p + (E[l] / (g + copysignf(r, g)));
 
-                float s = ONE;
-                float c = ONE;
+                f32 s = ONE;
+                f32 c = ONE;
                 p = ZERO;
 
                 /* Inner loop */
                 int mm1 = mm - 1;
                 for (int i = mm1; i >= l; i--) {
-                    float f = s * E[i];
-                    float b = c * E[i];
+                    f32 f = s * E[i];
+                    f32 b = c * E[i];
                     slartg(g, f, &c, &s, &r);
                     if (i != mm - 1)
                         E[i + 1] = r;
@@ -280,7 +280,7 @@ void ssteqr(const char* compz, const int n,
                 if (l != lend) {
                     int lendp1 = lend + 1;
                     for (mm = l; mm >= lendp1; mm--) {
-                        float tst = fabsf(E[mm - 1]) * fabsf(E[mm - 1]);
+                        f32 tst = fabsf(E[mm - 1]) * fabsf(E[mm - 1]);
                         if (tst <= (eps2 * fabsf(D[mm])) * fabsf(D[mm - 1]) + safmin)
                             break;
                     }
@@ -292,7 +292,7 @@ void ssteqr(const char* compz, const int n,
 
                 if (mm > lend)
                     E[mm - 1] = ZERO;
-                float p = D[l];
+                f32 p = D[l];
                 if (mm == l) {
                     /* Eigenvalue found. */
                     D[l] = p;
@@ -305,9 +305,9 @@ void ssteqr(const char* compz, const int n,
                 /* If remaining matrix is 2-by-2, use SLAE2 or SLAEV2
                  * to compute its eigensystem. */
                 if (mm == l - 1) {
-                    float rt1, rt2;
+                    f32 rt1, rt2;
                     if (icompz > 0) {
-                        float c, s;
+                        f32 c, s;
                         slaev2(D[l - 1], E[l - 1], D[l], &rt1, &rt2, &c, &s);
                         work[mm] = c;
                         work[n - 1 + mm] = s;
@@ -330,19 +330,19 @@ void ssteqr(const char* compz, const int n,
                 jtot = jtot + 1;
 
                 /* Form shift. */
-                float g = (D[l - 1] - p) / (TWO * E[l - 1]);
-                float r = slapy2(g, ONE);
+                f32 g = (D[l - 1] - p) / (TWO * E[l - 1]);
+                f32 r = slapy2(g, ONE);
                 g = D[mm] - p + (E[l - 1] / (g + copysignf(r, g)));
 
-                float s = ONE;
-                float c = ONE;
+                f32 s = ONE;
+                f32 c = ONE;
                 p = ZERO;
 
                 /* Inner loop */
                 int lm1 = l - 1;
                 for (int i = mm; i <= lm1; i++) {
-                    float f = s * E[i];
-                    float b = c * E[i];
+                    f32 f = s * E[i];
+                    f32 b = c * E[i];
                     slartg(g, f, &c, &s, &r);
                     if (i != mm)
                         E[i - 1] = r;
@@ -408,7 +408,7 @@ void ssteqr(const char* compz, const int n,
         for (int ii = 1; ii < n; ii++) {
             int i = ii - 1;
             int k = i;
-            float p = D[i];
+            f32 p = D[i];
             for (int j = ii; j < n; j++) {
                 if (D[j] < p) {
                     k = j;

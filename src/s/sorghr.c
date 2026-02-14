@@ -36,11 +36,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorghr(const int n, const int ilo, const int ihi,
-            float* A, const int lda, const float* tau,
-            float* work, const int lwork, int* info)
+            f32* A, const int lda, const f32* tau,
+            f32* work, const int lwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery;
     int i, iinfo, j, lwkopt, nb, nh;
@@ -70,7 +70,7 @@ void sorghr(const int n, const int ilo, const int ihi,
     if (*info == 0) {
         nb = lapack_get_nb("ORGQR");
         lwkopt = nh_max_1 * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -118,5 +118,5 @@ void sorghr(const int n, const int ilo, const int ihi,
         sorgqr(nh, nh, nh, &A[(ilo + 1) + (ilo + 1) * lda], lda,
                &tau[ilo], work, lwork, &iinfo);
     }
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

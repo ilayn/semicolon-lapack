@@ -40,23 +40,23 @@ void dtprfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const double* const restrict AP,
-    const double* const restrict B,
+    const f64* const restrict AP,
+    const f64* const restrict B,
     const int ldb,
-    const double* const restrict X,
+    const f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notran, nounit, upper;
     int i, j, k, kase, kc, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
 
     *info = 0;
@@ -208,10 +208,10 @@ void dtprfs(
         s = ZERO;
         for (i = 0; i < n; i++) {
             if (work[i] > safe2) {
-                double tmp = fabs(work[n + i]) / work[i];
+                f64 tmp = fabs(work[n + i]) / work[i];
                 if (s < tmp) s = tmp;
             } else {
-                double tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
+                f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                 if (s < tmp) s = tmp;
             }
         }
@@ -251,7 +251,7 @@ void dtprfs(
         // Normalize error
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double tmp = fabs(X[i + j * ldx]);
+            f64 tmp = fabs(X[i + j * ldx]);
             if (lstres < tmp) lstres = tmp;
         }
         if (lstres != ZERO)

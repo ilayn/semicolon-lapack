@@ -45,21 +45,21 @@
 void dgecon(
     const char* norm,
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    const double anorm,
-    double *rcond,
-    double * const restrict work,
+    const f64 anorm,
+    f64 *rcond,
+    f64 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int onenrm;
     char normin;
     int ix, kase, kase1;
-    double ainvnm, scale, sl, smlnum, su, hugeval;
+    f64 ainvnm, scale, sl, smlnum, su, hugeval;
     int isave[3];
     int linfo;
 

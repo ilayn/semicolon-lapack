@@ -73,22 +73,22 @@ void sorbdb5(
     const int m1,
     const int m2,
     const int n,
-    float* restrict X1,
+    f32* restrict X1,
     const int incx1,
-    float* restrict X2,
+    f32* restrict X2,
     const int incx2,
-    const float* const restrict Q1,
+    const f32* const restrict Q1,
     const int ldq1,
-    const float* const restrict Q2,
+    const f32* const restrict Q2,
     const int ldq2,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
     int childinfo, i, j;
-    float eps, norm, scl, ssq;
+    f32 eps, norm, scl, ssq;
 
     *info = 0;
     if (m1 < 0) {

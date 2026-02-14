@@ -52,17 +52,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zhetd2(const char* uplo, const int n, double complex* const restrict A,
-            const int lda, double* const restrict D, double* const restrict E,
-            double complex* const restrict tau, int* info)
+void zhetd2(const char* uplo, const int n, c128* const restrict A,
+            const int lda, f64* const restrict D, f64* const restrict E,
+            c128* const restrict tau, int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex HALF = CMPLX(0.5, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 HALF = CMPLX(0.5, 0.0);
 
     int upper;
     int i;
-    double complex alpha, taui;
+    c128 alpha, taui;
     CBLAS_UPLO cblas_uplo;
 
     /* Test the input parameters. */
@@ -109,14 +109,14 @@ void zhetd2(const char* uplo, const int n, double complex* const restrict A,
                             &ZERO, tau, 1);
 
                 /* Compute w := x - 1/2 * tau * (x**H * v) * v */
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(i + 1, tau, 1, &A[(i + 1) * lda], 1, &dotc);
                 alpha = -HALF * taui * dotc;
                 cblas_zaxpy(i + 1, &alpha, &A[(i + 1) * lda], 1, tau, 1);
 
                 /* Apply the transformation as a rank-2 update:
                  *   A := A - v * w**H - w * v**H */
-                double complex neg_one = CMPLX(-1.0, 0.0);
+                c128 neg_one = CMPLX(-1.0, 0.0);
                 cblas_zher2(CblasColMajor, cblas_uplo, i + 1, &neg_one,
                             &A[(i + 1) * lda], 1, tau, 1, A, lda);
 
@@ -155,14 +155,14 @@ void zhetd2(const char* uplo, const int n, double complex* const restrict A,
                             &ZERO, &tau[i], 1);
 
                 /* Compute w := x - 1/2 * tau * (x**H * v) * v */
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(ni, &tau[i], 1, &A[(i + 1) + i * lda], 1, &dotc);
                 alpha = -HALF * taui * dotc;
                 cblas_zaxpy(ni, &alpha, &A[(i + 1) + i * lda], 1, &tau[i], 1);
 
                 /* Apply the transformation as a rank-2 update:
                  *   A := A - v * w**H - w * v**H */
-                double complex neg_one = CMPLX(-1.0, 0.0);
+                c128 neg_one = CMPLX(-1.0, 0.0);
                 cblas_zher2(CblasColMajor, cblas_uplo, ni, &neg_one,
                             &A[(i + 1) + i * lda], 1, &tau[i], 1,
                             &A[(i + 1) + (i + 1) * lda], lda);

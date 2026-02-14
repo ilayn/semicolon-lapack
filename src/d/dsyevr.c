@@ -56,25 +56,25 @@
  *                         - > 0: Internal error
  */
 void dsyevr(const char* jobz, const char* range, const char* uplo,
-            const int n, double* const restrict A, const int lda,
-            const double vl, const double vu, const int il, const int iu,
-            const double abstol, int* m,
-            double* const restrict W,
-            double* const restrict Z, const int ldz,
+            const int n, f64* const restrict A, const int lda,
+            const f64 vl, const f64 vu, const int il, const int iu,
+            const f64 abstol, int* m,
+            f64* const restrict W,
+            f64* const restrict Z, const int ldz,
             int* const restrict isuppz,
-            double* const restrict work, const int lwork,
+            f64* const restrict work, const int lwork,
             int* const restrict iwork, const int liwork,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     int i, ieeeok, iinfo, imax, indd, inddd, inde, indee;
     int indibl, indifl, indisp, indiwo, indtau, indwk, indwkn;
     int iscale, j, jj, liwmin, llwork, llwrkn, lwkopt, lwmin, nb, nsplit;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
     /* Test the input parameters */
     /* IEEEOK = 1 means IEEE arithmetic is assumed (NaN/Inf handled properly) */
@@ -134,7 +134,7 @@ void dsyevr(const char* jobz, const char* range, const char* uplo,
         nb = lapack_get_nb("SYTRD");
         nb = nb > lapack_get_nb("ORMTR") ? nb : lapack_get_nb("ORMTR");
         lwkopt = (nb + 1) * n > lwmin ? (nb + 1) * n : lwmin;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         iwork[0] = liwmin;
     }
 
@@ -333,6 +333,6 @@ L30:
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
     iwork[0] = liwmin;
 }

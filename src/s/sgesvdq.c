@@ -8,8 +8,8 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
 
 /**
  * SGESVDQ computes the singular value decomposition (SVD) of a real
@@ -22,12 +22,12 @@ static const float ONE = 1.0f;
  */
 void sgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, float* const restrict A, const int lda,
-             float* const restrict S, float* const restrict U, const int ldu,
-             float* const restrict V, const int ldv, int* numrank,
+             const int m, const int n, f32* const restrict A, const int lda,
+             f32* const restrict S, f32* const restrict U, const int ldu,
+             f32* const restrict V, const int ldv, int* numrank,
              int* const restrict iwork, const int liwork,
-             float* const restrict work, const int lwork,
-             float* const restrict rwork, const int lrwork, int* info)
+             f32* const restrict work, const int lwork,
+             f32* const restrict rwork, const int lrwork, int* info)
 {
     int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
     int wntvr, wntva, rsvec, dntwv;
@@ -37,7 +37,7 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
     int iminwrk, rminwrk;
     int ierr, iwoff, nr, n1, optratio, p, q;
     int ascaled;
-    float big, epsln, sconda, sfmin, rtmp;
+    f32 big, epsln, sconda, sfmin, rtmp;
 
     /* Decode job parameters */
     wntus = (jobu[0] == 'S' || jobu[0] == 's' || jobu[0] == 'U' || jobu[0] == 'u');
@@ -159,9 +159,9 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     if (lquery) {
         iwork[0] = iminwrk;
-        work[0] = (float)optwrk;
-        work[1] = (float)minwrk;
-        rwork[0] = (float)rminwrk;
+        work[0] = (f32)optwrk;
+        work[1] = (f32)minwrk;
+        rwork[0] = (f32)rminwrk;
         return;
     }
 
@@ -233,8 +233,8 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
         }
 
         /* Scale if needed to prevent overflow */
-        if (rwork[0] > big / sqrtf((float)m)) {
-            slascl("G", 0, 0, sqrtf((float)m), ONE, m, n, A, lda, &ierr);
+        if (rwork[0] > big / sqrtf((f32)m)) {
+            slascl("G", 0, 0, sqrtf((f32)m), ONE, m, n, A, lda, &ierr);
             ascaled = 1;
         }
         /* Apply row permutation */
@@ -249,8 +249,8 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
             return;
         }
         /* Scale if needed to prevent overflow */
-        if (rtmp > big / sqrtf((float)m)) {
-            slascl("G", 0, 0, sqrtf((float)m), ONE, m, n, A, lda, &ierr);
+        if (rtmp > big / sqrtf((f32)m)) {
+            slascl("G", 0, 0, sqrtf((f32)m), ONE, m, n, A, lda, &ierr);
             ascaled = 1;
         }
     }
@@ -270,7 +270,7 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
     if (accla) {
         /* Aggressive truncation: |R(i,i)| < sqrt(n)*eps*|R(1,1)| */
         nr = 1;
-        rtmp = sqrtf((float)n) * epsln;
+        rtmp = sqrtf((f32)n) * epsln;
         for (p = 1; p < n; p++) {
             if (fabsf(A[p + p * lda]) < rtmp * fabsf(A[0])) break;
             nr++;
@@ -697,11 +697,11 @@ void sgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     /* Undo scaling */
     if (ascaled) {
-        slascl("G", 0, 0, ONE, sqrtf((float)m), nr, 1, S, n, &ierr);
+        slascl("G", 0, 0, ONE, sqrtf((f32)m), nr, 1, S, n, &ierr);
     }
 
     if (conda) rwork[0] = sconda;
-    rwork[1] = (float)(p - nr);
+    rwork[1] = (f32)(p - nr);
 
     *numrank = nr;
     *info = ierr;

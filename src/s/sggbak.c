@@ -41,10 +41,10 @@ void sggbak(
     const int n,
     const int ilo,
     const int ihi,
-    const float* const restrict lscale,
-    const float* const restrict rscale,
+    const f32* const restrict lscale,
+    const f32* const restrict rscale,
     const int m,
-    float* const restrict V,
+    f32* const restrict V,
     const int ldv,
     int* info)
 {

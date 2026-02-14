@@ -32,12 +32,12 @@ void sspgv(
     const char* jobz,
     const char* uplo,
     const int n,
-    float* restrict AP,
-    float* restrict BP,
-    float* restrict W,
-    float* restrict Z,
+    f32* restrict AP,
+    f32* restrict BP,
+    f32* restrict W,
+    f32* restrict Z,
     const int ldz,
-    float* restrict work,
+    f32* restrict work,
     int* info)
 {
     int wantz, upper;

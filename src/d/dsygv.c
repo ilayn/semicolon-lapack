@@ -33,16 +33,16 @@ void dsygv(
     const char* jobz,
     const char* uplo,
     const int n,
-    double* restrict A,
+    f64* restrict A,
     const int lda,
-    double* restrict B,
+    f64* restrict B,
     const int ldb,
-    double* restrict W,
-    double* restrict work,
+    f64* restrict W,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
     int wantz, upper, lquery;
     int lwkmin, lwkopt, nb, neig;
 
@@ -69,7 +69,7 @@ void dsygv(
         lwkmin = (3 * n - 1 > 1) ? 3 * n - 1 : 1;
         nb = lapack_get_nb("SYTRD");
         lwkopt = ((nb + 2) * n > lwkmin) ? (nb + 2) * n : lwkmin;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -11;
@@ -125,5 +125,5 @@ void dsygv(
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

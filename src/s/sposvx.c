@@ -59,31 +59,31 @@ void sposvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict AF,
+    f32* const restrict AF,
     const int ldaf,
     char* equed,
-    float* const restrict S,
-    float* const restrict B,
+    f32* const restrict S,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* rcond,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* rcond,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     *info = 0;
     int nofact = (fact[0] == 'N' || fact[0] == 'n');
     int equil = (fact[0] == 'E' || fact[0] == 'e');
     int rcequ = 0;
-    float smlnum = 0.0f, bignum = 0.0f, scond = ONE, amax;
+    f32 smlnum = 0.0f, bignum = 0.0f, scond = ONE, amax;
 
     if (nofact || equil) {
         *equed = 'N';
@@ -113,8 +113,8 @@ void sposvx(
         *info = -9;
     } else {
         if (rcequ) {
-            float smin_val = bignum;
-            float smax_val = ZERO;
+            f32 smin_val = bignum;
+            f32 smax_val = ZERO;
             for (int j = 0; j < n; j++) {
                 if (S[j] < smin_val) smin_val = S[j];
                 if (S[j] > smax_val) smax_val = S[j];
@@ -122,8 +122,8 @@ void sposvx(
             if (smin_val <= ZERO) {
                 *info = -10;
             } else if (n > 0) {
-                float smin_clamped = smin_val > smlnum ? smin_val : smlnum;
-                float smax_clamped = smax_val < bignum ? smax_val : bignum;
+                f32 smin_clamped = smin_val > smlnum ? smin_val : smlnum;
+                f32 smax_clamped = smax_val < bignum ? smax_val : bignum;
                 scond = smin_clamped / smax_clamped;
             } else {
                 scond = ONE;
@@ -176,7 +176,7 @@ void sposvx(
     }
 
     // Compute the norm of the matrix A.
-    float anorm = slansy("1", uplo, n, A, lda, work);
+    f32 anorm = slansy("1", uplo, n, A, lda, work);
 
     // Compute the reciprocal of the condition number of A.
     spocon(uplo, n, AF, ldaf, anorm, rcond, work, iwork, info);

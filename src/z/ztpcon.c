@@ -36,19 +36,19 @@ void ztpcon(
     const char* uplo,
     const char* diag,
     const int n,
-    const double complex* const restrict AP,
-    double* rcond,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    const c128* const restrict AP,
+    f64* rcond,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int nounit, onenrm, upper;
     char normin;
     int ix, kase, kase1;
-    double ainvnm, anorm, scale, smlnum, xnorm;
+    f64 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
     int info_local;
 
@@ -77,7 +77,7 @@ void ztpcon(
     }
 
     *rcond = ZERO;
-    smlnum = dlamch("S") * (double)(1 > n ? 1 : n);
+    smlnum = dlamch("S") * (f64)(1 > n ? 1 : n);
 
     // Compute the norm of the triangular matrix A
     anorm = zlantp(norm, uplo, diag, n, AP, rwork);

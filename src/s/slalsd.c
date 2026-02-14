@@ -8,9 +8,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ONE = 1.0f;
-static const float ZERO = 0.0f;
-static const float TWO = 2.0f;
+static const f32 ONE = 1.0f;
+static const f32 ZERO = 0.0f;
+static const f32 TWO = 2.0f;
 
 /**
  * SLALSD uses the singular value decomposition of A to solve the least
@@ -48,16 +48,16 @@ static const float TWO = 2.0f;
  *                         - > 0: The algorithm failed to compute a singular value.
  */
 void slalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
-            float* const restrict D, float* const restrict E,
-            float* const restrict B, const int ldb, const float rcond,
-            int* rank, float* const restrict work, int* const restrict iwork,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict B, const int ldb, const f32 rcond,
+            int* rank, f32* const restrict work, int* const restrict iwork,
             int* info)
 {
     int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
     int givptr, i, icmpq1, icmpq2, iwk, j, k_idx, nlvl;
     int nm1, nsize, nsub, nwork, perm, poles, s_idx, sizei;
     int smlszp, sqre, st, st1, u_idx, vt_idx, z_idx;
-    float cs, eps, orgnrm, r, rcnd, sn, tol;
+    f32 cs, eps, orgnrm, r, rcnd, sn, tol;
 
     *info = 0;
 
@@ -171,7 +171,7 @@ void slalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
     }
 
     /* Book-keeping and setting up some constants. */
-    nlvl = (int)(logf((float)n / (float)(smlsiz + 1)) / logf(TWO)) + 1;
+    nlvl = (int)(logf((f32)n / (f32)(smlsiz + 1)) / logf(TWO)) + 1;
 
     smlszp = smlsiz + 1;
 

@@ -40,22 +40,22 @@ void dsbtrd(
     const char* uplo,
     const int n,
     const int kd,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    double* const restrict D,
-    double* const restrict E,
-    double* const restrict Q,
+    f64* const restrict D,
+    f64* const restrict E,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int initq, upper, wantq;
     int i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
     int jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
-    double temp;
+    f64 temp;
 
     initq = (vect[0] == 'V' || vect[0] == 'v');
     wantq = initq || (vect[0] == 'U' || vect[0] == 'u');

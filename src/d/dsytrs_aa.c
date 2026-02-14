@@ -59,12 +59,12 @@ void dsytrs_aa(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -101,7 +101,7 @@ void dsytrs_aa(
         xerbla("DSYTRS_AA", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double)lwkmin;
+        work[0] = (f64)lwkmin;
         return;
     }
 

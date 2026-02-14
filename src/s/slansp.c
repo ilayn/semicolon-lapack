@@ -41,20 +41,20 @@
  *
  * @return The computed norm value.
  */
-float slansp(
+f32 slansp(
     const char* norm,
     const char* uplo,
     const int n,
-    const float* const restrict AP,
-    float* const restrict work)
+    const f32* const restrict AP,
+    f32* const restrict work)
 {
     // slansp.f lines 129-130: Parameters
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     // slansp.f lines 133-134: Local Scalars
     int i, j, k;
-    float absa, scale, sum, value;
+    f32 absa, scale, sum, value;
 
     // slansp.f lines 148-252: Main logic
     if (n == 0) {

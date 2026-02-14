@@ -82,15 +82,15 @@ void ssysv_aa_2stage(
     const char* uplo,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict TB,
+    f32* restrict TB,
     const int ltb,
     int* restrict ipiv,
     int* restrict ipiv2,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -122,7 +122,7 @@ void ssysv_aa_2stage(
     if (*info == 0) {
         ssytrf_aa_2stage(uplo, n, A, lda, TB, -1, ipiv, ipiv2, work, -1, info);
         lwkopt = (lwkmin > (int)work[0]) ? lwkmin : (int)work[0];
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -139,5 +139,5 @@ void ssysv_aa_2stage(
 
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

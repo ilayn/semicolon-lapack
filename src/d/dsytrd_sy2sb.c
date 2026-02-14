@@ -7,15 +7,15 @@
 #include <cblas.h>
 
 void dsytrd_sy2sb(const char* uplo, const int n, const int kd,
-                  double* A, const int lda,
-                  double* AB, const int ldab,
-                  double* tau,
-                  double* work, const int lwork, int* info)
+                  f64* A, const int lda,
+                  f64* AB, const int ldab,
+                  f64* tau,
+                  f64* work, const int lwork, int* info)
 {
-    const double rone = 1.0;
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double half = 0.5;
+    const f64 rone = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const f64 half = 0.5;
 
     int lquery, upper;
     int i, j, iinfo, lwmin, pn, pk, lk;
@@ -51,7 +51,7 @@ void dsytrd_sy2sb(const char* uplo, const int n, const int kd,
         xerbla("DSYTRD_SY2SB", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         return;
     }
 
@@ -208,5 +208,5 @@ void dsytrd_sy2sb(const char* uplo, const int n, const int kd,
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

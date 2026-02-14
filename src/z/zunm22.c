@@ -54,12 +54,12 @@
  */
 void zunm22(const char* side, const char* trans,
             const int m, const int n, const int n1, const int n2,
-            const double complex* const restrict Q, const int ldq,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work, const int lwork,
+            const c128* const restrict Q, const int ldq,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work, const int lwork,
             int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int left, lquery, notran;
     int i, ldwork, len, lwkopt, nb, nq, nw;
@@ -100,7 +100,7 @@ void zunm22(const char* side, const char* trans,
 
     if (*info == 0) {
         lwkopt = m * n;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -296,5 +296,5 @@ void zunm22(const char* side, const char* trans,
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

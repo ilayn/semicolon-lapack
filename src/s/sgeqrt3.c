@@ -49,8 +49,8 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgeqrt3(const int m, const int n,
-             float * const restrict A, const int lda,
-             float * const restrict T, const int ldt,
+             f32 * const restrict A, const int lda,
+             f32 * const restrict T, const int ldt,
              int *info)
 {
     int i, j, n1, n2, iinfo;

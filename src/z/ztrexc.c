@@ -39,14 +39,14 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztrexc(const char* compq, const int n, double complex* T, const int ldt,
-            double complex* Q, const int ldq, const int ifst, const int ilst,
+void ztrexc(const char* compq, const int n, c128* T, const int ldt,
+            c128* Q, const int ldq, const int ifst, const int ilst,
             int* info)
 {
     int wantq;
     int k, m1, m2, m3;
-    double cs;
-    double complex sn, t11, t22, temp;
+    f64 cs;
+    c128 sn, t11, t22, temp;
 
     /* Decode and test the input parameters. */
     *info = 0;

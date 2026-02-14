@@ -56,11 +56,11 @@
  */
 void dtpmlqt(const char* side, const char* trans, const int m, const int n,
              const int k, const int l, const int mb,
-             const double* const restrict V, const int ldv,
-             const double* const restrict T, const int ldt,
-             double* const restrict A, const int lda,
-             double* const restrict B, const int ldb,
-             double* const restrict work, int* info)
+             const f64* const restrict V, const int ldv,
+             const f64* const restrict T, const int ldt,
+             f64* const restrict A, const int lda,
+             f64* const restrict B, const int ldb,
+             f64* const restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, nb, lb, kf, ldaq;

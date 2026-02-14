@@ -35,13 +35,13 @@
  * @param[out]    info
  *                         - = 0: successful exit.
  */
-void dlarra(const int n, const double* const restrict D,
-            double* const restrict E, double* const restrict E2,
-            const double spltol, const double tnrm,
+void dlarra(const int n, const f64* const restrict D,
+            f64* const restrict E, f64* const restrict E2,
+            const f64 spltol, const f64 tnrm,
             int* nsplit, int* const restrict isplit, int* info)
 {
     int i;
-    double eabs, tmp1;
+    f64 eabs, tmp1;
 
     *info = 0;
     *nsplit = 1;

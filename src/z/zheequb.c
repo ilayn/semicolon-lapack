@@ -43,16 +43,16 @@
 void zheequb(
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double* const restrict S,
-    double* scond,
-    double* amax,
-    double complex* const restrict work,
+    f64* const restrict S,
+    f64* scond,
+    f64* amax,
+    c128* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     const int MAX_ITER = 100;
 
     *info = 0;
@@ -85,22 +85,22 @@ void zheequb(
     if (up) {
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < j; i++) {
-                double absval = cabs1(A[i + j * lda]);
+                f64 absval = cabs1(A[i + j * lda]);
                 S[i] = (S[i] > absval) ? S[i] : absval;
                 S[j] = (S[j] > absval) ? S[j] : absval;
                 *amax = (*amax > absval) ? *amax : absval;
             }
-            double absdiag = cabs1(A[j + j * lda]);
+            f64 absdiag = cabs1(A[j + j * lda]);
             S[j] = (S[j] > absdiag) ? S[j] : absdiag;
             *amax = (*amax > absdiag) ? *amax : absdiag;
         }
     } else {
         for (int j = 0; j < n; j++) {
-            double absdiag = cabs1(A[j + j * lda]);
+            f64 absdiag = cabs1(A[j + j * lda]);
             S[j] = (S[j] > absdiag) ? S[j] : absdiag;
             *amax = (*amax > absdiag) ? *amax : absdiag;
             for (int i = j + 1; i < n; i++) {
-                double absval = cabs1(A[i + j * lda]);
+                f64 absval = cabs1(A[i + j * lda]);
                 S[i] = (S[i] > absval) ? S[i] : absval;
                 S[j] = (S[j] > absval) ? S[j] : absval;
                 *amax = (*amax > absval) ? *amax : absval;
@@ -111,12 +111,12 @@ void zheequb(
         S[j] = ONE / S[j];
     }
 
-    double tol_val = ONE / sqrt(2.0 * n);
-    double avg = ZERO;
+    f64 tol_val = ONE / sqrt(2.0 * n);
+    f64 avg = ZERO;
 
     for (int iter = 0; iter < MAX_ITER; iter++) {
-        double scale = ZERO;
-        double sumsq = ZERO;
+        f64 scale = ZERO;
+        f64 sumsq = ZERO;
 
         for (int i = 0; i < n; i++) {
             work[i] = CMPLX(ZERO, 0.0);
@@ -124,7 +124,7 @@ void zheequb(
         if (up) {
             for (int j = 0; j < n; j++) {
                 for (int i = 0; i < j; i++) {
-                    double absval = cabs1(A[i + j * lda]);
+                    f64 absval = cabs1(A[i + j * lda]);
                     work[i] = work[i] + absval * S[j];
                     work[j] = work[j] + absval * S[i];
                 }
@@ -134,7 +134,7 @@ void zheequb(
             for (int j = 0; j < n; j++) {
                 work[j] = work[j] + cabs1(A[j + j * lda]) * S[j];
                 for (int i = j + 1; i < n; i++) {
-                    double absval = cabs1(A[i + j * lda]);
+                    f64 absval = cabs1(A[i + j * lda]);
                     work[i] = work[i] + absval * S[j];
                     work[j] = work[j] + absval * S[i];
                 }
@@ -147,7 +147,7 @@ void zheequb(
         }
         avg = avg / n;
 
-        double std_dev = ZERO;
+        f64 std_dev = ZERO;
         for (int i = 0; i < n; i++) {
             work[n + i] = CMPLX(S[i] * creal(work[i]) - avg, 0.0);
         }
@@ -159,12 +159,12 @@ void zheequb(
         }
 
         for (int i = 0; i < n; i++) {
-            double t = cabs1(A[i + i * lda]);
-            double si = S[i];
-            double c2 = (n - 1) * t;
-            double c1 = (n - 2) * (creal(work[i]) - t * si);
-            double c0 = -(t * si) * si + 2 * creal(work[i]) * si - n * avg;
-            double d = c1 * c1 - 4 * c0 * c2;
+            f64 t = cabs1(A[i + i * lda]);
+            f64 si = S[i];
+            f64 c2 = (n - 1) * t;
+            f64 c1 = (n - 2) * (creal(work[i]) - t * si);
+            f64 c0 = -(t * si) * si + 2 * creal(work[i]) * si - n * avg;
+            f64 d = c1 * c1 - 4 * c0 * c2;
 
             if (d <= ZERO) {
                 *info = -1;
@@ -173,7 +173,7 @@ void zheequb(
             si = -2 * c0 / (c1 + sqrt(d));
 
             d = si - S[i];
-            double u = ZERO;
+            f64 u = ZERO;
             if (up) {
                 for (int j = 0; j <= i; j++) {
                     t = cabs1(A[j + i * lda]);
@@ -203,19 +203,19 @@ void zheequb(
         }
     }
 
-    double smlnum = dlamch("SAFEMIN");
-    double bignum = ONE / smlnum;
-    double smin = bignum;
-    double smax = ZERO;
-    double t = ONE / sqrt(avg > ZERO ? avg : 1.0);
-    double base = dlamch("B");
-    double u = ONE / log(base);
+    f64 smlnum = dlamch("SAFEMIN");
+    f64 bignum = ONE / smlnum;
+    f64 smin = bignum;
+    f64 smax = ZERO;
+    f64 t = ONE / sqrt(avg > ZERO ? avg : 1.0);
+    f64 base = dlamch("B");
+    f64 u = ONE / log(base);
     for (int i = 0; i < n; i++) {
         S[i] = pow(base, (int)(u * log(S[i] * t)));
         smin = (smin < S[i]) ? smin : S[i];
         smax = (smax > S[i]) ? smax : S[i];
     }
-    double smin_safe = (smin > smlnum) ? smin : smlnum;
-    double smax_safe = (smax < bignum) ? smax : bignum;
+    f64 smin_safe = (smin > smlnum) ? smin : smlnum;
+    f64 smax_safe = (smax < bignum) ? smax : bignum;
     *scond = smin_safe / smax_safe;
 }

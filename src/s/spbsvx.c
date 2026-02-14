@@ -55,29 +55,29 @@ void spbsvx(
     const int n,
     const int kd,
     const int nrhs,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict AFB,
+    f32* const restrict AFB,
     const int ldafb,
     char* equed,
-    float* const restrict S,
-    float* const restrict B,
+    f32* const restrict S,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* rcond,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* rcond,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int equil, nofact, rcequ, upper;
     int i, infequ, j, j1, j2;
-    float amax, anorm, bignum = 0.0f, scond, smax, smin, smlnum = 0.0f;
+    f32 amax, anorm, bignum = 0.0f, scond, smax, smin, smlnum = 0.0f;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

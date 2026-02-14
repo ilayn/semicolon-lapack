@@ -28,19 +28,19 @@
 void slaqsp(
     const char* uplo,
     const int n,
-    float* const restrict AP,
-    const float* const restrict S,
-    const float scond,
-    const float amax,
+    f32* const restrict AP,
+    const f32* const restrict S,
+    const f32 scond,
+    const f32 amax,
     char* equed)
 {
     // slaqsp.f lines 141-142: Parameters
-    const float ONE = 1.0f;
-    const float THRESH = 0.1f;  // slaqsp.f line 142: THRESH = 0.1D+0
+    const f32 ONE = 1.0f;
+    const f32 THRESH = 0.1f;  // slaqsp.f line 142: THRESH = 0.1D+0
 
     // slaqsp.f lines 145-146: Local Scalars
     int i, j, jc;
-    float cj, large, small;
+    f32 cj, large, small;
 
     // slaqsp.f lines 157-160: Quick return if possible
     if (n <= 0) {

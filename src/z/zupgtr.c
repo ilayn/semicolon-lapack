@@ -33,12 +33,12 @@
  * @param[out]    info   = 0:  successful exit
  *                       < 0:  if INFO = -i, the i-th argument had an illegal value
  */
-void zupgtr(const char* uplo, const int n, const double complex* AP,
-            const double complex* tau, double complex* Q, const int ldq,
-            double complex* work, int* info) {
+void zupgtr(const char* uplo, const int n, const c128* AP,
+            const c128* tau, c128* Q, const int ldq,
+            c128* work, int* info) {
 
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int upper;
     int i, iinfo, ij, j;

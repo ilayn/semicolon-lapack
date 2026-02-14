@@ -68,15 +68,15 @@ void zgetsqrhrt(
     const int mb1,
     const int nb1,
     const int nb2,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict T,
+    c128* restrict T,
     const int ldt,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lquery;
     int i, iinfo, j, lw1, lw2, lwt, ldwt, lworkopt;
@@ -110,7 +110,7 @@ void zgetsqrhrt(
                 nb1local = (nb1 < n) ? nb1 : n;
 
                 if (m - n > 0) {
-                    num_all_row_blocks = (int)ceil((double)(m - n) / (double)(mb1 - n));
+                    num_all_row_blocks = (int)ceil((f64)(m - n) / (f64)(mb1 - n));
                 } else {
                     num_all_row_blocks = 1;
                 }
@@ -140,13 +140,13 @@ void zgetsqrhrt(
         xerbla("ZGETSQRHRT", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double complex)lworkopt;
+        work[0] = (c128)lworkopt;
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (double complex)lworkopt;
+        work[0] = (c128)lworkopt;
         return;
     }
 
@@ -172,5 +172,5 @@ void zgetsqrhrt(
         }
     }
 
-    work[0] = (double complex)lworkopt;
+    work[0] = (c128)lworkopt;
 }

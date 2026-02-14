@@ -35,20 +35,20 @@
 void slaqge(
     const int m,
     const int n,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
-    const float * const restrict R,
-    const float * const restrict C,
-    const float rowcnd,
-    const float colcnd,
-    const float amax,
+    const f32 * const restrict R,
+    const f32 * const restrict C,
+    const f32 rowcnd,
+    const f32 colcnd,
+    const f32 amax,
     char *equed)
 {
-    const float ONE = 1.0f;
-    const float THRESH = 0.1f;
+    const f32 ONE = 1.0f;
+    const f32 THRESH = 0.1f;
 
     int i, j;
-    float cj, large, small;
+    f32 cj, large, small;
 
     // Quick return if possible
     if (m <= 0 || n <= 0) {

@@ -34,24 +34,24 @@
  */
 void slacn2(
     const int n,
-    float * const restrict V,
-    float * const restrict X,
+    f32 * const restrict V,
+    f32 * const restrict X,
     int * const restrict isgn,
-    float *est,
+    f32 *est,
     int *kase,
     int * const restrict isave)
 {
     const int ITMAX = 5;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
 
     int i, jlast;
-    float altsgn, estold, temp, xs;
+    f32 altsgn, estold, temp, xs;
 
     if (*kase == 0) {
         for (i = 0; i < n; i++) {
-            X[i] = ONE / (float)n;
+            X[i] = ONE / (f32)n;
         }
         *kase = 1;
         isave[0] = 1;  // JUMP = 1
@@ -167,7 +167,7 @@ L120:
 
     altsgn = ONE;
     for (i = 0; i < n; i++) {
-        X[i] = altsgn * (ONE + (float)i / (float)((n > 1) ? (n - 1) : 1));
+        X[i] = altsgn * (ONE + (f32)i / (f32)((n > 1) ? (n - 1) : 1));
         altsgn = -altsgn;
     }
     *kase = 1;
@@ -178,7 +178,7 @@ L140:
     // ENTRY (isave[0] = 5)
     // X HAS BEEN OVERWRITTEN BY A*X.
 
-    temp = TWO * (cblas_sasum(n, X, 1) / (float)(3 * n));
+    temp = TWO * (cblas_sasum(n, X, 1) / (f32)(3 * n));
     if (temp > *est) {
         cblas_scopy(n, X, 1, V, 1);
         *est = temp;

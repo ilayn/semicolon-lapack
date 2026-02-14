@@ -62,12 +62,12 @@
 void slaorhr_col_getrfnp2(
     const int m,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict D,
+    f32* restrict D,
     int* info)
 {
-    float sfmin;
+    f32 sfmin;
     int i, n1, n2;
     int iinfo;
 

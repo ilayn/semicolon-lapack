@@ -73,16 +73,16 @@
  *  v(1:i) = 0 and v(i+1) = 1; v(i+2:n) is stored on exit in AP,
  *  overwriting A(i+2:n,i), and tau is stored in TAU(i).
  */
-void zhptrd(const char* uplo, const int n, double complex* AP,
-            double* d, double* e, double complex* tau, int* info)
+void zhptrd(const char* uplo, const int n, c128* AP,
+            f64* d, f64* e, c128* tau, int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex HALF = CMPLX(0.5, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 HALF = CMPLX(0.5, 0.0);
 
     int upper;
     int i, i1, i1i1, ii;
-    double complex alpha, taui;
+    c128 alpha, taui;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -128,7 +128,7 @@ void zhptrd(const char* uplo, const int n, double complex* AP,
 
                 /* Compute  w := y - 1/2 * tau * (y**H * v) * v */
 
-                double complex dot;
+                c128 dot;
                 cblas_zdotc_sub(i + 1, tau, 1, &AP[i1], 1, &dot);
                 alpha = -HALF * taui * dot;
                 cblas_zaxpy(i + 1, &alpha, &AP[i1], 1, tau, 1);
@@ -136,7 +136,7 @@ void zhptrd(const char* uplo, const int n, double complex* AP,
                 /* Apply the transformation as a rank-2 update: */
                 /*    A := A - v * w**H - w * v**H */
 
-                double complex neg_one = -ONE;
+                c128 neg_one = -ONE;
                 cblas_zhpr2(CblasColMajor, CblasUpper, i + 1, &neg_one,
                             &AP[i1], 1, tau, 1, AP);
 
@@ -177,7 +177,7 @@ void zhptrd(const char* uplo, const int n, double complex* AP,
 
                 /* Compute  w := y - 1/2 * tau * (y**H * v) * v */
 
-                double complex dot;
+                c128 dot;
                 cblas_zdotc_sub(n - i - 1, &tau[i], 1, &AP[ii + 1], 1, &dot);
                 alpha = -HALF * taui * dot;
                 cblas_zaxpy(n - i - 1, &alpha, &AP[ii + 1], 1, &tau[i], 1);
@@ -185,7 +185,7 @@ void zhptrd(const char* uplo, const int n, double complex* AP,
                 /* Apply the transformation as a rank-2 update: */
                 /*    A := A - v * w**H - w * v**H */
 
-                double complex neg_one = -ONE;
+                c128 neg_one = -ONE;
                 cblas_zhpr2(CblasColMajor, CblasLower, n - i - 1, &neg_one,
                             &AP[ii + 1], 1, &tau[i], 1, &AP[i1i1]);
 

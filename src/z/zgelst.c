@@ -63,17 +63,17 @@ void zgelst(
     const int m,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
     int lquery, tpsd;
     int brow, i, iascl, ibscl, j, lwopt, mn, mnnrhs, nb, nbmin, scllen;
-    double anrm, bignum, bnrm, smlnum;
+    f64 anrm, bignum, bnrm, smlnum;
     int max_mn, max_ldb;
 
     *info = 0;
@@ -113,7 +113,7 @@ void zgelst(
 
         mnnrhs = (mn > nrhs) ? mn : nrhs;
         lwopt = (1 > (mn + mnnrhs) * nb) ? 1 : ((mn + mnnrhs) * nb);
-        work[0] = (double complex)lwopt;
+        work[0] = (c128)lwopt;
 
     }
 
@@ -126,9 +126,9 @@ void zgelst(
 
     max_mn = (m > n) ? m : n;
     if (mn == 0 || nrhs == 0) {
-        const double complex CZERO = CMPLX(0.0, 0.0);
+        const c128 CZERO = CMPLX(0.0, 0.0);
         zlaset("F", max_mn, nrhs, CZERO, CZERO, B, ldb);
-        work[0] = (double complex)lwopt;
+        work[0] = (c128)lwopt;
         return;
     }
 
@@ -157,9 +157,9 @@ void zgelst(
         iascl = 2;
     } else if (anrm == 0.0) {
 
-        const double complex CZERO = CMPLX(0.0, 0.0);
+        const c128 CZERO = CMPLX(0.0, 0.0);
         zlaset("F", max_mn, nrhs, CZERO, CZERO, B, ldb);
-        work[0] = (double complex)lwopt;
+        work[0] = (c128)lwopt;
         return;
     }
 
@@ -267,5 +267,5 @@ void zgelst(
         zlascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, info);
     }
 
-    work[0] = (double complex)lwopt;
+    work[0] = (c128)lwopt;
 }

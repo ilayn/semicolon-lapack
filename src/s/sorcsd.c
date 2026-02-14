@@ -141,30 +141,30 @@ void sorcsd(
     const int m,
     const int p,
     const int q,
-    float* const restrict X11,
+    f32* const restrict X11,
     const int ldx11,
-    float* const restrict X12,
+    f32* const restrict X12,
     const int ldx12,
-    float* const restrict X21,
+    f32* const restrict X21,
     const int ldx21,
-    float* const restrict X22,
+    f32* const restrict X22,
     const int ldx22,
-    float* restrict theta,
-    float* restrict U1,
+    f32* restrict theta,
+    f32* restrict U1,
     const int ldu1,
-    float* restrict U2,
+    f32* restrict U2,
     const int ldu2,
-    float* restrict V1T,
+    f32* restrict V1T,
     const int ldv1t,
-    float* restrict V2T,
+    f32* restrict V2T,
     const int ldv2t,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     int* info)
 {
-    const float one = 1.0f;
-    const float zero = 0.0f;
+    const f32 one = 1.0f;
+    const f32 zero = 0.0f;
 
     int childinfo, i, ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
     int ib21d = 0, ib21e = 0, ib22d = 0, ib22e = 0, ibbcsd = 0, iorbdb = 0;
@@ -291,7 +291,7 @@ void sorcsd(
         if (ibbcsd + lbbcsdworkmin > lworkmin) lworkmin = ibbcsd + lbbcsdworkmin;
         lworkmin = lworkmin - 1;
 
-        work[0] = (float)(lworkopt > lworkmin ? lworkopt : lworkmin);
+        work[0] = (f32)(lworkopt > lworkmin ? lworkopt : lworkmin);
 
         if (lwork < lworkmin && !lquery) {
             *info = -22;

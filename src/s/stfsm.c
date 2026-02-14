@@ -86,13 +86,13 @@ void stfsm(
     const char* diag,
     const int m,
     const int n,
-    const float alpha,
-    const float* const restrict A,
-    float* const restrict B,
+    const f32 alpha,
+    const f32* const restrict A,
+    f32* const restrict B,
     const int ldb)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int lower, lside, misodd, nisodd, normaltransr, notrans;
     int m1, m2, n1, n2, k, info;

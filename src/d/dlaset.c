@@ -26,8 +26,8 @@
  * @param[in]  lda    The leading dimension of A. lda >= max(1, m).
  */
 void dlaset(const char* uplo, const int m, const int n,
-            const double alpha, const double beta,
-            double * const restrict A, const int lda)
+            const f64 alpha, const f64 beta,
+            f64 * const restrict A, const int lda)
 {
     int i, j;
     int minmn = m < n ? m : n;

@@ -53,24 +53,24 @@
 void dlatdf(
     const int ijob,
     const int n,
-    const double* const restrict Z,
+    const f64* const restrict Z,
     const int ldz,
-    double* const restrict rhs,
-    double* rdsum,
-    double* rdscal,
+    f64* const restrict rhs,
+    f64* rdsum,
+    f64* rdscal,
     const int* const restrict ipiv,
     const int* const restrict jpiv)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, k, info;
-    double bm, bp, pmone, sminu, splus, temp;
+    f64 bm, bp, pmone, sminu, splus, temp;
 
     int iwork[MAXDIM];
-    double work[4 * MAXDIM];
-    double xm[MAXDIM];
-    double xp[MAXDIM];
+    f64 work[4 * MAXDIM];
+    f64 xm[MAXDIM];
+    f64 xp[MAXDIM];
 
     if (ijob != 2) {
 
@@ -169,7 +169,7 @@ void dlatdf(
         /* Compute RHS */
         for (i = n - 2; i >= 0; i--) {
             if (ipiv[i] != i) {
-                double tmp = xm[i];
+                f64 tmp = xm[i];
                 xm[i] = xm[ipiv[i]];
                 xm[ipiv[i]] = tmp;
             }

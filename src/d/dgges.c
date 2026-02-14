@@ -56,26 +56,26 @@
  */
 void dgges(const char* jobvsl, const char* jobvsr, const char* sort,
            dselect3_t selctg, const int n,
-           double* const restrict A, const int lda,
-           double* const restrict B, const int ldb,
+           f64* const restrict A, const int lda,
+           f64* const restrict B, const int ldb,
            int* sdim,
-           double* const restrict alphar, double* const restrict alphai,
-           double* const restrict beta,
-           double* const restrict VSL, const int ldvsl,
-           double* const restrict VSR, const int ldvsr,
-           double* const restrict work, const int lwork,
+           f64* const restrict alphar, f64* const restrict alphai,
+           f64* const restrict beta,
+           f64* const restrict VSL, const int ldvsl,
+           f64* const restrict VSR, const int ldvsr,
+           f64* const restrict work, const int lwork,
            int* const restrict bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl, wantst;
     int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
     int ip, iright, irows, itau, iwrk, maxwrk, minwrk;
-    double anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
-    double pvsl, pvsr, safmax, safmin, smlnum;
+    f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
+    f64 pvsl, pvsr, safmax, safmin, smlnum;
     int idum[1];
-    double dif[2];
+    f64 dif[2];
     int nb_geqrf, nb_ormqr, nb_orgqr;
 
     /* Decode the input arguments */
@@ -142,7 +142,7 @@ void dgges(const char* jobvsl, const char* jobvsr, const char* sort,
             minwrk = 1;
             maxwrk = 1;
         }
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -366,7 +366,7 @@ void dgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L50:
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 
     return;
 }

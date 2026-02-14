@@ -69,12 +69,12 @@ void zsysv_aa(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -105,7 +105,7 @@ void zsysv_aa(
         zsytrs_aa(uplo, n, nrhs, A, lda, ipiv, B, ldb, work, -1, info);
         lwkopt_sytrs = (int)creal(work[0]);
         lwkopt = (lwkopt_sytrf > lwkopt_sytrs) ? lwkopt_sytrf : lwkopt_sytrs;
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -122,5 +122,5 @@ void zsysv_aa(
 
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

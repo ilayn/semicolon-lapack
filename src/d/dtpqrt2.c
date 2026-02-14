@@ -38,15 +38,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtpqrt2(const int m, const int n, const int l,
-             double* const restrict A, const int lda,
-             double* const restrict B, const int ldb,
-             double* const restrict T, const int ldt, int* info)
+             f64* const restrict A, const int lda,
+             f64* const restrict B, const int ldb,
+             f64* const restrict T, const int ldt, int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     int i, j, p, mp, np;
     int minmn;
-    double alpha;
+    f64 alpha;
 
     *info = 0;
     minmn = m < n ? m : n;

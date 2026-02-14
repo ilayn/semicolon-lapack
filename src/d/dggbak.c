@@ -41,10 +41,10 @@ void dggbak(
     const int n,
     const int ilo,
     const int ihi,
-    const double* const restrict lscale,
-    const double* const restrict rscale,
+    const f64* const restrict lscale,
+    const f64* const restrict rscale,
     const int m,
-    double* const restrict V,
+    f64* const restrict V,
     const int ldv,
     int* info)
 {

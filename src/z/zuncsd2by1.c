@@ -118,26 +118,26 @@ void zuncsd2by1(
     const int m,
     const int p,
     const int q,
-    double complex* const restrict X11,
+    c128* const restrict X11,
     const int ldx11,
-    double complex* const restrict X21,
+    c128* const restrict X21,
     const int ldx21,
-    double* restrict theta,
-    double complex* restrict U1,
+    f64* restrict theta,
+    c128* restrict U1,
     const int ldu1,
-    double complex* restrict U2,
+    c128* restrict U2,
     const int ldu2,
-    double complex* restrict V1T,
+    c128* restrict V1T,
     const int ldv1t,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     const int lrwork,
     int* restrict iwork,
     int* info)
 {
-    const double complex one = CMPLX(1.0, 0.0);
-    const double complex zero_c = CMPLX(0.0, 0.0);
+    const c128 one = CMPLX(1.0, 0.0);
+    const c128 zero_c = CMPLX(0.0, 0.0);
 
     int childinfo, i, ib11d, ib11e, ib12d, ib12e;
     int ib21d, ib21e, ib22d, ib22e, ibbcsd, iorbdb;
@@ -146,8 +146,8 @@ void zuncsd2by1(
     int lorglqopt, lorgqr, lorgqrmin, lorgqropt;
     int lworkmin, lworkopt, lrworkmin, lrworkopt, r;
     int lquery, wantu1, wantu2, wantv1t;
-    double dum[1];
-    double complex cdum[1];
+    f64 dum[1];
+    c128 cdum[1];
 
     *info = 0;
     wantu1 = (jobu1[0] == 'Y' || jobu1[0] == 'y');
@@ -301,7 +301,7 @@ void zuncsd2by1(
 
         lrworkmin = ibbcsd + lbbcsd - 1;
         lrworkopt = lrworkmin;
-        rwork[0] = (double)lrworkopt;
+        rwork[0] = (f64)lrworkopt;
 
         lworkmin = iorbdb + lorbdb - 1;
         if (iorgqr + lorgqrmin - 1 > lworkmin) lworkmin = iorgqr + lorgqrmin - 1;
@@ -311,7 +311,7 @@ void zuncsd2by1(
         if (iorgqr + lorgqropt - 1 > lworkopt) lworkopt = iorgqr + lorgqropt - 1;
         if (iorglq + lorglqopt - 1 > lworkopt) lworkopt = iorglq + lorglqopt - 1;
 
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         if (lwork < lworkmin && !lquery) {
             *info = -19;
         }

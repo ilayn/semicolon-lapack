@@ -121,33 +121,33 @@ void ztgsyl(
     const int ijob,
     const int m,
     const int n,
-    const double complex* A,
+    const c128* A,
     const int lda,
-    const double complex* B,
+    const c128* B,
     const int ldb,
-    double complex* C,
+    c128* C,
     const int ldc,
-    const double complex* D,
+    const c128* D,
     const int ldd,
-    const double complex* E,
+    const c128* E,
     const int lde,
-    double complex* F,
+    c128* F,
     const int ldf,
-    double* scale,
-    double* dif,
-    double complex* work,
+    f64* scale,
+    f64* dif,
+    c128* work,
     const int lwork,
     int* iwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int lquery, notran;
     int i, ie, ifunc, iround, is, isolve, j, je, js, k;
     int linfo, lwmin, mb, nb, p, pq, q;
-    double dscale, dsum, scale2, scaloc;
+    f64 dscale, dsum, scale2 = 0.0, scaloc;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');
@@ -190,7 +190,7 @@ void ztgsyl(
         } else {
             lwmin = 1;
         }
-        work[0] = CMPLX((double)lwmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
 
         if (lwork < lwmin && !lquery) {
             *info = -20;
@@ -242,9 +242,9 @@ void ztgsyl(
                    info);
             if (dscale != ZERO) {
                 if (ijob == 1 || ijob == 3) {
-                    *dif = sqrt((double)(2 * m * n)) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    *dif = sqrt((double)pq) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)pq) / (dscale * sqrt(dsum));
                 }
             }
 
@@ -329,7 +329,7 @@ void ztgsyl(
                     }
                     pq = pq + mb * nb;
                     if (scaloc != ONE) {
-                        double complex scaloc_cmplx = CMPLX(scaloc, ZERO);
+                        c128 scaloc_cmplx = CMPLX(scaloc, ZERO);
                         for (k = 1; k <= js - 1; k++) {
                             cblas_zscal(m, &scaloc_cmplx,
                                         &C[0 + (k - 1) * ldc], 1);
@@ -358,8 +358,8 @@ void ztgsyl(
                     }
 
                     if (i > 1) {
-                        const double complex NEG_ONE = CMPLX(-ONE, ZERO);
-                        const double complex CONE = CMPLX(ONE, ZERO);
+                        const c128 NEG_ONE = CMPLX(-ONE, ZERO);
+                        const c128 CONE = CMPLX(ONE, ZERO);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     is - 1, nb, mb, &NEG_ONE,
                                     &A[0 + (is - 1) * lda], lda,
@@ -372,7 +372,7 @@ void ztgsyl(
                                     &CONE, &F[0 + (js - 1) * ldf], ldf);
                     }
                     if (j < q) {
-                        const double complex CONE = CMPLX(ONE, ZERO);
+                        const c128 CONE = CMPLX(ONE, ZERO);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     mb, n - je, nb, &CONE,
                                     &F[(is - 1) + (js - 1) * ldf], ldf,
@@ -388,9 +388,9 @@ void ztgsyl(
             }
             if (dscale != ZERO) {
                 if (ijob == 1 || ijob == 3) {
-                    *dif = sqrt((double)(2 * m * n)) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)(2 * m * n)) / (dscale * sqrt(dsum));
                 } else {
-                    *dif = sqrt((double)pq) / (dscale * sqrt(dsum));
+                    *dif = sqrt((f64)pq) / (dscale * sqrt(dsum));
                 }
             }
             if (isolve == 2 && iround == 1) {
@@ -433,7 +433,7 @@ void ztgsyl(
                     *info = linfo;
                 }
                 if (scaloc != ONE) {
-                    double complex scaloc_cmplx = CMPLX(scaloc, ZERO);
+                    c128 scaloc_cmplx = CMPLX(scaloc, ZERO);
                     for (k = 1; k <= js - 1; k++) {
                         cblas_zscal(m, &scaloc_cmplx,
                                     &C[0 + (k - 1) * ldc], 1);
@@ -462,7 +462,7 @@ void ztgsyl(
                 }
 
                 if (j > p + 2) {
-                    const double complex CONE = CMPLX(ONE, ZERO);
+                    const c128 CONE = CMPLX(ONE, ZERO);
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
                                 mb, js - 1, nb, &CONE,
                                 &C[(is - 1) + (js - 1) * ldc], ldc,
@@ -475,8 +475,8 @@ void ztgsyl(
                                 &CONE, &F[(is - 1) + 0 * ldf], ldf);
                 }
                 if (i < p) {
-                    const double complex NEG_ONE = CMPLX(-ONE, ZERO);
-                    const double complex CONE = CMPLX(ONE, ZERO);
+                    const c128 NEG_ONE = CMPLX(-ONE, ZERO);
+                    const c128 CONE = CMPLX(ONE, ZERO);
                     cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
                                 m - ie, nb, mb, &NEG_ONE,
                                 &A[(is - 1) + ie * lda], lda,
@@ -493,5 +493,5 @@ void ztgsyl(
 
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

@@ -38,25 +38,25 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, the updating process failed.
  */
-void slaed4(const int n, const int i, const float* const restrict D,
-            const float* const restrict Z, float* const restrict delta,
-            const float rho, float* dlam, int* info)
+void slaed4(const int n, const int i, const f32* const restrict D,
+            const f32* const restrict Z, f32* const restrict delta,
+            const f32 rho, f32* dlam, int* info)
 {
     const int MAXIT = 30;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
-    const float FOUR = 4.0f;
-    const float EIGHT = 8.0f;
-    const float TEN = 10.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
+    const f32 FOUR = 4.0f;
+    const f32 EIGHT = 8.0f;
+    const f32 TEN = 10.0f;
 
     int orgati, swtch, swtch3;
     int ii, iim1, iip1, ip1, iter, j, niter;
-    float a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
-    float eps, erretm, eta, midpt, phi, prew, psi;
-    float rhoinv, tau, temp, temp1, w;
-    float zz[3];
+    f32 a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
+    f32 eps, erretm, eta, midpt, phi, prew, psi;
+    f32 rhoinv, tau, temp, temp1, w;
+    f32 zz[3];
 
     /* Since this routine is called in an inner loop, we do no argument
        checking. */

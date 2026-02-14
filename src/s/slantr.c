@@ -37,21 +37,21 @@
  *
  * @return The computed norm value.
  */
-float slantr(
+f32 slantr(
     const char* norm,
     const char* uplo,
     const char* diag,
     const int m,
     const int n,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    float * const restrict work)
+    f32 * const restrict work)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j;
-    float scale, sum, value, temp;
+    f32 scale, sum, value, temp;
     int udiag;  /* unit diagonal flag */
     int minmn;
 
@@ -210,7 +210,7 @@ float slantr(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 scale = ONE;
-                sum = (float)minmn;  /* count of unit diagonal elements */
+                sum = (f32)minmn;  /* count of unit diagonal elements */
                 for (j = 1; j < n; j++) {
                     int col_len = (j < m) ? j : m;
                     if (col_len > 0) {
@@ -231,7 +231,7 @@ float slantr(
             /* Lower triangular */
             if (udiag) {
                 scale = ONE;
-                sum = (float)minmn;  /* count of unit diagonal elements */
+                sum = (f32)minmn;  /* count of unit diagonal elements */
                 for (j = 0; j < n; j++) {
                     int col_len = m - j - 1;
                     if (col_len > 0) {

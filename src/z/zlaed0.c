@@ -48,11 +48,11 @@
  *                             and columns INFO/(N+1) through mod(INFO,N+1).
  */
 void zlaed0(const int qsiz, const int n,
-            double* D, double* E, double complex* Q, const int ldq,
-            double complex* qstore, const int ldqs,
-            double* rwork, int* iwork, int* info)
+            f64* D, f64* E, c128* Q, const int ldq,
+            c128* qstore, const int ldqs,
+            f64* rwork, int* iwork, int* info)
 {
-    const double TWO = 2.0;
+    const f64 TWO = 2.0;
 
     /* SMLSIZ from ILAENV(9, ...) */
     const int SMLSIZ = 25;
@@ -61,7 +61,7 @@ void zlaed0(const int qsiz, const int n,
         igivpt, indxq, iperm, iprmpt, iq, iqptr, iwrem,
         j, k, lgn, ll, matsiz, msd2, smm1, spm1,
         spm2, submat, subpbs, tlvls;
-    double temp;
+    f64 temp;
 
     /* Test the input parameters. */
     *info = 0;
@@ -122,7 +122,7 @@ void zlaed0(const int qsiz, const int n,
      * Set up workspaces for eigenvalues only/accumulate new vectors
      * routine
      */
-    temp = log((double)n) / log(TWO);
+    temp = log((f64)n) / log(TWO);
     lgn = (int)temp;
     if ((1 << lgn) < n) {
         lgn = lgn + 1;

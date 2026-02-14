@@ -38,22 +38,22 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, failure to converge
  */
-void dlaed6(const int kniter, const int orgati, const double rho,
-            const double* const restrict D, const double* const restrict Z,
-            const double finit, double* tau, int* info)
+void dlaed6(const int kniter, const int orgati, const f64 rho,
+            const f64* const restrict D, const f64* const restrict Z,
+            const f64 finit, f64* tau, int* info)
 {
     const int MAXIT = 40;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
-    const double FOUR = 4.0;
-    const double EIGHT = 8.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
+    const f64 FOUR = 4.0;
+    const f64 EIGHT = 8.0;
 
-    double dscale[3], zscale[3];
+    f64 dscale[3], zscale[3];
 
     int i, niter, scale;
-    double a, b, base, c, ddf, df, eps, erretm, eta, f,
+    f64 a, b, base, c, ddf, df, eps, erretm, eta, f,
            fc, sclfac, sclinv, small1, small2, sminv1,
            sminv2, temp, temp1, temp2, temp3, temp4,
            lbd, ubd;

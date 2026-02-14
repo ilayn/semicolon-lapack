@@ -57,7 +57,7 @@ int iparmq(
     const int NIBBLE = 14;    /* Nibble crossover point */
     const int KNWSWP = 500;   /* Deflation window size threshold */
     const int RCOST = 10;     /* Relative cost (percentage) */
-    const float TWO = 2.0f;
+    const f32 TWO = 2.0f;
 
     int nh = 0, ns = 0;
     int result;
@@ -78,7 +78,7 @@ int iparmq(
             ns = 10;
         }
         if (nh >= 150) {
-            int log2_nh = (int)(logf((float)nh) / logf(TWO) + 0.5f);
+            int log2_nh = (int)(logf((f32)nh) / logf(TWO) + 0.5f);
             ns = nh / log2_nh;
             if (ns < 10) {
                 ns = 10;

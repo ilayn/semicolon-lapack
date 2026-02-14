@@ -83,21 +83,21 @@ void dorbdb2(
     const int m,
     const int p,
     const int q,
-    double* const restrict X11,
+    f64* const restrict X11,
     const int ldx11,
-    double* const restrict X21,
+    f64* const restrict X21,
     const int ldx21,
-    double* restrict theta,
-    double* restrict phi,
-    double* restrict taup1,
-    double* restrict taup2,
-    double* restrict tauq1,
-    double* restrict work,
+    f64* restrict theta,
+    f64* restrict phi,
+    f64* restrict taup1,
+    f64* restrict taup2,
+    f64* restrict tauq1,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double negone = -1.0;
-    double c, s;
+    const f64 negone = -1.0;
+    f64 c, s;
     int childinfo, i, ilarf, iorbdb5, llarf, lorbdb5, lworkmin, lworkopt;
     int lquery;
     int max_val;
@@ -127,7 +127,7 @@ void dorbdb2(
         lorbdb5 = q - 1;
         lworkopt = (ilarf + llarf > iorbdb5 + lorbdb5) ? (ilarf + llarf) : (iorbdb5 + lorbdb5);
         lworkmin = lworkopt;
-        work[0] = (double)lworkopt;
+        work[0] = (f64)lworkopt;
         if (lwork < lworkmin && !lquery) {
             *info = -14;
         }
@@ -151,8 +151,8 @@ void dorbdb2(
                 &X11[(i + 1) + i * ldx11], ldx11, &work[ilarf]);
         dlarf1f("R", m - p - i, q - i, &X11[i + i * ldx11], ldx11, tauq1[i],
                 &X21[i + i * ldx21], ldx21, &work[ilarf]);
-        double nrm1 = cblas_dnrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1);
-        double nrm2 = cblas_dnrm2(m - p - i, &X21[i + i * ldx21], 1);
+        f64 nrm1 = cblas_dnrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1);
+        f64 nrm2 = cblas_dnrm2(m - p - i, &X21[i + i * ldx21], 1);
         s = sqrt(nrm1 * nrm1 + nrm2 * nrm2);
         theta[i] = atan2(s, c);
 

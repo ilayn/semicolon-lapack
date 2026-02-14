@@ -26,7 +26,7 @@ static int iparmq_nshfts(int nh)
     if (nh >= 60) ns = 10;
     if (nh >= 150) {
         /* ns = max(10, nh / nint(log(nh)/log(2))) */
-        float lognh = logf((float)nh) / logf(2.0f);
+        f32 lognh = logf((f32)nh) / logf(2.0f);
         int div = (int)(lognh + 0.5f);  /* nint */
         if (div < 1) div = 1;
         ns = nh / div;
@@ -124,23 +124,23 @@ static int iparmq_kacc22(int ns)
  */
 SEMICOLON_API void slaqr4(const int wantt, const int wantz, const int n,
                           const int ilo, const int ihi,
-                          float* H, const int ldh,
-                          float* wr, float* wi,
+                          f32* H, const int ldh,
+                          f32* wr, f32* wi,
                           const int iloz, const int ihiz,
-                          float* Z, const int ldz,
-                          float* work, const int lwork, int* info)
+                          f32* Z, const int ldz,
+                          f32* work, const int lwork, int* info)
 {
     /* Parameters */
     const int ntiny = 15;   /* Matrices of order NTINY or smaller use SLAHQR */
     const int kexnw = 5;    /* Exceptional deflation window frequency */
     const int kexsh = 6;    /* Exceptional shifts frequency */
-    const float wilk1 = 0.75f;
-    const float wilk2 = -0.4375f;
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 wilk1 = 0.75f;
+    const f32 wilk2 = -0.4375f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     /* Local scalars */
-    float aa, bb, cc, cs, dd, sn, ss, swap;
+    f32 aa, bb, cc, cs, dd, sn, ss, swap;
     int i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
     int kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
     int lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
@@ -148,7 +148,7 @@ SEMICOLON_API void slaqr4(const int wantt, const int wantz, const int n,
     int sorted;
 
     /* Local array for dummy Z in SLAHQR call */
-    float zdum[1];
+    f32 zdum[1];
 
     *info = 0;
 
@@ -199,7 +199,7 @@ SEMICOLON_API void slaqr4(const int wantt, const int wantz, const int n,
 
         /* Quick return in case of workspace query */
         if (lwork == -1) {
-            work[0] = (float)lwkopt;
+            work[0] = (f32)lwkopt;
             return;
         }
 
@@ -484,5 +484,5 @@ L90:;
     }
 
     /* Return the optimal value of LWORK */
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

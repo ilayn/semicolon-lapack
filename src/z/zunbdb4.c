@@ -70,21 +70,21 @@
  *                         < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zunbdb4(const int m, const int p, const int q,
-             double complex* const restrict X11, const int ldx11,
-             double complex* const restrict X21, const int ldx21,
-             double* const restrict theta,
-             double* const restrict phi,
-             double complex* const restrict taup1,
-             double complex* const restrict taup2,
-             double complex* const restrict tauq1,
-             double complex* const restrict phantom,
-             double complex* const restrict work, const int lwork,
+             c128* const restrict X11, const int ldx11,
+             c128* const restrict X21, const int ldx21,
+             f64* const restrict theta,
+             f64* const restrict phi,
+             c128* const restrict taup1,
+             c128* const restrict taup2,
+             c128* const restrict tauq1,
+             c128* const restrict phantom,
+             c128* const restrict work, const int lwork,
              int* info)
 {
-    const double complex NEGONE = CMPLX(-1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 NEGONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
-    double c, s;
+    f64 c, s;
     int childinfo, i, ilarf, iorbdb5, j, llarf, lorbdb5, lworkmin, lworkopt;
     int lquery;
 
@@ -113,7 +113,7 @@ void zunbdb4(const int m, const int p, const int q,
         lworkopt = ilarf + llarf;
         if (iorbdb5 + lorbdb5 > lworkopt) lworkopt = iorbdb5 + lorbdb5;
         lworkmin = lworkopt;
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         if (lwork < lworkmin && !lquery) {
             *info = -14;
         }
@@ -143,10 +143,10 @@ void zunbdb4(const int m, const int p, const int q,
             theta[i] = atan2(creal(phantom[0]), creal(phantom[p]));
             c = cos(theta[i]);
             s = sin(theta[i]);
-            double complex conjtaup1 = conj(taup1[0]);
+            c128 conjtaup1 = conj(taup1[0]);
             zlarf1f("L", p, q, &phantom[0], 1, conjtaup1,
                     X11, ldx11, &work[ilarf]);
-            double complex conjtaup2 = conj(taup2[0]);
+            c128 conjtaup2 = conj(taup2[0]);
             zlarf1f("L", m - p, q, &phantom[p], 1,
                     conjtaup2,
                     X21, ldx21, &work[ilarf]);
@@ -168,13 +168,13 @@ void zunbdb4(const int m, const int p, const int q,
                              creal(X21[i + (i - 1) * ldx21]));
             c = cos(theta[i]);
             s = sin(theta[i]);
-            double complex conjtaup1 = conj(taup1[i]);
+            c128 conjtaup1 = conj(taup1[i]);
             zlarf1f("L", p - i, q - i,
                     &X11[i + (i - 1) * ldx11], 1,
                     conjtaup1,
                     &X11[i + i * ldx11], ldx11,
                     &work[ilarf]);
-            double complex conjtaup2 = conj(taup2[i]);
+            c128 conjtaup2 = conj(taup2[i]);
             zlarf1f("L", m - p - i, q - i,
                     &X21[i + (i - 1) * ldx21], 1,
                     conjtaup2,
@@ -196,8 +196,8 @@ void zunbdb4(const int m, const int p, const int q,
                 &work[ilarf]);
         zlacgv(q - i, &X21[i + i * ldx21], ldx21);
         if (i < m - q - 1) {
-            double nrm1 = cblas_dznrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1);
-            double nrm2 = cblas_dznrm2(m - p - i - 1, &X21[(i + 1) + i * ldx21], 1);
+            f64 nrm1 = cblas_dznrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1);
+            f64 nrm2 = cblas_dznrm2(m - p - i - 1, &X21[(i + 1) + i * ldx21], 1);
             s = sqrt(nrm1 * nrm1 + nrm2 * nrm2);
             phi[i] = atan2(s, c);
         }

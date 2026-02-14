@@ -37,21 +37,21 @@
  *
  * @return The computed norm value.
  */
-double dlantr(
+f64 dlantr(
     const char* norm,
     const char* uplo,
     const char* diag,
     const int m,
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    double * const restrict work)
+    f64 * const restrict work)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double scale, sum, value, temp;
+    f64 scale, sum, value, temp;
     int udiag;  /* unit diagonal flag */
     int minmn;
 
@@ -210,7 +210,7 @@ double dlantr(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 scale = ONE;
-                sum = (double)minmn;  /* count of unit diagonal elements */
+                sum = (f64)minmn;  /* count of unit diagonal elements */
                 for (j = 1; j < n; j++) {
                     int col_len = (j < m) ? j : m;
                     if (col_len > 0) {
@@ -231,7 +231,7 @@ double dlantr(
             /* Lower triangular */
             if (udiag) {
                 scale = ONE;
-                sum = (double)minmn;  /* count of unit diagonal elements */
+                sum = (f64)minmn;  /* count of unit diagonal elements */
                 for (j = 0; j < n; j++) {
                     int col_len = m - j - 1;
                     if (col_len > 0) {

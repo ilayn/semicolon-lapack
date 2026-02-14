@@ -44,9 +44,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void stzrzf(const int m, const int n,
-            float * const restrict A, const int lda,
-            float * const restrict tau,
-            float * const restrict work, const int lwork,
+            f32 * const restrict A, const int lda,
+            f32 * const restrict tau,
+            f32 * const restrict work, const int lwork,
             int *info)
 {
     int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
@@ -75,7 +75,7 @@ void stzrzf(const int m, const int n,
             lwkopt = m * nb;
             lwkmin = m > 1 ? m : 1;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -7;
@@ -217,5 +217,5 @@ void stzrzf(const int m, const int n,
         slatrz(mu, n, n - m, A, lda, tau, work);
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

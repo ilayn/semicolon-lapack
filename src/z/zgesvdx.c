@@ -10,10 +10,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double complex CZERO = CMPLX(0.0, 0.0);
-static const double complex CONE = CMPLX(1.0, 0.0);
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const c128 CZERO = CMPLX(0.0, 0.0);
 
 /**
  * ZGESVDX computes the singular value decomposition (SVD) of a complex
@@ -67,19 +66,19 @@ static const double complex CONE = CMPLX(1.0, 0.0);
  *                         - > 0: i eigenvectors failed to converge in DBDSVDX.
  */
 void zgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, double complex* const restrict A, const int lda,
-             const double vl, const double vu, const int il, const int iu,
-             int* ns, double* const restrict S, double complex* const restrict U,
-             const int ldu, double complex* const restrict VT, const int ldvt,
-             double complex* const restrict work, const int lwork,
-             double* const restrict rwork, int* const restrict iwork, int* info)
+             const int m, const int n, c128* const restrict A, const int lda,
+             const f64 vl, const f64 vu, const int il, const int iu,
+             int* ns, f64* const restrict S, c128* const restrict U,
+             const int ldu, c128* const restrict VT, const int ldvt,
+             c128* const restrict work, const int lwork,
+             f64* const restrict rwork, int* const restrict iwork, int* info)
 {
     int alls, inds, lquery, vals, wantu, wantvt;
     int i, id, ie, ierr, ilqf, iltgk, iutgk, iqrf, iscl, itau, itaup, itauq;
     int itemp, itempr, itgkz, j, k, maxwrk, minmn, minwrk, mnthr;
-    double anrm, bignum, eps, smlnum;
+    f64 anrm, bignum, eps, smlnum;
     char jobz, rngtgk;
-    double dum[1];
+    f64 dum[1];
 
     /* Test the input parameters */
     *ns = 0;
@@ -195,7 +194,7 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = CMPLX((double)maxwrk, 0.0);
+        work[0] = CMPLX((f64)maxwrk, 0.0);
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -516,5 +515,5 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     /* Return optimal workspace */
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
 }

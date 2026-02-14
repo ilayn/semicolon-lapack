@@ -43,10 +43,10 @@
 SEMICOLON_API void sormhr(const char* side, const char* trans,
                           const int m, const int n,
                           const int ilo, const int ihi,
-                          const float* A, const int lda,
-                          const float* tau,
-                          float* C, const int ldc,
-                          float* work, const int lwork, int* info)
+                          const f32* A, const int lda,
+                          const f32* tau,
+                          f32* C, const int ldc,
+                          f32* work, const int lwork, int* info)
 {
     int left, lquery;
     int i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
@@ -91,7 +91,7 @@ SEMICOLON_API void sormhr(const char* side, const char* trans,
         /* Get optimal block size */
         nb = lapack_get_nb("ORMQR");
         lwkopt = nw * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -123,5 +123,5 @@ SEMICOLON_API void sormhr(const char* side, const char* trans,
     sormqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

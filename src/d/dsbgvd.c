@@ -55,21 +55,21 @@ void dsbgvd(
     const int n,
     const int ka,
     const int kb,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    double* const restrict BB,
+    f64* const restrict BB,
     const int ldbb,
-    double* const restrict W,
-    double* const restrict Z,
+    f64* const restrict W,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int lquery, upper, wantz;
     int iinfo, inde, indwk2, indwrk, liwmin, llwrk2, lwmin;
@@ -110,7 +110,7 @@ void dsbgvd(
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -162,6 +162,6 @@ void dsbgvd(
         dlacpy("A", n, n, &work[indwk2], n, Z, ldz);
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

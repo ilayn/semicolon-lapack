@@ -1,7 +1,7 @@
 /**
  * @file dzsum1.c
  * @brief DZSUM1 takes the sum of the absolute values of a complex
- *        vector and returns a double precision result.
+ *        vector and returns a f64 precision result.
  */
 
 #include <complex.h>
@@ -10,7 +10,7 @@
 
 /**
  * DZSUM1 takes the sum of the absolute values of a complex
- * vector and returns a double precision result.
+ * vector and returns a f64 precision result.
  *
  * Based on DZASUM from the Level 1 BLAS.
  * The change is to use the 'genuine' absolute value.
@@ -20,9 +20,9 @@
  *                   The vector whose elements will be summed.
  * @param[in] incx  The spacing between successive values of CX. incx > 0.
  */
-double dzsum1(const int n, const double complex* const restrict CX, const int incx)
+f64 dzsum1(const int n, const c128* const restrict CX, const int incx)
 {
-    double stemp;
+    f64 stemp;
     int i, nincx;
 
     stemp = 0.0;

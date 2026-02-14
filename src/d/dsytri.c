@@ -31,10 +31,10 @@
 void dsytri(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
     *info = 0;
@@ -103,11 +103,11 @@ void dsytri(
                 /* 2x2 diagonal block: invert the 2x2 block.
                  * Fortran: T = ABS(A(K, K+1))
                  * 0-based: t = |A[k + (k+1)*lda]| */
-                double t = fabs(A[k + (k + 1) * lda]);
-                double ak = A[k + k * lda] / t;
-                double akp1 = A[(k + 1) + (k + 1) * lda] / t;
-                double akkp1 = A[k + (k + 1) * lda] / t;
-                double d = t * (ak * akp1 - 1.0);
+                f64 t = fabs(A[k + (k + 1) * lda]);
+                f64 ak = A[k + k * lda] / t;
+                f64 akp1 = A[(k + 1) + (k + 1) * lda] / t;
+                f64 akkp1 = A[k + (k + 1) * lda] / t;
+                f64 d = t * (ak * akp1 - 1.0);
                 A[k + k * lda] = akp1 / d;
                 A[(k + 1) + (k + 1) * lda] = ak / d;
                 A[k + (k + 1) * lda] = -akkp1 / d;
@@ -157,7 +157,7 @@ void dsytri(
                 }
 
                 /* Swap diagonal elements */
-                double temp = A[k + k * lda];
+                f64 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
@@ -201,11 +201,11 @@ void dsytri(
                 /* 2x2 diagonal block: invert the 2x2 block.
                  * Fortran: T = ABS(A(K, K-1))
                  * 0-based: t = |A[k + (k-1)*lda]| */
-                double t = fabs(A[k + (k - 1) * lda]);
-                double ak = A[(k - 1) + (k - 1) * lda] / t;
-                double akp1 = A[k + k * lda] / t;
-                double akkp1 = A[k + (k - 1) * lda] / t;
-                double d = t * (ak * akp1 - 1.0);
+                f64 t = fabs(A[k + (k - 1) * lda]);
+                f64 ak = A[(k - 1) + (k - 1) * lda] / t;
+                f64 akp1 = A[k + k * lda] / t;
+                f64 akkp1 = A[k + (k - 1) * lda] / t;
+                f64 d = t * (ak * akp1 - 1.0);
                 A[(k - 1) + (k - 1) * lda] = akp1 / d;
                 A[k + k * lda] = ak / d;
                 A[k + (k - 1) * lda] = -akkp1 / d;
@@ -256,7 +256,7 @@ void dsytri(
                 }
 
                 /* Swap diagonal elements */
-                double temp = A[k + k * lda];
+                f64 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 

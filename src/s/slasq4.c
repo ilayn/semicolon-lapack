@@ -27,26 +27,26 @@
  * @param[in,out] g      G is passed as an argument in order to save its
  *                        value between calls to SLASQ4.
  */
-void slasq4(const int i0, const int n0, const float* const restrict Z,
-            const int pp, const int n0in, const float dmin,
-            const float dmin1, const float dmin2, const float dn,
-            const float dn1, const float dn2, float* tau,
-            int* ttype, float* g)
+void slasq4(const int i0, const int n0, const f32* const restrict Z,
+            const int pp, const int n0in, const f32 dmin,
+            const f32 dmin1, const f32 dmin2, const f32 dn,
+            const f32 dn1, const f32 dn2, f32* tau,
+            int* ttype, f32* g)
 {
     /* Constants from the Fortran source: CNST1 = 9/16 = 0.5630 (approx) */
-    const float CNST1 = 0.5630f;
-    const float CNST2 = 1.010f;
-    const float CNST3 = 1.050f;
-    const float QURTR = 0.250f;
-    const float THIRD = 0.3330f;
-    const float HALF = 0.50f;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float HUNDRD = 100.0f;
+    const f32 CNST1 = 0.5630f;
+    const f32 CNST2 = 1.010f;
+    const f32 CNST3 = 1.050f;
+    const f32 QURTR = 0.250f;
+    const f32 THIRD = 0.3330f;
+    const f32 HALF = 0.50f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 HUNDRD = 100.0f;
 
     int i4, nn, np;
-    float a2, b1, b2, gam, gap1, gap2, s = ZERO;
+    f32 a2, b1, b2, gam, gap1, gap2, s = ZERO;
 
     /*
      * A negative DMIN forces the shift to take that absolute value.

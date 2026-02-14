@@ -48,15 +48,15 @@
 void dsytri_rook(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double* restrict work,
+    f64* restrict work,
     int* info)
 {
     int upper;
     int k, kp, kstep;
-    double ak, akkp1, akp1, d, t, temp;
+    f64 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

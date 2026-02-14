@@ -46,21 +46,21 @@ void dlatps(
     const char* diag,
     const char* normin,
     const int n,
-    const double* const restrict AP,
-    double* const restrict X,
-    double* scale,
-    double* const restrict cnorm,
+    const f64* const restrict AP,
+    f64* const restrict X,
+    f64* scale,
+    f64* const restrict cnorm,
     int* info)
 {
     // dlatps.f lines 245-246: Parameters
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
 
     // dlatps.f lines 248-252: Local variables
     int upper, notran, nounit;
     int i, imax, ip, j, jfirst, jinc, jlast, jlen;
-    double bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
+    f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
     // dlatps.f lines 268-271
     *info = 0;

@@ -81,13 +81,13 @@ void zsysv_rk(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict E,
+    c128* restrict E,
     int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -118,7 +118,7 @@ void zsysv_rk(
             zsytrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
             lwkopt = (int)creal(work[0]);
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -136,5 +136,5 @@ void zsysv_rk(
 
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

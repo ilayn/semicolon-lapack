@@ -56,17 +56,17 @@
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  */
 void dlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            double* const restrict B, const int ldb,
-            double* const restrict BX, const int ldbx,
-            const double* const restrict U, const int ldu,
-            const double* const restrict VT, const int* const restrict K,
-            const double* const restrict difl, const double* const restrict difr,
-            const double* const restrict Z, const double* const restrict poles,
+            f64* const restrict B, const int ldb,
+            f64* const restrict BX, const int ldbx,
+            const f64* const restrict U, const int ldu,
+            const f64* const restrict VT, const int* const restrict K,
+            const f64* const restrict difl, const f64* const restrict difr,
+            const f64* const restrict Z, const f64* const restrict poles,
             const int* const restrict givptr, const int* const restrict givcol,
             const int ldgcol, const int* const restrict perm,
-            const double* const restrict givnum,
-            const double* const restrict C, const double* const restrict S,
-            double* const restrict work, int* const restrict iwork, int* info)
+            const f64* const restrict givnum,
+            const f64* const restrict C, const f64* const restrict S,
+            f64* const restrict work, int* const restrict iwork, int* info)
 {
     int i, ic, im1, inode, j, lf, ll, lvl, lvl2;
     int nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;

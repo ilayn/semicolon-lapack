@@ -22,7 +22,7 @@ void dlasdt(const int n, int* lvl, int* nd,
             const int msub)
 {
     int maxn = (n > 1) ? n : 1;
-    double temp = log((double)maxn / (double)(msub + 1)) / log(2.0);
+    f64 temp = log((f64)maxn / (f64)(msub + 1)) / log(2.0);
     *lvl = (int)temp + 1;
 
     int i = n / 2;

@@ -44,9 +44,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtzrzf(const int m, const int n,
-            double * const restrict A, const int lda,
-            double * const restrict tau,
-            double * const restrict work, const int lwork,
+            f64 * const restrict A, const int lda,
+            f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
@@ -75,7 +75,7 @@ void dtzrzf(const int m, const int n,
             lwkopt = m * nb;
             lwkmin = m > 1 ? m : 1;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -7;
@@ -217,5 +217,5 @@ void dtzrzf(const int m, const int n,
         dlatrz(mu, n, n - m, A, lda, tau, work);
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

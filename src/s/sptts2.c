@@ -36,9 +36,9 @@
 void sptts2(
     const int n,
     const int nrhs,
-    const float* const restrict D,
-    const float* const restrict E,
-    float* const restrict B,
+    const f32* const restrict D,
+    const f32* const restrict E,
+    f32* const restrict B,
     const int ldb)
 {
     int i, j;

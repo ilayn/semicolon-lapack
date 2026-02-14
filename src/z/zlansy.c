@@ -35,16 +35,16 @@
  *
  * @return The computed norm value.
  */
-double zlansy(
+f64 zlansy(
     const char* norm,
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double* const restrict work)
+    f64* const restrict work)
 {
     int i, j;
-    double absa, scale, sum, value, temp;
+    f64 absa, scale, sum, value, temp;
 
     /* Quick return if possible */
     if (n == 0) {

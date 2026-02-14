@@ -106,15 +106,15 @@
  */
 void slaed7(const int icompq, const int n, const int qsiz,
             const int tlvls, const int curlvl, const int curpbm,
-            float* D, float* Q, const int ldq, int* indxq,
-            const float rho, const int cutpnt, float* qstore,
+            f32* D, f32* Q, const int ldq, int* indxq,
+            const f32 rho, const int cutpnt, f32* qstore,
             int* qptr, int* prmptr, int* perm, int* givptr,
-            int* givcol, float* givnum, float* work, int* iwork,
+            int* givcol, f32* givnum, f32* work, int* iwork,
             int* info)
 {
     int coltyp, curr, i, idlmda, indx, indxc, indxp,
         iq2, is, iw, iz, k, ldq2, n1, n2, ptr;
-    float rho_local;
+    f32 rho_local;
 
     /* Test the input parameters. */
     *info = 0;

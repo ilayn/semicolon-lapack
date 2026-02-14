@@ -40,23 +40,23 @@ void stprfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const float* const restrict AP,
-    const float* const restrict B,
+    const f32* const restrict AP,
+    const f32* const restrict B,
     const int ldb,
-    const float* const restrict X,
+    const f32* const restrict X,
     const int ldx,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int notran, nounit, upper;
     int i, j, k, kase, kc, nz;
-    float eps, lstres, s, safe1, safe2, safmin, xk;
+    f32 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
 
     *info = 0;
@@ -208,10 +208,10 @@ void stprfs(
         s = ZERO;
         for (i = 0; i < n; i++) {
             if (work[i] > safe2) {
-                float tmp = fabsf(work[n + i]) / work[i];
+                f32 tmp = fabsf(work[n + i]) / work[i];
                 if (s < tmp) s = tmp;
             } else {
-                float tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
+                f32 tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
                 if (s < tmp) s = tmp;
             }
         }
@@ -251,7 +251,7 @@ void stprfs(
         // Normalize error
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            float tmp = fabsf(X[i + j * ldx]);
+            f32 tmp = fabsf(X[i + j * ldx]);
             if (lstres < tmp) lstres = tmp;
         }
         if (lstres != ZERO)

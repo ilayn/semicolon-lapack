@@ -70,41 +70,41 @@ void shgeqz(
     const int n,
     const int ilo,
     const int ihi,
-    float* const restrict H,
+    f32* const restrict H,
     const int ldh,
-    float* const restrict T,
+    f32* const restrict T,
     const int ldt,
-    float* const restrict alphar,
-    float* const restrict alphai,
-    float* const restrict beta,
-    float* const restrict Q,
+    f32* const restrict alphar,
+    f32* const restrict alphai,
+    f32* const restrict beta,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
-    const float HALF = 0.5f;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float SAFETY = 100.0f;
+    const f32 HALF = 0.5f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 SAFETY = 100.0f;
 
     int ilazr2, ilazro, ilpivt, ilq = 0, ilschr = 0, ilz = 0, lquery;
     int icompq, icompz, ifirst, ifrstm, iiter, ilast;
     int ilastm, in, ischur, istart, j, jc, jch, jiter;
     int jr, maxit;
-    float a11, a12, a1i, a1r, a21, a22, a2i, a2r, ad11;
-    float ad11l, ad12, ad12l, ad21, ad21l, ad22, ad22l;
-    float ad32l, an, anorm, ascale, atol, b11, b1a, b1i;
-    float b1r, b22, b2a, b2i, b2r, bn, bnorm, bscale;
-    float btol, c, c11i, c11r, c12, c21, c22i, c22r, cl;
-    float cq, cr, cz, eshift, s, s1, s1inv, s2, safmax;
-    float safmin, scale, sl, sqi, sqr, sr, szi, szr, t1;
-    float t2, t3, tau, temp, temp2, tempi, tempr, u1;
-    float u12, u12l, u2, ulp, vs, w11, w12, w21, w22;
-    float wabs, wi, wr, wr2;
-    float v[3];
+    f32 a11, a12, a1i, a1r, a21, a22, a2i, a2r, ad11;
+    f32 ad11l, ad12, ad12l, ad21, ad21l, ad22, ad22l;
+    f32 ad32l, an, anorm, ascale, atol, b11, b1a, b1i;
+    f32 b1r, b22, b2a, b2i, b2r, bn, bnorm, bscale;
+    f32 btol, c, c11i, c11r, c12, c21, c22i, c22r, cl;
+    f32 cq, cr, cz, eshift, s, s1, s1inv, s2, safmax;
+    f32 safmin, scale, sl, sqi, sqr, sr, szi, szr, t1;
+    f32 t2, t3, tau, temp, temp2, tempi, tempr, u1;
+    f32 u12, u12l, u2, ulp, vs, w11, w12, w21, w22;
+    f32 wabs, wi, wr, wr2;
+    f32 v[3];
 
     /* Decode JOB, COMPQ, COMPZ */
 
@@ -487,11 +487,11 @@ L110:
              * (Single shift only.)
              */
 
-            if (((float)maxit * safmin) * fabsf(H[ilast + (ilast - 1) * ldh]) <
+            if (((f32)maxit * safmin) * fabsf(H[ilast + (ilast - 1) * ldh]) <
                 fabsf(T[(ilast - 1) + (ilast - 1) * ldt])) {
                 eshift = H[ilast + (ilast - 1) * ldh] / T[(ilast - 1) + (ilast - 1) * ldt];
             } else {
-                eshift = eshift + ONE / (safmin * (float)maxit);
+                eshift = eshift + ONE / (safmin * (f32)maxit);
             }
             s1 = ONE;
             wr = eshift;
@@ -517,9 +517,9 @@ L110:
             }
             temp = s1;
             {
-                float tmp1 = fabsf(wr);
-                float tmp2 = fabsf(wi);
-                float tmp3 = (ONE > tmp1) ? ONE : tmp1;
+                f32 tmp1 = fabsf(wr);
+                f32 tmp2 = fabsf(wi);
+                f32 tmp3 = (ONE > tmp1) ? ONE : tmp1;
                 tmp3 = (tmp3 > tmp2) ? tmp3 : tmp2;
                 if (safmin * tmp3 > temp) temp = safmin * tmp3;
             }
@@ -916,16 +916,16 @@ L200:
                 ilpivt = 0;
                 temp = fabsf(T[(j + 1) + (j + 1) * ldt]);
                 {
-                    float tmp = fabsf(T[(j + 1) + (j + 2) * ldt]);
+                    f32 tmp = fabsf(T[(j + 1) + (j + 2) * ldt]);
                     if (tmp > temp) temp = tmp;
                 }
                 temp2 = fabsf(T[(j + 2) + (j + 1) * ldt]);
                 {
-                    float tmp = fabsf(T[(j + 2) + (j + 2) * ldt]);
+                    f32 tmp = fabsf(T[(j + 2) + (j + 2) * ldt]);
                     if (tmp > temp2) temp2 = tmp;
                 }
                 {
-                    float maxtemp = (temp > temp2) ? temp : temp2;
+                    f32 maxtemp = (temp > temp2) ? temp : temp2;
                     if (maxtemp < safmin) {
                         scale = ZERO;
                         u1 = ONE;
@@ -979,7 +979,7 @@ L200:
                 if (fabsf(w22) < fabsf(u2))
                     scale = fabsf(w22 / u2);
                 if (fabsf(w11) < fabsf(u1)) {
-                    float tmp = fabsf(w11 / u1);
+                    f32 tmp = fabsf(w11 / u1);
                     if (tmp < scale) scale = tmp;
                 }
 
@@ -1132,6 +1132,6 @@ L380:
     /* Exit (other than argument error) -- return optimal workspace size */
 
 L420:
-    work[0] = (float)n;
+    work[0] = (f32)n;
     return;
 }

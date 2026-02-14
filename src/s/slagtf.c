@@ -59,17 +59,17 @@
  */
 void slagtf(
     const int n,
-    float* const restrict A,
-    const float lambda,
-    float* const restrict B,
-    float* const restrict C,
-    const float tol,
-    float* const restrict D,
+    f32* const restrict A,
+    const f32 lambda,
+    f32* const restrict B,
+    f32* const restrict C,
+    const f32 tol,
+    f32* const restrict D,
     int* const restrict in,
     int* info)
 {
     int k;
-    float eps, mult, piv1, piv2, scale1, scale2, temp, tl;
+    f32 eps, mult, piv1, piv2, scale1, scale2, temp, tl;
 
     *info = 0;
     if (n < 0) {

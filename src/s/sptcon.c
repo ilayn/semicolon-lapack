@@ -37,17 +37,17 @@
  */
 void sptcon(
     const int n,
-    const float* const restrict D,
-    const float* const restrict E,
-    const float anorm,
-    float* rcond,
-    float* const restrict work,
+    const f32* const restrict D,
+    const f32* const restrict E,
+    const f32 anorm,
+    f32* rcond,
+    f32* const restrict work,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
     int i, ix;
-    float ainvnm;
+    f32 ainvnm;
 
     *info = 0;
     if (n < 0) {

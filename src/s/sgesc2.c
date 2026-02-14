@@ -34,17 +34,17 @@
  */
 void sgesc2(
     const int n,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    float * const restrict rhs,
+    f32 * const restrict rhs,
     const int * const restrict ipiv,
     const int * const restrict jpiv,
-    float *scale)
+    f32 *scale)
 {
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
 
-    float eps, smlnum, bignum, temp;
+    f32 eps, smlnum, bignum, temp;
     int i, j, imax;
 
     // Quick return if possible

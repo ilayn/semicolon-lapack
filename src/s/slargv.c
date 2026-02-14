@@ -28,20 +28,20 @@
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void slargv(const int n, float* const restrict X, const int incx,
-            float* const restrict Y, const int incy,
-            float* const restrict C, const int incc)
+void slargv(const int n, f32* const restrict X, const int incx,
+            f32* const restrict Y, const int incy,
+            f32* const restrict C, const int incc)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     int ix = 0;
     int iy = 0;
     int ic = 0;
 
     for (int i = 0; i < n; i++) {
-        float f = X[ix];
-        float g = Y[iy];
+        f32 f = X[ix];
+        f32 g = Y[iy];
 
         if (g == zero) {
             /* g is zero, no rotation needed */
@@ -53,15 +53,15 @@ void slargv(const int n, float* const restrict X, const int incx,
             X[ix] = g;
         } else if (fabsf(f) > fabsf(g)) {
             /* |f| > |g|: standard case */
-            float t = g / f;
-            float tt = sqrtf(one + t * t);
+            f32 t = g / f;
+            f32 tt = sqrtf(one + t * t);
             C[ic] = one / tt;
             Y[iy] = t * C[ic];
             X[ix] = f * tt;
         } else {
             /* |f| <= |g|: reversed case */
-            float t = f / g;
-            float tt = sqrtf(one + t * t);
+            f32 t = f / g;
+            f32 tt = sqrtf(one + t * t);
             Y[iy] = one / tt;
             C[ic] = t * Y[iy];
             X[ix] = g * tt;

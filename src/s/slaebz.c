@@ -78,24 +78,24 @@
  */
 void slaebz(const int ijob, const int nitmax, const int n,
             const int mmax, const int minp, const int nbmin,
-            const float abstol, const float reltol, const float pivmin,
-            const float* const restrict D,
-            const float* const restrict E,
-            const float* const restrict E2,
+            const f32 abstol, const f32 reltol, const f32 pivmin,
+            const f32* const restrict D,
+            const f32* const restrict E,
+            const f32* const restrict E2,
             int* const restrict nval,
-            float* const restrict AB,
-            float* const restrict C,
+            f32* const restrict AB,
+            f32* const restrict C,
             int* mout,
             int* const restrict NAB,
-            float* const restrict work,
+            f32* const restrict work,
             int* const restrict iwork,
             int* info)
 {
     (void)E;  /* E is in the API for compatibility but E2 is used instead */
-    const float HALF = 0.5f;
+    const f32 HALF = 0.5f;
 
     int itmp1, itmp2, j, ji, jit, kf, kfnew, kl, klnew;
-    float tmp1, tmp2;
+    f32 tmp1, tmp2;
 
     /* Check for errors */
     *info = 0;
@@ -351,13 +351,13 @@ void slaebz(const int ijob, const int nitmax, const int n,
             tmp1 = fabsf(AB[ji + 1 * mmax] - AB[ji + 0 * mmax]);
             tmp2 = fabsf(AB[ji + 1 * mmax]);
             {
-                float atmp = fabsf(AB[ji + 0 * mmax]);
+                f32 atmp = fabsf(AB[ji + 0 * mmax]);
                 if (atmp > tmp2)
                     tmp2 = atmp;
             }
             {
-                float thresh = abstol > pivmin ? abstol : pivmin;
-                float rthresh = reltol * tmp2;
+                f32 thresh = abstol > pivmin ? abstol : pivmin;
+                f32 rthresh = reltol * tmp2;
                 if (rthresh > thresh)
                     thresh = rthresh;
 

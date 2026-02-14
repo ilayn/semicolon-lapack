@@ -26,7 +26,7 @@ static int iparmq_nshfts(int nh)
     if (nh >= 60) ns = 10;
     if (nh >= 150) {
         /* ns = max(10, nh / nint(log(nh)/log(2))) */
-        double lognh = log((double)nh) / log(2.0);
+        f64 lognh = log((f64)nh) / log(2.0);
         int div = (int)(lognh + 0.5);  /* nint */
         if (div < 1) div = 1;
         ns = nh / div;
@@ -120,23 +120,23 @@ static int iparmq_kacc22(int ns)
  */
 SEMICOLON_API void dlaqr0(const int wantt, const int wantz, const int n,
                           const int ilo, const int ihi,
-                          double* H, const int ldh,
-                          double* wr, double* wi,
+                          f64* H, const int ldh,
+                          f64* wr, f64* wi,
                           const int iloz, const int ihiz,
-                          double* Z, const int ldz,
-                          double* work, const int lwork, int* info)
+                          f64* Z, const int ldz,
+                          f64* work, const int lwork, int* info)
 {
     /* Parameters */
     const int ntiny = 15;   /* Matrices of order NTINY or smaller use DLAHQR */
     const int kexnw = 5;    /* Exceptional deflation window frequency */
     const int kexsh = 6;    /* Exceptional shifts frequency */
-    const double wilk1 = 0.75;
-    const double wilk2 = -0.4375;
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 wilk1 = 0.75;
+    const f64 wilk2 = -0.4375;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Local scalars */
-    double aa, bb, cc, cs, dd, sn, ss, swap;
+    f64 aa, bb, cc, cs, dd, sn, ss, swap;
     int i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
     int kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
     int lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
@@ -144,7 +144,7 @@ SEMICOLON_API void dlaqr0(const int wantt, const int wantz, const int n,
     int sorted;
 
     /* Local array for dummy Z in DLAHQR/DLAQR4 call */
-    double zdum[1];
+    f64 zdum[1];
 
     *info = 0;
 
@@ -195,7 +195,7 @@ SEMICOLON_API void dlaqr0(const int wantt, const int wantz, const int n,
 
         /* Quick return in case of workspace query */
         if (lwork == -1) {
-            work[0] = (double)lwkopt;
+            work[0] = (f64)lwkopt;
             return;
         }
 
@@ -487,5 +487,5 @@ L90:;
     }
 
     /* Return the optimal value of LWORK */
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

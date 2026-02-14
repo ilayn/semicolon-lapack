@@ -31,12 +31,12 @@ void ztptri(
     const char* uplo,
     const char* diag,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     int* info)
 {
     // ztptri.f lines 132-133: Parameters
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     // ztptri.f lines 151-164: Test the input parameters
     *info = 0;
@@ -87,7 +87,7 @@ void ztptri(
         // ztptri.f lines 187-206: Compute inverse of upper triangular matrix
         int jc = 0;  // ztptri.f line 191: JC = 1 (0-based: 0)
         for (int j = 0; j < n; j++) {  // ztptri.f line 192: DO 30 J = 1, N
-            double complex ajj;
+            c128 ajj;
             if (nounit) {
                 // ztptri.f lines 193-195
                 AP[jc + j] = ONE / AP[jc + j];
@@ -110,7 +110,7 @@ void ztptri(
         int jc = n * (n + 1) / 2 - 1;  // ztptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
         int jclast = 0;  // Will be set in loop
         for (int j = n - 1; j >= 0; j--) {  // ztptri.f line 213: DO 40 J = N, 1, -1
-            double complex ajj;
+            c128 ajj;
             if (nounit) {
                 // ztptri.f lines 214-216
                 AP[jc] = ONE / AP[jc];

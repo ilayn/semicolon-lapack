@@ -46,35 +46,35 @@ void stgsna(
     const char* howmny,
     const int* const restrict select,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    const float* const restrict VL,
+    const f32* const restrict VL,
     const int ldvl,
-    const float* const restrict VR,
+    const f32* const restrict VR,
     const int ldvr,
-    float* const restrict S,
-    float* const restrict dif,
+    f32* const restrict S,
+    f32* const restrict dif,
     const int mm,
     int* m,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* const restrict iwork,
     int* info)
 {
     const int DIFDRI = 3;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float FOUR = 4.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 FOUR = 4.0f;
 
     int lquery, pair, somcon, wantbh, wantdf, wants;
     int i, ierr, ifst, ilst, iz, k, ks, lwmin, n1, n2;
-    float alphai, alphar, alprqt, beta, c1, c2, cond = 0.0f;
-    float eps, lnrm, rnrm, root1, root2, scale, smlnum;
-    float tmpii, tmpir, tmpri, tmprr, uhav, uhavi, uhbv, uhbvi;
-    float dummy[1], dummy1[1];
+    f32 alphai, alphar, alprqt, beta, c1, c2, cond = 0.0f;
+    f32 eps, lnrm, rnrm, root1, root2, scale, smlnum;
+    f32 tmpii, tmpir, tmpri, tmprr, uhav, uhavi, uhbv, uhbvi;
+    f32 dummy[1], dummy1[1];
 
     wantbh = (job[0] == 'B' || job[0] == 'b');
     wants = (job[0] == 'E' || job[0] == 'e') || wantbh;
@@ -140,7 +140,7 @@ void stgsna(
         } else {
             lwmin = n;
         }
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
 
         if (mm < *m) {
             *info = -15;
@@ -319,7 +319,7 @@ void stgsna(
                            &work[iz], lwork - 2 * n * n, iwork, &ierr);
 
                     if (pair) {
-                        float tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks - 1];
+                        f32 tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks - 1];
                         dif[ks - 1] = tmp < cond ? tmp : cond;
                     }
                 }
@@ -332,5 +332,5 @@ void stgsna(
             ks = ks + 1;
         }
     }
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

@@ -51,15 +51,15 @@
  */
 void zla_gbamv(const int trans, const int m, const int n,
                const int kl, const int ku,
-               const double alpha, const double complex* const restrict AB,
-               const int ldab, const double complex* const restrict X,
-               const int incx, const double beta,
-               double* const restrict Y, const int incy)
+               const f64 alpha, const c128* const restrict AB,
+               const int ldab, const c128* const restrict X,
+               const int incx, const f64 beta,
+               f64* const restrict Y, const int incy)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int symb_zero;
-    double temp, safe1;
+    f64 temp, safe1;
     int i, info, iy, j, jx, kx, ky, lenx, leny, kd, ke;
 
     info = 0;

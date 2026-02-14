@@ -67,16 +67,16 @@
  */
 void sgesvd(const char* jobu, const char* jobvt,
             const int m, const int n,
-            float* const restrict A, const int lda,
-            float* const restrict S,
-            float* const restrict U, const int ldu,
-            float* const restrict VT, const int ldvt,
-            float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            f32* const restrict S,
+            f32* const restrict U, const int ldu,
+            f32* const restrict VT, const int ldvt,
+            f32* const restrict work, const int lwork,
             int* info)
 {
     /* Constants */
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     /* Helper macro for 3-way max (matches Fortran MAX(a,b,c)) */
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
@@ -92,8 +92,8 @@ void sgesvd(const char* jobu, const char* jobvt,
     int ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk;
     int i, ierr, iscl, ncu, ncvt, nru, nrvt;
     int ldwrkr, ldwrku;
-    float anrm, bignum, eps, smlnum;
-    float dum[1];
+    f32 anrm, bignum, eps, smlnum;
+    f32 dum[1];
 
     /* Parse job options */
     wntua = (jobu[0] == 'A' || jobu[0] == 'a');
@@ -392,7 +392,7 @@ void sgesvd(const char* jobu, const char* jobvt,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -1712,7 +1712,7 @@ void sgesvd(const char* jobu, const char* jobvt,
     }
 
     /* Return optimal workspace */
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 
     #undef MAX3
 }

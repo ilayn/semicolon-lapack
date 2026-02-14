@@ -67,19 +67,19 @@
 void dsycon_3(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* restrict E,
+    const f64* restrict E,
     const int* restrict ipiv,
-    const double anorm,
-    double* rcond,
-    double* restrict work,
+    const f64 anorm,
+    f64* rcond,
+    f64* restrict work,
     int* restrict iwork,
     int* info)
 {
     int upper;
     int i, kase;
-    double ainvnm;
+    f64 ainvnm;
     int isave[3];
     int dummy_info;
 

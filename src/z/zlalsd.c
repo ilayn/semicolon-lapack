@@ -61,10 +61,10 @@
  *                             INFO/(N+1) through MOD(INFO,N+1).
  */
 void zlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
-            double* const restrict D, double* const restrict E,
-            double complex* const restrict B, const int ldb, const double rcond,
-            int* rank, double complex* const restrict work,
-            double* const restrict rwork, int* const restrict iwork, int* info)
+            f64* const restrict D, f64* const restrict E,
+            c128* const restrict B, const int ldb, const f64 rcond,
+            int* rank, c128* const restrict work,
+            f64* const restrict rwork, int* const restrict iwork, int* info)
 {
     int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
     int givptr, i, icmpq1, icmpq2, irwb, irwib, irwrb;
@@ -72,8 +72,8 @@ void zlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
     int jreal, jrow, k_idx, nlvl, nm1, nrwork, nsize, nsub;
     int perm, poles, s_idx, sizei, smlszp, sqre, st, st1;
     int u_idx, vt_idx, z_idx;
-    double cs, eps, orgnrm, r, rcnd, sn, tol;
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    f64 cs, eps, orgnrm, r, rcnd, sn, tol;
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     *info = 0;
 
@@ -257,7 +257,7 @@ void zlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
 
     /* Book-keeping and setting up some constants. */
 
-    nlvl = (int)(log((double)n / (double)(smlsiz + 1)) / log(2.0)) + 1;
+    nlvl = (int)(log((f64)n / (f64)(smlsiz + 1)) / log(2.0)) + 1;
 
     smlszp = smlsiz + 1;
 

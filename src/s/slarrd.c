@@ -66,19 +66,19 @@
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
 void slarrd(const char* range, const char* order, const int n,
-            const float vl, const float vu, const int il, const int iu,
-            const float* gers, const float reltol,
-            const float* D, const float* E, const float* E2,
-            const float pivmin, const int nsplit, const int* isplit,
-            int* m, float* W, float* werr,
-            float* wl, float* wu,
+            const f32 vl, const f32 vu, const int il, const int iu,
+            const f32* gers, const f32 reltol,
+            const f32* D, const f32* E, const f32* E2,
+            const f32 pivmin, const int nsplit, const int* isplit,
+            int* m, f32* W, f32* werr,
+            f32* wl, f32* wu,
             int* iblock, int* indexw,
-            float* work, int* iwork, int* info)
+            f32* work, int* iwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float TWO = 2.0f;
-    const float HALF = 0.5f;
-    const float FUDGE = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 TWO = 2.0f;
+    const f32 HALF = 0.5f;
+    const f32 FUDGE = 2.0f;
 
     const int ALLRNG = 1;
     const int VALRNG = 2;
@@ -89,7 +89,7 @@ void slarrd(const char* range, const char* order, const int n,
         im, in, ioff, iout, irange, itmax, itmp1,
         itmp2, iw, iwoff, j, jblk, jdisc, je, jee, nb,
         nwl, nwu;
-    float atoli, eps, gl, gu, rtoli, tmp1, tmp2,
+    f32 atoli, eps, gl, gu, rtoli, tmp1, tmp2,
            tnorm, uflow, wkill, wlu = 0.0f, wul = 0.0f;
     int idumma[1];
 

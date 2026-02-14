@@ -42,18 +42,18 @@ void zlagtm(
     const char* trans,
     const int n,
     const int nrhs,
-    const double alpha,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU,
-    const double complex* const restrict X,
+    const f64 alpha,
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU,
+    const c128* const restrict X,
     const int ldx,
-    const double beta,
-    double complex* const restrict B,
+    const f64 beta,
+    c128* const restrict B,
     const int ldb)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j;
 

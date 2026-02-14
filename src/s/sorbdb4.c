@@ -91,23 +91,23 @@ void sorbdb4(
     const int m,
     const int p,
     const int q,
-    float* const restrict X11,
+    f32* const restrict X11,
     const int ldx11,
-    float* const restrict X21,
+    f32* const restrict X21,
     const int ldx21,
-    float* restrict theta,
-    float* restrict phi,
-    float* restrict taup1,
-    float* restrict taup2,
-    float* restrict tauq1,
-    float* restrict phantom,
-    float* restrict work,
+    f32* restrict theta,
+    f32* restrict phi,
+    f32* restrict taup1,
+    f32* restrict taup2,
+    f32* restrict tauq1,
+    f32* restrict phantom,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float negone = -1.0f;
-    const float zero = 0.0f;
-    float c, s;
+    const f32 negone = -1.0f;
+    const f32 zero = 0.0f;
+    f32 c, s;
     int childinfo, i, ilarf, iorbdb5, j, llarf, lorbdb5, lworkmin, lworkopt;
     int lquery;
     int max_val;
@@ -138,7 +138,7 @@ void sorbdb4(
         lworkopt = ilarf + llarf;
         if (iorbdb5 + lorbdb5 > lworkopt) lworkopt = iorbdb5 + lorbdb5;
         lworkmin = lworkopt;
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         if (lwork < lworkmin && !lquery) {
             *info = -14;
         }
@@ -193,8 +193,8 @@ void sorbdb4(
         slarf1f("R", m - p - i - 1, q - i, &X21[i + i * ldx21], ldx21, tauq1[i],
                 &X21[(i + 1) + i * ldx21], ldx21, &work[ilarf]);
         if (i < m - q - 1) {
-            float nrm1 = cblas_snrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1);
-            float nrm2 = cblas_snrm2(m - p - i - 1, &X21[(i + 1) + i * ldx21], 1);
+            f32 nrm1 = cblas_snrm2(p - i - 1, &X11[(i + 1) + i * ldx11], 1);
+            f32 nrm2 = cblas_snrm2(m - p - i - 1, &X21[(i + 1) + i * ldx21], 1);
             s = sqrtf(nrm1 * nrm1 + nrm2 * nrm2);
             phi[i] = atan2f(s, c);
         }

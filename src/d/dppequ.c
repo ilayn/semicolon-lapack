@@ -42,15 +42,15 @@
 void dppequ(
     const char* uplo,
     const int n,
-    const double* const restrict AP,
-    double* const restrict S,
-    double* scond,
-    double* amax,
+    const f64* const restrict AP,
+    f64* const restrict S,
+    f64* scond,
+    f64* amax,
     int* info)
 {
     // dppequ.f lines 131-133: Parameters
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // dppequ.f lines 154-164: Test the input parameters
     *info = 0;
@@ -74,7 +74,7 @@ void dppequ(
 
     // dppequ.f lines 176-178: Initialize SMIN and AMAX
     S[0] = AP[0];
-    double smin = S[0];
+    f64 smin = S[0];
     *amax = S[0];
 
     if (upper) {

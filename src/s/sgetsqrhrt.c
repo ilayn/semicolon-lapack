@@ -67,11 +67,11 @@ void sgetsqrhrt(
     const int mb1,
     const int nb1,
     const int nb2,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict T,
+    f32* restrict T,
     const int ldt,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -107,7 +107,7 @@ void sgetsqrhrt(
                 nb1local = (nb1 < n) ? nb1 : n;
 
                 if (m - n > 0) {
-                    num_all_row_blocks = (int)ceilf((float)(m - n) / (float)(mb1 - n));
+                    num_all_row_blocks = (int)ceilf((f32)(m - n) / (f32)(mb1 - n));
                 } else {
                     num_all_row_blocks = 1;
                 }
@@ -137,13 +137,13 @@ void sgetsqrhrt(
         xerbla("SGETSQRHRT", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         return;
     }
 
@@ -169,5 +169,5 @@ void sgetsqrhrt(
         }
     }
 
-    work[0] = (float)lworkopt;
+    work[0] = (f32)lworkopt;
 }

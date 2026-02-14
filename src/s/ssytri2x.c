@@ -36,23 +36,23 @@
 void ssytri2x(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    float* const restrict work,
+    f32* const restrict work,
     const int nb,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int upper;
     int i, iinfo, ip, k, cut, nnb;
     int count;
     int j, u11, invd;
-    float ak, akkp1, akp1, d, t;
-    float u01_i_j, u01_ip1_j;
-    float u11_i_j, u11_ip1_j;
+    f32 ak, akkp1, akp1, d, t;
+    f32 u01_i_j, u01_ip1_j;
+    f32 u11_i_j, u11_ip1_j;
     const int ldw = n + nb + 1;
 
     *info = 0;

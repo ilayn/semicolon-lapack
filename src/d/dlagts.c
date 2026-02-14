@@ -60,18 +60,18 @@
 void dlagts(
     const int job,
     const int n,
-    const double* const restrict A,
-    const double* const restrict B,
-    const double* const restrict C,
-    const double* const restrict D,
+    const f64* const restrict A,
+    const f64* const restrict B,
+    const f64* const restrict C,
+    const f64* const restrict D,
     const int* const restrict in,
-    double* const restrict Y,
-    double* tol,
+    f64* const restrict Y,
+    f64* tol,
     int* info)
 {
     int k;
     int absjob;
-    double absak, ak, bignum, eps, pert, sfmin, temp;
+    f64 absak, ak, bignum, eps, pert, sfmin, temp;
 
     *info = 0;
     absjob = job < 0 ? -job : job;

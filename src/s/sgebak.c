@@ -41,16 +41,16 @@
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void sgebak(const char* job, const char* side, const int n, const int ilo,
-            const int ihi, const float* scale, const int m, float* V,
+            const int ihi, const f32* scale, const int m, f32* V,
             const int ldv, int* info)
 {
     /* Constants */
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     /* Local variables */
     int leftv, rightv;
     int i, ii, k;
-    float s;
+    f32 s;
 
     /* Decode and test the input parameters */
     rightv = (side[0] == 'R' || side[0] == 'r');

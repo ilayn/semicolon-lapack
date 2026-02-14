@@ -40,28 +40,28 @@
  */
 SEMICOLON_API void dlaqr5(const int wantt, const int wantz, const int kacc22,
                           const int n, const int ktop, const int kbot,
-                          const int nshfts, double* sr, double* si,
-                          double* H, const int ldh,
+                          const int nshfts, f64* sr, f64* si,
+                          f64* H, const int ldh,
                           const int iloz, const int ihiz,
-                          double* Z, const int ldz,
-                          double* V, const int ldv,
-                          double* U, const int ldu,
-                          const int nv, double* WV, const int ldwv,
-                          const int nh, double* WH, const int ldwh)
+                          f64* Z, const int ldz,
+                          f64* V, const int ldv,
+                          f64* U, const int ldu,
+                          const int nv, f64* WV, const int ldwv,
+                          const int nh, f64* WH, const int ldwh)
 {
     /* Parameters */
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Local scalars */
-    double alpha, beta, h11, h12, h21, h22, refsum;
-    double safmin, scl, smlnum, swap, t1, t2, t3, tst1, tst2, ulp;
+    f64 alpha, beta, h11, h12, h21, h22, refsum;
+    f64 safmin, scl, smlnum, swap, t1, t2, t3, tst1, tst2, ulp;
     int i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
     int k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
     int accum, bmp22;
 
     /* Local array */
-    double vt[3];
+    f64 vt[3];
 
     /* If there are no shifts, then there is nothing to do */
     if (nshfts < 2)
@@ -95,7 +95,7 @@ SEMICOLON_API void dlaqr5(const int wantt, const int wantz, const int kacc22,
     /* Machine constants for deflation */
     safmin = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     /* Use accumulated reflections to update far-from-diagonal entries? */
     accum = (kacc22 == 1) || (kacc22 == 2);
@@ -130,7 +130,7 @@ SEMICOLON_API void dlaqr5(const int wantt, const int wantz, const int kacc22,
         for (krcol = incol; krcol <= (incol + 2 * nbmps - 1 < kbot - 2 ?
                                       incol + 2 * nbmps - 1 : kbot - 2); krcol++) {
 
-            /* Bulges number MTOP to MBOT are active double implicit shift bulges */
+            /* Bulges number MTOP to MBOT are active f64 implicit shift bulges */
             mtop = 1 > (ktop - krcol) / 2 + 1 ? 1 : (ktop - krcol) / 2 + 1;
             mbot = nbmps < (kbot - krcol - 1) / 2 ? nbmps : (kbot - krcol - 1) / 2;
             m22 = mbot + 1;

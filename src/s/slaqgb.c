@@ -42,20 +42,20 @@ void slaqgb(
     const int n,
     const int kl,
     const int ku,
-    float * const restrict AB,
+    f32 * const restrict AB,
     const int ldab,
-    const float * const restrict R,
-    const float * const restrict C,
-    const float rowcnd,
-    const float colcnd,
-    const float amax,
+    const f32 * const restrict R,
+    const f32 * const restrict C,
+    const f32 rowcnd,
+    const f32 colcnd,
+    const f32 amax,
     char *equed)
 {
-    const float ONE = 1.0f;
-    const float THRESH = 0.1f;
+    const f32 ONE = 1.0f;
+    const f32 THRESH = 0.1f;
 
     int i, j;
-    float cj, large, small;
+    f32 cj, large, small;
     int i_start, i_end;
 
     /* Quick return if possible */

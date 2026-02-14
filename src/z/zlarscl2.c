@@ -26,8 +26,8 @@
 void zlarscl2(
     const int m,
     const int n,
-    const double* const restrict D,
-    double complex* const restrict X,
+    const f64* const restrict D,
+    c128* const restrict X,
     const int ldx)
 {
     int i, j;

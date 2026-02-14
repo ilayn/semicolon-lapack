@@ -21,16 +21,16 @@
  */
 void slar2v(
     const int n,
-    float* const restrict X,
-    float* const restrict Y,
-    float* const restrict Z,
+    f32* const restrict X,
+    f32* const restrict Y,
+    f32* const restrict Z,
     const int incx,
-    const float* const restrict C,
-    const float* const restrict S,
+    const f32* const restrict C,
+    const f32* const restrict S,
     const int incc)
 {
     int i, ic, ix;
-    float ci, si, t1, t2, t3, t4, t5, t6, xi, yi, zi;
+    f32 ci, si, t1, t2, t3, t4, t5, t6, xi, yi, zi;
 
     ix = 0;
     ic = 0;

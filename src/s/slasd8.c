@@ -8,9 +8,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static inline float dlamc3(float a, float b)
+static inline f32 dlamc3(f32 a, f32 b)
 {
-    volatile float result = a + b;
+    volatile f32 result = a + b;
     return result;
 }
 
@@ -25,16 +25,16 @@ static inline float dlamc3(float a, float b)
  * SLASD8 is called from SLASD6.
  */
 void slasd8(const int icompq, const int k,
-            float* const restrict D, float* const restrict Z,
-            float* const restrict VF, float* const restrict VL,
-            float* const restrict DIFL, float* const restrict DIFR,
-            const int lddifr, const float* const restrict DSIGMA,
-            float* const restrict work, int* info)
+            f32* const restrict D, f32* const restrict Z,
+            f32* const restrict VF, f32* const restrict VL,
+            f32* const restrict DIFL, f32* const restrict DIFR,
+            const int lddifr, const f32* const restrict DSIGMA,
+            f32* const restrict work, int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, iwk1, iwk2, iwk3;
-    float diflj, difrj = 0.0f, dj, dsigj, dsigjp = 0.0f, rho, temp;
+    f32 diflj, difrj = 0.0f, dj, dsigj, dsigjp = 0.0f, rho, temp;
 
     *info = 0;
 

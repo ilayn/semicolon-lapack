@@ -36,13 +36,13 @@
  *                       Not referenced if H has order < 11.
  */
 void zlarfx(const char* side, const int m, const int n,
-            const double complex* const restrict v, const double complex tau,
-            double complex* const restrict C, const int ldc,
-            double complex* restrict work)
+            const c128* const restrict v, const c128 tau,
+            c128* const restrict C, const int ldc,
+            c128* restrict work)
 {
     int j;
-    double complex sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
-    double complex v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
+    c128 sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
+    c128 v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
 
     if (tau == 0.0) {
         return;

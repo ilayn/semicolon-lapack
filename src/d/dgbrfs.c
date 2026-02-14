@@ -55,31 +55,31 @@ void dgbrfs(
     const int kl,
     const int ku,
     const int nrhs,
-    const double * const restrict AB,
+    const f64 * const restrict AB,
     const int ldab,
-    const double * const restrict AFB,
+    const f64 * const restrict AFB,
     const int ldafb,
     const int * const restrict ipiv,
-    const double * const restrict B,
+    const f64 * const restrict B,
     const int ldb,
-    double * const restrict X,
+    f64 * const restrict X,
     const int ldx,
-    double * const restrict ferr,
-    double * const restrict berr,
-    double * const restrict work,
+    f64 * const restrict ferr,
+    f64 * const restrict berr,
+    f64 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int notran;
     char transt;
     int count, i, j, k, kase, kk, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int linfo;
 

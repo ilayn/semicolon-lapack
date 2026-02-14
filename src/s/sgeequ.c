@@ -49,20 +49,20 @@
 void sgeequ(
     const int m,
     const int n,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    float * const restrict R,
-    float * const restrict C,
-    float *rowcnd,
-    float *colcnd,
-    float *amax,
+    f32 * const restrict R,
+    f32 * const restrict C,
+    f32 *rowcnd,
+    f32 *colcnd,
+    f32 *amax,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int i, j;
-    float bignum, rcmax, rcmin, smlnum;
+    f32 bignum, rcmax, rcmin, smlnum;
 
     // Test the input parameters
     *info = 0;
@@ -99,7 +99,7 @@ void sgeequ(
     // Find the maximum element in each row
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
-            float abs_val = fabsf(A[i + j * lda]);
+            f32 abs_val = fabsf(A[i + j * lda]);
             if (abs_val > R[i]) {
                 R[i] = abs_val;
             }
@@ -130,7 +130,7 @@ void sgeequ(
     } else {
         // Invert the scale factors
         for (i = 0; i < m; i++) {
-            float ri = R[i];
+            f32 ri = R[i];
             if (ri < smlnum) {
                 ri = smlnum;
             }
@@ -141,8 +141,8 @@ void sgeequ(
         }
 
         // Compute rowcnd = min(R(i)) / max(R(i))
-        float rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
-        float rcmax_clamped = rcmax < bignum ? rcmax : bignum;
+        f32 rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
+        f32 rcmax_clamped = rcmax < bignum ? rcmax : bignum;
         *rowcnd = rcmin_clamped / rcmax_clamped;
     }
 
@@ -155,7 +155,7 @@ void sgeequ(
     // assuming the row scaling computed above
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
-            float scaled_val = fabsf(A[i + j * lda]) * R[i];
+            f32 scaled_val = fabsf(A[i + j * lda]) * R[i];
             if (scaled_val > C[j]) {
                 C[j] = scaled_val;
             }
@@ -185,7 +185,7 @@ void sgeequ(
     } else {
         // Invert the scale factors
         for (j = 0; j < n; j++) {
-            float cj = C[j];
+            f32 cj = C[j];
             if (cj < smlnum) {
                 cj = smlnum;
             }
@@ -196,8 +196,8 @@ void sgeequ(
         }
 
         // Compute colcnd = min(C(j)) / max(C(j))
-        float rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
-        float rcmax_clamped = rcmax < bignum ? rcmax : bignum;
+        f32 rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
+        f32 rcmax_clamped = rcmax < bignum ? rcmax : bignum;
         *colcnd = rcmin_clamped / rcmax_clamped;
     }
 }

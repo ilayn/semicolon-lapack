@@ -45,16 +45,16 @@
  */
 void sgttrf(
     const int n,
-    float * const restrict DL,
-    float * const restrict D,
-    float * const restrict DU,
-    float * const restrict DU2,
+    f32 * const restrict DL,
+    f32 * const restrict D,
+    f32 * const restrict DU,
+    f32 * const restrict DU2,
     int * const restrict ipiv,
     int *info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
     int i;
-    float fact, temp;
+    f32 fact, temp;
 
     *info = 0;
     if (n < 0) {

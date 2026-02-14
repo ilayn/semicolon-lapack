@@ -35,24 +35,24 @@ void dsbevd_2stage(
     const char* uplo,
     const int n,
     const int kd,
-    double* restrict AB,
+    f64* restrict AB,
     const int ldab,
-    double* restrict W,
-    double* restrict Z,
+    f64* restrict W,
+    f64* restrict Z,
     const int ldz,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* restrict iwork,
     const int liwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lower, lquery, wantz;
     int iinfo, inde, indwk2, indwrk, iscale, liwmin;
     int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, llwrk2;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -89,7 +89,7 @@ void dsbevd_2stage(
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -168,6 +168,6 @@ void dsbevd_2stage(
         cblas_dscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

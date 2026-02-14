@@ -57,29 +57,29 @@ void zlaqz0(
     const int n,
     const int ilo,
     const int ihi,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict alpha,
-    double complex* const restrict beta,
-    double complex* const restrict Q,
+    c128* const restrict alpha,
+    c128* const restrict beta,
+    c128* const restrict Q,
     const int ldq,
-    double complex* const restrict Z,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     const int rec,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 ONE = 1.0;
 
-    double smlnum, ulp, safmin, c1;
-    double bnorm, btol;
-    double complex eshift, s1, temp;
+    f64 smlnum, ulp, safmin, c1;
+    f64 bnorm, btol;
+    c128 eshift, s1, temp;
     int istart, istop, iiter, maxit, istart2, k, nshifts;
     int nblock, nw, nmin, nibble, n_undeflated, n_deflated;
     int ns, sweep_info, shiftpos, lworkreq, k2, istartm;
@@ -187,7 +187,7 @@ void zlaqz0(
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
     rcost = iparmq(17, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    itemp1 = (int)(nsr / sqrt(1.0 + 2.0 * nsr / ((double)rcost / 100.0 * n)));
+    itemp1 = (int)(nsr / sqrt(1.0 + 2.0 * nsr / ((f64)rcost / 100.0 * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;
 
@@ -215,7 +215,7 @@ void zlaqz0(
     lworkreq = (itemp1 + 2 * nw * nw > itemp2 + 2 * nbr * nbr) ?
                itemp1 + 2 * nw * nw : itemp2 + 2 * nbr * nbr;
     if (lwork == -1) {
-        work[0] = CMPLX((double)lworkreq, 0.0);
+        work[0] = CMPLX((f64)lworkreq, 0.0);
         return;
     } else if (lwork < lworkreq) {
         *info = -19;
@@ -233,7 +233,7 @@ void zlaqz0(
     safmin = dlamch("S");
     (void)(ONE / safmin);
     ulp = dlamch("P");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     bnorm = zlanhs("F", ihi - ilo + 1, &B[ilo + ilo * ldb], ldb, rwork);
     btol = (safmin > ulp * bnorm) ? safmin : ulp * bnorm;
@@ -416,12 +416,12 @@ void zlaqz0(
 
         if ((ld % 6) == 0) {
             /* Exceptional shift.  Chosen for no particularly good reason. */
-            if (((double)maxit * safmin) * cabs(A[istop + (istop - 1) * lda]) <
+            if (((f64)maxit * safmin) * cabs(A[istop + (istop - 1) * lda]) <
                 cabs(A[(istop - 1) + (istop - 1) * lda])) {
                 eshift = A[istop + (istop - 1) * lda] /
                          B[(istop - 1) + (istop - 1) * ldb];
             } else {
-                eshift = eshift + CONE / (safmin * (double)maxit);
+                eshift = eshift + CONE / (safmin * (f64)maxit);
             }
             alpha[shiftpos] = CONE;
             beta[shiftpos] = eshift;

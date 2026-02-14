@@ -36,21 +36,20 @@ void zhegv_2stage(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
-    double complex* restrict B,
+    c128* restrict B,
     const int ldb,
-    double* restrict W,
-    double complex* restrict work,
+    f64* restrict W,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int lquery, upper, wantz;
     int neig, lwmin, lhtrd, lwtrd, kd, ib;
-    char trans;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -77,7 +76,7 @@ void zhegv_2stage(
         lhtrd = ilaenv2stage(3, "ZHETRD_2STAGE", jobz, n, kd, ib, -1);
         lwtrd = ilaenv2stage(4, "ZHETRD_2STAGE", jobz, n, kd, ib, -1);
         lwmin = n + lhtrd + lwtrd;
-        work[0] = CMPLX((double)lwmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
 
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -128,5 +127,5 @@ void zhegv_2stage(
         }
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

@@ -63,15 +63,15 @@ void dlasyf_aa(
     const int j1,
     const int m,
     const int nb,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double* restrict H,
+    f64* restrict H,
     const int ldh,
-    double* restrict work)
+    f64* restrict work)
 {
     int j, k, k1, i1, i2, mj;
-    double piv, alpha;
+    f64 piv, alpha;
     int minval;
 
     j = 0;

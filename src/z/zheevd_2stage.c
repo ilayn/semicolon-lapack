@@ -48,21 +48,21 @@
  *                               mod(INFO,N+1).
  */
 void zheevd_2stage(const char* jobz, const char* uplo, const int n,
-                   double complex* A, const int lda,
-                   double* W,
-                   double complex* work, const int lwork,
-                   double* rwork, const int lrwork,
+                   c128* A, const int lda,
+                   f64* W,
+                   c128* work, const int lwork,
+                   f64* rwork, const int lrwork,
                    int* iwork, const int liwork, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double complex cone = CMPLX(1.0, 0.0);
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const c128 cone = CMPLX(1.0, 0.0);
 
     int lower, lquery, wantz;
     int iinfo, imax, inde, indrwk, indtau, indwk2, indwrk, iscale;
     int liwmin, llrwk, llwork, llwrk2, lrwmin, lwmin;
-    int lhtrd, lwtrd, kd, ib, indhous;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    int lhtrd = 0, lwtrd, kd, ib, indhous;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -99,8 +99,8 @@ void zheevd_2stage(const char* jobz, const char* uplo, const int n,
                 liwmin = 1;
             }
         }
-        work[0] = CMPLX((double)lwmin, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwmin, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -203,7 +203,7 @@ void zheevd_2stage(const char* jobz, const char* uplo, const int n,
         cblas_dscal(imax, one / sigma, W, 1);
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwmin, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 }

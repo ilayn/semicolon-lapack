@@ -89,14 +89,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zlaunhr_col_getrfnp2(const int m, const int n,
-                           double complex* const restrict A, const int lda,
-                           double complex* const restrict D,
+                           c128* const restrict A, const int lda,
+                           c128* const restrict D,
                            int* info)
 {
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
-    double sfmin;
+    f64 sfmin;
     int i, iinfo, n1, n2;
 
     *info = 0;
@@ -131,7 +131,7 @@ void zlaunhr_col_getrfnp2(const int m, const int n,
         sfmin = dlamch("S");
 
         if (cabs1(A[0]) >= sfmin) {
-            double complex scale = CONE / A[0];
+            c128 scale = CONE / A[0];
             cblas_zscal(m - 1, &scale, &A[1], 1);
         } else {
             for (i = 1; i < m; i++) {
@@ -154,7 +154,7 @@ void zlaunhr_col_getrfnp2(const int m, const int n,
                     n1, n2, &CONE, A, lda,
                     &A[n1 * lda], lda);
 
-        double complex neg_cone = CMPLX(-1.0, 0.0);
+        c128 neg_cone = CMPLX(-1.0, 0.0);
         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     m - n1, n2, n1, &neg_cone, &A[n1], lda,
                     &A[n1 * lda], lda, &CONE, &A[n1 + n1 * lda], lda);

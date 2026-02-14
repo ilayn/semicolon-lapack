@@ -10,7 +10,7 @@
 /**
  * DLAQZ0 computes the eigenvalues of a real matrix pair (H,T),
  * where H is an upper Hessenberg matrix and T is upper triangular,
- * using the double-shift QZ method with aggressive early deflation.
+ * using the f64-shift QZ method with aggressive early deflation.
  *
  * @param[in]     wants    'E': Compute eigenvalues only; 'S': Compute Schur form.
  * @param[in]     wantq    'N': Q not computed; 'I': Q initialized; 'V': Q updated.
@@ -42,27 +42,27 @@ void dlaqz0(
     const int n,
     const int ilo,
     const int ihi,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict alphar,
-    double* const restrict alphai,
-    double* const restrict beta,
-    double* const restrict Q,
+    f64* const restrict alphar,
+    f64* const restrict alphai,
+    f64* const restrict beta,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     const int rec,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double smlnum, ulp, eshift, safmin, c1, s1;
-    double temp, swap, bnorm, btol;
+    f64 smlnum, ulp, eshift, safmin, c1, s1;
+    f64 temp, swap, bnorm, btol;
     int istart, istop, iiter, maxit, istart2, k, nshifts;
     int nblock, nw, nmin, nibble, n_undeflated, n_deflated;
     int ns, sweep_info, shiftpos, lworkreq, k2, istartm;
@@ -170,7 +170,7 @@ void dlaqz0(
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
     rcost = iparmq(17, "DLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    itemp1 = (int)(nsr / sqrt(1.0 + 2.0 * nsr / ((double)rcost / 100.0 * n)));
+    itemp1 = (int)(nsr / sqrt(1.0 + 2.0 * nsr / ((f64)rcost / 100.0 * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;
 
@@ -198,7 +198,7 @@ void dlaqz0(
     lworkreq = (itemp1 + 2 * nw * nw > itemp2 + 2 * nbr * nbr) ?
                itemp1 + 2 * nw * nw : itemp2 + 2 * nbr * nbr;
     if (lwork == -1) {
-        work[0] = (double)lworkreq;
+        work[0] = (f64)lworkreq;
         return;
     } else if (lwork < lworkreq) {
         *info = -19;
@@ -216,7 +216,7 @@ void dlaqz0(
     safmin = dlamch("S");
     (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
     ulp = dlamch("P");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     bnorm = dlanhs("F", ihi - ilo + 1, &B[ilo + ilo * ldb], ldb, work);
     btol = (safmin > ulp * bnorm) ? safmin : ulp * bnorm;
@@ -239,9 +239,9 @@ void dlaqz0(
 
         /* Check deflations at the end */
         {
-            double tmp = fabs(A[(istop - 1) + (istop - 1) * lda]) +
+            f64 tmp = fabs(A[(istop - 1) + (istop - 1) * lda]) +
                          fabs(A[(istop - 2) + (istop - 2) * lda]);
-            double thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
+            f64 thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
             if (fabs(A[(istop - 1) + (istop - 2) * lda]) <= thresh) {
                 A[(istop - 1) + (istop - 2) * lda] = ZERO;
                 istop = istop - 2;
@@ -261,9 +261,9 @@ void dlaqz0(
 
         /* Check deflations at the start */
         {
-            double tmp = fabs(A[(istart + 1) + (istart + 1) * lda]) +
+            f64 tmp = fabs(A[(istart + 1) + (istart + 1) * lda]) +
                          fabs(A[(istart + 2) + (istart + 2) * lda]);
-            double thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
+            f64 thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
             if (fabs(A[(istart + 2) + (istart + 1) * lda]) <= thresh) {
                 A[(istart + 2) + (istart + 1) * lda] = ZERO;
                 istart = istart + 2;
@@ -288,8 +288,8 @@ void dlaqz0(
         /* Check interior deflations */
         istart2 = istart;
         for (k = istop; k >= istart + 1; k--) {
-            double tmp = fabs(A[k + k * lda]) + fabs(A[(k - 1) + (k - 1) * lda]);
-            double thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
+            f64 tmp = fabs(A[k + k * lda]) + fabs(A[(k - 1) + (k - 1) * lda]);
+            f64 thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
             if (fabs(A[k + (k - 1) * lda]) <= thresh) {
                 A[k + (k - 1) * lda] = ZERO;
                 istart2 = k;
@@ -411,7 +411,7 @@ void dlaqz0(
         if (ns > n_undeflated) ns = n_undeflated;
         shiftpos = istop - n_undeflated + 1;
 
-        /* Shuffle shifts to put double shifts in front */
+        /* Shuffle shifts to put f64 shifts in front */
         for (i = shiftpos; i <= shiftpos + n_undeflated - 2; i += 2) {
             if (alphai[i] != -alphai[i + 1]) {
                 swap = alphar[i];
@@ -433,11 +433,11 @@ void dlaqz0(
 
         if ((ld % 6) == 0) {
             /* Exceptional shift */
-            if (((double)maxit * safmin) * fabs(A[istop + (istop - 1) * lda]) <
+            if (((f64)maxit * safmin) * fabs(A[istop + (istop - 1) * lda]) <
                 fabs(A[(istop - 1) + (istop - 1) * lda])) {
                 eshift = A[istop + (istop - 1) * lda] / B[(istop - 1) + (istop - 1) * ldb];
             } else {
-                eshift = eshift + ONE / (safmin * (double)maxit);
+                eshift = eshift + ONE / (safmin * (f64)maxit);
             }
             alphar[shiftpos] = ONE;
             alphar[shiftpos + 1] = ZERO;

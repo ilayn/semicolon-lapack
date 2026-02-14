@@ -19,11 +19,11 @@
  * @param[out] ssmin  The smaller singular value.
  * @param[out] ssmax  The larger singular value.
  */
-void dlas2(const double f, const double g, const double h,
-           double* ssmin, double* ssmax)
+void dlas2(const f64 f, const f64 g, const f64 h,
+           f64* ssmin, f64* ssmax)
 {
-    double fa, ga, ha, fhmn, fhmx;
-    double as, at, au, c;
+    f64 fa, ga, ha, fhmn, fhmx;
+    f64 as, at, au, c;
 
     fa = fabs(f);
     ga = fabs(g);
@@ -36,8 +36,8 @@ void dlas2(const double f, const double g, const double h,
         if (fhmx == 0.0) {
             *ssmax = ga;
         } else {
-            double mn = (fhmx < ga) ? fhmx : ga;
-            double mx = (fhmx > ga) ? fhmx : ga;
+            f64 mn = (fhmx < ga) ? fhmx : ga;
+            f64 mx = (fhmx > ga) ? fhmx : ga;
             *ssmax = mx * sqrt(1.0 + (mn / mx) * (mn / mx));
         }
     } else {

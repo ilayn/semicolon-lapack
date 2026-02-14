@@ -43,10 +43,10 @@
 void dsytrf(
     const char* uplo,
     const int n,
-    double* restrict A,
+    f64* restrict A,
     const int lda,
     int* restrict ipiv,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -70,7 +70,7 @@ void dsytrf(
     int lwkopt = n * nb > 1 ? n * nb : 1;
 
     if (*info == 0) {
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -206,5 +206,5 @@ void dsytrf(
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

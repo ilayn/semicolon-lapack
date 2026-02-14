@@ -43,19 +43,19 @@ void zsytrs2(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict work,
+    c128* const restrict work,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int upper;
     int i, iinfo, j, k, kp;
-    double complex ak, akm1, akm1k, bk, bkm1, denom;
+    c128 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -115,7 +115,7 @@ void zsytrs2(
         i = n - 1;
         while (i >= 0) {
             if (ipiv[i] >= 0) {
-                double complex scal = ONE / A[i + i * lda];
+                c128 scal = ONE / A[i + i * lda];
                 cblas_zscal(nrhs, &scal, &B[i], ldb);
             } else if (i > 0) {
                 if (ipiv[i - 1] == ipiv[i]) {
@@ -195,7 +195,7 @@ void zsytrs2(
         i = 0;
         while (i < n) {
             if (ipiv[i] >= 0) {
-                double complex scal = ONE / A[i + i * lda];
+                c128 scal = ONE / A[i + i * lda];
                 cblas_zscal(nrhs, &scal, &B[i], ldb);
             } else {
                 akm1k = work[i];

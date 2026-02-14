@@ -39,17 +39,17 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void strcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const float* const restrict A, const int lda,
-            float* rcond, float* const restrict work,
+            const int n, const f32* const restrict A, const int lda,
+            f32* rcond, f32* const restrict work,
             int* const restrict iwork, int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int upper, onenrm, nounit;
     char normin;
     int ix, kase, kase1;
-    float ainvnm, anorm, scale, smlnum, xnorm;
+    f32 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
 
     /* Test the input parameters */
@@ -82,7 +82,7 @@ void strcon(const char* norm, const char* uplo, const char* diag,
     }
 
     *rcond = ZERO;
-    smlnum = slamch("S") * (float)(n > 1 ? n : 1);
+    smlnum = slamch("S") * (f32)(n > 1 ? n : 1);
 
     /* Compute the norm of the triangular matrix A */
     anorm = slantr(norm, uplo, diag, n, n, A, lda, work);

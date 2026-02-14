@@ -87,14 +87,14 @@ void ztfsm(
     const char* diag,
     const int m,
     const int n,
-    const double complex alpha,
-    const double complex* const restrict A,
-    double complex* const restrict B,
+    const c128 alpha,
+    const c128* const restrict A,
+    c128* const restrict B,
     const int ldb)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int lower, lside, misodd, nisodd, normaltransr, notrans;
     int m1, m2, n1, n2, k, info;

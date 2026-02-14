@@ -60,31 +60,31 @@ void zposvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict AF,
+    c128* const restrict AF,
     const int ldaf,
     char* equed,
-    double* const restrict S,
-    double complex* const restrict B,
+    f64* const restrict S,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     *info = 0;
     int nofact = (fact[0] == 'N' || fact[0] == 'n');
     int equil = (fact[0] == 'E' || fact[0] == 'e');
     int rcequ = 0;
-    double smlnum = 0.0, bignum = 0.0, scond = ONE, amax;
+    f64 smlnum = 0.0, bignum = 0.0, scond = ONE, amax;
 
     if (nofact || equil) {
         *equed = 'N';
@@ -114,8 +114,8 @@ void zposvx(
         *info = -9;
     } else {
         if (rcequ) {
-            double smin_val = bignum;
-            double smax_val = ZERO;
+            f64 smin_val = bignum;
+            f64 smax_val = ZERO;
             for (int j = 0; j < n; j++) {
                 if (S[j] < smin_val) smin_val = S[j];
                 if (S[j] > smax_val) smax_val = S[j];
@@ -123,8 +123,8 @@ void zposvx(
             if (smin_val <= ZERO) {
                 *info = -10;
             } else if (n > 0) {
-                double smin_clamped = smin_val > smlnum ? smin_val : smlnum;
-                double smax_clamped = smax_val < bignum ? smax_val : bignum;
+                f64 smin_clamped = smin_val > smlnum ? smin_val : smlnum;
+                f64 smax_clamped = smax_val < bignum ? smax_val : bignum;
                 scond = smin_clamped / smax_clamped;
             } else {
                 scond = ONE;
@@ -177,7 +177,7 @@ void zposvx(
     }
 
     // Compute the norm of the matrix A.
-    double anorm = zlanhe("1", uplo, n, A, lda, rwork);
+    f64 anorm = zlanhe("1", uplo, n, A, lda, rwork);
 
     // Compute the reciprocal of the condition number of A.
     zpocon(uplo, n, AF, ldaf, anorm, rcond, work, rwork, info);

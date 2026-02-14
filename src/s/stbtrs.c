@@ -42,13 +42,13 @@ void stbtrs(
     const int n,
     const int kd,
     const int nrhs,
-    const float* const restrict AB,
+    const f32* const restrict AB,
     const int ldab,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int nounit, upper;
     int j;

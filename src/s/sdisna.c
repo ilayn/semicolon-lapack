@@ -59,16 +59,16 @@ void sdisna(
     const char* job,
     const int m,
     const int n,
-    const float* restrict D,
-    float* restrict SEP,
+    const f32* restrict D,
+    f32* restrict SEP,
     int* info)
 {
-    const float zero = 0.0f;
+    const f32 zero = 0.0f;
 
     int eigen, left, right, sing;
     int i, k;
     int incr, decr;
-    float anorm, eps, newgap, oldgap, safmin, thresh;
+    f32 anorm, eps, newgap, oldgap, safmin, thresh;
 
     *info = 0;
     eigen = (job[0] == 'E' || job[0] == 'e');

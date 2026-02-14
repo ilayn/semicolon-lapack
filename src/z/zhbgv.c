@@ -57,15 +57,15 @@ void zhbgv(
     const int n,
     const int ka,
     const int kb,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double complex* const restrict BB,
+    c128* const restrict BB,
     const int ldbb,
-    double* const restrict W,
-    double complex* const restrict Z,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');

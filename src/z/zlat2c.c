@@ -1,6 +1,6 @@
 /**
  * @file zlat2c.c
- * @brief ZLAT2C converts a double complex triangular matrix to a complex triangular matrix.
+ * @brief ZLAT2C converts a c128 triangular matrix to a complex triangular matrix.
  */
 
 #include "semicolon_lapack_complex_double.h"
@@ -42,14 +42,14 @@
 void zlat2c(
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
     float complex* const restrict SA,
     const int ldsa,
     int* info)
 {
     int i, j;
-    const double rmax = (double)FLT_MAX;
+    const f64 rmax = (f64)FLT_MAX;
     int upper;
 
     *info = 0;
@@ -58,8 +58,8 @@ void zlat2c(
     if (upper) {
         for (j = 0; j < n; j++) {
             for (i = 0; i <= j; i++) {
-                double re = creal(A[i + j * lda]);
-                double im = cimag(A[i + j * lda]);
+                f64 re = creal(A[i + j * lda]);
+                f64 im = cimag(A[i + j * lda]);
                 if ((re < -rmax) || (re > rmax) ||
                     (im < -rmax) || (im > rmax)) {
                     *info = 1;
@@ -71,8 +71,8 @@ void zlat2c(
     } else {
         for (j = 0; j < n; j++) {
             for (i = j; i < n; i++) {
-                double re = creal(A[i + j * lda]);
-                double im = cimag(A[i + j * lda]);
+                f64 re = creal(A[i + j * lda]);
+                f64 im = cimag(A[i + j * lda]);
                 if ((re < -rmax) || (re > rmax) ||
                     (im < -rmax) || (im > rmax)) {
                     *info = 1;

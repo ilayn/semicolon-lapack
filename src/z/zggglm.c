@@ -111,20 +111,20 @@ void zggglm(
     const int n,
     const int m,
     const int p,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict D,
-    double complex* restrict X,
-    double complex* restrict Y,
-    double complex* restrict work,
+    c128* restrict D,
+    c128* restrict X,
+    c128* restrict Y,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex zero = CMPLX(0.0, 0.0);
-    const double complex one = CMPLX(1.0, 0.0);
-    const double complex neg_one = CMPLX(-1.0, 0.0);
+    const c128 zero = CMPLX(0.0, 0.0);
+    const c128 one = CMPLX(1.0, 0.0);
+    const c128 neg_one = CMPLX(-1.0, 0.0);
 
     int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
     int lquery;
@@ -163,7 +163,7 @@ void zggglm(
             max_val = (n > p) ? n : p;
             lwkopt = m + np + max_val * nb;
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -231,5 +231,5 @@ void zggglm(
     zunmrq("L", "C", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (double complex)(m + np + ((lopt > (int)creal(work[m + np])) ? lopt : (int)creal(work[m + np])));
+    work[0] = (c128)(m + np + ((lopt > (int)creal(work[m + np])) ? lopt : (int)creal(work[m + np])));
 }

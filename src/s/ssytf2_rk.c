@@ -60,20 +60,20 @@
 void ssytf2_rk(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict E,
+    f32* restrict E,
     int* restrict ipiv,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float EIGHT = 8.0f;
-    const float SEVTEN = 17.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 EIGHT = 8.0f;
+    const f32 SEVTEN = 17.0f;
 
     int upper, done;
     int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
-    float absakk, alpha, colmax, d11, d12, d21, d22, rowmax, dtemp, t, wk, wkm1, wkp1, sfmin;
+    f32 absakk, alpha, colmax, d11, d12, d21, d22, rowmax, dtemp, t, wk, wkm1, wkp1, sfmin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

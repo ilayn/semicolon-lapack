@@ -54,15 +54,15 @@
  */
 void zupmtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n,
-            double complex* const restrict AP,
-            const double complex* const restrict tau,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work,
+            c128* const restrict AP,
+            const c128* const restrict tau,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work,
             int* info)
 {
     int left, notran, upper, forwrd;
     int i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
-    double complex taui;
+    c128 taui;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

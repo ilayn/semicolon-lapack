@@ -27,14 +27,14 @@
  * @param[in]     ieee   Flag for IEEE or non IEEE arithmetic (1=IEEE, 0=non-IEEE).
  * @param[in]     eps    This is the value of epsilon used.
  */
-void slasq5(const int i0, const int n0, float* const restrict Z,
-            const int pp, float tau, float sigma,
-            float* dmin, float* dmin1, float* dmin2,
-            float* dn, float* dnm1, float* dnm2,
-            const int ieee, const float eps)
+void slasq5(const int i0, const int n0, f32* const restrict Z,
+            const int pp, f32 tau, f32 sigma,
+            f32* dmin, f32* dmin1, f32* dmin2,
+            f32* dn, f32* dnm1, f32* dnm2,
+            const int ieee, const f32 eps)
 {
     int j4, j4p2;
-    float d, emin, temp, dthresh;
+    f32 d, emin, temp, dthresh;
 
     if ((n0 - i0 - 1) <= 0) {
         return;

@@ -47,35 +47,35 @@ void ssbevx_2stage(
     const char* uplo,
     const int n,
     const int kd,
-    float* restrict AB,
+    f32* restrict AB,
     const int ldab,
-    float* restrict Q,
+    f32* restrict Q,
     const int ldq,
-    const float vl,
-    const float vu,
+    const f32 vl,
+    const f32 vu,
     const int il,
     const int iu,
-    const float abstol,
+    const f32 abstol,
     int* m,
-    float* restrict W,
-    float* restrict Z,
+    f32* restrict W,
+    f32* restrict Z,
     const int ldz,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     int* restrict ifail,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int alleig, indeig, lower, test, valeig, wantz, lquery;
     char order;
     int i, iinfo, imax, indd, inde, indee, indibl;
     int indisp, indiwo, indwrk, iscale, itmp1, j, jj;
     int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, nsplit;
-    float abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    float sigma, smlnum, tmp1, vll, vuu;
+    f32 abstll, anrm, bignum, eps, rmax, rmin, safmin;
+    f32 sigma, smlnum, tmp1, vll, vuu;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     alleig = (range[0] == 'A' || range[0] == 'a');
@@ -121,13 +121,13 @@ void ssbevx_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = (float)lwmin;
+            work[0] = (f32)lwmin;
         } else {
             ib = ilaenv2stage(2, "SSYTRD_SB2ST", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "SSYTRD_SB2ST", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "SSYTRD_SB2ST", jobz, n, kd, ib, -1);
             lwmin = 2 * n + lhtrd + lwtrd;
-            work[0] = (float)lwmin;
+            work[0] = (f32)lwmin;
         }
 
         if (lwork < lwmin && !lquery) {
@@ -312,5 +312,5 @@ L30:
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

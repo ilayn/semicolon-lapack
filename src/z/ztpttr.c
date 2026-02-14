@@ -45,8 +45,8 @@
 void ztpttr(
     const char* uplo,
     const int n,
-    const double complex* const restrict AP,
-    double complex* const restrict A,
+    const c128* const restrict AP,
+    c128* const restrict A,
     const int lda,
     int* info)
 {

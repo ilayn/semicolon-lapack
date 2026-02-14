@@ -31,9 +31,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void dgelqf(const int m, const int n,
-            double * const restrict A, const int lda,
-            double * const restrict tau,
-            double * const restrict work, const int lwork,
+            f64 * const restrict A, const int lda,
+            f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -58,7 +58,7 @@ void dgelqf(const int m, const int n,
             work[0] = 1.0;
         } else {
             nb = lapack_get_nb("GELQF");
-            work[0] = (double)(m * nb);
+            work[0] = (f64)(m * nb);
         }
         if (!lquery && lwork < (k > 0 ? (m > 1 ? m : 1) : 1)) {
             *info = -7;
@@ -129,5 +129,5 @@ void dgelqf(const int m, const int n,
         dgelq2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (double)iws;
+    work[0] = (f64)iws;
 }

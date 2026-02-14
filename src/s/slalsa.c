@@ -56,17 +56,17 @@
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  */
 void slalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            float* const restrict B, const int ldb,
-            float* const restrict BX, const int ldbx,
-            const float* const restrict U, const int ldu,
-            const float* const restrict VT, const int* const restrict K,
-            const float* const restrict difl, const float* const restrict difr,
-            const float* const restrict Z, const float* const restrict poles,
+            f32* const restrict B, const int ldb,
+            f32* const restrict BX, const int ldbx,
+            const f32* const restrict U, const int ldu,
+            const f32* const restrict VT, const int* const restrict K,
+            const f32* const restrict difl, const f32* const restrict difr,
+            const f32* const restrict Z, const f32* const restrict poles,
             const int* const restrict givptr, const int* const restrict givcol,
             const int ldgcol, const int* const restrict perm,
-            const float* const restrict givnum,
-            const float* const restrict C, const float* const restrict S,
-            float* const restrict work, int* const restrict iwork, int* info)
+            const f32* const restrict givnum,
+            const f32* const restrict C, const f32* const restrict S,
+            f32* const restrict work, int* const restrict iwork, int* info)
 {
     int i, ic, im1, inode, j, lf, ll, lvl, lvl2;
     int nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;

@@ -30,18 +30,18 @@
  *
  * @return The computed norm value.
  */
-double dlanhs(
+f64 dlanhs(
     const char* norm,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict work)
+    f64* const restrict work)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double scale, sum, value, temp;
+    f64 scale, sum, value, temp;
     int jmax;
 
     if (n == 0) {

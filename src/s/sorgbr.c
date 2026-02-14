@@ -65,9 +65,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sorgbr(const char* vect, const int m, const int n, const int k,
-            float* const restrict A, const int lda,
-            const float* const restrict tau,
-            float* const restrict work, const int lwork, int* info)
+            f32* const restrict A, const int lda,
+            const f32* const restrict tau,
+            f32* const restrict work, const int lwork, int* info)
 {
     int i, j, iinfo, lquery, mn, wantq, lwkopt;
 
@@ -120,7 +120,7 @@ void sorgbr(const char* vect, const int m, const int n, const int k,
         xerbla("SORGBR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -181,5 +181,5 @@ void sorgbr(const char* vect, const int m, const int n, const int k,
             }
         }
     }
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

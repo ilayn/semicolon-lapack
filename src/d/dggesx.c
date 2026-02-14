@@ -66,29 +66,29 @@
  */
 void dggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             dselect3_t selctg, const char* sense, const int n,
-            double* const restrict A, const int lda,
-            double* const restrict B, const int ldb,
+            f64* const restrict A, const int lda,
+            f64* const restrict B, const int ldb,
             int* sdim,
-            double* const restrict alphar, double* const restrict alphai,
-            double* const restrict beta,
-            double* const restrict VSL, const int ldvsl,
-            double* const restrict VSR, const int ldvsr,
-            double* const restrict rconde, double* const restrict rcondv,
-            double* const restrict work, const int lwork,
+            f64* const restrict alphar, f64* const restrict alphai,
+            f64* const restrict beta,
+            f64* const restrict VSL, const int ldvsl,
+            f64* const restrict VSR, const int ldvsr,
+            f64* const restrict rconde, f64* const restrict rcondv,
+            f64* const restrict work, const int lwork,
             int* const restrict iwork, const int liwork,
             int* const restrict bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl;
     int wantsb, wantse, wantsn, wantst, wantsv;
     int i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
     int ileft, ilo, ip, iright, irows, itau, iwrk;
     int liwmin, lwrk, maxwrk, minwrk;
-    double anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
-    double pl, pr, safmax, safmin, smlnum;
-    double dif[2];
+    f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
+    f64 pl, pr, safmax, safmin, smlnum;
+    f64 dif[2];
     int nb_geqrf, nb_ormqr, nb_orgqr;
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
@@ -176,7 +176,7 @@ void dggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             maxwrk = 1;
             lwrk = 1;
         }
-        work[0] = (double)lwrk;
+        work[0] = (f64)lwrk;
         if (wantsn || n == 0) {
             liwmin = 1;
         } else {
@@ -406,7 +406,7 @@ void dggesx(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L60:
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
     iwork[0] = liwmin;
 
     return;

@@ -57,10 +57,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgeqp3(const int m, const int n,
-            double * const restrict A, const int lda,
+            f64 * const restrict A, const int lda,
             int * const restrict jpvt,
-            double * const restrict tau,
-            double * const restrict work, const int lwork,
+            f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
@@ -92,7 +92,7 @@ void dgeqp3(const int m, const int n,
             nb = lapack_get_nb("GEQRF");
             lwkopt = 2 * n + (n + 1) * nb;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if ((lwork < iws) && !lquery) {
             *info = -8;
@@ -290,5 +290,5 @@ void dgeqp3(const int m, const int n,
         }
     }
 
-    work[0] = (double)iws;
+    work[0] = (f64)iws;
 }

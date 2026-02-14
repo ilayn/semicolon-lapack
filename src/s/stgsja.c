@@ -76,25 +76,25 @@
  */
 void stgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,
-            float* const restrict A, const int lda,
-            float* const restrict B, const int ldb,
-            const float tola, const float tolb,
-            float* const restrict alpha, float* const restrict beta,
-            float* const restrict U, const int ldu,
-            float* const restrict V, const int ldv,
-            float* const restrict Q, const int ldq,
-            float* const restrict work, int* ncycle, int* info)
+            f32* const restrict A, const int lda,
+            f32* const restrict B, const int ldb,
+            const f32 tola, const f32 tolb,
+            f32* const restrict alpha, f32* const restrict beta,
+            f32* const restrict U, const int ldu,
+            f32* const restrict V, const int ldv,
+            f32* const restrict Q, const int ldq,
+            f32* const restrict work, int* ncycle, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float HUGENUM = FLT_MAX;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 HUGENUM = FLT_MAX;
 
     int initu, wantu, initv, wantv, initq, wantq;
     int upper;
     int i, j, kcycle;
-    float a1, a2, a3, b1, b2, b3;
-    float csu, snu, csv, snv, csq, snq;
-    float error, gamma, rwk, ssmin;
+    f32 a1, a2, a3, b1, b2, b3;
+    f32 csu, snu, csv, snv, csq, snq;
+    f32 error, gamma, rwk, ssmin;
     int minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');

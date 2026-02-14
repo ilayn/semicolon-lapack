@@ -48,12 +48,12 @@
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
 void slaed9(const int k, const int kstart, const int kstop, const int n,
-            float* D, float* Q, const int ldq, const float rho,
-            const float* dlambda, float* W, float* S, const int lds,
+            f32* D, f32* Q, const int ldq, const f32 rho,
+            const f32* dlambda, f32* W, f32* S, const int lds,
             int* info)
 {
     int i, j;
-    float temp;
+    f32 temp;
 
     /* Test the input parameters. */
     *info = 0;

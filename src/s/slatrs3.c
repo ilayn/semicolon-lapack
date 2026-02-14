@@ -68,35 +68,35 @@ void slatrs3(
     const char* normin,
     const int n,
     const int nrhs,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict scale,
-    float* const restrict cnorm,
-    float* const restrict work,
+    f32* const restrict scale,
+    f32* const restrict cnorm,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
     /* Parameters from Fortran - match LAPACK exactly */
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 #define NRHSMIN 2
 #define NBRHS 32
 #define NBMIN 8
 #define NBMAX 64
 
     /* Local arrays - match Fortran local arrays */
-    float W[NBMAX];
-    float XNRM[NBRHS];
+    f32 W[NBMAX];
+    f32 XNRM[NBRHS];
 
     /* Local scalars */
     int upper, notran, nounit, lquery;
     int awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
     int jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
     int lanrm, lds, lscale, nb, nba, nbx, rhs, lwmin;
-    float anrm, bignum, bnrm, rscal, scal, scaloc;
-    float scamin, smlnum, tmax;
+    f32 anrm, bignum, bnrm, rscal, scal, scaloc;
+    f32 scamin, smlnum, tmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -131,7 +131,7 @@ void slatrs3(
     } else {
         lwmin = lscale + lanrm;
     }
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 
     /* Test the input parameters */
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -440,5 +440,5 @@ void slatrs3(
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

@@ -25,10 +25,10 @@
  *                         - = 1: the matrix warrants computations guaranteeing
  *                           only absolute accuracy.
  */
-void slarrr(const int n, const float* D, float* E, int* info)
+void slarrr(const int n, const f32* D, f32* E, int* info)
 {
-    const float ZERO = 0.0f;
-    const float RELCOND = 0.999f;
+    const f32 ZERO = 0.0f;
+    const f32 RELCOND = 0.999f;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -39,10 +39,10 @@ void slarrr(const int n, const float* D, float* E, int* info)
     /* As a default, do NOT go for relative-accuracy preserving computations. */
     *info = 1;
 
-    float safmin = slamch("S");
-    float eps = slamch("P");
-    float smlnum = safmin / eps;
-    float rmin = sqrtf(smlnum);
+    f32 safmin = slamch("S");
+    f32 eps = slamch("P");
+    f32 smlnum = safmin / eps;
+    f32 rmin = sqrtf(smlnum);
 
     /* Tests for relative accuracy */
 
@@ -62,13 +62,13 @@ void slarrr(const int n, const float* D, float* E, int* info)
        instead of the current OFFDIG + OFFDIG2 < 1 */
 
     int yesrel = 1;
-    float offdig = ZERO;
-    float offdig2;
-    float tmp = sqrtf(fabsf(D[0]));
+    f32 offdig = ZERO;
+    f32 offdig2;
+    f32 tmp = sqrtf(fabsf(D[0]));
     if (tmp < rmin) yesrel = 0;
     if (yesrel) {
         for (int i = 1; i < n; i++) {
-            float tmp2 = sqrtf(fabsf(D[i]));
+            f32 tmp2 = sqrtf(fabsf(D[i]));
             if (tmp2 < rmin) { yesrel = 0; break; }
             offdig2 = fabsf(E[i - 1]) / (tmp * tmp2);
             if (offdig + offdig2 >= RELCOND) { yesrel = 0; break; }

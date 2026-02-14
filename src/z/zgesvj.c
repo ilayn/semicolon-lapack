@@ -8,11 +8,11 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double HALF = 0.5;
-static const double ONE = 1.0;
-static const double complex CZERO = CMPLX(0.0, 0.0);
-static const double complex CONE = CMPLX(1.0, 0.0);
+static const f64 ZERO = 0.0;
+static const f64 HALF = 0.5;
+static const f64 ONE = 1.0;
+static const c128 CZERO = CMPLX(0.0, 0.0);
+static const c128 CONE = CMPLX(1.0, 0.0);
 static const int NSWEEP = 30;
 
 /**
@@ -206,11 +206,11 @@ static const int NSWEEP = 30;
  *                           description of rwork.
  */
 void zgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, double complex* const restrict A, const int lda,
-            double* const restrict SVA, const int mv,
-            double complex* const restrict V, const int ldv,
-            double complex* const restrict cwork, const int lwork,
-            double* const restrict rwork, const int lrwork, int* info)
+            const int m, const int n, c128* const restrict A, const int lda,
+            f64* const restrict SVA, const int mv,
+            c128* const restrict V, const int ldv,
+            c128* const restrict cwork, const int lwork,
+            f64* const restrict rwork, const int lrwork, int* info)
 {
     int lsvec, uctol, rsvec, applv, upper, lower, lquery;
     int minmn, lwmin, lrwmin, mvl = 0;
@@ -221,11 +221,11 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     int n2, n4, n34;
     int ierr;
     int rotok, noscale, goscale;
-    double complex aapq, ompq;
-    double aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
-    double big, bigtheta, cs, sn, t, temp1, theta, thsign;
-    double ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
-    double rootsfmin, sfmin, skl, small, tol, roottol;
+    c128 aapq, ompq;
+    f64 aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
+    f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
+    f64 ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
+    f64 rootsfmin, sfmin, skl, small, tol, roottol;
 
     lsvec = (jobu[0] == 'U' || jobu[0] == 'u' || jobu[0] == 'F' || jobu[0] == 'f');
     uctol = (jobu[0] == 'C' || jobu[0] == 'c');
@@ -274,8 +274,8 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
         xerbla("ZGESVJ", -(*info));
         return;
     } else if (lquery) {
-        cwork[0] = (double complex)lwmin;
-        rwork[0] = (double)lrwmin;
+        cwork[0] = (c128)lwmin;
+        rwork[0] = (f64)lrwmin;
         return;
     }
 
@@ -285,9 +285,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
         ctol = rwork[0];
     } else {
         if (lsvec || rsvec || applv) {
-            ctol = sqrt((double)m);
+            ctol = sqrt((f64)m);
         } else {
-            ctol = (double)m;
+            ctol = (f64)m;
         }
     }
 
@@ -303,7 +303,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     tol = ctol * epsln;
     roottol = sqrt(tol);
 
-    if ((double)m * epsln >= ONE) {
+    if ((f64)m * epsln >= ONE) {
         *info = -4;
         xerbla("ZGESVJ", -(*info));
         return;
@@ -317,7 +317,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     }
     rsvec = rsvec || applv;
 
-    skl = ONE / sqrt((double)m * (double)n);
+    skl = ONE / sqrt((f64)m * (f64)n);
     noscale = 1;
     goscale = 1;
 
@@ -427,16 +427,16 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     }
 
     sn = sqrt(sfmin / epsln);
-    temp1 = sqrt(big / (double)n);
+    temp1 = sqrt(big / (f64)n);
     if ((aapp <= sn) || (aaqq >= temp1) ||
         ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = fmin(big, temp1 / aapp);
     } else if ((aaqq <= sn) && (aapp <= temp1)) {
-        temp1 = fmin(sn / aaqq, big / (aapp * sqrt((double)n)));
+        temp1 = fmin(sn / aaqq, big / (aapp * sqrt((f64)n)));
     } else if ((aaqq >= sn) && (aapp >= temp1)) {
         temp1 = fmax(sn / aaqq, temp1 / aapp);
     } else if ((aaqq <= sn) && (aapp >= temp1)) {
-        temp1 = fmin(sn / aaqq, big / (sqrt((double)n) * aapp));
+        temp1 = fmin(sn / aaqq, big / (sqrt((f64)n) * aapp));
     } else {
         temp1 = ONE;
     }
@@ -668,7 +668,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                                         zlascl("G", 0, 0, aapp, ONE, m, 1, &cwork[n], lda, &ierr);
                                         zlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
                                         {
-                                            double complex neg_aapq = -aapq;
+                                            c128 neg_aapq = -aapq;
                                             cblas_zaxpy(m, &neg_aapq, &cwork[n], 1, &A[q * lda], 1);
                                         }
                                         zlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
@@ -771,8 +771,8 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                                     if (aapp > (small / aaqq)) {
                                         cblas_zdotc_sub(m, &A[p * lda], 1, &A[q * lda], 1, &aapq);
                                         {
-                                            double mx = fmax(aaqq, aapp);
-                                            double mn = fmin(aaqq, aapp);
+                                            f64 mx = fmax(aaqq, aapp);
+                                            f64 mn = fmin(aaqq, aapp);
                                             aapq = (aapq / mx) / mn;
                                         }
                                     } else {
@@ -840,7 +840,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                                             zlascl("G", 0, 0, aapp, ONE, m, 1, &cwork[n], lda, &ierr);
                                             zlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
                                             {
-                                                double complex neg_aapq = -aapq;
+                                                c128 neg_aapq = -aapq;
                                                 cblas_zaxpy(m, &neg_aapq, &cwork[n], 1, &A[q * lda], 1);
                                             }
                                             zlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
@@ -851,7 +851,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                                             zlascl("G", 0, 0, aaqq, ONE, m, 1, &cwork[n], lda, &ierr);
                                             zlascl("G", 0, 0, aapp, ONE, m, 1, &A[p * lda], lda, &ierr);
                                             {
-                                                double complex neg_conj_aapq = -conj(aapq);
+                                                c128 neg_conj_aapq = -conj(aapq);
                                                 cblas_zaxpy(m, &neg_conj_aapq, &cwork[n], 1, &A[p * lda], 1);
                                             }
                                             zlascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
@@ -942,8 +942,8 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
         if ((i + 1 < swband) && ((mxaapq <= roottol) || (iswrot <= n)))
             swband = i + 1;
 
-        if ((i > swband) && (mxaapq < sqrt((double)n) * tol)
-            && ((double)n * mxaapq * mxsinj < tol)) {
+        if ((i > swband) && (mxaapq < sqrt((f64)n) * tol)
+            && ((f64)n * mxaapq * mxsinj < tol)) {
             break;
         }
 
@@ -1000,9 +1000,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     }
 
     rwork[0] = skl;
-    rwork[1] = (double)n4;
-    rwork[2] = (double)n2;
-    rwork[3] = (double)(i + 1);
+    rwork[1] = (f64)n4;
+    rwork[2] = (f64)n2;
+    rwork[3] = (f64)(i + 1);
     rwork[4] = mxaapq;
     rwork[5] = mxsinj;
 

@@ -35,14 +35,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgr2(const int m, const int n, const int k,
-            double * const restrict A, const int lda,
-            const double * const restrict tau,
-            double * const restrict work,
+            f64 * const restrict A, const int lda,
+            const f64 * const restrict tau,
+            f64 * const restrict work,
             int *info)
 {
     int i, ii, j, l;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Parameter validation */
     *info = 0;

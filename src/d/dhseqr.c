@@ -61,10 +61,10 @@ static int iparmq_nmin(void)
  */
 void dhseqr(const char* job, const char* compz, const int n,
                           const int ilo, const int ihi,
-                          double* H, const int ldh,
-                          double* wr, double* wi,
-                          double* Z, const int ldz,
-                          double* work, const int lwork, int* info)
+                          f64* H, const int ldh,
+                          f64* wr, f64* wi,
+                          f64* Z, const int ldz,
+                          f64* work, const int lwork, int* info)
 {
     /* Parameters */
     const int ntiny = 15;  /* Matrices of order NTINY or smaller use DLAHQR */
@@ -72,12 +72,12 @@ void dhseqr(const char* job, const char* compz, const int n,
      * a rare DLAHQR failure. Allows up to six simultaneous shifts and
      * a 16-by-16 deflation window. */
     const int nl = 49;
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Local arrays - use explicit size to avoid VLA */
-    double hl[49 * 49];
-    double workl[49];
+    f64 hl[49 * 49];
+    f64 workl[49];
 
     /* Local scalars */
     int i, kbot, nmin;
@@ -87,7 +87,7 @@ void dhseqr(const char* job, const char* compz, const int n,
     wantt = (job[0] == 'S' || job[0] == 's');
     initz = (compz[0] == 'I' || compz[0] == 'i');
     wantz = initz || (compz[0] == 'V' || compz[0] == 'v');
-    work[0] = (double)(1 > n ? 1 : n);
+    work[0] = (f64)(1 > n ? 1 : n);
     lquery = (lwork == -1);
 
     *info = 0;
@@ -124,8 +124,8 @@ void dhseqr(const char* job, const char* compz, const int n,
                ihi, Z, ldz, work, lwork, info);
         /* Ensure reported workspace size is backward-compatible with
          * previous LAPACK versions */
-        if (work[0] < (double)(1 > n ? 1 : n))
-            work[0] = (double)(1 > n ? 1 : n);
+        if (work[0] < (f64)(1 > n ? 1 : n))
+            work[0] = (f64)(1 > n ? 1 : n);
         return;
     } else {
         /* Copy eigenvalues isolated by DGEBAL */
@@ -196,7 +196,7 @@ void dhseqr(const char* job, const char* compz, const int n,
 
         /* Ensure reported workspace size is backward-compatible with
          * previous LAPACK versions */
-        if (work[0] < (double)(1 > n ? 1 : n))
-            work[0] = (double)(1 > n ? 1 : n);
+        if (work[0] < (f64)(1 > n ? 1 : n))
+            work[0] = (f64)(1 > n ? 1 : n);
     }
 }

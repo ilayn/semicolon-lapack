@@ -32,17 +32,17 @@
 void zlaqhp(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    const double* const restrict S,
-    const double scond,
-    const double amax,
+    c128* const restrict AP,
+    const f64* const restrict S,
+    const f64 scond,
+    const f64 amax,
     char* equed)
 {
-    const double ONE = 1.0;
-    const double THRESH = 0.1;
+    const f64 ONE = 1.0;
+    const f64 THRESH = 0.1;
 
     int i, j, jc;
-    double cj, large, small;
+    f64 cj, large, small;
 
     if (n <= 0) {
         *equed = 'N';

@@ -48,24 +48,24 @@ void dspsvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict AP,
-    double* const restrict AFP,
+    const f64* const restrict AP,
+    f64* const restrict AFP,
     int* const restrict ipiv,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nofact;
-    double anorm;
+    f64 anorm;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

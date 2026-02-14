@@ -52,23 +52,23 @@ static int iparmq_nmin(void)
  */
 SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
                           const int ktop, const int kbot, const int nw,
-                          double* H, const int ldh,
+                          f64* H, const int ldh,
                           const int iloz, const int ihiz,
-                          double* Z, const int ldz,
+                          f64* Z, const int ldz,
                           int* ns, int* nd,
-                          double* sr, double* si,
-                          double* V, const int ldv,
-                          const int nh, double* T, const int ldt,
-                          const int nv, double* WV, const int ldwv,
-                          double* work, const int lwork)
+                          f64* sr, f64* si,
+                          f64* V, const int ldv,
+                          const int nh, f64* T, const int ldt,
+                          const int nv, f64* WV, const int ldwv,
+                          f64* work, const int lwork)
 {
     /* Parameters */
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Local scalars */
-    double aa, bb, beta, cc, cs, dd, evi, evk, foo, s;
-    double safmin, smlnum, sn, tau, ulp;
+    f64 aa, bb, beta, cc, cs, dd, evi, evk, foo, s;
+    f64 safmin, smlnum, sn, tau, ulp;
     int i, ifst, ilst, info, infqr, j, jw, k, kcol, kend, kln;
     int krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin;
     int bulge, sorted;
@@ -100,7 +100,7 @@ SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
 
     /* Quick return in case of workspace query */
     if (lwork == -1) {
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -117,7 +117,7 @@ SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
     /* Machine constants */
     safmin = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     /* Setup deflation window */
     jw = nw < kbot - ktop + 1 ? nw : kbot - ktop + 1;
@@ -382,5 +382,5 @@ SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
     *ns = *ns - infqr;
 
     /* Return optimal workspace */
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

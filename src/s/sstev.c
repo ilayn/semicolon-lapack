@@ -41,12 +41,12 @@
  *                           zero.
  */
 void sstev(const char* jobz, const int n,
-           float* const restrict D, float* const restrict E,
-           float* const restrict Z, const int ldz,
-           float* const restrict work, int* info)
+           f32* const restrict D, f32* const restrict E,
+           f32* const restrict Z, const int ldz,
+           f32* const restrict work, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     /* Test the input parameters. */
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -76,17 +76,17 @@ void sstev(const char* jobz, const int n,
     }
 
     /* Get machine constants. */
-    float safmin = slamch("S");
-    float eps = slamch("P");
-    float smlnum = safmin / eps;
-    float bignum = ONE / smlnum;
-    float rmin = sqrtf(smlnum);
-    float rmax = sqrtf(bignum);
+    f32 safmin = slamch("S");
+    f32 eps = slamch("P");
+    f32 smlnum = safmin / eps;
+    f32 bignum = ONE / smlnum;
+    f32 rmin = sqrtf(smlnum);
+    f32 rmax = sqrtf(bignum);
 
     /* Scale matrix to allowable range, if necessary. */
     int iscale = 0;
-    float tnrm = slanst("M", n, D, E);
-    float sigma = ZERO;
+    f32 tnrm = slanst("M", n, D, E);
+    f32 sigma = ZERO;
     if (tnrm > ZERO && tnrm < rmin) {
         iscale = 1;
         sigma = rmin / tnrm;

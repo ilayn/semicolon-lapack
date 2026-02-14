@@ -49,19 +49,19 @@
 void zsytri_rook(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int upper;
     int k, kp, kstep;
-    double complex ak, akkp1, akp1, d, t, temp;
+    c128 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -112,7 +112,7 @@ void zsytri_rook(
                 A[k + k * lda] = ONE / A[k + k * lda];
 
                 if (k > 0) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(k, &A[0 + k * lda], 1, work, 1);
                     zsymv(uplo, k, NEG_ONE, A, lda,
                           work, 1, ZERO, &A[0 + k * lda], 1);
@@ -133,7 +133,7 @@ void zsytri_rook(
                 A[k + (k + 1) * lda] = -akkp1 / d;
 
                 if (k > 0) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(k, &A[0 + k * lda], 1, work, 1);
                     zsymv(uplo, k, NEG_ONE, A, lda,
                           work, 1, ZERO, &A[0 + k * lda], 1);
@@ -206,7 +206,7 @@ void zsytri_rook(
                 A[k + k * lda] = ONE / A[k + k * lda];
 
                 if (k < n - 1) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(n - k - 1, &A[k + 1 + k * lda], 1, work, 1);
                     zsymv(uplo, n - k - 1, NEG_ONE,
                           &A[k + 1 + (k + 1) * lda], lda, work, 1, ZERO, &A[k + 1 + k * lda], 1);
@@ -227,7 +227,7 @@ void zsytri_rook(
                 A[k + (k - 1) * lda] = -akkp1 / d;
 
                 if (k < n - 1) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(n - k - 1, &A[k + 1 + k * lda], 1, work, 1);
                     zsymv(uplo, n - k - 1, NEG_ONE,
                           &A[k + 1 + (k + 1) * lda], lda, work, 1, ZERO, &A[k + 1 + k * lda], 1);

@@ -90,27 +90,27 @@
  *                         - = -5: Problem in SLASQ2.
  *                         - = -6: Problem in SLASQ2.
  */
-void slarre(const char* range, const int n, float* vl, float* vu,
+void slarre(const char* range, const int n, f32* vl, f32* vu,
             const int il, const int iu,
-            float* D, float* E, float* E2,
-            const float rtol1, const float rtol2, const float spltol,
+            f32* D, f32* E, f32* E2,
+            const f32 rtol1, const f32 rtol2, const f32 spltol,
             int* nsplit, int* isplit, int* m,
-            float* W, float* werr, float* wgap,
-            int* iblock, int* indexw, float* gers,
-            float* pivmin, float* work, int* iwork, int* info)
+            f32* W, f32* werr, f32* wgap,
+            int* iblock, int* indexw, f32* gers,
+            f32* pivmin, f32* work, int* iwork, int* info)
 {
     /* Parameters */
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float FOUR = 4.0f;
-    const float HNDRD = 100.0f;
-    const float PERT = 8.0f;
-    const float HALF = 0.5f;
-    const float FOURTH = 0.25f;
-    const float FAC = 0.5f;
-    const float MAXGROWTH = 64.0f;
-    const float FUDGE = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 FOUR = 4.0f;
+    const f32 HNDRD = 100.0f;
+    const f32 PERT = 8.0f;
+    const f32 HALF = 0.5f;
+    const f32 FOURTH = 0.25f;
+    const f32 FAC = 0.5f;
+    const f32 MAXGROWTH = 64.0f;
+    const f32 FUDGE = 2.0f;
     const int MAXTRY = 6;
     const int ALLRNG = 1;
     const int INDRNG = 2;
@@ -121,7 +121,7 @@ void slarre(const char* range, const int n, float* vl, float* vu,
     int cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
         in, indl = 0, indu = 0, irange = 0, j, jblk, mb = 0, mm,
         wbegin, wend = 0;
-    float avgap, bsrtol, clwdth, dmax_, dpivot, eabs,
+    f32 avgap, bsrtol, clwdth, dmax_, dpivot, eabs,
            emax, eold, eps, gl, gu, isleft, isrght, rtl,
            rtol, s1, s2, safmin, sgndef, sigma, spdiam,
            tau, tmp, tmp1;
@@ -446,7 +446,7 @@ void slarre(const char* range, const int n, float* vl, float* vu,
         } else {
             if (mb > 1) {
                 clwdth = W[wend] + werr[wend] - W[wbegin] - werr[wbegin];
-                avgap = fabsf(clwdth / (float)(wend - wbegin));
+                avgap = fabsf(clwdth / (f32)(wend - wbegin));
                 if (sgndef == ONE) {
                     tau = HALF * (wgap[wbegin] > avgap ? wgap[wbegin] : avgap);
                     tau = tau > werr[wbegin] ? tau : werr[wbegin];
@@ -527,9 +527,9 @@ void slarre(const char* range, const int n, float* vl, float* vu,
         /* Store the shift. */
         E[iend] = sigma;
         /* Store D and L. */
-        memcpy(&D[ibegin], work, (size_t)in * sizeof(float));
+        memcpy(&D[ibegin], work, (size_t)in * sizeof(f32));
         if (in > 1) {
-            memcpy(&E[ibegin], &work[in], (size_t)(in - 1) * sizeof(float));
+            memcpy(&E[ibegin], &work[in], (size_t)(in - 1) * sizeof(f32));
         }
 
         if (mb > 1) {
@@ -600,7 +600,7 @@ void slarre(const char* range, const int n, float* vl, float* vu,
             /* This is an ESTIMATED error, the worst case bound is 4*N*EPS */
             /* which is usually too large and requires unnecessary work to be */
             /* done by bisection when computing the eigenvectors */
-            rtol = logf((float)in) * FOUR * eps;
+            rtol = logf((f32)in) * FOUR * eps;
             j = ibegin;
             for (i = 0; i < in - 1; i++) {
                 work[2 * i] = fabsf(D[j]);

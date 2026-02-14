@@ -56,21 +56,21 @@ void sgbtrf(
     const int n,
     const int kl,
     const int ku,
-    float * const restrict AB,
+    f32 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
+    const f32 ZERO = 0.0f;
 
     /* Work arrays for A13 and A31 blocks that fall outside the band */
-    float work13[LDWORK * NBMAX];
-    float work31[LDWORK * NBMAX];
+    f32 work13[LDWORK * NBMAX];
+    f32 work31[LDWORK * NBMAX];
 
     int i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
-    float temp;
+    f32 temp;
     int minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */

@@ -34,13 +34,13 @@
  */
 void zpttrf(
     const int n,
-    double* const restrict D,
-    double complex* const restrict E,
+    f64* const restrict D,
+    c128* const restrict E,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     int i, i4;
-    double eir, eii, f, g;
+    f64 eir, eii, f, g;
 
     *info = 0;
     if (n < 0) {

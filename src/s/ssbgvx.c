@@ -63,32 +63,32 @@ void ssbgvx(
     const int n,
     const int ka,
     const int kb,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict BB,
+    f32* const restrict BB,
     const int ldbb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    const float vl,
-    const float vu,
+    const f32 vl,
+    const f32 vu,
     const int il,
     const int iu,
-    const float abstol,
+    const f32 abstol,
     int* m,
-    float* const restrict W,
-    float* const restrict Z,
+    f32* const restrict W,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     int* const restrict iwork,
     int* const restrict ifail,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int alleig, indeig, test, upper, valeig, wantz;
     int i, iinfo, indd, inde, indee, indisp, indiwo, indwrk, itmp1, j, jj, nsplit;
-    float tmp1;
+    f32 tmp1;
     char order, vect;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

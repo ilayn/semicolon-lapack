@@ -38,15 +38,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dspgst(const int itype, const char* uplo, const int n,
-            double* const restrict AP, const double* const restrict BP,
+            f64* const restrict AP, const f64* const restrict BP,
             int* info)
 {
-    const double ONE = 1.0;
-    const double HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
 
     int upper;
     int j, j1, j1j1, jj, k, k1, k1k1, kk;
-    double ajj, akk, bjj, bkk, ct;
+    f64 ajj, akk, bjj, bkk, ct;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

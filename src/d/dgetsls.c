@@ -80,23 +80,23 @@ void dgetsls(
     const int m,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int i, iascl, ibscl, j, maxmn, brow;
     int scllen, tszo = 0, tszm = 0, lwo = 0, lwm = 0, lw1, lw2;
     int wsizeo, wsizem, info2;
     int lquery, tran;
-    double anrm, bignum, bnrm, smlnum;
-    double tq[5], workq[1];
+    f64 anrm, bignum, bnrm, smlnum;
+    f64 tq[5], workq[1];
 
     *info = 0;
     maxmn = (m > n) ? m : n;
@@ -163,7 +163,7 @@ void dgetsls(
             *info = -10;
         }
 
-        work[0] = (double)wsizeo;
+        work[0] = (f64)wsizeo;
     }
 
     if (*info != 0) {
@@ -171,7 +171,7 @@ void dgetsls(
         return;
     }
     if (lquery) {
-        if (lwork == -2) work[0] = (double)wsizem;
+        if (lwork == -2) work[0] = (f64)wsizem;
         return;
     }
     if (lwork < wsizeo) {
@@ -205,7 +205,7 @@ void dgetsls(
         iascl = 2;
     } else if (anrm == zero) {
         dlaset("F", maxmn, nrhs, zero, zero, B, ldb);
-        work[0] = (double)(tszo + lwo);
+        work[0] = (f64)(tszo + lwo);
         return;
     }
 
@@ -298,5 +298,5 @@ void dgetsls(
         dlascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, info);
     }
 
-    work[0] = (double)(tszo + lwo);
+    work[0] = (f64)(tszo + lwo);
 }

@@ -28,15 +28,15 @@ void dtrti2(
     const char* uplo,
     const char* diag,
     const int n,
-    double * const restrict A,
+    f64 * const restrict A,
     const int lda,
     int *info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int upper, nounit;
     int j;
-    double ajj;
+    f64 ajj;
 
     // Test the input parameters
     *info = 0;

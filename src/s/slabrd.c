@@ -47,11 +47,11 @@
  * @param[in]     ldy   The leading dimension of the array Y. ldy >= max(1,n).
  */
 void slabrd(const int m, const int n, const int nb,
-            float* const restrict A, const int lda,
-            float* const restrict D, float* const restrict E,
-            float* const restrict tauq, float* const restrict taup,
-            float* const restrict X, const int ldx,
-            float* const restrict Y, const int ldy)
+            f32* const restrict A, const int lda,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict tauq, f32* const restrict taup,
+            f32* const restrict X, const int ldx,
+            f32* const restrict Y, const int ldy)
 {
     int i;
 

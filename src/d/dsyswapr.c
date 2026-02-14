@@ -41,13 +41,13 @@
 void dsyswapr(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     const int i1,
     const int i2)
 {
     int upper;
-    double tmp;
+    f64 tmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (upper) {

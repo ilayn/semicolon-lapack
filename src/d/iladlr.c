@@ -27,10 +27,10 @@
 int iladlr(
     const int m,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda)
 {
-    const double zero = 0.0;
+    const f64 zero = 0.0;
     int i, j, result;
 
     if (m == 0) {

@@ -65,10 +65,10 @@
  *                           bidiagonal form did not converge to zero.
  */
 void sgelss(const int m, const int n, const int nrhs,
-            float* const restrict A, const int lda,
-            float* const restrict B, const int ldb,
-            float* const restrict S, const float rcond, int* rank,
-            float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            f32* const restrict B, const int ldb,
+            f32* const restrict S, const f32 rcond, int* rank,
+            f32* const restrict work, const int lwork,
             int* info)
 {
     int lquery;
@@ -76,12 +76,12 @@ void sgelss(const int m, const int n, const int nrhs,
     int iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr;
     int lwork_dgeqrf, lwork_dormqr, lwork_dgebrd, lwork_dormbr, lwork_dorgbr;
     int lwork_dgelqf, lwork_dormlq;
-    float anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
-    float wkopt[1];
+    f32 anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
+    f32 wkopt[1];
     int iinfo;
 
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     /* Test the input arguments */
     *info = 0;
@@ -199,7 +199,7 @@ void sgelss(const int m, const int n, const int nrhs,
             }
             if (maxwrk < minwrk) maxwrk = minwrk;
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -519,5 +519,5 @@ void sgelss(const int m, const int n, const int nrhs,
     }
 
 cleanup:
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 }

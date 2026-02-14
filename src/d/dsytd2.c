@@ -50,17 +50,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dsytd2(const char* uplo, const int n, double* const restrict A,
-            const int lda, double* const restrict D, double* const restrict E,
-            double* const restrict tau, int* info)
+void dsytd2(const char* uplo, const int n, f64* const restrict A,
+            const int lda, f64* const restrict D, f64* const restrict E,
+            f64* const restrict tau, int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
 
     int upper;
     int i;
-    double alpha, taui;
+    f64 alpha, taui;
     CBLAS_UPLO cblas_uplo;
 
     /* Test the input parameters. */

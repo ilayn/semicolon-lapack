@@ -32,22 +32,22 @@ void dsbev_2stage(
     const char* uplo,
     const int n,
     const int kd,
-    double* restrict AB,
+    f64* restrict AB,
     const int ldab,
-    double* restrict W,
-    double* restrict Z,
+    f64* restrict W,
+    f64* restrict Z,
     const int ldz,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lower, wantz, lquery;
     int iinfo, imax, inde, indwrk, iscale;
     int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -71,13 +71,13 @@ void dsbev_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = (double)lwmin;
+            work[0] = (f64)lwmin;
         } else {
             ib = ilaenv2stage(2, "DSYTRD_SB2ST", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "DSYTRD_SB2ST", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "DSYTRD_SB2ST", jobz, n, kd, ib, -1);
             lwmin = n + lhtrd + lwtrd;
-            work[0] = (double)lwmin;
+            work[0] = (f64)lwmin;
         }
 
         if (lwork < lwmin && !lquery) {
@@ -156,5 +156,5 @@ void dsbev_2stage(
         cblas_dscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

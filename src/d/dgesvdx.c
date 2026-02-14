@@ -9,8 +9,8 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
 
 /**
  * DGESVDX computes the singular value decomposition (SVD) of a real
@@ -63,17 +63,17 @@ static const double ONE = 1.0;
  *                         - > 0: i eigenvectors failed to converge in DBDSVDX.
  */
 void dgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, double* const restrict A, const int lda,
-             const double vl, const double vu, const int il, const int iu,
-             int* ns, double* const restrict S, double* const restrict U,
-             const int ldu, double* const restrict VT, const int ldvt,
-             double* const restrict work, const int lwork,
+             const int m, const int n, f64* const restrict A, const int lda,
+             const f64 vl, const f64 vu, const int il, const int iu,
+             int* ns, f64* const restrict S, f64* const restrict U,
+             const int ldu, f64* const restrict VT, const int ldvt,
+             f64* const restrict work, const int lwork,
              int* const restrict iwork, int* info)
 {
     int alls, inds, lquery, vals, wantu, wantvt;
     int i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;
     int itemp, itgkz, iutgk, j, maxwrk, minmn, minwrk, mnthr;
-    double anrm, bignum, eps, smlnum;
+    f64 anrm, bignum, eps, smlnum;
     char jobz, rngtgk;
 
     /* Test the input parameters */
@@ -211,7 +211,7 @@ void dgesvdx(const char* jobu, const char* jobvt, const char* range,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -514,5 +514,5 @@ void dgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     /* Return optimal workspace */
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 }

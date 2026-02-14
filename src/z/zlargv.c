@@ -7,13 +7,13 @@
 #include <math.h>
 #include "semicolon_lapack_complex_double.h"
 
-static inline double abs1(double complex ff) {
-    double a = creal(ff);
-    double b = cimag(ff);
+static inline f64 abs1(c128 ff) {
+    f64 a = creal(ff);
+    f64 b = cimag(ff);
     return (fabs(a) > fabs(b)) ? fabs(a) : fabs(b);
 }
 
-static inline double abssq(double complex ff) {
+static inline f64 abssq(c128 ff) {
     return creal(ff) * creal(ff) + cimag(ff) * cimag(ff);
 }
 
@@ -45,35 +45,36 @@ static inline double abssq(double complex ff) {
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void zlargv(const int n, double complex* const restrict X, const int incx,
-            double complex* const restrict Y, const int incy,
-            double* const restrict C, const int incc)
+void zlargv(const int n, c128* const restrict X, const int incx,
+            c128* const restrict Y, const int incy,
+            f64* const restrict C, const int incc)
 {
-    const double two = 2.0;
-    const double one = 1.0;
-    const double zero = 0.0;
-    const double complex czero = CMPLX(0.0, 0.0);
+    const f64 two = 2.0;
+    const f64 one = 1.0;
+    const f64 zero = 0.0;
+    const c128 czero = CMPLX(0.0, 0.0);
 
-    double safmin = dlamch("S");
-    double eps = dlamch("E");
-    double safmn2 = pow(dlamch("B"),
+    f64 safmin = dlamch("S");
+    f64 eps = dlamch("E");
+    f64 safmn2 = pow(dlamch("B"),
                         (int)(log(safmin / eps) / log(dlamch("B")) / two));
-    double safmx2 = one / safmn2;
+    f64 safmx2 = one / safmn2;
 
     int ix = 0;
     int iy = 0;
     int ic = 0;
 
     for (int i = 0; i < n; i++) {
-        double complex f = X[ix];
-        double complex g = Y[iy];
+        c128 f = X[ix];
+        c128 g = Y[iy];
 
-        double scale = (abs1(f) > abs1(g)) ? abs1(f) : abs1(g);
-        double complex fs = f;
-        double complex gs = g;
+        f64 scale = (abs1(f) > abs1(g)) ? abs1(f) : abs1(g);
+        c128 fs = f;
+        c128 gs = g;
         int count = 0;
-        double cs;
-        double complex sn, r;
+        f64 cs;
+        c128 sn, r;
+        f64 f2, g2;
 
         if (scale >= safmx2) {
             do {
@@ -97,8 +98,8 @@ void zlargv(const int n, double complex* const restrict X, const int incx,
             } while (scale <= safmn2);
         }
 
-        double f2 = abssq(fs);
-        double g2 = abssq(gs);
+        f2 = abssq(fs);
+        g2 = abssq(gs);
 
         if (f2 <= ((g2 > one) ? g2 : one) * safmin) {
 
@@ -109,14 +110,14 @@ void zlargv(const int n, double complex* const restrict X, const int incx,
                 r = dlapy2(creal(g), cimag(g));
                 /* Do complex/real division explicitly with two real
                    divisions */
-                double d = dlapy2(creal(gs), cimag(gs));
+                f64 d = dlapy2(creal(gs), cimag(gs));
                 sn = CMPLX(creal(gs) / d, -cimag(gs) / d);
                 goto label50;
             }
-            double f2s = dlapy2(creal(fs), cimag(fs));
+            f64 f2s = dlapy2(creal(fs), cimag(fs));
             /* G2 and G2S are accurate
                G2 is at least SAFMIN, and G2S is at least SAFMN2 */
-            double g2s = sqrt(g2);
+            f64 g2s = sqrt(g2);
             /* Error in CS from underflow in F2S is at most
                UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
                If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
@@ -127,14 +128,14 @@ void zlargv(const int n, double complex* const restrict X, const int incx,
             cs = f2s / g2s;
             /* Make sure abs(FF) = 1
                Do complex/real division explicitly with 2 real divisions */
-            double complex ff;
-            double d;
+            c128 ff;
+            f64 d;
             if (abs1(f) > one) {
                 d = dlapy2(creal(f), cimag(f));
                 ff = CMPLX(creal(f) / d, cimag(f) / d);
             } else {
-                double dr = safmx2 * creal(f);
-                double di = safmx2 * cimag(f);
+                f64 dr = safmx2 * creal(f);
+                f64 di = safmx2 * cimag(f);
                 d = dlapy2(dr, di);
                 ff = CMPLX(dr / d, di / d);
             }
@@ -146,12 +147,12 @@ void zlargv(const int n, double complex* const restrict X, const int incx,
                Neither F2 nor F2/G2 are less than SAFMIN
                F2S cannot overflow, and it is accurate */
 
-            double f2s = sqrt(one + g2 / f2);
+            f64 f2s = sqrt(one + g2 / f2);
             /* Do the F2S(real)*FS(complex) multiply with two real
                multiplies */
             r = CMPLX(f2s * creal(fs), f2s * cimag(fs));
             cs = one / f2s;
-            double d = f2 + g2;
+            f64 d = f2 + g2;
             /* Do complex/real division explicitly with two real divisions */
             sn = CMPLX(creal(r) / d, cimag(r) / d);
             sn = sn * conj(gs);

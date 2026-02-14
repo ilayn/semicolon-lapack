@@ -71,18 +71,18 @@
  *                           info/(n+1) through mod(info,n+1).
  */
 void sstedc(const char* compz, const int n,
-            float* D, float* E,
-            float* Z, const int ldz,
-            float* work, const int lwork,
+            f32* D, f32* E,
+            f32* Z, const int ldz,
+            f32* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
 
     int lquery;
     int i, icompz, ii, j, k, lgn, liwmin = 1, lwmin = 1, m, start, finish, storez, strtrw;
-    float eps, orgnrm, p, tiny;
+    f32 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'SSTEDC', ...) - hardcoded per project convention */
     const int SMLSIZ = 25;
@@ -123,7 +123,7 @@ void sstedc(const char* compz, const int n,
             liwmin = 1;
             lwmin = 2 * (n - 1);
         } else {
-            lgn = (int)(logf((float)n) / logf(TWO));
+            lgn = (int)(logf((f32)n) / logf(TWO));
             if ((1 << lgn) < n)
                 lgn = lgn + 1;
             if ((1 << lgn) < n)
@@ -136,7 +136,7 @@ void sstedc(const char* compz, const int n,
                 liwmin = 3 + 5*n;
             }
         }
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -346,7 +346,7 @@ void sstedc(const char* compz, const int n,
     }
 
 L50:
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 
     return;

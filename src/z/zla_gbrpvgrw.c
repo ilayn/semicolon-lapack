@@ -37,18 +37,18 @@
  *
  * @return The reciprocal pivot growth factor.
  */
-double zla_gbrpvgrw(
+f64 zla_gbrpvgrw(
     const int n,
     const int kl,
     const int ku,
     const int ncols,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    const double complex* const restrict AFB,
+    const c128* const restrict AFB,
     const int ldafb)
 {
     int i, j, kd;
-    double amax, umax, rpvgrw;
+    f64 amax, umax, rpvgrw;
 
     rpvgrw = 1.0;
 

@@ -36,20 +36,20 @@ void ssbev(
     const char* uplo,
     const int n,
     const int kd,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict W,
-    float* const restrict Z,
+    f32* const restrict W,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lower, wantz;
     int iinfo, imax, inde, indwrk, iscale;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');

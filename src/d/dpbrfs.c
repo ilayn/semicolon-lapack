@@ -43,28 +43,28 @@ void dpbrfs(
     const int n,
     const int kd,
     const int nrhs,
-    const double* const restrict AB,
+    const f64* const restrict AB,
     const int ldab,
-    const double* const restrict AFB,
+    const f64* const restrict AFB,
     const int ldafb,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int upper;
     int count, i, j, k, kase, l, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int info_local;
 
@@ -153,10 +153,10 @@ void dpbrfs(
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    double tmp = fabs(work[n + i]) / work[i];
+                    f64 tmp = fabs(work[n + i]) / work[i];
                     if (s < tmp) s = tmp;
                 } else {
-                    double tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
+                    f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                     if (s < tmp) s = tmp;
                 }
             }
@@ -206,7 +206,7 @@ void dpbrfs(
         // Normalize error
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double tmp = fabs(X[i + j * ldx]);
+            f64 tmp = fabs(X[i + j * ldx]);
             if (lstres < tmp) lstres = tmp;
         }
         if (lstres != ZERO)

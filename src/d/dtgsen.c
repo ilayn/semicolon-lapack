@@ -55,34 +55,34 @@ void dtgsen(
     const int wantz,
     const int* const restrict select,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict alphar,
-    double* const restrict alphai,
-    double* const restrict beta,
-    double* const restrict Q,
+    f64* const restrict alphar,
+    f64* const restrict alphai,
+    f64* const restrict beta,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
     int* m,
-    double* pl,
-    double* pr,
-    double* const restrict dif,
-    double* const restrict work,
+    f64* pl,
+    f64* pr,
+    f64* const restrict dif,
+    f64* const restrict work,
     const int lwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
     const int IDIFJB = 3;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, pair, swap, wantd, wantd1, wantd2, wantp;
     int i, ierr, ijb, k, kase, kk, ks, liwmin, lwmin, mn2, n1, n2;
-    double dscale, dsum, eps, rdscal, smlnum;
+    f64 dscale, dsum, eps, rdscal, smlnum;
     int isave[3];
 
     *info = 0;
@@ -159,7 +159,7 @@ void dtgsen(
         liwmin = 1;
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 
     if (lwork < lwmin && !lquery) {
@@ -412,6 +412,6 @@ L60:
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

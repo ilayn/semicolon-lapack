@@ -57,21 +57,20 @@
 void zhetrf_aa(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int upper, lquery;
     int j, lwkmin, lwkopt;
     int nb, mj, nj, k1, k2, j1, j2, j3, jb;
-    double complex alpha;
+    c128 alpha;
 
     nb = lapack_get_nb("HETRF");
 
@@ -98,7 +97,7 @@ void zhetrf_aa(
     }
 
     if (*info == 0) {
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -258,5 +257,5 @@ void zhetrf_aa(
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

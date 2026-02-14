@@ -47,14 +47,14 @@
 void zpotf2(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -76,12 +76,12 @@ void zpotf2(
         /* Compute the Cholesky factorization A = U**H *U. */
         for (int j = 0; j < n; j++) {
             /* Compute U(J,J) and test for non-positive-definiteness. */
-            double complex zdotc_result = CMPLX(0.0, 0.0);
+            c128 zdotc_result = CMPLX(0.0, 0.0);
             if (j > 0) {
                 cblas_zdotc_sub(j, &A[j * lda], 1, &A[j * lda], 1,
                                 &zdotc_result);
             }
-            double ajj = creal(A[j + j * lda]) - creal(zdotc_result);
+            f64 ajj = creal(A[j + j * lda]) - creal(zdotc_result);
             if (ajj <= ZERO || disnan(ajj)) {
                 A[j + j * lda] = CMPLX(ajj, 0.0);
                 *info = j + 1;
@@ -107,12 +107,12 @@ void zpotf2(
         /* Compute the Cholesky factorization A = L*L**H. */
         for (int j = 0; j < n; j++) {
             /* Compute L(J,J) and test for non-positive-definiteness. */
-            double complex zdotc_result = CMPLX(0.0, 0.0);
+            c128 zdotc_result = CMPLX(0.0, 0.0);
             if (j > 0) {
                 cblas_zdotc_sub(j, &A[j], lda, &A[j], lda,
                                 &zdotc_result);
             }
-            double ajj = creal(A[j + j * lda]) - creal(zdotc_result);
+            f64 ajj = creal(A[j + j * lda]) - creal(zdotc_result);
             if (ajj <= ZERO || disnan(ajj)) {
                 A[j + j * lda] = CMPLX(ajj, 0.0);
                 *info = j + 1;

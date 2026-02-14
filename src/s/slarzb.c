@@ -53,13 +53,13 @@
 void slarzb(const char* side, const char* trans, const char* direct,
             const char* storev, const int m, const int n,
             const int k, const int l,
-            const float * const restrict V, const int ldv,
-            const float * const restrict T, const int ldt,
-            float * const restrict C, const int ldc,
-            float * const restrict work, const int ldwork)
+            const f32 * const restrict V, const int ldv,
+            const f32 * const restrict T, const int ldt,
+            f32 * const restrict C, const int ldc,
+            f32 * const restrict work, const int ldwork)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
     int i, j;
     CBLAS_TRANSPOSE transt;
 

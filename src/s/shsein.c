@@ -66,27 +66,27 @@ void shsein(
     const char* initv,
     int* const restrict select,
     const int n,
-    const float* const restrict H,
+    const f32* const restrict H,
     const int ldh,
-    float* const restrict wr,
-    const float* const restrict wi,
-    float* const restrict VL,
+    f32* const restrict wr,
+    const f32* const restrict wi,
+    f32* const restrict VL,
     const int ldvl,
-    float* const restrict VR,
+    f32* const restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    float* const restrict work,
+    f32* const restrict work,
     int* const restrict ifaill,
     int* const restrict ifailr,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int bothv, fromqr, leftv, noinit_flag, pair, rightv;
     int i, iinfo, k, kl, kln, kr, ksi, ksr, ldwork;
-    float bignum, eps3 = 0.0f, hnorm, smlnum, ulp, unfl, wki, wkr;
+    f32 bignum, eps3 = 0.0f, hnorm, smlnum, ulp, unfl, wki, wkr;
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -152,7 +152,7 @@ void shsein(
     /* Set machine-dependent constants */
     unfl = slamch("S");
     ulp = slamch("P");
-    smlnum = unfl * ((float)n / ulp);
+    smlnum = unfl * ((f32)n / ulp);
     bignum = (ONE - ulp) / smlnum;
 
     ldwork = n + 1;

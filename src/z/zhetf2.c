@@ -11,7 +11,7 @@
 #include "semicolon_lapack_complex_double.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
-static const double ALPHA_BK = 0.6403882032022076;
+static const f64 ALPHA_BK = 0.6403882032022076;
 
 /**
  * ZHETF2 computes the factorization of a complex Hermitian matrix A
@@ -58,7 +58,7 @@ static const double ALPHA_BK = 0.6403882032022076;
 void zhetf2(
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)
@@ -94,10 +94,10 @@ void zhetf2(
         int k = n - 1;
         while (k >= 0) {
             int kstep = 1;
-            double absakk = fabs(creal(A[k + k * lda]));
+            f64 absakk = fabs(creal(A[k + k * lda]));
 
             int imax = 0;
-            double colmax = 0.0;
+            f64 colmax = 0.0;
             if (k > 0) {
                 imax = cblas_izamax(k, &A[0 + k * lda], 1);
                 colmax = cabs1(A[imax + k * lda]);
@@ -114,7 +114,7 @@ void zhetf2(
                 if (absakk >= ALPHA_BK * colmax) {
                     kp = k;
                 } else {
-                    double rowmax = 0.0;
+                    f64 rowmax = 0.0;
                     if (imax + 1 <= k) {
                         int jmax = imax + 1 + cblas_izamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                         rowmax = cabs1(A[imax + jmax * lda]);
@@ -140,17 +140,17 @@ void zhetf2(
                         cblas_zswap(kp, &A[0 + kk * lda], 1, &A[0 + kp * lda], 1);
                     }
                     for (int j = kp + 1; j < kk; j++) {
-                        double complex t = conj(A[j + kk * lda]);
+                        c128 t = conj(A[j + kk * lda]);
                         A[j + kk * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = t;
                     }
                     A[kp + kk * lda] = conj(A[kp + kk * lda]);
-                    double r1 = creal(A[kk + kk * lda]);
+                    f64 r1 = creal(A[kk + kk * lda]);
                     A[kk + kk * lda] = creal(A[kp + kp * lda]);
                     A[kp + kp * lda] = r1;
                     if (kstep == 2) {
                         A[k + k * lda] = creal(A[k + k * lda]);
-                        double complex t = A[(k - 1) + k * lda];
+                        c128 t = A[(k - 1) + k * lda];
                         A[(k - 1) + k * lda] = A[kp + k * lda];
                         A[kp + k * lda] = t;
                     }
@@ -162,25 +162,25 @@ void zhetf2(
 
                 if (kstep == 1) {
                     if (k > 0) {
-                        double r1 = 1.0 / creal(A[k + k * lda]);
+                        f64 r1 = 1.0 / creal(A[k + k * lda]);
                         cblas_zher(CblasColMajor, CblasUpper, k, -r1,
                                    &A[0 + k * lda], 1, A, lda);
                         cblas_zdscal(k, r1, &A[0 + k * lda], 1);
                     }
                 } else {
                     if (k > 1) {
-                        double d = dlapy2(creal(A[(k - 1) + k * lda]),
+                        f64 d = dlapy2(creal(A[(k - 1) + k * lda]),
                                           cimag(A[(k - 1) + k * lda]));
-                        double d22 = creal(A[(k - 1) + (k - 1) * lda]) / d;
-                        double d11 = creal(A[k + k * lda]) / d;
-                        double tt = 1.0 / (d11 * d22 - 1.0);
-                        double complex d12 = A[(k - 1) + k * lda] / d;
+                        f64 d22 = creal(A[(k - 1) + (k - 1) * lda]) / d;
+                        f64 d11 = creal(A[k + k * lda]) / d;
+                        f64 tt = 1.0 / (d11 * d22 - 1.0);
+                        c128 d12 = A[(k - 1) + k * lda] / d;
                         d = tt / d;
 
                         for (int j = k - 2; j >= 0; j--) {
-                            double complex wkm1 = d * (d11 * A[j + (k - 1) * lda] -
+                            c128 wkm1 = d * (d11 * A[j + (k - 1) * lda] -
                                                        conj(d12) * A[j + k * lda]);
-                            double complex wk = d * (d22 * A[j + k * lda] -
+                            c128 wk = d * (d22 * A[j + k * lda] -
                                                      d12 * A[j + (k - 1) * lda]);
                             for (int i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * conj(wk) +
@@ -215,10 +215,10 @@ void zhetf2(
         int k = 0;
         while (k < n) {
             int kstep = 1;
-            double absakk = fabs(creal(A[k + k * lda]));
+            f64 absakk = fabs(creal(A[k + k * lda]));
 
             int imax = k;
-            double colmax = 0.0;
+            f64 colmax = 0.0;
             if (k < n - 1) {
                 imax = k + 1 + cblas_izamax(n - k - 1, &A[(k + 1) + k * lda], 1);
                 colmax = cabs1(A[imax + k * lda]);
@@ -235,7 +235,7 @@ void zhetf2(
                 if (absakk >= ALPHA_BK * colmax) {
                     kp = k;
                 } else {
-                    double rowmax = 0.0;
+                    f64 rowmax = 0.0;
                     if (imax > k) {
                         int jmax = k + cblas_izamax(imax - k, &A[imax + k * lda], lda);
                         rowmax = cabs1(A[imax + jmax * lda]);
@@ -262,17 +262,17 @@ void zhetf2(
                                     &A[(kp + 1) + kp * lda], 1);
                     }
                     for (int j = kk + 1; j < kp; j++) {
-                        double complex t = conj(A[j + kk * lda]);
+                        c128 t = conj(A[j + kk * lda]);
                         A[j + kk * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = t;
                     }
                     A[kp + kk * lda] = conj(A[kp + kk * lda]);
-                    double r1 = creal(A[kk + kk * lda]);
+                    f64 r1 = creal(A[kk + kk * lda]);
                     A[kk + kk * lda] = creal(A[kp + kp * lda]);
                     A[kp + kp * lda] = r1;
                     if (kstep == 2) {
                         A[k + k * lda] = creal(A[k + k * lda]);
-                        double complex t = A[(k + 1) + k * lda];
+                        c128 t = A[(k + 1) + k * lda];
                         A[(k + 1) + k * lda] = A[kp + k * lda];
                         A[kp + k * lda] = t;
                     }
@@ -284,7 +284,7 @@ void zhetf2(
 
                 if (kstep == 1) {
                     if (k < n - 1) {
-                        double r1 = 1.0 / creal(A[k + k * lda]);
+                        f64 r1 = 1.0 / creal(A[k + k * lda]);
                         cblas_zher(CblasColMajor, CblasLower, n - k - 1, -r1,
                                    &A[(k + 1) + k * lda], 1,
                                    &A[(k + 1) + (k + 1) * lda], lda);
@@ -292,18 +292,18 @@ void zhetf2(
                     }
                 } else {
                     if (k < n - 2) {
-                        double d = dlapy2(creal(A[(k + 1) + k * lda]),
+                        f64 d = dlapy2(creal(A[(k + 1) + k * lda]),
                                           cimag(A[(k + 1) + k * lda]));
-                        double d11 = creal(A[(k + 1) + (k + 1) * lda]) / d;
-                        double d22 = creal(A[k + k * lda]) / d;
-                        double tt = 1.0 / (d11 * d22 - 1.0);
-                        double complex d21 = A[(k + 1) + k * lda] / d;
+                        f64 d11 = creal(A[(k + 1) + (k + 1) * lda]) / d;
+                        f64 d22 = creal(A[k + k * lda]) / d;
+                        f64 tt = 1.0 / (d11 * d22 - 1.0);
+                        c128 d21 = A[(k + 1) + k * lda] / d;
                         d = tt / d;
 
                         for (int j = k + 2; j < n; j++) {
-                            double complex wk = d * (d11 * A[j + k * lda] -
+                            c128 wk = d * (d11 * A[j + k * lda] -
                                                      d21 * A[j + (k + 1) * lda]);
-                            double complex wkp1 = d * (d22 * A[j + (k + 1) * lda] -
+                            c128 wkp1 = d * (d22 * A[j + (k + 1) * lda] -
                                                        conj(d21) * A[j + k * lda]);
                             for (int i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * conj(wk) +

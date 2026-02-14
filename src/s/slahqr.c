@@ -51,28 +51,28 @@
  */
 SEMICOLON_API void slahqr(const int wantt, const int wantz, const int n,
                           const int ilo, const int ihi,
-                          float* H, const int ldh,
-                          float* wr, float* wi,
+                          f32* H, const int ldh,
+                          f32* wr, f32* wi,
                           const int iloz, const int ihiz,
-                          float* Z, const int ldz,
+                          f32* Z, const int ldz,
                           int* info)
 {
     /* Parameters */
-    const float zero = 0.0f;
-    const float one = 1.0f;
-    const float two = 2.0f;
-    const float dat1 = 3.0f / 4.0f;
-    const float dat2 = -0.4375f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
+    const f32 two = 2.0f;
+    const f32 dat1 = 3.0f / 4.0f;
+    const f32 dat2 = -0.4375f;
     const int kexsh = 10;
 
     /* Local scalars */
-    float aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
-    float rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
-    float smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
+    f32 aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
+    f32 rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
+    f32 smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
     int i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
 
     /* Local array */
-    float v[3];
+    f32 v[3];
 
     *info = 0;
 
@@ -100,7 +100,7 @@ SEMICOLON_API void slahqr(const int wantt, const int wantz, const int n,
     /* Set machine-dependent constants for the stopping criterion */
     safmin = slamch("Safe minimum");
     ulp = slamch("Precision");
-    smlnum = safmin * ((float)nh / ulp);
+    smlnum = safmin * ((f32)nh / ulp);
 
     /* I1 and I2 are the indices of the first row and last column of H
      * to which transformations must be applied. If eigenvalues only are

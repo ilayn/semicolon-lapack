@@ -39,16 +39,16 @@
  *                           form did not converge to zero.
  */
 void dspev(const char* jobz, const char* uplo, const int n,
-           double* const restrict AP, double* const restrict W,
-           double* const restrict Z, const int ldz,
-           double* const restrict work, int* info)
+           f64* const restrict AP, f64* const restrict W,
+           f64* const restrict Z, const int ldz,
+           f64* const restrict work, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantz;
     int iinfo, imax, inde, indtau, indwrk, iscale;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 

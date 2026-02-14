@@ -21,16 +21,16 @@
  */
 void dlar2v(
     const int n,
-    double* const restrict X,
-    double* const restrict Y,
-    double* const restrict Z,
+    f64* const restrict X,
+    f64* const restrict Y,
+    f64* const restrict Z,
     const int incx,
-    const double* const restrict C,
-    const double* const restrict S,
+    const f64* const restrict C,
+    const f64* const restrict S,
     const int incc)
 {
     int i, ic, ix;
-    double ci, si, t1, t2, t3, t4, t5, t6, xi, yi, zi;
+    f64 ci, si, t1, t2, t3, t4, t5, t6, xi, yi, zi;
 
     ix = 0;
     ic = 0;

@@ -37,13 +37,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelq2(const int m, const int n,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict tau,
-            double complex* const restrict work,
+            c128* const restrict A, const int lda,
+            c128* const restrict tau,
+            c128* const restrict work,
             int* info)
 {
     int i, k;
-    double complex aii;
+    c128 aii;
 
     /* Parameter validation */
     *info = 0;

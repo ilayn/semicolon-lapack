@@ -38,11 +38,11 @@
 void zlauu2(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -63,14 +63,14 @@ void zlauu2(
     if (upper) {
         /* Compute the product U * U**H. */
         for (int i = 0; i < n; i++) {
-            double aii = creal(A[i + i * lda]);
+            f64 aii = creal(A[i + i * lda]);
             if (i < n - 1) {
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(n - i - 1, &A[i + (i + 1) * lda], lda,
                                 &A[i + (i + 1) * lda], lda, &dotc);
                 A[i + i * lda] = CMPLX(aii * aii + creal(dotc), 0.0);
                 zlacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
-                double complex alpha = CMPLX(aii, 0.0);
+                c128 alpha = CMPLX(aii, 0.0);
                 cblas_zgemv(CblasColMajor, CblasNoTrans,
                             i, n - i - 1, &ONE,
                             &A[(i + 1) * lda], lda,
@@ -84,14 +84,14 @@ void zlauu2(
     } else {
         /* Compute the product L**H * L. */
         for (int i = 0; i < n; i++) {
-            double aii = creal(A[i + i * lda]);
+            f64 aii = creal(A[i + i * lda]);
             if (i < n - 1) {
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(n - i - 1, &A[(i + 1) + i * lda], 1,
                                 &A[(i + 1) + i * lda], 1, &dotc);
                 A[i + i * lda] = CMPLX(aii * aii + creal(dotc), 0.0);
                 zlacgv(i, &A[i], lda);
-                double complex alpha = CMPLX(aii, 0.0);
+                c128 alpha = CMPLX(aii, 0.0);
                 cblas_zgemv(CblasColMajor, CblasConjTrans,
                             n - i - 1, i, &ONE,
                             &A[(i + 1)], lda,

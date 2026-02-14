@@ -7,7 +7,7 @@
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 
-static inline double abssq(double complex t)
+static inline f64 abssq(c128 t)
 {
     return creal(t) * creal(t) + cimag(t) * cimag(t);
 }
@@ -45,15 +45,15 @@ static inline double abssq(double complex t)
  * @param[out] s  The sine of the rotation.
  * @param[out] r  The nonzero component of the rotated vector.
  */
-void zlartg(const double complex f, const double complex g,
-            double* c, double complex* s, double complex* r)
+void zlartg(const c128 f, const c128 g,
+            f64* c, c128* s, c128* r)
 {
-    double safmin = dlamch("S");
-    double safmax = 1.0 / safmin;
-    double rtmin = sqrt(safmin);
+    f64 safmin = dlamch("S");
+    f64 safmax = 1.0 / safmin;
+    f64 rtmin = sqrt(safmin);
 
-    double d, f1, f2, g1, g2, h2, u, v, w, rtmax;
-    double complex fs, gs;
+    f64 d, f1, f2, g1, g2, h2, u, v, w, rtmax;
+    c128 fs, gs;
 
     if (g == CMPLX(0.0, 0.0)) {
         *c = 1.0;

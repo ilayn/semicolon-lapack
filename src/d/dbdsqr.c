@@ -76,29 +76,29 @@
  *                           elements of E have not converged to zero.
  */
 void dbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
-            const int ncc, double* const restrict D, double* const restrict E,
-            double* const restrict VT, const int ldvt,
-            double* const restrict U, const int ldu,
-            double* const restrict C, const int ldc,
-            double* const restrict work, int* info)
+            const int ncc, f64* const restrict D, f64* const restrict E,
+            f64* const restrict VT, const int ldvt,
+            f64* const restrict U, const int ldu,
+            f64* const restrict C, const int ldc,
+            f64* const restrict work, int* info)
 {
     /* Constants from LAPACK */
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double NEGONE = -1.0;
-    const double HNDRTH = 0.01;
-    const double TEN = 10.0;
-    const double HNDRD = 100.0;
-    const double MEIGTH = -0.125;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 NEGONE = -1.0;
+    const f64 HNDRTH = 0.01;
+    const f64 TEN = 10.0;
+    const f64 HNDRD = 100.0;
+    const f64 MEIGTH = -0.125;
     const int MAXITR = 6;
 
     /* Local variables */
     int lower, rotate;
     int i, idir, isub, iter, iterdivn, j, ll, lll, m;
     int maxitdivn, nm1, nm12, nm13, oldll, oldm;
-    double abse, abss, cosl, cosr, cs, eps, f, g, h, mu;
-    double oldcs, oldsn, r, shift, sigmn, sigmx, sinl, sinr;
-    double sll, smax, smin, sminoa, sn, thresh, tol, tolmul, unfl;
+    f64 abse, abss, cosl, cosr, cs, eps, f, g, h, mu;
+    f64 oldcs, oldsn, r, shift, sigmn, sigmx, sinl, sinr;
+    f64 sll, smax, smin, sminoa, sn, thresh, tol, tolmul, unfl;
 
     /* Test the input parameters */
     *info = 0;
@@ -202,7 +202,7 @@ void dbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
             if (sminoa == ZERO) goto L50;
         }
     L50:
-        sminoa = sminoa / sqrt((double)n);
+        sminoa = sminoa / sqrt((f64)n);
         thresh = (tol * sminoa > MAXITR * (n * (n * unfl)))
                  ? tol * sminoa
                  : MAXITR * (n * (n * unfl));

@@ -37,16 +37,16 @@
  *
  * @return The computed norm value.
  */
-double zlanhe(
+f64 zlanhe(
     const char* norm,
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double* const restrict work)
+    f64* const restrict work)
 {
     int i, j;
-    double absa, scale, sum, value;
+    f64 absa, scale, sum, value;
 
     if (n == 0) {
         return 0.0;

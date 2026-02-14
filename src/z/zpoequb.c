@@ -56,18 +56,18 @@
  */
 void zpoequb(
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double* restrict S,
-    double* scond,
-    double* amax,
+    f64* restrict S,
+    f64* scond,
+    f64* amax,
     int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int i;
-    double smin, base, tmp;
+    f64 smin, base, tmp;
 
     *info = 0;
     if (n < 0) {

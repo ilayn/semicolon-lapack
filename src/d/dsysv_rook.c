@@ -95,12 +95,12 @@ void dsysv_rook(
     const char* uplo,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -132,7 +132,7 @@ void dsysv_rook(
             dsytrf_rook(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (int)work[0];
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -147,5 +147,5 @@ void dsysv_rook(
         dsytrs_rook(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

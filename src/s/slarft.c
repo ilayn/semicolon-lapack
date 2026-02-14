@@ -36,12 +36,12 @@
  */
 void slarft(const char* direct, const char* storev,
             const int n, const int k,
-            const float * const restrict V, const int ldv,
-            const float * const restrict tau,
-            float * const restrict T, const int ldt)
+            const f32 * const restrict V, const int ldv,
+            const f32 * const restrict tau,
+            f32 * const restrict T, const int ldt)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
     int l, i, j;
     int dirf, colv, qr, lq, ql;
 

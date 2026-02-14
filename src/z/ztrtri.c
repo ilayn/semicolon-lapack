@@ -32,13 +32,13 @@ void ztrtri(
     const char* uplo,
     const char* diag,
     const int n,
-    double complex * const restrict A,
+    c128 * const restrict A,
     const int lda,
     int *info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int upper, nounit;
     int j, jb, nb, nn;

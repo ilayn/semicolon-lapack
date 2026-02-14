@@ -34,16 +34,16 @@ void dpbstf(
     const char* uplo,
     const int n,
     const int kd,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper;
     int j, kld, km, m;
-    double ajj;
+    f64 ajj;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

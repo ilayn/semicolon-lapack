@@ -65,26 +65,26 @@
  */
 void dstein(
     const int n,
-    const double* const restrict D,
-    const double* const restrict E,
+    const f64* const restrict D,
+    const f64* const restrict E,
     const int m,
-    const double* const restrict W,
+    const f64* const restrict W,
     const int* const restrict iblock,
     const int* const restrict isplit,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     int* const restrict iwork,
     int* const restrict ifail,
     int* info)
 {
     const int MAXITS = 5;
     const int EXTRA = 2;
-    const double ODM3 = 1.0e-3;
-    const double ODM1 = 1.0e-1;
+    const f64 ODM3 = 1.0e-3;
+    const f64 ODM1 = 1.0e-1;
 
     int b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, nblk, nrmchk;
-    double dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm, ztr;
+    f64 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm, ztr;
     uint64_t seed;
 
     /* Workspace offsets: each segment has n elements */
@@ -213,7 +213,7 @@ void dstein(
              */
             for (i = 0; i < blksiz; i++) {
                 seed = seed * 6364136223846793005ULL + 1442695040888963407ULL;
-                work[indrv1 + i] = (double)((int64_t)(seed >> 33)) / (double)(1LL << 31);
+                work[indrv1 + i] = (f64)((int64_t)(seed >> 33)) / (f64)(1LL << 31);
             }
 
             /*
@@ -249,7 +249,7 @@ void dstein(
                  * cblas_idamax returns 0-based index.
                  */
                 jmax = (int)cblas_idamax(blksiz, &work[indrv1], 1);
-                scl = (double)blksiz * onenrm *
+                scl = (f64)blksiz * onenrm *
                       fmax(eps, fabs(work[indrv4 + blksiz - 1])) /
                       fabs(work[indrv1 + jmax]);
                 cblas_dscal(blksiz, scl, &work[indrv1], 1);

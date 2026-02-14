@@ -46,9 +46,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgelq(const int m, const int n,
-           double* const restrict A, const int lda,
-           double* const restrict T, const int tsize,
-           double* const restrict work, const int lwork,
+           f64* const restrict A, const int lda,
+           f64* const restrict T, const int tsize,
+           f64* const restrict work, const int lwork,
            int* info)
 {
     int lquery, lminws, mint, minw;
@@ -135,16 +135,16 @@ void dgelq(const int m, const int n,
 
     if (*info == 0) {
         if (mint) {
-            T[0] = (double)mintsz;
+            T[0] = (f64)mintsz;
         } else {
-            T[0] = (double)(mb * m * nblcks + 5);
+            T[0] = (f64)(mb * m * nblcks + 5);
         }
-        T[1] = (double)mb;
-        T[2] = (double)nb;
+        T[1] = (f64)mb;
+        T[2] = (f64)nb;
         if (minw) {
-            work[0] = (double)lwmin;
+            work[0] = (f64)lwmin;
         } else {
-            work[0] = (double)lwreq;
+            work[0] = (f64)lwreq;
         }
     }
     if (*info != 0) {
@@ -166,5 +166,5 @@ void dgelq(const int m, const int n,
         dlaswlq(m, n, mb, nb, A, lda, &T[5], mb, work, lwork, info);
     }
 
-    work[0] = (double)lwreq;
+    work[0] = (f64)lwreq;
 }

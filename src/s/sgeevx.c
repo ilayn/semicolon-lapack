@@ -99,21 +99,21 @@
  *                           contain eigenvalues which have converged.
  */
 void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n, float* A, const int lda,
-            float* wr, float* wi,
-            float* VL, const int ldvl, float* VR, const int ldvr,
-            int* ilo, int* ihi, float* scale, float* abnrm,
-            float* rconde, float* rcondv,
-            float* work, const int lwork, int* iwork, int* info)
+            const char* sense, const int n, f32* A, const int lda,
+            f32* wr, f32* wi,
+            f32* VL, const int ldvl, f32* VR, const int ldvr,
+            int* ilo, int* ihi, f32* scale, f32* abnrm,
+            f32* rconde, f32* rcondv,
+            f32* work, const int lwork, int* iwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
     int hswork, i, icond, ierr, itau, iwrk, k;
     int lwork_trevc, maxwrk, minwrk, nout;
-    float anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
-    float dum[1];
+    f32 anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
+    f32 dum[1];
     int select[1];  /* Dummy for strevc3 workspace query */
     const char* side;
     char job_hseqr;
@@ -210,7 +210,7 @@ void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
             }
             maxwrk = maxwrk > minwrk ? maxwrk : minwrk;
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -21;
@@ -395,5 +395,5 @@ L50:
         }
     }
 
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 }

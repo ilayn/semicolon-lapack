@@ -37,12 +37,12 @@
  */
 void zlarft(const char* direct, const char* storev,
             const int n, const int k,
-            const double complex* const restrict V, const int ldv,
-            const double complex* const restrict tau,
-            double complex* const restrict T, const int ldt)
+            const c128* const restrict V, const int ldv,
+            const c128* const restrict tau,
+            c128* const restrict T, const int ldt)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
     int l, i, j;
     int dirf, colv, qr, lq, ql;
 

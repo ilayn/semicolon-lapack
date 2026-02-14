@@ -25,10 +25,10 @@
  *                         - = 1: the matrix warrants computations guaranteeing
  *                           only absolute accuracy.
  */
-void dlarrr(const int n, const double* D, double* E, int* info)
+void dlarrr(const int n, const f64* D, f64* E, int* info)
 {
-    const double ZERO = 0.0;
-    const double RELCOND = 0.999;
+    const f64 ZERO = 0.0;
+    const f64 RELCOND = 0.999;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -39,10 +39,10 @@ void dlarrr(const int n, const double* D, double* E, int* info)
     /* As a default, do NOT go for relative-accuracy preserving computations. */
     *info = 1;
 
-    double safmin = dlamch("S");
-    double eps = dlamch("P");
-    double smlnum = safmin / eps;
-    double rmin = sqrt(smlnum);
+    f64 safmin = dlamch("S");
+    f64 eps = dlamch("P");
+    f64 smlnum = safmin / eps;
+    f64 rmin = sqrt(smlnum);
 
     /* Tests for relative accuracy */
 
@@ -62,13 +62,13 @@ void dlarrr(const int n, const double* D, double* E, int* info)
        instead of the current OFFDIG + OFFDIG2 < 1 */
 
     int yesrel = 1;
-    double offdig = ZERO;
-    double offdig2;
-    double tmp = sqrt(fabs(D[0]));
+    f64 offdig = ZERO;
+    f64 offdig2;
+    f64 tmp = sqrt(fabs(D[0]));
     if (tmp < rmin) yesrel = 0;
     if (yesrel) {
         for (int i = 1; i < n; i++) {
-            double tmp2 = sqrt(fabs(D[i]));
+            f64 tmp2 = sqrt(fabs(D[i]));
             if (tmp2 < rmin) { yesrel = 0; break; }
             offdig2 = fabs(E[i - 1]) / (tmp * tmp2);
             if (offdig + offdig2 >= RELCOND) { yesrel = 0; break; }

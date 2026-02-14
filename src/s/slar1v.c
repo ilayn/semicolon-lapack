@@ -66,19 +66,19 @@
  * @param[out]    rqcorr  The Rayleigh Quotient correction to lambda.
  * @param[out]    work    Double precision array, dimension (4*n).
  */
-void slar1v(const int n, const int b1, const int bn, const float lambda,
-            const float* const restrict D, const float* const restrict L,
-            const float* const restrict LD, const float* const restrict LLD,
-            const float pivmin, const float gaptol,
-            float* const restrict Z, const int wantnc, int* negcnt,
-            float* ztz, float* mingma, int* r,
-            int* const restrict isuppz, float* nrminv, float* resid,
-            float* rqcorr, float* const restrict work)
+void slar1v(const int n, const int b1, const int bn, const f32 lambda,
+            const f32* const restrict D, const f32* const restrict L,
+            const f32* const restrict LD, const f32* const restrict LLD,
+            const f32 pivmin, const f32 gaptol,
+            f32* const restrict Z, const int wantnc, int* negcnt,
+            f32* ztz, f32* mingma, int* r,
+            int* const restrict isuppz, f32* nrminv, f32* resid,
+            f32* rqcorr, f32* const restrict work)
 {
     /* Local variables */
     int i, r1, r2, neg1, neg2;
     int sawnan1, sawnan2;
-    float dplus, dminus, s, tmp, eps;
+    f32 dplus, dminus, s, tmp, eps;
 
     /* Workspace segment offsets (0-based):
      *   work[indlpl .. indlpl+n-2]: L+ values

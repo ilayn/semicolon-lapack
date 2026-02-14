@@ -45,21 +45,21 @@
  *
  * @return The computed norm value.
  */
-float slantb(
+f32 slantb(
     const char* norm,
     const char* uplo,
     const char* diag,
     const int n,
     const int k,
-    const float * const restrict AB,
+    const f32 * const restrict AB,
     const int ldab,
-    float * const restrict work)
+    f32 * const restrict work)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, l;
-    float scale, sum, value;
+    f32 scale, sum, value;
     int udiag;
 
     /* Quick return if possible */
@@ -223,7 +223,7 @@ float slantb(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 scale = ONE;
-                sum = (float)n;
+                sum = (f32)n;
                 if (k > 0) {
                     for (j = 1; j < n; j++) {
                         int count = (j < k) ? j : k;
@@ -243,7 +243,7 @@ float slantb(
         } else {
             if (udiag) {
                 scale = ONE;
-                sum = (float)n;
+                sum = (f32)n;
                 if (k > 0) {
                     for (j = 0; j < n - 1; j++) {
                         int count = (n - 1 - j < k) ? n - 1 - j : k;

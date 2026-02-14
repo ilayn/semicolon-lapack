@@ -43,9 +43,9 @@ void sposv(
     const char* uplo,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {

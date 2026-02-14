@@ -30,11 +30,11 @@
 void zpptri(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     int* info)
 {
     // zpptri.f lines 108-109: Parameters
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     // zpptri.f lines 128-138: Test the input parameters
     *info = 0;
@@ -69,7 +69,7 @@ void zpptri(
             if (j > 0) {
                 cblas_zhpr(CblasColMajor, CblasUpper, j, ONE, &AP[jc], 1, AP);
             }
-            double ajj = creal(AP[jj]);
+            f64 ajj = creal(AP[jj]);
             cblas_zdscal(j + 1, ajj, &AP[jc], 1);
         }
     } else {
@@ -77,7 +77,7 @@ void zpptri(
         int jj = 0;
         for (int j = 0; j < n; j++) {
             int jjn = jj + n - j;
-            double complex dotc;
+            c128 dotc;
             cblas_zdotc_sub(n - j, &AP[jj], 1, &AP[jj], 1, &dotc);
             AP[jj] = creal(dotc);
             if (j < n - 1) {

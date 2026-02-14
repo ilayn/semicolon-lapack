@@ -40,10 +40,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtplqt(const int m, const int n, const int l, const int mb,
-            double* const restrict A, const int lda,
-            double* const restrict B, const int ldb,
-            double* const restrict T, const int ldt,
-            double* const restrict work, int* info)
+            f64* const restrict A, const int lda,
+            f64* const restrict B, const int ldb,
+            f64* const restrict T, const int ldt,
+            f64* const restrict work, int* info)
 {
     int i, ib, lb, nb, iinfo;
     int minmn;

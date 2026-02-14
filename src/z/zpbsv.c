@@ -42,9 +42,9 @@ void zpbsv(
     const int n,
     const int kd,
     const int nrhs,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {

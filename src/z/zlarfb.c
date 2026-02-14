@@ -33,13 +33,13 @@
  */
 void zlarfb(const char* side, const char* trans, const char* direct,
             const char* storev, const int m, const int n, const int k,
-            const double complex* const restrict V, const int ldv,
-            const double complex* const restrict T, const int ldt,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work, const int ldwork)
+            const c128* const restrict V, const int ldv,
+            const c128* const restrict T, const int ldt,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work, const int ldwork)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
     int i, j;
     CBLAS_TRANSPOSE transt;
 

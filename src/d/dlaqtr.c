@@ -60,19 +60,19 @@
  *                           a small number in DLALN2 to keep nonsingularity.
  */
 void dlaqtr(const int ltran, const int lreal, const int n,
-            const double* T, const int ldt,
-            const double* B, const double w,
-            double* scale, double* X, double* work, int* info)
+            const f64* T, const int ldt,
+            const f64* B, const f64 w,
+            f64* scale, f64* X, f64* work, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notran;
     int i, ierr, j, j1, j2, jnext, k, n1, n2;
-    double bignum, eps, rec, scaloc, si, smin, sminw;
-    double smlnum, sr, tjj, tmp, xj, xmax, xnorm, z;
-    double d[4];  /* 2x2 stored column-major: d[0]=d(1,1), d[1]=d(2,1), d[2]=d(1,2), d[3]=d(2,2) */
-    double v[4];  /* 2x2 stored column-major */
+    f64 bignum, eps, rec, scaloc, si, smin, sminw;
+    f64 smlnum, sr, tjj, tmp, xj, xmax, xnorm, z;
+    f64 d[4];  /* 2x2 stored column-major: d[0]=d(1,1), d[1]=d(2,1), d[2]=d(1,2), d[3]=d(2,2) */
+    f64 v[4];  /* 2x2 stored column-major */
 
     /* Do not test the input parameters for errors */
     notran = !ltran;

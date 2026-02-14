@@ -45,23 +45,22 @@ void ztprfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const double complex* const restrict AP,
-    const double complex* const restrict B,
+    const c128* const restrict AP,
+    const c128* const restrict B,
     const int ldb,
-    const double complex* const restrict X,
+    const c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
 
     int notran, nounit, upper;
     int i, j, k, kase, kc, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
 
     *info = 0;
@@ -98,16 +97,6 @@ void ztprfs(
         return;
     }
 
-    const char* transn;
-    const char* transt;
-    if (notran) {
-        transn = "N";
-        transt = "C";
-    } else {
-        transn = "C";
-        transt = "N";
-    }
-
     nz = n + 1;
     eps = dlamch("E");
     safmin = dlamch("S");
@@ -133,7 +122,7 @@ void ztprfs(
         cblas_ztpmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, AP, work, 1);
         {
-            const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+            const c128 NEG_ONE = CMPLX(-1.0, 0.0);
             cblas_zaxpy(n, &NEG_ONE, &B[j * ldb], 1, work, 1);
         }
 
@@ -233,10 +222,10 @@ void ztprfs(
         s = ZERO;
         for (i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
-                double tmp = cabs1(work[i]) / rwork[i];
+                f64 tmp = cabs1(work[i]) / rwork[i];
                 if (s < tmp) s = tmp;
             } else {
-                double tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
+                f64 tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
                 if (s < tmp) s = tmp;
             }
         }
@@ -272,7 +261,7 @@ void ztprfs(
 
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double tmp = cabs1(X[i + j * ldx]);
+            f64 tmp = cabs1(X[i + j * ldx]);
             if (lstres < tmp) lstres = tmp;
         }
         if (lstres != ZERO)

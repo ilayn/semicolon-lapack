@@ -43,13 +43,13 @@
 void spotf2(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
+    const f32 ZERO = 0.0f;
 
     // Test the input parameters
     *info = 0;
@@ -75,7 +75,7 @@ void spotf2(
             // Compute U(j,j) and test for non-positive-definiteness.
             // Fortran: AJJ = A(J,J) - DDOT(J-1, A(1,J), 1, A(1,J), 1)
             // 0-based: length = j (number of elements above diagonal in column j)
-            float ajj = A[j + j * lda];
+            f32 ajj = A[j + j * lda];
             if (j > 0) {
                 ajj -= cblas_sdot(j, &A[j * lda], 1, &A[j * lda], 1);
             }
@@ -108,7 +108,7 @@ void spotf2(
             // Compute L(j,j) and test for non-positive-definiteness.
             // Fortran: AJJ = A(J,J) - DDOT(J-1, A(J,1), LDA, A(J,1), LDA)
             // 0-based: length = j (number of elements left of diagonal in row j)
-            float ajj = A[j + j * lda];
+            f32 ajj = A[j + j * lda];
             if (j > 0) {
                 ajj -= cblas_sdot(j, &A[j], lda, &A[j], lda);
             }

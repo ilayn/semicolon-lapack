@@ -30,7 +30,7 @@
 void slag2d(
     const int m,
     const int n,
-    const float * const restrict SA,
+    const f32 * const restrict SA,
     const int ldsa,
     double * const restrict A,
     const int lda,

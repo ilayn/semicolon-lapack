@@ -56,17 +56,17 @@
 void ssytrf_aa(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* restrict ipiv,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
     int upper, lquery;
     int j, lwkmin, lwkopt;
     int nb, mj, nj, k1, k2, j1, j2, j3, jb;
-    float alpha;
+    f32 alpha;
 
     nb = lapack_get_nb("SYTRF");
 
@@ -93,7 +93,7 @@ void ssytrf_aa(
     }
 
     if (*info == 0) {
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -250,5 +250,5 @@ void ssytrf_aa(
         }
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

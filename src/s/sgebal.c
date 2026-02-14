@@ -49,19 +49,19 @@
  *                         - = 0: successful exit.
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void sgebal(const char* job, const int n, float* A, const int lda,
-            int* ilo, int* ihi, float* scale, int* info)
+void sgebal(const char* job, const int n, f32* A, const int lda,
+            int* ilo, int* ihi, f32* scale, int* info)
 {
     /* Constants */
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float SCLFAC = 2.0f;
-    const float FACTOR = 0.95f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 SCLFAC = 2.0f;
+    const f32 FACTOR = 0.95f;
 
     /* Local variables */
     int noconv, canswap;
     int i, ica, ira, j, k, l;
-    float c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
+    f32 c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
 
     /* Test the input parameters */
     *info = 0;
@@ -117,7 +117,7 @@ void sgebal(const char* job, const int n, float* A, const int lda,
                 }
 
                 if (canswap) {
-                    scale[l] = (float)i;  /* Store 0-based index */
+                    scale[l] = (f32)i;  /* Store 0-based index */
                     if (i != l) {
                         /* Swap columns i and l */
                         cblas_sswap(l + 1, &A[0 + i * lda], 1, &A[0 + l * lda], 1);
@@ -151,7 +151,7 @@ void sgebal(const char* job, const int n, float* A, const int lda,
                 }
 
                 if (canswap) {
-                    scale[k] = (float)j;  /* Store 0-based index */
+                    scale[k] = (f32)j;  /* Store 0-based index */
                     if (j != k) {
                         /* Swap columns j and k */
                         cblas_sswap(l + 1, &A[0 + j * lda], 1, &A[0 + k * lda], 1);
@@ -223,10 +223,10 @@ void sgebal(const char* job, const int n, float* A, const int lda,
                    (g < sfmin2 ? sfmin2 : g) > sfmin2 &&
                    (ra < sfmin2 ? sfmin2 : ra) > sfmin2) {
                 /* Re-check the actual condition from Fortran */
-                float maxfcca = f;
+                f32 maxfcca = f;
                 if (c > maxfcca) maxfcca = c;
                 if (ca > maxfcca) maxfcca = ca;
-                float minrgra = r;
+                f32 minrgra = r;
                 if (g < minrgra) minrgra = g;
                 if (ra < minrgra) minrgra = ra;
                 if (!(c < g && maxfcca < sfmax2 && minrgra > sfmin2)) break;
@@ -242,9 +242,9 @@ void sgebal(const char* job, const int n, float* A, const int lda,
             g = c / SCLFAC;
 
             while (g >= r) {
-                float maxrra = r;
+                f32 maxrra = r;
                 if (ra > maxrra) maxrra = ra;
-                float minfcgca = f;
+                f32 minfcgca = f;
                 if (c < minfcgca) minfcgca = c;
                 if (g < minfcgca) minfcgca = g;
                 if (ca < minfcgca) minfcgca = ca;

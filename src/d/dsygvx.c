@@ -46,26 +46,26 @@ void dsygvx(
     const char* range,
     const char* uplo,
     const int n,
-    double* restrict A,
+    f64* restrict A,
     const int lda,
-    double* restrict B,
+    f64* restrict B,
     const int ldb,
-    const double vl,
-    const double vu,
+    const f64 vl,
+    const f64 vu,
     const int il,
     const int iu,
-    const double abstol,
+    const f64 abstol,
     int* m,
-    double* restrict W,
-    double* restrict Z,
+    f64* restrict W,
+    f64* restrict Z,
     const int ldz,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* restrict iwork,
     int* restrict ifail,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
     int wantz, upper, alleig, valeig, indeig, lquery;
     int lwkmin, lwkopt, nb;
 
@@ -114,7 +114,7 @@ void dsygvx(
         lwkmin = (8 * n > 1) ? 8 * n : 1;
         nb = lapack_get_nb("SYTRD");
         lwkopt = ((nb + 3) * n > lwkmin) ? (nb + 3) * n : lwkmin;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -20;
@@ -171,5 +171,5 @@ void dsygvx(
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

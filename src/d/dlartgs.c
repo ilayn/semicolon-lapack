@@ -25,11 +25,11 @@
  * @param[out] cs     The cosine of the rotation.
  * @param[out] sn     The sine of the rotation.
  */
-void dlartgs(const double x, const double y, const double sigma,
-             double* cs, double* sn)
+void dlartgs(const f64 x, const f64 y, const f64 sigma,
+             f64* cs, f64* sn)
 {
-    double thresh = dlamch("E");
-    double z, w, r;
+    f64 thresh = dlamch("E");
+    f64 z, w, r;
 
     if ((sigma == 0.0 && fabs(x) < thresh) ||
         (fabs(x) == sigma && y == 0.0)) {
@@ -47,7 +47,7 @@ void dlartgs(const double x, const double y, const double sigma,
         z = -sigma * sigma;
         w = 0.0;
     } else {
-        double s;
+        f64 s;
         if (x >= 0.0) {
             s = 1.0;
         } else {

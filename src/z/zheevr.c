@@ -60,37 +60,37 @@ void zheevr(
     const char* range,
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    const double vl,
-    const double vu,
+    const f64 vl,
+    const f64 vu,
     const int il,
     const int iu,
-    const double abstol,
+    const f64 abstol,
     int* m,
-    double* const restrict W,
-    double complex* const restrict Z,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
     int* const restrict isuppz,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     const int lrwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     int i, ieeeok, iinfo, imax, indibl, indifl, indisp, indiwo;
     int indrd, indrdd, indre, indree, indrwk, indtau, indwk, indwkn;
     int iscale, itmp1, j, jj, liwmin, llwork, llrwork, llwrkn;
     int lrwmin, lwkopt, lwmin, nb, nsplit;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    double sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
+    f64 sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
     ieeeok = 1;
 
@@ -144,8 +144,8 @@ void zheevr(
         nb = lapack_get_nb("HETRD");
         nb = nb > lapack_get_nb("UNMTR") ? nb : lapack_get_nb("UNMTR");
         lwkopt = ((nb + 1) * n > lwmin) ? (nb + 1) * n : lwmin;
-        work[0] = CMPLX((double)lwkopt, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwkopt, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -339,7 +339,7 @@ L30:
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwkopt, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 }

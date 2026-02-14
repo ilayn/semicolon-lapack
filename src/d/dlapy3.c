@@ -15,11 +15,11 @@
  * @param[in] z  Third value.
  * @return       sqrt(x**2 + y**2 + z**2)
  */
-double dlapy3(const double x, const double y, const double z)
+f64 dlapy3(const f64 x, const f64 y, const f64 z)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
-    double w, xabs, yabs, zabs, hugeval;
+    f64 w, xabs, yabs, zabs, hugeval;
 
     hugeval = dlamch("O");
     xabs = fabs(x);

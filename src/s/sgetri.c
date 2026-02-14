@@ -36,16 +36,16 @@
  */
 void sgetri(
     const int n,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
     const int * const restrict ipiv,
-    float * const restrict work,
+    f32 * const restrict work,
     const int lwork,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
 
     int lquery;
     int i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
@@ -54,7 +54,7 @@ void sgetri(
     *info = 0;
     nb = lapack_get_nb("GETRI");
     lwkopt = (n > 1) ? n * nb : 1;
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 
     lquery = (lwork == -1);
     if (n < 0) {
@@ -148,5 +148,5 @@ void sgetri(
         }
     }
 
-    work[0] = (float)iws;
+    work[0] = (f32)iws;
 }

@@ -34,16 +34,16 @@ void ssygv_2stage(
     const char* jobz,
     const char* uplo,
     const int n,
-    float* restrict A,
+    f32* restrict A,
     const int lda,
-    float* restrict B,
+    f32* restrict B,
     const int ldb,
-    float* restrict W,
-    float* restrict work,
+    f32* restrict W,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int lquery, upper, wantz;
     int neig, lwmin, lhtrd, lwtrd, kd, ib;
@@ -73,7 +73,7 @@ void ssygv_2stage(
         lhtrd = ilaenv2stage(3, "SSYTRD_2STAGE", jobz, n, kd, ib, -1);
         lwtrd = ilaenv2stage(4, "SSYTRD_2STAGE", jobz, n, kd, ib, -1);
         lwmin = 2 * n + lhtrd + lwtrd;
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -124,5 +124,5 @@ void ssygv_2stage(
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

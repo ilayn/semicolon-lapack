@@ -37,11 +37,11 @@
 void slauu2(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     // Test the input parameters
     *info = 0;
@@ -64,7 +64,7 @@ void slauu2(
     if (upper) {
         // Compute the product U * U**T.
         for (int i = 0; i < n; i++) {
-            float aii = A[i + i * lda];
+            f32 aii = A[i + i * lda];
             if (i < n - 1) {
                 // A(i,i) = dot(row i from col i to n-1)
                 // Fortran: DDOT(N-I+1, A(I,I), LDA, A(I,I), LDA)
@@ -87,7 +87,7 @@ void slauu2(
     } else {
         // Compute the product L**T * L.
         for (int i = 0; i < n; i++) {
-            float aii = A[i + i * lda];
+            f32 aii = A[i + i * lda];
             if (i < n - 1) {
                 // A(i,i) = dot(column i from row i to n-1)
                 // Fortran: DDOT(N-I+1, A(I,I), 1, A(I,I), 1)

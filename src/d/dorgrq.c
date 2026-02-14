@@ -40,16 +40,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgrq(const int m, const int n, const int k,
-            double * const restrict A, const int lda,
-            const double * const restrict tau,
-            double * const restrict work, const int lwork,
+            f64 * const restrict A, const int lda,
+            const f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;
     int i, ib, ii, iinfo, j, l;
     int kk;
     int lquery;
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     /* Parameter validation */
     *info = 0;
@@ -72,7 +72,7 @@ void dorgrq(const int m, const int n, const int k,
             nb = lapack_get_nb("ORGRQ");
             lwkopt = m * nb;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < (m > 1 ? m : 1) && !lquery) {
             *info = -8;
@@ -161,5 +161,5 @@ void dorgrq(const int m, const int n, const int k,
         }
     }
 
-    work[0] = (double)iws;
+    work[0] = (f64)iws;
 }

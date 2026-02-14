@@ -83,22 +83,22 @@ void slasyf_rk(
     const int n,
     const int nb,
     int* kb,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict E,
+    f32* restrict E,
     int* restrict ipiv,
-    float* const restrict W,
+    f32* const restrict W,
     const int ldw,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float EIGHT = 8.0f;
-    const float SEVTEN = 17.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 EIGHT = 8.0f;
+    const f32 SEVTEN = 17.0f;
 
     int done;
     int imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
-    float absakk, alpha, colmax, d11, d12, d21, d22, dtemp, r1, rowmax, t, sfmin;
+    f32 absakk, alpha, colmax, d11, d12, d21, d22, dtemp, r1, rowmax, t, sfmin;
 
     *info = 0;
 

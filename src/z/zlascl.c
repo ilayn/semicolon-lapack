@@ -55,15 +55,15 @@
  *                           value.
  */
 void zlascl(const char* type, const int kl, const int ku,
-            const double cfrom, const double cto,
+            const f64 cfrom, const f64 cto,
             const int m, const int n,
-            double complex* const restrict A, const int lda,
+            c128* const restrict A, const int lda,
             int* info)
 {
-    const double ZERO = 0.0, ONE = 1.0;
+    const f64 ZERO = 0.0, ONE = 1.0;
     int i, j, itype, k1, k2, k3, k4;
     int done;
-    double bignum, cfrom1, cfromc, cto1, ctoc, mul, smlnum;
+    f64 bignum, cfrom1, cfromc, cto1, ctoc, mul, smlnum;
 
     /* Test the input arguments */
     *info = 0;

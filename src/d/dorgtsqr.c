@@ -56,11 +56,11 @@ void dorgtsqr(
     const int n,
     const int mb,
     const int nb,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    const double* const restrict T,
+    const f64* const restrict T,
     const int ldt,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -110,13 +110,13 @@ void dorgtsqr(
         xerbla("DORGTSQR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double)lworkopt;
+        work[0] = (f64)lworkopt;
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (double)lworkopt;
+        work[0] = (f64)lworkopt;
         return;
     }
 
@@ -129,5 +129,5 @@ void dorgtsqr(
         cblas_dcopy(m, &work[j * ldc], 1, &A[0 + j * lda], 1);
     }
 
-    work[0] = (double)lworkopt;
+    work[0] = (f64)lworkopt;
 }

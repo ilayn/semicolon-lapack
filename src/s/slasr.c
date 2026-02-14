@@ -38,11 +38,11 @@
  */
 void slasr(const char* side, const char* pivot, const char* direct,
            const int m, const int n,
-           const float* const restrict C_rot, const float* const restrict S_rot,
-           float* const restrict A, const int lda)
+           const f32* const restrict C_rot, const f32* const restrict S_rot,
+           f32* const restrict A, const int lda)
 {
     int i, j;
-    float ctemp, stemp, temp;
+    f32 ctemp, stemp, temp;
 
     /* Quick return if possible */
     if (m == 0 || n == 0) return;

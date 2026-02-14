@@ -57,11 +57,11 @@
  */
 void ztpmlqt(const char* side, const char* trans, const int m, const int n,
              const int k, const int l, const int mb,
-             const double complex* const restrict V, const int ldv,
-             const double complex* const restrict T, const int ldt,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict B, const int ldb,
-             double complex* const restrict work, int* info)
+             const c128* const restrict V, const int ldv,
+             const c128* const restrict T, const int ldt,
+             c128* const restrict A, const int lda,
+             c128* const restrict B, const int ldb,
+             c128* const restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, nb, lb, kf, ldaq;

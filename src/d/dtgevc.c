@@ -61,34 +61,34 @@ void dtgevc(
     const char* howmny,
     const int* const restrict select,
     const int n,
-    const double* const restrict S,
+    const f64* const restrict S,
     const int lds,
-    const double* const restrict P,
+    const f64* const restrict P,
     const int ldp,
-    double* const restrict VL,
+    f64* const restrict VL,
     const int ldvl,
-    double* const restrict VR,
+    f64* const restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double SAFETY = 100.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 SAFETY = 100.0;
 
     int compl, compr, ilall, ilback, ilcplx;
     int ihwmny, iside;
     int ilabad, ilbbad;
     int i, ibeg, iend, ieig, iinfo, ilcomp, im, j, ja, je, jr, jw, na, nw;
     int il2by2;
-    double acoef, acoefa, anorm, ascale, bcoefa, bcoefi, bcoefr;
-    double big, bignum, bnorm, bscale;
-    double cim2a, cim2b, cimaga, cimagb, cre2a, cre2b, creala, crealb;
-    double dmin, safmin, salfar, sbeta, scale, small;
-    double temp, temp2, temp2i, temp2r, ulp, xmax, xscale;
-    double bdiag[2], sum[2][2], sums[2][2], sump[2][2];
+    f64 acoef, acoefa, anorm, ascale, bcoefa, bcoefi, bcoefr;
+    f64 big, bignum, bnorm, bscale;
+    f64 cim2a, cim2b, cimaga, cimagb, cre2a, cre2b, creala, crealb;
+    f64 dmin, safmin, salfar, sbeta, scale, small;
+    f64 temp, temp2, temp2i, temp2r, ulp, xmax, xscale;
+    f64 bdiag[2], sum[2][2], sums[2][2], sump[2][2];
 
     *info = 0;
 

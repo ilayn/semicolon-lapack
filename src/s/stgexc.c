@@ -43,21 +43,21 @@ void stgexc(
     const int wantq,
     const int wantz,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
     int* ifst,
     int* ilst,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int lquery;
     int here, lwmin, nbf, nbl, nbnext;
@@ -87,7 +87,7 @@ void stgexc(
         } else {
             lwmin = 4 * n + 16;
         }
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -15;
@@ -342,5 +342,5 @@ void stgexc(
     }
 
     *ilst = here;
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

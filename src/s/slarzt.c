@@ -49,11 +49,11 @@
  */
 void slarzt(const char* direct, const char* storev,
             const int n, const int k,
-            float * const restrict V, const int ldv,
-            const float * const restrict tau,
-            float * const restrict T, const int ldt)
+            f32 * const restrict V, const int ldv,
+            const f32 * const restrict tau,
+            f32 * const restrict T, const int ldt)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
     int i, j, info;
 
     /* Check for currently supported options */

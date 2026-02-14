@@ -95,17 +95,17 @@
  *                        < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            double complex* const restrict B, const int ldb,
-            double complex* const restrict BX, const int ldbx,
-            const double* const restrict U, const int ldu,
-            const double* const restrict VT, const int* const restrict K,
-            const double* const restrict difl, const double* const restrict difr,
-            const double* const restrict Z, const double* const restrict poles,
+            c128* const restrict B, const int ldb,
+            c128* const restrict BX, const int ldbx,
+            const f64* const restrict U, const int ldu,
+            const f64* const restrict VT, const int* const restrict K,
+            const f64* const restrict difl, const f64* const restrict difr,
+            const f64* const restrict Z, const f64* const restrict poles,
             const int* const restrict givptr, const int* const restrict givcol,
             const int ldgcol, const int* const restrict perm,
-            const double* const restrict givnum,
-            const double* const restrict C, const double* const restrict S,
-            double* const restrict rwork, int* const restrict iwork, int* info)
+            const f64* const restrict givnum,
+            const f64* const restrict C, const f64* const restrict S,
+            f64* const restrict rwork, int* const restrict iwork, int* info)
 {
     int i, i1, ic, im1, inode, j, jcol, jimag, jreal;
     int jrow, lf, ll, lvl, lvl2, nd, ndb1, ndiml;

@@ -116,21 +116,21 @@
  */
 void zunbdb(const char* trans, const char* signs,
             const int m, const int p, const int q,
-            double complex* const restrict X11, const int ldx11,
-            double complex* const restrict X12, const int ldx12,
-            double complex* const restrict X21, const int ldx21,
-            double complex* const restrict X22, const int ldx22,
-            double* const restrict theta, double* const restrict phi,
-            double complex* const restrict taup1,
-            double complex* const restrict taup2,
-            double complex* const restrict tauq1,
-            double complex* const restrict tauq2,
-            double complex* const restrict work, const int lwork,
+            c128* const restrict X11, const int ldx11,
+            c128* const restrict X12, const int ldx12,
+            c128* const restrict X21, const int ldx21,
+            c128* const restrict X22, const int ldx22,
+            f64* const restrict theta, f64* const restrict phi,
+            c128* const restrict taup1,
+            c128* const restrict taup2,
+            c128* const restrict tauq1,
+            c128* const restrict tauq2,
+            c128* const restrict work, const int lwork,
             int* info)
 {
     int colmajor, lquery;
     int i, lworkmin, lworkopt;
-    double z1, z2, z3, z4;
+    f64 z1, z2, z3, z4;
 
     *info = 0;
     colmajor = !(trans[0] == 'T' || trans[0] == 't');
@@ -174,7 +174,7 @@ void zunbdb(const char* trans, const char* signs,
     if (*info == 0) {
         lworkopt = m - q;
         lworkmin = m - q;
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         if (lwork < lworkmin && !lquery) {
             *info = -21;
         }
@@ -193,22 +193,22 @@ void zunbdb(const char* trans, const char* signs,
         for (i = 0; i < q; i++) {
 
             if (i == 0) {
-                double complex sc = CMPLX(z1, 0.0);
+                c128 sc = CMPLX(z1, 0.0);
                 cblas_zscal(p - i, &sc, &X11[i + i * ldx11], 1);
             } else {
-                double complex sc = CMPLX(z1 * cos(phi[i - 1]), 0.0);
+                c128 sc = CMPLX(z1 * cos(phi[i - 1]), 0.0);
                 cblas_zscal(p - i, &sc, &X11[i + i * ldx11], 1);
-                double complex alpha = CMPLX(-z1 * z3 * z4 * sin(phi[i - 1]), 0.0);
+                c128 alpha = CMPLX(-z1 * z3 * z4 * sin(phi[i - 1]), 0.0);
                 cblas_zaxpy(p - i, &alpha, &X12[i + (i - 1) * ldx12], 1,
                             &X11[i + i * ldx11], 1);
             }
             if (i == 0) {
-                double complex sc = CMPLX(z2, 0.0);
+                c128 sc = CMPLX(z2, 0.0);
                 cblas_zscal(m - p - i, &sc, &X21[i + i * ldx21], 1);
             } else {
-                double complex sc = CMPLX(z2 * cos(phi[i - 1]), 0.0);
+                c128 sc = CMPLX(z2 * cos(phi[i - 1]), 0.0);
                 cblas_zscal(m - p - i, &sc, &X21[i + i * ldx21], 1);
-                double complex alpha = CMPLX(-z2 * z3 * z4 * sin(phi[i - 1]), 0.0);
+                c128 alpha = CMPLX(-z2 * z3 * z4 * sin(phi[i - 1]), 0.0);
                 cblas_zaxpy(m - p - i, &alpha, &X22[i + (i - 1) * ldx22], 1,
                             &X21[i + i * ldx21], 1);
             }
@@ -232,33 +232,33 @@ void zunbdb(const char* trans, const char* signs,
             }
 
             if (q > i + 1) {
-                double complex ct1 = conj(taup1[i]);
+                c128 ct1 = conj(taup1[i]);
                 zlarf1f("L", p - i, q - i - 1, &X11[i + i * ldx11], 1,
                         ct1, &X11[i + (i + 1) * ldx11], ldx11, work);
-                double complex ct2 = conj(taup2[i]);
+                c128 ct2 = conj(taup2[i]);
                 zlarf1f("L", m - p - i, q - i - 1, &X21[i + i * ldx21], 1,
                         ct2, &X21[i + (i + 1) * ldx21], ldx21, work);
             }
             if (m - q >= i + 1) {
-                double complex ct1 = conj(taup1[i]);
+                c128 ct1 = conj(taup1[i]);
                 zlarf1f("L", p - i, m - q - i, &X11[i + i * ldx11], 1,
                         ct1, &X12[i + i * ldx12], ldx12, work);
-                double complex ct2 = conj(taup2[i]);
+                c128 ct2 = conj(taup2[i]);
                 zlarf1f("L", m - p - i, m - q - i, &X21[i + i * ldx21], 1,
                         ct2, &X22[i + i * ldx22], ldx22, work);
             }
 
             if (i < q - 1) {
-                double complex sc = CMPLX(-z1 * z3 * sin(theta[i]), 0.0);
+                c128 sc = CMPLX(-z1 * z3 * sin(theta[i]), 0.0);
                 cblas_zscal(q - i - 1, &sc, &X11[i + (i + 1) * ldx11], ldx11);
-                double complex alpha = CMPLX(z2 * z3 * cos(theta[i]), 0.0);
+                c128 alpha = CMPLX(z2 * z3 * cos(theta[i]), 0.0);
                 cblas_zaxpy(q - i - 1, &alpha, &X21[i + (i + 1) * ldx21], ldx21,
                             &X11[i + (i + 1) * ldx11], ldx11);
             }
             {
-                double complex sc = CMPLX(-z1 * z4 * sin(theta[i]), 0.0);
+                c128 sc = CMPLX(-z1 * z4 * sin(theta[i]), 0.0);
                 cblas_zscal(m - q - i, &sc, &X12[i + i * ldx12], ldx12);
-                double complex alpha = CMPLX(z2 * z4 * cos(theta[i]), 0.0);
+                c128 alpha = CMPLX(z2 * z4 * cos(theta[i]), 0.0);
                 cblas_zaxpy(m - q - i, &alpha, &X22[i + i * ldx22], ldx22,
                             &X12[i + i * ldx12], ldx12);
             }
@@ -313,7 +313,7 @@ void zunbdb(const char* trans, const char* signs,
         for (i = q; i < p; i++) {
 
             {
-                double complex sc = CMPLX(-z1 * z4, 0.0);
+                c128 sc = CMPLX(-z1 * z4, 0.0);
                 cblas_zscal(m - q - i, &sc, &X12[i + i * ldx12], ldx12);
             }
             zlacgv(m - q - i, &X12[i + i * ldx12], ldx12);
@@ -341,7 +341,7 @@ void zunbdb(const char* trans, const char* signs,
         for (i = 0; i < m - p - q; i++) {
 
             {
-                double complex sc = CMPLX(z2 * z4, 0.0);
+                c128 sc = CMPLX(z2 * z4, 0.0);
                 cblas_zscal(m - p - q - i, &sc, &X22[(q + i) + (p + i) * ldx22], ldx22);
             }
             zlacgv(m - p - q - i, &X22[(q + i) + (p + i) * ldx22], ldx22);
@@ -361,22 +361,22 @@ void zunbdb(const char* trans, const char* signs,
         for (i = 0; i < q; i++) {
 
             if (i == 0) {
-                double complex sc = CMPLX(z1, 0.0);
+                c128 sc = CMPLX(z1, 0.0);
                 cblas_zscal(p - i, &sc, &X11[i + i * ldx11], ldx11);
             } else {
-                double complex sc = CMPLX(z1 * cos(phi[i - 1]), 0.0);
+                c128 sc = CMPLX(z1 * cos(phi[i - 1]), 0.0);
                 cblas_zscal(p - i, &sc, &X11[i + i * ldx11], ldx11);
-                double complex alpha = CMPLX(-z1 * z3 * z4 * sin(phi[i - 1]), 0.0);
+                c128 alpha = CMPLX(-z1 * z3 * z4 * sin(phi[i - 1]), 0.0);
                 cblas_zaxpy(p - i, &alpha, &X12[(i - 1) + i * ldx12], ldx12,
                             &X11[i + i * ldx11], ldx11);
             }
             if (i == 0) {
-                double complex sc = CMPLX(z2, 0.0);
+                c128 sc = CMPLX(z2, 0.0);
                 cblas_zscal(m - p - i, &sc, &X21[i + i * ldx21], ldx21);
             } else {
-                double complex sc = CMPLX(z2 * cos(phi[i - 1]), 0.0);
+                c128 sc = CMPLX(z2 * cos(phi[i - 1]), 0.0);
                 cblas_zscal(m - p - i, &sc, &X21[i + i * ldx21], ldx21);
-                double complex alpha = CMPLX(-z2 * z3 * z4 * sin(phi[i - 1]), 0.0);
+                c128 alpha = CMPLX(-z2 * z3 * z4 * sin(phi[i - 1]), 0.0);
                 cblas_zaxpy(m - p - i, &alpha, &X22[(i - 1) + i * ldx22], ldx22,
                             &X21[i + i * ldx21], ldx21);
             }
@@ -410,16 +410,16 @@ void zunbdb(const char* trans, const char* signs,
             zlacgv(m - p - i, &X21[i + i * ldx21], ldx21);
 
             if (i < q - 1) {
-                double complex sc = CMPLX(-z1 * z3 * sin(theta[i]), 0.0);
+                c128 sc = CMPLX(-z1 * z3 * sin(theta[i]), 0.0);
                 cblas_zscal(q - i - 1, &sc, &X11[(i + 1) + i * ldx11], 1);
-                double complex alpha = CMPLX(z2 * z3 * cos(theta[i]), 0.0);
+                c128 alpha = CMPLX(z2 * z3 * cos(theta[i]), 0.0);
                 cblas_zaxpy(q - i - 1, &alpha, &X21[(i + 1) + i * ldx21], 1,
                             &X11[(i + 1) + i * ldx11], 1);
             }
             {
-                double complex sc = CMPLX(-z1 * z4 * sin(theta[i]), 0.0);
+                c128 sc = CMPLX(-z1 * z4 * sin(theta[i]), 0.0);
                 cblas_zscal(m - q - i, &sc, &X12[i + i * ldx12], 1);
-                double complex alpha = CMPLX(z2 * z4 * cos(theta[i]), 0.0);
+                c128 alpha = CMPLX(z2 * z4 * cos(theta[i]), 0.0);
                 cblas_zaxpy(m - q - i, &alpha, &X22[i + i * ldx22], 1,
                             &X12[i + i * ldx12], 1);
             }
@@ -436,20 +436,20 @@ void zunbdb(const char* trans, const char* signs,
                     &X12[(i + 1) + i * ldx12], 1, &tauq2[i]);
 
             if (i < q - 1) {
-                double complex ct1 = conj(tauq1[i]);
+                c128 ct1 = conj(tauq1[i]);
                 zlarf1f("L", q - i - 1, p - i - 1, &X11[(i + 1) + i * ldx11], 1,
                         ct1, &X11[(i + 1) + (i + 1) * ldx11], ldx11, work);
                 zlarf1f("L", q - i - 1, m - p - i - 1, &X11[(i + 1) + i * ldx11], 1,
                         ct1, &X21[(i + 1) + (i + 1) * ldx21], ldx21, work);
             }
             {
-                double complex ct2 = conj(tauq2[i]);
+                c128 ct2 = conj(tauq2[i]);
                 zlarf1f("L", m - q - i, p - i - 1, &X12[i + i * ldx12], 1,
                         ct2, &X12[i + (i + 1) * ldx12], ldx12, work);
             }
 
             if (m - p > i + 1) {
-                double complex ct2 = conj(tauq2[i]);
+                c128 ct2 = conj(tauq2[i]);
                 zlarf1f("L", m - q - i, m - p - i - 1, &X12[i + i * ldx12], 1,
                         ct2, &X22[i + (i + 1) * ldx22], ldx22, work);
             }
@@ -460,19 +460,19 @@ void zunbdb(const char* trans, const char* signs,
         for (i = q; i < p; i++) {
 
             {
-                double complex sc = CMPLX(-z1 * z4, 0.0);
+                c128 sc = CMPLX(-z1 * z4, 0.0);
                 cblas_zscal(m - q - i, &sc, &X12[i + i * ldx12], 1);
             }
             zlarfgp(m - q - i, &X12[i + i * ldx12],
                     &X12[(i + 1) + i * ldx12], 1, &tauq2[i]);
 
             if (p > i + 1) {
-                double complex ct = conj(tauq2[i]);
+                c128 ct = conj(tauq2[i]);
                 zlarf1f("L", m - q - i, p - i - 1, &X12[i + i * ldx12], 1,
                         ct, &X12[i + (i + 1) * ldx12], ldx12, work);
             }
             if (m - p - q >= 1) {
-                double complex ct = conj(tauq2[i]);
+                c128 ct = conj(tauq2[i]);
                 zlarf1f("L", m - q - i, m - p - q, &X12[i + i * ldx12], 1,
                         ct, &X22[i + q * ldx22], ldx22, work);
             }
@@ -483,13 +483,13 @@ void zunbdb(const char* trans, const char* signs,
         for (i = 0; i < m - p - q; i++) {
 
             {
-                double complex sc = CMPLX(z2 * z4, 0.0);
+                c128 sc = CMPLX(z2 * z4, 0.0);
                 cblas_zscal(m - p - q - i, &sc, &X22[(p + i) + (q + i) * ldx22], 1);
             }
             zlarfgp(m - p - q - i, &X22[(p + i) + (q + i) * ldx22],
                     &X22[(p + i + 1) + (q + i) * ldx22], 1, &tauq2[p + i]);
             if (m - p - q != i + 1) {
-                double complex ct = conj(tauq2[p + i]);
+                c128 ct = conj(tauq2[p + i]);
                 zlarf1f("L", m - p - q - i, m - p - q - i - 1,
                         &X22[(p + i) + (q + i) * ldx22], 1,
                         ct, &X22[(p + i) + (q + i + 1) * ldx22], ldx22, work);

@@ -52,9 +52,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void slatsqr(const int m, const int n, const int mb, const int nb,
-             float* const restrict A, const int lda,
-             float* const restrict T, const int ldt,
-             float* const restrict work, const int lwork,
+             f32* const restrict A, const int lda,
+             f32* const restrict T, const int ldt,
+             f32* const restrict work, const int lwork,
              int* info)
 {
     int lquery;
@@ -88,7 +88,7 @@ void slatsqr(const int m, const int n, const int mb, const int nb,
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
     }
 
     if (*info != 0) {
@@ -129,5 +129,5 @@ void slatsqr(const int m, const int n, const int mb, const int nb,
                &T[0 + ctr * n * ldt], ldt, work, info);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

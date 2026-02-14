@@ -56,8 +56,8 @@
  */
 void slaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
             int* prmptr, int* perm, int* givptr, int* givcol,
-            float* givnum, float* Q, int* qptr, float* Z,
-            float* ztemp, int* info)
+            f32* givnum, f32* Q, int* qptr, f32* Z,
+            f32* ztemp, int* info)
 {
     int bsiz1, bsiz2, curr, i, k, mid, psiz1, psiz2, ptr, zptr1;
 
@@ -89,8 +89,8 @@ void slaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
     /* Determine size of these matrices. We add 0.5 to the value of
      * the sqrt in case the machine underestimates one of these square
      * roots. */
-    bsiz1 = (int)(0.5f + sqrtf((float)(qptr[curr + 1] - qptr[curr])));
-    bsiz2 = (int)(0.5f + sqrtf((float)(qptr[curr + 2] - qptr[curr + 1])));
+    bsiz1 = (int)(0.5f + sqrtf((f32)(qptr[curr + 1] - qptr[curr])));
+    bsiz2 = (int)(0.5f + sqrtf((f32)(qptr[curr + 2] - qptr[curr + 1])));
 
     for (k = 0; k < mid - bsiz1; k++) {
         Z[k] = 0.0f;
@@ -137,8 +137,8 @@ void slaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
         /* Determine size of these matrices. We add 0.5 to the value of
          * the sqrt in case the machine underestimates one of these
          * square roots. */
-        bsiz1 = (int)(0.5f + sqrtf((float)(qptr[curr + 1] - qptr[curr])));
-        bsiz2 = (int)(0.5f + sqrtf((float)(qptr[curr + 2] - qptr[curr + 1])));
+        bsiz1 = (int)(0.5f + sqrtf((f32)(qptr[curr + 1] - qptr[curr])));
+        bsiz2 = (int)(0.5f + sqrtf((f32)(qptr[curr + 2] - qptr[curr + 1])));
         if (bsiz1 > 0) {
             cblas_sgemv(CblasColMajor, CblasTrans, bsiz1, bsiz1, 1.0f,
                         &Q[qptr[curr]], bsiz1, &ztemp[0], 1, 0.0f,

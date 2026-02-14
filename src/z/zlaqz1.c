@@ -34,15 +34,15 @@
  * @param[in]     ldz      The leading dimension of Z.
  */
 void zlaqz1(const int ilq, const int ilz, const int k, const int istartm,
-            const int istopm, const int ihi, double complex* A, const int lda,
-            double complex* B, const int ldb, const int nq, const int qstart,
-            double complex* Q, const int ldq, const int nz, const int zstart,
-            double complex* Z, const int ldz)
+            const int istopm, const int ihi, c128* A, const int lda,
+            c128* B, const int ldb, const int nq, const int qstart,
+            c128* Q, const int ldq, const int nz, const int zstart,
+            c128* Z, const int ldz)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
-    double c;
-    double complex s, temp;
+    f64 c;
+    c128 s, temp;
 
     if (k + 1 == ihi) {
 

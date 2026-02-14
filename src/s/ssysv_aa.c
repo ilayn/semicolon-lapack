@@ -68,12 +68,12 @@ void ssysv_aa(
     const char* uplo,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* restrict ipiv,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -109,7 +109,7 @@ void ssysv_aa(
         lwkopt_sytrs = (int)work[0];
         tmp1 = (lwkmin > lwkopt_sytrf) ? lwkmin : lwkopt_sytrf;
         lwkopt = (tmp1 > lwkopt_sytrs) ? tmp1 : lwkopt_sytrs;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -126,5 +126,5 @@ void ssysv_aa(
 
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

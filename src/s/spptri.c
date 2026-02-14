@@ -29,11 +29,11 @@
 void spptri(
     const char* uplo,
     const int n,
-    float* const restrict AP,
+    f32* const restrict AP,
     int* info)
 {
     // spptri.f lines 108-109: Parameters
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     // spptri.f lines 128-138: Test the input parameters
     *info = 0;
@@ -70,7 +70,7 @@ void spptri(
                 cblas_sspr(CblasColMajor, CblasUpper, j, ONE, &AP[jc], 1, AP);
             }
             // spptri.f lines 161-162
-            float ajj = AP[jj];
+            f32 ajj = AP[jj];
             cblas_sscal(j + 1, ajj, &AP[jc], 1);
         }
     } else {

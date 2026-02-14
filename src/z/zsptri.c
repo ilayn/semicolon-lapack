@@ -37,17 +37,17 @@
 void zsptri(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int upper;
     int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
-    double complex ak, akkp1, akp1, d, t, temp;
+    c128 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -96,7 +96,7 @@ void zsptri(
                 if (k > 0) {
                     cblas_zcopy(k, &AP[kc], 1, work, 1);
                     zspmv(uplo, k, -ONE, AP, work, 1, ZERO, &AP[kc], 1);
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zdotu_sub(k, work, 1, &AP[kc], 1, &dotval);
                     AP[kc + k] = AP[kc + k] - dotval;
                 }
@@ -114,7 +114,7 @@ void zsptri(
                 if (k > 0) {
                     cblas_zcopy(k, &AP[kc], 1, work, 1);
                     zspmv(uplo, k, -ONE, AP, work, 1, ZERO, &AP[kc], 1);
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zdotu_sub(k, work, 1, &AP[kc], 1, &dotval);
                     AP[kc + k] = AP[kc + k] - dotval;
                     cblas_zdotu_sub(k, &AP[kc], 1, &AP[kcnext], 1, &dotval);
@@ -165,7 +165,7 @@ void zsptri(
                 if (k < n - 1) {
                     cblas_zcopy(n - k - 1, &AP[kc + 1], 1, work, 1);
                     zspmv(uplo, n - k - 1, -ONE, &AP[kc + n - k], work, 1, ZERO, &AP[kc + 1], 1);
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zdotu_sub(n - k - 1, work, 1, &AP[kc + 1], 1, &dotval);
                     AP[kc] = AP[kc] - dotval;
                 }
@@ -183,7 +183,7 @@ void zsptri(
                 if (k < n - 1) {
                     cblas_zcopy(n - k - 1, &AP[kc + 1], 1, work, 1);
                     zspmv(uplo, n - k - 1, -ONE, &AP[kc + n - k], work, 1, ZERO, &AP[kc + 1], 1);
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zdotu_sub(n - k - 1, work, 1, &AP[kc + 1], 1, &dotval);
                     AP[kc] = AP[kc] - dotval;
                     cblas_zdotu_sub(n - k - 1, &AP[kc + 1], 1, &AP[kcnext + 2], 1, &dotval);

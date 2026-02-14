@@ -40,22 +40,22 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorgqr(const int m, const int n, const int k,
-            double * const restrict A, const int lda,
-            const double * const restrict tau,
-            double * const restrict work, const int lwork,
+            f64 * const restrict A, const int lda,
+            const f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;
     int i, ib, iinfo, j, l;
     int ki, kk;
     int lquery;
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     /* Parameter validation */
     *info = 0;
     nb = lapack_get_nb("ORGQR");
     lwkopt = (n > 1 ? n : 1) * nb;
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
     lquery = (lwork == -1);
 
     if (m < 0) {
@@ -155,5 +155,5 @@ void dorgqr(const int m, const int n, const int k,
         }
     }
 
-    work[0] = (double)iws;
+    work[0] = (f64)iws;
 }

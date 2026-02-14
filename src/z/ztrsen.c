@@ -64,19 +64,19 @@
  *                   - < 0: if info = -i, the i-th argument had an illegal value
  */
 void ztrsen(const char* job, const char* compq, const int* select,
-            const int n, double complex* T, const int ldt,
-            double complex* Q, const int ldq,
-            double complex* W, int* m, double* s, double* sep,
-            double complex* work, const int lwork, int* info)
+            const int n, c128* T, const int ldt,
+            c128* Q, const int ldq,
+            c128* W, int* m, f64* s, f64* sep,
+            c128* work, const int lwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantbh, wants, wantsp, wantq, lquery;
-    int ierr, k, kase, ks, lwmin, n1, n2, nn;
-    double est, rnorm, scale;
+    int ierr, k, kase, ks, lwmin = 0, n1, n2, nn;
+    f64 est, rnorm, scale;
     int isave[3];
-    double rwork[1];
+    f64 rwork[1];
 
     /* Decode and test the input parameters. */
     wantbh = (job[0] == 'B' || job[0] == 'b');
@@ -121,7 +121,7 @@ void ztrsen(const char* job, const char* compq, const int* select,
     }
 
     if (*info == 0) {
-        work[0] = CMPLX((double)lwmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
     }
 
     if (*info != 0) {
@@ -208,5 +208,5 @@ L40:
         W[k] = T[k + k * ldt];
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

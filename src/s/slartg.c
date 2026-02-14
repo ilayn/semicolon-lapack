@@ -27,15 +27,15 @@
  * @param[out] s  The sine of the rotation.
  * @param[out] r  The nonzero component of the rotated vector.
  */
-void slartg(const float f, const float g, float* c, float* s, float* r)
+void slartg(const f32 f, const f32 g, f32* c, f32* s, f32* r)
 {
-    float safmin = slamch("S");
-    float safmax = 1.0f / safmin;
-    float rtmin = sqrtf(safmin);
-    float rtmax = sqrtf(safmax / 2.0f);
+    f32 safmin = slamch("S");
+    f32 safmax = 1.0f / safmin;
+    f32 rtmin = sqrtf(safmin);
+    f32 rtmax = sqrtf(safmax / 2.0f);
 
-    float f1 = fabsf(f);
-    float g1 = fabsf(g);
+    f32 f1 = fabsf(f);
+    f32 g1 = fabsf(g);
 
     if (g == 0.0f) {
         *c = 1.0f;
@@ -48,16 +48,16 @@ void slartg(const float f, const float g, float* c, float* s, float* r)
     } else if (f1 > rtmin && f1 < rtmax &&
                g1 > rtmin && g1 < rtmax) {
         /* Both f and g are in safe range */
-        float d = sqrtf(f * f + g * g);
+        f32 d = sqrtf(f * f + g * g);
         *c = f1 / d;
         *r = (f > 0.0f) ? d : -d;
         *s = g / (*r);
     } else {
         /* Use scaled algorithm */
-        float u = fminf(safmax, fmaxf(safmin, fmaxf(f1, g1)));
-        float fs = f / u;
-        float gs = g / u;
-        float d = sqrtf(fs * fs + gs * gs);
+        f32 u = fminf(safmax, fmaxf(safmin, fmaxf(f1, g1)));
+        f32 fs = f / u;
+        f32 gs = g / u;
+        f32 d = sqrtf(fs * fs + gs * gs);
         *c = fabsf(fs) / d;
         *r = (f > 0.0f) ? d : -d;
         *s = gs / (*r);

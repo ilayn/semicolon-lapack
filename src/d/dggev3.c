@@ -60,21 +60,21 @@
  *                         - > n: other errors
  */
 void dggev3(const char* jobvl, const char* jobvr, const int n,
-            double* const restrict A, const int lda,
-            double* const restrict B, const int ldb,
-            double* const restrict alphar, double* const restrict alphai,
-            double* const restrict beta,
-            double* const restrict VL, const int ldvl,
-            double* const restrict VR, const int ldvr,
-            double* const restrict work, const int lwork, int* info)
+            f64* const restrict A, const int lda,
+            f64* const restrict B, const int ldb,
+            f64* const restrict alphar, f64* const restrict alphai,
+            f64* const restrict beta,
+            f64* const restrict VL, const int ldvl,
+            f64* const restrict VR, const int ldvr,
+            f64* const restrict work, const int lwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
     int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
     int in, iright, irows, itau, iwrk, jc, jr, lwkopt, lwkmin;
-    double anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps, smlnum, temp;
+    f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps, smlnum, temp;
     int ldumma[1];
 
     /* Decode the input arguments */
@@ -153,7 +153,7 @@ void dggev3(const char* jobvl, const char* jobvr, const int n,
         if (n == 0) {
             work[0] = 1;
         } else {
-            work[0] = (double)lwkopt;
+            work[0] = (f64)lwkopt;
         }
     }
 
@@ -374,6 +374,6 @@ L110:
         dlascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
     return;
 }

@@ -76,20 +76,20 @@
  *                           the same order as in T; s and sep are set to zero.
  */
 void dtrsen(const char* job, const char* compq, const int* select,
-            const int n, double* T, const int ldt,
-            double* Q, const int ldq,
-            double* wr, double* wi, int* m,
-            double* s, double* sep,
-            double* work, const int lwork,
+            const int n, f64* T, const int ldt,
+            f64* Q, const int ldq,
+            f64* wr, f64* wi, int* m,
+            f64* s, f64* sep,
+            f64* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantbh, wants, wantsp, wantq, lquery;
     int ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
     int pair, swap;
-    double est, rnorm, scale;
+    f64 est, rnorm, scale;
     int isave[3];
 
     /* Decode and test the input parameters */
@@ -167,7 +167,7 @@ void dtrsen(const char* job, const char* compq, const int* select,
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
     }
 
@@ -283,6 +283,6 @@ L40:
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

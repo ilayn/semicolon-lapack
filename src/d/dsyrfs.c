@@ -55,30 +55,30 @@ void dsyrfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict AF,
+    const f64* const restrict AF,
     const int ldaf,
     const int* const restrict ipiv,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int upper;
     int count, i, j, k, kase, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int linfo;
 
@@ -173,10 +173,10 @@ void dsyrfs(
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    double tmp = fabs(work[n + i]) / work[i];
+                    f64 tmp = fabs(work[n + i]) / work[i];
                     if (tmp > s) s = tmp;
                 } else {
-                    double tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
+                    f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                     if (tmp > s) s = tmp;
                 }
             }
@@ -255,7 +255,7 @@ void dsyrfs(
         /* Normalize error. */
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double tmp = fabs(X[i + j * ldx]);
+            f64 tmp = fabs(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

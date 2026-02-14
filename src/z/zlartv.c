@@ -26,9 +26,9 @@
  *                      The sines of the plane rotations.
  * @param[in]     incc  The increment between elements of C and S. incc > 0.
  */
-void zlartv(const int n, double complex* const restrict X, const int incx,
-            double complex* const restrict Y, const int incy,
-            const double* const restrict C, const double complex* const restrict S,
+void zlartv(const int n, c128* const restrict X, const int incx,
+            c128* const restrict Y, const int incy,
+            const f64* const restrict C, const c128* const restrict S,
             const int incc)
 {
     int ix = 0;
@@ -36,8 +36,8 @@ void zlartv(const int n, double complex* const restrict X, const int incx,
     int ic = 0;
 
     for (int i = 0; i < n; i++) {
-        double complex xi = X[ix];
-        double complex yi = Y[iy];
+        c128 xi = X[ix];
+        c128 yi = Y[iy];
         X[ix] = C[ic] * xi + S[ic] * yi;
         Y[iy] = C[ic] * yi - conj(S[ic]) * xi;
         ix += incx;

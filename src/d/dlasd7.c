@@ -9,24 +9,24 @@
 #include <cblas.h>
 
 void dlasd7(const int icompq, const int nl, const int nr, const int sqre,
-            int* k, double* const restrict D, double* const restrict Z,
-            double* const restrict ZW, double* const restrict VF,
-            double* const restrict VFW, double* const restrict VL,
-            double* const restrict VLW, const double alpha, const double beta,
-            double* const restrict DSIGMA, int* const restrict IDX,
+            int* k, f64* const restrict D, f64* const restrict Z,
+            f64* const restrict ZW, f64* const restrict VF,
+            f64* const restrict VFW, f64* const restrict VL,
+            f64* const restrict VLW, const f64 alpha, const f64 beta,
+            f64* const restrict DSIGMA, int* const restrict IDX,
             int* const restrict IDXP, int* const restrict IDXQ,
             int* const restrict PERM, int* givptr,
             int* const restrict GIVCOL, const int ldgcol,
-            double* const restrict GIVNUM, const int ldgnum,
-            double* c, double* s, int* info)
+            f64* const restrict GIVNUM, const int ldgnum,
+            f64* c, f64* s, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double EIGHT = 8.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 EIGHT = 8.0;
 
     int i, idxi, idxj, idxjp, j, jp, jprev = 0, k2, m, n, nlp1, nlp2;
-    double eps, hlftol, tau, tol, z1;
+    f64 eps, hlftol, tau, tol, z1;
 
     *info = 0;
     n = nl + nr + 1;

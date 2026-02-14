@@ -8,8 +8,8 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
 
 /* Helper: max of 3 integers */
 static inline int max3i(int a, int b, int c) {
@@ -352,17 +352,17 @@ static inline int max3i(int a, int b, int c) {
 void dgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
             const int m, const int n,
-            double* const restrict A, const int lda,
-            double* const restrict SVA,
-            double* const restrict U, const int ldu,
-            double* const restrict V, const int ldv,
-            double* const restrict work, const int lwork,
+            f64* const restrict A, const int lda,
+            f64* const restrict SVA,
+            f64* const restrict U, const int ldu,
+            f64* const restrict V, const int ldv,
+            f64* const restrict work, const int lwork,
             int* const restrict iwork, int* info)
 {
     /* Local variables */
-    double aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
-    double condr1, condr2, entra, entrat, epsln, maxprj, scalem;
-    double sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
+    f64 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
+    f64 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
+    f64 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
     int ierr, n1, nr, numrank, p, q, warning;
     int almort, defr, errest, goscal, jracc, kill, lsvec;
     int l2aber, l2kill, l2pert, l2rank, l2tran;
@@ -485,7 +485,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Chunk 4: Initialize SVA = ||A e_i||_2, with scaling                  */
     /* -------------------------------------------------------------------- */
 
-    scalem = ONE / sqrt((double)m * (double)n);
+    scalem = ONE / sqrt((f64)m * (f64)n);
     noscal = 1;
     goscal = 1;
 
@@ -642,7 +642,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             big1 = ((SVA[p] / xsc) * (SVA[p] / xsc)) * temp1;
             if (big1 != ZERO) entra = entra + big1 * log(big1);
         }
-        entra = -entra / log((double)n);
+        entra = -entra / log((f64)n);
 
         /* Same for row norms (A * A^t diagonal) */
         entrat = ZERO;
@@ -650,7 +650,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             big1 = ((work[n + p] / xsc) * (work[n + p] / xsc)) * temp1;
             if (big1 != ZERO) entrat = entrat + big1 * log(big1);
         }
-        entrat = -entrat / log((double)m);
+        entrat = -entrat / log((f64)m);
 
         /* Decide: if row entropy < column entropy, use transpose */
         transp = (entrat < entra);
@@ -694,7 +694,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
      * has Euclidean norm equal to sqrt(BIG/N). */
 
     big1 = sqrt(big);
-    temp1 = sqrt(big / (double)n);
+    temp1 = sqrt(big / (f64)n);
 
     dlascl("G", 0, 0, aapp, temp1, n, 1, SVA, n, &ierr);
     if (aaqq > aapp * sfmin) {
@@ -767,7 +767,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
 
     if (l2aber) {
         /* JOBA='A': Aggressive - treat small singular values as noise */
-        temp1 = sqrt((double)n) * epsln;
+        temp1 = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) >= temp1 * fabs(A[0])) {
                 nr++;
@@ -809,7 +809,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             temp1 = fabs(A[p + p * lda]) / SVA[iwork[p]];
             if (temp1 < maxprj) maxprj = temp1;
         }
-        if (maxprj * maxprj >= ONE - (double)n * epsln) {
+        if (maxprj * maxprj >= ONE - (f64)n * epsln) {
             almort = 1;
         }
     }
@@ -856,7 +856,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Phase 4: SVD computation branches                                    */
     /* -------------------------------------------------------------------- */
 
-    cond_ok = sqrt((double)nr);
+    cond_ok = sqrt((f64)nr);
 
     if (!rsvec && !lsvec) {
         /* ============================================================== */
@@ -873,7 +873,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             /* Apply perturbation if L2PERT */
             if (l2pert) {
                 /* NOTE: Fortran uses EPSLN/N, not sqrt(SMALL) */
-                xsc = epsln / (double)n;
+                xsc = epsln / (f64)n;
                 for (q = 0; q < nr; q++) {
                     temp1 = xsc * fabs(A[q + q * lda]);
                     for (p = 0; p < nr; p++) {
@@ -898,7 +898,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         /* Final perturbation */
         if (l2pert) {
             /* NOTE: Fortran uses EPSLN/N, not sqrt(SMALL) */
-            xsc = epsln / (double)n;
+            xsc = epsln / (f64)n;
             for (q = 0; q < nr; q++) {
                 temp1 = xsc * fabs(A[q + q * lda]);
                 for (p = 0; p < nr; p++) {
@@ -1065,7 +1065,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                        &work[2 * n + nr * nr], &iwork[m + 2 * n], &ierr);
                 condr1 = ONE / sqrt(temp1);
 
-                cond_ok = sqrt((double)nr);
+                cond_ok = sqrt((f64)nr);
 
                 if (condr1 < cond_ok) {
                     /* R1 is well-conditioned: second QRF without pivoting */
@@ -1252,7 +1252,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 }
 
                 /* Permute rows of V by first QRP column pivots and normalize */
-                temp1 = sqrt((double)n) * epsln;
+                temp1 = sqrt((f64)n) * epsln;
                 for (q = 0; q < n; q++) {
                     for (p = 0; p < n; p++) {
                         work[2 * n + n * nr + nr + iwork[p]] = V[p + q * ldv];
@@ -1278,7 +1278,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 dormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
 
                 /* Normalize U columns */
-                temp1 = sqrt((double)m) * epsln;
+                temp1 = sqrt((f64)m) * epsln;
                 for (p = 0; p < nr; p++) {
                     xsc = ONE / cblas_dnrm2(m, &U[p * ldu], 1);
                     if (xsc < (ONE - temp1) || xsc > (ONE + temp1)) {
@@ -1330,7 +1330,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                     cblas_dcopy(n, &work[n + p], n, &V[iwork[p]], ldv);
                 }
 
-                temp1 = sqrt((double)n) * epsln;
+                temp1 = sqrt((f64)n) * epsln;
                 for (p = 0; p < n; p++) {
                     xsc = ONE / cblas_dnrm2(n, &V[p * ldv], 1);
                     if (xsc < (ONE - temp1) || xsc > (ONE + temp1)) {
@@ -1349,7 +1349,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
 
                 dormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
 
-                temp1 = sqrt((double)m) * epsln;
+                temp1 = sqrt((f64)m) * epsln;
                 for (p = 0; p < n1; p++) {
                     xsc = ONE / cblas_dnrm2(m, &U[p * ldu], 1);
                     if (xsc < (ONE - temp1) || xsc > (ONE + temp1)) {
@@ -1420,7 +1420,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                    V, ldv, &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, &ierr);
 
             /* Permute rows and normalize */
-            temp1 = sqrt((double)n) * epsln;
+            temp1 = sqrt((f64)n) * epsln;
             for (q = 0; q < n; q++) {
                 for (p = 0; p < n; p++) {
                     work[2 * n + n * nr + nr + iwork[p]] = V[p + q * ldv];

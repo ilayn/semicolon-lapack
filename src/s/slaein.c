@@ -44,32 +44,32 @@ void slaein(
     const int rightv,
     const int noinit,
     const int n,
-    const float* const restrict H,
+    const f32* const restrict H,
     const int ldh,
-    const float wr,
-    const float wi,
-    float* const restrict vr,
-    float* const restrict vi,
-    float* const restrict B,
+    const f32 wr,
+    const f32 wi,
+    f32* const restrict vr,
+    f32* const restrict vi,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict work,
-    const float eps3,
-    const float smlnum,
-    const float bignum,
+    f32* const restrict work,
+    const f32 eps3,
+    const f32 smlnum,
+    const f32 bignum,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TENTH = 0.1f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TENTH = 0.1f;
 
     int i, i1, i2, i3, ierr, its, j;
-    float absbii, absbjj, ei, ej, growto, norm, nrmsml;
-    float rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
+    f32 absbii, absbjj, ei, ej, growto, norm, nrmsml;
+    f32 rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
 
     *info = 0;
 
     /* GROWTO is the threshold used in the acceptance test for an eigenvector */
-    rootn = sqrtf((float)n);
+    rootn = sqrtf((f32)n);
     growto = TENTH / rootn;
     nrmsml = ONE > eps3 * rootn ? ONE : eps3 * rootn;
     nrmsml *= smlnum;
@@ -94,7 +94,7 @@ void slaein(
         } else {
             /* Scale supplied initial vector */
             vnorm = cblas_snrm2(n, vr, 1);
-            float denom = vnorm > nrmsml ? vnorm : nrmsml;
+            f32 denom = vnorm > nrmsml ? vnorm : nrmsml;
             cblas_sscal(n, (eps3 * rootn) / denom, vr, 1);
         }
 
@@ -233,7 +233,7 @@ void slaein(
         } else {
             /* Scale supplied initial vector */
             norm = slapy2(cblas_snrm2(n, vr, 1), cblas_snrm2(n, vi, 1));
-            float denom = norm > nrmsml ? norm : nrmsml;
+            f32 denom = norm > nrmsml ? norm : nrmsml;
             rec = (eps3 * rootn) / denom;
             cblas_sscal(n, rec, vr, 1);
             cblas_sscal(n, rec, vi, 1);
@@ -407,7 +407,7 @@ void slaein(
 
                     /* Divide by diagonal element of B */
                     sladiv(xr, xi, B[i + i * ldb], B[i + 1 + i * ldb], &vr[i], &vi[i]);
-                    float absvr = fabsf(vr[i]) + fabsf(vi[i]);
+                    f32 absvr = fabsf(vr[i]) + fabsf(vi[i]);
                     if (absvr > vmax) {
                         vmax = absvr;
                     }
@@ -449,7 +449,7 @@ void slaein(
         /* Normalize eigenvector */
         vnorm = ZERO;
         for (i = 0; i < n; i++) {
-            float mag = fabsf(vr[i]) + fabsf(vi[i]);
+            f32 mag = fabsf(vr[i]) + fabsf(vi[i]);
             if (mag > vnorm) {
                 vnorm = mag;
             }

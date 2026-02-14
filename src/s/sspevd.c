@@ -50,17 +50,17 @@
  *                         - > 0: if info = i, the algorithm failed to converge.
  */
 void sspevd(const char* jobz, const char* uplo, const int n,
-            float* const restrict AP, float* const restrict W,
-            float* const restrict Z, const int ldz,
-            float* const restrict work, const int lwork,
+            f32* const restrict AP, f32* const restrict W,
+            f32* const restrict Z, const int ldz,
+            f32* const restrict work, const int lwork,
             int* const restrict iwork, const int liwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery, wantz;
     int iinfo, inde, indtau, indwrk, iscale, liwmin, llwork, lwmin;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lquery = (lwork == -1 || liwork == -1);
@@ -91,7 +91,7 @@ void sspevd(const char* jobz, const char* uplo, const int n,
             }
         }
         iwork[0] = liwmin;
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -9;
@@ -171,6 +171,6 @@ void sspevd(const char* jobz, const char* uplo, const int n,
         cblas_sscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

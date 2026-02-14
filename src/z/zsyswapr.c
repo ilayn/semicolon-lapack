@@ -42,13 +42,13 @@
 void zsyswapr(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int i1,
     const int i2)
 {
     int upper;
-    double complex tmp;
+    c128 tmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (upper) {

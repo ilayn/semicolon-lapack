@@ -34,18 +34,18 @@ void dsygvd(
     const char* jobz,
     const char* uplo,
     const int n,
-    double* restrict A,
+    f64* restrict A,
     const int lda,
-    double* restrict B,
+    f64* restrict B,
     const int ldb,
-    double* restrict W,
-    double* restrict work,
+    f64* restrict W,
+    f64* restrict work,
     const int lwork,
     int* restrict iwork,
     const int liwork,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
     int wantz, upper, lquery;
     int liwmin, lwmin, lopt, liopt;
 
@@ -82,7 +82,7 @@ void dsygvd(
     }
 
     if (*info == 0) {
-        work[0] = (double)lopt;
+        work[0] = (f64)lopt;
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -141,6 +141,6 @@ void dsygvd(
         }
     }
 
-    work[0] = (double)lopt;
+    work[0] = (f64)lopt;
     iwork[0] = liopt;
 }

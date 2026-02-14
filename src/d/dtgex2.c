@@ -45,38 +45,38 @@ void dtgex2(
     const int wantq,
     const int wantz,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
     const int j1,
     const int n1,
     const int n2,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWENTY = 20.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWENTY = 20.0;
 
     int weak, strong;
     int i, idum, linfo, m;
-    double bqra21, brqa21, ddum, dnorma, dnormb, dscale;
-    double dsum, eps, f, g, sa, sb, scale, smlnum;
-    double thresha, threshb;
+    f64 bqra21, brqa21, ddum, dnorma, dnormb, dscale;
+    f64 dsum, eps, f, g, sa, sb, scale, smlnum;
+    f64 thresha, threshb;
 
     int iwork[LDST + 2];
-    double ai[2], ar[2], be[2];
-    double ir[LDST * LDST], ircop[LDST * LDST];
-    double li[LDST * LDST], licop[LDST * LDST];
-    double s[LDST * LDST], scpy[LDST * LDST];
-    double t[LDST * LDST], tcpy[LDST * LDST];
-    double taul[LDST], taur[LDST];
+    f64 ai[2], ar[2], be[2];
+    f64 ir[LDST * LDST], ircop[LDST * LDST];
+    f64 li[LDST * LDST], licop[LDST * LDST];
+    f64 s[LDST * LDST], scpy[LDST * LDST];
+    f64 t[LDST * LDST], tcpy[LDST * LDST];
+    f64 taul[LDST], taur[LDST];
 
     *info = 0;
 
@@ -96,7 +96,7 @@ void dtgex2(
 
     if (lwork < max_work) {
         *info = -16;
-        work[0] = (double)max_work;
+        work[0] = (f64)max_work;
         return;
     }
 

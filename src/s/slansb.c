@@ -25,20 +25,20 @@
  *
  * @return The computed norm value.
  */
-float slansb(
+f32 slansb(
     const char* norm,
     const char* uplo,
     const int n,
     const int k,
-    const float* const restrict AB,
+    const f32* const restrict AB,
     const int ldab,
-    float* const restrict work)
+    f32* const restrict work)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int i, j, l;
-    float absa, scale, sum, value;
+    f32 absa, scale, sum, value;
 
     if (n == 0) {
         value = ZERO;

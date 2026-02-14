@@ -25,20 +25,20 @@
  *
  * @return The computed norm value.
  */
-float slantp(
+f32 slantp(
     const char* norm,
     const char* uplo,
     const char* diag,
     const int n,
-    const float* const restrict AP,
-    float* const restrict work)
+    const f32* const restrict AP,
+    f32* const restrict work)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int udiag;
     int i, j, k;
-    float scale, sum, value;
+    f32 scale, sum, value;
 
     if (n == 0) {
         value = ZERO;

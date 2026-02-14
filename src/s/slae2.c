@@ -19,11 +19,11 @@
  * @param[out] rt1  The eigenvalue of larger absolute value.
  * @param[out] rt2  The eigenvalue of smaller absolute value.
  */
-void slae2(const float a, const float b, const float c,
-           float* rt1, float* rt2)
+void slae2(const f32 a, const f32 b, const f32 c,
+           f32* rt1, f32* rt2)
 {
-    float sm, df, adf, tb, ab, rt;
-    float acmx, acmn;
+    f32 sm, df, adf, tb, ab, rt;
+    f32 acmx, acmn;
 
     /* Compute the eigenvalues */
     sm = a + c;

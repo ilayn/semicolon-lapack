@@ -1,6 +1,6 @@
 /**
  * @file dlamch.c
- * @brief DLAMCH determines double precision machine parameters.
+ * @brief DLAMCH determines f64 precision machine parameters.
  */
 
 #include <float.h>
@@ -8,7 +8,7 @@
 #include "semicolon_lapack_double.h"
 
 /**
- * DLAMCH determines double precision machine parameters.
+ * DLAMCH determines f64 precision machine parameters.
  *
  * @param[in] cmach  Specifies the value to be returned by dlamch:
  *                   = 'E' or 'e':  dlamch := eps (relative machine precision)
@@ -24,15 +24,15 @@
  *
  * @return The requested machine parameter.
  */
-double dlamch(const char* cmach)
+f64 dlamch(const char* cmach)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
-    double eps, sfmin, small, rmach;
+    f64 eps, sfmin, small, rmach;
 
     // eps = relative machine precision (assuming rounding)
-    // DBL_EPSILON is the difference between 1 and the smallest double > 1
+    // DBL_EPSILON is the difference between 1 and the smallest f64 > 1
     // For rounding arithmetic, divide by 2
     eps = DBL_EPSILON * 0.5;
 
@@ -51,25 +51,25 @@ double dlamch(const char* cmach)
         rmach = sfmin;
     } else if (cmach[0] == 'B' || cmach[0] == 'b') {
         // Base
-        rmach = (double)FLT_RADIX;
+        rmach = (f64)FLT_RADIX;
     } else if (cmach[0] == 'P' || cmach[0] == 'p') {
         // Precision = eps * base
-        rmach = eps * (double)FLT_RADIX;
+        rmach = eps * (f64)FLT_RADIX;
     } else if (cmach[0] == 'N' || cmach[0] == 'n') {
         // Number of (base) digits in the mantissa
-        rmach = (double)DBL_MANT_DIG;
+        rmach = (f64)DBL_MANT_DIG;
     } else if (cmach[0] == 'R' || cmach[0] == 'r') {
         // Rounding mode (1.0 for rounding)
         rmach = ONE;
     } else if (cmach[0] == 'M' || cmach[0] == 'm') {
         // Minimum exponent before underflow
-        rmach = (double)DBL_MIN_EXP;
+        rmach = (f64)DBL_MIN_EXP;
     } else if (cmach[0] == 'U' || cmach[0] == 'u') {
         // Underflow threshold
         rmach = DBL_MIN;
     } else if (cmach[0] == 'L' || cmach[0] == 'l') {
         // Largest exponent before overflow
-        rmach = (double)DBL_MAX_EXP;
+        rmach = (f64)DBL_MAX_EXP;
     } else if (cmach[0] == 'O' || cmach[0] == 'o') {
         // Overflow threshold
         rmach = DBL_MAX;

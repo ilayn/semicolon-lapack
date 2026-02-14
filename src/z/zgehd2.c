@@ -41,8 +41,8 @@
  *                           exit in A(i+2:ihi,i), and tau in tau(i).
  */
 void zgehd2(const int n, const int ilo, const int ihi,
-            double complex* A, const int lda, double complex* tau,
-            double complex* work, int* info)
+            c128* A, const int lda, c128* tau,
+            c128* work, int* info)
 {
     int i;
     int max_n_1 = (n > 1) ? n : 1;
@@ -82,7 +82,7 @@ void zgehd2(const int n, const int ilo, const int ihi,
                 &A[(i + 1) * lda], lda, work);
 
         /* Apply H(i)**H to A(i+1:ihi, i+1:n-1) from the left */
-        double complex conjtau = conj(tau[i]);
+        c128 conjtau = conj(tau[i]);
         zlarf1f("Left", len, n - i - 1, &A[(i + 1) + i * lda], 1, conjtau,
                 &A[(i + 1) + (i + 1) * lda], lda, work);
     }

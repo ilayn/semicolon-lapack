@@ -43,19 +43,19 @@
  *
  * @return The norm value.
  */
-float slansf(
+f32 slansf(
     const char* norm,
     const char* transr,
     const char* uplo,
     const int n,
-    const float* const restrict A,
-    float* const restrict work)
+    const f32* const restrict A,
+    f32* const restrict work)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int i, j, ifm, ilu, noe, n1, k, l, lda;
-    float scale, s, value, aa, temp;
+    f32 scale, s, value, aa, temp;
 
     if (n == 0) {
         return ZERO;

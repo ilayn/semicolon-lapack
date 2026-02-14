@@ -29,19 +29,19 @@
 void zlaqsp(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    const double* const restrict S,
-    const double scond,
-    const double amax,
+    c128* const restrict AP,
+    const f64* const restrict S,
+    const f64 scond,
+    const f64 amax,
     char* equed)
 {
     // zlaqsp.f lines 143-144: Parameters
-    const double ONE = 1.0;
-    const double THRESH = 0.1;  // zlaqsp.f line 144: THRESH = 0.1D+0
+    const f64 ONE = 1.0;
+    const f64 THRESH = 0.1;  // zlaqsp.f line 144: THRESH = 0.1D+0
 
     // zlaqsp.f lines 147-148: Local Scalars
     int i, j, jc;
-    double cj, large, small;
+    f64 cj, large, small;
 
     // zlaqsp.f lines 159-162: Quick return if possible
     if (n <= 0) {

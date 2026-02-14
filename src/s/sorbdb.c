@@ -95,28 +95,28 @@ void sorbdb(
     const int m,
     const int p,
     const int q,
-    float* const restrict X11,
+    f32* const restrict X11,
     const int ldx11,
-    float* const restrict X12,
+    f32* const restrict X12,
     const int ldx12,
-    float* const restrict X21,
+    f32* const restrict X21,
     const int ldx21,
-    float* const restrict X22,
+    f32* const restrict X22,
     const int ldx22,
-    float* restrict theta,
-    float* restrict phi,
-    float* restrict taup1,
-    float* restrict taup2,
-    float* restrict tauq1,
-    float* restrict tauq2,
-    float* restrict work,
+    f32* restrict theta,
+    f32* restrict phi,
+    f32* restrict taup1,
+    f32* restrict taup2,
+    f32* restrict tauq1,
+    f32* restrict tauq2,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float one = 1.0f;
+    const f32 one = 1.0f;
     int colmajor, lquery;
     int i, lworkmin, lworkopt;
-    float z1, z2, z3, z4;
+    f32 z1, z2, z3, z4;
 
     *info = 0;
     colmajor = !(trans[0] == 'T' || trans[0] == 't');
@@ -160,7 +160,7 @@ void sorbdb(
     if (*info == 0) {
         lworkopt = m - q;
         lworkmin = m - q;
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         if (lwork < lworkmin && !lquery) {
             *info = -21;
         }

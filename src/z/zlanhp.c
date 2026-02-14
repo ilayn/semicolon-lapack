@@ -44,18 +44,18 @@
  *
  * @return The computed norm value.
  */
-double zlanhp(
+f64 zlanhp(
     const char* norm,
     const char* uplo,
     const int n,
-    const double complex* const restrict AP,
-    double* const restrict work)
+    const c128* const restrict AP,
+    f64* const restrict work)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j, k;
-    double absa, scale, sum, value;
+    f64 absa, scale, sum, value;
 
     if (n == 0) {
         value = ZERO;

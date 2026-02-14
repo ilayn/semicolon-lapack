@@ -89,21 +89,21 @@
  *                     the Schur form no longer satisfy select=true.
  */
 void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
-            const char* sense, const int n, double complex* A, const int lda,
-            int* sdim, double complex* W,
-            double complex* VS, const int ldvs,
-            double* rconde, double* rcondv,
-            double complex* work, const int lwork,
-            double* rwork, int* bwork, int* info)
+            const char* sense, const int n, c128* A, const int lda,
+            int* sdim, c128* W,
+            c128* VS, const int ldvs,
+            f64* rconde, f64* rcondv,
+            c128* work, const int lwork,
+            f64* rwork, int* bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
     int hswork, i, ibal, icond, ierr, ieval;
     int ihi, ilo, itau, iwrk, lwrk, maxwrk, minwrk;
-    double anrm, bignum, cscale = ONE, eps, smlnum;
-    double dum[1];
+    f64 anrm, bignum, cscale = ONE, eps, smlnum;
+    f64 dum[1];
     int nb_gehrd, nb_unghr;
 
     *info = 0;
@@ -159,7 +159,7 @@ void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
             if (!wantsn)
                 lwrk = lwrk > ((n * n) / 2) ? lwrk : ((n * n) / 2);
         }
-        work[0] = CMPLX((double)lwrk, 0.0);
+        work[0] = CMPLX((f64)lwrk, 0.0);
 
         if (lwork < minwrk && !lquery) {
             *info = -15;
@@ -266,5 +266,5 @@ void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
         }
     }
 
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
 }

@@ -99,28 +99,28 @@ void zgghd3(
     const int n,
     const int ilo,
     const int ihi,
-    double complex* A,
+    c128* A,
     const int lda,
-    double complex* B,
+    c128* B,
     const int ldb,
-    double complex* Q,
+    c128* Q,
     const int ldq,
-    double complex* Z,
+    c128* Z,
     const int ldz,
-    double complex* work,
+    c128* work,
     const int lwork,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int blk22, initq, initz, lquery, wantq, wantz;
     char compq2, compz2;
     int cola, i, ierr, j, j0, jcol, jj, jrow, k,
         kacc22, len, lwkopt, n2nb, nb, nblst, nbmin,
         nh, nnb, nx, ppw, ppwo, pw, top, topq;
-    double c;
-    double complex c1, c2, ctemp, s, s1, s2, temp, temp1, temp2, temp3;
+    f64 c;
+    c128 c1, c2, ctemp, s, s1, s2, temp, temp1, temp2, temp3;
 
     *info = 0;
     nb = lapack_get_nb("GGHD3");
@@ -130,7 +130,7 @@ void zgghd3(
     } else {
         lwkopt = 6 * n * nb;
     }
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
     initq = (compq[0] == 'I' || compq[0] == 'i');
     wantq = initq || (compq[0] == 'V' || compq[0] == 'v');
     initz = (compz[0] == 'I' || compz[0] == 'i');
@@ -577,5 +577,5 @@ void zgghd3(
         zgghrd(cq2, cz2, n, jcol + 1, ihi, A, lda, B, ldb, Q, ldq, Z, ldz, &ierr);
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

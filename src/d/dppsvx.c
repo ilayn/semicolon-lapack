@@ -59,29 +59,29 @@ void dppsvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    double* const restrict AP,
-    double* const restrict AFP,
+    f64* const restrict AP,
+    f64* const restrict AFP,
     char* equed,
-    double* const restrict S,
-    double* const restrict B,
+    f64* const restrict S,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // dppsvx.f lines 330-331: Parameters
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     // dppsvx.f lines 334-336: Local Scalars
     int equil, nofact, rcequ;
     int i, infequ, j;
-    double amax, anorm, bignum, scond, smax, smin, smlnum;
+    f64 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     // dppsvx.f lines 353-363: Initialize
     *info = 0;

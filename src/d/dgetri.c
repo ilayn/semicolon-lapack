@@ -36,16 +36,16 @@
  */
 void dgetri(
     const int n,
-    double * const restrict A,
+    f64 * const restrict A,
     const int lda,
     const int * const restrict ipiv,
-    double * const restrict work,
+    f64 * const restrict work,
     const int lwork,
     int *info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
 
     int lquery;
     int i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
@@ -54,7 +54,7 @@ void dgetri(
     *info = 0;
     nb = lapack_get_nb("GETRI");
     lwkopt = (n > 1) ? n * nb : 1;
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 
     lquery = (lwork == -1);
     if (n < 0) {
@@ -148,5 +148,5 @@ void dgetri(
         }
     }
 
-    work[0] = (double)iws;
+    work[0] = (f64)iws;
 }

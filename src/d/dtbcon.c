@@ -39,19 +39,19 @@ void dtbcon(
     const char* diag,
     const int n,
     const int kd,
-    const double* const restrict AB,
+    const f64* const restrict AB,
     const int ldab,
-    double* rcond,
-    double* const restrict work,
+    f64* rcond,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int nounit, onenrm, upper;
     int ix, kase, kase1;
-    double ainvnm, anorm, scale, smlnum, xnorm;
+    f64 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
     char normin;
 

@@ -60,27 +60,27 @@
  */
 void ztrsyl3(const char* trana, const char* tranb, const int isgn,
              const int m, const int n,
-             const double complex* A, const int lda,
-             const double complex* B, const int ldb,
-             double complex* C, const int ldc,
-             double* scale,
-             double* swork, const int ldswork,
+             const c128* A, const int lda,
+             const c128* B, const int ldb,
+             c128* C, const int ldc,
+             f64* scale,
+             f64* swork, const int ldswork,
              int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int notrna, notrnb, lquery;
     int awrk, bwrk, i, i1, i2, iinfo, j, j1, j2, jj;
     int k, k1, k2, l, l1, l2, ll, nba, nb, nbb;
-    double anrm, bignum, bnrm, cnrm, scal, scaloc;
-    double scamin, sgn, xnrm, buf, smlnum;
-    double complex csgn;
+    f64 anrm, bignum, bnrm, cnrm, scal, scaloc;
+    f64 scamin, sgn, xnrm, buf, smlnum;
+    c128 csgn;
 
     int max_mn = (m > n) ? m : n;
     if (max_mn < 1) max_mn = 1;
-    double wnrm[max_mn];
+    f64 wnrm[max_mn];
 
     /* Decode and Test input parameters */
     notrna = (trana[0] == 'N' || trana[0] == 'n');
@@ -206,7 +206,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
         }
     }
 
-    sgn = (double)isgn;
+    sgn = (f64)isgn;
     csgn = CMPLX(sgn, ZERO);
 
     if (notrna && notrnb) {
@@ -248,7 +248,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -275,7 +275,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -303,7 +303,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[i + l * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_cone = CMPLX(-1.0, 0.0);
+                        const c128 neg_cone = CMPLX(-1.0, 0.0);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     i2 - i1, l2 - l1, k2 - k1, &neg_cone,
                                     &A[i1 + k1 * lda], lda, &C[k1 + l1 * ldc], ldc,
@@ -331,7 +331,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -359,7 +359,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[k + j * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_csgn = -csgn;
+                        const c128 neg_csgn = -csgn;
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     k2 - k1, j2 - j1, l2 - l1, &neg_csgn,
                                     &C[k1 + l1 * ldc], ldc, &B[l1 + j1 * ldb], ldb,
@@ -408,7 +408,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -435,7 +435,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -463,7 +463,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[i + l * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_cone = CMPLX(-1.0, 0.0);
+                        const c128 neg_cone = CMPLX(-1.0, 0.0);
                         cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
                                     i2 - i1, l2 - l1, k2 - k1, &neg_cone,
                                     &A[k1 + i1 * lda], lda, &C[k1 + l1 * ldc], ldc,
@@ -491,7 +491,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -519,7 +519,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[k + j * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_csgn = -csgn;
+                        const c128 neg_csgn = -csgn;
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     k2 - k1, j2 - j1, l2 - l1, &neg_csgn,
                                     &C[k1 + l1 * ldc], ldc, &B[l1 + j1 * ldb], ldb,
@@ -568,7 +568,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -595,7 +595,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -623,7 +623,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[i + l * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_cone = CMPLX(-1.0, 0.0);
+                        const c128 neg_cone = CMPLX(-1.0, 0.0);
                         cblas_zgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
                                     i2 - i1, l2 - l1, k2 - k1, &neg_cone,
                                     &A[k1 + i1 * lda], lda, &C[k1 + l1 * ldc], ldc,
@@ -651,7 +651,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -679,7 +679,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[k + j * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_csgn = -csgn;
+                        const c128 neg_csgn = -csgn;
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
                                     k2 - k1, j2 - j1, l2 - l1, &neg_csgn,
                                     &C[k1 + l1 * ldc], ldc, &B[j1 + l1 * ldb], ldb,
@@ -728,7 +728,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -755,7 +755,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -783,7 +783,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[i + l * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_cone = CMPLX(-1.0, 0.0);
+                        const c128 neg_cone = CMPLX(-1.0, 0.0);
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     i2 - i1, l2 - l1, k2 - k1, &neg_cone,
                                     &A[i1 + k1 * lda], lda, &C[k1 + l1 * ldc], ldc,
@@ -811,7 +811,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -839,7 +839,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
                     swork[k + j * ldswork] = scamin * scaloc;
 
                     {
-                        const double complex neg_csgn = -csgn;
+                        const c128 neg_csgn = -csgn;
                         cblas_zgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
                                     k2 - k1, j2 - j1, l2 - l1, &neg_csgn,
                                     &C[k1 + l1 * ldc], ldc, &B[j1 + l1 * ldb], ldb,
@@ -862,8 +862,8 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
     }
     if (*scale == ZERO) {
 
-        swork[0] = (double)((nba > nbb) ? nba : nbb);
-        swork[1] = (double)(2 * nbb + nba);
+        swork[0] = (f64)((nba > nbb) ? nba : nbb);
+        swork[1] = (f64)(2 * nbb + nba);
         return;
     }
 
@@ -895,12 +895,12 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
 
         scal = fabs(creal(C[0]));
         {
-            double tmp = fabs(cimag(C[0]));
+            f64 tmp = fabs(cimag(C[0]));
             if (tmp > scal) scal = tmp;
         }
         for (k = 0; k < m; k++) {
             for (l = 0; l < n; l++) {
-                double tmp = fabs(creal(C[k + l * ldc]));
+                f64 tmp = fabs(creal(C[k + l * ldc]));
                 if (tmp > scal) scal = tmp;
                 tmp = fabs(cimag(C[k + l * ldc]));
                 if (tmp > scal) scal = tmp;
@@ -916,6 +916,6 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
 
     /* Restore workspace dimensions */
 
-    swork[0] = (double)((nba > nbb) ? nba : nbb);
-    swork[1] = (double)(2 * nbb + nba);
+    swork[0] = (f64)((nba > nbb) ? nba : nbb);
+    swork[1] = (f64)(2 * nbb + nba);
 }

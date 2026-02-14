@@ -46,20 +46,20 @@
  *                         - = 0: successful exit. < 0: illegal argument.
  */
 void slasd2(const int nl, const int nr, const int sqre, int* k,
-            float* const restrict D, float* const restrict Z,
-            const float alpha, const float beta,
-            float* const restrict U, const int ldu,
-            float* const restrict VT, const int ldvt,
-            float* const restrict DSIGMA,
-            float* const restrict U2, const int ldu2,
-            float* const restrict VT2, const int ldvt2,
+            f32* const restrict D, f32* const restrict Z,
+            const f32 alpha, const f32 beta,
+            f32* const restrict U, const int ldu,
+            f32* const restrict VT, const int ldvt,
+            f32* const restrict DSIGMA,
+            f32* const restrict U2, const int ldu2,
+            f32* const restrict VT2, const int ldvt2,
             int* const restrict IDXP, int* const restrict IDX,
             int* const restrict IDXC, int* const restrict IDXQ,
             int* const restrict COLTYP, int* info)
 {
     int ctot[4], psm[4];
     int ct, i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n;
-    float c, eps, hlftol, s, tau, tol, z1;
+    f32 c, eps, hlftol, s, tau, tol, z1;
 
     *info = 0;
 

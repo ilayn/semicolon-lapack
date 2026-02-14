@@ -40,17 +40,17 @@
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void slasd3(const int nl, const int nr, const int sqre, const int k,
-            float* const restrict D, float* const restrict Q, const int ldq,
-            const float* const restrict DSIGMA,
-            float* const restrict U, const int ldu,
-            const float* const restrict U2, const int ldu2,
-            float* const restrict VT, const int ldvt,
-            float* const restrict VT2, const int ldvt2,
+            f32* const restrict D, f32* const restrict Q, const int ldq,
+            const f32* const restrict DSIGMA,
+            f32* const restrict U, const int ldu,
+            const f32* const restrict U2, const int ldu2,
+            f32* const restrict VT, const int ldvt,
+            f32* const restrict VT2, const int ldvt2,
             const int* const restrict IDXC, const int* const restrict CTOT,
-            float* const restrict Z, int* info)
+            f32* const restrict Z, int* info)
 {
     int ctemp, i, j, jc, ktemp, m, n;
-    float rho, temp;
+    f32 rho, temp;
 
     *info = 0;
 

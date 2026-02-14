@@ -32,19 +32,19 @@
 void zspcon(
     const char* uplo,
     const int n,
-    const double complex* const restrict AP,
+    const c128* const restrict AP,
     const int* const restrict ipiv,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper;
     int i, ip, kase;
-    double ainvnm;
+    f64 ainvnm;
     int isave[3];
     int info_local;
 

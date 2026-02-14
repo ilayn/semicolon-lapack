@@ -34,15 +34,15 @@
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasd1(const int nl, const int nr, const int sqre,
-            double* const restrict D, double* alpha, double* beta,
-            double* const restrict U, const int ldu,
-            double* const restrict VT, const int ldvt,
+            f64* const restrict D, f64* alpha, f64* beta,
+            f64* const restrict U, const int ldu,
+            f64* const restrict VT, const int ldvt,
             int* const restrict IDXQ, int* const restrict IWORK,
-            double* const restrict work, int* info)
+            f64* const restrict work, int* info)
 {
     int coltyp, i, idx, idxc, idxp, iq, isigma, iu2, ivt2, iz;
     int k, ldq, ldu2, ldvt2, m, n, n1, n2;
-    double orgnrm;
+    f64 orgnrm;
 
     *info = 0;
 

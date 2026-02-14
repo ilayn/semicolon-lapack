@@ -71,18 +71,18 @@
  *                           info/(n+1) through mod(info,n+1).
  */
 void dstedc(const char* compz, const int n,
-            double* D, double* E,
-            double* Z, const int ldz,
-            double* work, const int lwork,
+            f64* D, f64* E,
+            f64* Z, const int ldz,
+            f64* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int lquery;
     int i, icompz, ii, j, k, lgn, liwmin = 1, lwmin = 1, m, start, finish, storez, strtrw;
-    double eps, orgnrm, p, tiny;
+    f64 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'DSTEDC', ...) - hardcoded per project convention */
     const int SMLSIZ = 25;
@@ -123,7 +123,7 @@ void dstedc(const char* compz, const int n,
             liwmin = 1;
             lwmin = 2 * (n - 1);
         } else {
-            lgn = (int)(log((double)n) / log(TWO));
+            lgn = (int)(log((f64)n) / log(TWO));
             if ((1 << lgn) < n)
                 lgn = lgn + 1;
             if ((1 << lgn) < n)
@@ -136,7 +136,7 @@ void dstedc(const char* compz, const int n,
                 liwmin = 3 + 5*n;
             }
         }
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -346,7 +346,7 @@ void dstedc(const char* compz, const int n,
     }
 
 L50:
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 
     return;

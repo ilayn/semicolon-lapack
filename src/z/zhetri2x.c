@@ -37,23 +37,23 @@
 void zhetri2x(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int nb,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int upper;
     int i, iinfo, ip, k, cut, nnb;
     int count;
     int j, u11, invd;
-    double complex ak, akkp1, akp1, d, t;
-    double complex u01_i_j, u01_ip1_j;
-    double complex u11_i_j, u11_ip1_j;
+    c128 ak, akkp1, akp1, d, t;
+    c128 u01_i_j, u01_ip1_j;
+    c128 u11_i_j, u11_ip1_j;
     const int ldw = n + nb + 1;
 
     *info = 0;

@@ -110,19 +110,19 @@ void dggglm(
     const int n,
     const int m,
     const int p,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict D,
-    double* restrict X,
-    double* restrict Y,
-    double* restrict work,
+    f64* restrict D,
+    f64* restrict X,
+    f64* restrict Y,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
     int lquery;
@@ -161,7 +161,7 @@ void dggglm(
             max_val = (n > p) ? n : p;
             lwkopt = m + np + max_val * nb;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -229,5 +229,5 @@ void dggglm(
     dormrq("L", "T", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (double)(m + np + ((lopt > (int)work[m + np]) ? lopt : (int)work[m + np]));
+    work[0] = (f64)(m + np + ((lopt > (int)work[m + np]) ? lopt : (int)work[m + np]));
 }

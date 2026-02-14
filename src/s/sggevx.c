@@ -67,28 +67,28 @@
  */
 void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
             const char* sense, const int n,
-            float* const restrict A, const int lda,
-            float* const restrict B, const int ldb,
-            float* const restrict alphar, float* const restrict alphai,
-            float* const restrict beta,
-            float* const restrict VL, const int ldvl,
-            float* const restrict VR, const int ldvr,
+            f32* const restrict A, const int lda,
+            f32* const restrict B, const int ldb,
+            f32* const restrict alphar, f32* const restrict alphai,
+            f32* const restrict beta,
+            f32* const restrict VL, const int ldvl,
+            f32* const restrict VR, const int ldvr,
             int* ilo, int* ihi,
-            float* const restrict lscale, float* const restrict rscale,
-            float* abnrm, float* bbnrm,
-            float* const restrict rconde, float* const restrict rcondv,
-            float* const restrict work, const int lwork,
+            f32* const restrict lscale, f32* const restrict rscale,
+            f32* abnrm, f32* bbnrm,
+            f32* const restrict rconde, f32* const restrict rcondv,
+            f32* const restrict work, const int lwork,
             int* const restrict iwork, int* const restrict bwork,
             int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int ilascl, ilbscl, ilv, ilvl, ilvr, lquery, noscl;
     int pair, wantsb, wantse, wantsn, wantsv;
     int i, icols, ierr, ijobvl, ijobvr, in, irows;
     int itau, iwrk, iwrk1, j, jc, jr, m, maxwrk, minwrk, mm;
-    float anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
+    f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
     int ldumma[1];
     int nb_geqrf, nb_ormqr, nb_orgqr;
 
@@ -174,7 +174,7 @@ void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
                 maxwrk = maxwrk > (n + n * nb_orgqr) ? maxwrk : (n + n * nb_orgqr);
             }
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -26;
@@ -437,6 +437,6 @@ L130:
         slascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
     }
 
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
     return;
 }

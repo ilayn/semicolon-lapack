@@ -47,14 +47,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
-                           const int n, float* T, const int ldt,
-                           float* VL, const int ldvl,
-                           float* VR, const int ldvr,
+                           const int n, f32* T, const int ldt,
+                           f32* VL, const int ldvl,
+                           f32* VR, const int ldvr,
                            const int mm, int* m,
-                           float* work, const int lwork, int* info)
+                           f32* work, const int lwork, int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     /* Local variables */
     int bothv, rightv, leftv;
@@ -63,9 +63,9 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
     int i, j, k, ki, ki2, is, ip, ii;
     int j1, j2, jnxt, ierr;
     int iv, nb, maxwrk;
-    float beta, bignum, emax, rec, remax, scale;
-    float smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
-    float x[4];  /* 2x2 matrix, column-major */
+    f32 beta, bignum, emax, rec, remax, scale;
+    f32 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
+    f32 x[4];  /* 2x2 matrix, column-major */
     int iscomplex[NBMAX];
     int pair;
 
@@ -84,7 +84,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
     nb = 64;
     maxwrk = n + 2 * n * nb;
     if (maxwrk < 1) maxwrk = 1;
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
     lquery = (lwork == -1);
 
     if (!rightv && !leftv) {
@@ -162,7 +162,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
     unfl = slamch("S");
     /* ovfl = one / unfl; -- not used in this routine */
     ulp = slamch("P");
-    smlnum = unfl * ((float)n / ulp);
+    smlnum = unfl * ((f32)n / ulp);
     bignum = (one - ulp) / smlnum;
 
     /* Compute 1-norm of each column of strictly upper triangular
@@ -456,7 +456,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = 0; k < ki; k++) {
-                        float val = fabsf(VR[k + (is - 1) * ldvr]) + fabsf(VR[k + is * ldvr]);
+                        f32 val = fabsf(VR[k + (is - 1) * ldvr]) + fabsf(VR[k + is * ldvr]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -484,7 +484,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = 0; k < n; k++) {
-                        float val = fabsf(VR[k + (ki - 1) * ldvr]) + fabsf(VR[k + ki * ldvr]);
+                        f32 val = fabsf(VR[k + (ki - 1) * ldvr]) + fabsf(VR[k + ki * ldvr]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -537,7 +537,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
                             /* First eigenvector of conjugate pair */
                             emax = zero;
                             for (ii = 0; ii < n; ii++) {
-                                float val = fabsf(work[ii + (nb + k) * n]) +
+                                f32 val = fabsf(work[ii + (nb + k) * n]) +
                                              fabsf(work[ii + (nb + k + 1) * n]);
                                 if (val > emax) emax = val;
                             }
@@ -700,7 +700,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
                         work[j + iv * n] = x[0];
                         work[(j + 1) + iv * n] = x[1];
 
-                        float tmp = fabsf(work[j + iv * n]);
+                        f32 tmp = fabsf(work[j + iv * n]);
                         if (fabsf(work[(j + 1) + iv * n]) > tmp)
                             tmp = fabsf(work[(j + 1) + iv * n]);
                         if (tmp > vmax) vmax = tmp;
@@ -881,7 +881,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = ki; k < n; k++) {
-                        float val = fabsf(VL[k + is * ldvl]) + fabsf(VL[k + (is + 1) * ldvl]);
+                        f32 val = fabsf(VL[k + is * ldvl]) + fabsf(VL[k + (is + 1) * ldvl]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -911,7 +911,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
 
                     emax = zero;
                     for (k = 0; k < n; k++) {
-                        float val = fabsf(VL[k + ki * ldvl]) + fabsf(VL[k + (ki + 1) * ldvl]);
+                        f32 val = fabsf(VL[k + ki * ldvl]) + fabsf(VL[k + (ki + 1) * ldvl]);
                         if (val > emax) emax = val;
                     }
                     remax = one / emax;
@@ -964,7 +964,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, int* select,
                             /* First eigenvector of conjugate pair */
                             emax = zero;
                             for (ii = 0; ii < n; ii++) {
-                                float val = fabsf(work[ii + (nb + k) * n]) +
+                                f32 val = fabsf(work[ii + (nb + k) * n]) +
                                              fabsf(work[ii + (nb + k + 1) * n]);
                                 if (val > emax) emax = val;
                             }

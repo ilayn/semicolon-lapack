@@ -47,16 +47,16 @@
 void dgtsv(
     const int n,
     const int nrhs,
-    double * const restrict DL,
-    double * const restrict D,
-    double * const restrict DU,
-    double * const restrict B,
+    f64 * const restrict DL,
+    f64 * const restrict D,
+    f64 * const restrict DU,
+    f64 * const restrict B,
     const int ldb,
     int *info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     int i, j;
-    double fact, temp;
+    f64 fact, temp;
     int ldb_min;
 
     *info = 0;

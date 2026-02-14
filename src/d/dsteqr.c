@@ -53,14 +53,14 @@
  *                           converged to zero.
  */
 void dsteqr(const char* compz, const int n,
-            double* const restrict D, double* const restrict E,
-            double* const restrict Z, const int ldz,
-            double* const restrict work, int* info)
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict Z, const int ldz,
+            f64* const restrict work, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
     const int MAXIT = 30;
 
     /* Test the input parameters. */
@@ -100,12 +100,12 @@ void dsteqr(const char* compz, const int n,
     }
 
     /* Determine the unit roundoff and over/underflow thresholds. */
-    double eps = dlamch("E");
-    double eps2 = eps * eps;
-    double safmin = dlamch("S");
-    double safmax = ONE / safmin;
-    double ssfmax = sqrt(safmax) / THREE;
-    double ssfmin = sqrt(safmin) / eps2;
+    f64 eps = dlamch("E");
+    f64 eps2 = eps * eps;
+    f64 safmin = dlamch("S");
+    f64 safmax = ONE / safmin;
+    f64 ssfmax = sqrt(safmax) / THREE;
+    f64 ssfmin = sqrt(safmin) / eps2;
 
     /* Compute the eigenvalues and eigenvectors of the tridiagonal matrix. */
     if (icompz == 2)
@@ -127,7 +127,7 @@ void dsteqr(const char* compz, const int n,
         int m;
         if (l1 <= nm1 - 1) {
             for (m = l1; m <= nm1 - 1; m++) {
-                double tst = fabs(E[m]);
+                f64 tst = fabs(E[m]);
                 if (tst == ZERO)
                     break;
                 if (tst <= (sqrt(fabs(D[m])) * sqrt(fabs(D[m + 1]))) * eps) {
@@ -151,7 +151,7 @@ void dsteqr(const char* compz, const int n,
 
         /* Scale submatrix in rows and columns l to lend */
         int subsize = lend - l + 1;
-        double anorm = dlanst("M", subsize, &D[l], &E[l]);
+        f64 anorm = dlanst("M", subsize, &D[l], &E[l]);
         int iscale = 0;
         if (anorm == ZERO)
             continue;
@@ -182,7 +182,7 @@ void dsteqr(const char* compz, const int n,
                 if (l != lend) {
                     int lendm1 = lend - 1;
                     for (mm = l; mm <= lendm1; mm++) {
-                        double tst = fabs(E[mm]) * fabs(E[mm]);
+                        f64 tst = fabs(E[mm]) * fabs(E[mm]);
                         if (tst <= (eps2 * fabs(D[mm])) * fabs(D[mm + 1]) + safmin)
                             break;
                     }
@@ -194,7 +194,7 @@ void dsteqr(const char* compz, const int n,
 
                 if (mm < lend)
                     E[mm] = ZERO;
-                double p = D[l];
+                f64 p = D[l];
                 if (mm == l) {
                     /* Eigenvalue found. */
                     D[l] = p;
@@ -207,9 +207,9 @@ void dsteqr(const char* compz, const int n,
                 /* If remaining matrix is 2-by-2, use DLAE2 or DLAEV2
                  * to compute its eigensystem. */
                 if (mm == l + 1) {
-                    double rt1, rt2;
+                    f64 rt1, rt2;
                     if (icompz > 0) {
-                        double c, s;
+                        f64 c, s;
                         dlaev2(D[l], E[l], D[l + 1], &rt1, &rt2, &c, &s);
                         work[l] = c;
                         work[n - 1 + l] = s;
@@ -232,19 +232,19 @@ void dsteqr(const char* compz, const int n,
                 jtot = jtot + 1;
 
                 /* Form shift. */
-                double g = (D[l + 1] - p) / (TWO * E[l]);
-                double r = dlapy2(g, ONE);
+                f64 g = (D[l + 1] - p) / (TWO * E[l]);
+                f64 r = dlapy2(g, ONE);
                 g = D[mm] - p + (E[l] / (g + copysign(r, g)));
 
-                double s = ONE;
-                double c = ONE;
+                f64 s = ONE;
+                f64 c = ONE;
                 p = ZERO;
 
                 /* Inner loop */
                 int mm1 = mm - 1;
                 for (int i = mm1; i >= l; i--) {
-                    double f = s * E[i];
-                    double b = c * E[i];
+                    f64 f = s * E[i];
+                    f64 b = c * E[i];
                     dlartg(g, f, &c, &s, &r);
                     if (i != mm - 1)
                         E[i + 1] = r;
@@ -280,7 +280,7 @@ void dsteqr(const char* compz, const int n,
                 if (l != lend) {
                     int lendp1 = lend + 1;
                     for (mm = l; mm >= lendp1; mm--) {
-                        double tst = fabs(E[mm - 1]) * fabs(E[mm - 1]);
+                        f64 tst = fabs(E[mm - 1]) * fabs(E[mm - 1]);
                         if (tst <= (eps2 * fabs(D[mm])) * fabs(D[mm - 1]) + safmin)
                             break;
                     }
@@ -292,7 +292,7 @@ void dsteqr(const char* compz, const int n,
 
                 if (mm > lend)
                     E[mm - 1] = ZERO;
-                double p = D[l];
+                f64 p = D[l];
                 if (mm == l) {
                     /* Eigenvalue found. */
                     D[l] = p;
@@ -305,9 +305,9 @@ void dsteqr(const char* compz, const int n,
                 /* If remaining matrix is 2-by-2, use DLAE2 or DLAEV2
                  * to compute its eigensystem. */
                 if (mm == l - 1) {
-                    double rt1, rt2;
+                    f64 rt1, rt2;
                     if (icompz > 0) {
-                        double c, s;
+                        f64 c, s;
                         dlaev2(D[l - 1], E[l - 1], D[l], &rt1, &rt2, &c, &s);
                         work[mm] = c;
                         work[n - 1 + mm] = s;
@@ -330,19 +330,19 @@ void dsteqr(const char* compz, const int n,
                 jtot = jtot + 1;
 
                 /* Form shift. */
-                double g = (D[l - 1] - p) / (TWO * E[l - 1]);
-                double r = dlapy2(g, ONE);
+                f64 g = (D[l - 1] - p) / (TWO * E[l - 1]);
+                f64 r = dlapy2(g, ONE);
                 g = D[mm] - p + (E[l - 1] / (g + copysign(r, g)));
 
-                double s = ONE;
-                double c = ONE;
+                f64 s = ONE;
+                f64 c = ONE;
                 p = ZERO;
 
                 /* Inner loop */
                 int lm1 = l - 1;
                 for (int i = mm; i <= lm1; i++) {
-                    double f = s * E[i];
-                    double b = c * E[i];
+                    f64 f = s * E[i];
+                    f64 b = c * E[i];
                     dlartg(g, f, &c, &s, &r);
                     if (i != mm)
                         E[i - 1] = r;
@@ -408,7 +408,7 @@ void dsteqr(const char* compz, const int n,
         for (int ii = 1; ii < n; ii++) {
             int i = ii - 1;
             int k = i;
-            double p = D[i];
+            f64 p = D[i];
             for (int j = ii; j < n; j++) {
                 if (D[j] < p) {
                     k = j;

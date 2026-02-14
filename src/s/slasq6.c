@@ -23,12 +23,12 @@
  * @param[out]    dnm1   d(N0-1).
  * @param[out]    dnm2   d(N0-2).
  */
-void slasq6(const int i0, const int n0, float* const restrict Z,
-            const int pp, float* dmin, float* dmin1, float* dmin2,
-            float* dn, float* dnm1, float* dnm2)
+void slasq6(const int i0, const int n0, f32* const restrict Z,
+            const int pp, f32* dmin, f32* dmin1, f32* dmin2,
+            f32* dn, f32* dnm1, f32* dnm2)
 {
     int j4, j4p2;
-    float d, emin, safmin, temp;
+    f32 d, emin, safmin, temp;
 
     if ((n0 - i0 - 1) <= 0) {
         return;

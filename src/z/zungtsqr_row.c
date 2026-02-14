@@ -71,22 +71,22 @@ void zungtsqr_row(
     const int n,
     const int mb,
     const int nb,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    const double complex* const restrict T,
+    const c128* const restrict T,
     const int ldt,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int lquery;
     int nblocal, mb2, itmp, ib_bottom;
     int lworkopt, num_all_row_blocks, jb_t, ib, imb;
     int kb, kb_last, knb, mb1;
-    double complex dummy[1];
+    c128 dummy[1];
     int minval;
 
     *info = 0;
@@ -120,13 +120,13 @@ void zungtsqr_row(
         xerbla("ZUNGTSQR_ROW", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = CMPLX((double)lworkopt, 0.0);
+        work[0] = CMPLX((f64)lworkopt, 0.0);
         return;
     }
 
@@ -182,5 +182,5 @@ void zungtsqr_row(
 
     }
 
-    work[0] = CMPLX((double)lworkopt, 0.0);
+    work[0] = CMPLX((f64)lworkopt, 0.0);
 }

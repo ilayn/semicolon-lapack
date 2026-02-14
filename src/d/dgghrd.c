@@ -54,22 +54,22 @@ void dgghrd(
     const int n,
     const int ilo,
     const int ihi,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int ilq, ilz;
     int icompq, icompz, jcol, jrow;
-    double c, s, temp;
+    f64 c, s, temp;
 
     if (compq[0] == 'N' || compq[0] == 'n') {
         ilq = 0;

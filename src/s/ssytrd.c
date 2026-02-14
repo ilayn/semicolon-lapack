@@ -62,11 +62,11 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ssytrd(const char* uplo, const int n, float* A, const int lda,
-            float* D, float* E, float* tau, float* work,
+void ssytrd(const char* uplo, const int n, f32* A, const int lda,
+            f32* D, f32* E, f32* tau, f32* work,
             const int lwork, int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int upper, lquery;
     int i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
@@ -89,7 +89,7 @@ void ssytrd(const char* uplo, const int n, float* A, const int lda,
         /* Determine the block size. */
         nb = lapack_get_nb("SYTRD");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -256,5 +256,5 @@ void ssytrd(const char* uplo, const int n, float* A, const int lda,
                &tau[i], &iinfo);
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

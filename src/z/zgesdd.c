@@ -9,10 +9,10 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double complex CZERO = CMPLX(0.0, 0.0);
-static const double complex CONE = CMPLX(1.0, 0.0);
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const c128 CZERO = CMPLX(0.0, 0.0);
+static const c128 CONE = CMPLX(1.0, 0.0);
 
 /**
  * ZGESDD computes the singular value decomposition (SVD) of a complex
@@ -53,12 +53,12 @@ static const double complex CONE = CMPLX(1.0, 0.0);
  * @param[out]    info    = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
 void zgesdd(const char* jobz, const int m, const int n,
-            double complex* const restrict A, const int lda,
-            double* const restrict S,
-            double complex* const restrict U, const int ldu,
-            double complex* const restrict VT, const int ldvt,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork, int* const restrict iwork, int* info)
+            c128* const restrict A, const int lda,
+            f64* const restrict S,
+            c128* const restrict U, const int ldu,
+            c128* const restrict VT, const int ldvt,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork, int* const restrict iwork, int* info)
 {
     int lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
     int blk, chunk, i, ie, ierr, il, ir, iru, irvt;
@@ -74,10 +74,10 @@ void zgesdd(const char* jobz, const int m, const int n,
     int lwork_zunmbr_prc_mm, lwork_zunmbr_qln_mm;
     int lwork_zunmbr_prc_mn, lwork_zunmbr_qln_mn;
     int lwork_zunmbr_prc_nn, lwork_zunmbr_qln_nn;
-    double anrm, bignum, eps, smlnum;
+    f64 anrm, bignum, eps, smlnum;
     int idum[1];
-    double dum[1];
-    double complex cdum[1];
+    f64 dum[1];
+    c128 cdum[1];
 
     *info = 0;
     minmn = (m < n) ? m : n;
@@ -348,7 +348,7 @@ void zgesdd(const char* jobz, const int m, const int n,
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
     }
     if (*info == 0) {
-        work[0] = CMPLX((double)maxwrk, 0.0);
+        work[0] = CMPLX((f64)maxwrk, 0.0);
         if (lwork < minwrk && !lquery) {
             *info = -12;
         }
@@ -1216,5 +1216,5 @@ void zgesdd(const char* jobz, const int m, const int n,
     }
 
     /* Return optimal workspace in WORK(1) */
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
 }

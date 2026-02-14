@@ -42,27 +42,27 @@ void slaqz0(
     const int n,
     const int ilo,
     const int ihi,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict alphar,
-    float* const restrict alphai,
-    float* const restrict beta,
-    float* const restrict Q,
+    f32* const restrict alphar,
+    f32* const restrict alphai,
+    f32* const restrict beta,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     const int rec,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
-    float smlnum, ulp, eshift, safmin, c1, s1;
-    float temp, swap, bnorm, btol;
+    f32 smlnum, ulp, eshift, safmin, c1, s1;
+    f32 temp, swap, bnorm, btol;
     int istart, istop, iiter, maxit, istart2, k, nshifts;
     int nblock, nw, nmin, nibble, n_undeflated, n_deflated;
     int ns, sweep_info, shiftpos, lworkreq, k2, istartm;
@@ -170,7 +170,7 @@ void slaqz0(
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
     rcost = iparmq(17, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    itemp1 = (int)(nsr / sqrtf(1.0f + 2.0f * nsr / ((float)rcost / 100.0f * n)));
+    itemp1 = (int)(nsr / sqrtf(1.0f + 2.0f * nsr / ((f32)rcost / 100.0f * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;
 
@@ -198,7 +198,7 @@ void slaqz0(
     lworkreq = (itemp1 + 2 * nw * nw > itemp2 + 2 * nbr * nbr) ?
                itemp1 + 2 * nw * nw : itemp2 + 2 * nbr * nbr;
     if (lwork == -1) {
-        work[0] = (float)lworkreq;
+        work[0] = (f32)lworkreq;
         return;
     } else if (lwork < lworkreq) {
         *info = -19;
@@ -216,7 +216,7 @@ void slaqz0(
     safmin = slamch("S");
     (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
     ulp = slamch("P");
-    smlnum = safmin * ((float)n / ulp);
+    smlnum = safmin * ((f32)n / ulp);
 
     bnorm = slanhs("F", ihi - ilo + 1, &B[ilo + ilo * ldb], ldb, work);
     btol = (safmin > ulp * bnorm) ? safmin : ulp * bnorm;
@@ -239,9 +239,9 @@ void slaqz0(
 
         /* Check deflations at the end */
         {
-            float tmp = fabsf(A[(istop - 1) + (istop - 1) * lda]) +
+            f32 tmp = fabsf(A[(istop - 1) + (istop - 1) * lda]) +
                          fabsf(A[(istop - 2) + (istop - 2) * lda]);
-            float thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
+            f32 thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
             if (fabsf(A[(istop - 1) + (istop - 2) * lda]) <= thresh) {
                 A[(istop - 1) + (istop - 2) * lda] = ZERO;
                 istop = istop - 2;
@@ -261,9 +261,9 @@ void slaqz0(
 
         /* Check deflations at the start */
         {
-            float tmp = fabsf(A[(istart + 1) + (istart + 1) * lda]) +
+            f32 tmp = fabsf(A[(istart + 1) + (istart + 1) * lda]) +
                          fabsf(A[(istart + 2) + (istart + 2) * lda]);
-            float thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
+            f32 thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
             if (fabsf(A[(istart + 2) + (istart + 1) * lda]) <= thresh) {
                 A[(istart + 2) + (istart + 1) * lda] = ZERO;
                 istart = istart + 2;
@@ -288,8 +288,8 @@ void slaqz0(
         /* Check interior deflations */
         istart2 = istart;
         for (k = istop; k >= istart + 1; k--) {
-            float tmp = fabsf(A[k + k * lda]) + fabsf(A[(k - 1) + (k - 1) * lda]);
-            float thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
+            f32 tmp = fabsf(A[k + k * lda]) + fabsf(A[(k - 1) + (k - 1) * lda]);
+            f32 thresh = (smlnum > ulp * tmp) ? smlnum : ulp * tmp;
             if (fabsf(A[k + (k - 1) * lda]) <= thresh) {
                 A[k + (k - 1) * lda] = ZERO;
                 istart2 = k;
@@ -433,11 +433,11 @@ void slaqz0(
 
         if ((ld % 6) == 0) {
             /* Exceptional shift */
-            if (((float)maxit * safmin) * fabsf(A[istop + (istop - 1) * lda]) <
+            if (((f32)maxit * safmin) * fabsf(A[istop + (istop - 1) * lda]) <
                 fabsf(A[(istop - 1) + (istop - 1) * lda])) {
                 eshift = A[istop + (istop - 1) * lda] / B[(istop - 1) + (istop - 1) * ldb];
             } else {
-                eshift = eshift + ONE / (safmin * (float)maxit);
+                eshift = eshift + ONE / (safmin * (f32)maxit);
             }
             alphar[shiftpos] = ONE;
             alphar[shiftpos + 1] = ZERO;

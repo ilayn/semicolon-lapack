@@ -36,17 +36,17 @@ void ssptrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict AP,
+    const f32* const restrict AP,
     const int* const restrict ipiv,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int upper;
     int j, k, kc, kp;
-    float ak, akm1, akm1k, bk, bkm1, denom;
+    f32 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -64,15 +64,15 @@
  */
 void dgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,
-            double* const restrict AB, const int ldab,
-            double* const restrict D, double* const restrict E,
-            double* const restrict Q, const int ldq,
-            double* const restrict PT, const int ldpt,
-            double* const restrict C, const int ldc,
-            double* const restrict work, int* info)
+            f64* const restrict AB, const int ldab,
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict Q, const int ldq,
+            f64* const restrict PT, const int ldpt,
+            f64* const restrict C, const int ldc,
+            f64* const restrict work, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     /* Test the input parameters */
     int wantb = (vect[0] == 'B' || vect[0] == 'b');
@@ -198,7 +198,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
                          * Generate plane rotation to annihilate a(i+ml-1,i)
                          * within the band, and apply rotation from the left
                          */
-                        double ra;
+                        f64 ra;
                         /* AB[ku+ml-2 + i*ldab] and AB[ku+ml-1 + i*ldab] in 0-indexed */
                         dlartg(AB[(ku + ml - 2) + i * ldab], AB[(ku + ml - 1) + i * ldab],
                                &work[mn + i + ml - 1], &work[i + ml - 1], &ra);
@@ -281,7 +281,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
                          * Generate plane rotation to annihilate a(i,i+mu-1)
                          * within the band, and apply rotation from the right
                          */
-                        double ra;
+                        f64 ra;
                         /* AB[ku-mu+2 + (i+mu-2)*ldab] and AB[ku-mu+1 + (i+mu-1)*ldab] */
                         dlartg(AB[(ku - mu + 2) + (i + mu - 2) * ldab],
                                AB[(ku - mu + 1) + (i + mu - 1) * ldab],
@@ -341,7 +341,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
          * and off-diagonal elements in E
          */
         for (int i = 0; i < MIN(m - 1, n); i++) {
-            double rc, rs, ra;
+            f64 rc, rs, ra;
             /* AB[0 + i*ldab] and AB[1 + i*ldab] */
             dlartg(AB[i * ldab], AB[1 + i * ldab], &rc, &rs, &ra);
             D[i] = ra;
@@ -369,9 +369,9 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
              * right, storing diagonal elements in D and off-diagonal
              * elements in E
              */
-            double rb = AB[(ku - 1) + m * ldab];  /* AB[ku-1 + m*ldab] = A(m-1, m) in 0-indexed */
+            f64 rb = AB[(ku - 1) + m * ldab];  /* AB[ku-1 + m*ldab] = A(m-1, m) in 0-indexed */
             for (int i = m - 1; i >= 0; i--) {
-                double rc, rs, ra;
+                f64 rc, rs, ra;
                 /* AB[ku + i*ldab] = diagonal element */
                 dlartg(AB[ku + i * ldab], rb, &rc, &rs, &ra);
                 D[i] = ra;

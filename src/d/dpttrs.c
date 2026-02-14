@@ -38,9 +38,9 @@
 void dpttrs(
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double* const restrict E,
-    double* const restrict B,
+    const f64* const restrict D,
+    const f64* const restrict E,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {

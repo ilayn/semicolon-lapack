@@ -40,14 +40,14 @@
 void zlaqhe(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    const double* const restrict S,
-    const double scond,
-    const double amax,
+    const f64* const restrict S,
+    const f64 scond,
+    const f64 amax,
     char* equed)
 {
-    const double THRESH = 0.1;
+    const f64 THRESH = 0.1;
 
     // Quick return if possible
     if (n <= 0) {
@@ -56,14 +56,14 @@ void zlaqhe(
     }
 
     // Initialize LARGE and SMALL
-    double eps = DBL_EPSILON * 0.5;
-    double sfmin = DBL_MIN;
-    double small_val = 1.0 / DBL_MAX;
+    f64 eps = DBL_EPSILON * 0.5;
+    f64 sfmin = DBL_MIN;
+    f64 small_val = 1.0 / DBL_MAX;
     if (small_val >= sfmin) {
         sfmin = small_val * (1.0 + eps);
     }
-    double small = sfmin / eps;
-    double large = 1.0 / small;
+    f64 small = sfmin / eps;
+    f64 large = 1.0 / small;
 
     if (scond >= THRESH && amax >= small && amax <= large) {
         *equed = 'N';
@@ -72,7 +72,7 @@ void zlaqhe(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             // Upper triangle of A is stored
             for (int j = 0; j < n; j++) {
-                double cj = S[j];
+                f64 cj = S[j];
                 for (int i = 0; i < j; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }
@@ -81,7 +81,7 @@ void zlaqhe(
         } else {
             // Lower triangle of A is stored
             for (int j = 0; j < n; j++) {
-                double cj = S[j];
+                f64 cj = S[j];
                 A[j + j * lda] = CMPLX(cj * cj * creal(A[j + j * lda]), 0.0);
                 for (int i = j + 1; i < n; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];

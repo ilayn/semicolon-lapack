@@ -38,22 +38,22 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, failure to converge
  */
-void slaed6(const int kniter, const int orgati, const float rho,
-            const float* const restrict D, const float* const restrict Z,
-            const float finit, float* tau, int* info)
+void slaed6(const int kniter, const int orgati, const f32 rho,
+            const f32* const restrict D, const f32* const restrict Z,
+            const f32 finit, f32* tau, int* info)
 {
     const int MAXIT = 40;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
-    const float FOUR = 4.0f;
-    const float EIGHT = 8.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
+    const f32 FOUR = 4.0f;
+    const f32 EIGHT = 8.0f;
 
-    float dscale[3], zscale[3];
+    f32 dscale[3], zscale[3];
 
     int i, niter, scale;
-    float a, b, base, c, ddf, df, eps, erretm, eta, f,
+    f32 a, b, base, c, ddf, df, eps, erretm, eta, f,
            fc, sclfac, sclinv, small1, small2, sminv1,
            sminv2, temp, temp1, temp2, temp3, temp4,
            lbd, ubd;

@@ -39,23 +39,23 @@ void dsbevd(
     const char* uplo,
     const int n,
     const int kd,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    double* const restrict W,
-    double* const restrict Z,
+    f64* const restrict W,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lower, lquery, wantz;
     int iinfo, inde, indwk2, indwrk, iscale, liwmin, llwrk2, lwmin;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -90,7 +90,7 @@ void dsbevd(
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -164,6 +164,6 @@ void dsbevd(
     if (iscale == 1)
         cblas_dscal(n, ONE / sigma, W, 1);
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

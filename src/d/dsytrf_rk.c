@@ -71,11 +71,11 @@
 void dsytrf_rk(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict E,
+    f64* restrict E,
     int* restrict ipiv,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -99,7 +99,7 @@ void dsytrf_rk(
     if (*info == 0) {
         nb = lapack_get_nb("SYTRF");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -204,5 +204,5 @@ void dsytrf_rk(
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

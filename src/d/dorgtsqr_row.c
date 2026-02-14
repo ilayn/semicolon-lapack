@@ -61,11 +61,11 @@ void dorgtsqr_row(
     const int n,
     const int mb,
     const int nb,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    const double* const restrict T,
+    const f64* const restrict T,
     const int ldt,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -73,7 +73,7 @@ void dorgtsqr_row(
     int nblocal, mb2, itmp, ib_bottom;
     int lworkopt, num_all_row_blocks, jb_t, ib, imb;
     int kb, kb_last, knb, mb1;
-    double dummy[1];
+    f64 dummy[1];
     int minval;
 
     *info = 0;
@@ -107,13 +107,13 @@ void dorgtsqr_row(
         xerbla("DORGTSQR_ROW", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double)lworkopt;
+        work[0] = (f64)lworkopt;
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (double)lworkopt;
+        work[0] = (f64)lworkopt;
         return;
     }
 
@@ -169,5 +169,5 @@ void dorgtsqr_row(
 
     }
 
-    work[0] = (double)lworkopt;
+    work[0] = (f64)lworkopt;
 }

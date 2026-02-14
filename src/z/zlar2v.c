@@ -33,17 +33,17 @@
  */
 void zlar2v(
     const int n,
-    double complex* const restrict X,
-    double complex* const restrict Y,
-    double complex* const restrict Z,
+    c128* const restrict X,
+    c128* const restrict Y,
+    c128* const restrict Z,
     const int incx,
-    const double* const restrict C,
-    const double complex* const restrict S,
+    const f64* const restrict C,
+    const c128* const restrict S,
     const int incc)
 {
     int i, ic, ix;
-    double ci, sii, sir, t1i, t1r, t5, t6, xi, yi, zii, zir;
-    double complex si, t2, t3, t4, zi;
+    f64 ci, sii, sir, t1i, t1r, t5, t6, xi, yi, zii, zir;
+    c128 si, t2, t3, t4, zi;
 
     ix = 0;
     ic = 0;

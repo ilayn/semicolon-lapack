@@ -9,24 +9,24 @@
 #include <cblas.h>
 
 void slasd7(const int icompq, const int nl, const int nr, const int sqre,
-            int* k, float* const restrict D, float* const restrict Z,
-            float* const restrict ZW, float* const restrict VF,
-            float* const restrict VFW, float* const restrict VL,
-            float* const restrict VLW, const float alpha, const float beta,
-            float* const restrict DSIGMA, int* const restrict IDX,
+            int* k, f32* const restrict D, f32* const restrict Z,
+            f32* const restrict ZW, f32* const restrict VF,
+            f32* const restrict VFW, f32* const restrict VL,
+            f32* const restrict VLW, const f32 alpha, const f32 beta,
+            f32* const restrict DSIGMA, int* const restrict IDX,
             int* const restrict IDXP, int* const restrict IDXQ,
             int* const restrict PERM, int* givptr,
             int* const restrict GIVCOL, const int ldgcol,
-            float* const restrict GIVNUM, const int ldgnum,
-            float* c, float* s, int* info)
+            f32* const restrict GIVNUM, const int ldgnum,
+            f32* c, f32* s, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float EIGHT = 8.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 EIGHT = 8.0f;
 
     int i, idxi, idxj, idxjp, j, jp, jprev = 0, k2, m, n, nlp1, nlp2;
-    float eps, hlftol, tau, tol, z1;
+    f32 eps, hlftol, tau, tol, z1;
 
     *info = 0;
     n = nl + nr + 1;

@@ -65,26 +65,26 @@
  */
 void sstein(
     const int n,
-    const float* const restrict D,
-    const float* const restrict E,
+    const f32* const restrict D,
+    const f32* const restrict E,
     const int m,
-    const float* const restrict W,
+    const f32* const restrict W,
     const int* const restrict iblock,
     const int* const restrict isplit,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     int* const restrict iwork,
     int* const restrict ifail,
     int* info)
 {
     const int MAXITS = 5;
     const int EXTRA = 2;
-    const float ODM3 = 1.0e-3f;
-    const float ODM1 = 1.0e-1f;
+    const f32 ODM3 = 1.0e-3f;
+    const f32 ODM1 = 1.0e-1f;
 
     int b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, nblk, nrmchk;
-    float dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm, ztr;
+    f32 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm, ztr;
     uint64_t seed;
 
     /* Workspace offsets: each segment has n elements */
@@ -213,7 +213,7 @@ void sstein(
              */
             for (i = 0; i < blksiz; i++) {
                 seed = seed * 6364136223846793005ULL + 1442695040888963407ULL;
-                work[indrv1 + i] = (float)((int64_t)(seed >> 33)) / (float)(1LL << 31);
+                work[indrv1 + i] = (f32)((int64_t)(seed >> 33)) / (f32)(1LL << 31);
             }
 
             /*
@@ -249,7 +249,7 @@ void sstein(
                  * cblas_idamax returns 0-based index.
                  */
                 jmax = (int)cblas_isamax(blksiz, &work[indrv1], 1);
-                scl = (float)blksiz * onenrm *
+                scl = (f32)blksiz * onenrm *
                       fmaxf(eps, fabsf(work[indrv4 + blksiz - 1])) /
                       fabsf(work[indrv1 + jmax]);
                 cblas_sscal(blksiz, scl, &work[indrv1], 1);

@@ -41,17 +41,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ssptrd(const char* uplo, const int n, float* const restrict AP,
-            float* const restrict D, float* const restrict E,
-            float* const restrict tau, int* info)
+void ssptrd(const char* uplo, const int n, f32* const restrict AP,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict tau, int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
 
     int upper;
     int i, i1, i1i1, ii;
-    float alpha, taui;
+    f32 alpha, taui;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -90,30 +90,30 @@ void sgesvx(
     const char* trans,
     const int n,
     const int nrhs,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
-    float * const restrict AF,
+    f32 * const restrict AF,
     const int ldaf,
     int * const restrict ipiv,
     char *equed,
-    float * const restrict R,
-    float * const restrict C,
-    float * const restrict B,
+    f32 * const restrict R,
+    f32 * const restrict C,
+    f32 * const restrict B,
     const int ldb,
-    float * const restrict X,
+    f32 * const restrict X,
     const int ldx,
-    float *rcond,
-    float * const restrict ferr,
-    float * const restrict berr,
-    float * const restrict work,
+    f32 *rcond,
+    f32 * const restrict ferr,
+    f32 * const restrict berr,
+    f32 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, infequ;
-    float amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
+    f32 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
     int nofact, equil, notran, rowequ, colequ;
 
@@ -163,8 +163,8 @@ void sgesvx(
             if (rcmin <= ZERO) {
                 *info = -11;
             } else if (n > 0) {
-                float rmin = (rcmin > smlnum) ? rcmin : smlnum;
-                float rmax = (rcmax < bignum) ? rcmax : bignum;
+                f32 rmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f32 rmax = (rcmax < bignum) ? rcmax : bignum;
                 rowcnd = rmin / rmax;
             } else {
                 rowcnd = ONE;
@@ -180,8 +180,8 @@ void sgesvx(
             if (rcmin <= ZERO) {
                 *info = -12;
             } else if (n > 0) {
-                float cmin = (rcmin > smlnum) ? rcmin : smlnum;
-                float cmax = (rcmax < bignum) ? rcmax : bignum;
+                f32 cmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f32 cmax = (rcmax < bignum) ? rcmax : bignum;
                 colcnd = cmin / cmax;
             } else {
                 colcnd = ONE;

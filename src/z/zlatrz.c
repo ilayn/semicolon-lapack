@@ -56,13 +56,13 @@
  * @param[out]    work  Complex array, dimension (m).
  */
 void zlatrz(const int m, const int n, const int l,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict tau,
-            double complex* const restrict work)
+            c128* const restrict A, const int lda,
+            c128* const restrict tau,
+            c128* const restrict work)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int i;
-    double complex alpha;
+    c128 alpha;
 
     /* Quick return if possible */
     if (m == 0) {
@@ -89,7 +89,7 @@ void zlatrz(const int m, const int n, const int l,
         /* Apply H(i) to A(0:i-1, i:n-1) from the right. */
 
         if (i > 0) {
-            double complex conjtau = conj(tau[i]);
+            c128 conjtau = conj(tau[i]);
             zlarz("R", i, n - i, l, &A[i + (n - l) * lda], lda, conjtau,
                   &A[i * lda], lda, work);
         }

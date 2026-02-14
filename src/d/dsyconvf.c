@@ -57,13 +57,13 @@ void dsyconvf(
     const char* uplo,
     const char* way,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict E,
+    f64* restrict E,
     int* restrict ipiv,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int upper, convert;
     int i, ip;

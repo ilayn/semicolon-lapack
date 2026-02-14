@@ -42,17 +42,17 @@
 void sgetf2(
     const int m,
     const int n,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
     int * const restrict ipiv,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float sfmin = FLT_MIN;
+    const f32 ZERO = 0.0f;
+    const f32 sfmin = FLT_MIN;
 
     int i, j, k, jp;
     int minmn = m < n ? m : n;
-    float abs_val, max_val, pivot, inv, tmp;
+    f32 abs_val, max_val, pivot, inv, tmp;
 
     *info = 0;
     if (m < 0) {

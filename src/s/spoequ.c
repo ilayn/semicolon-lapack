@@ -37,15 +37,15 @@
  */
 void spoequ(
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    float* const restrict S,
-    float* scond,
-    float* amax,
+    f32* const restrict S,
+    f32* scond,
+    f32* amax,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     // Test the input parameters
     *info = 0;
@@ -68,7 +68,7 @@ void spoequ(
 
     // Find the minimum and maximum diagonal elements.
     S[0] = A[0];
-    float smin = S[0];
+    f32 smin = S[0];
     *amax = S[0];
     for (int i = 1; i < n; i++) {
         S[i] = A[i + i * lda];

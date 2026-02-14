@@ -1,6 +1,6 @@
 /**
  * @file dhgeqz.c
- * @brief DHGEQZ computes eigenvalues of a real matrix pair (H,T) using the double-shift QZ method.
+ * @brief DHGEQZ computes eigenvalues of a real matrix pair (H,T) using the f64-shift QZ method.
  */
 
 #include <math.h>
@@ -10,7 +10,7 @@
 /**
  * DHGEQZ computes the eigenvalues of a real matrix pair (H,T),
  * where H is an upper Hessenberg matrix and T is upper triangular,
- * using the double-shift QZ method.
+ * using the f64-shift QZ method.
  * Matrix pairs of this type are produced by the reduction to
  * generalized upper Hessenberg form of a real matrix pair (A,B):
  *
@@ -70,41 +70,41 @@ void dhgeqz(
     const int n,
     const int ilo,
     const int ihi,
-    double* const restrict H,
+    f64* const restrict H,
     const int ldh,
-    double* const restrict T,
+    f64* const restrict T,
     const int ldt,
-    double* const restrict alphar,
-    double* const restrict alphai,
-    double* const restrict beta,
-    double* const restrict Q,
+    f64* const restrict alphar,
+    f64* const restrict alphai,
+    f64* const restrict beta,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
-    const double HALF = 0.5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double SAFETY = 100.0;
+    const f64 HALF = 0.5;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 SAFETY = 100.0;
 
     int ilazr2, ilazro, ilpivt, ilq = 0, ilschr = 0, ilz = 0, lquery;
     int icompq, icompz, ifirst, ifrstm, iiter, ilast;
     int ilastm, in, ischur, istart, j, jc, jch, jiter;
     int jr, maxit;
-    double a11, a12, a1i, a1r, a21, a22, a2i, a2r, ad11;
-    double ad11l, ad12, ad12l, ad21, ad21l, ad22, ad22l;
-    double ad32l, an, anorm, ascale, atol, b11, b1a, b1i;
-    double b1r, b22, b2a, b2i, b2r, bn, bnorm, bscale;
-    double btol, c, c11i, c11r, c12, c21, c22i, c22r, cl;
-    double cq, cr, cz, eshift, s, s1, s1inv, s2, safmax;
-    double safmin, scale, sl, sqi, sqr, sr, szi, szr, t1;
-    double t2, t3, tau, temp, temp2, tempi, tempr, u1;
-    double u12, u12l, u2, ulp, vs, w11, w12, w21, w22;
-    double wabs, wi, wr, wr2;
-    double v[3];
+    f64 a11, a12, a1i, a1r, a21, a22, a2i, a2r, ad11;
+    f64 ad11l, ad12, ad12l, ad21, ad21l, ad22, ad22l;
+    f64 ad32l, an, anorm, ascale, atol, b11, b1a, b1i;
+    f64 b1r, b22, b2a, b2i, b2r, bn, bnorm, bscale;
+    f64 btol, c, c11i, c11r, c12, c21, c22i, c22r, cl;
+    f64 cq, cr, cz, eshift, s, s1, s1inv, s2, safmax;
+    f64 safmin, scale, sl, sqi, sqr, sr, szi, szr, t1;
+    f64 t2, t3, tau, temp, temp2, tempi, tempr, u1;
+    f64 u12, u12l, u2, ulp, vs, w11, w12, w21, w22;
+    f64 wabs, wi, wr, wr2;
+    f64 v[3];
 
     /* Decode JOB, COMPQ, COMPZ */
 
@@ -487,11 +487,11 @@ L110:
              * (Single shift only.)
              */
 
-            if (((double)maxit * safmin) * fabs(H[ilast + (ilast - 1) * ldh]) <
+            if (((f64)maxit * safmin) * fabs(H[ilast + (ilast - 1) * ldh]) <
                 fabs(T[(ilast - 1) + (ilast - 1) * ldt])) {
                 eshift = H[ilast + (ilast - 1) * ldh] / T[(ilast - 1) + (ilast - 1) * ldt];
             } else {
-                eshift = eshift + ONE / (safmin * (double)maxit);
+                eshift = eshift + ONE / (safmin * (f64)maxit);
             }
             s1 = ONE;
             wr = eshift;
@@ -517,9 +517,9 @@ L110:
             }
             temp = s1;
             {
-                double tmp1 = fabs(wr);
-                double tmp2 = fabs(wi);
-                double tmp3 = (ONE > tmp1) ? ONE : tmp1;
+                f64 tmp1 = fabs(wr);
+                f64 tmp2 = fabs(wi);
+                f64 tmp3 = (ONE > tmp1) ? ONE : tmp1;
                 tmp3 = (tmp3 > tmp2) ? tmp3 : tmp2;
                 if (safmin * tmp3 > temp) temp = safmin * tmp3;
             }
@@ -621,9 +621,9 @@ L130:
 
         continue;
 
-        /* Use Francis double-shift
+        /* Use Francis f64-shift
          *
-         * Note: the Francis double-shift should work with real shifts,
+         * Note: the Francis f64-shift should work with real shifts,
          *       but only if the block is at least 3x3.
          *       This code may break if this point is reached with
          *       a 2x2 block with real eigenvalues.
@@ -823,7 +823,7 @@ L200:
         } else {
 
             /* Usual case: 3x3 or larger block, using Francis implicit
-             *             double-shift
+             *             f64-shift
              *
              *                                  2
              * Eigenvalue equation is  w  - c w + d = 0,
@@ -916,16 +916,16 @@ L200:
                 ilpivt = 0;
                 temp = fabs(T[(j + 1) + (j + 1) * ldt]);
                 {
-                    double tmp = fabs(T[(j + 1) + (j + 2) * ldt]);
+                    f64 tmp = fabs(T[(j + 1) + (j + 2) * ldt]);
                     if (tmp > temp) temp = tmp;
                 }
                 temp2 = fabs(T[(j + 2) + (j + 1) * ldt]);
                 {
-                    double tmp = fabs(T[(j + 2) + (j + 2) * ldt]);
+                    f64 tmp = fabs(T[(j + 2) + (j + 2) * ldt]);
                     if (tmp > temp2) temp2 = tmp;
                 }
                 {
-                    double maxtemp = (temp > temp2) ? temp : temp2;
+                    f64 maxtemp = (temp > temp2) ? temp : temp2;
                     if (maxtemp < safmin) {
                         scale = ZERO;
                         u1 = ONE;
@@ -979,7 +979,7 @@ L200:
                 if (fabs(w22) < fabs(u2))
                     scale = fabs(w22 / u2);
                 if (fabs(w11) < fabs(u1)) {
-                    double tmp = fabs(w11 / u1);
+                    f64 tmp = fabs(w11 / u1);
                     if (tmp < scale) scale = tmp;
                 }
 
@@ -1132,6 +1132,6 @@ L380:
     /* Exit (other than argument error) -- return optimal workspace size */
 
 L420:
-    work[0] = (double)n;
+    work[0] = (f64)n;
     return;
 }

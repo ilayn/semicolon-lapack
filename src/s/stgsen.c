@@ -55,34 +55,34 @@ void stgsen(
     const int wantz,
     const int* const restrict select,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict alphar,
-    float* const restrict alphai,
-    float* const restrict beta,
-    float* const restrict Q,
+    f32* const restrict alphar,
+    f32* const restrict alphai,
+    f32* const restrict beta,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
     int* m,
-    float* pl,
-    float* pr,
-    float* const restrict dif,
-    float* const restrict work,
+    f32* pl,
+    f32* pr,
+    f32* const restrict dif,
+    f32* const restrict work,
     const int lwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
     const int IDIFJB = 3;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery, pair, swap, wantd, wantd1, wantd2, wantp;
     int i, ierr, ijb, k, kase, kk, ks, liwmin, lwmin, mn2, n1, n2;
-    float dscale, dsum, eps, rdscal, smlnum;
+    f32 dscale, dsum, eps, rdscal, smlnum;
     int isave[3];
 
     *info = 0;
@@ -159,7 +159,7 @@ void stgsen(
         liwmin = 1;
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 
     if (lwork < lwmin && !lquery) {
@@ -412,6 +412,6 @@ L60:
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

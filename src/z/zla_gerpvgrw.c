@@ -28,16 +28,16 @@
  * @param[in] ldaf  The leading dimension of the array AF. ldaf >= max(1, n).
  * @return    The reciprocal pivot growth factor.
  */
-double zla_gerpvgrw(
+f64 zla_gerpvgrw(
     const int n,
     const int ncols,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* const restrict AF,
+    const c128* const restrict AF,
     const int ldaf)
 {
     int i, j;
-    double amax, umax, rpvgrw;
+    f64 amax, umax, rpvgrw;
 
     rpvgrw = 1.0;
 

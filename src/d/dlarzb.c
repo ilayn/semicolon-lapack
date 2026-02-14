@@ -53,13 +53,13 @@
 void dlarzb(const char* side, const char* trans, const char* direct,
             const char* storev, const int m, const int n,
             const int k, const int l,
-            const double * const restrict V, const int ldv,
-            const double * const restrict T, const int ldt,
-            double * const restrict C, const int ldc,
-            double * const restrict work, const int ldwork)
+            const f64 * const restrict V, const int ldv,
+            const f64 * const restrict T, const int ldt,
+            f64 * const restrict C, const int ldc,
+            f64 * const restrict work, const int ldwork)
 {
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
     int i, j;
     CBLAS_TRANSPOSE transt;
 

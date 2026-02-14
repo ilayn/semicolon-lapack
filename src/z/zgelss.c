@@ -62,25 +62,25 @@
  *                           bidiagonal form did not converge to zero.
  */
 void zgelss(const int m, const int n, const int nrhs,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict B, const int ldb,
-            double* const restrict S, const double rcond, int* rank,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork,
+            c128* const restrict A, const int lda,
+            c128* const restrict B, const int ldb,
+            f64* const restrict S, const f64 rcond, int* rank,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lquery;
     int bl, chunk, i, iascl, ibscl, ie, il, irwork, itau, itaup, itauq;
-    int iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr;
+    int iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr = 0;
     int lwork_zgeqrf, lwork_zunmqr, lwork_zgebrd, lwork_zunmbr, lwork_zungbr;
     int lwork_zgelqf, lwork_zunmlq;
-    double anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
-    double complex dum[1];
+    f64 anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
+    c128 dum[1];
     int iinfo;
 
     *info = 0;
@@ -206,7 +206,7 @@ void zgelss(const int m, const int n, const int nrhs,
             }
             if (maxwrk < minwrk) maxwrk = minwrk;
         }
-        work[0] = CMPLX((double)maxwrk, 0.0);
+        work[0] = CMPLX((f64)maxwrk, 0.0);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -514,5 +514,5 @@ void zgelss(const int m, const int n, const int nrhs,
     }
 
 cleanup:
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
 }

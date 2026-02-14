@@ -100,19 +100,19 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dlaed8(const int icompq, int* K, const int n, const int qsiz,
-            double* D, double* Q, const int ldq, int* indxq, double* rho,
-            const int cutpnt, double* Z, double* dlambda, double* Q2,
-            const int ldq2, double* W, int* perm, int* givptr,
-            int* givcol, double* givnum, int* indxp, int* indx, int* info)
+            f64* D, f64* Q, const int ldq, int* indxq, f64* rho,
+            const int cutpnt, f64* Z, f64* dlambda, f64* Q2,
+            const int ldq2, f64* W, int* perm, int* givptr,
+            int* givcol, f64* givnum, int* indxp, int* indx, int* info)
 {
-    const double MONE = -1.0;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double EIGHT = 8.0;
+    const f64 MONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 EIGHT = 8.0;
 
     int i, imax, j, jlam, jmax, jp, k2, n1, n2;
-    double c, eps, s, t, tau, tol;
+    f64 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */
     *info = 0;

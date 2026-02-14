@@ -148,32 +148,32 @@ void zuncsd(
     const int m,
     const int p,
     const int q,
-    double complex* X11,
+    c128* X11,
     const int ldx11,
-    double complex* X12,
+    c128* X12,
     const int ldx12,
-    double complex* X21,
+    c128* X21,
     const int ldx21,
-    double complex* X22,
+    c128* X22,
     const int ldx22,
-    double* restrict theta,
-    double complex* restrict U1,
+    f64* restrict theta,
+    c128* restrict U1,
     const int ldu1,
-    double complex* restrict U2,
+    c128* restrict U2,
     const int ldu2,
-    double complex* restrict V1T,
+    c128* restrict V1T,
     const int ldv1t,
-    double complex* restrict V2T,
+    c128* restrict V2T,
     const int ldv2t,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     const int lrwork,
     int* restrict iwork,
     int* info)
 {
-    const double complex one = CMPLX(1.0, 0.0);
-    const double complex zero = CMPLX(0.0, 0.0);
+    const c128 one = CMPLX(1.0, 0.0);
+    const c128 zero = CMPLX(0.0, 0.0);
 
     int childinfo, i;
     int ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
@@ -276,7 +276,7 @@ void zuncsd(
         lbbcsdworkmin = lbbcsdworkopt;
         lrworkopt = ibbcsd + lbbcsdworkopt - 1;
         lrworkmin = ibbcsd + lbbcsdworkmin - 1;
-        rwork[0] = (double)lrworkopt;
+        rwork[0] = (f64)lrworkopt;
 
         /* Complex workspace */
         itaup1 = 2;
@@ -311,7 +311,7 @@ void zuncsd(
         if (iorbdb + lorbdbworkopt > lworkmin) lworkmin = iorbdb + lorbdbworkopt;
         lworkmin = lworkmin - 1;
 
-        work[0] = CMPLX((double)(lworkopt > lworkmin ? lworkopt : lworkmin), 0.0);
+        work[0] = CMPLX((f64)(lworkopt > lworkmin ? lworkopt : lworkmin), 0.0);
 
         if (lwork < lworkmin && !(lquery || lrquery)) {
             *info = -22;

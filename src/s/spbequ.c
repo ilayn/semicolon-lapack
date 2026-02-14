@@ -32,19 +32,19 @@ void spbequ(
     const char* uplo,
     const int n,
     const int kd,
-    const float* const restrict AB,
+    const f32* const restrict AB,
     const int ldab,
-    float* const restrict S,
-    float* scond,
-    float* amax,
+    f32* const restrict S,
+    f32* scond,
+    f32* amax,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int upper;
     int i, j;
-    float smin;
+    f32 smin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

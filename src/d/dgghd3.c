@@ -13,27 +13,27 @@ void dgghd3(
     const int n,
     const int ilo,
     const int ihi,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int blk22, initq, initz, lquery, wantq, wantz;
     char compq2, compz2;
     int cola, i, ierr, j, j0, jcol, jj, jrow, k,
         kacc22, len, lwkopt, n2nb, nb, nblst, nbmin,
         nh, nnb, nx, ppw, ppwo, pw, top, topq;
-    double c, c1, c2, s, s1, s2, temp, temp1, temp2, temp3;
+    f64 c, c1, c2, s, s1, s2, temp, temp1, temp2, temp3;
 
     *info = 0;
     nb = lapack_get_nb("GGHD3");
@@ -43,7 +43,7 @@ void dgghd3(
     } else {
         lwkopt = 6 * n * nb;
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
     initq = (compq[0] == 'I' || compq[0] == 'i');
     wantq = initq || (compq[0] == 'V' || compq[0] == 'v');
     initz = (compz[0] == 'I' || compz[0] == 'i');
@@ -513,5 +513,5 @@ void dgghd3(
         dgghrd(cq2, cz2, n, jcol + 1, ihi, A, lda, B, ldb, Q, ldq, Z, ldz, &ierr);
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

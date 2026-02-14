@@ -61,34 +61,34 @@ void stgevc(
     const char* howmny,
     const int* const restrict select,
     const int n,
-    const float* const restrict S,
+    const f32* const restrict S,
     const int lds,
-    const float* const restrict P,
+    const f32* const restrict P,
     const int ldp,
-    float* const restrict VL,
+    f32* const restrict VL,
     const int ldvl,
-    float* const restrict VR,
+    f32* const restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float SAFETY = 100.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 SAFETY = 100.0f;
 
     int compl, compr, ilall, ilback, ilcplx;
     int ihwmny, iside;
     int ilabad, ilbbad;
     int i, ibeg, iend, ieig, iinfo, ilcomp, im, j, ja, je, jr, jw, na, nw;
     int il2by2;
-    float acoef, acoefa, anorm, ascale, bcoefa, bcoefi, bcoefr;
-    float big, bignum, bnorm, bscale;
-    float cim2a, cim2b, cimaga, cimagb, cre2a, cre2b, creala, crealb;
-    float dmin, safmin, salfar, sbeta, scale, small;
-    float temp, temp2, temp2i, temp2r, ulp, xmax, xscale;
-    float bdiag[2], sum[2][2], sums[2][2], sump[2][2];
+    f32 acoef, acoefa, anorm, ascale, bcoefa, bcoefi, bcoefr;
+    f32 big, bignum, bnorm, bscale;
+    f32 cim2a, cim2b, cimaga, cimagb, cre2a, cre2b, creala, crealb;
+    f32 dmin, safmin, salfar, sbeta, scale, small;
+    f32 temp, temp2, temp2i, temp2r, ulp, xmax, xscale;
+    f32 bdiag[2], sum[2][2], sums[2][2], sump[2][2];
 
     *info = 0;
 

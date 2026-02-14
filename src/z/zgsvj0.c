@@ -8,10 +8,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double HALF = 0.5;
-static const double ONE = 1.0;
-static const double complex CZERO = CMPLX(0.0, 0.0);
+static const f64 ZERO = 0.0;
+static const f64 HALF = 0.5;
+static const f64 ONE = 1.0;
 
 /**
  * ZGSVJ0 is called from ZGESVJ as a pre-processor. It applies Jacobi
@@ -41,11 +40,11 @@ static const double complex CZERO = CMPLX(0.0, 0.0);
  *                         - = 0: success. < 0: illegal argument.
  */
 void zgsvj0(const char* jobv, const int m, const int n,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict D, double* const restrict SVA,
-            const int mv, double complex* const restrict V, const int ldv,
-            const double eps, const double sfmin, const double tol,
-            const int nsweep, double complex* const restrict work, const int lwork,
+            c128* const restrict A, const int lda,
+            c128* const restrict D, f64* const restrict SVA,
+            const int mv, c128* const restrict V, const int ldv,
+            const f64 eps, const f64 sfmin, const f64 tol,
+            const int nsweep, c128* const restrict work, const int lwork,
             int* info)
 {
     int applv, rsvec, mvl;
@@ -53,10 +52,10 @@ void zgsvj0(const char* jobv, const int m, const int n,
     int blskip, rowskip, lkahead, swband;
     int notrot, pskipped, iswrot, ijblsk, emptsw;
     int ierr;
-    double complex aapq, ompq;
-    double aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
-    double big, bigtheta, cs, sn, t, temp1, theta, thsign;
-    double mxaapq, mxsinj, rootbig, rooteps, rootsfmin, roottol, small;
+    c128 aapq, ompq;
+    f64 aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
+    f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
+    f64 mxaapq, mxsinj, rootbig, rooteps, rootsfmin, roottol, small;
 
     /* Test the input parameters */
     applv = (jobv[0] == 'A' || jobv[0] == 'a');
@@ -148,7 +147,7 @@ void zgsvj0(const char* jobv, const int m, const int n,
                         temp1 = SVA[p];
                         SVA[p] = SVA[q];
                         SVA[q] = temp1;
-                        double complex dtmp = D[p];
+                        c128 dtmp = D[p];
                         D[p] = D[q];
                         D[q] = dtmp;
                     }
@@ -259,7 +258,7 @@ void zgsvj0(const char* jobv, const int m, const int n,
                                         cblas_zcopy(m, &A[p * lda], 1, work, 1);
                                         zlascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
                                         zlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
-                                        double complex neg_aapq = -aapq;
+                                        c128 neg_aapq = -aapq;
                                         cblas_zaxpy(m, &neg_aapq, work, 1, &A[q * lda], 1);
                                         zlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
                                         SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq1 * aapq1));
@@ -359,8 +358,8 @@ L2103:
                                     }
                                     if (aapp > (small / aaqq)) {
                                         cblas_zdotc_sub(m, &A[p * lda], 1, &A[q * lda], 1, &aapq);
-                                        double mx = (aaqq > aapp) ? aaqq : aapp;
-                                        double mn = (aaqq < aapp) ? aaqq : aapp;
+                                        f64 mx = (aaqq > aapp) ? aaqq : aapp;
+                                        f64 mn = (aaqq < aapp) ? aaqq : aapp;
                                         aapq = (aapq / mx) / mn;
                                     } else {
                                         cblas_zcopy(m, &A[q * lda], 1, work, 1);
@@ -422,7 +421,7 @@ L2103:
                                             cblas_zcopy(m, &A[p * lda], 1, work, 1);
                                             zlascl("G", 0, 0, aapp, ONE, m, 1, work, lda, &ierr);
                                             zlascl("G", 0, 0, aaqq, ONE, m, 1, &A[q * lda], lda, &ierr);
-                                            double complex neg_aapq = -aapq;
+                                            c128 neg_aapq = -aapq;
                                             cblas_zaxpy(m, &neg_aapq, work, 1, &A[q * lda], 1);
                                             zlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
                                             SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq1 * aapq1));
@@ -431,7 +430,7 @@ L2103:
                                             cblas_zcopy(m, &A[q * lda], 1, work, 1);
                                             zlascl("G", 0, 0, aaqq, ONE, m, 1, work, lda, &ierr);
                                             zlascl("G", 0, 0, aapp, ONE, m, 1, &A[p * lda], lda, &ierr);
-                                            double complex neg_conjg_aapq = -conj(aapq);
+                                            c128 neg_conjg_aapq = -conj(aapq);
                                             cblas_zaxpy(m, &neg_conjg_aapq, work, 1, &A[p * lda], 1);
                                             zlascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
                                             SVA[p] = aapp * sqrt(fmax(ZERO, ONE - aapq1 * aapq1));
@@ -516,7 +515,7 @@ L2011:
             swband = i;
         }
 
-        if (i > swband + 1 && mxaapq < sqrt((double)n) * tol && (double)n * mxaapq * mxsinj < tol) {
+        if (i > swband + 1 && mxaapq < sqrt((f64)n) * tol && (f64)n * mxaapq * mxsinj < tol) {
             goto L1994;
         }
 
@@ -539,7 +538,7 @@ L1995:
             temp1 = SVA[p];
             SVA[p] = SVA[q];
             SVA[q] = temp1;
-            double complex dtmp = D[p];
+            c128 dtmp = D[p];
             D[p] = D[q];
             D[q] = dtmp;
             cblas_zswap(m, &A[p * lda], 1, &A[q * lda], 1);

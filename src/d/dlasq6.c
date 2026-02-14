@@ -23,12 +23,12 @@
  * @param[out]    dnm1   d(N0-1).
  * @param[out]    dnm2   d(N0-2).
  */
-void dlasq6(const int i0, const int n0, double* const restrict Z,
-            const int pp, double* dmin, double* dmin1, double* dmin2,
-            double* dn, double* dnm1, double* dnm2)
+void dlasq6(const int i0, const int n0, f64* const restrict Z,
+            const int pp, f64* dmin, f64* dmin1, f64* dmin2,
+            f64* dn, f64* dnm1, f64* dnm2)
 {
     int j4, j4p2;
-    double d, emin, safmin, temp;
+    f64 d, emin, safmin, temp;
 
     if ((n0 - i0 - 1) <= 0) {
         return;

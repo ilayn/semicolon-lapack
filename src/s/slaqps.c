@@ -52,16 +52,16 @@
  */
 void slaqps(const int m, const int n, const int offset, const int nb,
             int *kb,
-            float * const restrict A, const int lda,
+            f32 * const restrict A, const int lda,
             int * const restrict jpvt,
-            float * const restrict tau,
-            float * const restrict vn1,
-            float * const restrict vn2,
-            float * const restrict auxv,
-            float * const restrict F, const int ldf)
+            f32 * const restrict tau,
+            f32 * const restrict vn1,
+            f32 * const restrict vn2,
+            f32 * const restrict auxv,
+            f32 * const restrict F, const int ldf)
 {
     int itemp, j, k, lastrk, lsticc, pvt, rk;
-    float akk, temp, temp2, tol3z;
+    f32 akk, temp, temp2, tol3z;
 
     lastrk = m < n + offset ? m : n + offset;
     lsticc = 0;
@@ -181,7 +181,7 @@ void slaqps(const int m, const int n, const int offset, const int nb,
                     if (temp < 0.0f) temp = 0.0f;
                     temp2 = temp * (vn1[j - 1] / vn2[j - 1]) * (vn1[j - 1] / vn2[j - 1]);
                     if (temp2 <= tol3z) {
-                        vn2[j - 1] = (float)lsticc;
+                        vn2[j - 1] = (f32)lsticc;
                         lsticc = j;
                     } else {
                         vn1[j - 1] = vn1[j - 1] * sqrtf(temp);

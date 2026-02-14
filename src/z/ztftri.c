@@ -44,11 +44,11 @@ void ztftri(
     const char* uplo,
     const char* diag,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     int* info)
 {
-    const double complex cone = CMPLX(1.0, 0.0);
-    const double complex neg_cone = CMPLX(-1.0, 0.0);
+    const c128 cone = CMPLX(1.0, 0.0);
+    const c128 neg_cone = CMPLX(-1.0, 0.0);
 
     int lower, nisodd, normaltransr;
     int n1, n2, k;

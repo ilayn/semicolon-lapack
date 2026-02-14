@@ -29,13 +29,13 @@
  * @param[out]    info
  *                         - = 0: successful exit.
  */
-void dlarrc(const char* jobt, const int n, const double vl, const double vu,
-            const double* const restrict D, const double* const restrict E,
-            const double pivmin, int* eigcnt, int* lcnt, int* rcnt, int* info)
+void dlarrc(const char* jobt, const int n, const f64 vl, const f64 vu,
+            const f64* const restrict D, const f64* const restrict E,
+            const f64 pivmin, int* eigcnt, int* lcnt, int* rcnt, int* info)
 {
     int i;
     int matt;
-    double lpivot, rpivot, sl, su, tmp, tmp2;
+    f64 lpivot, rpivot, sl, su, tmp, tmp2;
 
     (void)pivmin;
 

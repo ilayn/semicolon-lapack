@@ -41,19 +41,19 @@ void zhpgst(
     const int itype,
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    const double complex* const restrict BP,
+    c128* const restrict AP,
+    const c128* const restrict BP,
     int* info)
 {
-    const double ONE = 1.0;
-    const double HALF = 0.5;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int upper;
     int j, j1, j1j1, jj, k, k1, k1k1, kk;
-    double ajj, akk, bjj, bkk;
-    double complex ct;
+    f64 ajj, akk, bjj, bkk;
+    c128 ct;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -93,7 +93,7 @@ void zhpgst(
                                 &AP[j1], 1);
                     cblas_zdscal(j, ONE / bjj, &AP[j1], 1);
                 }
-                double complex dotc;
+                c128 dotc;
                 if (j > 0) {
                     cblas_zdotc_sub(j, &AP[j1], 1, &BP[j1], 1, &dotc);
                 } else {
@@ -178,7 +178,7 @@ void zhpgst(
 
                 ajj = creal(AP[jj]);
                 bjj = creal(BP[jj]);
-                double complex dotc;
+                c128 dotc;
                 if (j < n - 1) {
                     cblas_zdotc_sub(n - j - 1, &AP[jj + 1], 1,
                                     &BP[jj + 1], 1, &dotc);

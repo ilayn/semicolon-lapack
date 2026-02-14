@@ -35,13 +35,13 @@
  * @param[out]    info
  *                         - = 0: successful exit.
  */
-void slarra(const int n, const float* const restrict D,
-            float* const restrict E, float* const restrict E2,
-            const float spltol, const float tnrm,
+void slarra(const int n, const f32* const restrict D,
+            f32* const restrict E, f32* const restrict E2,
+            const f32 spltol, const f32 tnrm,
             int* nsplit, int* const restrict isplit, int* info)
 {
     int i;
-    float eabs, tmp1;
+    f32 eabs, tmp1;
 
     *info = 0;
     *nsplit = 1;

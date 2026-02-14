@@ -44,10 +44,10 @@
 void zsytrf(
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -71,7 +71,7 @@ void zsytrf(
     int lwkopt = n * nb > 1 ? n * nb : 1;
 
     if (*info == 0) {
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -207,5 +207,5 @@ void zsytrf(
         }
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

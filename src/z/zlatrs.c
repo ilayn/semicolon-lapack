@@ -48,22 +48,22 @@ void zlatrs(
     const char* diag,
     const char* normin,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double complex* const restrict X,
-    double* scale,
-    double* const restrict cnorm,
+    c128* const restrict X,
+    f64* scale,
+    f64* const restrict cnorm,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int upper, notran, nounit, normin_n;
     int i, imax, j, jfirst, jinc, jlast;
-    double bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
-    double complex csumj, tjjs = 0.0, uscal;
+    f64 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
+    c128 csumj, tjjs = 0.0, uscal;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -132,8 +132,8 @@ void zlatrs(
             if (upper) {
                 for (j = 1; j < n; j++) {
                     for (i = 0; i < j; i++) {
-                        double re = fabs(creal(A[i + j * lda]));
-                        double im = fabs(cimag(A[i + j * lda]));
+                        f64 re = fabs(creal(A[i + j * lda]));
+                        f64 im = fabs(cimag(A[i + j * lda]));
                         if (re > tmax) tmax = re;
                         if (im > tmax) tmax = im;
                     }
@@ -141,8 +141,8 @@ void zlatrs(
             } else {
                 for (j = 0; j < n - 1; j++) {
                     for (i = j + 1; i < n; i++) {
-                        double re = fabs(creal(A[i + j * lda]));
-                        double im = fabs(cimag(A[i + j * lda]));
+                        f64 re = fabs(creal(A[i + j * lda]));
+                        f64 im = fabs(cimag(A[i + j * lda]));
                         if (re > tmax) tmax = re;
                         if (im > tmax) tmax = im;
                     }
@@ -156,7 +156,7 @@ void zlatrs(
                         cnorm[j] = cnorm[j] * tscal;
                     } else {
                         // Recompute the 1-norm without introducing Infinity
-                        double tscal2 = TWO * tscal;
+                        f64 tscal2 = TWO * tscal;
                         cnorm[j] = ZERO;
                         if (upper) {
                             for (i = 0; i < j; i++) {
@@ -192,7 +192,7 @@ void zlatrs(
     // Level 2 BLAS routine ZTRSV can be used
     xmax = ZERO;
     for (j = 0; j < n; j++) {
-        double temp = cabs2(X[j]);
+        f64 temp = cabs2(X[j]);
         if (temp > xmax) xmax = temp;
     }
     xbnd = xmax;
@@ -366,14 +366,14 @@ void zlatrs(
 
                 if (upper) {
                     if (j > 0) {
-                        double complex alpha = -X[j] * tscal;
+                        c128 alpha = -X[j] * tscal;
                         cblas_zaxpy(j, &alpha, &A[j * lda], 1, X, 1);
                         i = cblas_izamax(j, X, 1);
                         xmax = cabs1(X[i]);
                     }
                 } else {
                     if (j < n - 1) {
-                        double complex alpha = -X[j] * tscal;
+                        c128 alpha = -X[j] * tscal;
                         cblas_zaxpy(n - j - 1, &alpha, &A[j + 1 + j * lda], 1, &X[j + 1], 1);
                         i = j + 1 + cblas_izamax(n - j - 1, &X[j + 1], 1);
                         xmax = cabs1(X[i]);

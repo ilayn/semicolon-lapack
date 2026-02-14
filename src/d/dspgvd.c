@@ -37,12 +37,12 @@ void dspgvd(
     const char* jobz,
     const char* uplo,
     const int n,
-    double* restrict AP,
-    double* restrict BP,
-    double* restrict W,
-    double* restrict Z,
+    f64* restrict AP,
+    f64* restrict BP,
+    f64* restrict W,
+    f64* restrict Z,
     const int ldz,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* restrict iwork,
     const int liwork,
@@ -81,7 +81,7 @@ void dspgvd(
                 lwmin = 2 * n;
             }
         }
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -144,6 +144,6 @@ void dspgvd(
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

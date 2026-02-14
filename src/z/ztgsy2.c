@@ -84,33 +84,33 @@ void ztgsy2(
     const int ijob,
     const int m,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict C,
+    c128* const restrict C,
     const int ldc,
-    const double complex* const restrict D,
+    const c128* const restrict D,
     const int ldd,
-    const double complex* const restrict E,
+    const c128* const restrict E,
     const int lde,
-    double complex* const restrict F,
+    c128* const restrict F,
     const int ldf,
-    double* scale,
-    double* rdsum,
-    double* rdscal,
+    f64* scale,
+    f64* rdsum,
+    f64* rdscal,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notran;
     int i, ierr, j, k;
-    double scaloc;
-    double complex alpha;
+    f64 scaloc;
+    c128 alpha;
 
     int ipiv[LDZ], jpiv[LDZ];
-    double complex rhs[LDZ], z[LDZ * LDZ];
+    c128 rhs[LDZ], z[LDZ * LDZ];
 
     *info = 0;
     ierr = 0;
@@ -177,7 +177,7 @@ void ztgsy2(
                 if (ijob == 0) {
                     zgesc2(LDZ, z, LDZ, rhs, ipiv, jpiv, &scaloc);
                     if (scaloc != ONE) {
-                        double complex scaloc_cmplx = CMPLX(scaloc, ZERO);
+                        c128 scaloc_cmplx = CMPLX(scaloc, ZERO);
                         for (k = 0; k < n; k++) {
                             cblas_zscal(m, &scaloc_cmplx, &C[0 + k * ldc], 1);
                             cblas_zscal(m, &scaloc_cmplx, &F[0 + k * ldf], 1);
@@ -237,7 +237,7 @@ void ztgsy2(
                 }
                 zgesc2(LDZ, z, LDZ, rhs, ipiv, jpiv, &scaloc);
                 if (scaloc != ONE) {
-                    double complex scaloc_cmplx = CMPLX(scaloc, ZERO);
+                    c128 scaloc_cmplx = CMPLX(scaloc, ZERO);
                     for (k = 0; k < n; k++) {
                         cblas_zscal(m, &scaloc_cmplx, &C[0 + k * ldc], 1);
                         cblas_zscal(m, &scaloc_cmplx, &F[0 + k * ldf], 1);

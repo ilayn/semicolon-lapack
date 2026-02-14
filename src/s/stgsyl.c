@@ -120,32 +120,32 @@ void stgsyl(
     const int ijob,
     const int m,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict C,
+    f32* const restrict C,
     const int ldc,
-    const float* const restrict D,
+    const f32* const restrict D,
     const int ldd,
-    const float* const restrict E,
+    const f32* const restrict E,
     const int lde,
-    float* const restrict F,
+    f32* const restrict F,
     const int ldf,
-    float* scale,
-    float* dif,
-    float* const restrict work,
+    f32* scale,
+    f32* dif,
+    f32* const restrict work,
     const int lwork,
     int* const restrict iwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery, notran;
     int i, ie, ifunc, iround, is, isolve, j, je, js, k;
     int linfo, lwmin, mb, nb, p, ppqq, pq, q;
-    float dscale, dsum, scale2, scaloc;
+    f32 dscale, dsum, scale2, scaloc;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');
@@ -188,7 +188,7 @@ void stgsyl(
         } else {
             lwmin = 1;
         }
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -20;
@@ -239,9 +239,9 @@ void stgsyl(
                    iwork, &pq, info);
             if (dscale != ZERO) {
                 if (ijob == 1 || ijob == 3) {
-                    *dif = sqrtf((float)(2 * m * n)) / (dscale * sqrtf(dsum));
+                    *dif = sqrtf((f32)(2 * m * n)) / (dscale * sqrtf(dsum));
                 } else {
-                    *dif = sqrtf((float)pq) / (dscale * sqrtf(dsum));
+                    *dif = sqrtf((f32)pq) / (dscale * sqrtf(dsum));
                 }
             }
 
@@ -374,9 +374,9 @@ void stgsyl(
             }
             if (dscale != ZERO) {
                 if (ijob == 1 || ijob == 3) {
-                    *dif = sqrtf((float)(2 * m * n)) / (dscale * sqrtf(dsum));
+                    *dif = sqrtf((f32)(2 * m * n)) / (dscale * sqrtf(dsum));
                 } else {
-                    *dif = sqrtf((float)pq) / (dscale * sqrtf(dsum));
+                    *dif = sqrtf((f32)pq) / (dscale * sqrtf(dsum));
                 }
             }
             if (isolve == 2 && iround == 1) {
@@ -459,5 +459,5 @@ void stgsyl(
 
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

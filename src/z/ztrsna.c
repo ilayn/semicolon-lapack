@@ -59,23 +59,23 @@
  *                    - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztrsna(const char* job, const char* howmny, const int* select,
-            const int n, const double complex* T, const int ldt,
-            const double complex* VL, const int ldvl,
-            const double complex* VR, const int ldvr,
-            double* S, double* sep, const int mm, int* m,
-            double complex* work, const int ldwork,
-            double* rwork, int* info)
+            const int n, const c128* T, const int ldt,
+            const c128* VL, const int ldvl,
+            const c128* VR, const int ldvr,
+            f64* S, f64* sep, const int mm, int* m,
+            c128* work, const int ldwork,
+            f64* rwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantbh, wants, wantsp, somcon;
     int i, ierr, ix, j, k, kase, ks;
-    double bignum, eps, est, lnrm, rnrm, scale, smlnum, xnorm;
-    double complex prod;
+    f64 eps, est, lnrm, rnrm, scale, smlnum, xnorm;
+    c128 prod;
     char normin;
     int isave[3];
-    double complex dummy[1];
+    c128 dummy[1];
 
     /* Decode and test the input parameters */
     wantbh = (job[0] == 'B' || job[0] == 'b');
@@ -138,7 +138,6 @@ void ztrsna(const char* job, const char* howmny, const int* select,
     /* Get machine constants */
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
-    bignum = ONE / smlnum;
 
     ks = 0;
     for (k = 0; k < n; k++) {

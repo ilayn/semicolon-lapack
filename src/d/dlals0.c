@@ -8,25 +8,25 @@
 #include <math.h>
 #include <cblas.h>
 
-static inline double dlamc3(double a, double b)
+static inline f64 dlamc3(f64 a, f64 b)
 {
-    volatile double result = a + b;
+    volatile f64 result = a + b;
     return result;
 }
 
 void dlals0(const int icompq, const int nl, const int nr, const int sqre,
-            const int nrhs, double* const restrict B, const int ldb,
-            double* const restrict BX, const int ldbx,
+            const int nrhs, f64* const restrict B, const int ldb,
+            f64* const restrict BX, const int ldbx,
             const int* const restrict perm, const int givptr,
             const int* const restrict givcol, const int ldgcol,
-            const double* const restrict givnum, const int ldgnum,
-            const double* const restrict poles, const double* const restrict difl,
-            const double* const restrict difr, const double* const restrict Z,
-            const int k, const double c, const double s,
-            double* const restrict work, int* info)
+            const f64* const restrict givnum, const int ldgnum,
+            const f64* const restrict poles, const f64* const restrict difl,
+            const f64* const restrict difr, const f64* const restrict Z,
+            const int k, const f64 c, const f64 s,
+            f64* const restrict work, int* info)
 {
     int i, j, m, n, nlp1;
-    double diflj, difrj = 0.0, dj, dsigj, dsigjp = 0.0, temp;
+    f64 diflj, difrj = 0.0, dj, dsigj, dsigjp = 0.0, temp;
 
     *info = 0;
     n = nl + nr + 1;

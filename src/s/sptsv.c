@@ -45,9 +45,9 @@
 void sptsv(
     const int n,
     const int nrhs,
-    float* const restrict D,
-    float* const restrict E,
-    float* const restrict B,
+    f32* const restrict D,
+    f32* const restrict E,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {

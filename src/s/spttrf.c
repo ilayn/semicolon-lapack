@@ -33,13 +33,13 @@
  */
 void spttrf(
     const int n,
-    float* const restrict D,
-    float* const restrict E,
+    f32* const restrict D,
+    f32* const restrict E,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
     int i, i4;
-    float ei;
+    f32 ei;
 
     *info = 0;
     if (n < 0) {

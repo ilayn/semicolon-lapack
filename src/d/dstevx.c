@@ -58,16 +58,16 @@
  *                           converge.
  */
 void dstevx(const char* jobz, const char* range, const int n,
-            double* const restrict D, double* const restrict E,
-            const double vl, const double vu,
-            const int il, const int iu, const double abstol,
-            int* m, double* const restrict W,
-            double* const restrict Z, const int ldz,
-            double* const restrict work, int* const restrict iwork,
+            f64* const restrict D, f64* const restrict E,
+            const f64 vl, const f64 vu,
+            const int il, const int iu, const f64 abstol,
+            int* m, f64* const restrict W,
+            f64* const restrict Z, const int ldz,
+            f64* const restrict work, int* const restrict iwork,
             int* const restrict ifail, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Test the input parameters. */
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -125,24 +125,24 @@ void dstevx(const char* jobz, const char* range, const int n,
     }
 
     /* Get machine constants. */
-    double safmin = dlamch("S");
-    double eps = dlamch("P");
-    double smlnum = safmin / eps;
-    double bignum = ONE / smlnum;
-    double rmin = sqrt(smlnum);
-    double rmax_val = sqrt(bignum);
-    double rmax2 = ONE / sqrt(sqrt(safmin));
-    double rmax = rmax_val < rmax2 ? rmax_val : rmax2;
+    f64 safmin = dlamch("S");
+    f64 eps = dlamch("P");
+    f64 smlnum = safmin / eps;
+    f64 bignum = ONE / smlnum;
+    f64 rmin = sqrt(smlnum);
+    f64 rmax_val = sqrt(bignum);
+    f64 rmax2 = ONE / sqrt(sqrt(safmin));
+    f64 rmax = rmax_val < rmax2 ? rmax_val : rmax2;
 
     /* Scale matrix to allowable range, if necessary. */
     int iscale = 0;
-    double vll = ZERO, vuu = ZERO;
+    f64 vll = ZERO, vuu = ZERO;
     if (valeig) {
         vll = vl;
         vuu = vu;
     }
-    double tnrm = dlanst("M", n, D, E);
-    double sigma = ZERO;
+    f64 tnrm = dlanst("M", n, D, E);
+    f64 sigma = ZERO;
     if (tnrm > ZERO && tnrm < rmin) {
         iscale = 1;
         sigma = rmin / tnrm;
@@ -221,7 +221,7 @@ rescale:
     if (wantz) {
         for (int j = 0; j < *m - 1; j++) {
             int imin = 0;
-            double tmp1 = W[j];
+            f64 tmp1 = W[j];
             for (int jj = j + 1; jj < *m; jj++) {
                 if (W[jj] < tmp1) {
                     imin = jj;

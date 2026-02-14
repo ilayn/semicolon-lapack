@@ -60,25 +60,25 @@ void zhbgst(
     const int n,
     const int ka,
     const int kb,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    const double complex* const restrict BB,
+    const c128* const restrict BB,
     const int ldbb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
-    const double ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
 
     int update, upper, wantx;
     int i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
-    double bii;
-    double complex ra, ra1 = CZERO, t;
+    f64 bii;
+    c128 ra, ra1 = CZERO, t;
 
     *info = 0;
     wantx = (vect[0] == 'V' || vect[0] == 'v');

@@ -48,11 +48,11 @@
  *                           the first row of the current position of the block
  *                           being moved.
  */
-void strexc(const char* compq, const int n, float* T, const int ldt,
-            float* Q, const int ldq, int* ifst, int* ilst,
-            float* work, int* info)
+void strexc(const char* compq, const int n, f32* T, const int ldt,
+            f32* Q, const int ldq, int* ifst, int* ilst,
+            f32* work, int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int wantq;
     int here, nbf, nbl, nbnext;

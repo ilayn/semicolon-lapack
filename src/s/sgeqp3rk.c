@@ -81,16 +81,16 @@ void sgeqp3rk(
     const int n,
     const int nrhs,
     const int kmax,
-    float abstol,
-    float reltol,
-    float* const restrict A,
+    f32 abstol,
+    f32 reltol,
+    f32* const restrict A,
     const int lda,
     int* K,
-    float* maxc2nrmk,
-    float* relmaxc2nrmk,
+    f32* maxc2nrmk,
+    f32* relmaxc2nrmk,
     int* restrict jpiv,
-    float* restrict tau,
-    float* restrict work,
+    f32* restrict tau,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     int* info)
@@ -98,7 +98,7 @@ void sgeqp3rk(
     int lquery, done;
     int iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
     int kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
-    float eps, hugeval, maxc2nrm, safmin;
+    f32 eps, hugeval, maxc2nrm, safmin;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -128,7 +128,7 @@ void sgeqp3rk(
             nb = 32;
             lwkopt = 2 * n + nb * (n + nrhs + 1);
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < iws && !lquery) {
             *info = -15;
@@ -146,7 +146,7 @@ void sgeqp3rk(
         *K = 0;
         *maxc2nrmk = 0.0f;
         *relmaxc2nrmk = 0.0f;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -170,7 +170,7 @@ void sgeqp3rk(
         *maxc2nrmk = maxc2nrm;
         *relmaxc2nrmk = maxc2nrm;
 
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -184,7 +184,7 @@ void sgeqp3rk(
             tau[j] = 0.0f;
         }
 
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
 
     }
@@ -204,7 +204,7 @@ void sgeqp3rk(
         for (j = 0; j < minmn; j++) {
             tau[j] = 0.0f;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -231,7 +231,7 @@ void sgeqp3rk(
             tau[j] = 0.0f;
         }
 
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -287,7 +287,7 @@ void sgeqp3rk(
                     *info = ioffset + iinfo;
                 }
 
-                work[0] = (float)lwkopt;
+                work[0] = (f32)lwkopt;
 
                 return;
 
@@ -339,5 +339,5 @@ void sgeqp3rk(
 
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

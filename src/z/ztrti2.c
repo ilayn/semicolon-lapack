@@ -29,15 +29,15 @@ void ztrti2(
     const char* uplo,
     const char* diag,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int *info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int upper, nounit;
     int j;
-    double complex ajj;
+    c128 ajj;
 
     // Test the input parameters
     *info = 0;

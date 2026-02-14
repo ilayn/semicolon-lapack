@@ -45,9 +45,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztzrzf(const int m, const int n,
-            double complex * const restrict A, const int lda,
-            double complex * const restrict tau,
-            double complex * const restrict work, const int lwork,
+            c128 * const restrict A, const int lda,
+            c128 * const restrict tau,
+            c128 * const restrict work, const int lwork,
             int *info)
 {
     int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
@@ -76,7 +76,7 @@ void ztzrzf(const int m, const int n,
             lwkopt = m * nb;
             lwkmin = m > 1 ? m : 1;
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -7;
@@ -217,5 +217,5 @@ void ztzrzf(const int m, const int n,
         zlatrz(mu, n, n - m, A, lda, tau, work);
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

@@ -62,17 +62,17 @@ void dgelst(
     const int m,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
     int lquery, tpsd;
     int brow, i, iascl, ibscl, j, lwopt, mn, mnnrhs, nb, nbmin, scllen;
-    double anrm, bignum, bnrm, smlnum;
+    f64 anrm, bignum, bnrm, smlnum;
     int max_mn, max_ldb;
 
     *info = 0;
@@ -112,7 +112,7 @@ void dgelst(
 
         mnnrhs = (mn > nrhs) ? mn : nrhs;
         lwopt = (1 > (mn + mnnrhs) * nb) ? 1 : ((mn + mnnrhs) * nb);
-        work[0] = (double)lwopt;
+        work[0] = (f64)lwopt;
 
     }
 
@@ -126,7 +126,7 @@ void dgelst(
     max_mn = (m > n) ? m : n;
     if (mn == 0 || nrhs == 0) {
         dlaset("F", max_mn, nrhs, 0.0, 0.0, B, ldb);
-        work[0] = (double)lwopt;
+        work[0] = (f64)lwopt;
         return;
     }
 
@@ -156,7 +156,7 @@ void dgelst(
     } else if (anrm == 0.0) {
 
         dlaset("F", max_mn, nrhs, 0.0, 0.0, B, ldb);
-        work[0] = (double)lwopt;
+        work[0] = (f64)lwopt;
         return;
     }
 
@@ -264,5 +264,5 @@ void dgelst(
         dlascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, info);
     }
 
-    work[0] = (double)lwopt;
+    work[0] = (f64)lwopt;
 }

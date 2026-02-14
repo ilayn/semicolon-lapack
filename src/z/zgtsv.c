@@ -48,16 +48,16 @@
 void zgtsv(
     const int n,
     const int nrhs,
-    double complex* const restrict DL,
-    double complex* const restrict D,
-    double complex* const restrict DU,
-    double complex* const restrict B,
+    c128* const restrict DL,
+    c128* const restrict D,
+    c128* const restrict DU,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int j, k;
-    double complex mult, temp;
+    c128 mult, temp;
     int ldb_min;
 
     *info = 0;

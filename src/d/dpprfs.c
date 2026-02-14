@@ -44,29 +44,29 @@ void dpprfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict AP,
-    const double* const restrict AFP,
-    const double* const restrict B,
+    const f64* const restrict AP,
+    const f64* const restrict AFP,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // dpprfs.f lines 189-198: Parameters
     const int ITMAX = 5;  // dpprfs.f line 190
-    const double ZERO = 0.0;  // dpprfs.f line 192
-    const double ONE = 1.0;  // dpprfs.f line 194
-    const double TWO = 2.0;  // dpprfs.f line 196
-    const double THREE = 3.0;  // dpprfs.f line 198
+    const f64 ZERO = 0.0;  // dpprfs.f line 192
+    const f64 ONE = 1.0;  // dpprfs.f line 194
+    const f64 TWO = 2.0;  // dpprfs.f line 196
+    const f64 THREE = 3.0;  // dpprfs.f line 198
 
     // dpprfs.f lines 201-206: Local Scalars and Arrays
     int upper;
     int count, i, ik, j, k, kase, kk, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int locinfo;
 

@@ -37,16 +37,16 @@
  */
 void zgetri(
     const int n,
-    double complex * const restrict A,
+    c128 * const restrict A,
     const int lda,
     const int * const restrict ipiv,
-    double complex * const restrict work,
+    c128 * const restrict work,
     const int lwork,
     int *info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int lquery;
     int i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
@@ -55,7 +55,7 @@ void zgetri(
     *info = 0;
     nb = lapack_get_nb("GETRI");
     lwkopt = (n > 1) ? n * nb : 1;
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 
     lquery = (lwork == -1);
     if (n < 0) {
@@ -149,5 +149,5 @@ void zgetri(
         }
     }
 
-    work[0] = (double complex)iws;
+    work[0] = (c128)iws;
 }

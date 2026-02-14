@@ -40,10 +40,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void stplqt(const int m, const int n, const int l, const int mb,
-            float* const restrict A, const int lda,
-            float* const restrict B, const int ldb,
-            float* const restrict T, const int ldt,
-            float* const restrict work, int* info)
+            f32* const restrict A, const int lda,
+            f32* const restrict B, const int ldb,
+            f32* const restrict T, const int ldt,
+            f32* const restrict work, int* info)
 {
     int i, ib, lb, nb, iinfo;
     int minmn;

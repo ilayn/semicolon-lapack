@@ -38,15 +38,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sspgst(const int itype, const char* uplo, const int n,
-            float* const restrict AP, const float* const restrict BP,
+            f32* const restrict AP, const f32* const restrict BP,
             int* info)
 {
-    const float ONE = 1.0f;
-    const float HALF = 0.5f;
+    const f32 ONE = 1.0f;
+    const f32 HALF = 0.5f;
 
     int upper;
     int j, j1, j1j1, jj, k, k1, k1k1, kk;
-    float ajj, akk, bjj, bkk, ct;
+    f32 ajj, akk, bjj, bkk, ct;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

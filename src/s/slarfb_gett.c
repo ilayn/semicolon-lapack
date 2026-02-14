@@ -67,13 +67,13 @@ void slarfb_gett(
     const int m,
     const int n,
     const int k,
-    const float* const restrict T,
+    const f32* const restrict T,
     const int ldt,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict work,
+    f32* restrict work,
     const int ldwork)
 {
     int lnotident;

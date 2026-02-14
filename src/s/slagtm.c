@@ -41,19 +41,19 @@ void slagtm(
     const char* trans,
     const int n,
     const int nrhs,
-    const float alpha,
-    const float * const restrict DL,
-    const float * const restrict D,
-    const float * const restrict DU,
-    const float * const restrict X,
+    const f32 alpha,
+    const f32 * const restrict DL,
+    const f32 * const restrict D,
+    const f32 * const restrict DU,
+    const f32 * const restrict X,
     const int ldx,
-    const float beta,
-    float * const restrict B,
+    const f32 beta,
+    f32 * const restrict B,
     const int ldb)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
 
     int i, j;
 

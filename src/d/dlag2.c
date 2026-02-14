@@ -30,29 +30,29 @@
  * @param[out]    wi      Imaginary part of eigenvalues (scaled by scale1). Non-negative.
  */
 void dlag2(
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    const double safmin,
-    double* scale1,
-    double* scale2,
-    double* wr1,
-    double* wr2,
-    double* wi)
+    const f64 safmin,
+    f64* scale1,
+    f64* scale2,
+    f64* wr1,
+    f64* wr2,
+    f64* wi)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HALF = ONE / TWO;
-    const double FUZZY1 = ONE + 1.0e-5;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = ONE / TWO;
+    const f64 FUZZY1 = ONE + 1.0e-5;
 
-    double a11, a12, a21, a22, abi22, anorm, as11, as12;
-    double as22, ascale, b11, b12, b22, binv11, binv22;
-    double bmin, bnorm, bscale, bsize, c1, c2, c3, c4, c5;
-    double diff, discr, pp, qq, r, rtmax, rtmin, s1, s2;
-    double safmax, shift, ss, sum, wabs, wbig, wdet;
-    double wscale, wsize, wsmall;
+    f64 a11, a12, a21, a22, abi22, anorm, as11, as12;
+    f64 as22, ascale, b11, b12, b22, binv11, binv22;
+    f64 bmin, bnorm, bscale, bsize, c1, c2, c3, c4, c5;
+    f64 diff, discr, pp, qq, r, rtmax, rtmin, s1, s2;
+    f64 safmax, shift, ss, sum, wabs, wbig, wdet;
+    f64 wscale, wsize, wsmall;
 
     rtmin = sqrt(safmin);
     rtmax = ONE / rtmin;
@@ -60,7 +60,7 @@ void dlag2(
 
     anorm = fabs(A[0 + 0 * lda]) + fabs(A[1 + 0 * lda]);
     {
-        double tmp = fabs(A[0 + 1 * lda]) + fabs(A[1 + 1 * lda]);
+        f64 tmp = fabs(A[0 + 1 * lda]) + fabs(A[1 + 1 * lda]);
         if (tmp > anorm) anorm = tmp;
     }
     if (safmin > anorm) anorm = safmin;
@@ -74,10 +74,10 @@ void dlag2(
     b12 = B[0 + 1 * ldb];
     b22 = B[1 + 1 * ldb];
     {
-        double tmp1 = fabs(b11);
-        double tmp2 = fabs(b12);
-        double tmp3 = fabs(b22);
-        double tmp = tmp1;
+        f64 tmp1 = fabs(b11);
+        f64 tmp2 = fabs(b12);
+        f64 tmp3 = fabs(b22);
+        f64 tmp = tmp1;
         if (tmp2 > tmp) tmp = tmp2;
         if (tmp3 > tmp) tmp = tmp3;
         if (rtmin > tmp) tmp = rtmin;
@@ -89,7 +89,7 @@ void dlag2(
         b22 = (b22 >= ZERO) ? bmin : -bmin;
 
     {
-        double tmp = fabs(b12) + fabs(b22);
+        f64 tmp = fabs(b12) + fabs(b22);
         bnorm = fabs(b11);
         if (tmp > bnorm) bnorm = tmp;
         if (safmin > bnorm) bnorm = safmin;
@@ -167,7 +167,7 @@ void dlag2(
     c2 = safmin * (ONE > bnorm ? ONE : bnorm);
     c3 = bsize * safmin;
     if (ascale <= ONE && bsize <= ONE) {
-        double tmp = ascale / safmin;
+        f64 tmp = ascale / safmin;
         c4 = (ONE < tmp * bsize) ? ONE : tmp * bsize;
     } else {
         c4 = ONE;
@@ -180,9 +180,9 @@ void dlag2(
 
     wabs = fabs(*wr1) + fabs(*wi);
     {
-        double tmp1 = wabs * c2 + c3;
-        double tmp2 = (wabs > c5) ? wabs : c5;
-        double tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
+        f64 tmp1 = wabs * c2 + c3;
+        f64 tmp2 = (wabs > c5) ? wabs : c5;
+        f64 tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
         wsize = safmin;
         if (c1 > wsize) wsize = c1;
         if (FUZZY1 * tmp1 > wsize) wsize = FUZZY1 * tmp1;
@@ -191,12 +191,12 @@ void dlag2(
     if (wsize != ONE) {
         wscale = ONE / wsize;
         if (wsize > ONE) {
-            double tmp1 = (ascale > bsize) ? ascale : bsize;
-            double tmp2 = (ascale < bsize) ? ascale : bsize;
+            f64 tmp1 = (ascale > bsize) ? ascale : bsize;
+            f64 tmp2 = (ascale < bsize) ? ascale : bsize;
             *scale1 = (tmp1 * wscale) * tmp2;
         } else {
-            double tmp1 = (ascale < bsize) ? ascale : bsize;
-            double tmp2 = (ascale > bsize) ? ascale : bsize;
+            f64 tmp1 = (ascale < bsize) ? ascale : bsize;
+            f64 tmp2 = (ascale > bsize) ? ascale : bsize;
             *scale1 = (tmp1 * wscale) * tmp2;
         }
         *wr1 = *wr1 * wscale;
@@ -213,9 +213,9 @@ void dlag2(
     if (*wi == ZERO) {
         wabs = fabs(*wr2);
         {
-            double tmp1 = wabs * c2 + c3;
-            double tmp2 = (wabs > c5) ? wabs : c5;
-            double tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
+            f64 tmp1 = wabs * c2 + c3;
+            f64 tmp2 = (wabs > c5) ? wabs : c5;
+            f64 tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
             wsize = safmin;
             if (c1 > wsize) wsize = c1;
             if (FUZZY1 * tmp1 > wsize) wsize = FUZZY1 * tmp1;
@@ -224,12 +224,12 @@ void dlag2(
         if (wsize != ONE) {
             wscale = ONE / wsize;
             if (wsize > ONE) {
-                double tmp1 = (ascale > bsize) ? ascale : bsize;
-                double tmp2 = (ascale < bsize) ? ascale : bsize;
+                f64 tmp1 = (ascale > bsize) ? ascale : bsize;
+                f64 tmp2 = (ascale < bsize) ? ascale : bsize;
                 *scale2 = (tmp1 * wscale) * tmp2;
             } else {
-                double tmp1 = (ascale < bsize) ? ascale : bsize;
-                double tmp2 = (ascale > bsize) ? ascale : bsize;
+                f64 tmp1 = (ascale < bsize) ? ascale : bsize;
+                f64 tmp2 = (ascale > bsize) ? ascale : bsize;
                 *scale2 = (tmp1 * wscale) * tmp2;
             }
             *wr2 = *wr2 * wscale;

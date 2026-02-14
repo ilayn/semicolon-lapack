@@ -40,19 +40,19 @@ void ztbcon(
     const char* diag,
     const int n,
     const int kd,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    double* rcond,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int nounit, onenrm, upper;
     int ix, kase, kase1;
-    double ainvnm, anorm, scale, smlnum, xnorm;
+    f64 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
     char normin;
 

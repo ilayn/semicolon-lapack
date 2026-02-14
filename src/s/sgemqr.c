@@ -49,10 +49,10 @@
  */
 void sgemqr(const char* side, const char* trans,
             const int m, const int n, const int k,
-            const float* const restrict A, const int lda,
-            const float* const restrict T, const int tsize,
-            float* const restrict C, const int ldc,
-            float* const restrict work, const int lwork,
+            const f32* const restrict A, const int lda,
+            const f32* const restrict T, const int tsize,
+            f32* const restrict C, const int ldc,
+            f32* const restrict work, const int lwork,
             int* info)
 {
     int left, right, tran, notran, lquery;
@@ -112,7 +112,7 @@ void sgemqr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
     }
 
     if (*info != 0) {
@@ -139,5 +139,5 @@ void sgemqr(const char* side, const char* trans,
                  A, lda, &T[5], nb, C, ldc, work, lwork, info);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

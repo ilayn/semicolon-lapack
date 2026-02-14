@@ -58,10 +58,10 @@
  */
 void zunmqr(const char* side, const char* trans,
             const int m, const int n, const int k,
-            const double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work, const int lwork,
+            const c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work, const int lwork,
             int* info)
 {
     const int NBMAX = 64;
@@ -110,7 +110,7 @@ void zunmqr(const char* side, const char* trans,
             nb = NBMAX;
         }
         lwkopt = nw * nb + TSIZE;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -180,5 +180,5 @@ void zunmqr(const char* side, const char* trans,
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

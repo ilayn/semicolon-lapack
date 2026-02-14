@@ -70,19 +70,19 @@
  *                           the Schur form no longer satisfy select=true.
  */
 void dgees(const char* jobvs, const char* sort, dselect2_t select,
-           const int n, double* A, const int lda, int* sdim,
-           double* wr, double* wi,
-           double* VS, const int ldvs,
-           double* work, const int lwork, int* bwork, int* info)
+           const int n, f64* A, const int lda, int* sdim,
+           f64* wr, f64* wi,
+           f64* VS, const int ldvs,
+           f64* work, const int lwork, int* bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int cursl, lastsl, lquery, lst2sl, scalea, wantst, wantvs;
     int hswork, i, i1, i2, ibal, icond, ierr, ieval;
     int ihi, ilo, inxt, ip, itau, iwrk, maxwrk, minwrk;
-    double anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
-    double dum[1];
+    f64 anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
+    f64 dum[1];
     int idum[1];
     int nb_gehrd, nb_orghr;
 
@@ -130,7 +130,7 @@ void dgees(const char* jobvs, const char* sort, dselect2_t select,
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
             }
         }
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -309,5 +309,5 @@ void dgees(const char* jobvs, const char* sort, dselect2_t select,
         }
     }
 
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 }

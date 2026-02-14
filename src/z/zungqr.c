@@ -38,21 +38,21 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zungqr(const int m, const int n, const int k,
-            double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict work, const int lwork,
+            c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const int lwork,
             int* info)
 {
     int nb, nbmin, nx, iws, ldwork, lwkopt;
     int i, ib, iinfo, j, l;
     int ki, kk;
     int lquery;
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     *info = 0;
     nb = lapack_get_nb("ORGQR");
     lwkopt = (n > 1 ? n : 1) * nb;
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
     lquery = (lwork == -1);
 
     if (m < 0) {
@@ -152,5 +152,5 @@ void zungqr(const int m, const int n, const int k,
         }
     }
 
-    work[0] = CMPLX((double)iws, 0.0);
+    work[0] = CMPLX((f64)iws, 0.0);
 }

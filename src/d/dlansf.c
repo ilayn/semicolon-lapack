@@ -43,19 +43,19 @@
  *
  * @return The norm value.
  */
-double dlansf(
+f64 dlansf(
     const char* norm,
     const char* transr,
     const char* uplo,
     const int n,
-    const double* const restrict A,
-    double* const restrict work)
+    const f64* const restrict A,
+    f64* const restrict work)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j, ifm, ilu, noe, n1, k, l, lda;
-    double scale, s, value, aa, temp;
+    f64 scale, s, value, aa, temp;
 
     if (n == 0) {
         return ZERO;

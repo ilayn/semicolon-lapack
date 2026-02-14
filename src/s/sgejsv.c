@@ -8,8 +8,8 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
 
 /* Helper: max of 3 integers */
 static inline int max3i(int a, int b, int c) {
@@ -352,17 +352,17 @@ static inline int max3i(int a, int b, int c) {
 void sgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
             const int m, const int n,
-            float* const restrict A, const int lda,
-            float* const restrict SVA,
-            float* const restrict U, const int ldu,
-            float* const restrict V, const int ldv,
-            float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            f32* const restrict SVA,
+            f32* const restrict U, const int ldu,
+            f32* const restrict V, const int ldv,
+            f32* const restrict work, const int lwork,
             int* const restrict iwork, int* info)
 {
     /* Local variables */
-    float aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
-    float condr1, condr2, entra, entrat, epsln, maxprj, scalem;
-    float sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
+    f32 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
+    f32 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
+    f32 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
     int ierr, n1, nr, numrank, p, q, warning;
     int almort, defr, errest, goscal, jracc, kill, lsvec;
     int l2aber, l2kill, l2pert, l2rank, l2tran;
@@ -485,7 +485,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Chunk 4: Initialize SVA = ||A e_i||_2, with scaling                  */
     /* -------------------------------------------------------------------- */
 
-    scalem = ONE / sqrtf((float)m * (float)n);
+    scalem = ONE / sqrtf((f32)m * (f32)n);
     noscal = 1;
     goscal = 1;
 
@@ -642,7 +642,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             big1 = ((SVA[p] / xsc) * (SVA[p] / xsc)) * temp1;
             if (big1 != ZERO) entra = entra + big1 * logf(big1);
         }
-        entra = -entra / logf((float)n);
+        entra = -entra / logf((f32)n);
 
         /* Same for row norms (A * A^t diagonal) */
         entrat = ZERO;
@@ -650,7 +650,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             big1 = ((work[n + p] / xsc) * (work[n + p] / xsc)) * temp1;
             if (big1 != ZERO) entrat = entrat + big1 * logf(big1);
         }
-        entrat = -entrat / logf((float)m);
+        entrat = -entrat / logf((f32)m);
 
         /* Decide: if row entropy < column entropy, use transpose */
         transp = (entrat < entra);
@@ -694,7 +694,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
      * has Euclidean norm equal to sqrt(BIG/N). */
 
     big1 = sqrtf(big);
-    temp1 = sqrtf(big / (float)n);
+    temp1 = sqrtf(big / (f32)n);
 
     slascl("G", 0, 0, aapp, temp1, n, 1, SVA, n, &ierr);
     if (aaqq > aapp * sfmin) {
@@ -767,7 +767,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
 
     if (l2aber) {
         /* JOBA='A': Aggressive - treat small singular values as noise */
-        temp1 = sqrtf((float)n) * epsln;
+        temp1 = sqrtf((f32)n) * epsln;
         for (p = 1; p < n; p++) {
             if (fabsf(A[p + p * lda]) >= temp1 * fabsf(A[0])) {
                 nr++;
@@ -809,7 +809,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             temp1 = fabsf(A[p + p * lda]) / SVA[iwork[p]];
             if (temp1 < maxprj) maxprj = temp1;
         }
-        if (maxprj * maxprj >= ONE - (float)n * epsln) {
+        if (maxprj * maxprj >= ONE - (f32)n * epsln) {
             almort = 1;
         }
     }
@@ -856,7 +856,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Phase 4: SVD computation branches                                    */
     /* -------------------------------------------------------------------- */
 
-    cond_ok = sqrtf((float)nr);
+    cond_ok = sqrtf((f32)nr);
 
     if (!rsvec && !lsvec) {
         /* ============================================================== */
@@ -873,7 +873,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             /* Apply perturbation if L2PERT */
             if (l2pert) {
                 /* NOTE: Fortran uses EPSLN/N, not sqrt(SMALL) */
-                xsc = epsln / (float)n;
+                xsc = epsln / (f32)n;
                 for (q = 0; q < nr; q++) {
                     temp1 = xsc * fabsf(A[q + q * lda]);
                     for (p = 0; p < nr; p++) {
@@ -898,7 +898,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
         /* Final perturbation */
         if (l2pert) {
             /* NOTE: Fortran uses EPSLN/N, not sqrt(SMALL) */
-            xsc = epsln / (float)n;
+            xsc = epsln / (f32)n;
             for (q = 0; q < nr; q++) {
                 temp1 = xsc * fabsf(A[q + q * lda]);
                 for (p = 0; p < nr; p++) {
@@ -1065,7 +1065,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                        &work[2 * n + nr * nr], &iwork[m + 2 * n], &ierr);
                 condr1 = ONE / sqrtf(temp1);
 
-                cond_ok = sqrtf((float)nr);
+                cond_ok = sqrtf((f32)nr);
 
                 if (condr1 < cond_ok) {
                     /* R1 is well-conditioned: second QRF without pivoting */
@@ -1252,7 +1252,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                 }
 
                 /* Permute rows of V by first QRP column pivots and normalize */
-                temp1 = sqrtf((float)n) * epsln;
+                temp1 = sqrtf((f32)n) * epsln;
                 for (q = 0; q < n; q++) {
                     for (p = 0; p < n; p++) {
                         work[2 * n + n * nr + nr + iwork[p]] = V[p + q * ldv];
@@ -1278,7 +1278,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                 sormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
 
                 /* Normalize U columns */
-                temp1 = sqrtf((float)m) * epsln;
+                temp1 = sqrtf((f32)m) * epsln;
                 for (p = 0; p < nr; p++) {
                     xsc = ONE / cblas_snrm2(m, &U[p * ldu], 1);
                     if (xsc < (ONE - temp1) || xsc > (ONE + temp1)) {
@@ -1330,7 +1330,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                     cblas_scopy(n, &work[n + p], n, &V[iwork[p]], ldv);
                 }
 
-                temp1 = sqrtf((float)n) * epsln;
+                temp1 = sqrtf((f32)n) * epsln;
                 for (p = 0; p < n; p++) {
                     xsc = ONE / cblas_snrm2(n, &V[p * ldv], 1);
                     if (xsc < (ONE - temp1) || xsc > (ONE + temp1)) {
@@ -1349,7 +1349,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
 
                 sormqr("L", "N", m, n1, n, A, lda, work, U, ldu, &work[n], lwork - n, &ierr);
 
-                temp1 = sqrtf((float)m) * epsln;
+                temp1 = sqrtf((f32)m) * epsln;
                 for (p = 0; p < n1; p++) {
                     xsc = ONE / cblas_snrm2(m, &U[p * ldu], 1);
                     if (xsc < (ONE - temp1) || xsc > (ONE + temp1)) {
@@ -1420,7 +1420,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                    V, ldv, &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, &ierr);
 
             /* Permute rows and normalize */
-            temp1 = sqrtf((float)n) * epsln;
+            temp1 = sqrtf((f32)n) * epsln;
             for (q = 0; q < n; q++) {
                 for (p = 0; p < n; p++) {
                     work[2 * n + n * nr + nr + iwork[p]] = V[p + q * ldv];

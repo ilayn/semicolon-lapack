@@ -48,13 +48,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelqt3(const int m, const int n,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict T, const int ldt,
+             c128* const restrict A, const int lda,
+             c128* const restrict T, const int ldt,
              int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEGONE = CMPLX(-1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEGONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, j, m1, m2, i1, j1, iinfo;
 

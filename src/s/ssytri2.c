@@ -39,10 +39,10 @@
 void ssytri2(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
@@ -77,7 +77,7 @@ void ssytri2(
         xerbla("SSYTRI2", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (float)minsize;
+        work[0] = (f32)minsize;
         return;
     }
 

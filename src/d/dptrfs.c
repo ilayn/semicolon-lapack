@@ -48,27 +48,27 @@
 void dptrfs(
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double* const restrict E,
-    const double* const restrict DF,
-    const double* const restrict EF,
-    const double* const restrict B,
+    const f64* const restrict D,
+    const f64* const restrict E,
+    const f64* const restrict DF,
+    const f64* const restrict EF,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     int* info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int count, i, ix, j, nz;
-    double bi, cx, dx, ex, eps, lstres, s, safe1, safe2, safmin;
+    f64 bi, cx, dx, ex, eps, lstres, s, safe1, safe2, safmin;
     int max_n_1 = (1 > n) ? 1 : n;
     int info_local;
 

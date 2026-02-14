@@ -32,14 +32,14 @@
  * @param[out] csl    The vector (CSL, SNL) is a unit left singular vector
  *                    for the singular value abs(SSMAX).
  */
-void dlasv2(const double f, const double g, const double h,
-            double* ssmin, double* ssmax,
-            double* snr, double* csr, double* snl, double* csl)
+void dlasv2(const f64 f, const f64 g, const f64 h,
+            f64* ssmin, f64* ssmax,
+            f64* snr, f64* csr, f64* snl, f64* csl)
 {
     int gasmal, swap, pmax;
-    double a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m;
-    double mm, r, s, slt, srt, t, temp, tsign, tt;
-    double eps;
+    f64 a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m;
+    f64 mm, r, s, slt, srt, t, temp, tsign, tt;
+    f64 eps;
 
     ft = f;
     fa = fabs(ft);

@@ -50,9 +50,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dlaswlq(const int m, const int n, const int mb, const int nb,
-             double* const restrict A, const int lda,
-             double* const restrict T, const int ldt,
-             double* const restrict work, const int lwork,
+             f64* const restrict A, const int lda,
+             f64* const restrict T, const int ldt,
+             f64* const restrict work, const int lwork,
              int* info)
 {
     int lquery;
@@ -87,7 +87,7 @@ void dlaswlq(const int m, const int n, const int mb, const int nb,
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
     }
 
     if (*info != 0) {
@@ -128,5 +128,5 @@ void dlaswlq(const int m, const int n, const int mb, const int nb,
                lda, &T[0 + ctr * m * ldt], ldt, work, info);
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

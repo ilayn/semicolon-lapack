@@ -7,7 +7,7 @@
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
+static const f32 ZERO = 0.0f;
 
 /**
  * SLASDQ computes the singular value decomposition (SVD) of a real
@@ -38,15 +38,15 @@ static const float ZERO = 0.0f;
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void slasdq(const char* uplo, const int sqre, const int n, const int ncvt,
-            const int nru, const int ncc, float* const restrict D,
-            float* const restrict E, float* const restrict VT, const int ldvt,
-            float* const restrict U, const int ldu,
-            float* const restrict C, const int ldc,
-            float* const restrict work, int* info)
+            const int nru, const int ncc, f32* const restrict D,
+            f32* const restrict E, f32* const restrict VT, const int ldvt,
+            f32* const restrict U, const int ldu,
+            f32* const restrict C, const int ldc,
+            f32* const restrict work, int* info)
 {
     int rotate;
     int i, isub, iuplo, j, np1, sqre1;
-    float cs, r, smin, sn;
+    f32 cs, r, smin, sn;
 
     /* Test the input parameters */
     *info = 0;

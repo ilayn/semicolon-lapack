@@ -63,20 +63,20 @@ void zgbequb(
     const int n,
     const int kl,
     const int ku,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    double* const restrict R,
-    double* const restrict C,
-    double* rowcnd,
-    double* colcnd,
-    double* amax,
+    f64* const restrict R,
+    f64* const restrict C,
+    f64* rowcnd,
+    f64* colcnd,
+    f64* amax,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j;
-    double bignum, rcmax, rcmin, smlnum, radix, logrdx;
+    f64 bignum, rcmax, rcmin, smlnum, radix, logrdx;
 
     /* Test the input parameters */
     *info = 0;
@@ -125,8 +125,8 @@ void zgbequb(
         int i_start = (j - ku > 0) ? j - ku : 0;
         int i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
-            double complex zdum = AB[ku + i - j + j * ldab];
-            double abs_val = fabs(creal(zdum)) + fabs(cimag(zdum));
+            c128 zdum = AB[ku + i - j + j * ldab];
+            f64 abs_val = fabs(creal(zdum)) + fabs(cimag(zdum));
             if (abs_val > R[i]) {
                 R[i] = abs_val;
             }
@@ -164,7 +164,7 @@ void zgbequb(
     } else {
         /* Invert the scale factors */
         for (i = 0; i < m; i++) {
-            double ri = R[i];
+            f64 ri = R[i];
             if (ri < smlnum) {
                 ri = smlnum;
             }
@@ -175,8 +175,8 @@ void zgbequb(
         }
 
         /* Compute rowcnd = min(R(i)) / max(R(i)) */
-        double rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
-        double rcmax_clamped = rcmax < bignum ? rcmax : bignum;
+        f64 rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
+        f64 rcmax_clamped = rcmax < bignum ? rcmax : bignum;
         *rowcnd = rcmin_clamped / rcmax_clamped;
     }
 
@@ -191,8 +191,8 @@ void zgbequb(
         int i_start = (j - ku > 0) ? j - ku : 0;
         int i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
-            double complex zdum = AB[ku + i - j + j * ldab];
-            double scaled_val = (fabs(creal(zdum)) + fabs(cimag(zdum))) * R[i];
+            c128 zdum = AB[ku + i - j + j * ldab];
+            f64 scaled_val = (fabs(creal(zdum)) + fabs(cimag(zdum))) * R[i];
             if (scaled_val > C[j]) {
                 C[j] = scaled_val;
             }
@@ -226,7 +226,7 @@ void zgbequb(
     } else {
         /* Invert the scale factors */
         for (j = 0; j < n; j++) {
-            double cj = C[j];
+            f64 cj = C[j];
             if (cj < smlnum) {
                 cj = smlnum;
             }
@@ -237,8 +237,8 @@ void zgbequb(
         }
 
         /* Compute colcnd = min(C(j)) / max(C(j)) */
-        double rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
-        double rcmax_clamped = rcmax < bignum ? rcmax : bignum;
+        f64 rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
+        f64 rcmax_clamped = rcmax < bignum ? rcmax : bignum;
         *colcnd = rcmin_clamped / rcmax_clamped;
     }
 }

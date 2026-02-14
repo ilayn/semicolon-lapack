@@ -61,18 +61,18 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void strevc(const char* side, const char* howmny, int* select, const int n,
-            const float* T, const int ldt, float* VL, const int ldvl,
-            float* VR, const int ldvr, const int mm, int* m,
-            float* work, int* info)
+            const f32* T, const int ldt, f32* VL, const int ldvl,
+            f32* VR, const int ldvr, const int mm, int* m,
+            f32* work, int* info)
 {
     /* Local scalars */
     int allv, bothv, leftv, over, pair, rightv, somev;
     int i, ierr, ii, ip, is, j, j1, j2, jnxt, k, ki, n2;
-    float beta, bignum, emax, rec, remax, scale;
-    float smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
+    f32 beta, bignum, emax, rec, remax, scale;
+    f32 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
 
     /* Local array */
-    float x[4];  /* 2x2 stored column-major: x[0]=X(1,1), x[1]=X(2,1), x[2]=X(1,2), x[3]=X(2,2) */
+    f32 x[4];  /* 2x2 stored column-major: x[0]=X(1,1), x[1]=X(2,1), x[2]=X(1,2), x[3]=X(2,2) */
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -145,7 +145,7 @@ void strevc(const char* side, const char* howmny, int* select, const int n,
     /* Set the constants to control overflow */
     unfl = FLT_MIN;
     ulp = FLT_EPSILON;
-    smlnum = unfl * ((float)n / ulp);
+    smlnum = unfl * ((f32)n / ulp);
     bignum = (1.0f - ulp) / smlnum;
 
     /* Compute 1-norm of each column of strictly upper triangular
@@ -407,7 +407,7 @@ void strevc(const char* side, const char* howmny, int* select, const int n,
 
                     emax = 0.0f;
                     for (k = 0; k <= ki; k++) {
-                        float temp = fabsf(VR[k + (is - 1) * ldvr]) + fabsf(VR[k + is * ldvr]);
+                        f32 temp = fabsf(VR[k + (is - 1) * ldvr]) + fabsf(VR[k + is * ldvr]);
                         if (temp > emax) emax = temp;
                     }
 
@@ -435,7 +435,7 @@ void strevc(const char* side, const char* howmny, int* select, const int n,
 
                     emax = 0.0f;
                     for (k = 0; k < n; k++) {
-                        float temp = fabsf(VR[k + (ki - 1) * ldvr]) + fabsf(VR[k + ki * ldvr]);
+                        f32 temp = fabsf(VR[k + (ki - 1) * ldvr]) + fabsf(VR[k + ki * ldvr]);
                         if (temp > emax) emax = temp;
                     }
                     remax = 1.0f / emax;
@@ -731,7 +731,7 @@ L130:
 
                     emax = 0.0f;
                     for (k = ki; k < n; k++) {
-                        float temp = fabsf(VL[k + is * ldvl]) + fabsf(VL[k + (is + 1) * ldvl]);
+                        f32 temp = fabsf(VL[k + is * ldvl]) + fabsf(VL[k + (is + 1) * ldvl]);
                         if (temp > emax) emax = temp;
                     }
                     remax = 1.0f / emax;
@@ -759,7 +759,7 @@ L130:
 
                     emax = 0.0f;
                     for (k = 0; k < n; k++) {
-                        float temp = fabsf(VL[k + ki * ldvl]) + fabsf(VL[k + (ki + 1) * ldvl]);
+                        f32 temp = fabsf(VL[k + ki * ldvl]) + fabsf(VL[k + (ki + 1) * ldvl]);
                         if (temp > emax) emax = temp;
                     }
                     remax = 1.0f / emax;

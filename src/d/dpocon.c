@@ -36,16 +36,16 @@
 void dpocon(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double anorm,
-    double* rcond,
-    double* const restrict work,
+    const f64 anorm,
+    f64* rcond,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // Test the input parameters
     *info = 0;
@@ -74,19 +74,19 @@ void dpocon(
     }
 
     // Safe minimum
-    double smlnum = dlamch("S");
+    f64 smlnum = dlamch("S");
 
     // Estimate the 1-norm of inv(A).
     int kase = 0;
     char normin = 'N';
     int isave[3] = {0, 0, 0};
-    double ainvnm;
+    f64 ainvnm;
 
     for (;;) {
         dlacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
         if (kase == 0) break;
 
-        double scalel, scaleu;
+        f64 scalel, scaleu;
         int linfo;
 
         if (upper) {
@@ -110,7 +110,7 @@ void dpocon(
         }
 
         // Multiply by 1/SCALE if doing so will not cause overflow.
-        double scale = scalel * scaleu;
+        f64 scale = scalel * scaleu;
         if (scale != ONE) {
             int ix = cblas_idamax(n, work, 1);
             if (scale < fabs(work[ix]) * smlnum || scale == ZERO) {

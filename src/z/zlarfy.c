@@ -36,17 +36,17 @@
  * @param[out]    work   Complex*16 array, dimension (N).
  */
 void zlarfy(const char* uplo, const int n,
-            const double complex* const restrict V,
-            const int incv, const double complex tau,
-            double complex* const restrict C,
-            const int ldc, double complex* const restrict work)
+            const c128* const restrict V,
+            const int incv, const c128 tau,
+            c128* const restrict C,
+            const int ldc, c128* const restrict work)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex HALF = CMPLX(0.5, 0.0);
-    double complex alpha;
-    double complex neg_tau;
-    double complex dotc;
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 HALF = CMPLX(0.5, 0.0);
+    c128 alpha;
+    c128 neg_tau;
+    c128 dotc;
     CBLAS_UPLO cblas_uplo;
 
     if (tau == ZERO) {

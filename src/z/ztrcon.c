@@ -40,17 +40,17 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztrcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const double complex* const restrict A, const int lda,
-            double* rcond, double complex* const restrict work,
-            double* const restrict rwork, int* info)
+            const int n, const c128* const restrict A, const int lda,
+            f64* rcond, c128* const restrict work,
+            f64* const restrict rwork, int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper, onenrm, nounit;
     char normin;
     int ix, kase, kase1;
-    double ainvnm, anorm, scale, smlnum, xnorm;
+    f64 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
 
     /* Test the input parameters */
@@ -83,7 +83,7 @@ void ztrcon(const char* norm, const char* uplo, const char* diag,
     }
 
     *rcond = ZERO;
-    smlnum = dlamch("S") * (double)(n > 1 ? n : 1);
+    smlnum = dlamch("S") * (f64)(n > 1 ? n : 1);
 
     /* Compute the norm of the triangular matrix A */
     anorm = zlantr(norm, uplo, diag, n, n, A, lda, rwork);

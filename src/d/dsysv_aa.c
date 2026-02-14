@@ -68,12 +68,12 @@ void dsysv_aa(
     const char* uplo,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -109,7 +109,7 @@ void dsysv_aa(
         lwkopt_sytrs = (int)work[0];
         tmp1 = (lwkmin > lwkopt_sytrf) ? lwkmin : lwkopt_sytrf;
         lwkopt = (tmp1 > lwkopt_sytrs) ? tmp1 : lwkopt_sytrs;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -126,5 +126,5 @@ void dsysv_aa(
 
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

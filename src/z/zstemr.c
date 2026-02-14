@@ -41,25 +41,25 @@
  *                         - = 0: success. < 0: illegal argument. > 0: internal error.
  */
 void zstemr(const char* jobz, const char* range, const int n,
-            double* D, double* E, const double vl, const double vu,
-            const int il, const int iu, int* m, double* W,
-            double complex* Z, const int ldz, const int nzc, int* isuppz,
-            int* tryrac, double* work, const int lwork,
+            f64* D, f64* E, const f64 vl, const f64 vu,
+            const int il, const int iu, int* m, f64* W,
+            c128* Z, const int ldz, const int nzc, int* isuppz,
+            int* tryrac, f64* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double FOUR = 4.0;
-    const double MINRGP = 1.0e-3;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 FOUR = 4.0;
+    const f64 MINRGP = 1.0e-3;
 
     int wantz, alleig, valeig, indeig, lquery, zquery, laeswap;
     int i, ibegin, iend, ifirst, iil, iindbl, iindw;
     int iindwk, iinfo, iinspl, iiu, ilast, in, indd;
     int inde2, inderr, indgp, indgrs, indwrk, itmp, itmp2;
     int j, jblk, jj, liwmin, lwmin, nsplit, nzcmin, offset, wbegin, wend;
-    double bignum, cs, eps, pivmin, r1 = 0.0, r2 = 0.0, rmax, rmin;
-    double rtol1, rtol2, safmin, scale, smlnum, sn;
-    double thresh, tmp, tnrm, wl, wu;
+    f64 bignum, cs, eps, pivmin, r1 = 0.0, r2 = 0.0, rmax, rmin;
+    f64 rtol1, rtol2, safmin, scale, smlnum, sn;
+    f64 thresh, tmp, tnrm, wl, wu;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     alleig = (range[0] == 'A' || range[0] == 'a');
@@ -138,7 +138,7 @@ void zstemr(const char* jobz, const char* range, const int n,
             nzcmin = 0;
         }
         if (zquery && *info == 0) {
-            Z[0] = (double complex)nzcmin;
+            Z[0] = (c128)nzcmin;
         } else if (nzc < nzcmin && !zquery) {
             *info = -14;
         }

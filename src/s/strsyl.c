@@ -58,19 +58,19 @@
  */
 void strsyl(const char* trana, const char* tranb, const int isgn,
             const int m, const int n,
-            const float* A, const int lda,
-            const float* B, const int ldb,
-            float* C, const int ldc,
-            float* scale, int* info)
+            const f32* A, const int lda,
+            const f32* B, const int ldb,
+            f32* C, const int ldc,
+            f32* scale, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int notrna, notrnb;
     int ierr, j, k, k1, k2, knext, l, l1, l2, lnext;
-    float a11, bignum, da11, db, eps, scaloc, sgn, smin;
-    float smlnum, suml, sumr, xnorm;
-    float dum[1], vec[4], x[4];  /* vec and x are 2x2, column-major */
+    f32 a11, bignum, da11, db, eps, scaloc, sgn, smin;
+    f32 smlnum, suml, sumr, xnorm;
+    f32 dum[1], vec[4], x[4];  /* vec and x are 2x2, column-major */
     int minval;
 
     /* Decode and test input parameters */
@@ -110,7 +110,7 @@ void strsyl(const char* trana, const char* tranb, const int isgn,
     eps = slamch("P");
     smlnum = slamch("S");
     bignum = ONE / smlnum;
-    smlnum = smlnum * (float)(m * n) / eps;
+    smlnum = smlnum * (f32)(m * n) / eps;
     bignum = ONE / smlnum;
 
     smin = smlnum;
@@ -119,7 +119,7 @@ void strsyl(const char* trana, const char* tranb, const int isgn,
     dum[0] = slange("M", n, n, B, ldb, dum);
     if (eps * dum[0] > smin) smin = eps * dum[0];
 
-    sgn = (float)isgn;
+    sgn = (f32)isgn;
 
     if (notrna && notrnb) {
         /*

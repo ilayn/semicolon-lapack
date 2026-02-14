@@ -60,10 +60,10 @@
  */
 void dormtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n,
-            const double* const restrict A, const int lda,
-            const double* const restrict tau,
-            double* const restrict C, const int ldc,
-            double* const restrict work, const int lwork,
+            const f64* const restrict A, const int lda,
+            const f64* const restrict tau,
+            f64* const restrict C, const int ldc,
+            f64* const restrict work, const int lwork,
             int* info)
 {
     int left, upper, lquery;
@@ -110,7 +110,7 @@ void dormtr(const char* side, const char* uplo, const char* trans,
             nb = lapack_get_nb("ORMQR");
         }
         lwkopt = nw * nb;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -159,5 +159,5 @@ void dormtr(const char* side, const char* uplo, const char* trans,
                &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

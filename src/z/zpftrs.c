@@ -46,12 +46,12 @@ void zpftrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
-    double complex* const restrict B,
+    const c128* const restrict A,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lower, normaltransr;
 

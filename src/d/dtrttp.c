@@ -44,9 +44,9 @@
 void dtrttp(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict AP,
+    f64* const restrict AP,
     int* info)
 {
     int lower;

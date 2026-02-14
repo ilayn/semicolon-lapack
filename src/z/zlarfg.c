@@ -39,14 +39,14 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void zlarfg(const int n, double complex* alpha, double complex* const x,
-            const int incx, double complex* tau)
+void zlarfg(const int n, c128* alpha, c128* const x,
+            const int incx, c128* tau)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int j, knt;
-    double alphi, alphr, beta, rsafmn, safmin, xnorm;
+    f64 alphi, alphr, beta, rsafmn, safmin, xnorm;
 
     if (n <= 0) {
         *tau = CMPLX(ZERO, ZERO);

@@ -39,23 +39,23 @@ void dlaqz2(
     const int istartm,
     const int istopm,
     const int ihi,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
     const int nq,
     const int qstart,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
     const int nz,
     const int zstart,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
-    double h[2 * 3];
-    double c1, s1, c2, s2, temp;
+    f64 h[2 * 3];
+    f64 c1, s1, c2, s2, temp;
 
     if (k + 2 == ihi) {
         /* Shift is located on the edge of the matrix, remove it */

@@ -38,15 +38,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void stpqrt2(const int m, const int n, const int l,
-             float* const restrict A, const int lda,
-             float* const restrict B, const int ldb,
-             float* const restrict T, const int ldt, int* info)
+             f32* const restrict A, const int lda,
+             f32* const restrict B, const int ldb,
+             f32* const restrict T, const int ldt, int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
     int i, j, p, mp, np;
     int minmn;
-    float alpha;
+    f32 alpha;
 
     *info = 0;
     minmn = m < n ? m : n;

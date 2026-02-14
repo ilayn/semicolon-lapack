@@ -40,28 +40,28 @@
  */
 SEMICOLON_API void slaqr5(const int wantt, const int wantz, const int kacc22,
                           const int n, const int ktop, const int kbot,
-                          const int nshfts, float* sr, float* si,
-                          float* H, const int ldh,
+                          const int nshfts, f32* sr, f32* si,
+                          f32* H, const int ldh,
                           const int iloz, const int ihiz,
-                          float* Z, const int ldz,
-                          float* V, const int ldv,
-                          float* U, const int ldu,
-                          const int nv, float* WV, const int ldwv,
-                          const int nh, float* WH, const int ldwh)
+                          f32* Z, const int ldz,
+                          f32* V, const int ldv,
+                          f32* U, const int ldu,
+                          const int nv, f32* WV, const int ldwv,
+                          const int nh, f32* WH, const int ldwh)
 {
     /* Parameters */
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     /* Local scalars */
-    float alpha, beta, h11, h12, h21, h22, refsum;
-    float safmin, scl, smlnum, swap, t1, t2, t3, tst1, tst2, ulp;
+    f32 alpha, beta, h11, h12, h21, h22, refsum;
+    f32 safmin, scl, smlnum, swap, t1, t2, t3, tst1, tst2, ulp;
     int i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
     int k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
     int accum, bmp22;
 
     /* Local array */
-    float vt[3];
+    f32 vt[3];
 
     /* If there are no shifts, then there is nothing to do */
     if (nshfts < 2)
@@ -95,7 +95,7 @@ SEMICOLON_API void slaqr5(const int wantt, const int wantz, const int kacc22,
     /* Machine constants for deflation */
     safmin = slamch("Safe minimum");
     ulp = slamch("Precision");
-    smlnum = safmin * ((float)n / ulp);
+    smlnum = safmin * ((f32)n / ulp);
 
     /* Use accumulated reflections to update far-from-diagonal entries? */
     accum = (kacc22 == 1) || (kacc22 == 2);

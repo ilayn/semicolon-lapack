@@ -28,12 +28,12 @@
  *
  * @return The number of negative pivots (Sturm count).
  */
-int slaneg(const int n, const float* D, const float* lld,
-           const float sigma, const float pivmin, const int r)
+int slaneg(const int n, const f32* D, const f32* lld,
+           const f32 sigma, const f32 pivmin, const int r)
 {
     (void)pivmin;  /* Not used; requires IEEE-754 propagation */
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
     const int BLKLEN = 128;
 
     int negcnt = 0;
@@ -41,16 +41,16 @@ int slaneg(const int n, const float* D, const float* lld,
     /* I) upper part: L D L^T - SIGMA I = L+ D+ L+^T
      * Fortran loop: DO BJ = 1, R-1 with inner loop J = BJ to MIN(BJ+BLKLEN-1, R-1)
      * In 0-based C: bj goes from 0 to r-1 (when r>0), using indices 0..r-1. */
-    float t = -sigma;
+    f32 t = -sigma;
     for (int bj = 0; bj < r; bj += BLKLEN) {
         int neg1 = 0;
-        float bsav = t;
+        f32 bsav = t;
         int jend = bj + BLKLEN - 1;
         if (jend > r - 1) jend = r - 1;
         for (int j = bj; j <= jend; j++) {
-            float dplus = D[j] + t;
+            f32 dplus = D[j] + t;
             if (dplus < ZERO) neg1++;
-            float tmp = t / dplus;
+            f32 tmp = t / dplus;
             t = tmp * lld[j] - sigma;
         }
         int sawnan = sisnan(t);
@@ -65,9 +65,9 @@ int slaneg(const int n, const float* D, const float* lld,
             jend = bj + BLKLEN - 1;
             if (jend > r - 1) jend = r - 1;
             for (int j = bj; j <= jend; j++) {
-                float dplus = D[j] + t;
+                f32 dplus = D[j] + t;
                 if (dplus < ZERO) neg1++;
-                float tmp = t / dplus;
+                f32 tmp = t / dplus;
                 if (sisnan(tmp)) tmp = ONE;
                 t = tmp * lld[j] - sigma;
             }
@@ -78,16 +78,16 @@ int slaneg(const int n, const float* D, const float* lld,
     /* II) lower part: L D L^T - SIGMA I = U- D- U-^T
      * Fortran loop: DO BJ = N-1, R, -BLKLEN with inner loop J = BJ down to MAX(BJ-BLKLEN+1, R)
      * In 0-based C: bj goes from n-2 down to r (inclusive), using indices r..n-2. */
-    float p = D[n - 1] - sigma;
+    f32 p = D[n - 1] - sigma;
     for (int bj = n - 2; bj >= r; bj -= BLKLEN) {
         int neg2 = 0;
-        float bsav = p;
+        f32 bsav = p;
         int jend = bj - BLKLEN + 1;
         if (jend < r) jend = r;
         for (int j = bj; j >= jend; j--) {
-            float dminus = lld[j] + p;
+            f32 dminus = lld[j] + p;
             if (dminus < ZERO) neg2++;
-            float tmp = p / dminus;
+            f32 tmp = p / dminus;
             p = tmp * D[j] - sigma;
         }
         int sawnan = sisnan(p);
@@ -96,9 +96,9 @@ int slaneg(const int n, const float* D, const float* lld,
             neg2 = 0;
             p = bsav;
             for (int j = bj; j >= jend; j--) {
-                float dminus = lld[j] + p;
+                f32 dminus = lld[j] + p;
                 if (dminus < ZERO) neg2++;
-                float tmp = p / dminus;
+                f32 tmp = p / dminus;
                 if (sisnan(tmp)) tmp = ONE;
                 p = tmp * D[j] - sigma;
             }
@@ -108,7 +108,7 @@ int slaneg(const int n, const float* D, const float* lld,
 
     /* III) Twist index
        T was shifted by SIGMA initially. */
-    float gamma = (t + sigma) + p;
+    f32 gamma = (t + sigma) + p;
     if (gamma < ZERO) negcnt++;
 
     return negcnt;

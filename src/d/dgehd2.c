@@ -40,8 +40,8 @@
  *                           exit in A(i+2:ihi,i), and tau in tau(i).
  */
 void dgehd2(const int n, const int ilo, const int ihi,
-            double* A, const int lda, double* tau,
-            double* work, int* info)
+            f64* A, const int lda, f64* tau,
+            f64* work, int* info)
 {
     int i;
     int max_n_1 = (n > 1) ? n : 1;

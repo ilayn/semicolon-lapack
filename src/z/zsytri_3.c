@@ -66,11 +66,11 @@
 void zsytri_3(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    const double complex* restrict E,
+    const c128* restrict E,
     const int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -101,7 +101,7 @@ void zsytri_3(
         xerbla("ZSYTRI_3", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -111,5 +111,5 @@ void zsytri_3(
 
     zsytri_3x(uplo, n, A, lda, E, ipiv, work, nb, info);
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

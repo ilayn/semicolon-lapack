@@ -45,23 +45,23 @@
  */
 SEMICOLON_API void slaqr2(const int wantt, const int wantz, const int n,
                           const int ktop, const int kbot, const int nw,
-                          float* H, const int ldh,
+                          f32* H, const int ldh,
                           const int iloz, const int ihiz,
-                          float* Z, const int ldz,
+                          f32* Z, const int ldz,
                           int* ns, int* nd,
-                          float* sr, float* si,
-                          float* V, const int ldv,
-                          const int nh, float* T, const int ldt,
-                          const int nv, float* WV, const int ldwv,
-                          float* work, const int lwork)
+                          f32* sr, f32* si,
+                          f32* V, const int ldv,
+                          const int nh, f32* T, const int ldt,
+                          const int nv, f32* WV, const int ldwv,
+                          f32* work, const int lwork)
 {
     /* Parameters */
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     /* Local scalars */
-    float aa, bb, beta, cc, cs, dd, evi, evk, foo, s;
-    float safmin, smlnum, sn, tau, ulp;
+    f32 aa, bb, beta, cc, cs, dd, evi, evk, foo, s;
+    f32 safmin, smlnum, sn, tau, ulp;
     int i, ifst, ilst, info, infqr, j, jw, k, kcol, kend, kln;
     int krow, kwtop, ltop, lwk1, lwk2, lwkopt;
     int bulge, sorted;
@@ -85,7 +85,7 @@ SEMICOLON_API void slaqr2(const int wantt, const int wantz, const int n,
 
     /* Quick return in case of workspace query */
     if (lwork == -1) {
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -102,7 +102,7 @@ SEMICOLON_API void slaqr2(const int wantt, const int wantz, const int n,
     /* Machine constants */
     safmin = slamch("Safe minimum");
     ulp = slamch("Precision");
-    smlnum = safmin * ((float)n / ulp);
+    smlnum = safmin * ((f32)n / ulp);
 
     /* Setup deflation window */
     jw = nw < kbot - ktop + 1 ? nw : kbot - ktop + 1;
@@ -354,5 +354,5 @@ SEMICOLON_API void slaqr2(const int wantt, const int wantz, const int n,
     *ns = *ns - infqr;
 
     /* Return optimal workspace */
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

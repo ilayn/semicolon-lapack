@@ -32,15 +32,15 @@
 void zhetri_rook(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const f64 ONE = 1.0;
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -90,7 +90,7 @@ void zhetri_rook(
                     cblas_zhemv(CblasColMajor, CblasUpper,
                                 k, &NEG_CONE, A, lda, work, 1,
                                 &ZERO, &A[0 + k * lda], 1);
-                    double complex dotc;
+                    c128 dotc;
                     cblas_zdotc_sub(k, work, 1, &A[0 + k * lda], 1, &dotc);
                     A[k + k * lda] = A[k + k * lda] - CMPLX(creal(dotc), 0.0);
                 }
@@ -98,11 +98,11 @@ void zhetri_rook(
 
             } else {
 
-                double t = cabs(A[k + (k + 1) * lda]);
-                double ak = creal(A[k + k * lda]) / t;
-                double akp1 = creal(A[(k + 1) + (k + 1) * lda]) / t;
-                double complex akkp1 = A[k + (k + 1) * lda] / t;
-                double d = t * (ak * akp1 - ONE);
+                f64 t = cabs(A[k + (k + 1) * lda]);
+                f64 ak = creal(A[k + k * lda]) / t;
+                f64 akp1 = creal(A[(k + 1) + (k + 1) * lda]) / t;
+                c128 akkp1 = A[k + (k + 1) * lda] / t;
+                f64 d = t * (ak * akp1 - ONE);
                 A[k + k * lda] = CMPLX(akp1 / d, 0.0);
                 A[(k + 1) + (k + 1) * lda] = CMPLX(ak / d, 0.0);
                 A[k + (k + 1) * lda] = -akkp1 / d;
@@ -112,7 +112,7 @@ void zhetri_rook(
                     cblas_zhemv(CblasColMajor, CblasUpper,
                                 k, &NEG_CONE, A, lda, work, 1,
                                 &ZERO, &A[0 + k * lda], 1);
-                    double complex dotc;
+                    c128 dotc;
                     cblas_zdotc_sub(k, work, 1, &A[0 + k * lda], 1, &dotc);
                     A[k + k * lda] = A[k + k * lda] - CMPLX(creal(dotc), 0.0);
                     cblas_zdotc_sub(k, &A[0 + k * lda], 1, &A[0 + (k + 1) * lda], 1, &dotc);
@@ -137,14 +137,14 @@ void zhetri_rook(
                         cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
 
                     for (int j = kp + 1; j < k; j++) {
-                        double complex temp = conj(A[j + k * lda]);
+                        c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
                     }
 
                     A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                    double complex temp = A[k + k * lda];
+                    c128 temp = A[k + k * lda];
                     A[k + k * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = temp;
                 }
@@ -159,14 +159,14 @@ void zhetri_rook(
                         cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
 
                     for (int j = kp + 1; j < k; j++) {
-                        double complex temp = conj(A[j + k * lda]);
+                        c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
                     }
 
                     A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                    double complex temp = A[k + k * lda];
+                    c128 temp = A[k + k * lda];
                     A[k + k * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = temp;
 
@@ -184,14 +184,14 @@ void zhetri_rook(
                         cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
 
                     for (int j = kp + 1; j < k; j++) {
-                        double complex temp = conj(A[j + k * lda]);
+                        c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
                     }
 
                     A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                    double complex temp = A[k + k * lda];
+                    c128 temp = A[k + k * lda];
                     A[k + k * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = temp;
                 }
@@ -215,7 +215,7 @@ void zhetri_rook(
                     cblas_zhemv(CblasColMajor, CblasLower,
                                 n - k - 1, &NEG_CONE, &A[(k + 1) + (k + 1) * lda], lda,
                                 work, 1, &ZERO, &A[(k + 1) + k * lda], 1);
-                    double complex dotc;
+                    c128 dotc;
                     cblas_zdotc_sub(n - k - 1, work, 1, &A[(k + 1) + k * lda], 1, &dotc);
                     A[k + k * lda] = A[k + k * lda] - CMPLX(creal(dotc), 0.0);
                 }
@@ -223,11 +223,11 @@ void zhetri_rook(
 
             } else {
 
-                double t = cabs(A[k + (k - 1) * lda]);
-                double ak = creal(A[(k - 1) + (k - 1) * lda]) / t;
-                double akp1 = creal(A[k + k * lda]) / t;
-                double complex akkp1 = A[k + (k - 1) * lda] / t;
-                double d = t * (ak * akp1 - ONE);
+                f64 t = cabs(A[k + (k - 1) * lda]);
+                f64 ak = creal(A[(k - 1) + (k - 1) * lda]) / t;
+                f64 akp1 = creal(A[k + k * lda]) / t;
+                c128 akkp1 = A[k + (k - 1) * lda] / t;
+                f64 d = t * (ak * akp1 - ONE);
                 A[(k - 1) + (k - 1) * lda] = CMPLX(akp1 / d, 0.0);
                 A[k + k * lda] = CMPLX(ak / d, 0.0);
                 A[k + (k - 1) * lda] = -akkp1 / d;
@@ -237,7 +237,7 @@ void zhetri_rook(
                     cblas_zhemv(CblasColMajor, CblasLower,
                                 n - k - 1, &NEG_CONE, &A[(k + 1) + (k + 1) * lda], lda,
                                 work, 1, &ZERO, &A[(k + 1) + k * lda], 1);
-                    double complex dotc;
+                    c128 dotc;
                     cblas_zdotc_sub(n - k - 1, work, 1, &A[(k + 1) + k * lda], 1, &dotc);
                     A[k + k * lda] = A[k + k * lda] - CMPLX(creal(dotc), 0.0);
                     cblas_zdotc_sub(n - k - 1, &A[(k + 1) + k * lda], 1,
@@ -265,14 +265,14 @@ void zhetri_rook(
                                     &A[(kp + 1) + kp * lda], 1);
 
                     for (int j = k + 1; j < kp; j++) {
-                        double complex temp = conj(A[j + k * lda]);
+                        c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
                     }
 
                     A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                    double complex temp = A[k + k * lda];
+                    c128 temp = A[k + k * lda];
                     A[k + k * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = temp;
                 }
@@ -288,14 +288,14 @@ void zhetri_rook(
                                     &A[(kp + 1) + kp * lda], 1);
 
                     for (int j = k + 1; j < kp; j++) {
-                        double complex temp = conj(A[j + k * lda]);
+                        c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
                     }
 
                     A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                    double complex temp = A[k + k * lda];
+                    c128 temp = A[k + k * lda];
                     A[k + k * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = temp;
 
@@ -314,14 +314,14 @@ void zhetri_rook(
                                     &A[(kp + 1) + kp * lda], 1);
 
                     for (int j = k + 1; j < kp; j++) {
-                        double complex temp = conj(A[j + k * lda]);
+                        c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
                     }
 
                     A[kp + k * lda] = conj(A[kp + k * lda]);
 
-                    double complex temp = A[k + k * lda];
+                    c128 temp = A[k + k * lda];
                     A[k + k * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = temp;
                 }

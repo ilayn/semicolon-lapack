@@ -35,14 +35,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sorg2r(const int m, const int n, const int k,
-            float * const restrict A, const int lda,
-            const float * const restrict tau,
-            float * const restrict work,
+            f32 * const restrict A, const int lda,
+            const f32 * const restrict tau,
+            f32 * const restrict work,
             int *info)
 {
     int i, j, l;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     /* Parameter validation */
     *info = 0;

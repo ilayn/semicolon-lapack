@@ -36,11 +36,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dorghr(const int n, const int ilo, const int ihi,
-            double* A, const int lda, const double* tau,
-            double* work, const int lwork, int* info)
+            f64* A, const int lda, const f64* tau,
+            f64* work, const int lwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery;
     int i, iinfo, j, lwkopt, nb, nh;
@@ -70,7 +70,7 @@ void dorghr(const int n, const int ilo, const int ihi,
     if (*info == 0) {
         nb = lapack_get_nb("ORGQR");
         lwkopt = nh_max_1 * nb;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -118,5 +118,5 @@ void dorghr(const int n, const int ilo, const int ihi,
         dorgqr(nh, nh, nh, &A[(ilo + 1) + (ilo + 1) * lda], lda,
                &tau[ilo], work, lwork, &iinfo);
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

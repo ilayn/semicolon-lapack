@@ -36,15 +36,15 @@
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
 void zlahr2(const int n, const int k, const int nb,
-            double complex* A, const int lda, double complex* tau,
-            double complex* T, const int ldt, double complex* Y, const int ldy)
+            c128* A, const int lda, c128* tau,
+            c128* T, const int ldt, c128* Y, const int ldy)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int i;
-    double complex ei = CMPLX(0.0, 0.0);
+    c128 ei = CMPLX(0.0, 0.0);
 
     /* Quick return if possible */
     if (n <= 1)
@@ -114,7 +114,7 @@ void zlahr2(const int n, const int k, const int nb,
 
         /* Compute T(0:i, i) */
         {
-            double complex neg_tau = -tau[i];
+            c128 neg_tau = -tau[i];
             cblas_zscal(i, &neg_tau, &T[i * ldt], 1);
         }
         cblas_ztrmv(CblasColMajor, CblasUpper, CblasNoTrans, CblasNonUnit,

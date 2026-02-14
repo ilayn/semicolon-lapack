@@ -22,15 +22,15 @@
  */
 void srscl(
     const int n,
-    const float sa,
-    float * const restrict sx,
+    const f32 sa,
+    f32 * const restrict sx,
     const int incx)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int done;
-    float bignum, cden, cden1, cnum, cnum1, mul, smlnum;
+    f32 bignum, cden, cden1, cnum, cnum1, mul, smlnum;
 
     // Quick return if possible
     if (n <= 0) {

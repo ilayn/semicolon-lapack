@@ -75,11 +75,11 @@
 void zhetrf_rk(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict E,
+    c128* restrict E,
     int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -103,7 +103,7 @@ void zhetrf_rk(
     if (*info == 0) {
         nb = lapack_get_nb("HETRF");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -208,5 +208,5 @@ void zhetrf_rk(
         }
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

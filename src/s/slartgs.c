@@ -25,11 +25,11 @@
  * @param[out] cs     The cosine of the rotation.
  * @param[out] sn     The sine of the rotation.
  */
-void slartgs(const float x, const float y, const float sigma,
-             float* cs, float* sn)
+void slartgs(const f32 x, const f32 y, const f32 sigma,
+             f32* cs, f32* sn)
 {
-    float thresh = slamch("E");
-    float z, w, r;
+    f32 thresh = slamch("E");
+    f32 z, w, r;
 
     if ((sigma == 0.0f && fabsf(x) < thresh) ||
         (fabsf(x) == sigma && y == 0.0f)) {
@@ -47,7 +47,7 @@ void slartgs(const float x, const float y, const float sigma,
         z = -sigma * sigma;
         w = 0.0f;
     } else {
-        float s;
+        f32 s;
         if (x >= 0.0f) {
             s = 1.0f;
         } else {

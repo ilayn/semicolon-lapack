@@ -53,22 +53,22 @@
  */
 void zlaqps(const int m, const int n, const int offset, const int nb,
             int* kb,
-            double complex* const restrict A, const int lda,
+            c128* const restrict A, const int lda,
             int* const restrict jpvt,
-            double complex* const restrict tau,
-            double* const restrict vn1,
-            double* const restrict vn2,
-            double complex* const restrict auxv,
-            double complex* const restrict F, const int ldf)
+            c128* const restrict tau,
+            f64* const restrict vn1,
+            f64* const restrict vn2,
+            c128* const restrict auxv,
+            c128* const restrict F, const int ldf)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int itemp, j, k, lastrk, lsticc, pvt, rk;
-    double temp, temp2, tol3z;
-    double complex akk;
-    double complex neg_tau;
+    f64 temp, temp2, tol3z;
+    c128 akk;
+    c128 neg_tau;
 
     lastrk = m < n + offset ? m : n + offset;
     lsticc = 0;
@@ -195,7 +195,7 @@ void zlaqps(const int m, const int n, const int offset, const int nb,
                     if (temp < 0.0) temp = 0.0;
                     temp2 = temp * (vn1[j - 1] / vn2[j - 1]) * (vn1[j - 1] / vn2[j - 1]);
                     if (temp2 <= tol3z) {
-                        vn2[j - 1] = (double)lsticc;
+                        vn2[j - 1] = (f64)lsticc;
                         lsticc = j;
                     } else {
                         vn1[j - 1] = vn1[j - 1] * sqrt(temp);

@@ -80,13 +80,13 @@ void dsysv_rk(
     const char* uplo,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict E,
+    f64* restrict E,
     int* restrict ipiv,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -117,7 +117,7 @@ void dsysv_rk(
             dsytrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
             lwkopt = (int)work[0];
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -135,5 +135,5 @@ void dsysv_rk(
 
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

@@ -40,8 +40,8 @@
  *                           exit in A(i+2:ihi,i), and tau in tau(i).
  */
 void sgehd2(const int n, const int ilo, const int ihi,
-            float* A, const int lda, float* tau,
-            float* work, int* info)
+            f32* A, const int lda, f32* tau,
+            f32* work, int* info)
 {
     int i;
     int max_n_1 = (n > 1) ? n : 1;

@@ -26,12 +26,12 @@
  * @param[out] sn  The sine of the rotation.
  * @param[out] r   The nonzero component of the rotated vector.
  */
-void dlartgp(const double f, const double g, double* cs, double* sn, double* r)
+void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
 {
-    double safmin = dlamch("S");
-    double eps = dlamch("E");
-    double safmn2 = pow(dlamch("B"), (int)(log(safmin / eps) / log(dlamch("B")) / 2.0));
-    double safmx2 = 1.0 / safmn2;
+    f64 safmin = dlamch("S");
+    f64 eps = dlamch("E");
+    f64 safmn2 = pow(dlamch("B"), (int)(log(safmin / eps) / log(dlamch("B")) / 2.0));
+    f64 safmx2 = 1.0 / safmn2;
 
     if (g == 0.0) {
         *cs = copysign(1.0, f);
@@ -42,9 +42,9 @@ void dlartgp(const double f, const double g, double* cs, double* sn, double* r)
         *sn = copysign(1.0, g);
         *r = fabs(g);
     } else {
-        double f1 = f;
-        double g1 = g;
-        double scale = fmax(fabs(f1), fabs(g1));
+        f64 f1 = f;
+        f64 g1 = g;
+        f64 scale = fmax(fabs(f1), fabs(g1));
 
         if (scale >= safmx2) {
             int count = 0;

@@ -59,17 +59,17 @@
  */
 void dlagtf(
     const int n,
-    double* const restrict A,
-    const double lambda,
-    double* const restrict B,
-    double* const restrict C,
-    const double tol,
-    double* const restrict D,
+    f64* const restrict A,
+    const f64 lambda,
+    f64* const restrict B,
+    f64* const restrict C,
+    const f64 tol,
+    f64* const restrict D,
     int* const restrict in,
     int* info)
 {
     int k;
-    double eps, mult, piv1, piv2, scale1, scale2, temp, tl;
+    f64 eps, mult, piv1, piv2, scale1, scale2, temp, tl;
 
     *info = 0;
     if (n < 0) {

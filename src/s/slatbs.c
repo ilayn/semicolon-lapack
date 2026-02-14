@@ -51,20 +51,20 @@ void slatbs(
     const char* normin,
     const int n,
     const int kd,
-    const float * const restrict AB,
+    const f32 * const restrict AB,
     const int ldab,
-    float * const restrict X,
-    float *scale,
-    float * const restrict cnorm,
+    f32 * const restrict X,
+    f32 *scale,
+    f32 * const restrict cnorm,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
+    const f32 ONE = 1.0f;
 
     int upper, notran, nounit, normin_n;
     int i, imax, j, jfirst, jinc, jlast, jlen, maind;
-    float bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
+    f32 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -181,7 +181,7 @@ void slatbs(
             grow = xbnd;
         } else {
             /* A is unit triangular */
-            float denom = (xbnd > smlnum) ? xbnd : smlnum;
+            f32 denom = (xbnd > smlnum) ? xbnd : smlnum;
             grow = (ONE < ONE / denom) ? ONE : ONE / denom;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
@@ -218,7 +218,7 @@ void slatbs(
             }
             grow = (grow < xbnd) ? grow : xbnd;
         } else {
-            float denom = (xbnd > smlnum) ? xbnd : smlnum;
+            f32 denom = (xbnd > smlnum) ? xbnd : smlnum;
             grow = (ONE < ONE / denom) ? ONE : ONE / denom;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;

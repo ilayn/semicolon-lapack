@@ -26,20 +26,20 @@
  *
  * @return The computed norm value.
  */
-double zlantp(
+f64 zlantp(
     const char* norm,
     const char* uplo,
     const char* diag,
     const int n,
-    const double complex* const restrict AP,
-    double* const restrict work)
+    const c128* const restrict AP,
+    f64* const restrict work)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int udiag;
     int i, j, k;
-    double scale, sum, value;
+    f64 scale, sum, value;
 
     if (n == 0) {
         value = ZERO;

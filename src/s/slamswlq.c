@@ -56,10 +56,10 @@
 void slamswlq(const char* side, const char* trans,
               const int m, const int n, const int k,
               const int mb, const int nb,
-              const float* const restrict A, const int lda,
-              const float* const restrict T, const int ldt,
-              float* const restrict C, const int ldc,
-              float* const restrict work, const int lwork,
+              const f32* const restrict A, const int lda,
+              const f32* const restrict T, const int ldt,
+              f32* const restrict C, const int ldc,
+              f32* const restrict work, const int lwork,
               int* info)
 {
     int left, right, tran, notran, lquery;
@@ -111,7 +111,7 @@ void slamswlq(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
     }
     if (*info != 0) {
         xerbla("SLAMSWLQ", -(*info));
@@ -241,5 +241,5 @@ void slamswlq(const char* side, const char* trans,
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

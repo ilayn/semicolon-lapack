@@ -36,18 +36,18 @@
  *                         - = 0: Eigenvalue converged.
  *                         - = -1: Eigenvalue did NOT converge.
  */
-void dlarrk(const int n, const int iw, const double gl, const double gu,
-            const double* const restrict D, const double* const restrict E2,
-            const double pivmin, const double reltol,
-            double* w, double* werr, int* info)
+void dlarrk(const int n, const int iw, const f64 gl, const f64 gu,
+            const f64* const restrict D, const f64* const restrict E2,
+            const f64 pivmin, const f64 reltol,
+            f64* w, f64* werr, int* info)
 {
     /* FUDGE = 2, a "fudge factor" to widen the Gershgorin intervals */
-    const double FUDGE = 2.0;
-    const double HALF = 0.5;
-    const double TWO = 2.0;
+    const f64 FUDGE = 2.0;
+    const f64 HALF = 0.5;
+    const f64 TWO = 2.0;
 
     int i, it, itmax, negcnt;
-    double atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
+    f64 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
 
     /* Quick return if possible */
     if (n <= 0) {

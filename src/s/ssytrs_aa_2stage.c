@@ -62,13 +62,13 @@ void ssytrs_aa_2stage(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    float* restrict TB,
+    f32* restrict TB,
     const int ltb,
     const int* restrict ipiv,
     const int* restrict ipiv2,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {

@@ -64,22 +64,22 @@
  *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void dspevx(const char* jobz, const char* range, const char* uplo,
-            const int n, double* const restrict AP,
-            const double vl, const double vu, const int il, const int iu,
-            const double abstol, int* m, double* const restrict W,
-            double* const restrict Z, const int ldz,
-            double* const restrict work, int* const restrict iwork,
+            const int n, f64* const restrict AP,
+            const f64 vl, const f64 vu, const int il, const int iu,
+            const f64 abstol, int* m, f64* const restrict W,
+            f64* const restrict Z, const int ldz,
+            f64* const restrict work, int* const restrict iwork,
             int* const restrict ifail, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int alleig, indeig, test, valeig, wantz;
     char order;
     int i, iinfo, imax, indd, inde, indee, indisp, indiwo, indtau, indwrk;
     int iscale, itmp1, j, jj, nsplit;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
-    double tmp1, vll, vuu;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 tmp1, vll, vuu;
 
     *info = 0;
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

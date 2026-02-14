@@ -46,20 +46,20 @@ void slatrs(
     const char* diag,
     const char* normin,
     const int n,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    float * const restrict X,
-    float *scale,
-    float * const restrict cnorm,
+    f32 * const restrict X,
+    f32 *scale,
+    f32 * const restrict cnorm,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
+    const f32 ONE = 1.0f;
 
     int upper, notran, nounit, normin_n;
     int i, imax, j, jfirst, jinc, jlast;
-    float bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
+    f32 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

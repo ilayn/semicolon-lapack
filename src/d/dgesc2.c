@@ -34,17 +34,17 @@
  */
 void dgesc2(
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    double * const restrict rhs,
+    f64 * const restrict rhs,
     const int * const restrict ipiv,
     const int * const restrict jpiv,
-    double *scale)
+    f64 *scale)
 {
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
-    double eps, smlnum, bignum, temp;
+    f64 eps, smlnum, bignum, temp;
     int i, j, imax;
 
     // Quick return if possible

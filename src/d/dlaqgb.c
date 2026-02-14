@@ -42,20 +42,20 @@ void dlaqgb(
     const int n,
     const int kl,
     const int ku,
-    double * const restrict AB,
+    f64 * const restrict AB,
     const int ldab,
-    const double * const restrict R,
-    const double * const restrict C,
-    const double rowcnd,
-    const double colcnd,
-    const double amax,
+    const f64 * const restrict R,
+    const f64 * const restrict C,
+    const f64 rowcnd,
+    const f64 colcnd,
+    const f64 amax,
     char *equed)
 {
-    const double ONE = 1.0;
-    const double THRESH = 0.1;
+    const f64 ONE = 1.0;
+    const f64 THRESH = 0.1;
 
     int i, j;
-    double cj, large, small;
+    f64 cj, large, small;
     int i_start, i_end;
 
     /* Quick return if possible */

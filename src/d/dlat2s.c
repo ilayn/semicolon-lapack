@@ -1,6 +1,6 @@
 /**
  * @file dlat2s.c
- * @brief Convert double precision triangular matrix to single precision.
+ * @brief Convert f64 precision triangular matrix to single precision.
  */
 
 #include <math.h>
@@ -40,13 +40,13 @@
 void dlat2s(
     const char* uplo,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
     float* const restrict SA,
     const int ldsa,
     int* info)
 {
-    const double rmax = (double)FLT_MAX;
+    const f64 rmax = (f64)FLT_MAX;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     *info = 0;
@@ -54,7 +54,7 @@ void dlat2s(
     if (upper) {
         for (int j = 0; j < n; j++) {
             for (int i = 0; i <= j; i++) {
-                double val = A[i + j * lda];
+                f64 val = A[i + j * lda];
                 if (val < -rmax || val > rmax) {
                     *info = 1;
                     return;
@@ -65,7 +65,7 @@ void dlat2s(
     } else {
         for (int j = 0; j < n; j++) {
             for (int i = j; i < n; i++) {
-                double val = A[i + j * lda];
+                f64 val = A[i + j * lda];
                 if (val < -rmax || val > rmax) {
                     *info = 1;
                     return;

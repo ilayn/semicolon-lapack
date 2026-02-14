@@ -47,17 +47,17 @@
  * @param[out] snq    The desired orthogonal matrix Q.
  */
 void slags2(const int upper,
-            const float a1, const float a2, const float a3,
-            const float b1, const float b2, const float b3,
-            float* csu, float* snu, float* csv, float* snv,
-            float* csq, float* snq)
+            const f32 a1, const f32 a2, const f32 a3,
+            const f32 b1, const f32 b2, const f32 b3,
+            f32* csu, f32* snu, f32* csv, f32* snv,
+            f32* csq, f32* snq)
 {
-    float a, b, c, d, r, s1, s2;
-    float csl, csr, snl, snr;
-    float ua11, ua11r, ua12, ua21, ua22, ua22r;
-    float vb11, vb11r, vb12, vb21, vb22, vb22r;
-    float aua11, aua12, aua21, aua22;
-    float avb11, avb12, avb21, avb22;
+    f32 a, b, c, d, r, s1, s2;
+    f32 csl, csr, snl, snr;
+    f32 ua11, ua11r, ua12, ua21, ua22, ua22r;
+    f32 vb11, vb11r, vb12, vb21, vb22, vb22r;
+    f32 aua11, aua12, aua21, aua22;
+    f32 avb11, avb12, avb21, avb22;
 
     if (upper) {
         a = a1 * b3;

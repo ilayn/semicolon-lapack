@@ -48,13 +48,13 @@
 void sgetrf2(
     const int m,
     const int n,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
     int * const restrict ipiv,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
 
     int i, iinfo, n1, n2;
     int minmn = m < n ? m : n;

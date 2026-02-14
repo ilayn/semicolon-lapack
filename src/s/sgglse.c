@@ -105,18 +105,18 @@ void sgglse(
     const int m,
     const int n,
     const int p,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict C,
-    float* restrict D,
-    float* restrict X,
-    float* restrict work,
+    f32* restrict C,
+    f32* restrict D,
+    f32* restrict X,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float one = 1.0f;
+    const f32 one = 1.0f;
 
     int lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
     int lquery;
@@ -155,7 +155,7 @@ void sgglse(
             max_val = (m > n) ? m : n;
             lwkopt = p + mn + max_val * nb;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -223,5 +223,5 @@ void sgglse(
 
     sormrq("L", "T", n, 1, p, B, ldb, work, X, n,
            &work[p + mn], lwork - p - mn, info);
-    work[0] = (float)(p + mn + ((lopt > (int)work[p + mn]) ? lopt : (int)work[p + mn]));
+    work[0] = (f32)(p + mn + ((lopt > (int)work[p + mn]) ? lopt : (int)work[p + mn]));
 }

@@ -44,8 +44,8 @@
 void stpttr(
     const char* uplo,
     const int n,
-    const float* const restrict AP,
-    float* const restrict A,
+    const f32* const restrict AP,
+    f32* const restrict A,
     const int lda,
     int* info)
 {

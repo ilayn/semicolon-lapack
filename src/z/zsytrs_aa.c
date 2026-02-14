@@ -60,16 +60,16 @@ void zsytrs_aa(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int upper, lquery;
     int k, kp, lwkmin;
@@ -104,7 +104,7 @@ void zsytrs_aa(
         xerbla("ZSYTRS_AA", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double complex)lwkmin;
+        work[0] = (c128)lwkmin;
         return;
     }
 

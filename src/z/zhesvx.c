@@ -95,28 +95,28 @@ void zhesvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double complex* const restrict AF,
+    c128* const restrict AF,
     const int ldaf,
     int* const restrict ipiv,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nofact, lquery;
     int lwkmin, lwkopt, nb;
-    double anorm;
+    f64 anorm;
 
     /* Test the input parameters. */
     *info = 0;
@@ -152,7 +152,7 @@ void zhesvx(
             int nbnb = n * nb;
             lwkopt = (lwkopt > nbnb) ? lwkopt : nbnb;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -194,5 +194,5 @@ void zhesvx(
         *info = n + 1;
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

@@ -56,26 +56,26 @@
  */
 void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
            sselect3_t selctg, const int n,
-           float* const restrict A, const int lda,
-           float* const restrict B, const int ldb,
+           f32* const restrict A, const int lda,
+           f32* const restrict B, const int ldb,
            int* sdim,
-           float* const restrict alphar, float* const restrict alphai,
-           float* const restrict beta,
-           float* const restrict VSL, const int ldvsl,
-           float* const restrict VSR, const int ldvsr,
-           float* const restrict work, const int lwork,
+           f32* const restrict alphar, f32* const restrict alphai,
+           f32* const restrict beta,
+           f32* const restrict VSL, const int ldvsl,
+           f32* const restrict VSR, const int ldvsr,
+           f32* const restrict work, const int lwork,
            int* const restrict bwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl, wantst;
     int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
     int ip, iright, irows, itau, iwrk, maxwrk, minwrk;
-    float anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps;
-    float pvsl, pvsr, safmax, safmin, smlnum;
+    f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps;
+    f32 pvsl, pvsr, safmax, safmin, smlnum;
     int idum[1];
-    float dif[2];
+    f32 dif[2];
     int nb_geqrf, nb_ormqr, nb_orgqr;
 
     /* Decode the input arguments */
@@ -142,7 +142,7 @@ void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
             minwrk = 1;
             maxwrk = 1;
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -366,7 +366,7 @@ void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L50:
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 
     return;
 }

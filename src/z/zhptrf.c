@@ -52,19 +52,19 @@
 void zhptrf(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     int* const restrict ipiv,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double EIGHT = 8.0;
-    const double SEVTEN = 17.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 EIGHT = 8.0;
+    const f64 SEVTEN = 17.0;
 
     int upper;
     int i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
-    double absakk, alpha, colmax, d, d11, d22, r1, rowmax, tt;
-    double complex d12, d21, t, wk, wkm1, wkp1;
+    f64 absakk, alpha, colmax, d, d11, d22, r1, rowmax, tt;
+    c128 d12, d21, t, wk, wkm1, wkp1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

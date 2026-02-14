@@ -60,23 +60,23 @@ void zgghrd(
     const int n,
     const int ilo,
     const int ihi,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict Q,
+    c128* const restrict Q,
     const int ldq,
-    double complex* const restrict Z,
+    c128* const restrict Z,
     const int ldz,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int ilq, ilz;
     int icompq, icompz, jcol, jrow;
-    double c;
-    double complex ctemp, s;
+    f64 c;
+    c128 ctemp, s;
 
     if (compq[0] == 'N' || compq[0] == 'n') {
         ilq = 0;

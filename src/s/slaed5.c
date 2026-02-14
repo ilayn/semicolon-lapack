@@ -29,11 +29,11 @@
  * @param[in]     rho    The scalar in the symmetric updating formula.
  * @param[out]    dlam   The computed lambda_I, the I-th updated eigenvalue.
  */
-void slaed5(const int i, const float* const restrict D,
-            const float* const restrict Z, float* const restrict delta,
-            const float rho, float* dlam)
+void slaed5(const int i, const f32* const restrict D,
+            const f32* const restrict Z, f32* const restrict delta,
+            const f32 rho, f32* dlam)
 {
-    float b, c, del, tau, temp, w;
+    f32 b, c, del, tau, temp, w;
 
     del = D[1] - D[0];
 

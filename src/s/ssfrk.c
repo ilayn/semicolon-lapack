@@ -62,11 +62,11 @@ void ssfrk(
     const char* trans,
     const int n,
     const int k,
-    const float alpha,
-    const float* const restrict A,
+    const f32 alpha,
+    const f32* const restrict A,
     const int lda,
-    const float beta,
-    float* const restrict C)
+    const f32 beta,
+    f32* const restrict C)
 {
     int lower, normaltransr, nisodd, notrans;
     int nrowa, j, nk, n1, n2;

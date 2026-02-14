@@ -28,19 +28,19 @@
 void dlaqsp(
     const char* uplo,
     const int n,
-    double* const restrict AP,
-    const double* const restrict S,
-    const double scond,
-    const double amax,
+    f64* const restrict AP,
+    const f64* const restrict S,
+    const f64 scond,
+    const f64 amax,
     char* equed)
 {
     // dlaqsp.f lines 141-142: Parameters
-    const double ONE = 1.0;
-    const double THRESH = 0.1;  // dlaqsp.f line 142: THRESH = 0.1D+0
+    const f64 ONE = 1.0;
+    const f64 THRESH = 0.1;  // dlaqsp.f line 142: THRESH = 0.1D+0
 
     // dlaqsp.f lines 145-146: Local Scalars
     int i, j, jc;
-    double cj, large, small;
+    f64 cj, large, small;
 
     // dlaqsp.f lines 157-160: Quick return if possible
     if (n <= 0) {

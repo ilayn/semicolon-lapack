@@ -67,9 +67,9 @@
  *                           columns info/(n+1) through mod(info,n+1).
  */
 void slaed0(const int icompq, const int qsiz, const int n,
-            float* D, float* E, float* Q, const int ldq,
-            float* qstore, const int ldqs,
-            float* work, int* iwork, int* info)
+            f32* D, f32* E, f32* Q, const int ldq,
+            f32* qstore, const int ldqs,
+            f32* work, int* iwork, int* info)
 {
     /* SMLSIZ from ILAENV(9, 'SLAED0', ...) - hardcoded per project plan */
     const int SMLSIZ = 25;
@@ -78,7 +78,7 @@ void slaed0(const int icompq, const int qsiz, const int n,
         igivpt = 0, indxq, iperm = 0, iprmpt = 0, iq = 0, iqptr = 0, iwrem = 0,
         j, k, lgn, matsiz, msd2, smm1, spm1,
         spm2, submat, subpbs, tlvls;
-    float temp;
+    f32 temp;
 
     /* Test the input parameters. */
     *info = 0;
@@ -143,7 +143,7 @@ void slaed0(const int icompq, const int qsiz, const int n,
          * Set up workspaces for eigenvalues only/accumulate new vectors
          * routine
          */
-        temp = logf((float)n) / logf(2.0f);
+        temp = logf((f32)n) / logf(2.0f);
         lgn = (int)temp;
         if ((1 << lgn) < n) {
             lgn = lgn + 1;

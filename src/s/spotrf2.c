@@ -47,13 +47,13 @@
 void spotrf2(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
+    const f32 ZERO = 0.0f;
 
     // Test the input parameters
     *info = 0;

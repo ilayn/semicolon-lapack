@@ -18,13 +18,13 @@
  * @param[in]  b  Double precision scalar, imaginary part of numerator.
  * @param[in]  c  Double precision scalar, real part of denominator.
  * @param[in]  d  Double precision scalar, imaginary part of denominator.
- * @param[out] p  Pointer to double, receives real part of result.
- * @param[out] q  Pointer to double, receives imaginary part of result.
+ * @param[out] p  Pointer to f64, receives real part of result.
+ * @param[out] q  Pointer to f64, receives imaginary part of result.
  */
-void dladiv1(const double a, const double b, const double c, const double d,
-             double* p, double* q)
+void dladiv1(const f64 a, const f64 b, const f64 c, const f64 d,
+             f64* p, f64* q)
 {
-    double r, t;
+    f64 r, t;
 
     r = d / c;
     t = 1.0 / (c + d * r);

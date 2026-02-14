@@ -25,10 +25,10 @@
  * @param[in]     incy   The increment between successive elements of Y. INCY > 0.
  * @param[out]    ssmin  The smallest singular value of the N-by-2 matrix A = ( X Y ).
  */
-void dlapll(const int n, double* const restrict x, const int incx,
-            double* const restrict y, const int incy, double* ssmin)
+void dlapll(const int n, f64* const restrict x, const int incx,
+            f64* const restrict y, const int incy, f64* ssmin)
 {
-    double a11, a12, a22, c, tau, ssmax;
+    f64 a11, a12, a22, c, tau, ssmax;
 
     if (n <= 1) {
         *ssmin = 0.0;

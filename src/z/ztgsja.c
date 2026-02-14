@@ -77,28 +77,28 @@
  */
 void ztgsja(const char* jobu, const char* jobv, const char* jobq,
             const int m, const int p, const int n, const int k, const int l,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict B, const int ldb,
-            const double tola, const double tolb,
-            double* const restrict alpha, double* const restrict beta,
-            double complex* const restrict U, const int ldu,
-            double complex* const restrict V, const int ldv,
-            double complex* const restrict Q, const int ldq,
-            double complex* const restrict work, int* ncycle, int* info)
+            c128* const restrict A, const int lda,
+            c128* const restrict B, const int ldb,
+            const f64 tola, const f64 tolb,
+            f64* const restrict alpha, f64* const restrict beta,
+            c128* const restrict U, const int ldu,
+            c128* const restrict V, const int ldv,
+            c128* const restrict Q, const int ldq,
+            c128* const restrict work, int* ncycle, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double HUGENUM = DBL_MAX;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 HUGENUM = DBL_MAX;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int initu, wantu, initv, wantv, initq, wantq;
     int upper;
     int i, j, kcycle;
-    double a1, a3, b1, b3;
-    double csu, csv, csq;
-    double complex a2, b2, snu, snv, snq;
-    double error, gamma, rwk, ssmin;
+    f64 a1, a3, b1, b3;
+    f64 csu, csv, csq;
+    c128 a2, b2, snu, snv, snq;
+    f64 error, gamma, rwk, ssmin;
     int minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');

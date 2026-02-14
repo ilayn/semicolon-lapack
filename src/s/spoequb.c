@@ -55,18 +55,18 @@
  */
 void spoequb(
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    float* restrict S,
-    float* scond,
-    float* amax,
+    f32* restrict S,
+    f32* scond,
+    f32* amax,
     int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     int i;
-    float smin, base, tmp;
+    f32 smin, base, tmp;
 
     *info = 0;
     if (n < 0) {

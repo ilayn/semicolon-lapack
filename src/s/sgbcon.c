@@ -48,22 +48,22 @@ void sgbcon(
     const int n,
     const int kl,
     const int ku,
-    const float * const restrict AB,
+    const f32 * const restrict AB,
     const int ldab,
     const int * const restrict ipiv,
-    const float anorm,
-    float *rcond,
-    float * const restrict work,
+    const f32 anorm,
+    f32 *rcond,
+    f32 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int lnoti, onenrm;
     char normin;
     int ix, j, jp, kase, kase1, kd, lm;
-    float ainvnm, scale, smlnum, t;
+    f32 ainvnm, scale, smlnum, t;
     int isave[3];
     int linfo;
 

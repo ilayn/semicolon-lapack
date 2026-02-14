@@ -25,7 +25,7 @@
  *                        On exit, modified internally and then restored.
  */
 void slapmt(const int forwrd, const int m, const int n,
-            float* const restrict X, const int ldx,
+            f32* const restrict X, const int ldx,
             int* const restrict K)
 {
     int i, j, in;

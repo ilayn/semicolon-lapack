@@ -49,17 +49,17 @@ void ssyconv(
     const char* uplo,
     const char* way,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    float* restrict E,
+    f32* restrict E,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int upper, convert;
     int i, ip, j;
-    float temp;
+    f32 temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

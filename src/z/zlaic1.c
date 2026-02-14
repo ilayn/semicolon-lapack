@@ -52,23 +52,23 @@
 void zlaic1(
     const int job,
     const int j,
-    const double complex* const restrict x,
-    const double sest,
-    const double complex* const restrict w,
-    const double complex gamma_,
-    double* sestpr,
-    double complex* s,
-    double complex* c)
+    const c128* const restrict x,
+    const f64 sest,
+    const c128* const restrict w,
+    const c128 gamma_,
+    f64* sestpr,
+    c128* s,
+    c128* c)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HALF = 0.5;
-    const double FOUR = 4.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = 0.5;
+    const f64 FOUR = 4.0;
 
-    double absalp, absest, absgam, b, eps,
+    f64 absalp, absest, absgam, b, eps,
            norma, s1, s2, scl, t, test, tmp, zeta1, zeta2;
-    double complex alpha, cosine, sine;
+    c128 alpha, cosine, sine;
 
     eps = DBL_EPSILON;
     cblas_zdotc_sub(j, x, 1, w, 1, &alpha);

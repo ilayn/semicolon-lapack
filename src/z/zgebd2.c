@@ -50,14 +50,14 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgebd2(const int m, const int n, double complex* const restrict A, const int lda,
-            double* const restrict D, double* const restrict E,
-            double complex* const restrict tauq, double complex* const restrict taup,
-            double complex* const restrict work, int* info)
+void zgebd2(const int m, const int n, c128* const restrict A, const int lda,
+            f64* const restrict D, f64* const restrict E,
+            c128* const restrict tauq, c128* const restrict taup,
+            c128* const restrict work, int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int i;
-    double complex alpha;
+    c128 alpha;
 
     /* Test the input parameters */
     *info = 0;

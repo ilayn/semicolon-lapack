@@ -45,8 +45,8 @@ void spftrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict A,
-    float* const restrict B,
+    const f32* const restrict A,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {

@@ -59,30 +59,30 @@ void zgtsvx(
     const char* trans,
     const int n,
     const int nrhs,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU,
-    double complex* const restrict DLF,
-    double complex* const restrict DF,
-    double complex* const restrict DUF,
-    double complex* const restrict DU2,
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU,
+    c128* const restrict DLF,
+    c128* const restrict DF,
+    c128* const restrict DUF,
+    c128* const restrict DU2,
     int* const restrict ipiv,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nofact, notran;
     char norm;
-    double anorm;
+    f64 anorm;
     int ldb_min, ldx_min;
 
     *info = 0;

@@ -44,12 +44,12 @@ void slapmr(
     const int forwrd,
     const int m,
     const int n,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
     int* restrict K)
 {
     int i, in, j, jj;
-    float temp;
+    f32 temp;
 
     if (m <= 1)
         return;

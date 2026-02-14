@@ -48,24 +48,24 @@ void sspsvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict AP,
-    float* const restrict AFP,
+    const f32* const restrict AP,
+    f32* const restrict AFP,
     int* const restrict ipiv,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* rcond,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* rcond,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int nofact;
-    float anorm;
+    f32 anorm;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

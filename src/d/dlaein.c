@@ -44,32 +44,32 @@ void dlaein(
     const int rightv,
     const int noinit,
     const int n,
-    const double* const restrict H,
+    const f64* const restrict H,
     const int ldh,
-    const double wr,
-    const double wi,
-    double* const restrict vr,
-    double* const restrict vi,
-    double* const restrict B,
+    const f64 wr,
+    const f64 wi,
+    f64* const restrict vr,
+    f64* const restrict vi,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict work,
-    const double eps3,
-    const double smlnum,
-    const double bignum,
+    f64* const restrict work,
+    const f64 eps3,
+    const f64 smlnum,
+    const f64 bignum,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TENTH = 0.1;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TENTH = 0.1;
 
     int i, i1, i2, i3, ierr, its, j;
-    double absbii, absbjj, ei, ej, growto, norm, nrmsml;
-    double rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
+    f64 absbii, absbjj, ei, ej, growto, norm, nrmsml;
+    f64 rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
 
     *info = 0;
 
     /* GROWTO is the threshold used in the acceptance test for an eigenvector */
-    rootn = sqrt((double)n);
+    rootn = sqrt((f64)n);
     growto = TENTH / rootn;
     nrmsml = ONE > eps3 * rootn ? ONE : eps3 * rootn;
     nrmsml *= smlnum;
@@ -94,7 +94,7 @@ void dlaein(
         } else {
             /* Scale supplied initial vector */
             vnorm = cblas_dnrm2(n, vr, 1);
-            double denom = vnorm > nrmsml ? vnorm : nrmsml;
+            f64 denom = vnorm > nrmsml ? vnorm : nrmsml;
             cblas_dscal(n, (eps3 * rootn) / denom, vr, 1);
         }
 
@@ -233,7 +233,7 @@ void dlaein(
         } else {
             /* Scale supplied initial vector */
             norm = dlapy2(cblas_dnrm2(n, vr, 1), cblas_dnrm2(n, vi, 1));
-            double denom = norm > nrmsml ? norm : nrmsml;
+            f64 denom = norm > nrmsml ? norm : nrmsml;
             rec = (eps3 * rootn) / denom;
             cblas_dscal(n, rec, vr, 1);
             cblas_dscal(n, rec, vi, 1);
@@ -407,7 +407,7 @@ void dlaein(
 
                     /* Divide by diagonal element of B */
                     dladiv(xr, xi, B[i + i * ldb], B[i + 1 + i * ldb], &vr[i], &vi[i]);
-                    double absvr = fabs(vr[i]) + fabs(vi[i]);
+                    f64 absvr = fabs(vr[i]) + fabs(vi[i]);
                     if (absvr > vmax) {
                         vmax = absvr;
                     }
@@ -449,7 +449,7 @@ void dlaein(
         /* Normalize eigenvector */
         vnorm = ZERO;
         for (i = 0; i < n; i++) {
-            double mag = fabs(vr[i]) + fabs(vi[i]);
+            f64 mag = fabs(vr[i]) + fabs(vi[i]);
             if (mag > vnorm) {
                 vnorm = mag;
             }

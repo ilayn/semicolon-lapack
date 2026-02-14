@@ -9,9 +9,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double TWO = 2.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const f64 TWO = 2.0;
 
 /* SMLSIZ: maximum size of subproblems at bottom of DC tree.
  * From ilaenv.f ISPEC=9, the default is 25. */
@@ -55,16 +55,16 @@ static const int SMLSIZ = 25;
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dbdsdc(const char* uplo, const char* compq, const int n,
-            double* const restrict D, double* const restrict E,
-            double* const restrict U, const int ldu,
-            double* const restrict VT, const int ldvt,
-            double* const restrict Q, int* const restrict IQ,
-            double* const restrict work, int* const restrict IWORK, int* info)
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict U, const int ldu,
+            f64* const restrict VT, const int ldvt,
+            f64* const restrict Q, int* const restrict IQ,
+            f64* const restrict work, int* const restrict IWORK, int* info)
 {
     int difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
     int ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
     int poles, qstart, smlszp, sqre, start, wstart, z;
-    double cs, eps, orgnrm, p, r, sn;
+    f64 cs, eps, orgnrm, p, r, sn;
 
     /* Test the input parameters */
     *info = 0;
@@ -202,7 +202,7 @@ void dbdsdc(const char* uplo, const char* compq, const int n,
 
     eps = 0.9 * dlamch("Epsilon");
 
-    mlvl = (int)(log((double)n / (double)(SMLSIZ + 1)) / log(TWO)) + 1;
+    mlvl = (int)(log((f64)n / (f64)(SMLSIZ + 1)) / log(TWO)) + 1;
     smlszp = SMLSIZ + 1;
 
     if (icompq == 1) {

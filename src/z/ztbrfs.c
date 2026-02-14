@@ -48,24 +48,24 @@ void ztbrfs(
     const int n,
     const int kd,
     const int nrhs,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    const double complex* const restrict X,
+    const c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int notran, nounit, upper;
     int i, j, k, kase, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
 
     *info = 0;
@@ -132,7 +132,7 @@ void ztbrfs(
         cblas_zcopy(n, &X[j * ldx], 1, work, 1);
         cblas_ztbmv(CblasColMajor, cblas_uplo, cblas_transn, cblas_diag,
                     n, kd, AB, ldab, work, 1);
-        double complex neg_one = -ONE;
+        c128 neg_one = -ONE;
         cblas_zaxpy(n, &neg_one, &B[j * ldb], 1, work, 1);
 
         for (i = 0; i < n; i++) {
@@ -235,10 +235,10 @@ void ztbrfs(
         s = ZERO;
         for (i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
-                double tmp = cabs1(work[i]) / rwork[i];
+                f64 tmp = cabs1(work[i]) / rwork[i];
                 if (s < tmp) s = tmp;
             } else {
-                double tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
+                f64 tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
                 if (s < tmp) s = tmp;
             }
         }
@@ -274,7 +274,7 @@ void ztbrfs(
 
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double tmp = cabs1(X[i + j * ldx]);
+            f64 tmp = cabs1(X[i + j * ldx]);
             if (lstres < tmp) lstres = tmp;
         }
         if (lstres != ZERO)

@@ -58,17 +58,17 @@
  */
 void zgels(const char* trans,
            const int m, const int n, const int nrhs,
-           double complex* const restrict A, const int lda,
-           double complex* const restrict B, const int ldb,
-           double complex* const restrict work, const int lwork,
+           c128* const restrict A, const int lda,
+           c128* const restrict B, const int ldb,
+           c128* const restrict work, const int lwork,
            int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int lquery, tpsd;
     int brow, iascl, ibscl, mn, nb, scllen, wsize;
-    double anrm, bignum, bnrm, smlnum;
-    double rwork[1];
+    f64 anrm, bignum, bnrm, smlnum;
+    f64 rwork[1];
     int iinfo;
 
     /* Test the input arguments */
@@ -111,7 +111,7 @@ void zgels(const char* trans,
         int mn_nrhs = mn > nrhs ? mn : nrhs;
         wsize = mn + mn_nrhs * nb;
         if (wsize < 1) wsize = 1;
-        work[0] = (double complex)wsize;
+        work[0] = (c128)wsize;
     }
 
     if (*info != 0) {
@@ -147,7 +147,7 @@ void zgels(const char* trans,
         /* Matrix all zero. Return zero solution. */
         int maxmn = m > n ? m : n;
         zlaset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
-        work[0] = (double complex)wsize;
+        work[0] = (c128)wsize;
         return;
     }
 
@@ -266,5 +266,5 @@ void zgels(const char* trans,
         zlascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, &iinfo);
     }
 
-    work[0] = (double complex)wsize;
+    work[0] = (c128)wsize;
 }

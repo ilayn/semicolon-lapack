@@ -65,10 +65,10 @@
  *                           bidiagonal form did not converge to zero.
  */
 void dgelss(const int m, const int n, const int nrhs,
-            double* const restrict A, const int lda,
-            double* const restrict B, const int ldb,
-            double* const restrict S, const double rcond, int* rank,
-            double* const restrict work, const int lwork,
+            f64* const restrict A, const int lda,
+            f64* const restrict B, const int ldb,
+            f64* const restrict S, const f64 rcond, int* rank,
+            f64* const restrict work, const int lwork,
             int* info)
 {
     int lquery;
@@ -76,12 +76,12 @@ void dgelss(const int m, const int n, const int nrhs,
     int iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr;
     int lwork_dgeqrf, lwork_dormqr, lwork_dgebrd, lwork_dormbr, lwork_dorgbr;
     int lwork_dgelqf, lwork_dormlq;
-    double anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
-    double wkopt[1];
+    f64 anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
+    f64 wkopt[1];
     int iinfo;
 
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Test the input arguments */
     *info = 0;
@@ -199,7 +199,7 @@ void dgelss(const int m, const int n, const int nrhs,
             }
             if (maxwrk < minwrk) maxwrk = minwrk;
         }
-        work[0] = (double)maxwrk;
+        work[0] = (f64)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -519,5 +519,5 @@ void dgelss(const int m, const int n, const int nrhs,
     }
 
 cleanup:
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
 }

@@ -14,7 +14,7 @@
  *
  * It is assumed that either sr1 = sr2 or si = 0.
  *
- * This is useful for starting double implicit shift bulges in the QZ algorithm.
+ * This is useful for starting f64 implicit shift bulges in the QZ algorithm.
  *
  * @param[in]     A       3x3 matrix A.
  * @param[in]     lda     Leading dimension of A.
@@ -28,22 +28,22 @@
  * @param[out]    v       Output vector of length 3.
  */
 void dlaqz1(
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    const double sr1,
-    const double sr2,
-    const double si,
-    const double beta1,
-    const double beta2,
-    double* const restrict v)
+    const f64 sr1,
+    const f64 sr2,
+    const f64 si,
+    const f64 beta1,
+    const f64 beta2,
+    f64* const restrict v)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double w[2];
-    double safmin, safmax, scale1, scale2;
+    f64 w[2];
+    f64 safmin, safmax, scale1, scale2;
 
     safmin = dlamch("S");
     safmax = ONE / safmin;

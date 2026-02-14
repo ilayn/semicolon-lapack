@@ -48,23 +48,23 @@
  * @param[out]    snr     The sine of the right rotation matrix.
  */
 void dlagv2(
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict alphar,
-    double* const restrict alphai,
-    double* const restrict beta,
-    double* csl,
-    double* snl,
-    double* csr,
-    double* snr)
+    f64* const restrict alphar,
+    f64* const restrict alphai,
+    f64* const restrict beta,
+    f64* csl,
+    f64* snl,
+    f64* csr,
+    f64* snr)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double anorm, ascale, bnorm, bscale;
-    double h1, h2, h3, qq, r, rr, safmin, scale1, scale2, t, ulp, wi, wr1, wr2;
+    f64 anorm, ascale, bnorm, bscale;
+    f64 h1, h2, h3, qq, r, rr, safmin, scale1, scale2, t, ulp, wi, wr1, wr2;
 
     safmin = dlamch("S");
     ulp = dlamch("P");

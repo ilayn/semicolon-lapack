@@ -84,21 +84,21 @@
  *                           the Schur form no longer satisfy select=true.
  */
 void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
-            const char* sense, const int n, double* A, const int lda, int* sdim,
-            double* wr, double* wi,
-            double* VS, const int ldvs,
-            double* rconde, double* rcondv,
-            double* work, const int lwork,
+            const char* sense, const int n, f64* A, const int lda, int* sdim,
+            f64* wr, f64* wi,
+            f64* VS, const int ldvs,
+            f64* rconde, f64* rcondv,
+            f64* work, const int lwork,
             int* iwork, const int liwork, int* bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int cursl, lastsl, lquery, lst2sl, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
     int hswork, i, i1, i2, ibal, icond, ierr, ieval;
     int ihi, ilo, inxt, ip, itau, iwrk, liwrk, lwrk, maxwrk, minwrk;
-    double anrm, bignum, cscale = ONE, eps, smlnum;
-    double dum[1];
+    f64 anrm, bignum, cscale = ONE, eps, smlnum;
+    f64 dum[1];
     int nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
@@ -159,7 +159,7 @@ void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
                 liwrk = (n * n) / 4;
         }
         iwork[0] = liwrk;
-        work[0] = (double)lwrk;
+        work[0] = (f64)lwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -16;
@@ -355,7 +355,7 @@ void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
         }
     }
 
-    work[0] = (double)maxwrk;
+    work[0] = (f64)maxwrk;
     if (wantsv || wantsb) {
         iwork[0] = 1 > (*sdim) * (n - (*sdim)) ? 1 : (*sdim) * (n - (*sdim));
     } else {

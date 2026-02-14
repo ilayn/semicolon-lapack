@@ -105,18 +105,18 @@ void dgglse(
     const int m,
     const int n,
     const int p,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict C,
-    double* restrict D,
-    double* restrict X,
-    double* restrict work,
+    f64* restrict C,
+    f64* restrict D,
+    f64* restrict X,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double one = 1.0;
+    const f64 one = 1.0;
 
     int lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
     int lquery;
@@ -155,7 +155,7 @@ void dgglse(
             max_val = (m > n) ? m : n;
             lwkopt = p + mn + max_val * nb;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -223,5 +223,5 @@ void dgglse(
 
     dormrq("L", "T", n, 1, p, B, ldb, work, X, n,
            &work[p + mn], lwork - p - mn, info);
-    work[0] = (double)(p + mn + ((lopt > (int)work[p + mn]) ? lopt : (int)work[p + mn]));
+    work[0] = (f64)(p + mn + ((lopt > (int)work[p + mn]) ? lopt : (int)work[p + mn]));
 }

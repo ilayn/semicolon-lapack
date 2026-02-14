@@ -177,7 +177,7 @@ static const int MM[128][4] = {
     {  545, 2366, 3801, 1537}
 };
 
-void slaruv(int* const restrict iseed, const int n, float* const restrict X)
+void slaruv(int* const restrict iseed, const int n, f32* const restrict X)
 {
     int i, it1, it2, it3, it4;
     int i1, i2, i3, i4;
@@ -214,8 +214,8 @@ void slaruv(int* const restrict iseed, const int n, float* const restrict X)
 
             /* Convert 48-bit integer to a real number in the interval (0,1) */
 
-            X[i] = R * ((float)it1 + R * ((float)it2 + R * ((float)it3 + R *
-                   (float)it4)));
+            X[i] = R * ((f32)it1 + R * ((f32)it2 + R * ((f32)it3 + R *
+                   (f32)it4)));
 
             if (X[i] != 1.0f) {
                 break;

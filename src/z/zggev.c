@@ -66,24 +66,24 @@
  *                   - > n: other errors
  */
 void zggev(const char* jobvl, const char* jobvr, const int n,
-           double complex* A, const int lda,
-           double complex* B, const int ldb,
-           double complex* alpha, double complex* beta,
-           double complex* VL, const int ldvl,
-           double complex* VR, const int ldvr,
-           double complex* work, const int lwork,
-           double* rwork, int* info)
+           c128* A, const int lda,
+           c128* B, const int ldb,
+           c128* alpha, c128* beta,
+           c128* VL, const int ldvl,
+           c128* VR, const int ldvr,
+           c128* work, const int lwork,
+           f64* rwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
     int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
     int in, iright, irows, irwrk, itau, iwrk, jc, jr;
     int lwkmin, lwkopt;
-    double anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps,
+    f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps,
            smlnum, temp;
     int ldumma[1];
     int nb_geqrf, nb_unmqr, nb_ungqr;
@@ -142,7 +142,7 @@ void zggev(const char* jobvl, const char* jobvr, const int n,
         if (ilvl) {
             lwkopt = lwkopt > n + n * nb_ungqr ? lwkopt : n + n * nb_ungqr;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < lwkmin && !lquery) {
             *info = -15;
@@ -328,6 +328,6 @@ L70:
     if (ilbscl)
         zlascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
     return;
 }

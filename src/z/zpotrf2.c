@@ -48,14 +48,14 @@
 void zpotrf2(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
-    const double ZERO = 0.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
+    const f64 ZERO = 0.0;
 
     // Test the input parameters
     *info = 0;
@@ -78,7 +78,7 @@ void zpotrf2(
     // N=1 case
     if (n == 1) {
         // Test for non-positive-definiteness
-        double ajj = creal(A[0]);
+        f64 ajj = creal(A[0]);
         if (ajj <= ZERO || disnan(ajj)) {
             *info = 1;
             return;

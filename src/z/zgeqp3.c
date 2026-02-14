@@ -59,11 +59,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgeqp3(const int m, const int n,
-            double complex* const restrict A, const int lda,
+            c128* const restrict A, const int lda,
             int* const restrict jpvt,
-            double complex* const restrict tau,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork,
+            c128* const restrict tau,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork,
             int* info)
 {
     int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
@@ -95,7 +95,7 @@ void zgeqp3(const int m, const int n,
             nb = lapack_get_nb("GEQRF");
             lwkopt = (n + 1) * nb;
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
 
         if ((lwork < iws) && !lquery) {
             *info = -8;
@@ -293,5 +293,5 @@ void zgeqp3(const int m, const int n,
         }
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

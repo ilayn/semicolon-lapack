@@ -48,35 +48,35 @@ void dlaqz3(
     const int ilo,
     const int ihi,
     const int nw,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    double* const restrict Z,
+    f64* const restrict Z,
     const int ldz,
     int* ns,
     int* nd,
-    double* const restrict alphar,
-    double* const restrict alphai,
-    double* const restrict beta,
-    double* const restrict QC,
+    f64* const restrict alphar,
+    f64* const restrict alphai,
+    f64* const restrict beta,
+    f64* const restrict QC,
     const int ldqc,
-    double* const restrict ZC,
+    f64* const restrict ZC,
     const int ldzc,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     const int rec,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int bulge;
     int jw, kwtop, kwbot, istopm, istartm, k, k2, dtgexc_info;
     int ifst, ilst, lworkreq, qz_small_info;
-    double s, smlnum, ulp, safmin, c1, s1, temp;
+    f64 s, smlnum, ulp, safmin, c1, s1, temp;
 
     *info = 0;
 
@@ -107,7 +107,7 @@ void dlaqz3(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = (double)lworkreq;
+        work[0] = (f64)lworkreq;
         return;
     } else if (lwork < lworkreq) {
         *info = -26;
@@ -122,7 +122,7 @@ void dlaqz3(
     safmin = dlamch("S");
     (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
     ulp = dlamch("P");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     if (ihi == kwtop) {
         /* 1 by 1 deflation window, just try a regular deflation */
@@ -132,7 +132,7 @@ void dlaqz3(
         *ns = 1;
         *nd = 0;
         {
-            double tmp = fabs(A[kwtop + kwtop * lda]);
+            f64 tmp = fabs(A[kwtop + kwtop * lda]);
             if (smlnum > tmp) tmp = smlnum;
             tmp = ulp * tmp;
             if (fabs(s) <= ((smlnum > tmp) ? smlnum : tmp)) {
@@ -188,10 +188,10 @@ void dlaqz3(
                     temp = fabs(s);
                 }
                 {
-                    double tmp1 = fabs(s * QC[0 + (kwbot - kwtop - 1) * ldqc]);
-                    double tmp2 = fabs(s * QC[0 + (kwbot - kwtop) * ldqc]);
-                    double maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
-                    double thresh = (smlnum > ulp * temp) ? smlnum : ulp * temp;
+                    f64 tmp1 = fabs(s * QC[0 + (kwbot - kwtop - 1) * ldqc]);
+                    f64 tmp2 = fabs(s * QC[0 + (kwbot - kwtop) * ldqc]);
+                    f64 maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
+                    f64 thresh = (smlnum > ulp * temp) ? smlnum : ulp * temp;
                     if (maxval <= thresh) {
                         /* Deflatable */
                         kwbot = kwbot - 2;
@@ -213,8 +213,8 @@ void dlaqz3(
                     temp = fabs(s);
                 }
                 {
-                    double tmp = fabs(s * QC[0 + (kwbot - kwtop) * ldqc]);
-                    double thresh = (ulp * temp > smlnum) ? ulp * temp : smlnum;
+                    f64 tmp = fabs(s * QC[0 + (kwbot - kwtop) * ldqc]);
+                    f64 thresh = (ulp * temp > smlnum) ? ulp * temp : smlnum;
                     if (tmp <= thresh) {
                         /* Deflatable */
                         kwbot = kwbot - 1;
@@ -263,7 +263,7 @@ void dlaqz3(
         /* Reflect spike back, this will create optimally packed bulges */
         /* A(KWTOP:KWBOT, KWTOP-1) = A(KWTOP, KWTOP-1) * QC(1, 1:JW-ND) */
         {
-            double a_val = A[kwtop + (kwtop - 1) * lda];
+            f64 a_val = A[kwtop + (kwtop - 1) * lda];
             for (int i = kwtop; i <= kwbot; i++) {
                 A[i + (kwtop - 1) * lda] = a_val * QC[0 + (i - kwtop) * ldqc];
             }
@@ -287,7 +287,7 @@ void dlaqz3(
         k = kwbot - 1;
         while (k >= kwtop) {
             if ((k >= kwtop + 1) && A[(k + 1) + (k - 1) * lda] != ZERO) {
-                /* Move double pole block down and remove it */
+                /* Move f64 pole block down and remove it */
                 for (k2 = k - 1; k2 <= kwbot - 2; k2++) {
                     dlaqz2(1, 1, k2, kwtop, kwtop + jw - 1, kwbot,
                            A, lda, B, ldb, jw, kwtop, QC, ldqc, jw, kwtop, ZC, ldzc);

@@ -110,19 +110,19 @@ void sggglm(
     const int n,
     const int m,
     const int p,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* restrict D,
-    float* restrict X,
-    float* restrict Y,
-    float* restrict work,
+    f32* restrict D,
+    f32* restrict X,
+    f32* restrict Y,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
     int lquery;
@@ -161,7 +161,7 @@ void sggglm(
             max_val = (n > p) ? n : p;
             lwkopt = m + np + max_val * nb;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -229,5 +229,5 @@ void sggglm(
     sormrq("L", "T", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (float)(m + np + ((lopt > (int)work[m + np]) ? lopt : (int)work[m + np]));
+    work[0] = (f32)(m + np + ((lopt > (int)work[m + np]) ? lopt : (int)work[m + np]));
 }

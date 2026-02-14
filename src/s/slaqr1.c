@@ -32,14 +32,14 @@
  * @param[out] v      Double precision array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-SEMICOLON_API void slaqr1(const int n, const float* H, const int ldh,
-                          const float sr1, const float si1,
-                          const float sr2, const float si2,
-                          float* v)
+SEMICOLON_API void slaqr1(const int n, const f32* H, const int ldh,
+                          const f32 sr1, const f32 si1,
+                          const f32 sr2, const f32 si2,
+                          f32* v)
 {
-    const float zero = 0.0f;
+    const f32 zero = 0.0f;
 
-    float h21s, h31s, s;
+    f32 h21s, h31s, s;
 
     /* Quick return if possible */
     if (n != 2 && n != 3) {

@@ -60,24 +60,24 @@
  *                               tridiagonal form did not converge to zero.
  */
 void zhbevd_2stage(const char* jobz, const char* uplo, const int n,
-                   const int kd, double complex* const restrict AB,
-                   const int ldab, double* const restrict W,
-                   double complex* const restrict Z, const int ldz,
-                   double complex* const restrict work, const int lwork,
-                   double* const restrict rwork, const int lrwork,
+                   const int kd, c128* const restrict AB,
+                   const int ldab, f64* const restrict W,
+                   c128* const restrict Z, const int ldz,
+                   c128* const restrict work, const int lwork,
+                   f64* const restrict rwork, const int lrwork,
                    int* const restrict iwork, const int liwork,
                    int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lower, lquery, wantz;
     int iinfo, imax, inde, indwk2, indrwk, iscale;
-    int llwork, indwk, lhtrd, lwtrd, ib, indhous;
+    int llwork, indwk, lhtrd = 0, lwtrd, ib, indhous;
     int liwmin, llrwk, llwk2, lrwmin, lwmin;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -117,8 +117,8 @@ void zhbevd_2stage(const char* jobz, const char* uplo, const int n,
     }
 
     if (*info == 0) {
-        work[0] = CMPLX((double)lwmin, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwmin, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -218,8 +218,8 @@ void zhbevd_2stage(const char* jobz, const char* uplo, const int n,
         cblas_dscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwmin, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
     return;
 }

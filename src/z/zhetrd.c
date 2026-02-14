@@ -63,12 +63,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zhetrd(const char* uplo, const int n, double complex* A, const int lda,
-            double* D, double* E, double complex* tau, double complex* work,
+void zhetrd(const char* uplo, const int n, c128* A, const int lda,
+            f64* D, f64* E, c128* tau, c128* work,
             const int lwork, int* info)
 {
-    const double ONE = 1.0;
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int upper, lquery;
     int i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
@@ -89,7 +89,7 @@ void zhetrd(const char* uplo, const int n, double complex* A, const int lda,
     if (*info == 0) {
         nb = lapack_get_nb("HETRD");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -188,5 +188,5 @@ void zhetrd(const char* uplo, const int n, double complex* A, const int lda,
                &tau[i], &iinfo);
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

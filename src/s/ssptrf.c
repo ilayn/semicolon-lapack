@@ -51,18 +51,18 @@
 void ssptrf(
     const char* uplo,
     const int n,
-    float* const restrict AP,
+    f32* const restrict AP,
     int* const restrict ipiv,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float EIGHT = 8.0f;
-    const float SEVTEN = 17.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 EIGHT = 8.0f;
+    const f32 SEVTEN = 17.0f;
 
     int upper;
     int i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
-    float absakk, alpha, colmax, d11, d12, d21, d22, r1, rowmax, t, wk, wkm1, wkp1;
+    f32 absakk, alpha, colmax, d11, d12, d21, d22, r1, rowmax, t, wk, wkm1, wkp1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

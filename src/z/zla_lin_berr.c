@@ -35,13 +35,13 @@ void zla_lin_berr(
     const int n,
     const int nz,
     const int nrhs,
-    const double complex* const restrict RES,
-    const double* const restrict AYB,
-    double* const restrict BERR)
+    const c128* const restrict RES,
+    const f64* const restrict AYB,
+    f64* const restrict BERR)
 {
     int i, j;
-    double tmp;
-    double safe1;
+    f64 tmp;
+    f64 safe1;
 
     /*     Adding SAFE1 to the numerator guards against spuriously zero */
     /*     residuals.  A similar safeguard is in the CLA_yyAMV routine used */

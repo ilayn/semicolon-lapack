@@ -67,10 +67,10 @@
  *                           solution could not be computed.
  */
 void dsysv(const char* uplo, const int n, const int nrhs,
-           double* const restrict A, const int lda,
+           f64* const restrict A, const int lda,
            int* const restrict ipiv,
-           double* const restrict B, const int ldb,
-           double* const restrict work, const int lwork,
+           f64* const restrict B, const int ldb,
+           f64* const restrict work, const int lwork,
            int* info)
 {
     int lwkopt;
@@ -100,7 +100,7 @@ void dsysv(const char* uplo, const int n, const int nrhs,
             dsytrf(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (int)work[0];
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -117,5 +117,5 @@ void dsysv(const char* uplo, const int n, const int nrhs,
         dsytrs(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

@@ -75,26 +75,26 @@ void zhpevd(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    double* const restrict W,
-    double complex* const restrict Z,
+    c128* const restrict AP,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     const int lrwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int wantz, lquery;
     int iinfo, imax, inde, indrwk, indtau, indwrk;
     int iscale, liwmin, llrwk, llwrk, lrwmin, lwmin;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
@@ -127,8 +127,8 @@ void zhpevd(
                 liwmin = 1;
             }
         }
-        work[0] = CMPLX((double)lwmin, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwmin, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -218,7 +218,7 @@ void zhpevd(
         cblas_dscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwmin, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 }

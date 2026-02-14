@@ -46,9 +46,9 @@ void ztrttf(
     const char* transr,
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double complex* const restrict ARF,
+    c128* const restrict ARF,
     int* info)
 {
     int lower, nisodd, normaltransr;

@@ -47,22 +47,22 @@ static const int bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
  */
 void slasy2(const int ltranl, const int ltranr, const int isgn,
             const int n1, const int n2,
-            const float* TL, const int ldtl,
-            const float* TR, const int ldtr,
-            const float* B, const int ldb,
-            float* scale, float* X, const int ldx,
-            float* xnorm, int* info)
+            const f32* TL, const int ldtl,
+            const f32* TR, const int ldtr,
+            const f32* B, const int ldb,
+            f32* scale, f32* X, const int ldx,
+            f32* xnorm, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float HALF = 0.5f;
-    const float EIGHT = 8.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 HALF = 0.5f;
+    const f32 EIGHT = 8.0f;
 
     int i, ip, ipiv, ipsv, j, jp, jpsv, k;
-    float bet, eps, gam, l21, sgn, smin, smlnum, tau1;
-    float temp, u11, u12, u22, xmax;
-    float btmp[4], t16[16], tmp[4], x2[2];  /* t16 stored column-major: t16[i + 4*j] */
+    f32 bet, eps, gam, l21, sgn, smin, smlnum, tau1;
+    f32 temp, u11, u12, u22, xmax;
+    f32 btmp[4], t16[16], tmp[4], x2[2];  /* t16 stored column-major: t16[i + 4*j] */
     int jpiv[4];
 
     *info = 0;
@@ -74,7 +74,7 @@ void slasy2(const int ltranl, const int ltranr, const int isgn,
     /* Set constants to control overflow */
     eps = slamch("P");
     smlnum = slamch("S") / eps;
-    sgn = (float)isgn;
+    sgn = (f32)isgn;
 
     k = n1 + n1 + n2 - 2;
 

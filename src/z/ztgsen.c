@@ -69,34 +69,34 @@ void ztgsen(
     const int wantz,
     const int* const restrict select,
     const int n,
-    double complex* A,
+    c128* A,
     const int lda,
-    double complex* B,
+    c128* B,
     const int ldb,
-    double complex* alpha,
-    double complex* beta,
-    double complex* Q,
+    c128* alpha,
+    c128* beta,
+    c128* Q,
     const int ldq,
-    double complex* Z,
+    c128* Z,
     const int ldz,
     int* m,
-    double* pl,
-    double* pr,
-    double* dif,
-    double complex* work,
+    f64* pl,
+    f64* pr,
+    f64* dif,
+    c128* work,
     const int lwork,
     int* iwork,
     const int liwork,
     int* info)
 {
     const int IDIFJB = 3;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, swap, wantd, wantd1, wantd2, wantp;
     int i, ierr, ijb, k, kase, ks, liwmin, lwmin, mn2, n1, n2;
-    double dscale, dsum, rdscal, safmin;
-    double complex temp1, temp2;
+    f64 dscale, dsum, rdscal, safmin;
+    c128 temp1, temp2;
     int isave[3];
 
     *info = 0;
@@ -157,7 +157,7 @@ void ztgsen(
         liwmin = 1;
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
     iwork[0] = liwmin;
 
     if (lwork < lwmin && !lquery) {
@@ -368,6 +368,6 @@ L50:
 
 L70:
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
     iwork[0] = liwmin;
 }

@@ -61,18 +61,18 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrevc(const char* side, const char* howmny, int* select, const int n,
-            const double* T, const int ldt, double* VL, const int ldvl,
-            double* VR, const int ldvr, const int mm, int* m,
-            double* work, int* info)
+            const f64* T, const int ldt, f64* VL, const int ldvl,
+            f64* VR, const int ldvr, const int mm, int* m,
+            f64* work, int* info)
 {
     /* Local scalars */
     int allv, bothv, leftv, over, pair, rightv, somev;
     int i, ierr, ii, ip, is, j, j1, j2, jnxt, k, ki, n2;
-    double beta, bignum, emax, rec, remax, scale;
-    double smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
+    f64 beta, bignum, emax, rec, remax, scale;
+    f64 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
 
     /* Local array */
-    double x[4];  /* 2x2 stored column-major: x[0]=X(1,1), x[1]=X(2,1), x[2]=X(1,2), x[3]=X(2,2) */
+    f64 x[4];  /* 2x2 stored column-major: x[0]=X(1,1), x[1]=X(2,1), x[2]=X(1,2), x[3]=X(2,2) */
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -145,7 +145,7 @@ void dtrevc(const char* side, const char* howmny, int* select, const int n,
     /* Set the constants to control overflow */
     unfl = DBL_MIN;
     ulp = DBL_EPSILON;
-    smlnum = unfl * ((double)n / ulp);
+    smlnum = unfl * ((f64)n / ulp);
     bignum = (1.0 - ulp) / smlnum;
 
     /* Compute 1-norm of each column of strictly upper triangular
@@ -407,7 +407,7 @@ void dtrevc(const char* side, const char* howmny, int* select, const int n,
 
                     emax = 0.0;
                     for (k = 0; k <= ki; k++) {
-                        double temp = fabs(VR[k + (is - 1) * ldvr]) + fabs(VR[k + is * ldvr]);
+                        f64 temp = fabs(VR[k + (is - 1) * ldvr]) + fabs(VR[k + is * ldvr]);
                         if (temp > emax) emax = temp;
                     }
 
@@ -435,7 +435,7 @@ void dtrevc(const char* side, const char* howmny, int* select, const int n,
 
                     emax = 0.0;
                     for (k = 0; k < n; k++) {
-                        double temp = fabs(VR[k + (ki - 1) * ldvr]) + fabs(VR[k + ki * ldvr]);
+                        f64 temp = fabs(VR[k + (ki - 1) * ldvr]) + fabs(VR[k + ki * ldvr]);
                         if (temp > emax) emax = temp;
                     }
                     remax = 1.0 / emax;
@@ -731,7 +731,7 @@ L130:
 
                     emax = 0.0;
                     for (k = ki; k < n; k++) {
-                        double temp = fabs(VL[k + is * ldvl]) + fabs(VL[k + (is + 1) * ldvl]);
+                        f64 temp = fabs(VL[k + is * ldvl]) + fabs(VL[k + (is + 1) * ldvl]);
                         if (temp > emax) emax = temp;
                     }
                     remax = 1.0 / emax;
@@ -759,7 +759,7 @@ L130:
 
                     emax = 0.0;
                     for (k = 0; k < n; k++) {
-                        double temp = fabs(VL[k + ki * ldvl]) + fabs(VL[k + (ki + 1) * ldvl]);
+                        f64 temp = fabs(VL[k + ki * ldvl]) + fabs(VL[k + (ki + 1) * ldvl]);
                         if (temp > emax) emax = temp;
                     }
                     remax = 1.0 / emax;

@@ -8,9 +8,9 @@
 #include "../include/lapack_tuning.h"
 
 void zggqrf(const int n, const int m, const int p,
-            double complex* const restrict A, const int lda, double complex* const restrict taua,
-            double complex* const restrict B, const int ldb, double complex* const restrict taub,
-            double complex* const restrict work, const int lwork, int* info)
+            c128* const restrict A, const int lda, c128* const restrict taua,
+            c128* const restrict B, const int ldb, c128* const restrict taub,
+            c128* const restrict work, const int lwork, int* info)
 {
     int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
     int minval;
@@ -30,7 +30,7 @@ void zggqrf(const int n, const int m, const int p,
 
     lwkopt = minval * nb;
     if (lwkopt < 1) lwkopt = 1;
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 
     lquery = (lwork == -1);
 
@@ -70,5 +70,5 @@ void zggqrf(const int n, const int m, const int p,
     zgerqf(n, p, B, ldb, taub, work, lwork, info);
     if ((int)creal(work[0]) > lopt) lopt = (int)creal(work[0]);
 
-    work[0] = (double complex)lopt;
+    work[0] = (c128)lopt;
 }

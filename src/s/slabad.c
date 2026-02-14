@@ -18,7 +18,7 @@
  *          On entry, the overflow threshold as computed by SLAMCH.
  *          On exit, the unchanged value large.
  */
-void slabad(float* small, float* large)
+void slabad(f32* small, f32* large)
 {
     (void)small;
     (void)large;

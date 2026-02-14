@@ -45,30 +45,30 @@ void zlaein(
     const int rightv,
     const int noinit,
     const int n,
-    const double complex* const restrict H,
+    const c128* const restrict H,
     const int ldh,
-    const double complex w,
-    double complex* const restrict V,
-    double complex* const restrict B,
+    const c128 w,
+    c128* const restrict V,
+    c128* const restrict B,
     const int ldb,
-    double* const restrict rwork,
-    const double eps3,
-    const double smlnum,
+    f64* const restrict rwork,
+    const f64 eps3,
+    const f64 smlnum,
     int* info)
 {
-    const double ONE = 1.0;
-    const double TENTH = 0.1;
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 TENTH = 0.1;
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int i, ierr, its, j;
-    double growto, nrmsml, rootn, rtemp, scale, vnorm;
-    double complex ei, ej, temp, x;
+    f64 growto, nrmsml, rootn, rtemp, scale, vnorm;
+    c128 ei, ej, temp, x;
 
     *info = 0;
 
     /*     GROWTO is the threshold used in the acceptance test for an
      *     eigenvector. */
-    rootn = sqrt((double)n);
+    rootn = sqrt((f64)n);
     growto = TENTH / rootn;
     nrmsml = (ONE > eps3 * rootn ? ONE : eps3 * rootn) * smlnum;
 
@@ -89,7 +89,7 @@ void zlaein(
     } else {
         /*        Scale supplied initial vector. */
         vnorm = cblas_dznrm2(n, V, 1);
-        double denom = vnorm > nrmsml ? vnorm : nrmsml;
+        f64 denom = vnorm > nrmsml ? vnorm : nrmsml;
         cblas_zdscal(n, (eps3 * rootn) / denom, V, 1);
     }
 

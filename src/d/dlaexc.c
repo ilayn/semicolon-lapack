@@ -40,22 +40,22 @@
  *                           Schur form; the blocks are not swapped and T and
  *                           Q are unchanged.
  */
-void dlaexc(const int wantq, const int n, double* T, const int ldt,
-            double* Q, const int ldq, const int j1, const int n1,
-            const int n2, double* work, int* info)
+void dlaexc(const int wantq, const int n, f64* T, const int ldt,
+            f64* Q, const int ldq, const int j1, const int n1,
+            const int n2, f64* work, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TEN = 10.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TEN = 10.0;
     const int LDD = 4;
     const int LDX = 2;
 
     int ierr, j2, j3, j4, k, nd;
-    double cs, dnorm, eps, scale, smlnum, sn, t11, t22;
-    double t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
-    double wr1, wr2, xnorm;
-    double D[16];  /* 4x4 stored column-major */
-    double U[3], U1[3], U2[3], X[4];  /* X is 2x2 stored column-major */
+    f64 cs, dnorm, eps, scale, smlnum, sn, t11, t22;
+    f64 t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
+    f64 wr1, wr2, xnorm;
+    f64 D[16];  /* 4x4 stored column-major */
+    f64 U[3], U1[3], U2[3], X[4];  /* X is 2x2 stored column-major */
 
     *info = 0;
 

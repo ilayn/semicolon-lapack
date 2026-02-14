@@ -49,15 +49,15 @@
  * @param[in]     incy   The increment for the elements of Y. incy != 0.
  */
 void zla_geamv(const int trans, const int m, const int n,
-               const double alpha, const double complex* const restrict A,
-               const int lda, const double complex* const restrict X,
-               const int incx, const double beta,
-               double* const restrict Y, const int incy)
+               const f64 alpha, const c128* const restrict A,
+               const int lda, const c128* const restrict X,
+               const int incx, const f64 beta,
+               f64* const restrict Y, const int incy)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int symb_zero;
-    double temp, safe1;
+    f64 temp, safe1;
     int i, info, iy, j, jx, kx, ky, lenx, leny;
 
     info = 0;

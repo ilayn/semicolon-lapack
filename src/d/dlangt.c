@@ -25,17 +25,17 @@
  *
  * @return The computed norm value.
  */
-double dlangt(
+f64 dlangt(
     const char* norm,
     const int n,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU)
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double anorm, scale, sum, temp;
+    f64 anorm, scale, sum, temp;
     int i;
 
     if (n <= 0) {

@@ -27,13 +27,13 @@
  *
  * @return Scale factor s in (0, 1].
  */
-double dlarmm(const double anorm, const double bnorm, const double cnorm)
+f64 dlarmm(const f64 anorm, const f64 bnorm, const f64 cnorm)
 {
-    const double ONE = 1.0;
-    const double HALF = 0.5;
-    const double FOUR = 4.0;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
+    const f64 FOUR = 4.0;
 
-    double smlnum, bignum;
+    f64 smlnum, bignum;
 
     /* Determine machine dependent parameters to control overflow */
     smlnum = dlamch("S") / dlamch("P");

@@ -63,20 +63,20 @@
 void ssytri_3x(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    const float* restrict E,
+    const f32* restrict E,
     const int* restrict ipiv,
-    float* restrict work,
+    f32* restrict work,
     const int nb,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int upper;
     int cut, i, icount, invd, ip, k, nnb, j, u11;
-    float ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
+    f32 ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
     int ldwork = n + nb + 1;
 
     *info = 0;

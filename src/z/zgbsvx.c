@@ -72,30 +72,30 @@ void zgbsvx(
     const int kl,
     const int ku,
     const int nrhs,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double complex* const restrict AFB,
+    c128* const restrict AFB,
     const int ldafb,
     int* const restrict ipiv,
     char* equed,
-    double* const restrict R,
-    double* const restrict C,
-    double complex* const restrict B,
+    f64* const restrict R,
+    f64* const restrict C,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, j1, j2, infequ;
-    double amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
+    f64 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
     int nofact, equil, notran, rowequ, colequ;
 
@@ -149,8 +149,8 @@ void zgbsvx(
             if (rcmin <= ZERO) {
                 *info = -13;
             } else if (n > 0) {
-                double rmin = (rcmin > smlnum) ? rcmin : smlnum;
-                double rmax = (rcmax < bignum) ? rcmax : bignum;
+                f64 rmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f64 rmax = (rcmax < bignum) ? rcmax : bignum;
                 rowcnd = rmin / rmax;
             } else {
                 rowcnd = ONE;
@@ -166,8 +166,8 @@ void zgbsvx(
             if (rcmin <= ZERO) {
                 *info = -14;
             } else if (n > 0) {
-                double cmin = (rcmin > smlnum) ? rcmin : smlnum;
-                double cmax = (rcmax < bignum) ? rcmax : bignum;
+                f64 cmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f64 cmax = (rcmax < bignum) ? rcmax : bignum;
                 colcnd = cmin / cmax;
             } else {
                 colcnd = ONE;
@@ -239,7 +239,7 @@ void zgbsvx(
                 int i_start = (ku - j > 0) ? ku - j : 0;
                 int i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
                 for (i = i_start; i <= i_end; i++) {
-                    double temp = cabs(AB[i + j * ldab]);
+                    f64 temp = cabs(AB[i + j * ldab]);
                     if (anorm < temp) anorm = temp;
                 }
             }

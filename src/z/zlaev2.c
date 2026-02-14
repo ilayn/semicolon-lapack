@@ -28,15 +28,15 @@
  * @param[out] cs1  The cosine of the rotation.
  * @param[out] sn1  The vector (CS1, SN1) is a unit right eigenvector for RT1.
  */
-void zlaev2(const double complex a, const double complex b,
-            const double complex c, double* rt1, double* rt2,
-            double* cs1, double complex* sn1)
+void zlaev2(const c128 a, const c128 b,
+            const c128 c, f64* rt1, f64* rt2,
+            f64* cs1, c128* sn1)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double t;
-    double complex w;
+    f64 t;
+    c128 w;
 
     if (cabs(b) == ZERO) {
         w = CMPLX(ONE, 0.0);

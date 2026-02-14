@@ -19,11 +19,11 @@
  * @param[out] ssmin  The smaller singular value.
  * @param[out] ssmax  The larger singular value.
  */
-void slas2(const float f, const float g, const float h,
-           float* ssmin, float* ssmax)
+void slas2(const f32 f, const f32 g, const f32 h,
+           f32* ssmin, f32* ssmax)
 {
-    float fa, ga, ha, fhmn, fhmx;
-    float as, at, au, c;
+    f32 fa, ga, ha, fhmn, fhmx;
+    f32 as, at, au, c;
 
     fa = fabsf(f);
     ga = fabsf(g);
@@ -36,8 +36,8 @@ void slas2(const float f, const float g, const float h,
         if (fhmx == 0.0f) {
             *ssmax = ga;
         } else {
-            float mn = (fhmx < ga) ? fhmx : ga;
-            float mx = (fhmx > ga) ? fhmx : ga;
+            f32 mn = (fhmx < ga) ? fhmx : ga;
+            f32 mx = (fhmx > ga) ? fhmx : ga;
             *ssmax = mx * sqrtf(1.0f + (mn / mx) * (mn / mx));
         }
     } else {

@@ -56,13 +56,13 @@ void zsyconvf_rook(
     const char* uplo,
     const char* way,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict E,
+    c128* restrict E,
     const int* restrict ipiv,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int upper, convert;
     int i, ip, ip2;

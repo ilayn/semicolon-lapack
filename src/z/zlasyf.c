@@ -10,7 +10,7 @@
 #include "semicolon_lapack_complex_double.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
-static const double ALPHA_BK = 0.6403882032022076;
+static const f64 ALPHA_BK = 0.6403882032022076;
 
 /* CABS1 returns |real(z)| + |imag(z)| */
 /**
@@ -77,15 +77,15 @@ void zlasyf(
     const int n,
     const int nb,
     int* kb,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* restrict W,
+    c128* restrict W,
     const int ldw,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
 
@@ -123,13 +123,13 @@ void zlasyf(
 
             /* Determine rows and columns to be interchanged and whether
              * a 1-by-1 or 2-by-2 pivot block will be used */
-            double absakk = cabs1(W[k + kw * ldw]);
+            f64 absakk = cabs1(W[k + kw * ldw]);
 
             /* IMAX is the row-index of the largest off-diagonal element in
              * column K, and COLMAX is its absolute value.
              * Determine both COLMAX and IMAX. */
             int imax = 0;
-            double colmax = 0.0;
+            f64 colmax = 0.0;
             if (k > 0) {
                 imax = cblas_izamax(k, &W[0 + kw * ldw], 1);
                 colmax = cabs1(W[imax + kw * ldw]);
@@ -168,7 +168,7 @@ void zlasyf(
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row IMAX, and ROWMAX is its absolute value */
                     int jmax = (imax + 1) + cblas_izamax(k - imax, &W[(imax + 1) + (kw - 1) * ldw], 1);
-                    double rowmax = cabs1(W[jmax + (kw - 1) * ldw]);
+                    f64 rowmax = cabs1(W[jmax + (kw - 1) * ldw]);
 
                     if (imax > 0) {
                         jmax = cblas_izamax(imax, &W[0 + (kw - 1) * ldw], 1);
@@ -242,7 +242,7 @@ void zlasyf(
                     cblas_zcopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
 
                     if (k > 0) {
-                        double complex r1 = CONE / A[k + k * lda];
+                        c128 r1 = CONE / A[k + k * lda];
                         cblas_zscal(k, &r1, &A[0 + k * lda], 1);
                     }
                 } else {
@@ -284,10 +284,10 @@ void zlasyf(
                          *
                          * = D21 * ( ( D11 ) (  -1 ) )
                          *         ( (  -1 ) ( D22 ) ) */
-                        double complex d21 = W[(k - 1) + kw * ldw];
-                        double complex d11 = W[k + kw * ldw] / d21;
-                        double complex d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
-                        double complex t = CONE / (d11 * d22 - CONE);
+                        c128 d21 = W[(k - 1) + kw * ldw];
+                        c128 d11 = W[k + kw * ldw] / d21;
+                        c128 d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
+                        c128 t = CONE / (d11 * d22 - CONE);
                         d21 = t / d21;
 
                         /* Update elements in columns A(k-1) and A(k) as
@@ -382,13 +382,13 @@ void zlasyf(
 
             /* Determine rows and columns to be interchanged and whether
              * a 1-by-1 or 2-by-2 pivot block will be used */
-            double absakk = cabs1(W[k + k * ldw]);
+            f64 absakk = cabs1(W[k + k * ldw]);
 
             /* IMAX is the row-index of the largest off-diagonal element in
              * column K, and COLMAX is its absolute value.
              * Determine both COLMAX and IMAX. */
             int imax = k;
-            double colmax = 0.0;
+            f64 colmax = 0.0;
             if (k < n - 1) {
                 imax = (k + 1) + cblas_izamax(n - k - 1, &W[(k + 1) + k * ldw], 1);
                 colmax = cabs1(W[imax + k * ldw]);
@@ -425,7 +425,7 @@ void zlasyf(
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row IMAX, and ROWMAX is its absolute value */
                     int jmax = k + cblas_izamax(imax - k, &W[k + (k + 1) * ldw], 1);
-                    double rowmax = cabs1(W[jmax + (k + 1) * ldw]);
+                    f64 rowmax = cabs1(W[jmax + (k + 1) * ldw]);
 
                     if (imax < n - 1) {
                         jmax = (imax + 1) + cblas_izamax(n - imax - 1, &W[(imax + 1) + (k + 1) * ldw], 1);
@@ -496,7 +496,7 @@ void zlasyf(
                     cblas_zcopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
 
                     if (k < n - 1) {
-                        double complex r1 = CONE / A[k + k * lda];
+                        c128 r1 = CONE / A[k + k * lda];
                         cblas_zscal(n - k - 1, &r1, &A[(k + 1) + k * lda], 1);
                     }
                 } else {
@@ -538,10 +538,10 @@ void zlasyf(
                          *
                          * = D21 * ( ( D11 ) (  -1 ) )
                          *         ( (  -1 ) ( D22 ) ) */
-                        double complex d21 = W[(k + 1) + k * ldw];
-                        double complex d11 = W[(k + 1) + (k + 1) * ldw] / d21;
-                        double complex d22 = W[k + k * ldw] / d21;
-                        double complex t = CONE / (d11 * d22 - CONE);
+                        c128 d21 = W[(k + 1) + k * ldw];
+                        c128 d11 = W[(k + 1) + (k + 1) * ldw] / d21;
+                        c128 d22 = W[k + k * ldw] / d21;
+                        c128 t = CONE / (d11 * d22 - CONE);
                         d21 = t / d21;
 
                         /* Update elements in columns A(k) and A(k+1) as

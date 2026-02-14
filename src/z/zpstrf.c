@@ -51,19 +51,19 @@
 void zpstrf(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* const restrict piv,
     int* rank,
-    const double tol,
-    double* const restrict work,
+    const f64 tol,
+    f64* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double NEG_ONE = -1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 NEG_ONE = -1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -98,9 +98,9 @@ void zpstrf(
 
     // Compute stopping value
     int pvt = 0;
-    double ajj = creal(A[0]);
+    f64 ajj = creal(A[0]);
     for (int i = 1; i < n; i++) {
-        double tmp = creal(A[i + i * lda]);
+        f64 tmp = creal(A[i + i * lda]);
         if (tmp > ajj) {
             pvt = i;
             ajj = tmp;
@@ -113,7 +113,7 @@ void zpstrf(
     }
 
     // Compute stopping value if not supplied
-    double dstop;
+    f64 dstop;
     if (tol < ZERO) {
         dstop = n * dlamch("Epsilon") * ajj;
     } else {
@@ -134,7 +134,7 @@ void zpstrf(
             for (int j = k; j < k + jb && jstop < 0; j++) {
                 for (int i = j; i < n; i++) {
                     if (j > k) {
-                        double complex val = A[(j - 1) + i * lda];
+                        c128 val = A[(j - 1) + i * lda];
                         work[i] = work[i] + creal(conj(val) * val);
                     }
                     work[n + i] = creal(A[i + i * lda]) - work[i];
@@ -142,7 +142,7 @@ void zpstrf(
 
                 if (j > 0) {
                     int itemp = 0;
-                    double wmax = work[n + j];
+                    f64 wmax = work[n + j];
                     for (int i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
@@ -168,13 +168,13 @@ void zpstrf(
                                     &A[pvt + (pvt + 1) * lda], lda);
                     }
                     for (int i = j + 1; i < pvt; i++) {
-                        double complex ztemp = conj(A[j + i * lda]);
+                        c128 ztemp = conj(A[j + i * lda]);
                         A[j + i * lda] = conj(A[i + pvt * lda]);
                         A[i + pvt * lda] = ztemp;
                     }
                     A[j + pvt * lda] = conj(A[j + pvt * lda]);
 
-                    double dtemp = work[j];
+                    f64 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
                     int itemp = piv[pvt];
@@ -217,7 +217,7 @@ void zpstrf(
             for (int j = k; j < k + jb && jstop < 0; j++) {
                 for (int i = j; i < n; i++) {
                     if (j > k) {
-                        double complex val = A[i + (j - 1) * lda];
+                        c128 val = A[i + (j - 1) * lda];
                         work[i] = work[i] + creal(conj(val) * val);
                     }
                     work[n + i] = creal(A[i + i * lda]) - work[i];
@@ -225,7 +225,7 @@ void zpstrf(
 
                 if (j > 0) {
                     int itemp = 0;
-                    double wmax = work[n + j];
+                    f64 wmax = work[n + j];
                     for (int i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
@@ -251,13 +251,13 @@ void zpstrf(
                                     &A[(pvt + 1) + pvt * lda], 1);
                     }
                     for (int i = j + 1; i < pvt; i++) {
-                        double complex ztemp = conj(A[i + j * lda]);
+                        c128 ztemp = conj(A[i + j * lda]);
                         A[i + j * lda] = conj(A[pvt + i * lda]);
                         A[pvt + i * lda] = ztemp;
                     }
                     A[pvt + j * lda] = conj(A[pvt + j * lda]);
 
-                    double dtemp = work[j];
+                    f64 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
                     int itemp = piv[pvt];

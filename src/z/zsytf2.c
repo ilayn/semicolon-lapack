@@ -10,7 +10,7 @@
 #include "semicolon_lapack_complex_double.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
-static const double ALPHA_BK = 0.6403882032022076;
+static const f64 ALPHA_BK = 0.6403882032022076;
 
 /**
  * ZSYTF2 computes the factorization of a complex symmetric matrix A using
@@ -57,12 +57,12 @@ static const double ALPHA_BK = 0.6403882032022076;
 void zsytf2(
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     /* Test the input parameters */
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -91,11 +91,11 @@ void zsytf2(
         int k = n - 1;
         while (k >= 0) {
             int kstep = 1;
-            double absakk = cabs1(A[k + k * lda]);
+            f64 absakk = cabs1(A[k + k * lda]);
 
             /* Find largest off-diagonal element in column k */
             int imax = 0;
-            double colmax = 0.0;
+            f64 colmax = 0.0;
             if (k > 0) {
                 imax = cblas_izamax(k, &A[0 + k * lda], 1);
                 colmax = cabs1(A[imax + k * lda]);
@@ -116,7 +116,7 @@ void zsytf2(
                 } else {
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row imax, and rowmax is its absolute value */
-                    double rowmax = 0.0;
+                    f64 rowmax = 0.0;
                     if (imax + 1 <= k) {
                         int jmax = imax + 1 + cblas_izamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                         rowmax = cabs1(A[imax + jmax * lda]);
@@ -152,7 +152,7 @@ void zsytf2(
                         cblas_zswap(kk - kp - 1, &A[(kp + 1) + kk * lda], 1,
                                     &A[kp + (kp + 1) * lda], lda);
                     }
-                    double complex t = A[kk + kk * lda];
+                    c128 t = A[kk + kk * lda];
                     A[kk + kk * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = t;
                     if (kstep == 2) {
@@ -169,8 +169,8 @@ void zsytf2(
                      * Perform a rank-1 update of A(0:k-1, 0:k-1) as
                      * A := A - U(k)*D(k)*U(k)**T = A - W(k)*(1/D(k))*W(k)**T */
                     if (k > 0) {
-                        double complex r1 = CONE / A[k + k * lda];
-                        double complex neg_r1 = -r1;
+                        c128 r1 = CONE / A[k + k * lda];
+                        c128 neg_r1 = -r1;
                         zsyr(uplo, k, neg_r1,
                              &A[0 + k * lda], 1, A, lda);
                         cblas_zscal(k, &r1, &A[0 + k * lda], 1);
@@ -181,15 +181,15 @@ void zsytf2(
                      * Perform a rank-2 update of A(0:k-2, 0:k-2) as
                      * A := A - (W(k-1) W(k))*inv(D(k))*(W(k-1) W(k))**T */
                     if (k > 1) {
-                        double complex d12 = A[(k - 1) + k * lda];
-                        double complex d22 = A[(k - 1) + (k - 1) * lda] / d12;
-                        double complex d11 = A[k + k * lda] / d12;
-                        double complex t = CONE / (d11 * d22 - CONE);
+                        c128 d12 = A[(k - 1) + k * lda];
+                        c128 d22 = A[(k - 1) + (k - 1) * lda] / d12;
+                        c128 d11 = A[k + k * lda] / d12;
+                        c128 t = CONE / (d11 * d22 - CONE);
                         d12 = t / d12;
 
                         for (int j = k - 2; j >= 0; j--) {
-                            double complex wkm1 = d12 * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
-                            double complex wk = d12 * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
+                            c128 wkm1 = d12 * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
+                            c128 wk = d12 * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
                             for (int i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k - 1) * lda] * wkm1;
@@ -219,11 +219,11 @@ void zsytf2(
         int k = 0;
         while (k < n) {
             int kstep = 1;
-            double absakk = cabs1(A[k + k * lda]);
+            f64 absakk = cabs1(A[k + k * lda]);
 
             /* Find largest off-diagonal element in column k */
             int imax = k;
-            double colmax = 0.0;
+            f64 colmax = 0.0;
             if (k < n - 1) {
                 imax = k + 1 + cblas_izamax(n - k - 1, &A[(k + 1) + k * lda], 1);
                 colmax = cabs1(A[imax + k * lda]);
@@ -244,7 +244,7 @@ void zsytf2(
                 } else {
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row imax, and rowmax is its absolute value */
-                    double rowmax = 0.0;
+                    f64 rowmax = 0.0;
                     if (imax > k) {
                         int jmax = k + cblas_izamax(imax - k, &A[imax + k * lda], lda);
                         rowmax = cabs1(A[imax + jmax * lda]);
@@ -281,7 +281,7 @@ void zsytf2(
                         cblas_zswap(kp - kk - 1, &A[(kk + 1) + kk * lda], 1,
                                     &A[kp + (kk + 1) * lda], lda);
                     }
-                    double complex t = A[kk + kk * lda];
+                    c128 t = A[kk + kk * lda];
                     A[kk + kk * lda] = A[kp + kp * lda];
                     A[kp + kp * lda] = t;
                     if (kstep == 2) {
@@ -298,8 +298,8 @@ void zsytf2(
                      * Perform a rank-1 update of A(k+1:n-1, k+1:n-1) as
                      * A := A - L(k)*D(k)*L(k)**T = A - W(k)*(1/D(k))*W(k)**T */
                     if (k < n - 1) {
-                        double complex d11 = CONE / A[k + k * lda];
-                        double complex neg_d11 = -d11;
+                        c128 d11 = CONE / A[k + k * lda];
+                        c128 neg_d11 = -d11;
                         zsyr(uplo, n - k - 1, neg_d11,
                              &A[(k + 1) + k * lda], 1, &A[(k + 1) + (k + 1) * lda], lda);
                         cblas_zscal(n - k - 1, &d11, &A[(k + 1) + k * lda], 1);
@@ -310,15 +310,15 @@ void zsytf2(
                      * Perform a rank-2 update of A(k+2:n-1, k+2:n-1) as
                      * A := A - (W(k) W(k+1))*inv(D(k))*(W(k) W(k+1))**T */
                     if (k < n - 2) {
-                        double complex d21 = A[(k + 1) + k * lda];
-                        double complex d11 = A[(k + 1) + (k + 1) * lda] / d21;
-                        double complex d22 = A[k + k * lda] / d21;
-                        double complex t = CONE / (d11 * d22 - CONE);
+                        c128 d21 = A[(k + 1) + k * lda];
+                        c128 d11 = A[(k + 1) + (k + 1) * lda] / d21;
+                        c128 d22 = A[k + k * lda] / d21;
+                        c128 t = CONE / (d11 * d22 - CONE);
                         d21 = t / d21;
 
                         for (int j = k + 2; j < n; j++) {
-                            double complex wk = d21 * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
-                            double complex wkp1 = d21 * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
+                            c128 wk = d21 * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
+                            c128 wkp1 = d21 * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
                             for (int i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k + 1) * lda] * wkp1;

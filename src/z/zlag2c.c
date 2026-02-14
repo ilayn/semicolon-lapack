@@ -1,6 +1,6 @@
 /**
  * @file zlag2c.c
- * @brief ZLAG2C converts a complex double precision matrix to a complex single precision matrix.
+ * @brief ZLAG2C converts a complex f64 precision matrix to a complex single precision matrix.
  */
 
 #include "semicolon_lapack_complex_double.h"
@@ -36,20 +36,20 @@
 void zlag2c(
     const int m,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
     float complex* const restrict SA,
     const int ldsa,
     int* info)
 {
-    const double rmax = (double)FLT_MAX;
+    const f64 rmax = (f64)FLT_MAX;
 
     *info = 0;
 
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < m; i++) {
-            double re = creal(A[i + j * lda]);
-            double im = cimag(A[i + j * lda]);
+            f64 re = creal(A[i + j * lda]);
+            f64 im = cimag(A[i + j * lda]);
             if ((re < -rmax) || (re > rmax) ||
                 (im < -rmax) || (im > rmax)) {
                 *info = 1;

@@ -110,24 +110,24 @@ void sorcsd2by1(
     const int m,
     const int p,
     const int q,
-    float* const restrict X11,
+    f32* const restrict X11,
     const int ldx11,
-    float* const restrict X21,
+    f32* const restrict X21,
     const int ldx21,
-    float* restrict theta,
-    float* restrict U1,
+    f32* restrict theta,
+    f32* restrict U1,
     const int ldu1,
-    float* restrict U2,
+    f32* restrict U2,
     const int ldu2,
-    float* restrict V1T,
+    f32* restrict V1T,
     const int ldv1t,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     int* info)
 {
-    const float one = 1.0f;
-    const float zero = 0.0f;
+    const f32 one = 1.0f;
+    const f32 zero = 0.0f;
 
     int childinfo, i, ib11d, ib11e, ib12d, ib12e;
     int ib21d, ib21e, ib22d, ib22e, ibbcsd, iorbdb;
@@ -136,8 +136,8 @@ void sorcsd2by1(
     int lorglqopt, lorgqr, lorgqrmin, lorgqropt;
     int lworkmin, lworkopt, r;
     int lquery, wantu1, wantu2, wantv1t;
-    float dum1[1];
-    float dum2[1];
+    f32 dum1[1];
+    f32 dum2[1];
 
     *info = 0;
     wantu1 = (jobu1[0] == 'Y' || jobu1[0] == 'y');
@@ -299,7 +299,7 @@ void sorcsd2by1(
         if (iorglq + lorglqopt - 1 > lworkopt) lworkopt = iorglq + lorglqopt - 1;
         if (ibbcsd + lbbcsd - 1 > lworkopt) lworkopt = ibbcsd + lbbcsd - 1;
 
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         if (lwork < lworkmin && !lquery) {
             *info = -19;
         }

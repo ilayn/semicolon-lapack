@@ -38,11 +38,11 @@
  */
 void dlasr(const char* side, const char* pivot, const char* direct,
            const int m, const int n,
-           const double* const restrict C_rot, const double* const restrict S_rot,
-           double* const restrict A, const int lda)
+           const f64* const restrict C_rot, const f64* const restrict S_rot,
+           f64* const restrict A, const int lda)
 {
     int i, j;
-    double ctemp, stemp, temp;
+    f64 ctemp, stemp, temp;
 
     /* Quick return if possible */
     if (m == 0 || n == 0) return;

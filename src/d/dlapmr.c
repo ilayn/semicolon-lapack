@@ -44,12 +44,12 @@ void dlapmr(
     const int forwrd,
     const int m,
     const int n,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
     int* restrict K)
 {
     int i, in, j, jj;
-    double temp;
+    f64 temp;
 
     if (m <= 1)
         return;

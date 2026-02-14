@@ -49,32 +49,32 @@ void ssbevx(
     const char* uplo,
     const int n,
     const int kd,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    const float vl,
-    const float vu,
+    const f32 vl,
+    const f32 vu,
     const int il,
     const int iu,
-    const float abstol,
+    const f32 abstol,
     int* m,
-    float* const restrict W,
-    float* const restrict Z,
+    f32* const restrict W,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     int* const restrict iwork,
     int* const restrict ifail,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int alleig, indeig, lower, test, valeig, wantz;
     char order;
     int i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo, indwrk;
     int iscale, itmp1, j, jj, nsplit;
-    float abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll, vuu;
+    f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll, vuu;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     alleig = (range[0] == 'A' || range[0] == 'a');

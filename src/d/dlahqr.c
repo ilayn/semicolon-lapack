@@ -1,7 +1,7 @@
 /**
  * @file dlahqr.c
  * @brief DLAHQR computes the eigenvalues and Schur factorization of an
- *        upper Hessenberg matrix, using the double-shift/single-shift QR
+ *        upper Hessenberg matrix, using the f64-shift/single-shift QR
  *        algorithm.
  */
 
@@ -51,28 +51,28 @@
  */
 SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
                           const int ilo, const int ihi,
-                          double* H, const int ldh,
-                          double* wr, double* wi,
+                          f64* H, const int ldh,
+                          f64* wr, f64* wi,
                           const int iloz, const int ihiz,
-                          double* Z, const int ldz,
+                          f64* Z, const int ldz,
                           int* info)
 {
     /* Parameters */
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double two = 2.0;
-    const double dat1 = 3.0 / 4.0;
-    const double dat2 = -0.4375;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const f64 two = 2.0;
+    const f64 dat1 = 3.0 / 4.0;
+    const f64 dat2 = -0.4375;
     const int kexsh = 10;
 
     /* Local scalars */
-    double aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
-    double rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
-    double smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
+    f64 aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
+    f64 rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
+    f64 smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
     int i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
 
     /* Local array */
-    double v[3];
+    f64 v[3];
 
     *info = 0;
 
@@ -100,7 +100,7 @@ SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
     /* Set machine-dependent constants for the stopping criterion */
     safmin = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = safmin * ((double)nh / ulp);
+    smlnum = safmin * ((f64)nh / ulp);
 
     /* I1 and I2 are the indices of the first row and last column of H
      * to which transformations must be applied. If eigenvalues only are
@@ -195,7 +195,7 @@ SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
                 h21 = s;
                 h22 = h11;
             } else {
-                /* Prepare to use Francis' double shift
+                /* Prepare to use Francis' f64 shift
                  * (i.e. 2nd degree generalized Rayleigh quotient) */
                 h11 = H[(i - 1) + (i - 1) * ldh];
                 h21 = H[i + (i - 1) * ldh];
@@ -241,7 +241,7 @@ SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
 
             /* Look for two consecutive small subdiagonal elements */
             for (m = i - 2; m >= l; m--) {
-                /* Determine the effect of starting the double-shift QR
+                /* Determine the effect of starting the f64-shift QR
                  * iteration at row m, and see if this would make H(m, m-1)
                  * negligible. */
                 h21s = H[(m + 1) + m * ldh];

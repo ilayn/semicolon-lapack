@@ -8,25 +8,25 @@
 #include <math.h>
 #include <cblas.h>
 
-static inline float dlamc3(float a, float b)
+static inline f32 dlamc3(f32 a, f32 b)
 {
-    volatile float result = a + b;
+    volatile f32 result = a + b;
     return result;
 }
 
 void slals0(const int icompq, const int nl, const int nr, const int sqre,
-            const int nrhs, float* const restrict B, const int ldb,
-            float* const restrict BX, const int ldbx,
+            const int nrhs, f32* const restrict B, const int ldb,
+            f32* const restrict BX, const int ldbx,
             const int* const restrict perm, const int givptr,
             const int* const restrict givcol, const int ldgcol,
-            const float* const restrict givnum, const int ldgnum,
-            const float* const restrict poles, const float* const restrict difl,
-            const float* const restrict difr, const float* const restrict Z,
-            const int k, const float c, const float s,
-            float* const restrict work, int* info)
+            const f32* const restrict givnum, const int ldgnum,
+            const f32* const restrict poles, const f32* const restrict difl,
+            const f32* const restrict difr, const f32* const restrict Z,
+            const int k, const f32 c, const f32 s,
+            f32* const restrict work, int* info)
 {
     int i, j, m, n, nlp1;
-    float diflj, difrj = 0.0f, dj, dsigj, dsigjp = 0.0f, temp;
+    f32 diflj, difrj = 0.0f, dj, dsigj, dsigjp = 0.0f, temp;
 
     *info = 0;
     n = nl + nr + 1;

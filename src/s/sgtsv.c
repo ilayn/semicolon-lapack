@@ -47,16 +47,16 @@
 void sgtsv(
     const int n,
     const int nrhs,
-    float * const restrict DL,
-    float * const restrict D,
-    float * const restrict DU,
-    float * const restrict B,
+    f32 * const restrict DL,
+    f32 * const restrict D,
+    f32 * const restrict DU,
+    f32 * const restrict B,
     const int ldb,
     int *info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
     int i, j;
-    float fact, temp;
+    f32 fact, temp;
     int ldb_min;
 
     *info = 0;

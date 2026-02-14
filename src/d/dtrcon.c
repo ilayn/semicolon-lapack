@@ -39,17 +39,17 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const double* const restrict A, const int lda,
-            double* rcond, double* const restrict work,
+            const int n, const f64* const restrict A, const int lda,
+            f64* rcond, f64* const restrict work,
             int* const restrict iwork, int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper, onenrm, nounit;
     char normin;
     int ix, kase, kase1;
-    double ainvnm, anorm, scale, smlnum, xnorm;
+    f64 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
 
     /* Test the input parameters */
@@ -82,7 +82,7 @@ void dtrcon(const char* norm, const char* uplo, const char* diag,
     }
 
     *rcond = ZERO;
-    smlnum = dlamch("S") * (double)(n > 1 ? n : 1);
+    smlnum = dlamch("S") * (f64)(n > 1 ? n : 1);
 
     /* Compute the norm of the triangular matrix A */
     anorm = dlantr(norm, uplo, diag, n, n, A, lda, work);

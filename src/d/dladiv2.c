@@ -23,10 +23,10 @@
  *
  * @return The computed value for use in complex division.
  */
-double dladiv2(const double a, const double b, const double c,
-               const double d, const double r, const double t)
+f64 dladiv2(const f64 a, const f64 b, const f64 c,
+               const f64 d, const f64 r, const f64 t)
 {
-    double br;
+    f64 br;
 
     if (r != 0.0) {
         br = b * r;

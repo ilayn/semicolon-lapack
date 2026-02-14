@@ -49,13 +49,13 @@
 void zgetrf2(
     const int m,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* const restrict ipiv,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int i, iinfo, n1, n2;
     int minmn = m < n ? m : n;

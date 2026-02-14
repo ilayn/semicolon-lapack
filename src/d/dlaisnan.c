@@ -28,7 +28,7 @@
  *
  * @return 1 if din1 != din2 (true for NaN), 0 otherwise.
  */
-int dlaisnan(const double din1, const double din2)
+int dlaisnan(const f64 din1, const f64 din2)
 {
     return (din1 != din2) ? 1 : 0;
 }

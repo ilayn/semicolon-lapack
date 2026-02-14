@@ -35,24 +35,24 @@ void ssbevd_2stage(
     const char* uplo,
     const int n,
     const int kd,
-    float* restrict AB,
+    f32* restrict AB,
     const int ldab,
-    float* restrict W,
-    float* restrict Z,
+    f32* restrict W,
+    f32* restrict Z,
     const int ldz,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     const int liwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lower, lquery, wantz;
     int iinfo, inde, indwk2, indwrk, iscale, liwmin;
     int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, llwrk2;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -89,7 +89,7 @@ void ssbevd_2stage(
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -168,6 +168,6 @@ void ssbevd_2stage(
         cblas_sscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

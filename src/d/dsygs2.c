@@ -34,17 +34,17 @@ void dsygs2(
     const int itype,
     const char* uplo,
     const int n,
-    double* restrict A,
+    f64* restrict A,
     const int lda,
-    const double* restrict B,
+    const f64* restrict B,
     const int ldb,
     int* info)
 {
-    const double ONE = 1.0;
-    const double HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
     int upper;
     int k;
-    double akk, bkk, ct;
+    f64 akk, bkk, ct;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

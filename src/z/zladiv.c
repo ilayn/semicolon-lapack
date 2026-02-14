@@ -18,9 +18,9 @@
  *
  * @return The complex quotient X / Y.
  */
-double complex zladiv(const double complex X, const double complex Y)
+c128 zladiv(const c128 X, const c128 Y)
 {
-    double zi, zr;
+    f64 zi, zr;
 
     dladiv(creal(X), cimag(X), creal(Y), cimag(Y), &zr, &zi);
     return CMPLX(zr, zi);

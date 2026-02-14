@@ -71,20 +71,20 @@
  *                           info/(n+1) through mod(info,n+1).
  */
 void zstedc(const char* compz, const int n,
-            double* D, double* E,
-            double complex* Z, const int ldz,
-            double complex* work, const int lwork,
-            double* rwork, const int lrwork,
+            f64* D, f64* E,
+            c128* Z, const int ldz,
+            c128* work, const int lwork,
+            f64* rwork, const int lrwork,
             int* iwork, const int liwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int lquery;
     int finish, i, icompz, ii, j, k, lgn, ll;
     int liwmin = 1, lrwmin = 1, lwmin = 1, m, start;
-    double eps, orgnrm, p, tiny;
+    f64 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'ZSTEDC', ...) - hardcoded per project convention */
     const int SMLSIZ = 25;
@@ -127,7 +127,7 @@ void zstedc(const char* compz, const int n,
             liwmin = 1;
             lrwmin = 2 * (n - 1);
         } else if (icompz == 1) {
-            lgn = (int)(log((double)n) / log(TWO));
+            lgn = (int)(log((f64)n) / log(TWO));
             if ((1 << lgn) < n)
                 lgn = lgn + 1;
             if ((1 << lgn) < n)
@@ -140,8 +140,8 @@ void zstedc(const char* compz, const int n,
             lrwmin = 1 + 4*n + 2*n*n;
             liwmin = 3 + 5*n;
         }
-        work[0] = CMPLX((double)lwmin, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwmin, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -321,8 +321,8 @@ void zstedc(const char* compz, const int n,
     }
 
 L70:
-    work[0] = CMPLX((double)lwmin, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwmin, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 
     return;

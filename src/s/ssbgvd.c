@@ -55,21 +55,21 @@ void ssbgvd(
     const int n,
     const int ka,
     const int kb,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict BB,
+    f32* const restrict BB,
     const int ldbb,
-    float* const restrict W,
-    float* const restrict Z,
+    f32* const restrict W,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* const restrict iwork,
     const int liwork,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int lquery, upper, wantz;
     int iinfo, inde, indwk2, indwrk, liwmin, llwrk2, lwmin;
@@ -110,7 +110,7 @@ void ssbgvd(
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -162,6 +162,6 @@ void ssbgvd(
         slacpy("A", n, n, &work[indwk2], n, Z, ldz);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

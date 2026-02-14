@@ -68,35 +68,35 @@ void dlatrs3(
     const char* normin,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict scale,
-    double* const restrict cnorm,
-    double* const restrict work,
+    f64* const restrict scale,
+    f64* const restrict cnorm,
+    f64* const restrict work,
     const int lwork,
     int* info)
 {
     /* Parameters from Fortran - match LAPACK exactly */
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 #define NRHSMIN 2
 #define NBRHS 32
 #define NBMIN 8
 #define NBMAX 64
 
     /* Local arrays - match Fortran local arrays */
-    double W[NBMAX];
-    double XNRM[NBRHS];
+    f64 W[NBMAX];
+    f64 XNRM[NBRHS];
 
     /* Local scalars */
     int upper, notran, nounit, lquery;
     int awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
     int jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
     int lanrm, lds, lscale, nb, nba, nbx, rhs, lwmin;
-    double anrm, bignum, bnrm, rscal, scal, scaloc;
-    double scamin, smlnum, tmax;
+    f64 anrm, bignum, bnrm, rscal, scal, scaloc;
+    f64 scamin, smlnum, tmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -131,7 +131,7 @@ void dlatrs3(
     } else {
         lwmin = lscale + lanrm;
     }
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 
     /* Test the input parameters */
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -440,5 +440,5 @@ void dlatrs3(
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

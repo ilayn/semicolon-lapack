@@ -56,25 +56,25 @@
  *                         - > 0: Internal error
  */
 void ssyevr(const char* jobz, const char* range, const char* uplo,
-            const int n, float* const restrict A, const int lda,
-            const float vl, const float vu, const int il, const int iu,
-            const float abstol, int* m,
-            float* const restrict W,
-            float* const restrict Z, const int ldz,
+            const int n, f32* const restrict A, const int lda,
+            const f32 vl, const f32 vu, const int il, const int iu,
+            const f32 abstol, int* m,
+            f32* const restrict W,
+            f32* const restrict Z, const int ldz,
             int* const restrict isuppz,
-            float* const restrict work, const int lwork,
+            f32* const restrict work, const int lwork,
             int* const restrict iwork, const int liwork,
             int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
 
     int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     int i, ieeeok, iinfo, imax, indd, inddd, inde, indee;
     int indibl, indifl, indisp, indiwo, indtau, indwk, indwkn;
     int iscale, j, jj, liwmin, llwork, llwrkn, lwkopt, lwmin, nb, nsplit;
-    float abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0f, vuu = 0.0f;
+    f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0f, vuu = 0.0f;
 
     /* Test the input parameters */
     /* IEEEOK = 1 means IEEE arithmetic is assumed (NaN/Inf handled properly) */
@@ -134,7 +134,7 @@ void ssyevr(const char* jobz, const char* range, const char* uplo,
         nb = lapack_get_nb("SYTRD");
         nb = nb > lapack_get_nb("ORMTR") ? nb : lapack_get_nb("ORMTR");
         lwkopt = (nb + 1) * n > lwmin ? (nb + 1) * n : lwmin;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         iwork[0] = liwmin;
     }
 
@@ -333,6 +333,6 @@ L30:
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
     iwork[0] = liwmin;
 }

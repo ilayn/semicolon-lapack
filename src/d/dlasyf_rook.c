@@ -52,17 +52,17 @@ void dlasyf_rook(
     const int n,
     const int nb,
     int* kb,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double* const restrict W,
+    f64* const restrict W,
     const int ldw,
     int* info)
 {
     int done;
     int imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
-    double absakk, alpha, colmax, d11, d12, d21, d22;
-    double dtemp, r1, rowmax, t, sfmin;
+    f64 absakk, alpha, colmax, d11, d12, d21, d22;
+    f64 dtemp, r1, rowmax, t, sfmin;
 
     *info = 0;
 

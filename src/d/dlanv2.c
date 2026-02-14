@@ -36,19 +36,19 @@
  * @param[out]    cs     Cosine of the rotation matrix.
  * @param[out]    sn     Sine of the rotation matrix.
  */
-void dlanv2(double* a, double* b, double* c, double* d,
-            double* rt1r, double* rt1i, double* rt2r, double* rt2i,
-            double* cs, double* sn)
+void dlanv2(f64* a, f64* b, f64* c, f64* d,
+            f64* rt1r, f64* rt1i, f64* rt2r, f64* rt2i,
+            f64* cs, f64* sn)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double MULTPL = 4.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 MULTPL = 4.0;
 
-    double aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab;
-    double sac, scale, sigma, sn1, tau, temp, z, safmin;
-    double safmn2, safmx2, base;
+    f64 aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab;
+    f64 sac, scale, sigma, sn1, tau, temp, z, safmin;
+    f64 safmn2, safmx2, base;
     int count;
 
     safmin = dlamch("S");

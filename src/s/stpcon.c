@@ -35,19 +35,19 @@ void stpcon(
     const char* uplo,
     const char* diag,
     const int n,
-    const float* const restrict AP,
-    float* rcond,
-    float* const restrict work,
+    const f32* const restrict AP,
+    f32* rcond,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int nounit, onenrm, upper;
     char normin;
     int ix, kase, kase1;
-    float ainvnm, anorm, scale, smlnum, xnorm;
+    f32 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
     int info_local;
 
@@ -76,7 +76,7 @@ void stpcon(
     }
 
     *rcond = ZERO;
-    smlnum = slamch("S") * (float)(1 > n ? 1 : n);
+    smlnum = slamch("S") * (f32)(1 > n ? 1 : n);
 
     // Compute the norm of the triangular matrix A
     anorm = slantp(norm, uplo, diag, n, AP, work);

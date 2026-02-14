@@ -32,9 +32,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void zgeqrf(const int m, const int n,
-            double complex * const restrict A, const int lda,
-            double complex * const restrict tau,
-            double complex * const restrict work, const int lwork,
+            c128 * const restrict A, const int lda,
+            c128 * const restrict tau,
+            c128 * const restrict work, const int lwork,
             int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -59,7 +59,7 @@ void zgeqrf(const int m, const int n,
             work[0] = CMPLX(1.0, 0.0);
         } else {
             nb = lapack_get_nb("GEQRF");
-            work[0] = CMPLX((double)(n * nb), 0.0);
+            work[0] = CMPLX((f64)(n * nb), 0.0);
         }
         if (!lquery && lwork < (k > 0 ? (n > 1 ? n : 1) : 1)) {
             *info = -7;
@@ -132,5 +132,5 @@ void zgeqrf(const int m, const int n,
         zgeqr2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = CMPLX((double)iws, 0.0);
+    work[0] = CMPLX((f64)iws, 0.0);
 }

@@ -35,12 +35,12 @@
 void spptrf(
     const char* uplo,
     const int n,
-    float* const restrict AP,
+    f32* const restrict AP,
     int* info)
 {
     // spptrf.f lines 134-135: Parameters
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     // spptrf.f lines 157-167: Test the input parameters
     *info = 0;
@@ -74,7 +74,7 @@ void spptrf(
             }
 
             // spptrf.f lines 191-196: Compute U(J,J) and test for non-positive-definiteness.
-            float ajj = AP[jj];
+            f32 ajj = AP[jj];
             if (j > 0) {
                 ajj -= cblas_sdot(j, &AP[jc], 1, &AP[jc], 1);
             }
@@ -91,7 +91,7 @@ void spptrf(
         for (int j = 0; j < n; j++) {  // spptrf.f line 203: DO 20 J = 1, N
 
             // spptrf.f lines 207-213: Compute L(J,J) and test for non-positive-definiteness.
-            float ajj = AP[jj];
+            f32 ajj = AP[jj];
             if (ajj <= ZERO) {
                 AP[jj] = ajj;
                 *info = j + 1;  // 1-based error code

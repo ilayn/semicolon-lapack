@@ -52,23 +52,23 @@
  *                         - = 0: successful exit
  *                         - = 1: failure
  */
-void dlarrf(const int n, const double* const restrict D,
-            const double* const restrict L, const double* const restrict LD,
+void dlarrf(const int n, const f64* const restrict D,
+            const f64* const restrict L, const f64* const restrict LD,
             const int clstrt, const int clend,
-            const double* const restrict W, double* const restrict wgap,
-            const double* const restrict werr,
-            const double spdiam, const double clgapl, const double clgapr,
-            const double pivmin, double* sigma,
-            double* const restrict dplus, double* const restrict lplus,
-            double* const restrict work, int* info)
+            const f64* const restrict W, f64* const restrict wgap,
+            const f64* const restrict werr,
+            const f64 spdiam, const f64 clgapl, const f64 clgapr,
+            const f64 pivmin, f64* sigma,
+            f64* const restrict dplus, f64* const restrict lplus,
+            f64* const restrict work, int* info)
 {
     /* Constants */
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double FOUR = 4.0;
-    const double QUART = 0.25;
-    const double MAXGROWTH1 = 8.0;
-    const double MAXGROWTH2 = 8.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 FOUR = 4.0;
+    const f64 QUART = 0.25;
+    const f64 MAXGROWTH1 = 8.0;
+    const f64 MAXGROWTH2 = 8.0;
     const int KTRYMAX = 1;
     const int SLEFT = 1;
     const int SRIGHT = 2;
@@ -76,10 +76,10 @@ void dlarrf(const int n, const double* const restrict D,
     /* Local variables */
     int i, indx, ktry, shift;
     int forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
-    double avgap, bestshift, clwdth, eps, fact, fail, fail2;
-    double growthbound, ldelta, ldmax, lsigma;
-    double max1, max2, mingap, oldp, prod, rdelta, rdmax;
-    double rrr1, rrr2, rsigma, s, smlgrowth, tmp, znm2;
+    f64 avgap, bestshift, clwdth, eps, fact, fail, fail2;
+    f64 growthbound, ldelta, ldmax, lsigma;
+    f64 max1, max2, mingap, oldp, prod, rdelta, rdmax;
+    f64 rrr1, rrr2, rsigma, s, smlgrowth, tmp, znm2;
 
     *info = 0;
 
@@ -88,7 +88,7 @@ void dlarrf(const int n, const double* const restrict D,
         return;
     }
 
-    fact = (double)(1 << KTRYMAX);  /* 2^KTRYMAX */
+    fact = (f64)(1 << KTRYMAX);  /* 2^KTRYMAX */
     eps = dlamch("P");
     shift = 0;
     forcer = 0;
@@ -110,7 +110,7 @@ void dlarrf(const int n, const double* const restrict D,
 
     /* Compute the average gap length of the cluster */
     clwdth = fabs(W[clend] - W[clstrt]) + werr[clend] + werr[clstrt];
-    avgap = clwdth / (double)(clend - clstrt);
+    avgap = clwdth / (f64)(clend - clstrt);
     mingap = fmin(clgapl, clgapr);
 
     /* Initial values for shifts to both ends of cluster */
@@ -131,8 +131,8 @@ void dlarrf(const int n, const double* const restrict D,
     /* Initialize the record of the best representation found */
     s = dlamch("S");
     smlgrowth = ONE / s;
-    fail = (double)(n - 1) * mingap / (spdiam * eps);
-    fail2 = (double)(n - 1) * mingap / (spdiam * sqrt(eps));
+    fail = (f64)(n - 1) * mingap / (spdiam * eps);
+    fail2 = (f64)(n - 1) * mingap / (spdiam * sqrt(eps));
     bestshift = lsigma;
 
     /* Main retry loop: while (ktry <= KTRYMAX) */
@@ -241,7 +241,7 @@ void dlarrf(const int n, const double* const restrict D,
          * we may still accept the representation, if it passes a
          * refined test for RRR. This test supposes that no NaN occurred.
          * Moreover, we use the refined RRR test only for isolated clusters. */
-        if ((clwdth < mingap / (double)(128)) &&
+        if ((clwdth < mingap / (f64)(128)) &&
             (fmin(max1, max2) < fail2) &&
             (!sawnan1) && (!sawnan2)) {
             dorrr1 = 1;

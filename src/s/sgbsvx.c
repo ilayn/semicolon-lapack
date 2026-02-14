@@ -71,30 +71,30 @@ void sgbsvx(
     const int kl,
     const int ku,
     const int nrhs,
-    float * const restrict AB,
+    f32 * const restrict AB,
     const int ldab,
-    float * const restrict AFB,
+    f32 * const restrict AFB,
     const int ldafb,
     int * const restrict ipiv,
     char *equed,
-    float * const restrict R,
-    float * const restrict C,
-    float * const restrict B,
+    f32 * const restrict R,
+    f32 * const restrict C,
+    f32 * const restrict B,
     const int ldb,
-    float * const restrict X,
+    f32 * const restrict X,
     const int ldx,
-    float *rcond,
-    float * const restrict ferr,
-    float * const restrict berr,
-    float * const restrict work,
+    f32 *rcond,
+    f32 * const restrict ferr,
+    f32 * const restrict berr,
+    f32 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, j1, j2, infequ;
-    float amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
+    f32 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
     int nofact, equil, notran, rowequ, colequ;
 
@@ -148,8 +148,8 @@ void sgbsvx(
             if (rcmin <= ZERO) {
                 *info = -13;
             } else if (n > 0) {
-                float rmin = (rcmin > smlnum) ? rcmin : smlnum;
-                float rmax = (rcmax < bignum) ? rcmax : bignum;
+                f32 rmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f32 rmax = (rcmax < bignum) ? rcmax : bignum;
                 rowcnd = rmin / rmax;
             } else {
                 rowcnd = ONE;
@@ -165,8 +165,8 @@ void sgbsvx(
             if (rcmin <= ZERO) {
                 *info = -14;
             } else if (n > 0) {
-                float cmin = (rcmin > smlnum) ? rcmin : smlnum;
-                float cmax = (rcmax < bignum) ? rcmax : bignum;
+                f32 cmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f32 cmax = (rcmax < bignum) ? rcmax : bignum;
                 colcnd = cmin / cmax;
             } else {
                 colcnd = ONE;
@@ -238,7 +238,7 @@ void sgbsvx(
                 int i_start = (ku - j > 0) ? ku - j : 0;
                 int i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
                 for (i = i_start; i <= i_end; i++) {
-                    float temp = fabsf(AB[i + j * ldab]);
+                    f32 temp = fabsf(AB[i + j * ldab]);
                     if (anorm < temp) anorm = temp;
                 }
             }

@@ -39,7 +39,7 @@
  */
 void slaswp(
     const int n,
-    float * const restrict A,
+    f32 * const restrict A,
     const int lda,
     const int k1,
     const int k2,
@@ -47,7 +47,7 @@ void slaswp(
     const int incx)
 {
     int i, i1, i2, inc, ip, ix, ix0, j, k, n32;
-    float temp;
+    f32 temp;
 
     // Interchange row i with row ipiv[k1 + (i - k1) * abs(incx)] for each of
     // rows k1 through k2. All indices are 0-based.

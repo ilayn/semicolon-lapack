@@ -32,8 +32,8 @@ void dpptrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict AP,
-    double* const restrict B,
+    const f64* const restrict AP,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {

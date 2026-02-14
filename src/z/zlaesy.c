@@ -41,23 +41,23 @@
  *                        eigenvector for RT1.
  */
 void zlaesy(
-    const double complex a,
-    const double complex b,
-    const double complex c,
-    double complex* rt1,
-    double complex* rt2,
-    double complex* evscal,
-    double complex* cs1,
-    double complex* sn1)
+    const c128 a,
+    const c128 b,
+    const c128 c,
+    c128* rt1,
+    c128* rt2,
+    c128* evscal,
+    c128* cs1,
+    c128* sn1)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double HALF = 0.5;
-    const double THRESH = 0.1;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 HALF = 0.5;
+    const f64 THRESH = 0.1;
 
-    double babs, evnorm, tabs, z;
-    double complex s, t, tmp;
+    f64 babs, evnorm, tabs, z;
+    c128 s, t, tmp;
 
     /* Special case:  The matrix is actually diagonal.
        To avoid divide by zero later, we treat this case separately. */

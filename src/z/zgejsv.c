@@ -9,10 +9,10 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double complex CZERO = CMPLX(0.0, 0.0);
-static const double complex CONE = CMPLX(1.0, 0.0);
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const c128 CZERO = CMPLX(0.0, 0.0);
+static const c128 CONE = CMPLX(1.0, 0.0);
 
 static inline int max3i(int a, int b, int c) {
     int m = (a > b) ? a : b;
@@ -29,34 +29,34 @@ static inline int max5i(int a, int b, int c, int d, int e) {
 void zgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
             const int m, const int n,
-            double complex* const restrict A, const int lda,
-            double* const restrict SVA,
-            double complex* const restrict U, const int ldu,
-            double complex* const restrict V, const int ldv,
-            double complex* const restrict cwork, const int lwork,
-            double* const restrict rwork, const int lrwork,
+            c128* const restrict A, const int lda,
+            f64* const restrict SVA,
+            c128* const restrict U, const int ldu,
+            c128* const restrict V, const int ldv,
+            c128* const restrict cwork, const int lwork,
+            f64* const restrict rwork, const int lrwork,
             int* const restrict iwork, int* info)
 {
     /* Local variables */
-    double complex ctemp;
-    double aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
-    double condr1, condr2, entra, entrat, epsln, maxprj, scalem;
-    double sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
+    c128 ctemp;
+    f64 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
+    f64 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
+    f64 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
     int ierr, n1, nr, numrank, p, q, warning;
     int almort, defr, errest, goscal, jracc, kill, lquery, lsvec;
     int l2aber, l2kill, l2pert, l2rank, l2tran;
     int noscal, rowpiv, rsvec, transp;
-    int iwoff;
+    int iwoff = 0;
 
     /* Workspace query variables */
     int optwrk, minwrk, minrwrk, miniwrk;
     int lwcon, lwlqf, lwqp3, lwqrf, lwunmlq, lwunmqr, lwunmqrm;
     int lwsvdj, lwsvdjv, lrwqp3, lrwcon, lrwsvdj;
-    int lwrk_zgelqf, lwrk_zgeqp3, lwrk_zgeqp3n, lwrk_zgeqrf;
+    int lwrk_zgelqf = 0, lwrk_zgeqp3 = 0, lwrk_zgeqp3n, lwrk_zgeqrf = 0;
     int lwrk_zgesvj, lwrk_zgesvjv, lwrk_zgesvju, lwrk_zunmlq;
     int lwrk_zunmqr, lwrk_zunmqrm;
-    double complex cdummy[1];
-    double rdummy[1];
+    c128 cdummy[1];
+    f64 rdummy[1];
 
     /* Parse boolean flags */
     lsvec  = (jobu[0] == 'U' || jobu[0] == 'u' || jobu[0] == 'F' || jobu[0] == 'f');
@@ -504,9 +504,9 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
         xerbla("ZGEJSV", -(*info));
         return;
     } else if (lquery) {
-        cwork[0] = (double complex)optwrk;
-        cwork[1] = (double complex)minwrk;
-        rwork[0] = (double)minrwrk;
+        cwork[0] = (c128)optwrk;
+        cwork[1] = (c128)minwrk;
+        rwork[0] = (f64)minrwrk;
         iwork[0] = (4 > miniwrk) ? 4 : miniwrk;
         return;
     }
@@ -530,7 +530,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
     big   = dlamch("O");
 
     /* Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N */
-    scalem = ONE / sqrt((double)m * (double)n);
+    scalem = ONE / sqrt((f64)m * (f64)n);
     noscal = 1;
     goscal = 1;
 
@@ -677,14 +677,14 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
             big1 = ((SVA[p] / xsc) * (SVA[p] / xsc)) * temp1;
             if (big1 != ZERO) entra = entra + big1 * log(big1);
         }
-        entra = -entra / log((double)n);
+        entra = -entra / log((f64)n);
 
         entrat = ZERO;
         for (p = 0; p < m; p++) {
             big1 = ((rwork[p] / xsc) * (rwork[p] / xsc)) * temp1;
             if (big1 != ZERO) entrat = entrat + big1 * log(big1);
         }
-        entrat = -entrat / log((double)m);
+        entrat = -entrat / log((f64)m);
 
         transp = (entrat < entra);
 
@@ -720,7 +720,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
 
     /* Scaling */
     big1  = sqrt(big);
-    temp1 = sqrt(big / (double)n);
+    temp1 = sqrt(big / (f64)n);
 
     dlascl("G", 0, 0, aapp, temp1, n, 1, SVA, n, &ierr);
     if (aaqq > (aapp * sfmin)) {
@@ -778,7 +778,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
     nr = 1;
 
     if (l2aber) {
-        temp1 = sqrt((double)n) * epsln;
+        temp1 = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
             if (cabs(A[p + p * lda]) >= temp1 * cabs(A[0])) {
                 nr++;
@@ -814,7 +814,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
             temp1 = cabs(A[p + p * lda]) / SVA[iwork[p]];
             maxprj = (maxprj < temp1) ? maxprj : temp1;
         }
-        if (maxprj * maxprj >= ONE - (double)n * epsln) almort = 1;
+        if (maxprj * maxprj >= ONE - (f64)n * epsln) almort = 1;
     }
 
     sconda = -ONE;
@@ -865,7 +865,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Phase 3:                                                             */
     /* -------------------------------------------------------------------- */
 
-    cond_ok = sqrt((double)nr);
+    cond_ok = sqrt((f64)nr);
 
     if (!rsvec && !lsvec) {
         /* ============================================================== */
@@ -882,7 +882,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
         if (!almort) {
 
             if (l2pert) {
-                xsc = epsln / (double)n;
+                xsc = epsln / (f64)n;
                 for (q = 0; q < nr; q++) {
                     ctemp = CMPLX(xsc * cabs(A[q + q * lda]), 0.0);
                     for (p = 0; p < n; p++) {
@@ -910,7 +910,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
         /* .. again some perturbation (a "background noise") is added */
         /*    to drown denormals */
         if (l2pert) {
-            xsc = epsln / (double)n;
+            xsc = epsln / (f64)n;
             for (q = 0; q < nr; q++) {
                 ctemp = CMPLX(xsc * cabs(A[q + q * lda]), 0.0);
                 for (p = 0; p < nr; p++) {
@@ -1085,7 +1085,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                    &cwork[2 * n + nr * nr], rwork, &ierr);
             condr1 = ONE / sqrt(temp1);
 
-            cond_ok = sqrt(sqrt((double)nr));
+            cond_ok = sqrt(sqrt((f64)nr));
 
             if (condr1 < cond_ok) {
                 /* .. the second QRF without pivoting. */
@@ -1276,7 +1276,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
             /* Permute the rows of V using the (column) permutation from the */
             /* first QRF. Also, scale the columns to make them unit in */
             /* Euclidean norm. This applies to all cases. */
-            temp1 = sqrt((double)n) * epsln;
+            temp1 = sqrt((f64)n) * epsln;
             for (q = 0; q < n; q++) {
                 for (p = 0; p < n; p++) {
                     cwork[2 * n + n * nr + nr + iwork[p]] = V[p + q * ldv];
@@ -1302,7 +1302,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                    ldu, &cwork[n], lwork - n, &ierr);
 
             /* The columns of U are normalized. */
-            temp1 = sqrt((double)m) * epsln;
+            temp1 = sqrt((f64)m) * epsln;
             for (p = 0; p < nr; p++) {
                 xsc = ONE / cblas_dznrm2(m, &U[p * ldu], 1);
                 if (xsc < (ONE - temp1) || xsc > (ONE + temp1))
@@ -1347,7 +1347,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
             for (p = 0; p < n; p++) {
                 cblas_zcopy(n, &cwork[n + p], n, &V[iwork[p]], ldv);
             }
-            temp1 = sqrt((double)n) * epsln;
+            temp1 = sqrt((f64)n) * epsln;
             for (p = 0; p < n; p++) {
                 xsc = ONE / cblas_dznrm2(n, &V[p * ldv], 1);
                 if (xsc < (ONE - temp1) || xsc > (ONE + temp1))
@@ -1364,7 +1364,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
             }
             zunmqr("L", "N", m, n1, n, A, lda, cwork, U,
                    ldu, &cwork[n], lwork - n, &ierr);
-            temp1 = sqrt((double)m) * epsln;
+            temp1 = sqrt((f64)m) * epsln;
             for (p = 0; p < n1; p++) {
                 xsc = ONE / cblas_dznrm2(m, &U[p * ldu], 1);
                 if (xsc < (ONE - temp1) || xsc > (ONE + temp1))
@@ -1438,7 +1438,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                    V, ldv, &cwork[2 * n + n * nr + nr],
                    lwork - 2 * n - n * nr - nr, &ierr);
 
-            temp1 = sqrt((double)n) * epsln;
+            temp1 = sqrt((f64)n) * epsln;
             for (q = 0; q < n; q++) {
                 for (p = 0; p < n; p++) {
                     cwork[2 * n + n * nr + nr + iwork[p]] = V[p + q * ldv];

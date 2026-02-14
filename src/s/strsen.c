@@ -76,20 +76,20 @@
  *                           the same order as in T; s and sep are set to zero.
  */
 void strsen(const char* job, const char* compq, const int* select,
-            const int n, float* T, const int ldt,
-            float* Q, const int ldq,
-            float* wr, float* wi, int* m,
-            float* s, float* sep,
-            float* work, const int lwork,
+            const int n, f32* T, const int ldt,
+            f32* Q, const int ldq,
+            f32* wr, f32* wi, int* m,
+            f32* s, f32* sep,
+            f32* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int wantbh, wants, wantsp, wantq, lquery;
     int ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
     int pair, swap;
-    float est, rnorm, scale;
+    f32 est, rnorm, scale;
     int isave[3];
 
     /* Decode and test the input parameters */
@@ -167,7 +167,7 @@ void strsen(const char* job, const char* compq, const int* select,
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
     }
 
@@ -283,6 +283,6 @@ L40:
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

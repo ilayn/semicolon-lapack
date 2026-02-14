@@ -49,23 +49,23 @@ void zgbcon(
     const int n,
     const int kl,
     const int ku,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
     const int* const restrict ipiv,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int lnoti, onenrm;
     char normin;
     int ix, j, jp, kase, kase1, kd, lm;
-    double ainvnm, scale, smlnum;
-    double complex t;
+    f64 ainvnm, scale, smlnum;
+    c128 t;
     int isave[3];
     int linfo;
 
@@ -134,7 +134,7 @@ void zgbcon(
                         work[j] = t;
                     }
                     /* work[j+1:j+lm] -= t * AB[kd+1:kd+lm, j] */
-                    double complex neg_t = -t;
+                    c128 neg_t = -t;
                     cblas_zaxpy(lm, &neg_t, &AB[kd + 1 + j * ldab], 1, &work[j + 1], 1);
                 }
             }
@@ -152,7 +152,7 @@ void zgbcon(
                 for (j = n - 2; j >= 0; j--) {
                     lm = (kl < n - 1 - j) ? kl : n - 1 - j;
                     /* work[j] -= zdotc(AB[kd+1:kd+lm, j], work[j+1:j+lm]) */
-                    double complex dotc;
+                    c128 dotc;
                     cblas_zdotc_sub(lm, &AB[kd + 1 + j * ldab], 1, &work[j + 1], 1, &dotc);
                     work[j] -= dotc;
                     jp = ipiv[j];

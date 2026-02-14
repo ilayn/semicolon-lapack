@@ -63,16 +63,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void dlaed3(const int k, const int n, const int n1, double* D,
-            double* Q, const int ldq, const double rho,
-            double* dlambda, double* Q2, int* indx, int* ctot,
-            double* W, double* S, int* info)
+void dlaed3(const int k, const int n, const int n1, f64* D,
+            f64* Q, const int ldq, const f64 rho,
+            f64* dlambda, f64* Q2, int* indx, int* ctot,
+            f64* W, f64* S, int* info)
 {
-    const double one = 1.0;
-    const double zero = 0.0;
+    const f64 one = 1.0;
+    const f64 zero = 0.0;
 
     int i, ii, iq2, j, n12, n2, n23;
-    double temp;
+    f64 temp;
 
     /* Test the input parameters. */
     *info = 0;

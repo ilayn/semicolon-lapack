@@ -46,32 +46,32 @@ void zlaqz3(
     const int ihi,
     const int nshifts,
     const int nblock_desired,
-    double complex* const restrict alpha,
-    double complex* const restrict beta,
-    double complex* const restrict A,
+    c128* const restrict alpha,
+    c128* const restrict beta,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict Q,
+    c128* const restrict Q,
     const int ldq,
-    double complex* const restrict Z,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict QC,
+    c128* const restrict QC,
     const int ldqc,
-    double complex* const restrict ZC,
+    c128* const restrict ZC,
     const int ldzc,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 ONE = 1.0;
 
     int i, j, ns, istartm, istopm, sheight, swidth, k, np;
     int istartb, istopb, ishift, nblock, npos;
-    double safmin, safmax, c, scale;
-    double complex s, temp, temp2, temp3;
+    f64 safmin, safmax, c, scale;
+    c128 s, temp, temp2, temp3;
 
     *info = 0;
     if (nblock_desired < nshifts + 1) {
@@ -79,7 +79,7 @@ void zlaqz3(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = CMPLX((double)(n * nblock_desired), 0.0);
+        work[0] = CMPLX((f64)(n * nblock_desired), 0.0);
         return;
     } else if (lwork < n * nblock_desired) {
         *info = -25;

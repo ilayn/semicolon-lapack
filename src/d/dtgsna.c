@@ -46,35 +46,35 @@ void dtgsna(
     const char* howmny,
     const int* const restrict select,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    const double* const restrict VL,
+    const f64* const restrict VL,
     const int ldvl,
-    const double* const restrict VR,
+    const f64* const restrict VR,
     const int ldvr,
-    double* const restrict S,
-    double* const restrict dif,
+    f64* const restrict S,
+    f64* const restrict dif,
     const int mm,
     int* m,
-    double* const restrict work,
+    f64* const restrict work,
     const int lwork,
     int* const restrict iwork,
     int* info)
 {
     const int DIFDRI = 3;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double FOUR = 4.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 FOUR = 4.0;
 
     int lquery, pair, somcon, wantbh, wantdf, wants;
     int i, ierr, ifst, ilst, iz, k, ks, lwmin, n1, n2;
-    double alphai, alphar, alprqt, beta, c1, c2, cond = 0.0;
-    double eps, lnrm, rnrm, root1, root2, scale, smlnum;
-    double tmpii, tmpir, tmpri, tmprr, uhav, uhavi, uhbv, uhbvi;
-    double dummy[1], dummy1[1];
+    f64 alphai, alphar, alprqt, beta, c1, c2, cond = 0.0;
+    f64 eps, lnrm, rnrm, root1, root2, scale, smlnum;
+    f64 tmpii, tmpir, tmpri, tmprr, uhav, uhavi, uhbv, uhbvi;
+    f64 dummy[1], dummy1[1];
 
     wantbh = (job[0] == 'B' || job[0] == 'b');
     wants = (job[0] == 'E' || job[0] == 'e') || wantbh;
@@ -140,7 +140,7 @@ void dtgsna(
         } else {
             lwmin = n;
         }
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
 
         if (mm < *m) {
             *info = -15;
@@ -319,7 +319,7 @@ void dtgsna(
                            &work[iz], lwork - 2 * n * n, iwork, &ierr);
 
                     if (pair) {
-                        double tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks - 1];
+                        f64 tmp = (ONE > alprqt ? ONE : alprqt) * dif[ks - 1];
                         dif[ks - 1] = tmp < cond ? tmp : cond;
                     }
                 }
@@ -332,5 +332,5 @@ void dtgsna(
             ks = ks + 1;
         }
     }
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

@@ -55,22 +55,22 @@
  */
 void slassq(
     const int n,
-    const float * const restrict X,
+    const f32 * const restrict X,
     const int incx,
-    float *scale,
-    float *sumsq)
+    f32 *scale,
+    f32 *sumsq)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
-    const float tsml = ldexpf(1.0f, CEIL_HALF(FLT_MIN_EXP - 1));
-    const float tbig = ldexpf(1.0f, FLOOR_HALF(FLT_MAX_EXP - FLT_MANT_DIG + 1));
-    const float ssml = ldexpf(1.0f, -FLOOR_HALF(FLT_MIN_EXP - FLT_MANT_DIG));
-    const float sbig = ldexpf(1.0f, -CEIL_HALF(FLT_MAX_EXP + FLT_MANT_DIG - 1));
+    const f32 tsml = ldexpf(1.0f, CEIL_HALF(FLT_MIN_EXP - 1));
+    const f32 tbig = ldexpf(1.0f, FLOOR_HALF(FLT_MAX_EXP - FLT_MANT_DIG + 1));
+    const f32 ssml = ldexpf(1.0f, -FLOOR_HALF(FLT_MIN_EXP - FLT_MANT_DIG));
+    const f32 sbig = ldexpf(1.0f, -CEIL_HALF(FLT_MAX_EXP + FLT_MANT_DIG - 1));
 
     int i, ix;
     int notbig;
-    float abig, amed, asml, ax, ymax, ymin;
+    f32 abig, amed, asml, ax, ymax, ymin;
 
     /* Quick return if possible */
     if (isnan(*scale) || isnan(*sumsq)) {

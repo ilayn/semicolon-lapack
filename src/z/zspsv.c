@@ -40,9 +40,9 @@ void zspsv(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     int* const restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {

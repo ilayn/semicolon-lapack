@@ -43,14 +43,14 @@ void ssbgv(
     const int n,
     const int ka,
     const int kb,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict BB,
+    f32* const restrict BB,
     const int ldbb,
-    float* const restrict W,
-    float* const restrict Z,
+    f32* const restrict W,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
     int upper, wantz;

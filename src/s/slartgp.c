@@ -26,12 +26,12 @@
  * @param[out] sn  The sine of the rotation.
  * @param[out] r   The nonzero component of the rotated vector.
  */
-void slartgp(const float f, const float g, float* cs, float* sn, float* r)
+void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
 {
-    float safmin = slamch("S");
-    float eps = slamch("E");
-    float safmn2 = powf(slamch("B"), (int)(logf(safmin / eps) / logf(slamch("B")) / 2.0f));
-    float safmx2 = 1.0f / safmn2;
+    f32 safmin = slamch("S");
+    f32 eps = slamch("E");
+    f32 safmn2 = powf(slamch("B"), (int)(logf(safmin / eps) / logf(slamch("B")) / 2.0f));
+    f32 safmx2 = 1.0f / safmn2;
 
     if (g == 0.0f) {
         *cs = copysignf(1.0f, f);
@@ -42,9 +42,9 @@ void slartgp(const float f, const float g, float* cs, float* sn, float* r)
         *sn = copysignf(1.0f, g);
         *r = fabsf(g);
     } else {
-        float f1 = f;
-        float g1 = g;
-        float scale = fmaxf(fabsf(f1), fabsf(g1));
+        f32 f1 = f;
+        f32 g1 = g;
+        f32 scale = fmaxf(fabsf(f1), fabsf(g1));
 
         if (scale >= safmx2) {
             int count = 0;

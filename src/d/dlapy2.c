@@ -18,9 +18,9 @@
  *
  * @return sqrt(x**2 + y**2) computed safely.
  */
-double dlapy2(const double x, const double y)
+f64 dlapy2(const f64 x, const f64 y)
 {
-    double xabs, yabs, w, z;
+    f64 xabs, yabs, w, z;
 
     /* Handle NaN propagation */
     if (isnan(x)) return x;
@@ -34,7 +34,7 @@ double dlapy2(const double x, const double y)
     if (z == 0.0 || w > DBL_MAX) {
         return w;
     } else {
-        double t = z / w;
+        f64 t = z / w;
         return w * sqrt(1.0 + t * t);
     }
 }

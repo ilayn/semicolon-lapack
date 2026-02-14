@@ -59,29 +59,29 @@ void sppsvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    float* const restrict AP,
-    float* const restrict AFP,
+    f32* const restrict AP,
+    f32* const restrict AFP,
     char* equed,
-    float* const restrict S,
-    float* const restrict B,
+    f32* const restrict S,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* rcond,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* rcond,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // sppsvx.f lines 330-331: Parameters
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     // sppsvx.f lines 334-336: Local Scalars
     int equil, nofact, rcequ;
     int i, infequ, j;
-    float amax, anorm, bignum, scond, smax, smin, smlnum;
+    f32 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     // sppsvx.f lines 353-363: Initialize
     *info = 0;

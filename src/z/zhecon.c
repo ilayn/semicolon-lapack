@@ -38,16 +38,16 @@
 void zhecon(
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // Test the input parameters.
     *info = 0;
@@ -95,7 +95,7 @@ void zhecon(
     // Estimate the 1-norm of the inverse.
     int kase = 0;
     int isave[3] = {0, 0, 0};
-    double ainvnm;
+    f64 ainvnm;
     int linfo;
 
     for (;;) {

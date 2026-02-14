@@ -26,10 +26,10 @@
  *
  * @return The norm value.
  */
-float slanst(const char* norm, const int n,
-              const float* const restrict D, const float* const restrict E)
+f32 slanst(const char* norm, const int n,
+              const f32* const restrict D, const f32* const restrict E)
 {
-    float anorm;
+    f32 anorm;
 
     if (n <= 0) {
         return 0.0f;
@@ -39,7 +39,7 @@ float slanst(const char* norm, const int n,
         /* Find max(abs(A(i,j))) */
         anorm = fabsf(D[n - 1]);
         for (int i = 0; i < n - 1; i++) {
-            float sum = fabsf(D[i]);
+            f32 sum = fabsf(D[i]);
             if (anorm < sum || isnan(sum)) anorm = sum;
             sum = fabsf(E[i]);
             if (anorm < sum || isnan(sum)) anorm = sum;
@@ -51,7 +51,7 @@ float slanst(const char* norm, const int n,
             anorm = fabsf(D[0]);
         } else {
             anorm = fabsf(D[0]) + fabsf(E[0]);
-            float sum = fabsf(E[n - 2]) + fabsf(D[n - 1]);
+            f32 sum = fabsf(E[n - 2]) + fabsf(D[n - 1]);
             if (anorm < sum || isnan(sum)) anorm = sum;
             for (int i = 1; i < n - 1; i++) {
                 sum = fabsf(D[i]) + fabsf(E[i]) + fabsf(E[i - 1]);
@@ -61,8 +61,8 @@ float slanst(const char* norm, const int n,
     } else if (norm[0] == 'F' || norm[0] == 'f' ||
                norm[0] == 'E' || norm[0] == 'e') {
         /* Find normF(A) using slassq */
-        float scale = 0.0f;
-        float sum = 1.0f;
+        f32 scale = 0.0f;
+        f32 sum = 1.0f;
         if (n > 1) {
             slassq(n - 1, E, 1, &scale, &sum);
             sum = 2.0f * sum;

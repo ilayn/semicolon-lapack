@@ -73,13 +73,13 @@ void sgbtf2(
     const int n,
     const int kl,
     const int ku,
-    float * const restrict AB,
+    f32 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int i, j, jp, ju, km, kv;
 

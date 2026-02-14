@@ -49,10 +49,10 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgebd2(const int m, const int n, double* const restrict A, const int lda,
-            double* const restrict D, double* const restrict E,
-            double* const restrict tauq, double* const restrict taup,
-            double* const restrict work, int* info)
+void dgebd2(const int m, const int n, f64* const restrict A, const int lda,
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict tauq, f64* const restrict taup,
+            f64* const restrict work, int* info)
 {
     int i;
 

@@ -64,18 +64,18 @@ void zlahef_aa(
     const int j1,
     const int m,
     const int nb,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* restrict H,
+    c128* restrict H,
     const int ldh,
-    double complex* restrict work)
+    c128* restrict work)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int j, k, k1, i1, i2, mj;
-    double complex piv, alpha;
+    c128 piv, alpha;
     int minval;
 
     j = 0;

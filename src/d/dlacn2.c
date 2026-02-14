@@ -34,24 +34,24 @@
  */
 void dlacn2(
     const int n,
-    double * const restrict V,
-    double * const restrict X,
+    f64 * const restrict V,
+    f64 * const restrict X,
     int * const restrict isgn,
-    double *est,
+    f64 *est,
     int *kase,
     int * const restrict isave)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int i, jlast;
-    double altsgn, estold, temp, xs;
+    f64 altsgn, estold, temp, xs;
 
     if (*kase == 0) {
         for (i = 0; i < n; i++) {
-            X[i] = ONE / (double)n;
+            X[i] = ONE / (f64)n;
         }
         *kase = 1;
         isave[0] = 1;  // JUMP = 1
@@ -167,7 +167,7 @@ L120:
 
     altsgn = ONE;
     for (i = 0; i < n; i++) {
-        X[i] = altsgn * (ONE + (double)i / (double)((n > 1) ? (n - 1) : 1));
+        X[i] = altsgn * (ONE + (f64)i / (f64)((n > 1) ? (n - 1) : 1));
         altsgn = -altsgn;
     }
     *kase = 1;
@@ -178,7 +178,7 @@ L140:
     // ENTRY (isave[0] = 5)
     // X HAS BEEN OVERWRITTEN BY A*X.
 
-    temp = TWO * (cblas_dasum(n, X, 1) / (double)(3 * n));
+    temp = TWO * (cblas_dasum(n, X, 1) / (f64)(3 * n));
     if (temp > *est) {
         cblas_dcopy(n, X, 1, V, 1);
         *est = temp;

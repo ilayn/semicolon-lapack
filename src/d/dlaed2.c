@@ -90,20 +90,20 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value.
  */
-void dlaed2(int* K, const int n, const int n1, double* D, double* Q,
-            const int ldq, int* indxq, double* rho, double* Z,
-            double* dlambda, double* W, double* Q2, int* indx,
+void dlaed2(int* K, const int n, const int n1, f64* D, f64* Q,
+            const int ldq, int* indxq, f64* rho, f64* Z,
+            f64* dlambda, f64* W, f64* Q2, int* indx,
             int* indxc, int* indxp, int* coltyp, int* info)
 {
-    const double MONE = -1.0;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double EIGHT = 8.0;
+    const f64 MONE = -1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 EIGHT = 8.0;
 
     int ctot[4], psm[4];
     int ct, i, imax, iq1, iq2, j, jmax, js, k2, n2, nj, pj = 0;
-    double c, eps, s, t, tau, tol;
+    f64 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */
     *info = 0;

@@ -37,16 +37,16 @@
 void zpocon(
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // Test the input parameters
     *info = 0;
@@ -74,19 +74,19 @@ void zpocon(
         return;
     }
 
-    double smlnum = dlamch("S");
+    f64 smlnum = dlamch("S");
 
     // Estimate the 1-norm of inv(A).
     int kase = 0;
     char normin = 'N';
     int isave[3] = {0, 0, 0};
-    double ainvnm;
+    f64 ainvnm;
 
     for (;;) {
         zlacn2(n, &work[n], work, &ainvnm, &kase, isave);
         if (kase == 0) break;
 
-        double scalel, scaleu;
+        f64 scalel, scaleu;
         int linfo;
 
         if (upper) {
@@ -110,7 +110,7 @@ void zpocon(
         }
 
         // Multiply by 1/SCALE if doing so will not cause overflow.
-        double scale = scalel * scaleu;
+        f64 scale = scalel * scaleu;
         if (scale != ONE) {
             int ix = cblas_izamax(n, work, 1);
             if (scale < cabs1(work[ix]) * smlnum || scale == ZERO) {

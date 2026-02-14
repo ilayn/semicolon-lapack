@@ -46,21 +46,21 @@ void slatps(
     const char* diag,
     const char* normin,
     const int n,
-    const float* const restrict AP,
-    float* const restrict X,
-    float* scale,
-    float* const restrict cnorm,
+    const f32* const restrict AP,
+    f32* const restrict X,
+    f32* scale,
+    f32* const restrict cnorm,
     int* info)
 {
     // slatps.f lines 245-246: Parameters
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
+    const f32 ONE = 1.0f;
 
     // slatps.f lines 248-252: Local variables
     int upper, notran, nounit;
     int i, imax, ip, j, jfirst, jinc, jlast, jlen;
-    float bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
+    f32 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
 
     // slatps.f lines 268-271
     *info = 0;

@@ -30,12 +30,12 @@ void dtptri(
     const char* uplo,
     const char* diag,
     const int n,
-    double* const restrict AP,
+    f64* const restrict AP,
     int* info)
 {
     // dtptri.f lines 132-133: Parameters
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // dtptri.f lines 151-164: Test the input parameters
     *info = 0;
@@ -86,7 +86,7 @@ void dtptri(
         // dtptri.f lines 187-206: Compute inverse of upper triangular matrix
         int jc = 0;  // dtptri.f line 191: JC = 1 (0-based: 0)
         for (int j = 0; j < n; j++) {  // dtptri.f line 192: DO 30 J = 1, N
-            double ajj;
+            f64 ajj;
             if (nounit) {
                 // dtptri.f lines 193-195
                 // AP( JC+J-1 ) in 1-based = AP[jc + j] in 0-based (since JC is 1-based offset)
@@ -112,7 +112,7 @@ void dtptri(
         int jc = n * (n + 1) / 2 - 1;  // dtptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
         int jclast = 0;  // Will be set in loop
         for (int j = n - 1; j >= 0; j--) {  // dtptri.f line 213: DO 40 J = N, 1, -1
-            double ajj;
+            f64 ajj;
             if (nounit) {
                 // dtptri.f lines 214-216
                 AP[jc] = ONE / AP[jc];

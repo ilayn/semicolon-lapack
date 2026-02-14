@@ -42,19 +42,19 @@ void ssytrs2(
     const char* uplo,
     const int n,
     const int nrhs,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int upper;
     int i, iinfo, j, k, kp;
-    float ak, akm1, akm1k, bk, bkm1, denom;
+    f32 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

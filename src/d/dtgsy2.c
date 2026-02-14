@@ -62,35 +62,35 @@ void dtgsy2(
     const int ijob,
     const int m,
     const int n,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict C,
+    f64* const restrict C,
     const int ldc,
-    const double* const restrict D,
+    const f64* const restrict D,
     const int ldd,
-    const double* const restrict E,
+    const f64* const restrict E,
     const int lde,
-    double* const restrict F,
+    f64* const restrict F,
     const int ldf,
-    double* scale,
-    double* rdsum,
-    double* rdscal,
+    f64* scale,
+    f64* rdsum,
+    f64* rdscal,
     int* const restrict iwork,
     int* pq,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notran;
     int i, ie, ierr, ii, is, isp1, j, je, jj, js, jsp1;
     int k, mb, nb, p, q, zdim;
-    double alpha, scaloc;
+    f64 alpha, scaloc;
 
     int ipiv[LDZ], jpiv[LDZ];
-    double rhs[LDZ], z[LDZ * LDZ];
+    f64 rhs[LDZ], z[LDZ * LDZ];
 
     *info = 0;
     ierr = 0;

@@ -46,31 +46,31 @@ void slaqz4(
     const int ihi,
     const int nshifts,
     const int nblock_desired,
-    float* const restrict sr,
-    float* const restrict si,
-    float* const restrict ss,
-    float* const restrict A,
+    f32* const restrict sr,
+    f32* const restrict si,
+    f32* const restrict ss,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
-    float* const restrict QC,
+    f32* const restrict QC,
     const int ldqc,
-    float* const restrict ZC,
+    f32* const restrict ZC,
     const int ldzc,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, ns, istartm, istopm, sheight, swidth, k, np;
     int istartb, istopb, ishift, nblock, npos;
-    float temp, v[3], c1, s1, c2, s2, swap;
+    f32 temp, v[3], c1, s1, c2, s2, swap;
 
     *info = 0;
     if (nblock_desired < nshifts + 1) {
@@ -78,7 +78,7 @@ void slaqz4(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = (float)(n * nblock_desired);
+        work[0] = (f32)(n * nblock_desired);
         return;
     } else if (lwork < n * nblock_desired) {
         *info = -25;

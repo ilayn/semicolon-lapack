@@ -9,13 +9,13 @@
 
 /* slaed6 is declared in semicolon_lapack_double.h */
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
-static const float TWO = 2.0f;
-static const float THREE = 3.0f;
-static const float FOUR = 4.0f;
-static const float EIGHT = 8.0f;
-static const float TEN = 10.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
+static const f32 TWO = 2.0f;
+static const f32 THREE = 3.0f;
+static const f32 FOUR = 4.0f;
+static const f32 EIGHT = 8.0f;
+static const f32 TEN = 10.0f;
 
 static const int MAXIT = 400;
 
@@ -37,19 +37,19 @@ static const int MAXIT = 400;
  * @param[out]    info
  *                         - = 0: successful exit. > 0: if info = 1, the updating process failed.
  */
-void slasd4(const int n, const int i, const float* const restrict D,
-            const float* const restrict Z, float* const restrict delta,
-            const float rho, float* sigma, float* const restrict work,
+void slasd4(const int n, const int i, const f32* const restrict D,
+            const f32* const restrict Z, f32* const restrict delta,
+            const f32 rho, f32* sigma, f32* const restrict work,
             int* info)
 {
     /* Local variables */
     int orgati, swtch, swtch3, geomavg;
     int ii, iim1, iip1, ip1, iter, j, niter;
-    float a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
-    float dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps;
-    float erretm, eta, phi, prew, psi, rhoinv, sglb;
-    float sgub, tau, tau2, temp, temp1, temp2, w;
-    float dd[3], zz[3];
+    f32 a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
+    f32 dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps;
+    f32 erretm, eta, phi, prew, psi, rhoinv, sglb;
+    f32 sgub, tau, tau2, temp, temp1, temp2, w;
+    f32 dd[3], zz[3];
     int iinfo;
 
     /* Quick return for n=1 and n=2 */

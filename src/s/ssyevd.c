@@ -53,19 +53,19 @@
  *                           through mod(INFO,N+1).
  */
 void ssyevd(const char* jobz, const char* uplo, const int n,
-            float* const restrict A, const int lda,
-            float* const restrict W,
-            float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            f32* const restrict W,
+            f32* const restrict work, const int lwork,
             int* const restrict iwork, const int liwork,
             int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lower, wantz, lquery;
     int iinfo, inde, indtau, indwrk, indwk2, iscale;
     int liopt, liwmin, llwork, llwrk2, lopt, lwmin;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     int nb;
 
     /* Test the input parameters */
@@ -102,7 +102,7 @@ void ssyevd(const char* jobz, const char* uplo, const int n,
             lopt = lwmin > 2 * n + n * nb ? lwmin : 2 * n + n * nb;
             liopt = liwmin;
         }
-        work[0] = (float)lopt;
+        work[0] = (f32)lopt;
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -184,6 +184,6 @@ void ssyevd(const char* jobz, const char* uplo, const int n,
         cblas_sscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (float)lopt;
+    work[0] = (f32)lopt;
     iwork[0] = liopt;
 }

@@ -57,21 +57,21 @@ void zgbtrf(
     const int n,
     const int kl,
     const int ku,
-    double complex * const restrict AB,
+    c128 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
     int *info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     /* Work arrays for A13 and A31 blocks that fall outside the band */
-    double complex work13[LDWORK * NBMAX];
-    double complex work31[LDWORK * NBMAX];
+    c128 work13[LDWORK * NBMAX];
+    c128 work31[LDWORK * NBMAX];
 
     int i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
-    double complex temp;
+    c128 temp;
     int minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
@@ -205,7 +205,7 @@ void zgbtrf(
 
                     /* Compute multipliers */
                     {
-                        const double complex scale = ONE / AB[kv + jj * ldab];
+                        const c128 scale = ONE / AB[kv + jj * ldab];
                         cblas_zscal(km, &scale, &AB[kv + 1 + jj * ldab], 1);
                     }
 

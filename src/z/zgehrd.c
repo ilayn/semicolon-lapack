@@ -40,19 +40,19 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgehrd(const int n, const int ilo, const int ihi,
-            double complex* A, const int lda, double complex* tau,
-            double complex* work, const int lwork, int* info)
+            c128* A, const int lda, c128* tau,
+            c128* work, const int lwork, int* info)
 {
     const int NBMAX = 64;
     const int LDT = NBMAX + 1;
     const int TSIZE = LDT * NBMAX;
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int lquery;
     int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
-    double complex ei;
+    c128 ei;
     int max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
@@ -83,7 +83,7 @@ void zgehrd(const int n, const int ilo, const int ihi,
             if (nb > NBMAX) nb = NBMAX;
             lwkopt = n * nb + TSIZE;
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -180,5 +180,5 @@ void zgehrd(const int n, const int ilo, const int ihi,
     /* Use unblocked code to reduce the rest of the matrix */
     zgehd2(n, i, ihi, A, lda, tau, work, &iinfo);
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

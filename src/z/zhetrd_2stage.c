@@ -7,10 +7,10 @@
 #include <complex.h>
 
 void zhetrd_2stage(const char* vect, const char* uplo, const int n,
-                   double complex* A, const int lda,
-                   double* D, double* E, double complex* tau,
-                   double complex* hous2, const int lhous2,
-                   double complex* work, const int lwork, int* info)
+                   c128* A, const int lda,
+                   f64* D, f64* E, c128* tau,
+                   c128* hous2, const int lhous2,
+                   c128* work, const int lwork, int* info)
 {
     int lquery, upper;
     int kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
@@ -45,8 +45,8 @@ void zhetrd_2stage(const char* vect, const char* uplo, const int n,
     }
 
     if (*info == 0) {
-        hous2[0] = CMPLX((double)lhmin, 0.0);
-        work[0] = CMPLX((double)lwmin, 0.0);
+        hous2[0] = CMPLX((f64)lhmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
     }
 
     if (*info != 0) {
@@ -81,5 +81,5 @@ void zhetrd_2stage(const char* vect, const char* uplo, const int n,
         return;
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

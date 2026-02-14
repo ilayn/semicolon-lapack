@@ -9,22 +9,22 @@
 #include <cblas.h>
 
 void dlasda(const int icompq, const int smlsiz, const int n, const int sqre,
-            double* const restrict D, double* const restrict E,
-            double* const restrict U, const int ldu,
-            double* const restrict VT, int* const restrict K,
-            double* const restrict DIFL, double* const restrict DIFR,
-            double* const restrict Z, double* const restrict POLES,
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict U, const int ldu,
+            f64* const restrict VT, int* const restrict K,
+            f64* const restrict DIFL, f64* const restrict DIFR,
+            f64* const restrict Z, f64* const restrict POLES,
             int* const restrict GIVPTR, int* const restrict GIVCOL,
             const int ldgcol, int* const restrict PERM,
-            double* const restrict GIVNUM,
-            double* const restrict C, double* const restrict S,
-            double* const restrict work, int* const restrict IWORK, int* info)
+            f64* const restrict GIVNUM,
+            f64* const restrict C, f64* const restrict S,
+            f64* const restrict work, int* const restrict IWORK, int* info)
 {
     int i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk;
     int j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr;
     int nl, nlf, nlp1, nlvl, nr, nrf, nrp1, nru;
     int nwork1, nwork2, smlszp, sqrei, vf, vfi, vl, vli;
-    double alpha, beta;
+    f64 alpha, beta;
 
     *info = 0;
 

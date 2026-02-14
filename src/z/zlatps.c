@@ -47,21 +47,21 @@ void zlatps(
     const char* diag,
     const char* normin,
     const int n,
-    const double complex* const restrict AP,
-    double complex* const restrict X,
-    double* scale,
-    double* const restrict cnorm,
+    const c128* const restrict AP,
+    c128* const restrict X,
+    f64* scale,
+    f64* const restrict cnorm,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int upper, notran, nounit;
     int i, imax, ip, j, jfirst, jinc, jlast, jlen;
-    double bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
-    double complex csumj, tjjs = 0.0, uscal;
+    f64 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
+    c128 csumj, tjjs = 0.0, uscal;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -120,7 +120,7 @@ void zlatps(
 
     xmax = ZERO;
     for (j = 0; j < n; j++) {
-        double tmp = cabs2(X[j]);
+        f64 tmp = cabs2(X[j]);
         if (xmax < tmp) xmax = tmp;
     }
     xbnd = xmax;
@@ -309,7 +309,7 @@ L100:
 
                 if (upper) {
                     if (j > 0) {
-                        double complex neg_xj_tscal = -X[j] * tscal;
+                        c128 neg_xj_tscal = -X[j] * tscal;
                         cblas_zaxpy(j, &neg_xj_tscal, &AP[ip - j], 1, X, 1);
                         i = cblas_izamax(j, X, 1);
                         xmax = cabs1(X[i]);
@@ -317,7 +317,7 @@ L100:
                     ip = ip - (j + 1);
                 } else {
                     if (j < n - 1) {
-                        double complex neg_xj_tscal = -X[j] * tscal;
+                        c128 neg_xj_tscal = -X[j] * tscal;
                         cblas_zaxpy(n - j - 1, &neg_xj_tscal, &AP[ip + 1], 1, &X[j + 1], 1);
                         i = j + 1 + cblas_izamax(n - j - 1, &X[j + 1], 1);
                         xmax = cabs1(X[i]);
@@ -354,7 +354,7 @@ L100:
                 }
 
                 csumj = ZERO;
-                if (uscal == (double complex)ONE) {
+                if (uscal == (c128)ONE) {
                     if (upper) {
                         if (j > 0) {
                             cblas_zdotu_sub(j, &AP[ip - j], 1, X, 1, &csumj);
@@ -374,7 +374,7 @@ L100:
                     }
                 }
 
-                if (uscal == (double complex)tscal) {
+                if (uscal == (c128)tscal) {
                     X[j] = X[j] - csumj;
                     xj = cabs1(X[j]);
                     if (nounit) {
@@ -449,7 +449,7 @@ L150:;
                 }
 
                 csumj = ZERO;
-                if (uscal == (double complex)ONE) {
+                if (uscal == (c128)ONE) {
                     if (upper) {
                         if (j > 0) {
                             cblas_zdotc_sub(j, &AP[ip - j], 1, X, 1, &csumj);
@@ -469,7 +469,7 @@ L150:;
                     }
                 }
 
-                if (uscal == (double complex)tscal) {
+                if (uscal == (c128)tscal) {
                     X[j] = X[j] - csumj;
                     xj = cabs1(X[j]);
                     if (nounit) {

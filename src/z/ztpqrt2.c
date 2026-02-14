@@ -39,15 +39,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztpqrt2(const int m, const int n, const int l,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict B, const int ldb,
-             double complex* const restrict T, const int ldt, int* info)
+             c128* const restrict A, const int lda,
+             c128* const restrict B, const int ldb,
+             c128* const restrict T, const int ldt, int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int i, j, p, mp, np;
     int minmn;
-    double complex alpha;
+    c128 alpha;
 
     *info = 0;
     minmn = m < n ? m : n;

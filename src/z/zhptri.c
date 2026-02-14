@@ -36,19 +36,18 @@
 void zhptri(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     int* info)
 {
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const f64 ONE = 1.0;
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int upper;
     int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
-    double ak, akp1, d, t;
-    double complex akkp1, temp;
+    f64 ak, akp1, d, t;
+    c128 akkp1, temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -112,9 +111,9 @@ void zhptri(
                 AP[kc + k] = CMPLX(ONE / creal(AP[kc + k]), 0.0);
 
                 if (k > 0) {
-                    double complex dotresult;
+                    c128 dotresult;
                     cblas_zcopy(k, &AP[kc], 1, work, 1);
-                    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+                    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
                     cblas_zhpmv(CblasColMajor, CblasUpper, k, &NEG_CONE, AP, work, 1, &ZERO, &AP[kc], 1);
                     cblas_zdotc_sub(k, work, 1, &AP[kc], 1, &dotresult);
                     AP[kc + k] = AP[kc + k] - CMPLX(creal(dotresult), 0.0);
@@ -136,8 +135,8 @@ void zhptri(
                 AP[kcnext + k] = -akkp1 / d;
 
                 if (k > 0) {
-                    double complex dotresult;
-                    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+                    c128 dotresult;
+                    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
                     cblas_zcopy(k, &AP[kc], 1, work, 1);
                     cblas_zhpmv(CblasColMajor, CblasUpper, k, &NEG_CONE, AP, work, 1, &ZERO, &AP[kc], 1);
@@ -205,8 +204,8 @@ void zhptri(
                 AP[kc] = CMPLX(ONE / creal(AP[kc]), 0.0);
 
                 if (k < n - 1) {
-                    double complex dotresult;
-                    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+                    c128 dotresult;
+                    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
                     cblas_zcopy(n - k - 1, &AP[kc + 1], 1, work, 1);
                     cblas_zhpmv(CblasColMajor, CblasLower, n - k - 1, &NEG_CONE, &AP[kc + n - k], work, 1, &ZERO, &AP[kc + 1], 1);
                     cblas_zdotc_sub(n - k - 1, work, 1, &AP[kc + 1], 1, &dotresult);
@@ -229,8 +228,8 @@ void zhptri(
                 AP[kcnext + 1] = -akkp1 / d;
 
                 if (k < n - 1) {
-                    double complex dotresult;
-                    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+                    c128 dotresult;
+                    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
                     cblas_zcopy(n - k - 1, &AP[kc + 1], 1, work, 1);
                     cblas_zhpmv(CblasColMajor, CblasLower, n - k - 1, &NEG_CONE, &AP[kc + n - k], work, 1, &ZERO, &AP[kc + 1], 1);

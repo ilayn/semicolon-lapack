@@ -48,10 +48,10 @@
  */
 void dlamtsqr(const char* side, const char* trans,
               const int m, const int n, const int k, const int mb, const int nb,
-              const double* const restrict A, const int lda,
-              const double* const restrict T, const int ldt,
-              double* const restrict C, const int ldc,
-              double* const restrict work, const int lwork,
+              const f64* const restrict A, const int lda,
+              const f64* const restrict T, const int ldt,
+              f64* const restrict C, const int ldc,
+              f64* const restrict work, const int lwork,
               int* info)
 {
     int left, right, tran, notran, lquery;
@@ -104,7 +104,7 @@ void dlamtsqr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
     }
 
     if (*info != 0) {
@@ -252,5 +252,5 @@ void dlamtsqr(const char* side, const char* trans,
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
 }

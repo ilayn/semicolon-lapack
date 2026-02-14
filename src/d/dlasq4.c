@@ -27,26 +27,26 @@
  * @param[in,out] g      G is passed as an argument in order to save its
  *                        value between calls to DLASQ4.
  */
-void dlasq4(const int i0, const int n0, const double* const restrict Z,
-            const int pp, const int n0in, const double dmin,
-            const double dmin1, const double dmin2, const double dn,
-            const double dn1, const double dn2, double* tau,
-            int* ttype, double* g)
+void dlasq4(const int i0, const int n0, const f64* const restrict Z,
+            const int pp, const int n0in, const f64 dmin,
+            const f64 dmin1, const f64 dmin2, const f64 dn,
+            const f64 dn1, const f64 dn2, f64* tau,
+            int* ttype, f64* g)
 {
     /* Constants from the Fortran source: CNST1 = 9/16 = 0.5630 (approx) */
-    const double CNST1 = 0.5630;
-    const double CNST2 = 1.010;
-    const double CNST3 = 1.050;
-    const double QURTR = 0.250;
-    const double THIRD = 0.3330;
-    const double HALF = 0.50;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HUNDRD = 100.0;
+    const f64 CNST1 = 0.5630;
+    const f64 CNST2 = 1.010;
+    const f64 CNST3 = 1.050;
+    const f64 QURTR = 0.250;
+    const f64 THIRD = 0.3330;
+    const f64 HALF = 0.50;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HUNDRD = 100.0;
 
     int i4, nn, np;
-    double a2, b1, b2, gam, gap1, gap2, s = ZERO;
+    f64 a2, b1, b2, gam, gap1, gap2, s = ZERO;
 
     /*
      * A negative DMIN forces the shift to take that absolute value.

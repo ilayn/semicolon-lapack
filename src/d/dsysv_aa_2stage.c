@@ -82,15 +82,15 @@ void dsysv_aa_2stage(
     const char* uplo,
     const int n,
     const int nrhs,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict TB,
+    f64* restrict TB,
     const int ltb,
     int* restrict ipiv,
     int* restrict ipiv2,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
@@ -122,7 +122,7 @@ void dsysv_aa_2stage(
     if (*info == 0) {
         dsytrf_aa_2stage(uplo, n, A, lda, TB, -1, ipiv, ipiv2, work, -1, info);
         lwkopt = (lwkmin > (int)work[0]) ? lwkmin : (int)work[0];
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -139,5 +139,5 @@ void dsysv_aa_2stage(
 
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

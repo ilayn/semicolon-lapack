@@ -90,27 +90,27 @@
  *                         - = -5: Problem in DLASQ2.
  *                         - = -6: Problem in DLASQ2.
  */
-void dlarre(const char* range, const int n, double* vl, double* vu,
+void dlarre(const char* range, const int n, f64* vl, f64* vu,
             const int il, const int iu,
-            double* D, double* E, double* E2,
-            const double rtol1, const double rtol2, const double spltol,
+            f64* D, f64* E, f64* E2,
+            const f64 rtol1, const f64 rtol2, const f64 spltol,
             int* nsplit, int* isplit, int* m,
-            double* W, double* werr, double* wgap,
-            int* iblock, int* indexw, double* gers,
-            double* pivmin, double* work, int* iwork, int* info)
+            f64* W, f64* werr, f64* wgap,
+            int* iblock, int* indexw, f64* gers,
+            f64* pivmin, f64* work, int* iwork, int* info)
 {
     /* Parameters */
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double FOUR = 4.0;
-    const double HNDRD = 100.0;
-    const double PERT = 8.0;
-    const double HALF = 0.5;
-    const double FOURTH = 0.25;
-    const double FAC = 0.5;
-    const double MAXGROWTH = 64.0;
-    const double FUDGE = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 FOUR = 4.0;
+    const f64 HNDRD = 100.0;
+    const f64 PERT = 8.0;
+    const f64 HALF = 0.5;
+    const f64 FOURTH = 0.25;
+    const f64 FAC = 0.5;
+    const f64 MAXGROWTH = 64.0;
+    const f64 FUDGE = 2.0;
     const int MAXTRY = 6;
     const int ALLRNG = 1;
     const int INDRNG = 2;
@@ -121,7 +121,7 @@ void dlarre(const char* range, const int n, double* vl, double* vu,
     int cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
         in, indl = 0, indu = 0, irange = 0, j, jblk, mb = 0, mm,
         wbegin, wend = 0;
-    double avgap, bsrtol, clwdth, dmax_, dpivot, eabs,
+    f64 avgap, bsrtol, clwdth, dmax_, dpivot, eabs,
            emax, eold, eps, gl, gu, isleft, isrght, rtl,
            rtol, s1, s2, safmin, sgndef, sigma, spdiam,
            tau, tmp, tmp1;
@@ -446,7 +446,7 @@ void dlarre(const char* range, const int n, double* vl, double* vu,
         } else {
             if (mb > 1) {
                 clwdth = W[wend] + werr[wend] - W[wbegin] - werr[wbegin];
-                avgap = fabs(clwdth / (double)(wend - wbegin));
+                avgap = fabs(clwdth / (f64)(wend - wbegin));
                 if (sgndef == ONE) {
                     tau = HALF * (wgap[wbegin] > avgap ? wgap[wbegin] : avgap);
                     tau = tau > werr[wbegin] ? tau : werr[wbegin];
@@ -527,9 +527,9 @@ void dlarre(const char* range, const int n, double* vl, double* vu,
         /* Store the shift. */
         E[iend] = sigma;
         /* Store D and L. */
-        memcpy(&D[ibegin], work, (size_t)in * sizeof(double));
+        memcpy(&D[ibegin], work, (size_t)in * sizeof(f64));
         if (in > 1) {
-            memcpy(&E[ibegin], &work[in], (size_t)(in - 1) * sizeof(double));
+            memcpy(&E[ibegin], &work[in], (size_t)(in - 1) * sizeof(f64));
         }
 
         if (mb > 1) {
@@ -600,7 +600,7 @@ void dlarre(const char* range, const int n, double* vl, double* vu,
             /* This is an ESTIMATED error, the worst case bound is 4*N*EPS */
             /* which is usually too large and requires unnecessary work to be */
             /* done by bisection when computing the eigenvectors */
-            rtol = log((double)in) * FOUR * eps;
+            rtol = log((f64)in) * FOUR * eps;
             j = ibegin;
             for (i = 0; i < in - 1; i++) {
                 work[2 * i] = fabs(D[j]);

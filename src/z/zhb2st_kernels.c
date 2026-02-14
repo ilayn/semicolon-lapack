@@ -36,21 +36,22 @@ void zhb2st_kernels(
     const int n,
     const int nb,
     const int ib,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict V,
-    double complex* const restrict TAU,
+    c128* const restrict V,
+    c128* const restrict TAU,
     const int ldvt,
-    double complex* const restrict WORK)
+    c128* const restrict WORK)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+
+    (void)wantz; (void)ib; (void)ldvt;
 
     int upper;
-    int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos, ajeter;
-    double complex ctmp;
+    int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
+    c128 ctmp;
 
-    ajeter = ib + ldvt;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (upper) {
@@ -66,13 +67,8 @@ void zhb2st_kernels(
      */
     if (upper) {
 
-        if (wantz) {
-            vpos   = (sweep % 2) * n + st;
-            taupos = (sweep % 2) * n + st;
-        } else {
-            vpos   = (sweep % 2) * n + st;
-            taupos = (sweep % 2) * n + st;
-        }
+        vpos   = (sweep % 2) * n + st;
+        taupos = (sweep % 2) * n + st;
 
         if (ttype == 1) {
             lm = ed - st + 1;
@@ -110,13 +106,8 @@ void zhb2st_kernels(
                        conj(TAU[taupos]),
                        &A[(dpos - nb) + j1 * lda], lda - 1, WORK);
 
-                if (wantz) {
-                    vpos   = (sweep % 2) * n + j1;
-                    taupos = (sweep % 2) * n + j1;
-                } else {
-                    vpos   = (sweep % 2) * n + j1;
-                    taupos = (sweep % 2) * n + j1;
-                }
+                vpos   = (sweep % 2) * n + j1;
+                taupos = (sweep % 2) * n + j1;
 
                 V[vpos] = ONE;
                 for (i = 1; i < lm; i++) {
@@ -138,13 +129,8 @@ void zhb2st_kernels(
      */
     } else {
 
-        if (wantz) {
-            vpos   = (sweep % 2) * n + st;
-            taupos = (sweep % 2) * n + st;
-        } else {
-            vpos   = (sweep % 2) * n + st;
-            taupos = (sweep % 2) * n + st;
-        }
+        vpos   = (sweep % 2) * n + st;
+        taupos = (sweep % 2) * n + st;
 
         if (ttype == 1) {
             lm = ed - st + 1;
@@ -185,13 +171,8 @@ void zhb2st_kernels(
                        TAU[taupos], &A[(dpos + nb) + st * lda],
                        lda - 1, WORK);
 
-                if (wantz) {
-                    vpos   = (sweep % 2) * n + j1;
-                    taupos = (sweep % 2) * n + j1;
-                } else {
-                    vpos   = (sweep % 2) * n + j1;
-                    taupos = (sweep % 2) * n + j1;
-                }
+                vpos   = (sweep % 2) * n + j1;
+                taupos = (sweep % 2) * n + j1;
 
                 V[vpos] = ONE;
                 for (i = 1; i < lm; i++) {

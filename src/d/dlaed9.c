@@ -48,12 +48,12 @@
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
 void dlaed9(const int k, const int kstart, const int kstop, const int n,
-            double* D, double* Q, const int ldq, const double rho,
-            const double* dlambda, double* W, double* S, const int lds,
+            f64* D, f64* Q, const int ldq, const f64 rho,
+            const f64* dlambda, f64* W, f64* S, const int lds,
             int* info)
 {
     int i, j;
-    double temp;
+    f64 temp;
 
     /* Test the input parameters. */
     *info = 0;

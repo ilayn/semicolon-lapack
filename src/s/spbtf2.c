@@ -36,16 +36,16 @@ void spbtf2(
     const char* uplo,
     const int n,
     const int kd,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int upper;
     int j, kld, kn;
-    float ajj;
+    f32 ajj;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

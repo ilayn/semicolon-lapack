@@ -68,17 +68,17 @@ void zlarfb_gett(
     const int m,
     const int n,
     const int k,
-    const double complex* const restrict T,
+    const c128* const restrict T,
     const int ldt,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int ldwork)
 {
-    const double complex CONE = 1.0;
-    const double complex CNEG_ONE = -1.0;
+    const c128 CONE = 1.0;
+    const c128 CNEG_ONE = -1.0;
 
     int lnotident;
     int i, j;

@@ -13,7 +13,7 @@
  *
  * @return Nonzero if din is NaN, zero otherwise.
  */
-int disnan(const double din)
+int disnan(const f64 din)
 {
     return isnan(din);
 }

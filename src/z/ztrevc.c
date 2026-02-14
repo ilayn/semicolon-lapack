@@ -65,18 +65,18 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztrevc(const char* side, const char* howmny, int* select, const int n,
-            double complex* T, const int ldt, double complex* VL, const int ldvl,
-            double complex* VR, const int ldvr, const int mm, int* m,
-            double complex* work, double* rwork, int* info)
+            c128* T, const int ldt, c128* VL, const int ldvl,
+            c128* VR, const int ldvr, const int mm, int* m,
+            c128* work, f64* rwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CMZERO = CMPLX(0.0, 0.0);
-    const double complex CMONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CMZERO = CMPLX(0.0, 0.0);
+    const c128 CMONE = CMPLX(1.0, 0.0);
 
     int allv, bothv, leftv, over, rightv, somev;
     int i, ii, is, j, k, ki;
-    double remax, scale, smin, smlnum, ulp, unfl;
+    f64 remax, scale, smin, smlnum, ulp, unfl;
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -127,7 +127,7 @@ void ztrevc(const char* side, const char* howmny, int* select, const int n,
     /* Set the constants to control overflow. */
     unfl = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = unfl * ((double)n / ulp);
+    smlnum = unfl * ((f64)n / ulp);
 
     /* Store the diagonal elements of T in working array WORK. */
     for (i = 0; i < n; i++) {
@@ -188,7 +188,7 @@ void ztrevc(const char* side, const char* howmny, int* select, const int n,
                 }
             } else {
                 if (ki > 0) {
-                    double complex scale_c = CMPLX(scale, 0.0);
+                    c128 scale_c = CMPLX(scale, 0.0);
                     cblas_zgemv(CblasColMajor, CblasNoTrans, n, ki,
                                 &CMONE, VR, ldvr,
                                 &work[0], 1, &scale_c, &VR[ki * ldvr], 1);
@@ -256,7 +256,7 @@ L80:        ;
                 }
             } else {
                 if (ki < n - 1) {
-                    double complex scale_c = CMPLX(scale, 0.0);
+                    c128 scale_c = CMPLX(scale, 0.0);
                     cblas_zgemv(CblasColMajor, CblasNoTrans, n, n - ki - 1,
                                 &CMONE, &VL[(ki + 1) * ldvl], ldvl,
                                 &work[ki + 1], 1, &scale_c,

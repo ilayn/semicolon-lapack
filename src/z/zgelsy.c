@@ -70,27 +70,27 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelsy(const int m, const int n, const int nrhs,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict B, const int ldb,
-            int* const restrict jpvt, const double rcond,
+            c128* const restrict A, const int lda,
+            c128* const restrict B, const int ldb,
+            int* const restrict jpvt, const f64 rcond,
             int* rank,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork,
             int* info)
 {
     /* Constants from Fortran source: IMAX=1, IMIN=2 */
     const int IMAX = 1;
     const int IMIN = 2;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lquery;
     int iascl, ibscl, ismin, ismax, mn, nb;
     int lwkmin, lwkopt;
     int iinfo;
-    double anrm, bignum, bnrm, smlnum, wsize;
-    double smax, smaxpr, smin, sminpr;
-    double complex c1, c2, s1, s2;
+    f64 anrm, bignum, bnrm, smlnum, wsize;
+    f64 smax, smaxpr, smin, sminpr;
+    c128 c1, c2, s1, s2;
 
     /* Initialization */
     mn = m < n ? m : n;
@@ -143,7 +143,7 @@ void zgelsy(const int m, const int n, const int nrhs,
             if (w1 > lwkopt) lwkopt = w1;
             if (w2 > lwkopt) lwkopt = w2;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -183,7 +183,7 @@ void zgelsy(const int m, const int n, const int nrhs,
         int maxmn = m > n ? m : n;
         zlaset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
         *rank = 0;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -203,7 +203,7 @@ void zgelsy(const int m, const int n, const int nrhs,
      *   A * P = Q * R
      * tau stored in work[0..mn-1], sub-workspace in work[mn..] */
     zgeqp3(m, n, A, lda, jpvt, work, &work[mn], lwork - mn, rwork, &iinfo);
-    wsize = (double)(mn) + creal(work[mn]);
+    wsize = (f64)(mn) + creal(work[mn]);
 
     /* Determine RANK using incremental condition estimation */
     work[ismin] = CONE;
@@ -215,7 +215,7 @@ void zgelsy(const int m, const int n, const int nrhs,
         *rank = 0;
         int maxmn = m > n ? m : n;
         zlaset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     } else {
         *rank = 1;
@@ -265,7 +265,7 @@ void zgelsy(const int m, const int n, const int nrhs,
     zunmqr("L", "C", m, nrhs, mn, A, lda,
            work, B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
     {
-        double wq = 2.0 * mn + creal(work[2 * mn]);
+        f64 wq = 2.0 * mn + creal(work[2 * mn]);
         if (wq > wsize) wsize = wq;
     }
 
@@ -310,5 +310,5 @@ void zgelsy(const int m, const int n, const int nrhs,
         zlascl("G", 0, 0, bignum, bnrm, n, nrhs, B, ldb, &iinfo);
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

@@ -46,21 +46,21 @@ void dsbgst(
     const int n,
     const int ka,
     const int kb,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    const double* const restrict BB,
+    const f64* const restrict BB,
     const int ldbb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int update, upper, wantx;
     int i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
-    double bii, ra, ra1 = 0.0, t;
+    f64 bii, ra, ra1 = 0.0, t;
 
     *info = 0;
     wantx = (vect[0] == 'V' || vect[0] == 'v');

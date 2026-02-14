@@ -58,10 +58,10 @@
 void ssytrf_rook(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* restrict ipiv,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -85,7 +85,7 @@ void ssytrf_rook(
     if (*info == 0) {
         nb = lapack_get_nb("SYTRF");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -170,5 +170,5 @@ void ssytrf_rook(
         }
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

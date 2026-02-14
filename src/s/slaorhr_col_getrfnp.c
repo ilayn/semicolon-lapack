@@ -59,9 +59,9 @@
 void slaorhr_col_getrfnp(
     const int m,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict D,
+    f32* restrict D,
     int* info)
 {
     int iinfo, j, jb, nb;

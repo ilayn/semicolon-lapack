@@ -37,28 +37,28 @@ void ssprfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict AP,
-    const float* const restrict AFP,
+    const f32* const restrict AP,
+    const f32* const restrict AFP,
     const int* const restrict ipiv,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     const int ITMAX = 5;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
 
     int upper;
     int count, i, ik, j, k, kase, kk, nz;
-    float eps, lstres, s, safe1, safe2, safmin, xk;
+    f32 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int info_local;
 
@@ -142,10 +142,10 @@ void ssprfs(
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    float tmp = fabsf(work[n + i]) / work[i];
+                    f32 tmp = fabsf(work[n + i]) / work[i];
                     if (s < tmp) s = tmp;
                 } else {
-                    float tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
+                    f32 tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
                     if (s < tmp) s = tmp;
                 }
             }
@@ -194,7 +194,7 @@ void ssprfs(
         // Normalize error
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            float tmp = fabsf(X[i + j * ldx]);
+            f32 tmp = fabsf(X[i + j * ldx]);
             if (lstres < tmp) lstres = tmp;
         }
         if (lstres != ZERO)

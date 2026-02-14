@@ -42,17 +42,17 @@
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
 void zlatrd(const char* uplo, const int n, const int nb,
-            double complex* const restrict A, const int lda,
-            double* const restrict E, double complex* const restrict tau,
-            double complex* const restrict W, const int ldw)
+            c128* const restrict A, const int lda,
+            f64* const restrict E, c128* const restrict tau,
+            c128* const restrict W, const int ldw)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE  = CMPLX(1.0, 0.0);
-    const double complex HALF = CMPLX(0.5, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE  = CMPLX(1.0, 0.0);
+    const c128 HALF = CMPLX(0.5, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int ii, iw;
-    double complex alpha;
+    c128 alpha;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -127,7 +127,7 @@ void zlatrd(const char* uplo, const int n, const int nb,
                 }
 
                 cblas_zscal(ii - 1, &tau[ii - 2], &W[(iw - 1) * ldw], 1);
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(ii - 1,
                                 &W[(iw - 1) * ldw], 1,
                                 &A[(ii - 1) * lda], 1,
@@ -201,7 +201,7 @@ void zlatrd(const char* uplo, const int n, const int nb,
                             &ONE, &W[ii + (ii - 1) * ldw], 1);
 
                 cblas_zscal(n - ii, &tau[ii - 1], &W[ii + (ii - 1) * ldw], 1);
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(n - ii,
                                 &W[ii + (ii - 1) * ldw], 1,
                                 &A[ii + (ii - 1) * lda], 1,

@@ -29,17 +29,17 @@ void dlaqsb(
     const char* uplo,
     const int n,
     const int kd,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    const double* const restrict S,
-    const double scond,
-    const double amax,
+    const f64* const restrict S,
+    const f64 scond,
+    const f64 amax,
     char* equed)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double cj, large, small;
+    f64 cj, large, small;
 
     if (n <= 0) {
         *equed = 'N';

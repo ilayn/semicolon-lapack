@@ -43,15 +43,15 @@
  * @param[out]    work    Double precision array, dimension (n).
  */
 void slaqp2(const int m, const int n, const int offset,
-            float * const restrict A, const int lda,
+            f32 * const restrict A, const int lda,
             int * const restrict jpvt,
-            float * const restrict tau,
-            float * const restrict vn1,
-            float * const restrict vn2,
-            float * const restrict work)
+            f32 * const restrict tau,
+            f32 * const restrict vn1,
+            f32 * const restrict vn2,
+            f32 * const restrict work)
 {
     int mn = (m - offset) < n ? (m - offset) : n;
-    float tol3z = sqrtf(FLT_EPSILON);
+    f32 tol3z = sqrtf(FLT_EPSILON);
 
     /* Compute factorization. */
     for (int i = 0; i < mn; i++) {
@@ -92,9 +92,9 @@ void slaqp2(const int m, const int n, const int offset,
                  * NOTE: The following lines follow from the analysis in
                  * LAPACK Working Note 176.
                  */
-                float temp = 1.0f - powf(fabsf(A[offpi + j * lda]) / vn1[j], 2);
+                f32 temp = 1.0f - powf(fabsf(A[offpi + j * lda]) / vn1[j], 2);
                 temp = temp > 0.0f ? temp : 0.0f;
-                float temp2 = temp * powf(vn1[j] / vn2[j], 2);
+                f32 temp2 = temp * powf(vn1[j] / vn2[j], 2);
                 if (temp2 <= tol3z) {
                     if (offpi < m - 1) {
                         vn1[j] = cblas_snrm2(m - offpi - 1,

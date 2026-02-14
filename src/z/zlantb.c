@@ -46,21 +46,21 @@
  *
  * @return The computed norm value.
  */
-double zlantb(
+f64 zlantb(
     const char* norm,
     const char* uplo,
     const char* diag,
     const int n,
     const int k,
-    const double complex * const restrict AB,
+    const c128 * const restrict AB,
     const int ldab,
-    double * const restrict work)
+    f64 * const restrict work)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, l;
-    double scale, sum, value;
+    f64 scale, sum, value;
     int udiag;
 
     /* Quick return if possible */
@@ -224,7 +224,7 @@ double zlantb(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             if (udiag) {
                 scale = ONE;
-                sum = (double)n;
+                sum = (f64)n;
                 if (k > 0) {
                     for (j = 1; j < n; j++) {
                         int count = (j < k) ? j : k;
@@ -244,7 +244,7 @@ double zlantb(
         } else {
             if (udiag) {
                 scale = ONE;
-                sum = (double)n;
+                sum = (f64)n;
                 if (k > 0) {
                     for (j = 0; j < n - 1; j++) {
                         int count = (n - 1 - j < k) ? n - 1 - j : k;

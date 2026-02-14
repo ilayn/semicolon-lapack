@@ -31,15 +31,15 @@
  */
 void zlacrt(
     const int n,
-    double complex* const restrict cx,
+    c128* const restrict cx,
     const int incx,
-    double complex* const restrict cy,
+    c128* const restrict cy,
     const int incy,
-    const double complex c,
-    const double complex s)
+    const c128 c,
+    const c128 s)
 {
     int i, ix, iy;
-    double complex ctemp;
+    c128 ctemp;
 
     if (n <= 0) {
         return;

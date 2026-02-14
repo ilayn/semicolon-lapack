@@ -59,22 +59,22 @@
  *                           have converged.
  */
 void sgeev(const char* jobvl, const char* jobvr, const int n,
-           float* A, const int lda,
-           float* wr, float* wi,
-           float* VL, const int ldvl,
-           float* VR, const int ldvr,
-           float* work, const int lwork, int* info)
+           f32* A, const int lda,
+           f32* wr, f32* wi,
+           f32* VL, const int ldvl,
+           f32* VR, const int ldvr,
+           f32* work, const int lwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery, scalea, wantvl, wantvr;
     char side[2];
     int hswork, i, ibal, ierr, ihi, ilo, itau, iwrk, k;
     int lwork_trevc, maxwrk, minwrk, nout;
-    float anrm, bignum, cs, cscale, eps, r, scl, smlnum, sn;
+    f32 anrm, bignum, cs, cscale, eps, r, scl, smlnum, sn;
     int select[1];  /* Dummy select array for strevc3 */
-    float dum[1];
+    f32 dum[1];
     int nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
@@ -151,7 +151,7 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
             }
             maxwrk = maxwrk > minwrk ? maxwrk : minwrk;
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -314,5 +314,5 @@ L50:
         }
     }
 
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 }

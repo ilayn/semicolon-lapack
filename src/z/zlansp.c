@@ -42,20 +42,20 @@
  *
  * @return The computed norm value.
  */
-double zlansp(
+f64 zlansp(
     const char* norm,
     const char* uplo,
     const int n,
-    const double complex* const restrict AP,
-    double* const restrict work)
+    const c128* const restrict AP,
+    f64* const restrict work)
 {
     // zlansp.f lines 131-132: Parameters
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // zlansp.f lines 135-136: Local Scalars
     int i, j, k;
-    double absa, scale, sum, value;
+    f64 absa, scale, sum, value;
 
     // zlansp.f lines 150-263: Main logic
     if (n == 0) {

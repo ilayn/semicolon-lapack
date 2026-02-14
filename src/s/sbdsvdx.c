@@ -8,12 +8,12 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
-static const float TEN = 10.0f;
-static const float HNDRD = 100.0f;
-static const float MEIGTH = -0.125f;
-static const float FUDGE = 2.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
+static const f32 TEN = 10.0f;
+static const f32 HNDRD = 100.0f;
+static const f32 MEIGTH = -0.125f;
+static const f32 FUDGE = 2.0f;
 
 /**
  * SBDSVDX computes the singular value decomposition (SVD) of a real
@@ -60,10 +60,10 @@ static const float FUDGE = 2.0f;
  *                         - > 0: i eigenvectors failed to converge in SSTEVX.
  */
 void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
-             float* const restrict D, float* const restrict E,
-             const float vl, const float vu, const int il, const int iu,
-             int* ns, float* const restrict S, float* const restrict Z,
-             const int ldz, float* const restrict work, int* const restrict iwork,
+             f32* const restrict D, f32* const restrict E,
+             const f32 vl, const f32 vu, const int il, const int iu,
+             int* ns, f32* const restrict S, f32* const restrict Z,
+             const int ldz, f32* const restrict work, int* const restrict iwork,
              int* info)
 {
     int allsv, indsv, lower, split, sveq0, valsv, wantz;
@@ -71,8 +71,8 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
     int iifail, iiwork, iltgk, irowu, irowv, irowz, isbeg;
     int isplt, itemp, iutgk, j, k, ns_local, nsl, ntgk;
     int nru, nrv;
-    float abstol, emin, eps, mu, nrmu, nrmv, ortol, smax, smin;
-    float sqrt2, thresh, tol, ulp, vltgk, vutgk, zjtji;
+    f32 abstol, emin, eps, mu, nrmu, nrmv, ortol, smax, smin;
+    f32 sqrt2, thresh, tol, ulp, vltgk, vutgk, zjtji;
     char rngvx = 'I';
 
     /* Test the input parameters */
@@ -168,7 +168,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
             if (smin == ZERO) break;
         }
     }
-    smin = smin / sqrtf((float)n);
+    smin = smin / sqrtf((f32)n);
     thresh = tol * smin;
 
     /* Check for zeros in D and E (splits), i.e., submatrices */
@@ -388,7 +388,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
                      * For eigenvalues [-1.65e-138, -1.93e-308, 0], MAXVAL = 0,
                      * so EMIN = ABS(0) = 0, triggering eigenvector concatenation. */
                     {
-                        float maxval = S[isbeg];
+                        f32 maxval = S[isbeg];
                         for (i = 1; i < nsl; i++) {
                             if (S[isbeg + i] > maxval) {
                                 maxval = S[isbeg + i];

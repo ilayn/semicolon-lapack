@@ -46,21 +46,21 @@ void ssbgst(
     const int n,
     const int ka,
     const int kb,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    const float* const restrict BB,
+    const f32* const restrict BB,
     const int ldbb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int update, upper, wantx;
     int i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
-    float bii, ra, ra1 = 0.0f, t;
+    f32 bii, ra, ra1 = 0.0f, t;
 
     *info = 0;
     wantx = (vect[0] == 'V' || vect[0] == 'v');

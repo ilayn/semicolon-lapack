@@ -7,9 +7,9 @@
 #include "lapack_tuning.h"
 
 void dggrqf(const int m, const int p, const int n,
-            double* const restrict A, const int lda, double* const restrict taua,
-            double* const restrict B, const int ldb, double* const restrict taub,
-            double* const restrict work, const int lwork, int* info)
+            f64* const restrict A, const int lda, f64* const restrict taua,
+            f64* const restrict B, const int ldb, f64* const restrict taub,
+            f64* const restrict work, const int lwork, int* info)
 {
     int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
     int minval, arow;
@@ -29,7 +29,7 @@ void dggrqf(const int m, const int p, const int n,
 
     lwkopt = minval * nb;
     if (lwkopt < 1) lwkopt = 1;
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 
     lquery = (lwork == -1);
 
@@ -71,5 +71,5 @@ void dggrqf(const int m, const int p, const int n,
     dgeqrf(p, n, B, ldb, taub, work, lwork, info);
     if ((int)work[0] > lopt) lopt = (int)work[0];
 
-    work[0] = (double)lopt;
+    work[0] = (f64)lopt;
 }

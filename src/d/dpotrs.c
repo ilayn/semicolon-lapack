@@ -33,13 +33,13 @@ void dpotrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     // Test the input parameters
     *info = 0;

@@ -49,27 +49,27 @@ void zhegvx(
     const char* range,
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
-    double complex* restrict B,
+    c128* restrict B,
     const int ldb,
-    const double vl,
-    const double vu,
+    const f64 vl,
+    const f64 vu,
     const int il,
     const int iu,
-    const double abstol,
+    const f64 abstol,
     int* m,
-    double* restrict W,
-    double complex* restrict Z,
+    f64* restrict W,
+    c128* restrict Z,
     const int ldz,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     int* restrict iwork,
     int* restrict ifail,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
     int wantz, upper, alleig, valeig, indeig, lquery;
     int lwkopt, nb;
     char trans;
@@ -121,7 +121,7 @@ void zhegvx(
         if (lwkopt < 1) {
             lwkopt = 1;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < (2 * n > 1 ? 2 * n : 1) && !lquery) {
             *info = -20;
@@ -187,5 +187,5 @@ void zhegvx(
     }
 
     /* Set WORK(1) to optimal complex workspace size */
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

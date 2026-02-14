@@ -40,25 +40,25 @@
  *                         - = 0: success. < 0: illegal argument. > 0: internal error.
  */
 void sstemr(const char* jobz, const char* range, const int n,
-            float* D, float* E, const float vl, const float vu,
-            const int il, const int iu, int* m, float* W,
-            float* Z, const int ldz, const int nzc, int* isuppz,
-            int* tryrac, float* work, const int lwork,
+            f32* D, f32* E, const f32 vl, const f32 vu,
+            const int il, const int iu, int* m, f32* W,
+            f32* Z, const int ldz, const int nzc, int* isuppz,
+            int* tryrac, f32* work, const int lwork,
             int* iwork, const int liwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float FOUR = 4.0f;
-    const float MINRGP = 1.0e-3f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 FOUR = 4.0f;
+    const f32 MINRGP = 1.0e-3f;
 
     int wantz, alleig, valeig, indeig, lquery, zquery, laeswap;
     int i, ibegin, iend, ifirst, iil, iindbl, iindw;
     int iindwk, iinfo, iinspl, iiu, ilast, in, indd;
     int inde2, inderr, indgp, indgrs, indwrk, itmp, itmp2;
     int j, jblk, jj, liwmin, lwmin, nsplit, nzcmin, offset, wbegin, wend;
-    float bignum, cs, eps, pivmin, r1 = 0.0f, r2 = 0.0f, rmax, rmin;
-    float rtol1, rtol2, safmin, scale, smlnum, sn;
-    float thresh, tmp, tnrm, wl, wu;
+    f32 bignum, cs, eps, pivmin, r1 = 0.0f, r2 = 0.0f, rmax, rmin;
+    f32 rtol1, rtol2, safmin, scale, smlnum, sn;
+    f32 thresh, tmp, tnrm, wl, wu;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     alleig = (range[0] == 'A' || range[0] == 'a');

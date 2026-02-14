@@ -42,15 +42,15 @@
 void ssytf2_rook(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)
 {
     int upper, done;
     int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
-    float absakk, alpha, colmax, d11, d12, d21, d22;
-    float rowmax, dtemp, t, wk, wkm1, wkp1, sfmin;
+    f32 absakk, alpha, colmax, d11, d12, d21, d22;
+    f32 rowmax, dtemp, t, wk, wkm1, wkp1, sfmin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

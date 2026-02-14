@@ -91,30 +91,30 @@ void zgesvx(
     const char* trans,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict AF,
+    c128* const restrict AF,
     const int ldaf,
     int* const restrict ipiv,
     char *equed,
-    double* const restrict R,
-    double* const restrict C,
-    double complex* const restrict B,
+    f64* const restrict R,
+    f64* const restrict C,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double *rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64 *rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int *info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j, infequ;
-    double amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
+    f64 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
     int nofact, equil, notran, rowequ, colequ;
 
@@ -164,8 +164,8 @@ void zgesvx(
             if (rcmin <= ZERO) {
                 *info = -11;
             } else if (n > 0) {
-                double rmin = (rcmin > smlnum) ? rcmin : smlnum;
-                double rmax = (rcmax < bignum) ? rcmax : bignum;
+                f64 rmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f64 rmax = (rcmax < bignum) ? rcmax : bignum;
                 rowcnd = rmin / rmax;
             } else {
                 rowcnd = ONE;
@@ -181,8 +181,8 @@ void zgesvx(
             if (rcmin <= ZERO) {
                 *info = -12;
             } else if (n > 0) {
-                double cmin = (rcmin > smlnum) ? rcmin : smlnum;
-                double cmax = (rcmax < bignum) ? rcmax : bignum;
+                f64 cmin = (rcmin > smlnum) ? rcmin : smlnum;
+                f64 cmax = (rcmax < bignum) ? rcmax : bignum;
                 colcnd = cmin / cmax;
             } else {
                 colcnd = ONE;

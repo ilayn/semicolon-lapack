@@ -29,11 +29,11 @@
 void dpptri(
     const char* uplo,
     const int n,
-    double* const restrict AP,
+    f64* const restrict AP,
     int* info)
 {
     // dpptri.f lines 108-109: Parameters
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     // dpptri.f lines 128-138: Test the input parameters
     *info = 0;
@@ -70,7 +70,7 @@ void dpptri(
                 cblas_dspr(CblasColMajor, CblasUpper, j, ONE, &AP[jc], 1, AP);
             }
             // dpptri.f lines 161-162
-            double ajj = AP[jj];
+            f64 ajj = AP[jj];
             cblas_dscal(j + 1, ajj, &AP[jc], 1);
         }
     } else {

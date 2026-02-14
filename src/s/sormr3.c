@@ -55,10 +55,10 @@
  */
 void sormr3(const char* side, const char* trans,
             const int m, const int n, const int k, const int l,
-            const float * const restrict A, const int lda,
-            const float * const restrict tau,
-            float * const restrict C, const int ldc,
-            float * const restrict work,
+            const f32 * const restrict A, const int lda,
+            const f32 * const restrict tau,
+            f32 * const restrict C, const int ldc,
+            f32 * const restrict work,
             int *info)
 {
     int mi, ni, nq;

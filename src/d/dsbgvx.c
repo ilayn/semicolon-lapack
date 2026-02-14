@@ -63,32 +63,32 @@ void dsbgvx(
     const int n,
     const int ka,
     const int kb,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    double* const restrict BB,
+    f64* const restrict BB,
     const int ldbb,
-    double* const restrict Q,
+    f64* const restrict Q,
     const int ldq,
-    const double vl,
-    const double vu,
+    const f64 vl,
+    const f64 vu,
     const int il,
     const int iu,
-    const double abstol,
+    const f64 abstol,
     int* m,
-    double* const restrict W,
-    double* const restrict Z,
+    f64* const restrict W,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     int* const restrict iwork,
     int* const restrict ifail,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int alleig, indeig, test, upper, valeig, wantz;
     int i, iinfo, indd, inde, indee, indisp, indiwo, indwrk, itmp1, j, jj, nsplit;
-    double tmp1;
+    f64 tmp1;
     char order, vect;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

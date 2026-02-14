@@ -25,7 +25,7 @@
  * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
  * @param[in,out] A     On entry, the N-by-N coefficient matrix A.
  *                      On exit, if iterative refinement succeeded (iter >= 0), A is unchanged.
- *                      If double precision factorization was used (iter < 0), A contains
+ *                      If f64 precision factorization was used (iter < 0), A contains
  *                      the factors L and U from A = P*L*U.
  *                      Array of dimension (lda, n).
  * @param[in]     lda   The leading dimension of A. lda >= max(1, n).
@@ -41,7 +41,7 @@
  * @param[out]    swork Single precision workspace for matrix and solutions.
  *                      Array of dimension n*(n+nrhs).
  * @param[out]    iter  Iteration count:
- *                      - < 0: iterative refinement has failed, double precision
+ *                      - < 0: iterative refinement has failed, f64 precision
  *                        factorization has been performed
  *                        - -1 : the routine fell back to full precision for
  *                          implementation- or machine-specific reasons
@@ -61,25 +61,25 @@
 void dsgesv(
     const int n,
     const int nrhs,
-    double * const restrict A,
+    f64 * const restrict A,
     const int lda,
     int * const restrict ipiv,
-    const double * const restrict B,
+    const f64 * const restrict B,
     const int ldb,
-    double * const restrict X,
+    f64 * const restrict X,
     const int ldx,
-    double * const restrict work,
+    f64 * const restrict work,
     float * const restrict swork,
     int *iter,
     int *info)
 {
     const int ITERMAX = 30;
-    const double BWDMAX = 1.0;
-    const double NEGONE = -1.0;
-    const double ONE = 1.0;
+    const f64 BWDMAX = 1.0;
+    const f64 NEGONE = -1.0;
+    const f64 ONE = 1.0;
 
     int i, iiter, iinfo;
-    double anrm, cte, eps, rnrm, xnrm;
+    f64 anrm, cte, eps, rnrm, xnrm;
     int converged;
 
     // Pointers into swork
@@ -118,16 +118,16 @@ void dsgesv(
     // Compute some constants
     anrm = dlange("I", n, n, A, lda, work);
     eps = dlamch("E");
-    cte = anrm * eps * sqrt((double)n) * BWDMAX;
+    cte = anrm * eps * sqrt((f64)n) * BWDMAX;
 
-    // Convert B from double to single precision and store in SX
+    // Convert B from f64 to single precision and store in SX
     dlag2s(n, nrhs, B, ldb, SX, n, &iinfo);
     if (iinfo != 0) {
         *iter = -2;
         goto fallback;
     }
 
-    // Convert A from double to single precision and store in SA
+    // Convert A from f64 to single precision and store in SA
     dlag2s(n, n, A, lda, SA, n, &iinfo);
     if (iinfo != 0) {
         *iter = -2;
@@ -144,7 +144,7 @@ void dsgesv(
     // Solve the system SA*SX = SB
     sgetrs("N", n, nrhs, SA, n, ipiv, SX, n, &iinfo);
 
-    // Convert SX back to double precision
+    // Convert SX back to f64 precision
     slag2d(n, nrhs, SX, n, X, ldx, &iinfo);
 
     // Compute R = B - A*X (R is stored in work)
@@ -172,7 +172,7 @@ void dsgesv(
 
     // Iterative refinement
     for (iiter = 1; iiter <= ITERMAX; iiter++) {
-        // Convert R from double to single precision and store in SX
+        // Convert R from f64 to single precision and store in SX
         dlag2s(n, nrhs, work, n, SX, n, &iinfo);
         if (iinfo != 0) {
             *iter = -2;
@@ -182,7 +182,7 @@ void dsgesv(
         // Solve the system SA*SX = SR
         sgetrs("N", n, nrhs, SA, n, ipiv, SX, n, &iinfo);
 
-        // Convert SX back to double precision and update the current iterate
+        // Convert SX back to f64 precision and update the current iterate
         slag2d(n, nrhs, SX, n, work, n, &iinfo);
 
         for (i = 0; i < nrhs; i++) {
@@ -218,7 +218,7 @@ void dsgesv(
 
 fallback:
     // Single-precision iterative refinement failed to converge to a
-    // satisfactory solution, so we resort to double precision.
+    // satisfactory solution, so we resort to f64 precision.
     dgetrf(n, n, A, lda, ipiv, info);
     if (*info != 0) {
         return;

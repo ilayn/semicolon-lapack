@@ -34,20 +34,20 @@
  *
  * @return The computed norm value.
  */
-float slangb(
+f32 slangb(
     const char* norm,
     const int n,
     const int kl,
     const int ku,
-    const float * const restrict AB,
+    const f32 * const restrict AB,
     const int ldab,
-    float * const restrict work)
+    f32 * const restrict work)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i, j, k, l;
-    float scale, sum, value, temp;
+    f32 scale, sum, value, temp;
 
     /* Quick return if possible */
     if (n == 0) {

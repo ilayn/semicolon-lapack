@@ -48,23 +48,23 @@
  * @param[out]    snr     The sine of the right rotation matrix.
  */
 void slagv2(
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict alphar,
-    float* const restrict alphai,
-    float* const restrict beta,
-    float* csl,
-    float* snl,
-    float* csr,
-    float* snr)
+    f32* const restrict alphar,
+    f32* const restrict alphai,
+    f32* const restrict beta,
+    f32* csl,
+    f32* snl,
+    f32* csr,
+    f32* snr)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
-    float anorm, ascale, bnorm, bscale;
-    float h1, h2, h3, qq, r, rr, safmin, scale1, scale2, t, ulp, wi, wr1, wr2;
+    f32 anorm, ascale, bnorm, bscale;
+    f32 h1, h2, h3, qq, r, rr, safmin, scale1, scale2, t, ulp, wi, wr1, wr2;
 
     safmin = slamch("S");
     ulp = slamch("P");

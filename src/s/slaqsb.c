@@ -29,17 +29,17 @@ void slaqsb(
     const char* uplo,
     const int n,
     const int kd,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    const float* const restrict S,
-    const float scond,
-    const float amax,
+    const f32* const restrict S,
+    const f32 scond,
+    const f32 amax,
     char* equed)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int i, j;
-    float cj, large, small;
+    f32 cj, large, small;
 
     if (n <= 0) {
         *equed = 'N';

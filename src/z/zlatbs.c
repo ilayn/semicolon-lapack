@@ -50,22 +50,22 @@ void zlatbs(
     const char* normin,
     const int n,
     const int kd,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    double complex* const restrict X,
-    double* scale,
-    double* const restrict cnorm,
+    c128* const restrict X,
+    f64* scale,
+    f64* const restrict cnorm,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int upper, notran, nounit, normin_n;
     int i, imax, j, jfirst, jinc, jlast, jlen, maind;
-    double bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
-    double complex csumj, tjjs = 0.0, uscal;
+    f64 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
+    c128 csumj, tjjs = 0.0, uscal;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -135,7 +135,7 @@ void zlatbs(
 
     xmax = ZERO;
     for (j = 0; j < n; j++) {
-        double tmp = cabs2(X[j]);
+        f64 tmp = cabs2(X[j]);
         if (xmax < tmp) xmax = tmp;
     }
     xbnd = xmax;
@@ -310,7 +310,7 @@ notran_skip:
                 if (upper) {
                     if (j > 0) {
                         jlen = (kd < j) ? kd : j;
-                        double complex neg_xj_tscal = -X[j] * tscal;
+                        c128 neg_xj_tscal = -X[j] * tscal;
                         cblas_zaxpy(jlen, &neg_xj_tscal, &AB[kd - jlen + j * ldab], 1, &X[j - jlen], 1);
                         i = cblas_izamax(j, X, 1);
                         xmax = cabs1(X[i]);
@@ -319,7 +319,7 @@ notran_skip:
                     if (j < n - 1) {
                         jlen = (kd < n - 1 - j) ? kd : n - 1 - j;
                         if (jlen > 0) {
-                            double complex neg_xj_tscal = -X[j] * tscal;
+                            c128 neg_xj_tscal = -X[j] * tscal;
                             cblas_zaxpy(jlen, &neg_xj_tscal, &AB[1 + j * ldab], 1, &X[j + 1], 1);
                         }
                         i = j + 1 + cblas_izamax(n - j - 1, &X[j + 1], 1);
@@ -354,7 +354,7 @@ notran_skip:
                 }
 
                 csumj = ZERO;
-                if (uscal == (double complex)ONE) {
+                if (uscal == (c128)ONE) {
                     if (upper) {
                         jlen = (kd < j) ? kd : j;
                         if (jlen > 0) {
@@ -380,7 +380,7 @@ notran_skip:
                     }
                 }
 
-                if (uscal == (double complex)tscal) {
+                if (uscal == (c128)tscal) {
                     X[j] = X[j] - csumj;
                     xj = cabs1(X[j]);
                     if (nounit) {
@@ -450,7 +450,7 @@ trans_skip: ;
                 }
 
                 csumj = ZERO;
-                if (uscal == (double complex)ONE) {
+                if (uscal == (c128)ONE) {
                     if (upper) {
                         jlen = (kd < j) ? kd : j;
                         if (jlen > 0) {
@@ -476,7 +476,7 @@ trans_skip: ;
                     }
                 }
 
-                if (uscal == (double complex)tscal) {
+                if (uscal == (c128)tscal) {
                     X[j] = X[j] - csumj;
                     xj = cabs1(X[j]);
                     if (nounit) {

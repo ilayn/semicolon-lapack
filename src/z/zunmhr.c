@@ -45,10 +45,10 @@
 void zunmhr(const char* side, const char* trans,
             const int m, const int n,
             const int ilo, const int ihi,
-            const double complex* A, const int lda,
-            const double complex* tau,
-            double complex* C, const int ldc,
-            double complex* work, const int lwork, int* info)
+            const c128* A, const int lda,
+            const c128* tau,
+            c128* C, const int ldc,
+            c128* work, const int lwork, int* info)
 {
     int left, lquery;
     int i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
@@ -92,7 +92,7 @@ void zunmhr(const char* side, const char* trans,
     if (*info == 0) {
         nb = lapack_get_nb("ORMQR");
         lwkopt = nw * nb;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -124,5 +124,5 @@ void zunmhr(const char* side, const char* trans,
     zunmqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

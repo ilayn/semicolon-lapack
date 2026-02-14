@@ -60,24 +60,24 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrsna(const char* job, const char* howmny, const int* select,
-            const int n, const double* T, const int ldt,
-            const double* VL, const int ldvl,
-            const double* VR, const int ldvr,
-            double* S, double* sep, const int mm, int* m,
-            double* work, const int ldwork,
+            const int n, const f64* T, const int ldt,
+            const f64* VL, const int ldvl,
+            const f64* VR, const int ldvr,
+            f64* S, f64* sep, const int mm, int* m,
+            f64* work, const int ldwork,
             int* iwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
     int wantbh, wants, wantsp, somcon;
     int i, ierr, ifst, ilst, j, k, kase, ks, n2, nn;
     int pair;
-    double bignum, cond, cs, delta, dumm = 0.0, eps, est, lnrm;
-    double mu, prod, prod1, prod2, rnrm, scale, smlnum, sn;
+    f64 bignum, cond, cs, delta, dumm = 0.0, eps, est, lnrm;
+    f64 mu, prod, prod1, prod2, rnrm, scale, smlnum, sn;
     int isave[3];
-    double dummy[1];
+    f64 dummy[1];
 
     /* Decode and test the input parameters */
     wantbh = (job[0] == 'B' || job[0] == 'b');

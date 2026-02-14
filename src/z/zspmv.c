@@ -30,19 +30,19 @@
 void zspmv(
     const char* uplo,
     const int n,
-    const double complex alpha,
-    const double complex* const restrict AP,
-    const double complex* const restrict X,
+    const c128 alpha,
+    const c128* const restrict AP,
+    const c128* const restrict X,
     const int incx,
-    const double complex beta,
-    double complex* const restrict Y,
+    const c128 beta,
+    c128* const restrict Y,
     const int incy)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, info, ix, iy, j, jx, jy, k, kk, kx, ky;
-    double complex temp1, temp2;
+    c128 temp1, temp2;
 
     info = 0;
     if (!(uplo[0] == 'U' || uplo[0] == 'u') &&

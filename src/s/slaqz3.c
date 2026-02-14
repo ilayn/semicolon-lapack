@@ -48,35 +48,35 @@ void slaqz3(
     const int ilo,
     const int ihi,
     const int nw,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
     int* ns,
     int* nd,
-    float* const restrict alphar,
-    float* const restrict alphai,
-    float* const restrict beta,
-    float* const restrict QC,
+    f32* const restrict alphar,
+    f32* const restrict alphai,
+    f32* const restrict beta,
+    f32* const restrict QC,
     const int ldqc,
-    float* const restrict ZC,
+    f32* const restrict ZC,
     const int ldzc,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     const int rec,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int bulge;
     int jw, kwtop, kwbot, istopm, istartm, k, k2, dtgexc_info;
     int ifst, ilst, lworkreq, qz_small_info;
-    float s, smlnum, ulp, safmin, c1, s1, temp;
+    f32 s, smlnum, ulp, safmin, c1, s1, temp;
 
     *info = 0;
 
@@ -107,7 +107,7 @@ void slaqz3(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = (float)lworkreq;
+        work[0] = (f32)lworkreq;
         return;
     } else if (lwork < lworkreq) {
         *info = -26;
@@ -122,7 +122,7 @@ void slaqz3(
     safmin = slamch("S");
     (void)(ONE / safmin);  /* safmax computed in Fortran but unused */
     ulp = slamch("P");
-    smlnum = safmin * ((float)n / ulp);
+    smlnum = safmin * ((f32)n / ulp);
 
     if (ihi == kwtop) {
         /* 1 by 1 deflation window, just try a regular deflation */
@@ -132,7 +132,7 @@ void slaqz3(
         *ns = 1;
         *nd = 0;
         {
-            float tmp = fabsf(A[kwtop + kwtop * lda]);
+            f32 tmp = fabsf(A[kwtop + kwtop * lda]);
             if (smlnum > tmp) tmp = smlnum;
             tmp = ulp * tmp;
             if (fabsf(s) <= ((smlnum > tmp) ? smlnum : tmp)) {
@@ -188,10 +188,10 @@ void slaqz3(
                     temp = fabsf(s);
                 }
                 {
-                    float tmp1 = fabsf(s * QC[0 + (kwbot - kwtop - 1) * ldqc]);
-                    float tmp2 = fabsf(s * QC[0 + (kwbot - kwtop) * ldqc]);
-                    float maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
-                    float thresh = (smlnum > ulp * temp) ? smlnum : ulp * temp;
+                    f32 tmp1 = fabsf(s * QC[0 + (kwbot - kwtop - 1) * ldqc]);
+                    f32 tmp2 = fabsf(s * QC[0 + (kwbot - kwtop) * ldqc]);
+                    f32 maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
+                    f32 thresh = (smlnum > ulp * temp) ? smlnum : ulp * temp;
                     if (maxval <= thresh) {
                         /* Deflatable */
                         kwbot = kwbot - 2;
@@ -213,8 +213,8 @@ void slaqz3(
                     temp = fabsf(s);
                 }
                 {
-                    float tmp = fabsf(s * QC[0 + (kwbot - kwtop) * ldqc]);
-                    float thresh = (ulp * temp > smlnum) ? ulp * temp : smlnum;
+                    f32 tmp = fabsf(s * QC[0 + (kwbot - kwtop) * ldqc]);
+                    f32 thresh = (ulp * temp > smlnum) ? ulp * temp : smlnum;
                     if (tmp <= thresh) {
                         /* Deflatable */
                         kwbot = kwbot - 1;
@@ -263,7 +263,7 @@ void slaqz3(
         /* Reflect spike back, this will create optimally packed bulges */
         /* A(KWTOP:KWBOT, KWTOP-1) = A(KWTOP, KWTOP-1) * QC(1, 1:JW-ND) */
         {
-            float a_val = A[kwtop + (kwtop - 1) * lda];
+            f32 a_val = A[kwtop + (kwtop - 1) * lda];
             for (int i = kwtop; i <= kwbot; i++) {
                 A[i + (kwtop - 1) * lda] = a_val * QC[0 + (i - kwtop) * ldqc];
             }

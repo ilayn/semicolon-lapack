@@ -79,23 +79,23 @@ void sptsvx(
     const char* fact,
     const int n,
     const int nrhs,
-    const float* const restrict D,
-    const float* const restrict E,
-    float* const restrict DF,
-    float* const restrict EF,
-    const float* const restrict B,
+    const f32* const restrict D,
+    const f32* const restrict E,
+    f32* const restrict DF,
+    f32* const restrict EF,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* rcond,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* rcond,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
     int nofact;
-    float anorm;
+    f32 anorm;
     int max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;

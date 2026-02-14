@@ -79,10 +79,10 @@
  *                           solution could not be computed.
  */
 void zhesv(const char* uplo, const int n, const int nrhs,
-           double complex* const restrict A, const int lda,
+           c128* const restrict A, const int lda,
            int* const restrict ipiv,
-           double complex* const restrict B, const int ldb,
-           double complex* const restrict work, const int lwork,
+           c128* const restrict B, const int ldb,
+           c128* const restrict work, const int lwork,
            int* info)
 {
     int lwkopt;
@@ -112,7 +112,7 @@ void zhesv(const char* uplo, const int n, const int nrhs,
             zhetrf(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (int)creal(work[0]);
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -141,5 +141,5 @@ void zhesv(const char* uplo, const int n, const int nrhs,
 
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

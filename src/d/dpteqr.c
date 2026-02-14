@@ -71,20 +71,20 @@
 void dpteqr(
     const char* compz,
     const int n,
-    double* const restrict D,
-    double* const restrict E,
-    double* const restrict Z,
+    f64* const restrict D,
+    f64* const restrict E,
+    f64* const restrict Z,
     const int ldz,
-    double* const restrict work,
+    f64* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
     int i, icompz, nru;
 
     // Dummy arrays for dbdsqr (ncvt=0 and ncc=0)
-    double VT_dummy[1];
-    double C_dummy[1];
+    f64 VT_dummy[1];
+    f64 C_dummy[1];
 
     // Test the input parameters
     *info = 0;

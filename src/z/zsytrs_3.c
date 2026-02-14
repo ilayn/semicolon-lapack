@@ -68,19 +68,19 @@ void zsytrs_3(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* restrict E,
+    const c128* restrict E,
     const int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int upper;
     int i, j, k, kp;
-    double complex ak, akm1, akm1k, bk, bkm1, denom;
+    c128 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -120,7 +120,7 @@ void zsytrs_3(
         i = n - 1;
         while (i >= 0) {
             if (ipiv[i] >= 0) {
-                double complex scal = ONE / A[i + i * lda];
+                c128 scal = ONE / A[i + i * lda];
                 cblas_zscal(nrhs, &scal, &B[i + 0 * ldb], ldb);
             } else if (i > 0) {
                 akm1k = E[i];
@@ -163,7 +163,7 @@ void zsytrs_3(
         i = 0;
         while (i < n) {
             if (ipiv[i] >= 0) {
-                double complex scal = ONE / A[i + i * lda];
+                c128 scal = ONE / A[i + i * lda];
                 cblas_zscal(nrhs, &scal, &B[i + 0 * ldb], ldb);
             } else if (i < n - 1) {
                 akm1k = E[i];

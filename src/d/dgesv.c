@@ -43,10 +43,10 @@
 void dgesv(
     const int n,
     const int nrhs,
-    double * const restrict A,
+    f64 * const restrict A,
     const int lda,
     int * const restrict ipiv,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb,
     int *info)
 {

@@ -51,15 +51,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dopmtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n, double* const restrict AP,
-            const double* const restrict tau, double* const restrict C,
-            const int ldc, double* const restrict work, int* info)
+            const int m, const int n, f64* const restrict AP,
+            const f64* const restrict tau, f64* const restrict C,
+            const int ldc, f64* const restrict work, int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int forwrd, left, notran, upper;
     int i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
-    double aii;
+    f64 aii;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

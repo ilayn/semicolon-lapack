@@ -19,7 +19,7 @@ static int iparmq_nshfts(int nh)
     if (nh >= 30) ns = 4;
     if (nh >= 60) ns = 10;
     if (nh >= 150) {
-        double lognh = log((double)nh) / log(2.0);
+        f64 lognh = log((f64)nh) / log(2.0);
         int div = (int)(lognh + 0.5);
         if (div < 1) div = 1;
         ns = nh / div;
@@ -85,29 +85,29 @@ static int iparmq_kacc22(int ns)
  */
 void zlaqr4(const int wantt, const int wantz, const int n,
             const int ilo, const int ihi,
-            double complex* H, const int ldh,
-            double complex* W,
+            c128* H, const int ldh,
+            c128* W,
             const int iloz, const int ihiz,
-            double complex* Z, const int ldz,
-            double complex* work, const int lwork, int* info)
+            c128* Z, const int ldz,
+            c128* work, const int lwork, int* info)
 {
     const int ntiny = 15;
     const int kexnw = 5;
     const int kexsh = 6;
-    const double wilk1 = 0.75;
-    const double complex czero = 0.0;
-    const double complex cone = 1.0;
-    const double two = 2.0;
+    const f64 wilk1 = 0.75;
+    const c128 czero = 0.0;
+    const c128 cone = 1.0;
+    const f64 two = 2.0;
 
-    double complex aa, bb, cc, dd, det, rtdisc, swap, tr2;
-    double s;
+    c128 aa, bb, cc, dd, det, rtdisc, swap, tr2;
+    f64 s;
     int i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
     int kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
     int lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
     int nsmax, nsr, nve, nw, nwmax, nwr, nwupbd;
     int sorted;
 
-    double complex zdum[1];
+    c128 zdum[1];
 
     *info = 0;
 
@@ -146,7 +146,7 @@ void zlaqr4(const int wantt, const int wantz, const int n,
         if ((int)creal(work[0]) > lwkopt) lwkopt = (int)creal(work[0]);
 
         if (lwork == -1) {
-            work[0] = (double)lwkopt;
+            work[0] = (f64)lwkopt;
             return;
         }
 
@@ -326,5 +326,5 @@ void zlaqr4(const int wantt, const int wantz, const int n,
 L90:;
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

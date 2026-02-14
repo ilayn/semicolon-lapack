@@ -52,20 +52,20 @@
 void zsptrf(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     int* const restrict ipiv,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double EIGHT = 8.0;
-    const double SEVTEN = 17.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 EIGHT = 8.0;
+    const f64 SEVTEN = 17.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int upper;
     int i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
-    double absakk, alpha, colmax, rowmax;
-    double complex d11, d12, d21, d22, r1, t, wk, wkm1, wkp1;
+    f64 absakk, alpha, colmax, rowmax;
+    c128 d11, d12, d21, d22, r1, t, wk, wkm1, wkp1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -167,7 +167,7 @@ void zsptrf(
                 if (kstep == 1) {
                     if (k > 0) {
                         r1 = CONE / AP[kc + k];
-                        double complex neg_r1 = -r1;
+                        c128 neg_r1 = -r1;
                         zspr(uplo, k, neg_r1, &AP[kc], 1, AP);
                         cblas_zscal(k, &r1, &AP[kc], 1);
                     }
@@ -290,7 +290,7 @@ void zsptrf(
                 if (kstep == 1) {
                     if (k < n - 1) {
                         r1 = CONE / AP[kc];
-                        double complex neg_r1 = -r1;
+                        c128 neg_r1 = -r1;
                         zspr(uplo, n - k - 1, neg_r1,
                                    &AP[kc + 1], 1, &AP[kc + n - k]);
                         cblas_zscal(n - k - 1, &r1, &AP[kc + 1], 1);

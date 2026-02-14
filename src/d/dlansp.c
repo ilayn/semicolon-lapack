@@ -41,20 +41,20 @@
  *
  * @return The computed norm value.
  */
-double dlansp(
+f64 dlansp(
     const char* norm,
     const char* uplo,
     const int n,
-    const double* const restrict AP,
-    double* const restrict work)
+    const f64* const restrict AP,
+    f64* const restrict work)
 {
     // dlansp.f lines 129-130: Parameters
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // dlansp.f lines 133-134: Local Scalars
     int i, j, k;
-    double absa, scale, sum, value;
+    f64 absa, scale, sum, value;
 
     // dlansp.f lines 148-252: Main logic
     if (n == 0) {

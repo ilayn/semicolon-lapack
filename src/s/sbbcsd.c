@@ -116,45 +116,45 @@ void sbbcsd(
     const int m,
     const int p,
     const int q,
-    float* restrict theta,
-    float* restrict phi,
-    float* restrict U1,
+    f32* restrict theta,
+    f32* restrict phi,
+    f32* restrict U1,
     const int ldu1,
-    float* restrict U2,
+    f32* restrict U2,
     const int ldu2,
-    float* restrict V1T,
+    f32* restrict V1T,
     const int ldv1t,
-    float* restrict V2T,
+    f32* restrict V2T,
     const int ldv2t,
-    float* restrict B11D,
-    float* restrict B11E,
-    float* restrict B12D,
-    float* restrict B12E,
-    float* restrict B21D,
-    float* restrict B21E,
-    float* restrict B22D,
-    float* restrict B22E,
-    float* restrict work,
+    f32* restrict B11D,
+    f32* restrict B11E,
+    f32* restrict B12D,
+    f32* restrict B12E,
+    f32* restrict B21D,
+    f32* restrict B21E,
+    f32* restrict B22D,
+    f32* restrict B22E,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
     const int maxitr = 6;
-    const float hundred = 100.0f;
-    const float meighth = -0.125f;
-    const float one = 1.0f;
-    const float ten = 10.0f;
-    const float zero = 0.0f;
-    const float negone = -1.0f;
-    const float piover2 = 1.57079632679489661923132169163975144210f;
+    const f32 hundred = 100.0f;
+    const f32 meighth = -0.125f;
+    const f32 one = 1.0f;
+    const f32 ten = 10.0f;
+    const f32 zero = 0.0f;
+    const f32 negone = -1.0f;
+    const f32 piover2 = 1.57079632679489661923132169163975144210f;
 
     int colmajor, lquery, restart11, restart12, restart21, restart22;
     int wantu1, wantu2, wantv1t, wantv2t;
     int i, imin, imax, iter, iu1cs, iu1sn, iu2cs, iu2sn;
     int iv1tcs, iv1tsn, iv2tcs, iv2tsn, j, lworkmin, lworkopt, maxit, mini;
-    float b11bulge, b12bulge, b21bulge, b22bulge, dummy;
-    float eps, mu, nu, r, sigma11, sigma21;
-    float temp, thetamax, thetamin, thresh, tol, tolmul, unfl;
-    float x1, x2, y1, y2;
+    f32 b11bulge, b12bulge, b21bulge, b22bulge, dummy;
+    f32 eps, mu, nu, r, sigma11, sigma21;
+    f32 temp, thetamax, thetamin, thresh, tol, tolmul, unfl;
+    f32 x1, x2, y1, y2;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -184,7 +184,7 @@ void sbbcsd(
 
     if (*info == 0 && q == 0) {
         lworkmin = 1;
-        work[0] = (float)lworkmin;
+        work[0] = (f32)lworkmin;
         return;
     }
 
@@ -199,7 +199,7 @@ void sbbcsd(
         iv2tsn = iv2tcs + q;
         lworkopt = iv2tsn + q;
         lworkmin = lworkopt;
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         if (lwork < lworkmin && !lquery) {
             *info = -28;
         }

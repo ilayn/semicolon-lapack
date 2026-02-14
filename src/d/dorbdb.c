@@ -95,28 +95,28 @@ void dorbdb(
     const int m,
     const int p,
     const int q,
-    double* const restrict X11,
+    f64* const restrict X11,
     const int ldx11,
-    double* const restrict X12,
+    f64* const restrict X12,
     const int ldx12,
-    double* const restrict X21,
+    f64* const restrict X21,
     const int ldx21,
-    double* const restrict X22,
+    f64* const restrict X22,
     const int ldx22,
-    double* restrict theta,
-    double* restrict phi,
-    double* restrict taup1,
-    double* restrict taup2,
-    double* restrict tauq1,
-    double* restrict tauq2,
-    double* restrict work,
+    f64* restrict theta,
+    f64* restrict phi,
+    f64* restrict taup1,
+    f64* restrict taup2,
+    f64* restrict tauq1,
+    f64* restrict tauq2,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double one = 1.0;
+    const f64 one = 1.0;
     int colmajor, lquery;
     int i, lworkmin, lworkopt;
-    double z1, z2, z3, z4;
+    f64 z1, z2, z3, z4;
 
     *info = 0;
     colmajor = !(trans[0] == 'T' || trans[0] == 't');
@@ -160,7 +160,7 @@ void dorbdb(
     if (*info == 0) {
         lworkopt = m - q;
         lworkmin = m - q;
-        work[0] = (double)lworkopt;
+        work[0] = (f64)lworkopt;
         if (lwork < lworkmin && !lquery) {
             *info = -21;
         }

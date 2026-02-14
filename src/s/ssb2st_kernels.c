@@ -8,16 +8,16 @@
 void ssb2st_kernels(const char* uplo, const int wantz, const int ttype,
                     const int st, const int ed, const int sweep,
                     const int n, const int nb, const int ib,
-                    float* A, const int lda,
-                    float* V, float* tau, const int ldvt,
-                    float* work)
+                    f32* A, const int lda,
+                    f32* V, f32* tau, const int ldvt,
+                    f32* work)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     int upper;
     int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
-    float ctmp;
+    f32 ctmp;
 
     (void)ib;
     (void)ldvt;

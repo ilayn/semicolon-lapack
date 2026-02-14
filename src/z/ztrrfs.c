@@ -47,20 +47,19 @@ void ztrrfs(
     const char* diag,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    const double complex* const restrict X,
+    const c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -99,22 +98,12 @@ void ztrrfs(
         return;
     }
 
-    const char* transn;
-    const char* transt;
-    if (notran) {
-        transn = "N";
-        transt = "C";
-    } else {
-        transn = "C";
-        transt = "N";
-    }
-
     /* NZ = maximum number of nonzero elements in each row of A, plus 1 */
     int nz = n + 1;
-    double eps = dlamch("E");
-    double safmin = dlamch("S");
-    double safe1 = nz * safmin;
-    double safe2 = safe1 / eps;
+    f64 eps = dlamch("E");
+    f64 safmin = dlamch("S");
+    f64 safe1 = nz * safmin;
+    f64 safe2 = safe1 / eps;
 
     /* Set up CBLAS enums */
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
@@ -140,7 +129,7 @@ void ztrrfs(
         cblas_zcopy(n, &X[j * ldx], 1, work, 1);
         cblas_ztrmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, A, lda, work, 1);
-        double complex neg_one = CMPLX(-1.0, 0.0);
+        c128 neg_one = CMPLX(-1.0, 0.0);
         cblas_zaxpy(n, &neg_one, &B[j * ldb], 1, work, 1);
 
         /*
@@ -164,14 +153,14 @@ void ztrrfs(
             if (upper) {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double xk = cabs1(X[k + j * ldx]);
+                        f64 xk = cabs1(X[k + j * ldx]);
                         for (int i = 0; i <= k; i++) {
                             rwork[i] += cabs1(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double xk = cabs1(X[k + j * ldx]);
+                        f64 xk = cabs1(X[k + j * ldx]);
                         for (int i = 0; i < k; i++) {
                             rwork[i] += cabs1(A[i + k * lda]) * xk;
                         }
@@ -181,14 +170,14 @@ void ztrrfs(
             } else {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double xk = cabs1(X[k + j * ldx]);
+                        f64 xk = cabs1(X[k + j * ldx]);
                         for (int i = k; i < n; i++) {
                             rwork[i] += cabs1(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double xk = cabs1(X[k + j * ldx]);
+                        f64 xk = cabs1(X[k + j * ldx]);
                         for (int i = k + 1; i < n; i++) {
                             rwork[i] += cabs1(A[i + k * lda]) * xk;
                         }
@@ -202,7 +191,7 @@ void ztrrfs(
             if (upper) {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double s = ZERO;
+                        f64 s = ZERO;
                         for (int i = 0; i <= k; i++) {
                             s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                         }
@@ -210,7 +199,7 @@ void ztrrfs(
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double s = cabs1(X[k + j * ldx]);
+                        f64 s = cabs1(X[k + j * ldx]);
                         for (int i = 0; i < k; i++) {
                             s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                         }
@@ -220,7 +209,7 @@ void ztrrfs(
             } else {
                 if (nounit) {
                     for (int k = 0; k < n; k++) {
-                        double s = ZERO;
+                        f64 s = ZERO;
                         for (int i = k; i < n; i++) {
                             s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                         }
@@ -228,7 +217,7 @@ void ztrrfs(
                     }
                 } else {
                     for (int k = 0; k < n; k++) {
-                        double s = cabs1(X[k + j * ldx]);
+                        f64 s = cabs1(X[k + j * ldx]);
                         for (int i = k + 1; i < n; i++) {
                             s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                         }
@@ -238,13 +227,13 @@ void ztrrfs(
             }
         }
 
-        double s = ZERO;
+        f64 s = ZERO;
         for (int i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
-                double tmp = cabs1(work[i]) / rwork[i];
+                f64 tmp = cabs1(work[i]) / rwork[i];
                 if (tmp > s) s = tmp;
             } else {
-                double tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
+                f64 tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
                 if (tmp > s) s = tmp;
             }
         }
@@ -305,9 +294,9 @@ void ztrrfs(
         }
 
         /* Normalize error. */
-        double lstres = ZERO;
+        f64 lstres = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = cabs1(X[i + j * ldx]);
+            f64 tmp = cabs1(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

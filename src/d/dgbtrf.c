@@ -56,21 +56,21 @@ void dgbtrf(
     const int n,
     const int kl,
     const int ku,
-    double * const restrict AB,
+    f64 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
     int *info)
 {
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
+    const f64 ZERO = 0.0;
 
     /* Work arrays for A13 and A31 blocks that fall outside the band */
-    double work13[LDWORK * NBMAX];
-    double work31[LDWORK * NBMAX];
+    f64 work13[LDWORK * NBMAX];
+    f64 work31[LDWORK * NBMAX];
 
     int i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
-    double temp;
+    f64 temp;
     int minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */

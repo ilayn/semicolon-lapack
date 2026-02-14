@@ -85,24 +85,24 @@ void slaqp2rk(
     const int nrhs,
     const int ioffset,
     int kmax,
-    const float abstol,
-    const float reltol,
+    const f32 abstol,
+    const f32 reltol,
     const int kp1,
-    const float maxc2nrm,
-    float* const restrict A,
+    const f32 maxc2nrm,
+    f32* const restrict A,
     const int lda,
     int* K,
-    float* maxc2nrmk,
-    float* relmaxc2nrmk,
+    f32* maxc2nrmk,
+    f32* relmaxc2nrmk,
     int* restrict jpiv,
-    float* restrict tau,
-    float* restrict vn1,
-    float* restrict vn2,
-    float* restrict work,
+    f32* restrict tau,
+    f32* restrict vn1,
+    f32* restrict vn2,
+    f32* restrict work,
     int* info)
 {
     int i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
-    float hugeval, temp, temp2, tol3z;
+    f32 hugeval, temp, temp2, tol3z;
 
     *info = 0;
 

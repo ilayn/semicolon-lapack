@@ -67,20 +67,20 @@
  *                     the Schur form no longer satisfy select=true.
  */
 void zgees(const char* jobvs, const char* sort, zselect1_t select,
-           const int n, double complex* A, const int lda, int* sdim,
-           double complex* W,
-           double complex* VS, const int ldvs,
-           double complex* work, const int lwork,
-           double* rwork, int* bwork, int* info)
+           const int n, c128* A, const int lda, int* sdim,
+           c128* W,
+           c128* VS, const int ldvs,
+           c128* work, const int lwork,
+           f64* rwork, int* bwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lquery, scalea, wantst, wantvs;
     int hswork, i, ibal, icond, ierr, ieval;
     int ihi, ilo, itau, iwrk, maxwrk, minwrk;
-    double anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
-    double dum[1];
+    f64 anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
+    f64 dum[1];
     int nb_gehrd, nb_unghr;
 
     /* Test the input arguments */
@@ -127,7 +127,7 @@ void zgees(const char* jobvs, const char* sort, zselect1_t select,
                 maxwrk = maxwrk > hswork ? maxwrk : hswork;
             }
         }
-        work[0] = CMPLX((double)maxwrk, 0.0);
+        work[0] = CMPLX((f64)maxwrk, 0.0);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -222,5 +222,5 @@ void zgees(const char* jobvs, const char* sort, zselect1_t select,
         cblas_zcopy(n, A, lda + 1, W, 1);
     }
 
-    work[0] = CMPLX((double)maxwrk, 0.0);
+    work[0] = CMPLX((f64)maxwrk, 0.0);
 }

@@ -58,16 +58,16 @@
  *                           converge.
  */
 void sstevx(const char* jobz, const char* range, const int n,
-            float* const restrict D, float* const restrict E,
-            const float vl, const float vu,
-            const int il, const int iu, const float abstol,
-            int* m, float* const restrict W,
-            float* const restrict Z, const int ldz,
-            float* const restrict work, int* const restrict iwork,
+            f32* const restrict D, f32* const restrict E,
+            const f32 vl, const f32 vu,
+            const int il, const int iu, const f32 abstol,
+            int* m, f32* const restrict W,
+            f32* const restrict Z, const int ldz,
+            f32* const restrict work, int* const restrict iwork,
             int* const restrict ifail, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     /* Test the input parameters. */
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -125,24 +125,24 @@ void sstevx(const char* jobz, const char* range, const int n,
     }
 
     /* Get machine constants. */
-    float safmin = slamch("S");
-    float eps = slamch("P");
-    float smlnum = safmin / eps;
-    float bignum = ONE / smlnum;
-    float rmin = sqrtf(smlnum);
-    float rmax_val = sqrtf(bignum);
-    float rmax2 = ONE / sqrtf(sqrtf(safmin));
-    float rmax = rmax_val < rmax2 ? rmax_val : rmax2;
+    f32 safmin = slamch("S");
+    f32 eps = slamch("P");
+    f32 smlnum = safmin / eps;
+    f32 bignum = ONE / smlnum;
+    f32 rmin = sqrtf(smlnum);
+    f32 rmax_val = sqrtf(bignum);
+    f32 rmax2 = ONE / sqrtf(sqrtf(safmin));
+    f32 rmax = rmax_val < rmax2 ? rmax_val : rmax2;
 
     /* Scale matrix to allowable range, if necessary. */
     int iscale = 0;
-    float vll = ZERO, vuu = ZERO;
+    f32 vll = ZERO, vuu = ZERO;
     if (valeig) {
         vll = vl;
         vuu = vu;
     }
-    float tnrm = slanst("M", n, D, E);
-    float sigma = ZERO;
+    f32 tnrm = slanst("M", n, D, E);
+    f32 sigma = ZERO;
     if (tnrm > ZERO && tnrm < rmin) {
         iscale = 1;
         sigma = rmin / tnrm;
@@ -221,7 +221,7 @@ rescale:
     if (wantz) {
         for (int j = 0; j < *m - 1; j++) {
             int imin = 0;
-            float tmp1 = W[j];
+            f32 tmp1 = W[j];
             for (int jj = j + 1; jj < *m; jj++) {
                 if (W[jj] < tmp1) {
                     imin = jj;

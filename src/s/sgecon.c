@@ -45,21 +45,21 @@
 void sgecon(
     const char* norm,
     const int n,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
-    const float anorm,
-    float *rcond,
-    float * const restrict work,
+    const f32 anorm,
+    f32 *rcond,
+    f32 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int onenrm;
     char normin;
     int ix, kase, kase1;
-    float ainvnm, scale, sl, smlnum, su, hugeval;
+    f32 ainvnm, scale, sl, smlnum, su, hugeval;
     int isave[3];
     int linfo;
 

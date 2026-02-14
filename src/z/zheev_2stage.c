@@ -9,19 +9,19 @@
 #include <math.h>
 
 void zheev_2stage(const char* jobz, const char* uplo, const int n,
-                  double complex* A, const int lda,
-                  double* W,
-                  double complex* work, const int lwork,
-                  double* rwork, int* info)
+                  c128* A, const int lda,
+                  f64* W,
+                  c128* work, const int lwork,
+                  f64* rwork, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double complex cone = CMPLX(1.0, 0.0);
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const c128 cone = CMPLX(1.0, 0.0);
 
     int lower, lquery, wantz;
     int iinfo, imax, inde, indtau, indwrk, iscale;
     int llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -44,7 +44,7 @@ void zheev_2stage(const char* jobz, const char* uplo, const int n,
         lhtrd = ilaenv2stage(3, "ZHETRD_2STAGE", jobz, n, kd, ib, -1);
         lwtrd = ilaenv2stage(4, "ZHETRD_2STAGE", jobz, n, kd, ib, -1);
         lwmin = n + lhtrd + lwtrd;
-        work[0] = CMPLX((double)lwmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
 
         if (lwork < lwmin && !lquery) {
             *info = -8;
@@ -120,5 +120,5 @@ void zheev_2stage(const char* jobz, const char* uplo, const int n,
         cblas_dscal(imax, one / sigma, W, 1);
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

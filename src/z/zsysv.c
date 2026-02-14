@@ -68,10 +68,10 @@
  *                           solution could not be computed.
  */
 void zsysv(const char* uplo, const int n, const int nrhs,
-           double complex* const restrict A, const int lda,
+           c128* const restrict A, const int lda,
            int* const restrict ipiv,
-           double complex* const restrict B, const int ldb,
-           double complex* const restrict work, const int lwork,
+           c128* const restrict B, const int ldb,
+           c128* const restrict work, const int lwork,
            int* info)
 {
     int lwkopt;
@@ -101,7 +101,7 @@ void zsysv(const char* uplo, const int n, const int nrhs,
             zsytrf(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (int)creal(work[0]);
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -118,5 +118,5 @@ void zsysv(const char* uplo, const int n, const int nrhs,
         zsytrs(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

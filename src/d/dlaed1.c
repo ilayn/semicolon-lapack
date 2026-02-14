@@ -68,12 +68,12 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void dlaed1(const int n, double* D, double* Q, const int ldq,
-            int* indxq, const double rho, const int cutpnt,
-            double* work, int* iwork, int* info)
+void dlaed1(const int n, f64* D, f64* Q, const int ldq,
+            int* indxq, const f64 rho, const int cutpnt,
+            f64* work, int* iwork, int* info)
 {
     int coltyp, i, idlmda, indx, indxc, indxp, iq2, is, iw, iz, k, n1, n2, zpp1;
-    double rho_local;
+    f64 rho_local;
 
     /* Test the input parameters. */
     *info = 0;

@@ -47,15 +47,15 @@
 void zhetf2_rook(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)
 {
     int upper, done;
     int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
-    double absakk, alpha, colmax, d, d11, d22, r1, dtemp, rowmax, tt, sfmin;
-    double complex d12, d21, t, wk, wkm1, wkp1;
+    f64 absakk, alpha, colmax, d, d11, d22, r1, dtemp, rowmax, tt, sfmin;
+    c128 d12, d21, t, wk, wkm1, wkp1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

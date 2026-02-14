@@ -36,13 +36,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgelq2(const int m, const int n,
-            float * const restrict A, const int lda,
-            float * const restrict tau,
-            float * const restrict work,
+            f32 * const restrict A, const int lda,
+            f32 * const restrict tau,
+            f32 * const restrict work,
             int *info)
 {
     int i, k;
-    float aii;
+    f32 aii;
 
     /* Parameter validation */
     *info = 0;

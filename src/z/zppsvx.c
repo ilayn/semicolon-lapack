@@ -60,27 +60,27 @@ void zppsvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict AP,
-    double complex* const restrict AFP,
+    c128* const restrict AP,
+    c128* const restrict AFP,
     char* equed,
-    double* const restrict S,
-    double complex* const restrict B,
+    f64* const restrict S,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int equil, nofact, rcequ;
     int i, infequ, j;
-    double amax, anorm, bignum, scond, smax, smin, smlnum;
+    f64 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

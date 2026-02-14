@@ -62,11 +62,11 @@ void dsfrk(
     const char* trans,
     const int n,
     const int k,
-    const double alpha,
-    const double* const restrict A,
+    const f64 alpha,
+    const f64* const restrict A,
     const int lda,
-    const double beta,
-    double* const restrict C)
+    const f64 beta,
+    f64* const restrict C)
 {
     int lower, normaltransr, nisodd, notrans;
     int nrowa, j, nk, n1, n2;

@@ -36,19 +36,19 @@
  * @param[out]    cs     Cosine of the rotation matrix.
  * @param[out]    sn     Sine of the rotation matrix.
  */
-void slanv2(float* a, float* b, float* c, float* d,
-            float* rt1r, float* rt1i, float* rt2r, float* rt2i,
-            float* cs, float* sn)
+void slanv2(f32* a, f32* b, f32* c, f32* d,
+            f32* rt1r, f32* rt1i, f32* rt2r, f32* rt2i,
+            f32* cs, f32* sn)
 {
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float MULTPL = 4.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 MULTPL = 4.0f;
 
-    float aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab;
-    float sac, scale, sigma, sn1, tau, temp, z, safmin;
-    float safmn2, safmx2, base;
+    f32 aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab;
+    f32 sac, scale, sigma, sn1, tau, temp, z, safmin;
+    f32 safmn2, safmx2, base;
     int count;
 
     safmin = slamch("S");

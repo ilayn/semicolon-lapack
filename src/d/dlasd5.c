@@ -7,11 +7,11 @@
 #include "semicolon_lapack_double.h"
 #include <math.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double TWO = 2.0;
-static const double THREE = 3.0;
-static const double FOUR = 4.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const f64 TWO = 2.0;
+static const f64 THREE = 3.0;
+static const f64 FOUR = 4.0;
 
 /**
  * DLASD5 computes the square root of the I-th eigenvalue of a positive
@@ -30,11 +30,11 @@ static const double FOUR = 4.0;
  * @param[out]    dsigma  The computed sigma_i, the i-th updated eigenvalue.
  * @param[out]    work    Array of dimension 2. Contains (D[j] + sigma_i) in its j-th component.
  */
-void dlasd5(const int i, const double* const restrict D, const double* const restrict Z,
-            double* const restrict delta, const double rho, double* dsigma,
-            double* const restrict work)
+void dlasd5(const int i, const f64* const restrict D, const f64* const restrict Z,
+            f64* const restrict delta, const f64 rho, f64* dsigma,
+            f64* const restrict work)
 {
-    double b, c, del, delsq, tau, w;
+    f64 b, c, del, delsq, tau, w;
 
     del = D[1] - D[0];
     delsq = del * (D[1] + D[0]);

@@ -47,15 +47,15 @@ void dgbtrs(
     const int kl,
     const int ku,
     const int nrhs,
-    const double * const restrict AB,
+    const f64 * const restrict AB,
     const int ldab,
     const int * const restrict ipiv,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb,
     int *info)
 {
-    const double ONE = 1.0;
-    const double NEG_ONE = -1.0;
+    const f64 ONE = 1.0;
+    const f64 NEG_ONE = -1.0;
 
     int notran, lnoti;
     int i, j, kd, l, lm;

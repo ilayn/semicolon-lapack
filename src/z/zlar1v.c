@@ -67,22 +67,22 @@
  * @param[out]    rqcorr  The Rayleigh Quotient correction to lambda.
  * @param[out]    work    Double precision array, dimension (4*n).
  */
-void zlar1v(const int n, const int b1, const int bn, const double lambda,
-            const double* const restrict D, const double* const restrict L,
-            const double* const restrict LD, const double* const restrict LLD,
-            const double pivmin, const double gaptol,
-            double complex* const restrict Z, const int wantnc, int* negcnt,
-            double* ztz, double* mingma, int* r,
-            int* const restrict isuppz, double* nrminv, double* resid,
-            double* rqcorr, double* const restrict work)
+void zlar1v(const int n, const int b1, const int bn, const f64 lambda,
+            const f64* const restrict D, const f64* const restrict L,
+            const f64* const restrict LD, const f64* const restrict LLD,
+            const f64 pivmin, const f64 gaptol,
+            c128* const restrict Z, const int wantnc, int* negcnt,
+            f64* ztz, f64* mingma, int* r,
+            int* const restrict isuppz, f64* nrminv, f64* resid,
+            f64* rqcorr, f64* const restrict work)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int i, r1, r2, neg1, neg2;
     int sawnan1, sawnan2;
-    double dplus, dminus, s, tmp, eps;
+    f64 dplus, dminus, s, tmp, eps;
 
     const int indlpl = 0;
     const int indumn = n;

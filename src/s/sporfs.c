@@ -45,26 +45,26 @@ void sporfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float* const restrict AF,
+    const f32* const restrict AF,
     const int ldaf,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // Parameters from the Fortran source
     const int ITMAX = 5;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
 
     // Test the input parameters
     *info = 0;
@@ -100,17 +100,17 @@ void sporfs(
 
     // NZ = maximum number of nonzero elements in each row of A, plus 1
     int nz = n + 1;
-    float eps = slamch("E");
-    float safmin = slamch("S");
-    float safe1 = nz * safmin;
-    float safe2 = safe1 / eps;
+    f32 eps = slamch("E");
+    f32 safmin = slamch("S");
+    f32 safe1 = nz * safmin;
+    f32 safe2 = safe1 / eps;
 
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
 
     // Do for each right hand side
     for (int j = 0; j < nrhs; j++) {
         int count = 1;
-        float lstres = THREE;
+        f32 lstres = THREE;
 
         for (;;) {
             // Compute residual R = B - A * X
@@ -129,8 +129,8 @@ void sporfs(
             // Compute |A|*|X| + |B|
             if (upper) {
                 for (int k = 0; k < n; k++) {
-                    float s = ZERO;
-                    float xk = fabsf(X[k + j * ldx]);
+                    f32 s = ZERO;
+                    f32 xk = fabsf(X[k + j * ldx]);
                     for (int i = 0; i < k; i++) {
                         work[i] += fabsf(A[i + k * lda]) * xk;
                         s += fabsf(A[i + k * lda]) * fabsf(X[i + j * ldx]);
@@ -139,8 +139,8 @@ void sporfs(
                 }
             } else {
                 for (int k = 0; k < n; k++) {
-                    float s = ZERO;
-                    float xk = fabsf(X[k + j * ldx]);
+                    f32 s = ZERO;
+                    f32 xk = fabsf(X[k + j * ldx]);
                     work[k] += fabsf(A[k + k * lda]) * xk;
                     for (int i = k + 1; i < n; i++) {
                         work[i] += fabsf(A[i + k * lda]) * xk;
@@ -150,13 +150,13 @@ void sporfs(
                 }
             }
 
-            float s = ZERO;
+            f32 s = ZERO;
             for (int i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    float tmp = fabsf(work[n + i]) / work[i];
+                    f32 tmp = fabsf(work[n + i]) / work[i];
                     if (tmp > s) s = tmp;
                 } else {
-                    float tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
+                    f32 tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
                     if (tmp > s) s = tmp;
                 }
             }
@@ -212,7 +212,7 @@ void sporfs(
         // Normalize error
         lstres = ZERO;
         for (int i = 0; i < n; i++) {
-            float tmp = fabsf(X[i + j * ldx]);
+            f32 tmp = fabsf(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

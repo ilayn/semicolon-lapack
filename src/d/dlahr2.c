@@ -35,14 +35,14 @@
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
 void dlahr2(const int n, const int k, const int nb,
-            double* A, const int lda, double* tau,
-            double* T, const int ldt, double* Y, const int ldy)
+            f64* A, const int lda, f64* tau,
+            f64* T, const int ldt, f64* Y, const int ldy)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i;
-    double ei = 0.0;
+    f64 ei = 0.0;
 
     /* Quick return if possible */
     if (n <= 1)

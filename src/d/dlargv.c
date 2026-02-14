@@ -28,20 +28,20 @@
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void dlargv(const int n, double* const restrict X, const int incx,
-            double* const restrict Y, const int incy,
-            double* const restrict C, const int incc)
+void dlargv(const int n, f64* const restrict X, const int incx,
+            f64* const restrict Y, const int incy,
+            f64* const restrict C, const int incc)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int ix = 0;
     int iy = 0;
     int ic = 0;
 
     for (int i = 0; i < n; i++) {
-        double f = X[ix];
-        double g = Y[iy];
+        f64 f = X[ix];
+        f64 g = Y[iy];
 
         if (g == zero) {
             /* g is zero, no rotation needed */
@@ -53,15 +53,15 @@ void dlargv(const int n, double* const restrict X, const int incx,
             X[ix] = g;
         } else if (fabs(f) > fabs(g)) {
             /* |f| > |g|: standard case */
-            double t = g / f;
-            double tt = sqrt(one + t * t);
+            f64 t = g / f;
+            f64 tt = sqrt(one + t * t);
             C[ic] = one / tt;
             Y[iy] = t * C[ic];
             X[ix] = f * tt;
         } else {
             /* |f| <= |g|: reversed case */
-            double t = f / g;
-            double tt = sqrt(one + t * t);
+            f64 t = f / g;
+            f64 tt = sqrt(one + t * t);
             Y[iy] = one / tt;
             C[ic] = t * Y[iy];
             X[ix] = g * tt;

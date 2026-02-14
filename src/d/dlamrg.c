@@ -26,7 +26,7 @@
  *                       B[i] = A[index[i]] for i=0,...,n1+n2-1,
  *                       then B is sorted in ascending order.
  */
-void dlamrg(const int n1, const int n2, const double* A,
+void dlamrg(const int n1, const int n2, const f64* A,
             const int dtrd1, const int dtrd2, int* index)
 {
     int n1sv = n1;

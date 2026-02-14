@@ -66,20 +66,20 @@
 void dsytrf_aa_2stage(
     const char* uplo,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict TB,
+    f64* restrict TB,
     const int ltb,
     int* restrict ipiv,
     int* restrict ipiv2,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
     int upper, tquery, wquery;
     int i, j, k, i1, i2, td;
     int ldtb, nb, kb, jb, nt, iinfo;
-    double piv;
+    f64 piv;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -107,10 +107,10 @@ void dsytrf_aa_2stage(
 
     if (*info == 0) {
         if (tquery) {
-            TB[0] = (double)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n);
+            TB[0] = (f64)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n);
         }
         if (wquery) {
-            work[0] = (double)((1 > n * nb) ? 1 : n * nb);
+            work[0] = (f64)((1 > n * nb) ? 1 : n * nb);
         }
     }
     if (tquery || wquery) {
@@ -137,7 +137,7 @@ void dsytrf_aa_2stage(
         ipiv[j] = j;
     }
 
-    TB[0] = (double)nb;
+    TB[0] = (f64)nb;
 
     if (upper) {
 

@@ -67,34 +67,34 @@ void zhbgvx(
     const int n,
     const int ka,
     const int kb,
-    double complex* const restrict AB,
+    c128* const restrict AB,
     const int ldab,
-    double complex* const restrict BB,
+    c128* const restrict BB,
     const int ldbb,
-    double complex* const restrict Q,
+    c128* const restrict Q,
     const int ldq,
-    const double vl,
-    const double vu,
+    const f64 vl,
+    const f64 vu,
     const int il,
     const int iu,
-    const double abstol,
+    const f64 abstol,
     int* m,
-    double* const restrict W,
-    double complex* const restrict Z,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* const restrict iwork,
     int* const restrict ifail,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int alleig, indeig, test, upper, valeig, wantz;
     int i, iinfo, indd, inde, indee, indisp, indiwk, indrwk, indwrk, itmp1, j, jj, nsplit;
-    double tmp1;
+    f64 tmp1;
     char order, vect;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

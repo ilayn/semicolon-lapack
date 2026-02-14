@@ -40,16 +40,16 @@ void sgtts2(
     const int itrans,
     const int n,
     const int nrhs,
-    const float * const restrict DL,
-    const float * const restrict D,
-    const float * const restrict DU,
-    const float * const restrict DU2,
+    const f32 * const restrict DL,
+    const f32 * const restrict D,
+    const f32 * const restrict DU,
+    const f32 * const restrict DU2,
     const int * const restrict ipiv,
-    float * const restrict B,
+    f32 * const restrict B,
     const int ldb)
 {
     int i, j;
-    float temp;
+    f32 temp;
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {

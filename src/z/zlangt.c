@@ -26,17 +26,17 @@
  *
  * @return The computed norm value.
  */
-double zlangt(
+f64 zlangt(
     const char* norm,
     const int n,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU)
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    double anorm, scale, sum, temp;
+    f64 anorm, scale, sum, temp;
     int i;
 
     if (n <= 0) {

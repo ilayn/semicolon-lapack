@@ -26,14 +26,14 @@
  * @param[out] p  Pointer to double, receives real part of result.
  * @param[out] q  Pointer to double, receives imaginary part of result.
  */
-void sladiv(const float a, const float b, const float c, const float d,
-            float* p, float* q)
+void sladiv(const f32 a, const f32 b, const f32 c, const f32 d,
+            f32* p, f32* q)
 {
-    const float BS = 2.0f;
-    const float HALF = 0.5f;
-    const float TWO = 2.0f;
+    const f32 BS = 2.0f;
+    const f32 HALF = 0.5f;
+    const f32 TWO = 2.0f;
 
-    float aa, bb, cc, dd, ab, cd, s, ov, un, be, eps;
+    f32 aa, bb, cc, dd, ab, cd, s, ov, un, be, eps;
 
     aa = a;
     bb = b;

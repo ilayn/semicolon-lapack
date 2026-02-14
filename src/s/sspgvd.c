@@ -37,12 +37,12 @@ void sspgvd(
     const char* jobz,
     const char* uplo,
     const int n,
-    float* restrict AP,
-    float* restrict BP,
-    float* restrict W,
-    float* restrict Z,
+    f32* restrict AP,
+    f32* restrict BP,
+    f32* restrict W,
+    f32* restrict Z,
     const int ldz,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     const int liwork,
@@ -81,7 +81,7 @@ void sspgvd(
                 lwmin = 2 * n;
             }
         }
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -144,6 +144,6 @@ void sspgvd(
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

@@ -48,15 +48,15 @@ void zgbtrs(
     const int kl,
     const int ku,
     const int nrhs,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
     const int* const restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int notran, lnoti;
     int i, j, kd, l, lm;

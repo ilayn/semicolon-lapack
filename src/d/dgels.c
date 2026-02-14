@@ -57,14 +57,14 @@
  */
 void dgels(const char* trans,
            const int m, const int n, const int nrhs,
-           double * const restrict A, const int lda,
-           double * const restrict B, const int ldb,
-           double * const restrict work, const int lwork,
+           f64 * const restrict A, const int lda,
+           f64 * const restrict B, const int ldb,
+           f64 * const restrict work, const int lwork,
            int *info)
 {
     int lquery, tpsd;
     int brow, iascl, ibscl, mn, nb, scllen, wsize;
-    double anrm, bignum, bnrm, smlnum;
+    f64 anrm, bignum, bnrm, smlnum;
     int iinfo;
 
     /* Test the input arguments */
@@ -107,7 +107,7 @@ void dgels(const char* trans,
         int mn_nrhs = mn > nrhs ? mn : nrhs;
         wsize = mn + mn_nrhs * nb;
         if (wsize < 1) wsize = 1;
-        work[0] = (double)wsize;
+        work[0] = (f64)wsize;
     }
 
     if (*info != 0) {
@@ -143,7 +143,7 @@ void dgels(const char* trans,
         /* Matrix all zero. Return zero solution. */
         int maxmn = m > n ? m : n;
         dlaset("F", maxmn, nrhs, 0.0, 0.0, B, ldb);
-        work[0] = (double)wsize;
+        work[0] = (f64)wsize;
         return;
     }
 
@@ -262,5 +262,5 @@ void dgels(const char* trans,
         dlascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, &iinfo);
     }
 
-    work[0] = (double)wsize;
+    work[0] = (f64)wsize;
 }

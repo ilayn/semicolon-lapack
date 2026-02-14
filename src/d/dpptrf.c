@@ -35,12 +35,12 @@
 void dpptrf(
     const char* uplo,
     const int n,
-    double* const restrict AP,
+    f64* const restrict AP,
     int* info)
 {
     // dpptrf.f lines 134-135: Parameters
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // dpptrf.f lines 157-167: Test the input parameters
     *info = 0;
@@ -74,7 +74,7 @@ void dpptrf(
             }
 
             // dpptrf.f lines 191-196: Compute U(J,J) and test for non-positive-definiteness.
-            double ajj = AP[jj];
+            f64 ajj = AP[jj];
             if (j > 0) {
                 ajj -= cblas_ddot(j, &AP[jc], 1, &AP[jc], 1);
             }
@@ -91,7 +91,7 @@ void dpptrf(
         for (int j = 0; j < n; j++) {  // dpptrf.f line 203: DO 20 J = 1, N
 
             // dpptrf.f lines 207-213: Compute L(J,J) and test for non-positive-definiteness.
-            double ajj = AP[jj];
+            f64 ajj = AP[jj];
             if (ajj <= ZERO) {
                 AP[jj] = ajj;
                 *info = j + 1;  // 1-based error code

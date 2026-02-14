@@ -60,26 +60,26 @@
  *                         - = 0: No error, (ca A - w D) did not have to be perturbed.
  *                         - = 1: (ca A - w D) had to be perturbed.
  */
-void dlaln2(const int ltrans, const int na, const int nw, const double smin,
-            const double ca, const double* A, const int lda,
-            const double d1, const double d2,
-            const double* B, const int ldb,
-            const double wr, const double wi,
-            double* X, const int ldx,
-            double* scale, double* xnorm, int* info)
+void dlaln2(const int ltrans, const int na, const int nw, const f64 smin,
+            const f64 ca, const f64* A, const int lda,
+            const f64 d1, const f64 d2,
+            const f64* B, const int ldb,
+            const f64 wr, const f64 wi,
+            f64* X, const int ldx,
+            f64* scale, f64* xnorm, int* info)
 {
     /* Local scalars */
     int icmax, j;
-    double bbnd, bi1, bi2, bignum, bnorm, br1, br2, ci21;
-    double ci22, cmax, cnorm, cr21, cr22, csi, csr, li21;
-    double lr21, smini, smlnum, temp, u22abs, ui11, ui11r;
-    double ui12, ui12s, ui22, ur11, ur11r, ur12, ur12s;
-    double ur22, xi1, xi2, xr1, xr2;
+    f64 bbnd, bi1, bi2, bignum, bnorm, br1, br2, ci21;
+    f64 ci22, cmax, cnorm, cr21, cr22, csi, csr, li21;
+    f64 lr21, smini, smlnum, temp, u22abs, ui11, ui11r;
+    f64 ui12, ui12s, ui22, ur11, ur11r, ur12, ur12s;
+    f64 ur22, xi1, xi2, xr1, xr2;
 
     /* Local arrays - CR and CI are 2x2, stored column-major
      * CRV and CIV are linear views of CR and CI respectively
      * CR(i,j) = CRV[i + j*2] for 0-based, or CRV[(i-1) + (j-1)*2] for 1-based */
-    double cr[4], ci[4];  /* Column-major: cr[0]=cr(1,1), cr[1]=cr(2,1), cr[2]=cr(1,2), cr[3]=cr(2,2) */
+    f64 cr[4], ci[4];  /* Column-major: cr[0]=cr(1,1), cr[1]=cr(2,1), cr[2]=cr(1,2), cr[3]=cr(2,2) */
 
     /* Pivot tables (converted from 1-based Fortran to 0-based C) */
     /* ZSWAP: whether to swap rows in final result */

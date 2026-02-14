@@ -36,14 +36,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zungl2(const int m, const int n, const int k,
-            double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict work,
+            c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict work,
             int* info)
 {
     int i, j, l;
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     /* Test the input arguments */
     *info = 0;
@@ -83,11 +83,11 @@ void zungl2(const int m, const int n, const int k,
         if (i < n - 1) {
             zlacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
             if (i < m - 1) {
-                double complex conj_tau = conj(tau[i]);
+                c128 conj_tau = conj(tau[i]);
                 zlarf1f("R", m - i - 1, n - i, &A[i + i * lda], lda,
                         conj_tau, &A[(i + 1) + i * lda], lda, work);
             }
-            double complex neg_tau = -tau[i];
+            c128 neg_tau = -tau[i];
             cblas_zscal(n - i - 1, &neg_tau, &A[i + (i + 1) * lda], lda);
             zlacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
         }

@@ -33,19 +33,19 @@ void zpbequ(
     const char* uplo,
     const int n,
     const int kd,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    double* const restrict S,
-    double* scond,
-    double* amax,
+    f64* const restrict S,
+    f64* scond,
+    f64* amax,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int upper;
     int i, j;
-    double smin;
+    f64 smin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

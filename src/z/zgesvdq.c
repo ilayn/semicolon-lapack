@@ -9,10 +9,10 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double complex CZERO = CMPLX(0.0, 0.0);
-static const double complex CONE = CMPLX(1.0, 0.0);
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const c128 CZERO = CMPLX(0.0, 0.0);
+static const c128 CONE = CMPLX(1.0, 0.0);
 
 /**
  * ZGESVDQ computes the singular value decomposition (SVD) of a complex
@@ -25,12 +25,12 @@ static const double complex CONE = CMPLX(1.0, 0.0);
  */
 void zgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, double complex* const restrict A, const int lda,
-             double* const restrict S, double complex* const restrict U, const int ldu,
-             double complex* const restrict V, const int ldv, int* numrank,
+             const int m, const int n, c128* const restrict A, const int lda,
+             f64* const restrict S, c128* const restrict U, const int ldu,
+             c128* const restrict V, const int ldv, int* numrank,
              int* const restrict iwork, const int liwork,
-             double complex* const restrict cwork, const int lcwork,
-             double* const restrict rwork, const int lrwork, int* info)
+             c128* const restrict cwork, const int lcwork,
+             f64* const restrict rwork, const int lrwork, int* info)
 {
     int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
     int wntvr, wntva, rsvec, dntwv;
@@ -40,15 +40,15 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
     int ascaled;
 
     int lwcon, lwqp3, lwrk_zgelqf, lwrk_zgesvd, lwrk_zgesvd2,
-        lwrk_zgeqp3, lwrk_zgeqrf, lwrk_zunmlq, lwrk_zunmqr,
+        lwrk_zgeqp3 = 0, lwrk_zgeqrf, lwrk_zunmlq, lwrk_zunmqr = 0,
         lwrk_zunmqr2, lwlqf, lwqrf, lwsvd, lwsvd2, lwunq,
         lwunq2, lwunlq, minwrk, minwrk2, optwrk, optwrk2,
         iminwrk, rminwrk;
 
-    double big, epsln, rtmp, sconda = -ONE, sfmin;
-    double complex ctmp;
-    double complex cdummy[1];
-    double rdummy[1];
+    f64 big, epsln, rtmp, sconda = -ONE, sfmin;
+    c128 ctmp;
+    c128 cdummy[1];
+    f64 rdummy[1];
 
     wntus  = (jobu[0] == 'S' || jobu[0] == 's' || jobu[0] == 'U' || jobu[0] == 'u');
     wntur  = (jobu[0] == 'R' || jobu[0] == 'r');
@@ -328,9 +328,9 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
         return;
     } else if (lquery) {
         iwork[0] = iminwrk;
-        cwork[0] = CMPLX((double)optwrk, 0.0);
-        cwork[1] = CMPLX((double)minwrk, 0.0);
-        rwork[0] = (double)rminwrk;
+        cwork[0] = CMPLX((f64)optwrk, 0.0);
+        cwork[1] = CMPLX((f64)minwrk, 0.0);
+        rwork[0] = (f64)rminwrk;
         return;
     }
 
@@ -383,8 +383,8 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
             return;
         }
 
-        if (rwork[0] > big / sqrt((double)m)) {
-            zlascl("G", 0, 0, sqrt((double)m), ONE, m, n, A, lda, &ierr);
+        if (rwork[0] > big / sqrt((f64)m)) {
+            zlascl("G", 0, 0, sqrt((f64)m), ONE, m, n, A, lda, &ierr);
             ascaled = 1;
         }
         zlaswp(n, A, lda, 0, m - 2, &iwork[n], 1);
@@ -398,8 +398,8 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
             xerbla("ZGESVDQ", -(*info));
             return;
         }
-        if (rtmp > big / sqrt((double)m)) {
-            zlascl("G", 0, 0, sqrt((double)m), ONE, m, n, A, lda, &ierr);
+        if (rtmp > big / sqrt((f64)m)) {
+            zlascl("G", 0, 0, sqrt((f64)m), ONE, m, n, A, lda, &ierr);
             ascaled = 1;
         }
     }
@@ -416,7 +416,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     if (accla) {
         nr = 1;
-        rtmp = sqrt((double)n) * epsln;
+        rtmp = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
             if (cabs1(A[p + p * lda]) < (rtmp * cabs1(A[0]))) break;
             nr++;
@@ -827,9 +827,9 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
     if (nr < n)
         dlaset("G", n - nr, 1, ZERO, ZERO, &S[nr], n);
     if (ascaled)
-        dlascl("G", 0, 0, ONE, sqrt((double)m), nr, 1, S, n, &ierr);
+        dlascl("G", 0, 0, ONE, sqrt((f64)m), nr, 1, S, n, &ierr);
     if (conda) rwork[0] = sconda;
-    rwork[1] = (double)(p - nr);
+    rwork[1] = (f64)(p - nr);
 
     *numrank = nr;
 }

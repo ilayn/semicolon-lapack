@@ -61,20 +61,20 @@
  */
 void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int p, const int n,
-             double* const restrict A, const int lda,
-             double* const restrict B, const int ldb,
-             const double tola, const double tolb,
+             f64* const restrict A, const int lda,
+             f64* const restrict B, const int ldb,
+             const f64 tola, const f64 tolb,
              int* k, int* l,
-             double* const restrict U, const int ldu,
-             double* const restrict V, const int ldv,
-             double* const restrict Q, const int ldq,
+             f64* const restrict U, const int ldu,
+             f64* const restrict V, const int ldv,
+             f64* const restrict Q, const int ldq,
              int* const restrict iwork,
-             double* const restrict tau,
-             double* const restrict work, const int lwork,
+             f64* const restrict tau,
+             f64* const restrict work, const int lwork,
              int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int wantu, wantv, wantq, lquery;
     int forwrd = 1;
@@ -129,7 +129,7 @@ void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
         dgeqp3(m, n, A, lda, iwork, tau, work, -1, &ierr);
         if ((int)work[0] > lwkopt) lwkopt = (int)work[0];
         if (lwkopt < 1) lwkopt = 1;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -264,5 +264,5 @@ void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
         }
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

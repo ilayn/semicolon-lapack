@@ -34,10 +34,10 @@ void ssytrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {
@@ -117,13 +117,13 @@ void ssytrs(
                 /* Multiply by inverse of 2x2 diagonal block.
                  * D = [ A(k-1,k-1)  A(k-1,k) ]
                  *     [ A(k-1,k)    A(k,k)   ] */
-                float akm1k = A[(k - 1) + k * lda];
-                float akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
-                float ak = A[k + k * lda] / akm1k;
-                float denom = akm1 * ak - 1.0f;
+                f32 akm1k = A[(k - 1) + k * lda];
+                f32 akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
+                f32 ak = A[k + k * lda] / akm1k;
+                f32 denom = akm1 * ak - 1.0f;
                 for (int j = 0; j < nrhs; j++) {
-                    float bkm1 = B[(k - 1) + j * ldb] / akm1k;
-                    float bk = B[k + j * ldb] / akm1k;
+                    f32 bkm1 = B[(k - 1) + j * ldb] / akm1k;
+                    f32 bk = B[k + j * ldb] / akm1k;
                     B[(k - 1) + j * ldb] = (ak * bkm1 - bk) / denom;
                     B[k + j * ldb] = (akm1 * bk - bkm1) / denom;
                 }
@@ -231,13 +231,13 @@ void ssytrs(
                 /* Multiply by inverse of 2x2 diagonal block.
                  * D = [ A(k,k)    A(k+1,k) ]
                  *     [ A(k+1,k)  A(k+1,k+1) ] */
-                float akm1k = A[(k + 1) + k * lda];
-                float akm1 = A[k + k * lda] / akm1k;
-                float ak = A[(k + 1) + (k + 1) * lda] / akm1k;
-                float denom = akm1 * ak - 1.0f;
+                f32 akm1k = A[(k + 1) + k * lda];
+                f32 akm1 = A[k + k * lda] / akm1k;
+                f32 ak = A[(k + 1) + (k + 1) * lda] / akm1k;
+                f32 denom = akm1 * ak - 1.0f;
                 for (int j = 0; j < nrhs; j++) {
-                    float bkm1 = B[k + j * ldb] / akm1k;
-                    float bk = B[(k + 1) + j * ldb] / akm1k;
+                    f32 bkm1 = B[k + j * ldb] / akm1k;
+                    f32 bk = B[(k + 1) + j * ldb] / akm1k;
                     B[k + j * ldb] = (ak * bkm1 - bk) / denom;
                     B[(k + 1) + j * ldb] = (akm1 * bk - bkm1) / denom;
                 }

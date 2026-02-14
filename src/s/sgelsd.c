@@ -86,22 +86,22 @@
  *                           bidiagonal form did not converge to zero.
  */
 void sgelsd(const int m, const int n, const int nrhs,
-            float* const restrict A, const int lda,
-            float* const restrict B, const int ldb,
-            float* const restrict S, const float rcond, int* rank,
-            float* const restrict work, const int lwork,
+            f32* const restrict A, const int lda,
+            f32* const restrict B, const int ldb,
+            f32* const restrict S, const f32 rcond, int* rank,
+            f32* const restrict work, const int lwork,
             int* const restrict iwork, int* info)
 {
     int lquery;
     int iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork;
     int maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork, smlsiz, wlalsd;
-    float anrm, bignum, bnrm, eps, sfmin, smlnum;
+    f32 anrm, bignum, bnrm, eps, sfmin, smlnum;
     int iinfo;
     int nb;
 
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
 
     /* Test the input arguments */
     *info = 0;
@@ -131,7 +131,7 @@ void sgelsd(const int m, const int n, const int nrhs,
     if (minmn > 0) {
         minmn = minmn > 1 ? minmn : 1;
     }
-    nlvl = (int)(logf((float)minmn / (float)(smlsiz + 1)) / logf(TWO)) + 1;
+    nlvl = (int)(logf((f32)minmn / (f32)(smlsiz + 1)) / logf(TWO)) + 1;
     if (nlvl < 0) nlvl = 0;
 
     if (*info == 0) {
@@ -197,7 +197,7 @@ void sgelsd(const int m, const int n, const int nrhs,
             if (3 * m + wlalsd > minwrk) minwrk = 3 * m + wlalsd;
         }
         if (minwrk > maxwrk) minwrk = maxwrk;
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
         iwork[0] = liwork;
 
         if (lwork < minwrk && !lquery) {
@@ -409,6 +409,6 @@ void sgelsd(const int m, const int n, const int nrhs,
     }
 
 cleanup:
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
     iwork[0] = liwork;
 }

@@ -34,15 +34,15 @@
 void zspr(
     const char* uplo,
     const int n,
-    const double complex alpha,
-    const double complex* const restrict X,
+    const c128 alpha,
+    const c128* const restrict X,
     const int incx,
-    double complex* const restrict AP)
+    c128* const restrict AP)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, info, ix, j, jx, k, kk, kx;
-    double complex temp;
+    c128 temp;
 
     info = 0;
     if (!(uplo[0] == 'U' || uplo[0] == 'u') &&

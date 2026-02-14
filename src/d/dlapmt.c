@@ -25,7 +25,7 @@
  *                        On exit, modified internally and then restored.
  */
 void dlapmt(const int forwrd, const int m, const int n,
-            double* const restrict X, const int ldx,
+            f64* const restrict X, const int ldx,
             int* const restrict K)
 {
     int i, j, in;

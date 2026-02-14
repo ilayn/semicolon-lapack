@@ -45,12 +45,12 @@ void zlapmr(
     const int forwrd,
     const int m,
     const int n,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
     int* restrict K)
 {
     int i, in, j, jj;
-    double complex temp;
+    c128 temp;
 
     if (m <= 1)
         return;

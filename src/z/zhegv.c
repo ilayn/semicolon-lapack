@@ -57,17 +57,17 @@ void zhegv(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double* const restrict W,
-    double complex* const restrict work,
+    f64* const restrict W,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -95,7 +95,7 @@ void zhegv(
         if (lwkopt < 1) {
             lwkopt = 1;
         }
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
 
         if (lwork < (1 > 2 * n - 1 ? 1 : 2 * n - 1) && !lquery) {
             *info = -11;
@@ -160,5 +160,5 @@ void zhegv(
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

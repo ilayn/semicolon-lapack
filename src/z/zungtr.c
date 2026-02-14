@@ -41,13 +41,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zungtr(const char* uplo, const int n,
-            double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict work, const int lwork,
+            c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const int lwork,
             int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int upper, lquery;
     int i, j, iinfo, lwkopt, nb;
@@ -74,7 +74,7 @@ void zungtr(const char* uplo, const int n,
             nb = lapack_get_nb("ORGQR");
         }
         lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -138,5 +138,5 @@ void zungtr(const char* uplo, const int n,
         }
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

@@ -51,22 +51,21 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zunbdb6(const int m1, const int m2, const int n,
-             double complex* const restrict X1, const int incx1,
-             double complex* const restrict X2, const int incx2,
-             const double complex* const restrict Q1, const int ldq1,
-             const double complex* const restrict Q2, const int ldq2,
-             double complex* const restrict work, const int lwork,
+             c128* const restrict X1, const int incx1,
+             c128* const restrict X2, const int incx2,
+             const c128* const restrict Q1, const int ldq1,
+             const c128* const restrict Q2, const int ldq2,
+             c128* const restrict work, const int lwork,
              int* info)
 {
-    const double ALPHA = 0.83;
-    const double REALONE = 1.0;
-    const double REALZERO = 0.0;
-    const double complex NEGONE = CMPLX(-1.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const f64 ALPHA = 0.83;
+    const f64 REALZERO = 0.0;
+    const c128 NEGONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, ix;
-    double eps, norm, norm_new, scl, ssq;
+    f64 eps, norm, norm_new, scl, ssq;
 
     *info = 0;
     if (m1 < 0) {

@@ -24,12 +24,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void slasrt(const char* id, const int n, float* const restrict D, int* info)
+void slasrt(const char* id, const int n, f32* const restrict D, int* info)
 {
     const int SELECT = 20;
 
     int dir, endd, i, j, start, stkpnt;
-    float d1, d2, d3, dmnmx, tmp;
+    f32 d1, d2, d3, dmnmx, tmp;
     int stack[2][32];
 
     /* Test the input parameters */

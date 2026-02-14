@@ -28,9 +28,9 @@ void dlacpy(
     const char* uplo,
     const int m,
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb)
 {
     int i, j;

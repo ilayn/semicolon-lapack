@@ -60,10 +60,10 @@
  */
 void sormtr(const char* side, const char* uplo, const char* trans,
             const int m, const int n,
-            const float* const restrict A, const int lda,
-            const float* const restrict tau,
-            float* const restrict C, const int ldc,
-            float* const restrict work, const int lwork,
+            const f32* const restrict A, const int lda,
+            const f32* const restrict tau,
+            f32* const restrict C, const int ldc,
+            f32* const restrict work, const int lwork,
             int* info)
 {
     int left, upper, lquery;
@@ -110,7 +110,7 @@ void sormtr(const char* side, const char* uplo, const char* trans,
             nb = lapack_get_nb("ORMQR");
         }
         lwkopt = nw * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -159,5 +159,5 @@ void sormtr(const char* side, const char* uplo, const char* trans,
                &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

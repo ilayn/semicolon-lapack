@@ -47,9 +47,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelq(const int m, const int n,
-           double complex* const restrict A, const int lda,
-           double complex* const restrict T, const int tsize,
-           double complex* const restrict work, const int lwork,
+           c128* const restrict A, const int lda,
+           c128* const restrict T, const int tsize,
+           c128* const restrict work, const int lwork,
            int* info)
 {
     int lquery, lminws, mint, minw;
@@ -136,16 +136,16 @@ void zgelq(const int m, const int n,
 
     if (*info == 0) {
         if (mint) {
-            T[0] = (double complex)mintsz;
+            T[0] = (c128)mintsz;
         } else {
-            T[0] = (double complex)(mb * m * nblcks + 5);
+            T[0] = (c128)(mb * m * nblcks + 5);
         }
-        T[1] = (double complex)mb;
-        T[2] = (double complex)nb;
+        T[1] = (c128)mb;
+        T[2] = (c128)nb;
         if (minw) {
-            work[0] = (double complex)lwmin;
+            work[0] = (c128)lwmin;
         } else {
-            work[0] = (double complex)lwreq;
+            work[0] = (c128)lwreq;
         }
     }
     if (*info != 0) {
@@ -167,5 +167,5 @@ void zgelq(const int m, const int n,
         zlaswlq(m, n, mb, nb, A, lda, &T[5], mb, work, lwork, info);
     }
 
-    work[0] = (double complex)lwreq;
+    work[0] = (c128)lwreq;
 }

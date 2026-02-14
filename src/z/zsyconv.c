@@ -50,17 +50,17 @@ void zsyconv(
     const char* uplo,
     const char* way,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double complex* restrict E,
+    c128* restrict E,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int upper, convert;
     int i, ip, j;
-    double complex temp;
+    c128 temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

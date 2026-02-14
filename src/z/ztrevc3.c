@@ -76,21 +76,21 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ztrevc3(const char* side, const char* howmny, int* select,
-             const int n, double complex* T, const int ldt,
-             double complex* VL, const int ldvl,
-             double complex* VR, const int ldvr,
+             const int n, c128* T, const int ldt,
+             c128* VL, const int ldvl,
+             c128* VR, const int ldvr,
              const int mm, int* m,
-             double complex* work, const int lwork,
-             double* rwork, const int lrwork, int* info)
+             c128* work, const int lwork,
+             f64* rwork, const int lrwork, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double complex czero = 0.0;
-    const double complex cone = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const c128 czero = 0.0;
+    const c128 cone = 1.0;
 
     int allv, bothv, leftv, lquery, over, rightv, somev;
     int i, ii, is, j, k, ki, iv, nb, maxwrk;
-    double remax, scale, smin, smlnum, ulp, unfl;
+    f64 remax, scale, smin, smlnum, ulp, unfl;
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -117,8 +117,8 @@ void ztrevc3(const char* side, const char* howmny, int* select,
     nb = 64;
     maxwrk = n + 2 * n * nb;
     if (maxwrk < 1) maxwrk = 1;
-    work[0] = (double)maxwrk;
-    rwork[0] = (double)(1 > n ? 1 : n);
+    work[0] = (f64)maxwrk;
+    rwork[0] = (f64)(1 > n ? 1 : n);
     lquery = (lwork == -1 || lrwork == -1);
 
     if (!rightv && !leftv) {
@@ -164,7 +164,7 @@ void ztrevc3(const char* side, const char* howmny, int* select,
     /* Set the constants to control overflow */
     unfl = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = unfl * ((double)n / ulp);
+    smlnum = unfl * ((f64)n / ulp);
 
     /* Store the diagonal elements of T in working array WORK. */
     for (i = 0; i < n; i++) {
@@ -232,7 +232,7 @@ void ztrevc3(const char* side, const char* howmny, int* select,
 
             } else if (nb == 1) {
                 if (ki > 0) {
-                    double complex scale_c = (double complex)scale;
+                    c128 scale_c = (c128)scale;
                     cblas_zgemv(CblasColMajor, CblasNoTrans, n, ki,
                                 &cone, VR, ldvr,
                                 &work[iv * n], 1, &scale_c,
@@ -340,7 +340,7 @@ R80:        ;
 
             } else if (nb == 1) {
                 if (ki < n - 1) {
-                    double complex scale_c = (double complex)scale;
+                    c128 scale_c = (c128)scale;
                     cblas_zgemv(CblasColMajor, CblasNoTrans, n, n - ki - 1,
                                 &cone, &VL[(ki + 1) * ldvl], ldvl,
                                 &work[(ki + 1) + iv * n], 1, &scale_c,

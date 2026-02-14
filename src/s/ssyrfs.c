@@ -55,30 +55,30 @@ void ssyrfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float* const restrict AF,
+    const f32* const restrict AF,
     const int ldaf,
     const int* const restrict ipiv,
-    const float* const restrict B,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     const int ITMAX = 5;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
 
     int upper;
     int count, i, j, k, kase, nz;
-    float eps, lstres, s, safe1, safe2, safmin, xk;
+    f32 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int linfo;
 
@@ -173,10 +173,10 @@ void ssyrfs(
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    float tmp = fabsf(work[n + i]) / work[i];
+                    f32 tmp = fabsf(work[n + i]) / work[i];
                     if (tmp > s) s = tmp;
                 } else {
-                    float tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
+                    f32 tmp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
                     if (tmp > s) s = tmp;
                 }
             }
@@ -255,7 +255,7 @@ void ssyrfs(
         /* Normalize error. */
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            float tmp = fabsf(X[i + j * ldx]);
+            f32 tmp = fabsf(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

@@ -25,17 +25,17 @@
  *
  * @return The computed norm value.
  */
-float slangt(
+f32 slangt(
     const char* norm,
     const int n,
-    const float * const restrict DL,
-    const float * const restrict D,
-    const float * const restrict DU)
+    const f32 * const restrict DL,
+    const f32 * const restrict D,
+    const f32 * const restrict DU)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
-    float anorm, scale, sum, temp;
+    f32 anorm, scale, sum, temp;
     int i;
 
     if (n <= 0) {

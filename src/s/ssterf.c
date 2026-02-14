@@ -30,13 +30,13 @@
  *                           if info = i, then i elements of E have not
  *                           converged to zero.
  */
-void ssterf(const int n, float* const restrict D,
-            float* const restrict E, int* info)
+void ssterf(const int n, f32* const restrict D,
+            f32* const restrict E, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
     const int MAXIT = 30;
 
     /* Test the input parameters. */
@@ -52,16 +52,16 @@ void ssterf(const int n, float* const restrict D,
         return;
 
     /* Determine the unit roundoff for this environment. */
-    float eps = slamch("E");
-    float eps2 = eps * eps;
-    float safmin = slamch("S");
-    float safmax = ONE / safmin;
-    float ssfmax = sqrtf(safmax) / THREE;
-    float ssfmin = sqrtf(safmin) / eps2;
+    f32 eps = slamch("E");
+    f32 eps2 = eps * eps;
+    f32 safmin = slamch("S");
+    f32 safmax = ONE / safmin;
+    f32 ssfmax = sqrtf(safmax) / THREE;
+    f32 ssfmin = sqrtf(safmin) / eps2;
 
     /* Compute the eigenvalues of the tridiagonal matrix. */
     int nmaxit = n * MAXIT;
-    float sigma = ZERO;
+    f32 sigma = ZERO;
     int jtot = 0;
 
     /* Determine where the matrix splits and choose QL or QR iteration
@@ -100,7 +100,7 @@ void ssterf(const int n, float* const restrict D,
 
         /* Scale submatrix in rows and columns l to lend */
         int subsize = lend - l + 1;
-        float anorm = slanst("M", subsize, &D[l], &E[l]);
+        f32 anorm = slanst("M", subsize, &D[l], &E[l]);
         int iscale = 0;
         if (anorm == ZERO)
             continue;
@@ -147,7 +147,7 @@ void ssterf(const int n, float* const restrict D,
 
                 if (mm < lend)
                     E[mm] = ZERO;
-                float p = D[l];
+                f32 p = D[l];
                 if (mm == l) {
                     /* Eigenvalue found. */
                     D[l] = p;
@@ -160,8 +160,8 @@ void ssterf(const int n, float* const restrict D,
                 /* If remaining matrix is 2 by 2, use SLAE2 to compute its
                  * eigenvalues. */
                 if (mm == l + 1) {
-                    float rte = sqrtf(E[l]);
-                    float rt1, rt2;
+                    f32 rte = sqrtf(E[l]);
+                    f32 rt1, rt2;
                     slae2(D[l], rte, D[l + 1], &rt1, &rt2);
                     D[l] = rt1;
                     D[l + 1] = rt2;
@@ -177,27 +177,27 @@ void ssterf(const int n, float* const restrict D,
                 jtot = jtot + 1;
 
                 /* Form shift. */
-                float rte = sqrtf(E[l]);
+                f32 rte = sqrtf(E[l]);
                 sigma = (D[l + 1] - p) / (TWO * rte);
-                float r = slapy2(sigma, ONE);
+                f32 r = slapy2(sigma, ONE);
                 sigma = p - (rte / (sigma + copysignf(r, sigma)));
 
-                float c = ONE;
-                float s = ZERO;
-                float gamma = D[mm] - sigma;
+                f32 c = ONE;
+                f32 s = ZERO;
+                f32 gamma = D[mm] - sigma;
                 p = gamma * gamma;
 
                 /* Inner loop */
                 for (int i = mm - 1; i >= l; i--) {
-                    float bb = E[i];
+                    f32 bb = E[i];
                     r = p + bb;
                     if (i != mm - 1)
                         E[i + 1] = s * r;
-                    float oldc = c;
+                    f32 oldc = c;
                     c = p / r;
                     s = bb / r;
-                    float oldgam = gamma;
-                    float alpha = D[i];
+                    f32 oldgam = gamma;
+                    f32 alpha = D[i];
                     gamma = c * (alpha - sigma) - s * oldgam;
                     D[i + 1] = oldgam + (alpha - gamma);
                     if (c != ZERO) {
@@ -230,7 +230,7 @@ void ssterf(const int n, float* const restrict D,
 
                 if (mm > lend)
                     E[mm - 1] = ZERO;
-                float p = D[l];
+                f32 p = D[l];
                 if (mm == l) {
                     /* Eigenvalue found. */
                     D[l] = p;
@@ -243,8 +243,8 @@ void ssterf(const int n, float* const restrict D,
                 /* If remaining matrix is 2 by 2, use SLAE2 to compute its
                  * eigenvalues. */
                 if (mm == l - 1) {
-                    float rte = sqrtf(E[l - 1]);
-                    float rt1, rt2;
+                    f32 rte = sqrtf(E[l - 1]);
+                    f32 rt1, rt2;
                     slae2(D[l], rte, D[l - 1], &rt1, &rt2);
                     D[l] = rt1;
                     D[l - 1] = rt2;
@@ -260,27 +260,27 @@ void ssterf(const int n, float* const restrict D,
                 jtot = jtot + 1;
 
                 /* Form shift. */
-                float rte = sqrtf(E[l - 1]);
+                f32 rte = sqrtf(E[l - 1]);
                 sigma = (D[l - 1] - p) / (TWO * rte);
-                float r = slapy2(sigma, ONE);
+                f32 r = slapy2(sigma, ONE);
                 sigma = p - (rte / (sigma + copysignf(r, sigma)));
 
-                float c = ONE;
-                float s = ZERO;
-                float gamma = D[mm] - sigma;
+                f32 c = ONE;
+                f32 s = ZERO;
+                f32 gamma = D[mm] - sigma;
                 p = gamma * gamma;
 
                 /* Inner loop */
                 for (int i = mm; i < l; i++) {
-                    float bb = E[i];
+                    f32 bb = E[i];
                     r = p + bb;
                     if (i != mm)
                         E[i - 1] = s * r;
-                    float oldc = c;
+                    f32 oldc = c;
                     c = p / r;
                     s = bb / r;
-                    float oldgam = gamma;
-                    float alpha = D[i + 1];
+                    f32 oldgam = gamma;
+                    f32 alpha = D[i + 1];
                     gamma = c * (alpha - sigma) - s * oldgam;
                     D[i] = oldgam + (alpha - gamma);
                     if (c != ZERO) {

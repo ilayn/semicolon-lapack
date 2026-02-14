@@ -42,17 +42,17 @@
  *                           off-diagonal elements did not converge to zero.
  */
 void ssyev(const char* jobz, const char* uplo, const int n,
-           float* const restrict A, const int lda,
-           float* const restrict W,
-           float* const restrict work, const int lwork,
+           f32* const restrict A, const int lda,
+           f32* const restrict W,
+           f32* const restrict work, const int lwork,
            int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lower, wantz, lquery;
     int iinfo, imax, inde, indtau, indwrk, iscale, llwork, lwkopt, nb;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     /* Test the input parameters */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -73,7 +73,7 @@ void ssyev(const char* jobz, const char* uplo, const int n,
     if (*info == 0) {
         nb = lapack_get_nb("SYTRD");
         lwkopt = (n > 1) ? (nb + 2) * n : 1;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < (3 * n - 1 > 1 ? 3 * n - 1 : 1) && !lquery) {
             *info = -8;
@@ -152,5 +152,5 @@ void ssyev(const char* jobz, const char* uplo, const int n,
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

@@ -42,33 +42,33 @@ void ssyevx_2stage(
     const char* range,
     const char* uplo,
     const int n,
-    float* restrict A,
+    f32* restrict A,
     const int lda,
-    const float vl,
-    const float vu,
+    const f32 vl,
+    const f32 vu,
     const int il,
     const int iu,
-    const float abstol,
+    const f32 abstol,
     int* m,
-    float* restrict W,
-    float* restrict Z,
+    f32* restrict W,
+    f32* restrict Z,
     const int ldz,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* restrict iwork,
     int* restrict ifail,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int alleig, indeig, lower, lquery, test, valeig, wantz;
     int i, iinfo, imax, indd, inde, indee, indibl;
     int indisp, indiwo, indtau, indwkn, indwrk, iscale;
     int itmp1, j, jj, llwork, llwrkn;
     int nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
-    float abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    float sigma, smlnum, tmp1, vll, vuu;
+    f32 abstll, anrm, bignum, eps, rmax, rmin, safmin;
+    f32 sigma, smlnum, tmp1, vll, vuu;
 
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -110,14 +110,14 @@ void ssyevx_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = (float)lwmin;
+            work[0] = (f32)lwmin;
         } else {
             kd = ilaenv2stage(1, "SSYTRD_2STAGE", jobz, n, -1, -1, -1);
             ib = ilaenv2stage(2, "SSYTRD_2STAGE", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "SSYTRD_2STAGE", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "SSYTRD_2STAGE", jobz, n, kd, ib, -1);
             lwmin = (8 * n > 3 * n + lhtrd + lwtrd) ? 8 * n : 3 * n + lhtrd + lwtrd;
-            work[0] = (float)lwmin;
+            work[0] = (f32)lwmin;
         }
 
         if (lwork < lwmin && !lquery) {
@@ -298,5 +298,5 @@ L40:
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

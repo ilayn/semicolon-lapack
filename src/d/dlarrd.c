@@ -66,19 +66,19 @@
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
 void dlarrd(const char* range, const char* order, const int n,
-            const double vl, const double vu, const int il, const int iu,
-            const double* gers, const double reltol,
-            const double* D, const double* E, const double* E2,
-            const double pivmin, const int nsplit, const int* isplit,
-            int* m, double* W, double* werr,
-            double* wl, double* wu,
+            const f64 vl, const f64 vu, const int il, const int iu,
+            const f64* gers, const f64 reltol,
+            const f64* D, const f64* E, const f64* E2,
+            const f64 pivmin, const int nsplit, const int* isplit,
+            int* m, f64* W, f64* werr,
+            f64* wl, f64* wu,
             int* iblock, int* indexw,
-            double* work, int* iwork, int* info)
+            f64* work, int* iwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double TWO = 2.0;
-    const double HALF = 0.5;
-    const double FUDGE = 2.0;
+    const f64 ZERO = 0.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = 0.5;
+    const f64 FUDGE = 2.0;
 
     const int ALLRNG = 1;
     const int VALRNG = 2;
@@ -89,7 +89,7 @@ void dlarrd(const char* range, const char* order, const int n,
         im, in, ioff, iout, irange, itmax, itmp1,
         itmp2, iw, iwoff, j, jblk, jdisc, je, jee, nb,
         nwl, nwu;
-    double atoli, eps, gl, gu, rtoli, tmp1, tmp2,
+    f64 atoli, eps, gl, gu, rtoli, tmp1, tmp2,
            tnorm, uflow, wkill, wlu = 0.0, wul = 0.0;
     int idumma[1];
 

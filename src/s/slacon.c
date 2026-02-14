@@ -43,23 +43,23 @@
  */
 void slacon(
     const int n,
-    float* restrict V,
-    float* restrict X,
+    f32* restrict V,
+    f32* restrict X,
     int* restrict ISGN,
-    float* est,
+    f32* est,
     int* kase)
 {
     static const int ITMAX = 5;
-    const float zero = 0.0f;
-    const float one = 1.0f;
-    const float two = 2.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
+    const f32 two = 2.0f;
 
     static int i, iter, j, jlast, jump;
-    static float altsgn, estold, temp;
+    static f32 altsgn, estold, temp;
 
     if (*kase == 0) {
         for (i = 0; i < n; i++) {
-            X[i] = one / (float)n;
+            X[i] = one / (f32)n;
         }
         *kase = 1;
         jump = 1;
@@ -146,7 +146,7 @@ L110:
 L120:
     altsgn = one;
     for (i = 0; i < n; i++) {
-        X[i] = altsgn * (one + (float)i / (float)(n - 1));
+        X[i] = altsgn * (one + (f32)i / (f32)(n - 1));
         altsgn = -altsgn;
     }
     *kase = 1;
@@ -154,7 +154,7 @@ L120:
     return;
 
 L140:
-    temp = two * (cblas_sasum(n, X, 1) / (float)(3 * n));
+    temp = two * (cblas_sasum(n, X, 1) / (f32)(3 * n));
     if (temp > *est) {
         cblas_scopy(n, X, 1, V, 1);
         *est = temp;

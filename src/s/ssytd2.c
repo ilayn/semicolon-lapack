@@ -50,17 +50,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ssytd2(const char* uplo, const int n, float* const restrict A,
-            const int lda, float* const restrict D, float* const restrict E,
-            float* const restrict tau, int* info)
+void ssytd2(const char* uplo, const int n, f32* const restrict A,
+            const int lda, f32* const restrict D, f32* const restrict E,
+            f32* const restrict tau, int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
-    const float HALF = 0.5f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
 
     int upper;
     int i;
-    float alpha, taui;
+    f32 alpha, taui;
     CBLAS_UPLO cblas_uplo;
 
     /* Test the input parameters. */

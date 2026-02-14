@@ -65,9 +65,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dorgbr(const char* vect, const int m, const int n, const int k,
-            double* const restrict A, const int lda,
-            const double* const restrict tau,
-            double* const restrict work, const int lwork, int* info)
+            f64* const restrict A, const int lda,
+            const f64* const restrict tau,
+            f64* const restrict work, const int lwork, int* info)
 {
     int i, j, iinfo, lquery, mn, wantq, lwkopt;
 
@@ -120,7 +120,7 @@ void dorgbr(const char* vect, const int m, const int n, const int k,
         xerbla("DORGBR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -181,5 +181,5 @@ void dorgbr(const char* vect, const int m, const int n, const int k,
             }
         }
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

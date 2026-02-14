@@ -100,19 +100,19 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void slaed8(const int icompq, int* K, const int n, const int qsiz,
-            float* D, float* Q, const int ldq, int* indxq, float* rho,
-            const int cutpnt, float* Z, float* dlambda, float* Q2,
-            const int ldq2, float* W, int* perm, int* givptr,
-            int* givcol, float* givnum, int* indxp, int* indx, int* info)
+            f32* D, f32* Q, const int ldq, int* indxq, f32* rho,
+            const int cutpnt, f32* Z, f32* dlambda, f32* Q2,
+            const int ldq2, f32* W, int* perm, int* givptr,
+            int* givcol, f32* givnum, int* indxp, int* indx, int* info)
 {
-    const float MONE = -1.0f;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float EIGHT = 8.0f;
+    const f32 MONE = -1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 EIGHT = 8.0f;
 
     int i, imax, j, jlam, jmax, jp, k2, n1, n2;
-    float c, eps, s, t, tau, tol;
+    f32 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */
     *info = 0;

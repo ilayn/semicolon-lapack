@@ -51,20 +51,20 @@ void dlatbs(
     const char* normin,
     const int n,
     const int kd,
-    const double * const restrict AB,
+    const f64 * const restrict AB,
     const int ldab,
-    double * const restrict X,
-    double *scale,
-    double * const restrict cnorm,
+    f64 * const restrict X,
+    f64 *scale,
+    f64 * const restrict cnorm,
     int *info)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
 
     int upper, notran, nounit, normin_n;
     int i, imax, j, jfirst, jinc, jlast, jlen, maind;
-    double bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
+    f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -181,7 +181,7 @@ void dlatbs(
             grow = xbnd;
         } else {
             /* A is unit triangular */
-            double denom = (xbnd > smlnum) ? xbnd : smlnum;
+            f64 denom = (xbnd > smlnum) ? xbnd : smlnum;
             grow = (ONE < ONE / denom) ? ONE : ONE / denom;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
@@ -218,7 +218,7 @@ void dlatbs(
             }
             grow = (grow < xbnd) ? grow : xbnd;
         } else {
-            double denom = (xbnd > smlnum) ? xbnd : smlnum;
+            f64 denom = (xbnd > smlnum) ? xbnd : smlnum;
             grow = (ONE < ONE / denom) ? ONE : ONE / denom;
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;

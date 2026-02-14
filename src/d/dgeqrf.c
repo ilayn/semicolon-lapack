@@ -31,9 +31,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void dgeqrf(const int m, const int n,
-            double * const restrict A, const int lda,
-            double * const restrict tau,
-            double * const restrict work, const int lwork,
+            f64 * const restrict A, const int lda,
+            f64 * const restrict tau,
+            f64 * const restrict work, const int lwork,
             int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -58,7 +58,7 @@ void dgeqrf(const int m, const int n,
             work[0] = 1.0;
         } else {
             nb = lapack_get_nb("GEQRF");
-            work[0] = (double)(n * nb);
+            work[0] = (f64)(n * nb);
         }
         if (!lquery && lwork < (k > 0 ? (n > 1 ? n : 1) : 1)) {
             *info = -7;
@@ -131,5 +131,5 @@ void dgeqrf(const int m, const int n,
         dgeqr2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (double)iws;
+    work[0] = (f64)iws;
 }

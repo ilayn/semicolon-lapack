@@ -86,13 +86,13 @@ void dtfsm(
     const char* diag,
     const int m,
     const int n,
-    const double alpha,
-    const double* const restrict A,
-    double* const restrict B,
+    const f64 alpha,
+    const f64* const restrict A,
+    f64* const restrict B,
     const int ldb)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int lower, lside, misodd, nisodd, normaltransr, notrans;
     int m1, m2, n1, n2, k, info;

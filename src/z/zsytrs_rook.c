@@ -54,19 +54,19 @@ void zsytrs_rook(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int upper;
     int j, k, kp;
-    double complex ak, akm1, akm1k, bk, bkm1, denom;
+    c128 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -106,7 +106,7 @@ void zsytrs_rook(
                 cblas_zgeru(CblasColMajor, k, nrhs, &NEG_CONE, &A[0 + k * lda], 1,
                             &B[k], ldb, &B[0], ldb);
 
-                double complex s = CONE / A[k + k * lda];
+                c128 s = CONE / A[k + k * lda];
                 cblas_zscal(nrhs, &s, &B[k], ldb);
                 k = k - 1;
 
@@ -199,7 +199,7 @@ void zsytrs_rook(
                                 &B[k], ldb, &B[k + 1], ldb);
                 }
 
-                double complex s = CONE / A[k + k * lda];
+                c128 s = CONE / A[k + k * lda];
                 cblas_zscal(nrhs, &s, &B[k], ldb);
                 k = k + 1;
 

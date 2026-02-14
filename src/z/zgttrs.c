@@ -43,12 +43,12 @@ void zgttrs(
     const char* trans,
     const int n,
     const int nrhs,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU,
-    const double complex* const restrict DU2,
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU,
+    const c128* const restrict DU2,
     const int* const restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {

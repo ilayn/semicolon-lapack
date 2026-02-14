@@ -47,27 +47,27 @@
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
 void sstebz(const char* range, const char* order, const int n,
-            const float vl, const float vu, const int il, const int iu,
-            const float abstol,
-            const float* const restrict D,
-            const float* const restrict E,
+            const f32 vl, const f32 vu, const int il, const int iu,
+            const f32 abstol,
+            const f32* const restrict D,
+            const f32* const restrict E,
             int* m, int* nsplit,
-            float* const restrict W,
+            f32* const restrict W,
             int* const restrict iblock,
             int* const restrict isplit,
-            float* const restrict work,
+            f32* const restrict work,
             int* const restrict iwork,
             int* info)
 {
     /* Internal parameters from the Fortran source */
-    const float FUDGE = 2.1f;
-    const float RELFAC = 2.0f;
+    const f32 FUDGE = 2.1f;
+    const f32 RELFAC = 2.0f;
 
     int ncnvrg, toofew;
     int ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
         im, in, iorder, iout, irange, itmax,
         itmp1, iw, iwoff, j, jb, jdisc, je, nb, nwl, nwu;
-    float atoli, bnorm, gl, gu, pivmin, rtoli, safemn,
+    f32 atoli, bnorm, gl, gu, pivmin, rtoli, safemn,
            tmp1, tmp2, tnorm, ulp, wkill, wl, wlu = 0.0f, wu, wul = 0.0f;
     int idumma[1];
     int m_val;
@@ -336,7 +336,7 @@ void sstebz(const char* range, const char* order, const int n,
          */
         tnorm = fabsf(D[0]) + fabsf(E[0]);
         {
-            float t = fabsf(D[n - 1]) + fabsf(E[n - 2]);
+            f32 t = fabsf(D[n - 1]) + fabsf(E[n - 2]);
             if (t > tnorm) tnorm = t;
         }
 
@@ -421,7 +421,7 @@ void sstebz(const char* range, const char* order, const int n,
 
             /* Compute ATOLI for the current submatrix */
             if (abstol <= 0.0f) {
-                float agl = fabsf(gl), agu = fabsf(gu);
+                f32 agl = fabsf(gl), agu = fabsf(gu);
                 atoli = ulp * (agl > agu ? agl : agu);
             } else {
                 atoli = abstol;

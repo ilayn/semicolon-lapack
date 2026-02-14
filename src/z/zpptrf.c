@@ -36,11 +36,11 @@
 void zpptrf(
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
+    c128* const restrict AP,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -72,9 +72,9 @@ void zpptrf(
             }
 
             // Compute U(J,J) and test for non-positive-definiteness.
-            double ajj = creal(AP[jj]);
+            f64 ajj = creal(AP[jj]);
             if (j > 0) {
-                double complex dotc;
+                c128 dotc;
                 cblas_zdotc_sub(j, &AP[jc], 1, &AP[jc], 1, &dotc);
                 ajj -= creal(dotc);
             }
@@ -91,7 +91,7 @@ void zpptrf(
         for (int j = 0; j < n; j++) {
 
             // Compute L(J,J) and test for non-positive-definiteness.
-            double ajj = creal(AP[jj]);
+            f64 ajj = creal(AP[jj]);
             if (ajj <= ZERO) {
                 AP[jj] = ajj;
                 *info = j + 1;

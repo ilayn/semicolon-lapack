@@ -55,22 +55,22 @@
  */
 void dlassq(
     const int n,
-    const double * const restrict X,
+    const f64 * const restrict X,
     const int incx,
-    double *scale,
-    double *sumsq)
+    f64 *scale,
+    f64 *sumsq)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
-    const double tsml = ldexp(1.0, CEIL_HALF(DBL_MIN_EXP - 1));
-    const double tbig = ldexp(1.0, FLOOR_HALF(DBL_MAX_EXP - DBL_MANT_DIG + 1));
-    const double ssml = ldexp(1.0, -FLOOR_HALF(DBL_MIN_EXP - DBL_MANT_DIG));
-    const double sbig = ldexp(1.0, -CEIL_HALF(DBL_MAX_EXP + DBL_MANT_DIG - 1));
+    const f64 tsml = ldexp(1.0, CEIL_HALF(DBL_MIN_EXP - 1));
+    const f64 tbig = ldexp(1.0, FLOOR_HALF(DBL_MAX_EXP - DBL_MANT_DIG + 1));
+    const f64 ssml = ldexp(1.0, -FLOOR_HALF(DBL_MIN_EXP - DBL_MANT_DIG));
+    const f64 sbig = ldexp(1.0, -CEIL_HALF(DBL_MAX_EXP + DBL_MANT_DIG - 1));
 
     int i, ix;
     int notbig;
-    double abig, amed, asml, ax, ymax, ymin;
+    f64 abig, amed, asml, ax, ymax, ymin;
 
     /* Quick return if possible */
     if (isnan(*scale) || isnan(*sumsq)) {

@@ -70,19 +70,19 @@
  *                           the Schur form no longer satisfy select=true.
  */
 void sgees(const char* jobvs, const char* sort, sselect2_t select,
-           const int n, float* A, const int lda, int* sdim,
-           float* wr, float* wi,
-           float* VS, const int ldvs,
-           float* work, const int lwork, int* bwork, int* info)
+           const int n, f32* A, const int lda, int* sdim,
+           f32* wr, f32* wi,
+           f32* VS, const int ldvs,
+           f32* work, const int lwork, int* bwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int cursl, lastsl, lquery, lst2sl, scalea, wantst, wantvs;
     int hswork, i, i1, i2, ibal, icond, ierr, ieval;
     int ihi, ilo, inxt, ip, itau, iwrk, maxwrk, minwrk;
-    float anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
-    float dum[1];
+    f32 anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
+    f32 dum[1];
     int idum[1];
     int nb_gehrd, nb_orghr;
 
@@ -130,7 +130,7 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
             }
         }
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -309,5 +309,5 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
         }
     }
 
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 }

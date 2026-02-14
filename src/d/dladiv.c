@@ -23,17 +23,17 @@
  * @param[in]  c  Double precision scalar.
  * @param[in]  d  Double precision scalar.
  *                The scalars a, b, c, and d in the above expression.
- * @param[out] p  Pointer to double, receives real part of result.
- * @param[out] q  Pointer to double, receives imaginary part of result.
+ * @param[out] p  Pointer to f64, receives real part of result.
+ * @param[out] q  Pointer to f64, receives imaginary part of result.
  */
-void dladiv(const double a, const double b, const double c, const double d,
-            double* p, double* q)
+void dladiv(const f64 a, const f64 b, const f64 c, const f64 d,
+            f64* p, f64* q)
 {
-    const double BS = 2.0;
-    const double HALF = 0.5;
-    const double TWO = 2.0;
+    const f64 BS = 2.0;
+    const f64 HALF = 0.5;
+    const f64 TWO = 2.0;
 
-    double aa, bb, cc, dd, ab, cd, s, ov, un, be, eps;
+    f64 aa, bb, cc, dd, ab, cd, s, ov, un, be, eps;
 
     aa = a;
     bb = b;

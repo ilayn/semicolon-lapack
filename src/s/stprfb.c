@@ -49,14 +49,14 @@
  */
 void stprfb(const char* side, const char* trans, const char* direct,
             const char* storev, const int m, const int n, const int k,
-            const int l, const float* const restrict V, const int ldv,
-            const float* const restrict T, const int ldt,
-            float* const restrict A, const int lda,
-            float* const restrict B, const int ldb,
-            float* const restrict work, const int ldwork)
+            const int l, const f32* const restrict V, const int ldv,
+            const f32* const restrict T, const int ldt,
+            f32* const restrict A, const int lda,
+            f32* const restrict B, const int ldb,
+            f32* const restrict work, const int ldwork)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
     int i, j, mp, np, kp;
     int left, right, forward, backward, column, row;
 

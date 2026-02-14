@@ -27,10 +27,10 @@
 int ilaslr(
     const int m,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda)
 {
-    const float zero = 0.0f;
+    const f32 zero = 0.0f;
     int i, j, result;
 
     if (m == 0) {

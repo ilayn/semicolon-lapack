@@ -68,13 +68,13 @@
  *                      < 0:  if info = -i, the i-th argument had an illegal value
  */
 void zungbr(const char* vect, const int m, const int n, const int k,
-            double complex* const restrict A, const int lda,
-            const double complex* const restrict tau,
-            double complex* const restrict work, const int lwork,
+            c128* const restrict A, const int lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const int lwork,
             int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int i, iinfo, j, lwkopt, mn;
     int lquery, wantq;
@@ -129,7 +129,7 @@ void zungbr(const char* vect, const int m, const int n, const int k,
         xerbla("ZUNGBR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
         return;
     }
 
@@ -214,5 +214,5 @@ void zungbr(const char* vect, const int m, const int n, const int k,
             }
         }
     }
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

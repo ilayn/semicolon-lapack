@@ -35,14 +35,14 @@
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
 void slahr2(const int n, const int k, const int nb,
-            float* A, const int lda, float* tau,
-            float* T, const int ldt, float* Y, const int ldy)
+            f32* A, const int lda, f32* tau,
+            f32* T, const int ldt, f32* Y, const int ldy)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int i;
-    float ei = 0.0f;
+    f32 ei = 0.0f;
 
     /* Quick return if possible */
     if (n <= 1)

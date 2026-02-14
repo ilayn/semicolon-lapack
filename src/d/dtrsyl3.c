@@ -72,22 +72,22 @@
  */
 void dtrsyl3(const char* trana, const char* tranb, const int isgn,
              const int m, const int n,
-             const double* A, const int lda,
-             const double* B, const int ldb,
-             double* C, const int ldc,
-             double* scale,
+             const f64* A, const int lda,
+             const f64* B, const int ldb,
+             f64* C, const int ldc,
+             f64* scale,
              int* iwork, const int liwork,
-             double* swork, const int ldswork,
+             f64* swork, const int ldswork,
              int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notrna, notrnb, lquery, skip;
     int awrk, bwrk, i, i1, i2, iinfo, j, j1, j2, jj;
     int k, k1, k2, l, l1, l2, ll, nba, nb, nbb, pc;
-    double anrm, bignum, bnrm, cnrm, scal, scaloc;
-    double scamin, sgn, xnrm, buf, smlnum;
+    f64 anrm, bignum, bnrm, cnrm, scal, scaloc;
+    f64 scamin, sgn, xnrm, buf, smlnum;
 
     /* Decode and Test input parameters */
     notrna = (trana[0] == 'N' || trana[0] == 'n');
@@ -286,7 +286,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
         }
     }
 
-    sgn = (double)isgn;
+    sgn = (f64)isgn;
 
     if (notrna && notrnb) {
 
@@ -345,7 +345,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -376,7 +376,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -437,7 +437,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -532,7 +532,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -563,7 +563,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -624,7 +624,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -720,7 +720,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -750,7 +750,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -811,7 +811,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -906,7 +906,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -937,7 +937,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -998,7 +998,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = buf * ldexp(1.0, ilogb(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                double tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
+                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
@@ -1043,7 +1043,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
     *scale = swork[0];
     for (k = 0; k < nba; k++) {
         for (l = 0; l < nbb; l++) {
-            double sw = swork[k + l * ldswork];
+            f64 sw = swork[k + l * ldswork];
             if (sw < *scale) *scale = sw;
         }
     }
@@ -1098,7 +1098,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
         scal = C[0];
         for (k = 0; k < m; k++) {
             for (l = 0; l < n; l++) {
-                double absval = fabs(C[k + l * ldc]);
+                f64 absval = fabs(C[k + l * ldc]);
                 if (absval > scal) scal = absval;
             }
         }

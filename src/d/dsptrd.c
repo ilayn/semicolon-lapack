@@ -41,17 +41,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dsptrd(const char* uplo, const int n, double* const restrict AP,
-            double* const restrict D, double* const restrict E,
-            double* const restrict tau, int* info)
+void dsptrd(const char* uplo, const int n, f64* const restrict AP,
+            f64* const restrict D, f64* const restrict E,
+            f64* const restrict tau, int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
 
     int upper;
     int i, i1, i1i1, ii;
-    double alpha, taui;
+    f64 alpha, taui;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

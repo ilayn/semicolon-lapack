@@ -47,8 +47,8 @@ void stfttr(
     const char* transr,
     const char* uplo,
     const int n,
-    const float* const restrict ARF,
-    float* const restrict A,
+    const f32* const restrict ARF,
+    f32* const restrict A,
     const int lda,
     int* info)
 {

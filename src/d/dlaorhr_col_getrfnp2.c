@@ -62,12 +62,12 @@
 void dlaorhr_col_getrfnp2(
     const int m,
     const int n,
-    double* const restrict A,
+    f64* const restrict A,
     const int lda,
-    double* restrict D,
+    f64* restrict D,
     int* info)
 {
-    double sfmin;
+    f64 sfmin;
     int i, n1, n2;
     int iinfo;
 

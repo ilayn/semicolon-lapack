@@ -50,17 +50,17 @@
 void spstrf(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* const restrict piv,
     int* rank,
-    const float tol,
-    float* const restrict work,
+    const f32 tol,
+    f32* const restrict work,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 NEG_ONE = -1.0f;
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -97,7 +97,7 @@ void spstrf(
 
     // Compute stopping value
     int pvt = 0;
-    float ajj = A[0];
+    f32 ajj = A[0];
     for (int i = 1; i < n; i++) {
         if (A[i + i * lda] > ajj) {
             pvt = i;
@@ -111,7 +111,7 @@ void spstrf(
     }
 
     // Compute stopping value if not supplied
-    float dstop;
+    f32 dstop;
     if (tol < ZERO) {
         dstop = n * slamch("Epsilon") * ajj;
     } else {
@@ -137,7 +137,7 @@ void spstrf(
                 // stored in the second half of WORK
                 for (int i = j; i < n; i++) {
                     if (j > k) {
-                        float tmp = A[(j - 1) + i * lda];
+                        f32 tmp = A[(j - 1) + i * lda];
                         work[i] = work[i] + tmp * tmp;
                     }
                     work[n + i] = A[i + i * lda] - work[i];
@@ -146,7 +146,7 @@ void spstrf(
                 if (j > 0) {
                     // Find max in work[n+j : n+n-1]
                     int itemp = 0;
-                    float wmax = work[n + j];
+                    f32 wmax = work[n + j];
                     for (int i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
@@ -178,7 +178,7 @@ void spstrf(
                     }
 
                     // Swap dot products and PIV
-                    float dtemp = work[j];
+                    f32 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
                     int itemp = piv[pvt];
@@ -229,7 +229,7 @@ void spstrf(
                 // stored in the second half of WORK
                 for (int i = j; i < n; i++) {
                     if (j > k) {
-                        float tmp = A[i + (j - 1) * lda];
+                        f32 tmp = A[i + (j - 1) * lda];
                         work[i] = work[i] + tmp * tmp;
                     }
                     work[n + i] = A[i + i * lda] - work[i];
@@ -238,7 +238,7 @@ void spstrf(
                 if (j > 0) {
                     // Find max in work[n+j : n+n-1]
                     int itemp = 0;
-                    float wmax = work[n + j];
+                    f32 wmax = work[n + j];
                     for (int i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
@@ -270,7 +270,7 @@ void spstrf(
                     }
 
                     // Swap dot products and PIV
-                    float dtemp = work[j];
+                    f32 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
                     int itemp = piv[pvt];

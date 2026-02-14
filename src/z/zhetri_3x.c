@@ -64,21 +64,21 @@
 void zhetri_3x(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    const double complex* restrict E,
+    const c128* restrict E,
     const int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     const int nb,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int upper;
     int cut, i, icount, invd, ip, k, nnb, j, u11;
-    double ak, akp1, t;
-    double complex akkp1, d, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
+    f64 ak, akp1, t;
+    c128 akkp1, d, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
     int ldwork = n + nb + 1;
 
     *info = 0;

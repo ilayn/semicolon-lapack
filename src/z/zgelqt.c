@@ -50,9 +50,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgelqt(const int m, const int n, const int mb,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict T, const int ldt,
-            double complex* const restrict work,
+            c128* const restrict A, const int lda,
+            c128* const restrict T, const int ldt,
+            c128* const restrict work,
             int* info)
 {
     int k, i, ib, iinfo;

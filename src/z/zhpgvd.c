@@ -75,14 +75,14 @@ void zhpgvd(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* const restrict AP,
-    double complex* const restrict BP,
-    double* const restrict W,
-    double complex* const restrict Z,
+    c128* const restrict AP,
+    c128* const restrict BP,
+    f64* const restrict W,
+    c128* const restrict Z,
     const int ldz,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
-    double* const restrict rwork,
+    f64* const restrict rwork,
     const int lrwork,
     int* const restrict iwork,
     const int liwork,
@@ -123,8 +123,8 @@ void zhpgvd(
             }
         }
 
-        work[0] = CMPLX((double)lwmin, 0.0);
-        rwork[0] = (double)lrwmin;
+        work[0] = CMPLX((f64)lwmin, 0.0);
+        rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -157,9 +157,9 @@ void zhpgvd(
     zhpgst(itype, uplo, n, AP, BP, info);
     zhpevd(jobz, uplo, n, AP, W, Z, ldz, work, lwork, rwork,
            lrwork, iwork, liwork, info);
-    lwmin = (int)fmax((double)lwmin, creal(work[0]));
-    lrwmin = (int)fmax((double)lrwmin, rwork[0]);
-    liwmin = (int)fmax((double)liwmin, (double)iwork[0]);
+    lwmin = (int)fmax((f64)lwmin, creal(work[0]));
+    lrwmin = (int)fmax((f64)lrwmin, rwork[0]);
+    liwmin = (int)fmax((f64)liwmin, (f64)iwork[0]);
 
     if (wantz) {
 
@@ -208,7 +208,7 @@ void zhpgvd(
         }
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
-    rwork[0] = (double)lrwmin;
+    work[0] = CMPLX((f64)lwmin, 0.0);
+    rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 }

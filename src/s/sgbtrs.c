@@ -47,15 +47,15 @@ void sgbtrs(
     const int kl,
     const int ku,
     const int nrhs,
-    const float * const restrict AB,
+    const f32 * const restrict AB,
     const int ldab,
     const int * const restrict ipiv,
-    float * const restrict B,
+    f32 * const restrict B,
     const int ldb,
     int *info)
 {
-    const float ONE = 1.0f;
-    const float NEG_ONE = -1.0f;
+    const f32 ONE = 1.0f;
+    const f32 NEG_ONE = -1.0f;
 
     int notran, lnoti;
     int i, j, kd, l, lm;

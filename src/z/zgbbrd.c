@@ -65,17 +65,17 @@
  */
 void zgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,
-            double complex* const restrict AB, const int ldab,
-            double* const restrict D, double* const restrict E,
-            double complex* const restrict Q, const int ldq,
-            double complex* const restrict PT, const int ldpt,
-            double complex* const restrict C, const int ldc,
-            double complex* const restrict work,
-            double* const restrict rwork, int* info)
+            c128* const restrict AB, const int ldab,
+            f64* const restrict D, f64* const restrict E,
+            c128* const restrict Q, const int ldq,
+            c128* const restrict PT, const int ldpt,
+            c128* const restrict C, const int ldc,
+            c128* const restrict work,
+            f64* const restrict rwork, int* info)
 {
-    const double ZERO = 0.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int wantb = (vect[0] == 'B' || vect[0] == 'b');
     int wantq = (vect[0] == 'Q' || vect[0] == 'q') || wantb;
@@ -134,7 +134,6 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
             mu0 = 1;
         }
 
-        int mn = MAX(m, n);
         int klm = MIN(m - 1, kl);
         int kun = MIN(n - 1, ku);
         int kb = klm + kun;
@@ -174,7 +173,7 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (ml > ml0) {
                     if (ml <= m - i) {
-                        double complex ra;
+                        c128 ra;
                         zlartg(AB[(ku + ml - 2) + i * ldab], AB[(ku + ml - 1) + i * ldab],
                                &rwork[i + ml - 1], &work[i + ml - 1], &ra);
                         AB[(ku + ml - 2) + i * ldab] = ra;
@@ -234,7 +233,7 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (ml == ml0 && mu > mu0) {
                     if (mu <= n - i) {
-                        double complex ra;
+                        c128 ra;
                         zlartg(AB[(ku - mu + 2) + (i + mu - 2) * ldab],
                                AB[(ku - mu + 1) + (i + mu - 1) * ldab],
                                &rwork[i + mu - 1], &work[i + mu - 1], &ra);
@@ -277,8 +276,8 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
 
     if (ku == 0 && kl > 0) {
         for (int i = 0; i < MIN(m - 1, n); i++) {
-            double rc;
-            double complex rs, ra;
+            f64 rc;
+            c128 rs, ra;
             zlartg(AB[i * ldab], AB[1 + i * ldab], &rc, &rs, &ra);
             AB[i * ldab] = ra;
             if (i < n - 1) {
@@ -293,10 +292,10 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
             }
         }
     } else if (ku > 0 && m < n) {
-        double complex rb = AB[(ku - 1) + m * ldab];
+        c128 rb = AB[(ku - 1) + m * ldab];
         for (int i = m - 1; i >= 0; i--) {
-            double rc;
-            double complex rs, ra;
+            f64 rc;
+            c128 rs, ra;
             zlartg(AB[ku + i * ldab], rb, &rc, &rs, &ra);
             AB[ku + i * ldab] = ra;
             if (i > 0) {
@@ -309,9 +308,9 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
         }
     }
 
-    double complex t = AB[ku];
+    c128 t = AB[ku];
     for (int i = 0; i < minmn; i++) {
-        double abst = cabs(t);
+        f64 abst = cabs(t);
         D[i] = abst;
         if (abst != ZERO) {
             t = t / abst;
@@ -322,7 +321,7 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
             cblas_zscal(m, &t, &Q[i * ldq], 1);
         }
         if (wantc) {
-            double complex tc = conj(t);
+            c128 tc = conj(t);
             cblas_zscal(ncc, &tc, &C[i], ldc);
         }
         if (i < minmn - 1) {

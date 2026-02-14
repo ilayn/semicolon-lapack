@@ -40,22 +40,22 @@ void ssbtrd(
     const char* uplo,
     const int n,
     const int kd,
-    float* const restrict AB,
+    f32* const restrict AB,
     const int ldab,
-    float* const restrict D,
-    float* const restrict E,
-    float* const restrict Q,
+    f32* const restrict D,
+    f32* const restrict E,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict work,
+    f32* const restrict work,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int initq, upper, wantq;
     int i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
     int jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
-    float temp;
+    f32 temp;
 
     initq = (vect[0] == 'V' || vect[0] == 'v');
     wantq = initq || (vect[0] == 'U' || vect[0] == 'u');

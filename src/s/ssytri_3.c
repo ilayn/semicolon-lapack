@@ -65,11 +65,11 @@
 void ssytri_3(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    const float* restrict E,
+    const f32* restrict E,
     const int* restrict ipiv,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -89,7 +89,7 @@ void ssytri_3(
         }
         lwkopt = (n + nb + 1) * (nb + 3);
     }
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -114,5 +114,5 @@ void ssytri_3(
 
     ssytri_3x(uplo, n, A, lda, E, ipiv, work, nb, info);
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

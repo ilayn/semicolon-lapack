@@ -35,19 +35,19 @@ void dtpcon(
     const char* uplo,
     const char* diag,
     const int n,
-    const double* const restrict AP,
-    double* rcond,
-    double* const restrict work,
+    const f64* const restrict AP,
+    f64* rcond,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int nounit, onenrm, upper;
     char normin;
     int ix, kase, kase1;
-    double ainvnm, anorm, scale, smlnum, xnorm;
+    f64 ainvnm, anorm, scale, smlnum, xnorm;
     int isave[3];
     int info_local;
 
@@ -76,7 +76,7 @@ void dtpcon(
     }
 
     *rcond = ZERO;
-    smlnum = dlamch("S") * (double)(1 > n ? 1 : n);
+    smlnum = dlamch("S") * (f64)(1 > n ? 1 : n);
 
     // Compute the norm of the triangular matrix A
     anorm = dlantp(norm, uplo, diag, n, AP, work);

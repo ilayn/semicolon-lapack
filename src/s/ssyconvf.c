@@ -57,13 +57,13 @@ void ssyconvf(
     const char* uplo,
     const char* way,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* restrict E,
+    f32* restrict E,
     int* restrict ipiv,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int upper, convert;
     int i, ip;

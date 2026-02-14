@@ -46,16 +46,16 @@
  */
 void zgttrf(
     const int n,
-    double complex* const restrict DL,
-    double complex* const restrict D,
-    double complex* const restrict DU,
-    double complex* const restrict DU2,
+    c128* const restrict DL,
+    c128* const restrict D,
+    c128* const restrict DU,
+    c128* const restrict DU2,
     int* const restrict ipiv,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int i;
-    double complex fact, temp;
+    c128 fact, temp;
 
     *info = 0;
     if (n < 0) {

@@ -43,15 +43,15 @@
  * @param[out]    work    Double precision array, dimension (n).
  */
 void dlaqp2(const int m, const int n, const int offset,
-            double * const restrict A, const int lda,
+            f64 * const restrict A, const int lda,
             int * const restrict jpvt,
-            double * const restrict tau,
-            double * const restrict vn1,
-            double * const restrict vn2,
-            double * const restrict work)
+            f64 * const restrict tau,
+            f64 * const restrict vn1,
+            f64 * const restrict vn2,
+            f64 * const restrict work)
 {
     int mn = (m - offset) < n ? (m - offset) : n;
-    double tol3z = sqrt(DBL_EPSILON);
+    f64 tol3z = sqrt(DBL_EPSILON);
 
     /* Compute factorization. */
     for (int i = 0; i < mn; i++) {
@@ -92,9 +92,9 @@ void dlaqp2(const int m, const int n, const int offset,
                  * NOTE: The following lines follow from the analysis in
                  * LAPACK Working Note 176.
                  */
-                double temp = 1.0 - pow(fabs(A[offpi + j * lda]) / vn1[j], 2);
+                f64 temp = 1.0 - pow(fabs(A[offpi + j * lda]) / vn1[j], 2);
                 temp = temp > 0.0 ? temp : 0.0;
-                double temp2 = temp * pow(vn1[j] / vn2[j], 2);
+                f64 temp2 = temp * pow(vn1[j] / vn2[j], 2);
                 if (temp2 <= tol3z) {
                     if (offpi < m - 1) {
                         vn1[j] = cblas_dnrm2(m - offpi - 1,

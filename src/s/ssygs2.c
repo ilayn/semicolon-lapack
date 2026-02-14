@@ -34,17 +34,17 @@ void ssygs2(
     const int itype,
     const char* uplo,
     const int n,
-    float* restrict A,
+    f32* restrict A,
     const int lda,
-    const float* restrict B,
+    const f32* restrict B,
     const int ldb,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float HALF = 0.5f;
+    const f32 ONE = 1.0f;
+    const f32 HALF = 0.5f;
     int upper;
     int k;
-    float akk, bkk, ct;
+    f32 akk, bkk, ct;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -53,10 +53,10 @@ void dgbsv(
     const int kl,
     const int ku,
     const int nrhs,
-    double * const restrict AB,
+    f64 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb,
     int *info)
 {

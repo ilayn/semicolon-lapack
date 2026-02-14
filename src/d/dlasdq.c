@@ -7,7 +7,7 @@
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
-static const double ZERO = 0.0;
+static const f64 ZERO = 0.0;
 
 /**
  * DLASDQ computes the singular value decomposition (SVD) of a real
@@ -38,15 +38,15 @@ static const double ZERO = 0.0;
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void dlasdq(const char* uplo, const int sqre, const int n, const int ncvt,
-            const int nru, const int ncc, double* const restrict D,
-            double* const restrict E, double* const restrict VT, const int ldvt,
-            double* const restrict U, const int ldu,
-            double* const restrict C, const int ldc,
-            double* const restrict work, int* info)
+            const int nru, const int ncc, f64* const restrict D,
+            f64* const restrict E, f64* const restrict VT, const int ldvt,
+            f64* const restrict U, const int ldu,
+            f64* const restrict C, const int ldc,
+            f64* const restrict work, int* info)
 {
     int rotate;
     int i, isub, iuplo, j, np1, sqre1;
-    double cs, r, smin, sn;
+    f64 cs, r, smin, sn;
 
     /* Test the input parameters */
     *info = 0;

@@ -33,9 +33,9 @@ void zpbtrs(
     const int n,
     const int kd,
     const int nrhs,
-    const double complex* const restrict AB,
+    const c128* const restrict AB,
     const int ldab,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {

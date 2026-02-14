@@ -99,15 +99,15 @@
  */
 void zlaed7(const int n, const int cutpnt, const int qsiz,
             const int tlvls, const int curlvl, const int curpbm,
-            double* D, double complex* Q, const int ldq,
-            const double rho, int* indxq, double* qstore,
+            f64* D, c128* Q, const int ldq,
+            const f64 rho, int* indxq, f64* qstore,
             int* qptr, int* prmptr, int* perm, int* givptr,
-            int* givcol, double* givnum, double complex* work,
-            double* rwork, int* iwork, int* info)
+            int* givcol, f64* givnum, c128* work,
+            f64* rwork, int* iwork, int* info)
 {
     int coltyp, curr, i, idlmda, indx, indxc, indxp,
         iq, iw, iz, k, n1, n2, ptr;
-    double rho_local;
+    f64 rho_local;
 
     /* Test the input parameters. */
     *info = 0;

@@ -63,11 +63,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgelsy(const int m, const int n, const int nrhs,
-            float * const restrict A, const int lda,
-            float * const restrict B, const int ldb,
-            int * const restrict jpvt, const float rcond,
+            f32 * const restrict A, const int lda,
+            f32 * const restrict B, const int ldb,
+            int * const restrict jpvt, const f32 rcond,
             int *rank,
-            float * const restrict work, const int lwork,
+            f32 * const restrict work, const int lwork,
             int *info)
 {
     /* Constants from Fortran source: IMAX=1, IMIN=2 */
@@ -78,8 +78,8 @@ void sgelsy(const int m, const int n, const int nrhs,
     int iascl, ibscl, ismin, ismax, mn, nb;
     int lwkmin, lwkopt;
     int iinfo;
-    float anrm, bignum, bnrm, smlnum, wsize;
-    float c1, c2, s1, s2, smax, smaxpr, smin, sminpr;
+    f32 anrm, bignum, bnrm, smlnum, wsize;
+    f32 c1, c2, s1, s2, smax, smaxpr, smin, sminpr;
 
     /* Initialization */
     mn = m < n ? m : n;
@@ -132,7 +132,7 @@ void sgelsy(const int m, const int n, const int nrhs,
             if (w1 > lwkopt) lwkopt = w1;
             if (w2 > lwkopt) lwkopt = w2;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -172,7 +172,7 @@ void sgelsy(const int m, const int n, const int nrhs,
         int maxmn = m > n ? m : n;
         slaset("F", maxmn, nrhs, 0.0f, 0.0f, B, ldb);
         *rank = 0;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     }
 
@@ -192,7 +192,7 @@ void sgelsy(const int m, const int n, const int nrhs,
      *   A * P = Q * R
      * tau stored in work[0..mn-1], sub-workspace in work[mn..] */
     sgeqp3(m, n, A, lda, jpvt, work, &work[mn], lwork - mn, &iinfo);
-    wsize = (float)(mn) + work[mn];
+    wsize = (f32)(mn) + work[mn];
 
     /* Determine RANK using incremental condition estimation */
     work[ismin] = 1.0f;
@@ -204,7 +204,7 @@ void sgelsy(const int m, const int n, const int nrhs,
         *rank = 0;
         int maxmn = m > n ? m : n;
         slaset("F", maxmn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
         return;
     } else {
         *rank = 1;
@@ -254,7 +254,7 @@ void sgelsy(const int m, const int n, const int nrhs,
     sormqr("L", "T", m, nrhs, mn, A, lda,
            work, B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
     {
-        float wq = 2.0f * mn + work[2 * mn];
+        f32 wq = 2.0f * mn + work[2 * mn];
         if (wq > wsize) wsize = wq;
     }
 
@@ -299,5 +299,5 @@ void sgelsy(const int m, const int n, const int nrhs,
         slascl("G", 0, 0, bignum, bnrm, n, nrhs, B, ldb, &iinfo);
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

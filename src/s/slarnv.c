@@ -35,9 +35,9 @@
 #define TWO_PI 6.2831853071795864769252867665590057683943f
 
 void slarnv(const int idist, int* const restrict iseed, const int n,
-            float* const restrict X)
+            f32* const restrict X)
 {
-    float U[LV];
+    f32 U[LV];
     int i, iv, il, il2;
 
     for (iv = 0; iv < n; iv += LV / 2) {

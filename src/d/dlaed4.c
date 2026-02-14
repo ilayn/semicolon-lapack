@@ -38,25 +38,25 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, the updating process failed.
  */
-void dlaed4(const int n, const int i, const double* const restrict D,
-            const double* const restrict Z, double* const restrict delta,
-            const double rho, double* dlam, int* info)
+void dlaed4(const int n, const int i, const f64* const restrict D,
+            const f64* const restrict Z, f64* const restrict delta,
+            const f64 rho, f64* dlam, int* info)
 {
     const int MAXIT = 30;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
-    const double FOUR = 4.0;
-    const double EIGHT = 8.0;
-    const double TEN = 10.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
+    const f64 FOUR = 4.0;
+    const f64 EIGHT = 8.0;
+    const f64 TEN = 10.0;
 
     int orgati, swtch, swtch3;
     int ii, iim1, iip1, ip1, iter, j, niter;
-    double a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
-    double eps, erretm, eta, midpt, phi, prew, psi;
-    double rhoinv, tau, temp, temp1, w;
-    double zz[3];
+    f64 a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
+    f64 eps, erretm, eta, midpt, phi, prew, psi;
+    f64 rhoinv, tau, temp, temp1, w;
+    f64 zz[3];
 
     /* Since this routine is called in an inner loop, we do no argument
        checking. */

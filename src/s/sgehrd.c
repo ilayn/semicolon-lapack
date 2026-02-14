@@ -39,18 +39,18 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgehrd(const int n, const int ilo, const int ihi,
-            float* A, const int lda, float* tau,
-            float* work, const int lwork, int* info)
+            f32* A, const int lda, f32* tau,
+            f32* work, const int lwork, int* info)
 {
     const int NBMAX = 64;
     const int LDT = NBMAX + 1;
     const int TSIZE = LDT * NBMAX;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int lquery;
     int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
-    float ei;
+    f32 ei;
     int max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
@@ -81,7 +81,7 @@ void sgehrd(const int n, const int ilo, const int ihi,
             if (nb > NBMAX) nb = NBMAX;
             lwkopt = n * nb + TSIZE;
         }
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -178,5 +178,5 @@ void sgehrd(const int n, const int ilo, const int ihi,
     /* Use unblocked code to reduce the rest of the matrix */
     sgehd2(n, i, ihi, A, lda, tau, work, &iinfo);
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

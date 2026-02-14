@@ -39,16 +39,16 @@
 void slaqsy(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    const float* const restrict S,
-    const float scond,
-    const float amax,
+    const f32* const restrict S,
+    const f32 scond,
+    const f32 amax,
     char* equed)
 {
     // Internal parameters
     // THRESH is a threshold value used to decide if scaling should be done
-    const float THRESH = 0.1f;
+    const f32 THRESH = 0.1f;
 
     // Quick return if possible
     if (n <= 0) {
@@ -59,14 +59,14 @@ void slaqsy(
     // Initialize LARGE and SMALL
     // SMALL = SLAMCH('Safe minimum') / SLAMCH('Precision')
     // LARGE = 1 / SMALL
-    float eps = FLT_EPSILON * 0.5f;
-    float sfmin = FLT_MIN;
-    float small_val = 1.0f / FLT_MAX;
+    f32 eps = FLT_EPSILON * 0.5f;
+    f32 sfmin = FLT_MIN;
+    f32 small_val = 1.0f / FLT_MAX;
     if (small_val >= sfmin) {
         sfmin = small_val * (1.0f + eps);
     }
-    float small = sfmin / eps;
-    float large = 1.0f / small;
+    f32 small = sfmin / eps;
+    f32 large = 1.0f / small;
 
     if (scond >= THRESH && amax >= small && amax <= large) {
         // No equilibration
@@ -76,7 +76,7 @@ void slaqsy(
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             // Upper triangle of A is stored
             for (int j = 0; j < n; j++) {
-                float cj = S[j];
+                f32 cj = S[j];
                 for (int i = 0; i <= j; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }
@@ -84,7 +84,7 @@ void slaqsy(
         } else {
             // Lower triangle of A is stored
             for (int j = 0; j < n; j++) {
-                float cj = S[j];
+                f32 cj = S[j];
                 for (int i = j; i < n; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }

@@ -48,18 +48,18 @@
  * @param[in]     ldy   The leading dimension of the array Y. ldy >= max(1,n).
  */
 void zlabrd(const int m, const int n, const int nb,
-            double complex* const restrict A, const int lda,
-            double* const restrict D, double* const restrict E,
-            double complex* const restrict tauq, double complex* const restrict taup,
-            double complex* const restrict X, const int ldx,
-            double complex* const restrict Y, const int ldy)
+            c128* const restrict A, const int lda,
+            f64* const restrict D, f64* const restrict E,
+            c128* const restrict tauq, c128* const restrict taup,
+            c128* const restrict X, const int ldx,
+            c128* const restrict Y, const int ldy)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex ONE  = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE  = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     int i;
-    double complex alpha;
+    c128 alpha;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {

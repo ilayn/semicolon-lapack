@@ -73,18 +73,18 @@
 void zhecon_3(
     const char* uplo,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* restrict E,
+    const c128* restrict E,
     const int* restrict ipiv,
-    const double anorm,
-    double* rcond,
-    double complex* restrict work,
+    const f64 anorm,
+    f64* rcond,
+    c128* restrict work,
     int* info)
 {
     int upper;
     int i, kase;
-    double ainvnm;
+    f64 ainvnm;
     int isave[3];
     int dummy_info;
 

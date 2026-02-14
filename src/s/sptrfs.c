@@ -48,27 +48,27 @@
 void sptrfs(
     const int n,
     const int nrhs,
-    const float* const restrict D,
-    const float* const restrict E,
-    const float* const restrict DF,
-    const float* const restrict EF,
-    const float* const restrict B,
+    const f32* const restrict D,
+    const f32* const restrict E,
+    const f32* const restrict DF,
+    const f32* const restrict EF,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* info)
 {
     const int ITMAX = 5;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
 
     int count, i, ix, j, nz;
-    float bi, cx, dx, ex, eps, lstres, s, safe1, safe2, safmin;
+    f32 bi, cx, dx, ex, eps, lstres, s, safe1, safe2, safmin;
     int max_n_1 = (1 > n) ? 1 : n;
     int info_local;
 

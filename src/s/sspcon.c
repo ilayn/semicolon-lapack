@@ -32,20 +32,20 @@
 void sspcon(
     const char* uplo,
     const int n,
-    const float* const restrict AP,
+    const f32* const restrict AP,
     const int* const restrict ipiv,
-    const float anorm,
-    float* rcond,
-    float* const restrict work,
+    const f32 anorm,
+    f32* rcond,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     int upper;
     int i, ip, kase;
-    float ainvnm;
+    f32 ainvnm;
     int isave[3];
     int info_local;
 

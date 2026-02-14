@@ -30,12 +30,12 @@ void stptri(
     const char* uplo,
     const char* diag,
     const int n,
-    float* const restrict AP,
+    f32* const restrict AP,
     int* info)
 {
     // stptri.f lines 132-133: Parameters
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     // stptri.f lines 151-164: Test the input parameters
     *info = 0;
@@ -86,7 +86,7 @@ void stptri(
         // stptri.f lines 187-206: Compute inverse of upper triangular matrix
         int jc = 0;  // stptri.f line 191: JC = 1 (0-based: 0)
         for (int j = 0; j < n; j++) {  // stptri.f line 192: DO 30 J = 1, N
-            float ajj;
+            f32 ajj;
             if (nounit) {
                 // stptri.f lines 193-195
                 // AP( JC+J-1 ) in 1-based = AP[jc + j] in 0-based (since JC is 1-based offset)
@@ -112,7 +112,7 @@ void stptri(
         int jc = n * (n + 1) / 2 - 1;  // stptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
         int jclast = 0;  // Will be set in loop
         for (int j = n - 1; j >= 0; j--) {  // stptri.f line 213: DO 40 J = N, 1, -1
-            float ajj;
+            f32 ajj;
             if (nounit) {
                 // stptri.f lines 214-216
                 AP[jc] = ONE / AP[jc];

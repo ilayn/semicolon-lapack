@@ -43,10 +43,10 @@
 SEMICOLON_API void dormhr(const char* side, const char* trans,
                           const int m, const int n,
                           const int ilo, const int ihi,
-                          const double* A, const int lda,
-                          const double* tau,
-                          double* C, const int ldc,
-                          double* work, const int lwork, int* info)
+                          const f64* A, const int lda,
+                          const f64* tau,
+                          f64* C, const int ldc,
+                          f64* work, const int lwork, int* info)
 {
     int left, lquery;
     int i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
@@ -91,7 +91,7 @@ SEMICOLON_API void dormhr(const char* side, const char* trans,
         /* Get optimal block size */
         nb = lapack_get_nb("ORMQR");
         lwkopt = nw * nb;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -123,5 +123,5 @@ SEMICOLON_API void dormhr(const char* side, const char* trans,
     dormqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

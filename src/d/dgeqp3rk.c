@@ -81,16 +81,16 @@ void dgeqp3rk(
     const int n,
     const int nrhs,
     const int kmax,
-    double abstol,
-    double reltol,
-    double* const restrict A,
+    f64 abstol,
+    f64 reltol,
+    f64* const restrict A,
     const int lda,
     int* K,
-    double* maxc2nrmk,
-    double* relmaxc2nrmk,
+    f64* maxc2nrmk,
+    f64* relmaxc2nrmk,
     int* restrict jpiv,
-    double* restrict tau,
-    double* restrict work,
+    f64* restrict tau,
+    f64* restrict work,
     const int lwork,
     int* restrict iwork,
     int* info)
@@ -98,7 +98,7 @@ void dgeqp3rk(
     int lquery, done;
     int iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
     int kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
-    double eps, hugeval, maxc2nrm, safmin;
+    f64 eps, hugeval, maxc2nrm, safmin;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -128,7 +128,7 @@ void dgeqp3rk(
             nb = 32;
             lwkopt = 2 * n + nb * (n + nrhs + 1);
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < iws && !lquery) {
             *info = -15;
@@ -146,7 +146,7 @@ void dgeqp3rk(
         *K = 0;
         *maxc2nrmk = 0.0;
         *relmaxc2nrmk = 0.0;
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -170,7 +170,7 @@ void dgeqp3rk(
         *maxc2nrmk = maxc2nrm;
         *relmaxc2nrmk = maxc2nrm;
 
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -184,7 +184,7 @@ void dgeqp3rk(
             tau[j] = 0.0;
         }
 
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
 
     }
@@ -204,7 +204,7 @@ void dgeqp3rk(
         for (j = 0; j < minmn; j++) {
             tau[j] = 0.0;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -231,7 +231,7 @@ void dgeqp3rk(
             tau[j] = 0.0;
         }
 
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -287,7 +287,7 @@ void dgeqp3rk(
                     *info = ioffset + iinfo;
                 }
 
-                work[0] = (double)lwkopt;
+                work[0] = (f64)lwkopt;
 
                 return;
 
@@ -339,5 +339,5 @@ void dgeqp3rk(
 
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

@@ -36,18 +36,18 @@
  */
 void zgesc2(
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double complex* const restrict rhs,
+    c128* const restrict rhs,
     const int* const restrict ipiv,
     const int* const restrict jpiv,
-    double* scale)
+    f64* scale)
 {
-    const double ONE = 1.0;
-    const double TWO = 2.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
 
-    double eps, smlnum, bignum;
-    double complex temp;
+    f64 eps, smlnum, bignum;
+    c128 temp;
     int i, j, imax;
 
     if (n == 0) {

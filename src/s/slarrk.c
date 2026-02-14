@@ -36,18 +36,18 @@
  *                         - = 0: Eigenvalue converged.
  *                         - = -1: Eigenvalue did NOT converge.
  */
-void slarrk(const int n, const int iw, const float gl, const float gu,
-            const float* const restrict D, const float* const restrict E2,
-            const float pivmin, const float reltol,
-            float* w, float* werr, int* info)
+void slarrk(const int n, const int iw, const f32 gl, const f32 gu,
+            const f32* const restrict D, const f32* const restrict E2,
+            const f32 pivmin, const f32 reltol,
+            f32* w, f32* werr, int* info)
 {
     /* FUDGE = 2, a "fudge factor" to widen the Gershgorin intervals */
-    const float FUDGE = 2.0f;
-    const float HALF = 0.5f;
-    const float TWO = 2.0f;
+    const f32 FUDGE = 2.0f;
+    const f32 HALF = 0.5f;
+    const f32 TWO = 2.0f;
 
     int i, it, itmax, negcnt;
-    float atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
+    f32 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
 
     /* Quick return if possible */
     if (n <= 0) {

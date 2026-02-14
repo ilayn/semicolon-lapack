@@ -35,15 +35,15 @@ void zsytrs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -96,7 +96,7 @@ void zsytrs(
 
                 /* Multiply by inverse of diagonal block.
                  * Fortran: ZSCAL(NRHS, ONE/A(K,K), B(K,1), LDB) */
-                double complex inv_akk = ONE / A[k + k * lda];
+                c128 inv_akk = ONE / A[k + k * lda];
                 cblas_zscal(nrhs, &inv_akk, &B[k], ldb);
                 k--;
             } else {
@@ -122,13 +122,13 @@ void zsytrs(
                 /* Multiply by inverse of 2x2 diagonal block.
                  * D = [ A(k-1,k-1)  A(k-1,k) ]
                  *     [ A(k-1,k)    A(k,k)   ] */
-                double complex akm1k = A[(k - 1) + k * lda];
-                double complex akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
-                double complex ak = A[k + k * lda] / akm1k;
-                double complex denom = akm1 * ak - ONE;
+                c128 akm1k = A[(k - 1) + k * lda];
+                c128 akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
+                c128 ak = A[k + k * lda] / akm1k;
+                c128 denom = akm1 * ak - ONE;
                 for (int j = 0; j < nrhs; j++) {
-                    double complex bkm1 = B[(k - 1) + j * ldb] / akm1k;
-                    double complex bk = B[k + j * ldb] / akm1k;
+                    c128 bkm1 = B[(k - 1) + j * ldb] / akm1k;
+                    c128 bk = B[k + j * ldb] / akm1k;
                     B[(k - 1) + j * ldb] = (ak * bkm1 - bk) / denom;
                     B[k + j * ldb] = (akm1 * bk - bkm1) / denom;
                 }
@@ -211,7 +211,7 @@ void zsytrs(
                 }
 
                 /* Multiply by inverse of diagonal block. */
-                double complex inv_akk = ONE / A[k + k * lda];
+                c128 inv_akk = ONE / A[k + k * lda];
                 cblas_zscal(nrhs, &inv_akk, &B[k], ldb);
                 k++;
             } else {
@@ -237,13 +237,13 @@ void zsytrs(
                 /* Multiply by inverse of 2x2 diagonal block.
                  * D = [ A(k,k)    A(k+1,k) ]
                  *     [ A(k+1,k)  A(k+1,k+1) ] */
-                double complex akm1k = A[(k + 1) + k * lda];
-                double complex akm1 = A[k + k * lda] / akm1k;
-                double complex ak = A[(k + 1) + (k + 1) * lda] / akm1k;
-                double complex denom = akm1 * ak - ONE;
+                c128 akm1k = A[(k + 1) + k * lda];
+                c128 akm1 = A[k + k * lda] / akm1k;
+                c128 ak = A[(k + 1) + (k + 1) * lda] / akm1k;
+                c128 denom = akm1 * ak - ONE;
                 for (int j = 0; j < nrhs; j++) {
-                    double complex bkm1 = B[k + j * ldb] / akm1k;
-                    double complex bk = B[(k + 1) + j * ldb] / akm1k;
+                    c128 bkm1 = B[k + j * ldb] / akm1k;
+                    c128 bk = B[(k + 1) + j * ldb] / akm1k;
                     B[k + j * ldb] = (ak * bkm1 - bk) / denom;
                     B[(k + 1) + j * ldb] = (akm1 * bk - bkm1) / denom;
                 }

@@ -86,24 +86,24 @@ void zlaqp2rk(
     const int nrhs,
     const int ioffset,
     int kmax,
-    const double abstol,
-    const double reltol,
+    const f64 abstol,
+    const f64 reltol,
     const int kp1,
-    const double maxc2nrm,
-    double complex* const restrict A,
+    const f64 maxc2nrm,
+    c128* const restrict A,
     const int lda,
     int* K,
-    double* maxc2nrmk,
-    double* relmaxc2nrmk,
+    f64* maxc2nrmk,
+    f64* relmaxc2nrmk,
     int* restrict jpiv,
-    double complex* restrict tau,
-    double* restrict vn1,
-    double* restrict vn2,
-    double complex* restrict work,
+    c128* restrict tau,
+    f64* restrict vn1,
+    f64* restrict vn2,
+    c128* restrict work,
     int* info)
 {
     int i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
-    double hugeval, taunan, temp, temp2, tol3z;
+    f64 hugeval, taunan, temp, temp2, tol3z;
 
     *info = 0;
 

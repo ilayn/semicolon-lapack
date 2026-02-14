@@ -57,14 +57,14 @@
  */
 void sgels(const char* trans,
            const int m, const int n, const int nrhs,
-           float * const restrict A, const int lda,
-           float * const restrict B, const int ldb,
-           float * const restrict work, const int lwork,
+           f32 * const restrict A, const int lda,
+           f32 * const restrict B, const int ldb,
+           f32 * const restrict work, const int lwork,
            int *info)
 {
     int lquery, tpsd;
     int brow, iascl, ibscl, mn, nb, scllen, wsize;
-    float anrm, bignum, bnrm, smlnum;
+    f32 anrm, bignum, bnrm, smlnum;
     int iinfo;
 
     /* Test the input arguments */
@@ -107,7 +107,7 @@ void sgels(const char* trans,
         int mn_nrhs = mn > nrhs ? mn : nrhs;
         wsize = mn + mn_nrhs * nb;
         if (wsize < 1) wsize = 1;
-        work[0] = (float)wsize;
+        work[0] = (f32)wsize;
     }
 
     if (*info != 0) {
@@ -143,7 +143,7 @@ void sgels(const char* trans,
         /* Matrix all zero. Return zero solution. */
         int maxmn = m > n ? m : n;
         slaset("F", maxmn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (float)wsize;
+        work[0] = (f32)wsize;
         return;
     }
 
@@ -262,5 +262,5 @@ void sgels(const char* trans,
         slascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, &iinfo);
     }
 
-    work[0] = (float)wsize;
+    work[0] = (f32)wsize;
 }

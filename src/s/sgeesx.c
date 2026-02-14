@@ -84,21 +84,21 @@
  *                           the Schur form no longer satisfy select=true.
  */
 void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
-            const char* sense, const int n, float* A, const int lda, int* sdim,
-            float* wr, float* wi,
-            float* VS, const int ldvs,
-            float* rconde, float* rcondv,
-            float* work, const int lwork,
+            const char* sense, const int n, f32* A, const int lda, int* sdim,
+            f32* wr, f32* wi,
+            f32* VS, const int ldvs,
+            f32* rconde, f32* rcondv,
+            f32* work, const int lwork,
             int* iwork, const int liwork, int* bwork, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int cursl, lastsl, lquery, lst2sl, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
     int hswork, i, i1, i2, ibal, icond, ierr, ieval;
     int ihi, ilo, inxt, ip, itau, iwrk, liwrk, lwrk, maxwrk, minwrk;
-    float anrm, bignum, cscale = ONE, eps, smlnum;
-    float dum[1];
+    f32 anrm, bignum, cscale = ONE, eps, smlnum;
+    f32 dum[1];
     int nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
@@ -159,7 +159,7 @@ void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
                 liwrk = (n * n) / 4;
         }
         iwork[0] = liwrk;
-        work[0] = (float)lwrk;
+        work[0] = (f32)lwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -16;
@@ -355,7 +355,7 @@ void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
         }
     }
 
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
     if (wantsv || wantsb) {
         iwork[0] = 1 > (*sdim) * (n - (*sdim)) ? 1 : (*sdim) * (n - (*sdim));
     } else {

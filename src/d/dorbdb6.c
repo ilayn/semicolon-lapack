@@ -73,24 +73,24 @@ void dorbdb6(
     const int m1,
     const int m2,
     const int n,
-    double* restrict X1,
+    f64* restrict X1,
     const int incx1,
-    double* restrict X2,
+    f64* restrict X2,
     const int incx2,
-    const double* const restrict Q1,
+    const f64* const restrict Q1,
     const int ldq1,
-    const double* const restrict Q2,
+    const f64* const restrict Q2,
     const int ldq2,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* info)
 {
-    const double alpha = 0.83;
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double negone = -1.0;
+    const f64 alpha = 0.83;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const f64 negone = -1.0;
     int i, ix;
-    double eps, norm, norm_new, scl, ssq;
+    f64 eps, norm, norm_new, scl, ssq;
 
     *info = 0;
     if (m1 < 0) {

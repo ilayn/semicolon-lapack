@@ -52,19 +52,19 @@
 void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int n, const int p,
              int* k, int* l,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict B, const int ldb,
-             double* const restrict alpha, double* const restrict beta,
-             double complex* const restrict U, const int ldu,
-             double complex* const restrict V, const int ldv,
-             double complex* const restrict Q, const int ldq,
-             double complex* const restrict work, const int lwork,
-             double* const restrict rwork,
+             c128* const restrict A, const int lda,
+             c128* const restrict B, const int ldb,
+             f64* const restrict alpha, f64* const restrict beta,
+             c128* const restrict U, const int ldu,
+             c128* const restrict V, const int ldv,
+             c128* const restrict Q, const int ldq,
+             c128* const restrict work, const int lwork,
+             f64* const restrict rwork,
              int* const restrict iwork, int* info)
 {
     int wantu, wantv, wantq, lquery;
     int i, j, ibnd, isub, ncycle, lwkopt;
-    double anorm, bnorm, smax, temp, tola = 0.0, tolb = 0.0, ulp, unfl;
+    f64 anorm, bnorm, smax, temp, tola = 0.0, tolb = 0.0, ulp, unfl;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
     wantv = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -106,7 +106,7 @@ void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
         lwkopt = n + (int)creal(work[0]);
         if (2 * n > lwkopt) lwkopt = 2 * n;
         if (lwkopt < 1) lwkopt = 1;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -155,5 +155,5 @@ void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
         }
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

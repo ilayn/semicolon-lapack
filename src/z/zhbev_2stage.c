@@ -37,23 +37,23 @@ void zhbev_2stage(
     const char* uplo,
     const int n,
     const int kd,
-    double complex* restrict AB,
+    c128* restrict AB,
     const int ldab,
-    double* restrict W,
-    double complex* restrict Z,
+    f64* restrict W,
+    c128* restrict Z,
     const int ldz,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int lower, wantz, lquery;
     int iinfo, imax, inde, indwrk, indrwk, iscale;
     int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -77,13 +77,13 @@ void zhbev_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = CMPLX((double)lwmin, 0.0);
+            work[0] = CMPLX((f64)lwmin, 0.0);
         } else {
             ib = ilaenv2stage(2, "ZHETRD_HB2ST", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "ZHETRD_HB2ST", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "ZHETRD_HB2ST", jobz, n, kd, ib, -1);
             lwmin = lhtrd + lwtrd;
-            work[0] = CMPLX((double)lwmin, 0.0);
+            work[0] = CMPLX((f64)lwmin, 0.0);
         }
 
         if (lwork < lwmin && !lquery) {
@@ -164,5 +164,5 @@ void zhbev_2stage(
         cblas_dscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

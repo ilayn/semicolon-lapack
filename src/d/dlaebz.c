@@ -78,24 +78,24 @@
  */
 void dlaebz(const int ijob, const int nitmax, const int n,
             const int mmax, const int minp, const int nbmin,
-            const double abstol, const double reltol, const double pivmin,
-            const double* const restrict D,
-            const double* const restrict E,
-            const double* const restrict E2,
+            const f64 abstol, const f64 reltol, const f64 pivmin,
+            const f64* const restrict D,
+            const f64* const restrict E,
+            const f64* const restrict E2,
             int* const restrict nval,
-            double* const restrict AB,
-            double* const restrict C,
+            f64* const restrict AB,
+            f64* const restrict C,
             int* mout,
             int* const restrict NAB,
-            double* const restrict work,
+            f64* const restrict work,
             int* const restrict iwork,
             int* info)
 {
     (void)E;  /* E is in the API for compatibility but E2 is used instead */
-    const double HALF = 0.5;
+    const f64 HALF = 0.5;
 
     int itmp1, itmp2, j, ji, jit, kf, kfnew, kl, klnew;
-    double tmp1, tmp2;
+    f64 tmp1, tmp2;
 
     /* Check for errors */
     *info = 0;
@@ -351,13 +351,13 @@ void dlaebz(const int ijob, const int nitmax, const int n,
             tmp1 = fabs(AB[ji + 1 * mmax] - AB[ji + 0 * mmax]);
             tmp2 = fabs(AB[ji + 1 * mmax]);
             {
-                double atmp = fabs(AB[ji + 0 * mmax]);
+                f64 atmp = fabs(AB[ji + 0 * mmax]);
                 if (atmp > tmp2)
                     tmp2 = atmp;
             }
             {
-                double thresh = abstol > pivmin ? abstol : pivmin;
-                double rthresh = reltol * tmp2;
+                f64 thresh = abstol > pivmin ? abstol : pivmin;
+                f64 rthresh = reltol * tmp2;
                 if (rthresh > thresh)
                     thresh = rthresh;
 

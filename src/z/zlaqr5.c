@@ -39,26 +39,26 @@
  */
 void zlaqr5(const int wantt, const int wantz, const int kacc22,
             const int n, const int ktop, const int kbot,
-            const int nshfts, double complex* S,
-            double complex* H, const int ldh,
+            const int nshfts, c128* S,
+            c128* H, const int ldh,
             const int iloz, const int ihiz,
-            double complex* Z, const int ldz,
-            double complex* V, const int ldv,
-            double complex* U, const int ldu,
-            const int nv, double complex* WV, const int ldwv,
-            const int nh, double complex* WH, const int ldwh)
+            c128* Z, const int ldz,
+            c128* V, const int ldv,
+            c128* U, const int ldu,
+            const int nv, c128* WV, const int ldwv,
+            const int nh, c128* WH, const int ldwh)
 {
-    const double complex czero = 0.0;
-    const double complex cone = 1.0;
-    const double rzero = 0.0;
+    const c128 czero = 0.0;
+    const c128 cone = 1.0;
+    const f64 rzero = 0.0;
 
-    double complex alpha, beta, refsum, t1, t2, t3;
-    double h11, h12, h21, h22, safmin, scl, smlnum, tst1, tst2, ulp;
+    c128 alpha, beta, refsum, t1, t2, t3;
+    f64 h11, h12, h21, h22, safmin, scl, smlnum, tst1, tst2, ulp;
     int i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
     int k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
     int accum, bmp22;
 
-    double complex vt[3];
+    c128 vt[3];
 
     if (nshfts < 2)
         return;
@@ -70,7 +70,7 @@ void zlaqr5(const int wantt, const int wantz, const int kacc22,
 
     safmin = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     accum = (kacc22 == 1) || (kacc22 == 2);
 

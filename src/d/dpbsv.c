@@ -41,9 +41,9 @@ void dpbsv(
     const int n,
     const int kd,
     const int nrhs,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {

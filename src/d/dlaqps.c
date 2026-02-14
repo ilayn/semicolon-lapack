@@ -52,16 +52,16 @@
  */
 void dlaqps(const int m, const int n, const int offset, const int nb,
             int *kb,
-            double * const restrict A, const int lda,
+            f64 * const restrict A, const int lda,
             int * const restrict jpvt,
-            double * const restrict tau,
-            double * const restrict vn1,
-            double * const restrict vn2,
-            double * const restrict auxv,
-            double * const restrict F, const int ldf)
+            f64 * const restrict tau,
+            f64 * const restrict vn1,
+            f64 * const restrict vn2,
+            f64 * const restrict auxv,
+            f64 * const restrict F, const int ldf)
 {
     int itemp, j, k, lastrk, lsticc, pvt, rk;
-    double akk, temp, temp2, tol3z;
+    f64 akk, temp, temp2, tol3z;
 
     lastrk = m < n + offset ? m : n + offset;
     lsticc = 0;
@@ -181,7 +181,7 @@ void dlaqps(const int m, const int n, const int offset, const int nb,
                     if (temp < 0.0) temp = 0.0;
                     temp2 = temp * (vn1[j - 1] / vn2[j - 1]) * (vn1[j - 1] / vn2[j - 1]);
                     if (temp2 <= tol3z) {
-                        vn2[j - 1] = (double)lsticc;
+                        vn2[j - 1] = (f64)lsticc;
                         lsticc = j;
                     } else {
                         vn1[j - 1] = vn1[j - 1] * sqrt(temp);

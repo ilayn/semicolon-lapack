@@ -8,13 +8,13 @@
 
 void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
                   const int n, const int kd,
-                  float* AB, const int ldab,
-                  float* D, float* E,
-                  float* hous, const int lhous,
-                  float* work, const int lwork, int* info)
+                  f32* AB, const int ldab,
+                  f32* D, f32* E,
+                  f32* hous, const int lhous,
+                  f32* work, const int lwork, int* info)
 {
-    const float rzero = 0.0f;
-    const float zero = 0.0f;
+    const f32 rzero = 0.0f;
+    const f32 zero = 0.0f;
 
     int lquery, wantq, upper, afters1;
     int i, m, k, ib, sweepid, myid, shift, stt, st;
@@ -60,8 +60,8 @@ void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     }
 
     if (*info == 0) {
-        hous[0] = (float)lhmin;
-        work[0] = (float)lwmin;
+        hous[0] = (f32)lhmin;
+        work[0] = (f32)lwmin;
     }
 
     if (*info != 0) {
@@ -139,9 +139,9 @@ void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     thgrsiz = n;
     grsiz = 1;
     shift = 3;
-    (void)ceilf((float)n / (float)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceilf((float)shift / (float)grsiz);
-    thgrnb = (int)ceilf((float)(n - 1) / (float)thgrsiz);
+    (void)ceilf((f32)n / (f32)kd);  /* nbtiles: unused OpenMP placeholder */
+    stepercol = (int)ceilf((f32)shift / (f32)grsiz);
+    thgrnb = (int)ceilf((f32)(n - 1) / (f32)thgrsiz);
 
     slacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     slaset("A", kd, n, zero, zero, &work[awpos], lda);
@@ -210,5 +210,5 @@ void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

@@ -49,10 +49,10 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgebd2(const int m, const int n, float* const restrict A, const int lda,
-            float* const restrict D, float* const restrict E,
-            float* const restrict tauq, float* const restrict taup,
-            float* const restrict work, int* info)
+void sgebd2(const int m, const int n, f32* const restrict A, const int lda,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict tauq, f32* const restrict taup,
+            f32* const restrict work, int* info)
 {
     int i;
 

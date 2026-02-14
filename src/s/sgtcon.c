@@ -43,23 +43,23 @@
 void sgtcon(
     const char* norm,
     const int n,
-    const float * const restrict DL,
-    const float * const restrict D,
-    const float * const restrict DU,
-    const float * const restrict DU2,
+    const f32 * const restrict DL,
+    const f32 * const restrict D,
+    const f32 * const restrict DU,
+    const f32 * const restrict DU2,
     const int * const restrict ipiv,
-    const float anorm,
-    float *rcond,
-    float * const restrict work,
+    const f32 anorm,
+    f32 *rcond,
+    f32 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int onenrm;
     int i, kase, kase1;
-    float ainvnm;
+    f32 ainvnm;
     int isave[3];
     int ldb;
 

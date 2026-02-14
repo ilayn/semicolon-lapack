@@ -43,22 +43,22 @@
 void zgtcon(
     const char* norm,
     const int n,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU,
-    const double complex* const restrict DU2,
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU,
+    const c128* const restrict DU2,
     const int* const restrict ipiv,
-    const double anorm,
-    double* rcond,
-    double complex* const restrict work,
+    const f64 anorm,
+    f64* rcond,
+    c128* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int onenrm;
     int i, kase, kase1;
-    double ainvnm;
+    f64 ainvnm;
     int isave[3];
     int ldb;
 

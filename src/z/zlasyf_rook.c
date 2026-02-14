@@ -53,21 +53,21 @@ void zlasyf_rook(
     const int n,
     const int nb,
     int* kb,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* const restrict W,
+    c128* const restrict W,
     const int ldw,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int done;
     int imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
-    double absakk, alpha, colmax, dtemp, rowmax, sfmin;
-    double complex d11, d12, d21, d22, r1, t;
+    f64 absakk, alpha, colmax, dtemp, rowmax, sfmin;
+    c128 d11, d12, d21, d22, r1, t;
 
     *info = 0;
 

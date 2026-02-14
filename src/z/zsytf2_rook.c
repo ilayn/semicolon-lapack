@@ -43,17 +43,17 @@
 void zsytf2_rook(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int upper, done;
     int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
-    double absakk, alpha, colmax, rowmax, dtemp, sfmin;
-    double complex d11, d12, d21, d22, t, wk, wkm1, wkp1;
+    f64 absakk, alpha, colmax, rowmax, dtemp, sfmin;
+    c128 d11, d12, d21, d22, t, wk, wkm1, wkp1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

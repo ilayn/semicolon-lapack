@@ -79,28 +79,28 @@ void zhsein(
     const char* initv,
     const int* const restrict select,
     const int n,
-    const double complex* const restrict H,
+    const c128* const restrict H,
     const int ldh,
-    double complex* const restrict W,
-    double complex* const restrict VL,
+    c128* const restrict W,
+    c128* const restrict VL,
     const int ldvl,
-    double complex* const restrict VR,
+    c128* const restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* const restrict ifaill,
     int* const restrict ifailr,
     int* info)
 {
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double RZERO = 0.0;
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const f64 RZERO = 0.0;
 
     int bothv, fromqr, leftv, noinit, rightv;
     int i, iinfo, k, kl, kln, kr, ks, ldwork;
-    double eps3 = 0.0, hnorm, smlnum, ulp, unfl;
-    double complex wk;
+    f64 eps3 = 0.0, hnorm, smlnum, ulp, unfl;
+    c128 wk;
 
     /* Decode and test the input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');
@@ -150,7 +150,7 @@ void zhsein(
     /* Set machine-dependent constants */
     unfl = dlamch("S");
     ulp = dlamch("P");
-    smlnum = unfl * ((double)n / ulp);
+    smlnum = unfl * ((f64)n / ulp);
 
     ldwork = n;
 

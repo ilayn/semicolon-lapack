@@ -83,15 +83,15 @@ void zsysv_aa_2stage(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* restrict TB,
+    c128* restrict TB,
     const int ltb,
     int* restrict ipiv,
     int* restrict ipiv2,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -123,7 +123,7 @@ void zsysv_aa_2stage(
     if (*info == 0) {
         zsytrf_aa_2stage(uplo, n, A, lda, TB, -1, ipiv, ipiv2, work, -1, info);
         lwkopt = (lwkmin > (int)creal(work[0])) ? lwkmin : (int)creal(work[0]);
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -140,5 +140,5 @@ void zsysv_aa_2stage(
 
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

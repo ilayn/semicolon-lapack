@@ -8,17 +8,17 @@
 #include <math.h>
 
 void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
-                   const int n, float* A, const int lda,
-                   const float vl, const float vu,
+                   const int n, f32* A, const int lda,
+                   const f32 vl, const f32 vu,
                    const int il, const int iu,
-                   const float abstol, int* m,
-                   float* W, float* Z, const int ldz, int* isuppz,
-                   float* work, const int lwork,
+                   const f32 abstol, int* m,
+                   f32* W, f32* Z, const int ldz, int* isuppz,
+                   f32* work, const int lwork,
                    int* iwork, const int liwork, int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
-    const float two = 2.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
+    const f32 two = 2.0f;
 
     int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     char order;
@@ -27,8 +27,8 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
     int indwk, indwkn, iscale, j, jj, liwmin;
     int llwork, llwrkn, lwmin, nsplit;
     int lhtrd, lwtrd, kd, ib, indhous;
-    float abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    float sigma, smlnum, tmp1, vll, vuu;
+    f32 abstll, anrm, bignum, eps, rmax, rmin, safmin;
+    f32 sigma, smlnum, tmp1, vll, vuu;
 
     /* IEEEOK = 1 means IEEE arithmetic is assumed (NaN/Inf handled properly) */
     ieeeok = 1;
@@ -89,7 +89,7 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
     }
 
     if (*info == 0) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         iwork[0] = liwmin;
     }
 
@@ -269,6 +269,6 @@ label30:
         }
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
     iwork[0] = liwmin;
 }

@@ -45,38 +45,38 @@ void stgex2(
     const int wantq,
     const int wantz,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    float* const restrict B,
+    f32* const restrict B,
     const int ldb,
-    float* const restrict Q,
+    f32* const restrict Q,
     const int ldq,
-    float* const restrict Z,
+    f32* const restrict Z,
     const int ldz,
     const int j1,
     const int n1,
     const int n2,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWENTY = 20.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWENTY = 20.0f;
 
     int weak, strong;
     int i, idum, linfo, m;
-    float bqra21, brqa21, ddum, dnorma, dnormb, dscale;
-    float dsum, eps, f, g, sa, sb, scale, smlnum;
-    float thresha, threshb;
+    f32 bqra21, brqa21, ddum, dnorma, dnormb, dscale;
+    f32 dsum, eps, f, g, sa, sb, scale, smlnum;
+    f32 thresha, threshb;
 
     int iwork[LDST + 2];
-    float ai[2], ar[2], be[2];
-    float ir[LDST * LDST], ircop[LDST * LDST];
-    float li[LDST * LDST], licop[LDST * LDST];
-    float s[LDST * LDST], scpy[LDST * LDST];
-    float t[LDST * LDST], tcpy[LDST * LDST];
-    float taul[LDST], taur[LDST];
+    f32 ai[2], ar[2], be[2];
+    f32 ir[LDST * LDST], ircop[LDST * LDST];
+    f32 li[LDST * LDST], licop[LDST * LDST];
+    f32 s[LDST * LDST], scpy[LDST * LDST];
+    f32 t[LDST * LDST], tcpy[LDST * LDST];
+    f32 taul[LDST], taur[LDST];
 
     *info = 0;
 
@@ -96,7 +96,7 @@ void stgex2(
 
     if (lwork < max_work) {
         *info = -16;
-        work[0] = (float)max_work;
+        work[0] = (f32)max_work;
         return;
     }
 

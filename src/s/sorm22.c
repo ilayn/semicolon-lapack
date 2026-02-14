@@ -56,15 +56,15 @@ void sorm22(
     const int n,
     const int n1,
     const int n2,
-    const float* const restrict Q,
+    const f32* const restrict Q,
     const int ldq,
-    float* const restrict C,
+    f32* const restrict C,
     const int ldc,
-    float* const restrict work,
+    f32* const restrict work,
     const int lwork,
     int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     int left, lquery, notran;
     int i, ldwork, len, lwkopt, nb, nq, nw;
@@ -105,7 +105,7 @@ void sorm22(
 
     if (*info == 0) {
         lwkopt = m * n;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -245,5 +245,5 @@ void sorm22(
         }
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

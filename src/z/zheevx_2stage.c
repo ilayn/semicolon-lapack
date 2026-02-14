@@ -45,35 +45,35 @@ void zheevx_2stage(
     const char* range,
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
-    const double vl,
-    const double vu,
+    const f64 vl,
+    const f64 vu,
     const int il,
     const int iu,
-    const double abstol,
+    const f64 abstol,
     int* m,
-    double* restrict W,
-    double complex* restrict Z,
+    f64* restrict W,
+    c128* restrict Z,
     const int ldz,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     int* restrict iwork,
     int* restrict ifail,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int alleig, indeig, lower, lquery, test, valeig, wantz;
     int i, iinfo, imax, indd, inde, indee, indibl;
     int indisp, indiwk, indtau, indwrk, indrwk, iscale;
     int itmp1, j, jj, llwork;
     int nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    double sigma, smlnum, tmp1, vll, vuu;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
+    f64 sigma, smlnum, tmp1, vll, vuu;
 
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -113,14 +113,14 @@ void zheevx_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = CMPLX((double)lwmin, 0.0);
+            work[0] = CMPLX((f64)lwmin, 0.0);
         } else {
             kd = ilaenv2stage(1, "ZHETRD_2STAGE", jobz, n, -1, -1, -1);
             ib = ilaenv2stage(2, "ZHETRD_2STAGE", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "ZHETRD_2STAGE", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "ZHETRD_2STAGE", jobz, n, kd, ib, -1);
             lwmin = n + lhtrd + lwtrd;
-            work[0] = CMPLX((double)lwmin, 0.0);
+            work[0] = CMPLX((f64)lwmin, 0.0);
         }
 
         if (lwork < lwmin && !lquery)
@@ -295,5 +295,5 @@ L40:
         }
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

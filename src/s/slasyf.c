@@ -9,7 +9,7 @@
 #include "semicolon_lapack_single.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
-static const float ALPHA_BK = 0.6403882032022076f;
+static const f32 ALPHA_BK = 0.6403882032022076f;
 
 /**
  * SLASYF computes a partial factorization of a real symmetric matrix A
@@ -74,10 +74,10 @@ void slasyf(
     const int n,
     const int nb,
     int* kb,
-    float* restrict A,
+    f32* restrict A,
     const int lda,
     int* restrict ipiv,
-    float* restrict W,
+    f32* restrict W,
     const int ldw,
     int* info)
 {
@@ -117,13 +117,13 @@ void slasyf(
 
             /* Determine rows and columns to be interchanged and whether
              * a 1-by-1 or 2-by-2 pivot block will be used */
-            float absakk = fabsf(W[k + kw * ldw]);
+            f32 absakk = fabsf(W[k + kw * ldw]);
 
             /* IMAX is the row-index of the largest off-diagonal element in
              * column K, and COLMAX is its absolute value.
              * Determine both COLMAX and IMAX. */
             int imax = 0;
-            float colmax = 0.0f;
+            f32 colmax = 0.0f;
             if (k > 0) {
                 imax = cblas_isamax(k, &W[0 + kw * ldw], 1);
                 colmax = fabsf(W[imax + kw * ldw]);
@@ -162,7 +162,7 @@ void slasyf(
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row IMAX, and ROWMAX is its absolute value */
                     int jmax = (imax + 1) + cblas_isamax(k - imax, &W[(imax + 1) + (kw - 1) * ldw], 1);
-                    float rowmax = fabsf(W[jmax + (kw - 1) * ldw]);
+                    f32 rowmax = fabsf(W[jmax + (kw - 1) * ldw]);
 
                     if (imax > 0) {
                         jmax = cblas_isamax(imax, &W[0 + (kw - 1) * ldw], 1);
@@ -236,7 +236,7 @@ void slasyf(
                     cblas_scopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
 
                     if (k > 0) {
-                        float r1 = 1.0f / A[k + k * lda];
+                        f32 r1 = 1.0f / A[k + k * lda];
                         cblas_sscal(k, r1, &A[0 + k * lda], 1);
                     }
                 } else {
@@ -278,10 +278,10 @@ void slasyf(
                          *
                          * = D21 * ( ( D11 ) (  -1 ) )
                          *         ( (  -1 ) ( D22 ) ) */
-                        float d21 = W[(k - 1) + kw * ldw];
-                        float d11 = W[k + kw * ldw] / d21;
-                        float d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
-                        float t = 1.0f / (d11 * d22 - 1.0f);
+                        f32 d21 = W[(k - 1) + kw * ldw];
+                        f32 d11 = W[k + kw * ldw] / d21;
+                        f32 d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
+                        f32 t = 1.0f / (d11 * d22 - 1.0f);
                         d21 = t / d21;
 
                         /* Update elements in columns A(k-1) and A(k) as
@@ -376,13 +376,13 @@ void slasyf(
 
             /* Determine rows and columns to be interchanged and whether
              * a 1-by-1 or 2-by-2 pivot block will be used */
-            float absakk = fabsf(W[k + k * ldw]);
+            f32 absakk = fabsf(W[k + k * ldw]);
 
             /* IMAX is the row-index of the largest off-diagonal element in
              * column K, and COLMAX is its absolute value.
              * Determine both COLMAX and IMAX. */
             int imax = k;
-            float colmax = 0.0f;
+            f32 colmax = 0.0f;
             if (k < n - 1) {
                 imax = (k + 1) + cblas_isamax(n - k - 1, &W[(k + 1) + k * ldw], 1);
                 colmax = fabsf(W[imax + k * ldw]);
@@ -419,7 +419,7 @@ void slasyf(
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row IMAX, and ROWMAX is its absolute value */
                     int jmax = k + cblas_isamax(imax - k, &W[k + (k + 1) * ldw], 1);
-                    float rowmax = fabsf(W[jmax + (k + 1) * ldw]);
+                    f32 rowmax = fabsf(W[jmax + (k + 1) * ldw]);
 
                     if (imax < n - 1) {
                         jmax = (imax + 1) + cblas_isamax(n - imax - 1, &W[(imax + 1) + (k + 1) * ldw], 1);
@@ -490,7 +490,7 @@ void slasyf(
                     cblas_scopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
 
                     if (k < n - 1) {
-                        float r1 = 1.0f / A[k + k * lda];
+                        f32 r1 = 1.0f / A[k + k * lda];
                         cblas_sscal(n - k - 1, r1, &A[(k + 1) + k * lda], 1);
                     }
                 } else {
@@ -532,10 +532,10 @@ void slasyf(
                          *
                          * = D21 * ( ( D11 ) (  -1 ) )
                          *         ( (  -1 ) ( D22 ) ) */
-                        float d21 = W[(k + 1) + k * ldw];
-                        float d11 = W[(k + 1) + (k + 1) * ldw] / d21;
-                        float d22 = W[k + k * ldw] / d21;
-                        float t = 1.0f / (d11 * d22 - 1.0f);
+                        f32 d21 = W[(k + 1) + k * ldw];
+                        f32 d11 = W[(k + 1) + (k + 1) * ldw] / d21;
+                        f32 d22 = W[k + k * ldw] / d21;
+                        f32 t = 1.0f / (d11 * d22 - 1.0f);
                         d21 = t / d21;
 
                         /* Update elements in columns A(k) and A(k+1) as

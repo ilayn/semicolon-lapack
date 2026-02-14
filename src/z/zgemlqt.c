@@ -59,10 +59,10 @@
  */
 void zgemlqt(const char* side, const char* trans,
              const int m, const int n, const int k, const int mb,
-             const double complex* const restrict V, const int ldv,
-             const double complex* const restrict T, const int ldt,
-             double complex* const restrict C, const int ldc,
-             double complex* const restrict work, int* info)
+             const c128* const restrict V, const int ldv,
+             const c128* const restrict T, const int ldt,
+             c128* const restrict C, const int ldc,
+             c128* const restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, ldwork, kf, q;

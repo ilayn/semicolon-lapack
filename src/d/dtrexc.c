@@ -48,11 +48,11 @@
  *                           the first row of the current position of the block
  *                           being moved.
  */
-void dtrexc(const char* compq, const int n, double* T, const int ldt,
-            double* Q, const int ldq, int* ifst, int* ilst,
-            double* work, int* info)
+void dtrexc(const char* compq, const int n, f64* T, const int ldt,
+            f64* Q, const int ldq, int* ifst, int* ilst,
+            f64* work, int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int wantq;
     int here, nbf, nbl, nbnext;

@@ -42,12 +42,12 @@ void dgttrs(
     const char* trans,
     const int n,
     const int nrhs,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU,
-    const double * const restrict DU2,
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU,
+    const f64 * const restrict DU2,
     const int * const restrict ipiv,
-    double * const restrict B,
+    f64 * const restrict B,
     const int ldb,
     int *info)
 {

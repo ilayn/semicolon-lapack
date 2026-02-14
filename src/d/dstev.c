@@ -41,12 +41,12 @@
  *                           zero.
  */
 void dstev(const char* jobz, const int n,
-           double* const restrict D, double* const restrict E,
-           double* const restrict Z, const int ldz,
-           double* const restrict work, int* info)
+           f64* const restrict D, f64* const restrict E,
+           f64* const restrict Z, const int ldz,
+           f64* const restrict work, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     /* Test the input parameters. */
     int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -76,17 +76,17 @@ void dstev(const char* jobz, const int n,
     }
 
     /* Get machine constants. */
-    double safmin = dlamch("S");
-    double eps = dlamch("P");
-    double smlnum = safmin / eps;
-    double bignum = ONE / smlnum;
-    double rmin = sqrt(smlnum);
-    double rmax = sqrt(bignum);
+    f64 safmin = dlamch("S");
+    f64 eps = dlamch("P");
+    f64 smlnum = safmin / eps;
+    f64 bignum = ONE / smlnum;
+    f64 rmin = sqrt(smlnum);
+    f64 rmax = sqrt(bignum);
 
     /* Scale matrix to allowable range, if necessary. */
     int iscale = 0;
-    double tnrm = dlanst("M", n, D, E);
-    double sigma = ZERO;
+    f64 tnrm = dlanst("M", n, D, E);
+    f64 sigma = ZERO;
     if (tnrm > ZERO && tnrm < rmin) {
         iscale = 1;
         sigma = rmin / tnrm;

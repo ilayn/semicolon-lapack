@@ -19,11 +19,11 @@
  * @param[out] rt1  The eigenvalue of larger absolute value.
  * @param[out] rt2  The eigenvalue of smaller absolute value.
  */
-void dlae2(const double a, const double b, const double c,
-           double* rt1, double* rt2)
+void dlae2(const f64 a, const f64 b, const f64 c,
+           f64* rt1, f64* rt2)
 {
-    double sm, df, adf, tb, ab, rt;
-    double acmx, acmn;
+    f64 sm, df, adf, tb, ab, rt;
+    f64 acmx, acmn;
 
     /* Compute the eigenvalues */
     sm = a + c;

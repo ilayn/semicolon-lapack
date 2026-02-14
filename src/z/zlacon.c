@@ -41,25 +41,25 @@
  */
 void zlacon(
     const int n,
-    double complex* restrict V,
-    double complex* restrict X,
-    double* est,
+    c128* restrict V,
+    c128* restrict X,
+    f64* est,
     int* kase)
 {
     static const int ITMAX = 5;
-    const double one = 1.0;
-    const double two = 2.0;
-    const double complex czero = CMPLX(0.0, 0.0);
-    const double complex cone = CMPLX(1.0, 0.0);
+    const f64 one = 1.0;
+    const f64 two = 2.0;
+    const c128 czero = CMPLX(0.0, 0.0);
+    const c128 cone = CMPLX(1.0, 0.0);
 
     static int i, iter, j, jlast, jump;
-    static double altsgn, estold, safmin, temp;
-    double absxi;
+    static f64 altsgn, estold, safmin, temp;
+    f64 absxi;
 
     safmin = dlamch("Safe minimum");
     if (*kase == 0) {
         for (i = 0; i < n; i++) {
-            X[i] = CMPLX(one / (double)n, 0.0);
+            X[i] = CMPLX(one / (f64)n, 0.0);
         }
         *kase = 1;
         jump = 1;
@@ -160,7 +160,7 @@ L90:
 L100:
     altsgn = one;
     for (i = 0; i < n; i++) {
-        X[i] = CMPLX(altsgn * (one + (double)i / (double)(n - 1)), 0.0);
+        X[i] = CMPLX(altsgn * (one + (f64)i / (f64)(n - 1)), 0.0);
         altsgn = -altsgn;
     }
     *kase = 1;
@@ -171,7 +171,7 @@ L100:
        X HAS BEEN OVERWRITTEN BY A*X. */
 
 L120:
-    temp = two * (dzsum1(n, X, 1) / (double)(3 * n));
+    temp = two * (dzsum1(n, X, 1) / (f64)(3 * n));
     if (temp > *est) {
         cblas_zcopy(n, X, 1, V, 1);
         *est = temp;

@@ -8,16 +8,16 @@
 void dsb2st_kernels(const char* uplo, const int wantz, const int ttype,
                     const int st, const int ed, const int sweep,
                     const int n, const int nb, const int ib,
-                    double* A, const int lda,
-                    double* V, double* tau, const int ldvt,
-                    double* work)
+                    f64* A, const int lda,
+                    f64* V, f64* tau, const int ldvt,
+                    f64* work)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int upper;
     int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
-    double ctmp;
+    f64 ctmp;
 
     (void)ib;
     (void)ldvt;

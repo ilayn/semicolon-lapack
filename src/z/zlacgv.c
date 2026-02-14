@@ -17,7 +17,7 @@
  */
 void zlacgv(
     const int n,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int incx)
 {
     int i, ioff;

@@ -79,23 +79,23 @@
  *                         - = 5: the Rayleigh Quotient Iteration failed to converge to
  *                           full accuracy in MAXITR steps.
  */
-void slarrv(const int n, const float vl, const float vu,
-            float* D, float* L, const float pivmin,
+void slarrv(const int n, const f32 vl, const f32 vu,
+            f32* D, f32* L, const f32 pivmin,
             const int* isplit, const int m, const int dol, const int dou,
-            const float minrgp, const float rtol1, const float rtol2,
-            float* W, float* werr, float* wgap,
-            const int* iblock, const int* indexw, const float* gers,
-            float* Z, const int ldz, int* isuppz,
-            float* work, int* iwork, int* info)
+            const f32 minrgp, const f32 rtol1, const f32 rtol2,
+            f32* W, f32* werr, f32* wgap,
+            const int* iblock, const int* indexw, const f32* gers,
+            f32* Z, const int ldz, int* isuppz,
+            f32* work, int* iwork, int* info)
 {
     /* Parameters */
     const int MAXITR = 10;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float THREE = 3.0f;
-    const float FOUR = 4.0f;
-    const float HALF = 0.5f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 THREE = 3.0f;
+    const f32 FOUR = 4.0f;
+    const f32 HALF = 0.5f;
 
     /* Local Scalars */
     int eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
@@ -108,14 +108,14 @@ void slarrv(const int n, const float vl, const float vu,
         oldncl, p, parity, q, wbegin, wend, windex,
         windmn, windpl, zfrom, zto, zusedl, zusedu,
         zusedw;
-    float bstres, bstw, eps, fudge, gap, gaptol, gl, gu,
+    f32 bstres, bstw, eps, fudge, gap, gaptol, gl, gu,
            lambda, left, lgap, mingma, nrminv, resid,
            rgap, right, rqcorr, rqtol, savgap, sgndef,
            sigma, spdiam, ssigma, tau, tmp, tol, ztz;
 
     /* Effective rtol values (may be overridden for partial eigenvector computation) */
-    float eff_rtol1 = rtol1;
-    float eff_rtol2 = rtol2;
+    f32 eff_rtol1 = rtol1;
+    f32 eff_rtol2 = rtol2;
 
     (void)vu; /* Currently unused */
 
@@ -132,7 +132,7 @@ void slarrv(const int n, const float vl, const float vu,
     indwrk = 3 * n;
     minwsize = 12 * n;
 
-    memset(work, 0, minwsize * sizeof(float));
+    memset(work, 0, minwsize * sizeof(f32));
 
     /* IWORK(IINDR..IINDR+N-1) hold the twist indices R for the
      * factorization used to compute the FP vector */
@@ -535,7 +535,7 @@ void slarrv(const int n, const float vl, const float vu,
                          */
                         iter = 0;
 
-                        tol = FOUR * logf((float)in) * eps;
+                        tol = FOUR * logf((f32)in) * eps;
 
                         k = newfst;
                         windex = wbegin + k;

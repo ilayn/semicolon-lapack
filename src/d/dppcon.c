@@ -35,22 +35,22 @@
 void dppcon(
     const char* uplo,
     const int n,
-    const double* const restrict AP,
-    const double anorm,
-    double* rcond,
-    double* const restrict work,
+    const f64* const restrict AP,
+    const f64 anorm,
+    f64* rcond,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // dppcon.f lines 136-137: Parameters
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     // dppcon.f lines 140-146: Local Scalars and Arrays
     int upper;
     char normin;
     int ix, kase;
-    double ainvnm, scale, scalel, scaleu, smlnum;
+    f64 ainvnm, scale, scalel, scaleu, smlnum;
     int isave[3];
 
     // dppcon.f lines 164-176: Test the input parameters

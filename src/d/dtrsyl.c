@@ -58,19 +58,19 @@
  */
 void dtrsyl(const char* trana, const char* tranb, const int isgn,
             const int m, const int n,
-            const double* A, const int lda,
-            const double* B, const int ldb,
-            double* C, const int ldc,
-            double* scale, int* info)
+            const f64* A, const int lda,
+            const f64* B, const int ldb,
+            f64* C, const int ldc,
+            f64* scale, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int notrna, notrnb;
     int ierr, j, k, k1, k2, knext, l, l1, l2, lnext;
-    double a11, bignum, da11, db, eps, scaloc, sgn, smin;
-    double smlnum, suml, sumr, xnorm;
-    double dum[1], vec[4], x[4];  /* vec and x are 2x2, column-major */
+    f64 a11, bignum, da11, db, eps, scaloc, sgn, smin;
+    f64 smlnum, suml, sumr, xnorm;
+    f64 dum[1], vec[4], x[4];  /* vec and x are 2x2, column-major */
     int minval;
 
     /* Decode and test input parameters */
@@ -110,7 +110,7 @@ void dtrsyl(const char* trana, const char* tranb, const int isgn,
     eps = dlamch("P");
     smlnum = dlamch("S");
     bignum = ONE / smlnum;
-    smlnum = smlnum * (double)(m * n) / eps;
+    smlnum = smlnum * (f64)(m * n) / eps;
     bignum = ONE / smlnum;
 
     smin = smlnum;
@@ -119,7 +119,7 @@ void dtrsyl(const char* trana, const char* tranb, const int isgn,
     dum[0] = dlange("M", n, n, B, ldb, dum);
     if (eps * dum[0] > smin) smin = eps * dum[0];
 
-    sgn = (double)isgn;
+    sgn = (f64)isgn;
 
     if (notrna && notrnb) {
         /*

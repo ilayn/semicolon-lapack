@@ -67,19 +67,19 @@
 void ssycon_3(
     const char* uplo,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
-    const float* restrict E,
+    const f32* restrict E,
     const int* restrict ipiv,
-    const float anorm,
-    float* rcond,
-    float* restrict work,
+    const f32 anorm,
+    f32* rcond,
+    f32* restrict work,
     int* restrict iwork,
     int* info)
 {
     int upper;
     int i, kase;
-    float ainvnm;
+    f32 ainvnm;
     int isave[3];
     int dummy_info;
 

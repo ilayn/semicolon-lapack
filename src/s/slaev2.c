@@ -26,13 +26,13 @@
  * @param[out] sn1  The sine of the rotation.
  *                  The vector (CS1, SN1) is a unit right eigenvector for RT1.
  */
-void slaev2(const float a, const float b, const float c,
-            float* rt1, float* rt2, float* cs1, float* sn1)
+void slaev2(const f32 a, const f32 b, const f32 c,
+            f32* rt1, f32* rt2, f32* cs1, f32* sn1)
 {
     int sgn1, sgn2;
-    float sm, df, adf, tb, ab, rt;
-    float acmx, acmn;
-    float cs, acs, ct, tn;
+    f32 sm, df, adf, tb, ab, rt;
+    f32 acmx, acmn;
+    f32 cs, acs, ct, tn;
 
     /* Compute the eigenvalues */
     sm = a + c;

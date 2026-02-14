@@ -177,7 +177,7 @@ static const int MM[128][4] = {
     {  545, 2366, 3801, 1537}
 };
 
-void dlaruv(int* const restrict iseed, const int n, double* const restrict X)
+void dlaruv(int* const restrict iseed, const int n, f64* const restrict X)
 {
     int i, it1, it2, it3, it4;
     int i1, i2, i3, i4;
@@ -214,8 +214,8 @@ void dlaruv(int* const restrict iseed, const int n, double* const restrict X)
 
             /* Convert 48-bit integer to a real number in the interval (0,1) */
 
-            X[i] = R * ((double)it1 + R * ((double)it2 + R * ((double)it3 + R *
-                   (double)it4)));
+            X[i] = R * ((f64)it1 + R * ((f64)it2 + R * ((f64)it3 + R *
+                   (f64)it4)));
 
             if (X[i] != 1.0) {
                 break;

@@ -116,46 +116,45 @@ void zbbcsd(
     const int m,
     const int p,
     const int q,
-    double* restrict theta,
-    double* restrict phi,
-    double complex* restrict U1,
+    f64* restrict theta,
+    f64* restrict phi,
+    c128* restrict U1,
     const int ldu1,
-    double complex* restrict U2,
+    c128* restrict U2,
     const int ldu2,
-    double complex* restrict V1T,
+    c128* restrict V1T,
     const int ldv1t,
-    double complex* restrict V2T,
+    c128* restrict V2T,
     const int ldv2t,
-    double* restrict B11D,
-    double* restrict B11E,
-    double* restrict B12D,
-    double* restrict B12E,
-    double* restrict B21D,
-    double* restrict B21E,
-    double* restrict B22D,
-    double* restrict B22E,
-    double* restrict rwork,
+    f64* restrict B11D,
+    f64* restrict B11E,
+    f64* restrict B12D,
+    f64* restrict B12E,
+    f64* restrict B21D,
+    f64* restrict B21E,
+    f64* restrict B22D,
+    f64* restrict B22E,
+    f64* restrict rwork,
     const int lrwork,
     int* info)
 {
     const int maxitr = 6;
-    const double hundred = 100.0;
-    const double meighth = -0.125;
-    const double one = 1.0;
-    const double ten = 10.0;
-    const double zero = 0.0;
-    const double negone = -1.0;
-    const double piover2 = 1.57079632679489661923132169163975144210;
-    const double complex negonecomplex = CMPLX(-1.0, 0.0);
+    const f64 hundred = 100.0;
+    const f64 meighth = -0.125;
+    const f64 one = 1.0;
+    const f64 ten = 10.0;
+    const f64 zero = 0.0;
+    const f64 piover2 = 1.57079632679489661923132169163975144210;
+    const c128 negonecomplex = CMPLX(-1.0, 0.0);
 
     int colmajor, lquery, restart11, restart12, restart21, restart22;
     int wantu1, wantu2, wantv1t, wantv2t;
     int i, imin, imax, iter, iu1cs, iu1sn, iu2cs, iu2sn;
     int iv1tcs, iv1tsn, iv2tcs, iv2tsn, j, lrworkmin, lrworkopt, maxit, mini;
-    double b11bulge, b12bulge, b21bulge, b22bulge, dummy;
-    double eps, mu, nu, r, sigma11, sigma21;
-    double temp, thetamax, thetamin, thresh, tol, tolmul, unfl;
-    double x1, x2, y1, y2;
+    f64 b11bulge, b12bulge, b21bulge, b22bulge, dummy;
+    f64 eps, mu, nu, r, sigma11, sigma21;
+    f64 temp, thetamax, thetamin, thresh, tol, tolmul, unfl;
+    f64 x1, x2, y1, y2;
 
     *info = 0;
     lquery = (lrwork == -1);
@@ -185,7 +184,7 @@ void zbbcsd(
 
     if (*info == 0 && q == 0) {
         lrworkmin = 1;
-        rwork[0] = (double)lrworkmin;
+        rwork[0] = (f64)lrworkmin;
         return;
     }
 
@@ -200,7 +199,7 @@ void zbbcsd(
         iv2tsn = iv2tcs + q;
         lrworkopt = iv2tsn + q;
         lrworkmin = lrworkopt;
-        rwork[0] = (double)lrworkopt;
+        rwork[0] = (f64)lrworkopt;
         if (lrwork < lrworkmin && !lquery) {
             *info = -28;
         }

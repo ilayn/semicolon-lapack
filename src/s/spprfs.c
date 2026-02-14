@@ -44,29 +44,29 @@ void spprfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const float* const restrict AP,
-    const float* const restrict AFP,
-    const float* const restrict B,
+    const f32* const restrict AP,
+    const f32* const restrict AFP,
+    const f32* const restrict B,
     const int ldb,
-    float* const restrict X,
+    f32* const restrict X,
     const int ldx,
-    float* const restrict ferr,
-    float* const restrict berr,
-    float* const restrict work,
+    f32* const restrict ferr,
+    f32* const restrict berr,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
     // spprfs.f lines 189-198: Parameters
     const int ITMAX = 5;  // spprfs.f line 190
-    const float ZERO = 0.0f;  // spprfs.f line 192
-    const float ONE = 1.0f;  // spprfs.f line 194
-    const float TWO = 2.0f;  // spprfs.f line 196
-    const float THREE = 3.0f;  // spprfs.f line 198
+    const f32 ZERO = 0.0f;  // spprfs.f line 192
+    const f32 ONE = 1.0f;  // spprfs.f line 194
+    const f32 TWO = 2.0f;  // spprfs.f line 196
+    const f32 THREE = 3.0f;  // spprfs.f line 198
 
     // spprfs.f lines 201-206: Local Scalars and Arrays
     int upper;
     int count, i, ik, j, k, kase, kk, nz;
-    float eps, lstres, s, safe1, safe2, safmin, xk;
+    f32 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int locinfo;
 

@@ -50,18 +50,18 @@
 void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
              const int m, const int n, const int p,
              int* k, int* l,
-             float* const restrict A, const int lda,
-             float* const restrict B, const int ldb,
-             float* const restrict alpha, float* const restrict beta,
-             float* const restrict U, const int ldu,
-             float* const restrict V, const int ldv,
-             float* const restrict Q, const int ldq,
-             float* const restrict work, const int lwork,
+             f32* const restrict A, const int lda,
+             f32* const restrict B, const int ldb,
+             f32* const restrict alpha, f32* const restrict beta,
+             f32* const restrict U, const int ldu,
+             f32* const restrict V, const int ldv,
+             f32* const restrict Q, const int ldq,
+             f32* const restrict work, const int lwork,
              int* const restrict iwork, int* info)
 {
     int wantu, wantv, wantq, lquery;
     int i, j, ibnd, isub, ncycle, lwkopt;
-    float anorm, bnorm, smax, temp, tola = 0.0f, tolb = 0.0f, ulp, unfl;
+    f32 anorm, bnorm, smax, temp, tola = 0.0f, tolb = 0.0f, ulp, unfl;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
     wantv = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -103,7 +103,7 @@ void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
         lwkopt = n + (int)work[0];
         if (2 * n > lwkopt) lwkopt = 2 * n;
         if (lwkopt < 1) lwkopt = 1;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -152,5 +152,5 @@ void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
         }
     }
 
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

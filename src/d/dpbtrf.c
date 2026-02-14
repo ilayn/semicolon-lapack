@@ -36,15 +36,15 @@ void dpbtrf(
     const char* uplo,
     const int n,
     const int kd,
-    double* const restrict AB,
+    f64* const restrict AB,
     const int ldab,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, i2, i3, ib, ii, j, jj, nb;
-    double work[LDWORK * NBMAX];
+    f64 work[LDWORK * NBMAX];
     int upper;
 
     *info = 0;

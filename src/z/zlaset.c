@@ -27,8 +27,8 @@
  * @param[in]  lda    The leading dimension of A. lda >= max(1, m).
  */
 void zlaset(const char* uplo, const int m, const int n,
-            const double complex alpha, const double complex beta,
-            double complex* const restrict A, const int lda)
+            const c128 alpha, const c128 beta,
+            c128* const restrict A, const int lda)
 {
     int i, j;
     int minmn = m < n ? m : n;

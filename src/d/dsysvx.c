@@ -94,28 +94,28 @@ void dsysvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double* const restrict A,
+    const f64* const restrict A,
     const int lda,
-    double* const restrict AF,
+    f64* const restrict AF,
     const int ldaf,
     int* const restrict ipiv,
-    const double* const restrict B,
+    const f64* const restrict B,
     const int ldb,
-    double* const restrict X,
+    f64* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double* const restrict work,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    f64* const restrict work,
     const int lwork,
     int* const restrict iwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nofact, lquery;
     int lwkmin, lwkopt, nb;
-    double anorm;
+    f64 anorm;
 
     /* Test the input parameters. */
     *info = 0;
@@ -151,7 +151,7 @@ void dsysvx(
             int nbnb = n * nb;
             lwkopt = (lwkopt > nbnb) ? lwkopt : nbnb;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
     }
 
     if (*info != 0) {
@@ -193,5 +193,5 @@ void dsysvx(
         *info = n + 1;
     }
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

@@ -61,10 +61,10 @@ static int iparmq_nmin(void)
  */
 void shseqr(const char* job, const char* compz, const int n,
                           const int ilo, const int ihi,
-                          float* H, const int ldh,
-                          float* wr, float* wi,
-                          float* Z, const int ldz,
-                          float* work, const int lwork, int* info)
+                          f32* H, const int ldh,
+                          f32* wr, f32* wi,
+                          f32* Z, const int ldz,
+                          f32* work, const int lwork, int* info)
 {
     /* Parameters */
     const int ntiny = 15;  /* Matrices of order NTINY or smaller use SLAHQR */
@@ -72,12 +72,12 @@ void shseqr(const char* job, const char* compz, const int n,
      * a rare SLAHQR failure. Allows up to six simultaneous shifts and
      * a 16-by-16 deflation window. */
     const int nl = 49;
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     /* Local arrays - use explicit size to avoid VLA */
-    float hl[49 * 49];
-    float workl[49];
+    f32 hl[49 * 49];
+    f32 workl[49];
 
     /* Local scalars */
     int i, kbot, nmin;
@@ -87,7 +87,7 @@ void shseqr(const char* job, const char* compz, const int n,
     wantt = (job[0] == 'S' || job[0] == 's');
     initz = (compz[0] == 'I' || compz[0] == 'i');
     wantz = initz || (compz[0] == 'V' || compz[0] == 'v');
-    work[0] = (float)(1 > n ? 1 : n);
+    work[0] = (f32)(1 > n ? 1 : n);
     lquery = (lwork == -1);
 
     *info = 0;
@@ -124,8 +124,8 @@ void shseqr(const char* job, const char* compz, const int n,
                ihi, Z, ldz, work, lwork, info);
         /* Ensure reported workspace size is backward-compatible with
          * previous LAPACK versions */
-        if (work[0] < (float)(1 > n ? 1 : n))
-            work[0] = (float)(1 > n ? 1 : n);
+        if (work[0] < (f32)(1 > n ? 1 : n))
+            work[0] = (f32)(1 > n ? 1 : n);
         return;
     } else {
         /* Copy eigenvalues isolated by SGEBAL */
@@ -196,7 +196,7 @@ void shseqr(const char* job, const char* compz, const int n,
 
         /* Ensure reported workspace size is backward-compatible with
          * previous LAPACK versions */
-        if (work[0] < (float)(1 > n ? 1 : n))
-            work[0] = (float)(1 > n ? 1 : n);
+        if (work[0] < (f32)(1 > n ? 1 : n))
+            work[0] = (f32)(1 > n ? 1 : n);
     }
 }

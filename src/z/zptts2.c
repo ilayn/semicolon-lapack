@@ -42,9 +42,9 @@ void zptts2(
     const int iuplo,
     const int n,
     const int nrhs,
-    const double* const restrict D,
-    const double complex* const restrict E,
-    double complex* const restrict B,
+    const f64* const restrict D,
+    const c128* const restrict E,
+    c128* const restrict B,
     const int ldb)
 {
     int i, j;
@@ -53,7 +53,7 @@ void zptts2(
 
     if (n <= 1) {
         if (n == 1) {
-            double scale = 1.0 / D[0];
+            f64 scale = 1.0 / D[0];
             cblas_zdscal(nrhs, scale, B, ldb);
         }
         return;

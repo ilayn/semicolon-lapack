@@ -60,18 +60,18 @@
 void slagts(
     const int job,
     const int n,
-    const float* const restrict A,
-    const float* const restrict B,
-    const float* const restrict C,
-    const float* const restrict D,
+    const f32* const restrict A,
+    const f32* const restrict B,
+    const f32* const restrict C,
+    const f32* const restrict D,
     const int* const restrict in,
-    float* const restrict Y,
-    float* tol,
+    f32* const restrict Y,
+    f32* tol,
     int* info)
 {
     int k;
     int absjob;
-    float absak, ak, bignum, eps, pert, sfmin, temp;
+    f32 absak, ak, bignum, eps, pert, sfmin, temp;
 
     *info = 0;
     absjob = job < 0 ? -job : job;

@@ -25,20 +25,20 @@
  *
  * @return The computed norm value.
  */
-double dlansb(
+f64 dlansb(
     const char* norm,
     const char* uplo,
     const int n,
     const int k,
-    const double* const restrict AB,
+    const f64* const restrict AB,
     const int ldab,
-    double* const restrict work)
+    f64* const restrict work)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j, l;
-    double absa, scale, sum, value;
+    f64 absa, scale, sum, value;
 
     if (n == 0) {
         value = ZERO;

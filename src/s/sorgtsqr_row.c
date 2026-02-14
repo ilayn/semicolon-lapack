@@ -61,11 +61,11 @@ void sorgtsqr_row(
     const int n,
     const int mb,
     const int nb,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
-    const float* const restrict T,
+    const f32* const restrict T,
     const int ldt,
-    float* restrict work,
+    f32* restrict work,
     const int lwork,
     int* info)
 {
@@ -73,7 +73,7 @@ void sorgtsqr_row(
     int nblocal, mb2, itmp, ib_bottom;
     int lworkopt, num_all_row_blocks, jb_t, ib, imb;
     int kb, kb_last, knb, mb1;
-    float dummy[1];
+    f32 dummy[1];
     int minval;
 
     *info = 0;
@@ -107,13 +107,13 @@ void sorgtsqr_row(
         xerbla("SORGTSQR_ROW", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (float)lworkopt;
+        work[0] = (f32)lworkopt;
         return;
     }
 
@@ -169,5 +169,5 @@ void sorgtsqr_row(
 
     }
 
-    work[0] = (float)lworkopt;
+    work[0] = (f32)lworkopt;
 }

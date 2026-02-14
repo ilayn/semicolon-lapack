@@ -52,18 +52,18 @@
  */
 void ztrsyl(const char* trana, const char* tranb, const int isgn,
             const int m, const int n,
-            const double complex* A, const int lda,
-            const double complex* B, const int ldb,
-            double complex* C, const int ldc,
-            double* scale, int* info)
+            const c128* A, const int lda,
+            const c128* B, const int ldb,
+            c128* C, const int ldc,
+            f64* scale, int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int notrna, notrnb;
     int j, k, l;
-    double bignum, da11, db, eps, scaloc, sgn, smin, smlnum;
-    double complex a11, suml, sumr, vec, x11;
-    double dum[1];
+    f64 bignum, da11, db, eps, scaloc, sgn, smin, smlnum;
+    c128 a11, suml, sumr, vec, x11;
+    f64 dum[1];
 
     /* Decode and Test input parameters */
     notrna = (trana[0] == 'N' || trana[0] == 'n');
@@ -101,7 +101,7 @@ void ztrsyl(const char* trana, const char* tranb, const int isgn,
     eps = dlamch("P");
     smlnum = dlamch("S");
     bignum = ONE / smlnum;
-    smlnum = smlnum * (double)(m * n) / eps;
+    smlnum = smlnum * (f64)(m * n) / eps;
     bignum = ONE / smlnum;
 
     smin = smlnum;
@@ -110,7 +110,7 @@ void ztrsyl(const char* trana, const char* tranb, const int isgn,
     dum[0] = zlange("M", n, n, B, ldb, dum);
     if (eps * dum[0] > smin) smin = eps * dum[0];
 
-    sgn = (double)isgn;
+    sgn = (f64)isgn;
 
     if (notrna && notrnb) {
         /*

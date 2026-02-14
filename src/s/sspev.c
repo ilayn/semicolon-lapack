@@ -39,16 +39,16 @@
  *                           form did not converge to zero.
  */
 void sspev(const char* jobz, const char* uplo, const int n,
-           float* const restrict AP, float* const restrict W,
-           float* const restrict Z, const int ldz,
-           float* const restrict work, int* info)
+           f32* const restrict AP, f32* const restrict W,
+           f32* const restrict Z, const int ldz,
+           f32* const restrict work, int* info)
 {
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
 
     int wantz;
     int iinfo, imax, inde, indtau, indwrk, iscale;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 

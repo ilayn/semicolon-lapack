@@ -46,9 +46,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sgelq(const int m, const int n,
-           float* const restrict A, const int lda,
-           float* const restrict T, const int tsize,
-           float* const restrict work, const int lwork,
+           f32* const restrict A, const int lda,
+           f32* const restrict T, const int tsize,
+           f32* const restrict work, const int lwork,
            int* info)
 {
     int lquery, lminws, mint, minw;
@@ -135,16 +135,16 @@ void sgelq(const int m, const int n,
 
     if (*info == 0) {
         if (mint) {
-            T[0] = (float)mintsz;
+            T[0] = (f32)mintsz;
         } else {
-            T[0] = (float)(mb * m * nblcks + 5);
+            T[0] = (f32)(mb * m * nblcks + 5);
         }
-        T[1] = (float)mb;
-        T[2] = (float)nb;
+        T[1] = (f32)mb;
+        T[2] = (f32)nb;
         if (minw) {
-            work[0] = (float)lwmin;
+            work[0] = (f32)lwmin;
         } else {
-            work[0] = (float)lwreq;
+            work[0] = (f32)lwreq;
         }
     }
     if (*info != 0) {
@@ -166,5 +166,5 @@ void sgelq(const int m, const int n,
         slaswlq(m, n, mb, nb, A, lda, &T[5], mb, work, lwork, info);
     }
 
-    work[0] = (float)lwreq;
+    work[0] = (f32)lwreq;
 }

@@ -32,19 +32,19 @@
  *
  * @return The computed norm value.
  */
-double zlange(
+f64 zlange(
     const char* norm,
     const int m,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double* const restrict work)
+    f64* const restrict work)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int i, j;
-    double scale, sum, value, temp;
+    f64 scale, sum, value, temp;
 
     /* Quick return if possible */
     int minmn = (m < n) ? m : n;

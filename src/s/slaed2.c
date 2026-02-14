@@ -90,20 +90,20 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value.
  */
-void slaed2(int* K, const int n, const int n1, float* D, float* Q,
-            const int ldq, int* indxq, float* rho, float* Z,
-            float* dlambda, float* W, float* Q2, int* indx,
+void slaed2(int* K, const int n, const int n1, f32* D, f32* Q,
+            const int ldq, int* indxq, f32* rho, f32* Z,
+            f32* dlambda, f32* W, f32* Q2, int* indx,
             int* indxc, int* indxp, int* coltyp, int* info)
 {
-    const float MONE = -1.0f;
-    const float ZERO = 0.0f;
-    const float ONE = 1.0f;
-    const float TWO = 2.0f;
-    const float EIGHT = 8.0f;
+    const f32 MONE = -1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 EIGHT = 8.0f;
 
     int ctot[4], psm[4];
     int ct, i, imax, iq1, iq2, j, jmax, js, k2, n2, nj, pj = 0;
-    float c, eps, s, t, tau, tol;
+    f32 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */
     *info = 0;

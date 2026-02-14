@@ -78,24 +78,24 @@ void zhpsvx(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict AP,
-    double complex* const restrict AFP,
+    const c128* const restrict AP,
+    c128* const restrict AFP,
     int* const restrict ipiv,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* rcond,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* rcond,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nofact;
-    double anorm;
+    f64 anorm;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

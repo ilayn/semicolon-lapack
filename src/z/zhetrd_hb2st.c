@@ -76,14 +76,14 @@
  */
 void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
                   const int n, const int kd,
-                  double complex* AB, const int ldab,
-                  double* D, double* E,
-                  double complex* hous, const int lhous,
-                  double complex* work, const int lwork, int* info)
+                  c128* AB, const int ldab,
+                  f64* D, f64* E,
+                  c128* hous, const int lhous,
+                  c128* work, const int lwork, int* info)
 {
-    const double rzero = 0.0;
-    const double complex zero = CMPLX(0.0, 0.0);
-    const double complex one = CMPLX(1.0, 0.0);
+    const f64 rzero = 0.0;
+    const c128 zero = CMPLX(0.0, 0.0);
+    const c128 one = CMPLX(1.0, 0.0);
 
     int lquery, wantq, upper, afters1;
     int i, m, k, ib, sweepid, myid, shift, stt, st;
@@ -93,8 +93,8 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     int abdpos, abofdpos, dpos, ofdpos, awpos;
     int inda, indw, apos, sizea, lda, indv, indtau;
     int sizetau, ldv, lhmin, lwmin;
-    double abstmp;
-    double complex tmp;
+    f64 abstmp;
+    c128 tmp;
 
     *info = 0;
     afters1 = (stage1[0] == 'Y' || stage1[0] == 'y');
@@ -130,8 +130,8 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     }
 
     if (*info == 0) {
-        hous[0] = CMPLX((double)lhmin, 0.0);
-        work[0] = CMPLX((double)lwmin, 0.0);
+        hous[0] = CMPLX((f64)lhmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
     }
 
     if (*info != 0) {
@@ -176,7 +176,7 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     /*
      * Case KD=0:
      * The matrix is diagonal. We just copy it (convert to real for
-     * complex because D is double and the imaginary part should be 0)
+     * complex because D is f64 and the imaginary part should be 0)
      * and store it in D. A sequential code here is better or
      * in a parallel environment it might need two cores for D and E
      */
@@ -251,9 +251,9 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     thgrsiz = n;
     grsiz = 1;
     shift = 3;
-    (void)ceil((double)n / (double)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceil((double)shift / (double)grsiz);
-    thgrnb = (int)ceil((double)(n - 1) / (double)thgrsiz);
+    (void)ceil((f64)n / (f64)kd);  /* nbtiles: unused OpenMP placeholder */
+    stepercol = (int)ceil((f64)shift / (f64)grsiz);
+    thgrnb = (int)ceil((f64)(n - 1) / (f64)thgrsiz);
 
     zlacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     zlaset("A", kd, n, zero, zero, &work[awpos], lda);
@@ -322,5 +322,5 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
         }
     }
 
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

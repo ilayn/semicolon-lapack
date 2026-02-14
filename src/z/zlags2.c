@@ -55,18 +55,18 @@
  * @param[out] snq    The desired unitary matrix Q.
  */
 void zlags2(const int upper,
-            const double a1, const double complex a2, const double a3,
-            const double b1, const double complex b2, const double b3,
-            double* csu, double complex* snu,
-            double* csv, double complex* snv,
-            double* csq, double complex* snq)
+            const f64 a1, const c128 a2, const f64 a3,
+            const f64 b1, const c128 b2, const f64 b3,
+            f64* csu, c128* snu,
+            f64* csv, c128* snv,
+            f64* csq, c128* snq)
 {
-    double a, aua11, aua12, aua21, aua22, avb11, avb12, avb21, avb22;
-    double csl, csr, d, fb, fc, s1, s2, snl, snr;
-    double ua11r, ua22r, vb11r, vb22r;
-    double complex b_var, c_var, d1, r, t;
-    double complex ua11, ua12, ua21, ua22;
-    double complex vb11, vb12, vb21, vb22;
+    f64 a, aua11, aua12, aua21, aua22, avb11, avb12, avb21, avb22;
+    f64 csl, csr, d, fb, fc, s1, s2, snl, snr;
+    f64 ua11r, ua22r, vb11r, vb22r;
+    c128 b_var, c_var, d1, r;
+    c128 ua11, ua12, ua21, ua22;
+    c128 vb11, vb12, vb21, vb22;
 
     if (upper) {
 

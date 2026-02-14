@@ -106,19 +106,19 @@ void zgglse(
     const int m,
     const int n,
     const int p,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict C,
-    double complex* restrict D,
-    double complex* restrict X,
-    double complex* restrict work,
+    c128* restrict C,
+    c128* restrict D,
+    c128* restrict X,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex cone = CMPLX(1.0, 0.0);
-    const double complex neg_cone = CMPLX(-1.0, 0.0);
+    const c128 cone = CMPLX(1.0, 0.0);
+    const c128 neg_cone = CMPLX(-1.0, 0.0);
 
     int lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
     int lquery;
@@ -157,7 +157,7 @@ void zgglse(
             max_val = (m > n) ? m : n;
             lwkopt = p + mn + max_val * nb;
         }
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -225,5 +225,5 @@ void zgglse(
 
     zunmrq("L", "C", n, 1, p, B, ldb, work, X, n,
            &work[p + mn], lwork - p - mn, info);
-    work[0] = (double complex)(p + mn + ((lopt > (int)creal(work[p + mn])) ? lopt : (int)creal(work[p + mn])));
+    work[0] = (c128)(p + mn + ((lopt > (int)creal(work[p + mn])) ? lopt : (int)creal(work[p + mn])));
 }

@@ -61,13 +61,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgebrd(const int m, const int n, double complex* const restrict A, const int lda,
-            double* const restrict D, double* const restrict E,
-            double complex* const restrict tauq, double complex* const restrict taup,
-            double complex* const restrict work, const int lwork, int* info)
+void zgebrd(const int m, const int n, c128* const restrict A, const int lda,
+            f64* const restrict D, f64* const restrict E,
+            c128* const restrict tauq, c128* const restrict taup,
+            c128* const restrict work, const int lwork, int* info)
 {
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     int i, j, iinfo;
     int lquery, minmn, nb, nbmin, nx;
@@ -85,7 +85,7 @@ void zgebrd(const int m, const int n, double complex* const restrict A, const in
         if (nb < 1) nb = 1;
         lwkopt = (m + n) * nb;
     }
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 
     lquery = (lwork == -1);
     if (m < 0) {
@@ -183,5 +183,5 @@ void zgebrd(const int m, const int n, double complex* const restrict A, const in
     /* Use unblocked code to reduce the remainder of the matrix */
     zgebd2(m - i, n - i, &A[i + i * lda], lda, &D[i], &E[i],
            &tauq[i], &taup[i], work, &iinfo);
-    work[0] = (double)ws;
+    work[0] = (f64)ws;
 }

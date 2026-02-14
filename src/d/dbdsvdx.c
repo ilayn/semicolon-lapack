@@ -8,12 +8,12 @@
 #include <math.h>
 #include <cblas.h>
 
-static const double ZERO = 0.0;
-static const double ONE = 1.0;
-static const double TEN = 10.0;
-static const double HNDRD = 100.0;
-static const double MEIGTH = -0.125;
-static const double FUDGE = 2.0;
+static const f64 ZERO = 0.0;
+static const f64 ONE = 1.0;
+static const f64 TEN = 10.0;
+static const f64 HNDRD = 100.0;
+static const f64 MEIGTH = -0.125;
+static const f64 FUDGE = 2.0;
 
 /**
  * DBDSVDX computes the singular value decomposition (SVD) of a real
@@ -60,10 +60,10 @@ static const double FUDGE = 2.0;
  *                         - > 0: i eigenvectors failed to converge in DSTEVX.
  */
 void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
-             double* const restrict D, double* const restrict E,
-             const double vl, const double vu, const int il, const int iu,
-             int* ns, double* const restrict S, double* const restrict Z,
-             const int ldz, double* const restrict work, int* const restrict iwork,
+             f64* const restrict D, f64* const restrict E,
+             const f64 vl, const f64 vu, const int il, const int iu,
+             int* ns, f64* const restrict S, f64* const restrict Z,
+             const int ldz, f64* const restrict work, int* const restrict iwork,
              int* info)
 {
     int allsv, indsv, lower, split, sveq0, valsv, wantz;
@@ -71,8 +71,8 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
     int iifail, iiwork, iltgk, irowu, irowv, irowz, isbeg;
     int isplt, itemp, iutgk, j, k, ns_local, nsl, ntgk;
     int nru, nrv;
-    double abstol, emin, eps, mu, nrmu, nrmv, ortol, smax, smin;
-    double sqrt2, thresh, tol, ulp, vltgk, vutgk, zjtji;
+    f64 abstol, emin, eps, mu, nrmu, nrmv, ortol, smax, smin;
+    f64 sqrt2, thresh, tol, ulp, vltgk, vutgk, zjtji;
     char rngvx = 'I';
 
     /* Test the input parameters */
@@ -168,7 +168,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
             if (smin == ZERO) break;
         }
     }
-    smin = smin / sqrt((double)n);
+    smin = smin / sqrt((f64)n);
     thresh = tol * smin;
 
     /* Check for zeros in D and E (splits), i.e., submatrices */
@@ -388,7 +388,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
                      * For eigenvalues [-1.65e-138, -1.93e-308, 0], MAXVAL = 0,
                      * so EMIN = ABS(0) = 0, triggering eigenvector concatenation. */
                     {
-                        double maxval = S[isbeg];
+                        f64 maxval = S[isbeg];
                         for (i = 1; i < nsl; i++) {
                             if (S[isbeg + i] > maxval) {
                                 maxval = S[isbeg + i];

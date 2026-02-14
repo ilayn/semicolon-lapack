@@ -46,25 +46,25 @@ void zporfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* const restrict AF,
+    const c128* const restrict AF,
     const int ldaf,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
-    const double complex ONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
+    const c128 ONE = CMPLX(1.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -99,18 +99,18 @@ void zporfs(
 
     // NZ = maximum number of nonzero elements in each row of A, plus 1
     int nz = n + 1;
-    double eps = dlamch("E");
-    double safmin = dlamch("S");
-    double safe1 = nz * safmin;
-    double safe2 = safe1 / eps;
+    f64 eps = dlamch("E");
+    f64 safmin = dlamch("S");
+    f64 safe1 = nz * safmin;
+    f64 safe2 = safe1 / eps;
 
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     // Do for each right hand side
     for (int j = 0; j < nrhs; j++) {
         int count = 1;
-        double lstres = THREE;
+        f64 lstres = THREE;
 
         for (;;) {
             // Compute residual R = B - A * X
@@ -127,8 +127,8 @@ void zporfs(
             // Compute |A|*|X| + |B|
             if (upper) {
                 for (int k = 0; k < n; k++) {
-                    double s = ZERO;
-                    double xk = cabs1(X[k + j * ldx]);
+                    f64 s = ZERO;
+                    f64 xk = cabs1(X[k + j * ldx]);
                     for (int i = 0; i < k; i++) {
                         rwork[i] += cabs1(A[i + k * lda]) * xk;
                         s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
@@ -137,8 +137,8 @@ void zporfs(
                 }
             } else {
                 for (int k = 0; k < n; k++) {
-                    double s = ZERO;
-                    double xk = cabs1(X[k + j * ldx]);
+                    f64 s = ZERO;
+                    f64 xk = cabs1(X[k + j * ldx]);
                     rwork[k] += fabs(creal(A[k + k * lda])) * xk;
                     for (int i = k + 1; i < n; i++) {
                         rwork[i] += cabs1(A[i + k * lda]) * xk;
@@ -148,13 +148,13 @@ void zporfs(
                 }
             }
 
-            double s = ZERO;
+            f64 s = ZERO;
             for (int i = 0; i < n; i++) {
                 if (rwork[i] > safe2) {
-                    double tmp = cabs1(work[i]) / rwork[i];
+                    f64 tmp = cabs1(work[i]) / rwork[i];
                     if (tmp > s) s = tmp;
                 } else {
-                    double tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
+                    f64 tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
                     if (tmp > s) s = tmp;
                 }
             }
@@ -210,7 +210,7 @@ void zporfs(
         // Normalize error
         lstres = ZERO;
         for (int i = 0; i < n; i++) {
-            double tmp = cabs1(X[i + j * ldx]);
+            f64 tmp = cabs1(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }
         if (lstres != ZERO) {

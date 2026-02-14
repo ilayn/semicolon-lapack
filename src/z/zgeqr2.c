@@ -36,13 +36,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgeqr2(const int m, const int n,
-            double complex* const restrict A, const int lda,
-            double complex* const restrict tau,
-            double complex* const restrict work,
+            c128* const restrict A, const int lda,
+            c128* const restrict tau,
+            c128* const restrict work,
             int* info)
 {
     int i, k;
-    double complex aii;
+    c128 aii;
 
     /* Parameter validation */
     *info = 0;
@@ -69,7 +69,7 @@ void zgeqr2(const int m, const int n,
             /* Apply H(i)**H to A(i:m-1, i+1:n-1) from the left */
             aii = A[i + i * lda];
             A[i + i * lda] = 1.0;
-            double complex conjtau = conj(tau[i]);
+            c128 conjtau = conj(tau[i]);
             zlarf1f("L", m - i, n - i - 1,
                     &A[i + i * lda], 1, conjtau,
                     &A[i + (i + 1) * lda], lda, work);

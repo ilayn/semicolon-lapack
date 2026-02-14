@@ -51,21 +51,21 @@
 void dlaic1(
     const int job,
     const int j,
-    const double * const restrict x,
-    const double sest,
-    const double * const restrict w,
-    const double gamma,
-    double *sestpr,
-    double *s,
-    double *c)
+    const f64 * const restrict x,
+    const f64 sest,
+    const f64 * const restrict w,
+    const f64 gamma,
+    f64 *sestpr,
+    f64 *s,
+    f64 *c)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HALF = 0.5;
-    const double FOUR = 4.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = 0.5;
+    const f64 FOUR = 4.0;
 
-    double absalp, absest, absgam, alpha, b, cosine, eps,
+    f64 absalp, absest, absgam, alpha, b, cosine, eps,
            norma, s1, s2, sine, t, test, tmp, zeta1, zeta2;
 
     eps = DBL_EPSILON;

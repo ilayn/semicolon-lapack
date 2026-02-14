@@ -81,24 +81,24 @@ void zgetsls(
     const int m,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
-    const double complex czero = CMPLX(0.0, 0.0);
-    const double zero = 0.0;
-    const double one = 1.0;
+    const c128 czero = CMPLX(0.0, 0.0);
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
 
     int i, iascl, ibscl, j, maxmn, brow;
     int scllen, tszo = 0, tszm = 0, lwo = 0, lwm = 0, lw1, lw2;
     int wsizeo, wsizem, info2;
     int lquery, tran;
-    double anrm, bignum, bnrm, smlnum;
-    double complex tq[5], workq[1];
+    f64 anrm, bignum, bnrm, smlnum;
+    c128 tq[5], workq[1];
 
     *info = 0;
     maxmn = (m > n) ? m : n;
@@ -165,7 +165,7 @@ void zgetsls(
             *info = -10;
         }
 
-        work[0] = (double)(wsizeo);
+        work[0] = (f64)(wsizeo);
     }
 
     if (*info != 0) {
@@ -173,7 +173,7 @@ void zgetsls(
         return;
     }
     if (lquery) {
-        if (lwork == -2) work[0] = (double)(wsizem);
+        if (lwork == -2) work[0] = (f64)(wsizem);
         return;
     }
     if (lwork < wsizeo) {
@@ -207,7 +207,7 @@ void zgetsls(
         iascl = 2;
     } else if (anrm == zero) {
         zlaset("F", maxmn, nrhs, czero, czero, B, ldb);
-        work[0] = (double)(tszo + lwo);
+        work[0] = (f64)(tszo + lwo);
         return;
     }
 
@@ -300,5 +300,5 @@ void zgetsls(
         zlascl("G", 0, 0, bignum, bnrm, scllen, nrhs, B, ldb, info);
     }
 
-    work[0] = (double)(tszo + lwo);
+    work[0] = (f64)(tszo + lwo);
 }

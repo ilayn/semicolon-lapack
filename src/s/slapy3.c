@@ -15,11 +15,11 @@
  * @param[in] z  Third value.
  * @return       sqrt(x**2 + y**2 + z**2)
  */
-float slapy3(const float x, const float y, const float z)
+f32 slapy3(const f32 x, const f32 y, const f32 z)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
-    float w, xabs, yabs, zabs, hugeval;
+    f32 w, xabs, yabs, zabs, hugeval;
 
     hugeval = slamch("O");
     xabs = fabsf(x);

@@ -105,34 +105,34 @@ void zlaqp3rk(
     const int nrhs,
     const int ioffset,
     int* nb,
-    const double abstol,
-    const double reltol,
+    const f64 abstol,
+    const f64 reltol,
     const int kp1,
-    const double maxc2nrm,
-    double complex* const restrict A,
+    const f64 maxc2nrm,
+    c128* const restrict A,
     const int lda,
     int* done,
     int* KB,
-    double* maxc2nrmk,
-    double* relmaxc2nrmk,
+    f64* maxc2nrmk,
+    f64* relmaxc2nrmk,
     int* restrict jpiv,
-    double complex* restrict tau,
-    double* restrict vn1,
-    double* restrict vn2,
-    double complex* restrict auxv,
-    double complex* restrict F,
+    c128* restrict tau,
+    f64* restrict vn1,
+    f64* restrict vn2,
+    c128* restrict auxv,
+    c128* restrict F,
     const int ldf,
     int* restrict iwork,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     int itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
-    double hugeval, taunan, temp, temp2, tol3z;
-    double complex aik;
-    double complex neg_tau;
+    f64 hugeval, taunan, temp, temp2, tol3z;
+    c128 aik;
+    c128 neg_tau;
     int nb_val;
 
     *info = 0;

@@ -73,10 +73,10 @@
  */
 void sormbr(const char* vect, const char* side, const char* trans,
             const int m, const int n, const int k,
-            const float* const restrict A, const int lda,
-            const float* const restrict tau,
-            float* const restrict C, const int ldc,
-            float* const restrict work, const int lwork, int* info)
+            const f32* const restrict A, const int lda,
+            const f32* const restrict tau,
+            f32* const restrict C, const int ldc,
+            f32* const restrict work, const int lwork, int* info)
 {
     int applyq, left, lquery, notran;
     char transt;
@@ -127,7 +127,7 @@ void sormbr(const char* vect, const char* side, const char* trans,
         }
         if (nb < 1) nb = 1;
         lwkopt = nw * nb;
-        work[0] = (float)lwkopt;
+        work[0] = (f32)lwkopt;
     }
 
     if (*info != 0) {
@@ -191,5 +191,5 @@ void sormbr(const char* vect, const char* side, const char* trans,
                    &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
         }
     }
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 }

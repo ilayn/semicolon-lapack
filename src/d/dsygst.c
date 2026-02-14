@@ -34,14 +34,14 @@ void dsygst(
     const int itype,
     const char* uplo,
     const int n,
-    double* restrict A,
+    f64* restrict A,
     const int lda,
-    const double* restrict B,
+    const f64* restrict B,
     const int ldb,
     int* info)
 {
-    const double ONE = 1.0;
-    const double HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 HALF = 0.5;
     int upper;
     int k, kb, nb;
 

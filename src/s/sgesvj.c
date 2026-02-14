@@ -187,16 +187,16 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float HALF = 0.5f;
-static const float ONE = 1.0f;
+static const f32 ZERO = 0.0f;
+static const f32 HALF = 0.5f;
+static const f32 ONE = 1.0f;
 static const int NSWEEP = 30;
 
 void sgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, float* const restrict A, const int lda,
-            float* const restrict SVA, const int mv,
-            float* const restrict V, const int ldv,
-            float* const restrict work, const int lwork, int* info)
+            const int m, const int n, f32* const restrict A, const int lda,
+            f32* const restrict SVA, const int mv,
+            f32* const restrict V, const int ldv,
+            f32* const restrict work, const int lwork, int* info)
 {
     int lsvec, uctol, rsvec, applv, upper, lower, lquery;
     int minmn, lwmin, mvl = 0;
@@ -207,11 +207,11 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     int n2, n4, n34;
     int ierr;
     int rotok, noscale, goscale;
-    float aapp, aapp0, aapq, aaqq, apoaq, aqoap;
-    float big, bigtheta, cs, sn, t, temp1, theta, thsign;
-    float ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
-    float rootsfmin, sfmin, skl, small, tol, roottol;
-    float fastr[5];
+    f32 aapp, aapp0, aapq, aaqq, apoaq, aqoap;
+    f32 big, bigtheta, cs, sn, t, temp1, theta, thsign;
+    f32 ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
+    f32 rootsfmin, sfmin, skl, small, tol, roottol;
+    f32 fastr[5];
 
     lsvec = (jobu[0] == 'U' || jobu[0] == 'u');
     uctol = (jobu[0] == 'C' || jobu[0] == 'c');
@@ -256,7 +256,7 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
         xerbla("SGESVJ", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
         return;
     }
 
@@ -266,9 +266,9 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
         ctol = work[0];
     } else {
         if (lsvec || rsvec || applv) {
-            ctol = sqrtf((float)m);
+            ctol = sqrtf((f32)m);
         } else {
-            ctol = (float)m;
+            ctol = (f32)m;
         }
     }
 
@@ -284,7 +284,7 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     tol = ctol * epsln;
     roottol = sqrtf(tol);
 
-    if ((float)m * epsln >= ONE) {
+    if ((f32)m * epsln >= ONE) {
         *info = -4;
         xerbla("SGESVJ", -(*info));
         return;
@@ -298,7 +298,7 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     }
     rsvec = rsvec || applv;
 
-    skl = ONE / sqrtf((float)m * (float)n);
+    skl = ONE / sqrtf((f32)m * (f32)n);
     noscale = 1;
     goscale = 1;
 
@@ -408,16 +408,16 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     }
 
     sn = sqrtf(sfmin / epsln);
-    temp1 = sqrtf(big / (float)n);
+    temp1 = sqrtf(big / (f32)n);
     if ((aapp <= sn) || (aaqq >= temp1) ||
         ((sn <= aaqq) && (aapp <= temp1))) {
         temp1 = fminf(big, temp1 / aapp);
     } else if ((aaqq <= sn) && (aapp <= temp1)) {
-        temp1 = fminf(sn / aaqq, big / (aapp * sqrtf((float)n)));
+        temp1 = fminf(sn / aaqq, big / (aapp * sqrtf((f32)n)));
     } else if ((aaqq >= sn) && (aapp >= temp1)) {
         temp1 = fmaxf(sn / aaqq, temp1 / aapp);
     } else if ((aaqq <= sn) && (aapp >= temp1)) {
-        temp1 = fminf(sn / aaqq, big / (sqrtf((float)n) * aapp));
+        temp1 = fminf(sn / aaqq, big / (sqrtf((f32)n) * aapp));
     } else {
         temp1 = ONE;
     }
@@ -988,8 +988,8 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
         if ((i + 1 < swband) && ((mxaapq <= roottol) || (iswrot <= n)))
             swband = i + 1;
 
-        if ((i > swband) && (mxaapq < sqrtf((float)n) * tol)
-            && ((float)n * mxaapq * mxsinj < tol)) {
+        if ((i > swband) && (mxaapq < sqrtf((f32)n) * tol)
+            && ((f32)n * mxaapq * mxsinj < tol)) {
             break;
         }
 
@@ -1055,9 +1055,9 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     }
 
     work[0] = skl;
-    work[1] = (float)n4;
-    work[2] = (float)n2;
-    work[3] = (float)(i + 1);
+    work[1] = (f32)n4;
+    work[2] = (f32)n2;
+    work[3] = (f32)(i + 1);
     work[4] = mxaapq;
     work[5] = mxsinj;
 

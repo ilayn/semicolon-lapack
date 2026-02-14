@@ -64,15 +64,15 @@
  */
 void sgbbrd(const char* vect, const int m, const int n, const int ncc,
             const int kl, const int ku,
-            float* const restrict AB, const int ldab,
-            float* const restrict D, float* const restrict E,
-            float* const restrict Q, const int ldq,
-            float* const restrict PT, const int ldpt,
-            float* const restrict C, const int ldc,
-            float* const restrict work, int* info)
+            f32* const restrict AB, const int ldab,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict Q, const int ldq,
+            f32* const restrict PT, const int ldpt,
+            f32* const restrict C, const int ldc,
+            f32* const restrict work, int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     /* Test the input parameters */
     int wantb = (vect[0] == 'B' || vect[0] == 'b');
@@ -198,7 +198,7 @@ void sgbbrd(const char* vect, const int m, const int n, const int ncc,
                          * Generate plane rotation to annihilate a(i+ml-1,i)
                          * within the band, and apply rotation from the left
                          */
-                        float ra;
+                        f32 ra;
                         /* AB[ku+ml-2 + i*ldab] and AB[ku+ml-1 + i*ldab] in 0-indexed */
                         slartg(AB[(ku + ml - 2) + i * ldab], AB[(ku + ml - 1) + i * ldab],
                                &work[mn + i + ml - 1], &work[i + ml - 1], &ra);
@@ -281,7 +281,7 @@ void sgbbrd(const char* vect, const int m, const int n, const int ncc,
                          * Generate plane rotation to annihilate a(i,i+mu-1)
                          * within the band, and apply rotation from the right
                          */
-                        float ra;
+                        f32 ra;
                         /* AB[ku-mu+2 + (i+mu-2)*ldab] and AB[ku-mu+1 + (i+mu-1)*ldab] */
                         slartg(AB[(ku - mu + 2) + (i + mu - 2) * ldab],
                                AB[(ku - mu + 1) + (i + mu - 1) * ldab],
@@ -341,7 +341,7 @@ void sgbbrd(const char* vect, const int m, const int n, const int ncc,
          * and off-diagonal elements in E
          */
         for (int i = 0; i < MIN(m - 1, n); i++) {
-            float rc, rs, ra;
+            f32 rc, rs, ra;
             /* AB[0 + i*ldab] and AB[1 + i*ldab] */
             slartg(AB[i * ldab], AB[1 + i * ldab], &rc, &rs, &ra);
             D[i] = ra;
@@ -369,9 +369,9 @@ void sgbbrd(const char* vect, const int m, const int n, const int ncc,
              * right, storing diagonal elements in D and off-diagonal
              * elements in E
              */
-            float rb = AB[(ku - 1) + m * ldab];  /* AB[ku-1 + m*ldab] = A(m-1, m) in 0-indexed */
+            f32 rb = AB[(ku - 1) + m * ldab];  /* AB[ku-1 + m*ldab] = A(m-1, m) in 0-indexed */
             for (int i = m - 1; i >= 0; i--) {
-                float rc, rs, ra;
+                f32 rc, rs, ra;
                 /* AB[ku + i*ldab] = diagonal element */
                 slartg(AB[ku + i * ldab], rb, &rc, &rs, &ra);
                 D[i] = ra;

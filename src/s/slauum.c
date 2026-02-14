@@ -38,11 +38,11 @@
 void slauum(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
 
     // Test the input parameters
     *info = 0;

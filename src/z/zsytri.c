@@ -32,15 +32,15 @@
 void zsytri(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
     int upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -89,7 +89,7 @@ void zsytri(
 
                 /* Compute column k of the inverse. */
                 if (k > 0) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(k, &A[0 + k * lda], 1, work, 1);
                     zsymv(uplo, k, NEG_ONE, A, lda, work, 1,
                           ZERO, &A[0 + k * lda], 1);
@@ -99,18 +99,18 @@ void zsytri(
                 kstep = 1;
             } else {
                 /* 2x2 diagonal block: invert the 2x2 block. */
-                double complex t = A[k + (k + 1) * lda];
-                double complex ak = A[k + k * lda] / t;
-                double complex akp1 = A[(k + 1) + (k + 1) * lda] / t;
-                double complex akkp1 = A[k + (k + 1) * lda] / t;
-                double complex d = t * (ak * akp1 - ONE);
+                c128 t = A[k + (k + 1) * lda];
+                c128 ak = A[k + k * lda] / t;
+                c128 akp1 = A[(k + 1) + (k + 1) * lda] / t;
+                c128 akkp1 = A[k + (k + 1) * lda] / t;
+                c128 d = t * (ak * akp1 - ONE);
                 A[k + k * lda] = akp1 / d;
                 A[(k + 1) + (k + 1) * lda] = ak / d;
                 A[k + (k + 1) * lda] = -akkp1 / d;
 
                 /* Compute columns k and k+1 of the inverse. */
                 if (k > 0) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(k, &A[0 + k * lda], 1, work, 1);
                     zsymv(uplo, k, NEG_ONE, A, lda, work, 1,
                           ZERO, &A[0 + k * lda], 1);
@@ -148,7 +148,7 @@ void zsytri(
                 }
 
                 /* Swap diagonal elements */
-                double complex temp = A[k + k * lda];
+                c128 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 
@@ -176,7 +176,7 @@ void zsytri(
 
                 /* Compute column k of the inverse. */
                 if (k < n - 1) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(n - k - 1, &A[(k + 1) + k * lda], 1, work, 1);
                     zsymv(uplo, n - k - 1, NEG_ONE, &A[(k + 1) + (k + 1) * lda], lda,
                           work, 1, ZERO, &A[(k + 1) + k * lda], 1);
@@ -187,18 +187,18 @@ void zsytri(
                 kstep = 1;
             } else {
                 /* 2x2 diagonal block: invert the 2x2 block. */
-                double complex t = A[k + (k - 1) * lda];
-                double complex ak = A[(k - 1) + (k - 1) * lda] / t;
-                double complex akp1 = A[k + k * lda] / t;
-                double complex akkp1 = A[k + (k - 1) * lda] / t;
-                double complex d = t * (ak * akp1 - ONE);
+                c128 t = A[k + (k - 1) * lda];
+                c128 ak = A[(k - 1) + (k - 1) * lda] / t;
+                c128 akp1 = A[k + k * lda] / t;
+                c128 akkp1 = A[k + (k - 1) * lda] / t;
+                c128 d = t * (ak * akp1 - ONE);
                 A[(k - 1) + (k - 1) * lda] = akp1 / d;
                 A[k + k * lda] = ak / d;
                 A[k + (k - 1) * lda] = -akkp1 / d;
 
                 /* Compute columns k-1 and k of the inverse. */
                 if (k < n - 1) {
-                    double complex dotval;
+                    c128 dotval;
                     cblas_zcopy(n - k - 1, &A[(k + 1) + k * lda], 1, work, 1);
                     zsymv(uplo, n - k - 1, NEG_ONE, &A[(k + 1) + (k + 1) * lda], lda,
                           work, 1, ZERO, &A[(k + 1) + k * lda], 1);
@@ -239,7 +239,7 @@ void zsytri(
                 }
 
                 /* Swap diagonal elements */
-                double complex temp = A[k + k * lda];
+                c128 temp = A[k + k * lda];
                 A[k + k * lda] = A[kp + kp * lda];
                 A[kp + kp * lda] = temp;
 

@@ -80,12 +80,12 @@ void zhesv_aa(
     const char* uplo,
     const int n,
     const int nrhs,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
@@ -121,7 +121,7 @@ void zhesv_aa(
         lwkopt_hetrs = (int)creal(work[0]);
         tmp1 = (lwkmin > lwkopt_hetrf) ? lwkmin : lwkopt_hetrf;
         lwkopt = (tmp1 > lwkopt_hetrs) ? tmp1 : lwkopt_hetrs;
-        work[0] = CMPLX((double)lwkopt, 0.0);
+        work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
     if (*info != 0) {
@@ -138,5 +138,5 @@ void zhesv_aa(
 
     }
 
-    work[0] = CMPLX((double)lwkopt, 0.0);
+    work[0] = CMPLX((f64)lwkopt, 0.0);
 }

@@ -8,17 +8,17 @@
 #include <math.h>
 
 void ssyev_2stage(const char* jobz, const char* uplo, const int n,
-                  float* A, const int lda,
-                  float* W,
-                  float* work, const int lwork, int* info)
+                  f32* A, const int lda,
+                  f32* W,
+                  f32* work, const int lwork, int* info)
 {
-    const float zero = 0.0f;
-    const float one = 1.0f;
+    const f32 zero = 0.0f;
+    const f32 one = 1.0f;
 
     int lower, lquery, wantz;
     int iinfo, imax, inde, indtau, indwrk, iscale;
     int llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
-    float anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -41,7 +41,7 @@ void ssyev_2stage(const char* jobz, const char* uplo, const int n,
         lhtrd = ilaenv2stage(3, "SSYTRD_2STAGE", jobz, n, kd, ib, -1);
         lwtrd = ilaenv2stage(4, "SSYTRD_2STAGE", jobz, n, kd, ib, -1);
         lwmin = 2 * n + lhtrd + lwtrd;
-        work[0] = (float)lwmin;
+        work[0] = (f32)lwmin;
 
         if (lwork < lwmin && !lquery) {
             *info = -8;
@@ -121,5 +121,5 @@ void ssyev_2stage(const char* jobz, const char* uplo, const int n,
         cblas_sscal(imax, one / sigma, W, 1);
     }
 
-    work[0] = (float)lwmin;
+    work[0] = (f32)lwmin;
 }

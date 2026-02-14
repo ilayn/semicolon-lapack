@@ -50,34 +50,34 @@ void ztgsna(
     const char* howmny,
     const int* const restrict select,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    const double complex* const restrict VL,
+    const c128* const restrict VL,
     const int ldvl,
-    const double complex* const restrict VR,
+    const c128* const restrict VR,
     const int ldvr,
-    double* const restrict S,
-    double* const restrict dif,
+    f64* const restrict S,
+    f64* const restrict dif,
     const int mm,
     int* m,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
     int* const restrict iwork,
     int* info)
 {
     const int IDIFJB = 3;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int lquery, somcon, wantbh, wantdf, wants;
     int i, ierr, ilst, k, ks, lwmin, n1, n2;
-    double cond, eps, lnrm, rnrm, scale, smlnum;
-    double complex yhax, yhbx;
-    double complex dummy[1], dummy1[1];
+    f64 cond, eps, lnrm, rnrm, scale, smlnum;
+    c128 yhax, yhbx;
+    c128 dummy[1], dummy1[1];
 
     wantbh = (job[0] == 'B' || job[0] == 'b');
     wants = (job[0] == 'E' || job[0] == 'e') || wantbh;
@@ -124,7 +124,7 @@ void ztgsna(
         } else {
             lwmin = n;
         }
-        work[0] = CMPLX((double)lwmin, 0.0);
+        work[0] = CMPLX((f64)lwmin, 0.0);
 
         if (mm < *m) {
             *info = -15;
@@ -219,5 +219,5 @@ void ztgsna(
             }
         }
     }
-    work[0] = CMPLX((double)lwmin, 0.0);
+    work[0] = CMPLX((f64)lwmin, 0.0);
 }

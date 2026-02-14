@@ -57,20 +57,20 @@
 void zsytrf_aa(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* restrict ipiv,
-    double complex* restrict work,
+    c128* restrict work,
     const int lwork,
     int* info)
 {
     int upper, lquery;
     int j, lwkmin, lwkopt;
     int nb, mj, nj, k1, k2, j1, j2, j3, jb;
-    double complex alpha;
+    c128 alpha;
 
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex NEG_ONE = CMPLX(-1.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     nb = lapack_get_nb("SYTRF");
 
@@ -97,7 +97,7 @@ void zsytrf_aa(
     }
 
     if (*info == 0) {
-        work[0] = (double complex)lwkopt;
+        work[0] = (c128)lwkopt;
     }
 
     if (*info != 0) {
@@ -254,5 +254,5 @@ void zsytrf_aa(
         }
     }
 
-    work[0] = (double complex)lwkopt;
+    work[0] = (c128)lwkopt;
 }

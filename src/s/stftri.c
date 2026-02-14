@@ -43,7 +43,7 @@ void stftri(
     const char* uplo,
     const char* diag,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     int* info)
 {
     int lower, nisodd, normaltransr;

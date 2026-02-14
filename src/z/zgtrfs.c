@@ -51,34 +51,34 @@ void zgtrfs(
     const char* trans,
     const int n,
     const int nrhs,
-    const double complex* const restrict DL,
-    const double complex* const restrict D,
-    const double complex* const restrict DU,
-    const double complex* const restrict DLF,
-    const double complex* const restrict DF,
-    const double complex* const restrict DUF,
-    const double complex* const restrict DU2,
+    const c128* const restrict DL,
+    const c128* const restrict D,
+    const c128* const restrict DU,
+    const c128* const restrict DLF,
+    const c128* const restrict DF,
+    const c128* const restrict DUF,
+    const c128* const restrict DU2,
     const int* const restrict ipiv,
-    const double complex* const restrict B,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int notran;
     char transn, transt;
     int count, i, j, kase, nz;
-    double eps, lstres, s, safe1, safe2, safmin;
+    f64 eps, lstres, s, safe1, safe2, safmin;
     int isave[3];
     int ldb_min, ldx_min;
     int gttrs_info;
@@ -142,8 +142,8 @@ void zgtrfs(
             /* Compute residual R = B - op(A) * X */
             cblas_zcopy(n, B + j * ldb, 1, work, 1);
             {
-                const double neg_one = -ONE;
-                const double one = ONE;
+                const f64 neg_one = -ONE;
+                const f64 one = ONE;
                 zlagtm(trans, n, 1, neg_one, DL, D, DU, X + j * ldx, ldx,
                         one, work, n);
             }
@@ -191,10 +191,10 @@ void zgtrfs(
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (rwork[i] > safe2) {
-                    double temp = cabs1(work[i]) / rwork[i];
+                    f64 temp = cabs1(work[i]) / rwork[i];
                     if (s < temp) s = temp;
                 } else {
-                    double temp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
+                    f64 temp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
                     if (s < temp) s = temp;
                 }
             }
@@ -205,7 +205,7 @@ void zgtrfs(
                 /* Update solution and try again */
                 zgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, work, n, &gttrs_info);
                 {
-                    const double complex zone = CMPLX(ONE, 0.0);
+                    const c128 zone = CMPLX(ONE, 0.0);
                     cblas_zaxpy(n, &zone, work, 1, X + j * ldx, 1);
                 }
                 lstres = berr[j];
@@ -250,7 +250,7 @@ void zgtrfs(
         /* Normalize error */
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double temp = cabs1(X[i + j * ldx]);
+            f64 temp = cabs1(X[i + j * ldx]);
             if (lstres < temp) lstres = temp;
         }
         if (lstres != ZERO) {

@@ -27,13 +27,13 @@
  *
  * @return Scale factor s in (0, 1].
  */
-float slarmm(const float anorm, const float bnorm, const float cnorm)
+f32 slarmm(const f32 anorm, const f32 bnorm, const f32 cnorm)
 {
-    const float ONE = 1.0f;
-    const float HALF = 0.5f;
-    const float FOUR = 4.0f;
+    const f32 ONE = 1.0f;
+    const f32 HALF = 0.5f;
+    const f32 FOUR = 4.0f;
 
-    float smlnum, bignum;
+    f32 smlnum, bignum;
 
     /* Determine machine dependent parameters to control overflow */
     smlnum = slamch("S") / slamch("P");

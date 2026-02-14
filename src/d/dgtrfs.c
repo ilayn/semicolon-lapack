@@ -50,34 +50,34 @@ void dgtrfs(
     const char* trans,
     const int n,
     const int nrhs,
-    const double * const restrict DL,
-    const double * const restrict D,
-    const double * const restrict DU,
-    const double * const restrict DLF,
-    const double * const restrict DF,
-    const double * const restrict DUF,
-    const double * const restrict DU2,
+    const f64 * const restrict DL,
+    const f64 * const restrict D,
+    const f64 * const restrict DU,
+    const f64 * const restrict DLF,
+    const f64 * const restrict DF,
+    const f64 * const restrict DUF,
+    const f64 * const restrict DU2,
     const int * const restrict ipiv,
-    const double * const restrict B,
+    const f64 * const restrict B,
     const int ldb,
-    double * const restrict X,
+    f64 * const restrict X,
     const int ldx,
-    double * const restrict ferr,
-    double * const restrict berr,
-    double * const restrict work,
+    f64 * const restrict ferr,
+    f64 * const restrict berr,
+    f64 * const restrict work,
     int * const restrict iwork,
     int *info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int notran;
     char transn, transt;
     int count, i, j, kase, nz;
-    double eps, lstres, s, safe1, safe2, safmin;
+    f64 eps, lstres, s, safe1, safe2, safmin;
     int isave[3];
     int ldb_min, ldx_min;
     int gttrs_info;
@@ -183,10 +183,10 @@ void dgtrfs(
             s = ZERO;
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
-                    double temp = fabs(work[n + i]) / work[i];
+                    f64 temp = fabs(work[n + i]) / work[i];
                     if (s < temp) s = temp;
                 } else {
-                    double temp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
+                    f64 temp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
                     if (s < temp) s = temp;
                 }
             }
@@ -240,7 +240,7 @@ void dgtrfs(
         /* Normalize error */
         lstres = ZERO;
         for (i = 0; i < n; i++) {
-            double temp = fabs(X[i + j * ldx]);
+            f64 temp = fabs(X[i + j * ldx]);
             if (lstres < temp) lstres = temp;
         }
         if (lstres != ZERO) {

@@ -10,10 +10,10 @@
 static int ilazlc(
     const int m,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda)
 {
-    const double complex zero = CMPLX(0.0, 0.0);
+    const c128 zero = CMPLX(0.0, 0.0);
     int i, j;
 
     if (n == 0) {
@@ -35,10 +35,10 @@ static int ilazlc(
 static int ilazlr(
     const int m,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda)
 {
-    const double complex zero = CMPLX(0.0, 0.0);
+    const c128 zero = CMPLX(0.0, 0.0);
     int i, j, result;
 
     if (m == 0) {
@@ -84,13 +84,13 @@ static int ilazlr(
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
 void zlarf(const char* side, const int m, const int n,
-           const double complex* const restrict v, const int incv,
-           const double complex tau,
-           double complex* const restrict C, const int ldc,
-           double complex* const restrict work)
+           const c128* const restrict v, const int incv,
+           const c128 tau,
+           c128* const restrict C, const int ldc,
+           c128* const restrict work)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
     int applyleft;
     int lastv, lastc, i;
 
@@ -137,7 +137,7 @@ void zlarf(const char* side, const int m, const int n,
                         v, incv, &ZERO, work, 1);
 
             /* C(0:lastv-1, 0:lastc-1) -= tau * v(0:lastv-1) * w**H */
-            const double complex neg_tau = -tau;
+            const c128 neg_tau = -tau;
             cblas_zgerc(CblasColMajor, lastv, lastc,
                         &neg_tau, v, incv, work, 1, C, ldc);
         }
@@ -150,7 +150,7 @@ void zlarf(const char* side, const int m, const int n,
                         v, incv, &ZERO, work, 1);
 
             /* C(0:lastc-1, 0:lastv-1) -= tau * w * v**H */
-            const double complex neg_tau = -tau;
+            const c128 neg_tau = -tau;
             cblas_zgerc(CblasColMajor, lastc, lastv,
                         &neg_tau, work, 1, v, incv, C, ldc);
         }

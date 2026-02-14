@@ -56,11 +56,11 @@
  */
 void stpmlqt(const char* side, const char* trans, const int m, const int n,
              const int k, const int l, const int mb,
-             const float* const restrict V, const int ldv,
-             const float* const restrict T, const int ldt,
-             float* const restrict A, const int lda,
-             float* const restrict B, const int ldb,
-             float* const restrict work, int* info)
+             const f32* const restrict V, const int ldv,
+             const f32* const restrict T, const int ldt,
+             f32* const restrict A, const int lda,
+             f32* const restrict B, const int ldb,
+             f32* const restrict work, int* info)
 {
     int left, right, tran, notran;
     int i, ib, nb, lb, kf, ldaq;

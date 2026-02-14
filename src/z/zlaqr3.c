@@ -50,22 +50,22 @@ static int iparmq_nmin(void)
  */
 void zlaqr3(const int wantt, const int wantz, const int n,
             const int ktop, const int kbot, const int nw,
-            double complex* H, const int ldh,
+            c128* H, const int ldh,
             const int iloz, const int ihiz,
-            double complex* Z, const int ldz,
+            c128* Z, const int ldz,
             int* ns, int* nd,
-            double complex* SH,
-            double complex* V, const int ldv,
-            const int nh, double complex* T, const int ldt,
-            const int nv, double complex* WV, const int ldwv,
-            double complex* work, const int lwork)
+            c128* SH,
+            c128* V, const int ldv,
+            const int nh, c128* T, const int ldt,
+            const int nv, c128* WV, const int ldwv,
+            c128* work, const int lwork)
 {
-    const double complex czero = 0.0;
-    const double complex cone = 1.0;
-    const double rzero = 0.0;
+    const c128 czero = 0.0;
+    const c128 cone = 1.0;
+    const f64 rzero = 0.0;
 
-    double complex s, tau;
-    double foo, safmin, smlnum, ulp;
+    c128 s, tau;
+    f64 foo, safmin, smlnum, ulp;
     int i, ifst, ilst, info, infqr, j, jw, kcol, kln, knt;
     int krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin;
 
@@ -91,7 +91,7 @@ void zlaqr3(const int wantt, const int wantz, const int n,
     }
 
     if (lwork == -1) {
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
         return;
     }
 
@@ -105,7 +105,7 @@ void zlaqr3(const int wantt, const int wantz, const int n,
 
     safmin = dlamch("Safe minimum");
     ulp = dlamch("Precision");
-    smlnum = safmin * ((double)n / ulp);
+    smlnum = safmin * ((f64)n / ulp);
 
     jw = nw < kbot - ktop + 1 ? nw : kbot - ktop + 1;
     kwtop = kbot - jw + 1;
@@ -253,5 +253,5 @@ void zlaqr3(const int wantt, const int wantz, const int n,
 
     *ns = *ns - infqr;
 
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

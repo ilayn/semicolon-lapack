@@ -37,14 +37,14 @@ void sgetrs(
     const char* trans,
     const int n,
     const int nrhs,
-    const float * const restrict A,
+    const f32 * const restrict A,
     const int lda,
     const int * const restrict ipiv,
-    float * const restrict B,
+    f32 * const restrict B,
     const int ldb,
     int *info)
 {
-    const float ONE = 1.0f;
+    const f32 ONE = 1.0f;
     int notran;
 
     // Test the input parameters

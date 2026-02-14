@@ -106,15 +106,15 @@
  */
 void dlaed7(const int icompq, const int n, const int qsiz,
             const int tlvls, const int curlvl, const int curpbm,
-            double* D, double* Q, const int ldq, int* indxq,
-            const double rho, const int cutpnt, double* qstore,
+            f64* D, f64* Q, const int ldq, int* indxq,
+            const f64 rho, const int cutpnt, f64* qstore,
             int* qptr, int* prmptr, int* perm, int* givptr,
-            int* givcol, double* givnum, double* work, int* iwork,
+            int* givcol, f64* givnum, f64* work, int* iwork,
             int* info)
 {
     int coltyp, curr, i, idlmda, indx, indxc, indxp,
         iq2, is, iw, iz, k, ldq2, n1, n2, ptr;
-    double rho_local;
+    f64 rho_local;
 
     /* Test the input parameters. */
     *info = 0;

@@ -37,23 +37,23 @@
  *                        value between calls to DLASQ3.
  * @param[in,out] tau    This is the shift.
  */
-void dlasq3(const int i0, int* n0, double* const restrict Z,
-            int* pp, double* dmin, double* sigma, double* desig,
-            const double qmax, int* nfail, int* iter, int* ndiv,
-            const int ieee, int* ttype, double* dmin1, double* dmin2,
-            double* dn, double* dn1, double* dn2, double* g, double* tau)
+void dlasq3(const int i0, int* n0, f64* const restrict Z,
+            int* pp, f64* dmin, f64* sigma, f64* desig,
+            const f64 qmax, int* nfail, int* iter, int* ndiv,
+            const int ieee, int* ttype, f64* dmin1, f64* dmin2,
+            f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau)
 {
-    const double CBIAS = 1.50;
-    const double ZERO = 0.0;
-    const double QURTR = 0.250;
-    const double HALF = 0.50;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HUNDRD = 100.0;
+    const f64 CBIAS = 1.50;
+    const f64 ZERO = 0.0;
+    const f64 QURTR = 0.250;
+    const f64 HALF = 0.50;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HUNDRD = 100.0;
 
     int ipn4, j4, n0in, nn;
-    double eps, s, t, temp, tol, tol2;
-    double qmax_local;
+    f64 eps, s, t, temp, tol, tol2;
+    f64 qmax_local;
 
     n0in = *n0;
     eps = dlamch("P");

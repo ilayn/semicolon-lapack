@@ -72,31 +72,31 @@ void ztgevc(
     const char* howmny,
     const int* const restrict select,
     const int n,
-    const double complex* const restrict S,
+    const c128* const restrict S,
     const int lds,
-    const double complex* const restrict P,
+    const c128* const restrict P,
     const int ldp,
-    double complex* const restrict VL,
+    c128* const restrict VL,
     const int ldvl,
-    double complex* const restrict VR,
+    c128* const restrict VR,
     const int ldvr,
     const int mm,
     int* m,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int compl_, compr, ilall, ilback, ilbbad, ilcomp;
     int ihwmny, iside;
     int i, ibeg, ieig, iend, im, isrc, j, je, jr;
-    double acoefa, acoeff, anorm, ascale, bcoefa, big, bignum;
-    double bnorm, bscale, dmin_, safmin, sbeta, scale, small_, temp, ulp, xmax;
-    double complex bcoeff, ca, cb, d, salpha, sum_, suma, sumb;
+    f64 acoefa, acoeff, anorm, ascale, bcoefa, big, bignum;
+    f64 bnorm, bscale, dmin_, safmin, sbeta, scale, small_, temp, ulp, xmax;
+    c128 bcoeff, ca, cb, d, salpha, sum_, suma, sumb;
     int lsa, lsb;
 
     *info = 0;

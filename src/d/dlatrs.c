@@ -46,20 +46,20 @@ void dlatrs(
     const char* diag,
     const char* normin,
     const int n,
-    const double * const restrict A,
+    const f64 * const restrict A,
     const int lda,
-    double * const restrict X,
-    double *scale,
-    double * const restrict cnorm,
+    f64 * const restrict X,
+    f64 *scale,
+    f64 * const restrict cnorm,
     int *info)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
 
     int upper, notran, nounit, normin_n;
     int i, imax, j, jfirst, jinc, jlast;
-    double bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
+    f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

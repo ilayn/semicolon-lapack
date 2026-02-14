@@ -7,9 +7,9 @@
 #include "lapack_tuning.h"
 
 void sggrqf(const int m, const int p, const int n,
-            float* const restrict A, const int lda, float* const restrict taua,
-            float* const restrict B, const int ldb, float* const restrict taub,
-            float* const restrict work, const int lwork, int* info)
+            f32* const restrict A, const int lda, f32* const restrict taua,
+            f32* const restrict B, const int ldb, f32* const restrict taub,
+            f32* const restrict work, const int lwork, int* info)
 {
     int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
     int minval, arow;
@@ -29,7 +29,7 @@ void sggrqf(const int m, const int p, const int n,
 
     lwkopt = minval * nb;
     if (lwkopt < 1) lwkopt = 1;
-    work[0] = (float)lwkopt;
+    work[0] = (f32)lwkopt;
 
     lquery = (lwork == -1);
 
@@ -71,5 +71,5 @@ void sggrqf(const int m, const int p, const int n,
     sgeqrf(p, n, B, ldb, taub, work, lwork, info);
     if ((int)work[0] > lopt) lopt = (int)work[0];
 
-    work[0] = (float)lopt;
+    work[0] = (f32)lopt;
 }

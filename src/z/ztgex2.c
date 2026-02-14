@@ -54,27 +54,27 @@ void ztgex2(
     const int wantq,
     const int wantz,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
-    double complex* const restrict Q,
+    c128* const restrict Q,
     const int ldq,
-    double complex* const restrict Z,
+    c128* const restrict Z,
     const int ldz,
     const int j1,
     int* info)
 {
-    const double complex CZERO = CMPLX(0.0, 0.0);
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double TWENTY = 20.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 TWENTY = 20.0;
 
     int weak, strong;
     int i, m;
-    double cq, cz, eps, sa, sb, scale, smlnum, sum, thresha, threshb;
-    double complex cdum, f, g, sq, sz;
+    f64 cq, cz, eps, sa, sb, scale, smlnum, sum, thresha, threshb;
+    c128 cdum, f, g, sq, sz;
 
-    double complex s[LDST * LDST], t[LDST * LDST], work[8];
+    c128 s[LDST * LDST], t[LDST * LDST], work[8];
 
     *info = 0;
 

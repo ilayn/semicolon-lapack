@@ -24,12 +24,12 @@
  *
  * @return The requested machine parameter.
  */
-float slamch(const char* cmach)
+f32 slamch(const char* cmach)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
-    float eps, sfmin, small, rmach;
+    f32 eps, sfmin, small, rmach;
 
     // eps = relative machine precision (assuming rounding)
     // DBL_EPSILON is the difference between 1 and the smallest double > 1
@@ -51,25 +51,25 @@ float slamch(const char* cmach)
         rmach = sfmin;
     } else if (cmach[0] == 'B' || cmach[0] == 'b') {
         // Base
-        rmach = (float)FLT_RADIX;
+        rmach = (f32)FLT_RADIX;
     } else if (cmach[0] == 'P' || cmach[0] == 'p') {
         // Precision = eps * base
-        rmach = eps * (float)FLT_RADIX;
+        rmach = eps * (f32)FLT_RADIX;
     } else if (cmach[0] == 'N' || cmach[0] == 'n') {
         // Number of (base) digits in the mantissa
-        rmach = (float)FLT_MANT_DIG;
+        rmach = (f32)FLT_MANT_DIG;
     } else if (cmach[0] == 'R' || cmach[0] == 'r') {
         // Rounding mode (1.0 for rounding)
         rmach = ONE;
     } else if (cmach[0] == 'M' || cmach[0] == 'm') {
         // Minimum exponent before underflow
-        rmach = (float)FLT_MIN_EXP;
+        rmach = (f32)FLT_MIN_EXP;
     } else if (cmach[0] == 'U' || cmach[0] == 'u') {
         // Underflow threshold
         rmach = FLT_MIN;
     } else if (cmach[0] == 'L' || cmach[0] == 'l') {
         // Largest exponent before overflow
-        rmach = (float)FLT_MAX_EXP;
+        rmach = (f32)FLT_MAX_EXP;
     } else if (cmach[0] == 'O' || cmach[0] == 'o') {
         // Overflow threshold
         rmach = FLT_MAX;

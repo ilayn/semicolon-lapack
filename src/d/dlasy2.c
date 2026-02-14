@@ -47,22 +47,22 @@ static const int bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
  */
 void dlasy2(const int ltranl, const int ltranr, const int isgn,
             const int n1, const int n2,
-            const double* TL, const int ldtl,
-            const double* TR, const int ldtr,
-            const double* B, const int ldb,
-            double* scale, double* X, const int ldx,
-            double* xnorm, int* info)
+            const f64* TL, const int ldtl,
+            const f64* TR, const int ldtr,
+            const f64* B, const int ldb,
+            f64* scale, f64* X, const int ldx,
+            f64* xnorm, int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double TWO = 2.0;
-    const double HALF = 0.5;
-    const double EIGHT = 8.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 TWO = 2.0;
+    const f64 HALF = 0.5;
+    const f64 EIGHT = 8.0;
 
     int i, ip, ipiv, ipsv, j, jp, jpsv, k;
-    double bet, eps, gam, l21, sgn, smin, smlnum, tau1;
-    double temp, u11, u12, u22, xmax;
-    double btmp[4], t16[16], tmp[4], x2[2];  /* t16 stored column-major: t16[i + 4*j] */
+    f64 bet, eps, gam, l21, sgn, smin, smlnum, tau1;
+    f64 temp, u11, u12, u22, xmax;
+    f64 btmp[4], t16[16], tmp[4], x2[2];  /* t16 stored column-major: t16[i + 4*j] */
     int jpiv[4];
 
     *info = 0;
@@ -74,7 +74,7 @@ void dlasy2(const int ltranl, const int ltranr, const int isgn,
     /* Set constants to control overflow */
     eps = dlamch("P");
     smlnum = dlamch("S") / eps;
-    sgn = (double)isgn;
+    sgn = (f64)isgn;
 
     k = n1 + n1 + n2 - 2;
 

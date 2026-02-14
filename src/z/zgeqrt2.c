@@ -47,15 +47,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgeqrt2(const int m, const int n,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict T, const int ldt,
+             c128* const restrict A, const int lda,
+             c128* const restrict T, const int ldt,
              int* info)
 {
-    const double complex ONE = CMPLX(1.0, 0.0);
-    const double complex ZERO = CMPLX(0.0, 0.0);
+    const c128 ONE = CMPLX(1.0, 0.0);
+    const c128 ZERO = CMPLX(0.0, 0.0);
 
     int i, k;
-    double complex aii, alpha;
+    c128 aii, alpha;
 
     /* Parameter validation */
     *info = 0;

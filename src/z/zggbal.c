@@ -49,30 +49,30 @@
 void zggbal(
     const char* job,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
-    double complex* const restrict B,
+    c128* const restrict B,
     const int ldb,
     int* ilo,
     int* ihi,
-    double* const restrict lscale,
-    double* const restrict rscale,
-    double* const restrict work,
+    f64* const restrict lscale,
+    f64* const restrict rscale,
+    f64* const restrict work,
     int* info)
 {
-    const double ZERO = 0.0;
-    const double HALF = 0.5;
-    const double ONE = 1.0;
-    const double THREE = 3.0;
-    const double SCLFAC = 10.0;
-    const double complex CZERO = CMPLX(0.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 HALF = 0.5;
+    const f64 ONE = 1.0;
+    const f64 THREE = 3.0;
+    const f64 SCLFAC = 10.0;
+    const c128 CZERO = CMPLX(0.0, 0.0);
 
     int i, icab, ir, irab, it, j, jc;
     int k, kount, l, lcab, lrab, lsfmax, lsfmin;
     int m, nr, nrp2;
-    double alpha, basl, beta, cab, cmax, coef, coef2;
-    double coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
-    double sfmin, sum, t, ta, tb, tc;
+    f64 alpha, basl, beta, cab, cmax, coef, coef2;
+    f64 coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
+    f64 sfmin, sum, t, ta, tb, tc;
 
     *info = 0;
     if (!(job[0] == 'N' || job[0] == 'n') &&
@@ -150,14 +150,14 @@ void zggbal(
                     continue;
                 j = (nz_col >= 0) ? nz_col : l - 1;
                 m = l;
-                lscale[m - 1] = (double)(i + 1);
+                lscale[m - 1] = (f64)(i + 1);
                 if (i != m - 1) {
                     cblas_zswap(n - k + 1, &A[i + (k - 1) * lda], lda,
                                 &A[m - 1 + (k - 1) * lda], lda);
                     cblas_zswap(n - k + 1, &B[i + (k - 1) * ldb], ldb,
                                 &B[m - 1 + (k - 1) * ldb], ldb);
                 }
-                rscale[m - 1] = (double)(j + 1);
+                rscale[m - 1] = (f64)(j + 1);
                 if (j != m - 1) {
                     cblas_zswap(l, &A[j * lda], 1, &A[(m - 1) * lda], 1);
                     cblas_zswap(l, &B[j * ldb], 1, &B[(m - 1) * ldb], 1);
@@ -192,14 +192,14 @@ void zggbal(
                     continue;
                 i = (nz_row >= 0) ? nz_row : l - 1;
                 m = k;
-                lscale[m - 1] = (double)(i + 1);
+                lscale[m - 1] = (f64)(i + 1);
                 if (i != m - 1) {
                     cblas_zswap(n - k + 1, &A[i + (k - 1) * lda], lda,
                                 &A[m - 1 + (k - 1) * lda], lda);
                     cblas_zswap(n - k + 1, &B[i + (k - 1) * ldb], ldb,
                                 &B[m - 1 + (k - 1) * ldb], ldb);
                 }
-                rscale[m - 1] = (double)(j + 1);
+                rscale[m - 1] = (f64)(j + 1);
                 if (j != m - 1) {
                     cblas_zswap(l, &A[j * lda], 1, &A[(m - 1) * lda], 1);
                     cblas_zswap(l, &B[j * ldb], 1, &B[(m - 1) * ldb], 1);
@@ -265,7 +265,7 @@ scaling:
         }
     }
 
-    coef = ONE / (double)(2 * nr);
+    coef = ONE / (f64)(2 * nr);
     coef2 = coef * coef;
     coef5 = HALF * coef2;
     nrp2 = nr + 2;
@@ -321,7 +321,7 @@ scaling:
                     sum += work[j];
                 }
             }
-            work[i + 2 * n] = (double)kount * work[i + n] + sum;
+            work[i + 2 * n] = (f64)kount * work[i + n] + sum;
         }
 
         for (j = k - 1; j < l; j++) {
@@ -337,7 +337,7 @@ scaling:
                     sum += work[i + n];
                 }
             }
-            work[j + 3 * n] = (double)kount * work[j] + sum;
+            work[j + 3 * n] = (f64)kount * work[j] + sum;
         }
 
         sum = cblas_ddot(nr, &work[k - 1 + n], 1, &work[k - 1 + 2 * n], 1) +
@@ -383,7 +383,7 @@ scaling:
         ir = (ir > lsfmin) ? ir : lsfmin;
         ir = (ir < lsfmax) ? ir : lsfmax;
         ir = (ir < lsfmax - lrab) ? ir : lsfmax - lrab;
-        lscale[i] = pow(SCLFAC, (double)ir);
+        lscale[i] = pow(SCLFAC, (f64)ir);
         icab = cblas_izamax(l, &A[i * lda], 1);
         cab = cabs(A[icab + i * lda]);
         icab = cblas_izamax(l, &B[i * ldb], 1);
@@ -394,7 +394,7 @@ scaling:
         jc = (jc > lsfmin) ? jc : lsfmin;
         jc = (jc < lsfmax) ? jc : lsfmax;
         jc = (jc < lsfmax - lcab) ? jc : lsfmax - lcab;
-        rscale[i] = pow(SCLFAC, (double)jc);
+        rscale[i] = pow(SCLFAC, (f64)jc);
     }
 
     /* Row scaling of matrices A and B */

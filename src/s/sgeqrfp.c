@@ -42,9 +42,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void sgeqrfp(const int m, const int n,
-             float * const restrict A, const int lda,
-             float * const restrict tau,
-             float * const restrict work, const int lwork,
+             f32 * const restrict A, const int lda,
+             f32 * const restrict tau,
+             f32 * const restrict work, const int lwork,
              int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -64,7 +64,7 @@ void sgeqrfp(const int m, const int n,
     } else {
         iws = n * nb;
     }
-    work[0] = (float)iws;
+    work[0] = (f32)iws;
 
     if (m < 0) {
         *info = -1;
@@ -143,5 +143,5 @@ void sgeqrfp(const int m, const int n,
         sgeqr2p(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (float)iws;
+    work[0] = (f32)iws;
 }

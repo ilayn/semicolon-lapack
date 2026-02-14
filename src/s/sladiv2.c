@@ -23,10 +23,10 @@
  *
  * @return The computed value for use in complex division.
  */
-float sladiv2(const float a, const float b, const float c,
-               const float d, const float r, const float t)
+f32 sladiv2(const f32 a, const f32 b, const f32 c,
+               const f32 d, const f32 r, const f32 t)
 {
-    float br;
+    f32 br;
 
     if (r != 0.0f) {
         br = b * r;

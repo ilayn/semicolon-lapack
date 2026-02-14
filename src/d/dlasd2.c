@@ -46,20 +46,20 @@
  *                         - = 0: successful exit. < 0: illegal argument.
  */
 void dlasd2(const int nl, const int nr, const int sqre, int* k,
-            double* const restrict D, double* const restrict Z,
-            const double alpha, const double beta,
-            double* const restrict U, const int ldu,
-            double* const restrict VT, const int ldvt,
-            double* const restrict DSIGMA,
-            double* const restrict U2, const int ldu2,
-            double* const restrict VT2, const int ldvt2,
+            f64* const restrict D, f64* const restrict Z,
+            const f64 alpha, const f64 beta,
+            f64* const restrict U, const int ldu,
+            f64* const restrict VT, const int ldvt,
+            f64* const restrict DSIGMA,
+            f64* const restrict U2, const int ldu2,
+            f64* const restrict VT2, const int ldvt2,
             int* const restrict IDXP, int* const restrict IDX,
             int* const restrict IDXC, int* const restrict IDXQ,
             int* const restrict COLTYP, int* info)
 {
     int ctot[4], psm[4];
     int ct, i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n;
-    double c, eps, hlftol, s, tau, tol, z1;
+    f64 c, eps, hlftol, s, tau, tol, z1;
 
     *info = 0;
 

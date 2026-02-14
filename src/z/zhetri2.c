@@ -44,10 +44,10 @@
 void zhetri2(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    double complex* const restrict work,
+    c128* const restrict work,
     const int lwork,
     int* info)
 {
@@ -82,7 +82,7 @@ void zhetri2(
         xerbla("ZHETRI2", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLX((double)minsize, 0.0);
+        work[0] = CMPLX((f64)minsize, 0.0);
         return;
     }
 

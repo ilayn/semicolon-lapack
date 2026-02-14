@@ -48,15 +48,15 @@
 void ssytri_rook(
     const char* uplo,
     const int n,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     const int* restrict ipiv,
-    float* restrict work,
+    f32* restrict work,
     int* info)
 {
     int upper;
     int k, kp, kstep;
-    float ak, akkp1, akp1, d, t, temp;
+    f32 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

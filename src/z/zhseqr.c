@@ -50,18 +50,18 @@ static int iparmq_nmin(void)
  */
 void zhseqr(const char* job, const char* compz, const int n,
             const int ilo, const int ihi,
-            double complex* H, const int ldh,
-            double complex* W,
-            double complex* Z, const int ldz,
-            double complex* work, const int lwork, int* info)
+            c128* H, const int ldh,
+            c128* W,
+            c128* Z, const int ldz,
+            c128* work, const int lwork, int* info)
 {
     const int ntiny = 15;
     const int nl = 49;
-    const double complex czero = 0.0;
-    const double complex cone = 1.0;
+    const c128 czero = 0.0;
+    const c128 cone = 1.0;
 
-    double complex hl[49 * 49];
-    double complex workl[49];
+    c128 hl[49 * 49];
+    c128 workl[49];
 
     int kbot, nmin;
     int initz, lquery, wantt, wantz;
@@ -69,7 +69,7 @@ void zhseqr(const char* job, const char* compz, const int n,
     wantt = (job[0] == 'S' || job[0] == 's');
     initz = (compz[0] == 'I' || compz[0] == 'i');
     wantz = initz || (compz[0] == 'V' || compz[0] == 'v');
-    work[0] = (double)(1 > n ? 1 : n);
+    work[0] = (f64)(1 > n ? 1 : n);
     lquery = (lwork == -1);
 
     *info = 0;
@@ -101,8 +101,8 @@ void zhseqr(const char* job, const char* compz, const int n,
     } else if (lquery) {
         zlaqr0(wantt, wantz, n, ilo, ihi, H, ldh, W, ilo,
                ihi, Z, ldz, work, lwork, info);
-        if (creal(work[0]) < (double)(1 > n ? 1 : n))
-            work[0] = (double)(1 > n ? 1 : n);
+        if (creal(work[0]) < (f64)(1 > n ? 1 : n))
+            work[0] = (f64)(1 > n ? 1 : n);
         return;
     } else {
         /* Copy eigenvalues isolated by ZGEBAL */
@@ -160,7 +160,7 @@ void zhseqr(const char* job, const char* compz, const int n,
             zlaset("L", n - 2, n - 2, czero, czero, &H[2], ldh);
 
         /* Ensure reported workspace size is backward-compatible */
-        if (creal(work[0]) < (double)(1 > n ? 1 : n))
-            work[0] = (double)(1 > n ? 1 : n);
+        if (creal(work[0]) < (f64)(1 > n ? 1 : n))
+            work[0] = (f64)(1 > n ? 1 : n);
     }
 }

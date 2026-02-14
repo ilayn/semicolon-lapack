@@ -9,9 +9,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
-static const float TWO = 2.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
+static const f32 TWO = 2.0f;
 
 /* SMLSIZ: maximum size of subproblems at bottom of DC tree.
  * From ilaenv.f ISPEC=9, the default is 25. */
@@ -55,16 +55,16 @@ static const int SMLSIZ = 25;
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
 void sbdsdc(const char* uplo, const char* compq, const int n,
-            float* const restrict D, float* const restrict E,
-            float* const restrict U, const int ldu,
-            float* const restrict VT, const int ldvt,
-            float* const restrict Q, int* const restrict IQ,
-            float* const restrict work, int* const restrict IWORK, int* info)
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict U, const int ldu,
+            f32* const restrict VT, const int ldvt,
+            f32* const restrict Q, int* const restrict IQ,
+            f32* const restrict work, int* const restrict IWORK, int* info)
 {
     int difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
     int ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
     int poles, qstart, smlszp, sqre, start, wstart, z;
-    float cs, eps, orgnrm, p, r, sn;
+    f32 cs, eps, orgnrm, p, r, sn;
 
     /* Test the input parameters */
     *info = 0;
@@ -202,7 +202,7 @@ void sbdsdc(const char* uplo, const char* compq, const int n,
 
     eps = 0.9f * slamch("Epsilon");
 
-    mlvl = (int)(logf((float)n / (float)(SMLSIZ + 1)) / logf(TWO)) + 1;
+    mlvl = (int)(logf((f32)n / (f32)(SMLSIZ + 1)) / logf(TWO)) + 1;
     smlszp = SMLSIZ + 1;
 
     if (icompq == 1) {

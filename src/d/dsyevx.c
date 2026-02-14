@@ -50,24 +50,24 @@
  *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void dsyevx(const char* jobz, const char* range, const char* uplo,
-            const int n, double* const restrict A, const int lda,
-            const double vl, const double vu, const int il, const int iu,
-            const double abstol, int* m,
-            double* const restrict W,
-            double* const restrict Z, const int ldz,
-            double* const restrict work, const int lwork,
+            const int n, f64* const restrict A, const int lda,
+            const f64 vl, const f64 vu, const int il, const int iu,
+            const f64 abstol, int* m,
+            f64* const restrict W,
+            f64* const restrict Z, const int ldz,
+            f64* const restrict work, const int lwork,
             int* const restrict iwork,
             int* const restrict ifail,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     int alleig, indeig, lower, lquery, test, valeig, wantz;
     int i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo;
     int indtau, indwkn, indwrk, iscale, itmp1, j, jj, llwork;
     int llwrkn, lwkmin, lwkopt, nb, nsplit;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
     /* Test the input parameters */
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -117,7 +117,7 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
             nb = nb > lapack_get_nb("ORMTR") ? nb : lapack_get_nb("ORMTR");
             lwkopt = (nb + 3) * n > lwkmin ? (nb + 3) * n : lwkmin;
         }
-        work[0] = (double)lwkopt;
+        work[0] = (f64)lwkopt;
 
         if (lwork < lwkmin && !lquery) {
             *info = -17;
@@ -310,5 +310,5 @@ L40:
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (double)lwkopt;
+    work[0] = (f64)lwkopt;
 }

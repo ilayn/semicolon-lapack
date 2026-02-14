@@ -44,10 +44,10 @@
 void zgesv(
     const int n,
     const int nrhs,
-    double complex * const restrict A,
+    c128 * const restrict A,
     const int lda,
     int * const restrict ipiv,
-    double complex * const restrict B,
+    c128 * const restrict B,
     const int ldb,
     int *info)
 {

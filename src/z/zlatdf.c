@@ -54,26 +54,26 @@
 void zlatdf(
     const int ijob,
     const int n,
-    const double complex* const restrict Z,
+    const c128* const restrict Z,
     const int ldz,
-    double complex* const restrict rhs,
-    double* rdsum,
-    double* rdscal,
+    c128* const restrict rhs,
+    f64* rdsum,
+    f64* rdscal,
     const int* const restrict ipiv,
     const int* const restrict jpiv)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int i, j, k, info;
-    double rtemp, scale, sminu, splus;
-    double complex bm, bp, pmone, temp;
+    f64 rtemp, scale, sminu, splus;
+    c128 bm, bp, pmone, temp;
 
-    double rwork[MAXDIM];
-    double complex work[4 * MAXDIM];
-    double complex xm[MAXDIM];
-    double complex xp[MAXDIM];
+    f64 rwork[MAXDIM];
+    c128 work[4 * MAXDIM];
+    c128 xm[MAXDIM];
+    c128 xp[MAXDIM];
 
     if (ijob != 2) {
 
@@ -98,7 +98,7 @@ void zlatdf(
              * Look-ahead for L-part RHS(1:N-1) = + or -1, SPLUS and
              * SMIN computed more efficiently than in BSOLVE [1].
              */
-            double complex dotresult;
+            c128 dotresult;
             cblas_zdotc_sub(n - j - 1, &Z[j + 1 + j * ldz], 1,
                             &Z[j + 1 + j * ldz], 1, &dotresult);
             splus = splus + creal(dotresult);
@@ -175,18 +175,18 @@ void zlatdf(
         /* Compute RHS */
         for (i = n - 2; i >= 0; i--) {
             if (ipiv[i] != i) {
-                double complex tmp = xm[i];
+                c128 tmp = xm[i];
                 xm[i] = xm[ipiv[i]];
                 xm[ipiv[i]] = tmp;
             }
         }
-        double complex dotresult;
+        c128 dotresult;
         cblas_zdotc_sub(n, xm, 1, xm, 1, &dotresult);
         temp = CONE / csqrt(dotresult);
         cblas_zscal(n, &temp, xm, 1);
         cblas_zcopy(n, xm, 1, xp, 1);
         cblas_zaxpy(n, &CONE, rhs, 1, xp, 1);
-        double complex neg_cone = -CONE;
+        c128 neg_cone = -CONE;
         cblas_zaxpy(n, &neg_cone, xm, 1, rhs, 1);
         zgesc2(n, Z, ldz, rhs, ipiv, jpiv, &scale);
         zgesc2(n, Z, ldz, xp, ipiv, jpiv, &scale);

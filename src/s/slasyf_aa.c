@@ -63,15 +63,15 @@ void slasyf_aa(
     const int j1,
     const int m,
     const int nb,
-    float* const restrict A,
+    f32* const restrict A,
     const int lda,
     int* restrict ipiv,
-    float* restrict H,
+    f32* restrict H,
     const int ldh,
-    float* restrict work)
+    f32* restrict work)
 {
     int j, k, k1, i1, i2, mj;
-    float piv, alpha;
+    f32 piv, alpha;
     int minval;
 
     j = 0;

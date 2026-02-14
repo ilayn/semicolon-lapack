@@ -27,12 +27,12 @@
  *                         [ -conjg(S)   C  ]
  *                      where C*C + S*CONJG(S) = 1.0.
  */
-void zrot(const int n, double complex* const restrict CX, const int incx,
-          double complex* const restrict CY, const int incy,
-          const double c, const double complex s)
+void zrot(const int n, c128* const restrict CX, const int incx,
+          c128* const restrict CY, const int incy,
+          const f64 c, const c128 s)
 {
     int i, ix, iy;
-    double complex stemp;
+    c128 stemp;
 
     if (n <= 0) return;
 

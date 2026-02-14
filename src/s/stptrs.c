@@ -39,12 +39,12 @@ void stptrs(
     const char* diag,
     const int n,
     const int nrhs,
-    const float* const restrict AP,
-    float* const restrict B,
+    const f32* const restrict AP,
+    f32* const restrict B,
     const int ldb,
     int* info)
 {
-    const float ZERO = 0.0f;
+    const f32 ZERO = 0.0f;
 
     int nounit, upper;
     int j, jc;

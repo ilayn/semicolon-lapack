@@ -32,13 +32,13 @@
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
 void dlarf1l(const char* side, const int m, const int n,
-             const double * const restrict v, const int incv,
-             const double tau,
-             double * const restrict C, const int ldc,
-             double * const restrict work)
+             const f64 * const restrict v, const int incv,
+             const f64 tau,
+             f64 * const restrict C, const int ldc,
+             f64 * const restrict work)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
     int applyleft;
     int firstv, lastv, lastc, i;
 

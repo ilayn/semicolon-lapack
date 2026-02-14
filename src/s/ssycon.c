@@ -38,17 +38,17 @@
 void ssycon(
     const char* uplo,
     const int n,
-    const float* const restrict A,
+    const f32* const restrict A,
     const int lda,
     const int* const restrict ipiv,
-    const float anorm,
-    float* rcond,
-    float* const restrict work,
+    const f32 anorm,
+    f32* rcond,
+    f32* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const float ONE = 1.0f;
-    const float ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
 
     // Test the input parameters.
     *info = 0;
@@ -96,7 +96,7 @@ void ssycon(
     // Estimate the 1-norm of the inverse.
     int kase = 0;
     int isave[3] = {0, 0, 0};
-    float ainvnm;
+    f32 ainvnm;
     int linfo;
 
     for (;;) {

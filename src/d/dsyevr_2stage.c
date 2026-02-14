@@ -8,17 +8,17 @@
 #include <math.h>
 
 void dsyevr_2stage(const char* jobz, const char* range, const char* uplo,
-                   const int n, double* A, const int lda,
-                   const double vl, const double vu,
+                   const int n, f64* A, const int lda,
+                   const f64 vl, const f64 vu,
                    const int il, const int iu,
-                   const double abstol, int* m,
-                   double* W, double* Z, const int ldz, int* isuppz,
-                   double* work, const int lwork,
+                   const f64 abstol, int* m,
+                   f64* W, f64* Z, const int ldz, int* isuppz,
+                   f64* work, const int lwork,
                    int* iwork, const int liwork, int* info)
 {
-    const double zero = 0.0;
-    const double one = 1.0;
-    const double two = 2.0;
+    const f64 zero = 0.0;
+    const f64 one = 1.0;
+    const f64 two = 2.0;
 
     int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     char order;
@@ -27,8 +27,8 @@ void dsyevr_2stage(const char* jobz, const char* range, const char* uplo,
     int indwk, indwkn, iscale, j, jj, liwmin;
     int llwork, llwrkn, lwmin, nsplit;
     int lhtrd, lwtrd, kd, ib, indhous;
-    double abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    double sigma, smlnum, tmp1, vll, vuu;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
+    f64 sigma, smlnum, tmp1, vll, vuu;
 
     /* IEEEOK = 1 means IEEE arithmetic is assumed (NaN/Inf handled properly) */
     ieeeok = 1;
@@ -89,7 +89,7 @@ void dsyevr_2stage(const char* jobz, const char* range, const char* uplo,
     }
 
     if (*info == 0) {
-        work[0] = (double)lwmin;
+        work[0] = (f64)lwmin;
         iwork[0] = liwmin;
     }
 
@@ -269,6 +269,6 @@ label30:
         }
     }
 
-    work[0] = (double)lwmin;
+    work[0] = (f64)lwmin;
     iwork[0] = liwmin;
 }

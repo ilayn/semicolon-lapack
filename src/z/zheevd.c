@@ -58,21 +58,21 @@
  *                           through mod(INFO,N+1).
  */
 void zheevd(const char* jobz, const char* uplo, const int n,
-            double complex* const restrict A, const int lda,
-            double* const restrict W,
-            double complex* const restrict work, const int lwork,
-            double* const restrict rwork, const int lrwork,
+            c128* const restrict A, const int lda,
+            f64* const restrict W,
+            c128* const restrict work, const int lwork,
+            f64* const restrict rwork, const int lrwork,
             int* const restrict iwork, const int liwork,
             int* info)
 {
-    const double ZERO = 0.0;
-    const double ONE = 1.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
 
     int lower, wantz, lquery;
     int iinfo, imax, inde, indrwk, indtau, indwk2, indwrk, iscale;
     int liopt, liwmin, llrwk, llwork, llwrk2, lopt, lropt, lrwmin, lwmin;
-    double anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
+    f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     int nb;
 
     /* Test the input parameters */
@@ -114,8 +114,8 @@ void zheevd(const char* jobz, const char* uplo, const int n,
             lropt = lrwmin;
             liopt = liwmin;
         }
-        work[0] = CMPLX((double)lopt, 0.0);
-        rwork[0] = (double)lropt;
+        work[0] = CMPLX((f64)lopt, 0.0);
+        rwork[0] = (f64)lropt;
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -207,7 +207,7 @@ void zheevd(const char* jobz, const char* uplo, const int n,
         cblas_dscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLX((double)lopt, 0.0);
-    rwork[0] = (double)lropt;
+    work[0] = CMPLX((f64)lopt, 0.0);
+    rwork[0] = (f64)lropt;
     iwork[0] = liopt;
 }

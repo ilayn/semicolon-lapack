@@ -26,10 +26,10 @@
  *
  * @return The norm value.
  */
-double dlanst(const char* norm, const int n,
-              const double* const restrict D, const double* const restrict E)
+f64 dlanst(const char* norm, const int n,
+              const f64* const restrict D, const f64* const restrict E)
 {
-    double anorm;
+    f64 anorm;
 
     if (n <= 0) {
         return 0.0;
@@ -39,7 +39,7 @@ double dlanst(const char* norm, const int n,
         /* Find max(abs(A(i,j))) */
         anorm = fabs(D[n - 1]);
         for (int i = 0; i < n - 1; i++) {
-            double sum = fabs(D[i]);
+            f64 sum = fabs(D[i]);
             if (anorm < sum || isnan(sum)) anorm = sum;
             sum = fabs(E[i]);
             if (anorm < sum || isnan(sum)) anorm = sum;
@@ -51,7 +51,7 @@ double dlanst(const char* norm, const int n,
             anorm = fabs(D[0]);
         } else {
             anorm = fabs(D[0]) + fabs(E[0]);
-            double sum = fabs(E[n - 2]) + fabs(D[n - 1]);
+            f64 sum = fabs(E[n - 2]) + fabs(D[n - 1]);
             if (anorm < sum || isnan(sum)) anorm = sum;
             for (int i = 1; i < n - 1; i++) {
                 sum = fabs(D[i]) + fabs(E[i]) + fabs(E[i - 1]);
@@ -61,8 +61,8 @@ double dlanst(const char* norm, const int n,
     } else if (norm[0] == 'F' || norm[0] == 'f' ||
                norm[0] == 'E' || norm[0] == 'e') {
         /* Find normF(A) using dlassq */
-        double scale = 0.0;
-        double sum = 1.0;
+        f64 scale = 0.0;
+        f64 sum = 1.0;
         if (n > 1) {
             dlassq(n - 1, E, 1, &scale, &sum);
             sum = 2.0 * sum;

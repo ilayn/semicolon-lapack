@@ -45,27 +45,27 @@ void zpprfs(
     const char* uplo,
     const int n,
     const int nrhs,
-    const double complex* const restrict AP,
-    const double complex* const restrict AFP,
-    const double complex* const restrict B,
+    const c128* const restrict AP,
+    const c128* const restrict AFP,
+    const c128* const restrict B,
     const int ldb,
-    double complex* const restrict X,
+    c128* const restrict X,
     const int ldx,
-    double* const restrict ferr,
-    double* const restrict berr,
-    double complex* const restrict work,
-    double* const restrict rwork,
+    f64* const restrict ferr,
+    f64* const restrict berr,
+    c128* const restrict work,
+    f64* const restrict rwork,
     int* info)
 {
     const int ITMAX = 5;
-    const double ZERO = 0.0;
-    const double complex CONE = CMPLX(1.0, 0.0);
-    const double TWO = 2.0;
-    const double THREE = 3.0;
+    const f64 ZERO = 0.0;
+    const c128 CONE = CMPLX(1.0, 0.0);
+    const f64 TWO = 2.0;
+    const f64 THREE = 3.0;
 
     int upper;
     int count, i, ik, j, k, kase, kk, nz;
-    double eps, lstres, s, safe1, safe2, safmin, xk;
+    f64 eps, lstres, s, safe1, safe2, safmin, xk;
     int isave[3];
     int locinfo;
 
@@ -110,7 +110,7 @@ void zpprfs(
             // Compute residual R = B - A * X
             cblas_zcopy(n, &B[j * ldb], 1, work, 1);
             {
-                const double complex NEG_CONE = CMPLX(-1.0, 0.0);
+                const c128 NEG_CONE = CMPLX(-1.0, 0.0);
                 cblas_zhpmv(CblasColMajor, upper ? CblasUpper : CblasLower,
                             n, &NEG_CONE, AP, &X[j * ldx], 1, &CONE, work, 1);
             }

@@ -9,8 +9,8 @@
 #include <math.h>
 #include <cblas.h>
 
-static const float ZERO = 0.0f;
-static const float ONE = 1.0f;
+static const f32 ZERO = 0.0f;
+static const f32 ONE = 1.0f;
 
 /**
  * SGESVDX computes the singular value decomposition (SVD) of a real
@@ -63,17 +63,17 @@ static const float ONE = 1.0f;
  *                         - > 0: i eigenvectors failed to converge in SBDSVDX.
  */
 void sgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, float* const restrict A, const int lda,
-             const float vl, const float vu, const int il, const int iu,
-             int* ns, float* const restrict S, float* const restrict U,
-             const int ldu, float* const restrict VT, const int ldvt,
-             float* const restrict work, const int lwork,
+             const int m, const int n, f32* const restrict A, const int lda,
+             const f32 vl, const f32 vu, const int il, const int iu,
+             int* ns, f32* const restrict S, f32* const restrict U,
+             const int ldu, f32* const restrict VT, const int ldvt,
+             f32* const restrict work, const int lwork,
              int* const restrict iwork, int* info)
 {
     int alls, inds, lquery, vals, wantu, wantvt;
     int i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;
     int itemp, itgkz, iutgk, j, maxwrk, minmn, minwrk, mnthr;
-    float anrm, bignum, eps, smlnum;
+    f32 anrm, bignum, eps, smlnum;
     char jobz, rngtgk;
 
     /* Test the input parameters */
@@ -211,7 +211,7 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = (float)maxwrk;
+        work[0] = (f32)maxwrk;
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -514,5 +514,5 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     /* Return optimal workspace */
-    work[0] = (float)maxwrk;
+    work[0] = (f32)maxwrk;
 }

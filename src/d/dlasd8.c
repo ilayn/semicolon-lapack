@@ -8,9 +8,9 @@
 #include <math.h>
 #include <cblas.h>
 
-static inline double dlamc3(double a, double b)
+static inline f64 dlamc3(f64 a, f64 b)
 {
-    volatile double result = a + b;
+    volatile f64 result = a + b;
     return result;
 }
 
@@ -25,16 +25,16 @@ static inline double dlamc3(double a, double b)
  * DLASD8 is called from DLASD6.
  */
 void dlasd8(const int icompq, const int k,
-            double* const restrict D, double* const restrict Z,
-            double* const restrict VF, double* const restrict VL,
-            double* const restrict DIFL, double* const restrict DIFR,
-            const int lddifr, const double* const restrict DSIGMA,
-            double* const restrict work, int* info)
+            f64* const restrict D, f64* const restrict Z,
+            f64* const restrict VF, f64* const restrict VL,
+            f64* const restrict DIFL, f64* const restrict DIFR,
+            const int lddifr, const f64* const restrict DSIGMA,
+            f64* const restrict work, int* info)
 {
-    const double ONE = 1.0;
+    const f64 ONE = 1.0;
 
     int i, j, iwk1, iwk2, iwk3;
-    double diflj, difrj = 0.0, dj, dsigj, dsigjp = 0.0, rho, temp;
+    f64 diflj, difrj = 0.0, dj, dsigj, dsigjp = 0.0, rho, temp;
 
     *info = 0;
 

@@ -42,13 +42,13 @@ void dtbtrs(
     const int n,
     const int kd,
     const int nrhs,
-    const double* const restrict AB,
+    const f64* const restrict AB,
     const int ldab,
-    double* const restrict B,
+    f64* const restrict B,
     const int ldb,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
 
     int nounit, upper;
     int j;

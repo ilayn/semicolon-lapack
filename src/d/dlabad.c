@@ -18,7 +18,7 @@
  *          On entry, the overflow threshold as computed by DLAMCH.
  *          On exit, the unchanged value large.
  */
-void dlabad(double* small, double* large)
+void dlabad(f64* small, f64* large)
 {
     (void)small;
     (void)large;

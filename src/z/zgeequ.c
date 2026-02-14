@@ -50,20 +50,20 @@
 void zgeequ(
     const int m,
     const int n,
-    const double complex* const restrict A,
+    const c128* const restrict A,
     const int lda,
-    double* const restrict R,
-    double* const restrict C,
-    double* rowcnd,
-    double* colcnd,
-    double* amax,
+    f64* const restrict R,
+    f64* const restrict C,
+    f64* rowcnd,
+    f64* colcnd,
+    f64* amax,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int i, j;
-    double bignum, rcmax, rcmin, smlnum;
+    f64 bignum, rcmax, rcmin, smlnum;
 
     // Test the input parameters
     *info = 0;
@@ -100,7 +100,7 @@ void zgeequ(
     // Find the maximum element in each row
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
-            double abs_val = cabs1(A[i + j * lda]);
+            f64 abs_val = cabs1(A[i + j * lda]);
             if (abs_val > R[i]) {
                 R[i] = abs_val;
             }
@@ -131,7 +131,7 @@ void zgeequ(
     } else {
         // Invert the scale factors
         for (i = 0; i < m; i++) {
-            double ri = R[i];
+            f64 ri = R[i];
             if (ri < smlnum) {
                 ri = smlnum;
             }
@@ -142,8 +142,8 @@ void zgeequ(
         }
 
         // Compute rowcnd = min(R(i)) / max(R(i))
-        double rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
-        double rcmax_clamped = rcmax < bignum ? rcmax : bignum;
+        f64 rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
+        f64 rcmax_clamped = rcmax < bignum ? rcmax : bignum;
         *rowcnd = rcmin_clamped / rcmax_clamped;
     }
 
@@ -156,7 +156,7 @@ void zgeequ(
     // assuming the row scaling computed above
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
-            double scaled_val = cabs1(A[i + j * lda]) * R[i];
+            f64 scaled_val = cabs1(A[i + j * lda]) * R[i];
             if (scaled_val > C[j]) {
                 C[j] = scaled_val;
             }
@@ -186,7 +186,7 @@ void zgeequ(
     } else {
         // Invert the scale factors
         for (j = 0; j < n; j++) {
-            double cj = C[j];
+            f64 cj = C[j];
             if (cj < smlnum) {
                 cj = smlnum;
             }
@@ -197,8 +197,8 @@ void zgeequ(
         }
 
         // Compute colcnd = min(C(j)) / max(C(j))
-        double rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
-        double rcmax_clamped = rcmax < bignum ? rcmax : bignum;
+        f64 rcmin_clamped = rcmin > smlnum ? rcmin : smlnum;
+        f64 rcmax_clamped = rcmax < bignum ? rcmax : bignum;
         *colcnd = rcmin_clamped / rcmax_clamped;
     }
 }

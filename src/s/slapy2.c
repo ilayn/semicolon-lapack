@@ -18,9 +18,9 @@
  *
  * @return sqrt(x**2 + y**2) computed safely.
  */
-float slapy2(const float x, const float y)
+f32 slapy2(const f32 x, const f32 y)
 {
-    float xabs, yabs, w, z;
+    f32 xabs, yabs, w, z;
 
     /* Handle NaN propagation */
     if (isnan(x)) return x;
@@ -34,7 +34,7 @@ float slapy2(const float x, const float y)
     if (z == 0.0f || w > FLT_MAX) {
         return w;
     } else {
-        float t = z / w;
+        f32 t = z / w;
         return w * sqrtf(1.0f + t * t);
     }
 }

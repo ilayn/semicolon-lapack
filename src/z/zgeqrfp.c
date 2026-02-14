@@ -43,9 +43,9 @@
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
 void zgeqrfp(const int m, const int n,
-             double complex * const restrict A, const int lda,
-             double complex * const restrict tau,
-             double complex * const restrict work, const int lwork,
+             c128 * const restrict A, const int lda,
+             c128 * const restrict tau,
+             c128 * const restrict work, const int lwork,
              int *info)
 {
     int k, nb, nbmin, nx, iws, ldwork;
@@ -65,7 +65,7 @@ void zgeqrfp(const int m, const int n,
     } else {
         iws = n * nb;
     }
-    work[0] = (double complex)iws;
+    work[0] = (c128)iws;
 
     if (m < 0) {
         *info = -1;
@@ -144,5 +144,5 @@ void zgeqrfp(const int m, const int n,
         zgeqr2p(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (double complex)iws;
+    work[0] = (c128)iws;
 }

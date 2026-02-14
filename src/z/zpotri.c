@@ -32,7 +32,7 @@
 void zpotri(
     const char* uplo,
     const int n,
-    double complex* const restrict A,
+    c128* const restrict A,
     const int lda,
     int* info)
 {

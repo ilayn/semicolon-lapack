@@ -38,20 +38,20 @@ void zhegvd(
     const char* jobz,
     const char* uplo,
     const int n,
-    double complex* restrict A,
+    c128* restrict A,
     const int lda,
-    double complex* restrict B,
+    c128* restrict B,
     const int ldb,
-    double* restrict W,
-    double complex* restrict work,
+    f64* restrict W,
+    c128* restrict work,
     const int lwork,
-    double* restrict rwork,
+    f64* restrict rwork,
     const int lrwork,
     int* restrict iwork,
     const int liwork,
     int* info)
 {
-    const double complex CONE = CMPLX(1.0, 0.0);
+    const c128 CONE = CMPLX(1.0, 0.0);
     int wantz, upper, lquery;
     int liwmin, lrwmin, lwmin, lopt, lropt, liopt;
     char trans;
@@ -93,8 +93,8 @@ void zhegvd(
     }
 
     if (*info == 0) {
-        work[0] = CMPLX((double)lopt, 0.0);
-        rwork[0] = (double)lropt;
+        work[0] = CMPLX((f64)lopt, 0.0);
+        rwork[0] = (f64)lropt;
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -163,7 +163,7 @@ void zhegvd(
         }
     }
 
-    work[0] = CMPLX((double)lopt, 0.0);
-    rwork[0] = (double)lropt;
+    work[0] = CMPLX((f64)lopt, 0.0);
+    rwork[0] = (f64)lropt;
     iwork[0] = liopt;
 }

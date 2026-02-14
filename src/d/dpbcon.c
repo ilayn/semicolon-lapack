@@ -34,21 +34,21 @@ void dpbcon(
     const char* uplo,
     const int n,
     const int kd,
-    const double* const restrict AB,
+    const f64* const restrict AB,
     const int ldab,
-    const double anorm,
-    double* rcond,
-    double* const restrict work,
+    const f64 anorm,
+    f64* rcond,
+    f64* const restrict work,
     int* const restrict iwork,
     int* info)
 {
-    const double ONE = 1.0;
-    const double ZERO = 0.0;
+    const f64 ONE = 1.0;
+    const f64 ZERO = 0.0;
 
     int upper;
     char normin;
     int ix, kase;
-    double ainvnm, scale, scalel, scaleu, smlnum;
+    f64 ainvnm, scale, scalel, scaleu, smlnum;
     int isave[3];
     int info_local;
 

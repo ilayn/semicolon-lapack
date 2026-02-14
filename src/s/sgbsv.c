@@ -53,10 +53,10 @@ void sgbsv(
     const int kl,
     const int ku,
     const int nrhs,
-    float * const restrict AB,
+    f32 * const restrict AB,
     const int ldab,
     int * const restrict ipiv,
-    float * const restrict B,
+    f32 * const restrict B,
     const int ldb,
     int *info)
 {

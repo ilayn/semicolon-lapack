@@ -9,22 +9,22 @@
 #include <cblas.h>
 
 void slasda(const int icompq, const int smlsiz, const int n, const int sqre,
-            float* const restrict D, float* const restrict E,
-            float* const restrict U, const int ldu,
-            float* const restrict VT, int* const restrict K,
-            float* const restrict DIFL, float* const restrict DIFR,
-            float* const restrict Z, float* const restrict POLES,
+            f32* const restrict D, f32* const restrict E,
+            f32* const restrict U, const int ldu,
+            f32* const restrict VT, int* const restrict K,
+            f32* const restrict DIFL, f32* const restrict DIFR,
+            f32* const restrict Z, f32* const restrict POLES,
             int* const restrict GIVPTR, int* const restrict GIVCOL,
             const int ldgcol, int* const restrict PERM,
-            float* const restrict GIVNUM,
-            float* const restrict C, float* const restrict S,
-            float* const restrict work, int* const restrict IWORK, int* info)
+            f32* const restrict GIVNUM,
+            f32* const restrict C, f32* const restrict S,
+            f32* const restrict work, int* const restrict IWORK, int* info)
 {
     int i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk;
     int j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr;
     int nl, nlf, nlp1, nlvl, nr, nrf, nrp1, nru;
     int nwork1, nwork2, smlszp, sqrei, vf, vfi, vl, vli;
-    float alpha, beta;
+    f32 alpha, beta;
 
     *info = 0;
 

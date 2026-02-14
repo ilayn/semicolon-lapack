@@ -141,30 +141,30 @@ void dorcsd(
     const int m,
     const int p,
     const int q,
-    double* const restrict X11,
+    f64* const restrict X11,
     const int ldx11,
-    double* const restrict X12,
+    f64* const restrict X12,
     const int ldx12,
-    double* const restrict X21,
+    f64* const restrict X21,
     const int ldx21,
-    double* const restrict X22,
+    f64* const restrict X22,
     const int ldx22,
-    double* restrict theta,
-    double* restrict U1,
+    f64* restrict theta,
+    f64* restrict U1,
     const int ldu1,
-    double* restrict U2,
+    f64* restrict U2,
     const int ldu2,
-    double* restrict V1T,
+    f64* restrict V1T,
     const int ldv1t,
-    double* restrict V2T,
+    f64* restrict V2T,
     const int ldv2t,
-    double* restrict work,
+    f64* restrict work,
     const int lwork,
     int* restrict iwork,
     int* info)
 {
-    const double one = 1.0;
-    const double zero = 0.0;
+    const f64 one = 1.0;
+    const f64 zero = 0.0;
 
     int childinfo, i, ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
     int ib21d = 0, ib21e = 0, ib22d = 0, ib22e = 0, ibbcsd = 0, iorbdb = 0;
@@ -291,7 +291,7 @@ void dorcsd(
         if (ibbcsd + lbbcsdworkmin > lworkmin) lworkmin = ibbcsd + lbbcsdworkmin;
         lworkmin = lworkmin - 1;
 
-        work[0] = (double)(lworkopt > lworkmin ? lworkopt : lworkmin);
+        work[0] = (f64)(lworkopt > lworkmin ? lworkopt : lworkmin);
 
         if (lwork < lworkmin && !lquery) {
             *info = -22;

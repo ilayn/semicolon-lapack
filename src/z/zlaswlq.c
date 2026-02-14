@@ -51,9 +51,9 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zlaswlq(const int m, const int n, const int mb, const int nb,
-             double complex* const restrict A, const int lda,
-             double complex* const restrict T, const int ldt,
-             double complex* const restrict work, const int lwork,
+             c128* const restrict A, const int lda,
+             c128* const restrict T, const int ldt,
+             c128* const restrict work, const int lwork,
              int* info)
 {
     int lquery;
@@ -88,7 +88,7 @@ void zlaswlq(const int m, const int n, const int mb, const int nb,
     }
 
     if (*info == 0) {
-        work[0] = (double complex)lwmin;
+        work[0] = (c128)lwmin;
     }
 
     if (*info != 0) {
@@ -129,5 +129,5 @@ void zlaswlq(const int m, const int n, const int mb, const int nb,
                lda, &T[0 + ctr * m * ldt], ldt, work, info);
     }
 
-    work[0] = (double complex)lwmin;
+    work[0] = (c128)lwmin;
 }

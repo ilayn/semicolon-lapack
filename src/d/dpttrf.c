@@ -33,13 +33,13 @@
  */
 void dpttrf(
     const int n,
-    double* const restrict D,
-    double* const restrict E,
+    f64* const restrict D,
+    f64* const restrict E,
     int* info)
 {
-    const double ZERO = 0.0;
+    const f64 ZERO = 0.0;
     int i, i4;
-    double ei;
+    f64 ei;
 
     *info = 0;
     if (n < 0) {

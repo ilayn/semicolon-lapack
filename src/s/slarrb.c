@@ -59,21 +59,21 @@
  * @param[out]    info
  *                           Error flag.
  */
-void slarrb(const int n, const float* D, const float* lld,
+void slarrb(const int n, const f32* D, const f32* lld,
             const int ifirst, const int ilast,
-            const float rtol1, const float rtol2, const int offset,
-            float* W, float* wgap, float* werr,
-            float* work, int* iwork,
-            const float pivmin, const float spdiam,
+            const f32 rtol1, const f32 rtol2, const int offset,
+            f32* W, f32* wgap, f32* werr,
+            f32* work, int* iwork,
+            const f32 pivmin, const f32 spdiam,
             const int twist, int* info)
 {
-    const float ZERO = 0.0f;
-    const float TWO = 2.0f;
-    const float HALF = 0.5f;
+    const f32 ZERO = 0.0f;
+    const f32 TWO = 2.0f;
+    const f32 HALF = 0.5f;
 
     int i, i1, ii, ip, iter, k, negcnt, next, nint, olnint, prev, r;
     int maxitr;
-    float back, cvrgd, gap, left, lgap, mid, mnwdth, rgap, right, tmp, width;
+    f32 back, cvrgd, gap, left, lgap, mid, mnwdth, rgap, right, tmp, width;
 
     *info = 0;
 
