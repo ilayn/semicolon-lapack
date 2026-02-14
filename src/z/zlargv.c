@@ -1,0 +1,179 @@
+/**
+ * @file zlargv.c
+ * @brief ZLARGV generates a vector of plane rotations with real cosines and complex sines.
+ */
+
+#include <complex.h>
+#include <math.h>
+#include "semicolon_lapack_complex_double.h"
+
+static inline double abs1(double complex ff) {
+    double a = creal(ff);
+    double b = cimag(ff);
+    return (fabs(a) > fabs(b)) ? fabs(a) : fabs(b);
+}
+
+static inline double abssq(double complex ff) {
+    return creal(ff) * creal(ff) + cimag(ff) * cimag(ff);
+}
+
+/**
+ * ZLARGV generates a vector of complex plane rotations with real
+ * cosines, determined by elements of the complex vectors x and y.
+ * For i = 0,1,...,n-1
+ *
+ *    (        c(i)   s(i) ) ( x(i) ) = ( r(i) )
+ *    ( -conjg(s(i))  c(i) ) ( y(i) ) = (   0  )
+ *
+ *    where c(i)**2 + ABS(s(i))**2 = 1
+ *
+ * The following conventions are used (these are the same as in ZLARTG,
+ * but differ from the BLAS1 routine ZROTG):
+ *    If y(i)=0, then c(i)=1 and s(i)=0.
+ *    If x(i)=0, then c(i)=0 and s(i) is chosen so that r(i) is real.
+ *
+ * @param[in]     n     The number of plane rotations to be generated.
+ * @param[in,out] X     Double complex array, dimension (1+(n-1)*incx).
+ *                      On entry, the vector x.
+ *                      On exit, x(i) is overwritten by r(i), for i = 0,...,n-1.
+ * @param[in]     incx  The increment between elements of X. incx > 0.
+ * @param[in,out] Y     Double complex array, dimension (1+(n-1)*incy).
+ *                      On entry, the vector y.
+ *                      On exit, the sines of the plane rotations.
+ * @param[in]     incy  The increment between elements of Y. incy > 0.
+ * @param[out]    C     Double precision array, dimension (1+(n-1)*incc).
+ *                      The cosines of the plane rotations.
+ * @param[in]     incc  The increment between elements of C. incc > 0.
+ */
+void zlargv(const int n, double complex* const restrict X, const int incx,
+            double complex* const restrict Y, const int incy,
+            double* const restrict C, const int incc)
+{
+    const double two = 2.0;
+    const double one = 1.0;
+    const double zero = 0.0;
+    const double complex czero = CMPLX(0.0, 0.0);
+
+    double safmin = dlamch("S");
+    double eps = dlamch("E");
+    double safmn2 = pow(dlamch("B"),
+                        (int)(log(safmin / eps) / log(dlamch("B")) / two));
+    double safmx2 = one / safmn2;
+
+    int ix = 0;
+    int iy = 0;
+    int ic = 0;
+
+    for (int i = 0; i < n; i++) {
+        double complex f = X[ix];
+        double complex g = Y[iy];
+
+        double scale = (abs1(f) > abs1(g)) ? abs1(f) : abs1(g);
+        double complex fs = f;
+        double complex gs = g;
+        int count = 0;
+        double cs;
+        double complex sn, r;
+
+        if (scale >= safmx2) {
+            do {
+                count = count + 1;
+                fs = fs * safmn2;
+                gs = gs * safmn2;
+                scale = scale * safmn2;
+            } while (scale >= safmx2 && count < 20);
+        } else if (scale <= safmn2) {
+            if (g == czero) {
+                cs = one;
+                sn = czero;
+                r = f;
+                goto label50;
+            }
+            do {
+                count = count - 1;
+                fs = fs * safmx2;
+                gs = gs * safmx2;
+                scale = scale * safmx2;
+            } while (scale <= safmn2);
+        }
+
+        double f2 = abssq(fs);
+        double g2 = abssq(gs);
+
+        if (f2 <= ((g2 > one) ? g2 : one) * safmin) {
+
+            /* This is a rare case: F is very small. */
+
+            if (f == czero) {
+                cs = zero;
+                r = dlapy2(creal(g), cimag(g));
+                /* Do complex/real division explicitly with two real
+                   divisions */
+                double d = dlapy2(creal(gs), cimag(gs));
+                sn = CMPLX(creal(gs) / d, -cimag(gs) / d);
+                goto label50;
+            }
+            double f2s = dlapy2(creal(fs), cimag(fs));
+            /* G2 and G2S are accurate
+               G2 is at least SAFMIN, and G2S is at least SAFMN2 */
+            double g2s = sqrt(g2);
+            /* Error in CS from underflow in F2S is at most
+               UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
+               If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
+               and so CS .lt. sqrt(SAFMIN)
+               If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
+               and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
+               Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S */
+            cs = f2s / g2s;
+            /* Make sure abs(FF) = 1
+               Do complex/real division explicitly with 2 real divisions */
+            double complex ff;
+            double d;
+            if (abs1(f) > one) {
+                d = dlapy2(creal(f), cimag(f));
+                ff = CMPLX(creal(f) / d, cimag(f) / d);
+            } else {
+                double dr = safmx2 * creal(f);
+                double di = safmx2 * cimag(f);
+                d = dlapy2(dr, di);
+                ff = CMPLX(dr / d, di / d);
+            }
+            sn = ff * CMPLX(creal(gs) / g2s, -cimag(gs) / g2s);
+            r = cs * f + sn * g;
+        } else {
+
+            /* This is the most common case.
+               Neither F2 nor F2/G2 are less than SAFMIN
+               F2S cannot overflow, and it is accurate */
+
+            double f2s = sqrt(one + g2 / f2);
+            /* Do the F2S(real)*FS(complex) multiply with two real
+               multiplies */
+            r = CMPLX(f2s * creal(fs), f2s * cimag(fs));
+            cs = one / f2s;
+            double d = f2 + g2;
+            /* Do complex/real division explicitly with two real divisions */
+            sn = CMPLX(creal(r) / d, cimag(r) / d);
+            sn = sn * conj(gs);
+            if (count != 0) {
+                if (count > 0) {
+                    for (int j = 0; j < count; j++) {
+                        r = r * safmx2;
+                    }
+                } else {
+                    for (int j = 0; j < -count; j++) {
+                        r = r * safmn2;
+                    }
+                }
+            }
+        }
+
+label50:
+        C[ic] = cs;
+        Y[iy] = sn;
+        X[ix] = r;
+        ic += incc;
+        iy += incy;
+        ix += incx;
+    }
+}

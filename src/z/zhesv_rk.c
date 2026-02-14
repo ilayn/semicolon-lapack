@@ -1,0 +1,140 @@
+/**
+ * @file zhesv_rk.c
+ * @brief ZHESV_RK computes the solution to system of linear equations A * X = B for HE matrices using ZHETRF_RK/ZHETRS_3.
+ */
+
+#include "semicolon_lapack_complex_double.h"
+#include <complex.h>
+
+/**
+ * ZHESV_RK computes the solution to a complex system of linear
+ * equations A * X = B, where A is an N-by-N Hermitian matrix
+ * and X and B are N-by-NRHS matrices.
+ *
+ * The bounded Bunch-Kaufman (rook) diagonal pivoting method is used
+ * to factor A as
+ *    A = P*U*D*(U**H)*(P**T),  if UPLO = 'U', or
+ *    A = P*L*D*(L**H)*(P**T),  if UPLO = 'L',
+ * where U (or L) is unit upper (or lower) triangular matrix,
+ * U**H (or L**H) is the conjugate of U (or L), P is a permutation
+ * matrix, P**T is the transpose of P, and D is Hermitian and block
+ * diagonal with 1-by-1 and 2-by-2 diagonal blocks.
+ *
+ * ZHETRF_RK is called to compute the factorization of a complex
+ * Hermitian matrix.  The factored form of A is then used to solve
+ * the system of equations A * X = B by calling BLAS3 routine ZHETRS_3.
+ *
+ * @param[in] uplo
+ *          Specifies whether the upper or lower triangular part of the
+ *          Hermitian matrix A is stored:
+ *          = 'U':  Upper triangle of A is stored;
+ *          = 'L':  Lower triangle of A is stored.
+ *
+ * @param[in] n
+ *          The number of linear equations, i.e., the order of the
+ *          matrix A. n >= 0.
+ *
+ * @param[in] nrhs
+ *          The number of right hand sides, i.e., the number of columns
+ *          of the matrix B. nrhs >= 0.
+ *
+ * @param[in,out] A
+ *          Double complex array, dimension (lda, n).
+ *          On entry, the Hermitian matrix A.
+ *          On exit, if info = 0, diagonal of the block diagonal
+ *          matrix D and factors U or L as computed by ZHETRF_RK.
+ *
+ * @param[in] lda
+ *          The leading dimension of the array A. lda >= max(1, n).
+ *
+ * @param[out] E
+ *          Double complex array, dimension (n).
+ *          On exit, contains the superdiagonal (or subdiagonal)
+ *          elements of the Hermitian block diagonal matrix D.
+ *
+ * @param[out] ipiv
+ *          Integer array, dimension (n).
+ *          Details of the interchanges and the block structure of D.
+ *
+ * @param[in,out] B
+ *          Double complex array, dimension (ldb, nrhs).
+ *          On entry, the N-by-NRHS right hand side matrix B.
+ *          On exit, if info = 0, the N-by-NRHS solution matrix X.
+ *
+ * @param[in] ldb
+ *          The leading dimension of the array B. ldb >= max(1, n).
+ *
+ * @param[out] work
+ *          Double complex array, dimension (max(1, lwork)).
+ *          On exit, if info = 0, work[0] returns the optimal lwork.
+ *
+ * @param[in] lwork
+ *          The length of work. lwork >= 1.
+ *          If lwork = -1, then a workspace query is assumed.
+ *
+ * @param[out] info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - > 0: if info = k, the matrix A is singular.
+ */
+void zhesv_rk(
+    const char* uplo,
+    const int n,
+    const int nrhs,
+    double complex* const restrict A,
+    const int lda,
+    double complex* restrict E,
+    int* restrict ipiv,
+    double complex* const restrict B,
+    const int ldb,
+    double complex* restrict work,
+    const int lwork,
+    int* info)
+{
+    int lquery;
+    int lwkopt;
+
+    *info = 0;
+    lquery = (lwork == -1);
+    if (!(uplo[0] == 'U' || uplo[0] == 'u') &&
+        !(uplo[0] == 'L' || uplo[0] == 'l')) {
+        *info = -1;
+    } else if (n < 0) {
+        *info = -2;
+    } else if (nrhs < 0) {
+        *info = -3;
+    } else if (lda < (1 > n ? 1 : n)) {
+        *info = -5;
+    } else if (ldb < (1 > n ? 1 : n)) {
+        *info = -9;
+    } else if (lwork < 1 && !lquery) {
+        *info = -11;
+    }
+
+    if (*info == 0) {
+        if (n == 0) {
+            lwkopt = 1;
+        } else {
+            zhetrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
+            lwkopt = (int)creal(work[0]);
+        }
+        work[0] = (double complex)lwkopt;
+    }
+
+    if (*info != 0) {
+        xerbla("ZHESV_RK", -(*info));
+        return;
+    } else if (lquery) {
+        return;
+    }
+
+    zhetrf_rk(uplo, n, A, lda, E, ipiv, work, lwork, info);
+
+    if (*info == 0) {
+
+        zhetrs_3(uplo, n, nrhs, A, lda, E, ipiv, B, ldb, info);
+
+    }
+
+    work[0] = (double complex)lwkopt;
+}

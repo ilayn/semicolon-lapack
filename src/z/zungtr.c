@@ -1,0 +1,142 @@
+/**
+ * @file zungtr.c
+ * @brief ZUNGTR generates a complex unitary matrix Q which is defined as the
+ *        product of n-1 elementary reflectors of order N, as returned by ZHETRD.
+ */
+
+#include <complex.h>
+#include "../include/lapack_tuning.h"
+#include "semicolon_lapack_complex_double.h"
+
+/**
+ * ZUNGTR generates a complex unitary matrix Q which is defined as the
+ * product of n-1 elementary reflectors of order N, as returned by
+ * ZHETRD:
+ *
+ * if UPLO = 'U', Q = H(n-1) . . . H(2) H(1),
+ *
+ * if UPLO = 'L', Q = H(1) H(2) . . . H(n-1).
+ *
+ * @param[in]     uplo   = 'U': Upper triangle of A contains elementary reflectors
+ *                              from ZHETRD;
+ *                         = 'L': Lower triangle of A contains elementary reflectors
+ *                              from ZHETRD.
+ * @param[in]     n      The order of the matrix Q. n >= 0.
+ * @param[in,out] A      Complex*16 array, dimension (lda, n).
+ *                       On entry, the vectors which define the elementary reflectors,
+ *                       as returned by ZHETRD.
+ *                       On exit, the N-by-N unitary matrix Q.
+ * @param[in]     lda    The leading dimension of the array A. lda >= max(1, n).
+ * @param[in]     tau    Complex*16 array, dimension (n-1).
+ *                       TAU(i) must contain the scalar factor of the elementary
+ *                       reflector H(i), as returned by ZHETRD.
+ * @param[out]    work   Complex*16 array, dimension (max(1, lwork)).
+ *                       On exit, if info = 0, work[0] returns the optimal lwork.
+ * @param[in]     lwork  The dimension of the array work. lwork >= max(1, n-1).
+ *                       For optimum performance lwork >= (n-1)*nb, where nb is
+ *                       the optimal blocksize.
+ *                       If lwork = -1, then a workspace query is assumed.
+ * @param[out]    info
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value.
+ */
+void zungtr(const char* uplo, const int n,
+            double complex* const restrict A, const int lda,
+            const double complex* const restrict tau,
+            double complex* const restrict work, const int lwork,
+            int* info)
+{
+    const double complex ZERO = CMPLX(0.0, 0.0);
+    const double complex ONE = CMPLX(1.0, 0.0);
+
+    int upper, lquery;
+    int i, j, iinfo, lwkopt, nb;
+
+    /* Test the input arguments */
+    *info = 0;
+    lquery = (lwork == -1);
+    upper = (uplo[0] == 'U' || uplo[0] == 'u');
+
+    if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
+        *info = -1;
+    } else if (n < 0) {
+        *info = -2;
+    } else if (lda < (n > 1 ? n : 1)) {
+        *info = -4;
+    } else if (lwork < (n - 1 > 1 ? n - 1 : 1) && !lquery) {
+        *info = -7;
+    }
+
+    if (*info == 0) {
+        if (upper) {
+            nb = lapack_get_nb("ORGQL");
+        } else {
+            nb = lapack_get_nb("ORGQR");
+        }
+        lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
+        work[0] = (double complex)lwkopt;
+    }
+
+    if (*info != 0) {
+        xerbla("ZUNGTR", -(*info));
+        return;
+    } else if (lquery) {
+        return;
+    }
+
+    /* Quick return if possible */
+    if (n == 0) {
+        work[0] = CMPLX(1.0, 0.0);
+        return;
+    }
+
+    if (upper) {
+        /* Q was determined by a call to ZHETRD with UPLO = 'U'
+         *
+         * Shift the vectors which define the elementary reflectors one
+         * column to the left, and set the last row and column of Q to
+         * those of the unit matrix */
+
+        for (j = 0; j < n - 1; j++) {
+            for (i = 0; i < j; i++) {
+                A[i + j * lda] = A[i + (j + 1) * lda];
+            }
+            A[n - 1 + j * lda] = ZERO;
+        }
+        for (i = 0; i < n - 1; i++) {
+            A[i + (n - 1) * lda] = ZERO;
+        }
+        A[(n - 1) + (n - 1) * lda] = ONE;
+
+        /* Generate Q(0:n-2, 0:n-2) */
+        if (n - 1 > 0) {
+            zungql(n - 1, n - 1, n - 1, A, lda, tau, work, lwork, &iinfo);
+        }
+
+    } else {
+        /* Q was determined by a call to ZHETRD with UPLO = 'L'.
+         *
+         * Shift the vectors which define the elementary reflectors one
+         * column to the right, and set the first row and column of Q to
+         * those of the unit matrix */
+
+        for (j = n - 1; j >= 1; j--) {
+            A[0 + j * lda] = ZERO;
+            for (i = j + 1; i < n; i++) {
+                A[i + j * lda] = A[i + (j - 1) * lda];
+            }
+        }
+        A[0 + 0 * lda] = ONE;
+        for (i = 1; i < n; i++) {
+            A[i + 0 * lda] = ZERO;
+        }
+
+        if (n > 1) {
+            /* Generate Q(1:n-1, 1:n-1) */
+            zungqr(n - 1, n - 1, n - 1, &A[1 + 1 * lda], lda, tau,
+                   work, lwork, &iinfo);
+        }
+    }
+
+    work[0] = (double complex)lwkopt;
+}
