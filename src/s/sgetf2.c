@@ -1,6 +1,11 @@
 /**
  * @file sgetf2.c
  * @brief Unblocked LU factorization with explicit loops.
+ *
+ * Deviation from reference LAPACK: pivot search, row swap, and column
+ * scaling use explicit loops instead of BLAS calls (isamax, sswap, sscal)
+ * to avoid function call overhead on small per-column operations.
+ * Inspired by faer (https://codeberg.org/sarah-quinones/faer).
  */
 
 #include <math.h>

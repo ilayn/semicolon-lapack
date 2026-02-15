@@ -1,6 +1,10 @@
 /**
  * @file zgetrf2.c
  * @brief Recursive LU factorization with threshold.
+ *
+ * Deviation from reference LAPACK: recursion stops at RECURSION_THRESHOLD
+ * and falls back to the unblocked xgetf2, avoiding recursion overhead on
+ * small panels. Inspired by faer (https://codeberg.org/sarah-quinones/faer).
  */
 
 #include <math.h>

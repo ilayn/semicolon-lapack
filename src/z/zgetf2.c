@@ -2,6 +2,11 @@
  * @file zgetf2.c
  * @brief ZGETF2 computes the LU factorization of a general m-by-n matrix
  *        using partial pivoting with row interchanges (unblocked algorithm).
+ *
+ * Deviation from reference LAPACK: pivot search, row swap, and column
+ * scaling use explicit loops instead of BLAS calls (izamax, zswap, zscal)
+ * to avoid function call overhead on small per-column operations.
+ * Inspired by faer (https://codeberg.org/sarah-quinones/faer).
  */
 
 #include <complex.h>
