@@ -145,6 +145,11 @@ testutils_sources = files(
   'dget23.c',   # DGEEVX verification: 11 tests for eigenvalues/eigenvectors/condition numbers
   'dget24.c',   # DGEESX verification: 17 tests for Schur form/sorting/condition numbers
 
+  # Generalized eigenvalue verification
+  'dget51.c',   # Decomposition check: |A - UBV'| / (|A| n ulp)
+  'dget52.c',   # Generalized eigenvector check: |bA*E - aB*E| / (n ulp max(|bA|,|aB|))
+  'dget53.c',   # 2x2 generalized eigenvalue check: |det(sA - wB)| / ...
+
   # Non-symmetric eigenvalue verification
   'dort01.c',   # Orthogonality check: |I - U*U'| / (n * eps)
   'dort03.c',   # Compare orthogonal matrices U and V

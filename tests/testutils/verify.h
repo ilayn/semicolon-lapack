@@ -541,6 +541,26 @@ void dbdt05(const int m, const int n, const f64* const restrict A, const int lda
             const f64* const restrict VT, const int ldvt,
             f64* const restrict work, f64* resid);
 
+/* Generalized eigenvalue verification routines */
+void dget51(const int itype, const int n,
+            const f64* A, const int lda,
+            const f64* B, const int ldb,
+            const f64* U, const int ldu,
+            const f64* V, const int ldv,
+            f64* work, f64* result);
+
+void dget52(const int left, const int n,
+            const f64* A, const int lda,
+            const f64* B, const int ldb,
+            const f64* E, const int lde,
+            const f64* alphar, const f64* alphai, const f64* beta,
+            f64* work, f64* result);
+
+void dget53(const f64* A, const int lda,
+            const f64* B, const int ldb,
+            const f64 scale, const f64 wr, const f64 wi,
+            f64* result, int* info);
+
 /* Non-symmetric eigenvalue verification routines */
 void dget10(const int m, const int n,
             const f64* const restrict A, const int lda,
