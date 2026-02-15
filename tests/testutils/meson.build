@@ -136,8 +136,12 @@ testutils_sources = files(
   'dstt22.c',   # Partial tridiagonal eigenvalue: |U'AU - S| and |I - U'U|
   'dsyt21.c',   # Symmetric eigenvalue decomposition: |A - USU'| and |I - UU'|
   'dsyt22.c',   # Partial symmetric eigenvalue: |U'AU - S| and |I - U'U|
+  'dsbt21.c',   # Symmetric band eigenvector: |A - USU'| and |I - UU'|
+  'dsgt01.c',   # Symmetric gen. eigenvector: |AZ - BZD| etc.
+  'dspt21.c',   # Symmetric packed eigenvector: |A - USU'| and |I - UU'|
   'dsxt1.c',    # Compare eigenvalue sets
   'dstech.c',   # Eigenvalue accuracy via Sturm sequence
+  'dstect.c',   # Tridiagonal eigenvalue count via Sturm sequence
 
   # Eigenvector verification (dget22, dget10)
   'dget22.c',   # Eigenvector check: |A*E - E*W| / (|A| |E| ulp)
@@ -167,6 +171,9 @@ testutils_sources = files(
 
   # GLM verification
   'dglmts.c',   # GLM: |d - A*x - B*u| / ((|A|+|B|)*(|x|+|u|)*eps)
+
+  # LSE verification
+  'dlsets.c',   # LSE: |A*x - c| / (|A|*|x|*eps), |B*x - d| / (|B|*|x|*eps)
 
   # GQR/GRQ verification
   'dgqrts.c',   # GQR: |R - Q'A|, |TZ - Q'B|, |I - Q'Q|, |I - Z'Z|

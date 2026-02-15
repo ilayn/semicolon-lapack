@@ -480,6 +480,31 @@ f64 dsxt1(const int ijob, const f64* const restrict D1, const int n1,
              const f64* const restrict D2, const int n2,
              const f64 abstol, const f64 ulp, const f64 unfl);
 
+/* Symmetric band eigenvector verification */
+void dsbt21(const char* uplo, const int n, const int ka, const int ks,
+            const f64* A, const int lda,
+            const f64* D, const f64* E,
+            const f64* U, const int ldu,
+            f64* work, f64* result);
+
+/* Symmetric generalized eigenvector verification */
+void dsgt01(const int itype, const char* uplo, const int n, const int m,
+            const f64* A, const int lda,
+            const f64* B, const int ldb,
+            f64* Z, const int ldz,
+            const f64* D, f64* work, f64* result);
+
+/* Symmetric packed eigenvector verification */
+void dspt21(const int itype, const char* uplo, const int n, const int kband,
+            const f64* AP, const f64* D, const f64* E,
+            const f64* U, const int ldu,
+            f64* VP, const f64* tau,
+            f64* work, f64* result);
+
+/* Tridiagonal eigenvalue count (Sturm sequence) */
+void dstect(const int n, const f64* a, const f64* b,
+            const f64 shift, int* num);
+
 /* Positive definite tridiagonal (PT) verification routines */
 void dptt01(const int n, const f64* const restrict D, const f64* const restrict E,
             const f64* const restrict DF, const f64* const restrict EF,
@@ -627,6 +652,14 @@ void dglmts(const int n, const int m, const int p,
             const f64* D, f64* DF, f64* X, f64* U,
             f64* work, const int lwork, f64* rwork,
             f64* result);
+
+/* LSE verification routines */
+void dlsets(const int m, const int p, const int n,
+            const f64* A, f64* AF, const int lda,
+            const f64* B, f64* BF, const int ldb,
+            const f64* C, f64* CF, const f64* D, f64* DF,
+            f64* X, f64* work, const int lwork,
+            f64* rwork, f64* result);
 
 /* Matrix parameter setup for GLM/GQR/GRQ/GSV/LSE tests */
 void dlatb9(const char* path, const int imat, const int m, const int p, const int n,
