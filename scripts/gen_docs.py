@@ -48,8 +48,10 @@ PRECISIONS = [
 # character, unless NO 'd' entry exists.
 SPECIAL_SOURCES = {
     # Mixed precision (single source, never gets tabs)
-    "gesv_mixed":  {"d": ["dsgesv"]},
-    "posv_mixed":  {"d": ["dsposv"]},
+    "dsgesv":      {"d": ["dsgesv"]},
+    "dsposv":      {"d": ["dsposv"]},
+    "zcgesv":      {"z": ["zcgesv"]},
+    "zcposv":      {"z": ["zcposv"]},
     # Precision conversion routines
     "_lag2_":      {"d": ["dlag2s"]},
     "_lat2_":      {"d": ["dlat2s"]},
@@ -86,7 +88,7 @@ PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "iparam2stage", "ip
 HIERARCHY = {
     "linear-systems": ("Linear Systems", {
         "general": ("General Matrix", [
-            "gesv", "gesv_mixed", "gesvx",
+            "gesv", "dsgesv", "zcgesv", "gesvx",
             "getrf", "getrf2", "getf2", "getrs", "getri",
             "gecon", "geequ", "geequb", "gerfs",
             "getc2", "gesc2",
@@ -104,7 +106,7 @@ HIERARCHY = {
             "gtcon", "gtrfs",
         ]),
         "spd": ("Symmetric Positive Definite", [
-            "posv", "posv_mixed", "posvx",
+            "posv", "dsposv", "zcposv", "posvx",
             "potrf", "potrf2", "potf2", "potrs", "potri",
             "pocon", "poequ", "poequb", "porfs",
             "laqsy",
