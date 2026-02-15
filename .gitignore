@@ -33,3 +33,6 @@ compile_commands.json
 # Documentation build artifacts
 doc/build/
 doc/source/xml/
+
+# Python
+__pycache__/
