@@ -1,6 +1,6 @@
 /**
  * @file dhgeqz.c
- * @brief DHGEQZ computes eigenvalues of a real matrix pair (H,T) using the f64-shift QZ method.
+ * @brief DHGEQZ computes eigenvalues of a real matrix pair (H,T) using the double-shift QZ method.
  */
 
 #include <math.h>
@@ -10,7 +10,7 @@
 /**
  * DHGEQZ computes the eigenvalues of a real matrix pair (H,T),
  * where H is an upper Hessenberg matrix and T is upper triangular,
- * using the f64-shift QZ method.
+ * using the double-shift QZ method.
  * Matrix pairs of this type are produced by the reduction to
  * generalized upper Hessenberg form of a real matrix pair (A,B):
  *
@@ -38,7 +38,7 @@
  * @param[in]     n       The order of the matrices H, T, Q, and Z. n >= 0.
  * @param[in]     ilo     See ihi.
  * @param[in]     ihi     ILO and IHI mark the rows and columns of H which are in
- *                        Hessenberg form. 1 <= ILO <= IHI <= N, if N > 0.
+ *                        Hessenberg form. 0 <= ILO <= IHI <= N-1, if N > 0.
  * @param[in,out] H       Array of dimension (ldh, n). On entry, the N-by-N upper
  *                        Hessenberg matrix H. On exit, if JOB = 'S', H contains the
  *                        upper quasi-triangular matrix S.
@@ -146,7 +146,7 @@ void dhgeqz(
 
     /* Check Argument Values */
     *info = 0;
-    work[0] = (1 > n) ? 1 : n;
+    work[0] = (f64)((1 > n) ? 1 : n);
     lquery = (lwork == -1);
     if (ischur == 0) {
         *info = -1;
@@ -156,9 +156,9 @@ void dhgeqz(
         *info = -3;
     } else if (n < 0) {
         *info = -4;
-    } else if (ilo < 1) {
+    } else if (ilo < 0) {
         *info = -5;
-    } else if (ihi > n || ihi < ilo - 1) {
+    } else if (ihi > n - 1 || ihi < ilo - 1) {
         *info = -6;
     } else if (ldh < n) {
         *info = -8;
@@ -193,19 +193,20 @@ void dhgeqz(
 
     /* Machine Constants */
 
-    in = ihi + 1 - ilo;
+    in = ihi - ilo + 1;
     safmin = dlamch("S");
     safmax = ONE / safmin;
     ulp = dlamch("E") * dlamch("B");
-    anorm = dlanhs("F", in, &H[(ilo - 1) + (ilo - 1) * ldh], ldh, work);
-    bnorm = dlanhs("F", in, &T[(ilo - 1) + (ilo - 1) * ldt], ldt, work);
+    anorm = dlanhs("F", in, &H[ilo + ilo * ldh], ldh, work);
+    bnorm = dlanhs("F", in, &T[ilo + ilo * ldt], ldt, work);
     atol = (safmin > ulp * anorm) ? safmin : ulp * anorm;
     btol = (safmin > ulp * bnorm) ? safmin : ulp * bnorm;
     ascale = ONE / ((safmin > anorm) ? safmin : anorm);
     bscale = ONE / ((safmin > bnorm) ? safmin : bnorm);
 
-    /* Set Eigenvalues IHI+1:N */
-    for (j = ihi; j < n; j++) {
+    /* Set Eigenvalues IHI+1:N-1 */
+
+    for (j = ihi + 1; j < n; j++) {
         if (T[j + j * ldt] < ZERO) {
             if (ilschr) {
                 for (jr = 0; jr <= j; jr++) {
@@ -217,9 +218,8 @@ void dhgeqz(
                 T[j + j * ldt] = -T[j + j * ldt];
             }
             if (ilz) {
-                for (jr = 0; jr < n; jr++) {
+                for (jr = 0; jr < n; jr++)
                     Z[jr + j * ldz] = -Z[jr + j * ldz];
-                }
             }
         }
         alphar[j] = H[j + j * ldh];
@@ -230,31 +230,17 @@ void dhgeqz(
     /* If IHI < ILO, skip QZ steps */
 
     if (ihi < ilo)
-        goto L380;
+        goto label_380;
 
-    /* MAIN QZ ITERATION LOOP
-     *
-     * Initialize dynamic indices
-     *
-     * Eigenvalues ILAST+1:N have been found.
-     *    Column operations modify rows IFRSTM:whatever.
-     *    Row operations modify columns whatever:ILASTM.
-     *
-     * If only eigenvalues are being computed, then
-     *    IFRSTM is the row of the last splitting row above row ILAST;
-     *    this is always at least ILO.
-     * IITER counts iterations since the last eigenvalue was found,
-     *    to tell when to use an extraordinary shift.
-     * MAXIT is the maximum number of QZ sweeps allowed.
-     */
+    /* MAIN QZ ITERATION LOOP */
 
-    ilast = ihi - 1;
+    ilast = ihi;
     if (ilschr) {
         ifrstm = 0;
         ilastm = n - 1;
     } else {
-        ifrstm = ilo - 1;
-        ilastm = ihi - 1;
+        ifrstm = ilo;
+        ilastm = ihi;
     }
     iiter = 0;
     eshift = ZERO;
@@ -269,242 +255,257 @@ void dhgeqz(
          *    2: T(j,j)=0
          */
 
-        if (ilast == ilo - 1) {
+        int do_split = 0;
+        int do_zero_t = 0;
+        int do_qz_step = 0;
+        ifirst = ilo;
+
+        if (ilast == ilo) {
 
             /* Special case: j=ILAST */
 
-            goto L80;
+            do_split = 1;
         } else {
-            temp = fabs(H[ilast + (ilast - 1) * ldh]);
-            temp2 = fabs(H[ilast + ilast * ldh]) + fabs(H[(ilast - 1) + (ilast - 1) * ldh]);
-            if (temp <= (safmin > ulp * temp2 ? safmin : ulp * temp2)) {
+            if (fabs(H[ilast + (ilast - 1) * ldh]) <= fmax(safmin, ulp *
+                (fabs(H[ilast + ilast * ldh]) +
+                 fabs(H[(ilast - 1) + (ilast - 1) * ldh])))) {
                 H[ilast + (ilast - 1) * ldh] = ZERO;
-                goto L80;
+                do_split = 1;
             }
         }
 
-        if (fabs(T[ilast + ilast * ldt]) <= btol) {
-            T[ilast + ilast * ldt] = ZERO;
-            goto L70;
+        if (!do_split) {
+            if (fabs(T[ilast + ilast * ldt]) <= btol) {
+                T[ilast + ilast * ldt] = ZERO;
+                do_zero_t = 1;
+            }
         }
 
         /* General case: j<ILAST */
 
-        for (j = ilast - 1; j >= ilo - 1; j--) {
+        if (!do_split && !do_zero_t) {
+            for (j = ilast - 1; j >= ilo; j--) {
 
-            /* Test 1: for H(j,j-1)=0 or j=ILO */
+                /* Test 1: for H(j,j-1)=0 or j=ILO */
 
-            if (j == ilo - 1) {
-                ilazro = 1;
-            } else {
-                temp = fabs(H[j + (j - 1) * ldh]);
-                temp2 = fabs(H[j + j * ldh]) + fabs(H[(j - 1) + (j - 1) * ldh]);
-                if (temp <= (safmin > ulp * temp2 ? safmin : ulp * temp2)) {
-                    H[j + (j - 1) * ldh] = ZERO;
+                if (j == ilo) {
                     ilazro = 1;
                 } else {
-                    ilazro = 0;
-                }
-            }
-
-            /* Test 2: for T(j,j)=0 */
-
-            if (fabs(T[j + j * ldt]) < btol) {
-                T[j + j * ldt] = ZERO;
-
-                /* Test 1a: Check for 2 consecutive small subdiagonals in A */
-
-                ilazr2 = 0;
-                if (!ilazro) {
-                    temp = fabs(H[j + (j - 1) * ldh]);
-                    temp2 = fabs(H[j + j * ldh]);
-                    tempr = (temp > temp2) ? temp : temp2;
-                    if (tempr < ONE && tempr != ZERO) {
-                        temp = temp / tempr;
-                        temp2 = temp2 / tempr;
+                    if (fabs(H[j + (j - 1) * ldh]) <= fmax(safmin, ulp *
+                        (fabs(H[j + j * ldh]) +
+                         fabs(H[(j - 1) + (j - 1) * ldh])))) {
+                        H[j + (j - 1) * ldh] = ZERO;
+                        ilazro = 1;
+                    } else {
+                        ilazro = 0;
                     }
-                    if (temp * (ascale * fabs(H[(j + 1) + j * ldh])) <= temp2 * (ascale * atol))
-                        ilazr2 = 1;
                 }
 
-                /* If both tests pass (1 & 2), i.e., the leading diagonal
-                 * element of B in the block is zero, split a 1x1 block off
-                 * at the top. (I.e., at the J-th row/column) The leading
-                 * diagonal element of the remainder can also be zero, so
-                 * this may have to be done repeatedly.
-                 */
+                /* Test 2: for T(j,j)=0 */
 
-                if (ilazro || ilazr2) {
-                    for (jch = j; jch < ilast; jch++) {
-                        temp = H[jch + jch * ldh];
-                        dlartg(temp, H[(jch + 1) + jch * ldh], &c, &s, &H[jch + jch * ldh]);
-                        H[(jch + 1) + jch * ldh] = ZERO;
-                        cblas_drot(ilastm - jch, &H[jch + (jch + 1) * ldh], ldh,
-                                   &H[(jch + 1) + (jch + 1) * ldh], ldh, c, s);
-                        cblas_drot(ilastm - jch, &T[jch + (jch + 1) * ldt], ldt,
-                                   &T[(jch + 1) + (jch + 1) * ldt], ldt, c, s);
-                        if (ilq)
-                            cblas_drot(n, &Q[jch * ldq], 1, &Q[(jch + 1) * ldq], 1, c, s);
-                        if (ilazr2)
-                            H[jch + (jch - 1) * ldh] = H[jch + (jch - 1) * ldh] * c;
-                        ilazr2 = 0;
-                        if (fabs(T[(jch + 1) + (jch + 1) * ldt]) >= btol) {
-                            if (jch + 1 >= ilast) {
-                                goto L80;
-                            } else {
-                                ifirst = jch + 1;
-                                goto L110;
-                            }
+                if (fabs(T[j + j * ldt]) < btol) {
+                    T[j + j * ldt] = ZERO;
+
+                    /* Test 1a: Check for 2 consecutive small subdiagonals in A */
+
+                    ilazr2 = 0;
+                    if (!ilazro) {
+                        temp = fabs(H[j + (j - 1) * ldh]);
+                        temp2 = fabs(H[j + j * ldh]);
+                        tempr = fmax(temp, temp2);
+                        if (tempr < ONE && tempr != ZERO) {
+                            temp = temp / tempr;
+                            temp2 = temp2 / tempr;
                         }
-                        T[(jch + 1) + (jch + 1) * ldt] = ZERO;
+                        if (temp * (ascale * fabs(H[(j + 1) + j * ldh])) <=
+                            temp2 * (ascale * atol))
+                            ilazr2 = 1;
                     }
-                    goto L70;
-                } else {
 
-                    /* Only test 2 passed -- chase the zero to T(ILAST,ILAST)
-                     * Then process as in the case T(ILAST,ILAST)=0
-                     */
+                    if (ilazro || ilazr2) {
+                        for (jch = j; jch <= ilast - 1; jch++) {
+                            temp = H[jch + jch * ldh];
+                            dlartg(temp, H[(jch + 1) + jch * ldh], &c, &s,
+                                   &H[jch + jch * ldh]);
+                            H[(jch + 1) + jch * ldh] = ZERO;
+                            cblas_drot(ilastm - jch, &H[jch + (jch + 1) * ldh], ldh,
+                                       &H[(jch + 1) + (jch + 1) * ldh], ldh, c, s);
+                            cblas_drot(ilastm - jch, &T[jch + (jch + 1) * ldt], ldt,
+                                       &T[(jch + 1) + (jch + 1) * ldt], ldt, c, s);
+                            if (ilq)
+                                cblas_drot(n, &Q[jch * ldq], 1,
+                                           &Q[(jch + 1) * ldq], 1, c, s);
+                            if (ilazr2)
+                                H[jch + (jch - 1) * ldh] = H[jch + (jch - 1) * ldh] * c;
+                            ilazr2 = 0;
+                            if (fabs(T[(jch + 1) + (jch + 1) * ldt]) >= btol) {
+                                if (jch + 1 >= ilast) {
+                                    do_split = 1;
+                                } else {
+                                    ifirst = jch + 1;
+                                    do_qz_step = 1;
+                                }
+                                break;
+                            }
+                            T[(jch + 1) + (jch + 1) * ldt] = ZERO;
+                        }
+                        if (!do_split && !do_qz_step)
+                            do_zero_t = 1;
+                        break;
+                    } else {
 
-                    for (jch = j; jch < ilast; jch++) {
-                        temp = T[jch + (jch + 1) * ldt];
-                        dlartg(temp, T[(jch + 1) + (jch + 1) * ldt], &c, &s, &T[jch + (jch + 1) * ldt]);
-                        T[(jch + 1) + (jch + 1) * ldt] = ZERO;
-                        if (jch < ilastm - 1)
-                            cblas_drot(ilastm - jch - 1, &T[jch + (jch + 2) * ldt], ldt,
-                                       &T[(jch + 1) + (jch + 2) * ldt], ldt, c, s);
-                        cblas_drot(ilastm - jch + 2, &H[jch + (jch - 1) * ldh], ldh,
-                                   &H[(jch + 1) + (jch - 1) * ldh], ldh, c, s);
-                        if (ilq)
-                            cblas_drot(n, &Q[jch * ldq], 1, &Q[(jch + 1) * ldq], 1, c, s);
-                        temp = H[(jch + 1) + jch * ldh];
-                        dlartg(temp, H[(jch + 1) + (jch - 1) * ldh], &c, &s, &H[(jch + 1) + jch * ldh]);
-                        H[(jch + 1) + (jch - 1) * ldh] = ZERO;
-                        cblas_drot(jch + 1 - ifrstm, &H[ifrstm + jch * ldh], 1,
-                                   &H[ifrstm + (jch - 1) * ldh], 1, c, s);
-                        cblas_drot(jch - ifrstm, &T[ifrstm + jch * ldt], 1,
-                                   &T[ifrstm + (jch - 1) * ldt], 1, c, s);
-                        if (ilz)
-                            cblas_drot(n, &Z[jch * ldz], 1, &Z[(jch - 1) * ldz], 1, c, s);
+                        /* Only test 2 passed -- chase the zero to T(ILAST,ILAST)
+                         * Then process as in the case T(ILAST,ILAST)=0 */
+
+                        for (jch = j; jch <= ilast - 1; jch++) {
+                            temp = T[jch + (jch + 1) * ldt];
+                            dlartg(temp, T[(jch + 1) + (jch + 1) * ldt], &c, &s,
+                                   &T[jch + (jch + 1) * ldt]);
+                            T[(jch + 1) + (jch + 1) * ldt] = ZERO;
+                            if (jch < ilastm - 1)
+                                cblas_drot(ilastm - jch - 1,
+                                           &T[jch + (jch + 2) * ldt], ldt,
+                                           &T[(jch + 1) + (jch + 2) * ldt], ldt, c, s);
+                            cblas_drot(ilastm - jch + 2,
+                                       &H[jch + (jch - 1) * ldh], ldh,
+                                       &H[(jch + 1) + (jch - 1) * ldh], ldh, c, s);
+                            if (ilq)
+                                cblas_drot(n, &Q[jch * ldq], 1,
+                                           &Q[(jch + 1) * ldq], 1, c, s);
+                            temp = H[(jch + 1) + jch * ldh];
+                            dlartg(temp, H[(jch + 1) + (jch - 1) * ldh], &c, &s,
+                                   &H[(jch + 1) + jch * ldh]);
+                            H[(jch + 1) + (jch - 1) * ldh] = ZERO;
+                            cblas_drot(jch + 1 - ifrstm,
+                                       &H[ifrstm + jch * ldh], 1,
+                                       &H[ifrstm + (jch - 1) * ldh], 1, c, s);
+                            cblas_drot(jch - ifrstm,
+                                       &T[ifrstm + jch * ldt], 1,
+                                       &T[ifrstm + (jch - 1) * ldt], 1, c, s);
+                            if (ilz)
+                                cblas_drot(n, &Z[jch * ldz], 1,
+                                           &Z[(jch - 1) * ldz], 1, c, s);
+                        }
+                        do_zero_t = 1;
+                        break;
                     }
-                    goto L70;
+                } else if (ilazro) {
+
+                    /* Only test 1 passed -- work on J:ILAST */
+
+                    ifirst = j;
+                    do_qz_step = 1;
+                    break;
                 }
-            } else if (ilazro) {
 
-                /* Only test 1 passed -- work on J:ILAST */
-
-                ifirst = j;
-                goto L110;
+                /* Neither test passed -- try next J */
             }
 
-            /* Neither test passed -- try next J */
+            /* Drop-through is "impossible" */
 
+            if (!do_split && !do_zero_t && !do_qz_step) {
+                *info = n + 1;
+                goto label_exit;
+            }
         }
-
-        /* (Drop-through is "impossible") */
-
-        *info = n + 1;
-        goto L420;
 
         /* T(ILAST,ILAST)=0 -- clear H(ILAST,ILAST-1) to split off a
-         * 1x1 block.
-         */
+         * 1x1 block. */
 
-L70:
-        temp = H[ilast + ilast * ldh];
-        dlartg(temp, H[ilast + (ilast - 1) * ldh], &c, &s, &H[ilast + ilast * ldh]);
-        H[ilast + (ilast - 1) * ldh] = ZERO;
-        cblas_drot(ilast - ifrstm, &H[ifrstm + ilast * ldh], 1,
-                   &H[ifrstm + (ilast - 1) * ldh], 1, c, s);
-        cblas_drot(ilast - ifrstm, &T[ifrstm + ilast * ldt], 1,
-                   &T[ifrstm + (ilast - 1) * ldt], 1, c, s);
-        if (ilz)
-            cblas_drot(n, &Z[ilast * ldz], 1, &Z[(ilast - 1) * ldz], 1, c, s);
+        if (do_zero_t) {
+            temp = H[ilast + ilast * ldh];
+            dlartg(temp, H[ilast + (ilast - 1) * ldh], &c, &s,
+                   &H[ilast + ilast * ldh]);
+            H[ilast + (ilast - 1) * ldh] = ZERO;
+            cblas_drot(ilast - ifrstm, &H[ifrstm + ilast * ldh], 1,
+                       &H[ifrstm + (ilast - 1) * ldh], 1, c, s);
+            cblas_drot(ilast - ifrstm, &T[ifrstm + ilast * ldt], 1,
+                       &T[ifrstm + (ilast - 1) * ldt], 1, c, s);
+            if (ilz)
+                cblas_drot(n, &Z[ilast * ldz], 1,
+                           &Z[(ilast - 1) * ldz], 1, c, s);
+            do_split = 1;
+        }
 
         /* H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHAR, ALPHAI,
-         *                       and BETA
-         */
+         *                        and BETA */
 
-L80:
-        if (T[ilast + ilast * ldt] < ZERO) {
-            if (ilschr) {
-                for (j = ifrstm; j <= ilast; j++) {
-                    H[j + ilast * ldh] = -H[j + ilast * ldh];
-                    T[j + ilast * ldt] = -T[j + ilast * ldt];
+        if (do_split) {
+            if (T[ilast + ilast * ldt] < ZERO) {
+                if (ilschr) {
+                    for (j = ifrstm; j <= ilast; j++) {
+                        H[j + ilast * ldh] = -H[j + ilast * ldh];
+                        T[j + ilast * ldt] = -T[j + ilast * ldt];
+                    }
+                } else {
+                    H[ilast + ilast * ldh] = -H[ilast + ilast * ldh];
+                    T[ilast + ilast * ldt] = -T[ilast + ilast * ldt];
                 }
-            } else {
-                H[ilast + ilast * ldh] = -H[ilast + ilast * ldh];
-                T[ilast + ilast * ldt] = -T[ilast + ilast * ldt];
-            }
-            if (ilz) {
-                for (j = 0; j < n; j++) {
-                    Z[j + ilast * ldz] = -Z[j + ilast * ldz];
+                if (ilz) {
+                    for (j = 0; j < n; j++)
+                        Z[j + ilast * ldz] = -Z[j + ilast * ldz];
                 }
             }
+            alphar[ilast] = H[ilast + ilast * ldh];
+            alphai[ilast] = ZERO;
+            beta[ilast] = T[ilast + ilast * ldt];
+
+            /* Go to next block -- exit if finished. */
+
+            ilast = ilast - 1;
+            if (ilast < ilo)
+                goto label_380;
+
+            /* Reset counters */
+
+            iiter = 0;
+            eshift = ZERO;
+            if (!ilschr) {
+                ilastm = ilast;
+                if (ifrstm > ilast)
+                    ifrstm = ilo;
+            }
+            continue;
         }
-        alphar[ilast] = H[ilast + ilast * ldh];
-        alphai[ilast] = ZERO;
-        beta[ilast] = T[ilast + ilast * ldt];
 
-        /* Go to next block -- exit if finished. */
-
-        ilast = ilast - 1;
-        if (ilast < ilo - 1)
-            goto L380;
-
-        /* Reset counters */
-
-        iiter = 0;
-        eshift = ZERO;
-        if (!ilschr) {
-            ilastm = ilast;
-            if (ifrstm > ilast)
-                ifrstm = ilo - 1;
-        }
-        continue;
-
-        /* QZ step
+        /*
+         * QZ step
          *
          * This iteration only involves rows/columns IFIRST:ILAST. We
          * assume IFIRST < ILAST, and that the diagonal of B is non-zero.
          */
 
-L110:
         iiter = iiter + 1;
         if (!ilschr) {
             ifrstm = ifirst;
         }
 
-        /* Compute single shifts.
-         *
-         * At this point, IFIRST < ILAST, and the diagonal elements of
-         * T(IFIRST:ILAST,IFIRST,ILAST) are larger than BTOL (in
-         * magnitude)
-         */
+        /* Compute single shifts. */
 
         if ((iiter / 10) * 10 == iiter) {
 
             /* Exceptional shift.  Chosen for no particularly good reason.
-             * (Single shift only.)
-             */
+             * (Single shift only.) */
 
             if (((f64)maxit * safmin) * fabs(H[ilast + (ilast - 1) * ldh]) <
                 fabs(T[(ilast - 1) + (ilast - 1) * ldt])) {
-                eshift = H[ilast + (ilast - 1) * ldh] / T[(ilast - 1) + (ilast - 1) * ldt];
+                eshift = H[ilast + (ilast - 1) * ldh] /
+                         T[(ilast - 1) + (ilast - 1) * ldt];
             } else {
                 eshift = eshift + ONE / (safmin * (f64)maxit);
             }
             s1 = ONE;
             wr = eshift;
+
         } else {
 
             /* Shifts based on the generalized eigenvalues of the
              * bottom-right 2x2 block of A and B. The first eigenvalue
-             * returned by DLAG2 is the Wilkinson shift (AEP p.512),
-             */
+             * returned by DLAG2 is the Wilkinson shift (AEP p.512), */
 
             dlag2(&H[(ilast - 1) + (ilast - 1) * ldh], ldh,
-                  &T[(ilast - 1) + (ilast - 1) * ldt], ldt, safmin * SAFETY, &s1,
-                  &s2, &wr, &wr2, &wi);
+                  &T[(ilast - 1) + (ilast - 1) * ldt], ldt, safmin * SAFETY,
+                  &s1, &s2, &wr, &wr2, &wi);
 
             if (fabs((wr / s1) * T[ilast + ilast * ldt] - H[ilast + ilast * ldh]) >
                 fabs((wr2 / s2) * T[ilast + ilast * ldt] - H[ilast + ilast * ldh])) {
@@ -515,30 +516,23 @@ L110:
                 s1 = s2;
                 s2 = temp;
             }
-            temp = s1;
-            {
-                f64 tmp1 = fabs(wr);
-                f64 tmp2 = fabs(wi);
-                f64 tmp3 = (ONE > tmp1) ? ONE : tmp1;
-                tmp3 = (tmp3 > tmp2) ? tmp3 : tmp2;
-                if (safmin * tmp3 > temp) temp = safmin * tmp3;
-            }
+            temp = fmax(s1, safmin * fmax(ONE, fmax(fabs(wr), fabs(wi))));
             if (wi != ZERO)
-                goto L200;
+                goto label_200;
         }
 
         /* Fiddle with shift to avoid overflow */
 
-        temp = ((ascale < ONE) ? ascale : ONE) * (HALF * safmax);
+        temp = fmin(ascale, ONE) * (HALF * safmax);
         if (s1 > temp) {
             scale = temp / s1;
         } else {
             scale = ONE;
         }
 
-        temp = ((bscale < ONE) ? bscale : ONE) * (HALF * safmax);
+        temp = fmin(bscale, ONE) * (HALF * safmax);
         if (fabs(wr) > temp)
-            scale = (scale < temp / fabs(wr)) ? scale : temp / fabs(wr);
+            scale = fmin(scale, temp / fabs(wr));
         s1 = scale * s1;
         wr = scale * wr;
 
@@ -548,21 +542,22 @@ L110:
             istart = j;
             temp = fabs(s1 * H[j + (j - 1) * ldh]);
             temp2 = fabs(s1 * H[j + j * ldh] - wr * T[j + j * ldt]);
-            tempr = (temp > temp2) ? temp : temp2;
+            tempr = fmax(temp, temp2);
             if (tempr < ONE && tempr != ZERO) {
                 temp = temp / tempr;
                 temp2 = temp2 / tempr;
             }
-            if (fabs((ascale * H[(j + 1) + j * ldh]) * temp) <= (ascale * atol) * temp2)
-                goto L130;
+            if (fabs((ascale * H[(j + 1) + j * ldh]) * temp) <=
+                (ascale * atol) * temp2)
+                goto label_130;
         }
 
         istart = ifirst;
-L130:
+label_130:
+
         /* Do an implicit single-shift QZ sweep.
          *
-         * Initial Q
-         */
+         * Initial Q */
 
         temp = s1 * H[istart + istart * ldh] - wr * T[istart + istart * ldt];
         temp2 = s1 * H[(istart + 1) + istart * ldh];
@@ -570,10 +565,11 @@ L130:
 
         /* Sweep */
 
-        for (j = istart; j < ilast; j++) {
+        for (j = istart; j <= ilast - 1; j++) {
             if (j > istart) {
                 temp = H[j + (j - 1) * ldh];
-                dlartg(temp, H[(j + 1) + (j - 1) * ldh], &c, &s, &H[j + (j - 1) * ldh]);
+                dlartg(temp, H[(j + 1) + (j - 1) * ldh], &c, &s,
+                       &H[j + (j - 1) * ldh]);
                 H[(j + 1) + (j - 1) * ldh] = ZERO;
             }
 
@@ -597,13 +593,10 @@ L130:
             dlartg(temp, T[(j + 1) + j * ldt], &c, &s, &T[(j + 1) + (j + 1) * ldt]);
             T[(j + 1) + j * ldt] = ZERO;
 
-            {
-                int jrmax = (j + 2 < ilast) ? j + 2 : ilast;
-                for (jr = ifrstm; jr <= jrmax; jr++) {
-                    temp = c * H[jr + (j + 1) * ldh] + s * H[jr + j * ldh];
-                    H[jr + j * ldh] = -s * H[jr + (j + 1) * ldh] + c * H[jr + j * ldh];
-                    H[jr + (j + 1) * ldh] = temp;
-                }
+            for (jr = ifrstm; jr <= (j + 2 < ilast ? j + 2 : ilast); jr++) {
+                temp = c * H[jr + (j + 1) * ldh] + s * H[jr + j * ldh];
+                H[jr + j * ldh] = -s * H[jr + (j + 1) * ldh] + c * H[jr + j * ldh];
+                H[jr + (j + 1) * ldh] = temp;
             }
             for (jr = ifrstm; jr <= j; jr++) {
                 temp = c * T[jr + (j + 1) * ldt] + s * T[jr + j * ldt];
@@ -619,17 +612,16 @@ L130:
             }
         }
 
-        continue;
+        goto label_350;
 
-        /* Use Francis f64-shift
+        /* Use Francis double-shift
          *
-         * Note: the Francis f64-shift should work with real shifts,
+         * Note: the Francis double-shift should work with real shifts,
          *       but only if the block is at least 3x3.
          *       This code may break if this point is reached with
-         *       a 2x2 block with real eigenvalues.
-         */
+         *       a 2x2 block with real eigenvalues. */
 
-L200:
+label_200:
         if (ifirst + 1 == ilast) {
 
             /* Special case -- 2x2 block with complex eigenvectors
@@ -651,22 +643,28 @@ L200:
                 b22 = -b22;
             }
 
-            cblas_drot(ilastm + 1 - ifirst, &H[(ilast - 1) + (ilast - 1) * ldh], ldh,
+            cblas_drot(ilastm + 1 - ifirst,
+                       &H[(ilast - 1) + (ilast - 1) * ldh], ldh,
                        &H[ilast + (ilast - 1) * ldh], ldh, cl, sl);
-            cblas_drot(ilast + 1 - ifrstm, &H[ifrstm + (ilast - 1) * ldh], 1,
+            cblas_drot(ilast + 1 - ifrstm,
+                       &H[ifrstm + (ilast - 1) * ldh], 1,
                        &H[ifrstm + ilast * ldh], 1, cr, sr);
 
             if (ilast < ilastm)
-                cblas_drot(ilastm - ilast, &T[(ilast - 1) + (ilast + 1) * ldt], ldt,
+                cblas_drot(ilastm - ilast,
+                           &T[(ilast - 1) + (ilast + 1) * ldt], ldt,
                            &T[ilast + (ilast + 1) * ldt], ldt, cl, sl);
             if (ifrstm < ilast - 1)
-                cblas_drot(ifirst - ifrstm, &T[ifrstm + (ilast - 1) * ldt], 1,
+                cblas_drot(ifirst - ifrstm,
+                           &T[ifrstm + (ilast - 1) * ldt], 1,
                            &T[ifrstm + ilast * ldt], 1, cr, sr);
 
             if (ilq)
-                cblas_drot(n, &Q[(ilast - 1) * ldq], 1, &Q[ilast * ldq], 1, cl, sl);
+                cblas_drot(n, &Q[(ilast - 1) * ldq], 1,
+                           &Q[ilast * ldq], 1, cl, sl);
             if (ilz)
-                cblas_drot(n, &Z[(ilast - 1) * ldz], 1, &Z[ilast * ldz], 1, cr, sr);
+                cblas_drot(n, &Z[(ilast - 1) * ldz], 1,
+                           &Z[ilast * ldz], 1, cr, sr);
 
             T[(ilast - 1) + (ilast - 1) * ldt] = b11;
             T[(ilast - 1) + ilast * ldt] = ZERO;
@@ -680,29 +678,27 @@ L200:
                     H[j + ilast * ldh] = -H[j + ilast * ldh];
                     T[j + ilast * ldt] = -T[j + ilast * ldt];
                 }
+
                 if (ilz) {
-                    for (j = 0; j < n; j++) {
+                    for (j = 0; j < n; j++)
                         Z[j + ilast * ldz] = -Z[j + ilast * ldz];
-                    }
                 }
                 b22 = -b22;
             }
 
             /* Step 2: Compute ALPHAR, ALPHAI, and BETA (see refs.)
              *
-             * Recompute shift
-             */
+             * Recompute shift */
 
             dlag2(&H[(ilast - 1) + (ilast - 1) * ldh], ldh,
-                  &T[(ilast - 1) + (ilast - 1) * ldt], ldt, safmin * SAFETY, &s1,
-                  &temp, &wr, &temp2, &wi);
+                  &T[(ilast - 1) + (ilast - 1) * ldt], ldt, safmin * SAFETY,
+                  &s1, &temp, &wr, &temp2, &wi);
 
             /* If standardization has perturbed the shift onto real line,
-             * do another (real single-shift) QR step.
-             */
+             * do another (real single-shift) QR step. */
 
             if (wi == ZERO)
-                continue;
+                goto label_350;
             s1inv = ONE / s1;
 
             /* Do EISPACK (QZVAL) computation of alpha and beta */
@@ -806,8 +802,8 @@ L200:
             /* Step 3: Go to next block -- exit if finished. */
 
             ilast = ifirst - 1;
-            if (ilast < ilo - 1)
-                goto L380;
+            if (ilast < ilo)
+                goto label_380;
 
             /* Reset counters */
 
@@ -816,14 +812,13 @@ L200:
             if (!ilschr) {
                 ilastm = ilast;
                 if (ifrstm > ilast)
-                    ifrstm = ilo - 1;
+                    ifrstm = ilo;
             }
-            continue;
-
+            goto label_350;
         } else {
 
             /* Usual case: 3x3 or larger block, using Francis implicit
-             *             f64-shift
+             *             double-shift
              *
              *                                  2
              * Eigenvalue equation is  w  - c w + d = 0,
@@ -859,7 +854,7 @@ L200:
             v[0] = (ad11 - ad11l) * (ad22 - ad11l) - ad12 * ad21 +
                    ad21 * u12 * ad11l + (ad12l - ad11l * u12l) * ad21l;
             v[1] = ((ad22l - ad11l) - ad21l * u12l - (ad11 - ad11l) -
-                    (ad22 - ad11l) + ad21 * u12) * ad21l;
+                   (ad22 - ad11l) + ad21 * u12) * ad21l;
             v[2] = ad32l * ad21l;
 
             istart = ifirst;
@@ -869,12 +864,11 @@ L200:
 
             /* Sweep */
 
-            for (j = istart; j < ilast - 1; j++) {
+            for (j = istart; j <= ilast - 2; j++) {
 
                 /* All but last elements: use 3x3 Householder transforms.
                  *
-                 * Zero (j-1)st column of A
-                 */
+                 * Zero (j-1)st column of A */
 
                 if (j > istart) {
                     v[0] = H[j + (j - 1) * ldh];
@@ -890,18 +884,21 @@ L200:
                 t2 = tau * v[1];
                 t3 = tau * v[2];
                 for (jc = j; jc <= ilastm; jc++) {
-                    temp = H[j + jc * ldh] + v[1] * H[(j + 1) + jc * ldh] + v[2] * H[(j + 2) + jc * ldh];
+                    temp = H[j + jc * ldh] + v[1] * H[(j + 1) + jc * ldh] +
+                           v[2] * H[(j + 2) + jc * ldh];
                     H[j + jc * ldh] = H[j + jc * ldh] - temp * tau;
                     H[(j + 1) + jc * ldh] = H[(j + 1) + jc * ldh] - temp * t2;
                     H[(j + 2) + jc * ldh] = H[(j + 2) + jc * ldh] - temp * t3;
-                    temp2 = T[j + jc * ldt] + v[1] * T[(j + 1) + jc * ldt] + v[2] * T[(j + 2) + jc * ldt];
+                    temp2 = T[j + jc * ldt] + v[1] * T[(j + 1) + jc * ldt] +
+                            v[2] * T[(j + 2) + jc * ldt];
                     T[j + jc * ldt] = T[j + jc * ldt] - temp2 * tau;
                     T[(j + 1) + jc * ldt] = T[(j + 1) + jc * ldt] - temp2 * t2;
                     T[(j + 2) + jc * ldt] = T[(j + 2) + jc * ldt] - temp2 * t3;
                 }
                 if (ilq) {
                     for (jr = 0; jr < n; jr++) {
-                        temp = Q[jr + j * ldq] + v[1] * Q[jr + (j + 1) * ldq] + v[2] * Q[jr + (j + 2) * ldq];
+                        temp = Q[jr + j * ldq] + v[1] * Q[jr + (j + 1) * ldq] +
+                               v[2] * Q[jr + (j + 2) * ldq];
                         Q[jr + j * ldq] = Q[jr + j * ldq] - temp * tau;
                         Q[jr + (j + 1) * ldq] = Q[jr + (j + 1) * ldq] - temp * t2;
                         Q[jr + (j + 2) * ldq] = Q[jr + (j + 2) * ldq] - temp * t3;
@@ -910,28 +907,19 @@ L200:
 
                 /* Zero j-th column of B (see DLAGBC for details)
                  *
-                 * Swap rows to pivot
-                 */
+                 * Swap rows to pivot */
 
                 ilpivt = 0;
-                temp = fabs(T[(j + 1) + (j + 1) * ldt]);
-                {
-                    f64 tmp = fabs(T[(j + 1) + (j + 2) * ldt]);
-                    if (tmp > temp) temp = tmp;
-                }
-                temp2 = fabs(T[(j + 2) + (j + 1) * ldt]);
-                {
-                    f64 tmp = fabs(T[(j + 2) + (j + 2) * ldt]);
-                    if (tmp > temp2) temp2 = tmp;
-                }
-                {
-                    f64 maxtemp = (temp > temp2) ? temp : temp2;
-                    if (maxtemp < safmin) {
-                        scale = ZERO;
-                        u1 = ONE;
-                        u2 = ZERO;
-                        goto L250;
-                    } else if (temp >= temp2) {
+                temp = fmax(fabs(T[(j + 1) + (j + 1) * ldt]),
+                            fabs(T[(j + 1) + (j + 2) * ldt]));
+                temp2 = fmax(fabs(T[(j + 2) + (j + 1) * ldt]),
+                             fabs(T[(j + 2) + (j + 2) * ldt]));
+                if (fmax(temp, temp2) < safmin) {
+                    scale = ZERO;
+                    u1 = ONE;
+                    u2 = ZERO;
+                } else {
+                    if (temp >= temp2) {
                         w11 = T[(j + 1) + (j + 1) * ldt];
                         w21 = T[(j + 2) + (j + 1) * ldt];
                         w12 = T[(j + 1) + (j + 2) * ldt];
@@ -946,49 +934,46 @@ L200:
                         u2 = T[(j + 1) + j * ldt];
                         u1 = T[(j + 2) + j * ldt];
                     }
+
+                    /* Swap columns if nec. */
+
+                    if (fabs(w12) > fabs(w11)) {
+                        ilpivt = 1;
+                        temp = w12;
+                        temp2 = w22;
+                        w12 = w11;
+                        w22 = w21;
+                        w11 = temp;
+                        w21 = temp2;
+                    }
+
+                    /* LU-factor */
+
+                    temp = w21 / w11;
+                    u2 = u2 - temp * u1;
+                    w22 = w22 - temp * w12;
+                    w21 = ZERO;
+
+                    /* Compute SCALE */
+
+                    scale = ONE;
+                    if (fabs(w22) < safmin) {
+                        scale = ZERO;
+                        u2 = ONE;
+                        u1 = -w12 / w11;
+                    } else {
+                        if (fabs(w22) < fabs(u2))
+                            scale = fabs(w22 / u2);
+                        if (fabs(w11) < fabs(u1))
+                            scale = fmin(scale, fabs(w11 / u1));
+
+                        /* Solve */
+
+                        u2 = (scale * u2) / w22;
+                        u1 = (scale * u1 - w12 * u2) / w11;
+                    }
                 }
 
-                /* Swap columns if nec. */
-
-                if (fabs(w12) > fabs(w11)) {
-                    ilpivt = 1;
-                    temp = w12;
-                    temp2 = w22;
-                    w12 = w11;
-                    w22 = w21;
-                    w11 = temp;
-                    w21 = temp2;
-                }
-
-                /* LU-factor */
-
-                temp = w21 / w11;
-                u2 = u2 - temp * u1;
-                w22 = w22 - temp * w12;
-                w21 = ZERO;
-
-                /* Compute SCALE */
-
-                scale = ONE;
-                if (fabs(w22) < safmin) {
-                    scale = ZERO;
-                    u2 = ONE;
-                    u1 = -w12 / w11;
-                    goto L250;
-                }
-                if (fabs(w22) < fabs(u2))
-                    scale = fabs(w22 / u2);
-                if (fabs(w11) < fabs(u1)) {
-                    f64 tmp = fabs(w11 / u1);
-                    if (tmp < scale) scale = tmp;
-                }
-
-                /* Solve */
-
-                u2 = (scale * u2) / w22;
-                u1 = (scale * u1 - w12 * u2) / w11;
-
-L250:
                 if (ilpivt) {
                     temp = u2;
                     u2 = u1;
@@ -1008,24 +993,24 @@ L250:
 
                 t2 = tau * v[1];
                 t3 = tau * v[2];
-                {
-                    int jrmax = (j + 3 < ilast) ? j + 3 : ilast;
-                    for (jr = ifrstm; jr <= jrmax; jr++) {
-                        temp = H[jr + j * ldh] + v[1] * H[jr + (j + 1) * ldh] + v[2] * H[jr + (j + 2) * ldh];
-                        H[jr + j * ldh] = H[jr + j * ldh] - temp * tau;
-                        H[jr + (j + 1) * ldh] = H[jr + (j + 1) * ldh] - temp * t2;
-                        H[jr + (j + 2) * ldh] = H[jr + (j + 2) * ldh] - temp * t3;
-                    }
+                for (jr = ifrstm; jr <= (j + 3 < ilast ? j + 3 : ilast); jr++) {
+                    temp = H[jr + j * ldh] + v[1] * H[jr + (j + 1) * ldh] +
+                           v[2] * H[jr + (j + 2) * ldh];
+                    H[jr + j * ldh] = H[jr + j * ldh] - temp * tau;
+                    H[jr + (j + 1) * ldh] = H[jr + (j + 1) * ldh] - temp * t2;
+                    H[jr + (j + 2) * ldh] = H[jr + (j + 2) * ldh] - temp * t3;
                 }
                 for (jr = ifrstm; jr <= j + 2; jr++) {
-                    temp = T[jr + j * ldt] + v[1] * T[jr + (j + 1) * ldt] + v[2] * T[jr + (j + 2) * ldt];
+                    temp = T[jr + j * ldt] + v[1] * T[jr + (j + 1) * ldt] +
+                           v[2] * T[jr + (j + 2) * ldt];
                     T[jr + j * ldt] = T[jr + j * ldt] - temp * tau;
                     T[jr + (j + 1) * ldt] = T[jr + (j + 1) * ldt] - temp * t2;
                     T[jr + (j + 2) * ldt] = T[jr + (j + 2) * ldt] - temp * t3;
                 }
                 if (ilz) {
                     for (jr = 0; jr < n; jr++) {
-                        temp = Z[jr + j * ldz] + v[1] * Z[jr + (j + 1) * ldz] + v[2] * Z[jr + (j + 2) * ldz];
+                        temp = Z[jr + j * ldz] + v[1] * Z[jr + (j + 1) * ldz] +
+                               v[2] * Z[jr + (j + 2) * ldz];
                         Z[jr + j * ldz] = Z[jr + j * ldz] - temp * tau;
                         Z[jr + (j + 1) * ldz] = Z[jr + (j + 1) * ldz] - temp * t2;
                         Z[jr + (j + 2) * ldz] = Z[jr + (j + 2) * ldz] - temp * t3;
@@ -1037,8 +1022,7 @@ L250:
 
             /* Last elements: Use Givens rotations
              *
-             * Rotations from the left
-             */
+             * Rotations from the left */
 
             j = ilast - 1;
             temp = H[j + (j - 1) * ldh];
@@ -1072,7 +1056,7 @@ L250:
                 H[jr + j * ldh] = -s * H[jr + (j + 1) * ldh] + c * H[jr + j * ldh];
                 H[jr + (j + 1) * ldh] = temp;
             }
-            for (jr = ifrstm; jr < ilast; jr++) {
+            for (jr = ifrstm; jr <= ilast - 1; jr++) {
                 temp = c * T[jr + (j + 1) * ldt] + s * T[jr + j * ldt];
                 T[jr + j * ldt] = -s * T[jr + (j + 1) * ldt] + c * T[jr + j * ldt];
                 T[jr + (j + 1) * ldt] = temp;
@@ -1089,21 +1073,22 @@ L250:
 
         }
 
-        /* End of iteration loop */
+label_350:
+        (void)0;
     }
 
     /* Drop-through = non-convergence */
 
     *info = ilast + 1;
-    goto L420;
+    goto label_exit;
 
     /* Successful completion of all QZ steps */
 
-L380:
+label_380:
 
-    /* Set Eigenvalues 1:ILO-1 */
+    /* Set Eigenvalues 0:ILO-1 */
 
-    for (j = 0; j < ilo - 1; j++) {
+    for (j = 0; j < ilo; j++) {
         if (T[j + j * ldt] < ZERO) {
             if (ilschr) {
                 for (jr = 0; jr <= j; jr++) {
@@ -1115,9 +1100,8 @@ L380:
                 T[j + j * ldt] = -T[j + j * ldt];
             }
             if (ilz) {
-                for (jr = 0; jr < n; jr++) {
+                for (jr = 0; jr < n; jr++)
                     Z[jr + j * ldz] = -Z[jr + j * ldz];
-                }
             }
         }
         alphar[j] = H[j + j * ldh];
@@ -1131,7 +1115,6 @@ L380:
 
     /* Exit (other than argument error) -- return optimal workspace size */
 
-L420:
+label_exit:
     work[0] = (f64)n;
-    return;
 }

@@ -10,7 +10,7 @@
 /**
  * DGGBAL balances a pair of general real matrices (A,B). This
  * involves, first, permuting A and B by similarity transformations to
- * isolate eigenvalues in the first 1 to ILO-1 and last IHI+1 to N
+ * isolate eigenvalues in the first 0 to ILO-1 and last IHI+1 to N-1
  * elements on the diagonal; and second, applying a diagonal similarity
  * transformation to rows and columns ILO to IHI to make the rows
  * and columns as close in norm as possible. Both steps are optional.
@@ -20,27 +20,46 @@
  * generalized eigenvalue problem A*x = lambda*B*x.
  *
  * @param[in]     job     Specifies the operations to be performed on A and B:
- *                        = 'N': none: simply set ILO = 1, IHI = N, LSCALE(I) = 1.0
- *                               and RSCALE(I) = 1.0 for i = 1,...,N.
+ *                        = 'N': none: simply set ILO = 0, IHI = N-1, LSCALE(I) = 1.0
+ *                               and RSCALE(I) = 1.0 for i = 0,...,N-1.
  *                        = 'P': permute only;
  *                        = 'S': scale only;
  *                        = 'B': both permute and scale.
  * @param[in]     n       The order of the matrices A and B. n >= 0.
  * @param[in,out] A       Array of dimension (lda, n). On entry, the input matrix A.
  *                        On exit, A is overwritten by the balanced matrix.
+ *                        If job = 'N', A is not referenced.
  * @param[in]     lda     The leading dimension of A. lda >= max(1,n).
  * @param[in,out] B       Array of dimension (ldb, n). On entry, the input matrix B.
  *                        On exit, B is overwritten by the balanced matrix.
+ *                        If job = 'N', B is not referenced.
  * @param[in]     ldb     The leading dimension of B. ldb >= max(1,n).
  * @param[out]    ilo     See ihi.
  * @param[out]    ihi     ILO and IHI are set to integers such that on exit
  *                        A(i,j) = 0 and B(i,j) = 0 if i > j and
- *                        j = 1,...,ILO-1 or i = IHI+1,...,N.
- * @param[out]    lscale  Array of dimension (n). Details of permutations and
+ *                        j = 0,...,ILO-1 or i = IHI+1,...,N-1.
+ *                        If job = 'N' or 'S', ILO = 0 and IHI = N-1.
+ * @param[out]    lscale  Array of dimension (n). Details of the permutations and
  *                        scaling factors applied to the left side of A and B.
- * @param[out]    rscale  Array of dimension (n). Details of permutations and
+ *                        If P(j) is the index of the row interchanged with row j,
+ *                        and D(j) is the scaling factor applied to row j, then
+ *                          lscale[j] = P(j)    for j = 0,...,ILO-1
+ *                                    = D(j)    for j = ILO,...,IHI
+ *                                    = P(j)    for j = IHI+1,...,N-1.
+ *                        The order in which the interchanges are made is N-1 to IHI+1,
+ *                        then 0 to ILO-1.
+ * @param[out]    rscale  Array of dimension (n). Details of the permutations and
  *                        scaling factors applied to the right side of A and B.
- * @param[out]    work    Workspace array of dimension (6*n).
+ *                        If P(j) is the index of the column interchanged with column j,
+ *                        and D(j) is the scaling factor applied to column j, then
+ *                          rscale[j] = P(j)    for j = 0,...,ILO-1
+ *                                    = D(j)    for j = ILO,...,IHI
+ *                                    = P(j)    for j = IHI+1,...,N-1.
+ *                        The order in which the interchanges are made is N-1 to IHI+1,
+ *                        then 0 to ILO-1.
+ * @param[out]    work    Workspace array of dimension (lwork).
+ *                        lwork must be at least max(1, 6*n) when job = 'S' or 'B', and
+ *                        at least 1 when job = 'N' or 'P'.
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
@@ -65,8 +84,8 @@ void dggbal(
     const f64 THREE = 3.0;
     const f64 SCLFAC = 10.0;
 
-    int i, icab, iflow, ip1, ir, irab, it, j, jc, jp1;
-    int k, kount, l, lcab, lm1, lrab, lsfmax, lsfmin;
+    int i, icab, ir, irab, it, j, jc;
+    int k, kount, l, lcab, lrab, lsfmax, lsfmin;
     int m, nr, nrp2;
     f64 alpha, basl, beta, cab, cmax, coef, coef2;
     f64 coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
@@ -91,22 +110,22 @@ void dggbal(
     }
 
     if (n == 0) {
-        *ilo = 1;
-        *ihi = n;
+        *ilo = 0;
+        *ihi = -1;
         return;
     }
 
     if (n == 1) {
-        *ilo = 1;
-        *ihi = n;
+        *ilo = 0;
+        *ihi = 0;
         lscale[0] = ONE;
         rscale[0] = ONE;
         return;
     }
 
     if (job[0] == 'N' || job[0] == 'n') {
-        *ilo = 1;
-        *ihi = n;
+        *ilo = 0;
+        *ihi = n - 1;
         for (i = 0; i < n; i++) {
             lscale[i] = ONE;
             rscale[i] = ONE;
@@ -114,98 +133,116 @@ void dggbal(
         return;
     }
 
-    k = 1;
-    l = n;
-    if (job[0] == 'S' || job[0] == 's')
-        goto L190;
+    k = 0;
+    l = n - 1;
 
-    goto L30;
+    if (!(job[0] == 'S' || job[0] == 's')) {
 
-L20:
-    l = lm1;
-    if (l != 1)
-        goto L30;
+        /* Permute the matrices A and B to isolate the eigenvalues. */
 
-    rscale[0] = ONE;
-    lscale[0] = ONE;
-    goto L190;
+        /* Find row with one nonzero in columns 1 through L */
 
-L30:
-    lm1 = l - 1;
-    for (i = l - 1; i >= 0; i--) {
-        for (j = 0; j < lm1; j++) {
-            jp1 = j + 1;
-            if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO)
-                goto L50;
+        int done_permuting = 0;
+        for (;;) {
+            if (l == 0) {
+                rscale[0] = ONE;
+                lscale[0] = ONE;
+                done_permuting = 1;
+                break;
+            }
+            int found = 0;
+            for (i = l; i >= 0; i--) {
+                int nz_col = -1;
+                int isolated = 1;
+                for (j = 0; j <= l; j++) {
+                    if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO) {
+                        if (nz_col >= 0) {
+                            isolated = 0;
+                            break;
+                        }
+                        nz_col = j;
+                    }
+                }
+                if (!isolated)
+                    continue;
+                j = (nz_col >= 0) ? nz_col : l;
+
+                /* Permute rows M and I */
+
+                m = l;
+                lscale[m] = (f64)i;
+                if (i != m) {
+                    cblas_dswap(n - k, &A[i + k * lda], lda, &A[m + k * lda], lda);
+                    cblas_dswap(n - k, &B[i + k * ldb], ldb, &B[m + k * ldb], ldb);
+                }
+
+                /* Permute columns M and J */
+
+                rscale[m] = (f64)j;
+                if (j != m) {
+                    cblas_dswap(l + 1, &A[j * lda], 1, &A[m * lda], 1);
+                    cblas_dswap(l + 1, &B[j * ldb], 1, &B[m * ldb], 1);
+                }
+                l--;
+                found = 1;
+                break;
+            }
+            if (!found)
+                break;
         }
-        j = l - 1;
-        goto L70;
 
-    L50:
-        for (j = jp1; j < l; j++) {
-            if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO)
-                goto L80;
+        /* Find column with one nonzero in rows K through N */
+
+        if (!done_permuting) {
+            for (;;) {
+                int found = 0;
+                for (j = k; j <= l; j++) {
+                    int nz_row = -1;
+                    int isolated = 1;
+                    for (i = k; i <= l; i++) {
+                        if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO) {
+                            if (nz_row >= 0) {
+                                isolated = 0;
+                                break;
+                            }
+                            nz_row = i;
+                        }
+                    }
+                    if (!isolated)
+                        continue;
+                    i = (nz_row >= 0) ? nz_row : l;
+
+                    /* Permute rows M and I */
+
+                    m = k;
+                    lscale[m] = (f64)i;
+                    if (i != m) {
+                        cblas_dswap(n - k, &A[i + k * lda], lda, &A[m + k * lda], lda);
+                        cblas_dswap(n - k, &B[i + k * ldb], ldb, &B[m + k * ldb], ldb);
+                    }
+
+                    /* Permute columns M and J */
+
+                    rscale[m] = (f64)j;
+                    if (j != m) {
+                        cblas_dswap(l + 1, &A[j * lda], 1, &A[m * lda], 1);
+                        cblas_dswap(l + 1, &B[j * ldb], 1, &B[m * ldb], 1);
+                    }
+                    k++;
+                    found = 1;
+                    break;
+                }
+                if (!found)
+                    break;
+            }
         }
-        j = jp1 - 1;
-
-    L70:
-        m = l;
-        iflow = 1;
-        goto L160;
-    L80:;
-    }
-    goto L100;
-
-L90:
-    k = k + 1;
-
-L100:
-    for (j = k - 1; j < l; j++) {
-        for (i = k - 1; i < lm1; i++) {
-            ip1 = i + 1;
-            if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO)
-                goto L120;
-        }
-        i = l - 1;
-        goto L140;
-    L120:
-        for (i = ip1; i < l; i++) {
-            if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO)
-                goto L150;
-        }
-        i = ip1 - 1;
-    L140:
-        m = k;
-        iflow = 2;
-        goto L160;
-    L150:;
-    }
-    goto L190;
-
-L160:
-    lscale[m - 1] = (f64)(i + 1);
-    if (i != m - 1) {
-        cblas_dswap(n - k + 1, &A[i + (k - 1) * lda], lda, &A[m - 1 + (k - 1) * lda], lda);
-        cblas_dswap(n - k + 1, &B[i + (k - 1) * ldb], ldb, &B[m - 1 + (k - 1) * ldb], ldb);
     }
 
-    rscale[m - 1] = (f64)(j + 1);
-    if (j != m - 1) {
-        cblas_dswap(l, &A[j * lda], 1, &A[(m - 1) * lda], 1);
-        cblas_dswap(l, &B[j * ldb], 1, &B[(m - 1) * ldb], 1);
-    }
-
-    if (iflow == 1)
-        goto L20;
-    else
-        goto L90;
-
-L190:
     *ilo = k;
     *ihi = l;
 
     if (job[0] == 'P' || job[0] == 'p') {
-        for (i = k - 1; i < l; i++) {
+        for (i = k; i <= l; i++) {
             lscale[i] = ONE;
             rscale[i] = ONE;
         }
@@ -215,8 +252,10 @@ L190:
     if (k == l)
         return;
 
+    /* Balance the submatrix in rows ILO to IHI. */
+
     nr = l - k + 1;
-    for (i = k - 1; i < l; i++) {
+    for (i = k; i <= l; i++) {
         rscale[i] = ZERO;
         lscale[i] = ZERO;
 
@@ -228,19 +267,17 @@ L190:
         work[i + 5 * n] = ZERO;
     }
 
+    /* Compute right side vector in resulting linear equations */
+
     basl = log10(SCLFAC);
-    for (i = k - 1; i < l; i++) {
-        for (j = k - 1; j < l; j++) {
+    for (i = k; i <= l; i++) {
+        for (j = k; j <= l; j++) {
             tb = B[i + j * ldb];
             ta = A[i + j * lda];
-            if (ta == ZERO)
-                goto L210;
-            ta = log10(fabs(ta)) / basl;
-        L210:
-            if (tb == ZERO)
-                goto L220;
-            tb = log10(fabs(tb)) / basl;
-        L220:
+            if (ta != ZERO)
+                ta = log10(fabs(ta)) / basl;
+            if (tb != ZERO)
+                tb = log10(fabs(tb)) / basl;
             work[i + 4 * n] = work[i + 4 * n] - ta - tb;
             work[j + 5 * n] = work[j + 5 * n] - ta - tb;
         }
@@ -251,117 +288,121 @@ L190:
     coef5 = HALF * coef2;
     nrp2 = nr + 2;
     beta = ZERO;
-    it = 1;
 
-L250:
-    gamma = cblas_ddot(nr, &work[k - 1 + 4 * n], 1, &work[k - 1 + 4 * n], 1) +
-            cblas_ddot(nr, &work[k - 1 + 5 * n], 1, &work[k - 1 + 5 * n], 1);
+    /* Start generalized conjugate gradient iteration */
 
-    ew = ZERO;
-    ewc = ZERO;
-    for (i = k - 1; i < l; i++) {
-        ew = ew + work[i + 4 * n];
-        ewc = ewc + work[i + 5 * n];
-    }
+    for (it = 1; it <= nrp2; it++) {
 
-    gamma = coef * gamma - coef2 * (ew * ew + ewc * ewc) - coef5 * (ew - ewc) * (ew - ewc);
-    if (gamma == ZERO)
-        goto L350;
-    if (it != 1)
-        beta = gamma / pgamma;
-    t = coef5 * (ewc - THREE * ew);
-    tc = coef5 * (ew - THREE * ewc);
+        gamma = cblas_ddot(nr, &work[k + 4 * n], 1, &work[k + 4 * n], 1) +
+                cblas_ddot(nr, &work[k + 5 * n], 1, &work[k + 5 * n], 1);
 
-    cblas_dscal(nr, beta, &work[k - 1], 1);
-    cblas_dscal(nr, beta, &work[k - 1 + n], 1);
-
-    cblas_daxpy(nr, coef, &work[k - 1 + 4 * n], 1, &work[k - 1 + n], 1);
-    cblas_daxpy(nr, coef, &work[k - 1 + 5 * n], 1, &work[k - 1], 1);
-
-    for (i = k - 1; i < l; i++) {
-        work[i] = work[i] + tc;
-        work[i + n] = work[i + n] + t;
-    }
-
-    for (i = k - 1; i < l; i++) {
-        kount = 0;
-        sum = ZERO;
-        for (j = k - 1; j < l; j++) {
-            if (A[i + j * lda] == ZERO)
-                goto L280;
-            kount = kount + 1;
-            sum = sum + work[j];
-        L280:
-            if (B[i + j * ldb] == ZERO)
-                continue;
-            kount = kount + 1;
-            sum = sum + work[j];
+        ew = ZERO;
+        ewc = ZERO;
+        for (i = k; i <= l; i++) {
+            ew = ew + work[i + 4 * n];
+            ewc = ewc + work[i + 5 * n];
         }
-        work[i + 2 * n] = (f64)kount * work[i + n] + sum;
-    }
 
-    for (j = k - 1; j < l; j++) {
-        kount = 0;
-        sum = ZERO;
-        for (i = k - 1; i < l; i++) {
-            if (A[i + j * lda] == ZERO)
-                goto L310;
-            kount = kount + 1;
-            sum = sum + work[i + n];
-        L310:
-            if (B[i + j * ldb] == ZERO)
-                continue;
-            kount = kount + 1;
-            sum = sum + work[i + n];
+        gamma = coef * gamma - coef2 * (ew * ew + ewc * ewc) -
+                coef5 * (ew - ewc) * (ew - ewc);
+        if (gamma == ZERO)
+            break;
+        if (it != 1)
+            beta = gamma / pgamma;
+        t = coef5 * (ewc - THREE * ew);
+        tc = coef5 * (ew - THREE * ewc);
+
+        cblas_dscal(nr, beta, &work[k], 1);
+        cblas_dscal(nr, beta, &work[k + n], 1);
+
+        cblas_daxpy(nr, coef, &work[k + 4 * n], 1, &work[k + n], 1);
+        cblas_daxpy(nr, coef, &work[k + 5 * n], 1, &work[k], 1);
+
+        for (i = k; i <= l; i++) {
+            work[i] = work[i] + tc;
+            work[i + n] = work[i + n] + t;
         }
-        work[j + 3 * n] = (f64)kount * work[j] + sum;
+
+        /* Apply matrix to vector */
+
+        for (i = k; i <= l; i++) {
+            kount = 0;
+            sum = ZERO;
+            for (j = k; j <= l; j++) {
+                if (A[i + j * lda] != ZERO) {
+                    kount = kount + 1;
+                    sum = sum + work[j];
+                }
+                if (B[i + j * ldb] != ZERO) {
+                    kount = kount + 1;
+                    sum = sum + work[j];
+                }
+            }
+            work[i + 2 * n] = (f64)kount * work[i + n] + sum;
+        }
+
+        for (j = k; j <= l; j++) {
+            kount = 0;
+            sum = ZERO;
+            for (i = k; i <= l; i++) {
+                if (A[i + j * lda] != ZERO) {
+                    kount = kount + 1;
+                    sum = sum + work[i + n];
+                }
+                if (B[i + j * ldb] != ZERO) {
+                    kount = kount + 1;
+                    sum = sum + work[i + n];
+                }
+            }
+            work[j + 3 * n] = (f64)kount * work[j] + sum;
+        }
+
+        sum = cblas_ddot(nr, &work[k + n], 1, &work[k + 2 * n], 1) +
+              cblas_ddot(nr, &work[k], 1, &work[k + 3 * n], 1);
+        alpha = gamma / sum;
+
+        /* Determine correction to current iteration */
+
+        cmax = ZERO;
+        for (i = k; i <= l; i++) {
+            cor = alpha * work[i + n];
+            if (fabs(cor) > cmax)
+                cmax = fabs(cor);
+            lscale[i] = lscale[i] + cor;
+            cor = alpha * work[i];
+            if (fabs(cor) > cmax)
+                cmax = fabs(cor);
+            rscale[i] = rscale[i] + cor;
+        }
+        if (cmax < HALF)
+            break;
+
+        cblas_daxpy(nr, -alpha, &work[k + 2 * n], 1, &work[k + 4 * n], 1);
+        cblas_daxpy(nr, -alpha, &work[k + 3 * n], 1, &work[k + 5 * n], 1);
+
+        pgamma = gamma;
     }
 
-    sum = cblas_ddot(nr, &work[k - 1 + n], 1, &work[k - 1 + 2 * n], 1) +
-          cblas_ddot(nr, &work[k - 1], 1, &work[k - 1 + 3 * n], 1);
-    alpha = gamma / sum;
+    /* End generalized conjugate gradient iteration */
 
-    cmax = ZERO;
-    for (i = k - 1; i < l; i++) {
-        cor = alpha * work[i + n];
-        if (fabs(cor) > cmax)
-            cmax = fabs(cor);
-        lscale[i] = lscale[i] + cor;
-        cor = alpha * work[i];
-        if (fabs(cor) > cmax)
-            cmax = fabs(cor);
-        rscale[i] = rscale[i] + cor;
-    }
-    if (cmax < HALF)
-        goto L350;
-
-    cblas_daxpy(nr, -alpha, &work[k - 1 + 2 * n], 1, &work[k - 1 + 4 * n], 1);
-    cblas_daxpy(nr, -alpha, &work[k - 1 + 3 * n], 1, &work[k - 1 + 5 * n], 1);
-
-    pgamma = gamma;
-    it = it + 1;
-    if (it <= nrp2)
-        goto L250;
-
-L350:
     sfmin = dlamch("S");
     sfmax = ONE / sfmin;
     lsfmin = (int)(log10(sfmin) / basl + ONE);
     lsfmax = (int)(log10(sfmax) / basl);
-    for (i = k - 1; i < l; i++) {
-        irab = cblas_idamax(n - k + 1, &A[i + (k - 1) * lda], lda);
-        rab = fabs(A[i + (irab + k - 1) * lda]);
-        irab = cblas_idamax(n - k + 1, &B[i + (k - 1) * ldb], ldb);
-        rab = (rab > fabs(B[i + (irab + k - 1) * ldb])) ? rab : fabs(B[i + (irab + k - 1) * ldb]);
+    for (i = k; i <= l; i++) {
+        irab = cblas_idamax(n - k, &A[i + k * lda], lda);
+        rab = fabs(A[i + (irab + k) * lda]);
+        irab = cblas_idamax(n - k, &B[i + k * ldb], ldb);
+        rab = (rab > fabs(B[i + (irab + k) * ldb])) ? rab : fabs(B[i + (irab + k) * ldb]);
         lrab = (int)(log10(rab + sfmin) / basl + ONE);
         ir = (int)(lscale[i] + (lscale[i] >= 0 ? HALF : -HALF));
         ir = (ir > lsfmin) ? ir : lsfmin;
         ir = (ir < lsfmax) ? ir : lsfmax;
         ir = (ir < lsfmax - lrab) ? ir : lsfmax - lrab;
         lscale[i] = pow(SCLFAC, (f64)ir);
-        icab = cblas_idamax(l, &A[i * lda], 1);
+        icab = cblas_idamax(l + 1, &A[i * lda], 1);
         cab = fabs(A[icab + i * lda]);
-        icab = cblas_idamax(l, &B[i * ldb], 1);
+        icab = cblas_idamax(l + 1, &B[i * ldb], 1);
         cab = (cab > fabs(B[icab + i * ldb])) ? cab : fabs(B[icab + i * ldb]);
         lcab = (int)(log10(cab + sfmin) / basl + ONE);
         jc = (int)(rscale[i] + (rscale[i] >= 0 ? HALF : -HALF));
@@ -371,13 +412,17 @@ L350:
         rscale[i] = pow(SCLFAC, (f64)jc);
     }
 
-    for (i = k - 1; i < l; i++) {
-        cblas_dscal(n - k + 1, lscale[i], &A[i + (k - 1) * lda], lda);
-        cblas_dscal(n - k + 1, lscale[i], &B[i + (k - 1) * ldb], ldb);
+    /* Row scaling of matrices A and B */
+
+    for (i = k; i <= l; i++) {
+        cblas_dscal(n - k, lscale[i], &A[i + k * lda], lda);
+        cblas_dscal(n - k, lscale[i], &B[i + k * ldb], ldb);
     }
 
-    for (j = k - 1; j < l; j++) {
-        cblas_dscal(l, rscale[j], &A[j * lda], 1);
-        cblas_dscal(l, rscale[j], &B[j * ldb], 1);
+    /* Column scaling of matrices A and B */
+
+    for (j = k; j <= l; j++) {
+        cblas_dscal(l + 1, rscale[j], &A[j * lda], 1);
+        cblas_dscal(l + 1, rscale[j], &B[j * ldb], 1);
     }
 }

@@ -168,11 +168,11 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
             lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
                      lwkopt : (n + (int)crealf(work[0]));
         }
-        cgghd3(jobvsl, jobvsr, n, 1, n, A, lda, B, ldb, VSL,
+        cgghd3(jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb, VSL,
                ldvsl, VSR, ldvsr, work, -1, &ierr);
         lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
                  lwkopt : (n + (int)crealf(work[0]));
-        claqz0("S", jobvsl, jobvsr, n, 1, n, A, lda, B, ldb,
+        claqz0("S", jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb,
                alpha, beta, VSL, ldvsl, VSR, ldvsr, work, -1,
                rwork, 0, &ierr);
         lwkopt = lwkopt > (int)crealf(work[0]) ?
@@ -240,25 +240,25 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
            &rwork[iright], &rwork[irwrk], &ierr);
 
     irows = ihi + 1 - ilo;
-    icols = n + 1 - ilo;
+    icols = n - ilo;
     itau = 0;
     iwrk = itau + irows;
-    cgeqrf(irows, icols, &B[(ilo - 1) + (ilo - 1) * ldb], ldb,
+    cgeqrf(irows, icols, &B[ilo + ilo * ldb], ldb,
            &work[itau], &work[iwrk], lwork - iwrk, &ierr);
 
     cunmqr("L", "C", irows, icols, irows,
-           &B[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau],
-           &A[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk],
+           &B[ilo + ilo * ldb], ldb, &work[itau],
+           &A[ilo + ilo * lda], lda, &work[iwrk],
            lwork - iwrk, &ierr);
 
     if (ilvsl) {
         claset("Full", n, n, CZERO, CONE, VSL, ldvsl);
         if (irows > 1) {
             clacpy("L", irows - 1, irows - 1,
-                   &B[ilo + (ilo - 1) * ldb], ldb,
-                   &VSL[ilo + (ilo - 1) * ldvsl], ldvsl);
+                   &B[(ilo + 1) + ilo * ldb], ldb,
+                   &VSL[(ilo + 1) + ilo * ldvsl], ldvsl);
         }
-        cungqr(irows, irows, irows, &VSL[(ilo - 1) + (ilo - 1) * ldvsl],
+        cungqr(irows, irows, irows, &VSL[ilo + ilo * ldvsl],
                ldvsl, &work[itau], &work[iwrk], lwork - iwrk, &ierr);
     }
 

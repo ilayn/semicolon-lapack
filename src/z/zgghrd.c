@@ -38,8 +38,12 @@
  *                        = 'V': Z must contain a unitary matrix Z1 on entry.
  * @param[in]     n       The order of the matrices A and B. n >= 0.
  * @param[in]     ilo     See ihi.
- * @param[in]     ihi     ILO and IHI mark the rows and columns of A which are to
- *                        be reduced. 1 <= ILO <= IHI <= N, if N > 0.
+ * @param[in]     ihi     ILO and IHI mark the rows and columns of A which are to be
+ *                        reduced. It is assumed that A is already upper triangular in
+ *                        rows and columns 0:ilo-1 and ihi+1:n-1. ILO and IHI are normally
+ *                        set by a previous call to ZGGBAL; otherwise they should be set
+ *                        to 0 and n-1 respectively.
+ *                        0 <= ilo <= ihi <= n-1, if n > 0; ilo=0 and ihi=-1, if n=0.
  * @param[in,out] A       Array of dimension (lda, n). On entry, the N-by-N general
  *                        matrix. On exit, the upper Hessenberg matrix H.
  * @param[in]     lda     The leading dimension of A. lda >= max(1,n).
@@ -111,9 +115,9 @@ void zgghrd(
         *info = -2;
     } else if (n < 0) {
         *info = -3;
-    } else if (ilo < 1) {
+    } else if (ilo < 0 || (n > 0 && ilo > n - 1)) {
         *info = -4;
-    } else if (ihi > n || ihi < ilo - 1) {
+    } else if (ihi > n - 1 || ihi < ilo - 1) {
         *info = -5;
     } else if (lda < (1 > n ? 1 : n)) {
         *info = -7;
@@ -143,8 +147,8 @@ void zgghrd(
         }
     }
 
-    for (jcol = ilo - 1; jcol < ihi - 2; jcol++) {
-        for (jrow = ihi - 1; jrow >= jcol + 2; jrow--) {
+    for (jcol = ilo; jcol <= ihi - 2; jcol++) {
+        for (jrow = ihi; jrow >= jcol + 2; jrow--) {
 
             ctemp = A[jrow - 1 + jcol * lda];
             zlartg(ctemp, A[jrow + jcol * lda], &c, &s,
@@ -162,7 +166,7 @@ void zgghrd(
             zlartg(ctemp, B[jrow + (jrow - 1) * ldb], &c, &s,
                    &B[jrow + jrow * ldb]);
             B[jrow + (jrow - 1) * ldb] = CZERO;
-            zrot(ihi, &A[jrow * lda], 1, &A[(jrow - 1) * lda], 1, c, s);
+            zrot(ihi + 1, &A[jrow * lda], 1, &A[(jrow - 1) * lda], 1, c, s);
             zrot(jrow, &B[jrow * ldb], 1, &B[(jrow - 1) * ldb], 1, c, s);
             if (ilz)
                 zrot(n, &Z[jrow * ldz], 1, &Z[(jrow - 1) * ldz], 1, c, s);

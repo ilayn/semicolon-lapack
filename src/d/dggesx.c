@@ -240,23 +240,23 @@ void dggesx(const char* jobvsl, const char* jobvsr, const char* sort,
            &work[iright], &work[iwrk], &ierr);
 
     irows = ihi + 1 - ilo;
-    icols = n + 1 - ilo;
+    icols = n - ilo;
     itau = iwrk;
     iwrk = itau + irows;
-    dgeqrf(irows, icols, &B[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau],
+    dgeqrf(irows, icols, &B[ilo + ilo * ldb], ldb, &work[itau],
            &work[iwrk], lwork - iwrk, &ierr);
 
-    dormqr("L", "T", irows, icols, irows, &B[(ilo - 1) + (ilo - 1) * ldb], ldb,
-           &work[itau], &A[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk],
+    dormqr("L", "T", irows, icols, irows, &B[ilo + ilo * ldb], ldb,
+           &work[itau], &A[ilo + ilo * lda], lda, &work[iwrk],
            lwork - iwrk, &ierr);
 
     if (ilvsl) {
         dlaset("Full", n, n, ZERO, ONE, VSL, ldvsl);
         if (irows > 1) {
-            dlacpy("L", irows - 1, irows - 1, &B[ilo + (ilo - 1) * ldb], ldb,
-                   &VSL[ilo + (ilo - 1) * ldvsl], ldvsl);
+            dlacpy("L", irows - 1, irows - 1, &B[(ilo + 1) + ilo * ldb], ldb,
+                   &VSL[(ilo + 1) + ilo * ldvsl], ldvsl);
         }
-        dorgqr(irows, irows, irows, &VSL[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl,
+        dorgqr(irows, irows, irows, &VSL[ilo + ilo * ldvsl], ldvsl,
                &work[itau], &work[iwrk], lwork - iwrk, &ierr);
     }
 

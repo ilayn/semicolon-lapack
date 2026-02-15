@@ -17,19 +17,23 @@
  *                        = 'P': do backward transformation for permutation only;
  *                        = 'S': do backward transformation for scaling only;
  *                        = 'B': do backward transformations for both permutation and scaling.
+ *                        JOB must be the same as the argument JOB supplied to DGGBAL.
  * @param[in]     side    = 'R': V contains right eigenvectors;
  *                        = 'L': V contains left eigenvectors.
  * @param[in]     n       The number of rows of the matrix V. n >= 0.
- * @param[in]     ilo     See ihi.
- * @param[in]     ihi     The integers ILO and IHI determined by DGGBAL.
- * @param[in]     lscale  Array of dimension (n). Details of permutations and/or
- *                        scaling factors applied to left side, as returned by DGGBAL.
- * @param[in]     rscale  Array of dimension (n). Details of permutations and/or
- *                        scaling factors applied to right side, as returned by DGGBAL.
+ * @param[in]     ilo     The integers ILO and IHI determined by DGGBAL.
+ *                        0 <= ILO <= IHI <= N-1, if N > 0; ILO=0 and IHI=-1, if N=0.
+ * @param[in]     ihi     See ILO.
+ * @param[in]     lscale  Array of dimension (n). Details of the permutations and/or
+ *                        scaling factors applied to the left side of A and B, as
+ *                        returned by DGGBAL.
+ * @param[in]     rscale  Array of dimension (n). Details of the permutations and/or
+ *                        scaling factors applied to the right side of A and B, as
+ *                        returned by DGGBAL.
  * @param[in]     m       The number of columns of the matrix V. m >= 0.
- * @param[in,out] V       Array of dimension (ldv, m). On entry, the matrix of
- *                        eigenvectors to be transformed. On exit, V is overwritten
- *                        by the transformed eigenvectors.
+ * @param[in,out] V       Array of dimension (ldv, m). On entry, the matrix of right
+ *                        or left eigenvectors to be transformed, as returned by DTGEVC.
+ *                        On exit, V is overwritten by the transformed eigenvectors.
  * @param[in]     ldv     The leading dimension of V. ldv >= max(1,n).
  * @param[out]    info
  *                         - = 0: successful exit
@@ -51,6 +55,8 @@ void dggbak(
     int leftv, rightv;
     int i, k;
 
+    /* Test the input parameters */
+
     rightv = (side[0] == 'R' || side[0] == 'r');
     leftv = (side[0] == 'L' || side[0] == 'l');
 
@@ -64,13 +70,9 @@ void dggbak(
         *info = -2;
     } else if (n < 0) {
         *info = -3;
-    } else if (ilo < 1) {
+    } else if (ilo < 0 || (n > 0 && ilo > n - 1)) {
         *info = -4;
-    } else if (n == 0 && ihi == 0 && ilo != 1) {
-        *info = -4;
-    } else if (n > 0 && (ihi < ilo || ihi > (1 > n ? 1 : n))) {
-        *info = -5;
-    } else if (n == 0 && ilo == 1 && ihi != 0) {
+    } else if ((n > 0 && ihi < ilo) || ihi > n - 1) {
         *info = -5;
     } else if (m < 0) {
         *info = -8;
@@ -82,74 +84,67 @@ void dggbak(
         return;
     }
 
-    if (n == 0)
-        return;
-    if (m == 0)
-        return;
-    if (job[0] == 'N' || job[0] == 'n')
-        return;
+    /* Quick return if possible */
 
-    if (ilo == ihi)
-        goto L30;
+    if (n == 0) return;
+    if (m == 0) return;
+    if (job[0] == 'N' || job[0] == 'n') return;
 
-    if (job[0] == 'S' || job[0] == 's' || job[0] == 'B' || job[0] == 'b') {
-        if (rightv) {
-            for (i = ilo - 1; i < ihi; i++) {
-                cblas_dscal(m, rscale[i], &V[i], ldv);
+    if (ilo != ihi) {
+
+        /* Backward balance */
+
+        if (job[0] == 'S' || job[0] == 's' || job[0] == 'B' || job[0] == 'b') {
+
+            /* Backward transformation on right eigenvectors */
+
+            if (rightv) {
+                for (i = ilo; i <= ihi; i++) {
+                    cblas_dscal(m, rscale[i], &V[i], ldv);
+                }
             }
-        }
 
-        if (leftv) {
-            for (i = ilo - 1; i < ihi; i++) {
-                cblas_dscal(m, lscale[i], &V[i], ldv);
+            /* Backward transformation on left eigenvectors */
+
+            if (leftv) {
+                for (i = ilo; i <= ihi; i++) {
+                    cblas_dscal(m, lscale[i], &V[i], ldv);
+                }
             }
         }
     }
 
-L30:
+    /* Backward permutation */
+
     if (job[0] == 'P' || job[0] == 'p' || job[0] == 'B' || job[0] == 'b') {
+
+        /* Backward permutation on right eigenvectors */
+
         if (rightv) {
-            if (ilo == 1)
-                goto L50;
-
-            for (i = ilo - 2; i >= 0; i--) {
+            for (i = ilo - 1; i >= 0; i--) {
                 k = (int)rscale[i];
-                if (k == i + 1)
-                    continue;
-                cblas_dswap(m, &V[i], ldv, &V[k - 1], ldv);
+                if (k == i) continue;
+                cblas_dswap(m, &V[i], ldv, &V[k], ldv);
             }
-
-        L50:
-            if (ihi == n)
-                goto L70;
-            for (i = ihi; i < n; i++) {
+            for (i = ihi + 1; i < n; i++) {
                 k = (int)rscale[i];
-                if (k == i + 1)
-                    continue;
-                cblas_dswap(m, &V[i], ldv, &V[k - 1], ldv);
+                if (k == i) continue;
+                cblas_dswap(m, &V[i], ldv, &V[k], ldv);
             }
         }
 
-    L70:
+        /* Backward permutation on left eigenvectors */
+
         if (leftv) {
-            if (ilo == 1)
-                goto L90;
-
-            for (i = ilo - 2; i >= 0; i--) {
+            for (i = ilo - 1; i >= 0; i--) {
                 k = (int)lscale[i];
-                if (k == i + 1)
-                    continue;
-                cblas_dswap(m, &V[i], ldv, &V[k - 1], ldv);
+                if (k == i) continue;
+                cblas_dswap(m, &V[i], ldv, &V[k], ldv);
             }
-
-        L90:
-            if (ihi == n)
-                return;
-            for (i = ihi; i < n; i++) {
+            for (i = ihi + 1; i < n; i++) {
                 k = (int)lscale[i];
-                if (k == i + 1)
-                    continue;
-                cblas_dswap(m, &V[i], ldv, &V[k - 1], ldv);
+                if (k == i) continue;
+                cblas_dswap(m, &V[i], ldv, &V[k], ldv);
             }
         }
     }

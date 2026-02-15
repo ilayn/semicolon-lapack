@@ -50,10 +50,29 @@
  * @param[in]     ldvl    The leading dimension of VL.
  * @param[out]    VR      If jobvr = 'V', the right eigenvectors.
  * @param[in]     ldvr    The leading dimension of VR.
- * @param[out]    ilo     Index of first non-isolated eigenvalue.
- * @param[out]    ihi     Index of last non-isolated eigenvalue.
- * @param[out]    lscale  Left scaling factors from balancing.
- * @param[out]    rscale  Right scaling factors from balancing.
+ * @param[out]    ilo     See ihi.
+ * @param[out]    ihi     ILO and IHI are integer values such that on exit
+ *                        A(i,j) = 0 and B(i,j) = 0 if i > j and
+ *                        j = 0,...,ILO-1 or i = IHI+1,...,N-1.
+ *                        If balanc = 'N' or 'S', ILO = 0 and IHI = N-1.
+ * @param[out]    lscale  Array of dimension (n). Details of the permutations and
+ *                        scaling factors applied to the left side of A and B.
+ *                        If PL(j) is the index of the row interchanged with row j,
+ *                        and DL(j) is the scaling factor applied to row j, then
+ *                          lscale[j] = PL(j)    for j = 0,...,ILO-1
+ *                                    = DL(j)    for j = ILO,...,IHI
+ *                                    = PL(j)    for j = IHI+1,...,N-1.
+ *                        The order in which the interchanges are made is N-1 to IHI+1,
+ *                        then 0 to ILO-1.
+ * @param[out]    rscale  Array of dimension (n). Details of the permutations and
+ *                        scaling factors applied to the right side of A and B.
+ *                        If PR(j) is the index of the column interchanged with column j,
+ *                        and DR(j) is the scaling factor applied to column j, then
+ *                          rscale[j] = PR(j)    for j = 0,...,ILO-1
+ *                                    = DR(j)    for j = ILO,...,IHI
+ *                                    = PR(j)    for j = IHI+1,...,N-1.
+ *                        The order in which the interchanges are made is N-1 to IHI+1,
+ *                        then 0 to ILO-1.
  * @param[out]    abnrm   The one-norm of the balanced matrix A.
  * @param[out]    bbnrm   The one-norm of the balanced matrix B.
  * @param[out]    rconde  Reciprocal condition numbers for eigenvalues.
@@ -243,28 +262,28 @@ void zggevx(const char* balanc, const char* jobvl, const char* jobvr,
     /* Reduce B to triangular form (QR decomposition of B) */
     irows = *ihi + 1 - *ilo;
     if (ilv || !wantsn) {
-        icols = n + 1 - *ilo;
+        icols = n - *ilo;
     } else {
         icols = irows;
     }
     itau = 0;
     iwrk = itau + irows;
-    zgeqrf(irows, icols, &B[(*ilo - 1) + (*ilo - 1) * ldb], ldb, &work[itau],
+    zgeqrf(irows, icols, &B[*ilo + *ilo * ldb], ldb, &work[itau],
            &work[iwrk], lwork - iwrk, &ierr);
 
     /* Apply the unitary transformation to A */
-    zunmqr("L", "C", irows, icols, irows, &B[(*ilo - 1) + (*ilo - 1) * ldb], ldb,
-           &work[itau], &A[(*ilo - 1) + (*ilo - 1) * lda], lda, &work[iwrk],
+    zunmqr("L", "C", irows, icols, irows, &B[*ilo + *ilo * ldb], ldb,
+           &work[itau], &A[*ilo + *ilo * lda], lda, &work[iwrk],
            lwork - iwrk, &ierr);
 
     /* Initialize VL and/or VR */
     if (ilvl) {
         zlaset("Full", n, n, CZERO, CONE, VL, ldvl);
         if (irows > 1) {
-            zlacpy("L", irows - 1, irows - 1, &B[*ilo + (*ilo - 1) * ldb], ldb,
-                   &VL[*ilo + (*ilo - 1) * ldvl], ldvl);
+            zlacpy("L", irows - 1, irows - 1, &B[(*ilo + 1) + *ilo * ldb], ldb,
+                   &VL[(*ilo + 1) + *ilo * ldvl], ldvl);
         }
-        zungqr(irows, irows, irows, &VL[(*ilo - 1) + (*ilo - 1) * ldvl], ldvl,
+        zungqr(irows, irows, irows, &VL[*ilo + *ilo * ldvl], ldvl,
                &work[itau], &work[iwrk], lwork - iwrk, &ierr);
     }
 
@@ -275,8 +294,8 @@ void zggevx(const char* balanc, const char* jobvl, const char* jobvr,
     if (ilv || !wantsn) {
         zgghrd(jobvl, jobvr, n, *ilo, *ihi, A, lda, B, ldb, VL, ldvl, VR, ldvr, &ierr);
     } else {
-        zgghrd("N", "N", irows, 1, irows, &A[(*ilo - 1) + (*ilo - 1) * lda], lda,
-               &B[(*ilo - 1) + (*ilo - 1) * ldb], ldb, VL, ldvl, VR, ldvr, &ierr);
+        zgghrd("N", "N", irows, 0, irows - 1, &A[*ilo + *ilo * lda], lda,
+               &B[*ilo + *ilo * ldb], ldb, VL, ldvl, VR, ldvr, &ierr);
     }
 
     /* Perform QZ algorithm (Compute eigenvalues, and optionally, the

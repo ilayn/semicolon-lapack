@@ -146,21 +146,21 @@ void cggev3(const char* jobvl, const char* jobvr, const int n,
                      lwkopt : (n + (int)crealf(work[0]));
         }
         if (ilv) {
-            cgghd3(jobvl, jobvr, n, 1, n, A, lda, B, ldb, VL,
+            cgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
             lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
                      lwkopt : (n + (int)crealf(work[0]));
-            claqz0("S", jobvl, jobvr, n, 1, n, A, lda, B, ldb,
+            claqz0("S", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
             lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
                      lwkopt : (n + (int)crealf(work[0]));
         } else {
-            cgghd3(jobvl, jobvr, n, 1, n, A, lda, B, ldb, VL,
+            cgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
             lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
                      lwkopt : (n + (int)crealf(work[0]));
-            claqz0("E", jobvl, jobvr, n, 1, n, A, lda, B, ldb,
+            claqz0("E", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
             lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
@@ -221,28 +221,28 @@ void cggev3(const char* jobvl, const char* jobvr, const int n,
 
     irows = ihi + 1 - ilo;
     if (ilv) {
-        icols = n + 1 - ilo;
+        icols = n - ilo;
     } else {
         icols = irows;
     }
     itau = 0;
     iwrk = itau + irows;
-    cgeqrf(irows, icols, &B[(ilo - 1) + (ilo - 1) * ldb], ldb,
+    cgeqrf(irows, icols, &B[ilo + ilo * ldb], ldb,
            &work[itau], &work[iwrk], lwork - iwrk, &ierr);
 
     cunmqr("L", "C", irows, icols, irows,
-           &B[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau],
-           &A[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk],
+           &B[ilo + ilo * ldb], ldb, &work[itau],
+           &A[ilo + ilo * lda], lda, &work[iwrk],
            lwork - iwrk, &ierr);
 
     if (ilvl) {
         claset("Full", n, n, CZERO, CONE, VL, ldvl);
         if (irows > 1) {
             clacpy("L", irows - 1, irows - 1,
-                   &B[ilo + (ilo - 1) * ldb], ldb,
-                   &VL[ilo + (ilo - 1) * ldvl], ldvl);
+                   &B[(ilo + 1) + ilo * ldb], ldb,
+                   &VL[(ilo + 1) + ilo * ldvl], ldvl);
         }
-        cungqr(irows, irows, irows, &VL[(ilo - 1) + (ilo - 1) * ldvl],
+        cungqr(irows, irows, irows, &VL[ilo + ilo * ldvl],
                ldvl, &work[itau], &work[iwrk], lwork - iwrk, &ierr);
     }
 
@@ -253,8 +253,8 @@ void cggev3(const char* jobvl, const char* jobvr, const int n,
         cgghd3(jobvl, jobvr, n, ilo, ihi, A, lda, B, ldb, VL,
                ldvl, VR, ldvr, &work[iwrk], lwork - iwrk, &ierr);
     } else {
-        cgghd3("N", "N", irows, 1, irows, &A[(ilo - 1) + (ilo - 1) * lda],
-               lda, &B[(ilo - 1) + (ilo - 1) * ldb], ldb, VL, ldvl, VR,
+        cgghd3("N", "N", irows, 0, irows - 1, &A[ilo + ilo * lda],
+               lda, &B[ilo + ilo * ldb], ldb, VL, ldvl, VR,
                ldvr, &work[iwrk], lwork - iwrk, &ierr);
     }
 

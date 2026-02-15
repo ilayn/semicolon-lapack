@@ -146,21 +146,21 @@ void zggev3(const char* jobvl, const char* jobvr, const int n,
                      lwkopt : (n + (int)creal(work[0]));
         }
         if (ilv) {
-            zgghd3(jobvl, jobvr, n, 1, n, A, lda, B, ldb, VL,
+            zgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
             lwkopt = lwkopt > (n + (int)creal(work[0])) ?
                      lwkopt : (n + (int)creal(work[0]));
-            zlaqz0("S", jobvl, jobvr, n, 1, n, A, lda, B, ldb,
+            zlaqz0("S", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
             lwkopt = lwkopt > (n + (int)creal(work[0])) ?
                      lwkopt : (n + (int)creal(work[0]));
         } else {
-            zgghd3(jobvl, jobvr, n, 1, n, A, lda, B, ldb, VL,
+            zgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
             lwkopt = lwkopt > (n + (int)creal(work[0])) ?
                      lwkopt : (n + (int)creal(work[0]));
-            zlaqz0("E", jobvl, jobvr, n, 1, n, A, lda, B, ldb,
+            zlaqz0("E", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
             lwkopt = lwkopt > (n + (int)creal(work[0])) ?
@@ -221,28 +221,28 @@ void zggev3(const char* jobvl, const char* jobvr, const int n,
 
     irows = ihi + 1 - ilo;
     if (ilv) {
-        icols = n + 1 - ilo;
+        icols = n - ilo;
     } else {
         icols = irows;
     }
     itau = 0;
     iwrk = itau + irows;
-    zgeqrf(irows, icols, &B[(ilo - 1) + (ilo - 1) * ldb], ldb,
+    zgeqrf(irows, icols, &B[ilo + ilo * ldb], ldb,
            &work[itau], &work[iwrk], lwork - iwrk, &ierr);
 
     zunmqr("L", "C", irows, icols, irows,
-           &B[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau],
-           &A[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk],
+           &B[ilo + ilo * ldb], ldb, &work[itau],
+           &A[ilo + ilo * lda], lda, &work[iwrk],
            lwork - iwrk, &ierr);
 
     if (ilvl) {
         zlaset("Full", n, n, CZERO, CONE, VL, ldvl);
         if (irows > 1) {
             zlacpy("L", irows - 1, irows - 1,
-                   &B[ilo + (ilo - 1) * ldb], ldb,
-                   &VL[ilo + (ilo - 1) * ldvl], ldvl);
+                   &B[(ilo + 1) + ilo * ldb], ldb,
+                   &VL[(ilo + 1) + ilo * ldvl], ldvl);
         }
-        zungqr(irows, irows, irows, &VL[(ilo - 1) + (ilo - 1) * ldvl],
+        zungqr(irows, irows, irows, &VL[ilo + ilo * ldvl],
                ldvl, &work[itau], &work[iwrk], lwork - iwrk, &ierr);
     }
 
@@ -253,8 +253,8 @@ void zggev3(const char* jobvl, const char* jobvr, const int n,
         zgghd3(jobvl, jobvr, n, ilo, ihi, A, lda, B, ldb, VL,
                ldvl, VR, ldvr, &work[iwrk], lwork - iwrk, &ierr);
     } else {
-        zgghd3("N", "N", irows, 1, irows, &A[(ilo - 1) + (ilo - 1) * lda],
-               lda, &B[(ilo - 1) + (ilo - 1) * ldb], ldb, VL, ldvl, VR,
+        zgghd3("N", "N", irows, 0, irows - 1, &A[ilo + ilo * lda],
+               lda, &B[ilo + ilo * ldb], ldb, VL, ldvl, VR,
                ldvr, &work[iwrk], lwork - iwrk, &ierr);
     }
 
