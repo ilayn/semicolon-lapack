@@ -64,6 +64,11 @@ SPECIAL_SOURCES = {
                     "s": ["slarf", "slarf1f", "slarf1l"],
                     "c": ["clarf", "clarf1f", "clarf1l"],
                     "z": ["zlarf", "zlarf1f", "zlarf1l"]},
+    # Complex-only routines with non-standard naming
+    "sum1":        {"z": ["dzsum1"], "c": ["scsum1"]},
+    "max1":        {"z": ["izmax1"], "c": ["icmax1"]},
+    "lag2c":       {"z": ["zlag2c"]},
+    "lat2c":       {"z": ["zlat2c"]},
 }
 
 # Pages with no precision prefix (precision-independent utilities).
@@ -74,8 +79,10 @@ PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "iparam2stage", "ip
 # Hierarchy definition
 # ---------------------------------------------------------------------------
 # Structure: {dir_name: (title, {subdir: ...} | [page_names])}
-# Page names are the real-precision LAPACK names (sy, sp, sb, or, op),
-# NOT the complex-only names (he, hp, hb, un, up).
+# Page names use the LAPACK base name.  Real-only families (sy, sp, sb,
+# or, op) and complex-only families (he, hp, hb, un, up) each get their
+# own pages.  The script checks the filesystem to determine which
+# precision tabs to show.
 HIERARCHY = {
     "linear-systems": ("Linear Systems", {
         "general": ("General Matrix", [
@@ -145,6 +152,29 @@ HIERARCHY = {
             "sptrf", "sptrs", "sptri",
             "spcon", "sprfs",
         ]),
+        "hermitian-indefinite": ("Hermitian Indefinite", [
+            "hesv", "hesv_rk", "hesv_rook",
+            "hesv_aa", "hesv_aa_2stage",
+            "hesvx",
+            "hetrf", "hetrf_rk", "hetrf_rook",
+            "hetrf_aa", "hetrf_aa_2stage",
+            "hetf2", "hetf2_rk", "hetf2_rook",
+            "hetrs", "hetrs2", "hetrs_3",
+            "hetrs_rook",
+            "hetrs_aa", "hetrs_aa_2stage",
+            "hetri", "hetri2", "hetri2x",
+            "hetri_3", "hetri_3x", "hetri_rook",
+            "hecon", "hecon_3", "hecon_rook",
+            "heequb", "herfs", "heswapr",
+            "lahef", "lahef_rk", "lahef_rook", "lahef_aa",
+            "laqhe",
+        ]),
+        "hermitian-indefinite-packed": ("Hermitian Indefinite Packed", [
+            "hpsv", "hpsvx",
+            "hptrf", "hptrs", "hptri",
+            "hpcon", "hprfs",
+            "laqhp",
+        ]),
         "triangular": ("Triangular", [
             "trtrs", "trtri", "trti2", "trcon", "trrfs",
             "latrs", "latrs3",
@@ -163,6 +193,9 @@ HIERARCHY = {
         ]),
         "auxiliary": ("Condition Estimation Helpers", [
             "lacn2", "lacon",
+            "la_gbamv", "la_gbrpvgrw",
+            "la_geamv", "la_gerpvgrw",
+            "la_lin_berr",
         ]),
     }),
     "least-squares": ("Least Squares", {
@@ -180,24 +213,27 @@ HIERARCHY = {
         "qr": ("QR Factorization", [
             "geqrf", "geqr2", "geqr2p", "geqrfp",
             "geqr", "geqrt", "geqrt2", "geqrt3",
-            "orgqr", "org2r",
-            "ormqr", "orm2r", "gemqr", "gemqrt",
+            "orgqr", "org2r", "ungqr", "ung2r",
+            "ormqr", "orm2r", "unmqr", "unm2r",
+            "gemqr", "gemqrt",
         ]),
         "qr-pivoting": ("QR with Column Pivoting", [
             "geqp3", "geqp3rk", "laqp2", "laqp2rk", "laqp3rk", "laqps",
         ]),
         "qr-tall-skinny": ("QR, Tall-Skinny (TSQR)", [
             "latsqr", "lamtsqr", "getsqrhrt", "larfb_gett",
-            "orgtsqr", "orgtsqr_row",
+            "orgtsqr", "orgtsqr_row", "ungtsqr", "ungtsqr_row",
             "laorhr_col_getrfnp", "laorhr_col_getrfnp2", "orhr_col",
+            "launhr_col_getrfnp", "launhr_col_getrfnp2", "unhr_col",
         ]),
         "qr-tri-pent": ("QR, Triangular-Pentagonal", [
             "tpqrt", "tpqrt2", "tpmqrt", "tprfb",
         ]),
         "lq": ("LQ Factorization", [
             "gelqf", "gelq2", "gelq", "gelqt", "gelqt3",
-            "orglq", "orgl2",
-            "ormlq", "orml2", "gemlq", "gemlqt",
+            "orglq", "orgl2", "unglq", "ungl2",
+            "ormlq", "orml2", "unmlq", "unml2",
+            "gemlq", "gemlqt",
         ]),
         "lq-short-wide": ("LQ, Short-Wide", [
             "laswlq", "lamswlq",
@@ -207,30 +243,35 @@ HIERARCHY = {
         ]),
         "ql": ("QL Factorization", [
             "geqlf", "geql2",
-            "orgql", "org2l",
-            "ormql", "orm2l",
+            "orgql", "org2l", "ungql", "ung2l",
+            "ormql", "orm2l", "unmql", "unm2l",
         ]),
         "rq": ("RQ Factorization", [
             "gerqf", "gerq2",
-            "orgrq", "orgr2",
-            "ormrq", "ormr2",
+            "orgrq", "orgr2", "ungrq", "ungr2",
+            "ormrq", "ormr2", "unmrq", "unmr2",
         ]),
         "rz": ("RZ Factorization", [
             "tzrzf", "latrz",
-            "ormrz", "ormr3",
+            "ormrz", "ormr3", "unmrz", "unmr3",
             "larz", "larzb", "larzt",
         ]),
         "householder": ("Householder Reflectors", [
             "larfg", "larfgp",
             "larf", "larfb", "larft", "larfx", "larfy",
+            "larft_lvl2",
         ]),
         "givens": ("Givens / Jacobi Rotations", [
             "lartg", "lar2v", "largv", "lartgp", "lartv", "lasr",
+            "rot", "lacrt",
         ]),
         "cs-decomposition": ("Cosine-Sine (CS) Decomposition", [
-            "orcsd", "orcsd2by1", "bbcsd",
+            "orcsd", "orcsd2by1", "uncsd", "uncsd2by1",
+            "bbcsd",
             "orbdb", "orbdb1", "orbdb2", "orbdb3",
             "orbdb4", "orbdb5", "orbdb6",
+            "unbdb", "unbdb1", "unbdb2", "unbdb3",
+            "unbdb4", "unbdb5", "unbdb6",
             "lapmr", "lapmt",
         ]),
         "generalized-qr": ("Generalized QR", [
@@ -248,7 +289,7 @@ HIERARCHY = {
             "ggev", "ggev3", "ggevx", "gges", "gges3", "ggesx",
         ]),
         "computational": ("Computational Routines", [
-            "gehrd", "gehd2", "orghr", "ormhr",
+            "gehrd", "gehd2", "orghr", "ormhr", "unghr", "unmhr",
             "gebak", "gebal",
             "hseqr", "hsein",
             "trevc", "trevc3", "trexc", "trsen", "trsna",
@@ -256,7 +297,7 @@ HIERARCHY = {
             "lahqr", "lahr2",
             "laqr0", "laqr1", "laqr2", "laqr3", "laqr4", "laqr5",
             "laqz0", "laqz1", "laqz2", "laqz3", "laqz4",
-            "laein", "laexc", "laln2", "lanv2", "laqtr", "lasy2",
+            "laein", "laexc", "laesy", "laln2", "lanv2", "laqtr", "lasy2",
             "iparmq",
         ]),
         "generalized-computational": ("Generalized Computational", [
@@ -264,7 +305,7 @@ HIERARCHY = {
             "hgeqz",
             "tgevc", "tgexc", "tgex2", "tgsen", "tgsna",
             "tgsy2", "tgsyl",
-            "lagv2", "orm22",
+            "lagv2", "orm22", "unm22",
         ]),
     }),
     "eigenvalues-symmetric": ("Symmetric / Hermitian Eigenvalues", {
@@ -318,6 +359,37 @@ HIERARCHY = {
             "laebz", "laneg",
         ]),
     }),
+    "eigenvalues-hermitian": ("Hermitian Eigenvalues", {
+        "dense-drivers": ("Dense Matrix Drivers", [
+            "heev", "heev_2stage",
+            "heevd", "heevd_2stage",
+            "heevr", "heevr_2stage",
+            "heevx", "heevx_2stage",
+        ]),
+        "band-drivers": ("Band Matrix Drivers", [
+            "hbev", "hbev_2stage",
+            "hbevd", "hbevd_2stage",
+            "hbevx", "hbevx_2stage",
+        ]),
+        "packed-drivers": ("Packed Matrix Drivers", [
+            "hpev", "hpevd", "hpevx",
+        ]),
+        "generalized-drivers": ("Generalized Eigenvalue Drivers", [
+            "hegv", "hegv_2stage", "hegvd", "hegvx",
+            "hbgv", "hbgvd", "hbgvx",
+            "hpgv", "hpgvd", "hpgvx",
+        ]),
+        "reduction": ("Reduction to Tridiagonal", [
+            "hetrd", "hetrd_2stage", "hetrd_he2hb", "hetrd_hb2st",
+            "hetd2", "hbtrd", "hptrd",
+            "hb2st_kernels",
+            "ungtr", "unmtr", "upgtr", "upmtr",
+            "laqhb",
+        ]),
+        "generalized-computational": ("Generalized Computational", [
+            "hegst", "hegs2", "hbgst", "hpgst",
+        ]),
+    }),
     "svd": ("Singular Value Decomposition", {
         "standard-drivers": ("Standard SVD Drivers", [
             "gesvd", "gesdd", "gesvdx", "gesvdq",
@@ -329,7 +401,7 @@ HIERARCHY = {
         ]),
         "computational": ("Bidiagonal Reduction", [
             "gebrd", "gebd2", "gbbrd",
-            "orgbr", "ormbr",
+            "orgbr", "ormbr", "ungbr", "unmbr",
             "labrd",
             "las2", "lasv2", "lartgs",
             "gsvj0", "gsvj1",
@@ -348,28 +420,33 @@ HIERARCHY = {
     }),
     "blas-like": ("BLAS-like Extensions", {
         "initialize-copy": ("Initialize, Copy, Convert", [
-            "_lag2_", "_lat2_", "lag2d",
-            "lacpy", "larnv", "laruv", "laset",
+            "_lag2_", "_lat2_", "lag2d", "lag2c", "lat2c",
+            "lacpy", "lacp2", "larnv", "laruv", "laset",
             "tfttp", "tfttr", "tpttf", "tpttr", "trttf", "trttp",
         ]),
         "vector-ops": ("Vector Operations", [
-            "lasrt", "rscl",
+            "lasrt", "rscl", "drscl",
+            "lacgv", "sum1", "max1",
+            "larscl2", "lascl2",
         ]),
         "matrix-vector-ops": ("Matrix-Vector Operations", [
             "ilalc", "ilalr", "lascl",
+            "symv", "syr", "spmv", "spr",
         ]),
         "matrix-matrix-ops": ("Matrix-Matrix Operations", [
-            "sfrk", "lagtm", "tfsm",
+            "sfrk", "hfrk", "lagtm", "tfsm",
+            "lacrm", "larcm",
         ]),
         "norms": ("Matrix Norms", [
             "langb", "lange", "langt",
             "lansb", "lansy", "lansf", "lansp",
+            "lanhe", "lanhb", "lanhf", "lanhp", "lanht",
             "lanhs", "lanst",
             "lantb", "lantp", "lantr",
             "lassq",
         ]),
         "scalar-ops": ("Scalar Operations", [
-            "lamch", "isnan", "ladiv", "laisnan",
+            "lamch", "isnan", "ladiv", "ladiv1", "ladiv2", "laisnan",
             "lapy2", "lapy3", "larmm",
         ]),
     }),
@@ -464,7 +541,7 @@ def generate_leaf_rst(page_name):
             lines.append(f"    .. tab-item:: {label}")
         else:
             func_name = sources[0]
-            lines.append(f"    .. tab-item:: {label} ({func_name})")
+            lines.append(f"    .. tab-item:: {func_name}")
             lines.append(f"        :name: {func_name}")
         lines.append(f"        :sync: {sync_key}")
         lines.append("")
