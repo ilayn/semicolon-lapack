@@ -410,13 +410,13 @@ void stgevc(
 
                 for (jw = 0; jw < nw; jw++) {
                     for (ja = 0; ja < na; ja++) {
-                        sums[ja][jw] = ZERO;
-                        sump[ja][jw] = ZERO;
+                        sums[jw][ja] = ZERO;
+                        sump[jw][ja] = ZERO;
 
                         for (jr = je; jr < j; jr++) {
-                            sums[ja][jw] = sums[ja][jw] +
+                            sums[jw][ja] = sums[jw][ja] +
                                            S[jr + (j + ja) * lds] * work[(jw + 2) * n + jr];
-                            sump[ja][jw] = sump[ja][jw] +
+                            sump[jw][ja] = sump[jw][ja] +
                                            P[jr + (j + ja) * ldp] * work[(jw + 2) * n + jr];
                         }
                     }
@@ -424,15 +424,15 @@ void stgevc(
 
                 for (ja = 0; ja < na; ja++) {
                     if (ilcplx) {
-                        sum[ja][0] = -acoef * sums[ja][0] +
-                                     bcoefr * sump[ja][0] -
-                                     bcoefi * sump[ja][1];
-                        sum[ja][1] = -acoef * sums[ja][1] +
-                                     bcoefr * sump[ja][1] +
-                                     bcoefi * sump[ja][0];
+                        sum[0][ja] = -acoef * sums[0][ja] +
+                                     bcoefr * sump[0][ja] -
+                                     bcoefi * sump[1][ja];
+                        sum[1][ja] = -acoef * sums[1][ja] +
+                                     bcoefr * sump[1][ja] +
+                                     bcoefi * sump[0][ja];
                     } else {
-                        sum[ja][0] = -acoef * sums[ja][0] +
-                                     bcoefr * sump[ja][0];
+                        sum[0][ja] = -acoef * sums[0][ja] +
+                                     bcoefr * sump[0][ja];
                     }
                 }
 
@@ -661,7 +661,7 @@ void stgevc(
 
                 for (jw = 0; jw < nw; jw++) {
                     for (ja = 0; ja < na; ja++)
-                        work[(jw + 2) * n + j + ja] = sum[ja][jw];
+                        work[(jw + 2) * n + j + ja] = sum[jw][ja];
                 }
 
                 if (j > 0) {
