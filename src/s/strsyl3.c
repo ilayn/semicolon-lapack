@@ -337,7 +337,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = ZERO;
                     } else {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
@@ -345,7 +345,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -373,15 +373,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -434,15 +434,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -524,7 +524,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = ZERO;
                     } else {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
@@ -532,7 +532,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -560,15 +560,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -621,15 +621,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -712,7 +712,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = ZERO;
                     } else {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
@@ -720,7 +720,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -747,15 +747,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -808,15 +808,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -898,7 +898,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         buf = ZERO;
                     } else {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
@@ -906,7 +906,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                              * is irrelevant; corresponding entries of the
                              * solution will be flushed in consistency scaling.
                              */
-                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                            f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                             swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                         }
                     }
@@ -934,15 +934,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -995,15 +995,15 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     scaloc = slarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
                         /* Use second scaling factor to prevent flushing to zero. */
-                        buf = buf * ldexpf(1.0f, ilogb(scaloc));
+                        buf = buf * ldexpf(1.0f, ilogbf(scaloc));
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogb(scaloc));
+                                f32 tmp = swork[ll + jj * ldswork] / ldexpf(1.0f, ilogbf(scaloc));
                                 swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
                             }
                         }
-                        scamin = scamin / ldexpf(1.0f, ilogb(scaloc));
-                        scaloc = scaloc / ldexpf(1.0f, ilogb(scaloc));
+                        scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
+                        scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;

@@ -164,7 +164,7 @@ static void test_normal_stats(void** cmocka_state) {
     rng_seed(state, 99999);
 
     f64 sum = 0.0, sum2 = 0.0;
-    int n_pos = 0, n_neg = 0;
+    int n_pos = 0;
 
     for (int i = 0; i < N; i++) {
         f64 x = rng_normal(state);
@@ -173,7 +173,6 @@ static void test_normal_stats(void** cmocka_state) {
         sum += x;
         sum2 += x * x;
         if (x > 0.0) n_pos++;
-        else n_neg++;
     }
 
     f64 mean = sum / N;

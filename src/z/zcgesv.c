@@ -89,8 +89,8 @@ void zcgesv(
 {
     const int ITERMAX = 30;
     const f64 BWDMAX = 1.0;
-    const c128 NEGONE = -1.0 + 0.0 * _Complex_I;
-    const c128 ONE = 1.0 + 0.0 * _Complex_I;
+    const c128 NEGONE = CMPLX(-1.0, + 0.0);
+    const c128 ONE = CMPLX(1.0, + 0.0);
 
     int i, iiter, iinfo;
     f64 anrm, cte, eps, rnrm, xnrm;

@@ -2,6 +2,14 @@
 #define SEMICOLON_LAPACK_COMPLEX_DOUBLE_H
 
 #include <complex.h>
+
+#ifndef CMPLX
+#define CMPLX(x, y) __builtin_complex((double)(x), (double)(y))
+#endif
+#ifndef CMPLXF
+#define CMPLXF(x, y) __builtin_complex((float)(x), (float)(y))
+#endif
+
 #include <float.h>
 #include <math.h>
 #include "semicolon_lapack/semicolon_lapack.h"
