@@ -239,6 +239,7 @@ SEMICOLON_API void claein(const int rightv, const int noinit, const int n, const
 SEMICOLON_API void claesy(const c64 a, const c64 b, const c64 c, c64* rt1, c64* rt2, c64* evscal, c64* cs1, c64* sn1);
 SEMICOLON_API void claev2(const c64 a, const c64 b, const c64 c, f32* rt1, f32* rt2, f32* cs1, c64* sn1);
 SEMICOLON_API void clag2c(const int m, const int n, const c64* restrict A, const int lda, float complex* restrict SA, const int ldsa, int* info);
+SEMICOLON_API void clag2z(const int m, const int n, const c64* restrict SA, const int ldsa, c128* restrict A, const int lda, int* info);
 SEMICOLON_API void clags2(const int upper, const f32 a1, const c64 a2, const f32 a3, const f32 b1, const c64 b2, const f32 b3, f32* csu, c64* snu, f32* csv, c64* snv, f32* csq, c64* snq);
 SEMICOLON_API void clagtm(const char* trans, const int n, const int nrhs, const f32 alpha, const c64* restrict DL, const c64* restrict D, const c64* restrict DU, const c64* restrict X, const int ldx, const f32 beta, c64* restrict B, const int ldb);
 SEMICOLON_API void clals0(const int icompq, const int nl, const int nr, const int sqre, const int nrhs, c64* restrict B, const int ldb, c64* restrict BX, const int ldbx, const int* restrict perm, const int givptr, const int* restrict givcol, const int ldgcol, const f32* restrict givnum, const int ldgnum, const f32* restrict poles, const f32* restrict difl, const f32* restrict difr, const f32* restrict Z, const int k, const f32 c, const f32 s, f32* restrict rwork, int* info);
