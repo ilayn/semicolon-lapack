@@ -1,0 +1,29 @@
+/* Styling for formatted C function signatures */
+
+/* The formatted signature code block */
+.sig-block {
+    background-color: var(--pst-color-surface, #f8f8f8);
+    border: 1px solid var(--pst-color-border, #e0e0e0);
+    border-radius: 4px;
+    padding: 0.75em 1em;
+    margin-bottom: 1em;
+    font-family: 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    font-size: 0.9em;
+    line-height: 1.5;
+    overflow-x: auto;
+}
+
+/* Hide the original inline signature since we show the formatted one */
+.sig-hidden {
+    display: none;
+}
+
+/* Ensure copy button appears on signature blocks */
+.sig-block {
+    position: relative;
+}
+
+/* Make the signature block stand out slightly */
+.sig-block:hover {
+    border-color: var(--pst-color-primary, #2962ff);
+}

@@ -1,0 +1,27 @@
+/* Hide the redundant "Functions" rubric that Breathe adds for each doxygenfile directive */
+p.breathe-sectiondef-title {
+    display: none;
+}
+
+/* Smooth sidebar expand/collapse */
+.bd-docs-nav details::details-content {
+    opacity: 0;
+    overflow: clip;
+    transition:
+        opacity 150ms ease,
+        content-visibility 150ms allow-discrete;
+}
+
+.bd-docs-nav details[open]::details-content {
+    opacity: 1;
+}
+
+/* Make the active sidebar item more visible with a background highlight */
+nav.bd-links .current > a {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 8%, transparent);
+    border-radius: 0.25rem;
+}
+
+[data-bs-theme="dark"] nav.bd-links .current > a {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 20%, transparent);
+}

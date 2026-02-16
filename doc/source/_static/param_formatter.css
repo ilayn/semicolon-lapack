@@ -1,0 +1,123 @@
+/* Parameter list: 3-column table layout to ensure aligned baselines AND continuous borders */
+
+.param-list {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.param-list-heading {
+    display: table-caption;
+    caption-side: top;
+    text-align: left;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--pst-color-text-muted);
+    border-bottom: 1px solid var(--pst-color-border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.param-entry {
+    display: table-row;
+}
+
+/* All three cells share the same row separator and vertical padding */
+.param-dir-cell,
+.param-name-cell,
+.param-desc {
+    display: table-cell;
+    vertical-align: baseline;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--pst-color-border) 40%, transparent);
+}
+
+.param-dir-cell {
+    padding-right: 1.5rem !important;
+    white-space: nowrap;
+    width: 1%;
+}
+
+.param-name-cell {
+    padding-right: 1.5rem !important;
+    white-space: nowrap;
+    width: 1%;
+}
+
+.param-desc {
+    padding-left: 0;
+}
+
+/* Column 1: direction badge */
+
+.param-dir {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.15em 0.5em;
+    border-radius: 3px;
+    font-family: var(--pst-font-family-monospace);
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.param-dir-in {
+    background-color: color-mix(in srgb, var(--pst-color-info) 15%, transparent);
+    color: var(--pst-color-info);
+    border: 1px solid color-mix(in srgb, var(--pst-color-info) 30%, transparent);
+}
+
+.param-dir-out {
+    background-color: color-mix(in srgb, var(--pst-color-success) 15%, transparent);
+    color: var(--pst-color-success);
+    border: 1px solid color-mix(in srgb, var(--pst-color-success) 30%, transparent);
+}
+
+.param-dir-inout {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 15%, transparent);
+    color: var(--pst-color-primary);
+    border: 1px solid color-mix(in srgb, var(--pst-color-primary) 30%, transparent);
+}
+
+/* Column 2: parameter name */
+.param-name-cell .param-name {
+   /* Ensure name has block formatting context to respect padding if needed */
+   display: inline-block;
+}
+
+.param-name-cell code.param-name {
+    font-weight: 600;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Column 3: description */
+.param-desc ul {
+    list-style-type: none;
+}
+
+.param-desc p {
+    margin: 0 0 0.3em;
+}
+
+.param-desc p:last-child {
+    margin-bottom: 0;
+}
+
+/* Dark theme */
+html[data-theme="dark"] .param-dir-in {
+    background-color: color-mix(in srgb, var(--pst-color-info) 20%, transparent);
+}
+
+html[data-theme="dark"] .param-dir-out {
+    background-color: color-mix(in srgb, var(--pst-color-success) 20%, transparent);
+}
+
+html[data-theme="dark"] .param-dir-inout {
+    background-color: color-mix(in srgb, var(--pst-color-primary) 20%, transparent);
+}
