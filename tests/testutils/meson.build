@@ -154,9 +154,22 @@ testutils_sources = files(
   'dget52.c',   # Generalized eigenvector check: |bA*E - aB*E| / (n ulp max(|bA|,|aB|))
   'dget53.c',   # 2x2 generalized eigenvalue check: |det(sA - wB)| / ...
   'dget54.c',   # Generalized Schur verify: |A-USV'|, |B-UTV'|
+  'dget31.c',   # DLALN2 test (small linear system solver)
+  'dget32.c',   # DLASY2 test (Sylvester-like equation solver)
+  'dget33.c',   # DLANV2 test (2x2 standardization)
+  'dget34.c',   # DLAEXC test (block swap in Schur form)
+  'dget35.c',   # DTRSYL test (Sylvester equation solver)
   'dget39.c',   # DLAQTR test (quasi-triangular solve)
+  'dget36.c',   # DTREXC test (Schur block reordering)
+  'dget37.c',   # DTRSNA test (eigenvalue/eigenvector condition numbers)
+  'dget38.c',   # DTRSEN test (cluster condition numbers)
   'dget40.c',   # DTGEXC test (generalized Schur block swap)
   'dsyl01.c',   # Sylvester equation test (DTRSYL + DTRSYL3)
+
+  # Error exit testing infrastructure
+  'xerbla_test.c', # Test xerbla with flag-setting (overrides weak production xerbla)
+  'chkxer.c',      # Error exit check helper (port of TESTING/EIG/chkxer.f)
+  'derrec.c',      # Error exit tests for eigencondition routines (DTRSYL, DTRSYL3, DTREXC, DTRSNA, DTRSEN)
 
   # SVD verification
   'dsvdct.c',   # Count singular values via Sturm sequence

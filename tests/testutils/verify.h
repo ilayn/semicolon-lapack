@@ -806,6 +806,30 @@ void dget54(const int n, const f64* A, const int lda,
             const f64* V, const int ldv,
             f64* work, f64* result);
 
+/* DLALN2 test (small linear system solver) */
+void dget31(f64* rmax, int* lmax, int ninfo[2], int* knt);
+
+/* DLASY2 test (Sylvester-like equation solver) */
+void dget32(f64* rmax, int* lmax, int* ninfo, int* knt);
+
+/* DLANV2 test (2x2 standardization) */
+void dget33(f64* rmax, int* lmax, int* ninfo, int* knt);
+
+/* DLAEXC test (block swap in Schur form) */
+void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt);
+
+/* DTRSYL test (Sylvester equation solver) */
+void dget35(f64* rmax, int* lmax, int* ninfo, int* knt);
+
+/* DTREXC test (Schur block reordering) */
+void dget36(f64* rmax, int* lmax, int ninfo[3], int* knt);
+
+/* DTRSNA test (eigenvalue/eigenvector condition numbers) */
+void dget37(f64 rmax[3], int lmax[3], int ninfo[3], int* knt);
+
+/* DTRSEN test (cluster condition numbers) */
+void dget38(f64 rmax[3], int lmax[3], int ninfo[3], int* knt);
+
 /* DLAQTR test (quasi-triangular solve) */
 void dget39(f64* rmax, int* lmax, int* ninfo, int* knt);
 
@@ -814,6 +838,15 @@ void dget40(f64* rmax, int* lmax, int* ninfo, int* knt);
 
 /* Sylvester equation test (DTRSYL + DTRSYL3) */
 void dsyl01(const f64 thresh, int* nfail, f64* rmax, int* ninfo, int* knt);
+
+/* Error exit testing infrastructure */
+extern int    xerbla_infot;
+extern int    xerbla_nout;
+extern int    xerbla_ok;
+extern int    xerbla_lerr;
+extern char   xerbla_srnamt[33];
+void chkxer(const char* srnamt, int infot, int* lerr, int* ok);
+void derrec(int* ok, int* nt);
 
 /* SVD singular value verification */
 void dsvdct(const int n, const f64* s, const f64* e, const f64 shift, int* num);

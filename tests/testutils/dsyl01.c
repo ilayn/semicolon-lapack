@@ -63,7 +63,7 @@ void dsyl01(const f64 thresh, int* nfail, f64* rmax, int* ninfo, int* knt)
     const f64 ONE = 1.0;
 #define MAXM 245
 #define MAXN 192
-#define LDSWORK 36
+#define LDSWORK (36 + MAXM)
 
     /* Get machine parameters */
 

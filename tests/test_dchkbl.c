@@ -301,11 +301,9 @@ static void test_dgebal(void** state)
     (void)state;
 
     f64 sfmin = dlamch("S");
-    f64 meps = dlamch("E");
 
     f64 a[LDA * LDA], ain[LDA * LDA];
     f64 scale[LDA];
-    f64 dummy[1];
     int ilo, ihi, info;
     f64 rmax = 0.0, vmax;
     int ninfo = 0, knt = 0;
@@ -319,8 +317,6 @@ static void test_dgebal(void** state)
 
         rowmajor_to_colmajor(c->a_rm, a, n, LDA);
         rowmajor_to_colmajor(c->ain_rm, ain, n, LDA);
-
-        f64 anorm = dlange("M", n, n, a, LDA, dummy);
 
         knt++;
 
