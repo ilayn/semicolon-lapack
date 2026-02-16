@@ -7,10 +7,7 @@
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
-/**
- * Compute IPARMQ-style tuning parameters for SLAQR4.
- * These are hardcoded from LAPACK's iparmq.f defaults.
- */
+/** @cond */
 
 /* ISPEC=12: NMIN - crossover to SLAHQR (must be at least 11) */
 static int iparmq_nmin(void)
@@ -69,6 +66,7 @@ static int iparmq_kacc22(int ns)
     if (ns >= k22min) kacc = 2;
     return kacc;
 }
+/** @endcond */
 
 /**
  * SLAQR4 implements one level of recursion for SLAQR0.

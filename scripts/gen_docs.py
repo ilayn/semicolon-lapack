@@ -511,15 +511,20 @@ def generate_leaf_rst(page_name):
 
     # Precision-independent: bare doxygenfile, no tabs
     if page_name in PRECISION_INDEPENDENT:
+        if os.path.exists(os.path.join(SRC_AUX, f"{page_name}.c")):
+            subdir = "auxiliary"
+        else:
+            subdir = "d"
         return (f"{title}\n{underline}\n\n\n"
-                f"{make_doxygenfile_block(page_name + '.c', '')}\n\n")
+                f"{make_doxygenfile_block(f'{subdir}/{page_name}.c', '')}\n\n")
 
     # Find which precisions have source files
     available = []
     for prefix, label, sync_key, src_dir in PRECISIONS:
         sources = get_sources(page_name, prefix, src_dir)
         if sources:
-            available.append((prefix, label, sync_key, sources))
+            subdir = os.path.basename(src_dir)
+            available.append((prefix, label, sync_key, sources, subdir))
 
     if not available:
         return (f"{title}\n{underline}\n\n"
@@ -527,18 +532,18 @@ def generate_leaf_rst(page_name):
 
     if len(available) == 1:
         # Single precision: bare doxygenfile(s), no tabs
-        _, _, _, sources = available[0]
+        _, _, _, sources, subdir = available[0]
         lines = [title, underline, "", ""]
         for src in sources:
-            lines.append(make_doxygenfile_block(f"{src}.c", ""))
+            lines.append(make_doxygenfile_block(f"{subdir}/{src}.c", ""))
             lines.append("")
         return "\n".join(lines) + "\n"
 
     # Multiple precisions: tab-set
-    is_multi = any(len(srcs) > 1 for _, _, _, srcs in available)
+    is_multi = any(len(srcs) > 1 for _, _, _, srcs, _ in available)
     lines = [title, underline, "", ".. tab-set::", ""]
 
-    for prefix, label, sync_key, sources in available:
+    for prefix, label, sync_key, sources, subdir in available:
         if is_multi:
             lines.append(f"    .. tab-item:: {label}")
         else:
@@ -548,7 +553,7 @@ def generate_leaf_rst(page_name):
         lines.append(f"        :sync: {sync_key}")
         lines.append("")
         for src in sources:
-            lines.append(make_doxygenfile_block(f"{src}.c", "        "))
+            lines.append(make_doxygenfile_block(f"{subdir}/{src}.c", "        "))
             lines.append("")
 
     return "\n".join(lines) + "\n"

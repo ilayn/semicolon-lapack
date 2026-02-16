@@ -6,11 +6,13 @@
 
 #include "semicolon_lapack_single.h"
 
+/** @cond */
 /* ISPEC=12: NMIN - crossover to SLAHQR (from iparmq.f) */
 static int iparmq_nmin(void)
 {
     return 75;
 }
+/** @endcond */
 
 /**
  * SHSEQR computes the eigenvalues of a Hessenberg matrix H

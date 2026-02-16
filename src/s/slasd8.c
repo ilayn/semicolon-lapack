@@ -8,11 +8,13 @@
 #include <math.h>
 #include <cblas.h>
 
+/** @cond */
 static inline f32 dlamc3(f32 a, f32 b)
 {
     volatile f32 result = a + b;
     return result;
 }
+/** @endcond */
 
 /**
  * SLASD8 finds the square roots of the roots of the secular equation,

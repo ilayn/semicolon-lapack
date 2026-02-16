@@ -7,11 +7,13 @@
 #include <cblas.h>
 #include <math.h>
 
+/** @cond */
 /* ISPEC=12: NMIN - crossover to SLAHQR (from iparmq.f) */
 static int iparmq_nmin(void)
 {
     return 75;
 }
+/** @endcond */
 
 /**
  * SLAQR3 accepts as input an upper Hessenberg matrix H and performs an

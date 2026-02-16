@@ -7,6 +7,7 @@
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"
 
+/** @cond */
 static inline f32 abs1(c64 ff) {
     f32 a = crealf(ff);
     f32 b = cimagf(ff);
@@ -16,6 +17,7 @@ static inline f32 abs1(c64 ff) {
 static inline f32 abssq(c64 ff) {
     return crealf(ff) * crealf(ff) + cimagf(ff) * cimagf(ff);
 }
+/** @endcond */
 
 /**
  * CLARGV generates a vector of complex plane rotations with real

@@ -8,6 +8,7 @@
 #include <complex.h>
 #include <math.h>
 
+/** @cond */
 static int iparmq_nmin(void)
 {
     return 75;
@@ -57,6 +58,7 @@ static int iparmq_kacc22(int ns)
     if (ns >= k22min) kacc = 2;
     return kacc;
 }
+/** @endcond */
 
 /**
  * ZLAQR4 implements one level of recursion for ZLAQR0.

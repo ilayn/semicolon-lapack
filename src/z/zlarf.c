@@ -7,6 +7,7 @@
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
 
+/** @cond */
 static int ilazlc(
     const int m,
     const int n,
@@ -59,6 +60,7 @@ static int ilazlr(
         return result;
     }
 }
+/** @endcond */
 
 /**
  * ZLARF applies a complex elementary reflector H to a complex m by n matrix

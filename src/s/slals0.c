@@ -8,11 +8,13 @@
 #include <math.h>
 #include <cblas.h>
 
+/** @cond */
 static inline f32 dlamc3(f32 a, f32 b)
 {
     volatile f32 result = a + b;
     return result;
 }
+/** @endcond */
 
 void slals0(const int icompq, const int nl, const int nr, const int sqre,
             const int nrhs, f32* restrict B, const int ldb,

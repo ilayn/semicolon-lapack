@@ -8,10 +8,12 @@
 #include <cblas.h>
 #include <math.h>
 
+/** @cond */
 static int iparmq_nmin(void)
 {
     return 75;
 }
+/** @endcond */
 
 /**
  * ZLAQR3 performs the unitary similarity transformation of a Hessenberg

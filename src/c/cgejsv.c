@@ -14,6 +14,7 @@ static const f32 ONE = 1.0f;
 static const c64 CZERO = CMPLXF(0.0f, 0.0f);
 static const c64 CONE = CMPLXF(1.0f, 0.0f);
 
+/** @cond */
 static inline int max3i(int a, int b, int c) {
     int m = (a > b) ? a : b;
     return (m > c) ? m : c;
@@ -25,6 +26,7 @@ static inline int max5i(int a, int b, int c, int d, int e) {
     m = (m > d) ? m : d;
     return (m > e) ? m : e;
 }
+/** @endcond */
 
 void cgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,

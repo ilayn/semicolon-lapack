@@ -8,6 +8,7 @@
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
 
+/** @cond */
 static int ilaclc(
     const int m,
     const int n,
@@ -60,6 +61,7 @@ static int ilaclr(
         return result;
     }
 }
+/** @endcond */
 
 /**
  * CLARF1L applies a complex elementary reflector H to a complex m by n matrix

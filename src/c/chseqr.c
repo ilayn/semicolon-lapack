@@ -8,10 +8,12 @@
 #include <complex.h>
 #include <cblas.h>
 
+/** @cond */
 static int iparmq_nmin(void)
 {
     return 75;
 }
+/** @endcond */
 
 /**
  * CHSEQR computes the eigenvalues of a Hessenberg matrix H

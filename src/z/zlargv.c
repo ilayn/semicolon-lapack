@@ -7,6 +7,7 @@
 #include <math.h>
 #include "semicolon_lapack_complex_double.h"
 
+/** @cond */
 static inline f64 abs1(c128 ff) {
     f64 a = creal(ff);
     f64 b = cimag(ff);
@@ -16,6 +17,7 @@ static inline f64 abs1(c128 ff) {
 static inline f64 abssq(c128 ff) {
     return creal(ff) * creal(ff) + cimag(ff) * cimag(ff);
 }
+/** @endcond */
 
 /**
  * ZLARGV generates a vector of complex plane rotations with real

@@ -8,11 +8,13 @@
 #include <math.h>
 #include <cblas.h>
 
+/** @cond */
 static inline f64 dlamc3(f64 a, f64 b)
 {
     volatile f64 result = a + b;
     return result;
 }
+/** @endcond */
 
 void dlals0(const int icompq, const int nl, const int nr, const int sqre,
             const int nrhs, f64* restrict B, const int ldb,

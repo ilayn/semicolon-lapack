@@ -11,11 +11,13 @@
 static const f64 ZERO = 0.0;
 static const f64 ONE = 1.0;
 
+/** @cond */
 /* Helper: max of 3 integers */
 static inline int max3i(int a, int b, int c) {
     int m = (a > b) ? a : b;
     return (m > c) ? m : c;
 }
+/** @endcond */
 
 /**
  * DGEJSV computes the singular value decomposition (SVD) of a real M-by-N

@@ -7,10 +7,12 @@
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
+/** @cond */
 static inline f32 abssq(c64 t)
 {
     return crealf(t) * crealf(t) + cimagf(t) * cimagf(t);
 }
+/** @endcond */
 
 /**
  * CLARTG generates a plane rotation so that

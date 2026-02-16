@@ -9,11 +9,13 @@
 #include <math.h>
 #include <cblas.h>
 
+/** @cond */
 static inline f32 dlamc3(f32 a, f32 b)
 {
     volatile f32 result = a + b;
     return result;
 }
+/** @endcond */
 
 /**
  * CLALS0 applies back the multiplying factors of either the left or the

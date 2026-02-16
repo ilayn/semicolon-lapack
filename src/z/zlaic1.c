@@ -44,7 +44,7 @@
  * @param[in]     sest   Estimated singular value of j by j matrix L.
  * @param[in]     w      Complex*16 array, dimension (j).
  *                        The j-vector w.
- * @param[in]     gamma  The diagonal element gamma.
+ * @param[in]     gamma_ The diagonal element gamma.
  * @param[out]    sestpr Estimated singular value of (j+1) by (j+1) matrix Lhat.
  * @param[out]    s      Sine needed in forming xhat.
  * @param[out]    c      Cosine needed in forming xhat.

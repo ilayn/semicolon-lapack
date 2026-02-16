@@ -7,10 +7,12 @@
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 
+/** @cond */
 static inline f64 abssq(c128 t)
 {
     return creal(t) * creal(t) + cimag(t) * cimag(t);
 }
+/** @endcond */
 
 /**
  * ZLARTG generates a plane rotation so that

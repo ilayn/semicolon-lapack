@@ -9,11 +9,13 @@
 #include <math.h>
 #include <cblas.h>
 
+/** @cond */
 static inline f64 dlamc3(f64 a, f64 b)
 {
     volatile f64 result = a + b;
     return result;
 }
+/** @endcond */
 
 /**
  * ZLALS0 applies back the multiplying factors of either the left or the
