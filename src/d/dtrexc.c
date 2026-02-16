@@ -33,10 +33,10 @@
  *                       If compq = 'N', Q is not referenced. Dimension (ldq, n).
  * @param[in]     ldq    The leading dimension of Q. ldq >= 1, and if
  *                       compq = 'V', ldq >= max(1, n).
- * @param[in,out] ifst   On entry, the row index of the block to move (1-based).
+ * @param[in,out] ifst   On entry, the row index of the block to move (0-based).
  *                       On exit, if ifst pointed to the second row of a 2-by-2
  *                       block, it is changed to point to the first row.
- * @param[in,out] ilst   On entry, the target row index for the block (1-based).
+ * @param[in,out] ilst   On entry, the target row index for the block (0-based).
  *                       On exit, points to the first row of the block in its
  *                       final position.
  * @param[out]    work   Workspace array, dimension (n).
@@ -68,9 +68,9 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
         *info = -4;
     } else if (ldq < 1 || (wantq && ldq < (n > 1 ? n : 1))) {
         *info = -6;
-    } else if (((*ifst < 1 || *ifst > n)) && (n > 0)) {
+    } else if (((*ifst < 0 || *ifst >= n)) && (n > 0)) {
         *info = -7;
-    } else if (((*ilst < 1 || *ilst > n)) && (n > 0)) {
+    } else if (((*ilst < 0 || *ilst >= n)) && (n > 0)) {
         *info = -8;
     }
     if (*info != 0) {
@@ -82,9 +82,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
     if (n <= 1)
         return;
 
-    /* Convert to 0-based indexing for internal use */
-    int ifst0 = *ifst - 1;
-    int ilst0 = *ilst - 1;
+    int ifst0 = *ifst;
+    int ilst0 = *ilst;
 
     /* Determine the first row of specified block
        and find out if it is 1 by 1 or 2 by 2. */
@@ -111,8 +110,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
     }
 
     if (ifst0 == ilst0) {
-        *ifst = ifst0 + 1;  /* Convert back to 1-based */
-        *ilst = ilst0 + 1;
+        *ifst = ifst0;
+        *ilst = ilst0;
         return;
     }
 
@@ -136,8 +135,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
                 }
                 dlaexc(wantq, n, T, ldt, Q, ldq, here, nbf, nbnext, work, info);
                 if (*info != 0) {
-                    *ifst = ifst0 + 1;
-                    *ilst = here + 1;  /* Convert back to 1-based */
+                    *ifst = ifst0;
+                    *ilst = here;
                     return;
                 }
                 here = here + nbnext;
@@ -158,8 +157,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
                 }
                 dlaexc(wantq, n, T, ldt, Q, ldq, here + 1, 1, nbnext, work, info);
                 if (*info != 0) {
-                    *ifst = ifst0 + 1;
-                    *ilst = here + 1;
+                    *ifst = ifst0;
+                    *ilst = here;
                     return;
                 }
                 if (nbnext == 1) {
@@ -174,8 +173,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
                         /* 2 by 2 Block did not split */
                         dlaexc(wantq, n, T, ldt, Q, ldq, here, 1, nbnext, work, info);
                         if (*info != 0) {
-                            *ifst = ifst0 + 1;
-                            *ilst = here + 1;
+                            *ifst = ifst0;
+                            *ilst = here;
                             return;
                         }
                         here = here + 2;
@@ -203,8 +202,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
                 }
                 dlaexc(wantq, n, T, ldt, Q, ldq, here - nbnext, nbnext, nbf, work, info);
                 if (*info != 0) {
-                    *ifst = ifst0 + 1;
-                    *ilst = here + 1;
+                    *ifst = ifst0;
+                    *ilst = here;
                     return;
                 }
                 here = here - nbnext;
@@ -225,8 +224,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
                 }
                 dlaexc(wantq, n, T, ldt, Q, ldq, here - nbnext, nbnext, 1, work, info);
                 if (*info != 0) {
-                    *ifst = ifst0 + 1;
-                    *ilst = here + 1;
+                    *ifst = ifst0;
+                    *ilst = here;
                     return;
                 }
                 if (nbnext == 1) {
@@ -241,8 +240,8 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
                         /* 2 by 2 Block did not split */
                         dlaexc(wantq, n, T, ldt, Q, ldq, here - 1, 2, 1, work, info);
                         if (*info != 0) {
-                            *ifst = ifst0 + 1;
-                            *ilst = here + 1;
+                            *ifst = ifst0;
+                            *ilst = here;
                             return;
                         }
                         here = here - 2;
@@ -257,6 +256,6 @@ void dtrexc(const char* compq, const int n, f64* T, const int ldt,
         }
     }
 
-    *ifst = ifst0 + 1;  /* Convert back to 1-based */
-    *ilst = here + 1;
+    *ifst = ifst0;
+    *ilst = here;
 }

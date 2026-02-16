@@ -93,6 +93,9 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
     notrna = (trana[0] == 'N' || trana[0] == 'n');
     notrnb = (tranb[0] == 'N' || tranb[0] == 'n');
 
+    int max_mn = (m > n) ? m : n;
+    if (max_mn < 1) max_mn = 1;
+
     /* Use the same block size for all matrices.
      * From ilaenv.f lines 477-485: for STRSYL (real precision),
      * NB = MIN(MAX(48, INT(MIN(N1,N2)*16/100)), 240)
@@ -117,7 +120,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
     lquery = (liwork == -1 || ldswork == -1);
     iwork[0] = nba + nbb + 2;
     if (lquery) {
-        swork[0] = (nba > nbb) ? nba : nbb;
+        swork[0] = ((nba > nbb) ? nba : nbb) + max_mn;
         swork[1] = 2 * nbb + nba;
     }
 
@@ -159,13 +162,17 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
     {
         int min_nba_nbb = (nba < nbb) ? nba : nbb;
         int max_nba_nbb = (nba > nbb) ? nba : nbb;
-        if (min_nba_nbb == 1 || ldswork < max_nba_nbb ||
+        if (min_nba_nbb == 1 || ldswork < max_nba_nbb + max_mn ||
             liwork < iwork[0]) {
             strsyl(trana, tranb, isgn, m, n, A, lda, B, ldb,
                    C, ldc, scale, info);
             return;
         }
     }
+
+    /* Use the tail of column 0 in swork as slange workspace */
+    int rows = (nba > nbb) ? nba : nbb;
+    f32* wnrm = &swork[rows];
 
     /* Set constants to control overflow */
     smlnum = slamch("S");
@@ -262,10 +269,10 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
             l2 = iwork[l + 1];
             if (notrna) {
                 swork[k + (awrk + l) * ldswork] = slange("I", k2 - k1, l2 - l1,
-                                                          &A[k1 + l1 * lda], lda, NULL);
+                                                          &A[k1 + l1 * lda], lda, wnrm);
             } else {
                 swork[l + (awrk + k) * ldswork] = slange("1", k2 - k1, l2 - l1,
-                                                          &A[k1 + l1 * lda], lda, NULL);
+                                                          &A[k1 + l1 * lda], lda, wnrm);
             }
         }
     }
@@ -278,10 +285,10 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
             l2 = iwork[pc + l + 1];
             if (notrnb) {
                 swork[k + (bwrk + l) * ldswork] = slange("I", k2 - k1, l2 - l1,
-                                                          &B[k1 + l1 * ldb], ldb, NULL);
+                                                          &B[k1 + l1 * ldb], ldb, wnrm);
             } else {
                 swork[l + (bwrk + k) * ldswork] = slange("1", k2 - k1, l2 - l1,
-                                                          &B[k1 + l1 * ldb], ldb, NULL);
+                                                          &B[k1 + l1 * ldb], ldb, wnrm);
             }
         }
     }
@@ -351,7 +358,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                 }
                 swork[k + l * ldswork] = scaloc * swork[k + l * ldswork];
-                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, NULL);
+                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, wnrm);
 
                 for (i = k - 1; i >= 0; i--) {
 
@@ -364,7 +371,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", i2 - i1, l2 - l1, &C[i1 + l1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[i + l * ldswork] < swork[k + l * ldswork])
                              ? swork[i + l * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[i + l * ldswork]);
@@ -425,7 +432,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", k2 - k1, j2 - j1, &C[k1 + j1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[k + j * ldswork] < swork[k + l * ldswork])
                              ? swork[k + j * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[k + j * ldswork]);
@@ -538,7 +545,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                 }
                 swork[k + l * ldswork] = scaloc * swork[k + l * ldswork];
-                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, NULL);
+                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, wnrm);
 
                 for (i = k + 1; i < nba; i++) {
 
@@ -551,7 +558,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", i2 - i1, l2 - l1, &C[i1 + l1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[i + l * ldswork] < swork[k + l * ldswork])
                              ? swork[i + l * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[i + l * ldswork]);
@@ -612,7 +619,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", k2 - k1, j2 - j1, &C[k1 + j1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[k + j * ldswork] < swork[k + l * ldswork])
                              ? swork[k + j * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[k + j * ldswork]);
@@ -725,7 +732,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         }
                     }
                 }
-                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, NULL);
+                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, wnrm);
 
                 for (i = k + 1; i < nba; i++) {
 
@@ -738,7 +745,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", i2 - i1, l2 - l1, &C[i1 + l1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[i + l * ldswork] < swork[k + l * ldswork])
                              ? swork[i + l * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[i + l * ldswork]);
@@ -799,7 +806,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", k2 - k1, j2 - j1, &C[k1 + j1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[k + j * ldswork] < swork[k + l * ldswork])
                              ? swork[k + j * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[k + j * ldswork]);
@@ -912,7 +919,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                     }
                 }
                 swork[k + l * ldswork] = scaloc * swork[k + l * ldswork];
-                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, NULL);
+                xnrm = slange("I", k2 - k1, l2 - l1, &C[k1 + l1 * ldc], ldc, wnrm);
 
                 for (i = 0; i < k; i++) {
 
@@ -925,7 +932,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", i2 - i1, l2 - l1, &C[i1 + l1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[i + l * ldswork] < swork[k + l * ldswork])
                              ? swork[i + l * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[i + l * ldswork]);
@@ -986,7 +993,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                      * simulating consistent scaling.
                      */
                     cnrm = slange("I", k2 - k1, j2 - j1, &C[k1 + j1 * ldc],
-                                  ldc, NULL);
+                                  ldc, wnrm);
                     scamin = (swork[k + j * ldswork] < swork[k + l * ldswork])
                              ? swork[k + j * ldswork] : swork[k + l * ldswork];
                     cnrm = cnrm * (scamin / swork[k + j * ldswork]);
@@ -1056,7 +1063,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
          * zero and give up.
          */
         iwork[0] = nba + nbb + 2;
-        swork[0] = (nba > nbb) ? nba : nbb;
+        swork[0] = ((nba > nbb) ? nba : nbb) + max_mn;
         swork[1] = 2 * nbb + nba;
         return;
     }
@@ -1116,7 +1123,7 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
 
     /* Restore workspace dimensions */
     iwork[0] = nba + nbb + 2;
-    swork[0] = (nba > nbb) ? nba : nbb;
+    swork[0] = ((nba > nbb) ? nba : nbb) + max_mn;
     swork[1] = 2 * nbb + nba;
 
     return;

@@ -188,7 +188,7 @@ void dtrsen(const char* job, const char* compq, const int* select,
     }
 
     /* Collect the selected blocks at the top-left corner of T. */
-    ks = 0;
+    ks = -1;
     pair = 0;
     for (k = 0; k < n; k++) {
         if (pair) {
@@ -204,11 +204,9 @@ void dtrsen(const char* job, const char* compq, const int* select,
             if (swap) {
                 ks++;
 
-                /* Swap the K-th block to position KS.
-                 * Note: dtrexc uses 1-based indices for ifst and ilst. */
                 ierr = 0;
-                kk = k + 1;  /* Convert to 1-based */
-                if (k + 1 != ks) {
+                kk = k;
+                if (k != ks) {
                     dtrexc(compq, n, T, ldt, Q, ldq, &kk, &ks, work, &ierr);
                 }
                 if (ierr == 1 || ierr == 2) {
