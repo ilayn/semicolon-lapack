@@ -1,0 +1,45 @@
+LAPACK Divergence Notes
+=======================
+
+This file tracks any intentional divergences from the reference LAPACK
+implementation, along with TODOs for resolving them. Only fundamental issues
+that cannot be solved belong here. Other types of issues, bugs should not be
+placed here.
+
+--------------------------------------------------------------------------------
+
+1. DGEMMTR replaced with cblas_dgemmt in dlasyf.c
+   Files affected: src/d/dlasyf.c (upper and lower case calls)
+
+   The reference LAPACK calls DGEMMTR (triangular-aware GEMM that only updates
+   one triangle of C). We use cblas_dgemmt which is functionally identical but
+   has a different name.
+
+   The CBLAS interface for DGEMMTR (cblas_dgemmtr) is not yet declared in
+   OpenBLAS cblas.h as of version 0.3.31. It will be available in OpenBLAS
+   0.3.32. Until then, we use cblas_dgemmt (the older BLAS extension name).
+
+   Status: Waiting for OpenBLAS 0.3.32 to switch to cblas_dgemmtr.
+
+   TODO: Switch to cblas_dgemmtr once OpenBLAS 0.3.32 ships with the
+   declaration in cblas.h.
+
+--------------------------------------------------------------------------------
+
+2. DSTEVR orthogonality differs from reference LAPACK
+   Files affected: src/d/dlarre.c, src/d/dlarrv.c, src/d/dlar1v.c
+
+   Eigenvalue bisection in dlarre produces 1-ulp differences in lambda
+   approximations. This propagates through dlarrv's recurrences to dlar1v's
+   twist index selection, which can differ between C and Fortran. Different
+   twist indices give different orthogonality residuals.
+
+   Over Wilkinson matrices n=10..50, C wins 7 cases, Fortran wins 5, 9 ties.
+   Test threshold relaxed to 100.0 to cover worst cases from either side.
+
+--------------------------------------------------------------------------------
+
+3. (C/Z)TRSYL3 internal array with a dynamic size is combined with the swork array
+   and the workspace requirement is increased by MAX(m, n) to accomodate for it.
+   The main reason is to avoid VLAs or malloc/free calls inside this function.
+
