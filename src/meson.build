@@ -2036,8 +2036,8 @@ c_sources = files(
 
 all_sources = common_sources + auxiliary_sources + d_sources + s_sources + z_sources + c_sources
 
-# Build as static library
-libsemilapack = static_library('semilapack',
+# Build as library (static by default; use --default-library=shared for .so)
+libsemilapack = library('semilapack',
   all_sources,
   include_directories: [inc_pub, inc_src],
   dependencies: [openblas_dep, m_dep],
