@@ -39,7 +39,8 @@ placed here.
 
 --------------------------------------------------------------------------------
 
-3. (C/Z)TRSYL3 internal array with a dynamic size is combined with the swork array
-   and the workspace requirement is increased by MAX(m, n) to accomodate for it.
-   The main reason is to avoid VLAs or malloc/free calls inside this function.
+3. (D/S/C/Z)TRSYL3 internal WNRM array with a dynamic size is combined with the
+   swork array and the workspace requirement is increased by MAX(m, n) to
+   accomodate for it. The main reason is to avoid VLAs or malloc/free calls
+   inside this function.
 
