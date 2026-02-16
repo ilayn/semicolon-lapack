@@ -153,6 +153,14 @@ testutils_sources = files(
   'dget51.c',   # Decomposition check: |A - UBV'| / (|A| n ulp)
   'dget52.c',   # Generalized eigenvector check: |bA*E - aB*E| / (n ulp max(|bA|,|aB|))
   'dget53.c',   # 2x2 generalized eigenvalue check: |det(sA - wB)| / ...
+  'dget54.c',   # Generalized Schur verify: |A-USV'|, |B-UTV'|
+  'dget39.c',   # DLAQTR test (quasi-triangular solve)
+  'dget40.c',   # DTGEXC test (generalized Schur block swap)
+  'dsyl01.c',   # Sylvester equation test (DTRSYL + DTRSYL3)
+
+  # SVD verification
+  'dsvdct.c',   # Count singular values via Sturm sequence
+  'dsvdch.c',   # Check singular values via intervals
 
   # Non-symmetric eigenvalue verification
   'dort01.c',   # Orthogonality check: |I - U*U'| / (n * eps)

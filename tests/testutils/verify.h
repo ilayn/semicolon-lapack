@@ -797,6 +797,29 @@ void dget24(const int comp, const int jtype, const f64 thresh,
             f64* result, f64* work, const int lwork,
             int* iwork, int* bwork, int* info);
 
+/* Generalized Schur decomposition verify */
+void dget54(const int n, const f64* A, const int lda,
+            const f64* B, const int ldb,
+            const f64* S, const int lds,
+            const f64* T, const int ldt,
+            const f64* U, const int ldu,
+            const f64* V, const int ldv,
+            f64* work, f64* result);
+
+/* DLAQTR test (quasi-triangular solve) */
+void dget39(f64* rmax, int* lmax, int* ninfo, int* knt);
+
+/* DTGEXC test (generalized Schur block swap) */
+void dget40(f64* rmax, int* lmax, int* ninfo, int* knt);
+
+/* Sylvester equation test (DTRSYL + DTRSYL3) */
+void dsyl01(const f64 thresh, int* nfail, f64* rmax, int* ninfo, int* knt);
+
+/* SVD singular value verification */
+void dsvdct(const int n, const f64* s, const f64* e, const f64 shift, int* num);
+void dsvdch(const int n, const f64* s, const f64* e,
+            const f64* svd, const f64 tol, int* info);
+
 /* Triangular banded (TB) verification routines */
 void dtbt02(const char* uplo, const char* trans, const char* diag,
             const int n, const int kd, const int nrhs,

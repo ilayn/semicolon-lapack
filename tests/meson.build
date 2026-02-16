@@ -46,6 +46,10 @@ lapack_tests = {
   'dchktb': ['test_dchktb.c', 'triangular'], # Triangular banded matrices
   'dchkeq': ['test_dchkeq.c', 'condition'],  # Equilibration routines
   'dchkrfp': ['test_dchkrfp.c', 'rfp'],      # RFP (Rectangular Full Packed) format
+  'dchkbl': ['test_dchkbl.c', 'eigen'],      # Balancing (DGEBAL)
+  'dchkbk': ['test_dchkbk.c', 'eigen'],      # Back-transform of balanced matrix (DGEBAK)
+  'dchkgl': ['test_dchkgl.c', 'eigen'],      # Generalized balancing (DGGBAL)
+  'dchkgk': ['test_dchkgk.c', 'eigen'],      # Generalized balancing back-transform (DGGBAK)
 
   # Expert driver tests (ddrv*.f ports)
   'ddrvgb': ['test_ddrvgb.c', 'band'],       # DGBSV/DGBSVX drivers
