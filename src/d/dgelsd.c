@@ -7,6 +7,7 @@
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
 #include <math.h>
+#include <stdio.h>
 #include <cblas.h>
 
 /* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */

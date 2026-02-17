@@ -56,14 +56,25 @@ The vendor library is a pre-built release binary (typically `-O3`) that we canno
 ./builddir/benchmark/bench_dgetrf 1000 100
 ```
 
-This runs 3 warmup iterations (untimed), then 100 timed iterations of LU factorization on a 1000x1000 matrix. Output:
+This runs 3 warmup iterations (untimed), then 100 timed iterations of LU factorization on a 1000x1000 matrix. Each iteration is timed individually with a cache flush between iterations, and the output reports both the minimum and median times:
 
 ```
-Benchmarking dgetrf: n=1000, iterations=100 (warmup=3)
-Total time: 1.234 s
-Time per iteration: 12.340 ms
-Performance: 54.12 GFLOP/s
+Benchmarking dgetrf: m=1000, n=1000, iters=100 (warmup=3)
+Min time:    12.340 ms  (54.12 GFLOP/s)
+Median time: 12.890 ms  (51.86 GFLOP/s)
 ```
+
+GFLOP/s are computed using precise LAWN 41 FLOP formulas (see `bench_flops.h`).
+
+### Rectangular matrices
+
+Pass three positional arguments for non-square matrices:
+
+```bash
+./builddir/benchmark/bench_dgeqrf 2000 200 50     # m=2000, n=200, 50 iterations
+```
+
+With one or two positional arguments, the old convention is preserved: `bench 1000 100` means n=1000, iters=100 (square).
 
 ### Size sweep
 
@@ -71,15 +82,16 @@ Performance: 54.12 GFLOP/s
 ./builddir/benchmark/bench_dgetrf --sweep
 ```
 
-Runs 35 sizes from n=4 to n=4000 with automatically chosen iteration counts (more iterations for small sizes, fewer for large). Prints a table:
+Runs 42 sizes (35 square from n=4 to n=4000, plus tall-skinny and short-wide rectangular shapes) with automatically chosen iteration counts (more iterations for small sizes, fewer for large). Prints a table:
 
 ```
-n         iters   total(s)  per_iter(ms)    GFLOP/s
----       -----   --------  -----------     -------
-32         5000      0.010        0.002       10.44
-64         3000      0.026        0.009       20.42
+m      n      iters   min(ms)   med(ms)  min(GF/s)  med(GF/s)
+---    ---    -----   -------   -------  ---------  ---------
+32     32      5000     0.010     0.012      10.44       8.70
+64     64      3000     0.040     0.042      20.42      19.50
 ...
-4000         10      3.761      376.139      113.43
+4000   4000      10   350.000   376.139     122.00     113.43
+1000   100     500      0.680     0.710      22.50      21.55
 ```
 
 ### CSV output
@@ -90,6 +102,16 @@ Add `--csv` to any invocation for machine-readable output, suitable for plotting
 ./builddir/benchmark/bench_dgetrf --sweep --csv > ours.csv
 ./builddir/benchmark/bench_dgetrf_fortran --sweep --csv > vendor.csv
 ```
+
+### Correctness check (QR only)
+
+The `bench_dgeqrf` and `bench_dgeqrf_fortran` binaries support a `--check` flag that verifies the factorization after benchmarking:
+
+```bash
+./builddir/benchmark/bench_dgeqrf 1000 50 --check
+```
+
+This computes `||A - Q*R|| / (max(m,n) * ||A|| * eps)` and reports PASS/FAIL to stderr.
 
 
 ## Layer 2: Statistical Benchmarking with pyperf
