@@ -34,5 +34,8 @@ compile_commands.json
 doc/build/
 doc/source/xml/
 
+# Benchmark results
+benchmark/results/
+
 # Python
 __pycache__/
