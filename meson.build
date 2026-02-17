@@ -50,15 +50,45 @@ add_project_arguments(extra_warnings, language: 'c')
 # Math library (required on some platforms)
 m_dep = cc.find_library('m', required: false)
 
-# OpenBLAS dependency - prefer pkg-config, fall back to manual detection
-openblas_dep = dependency('openblas', required: false)
-if not openblas_dep.found()
-  # Try blas-openblas (some distros use this name)
-  openblas_dep = dependency('blas-openblas', required: false)
-endif
-if not openblas_dep.found()
-  # Manual detection as last resort
-  openblas_dep = cc.find_library('openblas', required: true)
+# BLAS/CBLAS dependency
+# Use -Dblas=<vendor> to select: auto, openblas, blis,
+# or any pkg-config package name for direct control
+# (e.g., -Dblas=mkl-dynamic-lp64-seq).
+blas_vendor = get_option('blas')
+
+if blas_vendor == 'auto'
+  blas_dep = dependency('openblas', required: false)
+  if not blas_dep.found()
+    blas_dep = dependency('blas-openblas', required: false)
+  endif
+  if not blas_dep.found()
+    blas_dep = dependency('blis', required: false)
+  endif
+  if not blas_dep.found()
+    blas_dep = dependency('cblas', required: false)
+  endif
+  if not blas_dep.found()
+    blas_dep = dependency('blas', required: false)
+  endif
+  if not blas_dep.found()
+    blas_dep = cc.find_library('openblas', required: false)
+  endif
+  if not blas_dep.found()
+    blas_dep = cc.find_library('blas', required: true)
+  endif
+elif blas_vendor == 'openblas'
+  blas_dep = dependency('openblas', required: false)
+  if not blas_dep.found()
+    blas_dep = dependency('blas-openblas', required: false)
+  endif
+  if not blas_dep.found()
+    blas_dep = cc.find_library('openblas', required: true)
+  endif
+elif blas_vendor == 'blis'
+  blas_dep = dependency('blis', required: true)
+else
+  # Treat as a direct pkg-config package name
+  blas_dep = dependency(blas_vendor, required: true)
 endif
 
 # Common include directories
@@ -67,6 +97,29 @@ inc_src = include_directories('src/include')
 
 # Build the library
 subdir('src')
+
+# Install public headers
+install_headers(
+  'include/semicolon_lapack/semicolon_lapack.h',
+  'include/semicolon_lapack/types.h',
+  subdir: 'semicolon_lapack',
+)
+install_headers(
+  'src/include/semicolon_lapack_double.h',
+  'src/include/semicolon_lapack_single.h',
+  'src/include/semicolon_lapack_complex_double.h',
+  'src/include/semicolon_lapack_complex_single.h',
+  'src/include/semicolon_lapack_auxiliary.h',
+  subdir: 'semicolon_lapack',
+)
+
+# Generate pkg-config file
+pkg = import('pkgconfig')
+pkg.generate(libsemilapack,
+  name: 'semicolon-lapack',
+  description: 'LAPACK linear algebra routines implemented in C',
+  url: 'https://github.com/ilayn/semicolon-lapack',
+)
 
 # Testing (optional, enabled by default)
 if get_option('tests')

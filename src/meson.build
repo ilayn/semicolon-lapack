@@ -2040,7 +2040,7 @@ all_sources = common_sources + auxiliary_sources + d_sources + s_sources + z_sou
 libsemilapack = library('semilapack',
   all_sources,
   include_directories: [inc_pub, inc_src],
-  dependencies: [openblas_dep, m_dep],
+  dependencies: [blas_dep, m_dep],
   install: true,
 )
 
@@ -2048,5 +2048,5 @@ libsemilapack = library('semilapack',
 semilapack_dep = declare_dependency(
   link_with: libsemilapack,
   include_directories: [inc_pub, inc_src],
-  dependencies: [openblas_dep, m_dep],
+  dependencies: [blas_dep, m_dep],
 )

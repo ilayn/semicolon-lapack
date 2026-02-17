@@ -41,6 +41,7 @@ Contents
    :maxdepth: 1
    :caption: Overview
 
+   building
    dense-details
    conventions
 

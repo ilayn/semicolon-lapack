@@ -20,4 +20,11 @@
     #define SEMICOLON_API
 #endif
 
+#include "types.h"
+#include "semicolon_lapack_auxiliary.h"
+#include "semicolon_lapack_double.h"
+#include "semicolon_lapack_single.h"
+#include "semicolon_lapack_complex_double.h"
+#include "semicolon_lapack_complex_single.h"
+
 #endif /* SEMICOLON_LAPACK_H */
