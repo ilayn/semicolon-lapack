@@ -414,18 +414,6 @@ static void test_ddrgsx(void** state)
 
 int main(void)
 {
-    /* Count total parameter combinations */
-    int total = 0;
-    for (int ifunc = 0; ifunc <= 3; ifunc++) {
-        for (int prtype = 1; prtype <= 5; prtype++) {
-            for (int m = 1; m <= NSIZE - 1; m++) {
-                for (int n = 1; n <= NSIZE - m; n++) {
-                    total++;
-                }
-            }
-        }
-    }
-
     static ddrgsx_params_t all_params[4 * 5 * NSIZE * NSIZE];
     static struct CMUnitTest all_tests[4 * 5 * NSIZE * NSIZE];
     int idx = 0;
