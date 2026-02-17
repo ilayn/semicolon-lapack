@@ -1,0 +1,35 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-linux:
+    name: Test Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y meson ninja-build libopenblas-dev cmake pkg-config
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          sudo cmake --install cmocka/build
+
+      - name: Configure
+        run: meson setup builddir -Dblas=openblas
+
+      - name: Build
+        run: ninja -C builddir
+
+      - name: Test
+        run: meson test -C builddir -v
