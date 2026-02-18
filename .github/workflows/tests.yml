@@ -8,22 +8,37 @@ on:
 
 jobs:
   test-linux:
-    name: Test Linux
+    name: Test Linux OpenBLAS
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y meson ninja-build libopenblas-dev cmake pkg-config
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: ci
+          environment-file: ''
+
+      - name: Install dependencies
+        run: >-
+          conda install -y
+          c-compiler
+          openblas
+          meson
+          ninja
+          cmake
+          pkg-config
 
       - name: Install CMocka 2.0
         run: |
           git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
-          cmake -S cmocka -B cmocka/build -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_SHARED_LIBS=ON
+          cmake -S cmocka -B cmocka/build -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DBUILD_SHARED_LIBS=ON
           cmake --build cmocka/build
-          sudo cmake --install cmocka/build
+          cmake --install cmocka/build
 
       - name: Configure
         run: meson setup builddir -Dblas=openblas
