@@ -51,6 +51,7 @@ lapack_tests = {
   'dchkgl': ['test_dchkgl.c', 'eigen'],      # Generalized balancing (DGGBAL)
   'dchkgk': ['test_dchkgk.c', 'eigen'],      # Generalized balancing back-transform (DGGBAK)
   'dchkec': ['test_dchkec.c', 'eigen'],      # Eigencondition estimation (DLALN2..DTGEXC + error exits)
+  'dchkgg': ['test_dchkgg.c', 'eigen'],      # Generalized eigenvalue (Hessenberg) (DGGHRD/DHGEQZ/DTGEVC)
 
   # Expert driver tests (ddrv*.f ports)
   'ddrvgb': ['test_ddrvgb.c', 'band'],       # DGBSV/DGBSVX drivers
