@@ -279,17 +279,8 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
     if (zerot) {
         rcondc = 0.0;
     } else {
+        /* First compute condition of non-equilibrated matrix */
         dlacpy("Full", kd + 1, n, ws->ASAV, ldab, ws->AFAC, ldab);
-
-        if (equil || iequed > 0) {
-            dpbequ(uplo, n, kd, ws->AFAC, ldab, ws->S, &scond, &amax, &info);
-            if (info == 0 && n > 0) {
-                if (iequed > 0) scond = 0.0;
-                dlaqsb(uplo, n, kd, ws->AFAC, ldab, ws->S, scond, amax, &equed);
-            }
-        }
-
-        if (equil) roldc = rcondc;
 
         f64 anrm = dlansb("1", uplo, n, kd, ws->AFAC, ldab, ws->RWORK);
         dpbtrf(uplo, n, kd, ws->AFAC, ldab, &info);
@@ -299,12 +290,34 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
 
         f64 ainvnm = dlange("1", n, n, ws->WORK, lda, ws->RWORK);
         if (anrm <= 0.0 || ainvnm <= 0.0)
-            rcondc = 1.0;
+            roldc = 1.0;
         else
-            rcondc = (1.0 / anrm) / ainvnm;
-    }
+            roldc = (1.0 / anrm) / ainvnm;
 
-    if (!equil) roldc = rcondc;
+        /* Now compute condition of equilibrated matrix if needed */
+        if (equil || iequed > 0) {
+            dlacpy("Full", kd + 1, n, ws->ASAV, ldab, ws->AFAC, ldab);
+            dpbequ(uplo, n, kd, ws->AFAC, ldab, ws->S, &scond, &amax, &info);
+            if (info == 0 && n > 0) {
+                if (iequed > 0) scond = 0.0;
+                dlaqsb(uplo, n, kd, ws->AFAC, ldab, ws->S, scond, amax, &equed);
+            }
+
+            anrm = dlansb("1", uplo, n, kd, ws->AFAC, ldab, ws->RWORK);
+            dpbtrf(uplo, n, kd, ws->AFAC, ldab, &info);
+
+            dlaset("Full", n, n, 0.0, 1.0, ws->WORK, lda);
+            dpbtrs(uplo, n, kd, n, ws->AFAC, ldab, ws->WORK, lda, &info);
+
+            ainvnm = dlange("1", n, n, ws->WORK, lda, ws->RWORK);
+            if (anrm <= 0.0 || ainvnm <= 0.0)
+                rcondc = 1.0;
+            else
+                rcondc = (1.0 / anrm) / ainvnm;
+        } else {
+            rcondc = roldc;
+        }
+    }
 
     /* Restore A */
     dlacpy("Full", kd + 1, n, ws->ASAV, ldab, ws->A, ldab);

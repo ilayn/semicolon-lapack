@@ -311,7 +311,7 @@ static void test_pack_C(void** state)
 
     int n = 5;
     int lda = n * (n + 1) / 2;  /* packed storage size */
-    f64* A = calloc(lda, sizeof(f64));
+    f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
     int info;
