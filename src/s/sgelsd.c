@@ -105,7 +105,6 @@ void sgelsd(const int m, const int n, const int nrhs,
 
     /* Test the input arguments */
     *info = 0;
-    fflush(stderr);
     minmn = m < n ? m : n;
     maxmn = m > n ? m : n;
     mnthr = lapack_get_mnthr("GELSS", m, n);

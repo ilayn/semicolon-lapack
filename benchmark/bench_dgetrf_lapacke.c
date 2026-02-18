@@ -3,161 +3,152 @@
  * @brief Benchmark for vendor dgetrf via LAPACKE C interface.
  *
  * Usage:
- *   ./bench_dgetrf_lapacke [n] [iterations]    Single size benchmark
- *   ./bench_dgetrf_lapacke --sweep              Sweep n=32..4096, print table
- *   ./bench_dgetrf_lapacke --sweep --csv        Same but CSV output
+ *   ./bench_dgetrf_lapacke [m] [n] [iters]        Single size benchmark
+ *   ./bench_dgetrf_lapacke --sweep [iters]         Sweep sizes, print table
+ *   ./bench_dgetrf_lapacke --sweep [iters] --csv   Same but CSV output
  *
  * Profiling:
- *   samply record ./bench_dgetrf_lapacke 1000 50
+ *   samply record ./bench_dgetrf_lapacke 1000 1000 50
  */
 
 #define _POSIX_C_SOURCE 199309L
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include "bench_common.h"
+#include "bench_flops.h"
 #include <lapacke.h>
 
-#define DEFAULT_N 1000
-#define DEFAULT_ITERS 100
-#define WARMUP_ITERS 3
+/* ---------- Bench one configuration ---------- */
 
-static const int sweep_sizes[] = {
-    4, 8, 12, 16, 24, 32, 48, 64, 80, 100, 112, 128, 150, 180, 200, 240,
-    256, 300, 350, 384, 400, 450, 500, 550, 600, 700, 800, 900, 1000,
-    1200, 1500, 2000, 2500, 3000, 4000
-};
-#define N_SWEEP (int)(sizeof(sweep_sizes) / sizeof(sweep_sizes[0]))
-
-static double bench_one(int n, int iters)
+static int bench_one(int m, int n, int iters,
+                     double* out_min, double* out_med)
 {
-    int lda = n;
-    size_t matrix_size = (size_t)n * n * sizeof(double);
+    int lda = m;
+    size_t matrix_bytes = (size_t)m * n * sizeof(double);
+    int mindim = m < n ? m : n;
 
-    double* A = malloc(matrix_size);
-    double* A_orig = malloc(matrix_size);
-    int* ipiv = malloc(n * sizeof(int));
+    double* A      = (double*)malloc(matrix_bytes);
+    double* A_orig = (double*)malloc(matrix_bytes);
+    int*    ipiv   = (int*)malloc((size_t)mindim * sizeof(int));
+    double* times  = (double*)malloc((size_t)iters * sizeof(double));
 
-    if (!A || !A_orig || !ipiv) {
-        fprintf(stderr, "Memory allocation failed for n=%d\n", n);
-        free(A); free(A_orig); free(ipiv);
-        return -1.0;
+    if (!A || !A_orig || !ipiv || !times) {
+        fprintf(stderr, "Memory allocation failed for m=%d, n=%d\n", m, n);
+        free(A); free(A_orig); free(ipiv); free(times);
+        return -1;
     }
 
-    srand(42);
-    for (int i = 0; i < n * n; i++) {
-        A_orig[i] = (double)rand() / RAND_MAX - 0.5;
-    }
-    for (int i = 0; i < n; i++) {
-        A_orig[i + i * lda] += n;
-    }
+    fill_random(A_orig, m, n, lda, 42);
 
     /* Warmup */
     for (int w = 0; w < WARMUP_ITERS; w++) {
-        memcpy(A, A_orig, matrix_size);
-        LAPACKE_dgetrf(LAPACK_COL_MAJOR, n, n, A, lda, ipiv);
+        copy_matrix(A_orig, A, m, n, lda);
+        LAPACKE_dgetrf(LAPACK_COL_MAJOR, m, n, A, lda, ipiv);
     }
 
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-
+    /* Timed iterations */
     for (int iter = 0; iter < iters; iter++) {
-        memcpy(A, A_orig, matrix_size);
-        int info = LAPACKE_dgetrf(LAPACK_COL_MAJOR, n, n, A, lda, ipiv);
-        if (info != 0 && iter == 0) {
+        copy_matrix(A_orig, A, m, n, lda);
+        flush_cache();
+        double t0 = get_wtime();
+        int info = LAPACKE_dgetrf(LAPACK_COL_MAJOR, m, n, A, lda, ipiv);
+        double t1 = get_wtime();
+        times[iter] = t1 - t0;
+        if (info != 0 && iter == 0)
             fprintf(stderr, "LAPACKE_dgetrf failed with info=%d\n", info);
-        }
     }
 
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    double elapsed = (end.tv_sec - start.tv_sec) +
-                     (end.tv_nsec - start.tv_nsec) / 1e9;
+    compute_stats(times, iters, out_min, out_med);
 
     free(A);
     free(A_orig);
     free(ipiv);
-
-    return elapsed;
+    free(times);
+    return 0;
 }
 
-static int iters_for_size(int n)
-{
-    if (n <= 32) return 5000;
-    if (n <= 64) return 3000;
-    if (n <= 128) return 2000;
-    if (n <= 256) return 1000;
-    if (n <= 512) return 500;
-    if (n <= 1024) return 200;
-    if (n <= 2048) return 50;
-    return 10;
-}
+/* ---------- Main ---------- */
 
 int main(int argc, char* argv[])
 {
-    int do_sweep = 0;
-    int do_csv = 0;
-    int n = DEFAULT_N;
-    int iters = DEFAULT_ITERS;
+    int do_sweep = 0, do_csv = 0;
+    int m = DEFAULT_M, n = DEFAULT_N, iters = DEFAULT_ITERS;
 
-    int positional = 0;
+    int pos[3] = {0, 0, 0};
+    int npos = 0;
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--sweep") == 0) {
-            do_sweep = 1;
-        } else if (strcmp(argv[i], "--csv") == 0) {
-            do_csv = 1;
-        } else {
+        if (strcmp(argv[i], "--sweep") == 0)       { do_sweep = 1; }
+        else if (strcmp(argv[i], "--csv") == 0)     { do_csv = 1; }
+        else {
             int val = atoi(argv[i]);
-            if (val > 0) {
-                if (positional == 0) { n = val; positional++; }
-                else if (positional == 1) { iters = val; positional++; }
-            }
+            if (val > 0 && npos < 3) { pos[npos++] = val; }
         }
     }
+    /* 1 arg: n.  2 args: n iters.  3 args: m n iters. */
+    if (npos == 1)      { m = pos[0]; n = pos[0]; }
+    else if (npos == 2) { m = pos[0]; n = pos[0]; iters = pos[1]; }
+    else if (npos == 3) { m = pos[0]; n = pos[1]; iters = pos[2]; }
 
     if (do_sweep) {
+        if (npos > 1) {
+            fprintf(stderr, "Sweep does not take extra parameters."
+                    " Usage: %s --sweep [iters]\n", argv[0]);
+            return 1;
+        }
+        int sweep_iters_override = (npos == 1) ? pos[0] : 0;
+
         if (do_csv) {
-            printf("n,iters,time_s,time_per_iter_ms,gflops\n");
+            printf("m,n,iters,min_ms,med_ms,min_gflops,med_gflops\n");
         } else {
-            printf("%-8s %6s %10s %12s %10s\n",
-                   "n", "iters", "total(s)", "per_iter(ms)", "GFLOP/s");
-            printf("%-8s %6s %10s %12s %10s\n",
-                   "---", "-----", "--------", "-----------", "-------");
+            printf("%-6s %-6s %5s %9s %9s %10s %10s\n",
+                   "m", "n", "iters", "min(ms)", "med(ms)",
+                   "min(GF/s)", "med(GF/s)");
+            printf("%-6s %-6s %5s %9s %9s %10s %10s\n",
+                   "---", "---", "-----", "-------", "-------",
+                   "---------", "---------");
         }
 
         for (int s = 0; s < N_SWEEP; s++) {
-            int sn = sweep_sizes[s];
-            int si = iters_for_size(sn);
-            double elapsed = bench_one(sn, si);
-            if (elapsed < 0.0) continue;
+            int sm = sweep_shapes[s].m;
+            int sn = sweep_shapes[s].n;
+            int si = sweep_iters_override > 0
+                         ? sweep_iters_override
+                         : iters_for_size(sm, sn);
+            double t_min, t_med;
+            if (bench_one(sm, sn, si, &t_min, &t_med) < 0)
+                continue;
 
-            double per_iter = elapsed / si * 1000.0;
-            double gflops = (2.0 / 3.0 * sn * sn * sn) * si / elapsed / 1e9;
+            double flops = getrf_flops(sm, sn);
+            double gf_min = flops / t_min / 1e9;
+            double gf_med = flops / t_med / 1e9;
 
             if (do_csv) {
-                printf("%d,%d,%.6f,%.3f,%.2f\n", sn, si, elapsed, per_iter, gflops);
+                printf("%d,%d,%d,%.4f,%.4f,%.2f,%.2f\n",
+                       sm, sn, si, t_min * 1e3, t_med * 1e3, gf_min, gf_med);
             } else {
-                printf("%-8d %6d %10.3f %12.3f %10.2f\n",
-                       sn, si, elapsed, per_iter, gflops);
+                printf("%-6d %-6d %5d %9.3f %9.3f %10.2f %10.2f\n",
+                       sm, sn, si, t_min * 1e3, t_med * 1e3, gf_min, gf_med);
             }
             fflush(stdout);
         }
     } else {
-        double elapsed = bench_one(n, iters);
-        if (elapsed < 0.0) return 1;
+        double t_min, t_med;
+        if (bench_one(m, n, iters, &t_min, &t_med) != 0)
+            return 1;
 
-        double per_iter = elapsed / iters * 1000.0;
-        double gflops = (2.0 / 3.0 * n * n * n) * iters / elapsed / 1e9;
+        double flops = getrf_flops(m, n);
+        double gf_min = flops / t_min / 1e9;
+        double gf_med = flops / t_med / 1e9;
 
         if (do_csv) {
-            printf("n,iters,time_s,time_per_iter_ms,gflops\n");
-            printf("%d,%d,%.6f,%.3f,%.2f\n", n, iters, elapsed, per_iter, gflops);
+            printf("m,n,iters,min_ms,med_ms,min_gflops,med_gflops\n");
+            printf("%d,%d,%d,%.4f,%.4f,%.2f,%.2f\n",
+                   m, n, iters, t_min * 1e3, t_med * 1e3, gf_min, gf_med);
         } else {
-            printf("Benchmarking LAPACKE_dgetrf: n=%d, iterations=%d (warmup=%d)\n",
-                   n, iters, WARMUP_ITERS);
-            printf("Total time: %.3f s\n", elapsed);
-            printf("Time per iteration: %.3f ms\n", per_iter);
-            printf("Performance: %.2f GFLOP/s\n", gflops);
+            printf("Benchmarking LAPACKE_dgetrf: m=%d, n=%d, iters=%d (warmup=%d)\n",
+                   m, n, iters, WARMUP_ITERS);
+            printf("Min time:    %.3f ms  (%.2f GFLOP/s)\n",
+                   t_min * 1e3, gf_min);
+            printf("Median time: %.3f ms  (%.2f GFLOP/s)\n",
+                   t_med * 1e3, gf_med);
         }
     }
 

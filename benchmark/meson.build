@@ -1,4 +1,9 @@
 # Benchmark executables for profiling
+#
+# Common c_args:
+#   -fno-omit-frame-pointer   for samply / perf profiling
+
+bench_c_args = ['-fno-omit-frame-pointer']
 
 # Our dgetrf implementation
 bench_dgetrf = executable('bench_dgetrf',
@@ -6,7 +11,7 @@ bench_dgetrf = executable('bench_dgetrf',
     include_directories: [inc_pub, inc_src],
     link_with: libsemilapack,
     dependencies: [blas_dep, m_dep],
-    c_args: ['-fno-omit-frame-pointer'],
+    c_args: bench_c_args,
     build_by_default: false,
 )
 
@@ -14,7 +19,7 @@ bench_dgetrf = executable('bench_dgetrf',
 bench_dgetrf_fortran = executable('bench_dgetrf_fortran',
     'bench_dgetrf_fortran.c',
     dependencies: [blas_dep],
-    c_args: ['-fno-omit-frame-pointer'],
+    c_args: bench_c_args,
     build_by_default: false,
 )
 
@@ -22,7 +27,7 @@ bench_dgetrf_fortran = executable('bench_dgetrf_fortran',
 bench_dgetrf_lapacke = executable('bench_dgetrf_lapacke',
     'bench_dgetrf_lapacke.c',
     dependencies: [blas_dep],
-    c_args: ['-fno-omit-frame-pointer'],
+    c_args: bench_c_args,
     build_by_default: false,
 )
 
@@ -32,7 +37,7 @@ bench_dgeqrf = executable('bench_dgeqrf',
     include_directories: [inc_pub, inc_src],
     link_with: libsemilapack,
     dependencies: [blas_dep, m_dep],
-    c_args: ['-fno-omit-frame-pointer'],
+    c_args: bench_c_args,
     build_by_default: false,
 )
 
@@ -40,6 +45,6 @@ bench_dgeqrf = executable('bench_dgeqrf',
 bench_dgeqrf_fortran = executable('bench_dgeqrf_fortran',
     'bench_dgeqrf_fortran.c',
     dependencies: [blas_dep],
-    c_args: ['-fno-omit-frame-pointer'],
+    c_args: bench_c_args,
     build_by_default: false,
 )

@@ -1,176 +1,237 @@
 /**
  * @file bench_dgeqrf.c
- * @brief Benchmark for dgeqrf (QR factorization).
+ * @brief Benchmark for dgeqrf (QR factorization) — semicolon-lapack.
  *
  * Usage:
- *   ./bench_dgeqrf [n] [iterations]    Single size benchmark
- *   ./bench_dgeqrf --sweep             Sweep n=32..4096, print table
- *   ./bench_dgeqrf --sweep --csv       Same but CSV output
+ *   ./bench_dgeqrf [m] [n] [iters]        Single size benchmark
+ *   ./bench_dgeqrf --sweep [iters]         Sweep sizes, print table
+ *   ./bench_dgeqrf --sweep [iters] --csv   Same but CSV output
+ *   ./bench_dgeqrf [m] [n] [iters] --check Run correctness check
  *
  * Profiling:
- *   samply record ./bench_dgeqrf 1000 50
+ *   samply record ./bench_dgeqrf 1000 1000 50
  */
 
 #define _POSIX_C_SOURCE 199309L
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include "bench_common.h"
+#include "bench_flops.h"
 #include "semicolon_lapack_double.h"
 
-#define DEFAULT_N 1000
-#define DEFAULT_ITERS 100
-#define WARMUP_ITERS 3
+/* ---------- Correctness check ---------- */
 
-static const int sweep_sizes[] = {
-    4, 8, 12, 16, 24, 32, 48, 64, 80, 100, 112, 128, 150, 180, 200, 240,
-    256, 300, 350, 384, 400, 450, 500, 550, 600, 700, 800, 900, 1000,
-    1200, 1500, 2000, 2500, 3000, 4000
-};
-#define N_SWEEP (int)(sizeof(sweep_sizes) / sizeof(sweep_sizes[0]))
-
-static double bench_one(int n, int iters)
+/**
+ * Check ||A - Q*R|| / (max(m,n) * ||A|| * eps).
+ *
+ * On entry, A_qr holds the dgeqrf output (R in upper triangle,
+ * Householder vectors below).  A_orig holds the original matrix.
+ */
+static double check_geqrf(int m, int n, int lda,
+                           const double* A_qr, const double* tau,
+                           const double* A_orig)
 {
-    int lda = n;
-    size_t matrix_size = (size_t)n * n * sizeof(double);
+    int mindim = m < n ? m : n;
+    int maxdim = m > n ? m : n;
     int info;
 
-    double* A = malloc(matrix_size);
-    double* A_orig = malloc(matrix_size);
-    double* tau = malloc(n * sizeof(double));
+    /* Workspace query for dormqr */
+    double wq;
+    int lwork = -1;
+    dormqr("L", "N", m, n, mindim,
+           A_qr, lda, tau, NULL, lda, &wq, lwork, &info);
+    lwork = (int)wq;
+    double* work = (double*)malloc((size_t)lwork * sizeof(double));
+    if (!work) return -1.0;
 
-    if (!A || !A_orig || !tau) {
-        fprintf(stderr, "Memory allocation failed for n=%d\n", n);
-        free(A); free(A_orig); free(tau);
-        return -1.0;
+    /* Extract R (upper triangle of A_qr) into C, zero below diagonal */
+    double* C = (double*)malloc((size_t)lda * n * sizeof(double));
+    if (!C) { free(work); return -1.0; }
+    for (int j = 0; j < n; j++) {
+        for (int i = 0; i < m; i++) {
+            if (i <= j)
+                C[i + (size_t)j * lda] = A_qr[i + (size_t)j * lda];
+            else
+                C[i + (size_t)j * lda] = 0.0;
+        }
+    }
+
+    /* C = Q * R  via  dormqr("L", "N", ...) */
+    dormqr("L", "N", m, n, mindim,
+           A_qr, lda, tau, C, lda, work, lwork, &info);
+
+    /* C = C - A_orig */
+    for (int j = 0; j < n; j++)
+        for (int i = 0; i < m; i++)
+            C[i + (size_t)j * lda] -= A_orig[i + (size_t)j * lda];
+
+    /* ||C||_F */
+    double* work_norm = (double*)malloc((size_t)m * sizeof(double));
+    double res_norm = dlange("F", m, n, C, lda, work_norm);
+
+    /* ||A_orig||_F */
+    double a_norm = dlange("F", m, n, A_orig, lda, work_norm);
+
+    free(work_norm);
+    free(C);
+    free(work);
+
+    return res_norm / (maxdim * a_norm * DBL_EPSILON);
+}
+
+/* ---------- Bench one configuration ---------- */
+
+static int bench_one(int m, int n, int iters, int do_check,
+                     double* out_min, double* out_med)
+{
+    int lda = m;
+    size_t matrix_bytes = (size_t)m * n * sizeof(double);
+    int mindim = m < n ? m : n;
+    int info;
+
+    double* A      = (double*)malloc(matrix_bytes);
+    double* A_orig = (double*)malloc(matrix_bytes);
+    double* tau    = (double*)malloc((size_t)mindim * sizeof(double));
+    double* times  = (double*)malloc((size_t)iters * sizeof(double));
+
+    if (!A || !A_orig || !tau || !times) {
+        fprintf(stderr, "Memory allocation failed for m=%d, n=%d\n", m, n);
+        free(A); free(A_orig); free(tau); free(times);
+        return -1;
     }
 
     /* Workspace query */
     double work_query;
-    dgeqrf(n, n, A, lda, tau, &work_query, -1, &info);
+    dgeqrf(m, n, A, lda, tau, &work_query, -1, &info);
     int lwork = (int)work_query;
-    double* work = malloc(lwork * sizeof(double));
+    double* work = (double*)malloc((size_t)lwork * sizeof(double));
     if (!work) {
-        fprintf(stderr, "Workspace allocation failed for n=%d\n", n);
-        free(A); free(A_orig); free(tau);
-        return -1.0;
+        fprintf(stderr, "Workspace allocation failed for m=%d, n=%d\n", m, n);
+        free(A); free(A_orig); free(tau); free(times);
+        return -1;
     }
 
-    srand(42);
-    for (int i = 0; i < n * n; i++) {
-        A_orig[i] = (double)rand() / RAND_MAX - 0.5;
-    }
-    for (int i = 0; i < n; i++) {
-        A_orig[i + i * lda] += n;
-    }
+    fill_random(A_orig, m, n, lda, 42);
 
     /* Warmup */
     for (int w = 0; w < WARMUP_ITERS; w++) {
-        memcpy(A, A_orig, matrix_size);
-        dgeqrf(n, n, A, lda, tau, work, lwork, &info);
+        copy_matrix(A_orig, A, m, n, lda);
+        dgeqrf(m, n, A, lda, tau, work, lwork, &info);
     }
 
-    struct timespec start, end;
-    clock_gettime(CLOCK_MONOTONIC, &start);
-
+    /* Timed iterations */
     for (int iter = 0; iter < iters; iter++) {
-        memcpy(A, A_orig, matrix_size);
-        dgeqrf(n, n, A, lda, tau, work, lwork, &info);
-        if (info != 0 && iter == 0) {
+        copy_matrix(A_orig, A, m, n, lda);
+        flush_cache();
+        double t0 = get_wtime();
+        dgeqrf(m, n, A, lda, tau, work, lwork, &info);
+        double t1 = get_wtime();
+        times[iter] = t1 - t0;
+        if (info != 0 && iter == 0)
             fprintf(stderr, "dgeqrf failed with info=%d\n", info);
-        }
     }
 
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    compute_stats(times, iters, out_min, out_med);
 
-    double elapsed = (end.tv_sec - start.tv_sec) +
-                     (end.tv_nsec - start.tv_nsec) / 1e9;
+    /* Correctness check (on last factorization result) */
+    if (do_check) {
+        double resid = check_geqrf(m, n, lda, A, tau, A_orig);
+        fprintf(stderr, "  check: ||A-QR||/(max(m,n)*||A||*eps) = %.2e %s\n",
+                resid, resid < 10.0 ? "PASS" : "FAIL");
+    }
 
     free(A);
     free(A_orig);
     free(tau);
     free(work);
-
-    return elapsed;
+    free(times);
+    return 0;
 }
 
-static int iters_for_size(int n)
-{
-    if (n <= 32) return 5000;
-    if (n <= 64) return 3000;
-    if (n <= 128) return 2000;
-    if (n <= 256) return 1000;
-    if (n <= 512) return 500;
-    if (n <= 1024) return 200;
-    if (n <= 2048) return 50;
-    return 10;
-}
+/* ---------- Main ---------- */
 
 int main(int argc, char* argv[])
 {
-    int do_sweep = 0;
-    int do_csv = 0;
-    int n = DEFAULT_N;
-    int iters = DEFAULT_ITERS;
+    int do_sweep = 0, do_csv = 0, do_check = 0;
+    int m = DEFAULT_M, n = DEFAULT_N, iters = DEFAULT_ITERS;
 
-    int positional = 0;
+    int pos[3] = {0, 0, 0};
+    int npos = 0;
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "--sweep") == 0) {
-            do_sweep = 1;
-        } else if (strcmp(argv[i], "--csv") == 0) {
-            do_csv = 1;
-        } else {
+        if (strcmp(argv[i], "--sweep") == 0)       { do_sweep = 1; }
+        else if (strcmp(argv[i], "--csv") == 0)     { do_csv = 1; }
+        else if (strcmp(argv[i], "--check") == 0)   { do_check = 1; }
+        else {
             int val = atoi(argv[i]);
-            if (val > 0) {
-                if (positional == 0) { n = val; positional++; }
-                else if (positional == 1) { iters = val; positional++; }
-            }
+            if (val > 0 && npos < 3) { pos[npos++] = val; }
         }
     }
+    /* 1 arg: n.  2 args: n iters.  3 args: m n iters. */
+    if (npos == 1)      { m = pos[0]; n = pos[0]; }
+    else if (npos == 2) { m = pos[0]; n = pos[0]; iters = pos[1]; }
+    else if (npos == 3) { m = pos[0]; n = pos[1]; iters = pos[2]; }
 
     if (do_sweep) {
+        /* In sweep mode, at most one positional argument (iters override) */
+        if (npos > 1) {
+            fprintf(stderr, "Sweep does not take extra parameters."
+                    " Usage: %s --sweep [iters]\n", argv[0]);
+            return 1;
+        }
+        int sweep_iters_override = (npos == 1) ? pos[0] : 0;
+
         if (do_csv) {
-            printf("n,iters,time_s,time_per_iter_ms,gflops\n");
+            printf("m,n,iters,min_ms,med_ms,min_gflops,med_gflops\n");
         } else {
-            printf("%-8s %6s %10s %12s %10s\n",
-                   "n", "iters", "total(s)", "per_iter(ms)", "GFLOP/s");
-            printf("%-8s %6s %10s %12s %10s\n",
-                   "---", "-----", "--------", "-----------", "-------");
+            printf("%-6s %-6s %5s %9s %9s %10s %10s\n",
+                   "m", "n", "iters", "min(ms)", "med(ms)",
+                   "min(GF/s)", "med(GF/s)");
+            printf("%-6s %-6s %5s %9s %9s %10s %10s\n",
+                   "---", "---", "-----", "-------", "-------",
+                   "---------", "---------");
         }
 
         for (int s = 0; s < N_SWEEP; s++) {
-            int sn = sweep_sizes[s];
-            int si = iters_for_size(sn);
-            double elapsed = bench_one(sn, si);
-            if (elapsed < 0.0) continue;
+            int sm = sweep_shapes[s].m;
+            int sn = sweep_shapes[s].n;
+            int si = sweep_iters_override > 0
+                         ? sweep_iters_override
+                         : iters_for_size(sm, sn);
+            double t_min, t_med;
+            if (bench_one(sm, sn, si, do_check, &t_min, &t_med) < 0)
+                continue;
 
-            double per_iter = elapsed / si * 1000.0;
-            double gflops = (4.0 / 3.0 * sn * sn * sn) * si / elapsed / 1e9;
+            double flops = geqrf_flops(sm, sn);
+            double gf_min = flops / t_min / 1e9;
+            double gf_med = flops / t_med / 1e9;
 
             if (do_csv) {
-                printf("%d,%d,%.6f,%.3f,%.2f\n", sn, si, elapsed, per_iter, gflops);
+                printf("%d,%d,%d,%.4f,%.4f,%.2f,%.2f\n",
+                       sm, sn, si, t_min * 1e3, t_med * 1e3, gf_min, gf_med);
             } else {
-                printf("%-8d %6d %10.3f %12.3f %10.2f\n",
-                       sn, si, elapsed, per_iter, gflops);
+                printf("%-6d %-6d %5d %9.3f %9.3f %10.2f %10.2f\n",
+                       sm, sn, si, t_min * 1e3, t_med * 1e3, gf_min, gf_med);
             }
             fflush(stdout);
         }
     } else {
-        double elapsed = bench_one(n, iters);
-        if (elapsed < 0.0) return 1;
+        double t_min, t_med;
+        if (bench_one(m, n, iters, do_check, &t_min, &t_med) != 0)
+            return 1;
 
-        double per_iter = elapsed / iters * 1000.0;
-        double gflops = (4.0 / 3.0 * n * n * n) * iters / elapsed / 1e9;
+        double flops = geqrf_flops(m, n);
+        double gf_min = flops / t_min / 1e9;
+        double gf_med = flops / t_med / 1e9;
 
         if (do_csv) {
-            printf("n,iters,time_s,time_per_iter_ms,gflops\n");
-            printf("%d,%d,%.6f,%.3f,%.2f\n", n, iters, elapsed, per_iter, gflops);
+            printf("m,n,iters,min_ms,med_ms,min_gflops,med_gflops\n");
+            printf("%d,%d,%d,%.4f,%.4f,%.2f,%.2f\n",
+                   m, n, iters, t_min * 1e3, t_med * 1e3, gf_min, gf_med);
         } else {
-            printf("Benchmarking dgeqrf: n=%d, iterations=%d (warmup=%d)\n",
-                   n, iters, WARMUP_ITERS);
-            printf("Total time: %.3f s\n", elapsed);
-            printf("Time per iteration: %.3f ms\n", per_iter);
-            printf("Performance: %.2f GFLOP/s\n", gflops);
+            printf("Benchmarking dgeqrf: m=%d, n=%d, iters=%d (warmup=%d)\n",
+                   m, n, iters, WARMUP_ITERS);
+            printf("Min time:    %.3f ms  (%.2f GFLOP/s)\n",
+                   t_min * 1e3, gf_min);
+            printf("Median time: %.3f ms  (%.2f GFLOP/s)\n",
+                   t_med * 1e3, gf_med);
         }
     }
 
