@@ -607,7 +607,7 @@ void clarrv(const int n, const f32 vl, const f32 vu,
                             gaptol = gap * eps;
                         }
                         isupmn = in;
-                        isupmx = 1;
+                        isupmx = 0;
                         /* Update WGAP so that it holds the minimum gap
                          * to the left or the right. This is crucial in the
                          * case where bisection is used to ensure that the
@@ -681,7 +681,7 @@ label_120:
                             /* We need to check that the RQCORR update doesn't
                              * move the eigenvalue away from the desired one and
                              * towards a neighbor. -> protection with bisection */
-                            if (indeig <= negcnt) {
+                            if (indeig < negcnt) {
                                 /* The wanted eigenvalue lies to the left */
                                 sgndef = -ONE;
                             } else {
