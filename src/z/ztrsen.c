@@ -144,14 +144,14 @@ void ztrsen(const char* job, const char* compq, const int* select,
     ks = 0;
     for (k = 0; k < n; k++) {
         if (select[k]) {
-            ks++;
 
             /* Swap the K-th eigenvalue to position KS. */
-            if (k + 1 != ks) {
-                int ifst = k + 1;
+            if (k != ks) {
+                int ifst = k;
                 int ilst = ks;
                 ztrexc(compq, n, T, ldt, Q, ldq, ifst, ilst, &ierr);
             }
+            ks++;
         }
     }
 

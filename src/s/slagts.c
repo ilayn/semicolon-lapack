@@ -28,20 +28,20 @@
  *                      =  2: (T - lambda*I)^T x = y, no perturbation of U.
  *                      = -2: (T - lambda*I)^T x = y, with perturbation of U.
  * @param[in]     n     The order of the matrix T. n >= 0.
- * @param[in]     A     Double precision array, dimension (n).
+ * @param[in]     A     Single precision array, dimension (n).
  *                      The diagonal elements of U as returned from SLAGTF.
- * @param[in]     B     Double precision array, dimension (n-1).
+ * @param[in]     B     Single precision array, dimension (n-1).
  *                      The first super-diagonal elements of U as returned
  *                      from SLAGTF.
- * @param[in]     C     Double precision array, dimension (n-1).
+ * @param[in]     C     Single precision array, dimension (n-1).
  *                      The sub-diagonal elements of L as returned from SLAGTF.
- * @param[in]     D     Double precision array, dimension (n-2).
+ * @param[in]     D     Single precision array, dimension (n-2).
  *                      The second super-diagonal elements of U as returned
  *                      from SLAGTF.
  * @param[in]     in    Integer array, dimension (n).
  *                      Details of the permutation matrix P as returned from
  *                      SLAGTF.
- * @param[in,out] Y     Double precision array, dimension (n).
+ * @param[in,out] Y     Single precision array, dimension (n).
  *                      On entry, the right hand side vector y.
  *                      On exit, overwritten by the solution vector x.
  * @param[in,out] tol   On entry, with job < 0, tol should be the minimum
@@ -136,14 +136,14 @@ void slagts(
                 if (absak < 1.0f) {
                     if (absak < sfmin) {
                         if (absak == 0.0f || fabsf(temp) * sfmin > absak) {
-                            *info = k + 1;  /* 1-based for Fortran compatibility */
+                            *info = k + 1;
                             return;
                         } else {
                             temp = temp * bignum;
                             ak = ak * bignum;
                         }
                     } else if (fabsf(temp) > absak * bignum) {
-                        *info = k + 1;  /* 1-based */
+                        *info = k + 1;
                         return;
                     }
                 }
@@ -204,14 +204,14 @@ void slagts(
                 if (absak < 1.0f) {
                     if (absak < sfmin) {
                         if (absak == 0.0f || fabsf(temp) * sfmin > absak) {
-                            *info = k + 1;  /* 1-based */
+                            *info = k + 1;
                             return;
                         } else {
                             temp = temp * bignum;
                             ak = ak * bignum;
                         }
                     } else if (fabsf(temp) > absak * bignum) {
-                        *info = k + 1;  /* 1-based */
+                        *info = k + 1;
                         return;
                     }
                 }

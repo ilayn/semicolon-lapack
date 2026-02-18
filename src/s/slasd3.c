@@ -103,8 +103,7 @@ void slasd3(const int nl, const int nr, const int sqre, const int k,
     rho = rho * rho;
 
     for (j = 0; j < k; j++) {
-        /* Note: slasd4 expects 1-based i, so pass j+1 */
-        slasd4(k, j + 1, DSIGMA, Z, &U[j * ldu], rho, &D[j], &VT[j * ldvt], info);
+        slasd4(k, j, DSIGMA, Z, &U[j * ldu], rho, &D[j], &VT[j * ldvt], info);
         if (*info != 0) {
             return;
         }

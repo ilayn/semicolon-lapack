@@ -59,12 +59,12 @@
  * @param[out]    work    Double complex workspace array, dimension (n*n).
  * @param[out]    rwork   Double precision array, dimension (n).
  * @param[out]    ifaill  Integer array, dimension (mm). Convergence status
- *                        for left eigenvectors (0 if converged, k if
- *                        eigenvector corresponding to eigenvalue k failed).
+ *                        for left eigenvectors (-1 if converged, k (0-based)
+ *                        if eigenvector corresponding to eigenvalue k failed).
  *                        Not referenced if side = 'R'.
  * @param[out]    ifailr  Integer array, dimension (mm). Convergence status
- *                        for right eigenvectors (0 if converged, k if
- *                        eigenvector corresponding to eigenvalue k failed).
+ *                        for right eigenvectors (-1 if converged, k (0-based)
+ *                        if eigenvector corresponding to eigenvalue k failed).
  *                        Not referenced if side = 'L'.
  * @param[out]    info
  *                         - = 0: successful exit
@@ -233,9 +233,9 @@ void zhsein(
                        smlnum, &iinfo);
                 if (iinfo > 0) {
                     *info = *info + 1;
-                    ifaill[ks] = k + 1;
+                    ifaill[ks] = k;
                 } else {
-                    ifaill[ks] = 0;
+                    ifaill[ks] = -1;
                 }
                 for (i = 0; i < kl; i++) {
                     VL[i + ks * ldvl] = ZERO;
@@ -248,9 +248,9 @@ void zhsein(
                        work, ldwork, rwork, eps3, smlnum, &iinfo);
                 if (iinfo > 0) {
                     *info = *info + 1;
-                    ifailr[ks] = k + 1;
+                    ifailr[ks] = k;
                 } else {
-                    ifailr[ks] = 0;
+                    ifailr[ks] = -1;
                 }
                 for (i = kr + 1; i < n; i++) {
                     VR[i + ks * ldvr] = ZERO;

@@ -98,9 +98,9 @@ void cheevx_2stage(
             if (n > 0 && vu <= vl)
                 *info = -8;
         } else if (indeig) {
-            if (il < 1 || il > (1 > n ? 1 : n)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -9;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -10;
             }
         }
@@ -211,7 +211,7 @@ void cheevx_2stage(
 
     test = 0;
     if (indeig) {
-        if (il == 1 && iu == n) {
+        if (il == 0 && iu == n - 1) {
             test = 1;
         }
     }

@@ -136,14 +136,14 @@ void dlagts(
                 if (absak < 1.0) {
                     if (absak < sfmin) {
                         if (absak == 0.0 || fabs(temp) * sfmin > absak) {
-                            *info = k + 1;  /* 1-based for Fortran compatibility */
+                            *info = k + 1;
                             return;
                         } else {
                             temp = temp * bignum;
                             ak = ak * bignum;
                         }
                     } else if (fabs(temp) > absak * bignum) {
-                        *info = k + 1;  /* 1-based */
+                        *info = k + 1;
                         return;
                     }
                 }
@@ -204,14 +204,14 @@ void dlagts(
                 if (absak < 1.0) {
                     if (absak < sfmin) {
                         if (absak == 0.0 || fabs(temp) * sfmin > absak) {
-                            *info = k + 1;  /* 1-based */
+                            *info = k + 1;
                             return;
                         } else {
                             temp = temp * bignum;
                             ak = ak * bignum;
                         }
                     } else if (fabs(temp) > absak * bignum) {
-                        *info = k + 1;  /* 1-based */
+                        *info = k + 1;
                         return;
                     }
                 }

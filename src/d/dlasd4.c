@@ -27,7 +27,7 @@ static const int MAXIT = 400;
  * The rank-one modified system is: diag(D) * diag(D) + RHO * Z * Z^T
  *
  * @param[in]     n       The length of all arrays.
- * @param[in]     i       The index of the eigenvalue to be computed. 1 <= i <= n. (1-based!)
+ * @param[in]     i       The index of the eigenvalue to be computed. 0 <= i <= n-1.
  * @param[in]     D       Array of dimension n. The original eigenvalues, 0 <= D[j] < D[k] for j < k.
  * @param[in]     Z       Array of dimension n. The components of the updating vector.
  * @param[out]    delta   Array of dimension n. Contains (D[j] - sigma_i) in component j.
@@ -55,7 +55,7 @@ void dlasd4(const int n, const int i, const f64* restrict D,
     /* Quick return for n=1 and n=2 */
     *info = 0;
     if (n == 1) {
-        /* Presumably i=1 upon entry */
+        /* Presumably i=0 upon entry */
         *sigma = sqrt(D[0] * D[0] + rho * Z[0] * Z[0]);
         delta[0] = ONE;
         work[0] = ONE;
@@ -71,9 +71,8 @@ void dlasd4(const int n, const int i, const f64* restrict D,
     rhoinv = ONE / rho;
     tau2 = ZERO;
 
-    /* Convert 1-based i to indices */
-    /* The case i == n */
-    if (i == n) {
+    /* The case i == n-1 (last eigenvalue) */
+    if (i == n - 1) {
         /* Initialize some basic variables */
         ii = n - 1;  /* 0-based index for n-1 */
         niter = 1;
@@ -281,29 +280,29 @@ void dlasd4(const int n, const int i, const f64* restrict D,
     } else {
         /* The case for i < n */
         niter = 1;
-        ip1 = i;  /* 0-based index for i+1 in Fortran = i in C */
+        ip1 = i + 1;
 
         /* Calculate initial guess */
-        delsq = (D[ip1] - D[i - 1]) * (D[ip1] + D[i - 1]);
+        delsq = (D[ip1] - D[i]) * (D[ip1] + D[i]);
         delsq2 = delsq / TWO;
-        sq2 = sqrt((D[i - 1] * D[i - 1] + D[ip1] * D[ip1]) / TWO);
-        temp = delsq2 / (D[i - 1] + sq2);
+        sq2 = sqrt((D[i] * D[i] + D[ip1] * D[ip1]) / TWO);
+        temp = delsq2 / (D[i] + sq2);
         for (j = 0; j < n; j++) {
-            work[j] = D[j] + D[i - 1] + temp;
-            delta[j] = (D[j] - D[i - 1]) - temp;
+            work[j] = D[j] + D[i] + temp;
+            delta[j] = (D[j] - D[i]) - temp;
         }
 
         psi = ZERO;
-        for (j = 0; j < i - 1; j++) {
+        for (j = 0; j < i; j++) {
             psi = psi + Z[j] * Z[j] / (work[j] * delta[j]);
         }
 
         phi = ZERO;
-        for (j = n - 1; j >= i + 1; j--) {   /* Fortran: DO J = N, I+2, -1 */
+        for (j = n - 1; j >= i + 2; j--) {
             phi = phi + Z[j] * Z[j] / (work[j] * delta[j]);
         }
         c = rhoinv + psi + phi;
-        w = c + Z[i - 1] * Z[i - 1] / (work[i - 1] * delta[i - 1]) +
+        w = c + Z[i] * Z[i] / (work[i] * delta[i]) +
             Z[ip1] * Z[ip1] / (work[ip1] * delta[ip1]);
 
         geomavg = 0;
@@ -311,32 +310,32 @@ void dlasd4(const int n, const int i, const f64* restrict D,
             /* d(i)^2 < the ith sigma^2 < (d(i)^2+d(i+1)^2)/2
              * We choose d(i) as origin. */
             orgati = 1;
-            ii = i - 1;  /* 0-based */
+            ii = i;
             sglb = ZERO;
-            sgub = delsq2 / (D[i - 1] + sq2);
-            a = c * delsq + Z[i - 1] * Z[i - 1] + Z[ip1] * Z[ip1];
-            b = Z[i - 1] * Z[i - 1] * delsq;
+            sgub = delsq2 / (D[i] + sq2);
+            a = c * delsq + Z[i] * Z[i] + Z[ip1] * Z[ip1];
+            b = Z[i] * Z[i] * delsq;
             if (a > ZERO) {
                 tau2 = TWO * b / (a + sqrt(fabs(a * a - FOUR * b * c)));
             } else {
                 tau2 = (a - sqrt(fabs(a * a - FOUR * b * c))) / (TWO * c);
             }
 
-            tau = tau2 / (D[i - 1] + sqrt(D[i - 1] * D[i - 1] + tau2));
+            tau = tau2 / (D[i] + sqrt(D[i] * D[i] + tau2));
             temp = sqrt(eps);
-            if ((D[i - 1] <= temp * D[ip1]) && (fabs(Z[i - 1]) <= temp) &&
-                (D[i - 1] > ZERO)) {
-                tau = (TEN * D[i - 1] < sgub) ? TEN * D[i - 1] : sgub;
+            if ((D[i] <= temp * D[ip1]) && (fabs(Z[i]) <= temp) &&
+                (D[i] > ZERO)) {
+                tau = (TEN * D[i] < sgub) ? TEN * D[i] : sgub;
                 geomavg = 1;
             }
         } else {
             /* (d(i)^2+d(i+1)^2)/2 <= the ith sigma^2 < d(i+1)^2/2
              * We choose d(i+1) as origin. */
             orgati = 0;
-            ii = ip1;  /* 0-based */
+            ii = ip1;
             sglb = -delsq2 / (D[ii] + sq2);
             sgub = ZERO;
-            a = c * delsq - Z[i - 1] * Z[i - 1] - Z[ip1] * Z[ip1];
+            a = c * delsq - Z[i] * Z[i] - Z[ip1] * Z[ip1];
             b = Z[ip1] * Z[ip1] * delsq;
             if (a < ZERO) {
                 tau2 = TWO * b / (a - sqrt(fabs(a * a + FOUR * b * c)));
@@ -412,9 +411,9 @@ void dlasd4(const int n, const int i, const f64* restrict D,
         niter = niter + 1;
         if (!swtch3) {
             dtipsq = work[ip1] * delta[ip1];
-            dtisq = work[i - 1] * delta[i - 1];
+            dtisq = work[i] * delta[i];
             if (orgati) {
-                c = w - dtipsq * dw + delsq * (Z[i - 1] / dtisq) * (Z[i - 1] / dtisq);
+                c = w - dtipsq * dw + delsq * (Z[i] / dtisq) * (Z[i] / dtisq);
             } else {
                 c = w - dtisq * dw - delsq * (Z[ip1] / dtipsq) * (Z[ip1] / dtipsq);
             }
@@ -423,7 +422,7 @@ void dlasd4(const int n, const int i, const f64* restrict D,
             if (c == ZERO) {
                 if (a == ZERO) {
                     if (orgati) {
-                        a = Z[i - 1] * Z[i - 1] + dtipsq * dtipsq * (dpsi + dphi);
+                        a = Z[i] * Z[i] + dtipsq * dtipsq * (dpsi + dphi);
                     } else {
                         a = Z[ip1] * Z[ip1] + dtisq * dtisq * (dpsi + dphi);
                     }
@@ -472,9 +471,9 @@ void dlasd4(const int n, const int i, const f64* restrict D,
                 /* If INFO is not 0, i.e., DLAED6 failed, switch back to 2 pole interpolation */
                 swtch3 = 0;
                 dtipsq = work[ip1] * delta[ip1];
-                dtisq = work[i - 1] * delta[i - 1];
+                dtisq = work[i] * delta[i];
                 if (orgati) {
-                    c = w - dtipsq * dw + delsq * (Z[i - 1] / dtisq) * (Z[i - 1] / dtisq);
+                    c = w - dtipsq * dw + delsq * (Z[i] / dtisq) * (Z[i] / dtisq);
                 } else {
                     c = w - dtisq * dw - delsq * (Z[ip1] / dtipsq) * (Z[ip1] / dtipsq);
                 }
@@ -483,7 +482,7 @@ void dlasd4(const int n, const int i, const f64* restrict D,
                 if (c == ZERO) {
                     if (a == ZERO) {
                         if (orgati) {
-                            a = Z[i - 1] * Z[i - 1] + dtipsq * dtipsq * (dpsi + dphi);
+                            a = Z[i] * Z[i] + dtipsq * dtipsq * (dpsi + dphi);
                         } else {
                             a = Z[ip1] * Z[ip1] + dtisq * dtisq * (dpsi + dphi);
                         }
@@ -591,10 +590,10 @@ void dlasd4(const int n, const int i, const f64* restrict D,
             /* Calculate the new step */
             if (!swtch3) {
                 dtipsq = work[ip1] * delta[ip1];
-                dtisq = work[i - 1] * delta[i - 1];
+                dtisq = work[i] * delta[i];
                 if (!swtch) {
                     if (orgati) {
-                        c = w - dtipsq * dw + delsq * (Z[i - 1] / dtisq) * (Z[i - 1] / dtisq);
+                        c = w - dtipsq * dw + delsq * (Z[i] / dtisq) * (Z[i] / dtisq);
                     } else {
                         c = w - dtisq * dw - delsq * (Z[ip1] / dtipsq) * (Z[ip1] / dtipsq);
                     }
@@ -613,7 +612,7 @@ void dlasd4(const int n, const int i, const f64* restrict D,
                     if (a == ZERO) {
                         if (!swtch) {
                             if (orgati) {
-                                a = Z[i - 1] * Z[i - 1] + dtipsq * dtipsq * (dpsi + dphi);
+                                a = Z[i] * Z[i] + dtipsq * dtipsq * (dpsi + dphi);
                             } else {
                                 a = Z[ip1] * Z[ip1] + dtisq * dtisq * (dpsi + dphi);
                             }
@@ -670,10 +669,10 @@ void dlasd4(const int n, const int i, const f64* restrict D,
                     /* If INFO is not 0, switch back to two pole interpolation */
                     swtch3 = 0;
                     dtipsq = work[ip1] * delta[ip1];
-                    dtisq = work[i - 1] * delta[i - 1];
+                    dtisq = work[i] * delta[i];
                     if (!swtch) {
                         if (orgati) {
-                            c = w - dtipsq * dw + delsq * (Z[i - 1] / dtisq) * (Z[i - 1] / dtisq);
+                            c = w - dtipsq * dw + delsq * (Z[i] / dtisq) * (Z[i] / dtisq);
                         } else {
                             c = w - dtisq * dw - delsq * (Z[ip1] / dtipsq) * (Z[ip1] / dtipsq);
                         }
@@ -692,7 +691,7 @@ void dlasd4(const int n, const int i, const f64* restrict D,
                         if (a == ZERO) {
                             if (!swtch) {
                                 if (orgati) {
-                                    a = Z[i - 1] * Z[i - 1] + dtipsq * dtipsq * (dpsi + dphi);
+                                    a = Z[i] * Z[i] + dtipsq * dtipsq * (dpsi + dphi);
                                 } else {
                                     a = Z[ip1] * Z[ip1] + dtisq * dtisq * (dpsi + dphi);
                                 }

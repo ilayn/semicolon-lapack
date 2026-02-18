@@ -32,10 +32,10 @@
  *                        with ORDER = 'B' is expected here.)
  * @param[in]     iblock  Integer array, dimension (m).
  *                        The submatrix indices associated with the
- *                        corresponding eigenvalues in W; iblock[i]=1 if
+ *                        corresponding eigenvalues in W; iblock[i]=0 if
  *                        eigenvalue W[i] belongs to the first submatrix from
- *                        the top, =2 if W[i] belongs to the second submatrix,
- *                        etc. (1-based block numbers.)
+ *                        the top, =1 if W[i] belongs to the second submatrix,
+ *                        etc. (0-based block numbers.)
  * @param[in]     isplit  Integer array, dimension (nsplit).
  *                        The splitting points, at which T breaks up into
  *                        submatrices. The first submatrix consists of
@@ -144,18 +144,18 @@ void sstein(
      * j1 is the 0-based index of the first eigenvalue in the current block.
      */
     j1 = 0;
-    for (nblk = 1; nblk <= iblock[m - 1]; nblk++) {
+    for (nblk = 0; nblk <= iblock[m - 1]; nblk++) {
 
         /*
          * Find starting and ending indices of block nblk (0-based).
          * isplit stores 0-based endpoint indices.
          */
-        if (nblk == 1) {
+        if (nblk == 0) {
             b1 = 0;
         } else {
-            b1 = isplit[nblk - 2] + 1;
+            b1 = isplit[nblk - 1] + 1;
         }
-        bn = isplit[nblk - 1];
+        bn = isplit[nblk];
         blksiz = bn - b1 + 1;
 
         if (blksiz != 1) {

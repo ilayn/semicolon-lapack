@@ -27,7 +27,7 @@
  * @param[in]     ldq     Leading dimension of Q. ldq >= 1, or ldq >= n if jobz='V'.
  * @param[in]     vl      Lower bound if range='V'.
  * @param[in]     vu      Upper bound if range='V'. vl < vu.
- * @param[in]     il      Smallest eigenvalue index if range='I'. 1 <= il <= iu.
+ * @param[in]     il      Smallest eigenvalue index if range='I'. 0 <= il <= iu.
  * @param[in]     iu      Largest eigenvalue index if range='I'. il <= iu <= n.
  * @param[in]     abstol  Absolute error tolerance for eigenvalues.
  * @param[out]    m       Number of eigenvalues found.
@@ -105,9 +105,9 @@ void ssbevx_2stage(
                 *info = -11;
             }
         } else if (indeig) {
-            if (il < 1 || il > ((1 > n) ? 1 : n)) {
+            if (il < 0 || il > ((0 > n - 1) ? 0 : n - 1)) {
                 *info = -12;
-            } else if (iu < ((n < il) ? n : il) || iu > n) {
+            } else if (iu < ((n - 1 < il) ? n - 1 : il) || iu > n - 1) {
                 *info = -13;
             }
         }
@@ -219,7 +219,7 @@ void ssbevx_2stage(
 
     test = 0;
     if (indeig) {
-        if (il == 1 && iu == n) {
+        if (il == 0 && iu == n - 1) {
             test = 1;
         }
     }

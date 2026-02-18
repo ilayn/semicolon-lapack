@@ -10,12 +10,12 @@
  * DLASQ4 computes an approximation TAU to the smallest eigenvalue
  * using values of d from the previous transform.
  *
- * @param[in]     i0     First index (1-based).
- * @param[in]     n0     Last index (1-based).
- * @param[in]     Z      Double precision array, dimension (4*N0).
+ * @param[in]     i0     First index (0-based).
+ * @param[in]     n0     Last index (0-based).
+ * @param[in]     Z      Double precision array, dimension (4*N).
  *                        Z holds the qd array.
  * @param[in]     pp     PP=0 for ping, PP=1 for pong.
- * @param[in]     n0in   The value of N0 at start of EIGTEST (1-based).
+ * @param[in]     n0in   The value of N0 at start of EIGTEST (0-based).
  * @param[in]     dmin   Minimum value of d.
  * @param[in]     dmin1  Minimum value of d, excluding D(N0).
  * @param[in]     dmin2  Minimum value of d, excluding D(N0) and D(N0-1).
@@ -58,7 +58,7 @@ void dlasq4(const int i0, const int n0, const f64* restrict Z,
         return;
     }
 
-    nn = 4 * n0 + pp;
+    nn = 4 * n0 + pp + 3;
 
     if (n0in == n0) {
         /*
@@ -66,9 +66,9 @@ void dlasq4(const int i0, const int n0, const f64* restrict Z,
          */
         if (dmin == dn || dmin == dn1) {
 
-            b1 = sqrt(Z[(nn - 3) - 1]) * sqrt(Z[(nn - 5) - 1]);
-            b2 = sqrt(Z[(nn - 7) - 1]) * sqrt(Z[(nn - 9) - 1]);
-            a2 = Z[(nn - 7) - 1] + Z[(nn - 5) - 1];
+            b1 = sqrt(Z[nn - 3]) * sqrt(Z[nn - 5]);
+            b2 = sqrt(Z[nn - 7]) * sqrt(Z[nn - 9]);
+            a2 = Z[nn - 7] + Z[nn - 5];
 
             /* Cases 2 and 3. */
             if (dmin == dn && dmin1 == dn1) {
@@ -99,36 +99,36 @@ void dlasq4(const int i0, const int n0, const f64* restrict Z,
                 if (dmin == dn) {
                     gam = dn;
                     a2 = ZERO;
-                    if (Z[(nn - 5) - 1] > Z[(nn - 7) - 1]) {
+                    if (Z[nn - 5] > Z[nn - 7]) {
                         return;
                     }
-                    b2 = Z[(nn - 5) - 1] / Z[(nn - 7) - 1];
+                    b2 = Z[nn - 5] / Z[nn - 7];
                     np = nn - 9;
                 } else {
                     np = nn - 2 * pp;
                     gam = dn1;
-                    if (Z[(np - 4) - 1] > Z[(np - 2) - 1]) {
+                    if (Z[np - 4] > Z[np - 2]) {
                         return;
                     }
-                    a2 = Z[(np - 4) - 1] / Z[(np - 2) - 1];
-                    if (Z[(nn - 9) - 1] > Z[(nn - 11) - 1]) {
+                    a2 = Z[np - 4] / Z[np - 2];
+                    if (Z[nn - 9] > Z[nn - 11]) {
                         return;
                     }
-                    b2 = Z[(nn - 9) - 1] / Z[(nn - 11) - 1];
+                    b2 = Z[nn - 9] / Z[nn - 11];
                     np = nn - 13;
                 }
 
                 /* Approximate contribution to norm squared from I < NN-1. */
                 a2 = a2 + b2;
-                for (i4 = np; i4 >= 4 * i0 - 1 + pp; i4 -= 4) {
+                for (i4 = np; i4 >= 4 * i0 + pp + 2; i4 -= 4) {
                     if (b2 == ZERO) {
                         break;
                     }
                     b1 = b2;
-                    if (Z[i4 - 1] > Z[(i4 - 2) - 1]) {
+                    if (Z[i4] > Z[i4 - 2]) {
                         return;
                     }
-                    b2 = b2 * (Z[i4 - 1] / Z[(i4 - 2) - 1]);
+                    b2 = b2 * (Z[i4] / Z[i4 - 2]);
                     a2 = a2 + b2;
                     if (HUNDRD * fmax(b2, b1) < a2 || CNST1 < a2) {
                         break;
@@ -148,27 +148,27 @@ void dlasq4(const int i0, const int n0, const f64* restrict Z,
 
             /* Compute contribution to norm squared from I > NN-2. */
             np = nn - 2 * pp;
-            b1 = Z[(np - 2) - 1];
-            b2 = Z[(np - 6) - 1];
+            b1 = Z[np - 2];
+            b2 = Z[np - 6];
             gam = dn2;
-            if (Z[(np - 8) - 1] > b2 || Z[(np - 4) - 1] > b1) {
+            if (Z[np - 8] > b2 || Z[np - 4] > b1) {
                 return;
             }
-            a2 = (Z[(np - 8) - 1] / b2) * (ONE + Z[(np - 4) - 1] / b1);
+            a2 = (Z[np - 8] / b2) * (ONE + Z[np - 4] / b1);
 
             /* Approximate contribution to norm squared from I < NN-2. */
             if (n0 - i0 > 2) {
-                b2 = Z[(nn - 13) - 1] / Z[(nn - 15) - 1];
+                b2 = Z[nn - 13] / Z[nn - 15];
                 a2 = a2 + b2;
-                for (i4 = nn - 17; i4 >= 4 * i0 - 1 + pp; i4 -= 4) {
+                for (i4 = nn - 17; i4 >= 4 * i0 + pp + 2; i4 -= 4) {
                     if (b2 == ZERO) {
                         break;
                     }
                     b1 = b2;
-                    if (Z[i4 - 1] > Z[(i4 - 2) - 1]) {
+                    if (Z[i4] > Z[i4 - 2]) {
                         return;
                     }
-                    b2 = b2 * (Z[i4 - 1] / Z[(i4 - 2) - 1]);
+                    b2 = b2 * (Z[i4] / Z[i4 - 2]);
                     a2 = a2 + b2;
                     if (HUNDRD * fmax(b2, b1) < a2 || CNST1 < a2) {
                         break;
@@ -201,20 +201,20 @@ void dlasq4(const int i0, const int n0, const f64* restrict Z,
             /* Cases 7 and 8. */
             *ttype = -7;
             s = THIRD * dmin1;
-            if (Z[(nn - 5) - 1] > Z[(nn - 7) - 1]) {
+            if (Z[nn - 5] > Z[nn - 7]) {
                 return;
             }
-            b1 = Z[(nn - 5) - 1] / Z[(nn - 7) - 1];
+            b1 = Z[nn - 5] / Z[nn - 7];
             b2 = b1;
             if (b2 == ZERO) {
                 goto label_60;
             }
-            for (i4 = 4 * n0 - 9 + pp; i4 >= 4 * i0 - 1 + pp; i4 -= 4) {
+            for (i4 = nn - 9; i4 >= 4 * i0 + pp + 2; i4 -= 4) {
                 a2 = b1;
-                if (Z[i4 - 1] > Z[(i4 - 2) - 1]) {
+                if (Z[i4] > Z[i4 - 2]) {
                     return;
                 }
-                b1 = b1 * (Z[i4 - 1] / Z[(i4 - 2) - 1]);
+                b1 = b1 * (Z[i4] / Z[i4 - 2]);
                 b2 = b2 + b1;
                 if (HUNDRD * fmax(b1, a2) < b2) {
                     break;
@@ -245,22 +245,22 @@ label_60:
          *
          * Cases 10 and 11.
          */
-        if (dmin2 == dn2 && TWO * Z[(nn - 5) - 1] < Z[(nn - 7) - 1]) {
+        if (dmin2 == dn2 && TWO * Z[nn - 5] < Z[nn - 7]) {
             *ttype = -10;
             s = THIRD * dmin2;
-            if (Z[(nn - 5) - 1] > Z[(nn - 7) - 1]) {
+            if (Z[nn - 5] > Z[nn - 7]) {
                 return;
             }
-            b1 = Z[(nn - 5) - 1] / Z[(nn - 7) - 1];
+            b1 = Z[nn - 5] / Z[nn - 7];
             b2 = b1;
             if (b2 == ZERO) {
                 goto label_80;
             }
-            for (i4 = 4 * n0 - 9 + pp; i4 >= 4 * i0 - 1 + pp; i4 -= 4) {
-                if (Z[i4 - 1] > Z[(i4 - 2) - 1]) {
+            for (i4 = nn - 9; i4 >= 4 * i0 + pp + 2; i4 -= 4) {
+                if (Z[i4] > Z[i4 - 2]) {
                     return;
                 }
-                b1 = b1 * (Z[i4 - 1] / Z[(i4 - 2) - 1]);
+                b1 = b1 * (Z[i4] / Z[i4 - 2]);
                 b2 = b2 + b1;
                 if (HUNDRD * b1 < b2) {
                     break;
@@ -269,8 +269,8 @@ label_60:
 label_80:
             b2 = sqrt(CNST3 * b2);
             a2 = dmin2 / (ONE + b2 * b2);
-            gap2 = Z[(nn - 7) - 1] + Z[(nn - 9) - 1]
-                   - sqrt(Z[(nn - 11) - 1]) * sqrt(Z[(nn - 9) - 1]) - a2;
+            gap2 = Z[nn - 7] + Z[nn - 9]
+                   - sqrt(Z[nn - 11]) * sqrt(Z[nn - 9]) - a2;
             if (gap2 > ZERO && gap2 > b2 * a2) {
                 s = fmax(s, a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2));
             } else {

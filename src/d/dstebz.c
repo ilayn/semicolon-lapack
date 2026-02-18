@@ -29,15 +29,15 @@
  * @param[in]     n       The order of the tridiagonal matrix T. n >= 0.
  * @param[in]     vl      If range='V', the lower bound of the interval.
  * @param[in]     vu      If range='V', the upper bound of the interval.
- * @param[in]     il      If range='I', the index of the smallest eigenvalue (1-based).
- * @param[in]     iu      If range='I', the index of the largest eigenvalue (1-based).
+ * @param[in]     il      If range='I', the index of the smallest eigenvalue (0-based).
+ * @param[in]     iu      If range='I', the index of the largest eigenvalue (0-based).
  * @param[in]     abstol  The absolute tolerance for the eigenvalues.
  * @param[in]     D       Double precision array, dimension (n). The diagonal elements.
  * @param[in]     E       Double precision array, dimension (n-1). The off-diagonal elements.
  * @param[out]    m       The actual number of eigenvalues found.
  * @param[out]    nsplit  The number of diagonal blocks in T.
  * @param[out]    W       Double precision array, dimension (n). The eigenvalues.
- * @param[out]    iblock  Integer array, dimension (n). Block number for each eigenvalue.
+ * @param[out]    iblock  Integer array, dimension (n). Block number (0-based) for each eigenvalue.
  * @param[out]    isplit  Integer array, dimension (n). The splitting points (0-based endpoints).
  * @param[out]    work    Double precision array, dimension (4*n).
  * @param[out]    iwork   Integer array, dimension (3*n).
@@ -104,9 +104,9 @@ void dstebz(const char* range, const char* order, const int n,
     } else if (irange == 2) {
         if (vl >= vu)
             *info = -5;
-    } else if (irange == 3 && (il < 1 || il > (1 > n ? 1 : n))) {
+    } else if (irange == 3 && (il < 0 || il > (0 > n - 1 ? 0 : n - 1))) {
         *info = -6;
-    } else if (irange == 3 && (iu < (n < il ? n : il) || iu > n)) {
+    } else if (irange == 3 && (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1)) {
         *info = -7;
     }
 
@@ -126,7 +126,7 @@ void dstebz(const char* range, const char* order, const int n,
         return;
 
     /* Simplification: if RANGE='I' and IL=1 and IU=N, treat as RANGE='A' */
-    if (irange == 3 && il == 1 && iu == n)
+    if (irange == 3 && il == 0 && iu == n - 1)
         irange = 1;
 
     /* Get machine constants
@@ -147,7 +147,7 @@ void dstebz(const char* range, const char* order, const int n,
             *m = 0;
         } else {
             W[0] = D[0];
-            iblock[0] = 1;
+            iblock[0] = 0;
             *m = 1;
         }
         return;
@@ -259,8 +259,8 @@ void dstebz(const char* range, const char* order, const int n,
         iwork[1] = -1;
         iwork[2] = n + 1;
         iwork[3] = n + 1;
-        iwork[4] = il - 1;
-        iwork[5] = iu;
+        iwork[4] = il;
+        iwork[5] = iu + 1;
 
         /*
          * DLAEBZ(3, ITMAX, N, 2, 2, NB, ATOLI, RTOLI, PIVMIN,
@@ -305,7 +305,7 @@ void dstebz(const char* range, const char* order, const int n,
          * Fortran IWORK(3) = NAB(1,2) = iwork[2]
          * Fortran IWORK(4) = NAB(2,2) = iwork[3]
          */
-        if (iwork[5] == iu) {
+        if (iwork[5] == iu + 1) {
             /* Fortran: IWORK(6).EQ.IU */
             wl  = work[n + 0];  /* WORK(N+1) = AB(1,1) */
             wlu = work[n + 2];  /* WORK(N+3) = AB(1,2) */
@@ -389,7 +389,7 @@ void dstebz(const char* range, const char* order, const int n,
                 nwu = nwu + 1;
             if (irange == 1 || (wl < D[ibegin] - pivmin && wu >= D[ibegin] - pivmin)) {
                 W[m_val] = D[ibegin];
-                iblock[m_val] = jb + 1;  /* 1-based block number */
+                iblock[m_val] = jb;
                 m_val = m_val + 1;
             }
         } else {
@@ -530,9 +530,9 @@ void dstebz(const char* range, const char* order, const int n,
                 /* Flag non-convergence */
                 if (j >= iout - iinfo) {
                     ncnvrg = 1;
-                    ib = -(jb + 1);  /* negative 1-based block number */
+                    ib = -(jb + 2);
                 } else {
-                    ib = jb + 1;     /* positive 1-based block number */
+                    ib = jb;
                 }
 
                 /*
@@ -591,8 +591,8 @@ void dstebz(const char* range, const char* order, const int n,
      */
     if (irange == 3) {
         im = 0;
-        idiscl = il - 1 - nwl;
-        idiscu = nwu - iu;
+        idiscl = il - nwl;
+        idiscu = nwu - iu - 1;
 
         if (idiscl > 0 || idiscu > 0) {
             for (je = 0; je < m_val; je++) {
@@ -622,12 +622,12 @@ void dstebz(const char* range, const char* order, const int n,
                 for (jdisc = 0; jdisc < idiscl; jdisc++) {
                     iw = -1;
                     for (je = 0; je < m_val; je++) {
-                        if (iblock[je] != 0 && (W[je] < wkill || iw < 0)) {
+                        if (iblock[je] != -1 && (W[je] < wkill || iw < 0)) {
                             iw = je;
                             wkill = W[je];
                         }
                     }
-                    iblock[iw] = 0;
+                    iblock[iw] = -1;
                 }
             }
             if (idiscu > 0) {
@@ -635,17 +635,17 @@ void dstebz(const char* range, const char* order, const int n,
                 for (jdisc = 0; jdisc < idiscu; jdisc++) {
                     iw = -1;
                     for (je = 0; je < m_val; je++) {
-                        if (iblock[je] != 0 && (W[je] > wkill || iw < 0)) {
+                        if (iblock[je] != -1 && (W[je] > wkill || iw < 0)) {
                             iw = je;
                             wkill = W[je];
                         }
                     }
-                    iblock[iw] = 0;
+                    iblock[iw] = -1;
                 }
             }
             im = 0;
             for (je = 0; je < m_val; je++) {
-                if (iblock[je] != 0) {
+                if (iblock[je] != -1) {
                     W[im] = W[je];
                     iblock[im] = iblock[je];
                     im = im + 1;

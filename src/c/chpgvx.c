@@ -46,10 +46,10 @@
  *                       be searched for eigenvalues. vl < vu.
  *                       Not referenced if RANGE = 'A' or 'I'.
  * @param[in]     il     If RANGE='I', the index of the smallest eigenvalue
- *                       to be returned. 1 <= il <= iu <= n, if n > 0.
+ *                       to be returned. 0 <= il <= iu <= n-1, if n > 0.
  *                       Not referenced if RANGE = 'A' or 'V'.
  * @param[in]     iu     If RANGE='I', the index of the largest eigenvalue
- *                       to be returned. 1 <= il <= iu <= n, if n > 0.
+ *                       to be returned. 0 <= il <= iu <= n-1, if n > 0.
  *                       Not referenced if RANGE = 'A' or 'V'.
  * @param[in]     abstol The absolute error tolerance for the eigenvalues.
  * @param[out]    m      The total number of eigenvalues found. 0 <= m <= n.
@@ -118,9 +118,9 @@ void chpgvx(
                 *info = -9;
             }
         } else if (indeig) {
-            if (il < 1) {
+            if (il < 0) {
                 *info = -10;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -11;
             }
         }

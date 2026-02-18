@@ -35,12 +35,12 @@
  *                       be searched for eigenvalues. vl < vu.
  *                       Not referenced if range = 'A' or 'I'.
  * @param[in]     il     If range='I', the index of the smallest eigenvalue
- *                       to be returned (1-based).
- *                       1 <= il <= iu <= n, if n > 0; il = 1 and iu = 0 if n = 0.
+ *                       to be returned (0-based).
+ *                       0 <= il <= iu <= n-1, if n > 0.
  *                       Not referenced if range = 'A' or 'V'.
  * @param[in]     iu     If range='I', the index of the largest eigenvalue
- *                       to be returned (1-based).
- *                       1 <= il <= iu <= n, if n > 0; il = 1 and iu = 0 if n = 0.
+ *                       to be returned (0-based).
+ *                       0 <= il <= iu <= n-1, if n > 0.
  *                       Not referenced if range = 'A' or 'V'.
  * @param[in]     abstol The absolute error tolerance for the eigenvalues.
  * @param[out]    m      The total number of eigenvalues found. 0 <= m <= n.
@@ -102,9 +102,9 @@ void sspevx(const char* jobz, const char* range, const char* uplo,
                 *info = -7;
             }
         } else if (indeig) {
-            if (il < 1 || il > (1 > n ? 1 : n)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -8;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -9;
             }
         }
@@ -185,7 +185,7 @@ void sspevx(const char* jobz, const char* range, const char* uplo,
 
     test = 0;
     if (indeig) {
-        if (il == 1 && iu == n) {
+        if (il == 0 && iu == n - 1) {
             test = 1;
         }
     }

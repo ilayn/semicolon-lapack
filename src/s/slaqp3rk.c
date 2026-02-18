@@ -46,7 +46,7 @@
  *          The relative tolerance for maximum column 2-norm.
  *
  * @param[in] kp1
- *          The index of the column with the maximum 2-norm (1-based).
+ *          The index of the column with the maximum 2-norm (0-based).
  *
  * @param[in] maxc2nrm
  *          The maximum column 2-norm of the original matrix.
@@ -138,16 +138,16 @@ void slaqp3rk(
     hugeval = slamch("O");
 
     k = 0;
-    lsticc = 0;
+    lsticc = -1;
     *done = 0;
 
-    while (k < nb_val && lsticc == 0) {
+    while (k < nb_val && lsticc == -1) {
         k++;
         i = ioffset + k;
 
         if (i == 1) {
 
-            kp = kp1 - 1;
+            kp = kp1;
 
         } else {
 
@@ -310,7 +310,7 @@ void slaqp3rk(
 
                         iwork[j - 1] = lsticc;
 
-                        lsticc = j + 1;
+                        lsticc = j;
 
                     } else {
                         vn1[j] = vn1[j] * sqrtf(temp);
@@ -331,12 +331,12 @@ void slaqp3rk(
                     &F[*KB + 0 * ldf], ldf, 1.0f, &A[iF + (*KB) * lda], lda);
     }
 
-    while (lsticc > 0) {
+    while (lsticc >= 0) {
 
-        itemp = iwork[lsticc - 2];
+        itemp = iwork[lsticc - 1];
 
-        vn1[lsticc - 1] = cblas_snrm2(m - iF, &A[iF + (lsticc - 1) * lda], 1);
-        vn2[lsticc - 1] = vn1[lsticc - 1];
+        vn1[lsticc] = cblas_snrm2(m - iF, &A[iF + lsticc * lda], 1);
+        vn2[lsticc] = vn1[lsticc];
 
         lsticc = itemp;
 

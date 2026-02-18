@@ -6,6 +6,7 @@
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
+
 /**
  * DLASQ2 computes all the eigenvalues of the symmetric positive
  * definite tridiagonal matrix associated with the qd array Z to high
@@ -128,7 +129,6 @@ void dlasq2(const int n, f64* restrict Z, int* info)
     e = ZERO;
 
     for (k = 1; k <= 2 * (n - 1); k += 2) {
-        /* Z(k) -> Z[k-1], Z(k+1) -> Z[k] */
         if (Z[k - 1] < ZERO) {
             *info = -(200 + k);
             xerbla("DLASQ2", 2);
@@ -174,7 +174,6 @@ void dlasq2(const int n, f64* restrict Z, int* info)
     /*
      * Check whether the machine is IEEE conformable.
      * In this project, we assume IEEE=1 (all modern platforms are IEEE 754).
-     * Fortran: IEEE = (ILAENV(10, 'DLASQ2', 'N', 1, 2, 3, 4) == 1)
      */
     ieee = 1;
 
@@ -188,19 +187,19 @@ void dlasq2(const int n, f64* restrict Z, int* info)
         Z[2 * k - 4] = Z[k - 2];
     }
 
-    i0 = 1;
-    n0 = n;
+    i0 = 0;
+    n0 = n - 1;
 
     /* Reverse the qd-array, if warranted. */
-    if (CBIAS * Z[4 * i0 - 4] < Z[4 * n0 - 4]) {
+    if (CBIAS * Z[4 * i0] < Z[4 * n0]) {
         ipn4 = 4 * (i0 + n0);
         for (i4 = 4 * i0; i4 <= 2 * (i0 + n0 - 1); i4 += 4) {
-            temp = Z[i4 - 4];
-            Z[i4 - 4] = Z[ipn4 - i4 - 4];
-            Z[ipn4 - i4 - 4] = temp;
-            temp = Z[i4 - 2];
-            Z[i4 - 2] = Z[ipn4 - i4 - 6];
-            Z[ipn4 - i4 - 6] = temp;
+            temp = Z[i4];
+            Z[i4] = Z[ipn4 - i4];
+            Z[ipn4 - i4] = temp;
+            temp = Z[i4 + 2];
+            Z[i4 + 2] = Z[ipn4 - i4 - 2];
+            Z[ipn4 - i4 - 2] = temp;
         }
     }
 
@@ -211,8 +210,8 @@ void dlasq2(const int n, f64* restrict Z, int* info)
 
     for (k = 1; k <= 2; k++) {
 
-        d = Z[4 * n0 + pp - 4];
-        for (i4 = 4 * (n0 - 1) + pp; i4 >= 4 * i0 + pp; i4 -= 4) {
+        d = Z[4 * n0 + pp];
+        for (i4 = 4 * n0 + pp; i4 >= 4 * (i0 + 1) + pp; i4 -= 4) {
             if (Z[i4 - 2] <= tol2 * d) {
                 Z[i4 - 2] = -ZERO;
                 d = Z[i4 - 4];
@@ -222,9 +221,9 @@ void dlasq2(const int n, f64* restrict Z, int* info)
         }
 
         /* dqd maps Z to ZZ plus Li's test. */
-        emin = Z[4 * i0 + pp];
-        d = Z[4 * i0 + pp - 4];
-        for (i4 = 4 * i0 + pp; i4 <= 4 * (n0 - 1) + pp; i4 += 4) {
+        emin = Z[4 * i0 + pp + 4];
+        d = Z[4 * i0 + pp];
+        for (i4 = 4 * (i0 + 1) + pp; i4 <= 4 * n0 + pp; i4 += 4) {
             Z[i4 - 2 * pp - 3] = d + Z[i4 - 2];
             if (Z[i4 - 2] <= tol2 * d) {
                 Z[i4 - 2] = -ZERO;
@@ -242,11 +241,11 @@ void dlasq2(const int n, f64* restrict Z, int* info)
             }
             emin = fmin(emin, Z[i4 - 2 * pp - 1]);
         }
-        Z[4 * n0 - pp - 3] = d;
+        Z[4 * n0 - pp + 1] = d;
 
         /* Now find qmax. */
-        qmax = Z[4 * i0 - pp - 3];
-        for (i4 = 4 * i0 - pp + 2; i4 <= 4 * n0 - pp - 2; i4 += 4) {
+        qmax = Z[4 * i0 - pp + 1];
+        for (i4 = 4 * i0 - pp + 6; i4 <= 4 * n0 - pp + 2; i4 += 4) {
             qmax = fmax(qmax, Z[i4 - 1]);
         }
 
@@ -271,7 +270,7 @@ void dlasq2(const int n, f64* restrict Z, int* info)
     ndiv  = 2 * (n0 - i0);
 
     for (iwhila = 1; iwhila <= n + 1; iwhila++) {
-        if (n0 < 1) {
+        if (n0 < 0) {
             goto L170;
         }
 
@@ -282,10 +281,10 @@ void dlasq2(const int n, f64* restrict Z, int* info)
          * splits from the rest of the array, but is negated.
          */
         desig = ZERO;
-        if (n0 == n) {
+        if (n0 == n - 1) {
             sigma = ZERO;
         } else {
-            sigma = -Z[4 * n0 - 2];
+            sigma = -Z[4 * n0 + 2];
         }
         if (sigma < ZERO) {
             *info = 1;
@@ -298,13 +297,13 @@ void dlasq2(const int n, f64* restrict Z, int* info)
          */
         emax = ZERO;
         if (n0 > i0) {
-            emin = fabs(Z[4 * n0 - 6]);
+            emin = fabs(Z[4 * n0 - 2]);
         } else {
             emin = ZERO;
         }
-        qmin = Z[4 * n0 - 4];
+        qmin = Z[4 * n0];
         qmax = qmin;
-        for (i4 = 4 * n0; i4 >= 8; i4 -= 4) {
+        for (i4 = 4 * (n0 + 1); i4 >= 8; i4 -= 4) {
             if (Z[i4 - 6] <= ZERO) {
                 goto L100;
             }
@@ -318,37 +317,37 @@ void dlasq2(const int n, f64* restrict Z, int* info)
         i4 = 4;
 
 L100:
-        i0 = i4 / 4;
+        i0 = i4 / 4 - 1;
         pp = 0;
 
         if (n0 - i0 > 1) {
-            dee = Z[4 * i0 - 4];
+            dee = Z[4 * i0];
             deemin = dee;
             kmin = i0;
-            for (i4 = 4 * i0 + 1; i4 <= 4 * n0 - 3; i4 += 4) {
+            for (i4 = 4 * i0 + 5; i4 <= 4 * n0 + 1; i4 += 4) {
                 dee = Z[i4 - 1] * (dee / (dee + Z[i4 - 3]));
                 if (dee <= deemin) {
                     deemin = dee;
-                    kmin = (i4 + 3) / 4;
+                    kmin = (i4 + 3) / 4 - 1;
                 }
             }
             if ((kmin - i0) * 2 < n0 - kmin &&
-                deemin <= HALF * Z[4 * n0 - 4]) {
+                deemin <= HALF * Z[4 * n0]) {
                 ipn4 = 4 * (i0 + n0);
                 pp = 2;
                 for (i4 = 4 * i0; i4 <= 2 * (i0 + n0 - 1); i4 += 4) {
-                    temp = Z[i4 - 4];
-                    Z[i4 - 4] = Z[ipn4 - i4 - 4];
-                    Z[ipn4 - i4 - 4] = temp;
-                    temp = Z[i4 - 3];
-                    Z[i4 - 3] = Z[ipn4 - i4 - 3];
-                    Z[ipn4 - i4 - 3] = temp;
-                    temp = Z[i4 - 2];
-                    Z[i4 - 2] = Z[ipn4 - i4 - 6];
-                    Z[ipn4 - i4 - 6] = temp;
-                    temp = Z[i4 - 1];
-                    Z[i4 - 1] = Z[ipn4 - i4 - 5];
-                    Z[ipn4 - i4 - 5] = temp;
+                    temp = Z[i4];
+                    Z[i4] = Z[ipn4 - i4];
+                    Z[ipn4 - i4] = temp;
+                    temp = Z[i4 + 1];
+                    Z[i4 + 1] = Z[ipn4 - i4 + 1];
+                    Z[ipn4 - i4 + 1] = temp;
+                    temp = Z[i4 + 2];
+                    Z[i4 + 2] = Z[ipn4 - i4 - 2];
+                    Z[ipn4 - i4 - 2] = temp;
+                    temp = Z[i4 + 3];
+                    Z[i4 + 3] = Z[ipn4 - i4 - 1];
+                    Z[ipn4 - i4 - 1] = temp;
                 }
             }
         }
@@ -378,17 +377,17 @@ L100:
 
             /* When EMIN is very small check for splits. */
             if (pp == 0 && n0 - i0 >= 3) {
-                if (Z[4 * n0 - 1] <= tol2 * qmax ||
-                    Z[4 * n0 - 2] <= tol2 * sigma) {
+                if (Z[4 * n0 + 3] <= tol2 * qmax ||
+                    Z[4 * n0 + 2] <= tol2 * sigma) {
                     splt = i0 - 1;
-                    qmax = Z[4 * i0 - 4];
-                    emin = Z[4 * i0 - 2];
-                    oldemn = Z[4 * i0 - 1];
-                    for (i4 = 4 * i0; i4 <= 4 * (n0 - 3); i4 += 4) {
+                    qmax = Z[4 * i0];
+                    emin = Z[4 * i0 + 2];
+                    oldemn = Z[4 * i0 + 3];
+                    for (i4 = 4 * (i0 + 1); i4 <= 4 * (n0 - 2); i4 += 4) {
                         if (Z[i4 - 1] <= tol2 * Z[i4 - 4] ||
                             Z[i4 - 2] <= tol2 * sigma) {
                             Z[i4 - 2] = -sigma;
-                            splt = i4 / 4;
+                            splt = i4 / 4 - 1;
                             qmax = ZERO;
                             emin = Z[i4 + 2];
                             oldemn = Z[i4 + 3];
@@ -398,8 +397,8 @@ L100:
                             oldemn = fmin(oldemn, Z[i4 - 1]);
                         }
                     }
-                    Z[4 * n0 - 2] = emin;
-                    Z[4 * n0 - 1] = oldemn;
+                    Z[4 * n0 + 2] = emin;
+                    Z[4 * n0 + 3] = oldemn;
                     i0 = splt + 1;
                 }
             }
@@ -416,36 +415,31 @@ L100:
         i1 = i0;
         n1 = n0;
 L145:
-        tempq = Z[4 * i0 - 4];
-        Z[4 * i0 - 4] = Z[4 * i0 - 4] + sigma;
+        tempq = Z[4 * i0];
+        Z[4 * i0] = Z[4 * i0] + sigma;
         for (k = i0 + 1; k <= n0; k++) {
-            tempe = Z[4 * k - 6];
-            Z[4 * k - 6] = Z[4 * k - 6] * (tempq / Z[4 * k - 8]);
-            tempq = Z[4 * k - 4];
-            Z[4 * k - 4] = Z[4 * k - 4] + sigma + tempe - Z[4 * k - 6];
+            tempe = Z[4 * k - 2];
+            Z[4 * k - 2] = Z[4 * k - 2] * (tempq / Z[4 * k - 4]);
+            tempq = Z[4 * k];
+            Z[4 * k] = Z[4 * k] + sigma + tempe - Z[4 * k - 2];
         }
 
         /* Prepare to do this on the previous block if there is one. */
-        if (i1 > 1) {
+        if (i1 > 0) {
             n1 = i1 - 1;
-            while (i1 >= 2 && Z[4 * i1 - 6] >= ZERO) {
+            while (i1 >= 1 && Z[4 * i1 - 2] >= ZERO) {
                 i1 = i1 - 1;
             }
-            sigma = -Z[4 * n1 - 2];
+            sigma = -Z[4 * n1 + 2];
             goto L145;
         }
 
-        for (k = 1; k <= n; k++) {
-            Z[2 * k - 2] = Z[4 * k - 4];
-            /*
-             * Only the block 1..N0 is unfinished. The rest of the e's
-             * must be essentially zero, although sometimes other data
-             * has been stored in them.
-             */
+        for (k = 0; k < n; k++) {
+            Z[2 * k] = Z[4 * k];
             if (k < n0) {
-                Z[2 * k - 1] = Z[4 * k - 2];
+                Z[2 * k + 1] = Z[4 * k + 2];
             } else {
-                Z[2 * k - 1] = 0.0;
+                Z[2 * k + 1] = 0.0;
             }
         }
         return;
@@ -462,16 +456,16 @@ L170:
     /*
      * Move q's to the front.
      */
-    for (k = 2; k <= n; k++) {
-        Z[k - 1] = Z[4 * k - 4];
+    for (k = 1; k < n; k++) {
+        Z[k] = Z[4 * k];
     }
 
     /* Sort and compute sum of eigenvalues. */
     dlasrt("D", n, Z, &iinfo);
 
     e = ZERO;
-    for (k = n; k >= 1; k--) {
-        e = e + Z[k - 1];
+    for (k = n - 1; k >= 0; k--) {
+        e = e + Z[k];
     }
 
     /* Store trace, sum(eigenvalues) and information on performance. */

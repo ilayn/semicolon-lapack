@@ -307,13 +307,13 @@ L40:
             D[kk] = D[i];
             D[i] = p;
             if (icompq == 1) {
-                IQ[i] = kk + 1;  /* Store 1-based index as in Fortran */
+                IQ[i] = kk;
             } else if (icompq == 2) {
                 cblas_sswap(n, &U[i * ldu], 1, &U[kk * ldu], 1);
                 cblas_sswap(n, &VT[i], ldvt, &VT[kk], ldvt);
             }
         } else if (icompq == 1) {
-            IQ[i] = i + 1;  /* Store 1-based index as in Fortran */
+            IQ[i] = i;
         }
     }
 

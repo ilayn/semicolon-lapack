@@ -116,7 +116,7 @@ void cgehrd(const int n, const int ilo, const int ihi,
         /* Determine when to cross over from blocked to unblocked code
            (last block is always handled by unblocked code) */
         nx = lapack_get_nx("GEHRD");
-        if (nx > nb) nx = nb;
+        if (nx < nb) nx = nb;
 
         if (nx < nh) {
             /* Determine if workspace is large enough for blocked code */

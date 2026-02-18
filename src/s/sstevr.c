@@ -312,8 +312,7 @@ void sstevr(const char* jobz, const char* range, const int n,
             order = "E";
         }
 
-        /* sstebz uses 1-based il/iu; convert from 0-based */
-        sstebz(range, order, n, vll, vuu, il + 1, iu + 1, abstol, D, E,
+        sstebz(range, order, n, vll, vuu, il, iu, abstol, D, E,
                m, &nsplit, W, &iwork[indibl], &iwork[indisp], work,
                &iwork[indiwo], info);
     }

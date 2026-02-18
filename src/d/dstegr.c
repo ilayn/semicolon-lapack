@@ -53,12 +53,12 @@
  *                       searched for eigenvalues. vl < vu.
  *                       Not referenced if range = 'A' or 'I'.
  * @param[in]     il     If range = 'I', the index of the smallest eigenvalue
- *                       to be returned (1-based).
- *                       1 <= il <= iu <= n, if n > 0.
+ *                       to be returned (0-based).
+ *                       0 <= il <= iu <= n-1, if n > 0.
  *                       Not referenced if range = 'A' or 'V'.
  * @param[in]     iu     If range = 'I', the index of the largest eigenvalue
- *                       to be returned (1-based).
- *                       1 <= il <= iu <= n, if n > 0.
+ *                       to be returned (0-based).
+ *                       0 <= il <= iu <= n-1, if n > 0.
  *                       Not referenced if range = 'A' or 'V'.
  * @param[in]     abstol Unused. Was the absolute error tolerance in previous versions.
  * @param[out]    m      The total number of eigenvalues found. 0 <= m <= n.

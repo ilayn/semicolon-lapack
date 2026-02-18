@@ -32,9 +32,9 @@
  * @param[in]     vl     If range='V', the lower bound of the interval.
  * @param[in]     vu     If range='V', the upper bound of the interval.
  * @param[in]     il     If range='I', the index of the smallest eigenvalue
- *                       to be returned (1-based).
+ *                       to be returned (0-based).
  * @param[in]     iu     If range='I', the index of the largest eigenvalue
- *                       to be returned (1-based).
+ *                       to be returned (0-based).
  * @param[in]     abstol The absolute error tolerance for the eigenvalues.
  * @param[out]    m      The total number of eigenvalues found.
  * @param[out]    W      Double precision array, dimension (n). The first m
@@ -87,9 +87,9 @@ void dstevx(const char* jobz, const char* range, const int n,
             if (n > 0 && vu <= vl)
                 *info = -7;
         } else if (indeig) {
-            if (il < 1 || il > (1 > n ? 1 : n)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -8;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -9;
             }
         }
@@ -164,7 +164,7 @@ void dstevx(const char* jobz, const char* range, const int n,
      * then try DSTEBZ. */
     int test = 0;
     if (indeig) {
-        if (il == 1 && iu == n)
+        if (il == 0 && iu == n - 1)
             test = 1;
     }
     if ((alleig || test) && abstol <= ZERO) {

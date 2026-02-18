@@ -22,7 +22,7 @@ static const f32 FOUR = 4.0f;
  * The diagonal entries in D are assumed to satisfy 0 <= D[0] < D[1].
  * We also assume RHO > 0 and that the Euclidean norm of Z is one.
  *
- * @param[in]     i       The index of the eigenvalue to be computed. i = 1 or i = 2.
+ * @param[in]     i       The index of the eigenvalue to be computed. i = 0 or i = 1.
  * @param[in]     D       Array of dimension 2. The original eigenvalues. 0 <= D[0] < D[1].
  * @param[in]     Z       Array of dimension 2. The components of the updating vector.
  * @param[out]    delta   Array of dimension 2. Contains (D[j] - sigma_i) in its j-th component.
@@ -39,7 +39,7 @@ void slasd5(const int i, const f32* restrict D, const f32* restrict Z,
     del = D[1] - D[0];
     delsq = del * (D[1] + D[0]);
 
-    if (i == 1) {
+    if (i == 0) {
         w = ONE + FOUR * rho * (Z[1] * Z[1] / (D[0] + THREE * D[1]) -
                                 Z[0] * Z[0] / (THREE * D[0] + D[1])) / del;
 
@@ -78,7 +78,7 @@ void slasd5(const int i, const f32* restrict D, const f32* restrict Z,
             work[1] = TWO * D[1] + tau;
         }
     } else {
-        /* Now i == 2 */
+        /* Now i == 1 */
         b = -delsq + rho * (Z[0] * Z[0] + Z[1] * Z[1]);
         c = rho * Z[1] * Z[1] * delsq;
 

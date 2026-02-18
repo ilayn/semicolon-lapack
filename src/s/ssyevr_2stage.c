@@ -71,9 +71,9 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
                 *info = -8;
             }
         } else if (indeig) {
-            if (il < 1 || il > ((1 > n) ? 1 : n)) {
+            if (il < 0 || il > ((0 > n - 1) ? 0 : n - 1)) {
                 *info = -9;
-            } else if (iu < ((n < il) ? n : il) || iu > n) {
+            } else if (iu < ((n - 1 < il) ? n - 1 : il) || iu > n - 1) {
                 *info = -10;
             }
         }
@@ -181,7 +181,7 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
                   &work[inde], &work[indtau], &work[indhous],
                   lhtrd, &work[indwk], llwork, &iinfo);
 
-    if ((alleig || (indeig && il == 1 && iu == n)) && ieeeok == 1) {
+    if ((alleig || (indeig && il == 0 && iu == n - 1)) && ieeeok == 1) {
         if (!wantz) {
             cblas_scopy(n, &work[indd], 1, W, 1);
             cblas_scopy(n - 1, &work[inde], 1, &work[indee], 1);

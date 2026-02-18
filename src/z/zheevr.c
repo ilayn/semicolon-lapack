@@ -128,9 +128,9 @@ void zheevr(
             if (n > 0 && vu <= vl)
                 *info = -8;
         } else if (indeig) {
-            if (il < 1 || il > (1 > n ? 1 : n)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -9;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -10;
             }
         }
@@ -249,7 +249,7 @@ void zheevr(
     zhetrd(uplo, n, A, lda, &rwork[indrd], &rwork[indre],
            &work[indtau], &work[indwk], llwork, &iinfo);
 
-    if ((alleig || (indeig && il == 1 && iu == n)) && ieeeok == 1) {
+    if ((alleig || (indeig && il == 0 && iu == n - 1)) && ieeeok == 1) {
         if (!wantz) {
             cblas_dcopy(n, &rwork[indrd], 1, W, 1);
             cblas_dcopy(n - 1, &rwork[indre], 1, &rwork[indree], 1);

@@ -10,8 +10,8 @@
  * SLASQ5 computes one dqds transform in ping-pong form, one
  * version for IEEE machines another for non IEEE machines.
  *
- * @param[in]     i0     First index (1-based).
- * @param[in]     n0     Last index (1-based).
+ * @param[in]     i0     First index (0-based).
+ * @param[in]     n0     Last index (0-based).
  * @param[in,out] Z      Double precision array, dimension (4*N).
  *                        Z holds the qd array. EMIN is stored in Z(4*N0)
  *                        to avoid an extra argument.
@@ -46,214 +46,214 @@ void slasq5(const int i0, const int n0, f32* restrict Z,
     }
 
     if (tau != 0.0f) {
-        j4 = 4 * i0 + pp - 3;
-        emin = Z[(j4 + 4) - 1];
-        d = Z[j4 - 1] - tau;
+        j4 = 4 * i0 + pp;
+        emin = Z[j4 + 4];
+        d = Z[j4] - tau;
         *dmin = d;
-        *dmin1 = -Z[j4 - 1];
+        *dmin1 = -Z[j4];
 
         if (ieee) {
             /* Code for IEEE arithmetic. */
             if (pp == 0) {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 2) - 1] = d + Z[(j4 - 1) - 1];
-                    temp = Z[(j4 + 1) - 1] / Z[(j4 - 2) - 1];
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 2] = d + Z[j4 - 1];
+                    temp = Z[j4 + 1] / Z[j4 - 2];
                     d = d * temp - tau;
                     *dmin = fminf(*dmin, d);
-                    Z[j4 - 1] = Z[(j4 - 1) - 1] * temp;
-                    emin = fminf(Z[j4 - 1], emin);
+                    Z[j4] = Z[j4 - 1] * temp;
+                    emin = fminf(Z[j4], emin);
                 }
             } else {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 3) - 1] = d + Z[j4 - 1];
-                    temp = Z[(j4 + 2) - 1] / Z[(j4 - 3) - 1];
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 3] = d + Z[j4];
+                    temp = Z[j4 + 2] / Z[j4 - 3];
                     d = d * temp - tau;
                     *dmin = fminf(*dmin, d);
-                    Z[(j4 - 1) - 1] = Z[j4 - 1] * temp;
-                    emin = fminf(Z[(j4 - 1) - 1], emin);
+                    Z[j4 - 1] = Z[j4] * temp;
+                    emin = fminf(Z[j4 - 1], emin);
                 }
             }
 
             /* Unroll last two steps. */
             *dnm2 = d;
             *dmin2 = *dmin;
-            j4 = 4 * (n0 - 2) - pp;
+            j4 = 4 * n0 - pp - 5;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm2 + Z[j4p2 - 1];
-            Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-            *dnm1 = Z[(j4p2 + 2) - 1] * (*dnm2 / Z[(j4 - 2) - 1]) - tau;
+            Z[j4 - 2] = *dnm2 + Z[j4p2];
+            Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+            *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
             *dmin = fminf(*dmin, *dnm1);
 
             *dmin1 = *dmin;
             j4 = j4 + 4;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm1 + Z[j4p2 - 1];
-            Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-            *dn = Z[(j4p2 + 2) - 1] * (*dnm1 / Z[(j4 - 2) - 1]) - tau;
+            Z[j4 - 2] = *dnm1 + Z[j4p2];
+            Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+            *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
             *dmin = fminf(*dmin, *dn);
 
         } else {
             /* Code for non IEEE arithmetic. */
             if (pp == 0) {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 2) - 1] = d + Z[(j4 - 1) - 1];
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 2] = d + Z[j4 - 1];
                     if (d < 0.0f) {
                         return;
                     } else {
-                        Z[j4 - 1] = Z[(j4 + 1) - 1] * (Z[(j4 - 1) - 1] / Z[(j4 - 2) - 1]);
-                        d = Z[(j4 + 1) - 1] * (d / Z[(j4 - 2) - 1]) - tau;
+                        Z[j4] = Z[j4 + 1] * (Z[j4 - 1] / Z[j4 - 2]);
+                        d = Z[j4 + 1] * (d / Z[j4 - 2]) - tau;
+                    }
+                    *dmin = fminf(*dmin, d);
+                    emin = fminf(emin, Z[j4]);
+                }
+            } else {
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 3] = d + Z[j4];
+                    if (d < 0.0f) {
+                        return;
+                    } else {
+                        Z[j4 - 1] = Z[j4 + 2] * (Z[j4] / Z[j4 - 3]);
+                        d = Z[j4 + 2] * (d / Z[j4 - 3]) - tau;
                     }
                     *dmin = fminf(*dmin, d);
                     emin = fminf(emin, Z[j4 - 1]);
-                }
-            } else {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 3) - 1] = d + Z[j4 - 1];
-                    if (d < 0.0f) {
-                        return;
-                    } else {
-                        Z[(j4 - 1) - 1] = Z[(j4 + 2) - 1] * (Z[j4 - 1] / Z[(j4 - 3) - 1]);
-                        d = Z[(j4 + 2) - 1] * (d / Z[(j4 - 3) - 1]) - tau;
-                    }
-                    *dmin = fminf(*dmin, d);
-                    emin = fminf(emin, Z[(j4 - 1) - 1]);
                 }
             }
 
             /* Unroll last two steps. */
             *dnm2 = d;
             *dmin2 = *dmin;
-            j4 = 4 * (n0 - 2) - pp;
+            j4 = 4 * n0 - pp - 5;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm2 + Z[j4p2 - 1];
+            Z[j4 - 2] = *dnm2 + Z[j4p2];
             if (*dnm2 < 0.0f) {
                 return;
             } else {
-                Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-                *dnm1 = Z[(j4p2 + 2) - 1] * (*dnm2 / Z[(j4 - 2) - 1]) - tau;
+                Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+                *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
             }
             *dmin = fminf(*dmin, *dnm1);
 
             *dmin1 = *dmin;
             j4 = j4 + 4;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm1 + Z[j4p2 - 1];
+            Z[j4 - 2] = *dnm1 + Z[j4p2];
             if (*dnm1 < 0.0f) {
                 return;
             } else {
-                Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-                *dn = Z[(j4p2 + 2) - 1] * (*dnm1 / Z[(j4 - 2) - 1]) - tau;
+                Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+                *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
             }
             *dmin = fminf(*dmin, *dn);
         }
     } else {
         /* This is the version that sets d's to zero if they are small enough */
-        j4 = 4 * i0 + pp - 3;
-        emin = Z[(j4 + 4) - 1];
-        d = Z[j4 - 1] - tau;
+        j4 = 4 * i0 + pp;
+        emin = Z[j4 + 4];
+        d = Z[j4] - tau;
         *dmin = d;
-        *dmin1 = -Z[j4 - 1];
+        *dmin1 = -Z[j4];
 
         if (ieee) {
             /* Code for IEEE arithmetic. */
             if (pp == 0) {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 2) - 1] = d + Z[(j4 - 1) - 1];
-                    temp = Z[(j4 + 1) - 1] / Z[(j4 - 2) - 1];
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 2] = d + Z[j4 - 1];
+                    temp = Z[j4 + 1] / Z[j4 - 2];
                     d = d * temp - tau;
                     if (d < dthresh) { d = 0.0f; }
                     *dmin = fminf(*dmin, d);
-                    Z[j4 - 1] = Z[(j4 - 1) - 1] * temp;
-                    emin = fminf(Z[j4 - 1], emin);
+                    Z[j4] = Z[j4 - 1] * temp;
+                    emin = fminf(Z[j4], emin);
                 }
             } else {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 3) - 1] = d + Z[j4 - 1];
-                    temp = Z[(j4 + 2) - 1] / Z[(j4 - 3) - 1];
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 3] = d + Z[j4];
+                    temp = Z[j4 + 2] / Z[j4 - 3];
                     d = d * temp - tau;
                     if (d < dthresh) { d = 0.0f; }
                     *dmin = fminf(*dmin, d);
-                    Z[(j4 - 1) - 1] = Z[j4 - 1] * temp;
-                    emin = fminf(Z[(j4 - 1) - 1], emin);
+                    Z[j4 - 1] = Z[j4] * temp;
+                    emin = fminf(Z[j4 - 1], emin);
                 }
             }
 
             /* Unroll last two steps. */
             *dnm2 = d;
             *dmin2 = *dmin;
-            j4 = 4 * (n0 - 2) - pp;
+            j4 = 4 * n0 - pp - 5;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm2 + Z[j4p2 - 1];
-            Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-            *dnm1 = Z[(j4p2 + 2) - 1] * (*dnm2 / Z[(j4 - 2) - 1]) - tau;
+            Z[j4 - 2] = *dnm2 + Z[j4p2];
+            Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+            *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
             *dmin = fminf(*dmin, *dnm1);
 
             *dmin1 = *dmin;
             j4 = j4 + 4;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm1 + Z[j4p2 - 1];
-            Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-            *dn = Z[(j4p2 + 2) - 1] * (*dnm1 / Z[(j4 - 2) - 1]) - tau;
+            Z[j4 - 2] = *dnm1 + Z[j4p2];
+            Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+            *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
             *dmin = fminf(*dmin, *dn);
 
         } else {
             /* Code for non IEEE arithmetic. */
             if (pp == 0) {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 2) - 1] = d + Z[(j4 - 1) - 1];
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 2] = d + Z[j4 - 1];
                     if (d < 0.0f) {
                         return;
                     } else {
-                        Z[j4 - 1] = Z[(j4 + 1) - 1] * (Z[(j4 - 1) - 1] / Z[(j4 - 2) - 1]);
-                        d = Z[(j4 + 1) - 1] * (d / Z[(j4 - 2) - 1]) - tau;
+                        Z[j4] = Z[j4 + 1] * (Z[j4 - 1] / Z[j4 - 2]);
+                        d = Z[j4 + 1] * (d / Z[j4 - 2]) - tau;
+                    }
+                    if (d < dthresh) { d = 0.0f; }
+                    *dmin = fminf(*dmin, d);
+                    emin = fminf(emin, Z[j4]);
+                }
+            } else {
+                for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
+                    Z[j4 - 3] = d + Z[j4];
+                    if (d < 0.0f) {
+                        return;
+                    } else {
+                        Z[j4 - 1] = Z[j4 + 2] * (Z[j4] / Z[j4 - 3]);
+                        d = Z[j4 + 2] * (d / Z[j4 - 3]) - tau;
                     }
                     if (d < dthresh) { d = 0.0f; }
                     *dmin = fminf(*dmin, d);
                     emin = fminf(emin, Z[j4 - 1]);
-                }
-            } else {
-                for (j4 = 4 * i0; j4 <= 4 * (n0 - 3); j4 += 4) {
-                    Z[(j4 - 3) - 1] = d + Z[j4 - 1];
-                    if (d < 0.0f) {
-                        return;
-                    } else {
-                        Z[(j4 - 1) - 1] = Z[(j4 + 2) - 1] * (Z[j4 - 1] / Z[(j4 - 3) - 1]);
-                        d = Z[(j4 + 2) - 1] * (d / Z[(j4 - 3) - 1]) - tau;
-                    }
-                    if (d < dthresh) { d = 0.0f; }
-                    *dmin = fminf(*dmin, d);
-                    emin = fminf(emin, Z[(j4 - 1) - 1]);
                 }
             }
 
             /* Unroll last two steps. */
             *dnm2 = d;
             *dmin2 = *dmin;
-            j4 = 4 * (n0 - 2) - pp;
+            j4 = 4 * n0 - pp - 5;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm2 + Z[j4p2 - 1];
+            Z[j4 - 2] = *dnm2 + Z[j4p2];
             if (*dnm2 < 0.0f) {
                 return;
             } else {
-                Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-                *dnm1 = Z[(j4p2 + 2) - 1] * (*dnm2 / Z[(j4 - 2) - 1]) - tau;
+                Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+                *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
             }
             *dmin = fminf(*dmin, *dnm1);
 
             *dmin1 = *dmin;
             j4 = j4 + 4;
             j4p2 = j4 + 2 * pp - 1;
-            Z[(j4 - 2) - 1] = *dnm1 + Z[j4p2 - 1];
+            Z[j4 - 2] = *dnm1 + Z[j4p2];
             if (*dnm1 < 0.0f) {
                 return;
             } else {
-                Z[j4 - 1] = Z[(j4p2 + 2) - 1] * (Z[j4p2 - 1] / Z[(j4 - 2) - 1]);
-                *dn = Z[(j4p2 + 2) - 1] * (*dnm1 / Z[(j4 - 2) - 1]) - tau;
+                Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
+                *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
             }
             *dmin = fminf(*dmin, *dn);
         }
     }
 
-    Z[(j4 + 2) - 1] = *dn;
-    Z[(4 * n0 - pp) - 1] = emin;
+    Z[j4 + 2] = *dn;
+    Z[4 * n0 - pp + 3] = emin;
 }

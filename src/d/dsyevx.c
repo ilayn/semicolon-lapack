@@ -28,8 +28,8 @@
  * @param[in]     lda     The leading dimension of A. lda >= max(1, n).
  * @param[in]     vl      If RANGE='V', lower bound of interval. Not referenced otherwise.
  * @param[in]     vu      If RANGE='V', upper bound of interval. VL < VU. Not referenced otherwise.
- * @param[in]     il      If RANGE='I', index of smallest eigenvalue (1-based). Not referenced otherwise.
- * @param[in]     iu      If RANGE='I', index of largest eigenvalue (1-based). Not referenced otherwise.
+ * @param[in]     il      If RANGE='I', index of smallest eigenvalue (0-based). Not referenced otherwise.
+ * @param[in]     iu      If RANGE='I', index of largest eigenvalue (0-based). Not referenced otherwise.
  * @param[in]     abstol  Absolute error tolerance for eigenvalues.
  * @param[out]    m       The total number of eigenvalues found.
  * @param[out]    W       Array of dimension (n). The first M elements contain
@@ -94,9 +94,9 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
                 *info = -8;
             }
         } else if (indeig) {
-            if (il < 1 || il > (n > 1 ? n : 1)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -9;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -10;
             }
         }
@@ -213,7 +213,7 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
      * some eigenvalue, then try DSTEBZ. */
     test = 0;
     if (indeig) {
-        if (il == 1 && iu == n) {
+        if (il == 0 && iu == n - 1) {
             test = 1;
         }
     }

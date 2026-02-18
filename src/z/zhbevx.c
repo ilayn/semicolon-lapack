@@ -113,9 +113,9 @@ void zhbevx(
             if (n > 0 && vu <= vl)
                 *info = -11;
         } else if (indeig) {
-            if (il < 1 || il > (1 > n ? 1 : n)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -12;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -13;
             }
         }
@@ -203,7 +203,7 @@ void zhbevx(
 
     test = 0;
     if (indeig) {
-        if (il == 1 && iu == n) {
+        if (il == 0 && iu == n - 1) {
             test = 1;
         }
     }

@@ -37,7 +37,7 @@
  *
  * @param[in,out] K
  *          Integer array, dimension (m).
- *          On entry, K contains the permutation vector (1-based indices).
+ *          On entry, K contains the permutation vector (0-based indices).
  *          K is used as internal workspace, but reset to its original
  *          value on output.
  */
@@ -56,21 +56,21 @@ void clapmr(
         return;
 
     for (i = 0; i < m; i++) {
-        K[i] = -K[i];
+        K[i] = -(K[i] + 1);
     }
 
     if (forwrd) {
 
         for (i = 0; i < m; i++) {
 
-            if (K[i] > 0)
+            if (K[i] >= 0)
                 continue;
 
             j = i;
-            K[j] = -K[j];
-            in = K[j] - 1;
+            K[j] = -(K[j] + 1);
+            in = K[j];
 
-            while (K[in] <= 0) {
+            while (K[in] < 0) {
 
                 for (jj = 0; jj < n; jj++) {
                     temp = X[j + jj * ldx];
@@ -78,9 +78,9 @@ void clapmr(
                     X[in + jj * ldx] = temp;
                 }
 
-                K[in] = -K[in];
+                K[in] = -(K[in] + 1);
                 j = in;
-                in = K[in] - 1;
+                in = K[in];
             }
 
         }
@@ -89,11 +89,11 @@ void clapmr(
 
         for (i = 0; i < m; i++) {
 
-            if (K[i] > 0)
+            if (K[i] >= 0)
                 continue;
 
-            K[i] = -K[i];
-            j = K[i] - 1;
+            K[i] = -(K[i] + 1);
+            j = K[i];
 
             while (j != i) {
 
@@ -103,8 +103,8 @@ void clapmr(
                     X[j + jj * ldx] = temp;
                 }
 
-                K[j] = -K[j];
-                j = K[j] - 1;
+                K[j] = -(K[j] + 1);
+                j = K[j];
             }
 
         }

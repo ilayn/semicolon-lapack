@@ -85,9 +85,7 @@ void slasd8(const int icompq, const int k,
        and the updated Z.
        DO 40 J = 1, K -> for j = 0 to k-1 (0-based) */
     for (j = 0; j < k; j++) {
-        /* CALL SLASD4(K, J, DSIGMA, Z, WORK(IWK1), RHO, D(J), WORK(IWK2), INFO)
-           Note: SLASD4 expects J as 1-based index */
-        slasd4(k, j + 1, DSIGMA, Z, &work[iwk1], rho, &D[j], &work[iwk2], info);
+        slasd4(k, j, DSIGMA, Z, &work[iwk1], rho, &D[j], &work[iwk2], info);
 
         if (*info != 0) {
             return;

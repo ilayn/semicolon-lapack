@@ -236,7 +236,7 @@ SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
 
         while (!sorted) {
             sorted = 1;
-            kend = i;
+            kend = i - 1;
             i = infqr;
             if (i == *ns - 1) {
                 k = i + 1;

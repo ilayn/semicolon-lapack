@@ -20,7 +20,7 @@
  * @param[in]     n      The order of the matrix A.
  * @param[in]     k      The offset for the reduction. Elements below the k-th
  *                       subdiagonal in the first NB columns are reduced to zero.
- *                       k < n. (0-based: corresponds to Fortran K-1)
+ *                       k < n. (0-based)
  * @param[in]     nb     The number of columns to be reduced.
  * @param[in,out] A      On entry, the n-by-(n-k) general matrix A.
  *                       On exit, the elements on and above the k-th subdiagonal
@@ -52,12 +52,13 @@ void zlahr2(const int n, const int k, const int nb,
 
     for (i = 0; i < nb; i++) {
         if (i > 0) {
-            /* Update A(k:n-1, i)
+            /* Update A(k+1:n-1, i)
                Update i-th column of A - Y * V**H */
-            zlacgv(i, &A[k + i - 1], lda);
-            cblas_zgemv(CblasColMajor, CblasNoTrans, n - k, i, &NEG_ONE,
-                        &Y[k], ldy, &A[k + i - 1], lda, &ONE, &A[k + i * lda], 1);
-            zlacgv(i, &A[k + i - 1], lda);
+            zlacgv(i, &A[k + i], lda);
+            cblas_zgemv(CblasColMajor, CblasNoTrans, n - k - 1, i, &NEG_ONE,
+                        &Y[k + 1], ldy, &A[k + i], lda, &ONE,
+                        &A[(k + 1) + i * lda], 1);
+            zlacgv(i, &A[k + i], lda);
 
             /* Apply I - V * T**H * V**H to this column (call it b) from the
                left, using the last column of T as workspace
@@ -68,13 +69,13 @@ void zlahr2(const int n, const int k, const int nb,
                where V1 is unit lower triangular
 
                w := V1**H * b1 */
-            cblas_zcopy(i, &A[k + i * lda], 1, &T[(nb - 1) * ldt], 1);
+            cblas_zcopy(i, &A[(k + 1) + i * lda], 1, &T[(nb - 1) * ldt], 1);
             cblas_ztrmv(CblasColMajor, CblasLower, CblasConjTrans, CblasUnit,
-                        i, &A[k], lda, &T[(nb - 1) * ldt], 1);
+                        i, &A[k + 1], lda, &T[(nb - 1) * ldt], 1);
 
             /* w := w + V2**H * b2 */
-            cblas_zgemv(CblasColMajor, CblasConjTrans, n - k - i, i,
-                        &ONE, &A[k + i], lda, &A[k + i + i * lda], 1,
+            cblas_zgemv(CblasColMajor, CblasConjTrans, n - k - i - 1, i,
+                        &ONE, &A[k + i + 1], lda, &A[(k + i + 1) + i * lda], 1,
                         &ONE, &T[(nb - 1) * ldt], 1);
 
             /* w := T**H * w */
@@ -82,35 +83,36 @@ void zlahr2(const int n, const int k, const int nb,
                         i, T, ldt, &T[(nb - 1) * ldt], 1);
 
             /* b2 := b2 - V2*w */
-            cblas_zgemv(CblasColMajor, CblasNoTrans, n - k - i, i, &NEG_ONE,
-                        &A[k + i], lda, &T[(nb - 1) * ldt], 1,
-                        &ONE, &A[k + i + i * lda], 1);
+            cblas_zgemv(CblasColMajor, CblasNoTrans, n - k - i - 1, i, &NEG_ONE,
+                        &A[k + i + 1], lda, &T[(nb - 1) * ldt], 1,
+                        &ONE, &A[(k + i + 1) + i * lda], 1);
 
             /* b1 := b1 - V1*w */
             cblas_ztrmv(CblasColMajor, CblasLower, CblasNoTrans, CblasUnit,
-                        i, &A[k], lda, &T[(nb - 1) * ldt], 1);
-            cblas_zaxpy(i, &NEG_ONE, &T[(nb - 1) * ldt], 1, &A[k + i * lda], 1);
+                        i, &A[k + 1], lda, &T[(nb - 1) * ldt], 1);
+            cblas_zaxpy(i, &NEG_ONE, &T[(nb - 1) * ldt], 1, &A[(k + 1) + i * lda], 1);
 
-            A[k + i - 1 + (i - 1) * lda] = ei;
+            A[(k + i) + (i - 1) * lda] = ei;
         }
 
-        /* Generate the elementary reflector H(i) to annihilate A(k+i+1:n-1, i) */
-        int len = n - k - i;
-        int start = (k + i + 1 < n) ? (k + i + 1) : (n - 1);
-        zlarfg(len, &A[k + i + i * lda], &A[start + i * lda], 1, &tau[i]);
-        ei = A[k + i + i * lda];
-        A[k + i + i * lda] = ONE;
+        /* Generate the elementary reflector H(i) to annihilate A(k+i+2:n-1, i) */
+        int len = n - k - i - 1;
+        int start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
+        zlarfg(len, &A[(k + i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);
+        ei = A[(k + i + 1) + i * lda];
+        A[(k + i + 1) + i * lda] = ONE;
 
-        /* Compute Y(k:n-1, i) */
-        cblas_zgemv(CblasColMajor, CblasNoTrans, n - k, len,
-                    &ONE, &A[k + (i + 1) * lda], lda, &A[k + i + i * lda], 1,
-                    &ZERO, &Y[k + i * ldy], 1);
+        /* Compute Y(k+1:n-1, i) */
+        cblas_zgemv(CblasColMajor, CblasNoTrans, n - k - 1, len,
+                    &ONE, &A[(k + 1) + (i + 1) * lda], lda,
+                    &A[(k + i + 1) + i * lda], 1,
+                    &ZERO, &Y[(k + 1) + i * ldy], 1);
         cblas_zgemv(CblasColMajor, CblasConjTrans, len, i,
-                    &ONE, &A[k + i], lda, &A[k + i + i * lda], 1,
+                    &ONE, &A[k + i + 1], lda, &A[(k + i + 1) + i * lda], 1,
                     &ZERO, &T[i * ldt], 1);
-        cblas_zgemv(CblasColMajor, CblasNoTrans, n - k, i, &NEG_ONE,
-                    &Y[k], ldy, &T[i * ldt], 1, &ONE, &Y[k + i * ldy], 1);
-        cblas_zscal(n - k, &tau[i], &Y[k + i * ldy], 1);
+        cblas_zgemv(CblasColMajor, CblasNoTrans, n - k - 1, i, &NEG_ONE,
+                    &Y[k + 1], ldy, &T[i * ldt], 1, &ONE, &Y[(k + 1) + i * ldy], 1);
+        cblas_zscal(n - k - 1, &tau[i], &Y[(k + 1) + i * ldy], 1);
 
         /* Compute T(0:i, i) */
         {
@@ -121,16 +123,18 @@ void zlahr2(const int n, const int k, const int nb,
                     i, T, ldt, &T[i * ldt], 1);
         T[i + i * ldt] = tau[i];
     }
-    A[k + nb - 1 + (nb - 1) * lda] = ei;
+    A[(k + nb) + (nb - 1) * lda] = ei;
 
     /* Compute Y(0:k, 0:nb-1) */
-    zlacpy("All", k, nb, &A[lda], lda, Y, ldy);
+    zlacpy("All", k + 1, nb, &A[lda], lda, Y, ldy);
     cblas_ztrmm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, CblasUnit,
-                k, nb, &ONE, &A[k], lda, Y, ldy);
-    if (n > k + nb) {
-        cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, k, nb, n - k - nb,
-                    &ONE, &A[(nb + 1) * lda], lda, &A[k + nb], lda, &ONE, Y, ldy);
+                k + 1, nb, &ONE, &A[k + 1], lda, Y, ldy);
+    if (n > k + 1 + nb) {
+        cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, k + 1, nb,
+                    n - k - 1 - nb,
+                    &ONE, &A[(nb + 1) * lda], lda, &A[k + nb + 1], lda,
+                    &ONE, Y, ldy);
     }
     cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, CblasNonUnit,
-                k, nb, &ONE, T, ldt, Y, ldy);
+                k + 1, nb, &ONE, T, ldt, Y, ldy);
 }

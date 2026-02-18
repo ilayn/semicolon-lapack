@@ -45,8 +45,8 @@ static const f32 FUDGE = 2.0f;
  * @param[in]     E       Array of dimension max(1,n-1). Superdiagonal elements.
  * @param[in]     vl      If range='V', lower bound of interval for singular values.
  * @param[in]     vu      If range='V', upper bound of interval. vu > vl.
- * @param[in]     il      If range='I', index of smallest singular value (1-based).
- * @param[in]     iu      If range='I', index of largest singular value (1-based).
+ * @param[in]     il      If range='I', index of smallest singular value (0-based).
+ * @param[in]     iu      If range='I', index of largest singular value (0-based).
  * @param[out]    ns      Number of singular values found. 0 <= ns <= n.
  * @param[out]    S       Array (n). First ns elements contain selected singular values.
  * @param[out]    Z       Array (ldz, K). If jobz='V', singular vectors stored as
@@ -100,9 +100,9 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
                 *info = -8;
             }
         } else if (indsv) {
-            if (il < 1 || il > (n > 1 ? n : 1)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -9;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -10;
             }
         }
@@ -226,7 +226,7 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
     } else if (indsv) {
         /* Find IL-th through IU-th singular values.
          * Map indices to values by finding boundary eigenvalues. */
-        iltgk = il;  /* 1-based in Fortran, but sstevx expects 1-based too */
+        iltgk = il;
         iutgk = iu;
         rngvx = 'V';
 
@@ -356,8 +356,8 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
 
                 if (ntgk > 0) {
                     /* Compute eigenvalues/vectors of the active submatrix */
-                    iltgk = 1;
-                    iutgk = ntgk / 2;
+                    iltgk = 0;
+                    iutgk = ntgk / 2 - 1;
                     if (allsv || vutgk == ZERO) {
                         if (sveq0 || smin < eps || (ntgk % 2) > 0) {
                             /* Special case: eigenvalue equal to zero or very small */

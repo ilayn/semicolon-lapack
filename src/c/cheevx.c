@@ -42,10 +42,10 @@
  *                        be searched for eigenvalues. VL < VU.
  *                        Not referenced if RANGE = 'A' or 'I'.
  * @param[in]     il      If RANGE='I', the index of the smallest eigenvalue
- *                        to be returned (1-based).
+ *                        to be returned (0-based).
  *                        Not referenced if RANGE = 'A' or 'V'.
  * @param[in]     iu      If RANGE='I', the index of the largest eigenvalue
- *                        to be returned (1-based).
+ *                        to be returned (0-based).
  *                        Not referenced if RANGE = 'A' or 'V'.
  * @param[in]     abstol  The absolute error tolerance for the eigenvalues.
  * @param[out]    m       The total number of eigenvalues found. 0 <= M <= N.
@@ -120,9 +120,9 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
                 *info = -8;
             }
         } else if (indeig) {
-            if (il < 1 || il > (n > 1 ? n : 1)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -9;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -10;
             }
         }
@@ -239,7 +239,7 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
      * some eigenvalue, then try SSTEBZ. */
     test = 0;
     if (indeig) {
-        if (il == 1 && iu == n) {
+        if (il == 0 && iu == n - 1) {
             test = 1;
         }
     }

@@ -28,8 +28,8 @@
  * @param[in]     ldb     Leading dimension of B. ldb >= max(1, n).
  * @param[in]     vl      Lower bound of interval (if range='V').
  * @param[in]     vu      Upper bound of interval (if range='V').
- * @param[in]     il      Index of smallest eigenvalue (if range='I', 1-based).
- * @param[in]     iu      Index of largest eigenvalue (if range='I', 1-based).
+ * @param[in]     il      Index of smallest eigenvalue (if range='I', 0-based).
+ * @param[in]     iu      Index of largest eigenvalue (if range='I', 0-based).
  * @param[in]     abstol  Absolute error tolerance for eigenvalues.
  * @param[out]    m       Total number of eigenvalues found.
  * @param[out]    W       Selected eigenvalues in ascending order.
@@ -102,9 +102,9 @@ void zhegvx(
                 *info = -11;
             }
         } else if (indeig) {
-            if (il < 1 || il > (n > 1 ? n : 1)) {
+            if (il < 0 || il > (0 > n - 1 ? 0 : n - 1)) {
                 *info = -12;
-            } else if (iu < (n < il ? n : il) || iu > n) {
+            } else if (iu < ((n - 1) < il ? (n - 1) : il) || iu > n - 1) {
                 *info = -13;
             }
         }

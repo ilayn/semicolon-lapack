@@ -50,10 +50,10 @@
  * @param[out]    m       Number of columns required to store the eigenvectors.
  * @param[out]    work    Workspace array of dimension (n+2)*n.
  * @param[out]    ifaill  Array of dimension mm. Convergence status for left
- *                        eigenvectors (0 if converged, k if eigenvector
- *                        corresponding to eigenvalue k failed).
+ *                        eigenvectors (-1 if converged, k (0-based) if
+ *                        eigenvector corresponding to eigenvalue k failed).
  * @param[out]    ifailr  Array of dimension mm. Convergence status for right
- *                        eigenvectors.
+ *                        eigenvectors (-1 if converged, k (0-based) if failed).
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
@@ -245,11 +245,11 @@ void shsein(
                     } else {
                         (*info)++;
                     }
-                    ifaill[ksr] = k + 1;  /* 1-based index for user */
-                    ifaill[ksi] = k + 1;
+                    ifaill[ksr] = k;
+                    ifaill[ksi] = k;
                 } else {
-                    ifaill[ksr] = 0;
-                    ifaill[ksi] = 0;
+                    ifaill[ksr] = -1;
+                    ifaill[ksi] = -1;
                 }
                 for (i = 0; i < kl; i++) {
                     VL[i + ksr * ldvl] = ZERO;
@@ -273,11 +273,11 @@ void shsein(
                     } else {
                         (*info)++;
                     }
-                    ifailr[ksr] = k + 1;  /* 1-based index for user */
-                    ifailr[ksi] = k + 1;
+                    ifailr[ksr] = k;
+                    ifailr[ksi] = k;
                 } else {
-                    ifailr[ksr] = 0;
-                    ifailr[ksi] = 0;
+                    ifailr[ksr] = -1;
+                    ifailr[ksi] = -1;
                 }
                 for (i = kr + 1; i < n; i++) {
                     VR[i + ksr * ldvr] = ZERO;

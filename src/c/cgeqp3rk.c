@@ -274,7 +274,7 @@ void cgeqp3rk(
             ioffset = j - 1;
 
             claqp3rk(m, n_sub, nrhs, ioffset, &jb, abstol,
-                     reltol, kp1 + 1, maxc2nrm, &A[0 + (j - 1) * lda], lda,
+                     reltol, kp1, maxc2nrm, &A[0 + (j - 1) * lda], lda,
                      &done, &jbf, maxc2nrmk, relmaxc2nrmk,
                      &jpiv[j - 1], &tau[j - 1],
                      &rwork[j - 1], &rwork[n + j - 1],
@@ -311,7 +311,7 @@ void cgeqp3rk(
         ioffset = j - 1;
 
         claqp2rk(m, n_sub, nrhs, ioffset, jmax - j + 1,
-                 abstol, reltol, kp1 + 1, maxc2nrm, &A[0 + (j - 1) * lda], lda,
+                 abstol, reltol, kp1, maxc2nrm, &A[0 + (j - 1) * lda], lda,
                  &kf, maxc2nrmk, relmaxc2nrmk, &jpiv[j - 1],
                  &tau[j - 1], &rwork[j - 1], &rwork[n + j - 1],
                  &work[0], &iinfo);

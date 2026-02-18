@@ -85,9 +85,7 @@ void dlasd8(const int icompq, const int k,
        and the updated Z.
        DO 40 J = 1, K -> for j = 0 to k-1 (0-based) */
     for (j = 0; j < k; j++) {
-        /* CALL DLASD4(K, J, DSIGMA, Z, WORK(IWK1), RHO, D(J), WORK(IWK2), INFO)
-           Note: DLASD4 expects J as 1-based index */
-        dlasd4(k, j + 1, DSIGMA, Z, &work[iwk1], rho, &D[j], &work[iwk2], info);
+        dlasd4(k, j, DSIGMA, Z, &work[iwk1], rho, &D[j], &work[iwk2], info);
 
         if (*info != 0) {
             return;

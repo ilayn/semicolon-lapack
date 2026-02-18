@@ -39,7 +39,7 @@
  *          The relative tolerance for maximum column 2-norm.
  *
  * @param[in] kp1
- *          The index of the column with the maximum 2-norm (1-based).
+ *          The index of the column with the maximum 2-norm (0-based).
  *
  * @param[in] maxc2nrm
  *          The maximum column 2-norm of the original matrix.
@@ -118,7 +118,7 @@ void dlaqp2rk(
 
         if (i == 0) {
 
-            kp = kp1 - 1;
+            kp = kp1;
 
         } else {
 

@@ -227,8 +227,8 @@ void strsna(const char* job, const char* howmny, const int* select,
              * Copy the matrix T to the array WORK and swap the diagonal
              * block beginning at T(k,k) to the (1,1) position. */
             slacpy("F", n, n, T, ldt, work, ldwork);
-            ifst = k + 1;  /* 1-based for strexc */
-            ilst = 1;
+            ifst = k;
+            ilst = 0;
             strexc("N", n, work, ldwork, dummy, 1, &ifst, &ilst,
                    &work[n * ldwork], &ierr);
 

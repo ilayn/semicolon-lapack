@@ -26,14 +26,14 @@
  * inverse iteration.
  *
  * @param[in]     n       The order of the matrix T. n >= 0.
- * @param[in,out] A       Double precision array, dimension (n).
+ * @param[in,out] A       Single precision array, dimension (n).
  *                        On entry, the diagonal elements of T.
  *                        On exit, the n diagonal elements of U.
  * @param[in]     lambda  The scalar lambda.
- * @param[in,out] B       Double precision array, dimension (n-1).
+ * @param[in,out] B       Single precision array, dimension (n-1).
  *                        On entry, the (n-1) super-diagonal elements of T.
  *                        On exit, the (n-1) super-diagonal elements of U.
- * @param[in,out] C       Double precision array, dimension (n-1).
+ * @param[in,out] C       Single precision array, dimension (n-1).
  *                        On entry, the (n-1) sub-diagonal elements of T.
  *                        On exit, the (n-1) sub-diagonal elements of L.
  * @param[in]     tol     A relative tolerance used to indicate whether or
@@ -41,18 +41,19 @@
  *                        If tol is supplied as less than eps, where eps is the
  *                        relative machine precision, then eps is used in place
  *                        of tol.
- * @param[out]    D       Double precision array, dimension (n-2).
+ * @param[out]    D       Single precision array, dimension (n-2).
  *                        On exit, the (n-2) second super-diagonal elements of U.
  * @param[out]    in      Integer array, dimension (n).
  *                        On exit, contains details of the permutation matrix P.
  *                        If an interchange occurred at the k-th step of the
- *                        elimination, then in[k] = 1, otherwise in[k] = 0.
- *                        The element in[n-1] returns the smallest positive
- *                        integer j such that
+ *                        elimination, then in[k] = 1, otherwise in[k] = 0,
+ *                        for 0 <= k < n-1.
+ *                        The element in[n-1] returns the smallest 0-based
+ *                        index j such that
  *                          |u(j,j)| <= norm((T - lambda*I)(j)) * tol,
  *                        where norm(A(j)) denotes the sum of absolute values of
  *                        the j-th row of A. If no such j exists then in[n-1]
- *                        is returned as zero. (Note: in[n-1] uses 1-based indexing.)
+ *                        is returned as -1.
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -k, the k-th argument had an illegal value.
@@ -83,10 +84,10 @@ void slagtf(
     }
 
     A[0] = A[0] - lambda;
-    in[n - 1] = 0;
+    in[n - 1] = -1;
     if (n == 1) {
         if (A[0] == 0.0f) {
-            in[0] = 1;
+            in[0] = 0;
         }
         return;
     }
@@ -137,11 +138,11 @@ void slagtf(
                 C[k] = mult;
             }
         }
-        if ((fmaxf(piv1, piv2) <= tl) && (in[n - 1] == 0)) {
-            in[n - 1] = k + 1;  /* 1-based index, as used by slagts */
+        if ((fmaxf(piv1, piv2) <= tl) && (in[n - 1] < 0)) {
+            in[n - 1] = k;
         }
     }
-    if ((fabsf(A[n - 1]) <= scale1 * tl) && (in[n - 1] == 0)) {
-        in[n - 1] = n;  /* 1-based index */
+    if ((fabsf(A[n - 1]) <= scale1 * tl) && (in[n - 1] < 0)) {
+        in[n - 1] = n - 1;
     }
 }

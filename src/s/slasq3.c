@@ -11,9 +11,9 @@
  * In case of failure it changes shifts, and tries again until output
  * is positive.
  *
- * @param[in]     i0     First index (1-based).
- * @param[in,out] n0     Last index (1-based).
- * @param[in,out] Z      Double precision array, dimension (4*N0).
+ * @param[in]     i0     First index (0-based).
+ * @param[in,out] n0     Last index (0-based).
+ * @param[in,out] Z      Double precision array, dimension (4*N).
  *                        Z holds the qd array.
  * @param[in,out] pp     PP=0 for ping, PP=1 for pong.
  *                        PP=2 indicates that flipping was applied to the Z array
@@ -69,12 +69,12 @@ void slasq3(const int i0, int* n0, f32* restrict Z,
         }
         if (*n0 == i0) {
             /* Single eigenvalue deflation (Fortran label 20). */
-            Z[(4 * (*n0) - 3) - 1] = Z[(4 * (*n0) + *pp - 3) - 1] + *sigma;
+            Z[4 * (*n0)] = Z[4 * (*n0) + *pp] + *sigma;
             *n0 = *n0 - 1;
             continue;
         }
 
-        nn = 4 * (*n0) + *pp;
+        nn = 4 * (*n0) + *pp + 3;
 
         if (*n0 == (i0 + 1)) {
             /* Two eigenvalues (Fortran label 40). */
@@ -82,11 +82,11 @@ void slasq3(const int i0, int* n0, f32* restrict Z,
         }
 
         /* Check whether E(N0-1) is negligible, 1 eigenvalue. */
-        if (Z[(nn - 5) - 1] > tol2 * (*sigma + Z[(nn - 3) - 1]) &&
-            Z[(nn - 2 * (*pp) - 4) - 1] > tol2 * Z[(nn - 7) - 1]) {
+        if (Z[nn - 5] > tol2 * (*sigma + Z[nn - 3]) &&
+            Z[nn - 2 * (*pp) - 4] > tol2 * Z[nn - 7]) {
             /* Not negligible, check E(N0-2) (Fortran label 30). */
-            if (Z[(nn - 9) - 1] > tol2 * (*sigma) &&
-                Z[(nn - 2 * (*pp) - 8) - 1] > tol2 * Z[(nn - 11) - 1]) {
+            if (Z[nn - 9] > tol2 * (*sigma) &&
+                Z[nn - 2 * (*pp) - 8] > tol2 * Z[nn - 11]) {
                 /* Both non-negligible, proceed to shift (Fortran label 50). */
                 goto compute_shift;
             }
@@ -95,33 +95,33 @@ void slasq3(const int i0, int* n0, f32* restrict Z,
         }
 
         /* E(N0-1) is negligible: single eigenvalue deflation (Fortran label 20). */
-        Z[(4 * (*n0) - 3) - 1] = Z[(4 * (*n0) + *pp - 3) - 1] + *sigma;
+        Z[4 * (*n0)] = Z[4 * (*n0) + *pp] + *sigma;
         *n0 = *n0 - 1;
         continue;
 
 two_eigenvalues:
         /* Fortran label 40: compute 2 eigenvalues. */
-        if (Z[(nn - 3) - 1] > Z[(nn - 7) - 1]) {
-            s = Z[(nn - 3) - 1];
-            Z[(nn - 3) - 1] = Z[(nn - 7) - 1];
-            Z[(nn - 7) - 1] = s;
+        if (Z[nn - 3] > Z[nn - 7]) {
+            s = Z[nn - 3];
+            Z[nn - 3] = Z[nn - 7];
+            Z[nn - 7] = s;
         }
-        t = HALF * ((Z[(nn - 7) - 1] - Z[(nn - 3) - 1]) + Z[(nn - 5) - 1]);
-        if (Z[(nn - 5) - 1] > Z[(nn - 3) - 1] * tol2 && t != ZERO) {
-            s = Z[(nn - 3) - 1] * (Z[(nn - 5) - 1] / t);
+        t = HALF * ((Z[nn - 7] - Z[nn - 3]) + Z[nn - 5]);
+        if (Z[nn - 5] > Z[nn - 3] * tol2 && t != ZERO) {
+            s = Z[nn - 3] * (Z[nn - 5] / t);
             if (s <= t) {
-                s = Z[(nn - 3) - 1] * (Z[(nn - 5) - 1] /
+                s = Z[nn - 3] * (Z[nn - 5] /
                     (t * (ONE + sqrtf(ONE + s / t))));
             } else {
-                s = Z[(nn - 3) - 1] * (Z[(nn - 5) - 1] /
+                s = Z[nn - 3] * (Z[nn - 5] /
                     (t + sqrtf(t) * sqrtf(t + s)));
             }
-            t = Z[(nn - 7) - 1] + (s + Z[(nn - 5) - 1]);
-            Z[(nn - 3) - 1] = Z[(nn - 3) - 1] * (Z[(nn - 7) - 1] / t);
-            Z[(nn - 7) - 1] = t;
+            t = Z[nn - 7] + (s + Z[nn - 5]);
+            Z[nn - 3] = Z[nn - 3] * (Z[nn - 7] / t);
+            Z[nn - 7] = t;
         }
-        Z[(4 * (*n0) - 7) - 1] = Z[(nn - 7) - 1] + *sigma;
-        Z[(4 * (*n0) - 3) - 1] = Z[(nn - 3) - 1] + *sigma;
+        Z[4 * (*n0) - 4] = Z[nn - 7] + *sigma;
+        Z[4 * (*n0)] = Z[nn - 3] + *sigma;
         *n0 = *n0 - 2;
         continue;
 
@@ -133,38 +133,38 @@ compute_shift:
 
         /* Reverse the qd-array, if warranted. */
         if (*dmin <= ZERO || *n0 < n0in) {
-            if (CBIAS * Z[(4 * i0 + *pp - 3) - 1] < Z[(4 * (*n0) + *pp - 3) - 1]) {
+            if (CBIAS * Z[4 * i0 + *pp] < Z[4 * (*n0) + *pp]) {
                 ipn4 = 4 * (i0 + *n0);
                 for (j4 = 4 * i0; j4 <= 2 * (i0 + *n0 - 1); j4 += 4) {
-                    temp = Z[(j4 - 3) - 1];
-                    Z[(j4 - 3) - 1] = Z[(ipn4 - j4 - 3) - 1];
-                    Z[(ipn4 - j4 - 3) - 1] = temp;
+                    temp = Z[j4];
+                    Z[j4] = Z[ipn4 - j4];
+                    Z[ipn4 - j4] = temp;
 
-                    temp = Z[(j4 - 2) - 1];
-                    Z[(j4 - 2) - 1] = Z[(ipn4 - j4 - 2) - 1];
-                    Z[(ipn4 - j4 - 2) - 1] = temp;
+                    temp = Z[j4 + 1];
+                    Z[j4 + 1] = Z[ipn4 - j4 + 1];
+                    Z[ipn4 - j4 + 1] = temp;
 
-                    temp = Z[(j4 - 1) - 1];
-                    Z[(j4 - 1) - 1] = Z[(ipn4 - j4 - 5) - 1];
-                    Z[(ipn4 - j4 - 5) - 1] = temp;
+                    temp = Z[j4 + 2];
+                    Z[j4 + 2] = Z[ipn4 - j4 - 2];
+                    Z[ipn4 - j4 - 2] = temp;
 
-                    temp = Z[(j4) - 1];
-                    Z[(j4) - 1] = Z[(ipn4 - j4 - 4) - 1];
-                    Z[(ipn4 - j4 - 4) - 1] = temp;
+                    temp = Z[j4 + 3];
+                    Z[j4 + 3] = Z[ipn4 - j4 - 1];
+                    Z[ipn4 - j4 - 1] = temp;
                 }
                 if (*n0 - i0 <= 4) {
-                    Z[(4 * (*n0) + *pp - 1) - 1] = Z[(4 * i0 + *pp - 1) - 1];
-                    Z[(4 * (*n0) - *pp) - 1] = Z[(4 * i0 - *pp) - 1];
+                    Z[4 * (*n0) + *pp + 2] = Z[4 * i0 + *pp + 2];
+                    Z[4 * (*n0) - *pp + 3] = Z[4 * i0 - *pp + 3];
                 }
-                *dmin2 = fminf(*dmin2, Z[(4 * (*n0) + *pp - 1) - 1]);
-                Z[(4 * (*n0) + *pp - 1) - 1] = fminf(fminf(Z[(4 * (*n0) + *pp - 1) - 1],
-                                                         Z[(4 * i0 + *pp - 1) - 1]),
-                                                    Z[(4 * i0 + *pp + 3) - 1]);
-                Z[(4 * (*n0) - *pp) - 1] = fminf(fminf(Z[(4 * (*n0) - *pp) - 1],
-                                                     Z[(4 * i0 - *pp) - 1]),
-                                                Z[(4 * i0 - *pp + 4) - 1]);
-                qmax_local = fmaxf(fmaxf(qmax_local, Z[(4 * i0 + *pp - 3) - 1]),
-                                  Z[(4 * i0 + *pp + 1) - 1]);
+                *dmin2 = fminf(*dmin2, Z[4 * (*n0) + *pp + 2]);
+                Z[4 * (*n0) + *pp + 2] = fminf(fminf(Z[4 * (*n0) + *pp + 2],
+                                                     Z[4 * i0 + *pp + 2]),
+                                                Z[4 * i0 + *pp + 6]);
+                Z[4 * (*n0) - *pp + 3] = fminf(fminf(Z[4 * (*n0) - *pp + 3],
+                                                     Z[4 * i0 - *pp + 3]),
+                                                Z[4 * i0 - *pp + 7]);
+                qmax_local = fmaxf(fmaxf(qmax_local, Z[4 * i0 + *pp]),
+                                  Z[4 * i0 + *pp + 4]);
                 *dmin = -ZERO;
             }
         }
@@ -188,10 +188,10 @@ compute_shift:
                 break;
 
             } else if (*dmin < ZERO && *dmin1 > ZERO &&
-                       Z[(4 * (*n0 - 1) - *pp) - 1] < tol * (*sigma + *dn1) &&
+                       Z[4 * (*n0) - *pp - 1] < tol * (*sigma + *dn1) &&
                        fabsf(*dn) < tol * (*sigma)) {
                 /* Convergence hidden by negative DN. */
-                Z[(4 * (*n0 - 1) - *pp + 2) - 1] = ZERO;
+                Z[4 * (*n0) - *pp + 1] = ZERO;
                 *dmin = ZERO;
                 break;
 

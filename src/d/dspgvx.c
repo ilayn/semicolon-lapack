@@ -25,7 +25,7 @@
  * @param[in,out] BP      Packed symmetric positive definite B. On exit, Cholesky factor.
  * @param[in]     vl      Lower bound if range='V'.
  * @param[in]     vu      Upper bound if range='V'. vl < vu.
- * @param[in]     il      Smallest eigenvalue index if range='I'. 1 <= il <= iu.
+ * @param[in]     il      Smallest eigenvalue index if range='I'. 0 <= il <= iu.
  * @param[in]     iu      Largest eigenvalue index if range='I'. il <= iu <= n.
  * @param[in]     abstol  Absolute error tolerance for eigenvalues.
  * @param[out]    m       Number of eigenvalues found.
@@ -86,9 +86,9 @@ void dspgvx(
                 *info = -9;
             }
         } else if (indeig) {
-            if (il < 1) {
+            if (il < 0) {
                 *info = -10;
-            } else if (iu < ((n < il) ? n : il) || iu > n) {
+            } else if (iu < ((n - 1 < il) ? n - 1 : il) || iu > n - 1) {
                 *info = -11;
             }
         }

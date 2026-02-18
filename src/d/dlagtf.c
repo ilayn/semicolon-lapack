@@ -46,13 +46,14 @@
  * @param[out]    in      Integer array, dimension (n).
  *                        On exit, contains details of the permutation matrix P.
  *                        If an interchange occurred at the k-th step of the
- *                        elimination, then in[k] = 1, otherwise in[k] = 0.
- *                        The element in[n-1] returns the smallest positive
- *                        integer j such that
+ *                        elimination, then in[k] = 1, otherwise in[k] = 0,
+ *                        for 0 <= k < n-1.
+ *                        The element in[n-1] returns the smallest 0-based
+ *                        index j such that
  *                          |u(j,j)| <= norm((T - lambda*I)(j)) * tol,
  *                        where norm(A(j)) denotes the sum of absolute values of
  *                        the j-th row of A. If no such j exists then in[n-1]
- *                        is returned as zero. (Note: in[n-1] uses 1-based indexing.)
+ *                        is returned as -1.
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -k, the k-th argument had an illegal value.
@@ -83,10 +84,10 @@ void dlagtf(
     }
 
     A[0] = A[0] - lambda;
-    in[n - 1] = 0;
+    in[n - 1] = -1;
     if (n == 1) {
         if (A[0] == 0.0) {
-            in[0] = 1;
+            in[0] = 0;
         }
         return;
     }
@@ -137,11 +138,11 @@ void dlagtf(
                 C[k] = mult;
             }
         }
-        if ((fmax(piv1, piv2) <= tl) && (in[n - 1] == 0)) {
-            in[n - 1] = k + 1;  /* 1-based index, as used by dlagts */
+        if ((fmax(piv1, piv2) <= tl) && (in[n - 1] < 0)) {
+            in[n - 1] = k;
         }
     }
-    if ((fabs(A[n - 1]) <= scale1 * tl) && (in[n - 1] == 0)) {
-        in[n - 1] = n;  /* 1-based index */
+    if ((fabs(A[n - 1]) <= scale1 * tl) && (in[n - 1] < 0)) {
+        in[n - 1] = n - 1;
     }
 }

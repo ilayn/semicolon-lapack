@@ -48,8 +48,8 @@ static const c64 CZERO = CMPLXF(0.0f, 0.0f);
  * @param[in]     lda     Leading dimension of A. lda >= max(1,m).
  * @param[in]     vl      If range='V', lower bound of interval (exclusive).
  * @param[in]     vu      If range='V', upper bound of interval. vu > vl.
- * @param[in]     il      If range='I', index of smallest singular value (1-based).
- * @param[in]     iu      If range='I', index of largest singular value (1-based).
+ * @param[in]     il      If range='I', index of smallest singular value (0-based).
+ * @param[in]     iu      If range='I', index of largest singular value (0-based).
  * @param[out]    ns      Number of singular values found.
  * @param[out]    S       Single precision array (min(m,n)). Singular values in descending order.
  * @param[out]    U       Complex*16 array (ldu, *). Left singular vectors if jobu='V'.
@@ -120,9 +120,9 @@ void cgesvdx(const char* jobu, const char* jobvt, const char* range,
                 *info = -9;
             }
         } else if (inds) {
-            if (il < 1 || il > (minmn > 1 ? minmn : 1)) {
+            if (il < 0 || il > (0 > minmn - 1 ? 0 : minmn - 1)) {
                 *info = -10;
-            } else if (iu < (minmn < il ? minmn : il) || iu > minmn) {
+            } else if (iu < ((minmn - 1) < il ? (minmn - 1) : il) || iu > minmn - 1) {
                 *info = -11;
             }
         }
@@ -216,8 +216,8 @@ void cgesvdx(const char* jobu, const char* jobvt, const char* range,
     /* Set singular value indices according to RANGE */
     if (alls) {
         rngtgk = 'I';
-        iltgk = 1;
-        iutgk = minmn;
+        iltgk = 0;
+        iutgk = minmn - 1;
     } else if (inds) {
         rngtgk = 'I';
         iltgk = il;
