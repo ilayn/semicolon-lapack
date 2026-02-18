@@ -68,6 +68,7 @@ lapack_tests = {
   'ddrvsx': ['test_ddrvsx.c', 'eigen'],      # Non-symmetric Schur form expert (DGEESX)
   'ddrvvx': ['test_ddrvvx.c', 'eigen'],      # Non-symmetric eigenvalue expert (DGEEVX)
   'ddrvst': ['test_ddrvst.c', 'eigen'],      # Symmetric eigenvalue drivers
+  'dchkst': ['test_dchkst.c', 'eigen'],      # Symmetric tridiagonal eigenvalue
   'dckglm': ['test_dckglm.c', 'glm'],       # GLM solver (DGGGLM)
   'dckgqr': ['test_dckgqr.c', 'gqr'],       # GQR/GRQ factorization (DGGQRF/DGGRQF)
   'dckgsv': ['test_dckgsv.c', 'gsv'],       # GSVD (DGGSVD3)
