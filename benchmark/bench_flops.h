@@ -192,21 +192,21 @@ static inline double ungqr_flops(double m, double n, double k)
  * side: 'L' = left, 'R' = right
  * ================================================================ */
 
-static inline double fmuls_unmqr(char side, double m, double n, double k)
+static inline double fmuls_unmqr(const char* side, double m, double n, double k)
 {
-    return (side == 'L' || side == 'l')
+    return (side[0] == 'L' || side[0] == 'l')
         ? (2*n*m*k - n*k*k + 2*n*k)
         : (2*n*m*k - m*k*k + m*k + n*k - 0.5*k*k + 0.5*k);
 }
 
-static inline double fadds_unmqr(char side, double m, double n, double k)
+static inline double fadds_unmqr(const char* side, double m, double n, double k)
 {
-    return (side == 'L' || side == 'l')
+    return (side[0] == 'L' || side[0] == 'l')
         ? (2*n*m*k - n*k*k + n*k)
         : (2*n*m*k - m*k*k + m*k);
 }
 
-static inline double unmqr_flops(char side, double m, double n, double k)
+static inline double unmqr_flops(const char* side, double m, double n, double k)
     { return fmuls_unmqr(side, m, n, k) + fadds_unmqr(side, m, n, k); }
 
 /* ================================================================

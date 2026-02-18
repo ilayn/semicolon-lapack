@@ -7,7 +7,6 @@
 #include "semicolon_lapack_single.h"
 #include "../include/lapack_tuning.h"
 #include <math.h>
-#include <stdio.h>
 #include <cblas.h>
 
 /* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
@@ -106,7 +105,6 @@ void sgelsd(const int m, const int n, const int nrhs,
 
     /* Test the input arguments */
     *info = 0;
-    fflush(stderr);
     minmn = m < n ? m : n;
     maxmn = m > n ? m : n;
     mnthr = lapack_get_mnthr("GELSS", m, n);

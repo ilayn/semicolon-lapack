@@ -170,6 +170,14 @@ int main(int argc, char* argv[])
     else if (npos == 3) { m = pos[0]; n = pos[1]; iters = pos[2]; }
 
     if (do_sweep) {
+        /* In sweep mode, at most one positional argument (iters override) */
+        if (npos > 1) {
+            fprintf(stderr, "Sweep does not take extra parameters."
+                    " Usage: %s --sweep [iters]\n", argv[0]);
+            return 1;
+        }
+        int sweep_iters_override = (npos == 1) ? pos[0] : 0;
+
         if (do_csv) {
             printf("m,n,iters,min_ms,med_ms,min_gflops,med_gflops\n");
         } else {
@@ -180,9 +188,6 @@ int main(int argc, char* argv[])
                    "---", "---", "-----", "-------", "-------",
                    "---------", "---------");
         }
-
-        /* In sweep mode, a positional argument overrides default iters */
-        int sweep_iters_override = (npos >= 1) ? pos[0] : 0;
 
         for (int s = 0; s < N_SWEEP; s++) {
             int sm = sweep_shapes[s].m;
