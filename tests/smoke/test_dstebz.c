@@ -398,9 +398,9 @@ static void test_range_index(void** state)
     /* Generate 1-2-1 Toeplitz matrix */
     gen_toeplitz_121(n, fix->D, fix->E);
 
-    /* il and iu are 1-based indices */
-    int il = n / 4 + 1;
-    int iu = 3 * n / 4;
+    /* il and iu are 0-based indices */
+    int il = n / 4;
+    int iu = 3 * n / 4 - 1;
 
     /* Call dstebz with RANGE='I' */
     dstebz("I", "E", n, 0.0, 0.0, il, iu, 2.0 * dlamch("S"),
@@ -425,7 +425,7 @@ static void test_range_index(void** state)
     qsort(fix->W, m, sizeof(f64), cmp_double);
 
     /* Compare with the corresponding subset of sorted reference eigenvalues */
-    /* Reference eigenvalues are sorted; indices il..iu correspond to positions [il-1..iu-1] */
+    /* Reference eigenvalues are sorted; 0-based il..iu correspond to positions [il..iu] */
     f64 maxref = 0.0;
     for (int i = 0; i < n; i++) {
         f64 absref = fabs(fix->W_ref[i]);
@@ -435,7 +435,7 @@ static void test_range_index(void** state)
 
     f64 maxerr = 0.0;
     for (int i = 0; i < m; i++) {
-        f64 err = fabs(fix->W[i] - fix->W_ref[il - 1 + i]);
+        f64 err = fabs(fix->W[i] - fix->W_ref[il + i]);
         if (err > maxerr) maxerr = err;
     }
     f64 resid = maxerr / (n * ulp * maxref);

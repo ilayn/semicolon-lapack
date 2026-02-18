@@ -78,6 +78,7 @@ lapack_tests = {
   'ddrvrf3': ['test_ddrvrf3.c', 'rfp'],     # DTFSM (RFP triangular solve)
   'ddrvrf4': ['test_ddrvrf4.c', 'rfp'],     # DSFRK (RFP rank-k update)
   'ddrgvx': ['test_ddrgvx.c', 'eigen'],     # Generalized eigenvalue expert (DGGEVX)
+  'ddrges': ['test_ddrges.c', 'eigen'],       # Generalized Schur form (DGGES)
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
 
   # RNG validation

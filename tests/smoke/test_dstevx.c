@@ -478,9 +478,9 @@ static void test_range_index(void** state)
         skip_test("RANGE='I' test requires n >= 10");
     }
 
-    /* Use il, iu as 1-based indices into the sorted eigenvalues */
-    int il = n / 4 + 1;      /* 1-based lower index */
-    int iu = 3 * n / 4;      /* 1-based upper index */
+    /* Use il, iu as 0-based indices into the sorted eigenvalues */
+    int il = n / 4;           /* 0-based lower index */
+    int iu = 3 * n / 4 - 1;  /* 0-based upper index */
     int m_expected = iu - il + 1;
 
     /* Generate 1-2-1 Toeplitz matrix */
@@ -528,16 +528,16 @@ static void test_range_index(void** state)
     assert_info_success(info);
     assert_int_equal(m, m_expected);
 
-    /* Compare eigenvalues with reference (il..iu are 1-based) */
+    /* Compare eigenvalues with reference (il..iu are 0-based) */
     f64 max_eig = 0.0;
     for (int i = 0; i < m; i++) {
-        f64 a = fabs(fix->W_ref[il - 1 + i]);
+        f64 a = fabs(fix->W_ref[il + i]);
         if (a > max_eig) max_eig = a;
     }
 
     f64 max_diff = 0.0;
     for (int i = 0; i < m; i++) {
-        f64 d = fabs(fix->W[i] - fix->W_ref[il - 1 + i]);
+        f64 d = fabs(fix->W[i] - fix->W_ref[il + i]);
         if (d > max_diff) max_diff = d;
     }
 
