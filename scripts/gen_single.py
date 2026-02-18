@@ -106,6 +106,10 @@ def build_code_subs(lapack_names):
     subs.append((re.compile(r"\bDBL_MIN\b"), "FLT_MIN"))
     subs.append((re.compile(r"\bDBL_MAX\b"), "FLT_MAX"))
 
+    # --- 5b. Type aliases ---
+    subs.append((re.compile(r"\bf64\b"), "f32"))
+    subs.append((re.compile(r"\bc128\b"), "c64"))
+
     # --- 6. LAPACK routine names (longest first to avoid partial matches) ---
     for name in sorted(lapack_names, key=len, reverse=True):
         sname = "s" + name[1:]
