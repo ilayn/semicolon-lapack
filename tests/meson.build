@@ -54,6 +54,7 @@ lapack_tests = {
   'dchkgg': ['test_dchkgg.c', 'eigen'],      # Generalized eigenvalue (Hessenberg) (DGGHRD/DHGEQZ/DTGEVC)
   'dchkhs': ['test_dchkhs.c', 'eigen'],      # Hessenberg Schur (DGEHRD/DHSEQR/DTREVC)
   'dchkbb': ['test_dchkbb.c', 'eigen'],      # Band bidiagonal reduction (DGBBRD)
+  'dchkbd': ['test_dchkbd.c', 'svd'],        # Bidiagonal SVD (DGEBRD/DBDSQR/DBDSDC/DBDSVDX)
   'dckcsd': ['test_dckcsd.c', 'eigen'],      # CS decomposition (DORCSD/DORCSD2BY1)
 
   # Expert driver tests (ddrv*.f ports)

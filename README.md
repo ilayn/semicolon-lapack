@@ -21,9 +21,9 @@ Testing is ported from LAPACK's official test suite, for double and single preci
 
 | | Ported | Total |
 |--|--------|-------|
-| LIN tests (dchk* + ddrv*) | 48 | 54 |
-| EIG tests (dchk* + ddrv*) | 11 | 33 |
-| Verification routines | 108 | 123 |
+| LIN tests (dchk* + ddrv*) | 54 | 54 |
+| EIG tests (dchk* + ddrv*) | 22 | 33 |
+| Verification routines | 123 | 123 |
 | Matrix generators + helpers | 39 | 39 |
 
 The complex precision tests have not been ported yet. We expect frequent code changes in the near term.
