@@ -22,13 +22,23 @@ cmake-build-*/
 *.swp
 *~
 
+# Clang tooling
+.cache/
+.clangd/
+.clang-format
+.clang-tidy
+compile_commands.json
+
+# Claude Code
+.claude/
+
 # OS artifacts
 .DS_Store
 Thumbs.db
 
 # Generated files
 *.log
-compile_commands.json
+profile.json.zip
 
 # Documentation build artifacts
 doc/build/
