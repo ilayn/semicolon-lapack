@@ -47,4 +47,4 @@ jobs:
         run: ninja -C builddir
 
       - name: Test
-        run: meson test -C builddir -v
+        run: meson test -C builddir --print-errorlogs
