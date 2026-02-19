@@ -55,6 +55,7 @@ lapack_tests = {
   'dchkhs': ['test_dchkhs.c', 'eigen'],      # Hessenberg Schur (DGEHRD/DHSEQR/DTREVC)
   'dchkbb': ['test_dchkbb.c', 'eigen'],      # Band bidiagonal reduction (DGBBRD)
   'dchksb': ['test_dchksb.c', 'eigen'],      # Symmetric band tridiagonal reduction (DSBTRD)
+  'dchksb2stg': ['test_dchksb2stg.c', 'eigen'], # Symmetric band 2-stage reduction (DSYTRD_SB2ST)
   'dchkbd': ['test_dchkbd.c', 'svd'],        # Bidiagonal SVD (DGEBRD/DBDSQR/DBDSDC/DBDSVDX)
   'dckcsd': ['test_dckcsd.c', 'eigen'],      # CS decomposition (DORCSD/DORCSD2BY1)
 
