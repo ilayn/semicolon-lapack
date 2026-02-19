@@ -54,6 +54,7 @@ lapack_tests = {
   'dchkgg': ['test_dchkgg.c', 'eigen'],      # Generalized eigenvalue (Hessenberg) (DGGHRD/DHGEQZ/DTGEVC)
   'dchkhs': ['test_dchkhs.c', 'eigen'],      # Hessenberg Schur (DGEHRD/DHSEQR/DTREVC)
   'dchkbb': ['test_dchkbb.c', 'eigen'],      # Band bidiagonal reduction (DGBBRD)
+  'dchksb': ['test_dchksb.c', 'eigen'],      # Symmetric band tridiagonal reduction (DSBTRD)
   'dchkbd': ['test_dchkbd.c', 'svd'],        # Bidiagonal SVD (DGEBRD/DBDSQR/DBDSDC/DBDSVDX)
   'dckcsd': ['test_dckcsd.c', 'eigen'],      # CS decomposition (DORCSD/DORCSD2BY1)
 
@@ -89,8 +90,10 @@ lapack_tests = {
   'ddrvrf3': ['test_ddrvrf3.c', 'rfp'],     # DTFSM (RFP triangular solve)
   'ddrvrf4': ['test_ddrvrf4.c', 'rfp'],     # DSFRK (RFP rank-k update)
   'ddrgev': ['test_ddrgev.c', 'eigen'],      # Generalized eigenvalue (DGGEV)
+  'ddrgev3': ['test_ddrgev3.c', 'eigen'],    # Generalized eigenvalue (DGGEV3)
   'ddrgvx': ['test_ddrgvx.c', 'eigen'],     # Generalized eigenvalue expert (DGGEVX)
   'ddrges': ['test_ddrges.c', 'eigen'],       # Generalized Schur form (DGGES)
+  'ddrges3': ['test_ddrges3.c', 'eigen'],     # Generalized Schur form (DGGES3)
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
 
   # RNG validation

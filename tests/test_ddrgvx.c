@@ -276,13 +276,181 @@ static void test_ddrgvx(void** state)
     assert_int_equal(any_fail, 0);
 }
 
+/*
+ * Section 2: Read-in test data from dgd.in (LAPACK TESTING/dgd.in lines 64-86).
+ * Two precomputed 4x4 matrix pairs with known eigenvalue/eigenvector condition
+ * numbers, used to check accuracy of condition estimation in DGGEVX.
+ */
+
+#define NREADIN 2
+#define NREADIN_DIM 4
+
+typedef struct {
+    int n;
+    int idx;
+    char name[64];
+} ddrgvx_readin_params_t;
+
+/* Column-major storage */
+static const f64 readin_A[NREADIN][16] = {
+    /* Case 1: upper triangular */
+    {  8.0,  0.0,  0.0,  0.0,
+       4.0,  7.0,  0.0,  0.0,
+     -13.0,-24.0,  3.0,  0.0,
+       4.0, -3.0, -5.0, 16.0 },
+    /* Case 2: upper triangular */
+    {  1.0,  0.0,  0.0,  0.0,
+       2.0,  5.0,  0.0,  0.0,
+       3.0,  6.0,  8.0,  0.0,
+       4.0,  7.0,  9.0, 10.0 }
+};
+
+static const f64 readin_B[NREADIN][16] = {
+    {  9.0,  0.0,  0.0,  0.0,
+      -1.0,  4.0,  0.0,  0.0,
+       1.0, 16.0,-11.0,  0.0,
+      -6.0,-24.0,  6.0,  4.0 },
+    { -1.0,  0.0,  0.0,  0.0,
+      -1.0, -1.0,  0.0,  0.0,
+      -1.0, -1.0,  1.0,  0.0,
+      -1.0, -1.0, -1.0,  1.0 }
+};
+
+static const f64 readin_dtru[NREADIN][4] = {
+    { 3.1476e+00, 2.5286e+00, 4.2241e+00, 3.4160e+00 },
+    { 1.3639e+00, 4.0417e+00, 6.4089e-01, 6.8030e-01 }
+};
+
+static const f64 readin_diftru[NREADIN][4] = {
+    { 6.7340e-01, 1.1380e+00, 3.5424e+00, 9.5917e-01 },
+    { 7.6064e-01, 8.4964e-01, 1.1222e-01, 1.1499e-01 }
+};
+
+static void test_ddrgvx_readin(void** state)
+{
+    (void)state;
+    ddrgvx_readin_params_t* params = (ddrgvx_readin_params_t*)(*state);
+
+    const int n = params->n;
+    const int lda = NMAX;
+    const int ci = params->idx;
+    const f64 ulp = dlamch("P");
+    const f64 ulpinv = 1.0 / ulp;
+    const f64 thrsh2 = 10.0 * THRESH;
+
+    f64 result[4] = {0.0, 0.0, 0.0, 0.0};
+
+    /* Load precomputed matrices into workspace (lda may differ from n) */
+    for (int j = 0; j < n; j++)
+        for (int i = 0; i < n; i++) {
+            g_ws->A[i + j * lda] = readin_A[ci][i + j * n];
+            g_ws->B[i + j * lda] = readin_B[ci][i + j * n];
+        }
+
+    dlacpy("F", n, n, g_ws->A, lda, g_ws->AI, lda);
+    dlacpy("F", n, n, g_ws->B, lda, g_ws->BI, lda);
+
+    int ilo, ihi, linfo;
+    f64 anorm, bnorm;
+    dggevx("N", "V", "V", "B", n, g_ws->AI, lda, g_ws->BI, lda,
+           g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->VL, lda,
+           g_ws->VR, lda, &ilo, &ihi, g_ws->lscale, g_ws->rscale,
+           &anorm, &bnorm, g_ws->S, g_ws->DIF, g_ws->work, g_ws->lwork,
+           g_ws->iwork, g_ws->bwork, &linfo);
+
+    if (linfo != 0) {
+        print_message("DGGEVX returned INFO=%d for read-in example #%d\n",
+                      linfo, ci + 1);
+        result[0] = ulpinv;
+        assert_residual_below(result[0], thrsh2);
+        return;
+    }
+
+    /* Compute norm(A, B) */
+    dlacpy("Full", n, n, g_ws->AI, lda, g_ws->work, n);
+    dlacpy("Full", n, n, g_ws->BI, lda, &g_ws->work[n * n], n);
+    f64 abnorm = dlange("Fro", n, 2 * n, g_ws->work, n, g_ws->work);
+
+    /* Test (1): Left eigenvector residual */
+    f64 res52[2];
+    result[0] = 0.0;
+    dget52(1, n, g_ws->A, lda, g_ws->B, lda, g_ws->VL, lda,
+           g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->work, res52);
+    result[0] = res52[0];
+    if (res52[1] > THRESH) {
+        print_message("Left eigenvectors from DGGEVX incorrectly normalized: "
+                      "%.3g (read-in #%d)\n", res52[1], ci + 1);
+    }
+
+    /* Test (2): Right eigenvector residual */
+    result[1] = 0.0;
+    dget52(0, n, g_ws->A, lda, g_ws->B, lda, g_ws->VR, lda,
+           g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->work, res52);
+    result[1] = res52[0];
+    if (res52[1] > THRESH) {
+        print_message("Right eigenvectors from DGGEVX incorrectly normalized: "
+                      "%.3g (read-in #%d)\n", res52[1], ci + 1);
+    }
+
+    /* Test (3): Eigenvalue condition numbers */
+    result[2] = 0.0;
+    for (int i = 0; i < n; i++) {
+        if (g_ws->S[i] == 0.0) {
+            if (readin_dtru[ci][i] > abnorm * ulp)
+                result[2] = ulpinv;
+        } else if (readin_dtru[ci][i] == 0.0) {
+            if (g_ws->S[i] > abnorm * ulp)
+                result[2] = ulpinv;
+        } else {
+            f64 ratio = fmax(fabs(readin_dtru[ci][i] / g_ws->S[i]),
+                             fabs(g_ws->S[i] / readin_dtru[ci][i]));
+            result[2] = fmax(result[2], ratio);
+        }
+    }
+
+    /* Test (4): Eigenvector condition numbers (1st and last) */
+    result[3] = 0.0;
+    if (g_ws->DIF[0] == 0.0) {
+        if (readin_diftru[ci][0] > abnorm * ulp)
+            result[3] = ulpinv;
+    } else if (readin_diftru[ci][0] == 0.0) {
+        if (g_ws->DIF[0] > abnorm * ulp)
+            result[3] = ulpinv;
+    } else if (g_ws->DIF[n - 1] == 0.0) {
+        if (readin_diftru[ci][n - 1] > abnorm * ulp)
+            result[3] = ulpinv;
+    } else if (readin_diftru[ci][n - 1] == 0.0) {
+        if (g_ws->DIF[n - 1] > abnorm * ulp)
+            result[3] = ulpinv;
+    } else {
+        f64 ratio1 = fmax(fabs(readin_diftru[ci][0] / g_ws->DIF[0]),
+                          fabs(g_ws->DIF[0] / readin_diftru[ci][0]));
+        f64 ratio2 = fmax(fabs(readin_diftru[ci][n - 1] / g_ws->DIF[n - 1]),
+                          fabs(g_ws->DIF[n - 1] / readin_diftru[ci][n - 1]));
+        result[3] = fmax(ratio1, ratio2);
+    }
+
+    /* Check all 4 results against thrsh2 (read-in uses looser threshold) */
+    int any_fail = 0;
+    for (int j = 0; j < 4; j++) {
+        if (result[j] >= thrsh2) {
+            print_message("read-in #%d test(%d)=%g >= %.1f\n",
+                          ci + 1, j + 1, result[j], thrsh2);
+            any_fail = 1;
+        }
+    }
+    assert_int_equal(any_fail, 0);
+}
+
 int main(void)
 {
-    /* Generate all 1250 parameter combinations */
+    /* 1250 built-in + 2 read-in = 1252 total */
     static ddrgvx_params_t all_params[2 * 5 * 5 * 5 * 5];
-    static struct CMUnitTest all_tests[2 * 5 * 5 * 5 * 5];
+    static ddrgvx_readin_params_t readin_params[NREADIN];
+    static struct CMUnitTest all_tests[2 * 5 * 5 * 5 * 5 + NREADIN];
     int idx = 0;
 
+    /* Section 1: Built-in 5x5 tests via dlatm6 (1250 cases) */
     for (int iptype = 1; iptype <= 2; iptype++) {
         for (int iwa = 0; iwa < 5; iwa++) {
             for (int iwb = 0; iwb < 5; iwb++) {
@@ -308,6 +476,21 @@ int main(void)
                 }
             }
         }
+    }
+
+    /* Section 2: Read-in precomputed test matrices (2 cases from dgd.in) */
+    for (int ci = 0; ci < NREADIN; ci++) {
+        ddrgvx_readin_params_t* rp = &readin_params[ci];
+        rp->n = NREADIN_DIM;
+        rp->idx = ci;
+        snprintf(rp->name, sizeof(rp->name), "readin_%d", ci + 1);
+
+        all_tests[idx].name = rp->name;
+        all_tests[idx].test_func = test_ddrgvx_readin;
+        all_tests[idx].setup_func = NULL;
+        all_tests[idx].teardown_func = NULL;
+        all_tests[idx].initial_state = rp;
+        idx++;
     }
 
     return cmocka_run_group_tests_name("ddrgvx", all_tests, group_setup,

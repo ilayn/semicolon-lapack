@@ -39,6 +39,7 @@
 
 #define THRESH 10.0
 #define NSIZE 2
+#define NMAX 4
 
 /* Shared state for dlctsx callback (replaces Fortran COMMON /MN/) */
 static int g_sel_m, g_sel_n, g_sel_mplusn, g_sel_k;
@@ -122,7 +123,8 @@ static int group_setup(void** state)
     g_ws = calloc(1, sizeof(ddrgsx_workspace_t));
     if (!g_ws) return -1;
 
-    const int ns = NSIZE;
+    /* Allocate for NMAX (accommodates read-in 4x4 matrices) */
+    const int ns = NMAX;
     const int n2 = ns * ns;
 
     g_ws->A      = malloc(n2 * sizeof(f64));
@@ -194,7 +196,7 @@ static void test_ddrgsx(void** state)
     const int m = params->m;
     const int n = params->n;
     const int mplusn = m + n;
-    const int lda = NSIZE;
+    const int lda = NMAX;
 
     const f64 ulp = dlamch("P");
     const f64 ulpinv = 1.0 / ulp;
@@ -204,13 +206,19 @@ static void test_ddrgsx(void** state)
     f64 result[10];
     for (int i = 0; i < 10; i++) result[i] = 0.0;
 
-    /* Weight oscillates: sqrt(ulp), 1/sqrt(ulp), sqrt(ulp), ... */
-    /* In Fortran: WEIGHT = SQRT(ULP), then 1/WEIGHT each iteration.
-       We compute it deterministically from the parameter indices. */
-    static f64 weight_val = 0.0;
-    if (weight_val == 0.0) weight_val = sqrt(ulp);
-    f64 weight = 1.0 / weight_val;
-    weight_val = weight;
+    /* Weight oscillates: sqrt(ulp), 1/sqrt(ulp), sqrt(ulp), ...
+       Fortran initializes WEIGHT = SQRT(ULP), then flips at start of each
+       iteration. Compute deterministically from the flat iteration index. */
+    int inner_count = 0;
+    for (int mm = 1; mm <= NSIZE - 1; mm++)
+        for (int nn = 1; nn <= NSIZE - mm; nn++)
+            inner_count++;
+    int inner_idx = 0;
+    for (int mm = 1; mm < m; mm++)
+        inner_idx += NSIZE - mm;
+    inner_idx += n - 1;
+    int iter_idx = ifunc * 5 * inner_count + (prtype - 1) * inner_count + inner_idx;
+    f64 weight = ((iter_idx % 2) == 0) ? 1.0 / sqrt(ulp) : sqrt(ulp);
 
     /* Reset selection callback state */
     g_sel_fs = 1;
@@ -258,7 +266,7 @@ static void test_ddrgsx(void** state)
            g_ws->Q, lda, g_ws->Z, lda,
            pl, difest,
            g_ws->work, g_ws->lwork,
-           g_ws->iwork, NSIZE + 6, g_ws->bwork, &linfo);
+           g_ws->iwork, NMAX + 6, g_ws->bwork, &linfo);
 
     if (linfo != 0 && linfo != mplusn + 2) {
         print_message("DGGESX returned INFO=%d for sense=%s type=%d m=%d n=%d\n",
@@ -357,7 +365,7 @@ static void test_ddrgsx(void** state)
     /* Test (8): DIF accuracy vs exact */
     result[7] = 0.0;
     int mn2 = mm * (mplusn - mm) * 2;
-    int ncmax = NSIZE * NSIZE;
+    int ncmax = NMAX * NMAX;
     if (ifunc >= 2 && mn2 <= ncmax) {
         dlakf2(mm, mplusn - mm,
                g_ws->AI, lda,
@@ -412,14 +420,264 @@ static void test_ddrgsx(void** state)
     assert_int_equal(any_fail, 0);
 }
 
+/*
+ * Section 2: Read-in test data from dgd.in (LAPACK TESTING/dgd.in lines 23-51).
+ * Two precomputed 4x4 matrix pairs with known condition numbers for the
+ * eigenvalue cluster and deflating subspace, used to check accuracy of
+ * condition estimation in DGGESX.
+ */
+
+#define NREADIN 2
+
+typedef struct {
+    int mplusn;
+    int n;
+    int idx;
+    char name[64];
+} ddrgsx_readin_params_t;
+
+/* Column-major storage */
+static const f64 readin_AI[NREADIN][16] = {
+    {  8.0,  0.0,  0.0,  0.0,
+       4.0,  7.0,  0.0,  0.0,
+     -13.0,-24.0,  3.0,  0.0,
+       4.0, -3.0, -5.0, 16.0 },
+    {  1.0,  0.0,  0.0,  0.0,
+       2.0,  5.0,  0.0,  0.0,
+       3.0,  6.0,  8.0,  0.0,
+       4.0,  7.0,  9.0, 10.0 }
+};
+
+static const f64 readin_BI[NREADIN][16] = {
+    {  9.0,  0.0,  0.0,  0.0,
+      -1.0,  4.0,  0.0,  0.0,
+       1.0, 16.0,-11.0,  0.0,
+      -6.0,-24.0,  6.0,  4.0 },
+    { -1.0,  0.0,  0.0,  0.0,
+      -1.0, -1.0,  0.0,  0.0,
+      -1.0, -1.0,  1.0,  0.0,
+      -1.0, -1.0, -1.0,  1.0 }
+};
+
+static const f64 readin_pltru[NREADIN] = { 2.5901e-01, 9.8173e-01 };
+static const f64 readin_diftru[NREADIN] = { 1.7592e+00, 6.3649e-01 };
+
+static void test_ddrgsx_readin(void** state)
+{
+    ddrgsx_readin_params_t* params = (ddrgsx_readin_params_t*)(*state);
+
+    const int mplusn = params->mplusn;
+    const int n = params->n;
+    const int m = mplusn - n;
+    const int lda = NMAX;
+    const int ci = params->idx;
+
+    const f64 ulp = dlamch("P");
+    const f64 ulpinv = 1.0 / ulp;
+    const f64 smlnum = dlamch("S") / ulp;
+    const f64 thrsh2 = 10.0 * THRESH;
+
+    f64 result[10];
+    for (int i = 0; i < 10; i++) result[i] = 0.0;
+
+    /* Load precomputed matrices (lda may differ from mplusn) */
+    for (int j = 0; j < mplusn; j++)
+        for (int i = 0; i < mplusn; i++) {
+            g_ws->AI[i + j * lda] = readin_AI[ci][i + j * mplusn];
+            g_ws->BI[i + j * lda] = readin_BI[ci][i + j * mplusn];
+        }
+
+    /* Reset selection callback */
+    g_sel_fs = 1;
+    g_sel_k = 0;
+    g_sel_m = m;
+    g_sel_n = n;
+    g_sel_mplusn = mplusn;
+
+    dlacpy("Full", mplusn, mplusn, g_ws->AI, lda, g_ws->A, lda);
+    dlacpy("Full", mplusn, mplusn, g_ws->BI, lda, g_ws->B, lda);
+
+    int mm, linfo;
+    f64 pl[2], difest[2];
+
+    /* Reset selection callback again */
+    g_sel_fs = 1;
+    g_sel_k = 0;
+    g_sel_m = m;
+    g_sel_n = n;
+    g_sel_mplusn = mplusn;
+
+    dggesx("V", "V", "S", dlctsx, "B", mplusn,
+           g_ws->AI, lda, g_ws->BI, lda, &mm,
+           g_ws->alphar, g_ws->alphai, g_ws->beta,
+           g_ws->Q, lda, g_ws->Z, lda,
+           pl, difest,
+           g_ws->work, g_ws->lwork,
+           g_ws->iwork, NMAX + 6, g_ws->bwork, &linfo);
+
+    if (linfo != 0 && linfo != mplusn + 2) {
+        print_message("DGGESX returned INFO=%d for read-in example #%d\n",
+                      linfo, ci + 1);
+        result[0] = ulpinv;
+        assert_residual_below(result[0], thrsh2);
+        return;
+    }
+
+    /* Compute norm(A, B) */
+    dlacpy("Full", mplusn, mplusn, g_ws->AI, lda, g_ws->work, mplusn);
+    dlacpy("Full", mplusn, mplusn, g_ws->BI, lda,
+           &g_ws->work[mplusn * mplusn], mplusn);
+    f64 abnrm = dlange("Fro", mplusn, 2 * mplusn, g_ws->work, mplusn,
+                        g_ws->work);
+
+    /* Tests (1) to (4) via dget51 */
+    dget51(1, mplusn, g_ws->A, lda, g_ws->AI, lda, g_ws->Q, lda,
+           g_ws->Z, lda, g_ws->work, &result[0]);
+    dget51(1, mplusn, g_ws->B, lda, g_ws->BI, lda, g_ws->Q, lda,
+           g_ws->Z, lda, g_ws->work, &result[1]);
+    dget51(3, mplusn, g_ws->B, lda, g_ws->BI, lda, g_ws->Q, lda,
+           g_ws->Q, lda, g_ws->work, &result[2]);
+    dget51(3, mplusn, g_ws->B, lda, g_ws->BI, lda, g_ws->Z, lda,
+           g_ws->Z, lda, g_ws->work, &result[3]);
+
+    /* Tests (5) and (6): Schur form structure and eigenvalue accuracy */
+    f64 temp1 = 0.0;
+    result[4] = 0.0;
+    result[5] = 0.0;
+
+    for (int j = 0; j < mplusn; j++) {
+        int ilabad = 0;
+        f64 temp2;
+        if (g_ws->alphai[j] == 0.0) {
+            temp2 = (fabs(g_ws->alphar[j] - g_ws->AI[j + j * lda]) /
+                     fmax(smlnum, fmax(fabs(g_ws->alphar[j]),
+                          fabs(g_ws->AI[j + j * lda]))) +
+                     fabs(g_ws->beta[j] - g_ws->BI[j + j * lda]) /
+                     fmax(smlnum, fmax(fabs(g_ws->beta[j]),
+                          fabs(g_ws->BI[j + j * lda])))) / ulp;
+            if (j < mplusn - 1) {
+                if (g_ws->AI[(j + 1) + j * lda] != 0.0) {
+                    ilabad = 1;
+                    result[4] = ulpinv;
+                }
+            }
+            if (j > 0) {
+                if (g_ws->AI[j + (j - 1) * lda] != 0.0) {
+                    ilabad = 1;
+                    result[4] = ulpinv;
+                }
+            }
+        } else {
+            int i1;
+            if (g_ws->alphai[j] > 0.0) {
+                i1 = j;
+            } else {
+                i1 = j - 1;
+            }
+            if (i1 < 0 || i1 >= mplusn) {
+                ilabad = 1;
+            } else if (i1 < mplusn - 2) {
+                if (g_ws->AI[(i1 + 2) + (i1 + 1) * lda] != 0.0) {
+                    ilabad = 1;
+                    result[4] = ulpinv;
+                }
+            } else if (i1 > 0) {
+                if (g_ws->AI[i1 + (i1 - 1) * lda] != 0.0) {
+                    ilabad = 1;
+                    result[4] = ulpinv;
+                }
+            }
+            if (!ilabad) {
+                int iinfo;
+                dget53(&g_ws->AI[i1 + i1 * lda], lda,
+                       &g_ws->BI[i1 + i1 * lda], lda,
+                       g_ws->beta[j], g_ws->alphar[j], g_ws->alphai[j],
+                       &temp2, &iinfo);
+                if (iinfo >= 3) {
+                    print_message("DGET53 returned INFO=%d for eigenvalue %d "
+                                  "(read-in #%d)\n", iinfo, j + 1, ci + 1);
+                }
+            } else {
+                temp2 = ulpinv;
+            }
+        }
+        temp1 = fmax(temp1, temp2);
+    }
+    result[5] = temp1;
+
+    /* Test (7): if sorting worked */
+    result[6] = 0.0;
+    if (linfo == mplusn + 3)
+        result[6] = ulpinv;
+
+    /* Test (8): DIF accuracy vs exact (compare difest[1] with provided diftru) */
+    f64 diftru = readin_diftru[ci];
+    result[7] = 0.0;
+    if (difest[1] == 0.0) {
+        if (diftru > abnrm * ulp)
+            result[7] = ulpinv;
+    } else if (diftru == 0.0) {
+        if (difest[1] > abnrm * ulp)
+            result[7] = ulpinv;
+    } else if ((diftru > thrsh2 * difest[1]) ||
+               (diftru * thrsh2 < difest[1])) {
+        result[7] = fmax(diftru / difest[1], difest[1] / diftru);
+    }
+
+    /* Test (9): reordering failure */
+    result[8] = 0.0;
+    if (linfo == (mplusn + 2)) {
+        if (diftru > abnrm * ulp)
+            result[8] = ulpinv;
+        if (difest[1] != 0.0)
+            result[8] = ulpinv;
+        if (pl[0] != 0.0)
+            result[8] = ulpinv;
+    }
+
+    /* Test (10): PL accuracy vs exact */
+    f64 pltru = readin_pltru[ci];
+    result[9] = 0.0;
+    if (pl[0] == 0.0) {
+        if (pltru > abnrm * ulp)
+            result[9] = ulpinv;
+    } else if (pltru == 0.0) {
+        if (pl[0] > abnrm * ulp)
+            result[9] = ulpinv;
+    } else if ((pltru > THRESH * pl[0]) ||
+               (pltru * THRESH < pl[0])) {
+        result[9] = ulpinv;
+    }
+
+    /* Check all 10 results against thresholds */
+    int any_fail = 0;
+    for (int j = 0; j < 10; j++) {
+        if (result[j] >= THRESH) {
+            print_message("read-in #%d test(%d)=%g >= %.1f\n",
+                          ci + 1, j + 1, result[j], THRESH);
+            any_fail = 1;
+        }
+    }
+    assert_int_equal(any_fail, 0);
+}
+
 int main(void)
 {
+    /* Count built-in test cases */
+    int builtin_count = 0;
+    for (int mm = 1; mm <= NSIZE - 1; mm++)
+        for (int nn = 1; nn <= NSIZE - mm; nn++)
+            builtin_count++;
+    builtin_count *= 4 * 5;  /* ifunc x prtype */
+
     static ddrgsx_params_t all_params[4 * 5 * NSIZE * NSIZE];
-    static struct CMUnitTest all_tests[4 * 5 * NSIZE * NSIZE];
+    static ddrgsx_readin_params_t readin_params[NREADIN];
+    static struct CMUnitTest all_tests[4 * 5 * NSIZE * NSIZE + NREADIN];
     int idx = 0;
 
     static const char* sense_names[] = {"N", "E", "V", "B"};
 
+    /* Section 1: Built-in tests via dlatm5 */
     for (int ifunc = 0; ifunc <= 3; ifunc++) {
         for (int prtype = 1; prtype <= 5; prtype++) {
             for (int m = 1; m <= NSIZE - 1; m++) {
@@ -442,6 +700,22 @@ int main(void)
                 }
             }
         }
+    }
+
+    /* Section 2: Read-in precomputed test matrices (2 cases from dgd.in) */
+    for (int ci = 0; ci < NREADIN; ci++) {
+        ddrgsx_readin_params_t* rp = &readin_params[ci];
+        rp->mplusn = 4;
+        rp->n = 2;
+        rp->idx = ci;
+        snprintf(rp->name, sizeof(rp->name), "readin_%d", ci + 1);
+
+        all_tests[idx].name = rp->name;
+        all_tests[idx].test_func = test_ddrgsx_readin;
+        all_tests[idx].setup_func = NULL;
+        all_tests[idx].teardown_func = NULL;
+        all_tests[idx].initial_state = rp;
+        idx++;
     }
 
     return cmocka_run_group_tests_name("ddrgsx", all_tests, group_setup,
