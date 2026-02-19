@@ -9,7 +9,6 @@
 #ifndef VERIFY_H
 #define VERIFY_H
 
-#include <stdbool.h>
 #include <stdint.h>
 #include "semicolon_lapack/types.h"
 
@@ -38,7 +37,7 @@ void dget07(const char* trans, const int n, const int nrhs,
             const f64 * const restrict B, const int ldb,
             const f64 * const restrict X, const int ldx,
             const f64 * const restrict XACT, const int ldxact,
-            const f64 * const restrict ferr, const bool chkferr,
+            const f64 * const restrict ferr, const int chkferr,
             const f64 * const restrict berr, f64 * const restrict reslts);
 
 void dget08(const char* trans, const int m, const int n, const int nrhs,
@@ -914,5 +913,16 @@ void dsyt01_rook(const char* uplo, const int n,
 /* TSQR verification */
 void dtsqr01(const char* tssw, const int m, const int n, const int mb,
              const int nb, f64* result);
+
+/* CS decomposition verification */
+void dcsdts(const int m, const int p, const int q,
+            const f64* X, f64* XF, const int ldx,
+            f64* U1, const int ldu1,
+            f64* U2, const int ldu2,
+            f64* V1T, const int ldv1t,
+            f64* V2T, const int ldv2t,
+            f64* theta, int* iwork,
+            f64* work, const int lwork,
+            f64* rwork, f64* result);
 
 #endif /* VERIFY_H */

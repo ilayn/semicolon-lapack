@@ -16,7 +16,6 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <stdbool.h>
 #include <cblas.h>
 
 /* Routines under test */
@@ -213,7 +212,7 @@ static f64 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
     free(B_copy);
 
     /* Compute error bounds using dget07 */
-    bool chkferr = (imat <= 4);
+    int chkferr = (imat <= 4);
     dget07(trans, fix->n, fix->nrhs, fix->A, fix->lda, fix->B_orig, fix->ldb,
            fix->X, fix->ldb, fix->XACT, fix->ldb,
            fix->ferr, chkferr, fix->berr, fix->reslts);

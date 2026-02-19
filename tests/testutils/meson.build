@@ -234,6 +234,9 @@ testutils_sources = files(
   # QL/RQ solve helpers
   'dgeqls.c',   # Solve using QL factorization from DGEQLF
   'dgerqs.c',   # Solve using RQ factorization from DGERQF
+
+  # CS decomposition verification
+  'dcsdts.c',   # CSD: |U'*X*V - D| blocks, orthogonality, theta sorting
 )
 
 # Get the main library sources from parent scope

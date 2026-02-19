@@ -77,7 +77,7 @@ void dget07(
     const f64 * const restrict XACT,
     const int ldxact,
     const f64 * const restrict ferr,
-    const bool chkferr,
+    const int chkferr,
     const f64 * const restrict berr,
     f64 * const restrict reslts)
 {

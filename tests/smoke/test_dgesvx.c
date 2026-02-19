@@ -24,7 +24,6 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <stdbool.h>
 #include <cblas.h>
 
 /* Routine under test */
@@ -250,7 +249,7 @@ static int run_dgesvx_test(dgesvx_fixture_t *fix, int imat, const char* fact, co
     dget04(n, nrhs, fix->X, fix->ldx, fix->XACT, fix->ldx, rcond_use, resid_04);
 
     /* Test 3: Error bounds using dget07 */
-    bool chkferr = (imat <= 4);
+    int chkferr = (imat <= 4);
     dget07(trans, n, nrhs, fix->A_orig, fix->lda, fix->B_orig, fix->ldb,
            fix->X, fix->ldx, fix->XACT, fix->ldx,
            fix->ferr, chkferr, fix->berr, reslts);

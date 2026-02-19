@@ -45,6 +45,7 @@
  * Before running each parameterized test, set this to identify the test case.
  * On failure, the context will be printed along with the assertion details.
  */
+static char g_test_context_buf[256];
 static const char* g_test_context = NULL;
 
 /**
@@ -55,7 +56,13 @@ static const char* g_test_context = NULL;
  *   set_test_context("dchkpo n=50 uplo=U imat=3 TEST 2 (inverse)");
  */
 static inline void set_test_context(const char* context) {
-    g_test_context = context;
+    if (context) {
+        strncpy(g_test_context_buf, context, sizeof(g_test_context_buf) - 1);
+        g_test_context_buf[sizeof(g_test_context_buf) - 1] = '\0';
+        g_test_context = g_test_context_buf;
+    } else {
+        g_test_context = NULL;
+    }
 }
 
 /**

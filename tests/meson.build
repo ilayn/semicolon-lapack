@@ -52,6 +52,9 @@ lapack_tests = {
   'dchkgk': ['test_dchkgk.c', 'eigen'],      # Generalized balancing back-transform (DGGBAK)
   'dchkec': ['test_dchkec.c', 'eigen'],      # Eigencondition estimation (DLALN2..DTGEXC + error exits)
   'dchkgg': ['test_dchkgg.c', 'eigen'],      # Generalized eigenvalue (Hessenberg) (DGGHRD/DHGEQZ/DTGEVC)
+  'dchkhs': ['test_dchkhs.c', 'eigen'],      # Hessenberg Schur (DGEHRD/DHSEQR/DTREVC)
+  'dchkbb': ['test_dchkbb.c', 'eigen'],      # Band bidiagonal reduction (DGBBRD)
+  'dckcsd': ['test_dckcsd.c', 'eigen'],      # CS decomposition (DORCSD/DORCSD2BY1)
 
   # Expert driver tests (ddrv*.f ports)
   'ddrvgb': ['test_ddrvgb.c', 'band'],       # DGBSV/DGBSVX drivers
@@ -60,6 +63,11 @@ lapack_tests = {
   'ddrvpo': ['test_ddrvpo.c', 'cholesky'],   # DPOSV/DPOSVX drivers
   'ddrvpp': ['test_ddrvpp.c', 'cholesky'],   # DPPSV/DPPSVX drivers
   'ddrvsy': ['test_ddrvsy.c', 'symmetric'],  # DSYSV/DSYSVX drivers
+  'ddrvsy_aa': ['test_ddrvsy_aa.c', 'symmetric'],  # DSYSV_AA driver
+  'ddrvsy_aa_2stage': ['test_ddrvsy_aa_2stage.c', 'symmetric'],  # DSYSV_AA_2STAGE driver
+  'ddrvsy_rk': ['test_ddrvsy_rk.c', 'symmetric'],  # DSYSV_RK driver
+  'ddrvsy_rook': ['test_ddrvsy_rook.c', 'symmetric'],  # DSYSV_ROOK driver
+  'ddrvsp': ['test_ddrvsp.c', 'symmetric'],  # DSPSV/DSPSVX drivers
   'ddrvgt': ['test_ddrvgt.c', 'tridiag'],    # DGTSV/DGTSVX drivers
   'ddrvpt': ['test_ddrvpt.c', 'tridiag'],    # DPTSV/DPTSVX drivers
   'ddrvls': ['test_ddrvls.c', 'ls'],         # Least squares drivers
