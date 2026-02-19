@@ -231,6 +231,7 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
                            uint64_t state3[static 4],
                            int* ihbw_out)
 {
+    (void)ldu;
     int itype = KTYPE[jtype - 1];
     int imode = KMODE[jtype - 1];
     f64 anorm, cond;
@@ -421,12 +422,12 @@ static void run_ddrvst_single(ddrvst_params_t* params)
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
-    f64 ovfl = 1.0 / unfl;
+    // f64 ovfl = 1.0 / unfl;
     f64 ulpinv = 1.0 / ulp;
     f64 rtunfl = sqrt(unfl);
 
     int iinfo;
-    f64 temp1, temp2, temp3;
+    f64 temp1, temp2, temp3 = 0.0;
     int ntest;
     int m, m2, m3;
     f64 vl = 0.0, vu = 0.0;
