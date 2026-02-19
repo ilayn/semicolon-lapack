@@ -249,8 +249,8 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (wantpt) {
                     for (int j = j1; j <= j2; j += kb1) {
-                        crot(n, &PT[(j + kun - 1) * ldpt], 1,
-                             &PT[(j + kun) * ldpt], 1,
+                        crot(n, &PT[j + kun - 1], ldpt,
+                             &PT[j + kun], ldpt,
                              rwork[j + kun], conjf(work[j + kun]));
                     }
                 }
@@ -303,7 +303,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                 AB[(ku - 1) + i * ldab] = rc * AB[(ku - 1) + i * ldab];
             }
             if (wantpt) {
-                crot(n, &PT[i * ldpt], 1, &PT[m * ldpt], 1, rc, conjf(rs));
+                crot(n, &PT[i], ldpt, &PT[m], ldpt, rc, conjf(rs));
             }
         }
     }

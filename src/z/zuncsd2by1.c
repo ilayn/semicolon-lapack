@@ -365,10 +365,10 @@ void zuncsd2by1(
 
         if (q > 0 && wantu2) {
             for (i = 0; i < q; i++) {
-                iwork[i] = m - p - q + i + 1;
+                iwork[i] = m - p - q + i;
             }
             for (i = q; i < m - p; i++) {
-                iwork[i] = i - q + 1;
+                iwork[i] = i - q;
             }
             zlapmt(0, m - p, m - p, U2, ldu2, iwork);
         }
@@ -409,10 +409,10 @@ void zuncsd2by1(
 
         if (q > 0 && wantu2) {
             for (i = 0; i < q; i++) {
-                iwork[i] = m - p - q + i + 1;
+                iwork[i] = m - p - q + i;
             }
             for (i = q; i < m - p; i++) {
-                iwork[i] = i - q + 1;
+                iwork[i] = i - q;
             }
             zlapmt(0, m - p, m - p, U2, ldu2, iwork);
         }
@@ -453,10 +453,10 @@ void zuncsd2by1(
 
         if (q > r) {
             for (i = 0; i < r; i++) {
-                iwork[i] = q - r + i + 1;
+                iwork[i] = q - r + i;
             }
             for (i = r; i < q; i++) {
-                iwork[i] = i - r + 1;
+                iwork[i] = i - r;
             }
             if (wantu1) {
                 zlapmt(0, p, q, U1, ldu1, iwork);
@@ -512,10 +512,10 @@ void zuncsd2by1(
 
         if (p > r) {
             for (i = 0; i < r; i++) {
-                iwork[i] = p - r + i + 1;
+                iwork[i] = p - r + i;
             }
             for (i = r; i < p; i++) {
-                iwork[i] = i - r + 1;
+                iwork[i] = i - r;
             }
             if (wantu1) {
                 zlapmt(0, p, p, U1, ldu1, iwork);

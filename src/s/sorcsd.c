@@ -385,10 +385,10 @@ void sorcsd(
 
     if (q > 0 && wantu2) {
         for (i = 0; i < q; i++) {
-            iwork[i] = m - p - q + i + 1;
+            iwork[i] = m - p - q + i;
         }
         for (i = q; i < m - p; i++) {
-            iwork[i] = i - q + 1;
+            iwork[i] = i - q;
         }
         if (colmajor) {
             slapmt(0, m - p, m - p, U2, ldu2, iwork);
@@ -398,10 +398,10 @@ void sorcsd(
     }
     if (m > 0 && wantv2t) {
         for (i = 0; i < p; i++) {
-            iwork[i] = m - p - q + i + 1;
+            iwork[i] = m - p - q + i;
         }
         for (i = p; i < m - q; i++) {
-            iwork[i] = i - p + 1;
+            iwork[i] = i - p;
         }
         if (!colmajor) {
             slapmt(0, m - q, m - q, V2T, ldv2t, iwork);

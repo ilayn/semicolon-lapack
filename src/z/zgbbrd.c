@@ -249,8 +249,8 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (wantpt) {
                     for (int j = j1; j <= j2; j += kb1) {
-                        zrot(n, &PT[(j + kun - 1) * ldpt], 1,
-                             &PT[(j + kun) * ldpt], 1,
+                        zrot(n, &PT[j + kun - 1], ldpt,
+                             &PT[j + kun], ldpt,
                              rwork[j + kun], conj(work[j + kun]));
                     }
                 }
@@ -303,7 +303,7 @@ void zgbbrd(const char* vect, const int m, const int n, const int ncc,
                 AB[(ku - 1) + i * ldab] = rc * AB[(ku - 1) + i * ldab];
             }
             if (wantpt) {
-                zrot(n, &PT[i * ldpt], 1, &PT[m * ldpt], 1, rc, conj(rs));
+                zrot(n, &PT[i], ldpt, &PT[m], ldpt, rc, conj(rs));
             }
         }
     }

@@ -301,8 +301,8 @@ void sgbbrd(const char* vect, const int m, const int n, const int ncc,
                     /* Accumulate product of plane rotations in P**T */
                     for (int j = j1; j <= j2; j += kb1) {
                         /* PT rows j+kun-1 and j+kun (0-indexed) */
-                        cblas_srot(n, &PT[(j + kun - 1) * ldpt], 1,
-                                   &PT[(j + kun) * ldpt], 1,
+                        cblas_srot(n, &PT[j + kun - 1], ldpt,
+                                   &PT[j + kun], ldpt,
                                    work[mn + j + kun], work[j + kun]);
                     }
                 }
@@ -380,7 +380,7 @@ void sgbbrd(const char* vect, const int m, const int n, const int ncc,
                     E[i - 1] = rc * AB[(ku - 1) + i * ldab];
                 }
                 if (wantpt) {
-                    cblas_srot(n, &PT[i * ldpt], 1, &PT[m * ldpt], 1, rc, rs);
+                    cblas_srot(n, &PT[i], ldpt, &PT[m], ldpt, rc, rs);
                 }
             }
         } else {
