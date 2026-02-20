@@ -130,45 +130,45 @@ L10:
         // Transform A, working with the upper triangle
         if (update) {
             // Form inv(S(i))**T * A * inv(S(i))
-            bii = BB[kb + i * ldbb];  // BB(KB1, I) in 1-based
+            bii = BB[kb + (i - 1) * ldbb];  // BB(KB1, I) in 1-based
             for (j = i; j <= i1; j++) {
-                AB[i - j + ka + j * ldab] = AB[i - j + ka + j * ldab] / bii;
+                AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
             int jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i; j++) {
-                AB[j - i + ka + i * ldab] = AB[j - i + ka + i * ldab] / bii;
+                AB[j - i + ka + (i - 1) * ldab] = AB[j - i + ka + (i - 1) * ldab] / bii;
             }
             for (k = i - kbt; k <= i - 1; k++) {
                 for (j = i - kbt; j <= k; j++) {
-                    AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
-                        - BB[j - i + kb + i * ldbb] * AB[k - i + ka + i * ldab]
-                        - BB[k - i + kb + i * ldbb] * AB[j - i + ka + i * ldab]
-                        + AB[ka + i * ldab] * BB[j - i + kb + i * ldbb] * BB[k - i + kb + i * ldbb];
+                    AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
+                        - BB[j - i + kb + (i - 1) * ldbb] * AB[k - i + ka + (i - 1) * ldab]
+                        - BB[k - i + kb + (i - 1) * ldbb] * AB[j - i + ka + (i - 1) * ldab]
+                        + AB[ka + (i - 1) * ldab] * BB[j - i + kb + (i - 1) * ldbb] * BB[k - i + kb + (i - 1) * ldbb];
                 }
                 jmax = (1 > i - ka) ? 1 : (i - ka);
                 for (j = jmax; j <= i - kbt - 1; j++) {
-                    AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
-                        - BB[k - i + kb + i * ldbb] * AB[j - i + ka + i * ldab];
+                    AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
+                        - BB[k - i + kb + (i - 1) * ldbb] * AB[j - i + ka + (i - 1) * ldab];
                 }
             }
             for (j = i; j <= i1; j++) {
                 int kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
-                    AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
-                        - BB[k - i + kb + i * ldbb] * AB[i - j + ka + j * ldab];
+                    AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
+                        - BB[k - i + kb + (i - 1) * ldbb] * AB[i - j + ka + (j - 1) * ldab];
                 }
             }
 
             if (wantx) {
                 // post-multiply X by inv(S(i))
-                cblas_dscal(n - m, ONE / bii, &X[m + i * ldx], 1);
+                cblas_dscal(n - m, ONE / bii, &X[m + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_dger(CblasColMajor, n - m, kbt, -ONE, &X[m + i * ldx], 1,
-                               &BB[kb - kbt + i * ldbb], 1, &X[m + (i - kbt) * ldx], ldx);
+                    cblas_dger(CblasColMajor, n - m, kbt, -ONE, &X[m + (i - 1) * ldx], 1,
+                               &BB[kb - kbt + (i - 1) * ldbb], 1, &X[m + (i - kbt - 1) * ldx], ldx);
             }
 
             // store a(i,i1) in RA1 for use in next loop over K
-            ra1 = AB[i - i1 + ka + i1 * ldab];
+            ra1 = AB[i - i1 + ka + (i1 - 1) * ldab];
         }
 
         // Generate and apply vectors of rotations to chase all the
@@ -178,15 +178,15 @@ L10:
                 // Determine the rotations which would annihilate the bulge
                 if (i - k + ka < n && i - k > 1) {
                     // generate rotation to annihilate a(i,i-k+ka+1)
-                    dlartg(AB[k + (i - k + ka) * ldab], ra1,
+                    dlartg(AB[k + (i - k + ka - 1) * ldab], ra1,
                            &work[n + i - k + ka - m - 1], &work[i - k + ka - m - 1], &ra);
 
                     // create nonzero element a(i-k,i-k+ka+1) outside the band
-                    t = -BB[kb - k + i * ldbb] * ra1;
+                    t = -BB[kb - k + (i - 1) * ldbb] * ra1;
                     work[i - k - 1] = work[n + i - k + ka - m - 1] * t
-                        - work[i - k + ka - m - 1] * AB[0 + (i - k + ka) * ldab];
-                    AB[0 + (i - k + ka) * ldab] = work[i - k + ka - m - 1] * t
-                        + work[n + i - k + ka - m - 1] * AB[0 + (i - k + ka) * ldab];
+                        - work[i - k + ka - m - 1] * AB[0 + (i - k + ka - 1) * ldab];
+                    AB[0 + (i - k + ka - 1) * ldab] = work[i - k + ka - m - 1] * t
+                        + work[n + i - k + ka - m - 1] * AB[0 + (i - k + ka - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -201,25 +201,25 @@ L10:
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j += ka1) {
                 // create nonzero element a(j-ka,j+1) outside the band
-                work[j - m - 1] = work[j - m - 1] * AB[0 + (j + 1) * ldab];
-                AB[0 + (j + 1) * ldab] = work[n + j - m - 1] * AB[0 + (j + 1) * ldab];
+                work[j - m - 1] = work[j - m - 1] * AB[0 + (j) * ldab];
+                AB[0 + (j) * ldab] = work[n + j - m - 1] * AB[0 + (j) * ldab];
             }
 
             // generate rotations in 1st set to annihilate elements outside the band
             if (nrt > 0)
-                dlargv(nrt, &AB[0 + j2t * ldab], inca, &work[j2t - m - 1], ka1,
+                dlargv(nrt, &AB[0 + (j2t - 1) * ldab], inca, &work[j2t - m - 1], ka1,
                        &work[n + j2t - m - 1], ka1);
             if (nr > 0) {
                 // apply rotations in 1st set from the right
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[ka1 - l - 1 + j2 * ldab], inca,
-                           &AB[ka - l - 1 + (j2 + 1) * ldab], inca,
+                    dlartv(nr, &AB[ka1 - l - 1 + (j2 - 1) * ldab], inca,
+                           &AB[ka - l - 1 + (j2) * ldab], inca,
                            &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
                 }
 
                 // apply rotations in 1st set from both sides to diagonal blocks
-                dlar2v(nr, &AB[ka + j2 * ldab], &AB[ka + (j2 + 1) * ldab],
-                       &AB[ka - 1 + (j2 + 1) * ldab], inca,
+                dlar2v(nr, &AB[ka + (j2 - 1) * ldab], &AB[ka + (j2) * ldab],
+                       &AB[ka - 1 + (j2) * ldab], inca,
                        &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
             }
 
@@ -227,15 +227,15 @@ L10:
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + (j2 + ka1 - l) * ldab], inca,
-                           &AB[l + (j2 + ka1 - l) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j2 + ka1 - l - 1) * ldab], inca,
+                           &AB[l + (j2 + ka1 - l - 1) * ldab], inca,
                            &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 1st set
                 for (j = j2; j <= j1; j += ka1) {
-                    cblas_drot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    cblas_drot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + (j) * ldx], 1,
                                work[n + j - m - 1], work[j - m - 1]);
                 }
             }
@@ -244,7 +244,7 @@ L10:
         if (update) {
             if (i2 <= n && kbt > 0) {
                 // create nonzero element a(i-kbt,i-kbt+ka+1) outside the band
-                work[i - kbt - 1] = -BB[kb - kbt + i * ldbb] * ra1;
+                work[i - kbt - 1] = -BB[kb - kbt + (i - 1) * ldbb] * ra1;
             }
         }
 
@@ -259,8 +259,8 @@ L10:
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + ka + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + (j2 - l + 1) * ldab], inca,
-                           &AB[l + (j2 - l + 1) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j2 - l) * ldab], inca,
+                           &AB[l + (j2 - l) * ldab], inca,
                            &work[n + j2 - ka - 1], &work[j2 - ka - 1], ka1);
             }
             nr = (n - j2 + ka) / ka1;
@@ -271,8 +271,8 @@ L10:
             }
             for (j = j2; j <= j1; j += ka1) {
                 // create nonzero element a(j-ka,j+1) outside the band
-                work[j - 1] = work[j - 1] * AB[0 + (j + 1) * ldab];
-                AB[0 + (j + 1) * ldab] = work[n + j - 1] * AB[0 + (j + 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[0 + (j) * ldab];
+                AB[0 + (j) * ldab] = work[n + j - 1] * AB[0 + (j) * ldab];
             }
             if (update) {
                 if (i - k < n - ka && k <= kbt)
@@ -286,18 +286,18 @@ L10:
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
                 // generate rotations in 2nd set to annihilate elements outside the band
-                dlargv(nr, &AB[0 + j2 * ldab], inca, &work[j2 - 1], ka1, &work[n + j2 - 1], ka1);
+                dlargv(nr, &AB[0 + (j2 - 1) * ldab], inca, &work[j2 - 1], ka1, &work[n + j2 - 1], ka1);
 
                 // apply rotations in 2nd set from the right
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[ka1 - l - 1 + j2 * ldab], inca,
-                           &AB[ka - l - 1 + (j2 + 1) * ldab], inca,
+                    dlartv(nr, &AB[ka1 - l - 1 + (j2 - 1) * ldab], inca,
+                           &AB[ka - l - 1 + (j2) * ldab], inca,
                            &work[n + j2 - 1], &work[j2 - 1], ka1);
                 }
 
                 // apply rotations in 2nd set from both sides to diagonal blocks
-                dlar2v(nr, &AB[ka + j2 * ldab], &AB[ka + (j2 + 1) * ldab],
-                       &AB[ka - 1 + (j2 + 1) * ldab], inca,
+                dlar2v(nr, &AB[ka + (j2 - 1) * ldab], &AB[ka + (j2) * ldab],
+                       &AB[ka - 1 + (j2) * ldab], inca,
                        &work[n + j2 - 1], &work[j2 - 1], ka1);
             }
 
@@ -305,15 +305,15 @@ L10:
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + (j2 + ka1 - l) * ldab], inca,
-                           &AB[l + (j2 + ka1 - l) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j2 + ka1 - l - 1) * ldab], inca,
+                           &AB[l + (j2 + ka1 - l - 1) * ldab], inca,
                            &work[n + j2 - 1], &work[j2 - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 2nd set
                 for (j = j2; j <= j1; j += ka1) {
-                    cblas_drot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    cblas_drot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + (j) * ldx], 1,
                                work[n + j - 1], work[j - 1]);
                 }
             }
@@ -326,8 +326,8 @@ L10:
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + (j2 + ka1 - l) * ldab], inca,
-                           &AB[l + (j2 + ka1 - l) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j2 + ka1 - l - 1) * ldab], inca,
+                           &AB[l + (j2 + ka1 - l - 1) * ldab], inca,
                            &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
             }
         }
@@ -343,45 +343,45 @@ L10:
         // Transform A, working with the lower triangle
         if (update) {
             // Form inv(S(i))**T * A * inv(S(i))
-            bii = BB[0 + i * ldbb];  // BB(1, I) in 1-based
+            bii = BB[0 + (i - 1) * ldbb];  // BB(1, I) in 1-based
             for (j = i; j <= i1; j++) {
-                AB[j - i + i * ldab] = AB[j - i + i * ldab] / bii;
+                AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
             int jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i; j++) {
-                AB[i - j + j * ldab] = AB[i - j + j * ldab] / bii;
+                AB[i - j + (j - 1) * ldab] = AB[i - j + (j - 1) * ldab] / bii;
             }
             for (k = i - kbt; k <= i - 1; k++) {
                 for (j = i - kbt; j <= k; j++) {
-                    AB[k - j + j * ldab] = AB[k - j + j * ldab]
-                        - BB[i - j + j * ldbb] * AB[i - k + k * ldab]
-                        - BB[i - k + k * ldbb] * AB[i - j + j * ldab]
-                        + AB[0 + i * ldab] * BB[i - j + j * ldbb] * BB[i - k + k * ldbb];
+                    AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
+                        - BB[i - j + (j - 1) * ldbb] * AB[i - k + (k - 1) * ldab]
+                        - BB[i - k + (k - 1) * ldbb] * AB[i - j + (j - 1) * ldab]
+                        + AB[0 + (i - 1) * ldab] * BB[i - j + (j - 1) * ldbb] * BB[i - k + (k - 1) * ldbb];
                 }
                 jmax = (1 > i - ka) ? 1 : (i - ka);
                 for (j = jmax; j <= i - kbt - 1; j++) {
-                    AB[k - j + j * ldab] = AB[k - j + j * ldab]
-                        - BB[i - k + k * ldbb] * AB[i - j + j * ldab];
+                    AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
+                        - BB[i - k + (k - 1) * ldbb] * AB[i - j + (j - 1) * ldab];
                 }
             }
             for (j = i; j <= i1; j++) {
                 int kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
-                    AB[j - k + k * ldab] = AB[j - k + k * ldab]
-                        - BB[i - k + k * ldbb] * AB[j - i + i * ldab];
+                    AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
+                        - BB[i - k + (k - 1) * ldbb] * AB[j - i + (i - 1) * ldab];
                 }
             }
 
             if (wantx) {
                 // post-multiply X by inv(S(i))
-                cblas_dscal(n - m, ONE / bii, &X[m + i * ldx], 1);
+                cblas_dscal(n - m, ONE / bii, &X[m + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_dger(CblasColMajor, n - m, kbt, -ONE, &X[m + i * ldx], 1,
-                               &BB[kbt + (i - kbt) * ldbb], ldbb - 1, &X[m + (i - kbt) * ldx], ldx);
+                    cblas_dger(CblasColMajor, n - m, kbt, -ONE, &X[m + (i - 1) * ldx], 1,
+                               &BB[kbt + (i - kbt - 1) * ldbb], ldbb - 1, &X[m + (i - kbt - 1) * ldx], ldx);
             }
 
             // store a(i1,i) in RA1 for use in next loop over K
-            ra1 = AB[i1 - i + i * ldab];
+            ra1 = AB[i1 - i + (i - 1) * ldab];
         }
 
         // Generate and apply vectors of rotations to chase all the
@@ -391,15 +391,15 @@ L10:
                 // Determine the rotations which would annihilate the bulge
                 if (i - k + ka < n && i - k > 1) {
                     // generate rotation to annihilate a(i-k+ka+1,i)
-                    dlartg(AB[ka1 - k - 1 + i * ldab], ra1,
+                    dlartg(AB[ka1 - k - 1 + (i - 1) * ldab], ra1,
                            &work[n + i - k + ka - m - 1], &work[i - k + ka - m - 1], &ra);
 
                     // create nonzero element a(i-k+ka+1,i-k) outside the band
-                    t = -BB[k + (i - k) * ldbb] * ra1;
+                    t = -BB[k + (i - k - 1) * ldbb] * ra1;
                     work[i - k - 1] = work[n + i - k + ka - m - 1] * t
-                        - work[i - k + ka - m - 1] * AB[ka + (i - k) * ldab];
-                    AB[ka + (i - k) * ldab] = work[i - k + ka - m - 1] * t
-                        + work[n + i - k + ka - m - 1] * AB[ka + (i - k) * ldab];
+                        - work[i - k + ka - m - 1] * AB[ka + (i - k - 1) * ldab];
+                    AB[ka + (i - k - 1) * ldab] = work[i - k + ka - m - 1] * t
+                        + work[n + i - k + ka - m - 1] * AB[ka + (i - k - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -414,25 +414,25 @@ L10:
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j += ka1) {
                 // create nonzero element a(j+1,j-ka) outside the band
-                work[j - m - 1] = work[j - m - 1] * AB[ka + (j - ka + 1) * ldab];
-                AB[ka + (j - ka + 1) * ldab] = work[n + j - m - 1] * AB[ka + (j - ka + 1) * ldab];
+                work[j - m - 1] = work[j - m - 1] * AB[ka + (j - ka) * ldab];
+                AB[ka + (j - ka) * ldab] = work[n + j - m - 1] * AB[ka + (j - ka) * ldab];
             }
 
             // generate rotations in 1st set to annihilate elements outside the band
             if (nrt > 0)
-                dlargv(nrt, &AB[ka + (j2t - ka) * ldab], inca, &work[j2t - m - 1], ka1,
+                dlargv(nrt, &AB[ka + (j2t - ka - 1) * ldab], inca, &work[j2t - m - 1], ka1,
                        &work[n + j2t - m - 1], ka1);
             if (nr > 0) {
                 // apply rotations in 1st set from the left
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[l + (j2 - l) * ldab], inca,
-                           &AB[l + 1 + (j2 - l) * ldab], inca,
+                    dlartv(nr, &AB[l + (j2 - l - 1) * ldab], inca,
+                           &AB[l + 1 + (j2 - l - 1) * ldab], inca,
                            &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
                 }
 
                 // apply rotations in 1st set from both sides to diagonal blocks
-                dlar2v(nr, &AB[0 + j2 * ldab], &AB[0 + (j2 + 1) * ldab],
-                       &AB[1 + j2 * ldab], inca,
+                dlar2v(nr, &AB[0 + (j2 - 1) * ldab], &AB[0 + (j2) * ldab],
+                       &AB[1 + (j2 - 1) * ldab], inca,
                        &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
             }
 
@@ -440,15 +440,15 @@ L10:
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + j2 * ldab], inca,
-                           &AB[ka - l + (j2 + 1) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j2 - 1) * ldab], inca,
+                           &AB[ka - l + (j2) * ldab], inca,
                            &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 1st set
                 for (j = j2; j <= j1; j += ka1) {
-                    cblas_drot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    cblas_drot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + (j) * ldx], 1,
                                work[n + j - m - 1], work[j - m - 1]);
                 }
             }
@@ -457,7 +457,7 @@ L10:
         if (update) {
             if (i2 <= n && kbt > 0) {
                 // create nonzero element a(i-kbt+ka+1,i-kbt) outside the band
-                work[i - kbt - 1] = -BB[kbt + (i - kbt) * ldbb] * ra1;
+                work[i - kbt - 1] = -BB[kbt + (i - kbt - 1) * ldbb] * ra1;
             }
         }
 
@@ -472,8 +472,8 @@ L10:
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + ka + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + (j2 - ka) * ldab], inca,
-                           &AB[ka - l + (j2 - ka + 1) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j2 - ka - 1) * ldab], inca,
+                           &AB[ka - l + (j2 - ka) * ldab], inca,
                            &work[n + j2 - ka - 1], &work[j2 - ka - 1], ka1);
             }
             nr = (n - j2 + ka) / ka1;
@@ -484,8 +484,8 @@ L10:
             }
             for (j = j2; j <= j1; j += ka1) {
                 // create nonzero element a(j+1,j-ka) outside the band
-                work[j - 1] = work[j - 1] * AB[ka + (j - ka + 1) * ldab];
-                AB[ka + (j - ka + 1) * ldab] = work[n + j - 1] * AB[ka + (j - ka + 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[ka + (j - ka) * ldab];
+                AB[ka + (j - ka) * ldab] = work[n + j - 1] * AB[ka + (j - ka) * ldab];
             }
             if (update) {
                 if (i - k < n - ka && k <= kbt)
@@ -499,18 +499,18 @@ L10:
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
                 // generate rotations in 2nd set to annihilate elements outside the band
-                dlargv(nr, &AB[ka + (j2 - ka) * ldab], inca, &work[j2 - 1], ka1, &work[n + j2 - 1], ka1);
+                dlargv(nr, &AB[ka + (j2 - ka - 1) * ldab], inca, &work[j2 - 1], ka1, &work[n + j2 - 1], ka1);
 
                 // apply rotations in 2nd set from the left
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[l + (j2 - l) * ldab], inca,
-                           &AB[l + 1 + (j2 - l) * ldab], inca,
+                    dlartv(nr, &AB[l + (j2 - l - 1) * ldab], inca,
+                           &AB[l + 1 + (j2 - l - 1) * ldab], inca,
                            &work[n + j2 - 1], &work[j2 - 1], ka1);
                 }
 
                 // apply rotations in 2nd set from both sides to diagonal blocks
-                dlar2v(nr, &AB[0 + j2 * ldab], &AB[0 + (j2 + 1) * ldab],
-                       &AB[1 + j2 * ldab], inca,
+                dlar2v(nr, &AB[0 + (j2 - 1) * ldab], &AB[0 + (j2) * ldab],
+                       &AB[1 + (j2 - 1) * ldab], inca,
                        &work[n + j2 - 1], &work[j2 - 1], ka1);
             }
 
@@ -518,15 +518,15 @@ L10:
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + j2 * ldab], inca,
-                           &AB[ka - l + (j2 + 1) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j2 - 1) * ldab], inca,
+                           &AB[ka - l + (j2) * ldab], inca,
                            &work[n + j2 - 1], &work[j2 - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 2nd set
                 for (j = j2; j <= j1; j += ka1) {
-                    cblas_drot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    cblas_drot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + (j) * ldx], 1,
                                work[n + j - 1], work[j - 1]);
                 }
             }
@@ -539,8 +539,8 @@ L10:
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + j2 * ldab], inca,
-                           &AB[ka - l + (j2 + 1) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j2 - 1) * ldab], inca,
+                           &AB[ka - l + (j2) * ldab], inca,
                            &work[n + j2 - m - 1], &work[j2 - m - 1], ka1);
             }
         }
@@ -591,45 +591,45 @@ L490:
         // Transform A, working with the upper triangle
         if (update) {
             // Form inv(S(i))**T * A * inv(S(i))
-            bii = BB[kb + i * ldbb];
+            bii = BB[kb + (i - 1) * ldbb];
             for (j = i1; j <= i; j++) {
-                AB[j - i + ka + i * ldab] = AB[j - i + ka + i * ldab] / bii;
+                AB[j - i + ka + (i - 1) * ldab] = AB[j - i + ka + (i - 1) * ldab] / bii;
             }
             int jmin = (n < i + ka) ? n : (i + ka);
             for (j = i; j <= jmin; j++) {
-                AB[i - j + ka + j * ldab] = AB[i - j + ka + j * ldab] / bii;
+                AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
             for (k = i + 1; k <= i + kbt; k++) {
                 for (j = k; j <= i + kbt; j++) {
-                    AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
-                        - BB[i - j + kb + j * ldbb] * AB[i - k + ka + k * ldab]
-                        - BB[i - k + kb + k * ldbb] * AB[i - j + ka + j * ldab]
-                        + AB[ka + i * ldab] * BB[i - j + kb + j * ldbb] * BB[i - k + kb + k * ldbb];
+                    AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
+                        - BB[i - j + kb + (j - 1) * ldbb] * AB[i - k + ka + (k - 1) * ldab]
+                        - BB[i - k + kb + (k - 1) * ldbb] * AB[i - j + ka + (j - 1) * ldab]
+                        + AB[ka + (i - 1) * ldab] * BB[i - j + kb + (j - 1) * ldbb] * BB[i - k + kb + (k - 1) * ldbb];
                 }
                 jmin = (n < i + ka) ? n : (i + ka);
                 for (j = i + kbt + 1; j <= jmin; j++) {
-                    AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
-                        - BB[i - k + kb + k * ldbb] * AB[i - j + ka + j * ldab];
+                    AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
+                        - BB[i - k + kb + (k - 1) * ldbb] * AB[i - j + ka + (j - 1) * ldab];
                 }
             }
             for (j = i1; j <= i; j++) {
                 int kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
-                    AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
-                        - BB[i - k + kb + k * ldbb] * AB[j - i + ka + i * ldab];
+                    AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
+                        - BB[i - k + kb + (k - 1) * ldbb] * AB[j - i + ka + (i - 1) * ldab];
                 }
             }
 
             if (wantx) {
                 // post-multiply X by inv(S(i))
-                cblas_dscal(nx, ONE / bii, &X[0 + i * ldx], 1);
+                cblas_dscal(nx, ONE / bii, &X[0 + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_dger(CblasColMajor, nx, kbt, -ONE, &X[0 + i * ldx], 1,
-                               &BB[kb - 1 + (i + 1) * ldbb], ldbb - 1, &X[0 + (i + 1) * ldx], ldx);
+                    cblas_dger(CblasColMajor, nx, kbt, -ONE, &X[0 + (i - 1) * ldx], 1,
+                               &BB[kb - 1 + (i) * ldbb], ldbb - 1, &X[0 + (i) * ldx], ldx);
             }
 
             // store a(i1,i) in RA1 for use in next loop over K
-            ra1 = AB[i1 - i + ka + i * ldab];
+            ra1 = AB[i1 - i + ka + (i - 1) * ldab];
         }
 
         // Generate and apply vectors of rotations to chase all the
@@ -639,15 +639,15 @@ L490:
                 // Determine the rotations which would annihilate the bulge
                 if (i + k - ka1 > 0 && i + k < m) {
                     // generate rotation to annihilate a(i+k-ka-1,i)
-                    dlartg(AB[k + i * ldab], ra1,
+                    dlartg(AB[k + (i - 1) * ldab], ra1,
                            &work[n + i + k - ka - 1], &work[i + k - ka - 1], &ra);
 
                     // create nonzero element a(i+k-ka-1,i+k) outside the band
-                    t = -BB[kb - k + (i + k) * ldbb] * ra1;
+                    t = -BB[kb - k + (i + k - 1) * ldbb] * ra1;
                     work[m - kb + i + k - 1] = work[n + i + k - ka - 1] * t
-                        - work[i + k - ka - 1] * AB[0 + (i + k) * ldab];
-                    AB[0 + (i + k) * ldab] = work[i + k - ka - 1] * t
-                        + work[n + i + k - ka - 1] * AB[0 + (i + k) * ldab];
+                        - work[i + k - ka - 1] * AB[0 + (i + k - 1) * ldab];
+                    AB[0 + (i + k - 1) * ldab] = work[i + k - ka - 1] * t
+                        + work[n + i + k - ka - 1] * AB[0 + (i + k - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -662,25 +662,25 @@ L490:
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j += ka1) {
                 // create nonzero element a(j-1,j+ka) outside the band
-                work[j - 1] = work[j - 1] * AB[0 + (j + ka - 1) * ldab];
-                AB[0 + (j + ka - 1) * ldab] = work[n + j - 1] * AB[0 + (j + ka - 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
+                AB[0 + (j + ka - 1 - 1) * ldab] = work[n + j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
             }
 
             // generate rotations in 1st set to annihilate elements outside the band
             if (nrt > 0)
-                dlargv(nrt, &AB[0 + (j1 + ka) * ldab], inca, &work[j1 - 1], ka1,
+                dlargv(nrt, &AB[0 + (j1 + ka - 1) * ldab], inca, &work[j1 - 1], ka1,
                        &work[n + j1 - 1], ka1);
             if (nr > 0) {
                 // apply rotations in 1st set from the left
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[ka1 - l - 1 + (j1 + l) * ldab], inca,
-                           &AB[ka - l - 1 + (j1 + l) * ldab], inca,
+                    dlartv(nr, &AB[ka1 - l - 1 + (j1 + l - 1) * ldab], inca,
+                           &AB[ka - l - 1 + (j1 + l - 1) * ldab], inca,
                            &work[n + j1 - 1], &work[j1 - 1], ka1);
                 }
 
                 // apply rotations in 1st set from both sides to diagonal blocks
-                dlar2v(nr, &AB[ka + j1 * ldab], &AB[ka + (j1 - 1) * ldab],
-                       &AB[ka - 1 + j1 * ldab], inca,
+                dlar2v(nr, &AB[ka + (j1 - 1) * ldab], &AB[ka + (j1 - 1 - 1) * ldab],
+                       &AB[ka - 1 + (j1 - 1) * ldab], inca,
                        &work[n + j1 - 1], &work[j1 - 1], ka1);
             }
 
@@ -689,15 +689,15 @@ L490:
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + j1t * ldab], inca,
-                           &AB[l + (j1t - 1) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j1t - 1) * ldab], inca,
+                           &AB[l + (j1t - 1 - 1) * ldab], inca,
                            &work[n + j1t - 1], &work[j1t - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 1st set
                 for (j = j1; j <= j2; j += ka1) {
-                    cblas_drot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    cblas_drot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 1 - 1) * ldx], 1,
                                work[n + j - 1], work[j - 1]);
                 }
             }
@@ -706,7 +706,7 @@ L490:
         if (update) {
             if (i2 > 0 && kbt > 0) {
                 // create nonzero element a(i+kbt-ka-1,i+kbt) outside the band
-                work[m - kb + i + kbt - 1] = -BB[kb - kbt + (i + kbt) * ldbb] * ra1;
+                work[m - kb + i + kbt - 1] = -BB[kb - kbt + (i + kbt - 1) * ldbb] * ra1;
             }
         }
 
@@ -722,8 +722,8 @@ L490:
                 nrt = (j2 + ka + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + (j1t + ka) * ldab], inca,
-                           &AB[l + (j1t + ka - 1) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j1t + ka - 1) * ldab], inca,
+                           &AB[l + (j1t + ka - 1 - 1) * ldab], inca,
                            &work[n + m - kb + j1t + ka - 1], &work[m - kb + j1t + ka - 1], ka1);
             }
             nr = (j2 + ka - 1) / ka1;
@@ -734,8 +734,8 @@ L490:
             }
             for (j = j1; j <= j2; j += ka1) {
                 // create nonzero element a(j-1,j+ka) outside the band
-                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[0 + (j + ka - 1) * ldab];
-                AB[0 + (j + ka - 1) * ldab] = work[n + m - kb + j - 1] * AB[0 + (j + ka - 1) * ldab];
+                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
+                AB[0 + (j + ka - 1 - 1) * ldab] = work[n + m - kb + j - 1] * AB[0 + (j + ka - 1 - 1) * ldab];
             }
             if (update) {
                 if (i + k > ka1 && k <= kbt)
@@ -749,19 +749,19 @@ L490:
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
                 // generate rotations in 2nd set to annihilate elements outside the band
-                dlargv(nr, &AB[0 + (j1 + ka) * ldab], inca, &work[m - kb + j1 - 1], ka1,
+                dlargv(nr, &AB[0 + (j1 + ka - 1) * ldab], inca, &work[m - kb + j1 - 1], ka1,
                        &work[n + m - kb + j1 - 1], ka1);
 
                 // apply rotations in 2nd set from the left
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[ka1 - l - 1 + (j1 + l) * ldab], inca,
-                           &AB[ka - l - 1 + (j1 + l) * ldab], inca,
+                    dlartv(nr, &AB[ka1 - l - 1 + (j1 + l - 1) * ldab], inca,
+                           &AB[ka - l - 1 + (j1 + l - 1) * ldab], inca,
                            &work[n + m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
                 }
 
                 // apply rotations in 2nd set from both sides to diagonal blocks
-                dlar2v(nr, &AB[ka + j1 * ldab], &AB[ka + (j1 - 1) * ldab],
-                       &AB[ka - 1 + j1 * ldab], inca,
+                dlar2v(nr, &AB[ka + (j1 - 1) * ldab], &AB[ka + (j1 - 1 - 1) * ldab],
+                       &AB[ka - 1 + (j1 - 1) * ldab], inca,
                        &work[n + m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
             }
 
@@ -770,15 +770,15 @@ L490:
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + j1t * ldab], inca,
-                           &AB[l + (j1t - 1) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j1t - 1) * ldab], inca,
+                           &AB[l + (j1t - 1 - 1) * ldab], inca,
                            &work[n + m - kb + j1t - 1], &work[m - kb + j1t - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 2nd set
                 for (j = j1; j <= j2; j += ka1) {
-                    cblas_drot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    cblas_drot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 1 - 1) * ldx], 1,
                                work[n + m - kb + j - 1], work[m - kb + j - 1]);
                 }
             }
@@ -792,8 +792,8 @@ L490:
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[l - 1 + j1t * ldab], inca,
-                           &AB[l + (j1t - 1) * ldab], inca,
+                    dlartv(nrt, &AB[l - 1 + (j1t - 1) * ldab], inca,
+                           &AB[l + (j1t - 1 - 1) * ldab], inca,
                            &work[n + j1t - 1], &work[j1t - 1], ka1);
             }
         }
@@ -810,45 +810,45 @@ L490:
         // Transform A, working with the lower triangle
         if (update) {
             // Form inv(S(i))**T * A * inv(S(i))
-            bii = BB[0 + i * ldbb];
+            bii = BB[0 + (i - 1) * ldbb];
             for (j = i1; j <= i; j++) {
-                AB[i - j + j * ldab] = AB[i - j + j * ldab] / bii;
+                AB[i - j + (j - 1) * ldab] = AB[i - j + (j - 1) * ldab] / bii;
             }
             int jmin = (n < i + ka) ? n : (i + ka);
             for (j = i; j <= jmin; j++) {
-                AB[j - i + i * ldab] = AB[j - i + i * ldab] / bii;
+                AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
             for (k = i + 1; k <= i + kbt; k++) {
                 for (j = k; j <= i + kbt; j++) {
-                    AB[j - k + k * ldab] = AB[j - k + k * ldab]
-                        - BB[j - i + i * ldbb] * AB[k - i + i * ldab]
-                        - BB[k - i + i * ldbb] * AB[j - i + i * ldab]
-                        + AB[0 + i * ldab] * BB[j - i + i * ldbb] * BB[k - i + i * ldbb];
+                    AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
+                        - BB[j - i + (i - 1) * ldbb] * AB[k - i + (i - 1) * ldab]
+                        - BB[k - i + (i - 1) * ldbb] * AB[j - i + (i - 1) * ldab]
+                        + AB[0 + (i - 1) * ldab] * BB[j - i + (i - 1) * ldbb] * BB[k - i + (i - 1) * ldbb];
                 }
                 jmin = (n < i + ka) ? n : (i + ka);
                 for (j = i + kbt + 1; j <= jmin; j++) {
-                    AB[j - k + k * ldab] = AB[j - k + k * ldab]
-                        - BB[k - i + i * ldbb] * AB[j - i + i * ldab];
+                    AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
+                        - BB[k - i + (i - 1) * ldbb] * AB[j - i + (i - 1) * ldab];
                 }
             }
             for (j = i1; j <= i; j++) {
                 int kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
-                    AB[k - j + j * ldab] = AB[k - j + j * ldab]
-                        - BB[k - i + i * ldbb] * AB[i - j + j * ldab];
+                    AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
+                        - BB[k - i + (i - 1) * ldbb] * AB[i - j + (j - 1) * ldab];
                 }
             }
 
             if (wantx) {
                 // post-multiply X by inv(S(i))
-                cblas_dscal(nx, ONE / bii, &X[0 + i * ldx], 1);
+                cblas_dscal(nx, ONE / bii, &X[0 + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_dger(CblasColMajor, nx, kbt, -ONE, &X[0 + i * ldx], 1,
-                               &BB[1 + i * ldbb], 1, &X[0 + (i + 1) * ldx], ldx);
+                    cblas_dger(CblasColMajor, nx, kbt, -ONE, &X[0 + (i - 1) * ldx], 1,
+                               &BB[1 + (i - 1) * ldbb], 1, &X[0 + (i) * ldx], ldx);
             }
 
             // store a(i,i1) in RA1 for use in next loop over K
-            ra1 = AB[i - i1 + i1 * ldab];
+            ra1 = AB[i - i1 + (i1 - 1) * ldab];
         }
 
         // Generate and apply vectors of rotations to chase all the
@@ -858,15 +858,15 @@ L490:
                 // Determine the rotations which would annihilate the bulge
                 if (i + k - ka1 > 0 && i + k < m) {
                     // generate rotation to annihilate a(i,i+k-ka-1)
-                    dlartg(AB[ka1 - k - 1 + (i + k - ka) * ldab], ra1,
+                    dlartg(AB[ka1 - k - 1 + (i + k - ka - 1) * ldab], ra1,
                            &work[n + i + k - ka - 1], &work[i + k - ka - 1], &ra);
 
                     // create nonzero element a(i+k,i+k-ka-1) outside the band
-                    t = -BB[k + i * ldbb] * ra1;
+                    t = -BB[k + (i - 1) * ldbb] * ra1;
                     work[m - kb + i + k - 1] = work[n + i + k - ka - 1] * t
-                        - work[i + k - ka - 1] * AB[ka + (i + k - ka) * ldab];
-                    AB[ka + (i + k - ka) * ldab] = work[i + k - ka - 1] * t
-                        + work[n + i + k - ka - 1] * AB[ka + (i + k - ka) * ldab];
+                        - work[i + k - ka - 1] * AB[ka + (i + k - ka - 1) * ldab];
+                    AB[ka + (i + k - ka - 1) * ldab] = work[i + k - ka - 1] * t
+                        + work[n + i + k - ka - 1] * AB[ka + (i + k - ka - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -881,25 +881,25 @@ L490:
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j += ka1) {
                 // create nonzero element a(j+ka,j-1) outside the band
-                work[j - 1] = work[j - 1] * AB[ka + (j - 1) * ldab];
-                AB[ka + (j - 1) * ldab] = work[n + j - 1] * AB[ka + (j - 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[ka + (j - 1 - 1) * ldab];
+                AB[ka + (j - 1 - 1) * ldab] = work[n + j - 1] * AB[ka + (j - 1 - 1) * ldab];
             }
 
             // generate rotations in 1st set to annihilate elements outside the band
             if (nrt > 0)
-                dlargv(nrt, &AB[ka + j1 * ldab], inca, &work[j1 - 1], ka1,
+                dlargv(nrt, &AB[ka + (j1 - 1) * ldab], inca, &work[j1 - 1], ka1,
                        &work[n + j1 - 1], ka1);
             if (nr > 0) {
                 // apply rotations in 1st set from the right
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[l + j1 * ldab], inca,
-                           &AB[l + 1 + (j1 - 1) * ldab], inca,
+                    dlartv(nr, &AB[l + (j1 - 1) * ldab], inca,
+                           &AB[l + 1 + (j1 - 1 - 1) * ldab], inca,
                            &work[n + j1 - 1], &work[j1 - 1], ka1);
                 }
 
                 // apply rotations in 1st set from both sides to diagonal blocks
-                dlar2v(nr, &AB[0 + j1 * ldab], &AB[0 + (j1 - 1) * ldab],
-                       &AB[1 + (j1 - 1) * ldab], inca,
+                dlar2v(nr, &AB[0 + (j1 - 1) * ldab], &AB[0 + (j1 - 1 - 1) * ldab],
+                       &AB[1 + (j1 - 1 - 1) * ldab], inca,
                        &work[n + j1 - 1], &work[j1 - 1], ka1);
             }
 
@@ -908,15 +908,15 @@ L490:
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + (j1t - ka1 + l) * ldab], inca,
-                           &AB[ka - l + (j1t - ka1 + l) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j1t - ka1 + l - 1) * ldab], inca,
+                           &AB[ka - l + (j1t - ka1 + l - 1) * ldab], inca,
                            &work[n + j1t - 1], &work[j1t - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 1st set
                 for (j = j1; j <= j2; j += ka1) {
-                    cblas_drot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    cblas_drot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 1 - 1) * ldx], 1,
                                work[n + j - 1], work[j - 1]);
                 }
             }
@@ -925,7 +925,7 @@ L490:
         if (update) {
             if (i2 > 0 && kbt > 0) {
                 // create nonzero element a(i+kbt,i+kbt-ka-1) outside the band
-                work[m - kb + i + kbt - 1] = -BB[kbt + i * ldbb] * ra1;
+                work[m - kb + i + kbt - 1] = -BB[kbt + (i - 1) * ldbb] * ra1;
             }
         }
 
@@ -941,8 +941,8 @@ L490:
                 nrt = (j2 + ka + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + (j1t + l - 1) * ldab], inca,
-                           &AB[ka - l + (j1t + l - 1) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j1t + l - 1 - 1) * ldab], inca,
+                           &AB[ka - l + (j1t + l - 1 - 1) * ldab], inca,
                            &work[n + m - kb + j1t + ka - 1], &work[m - kb + j1t + ka - 1], ka1);
             }
             nr = (j2 + ka - 1) / ka1;
@@ -953,8 +953,8 @@ L490:
             }
             for (j = j1; j <= j2; j += ka1) {
                 // create nonzero element a(j+ka,j-1) outside the band
-                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[ka + (j - 1) * ldab];
-                AB[ka + (j - 1) * ldab] = work[n + m - kb + j - 1] * AB[ka + (j - 1) * ldab];
+                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[ka + (j - 1 - 1) * ldab];
+                AB[ka + (j - 1 - 1) * ldab] = work[n + m - kb + j - 1] * AB[ka + (j - 1 - 1) * ldab];
             }
             if (update) {
                 if (i + k > ka1 && k <= kbt)
@@ -968,19 +968,19 @@ L490:
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
                 // generate rotations in 2nd set to annihilate elements outside the band
-                dlargv(nr, &AB[ka + j1 * ldab], inca, &work[m - kb + j1 - 1], ka1,
+                dlargv(nr, &AB[ka + (j1 - 1) * ldab], inca, &work[m - kb + j1 - 1], ka1,
                        &work[n + m - kb + j1 - 1], ka1);
 
                 // apply rotations in 2nd set from the right
                 for (l = 1; l <= ka - 1; l++) {
-                    dlartv(nr, &AB[l + j1 * ldab], inca,
-                           &AB[l + 1 + (j1 - 1) * ldab], inca,
+                    dlartv(nr, &AB[l + (j1 - 1) * ldab], inca,
+                           &AB[l + 1 + (j1 - 1 - 1) * ldab], inca,
                            &work[n + m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
                 }
 
                 // apply rotations in 2nd set from both sides to diagonal blocks
-                dlar2v(nr, &AB[0 + j1 * ldab], &AB[0 + (j1 - 1) * ldab],
-                       &AB[1 + (j1 - 1) * ldab], inca,
+                dlar2v(nr, &AB[0 + (j1 - 1) * ldab], &AB[0 + (j1 - 1 - 1) * ldab],
+                       &AB[1 + (j1 - 1 - 1) * ldab], inca,
                        &work[n + m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
             }
 
@@ -989,15 +989,15 @@ L490:
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + (j1t - ka1 + l) * ldab], inca,
-                           &AB[ka - l + (j1t - ka1 + l) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j1t - ka1 + l - 1) * ldab], inca,
+                           &AB[ka - l + (j1t - ka1 + l - 1) * ldab], inca,
                            &work[n + m - kb + j1t - 1], &work[m - kb + j1t - 1], ka1);
             }
 
             if (wantx) {
                 // post-multiply X by product of rotations in 2nd set
                 for (j = j1; j <= j2; j += ka1) {
-                    cblas_drot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    cblas_drot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 1 - 1) * ldx], 1,
                                work[n + m - kb + j - 1], work[m - kb + j - 1]);
                 }
             }
@@ -1011,8 +1011,8 @@ L490:
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    dlartv(nrt, &AB[ka1 - l + (j1t - ka1 + l) * ldab], inca,
-                           &AB[ka - l + (j1t - ka1 + l) * ldab], inca,
+                    dlartv(nrt, &AB[ka1 - l + (j1t - ka1 + l - 1) * ldab], inca,
+                           &AB[ka - l + (j1t - ka1 + l - 1) * ldab], inca,
                            &work[n + j1t - 1], &work[j1t - 1], ka1);
             }
         }
