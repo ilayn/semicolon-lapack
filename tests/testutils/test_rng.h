@@ -76,7 +76,7 @@ static inline uint64_t rng_next(uint64_t state[static 4]) {
  *
  * @param[in,out] state  The 4-element state array.
  */
-static inline f64 rng_uniform(uint64_t state[static 4]) {
+static f64 rng_uniform(uint64_t state[static 4]) {
     /* Convert to [0, 1) then shift to (0, 1) */
     f64 u = (rng_next(state) >> 11) * 0x1.0p-53;
     /* Ensure we never return exactly 0 or 1 */

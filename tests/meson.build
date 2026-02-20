@@ -81,6 +81,7 @@ lapack_tests = {
   'ddrvvx': ['test_ddrvvx.c', 'eigen'],      # Non-symmetric eigenvalue expert (DGEEVX)
   'ddrvst': ['test_ddrvst.c', 'eigen'],      # Symmetric eigenvalue drivers
   'dchkst': ['test_dchkst.c', 'eigen'],      # Symmetric tridiagonal eigenvalue
+  'dchkst2stg': ['test_dchkst2stg.c', 'eigen'], # Symmetric tridiagonal eigenvalue (2-stage)
   'dckglm': ['test_dckglm.c', 'glm'],       # GLM solver (DGGGLM)
   'dckgqr': ['test_dckgqr.c', 'gqr'],       # GQR/GRQ factorization (DGGQRF/DGGRQF)
   'dckgsv': ['test_dckgsv.c', 'gsv'],       # GSVD (DGGSVD3)
@@ -96,6 +97,7 @@ lapack_tests = {
   'ddrges': ['test_ddrges.c', 'eigen'],       # Generalized Schur form (DGGES)
   'ddrges3': ['test_ddrges3.c', 'eigen'],     # Generalized Schur form (DGGES3)
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
+  'ddrvsg': ['test_ddrvsg.c', 'eigen'],      # Generalized symmetric eigenvalue (DSYGV/DSPGV/DSBGV)
 
   # RNG validation
   'rng_validation': ['test_rng_validation.c', 'rng'],  # xoshiro256+ correctness

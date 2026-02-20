@@ -400,8 +400,8 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
     if (n > 0)
         cblas_dcopy(n - 1, SE, 1, work, 1);
 
-    dsteqr("N", n, D1, work, work + n, ldu,
-           work + n, &iinfo);
+    dsteqr("N", n, D1, work, NULL, ldu,
+           NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
                  "dchksb2stg n=%d k=%d type=%d: DSTEQR(N) info=%d",
@@ -437,8 +437,8 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
     if (n > 0)
         cblas_dcopy(n - 1, SE, 1, work, 1);
 
-    dsteqr("N", n, D2, work, work + n, ldu,
-           work + n, &iinfo);
+    dsteqr("N", n, D2, work, NULL, ldu,
+           NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
                  "dchksb2stg n=%d k=%d type=%d: DSTEQR(N) D2 info=%d",
@@ -523,8 +523,8 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
     if (n > 0)
         cblas_dcopy(n - 1, SE, 1, work, 1);
 
-    dsteqr("N", n, D3, work, work + n, ldu,
-           work + n, &iinfo);
+    dsteqr("N", n, D3, work, NULL, ldu,
+           NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
                  "dchksb2stg n=%d k=%d type=%d: DSTEQR(N) D3 info=%d",
