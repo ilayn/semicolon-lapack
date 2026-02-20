@@ -98,6 +98,7 @@ void strsyl(const char* trana, const char* tranb, const int isgn,
         *info = -11;
     }
     if (*info != 0) {
+        xerbla("STRSYL", -(*info));
         return;
     }
 

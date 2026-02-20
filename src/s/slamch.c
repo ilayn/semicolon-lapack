@@ -1,6 +1,6 @@
 /**
  * @file slamch.c
- * @brief SLAMCH determines double precision machine parameters.
+ * @brief SLAMCH determines single precision machine parameters.
  */
 
 #include <float.h>
@@ -8,7 +8,7 @@
 #include "semicolon_lapack_single.h"
 
 /**
- * SLAMCH determines double precision machine parameters.
+ * SLAMCH determines single precision machine parameters.
  *
  * @param[in] cmach  Specifies the value to be returned by slamch:
  *                   = 'E' or 'e':  slamch := eps (relative machine precision)
@@ -32,7 +32,7 @@ f32 slamch(const char* cmach)
     f32 eps, sfmin, small, rmach;
 
     // eps = relative machine precision (assuming rounding)
-    // DBL_EPSILON is the difference between 1 and the smallest double > 1
+    // FLT_EPSILON is the difference between 1 and the smallest float > 1
     // For rounding arithmetic, divide by 2
     eps = FLT_EPSILON * 0.5f;
 

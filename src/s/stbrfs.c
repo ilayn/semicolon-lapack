@@ -115,12 +115,12 @@ void stbrfs(
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
     CBLAS_TRANSPOSE cblas_trans = notran ? CblasNoTrans : CblasTrans;
     CBLAS_TRANSPOSE cblas_transt = notran ? CblasTrans : CblasNoTrans;
-    CBLAS_DIAG cblas_siag = nounit ? CblasNonUnit : CblasUnit;
+    CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
 
     for (j = 0; j < nrhs; j++) {
         // Compute residual R = B - op(A) * X
         cblas_scopy(n, &X[j * ldx], 1, &work[n], 1);
-        cblas_stbmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_siag,
+        cblas_stbmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, kd, AB, ldab, &work[n], 1);
         cblas_saxpy(n, -ONE, &B[j * ldb], 1, &work[n], 1);
 
@@ -245,7 +245,7 @@ void stbrfs(
             if (kase != 0) {
                 if (kase == 1) {
                     // Multiply by diag(W)*inv(op(A)**T)
-                    cblas_stbsv(CblasColMajor, cblas_uplo, cblas_transt, cblas_siag,
+                    cblas_stbsv(CblasColMajor, cblas_uplo, cblas_transt, cblas_diag,
                                 n, kd, AB, ldab, &work[n], 1);
                     for (i = 0; i < n; i++) {
                         work[n + i] = work[i] * work[n + i];
@@ -255,7 +255,7 @@ void stbrfs(
                     for (i = 0; i < n; i++) {
                         work[n + i] = work[i] * work[n + i];
                     }
-                    cblas_stbsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_siag,
+                    cblas_stbsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                                 n, kd, AB, ldab, &work[n], 1);
                 }
             }

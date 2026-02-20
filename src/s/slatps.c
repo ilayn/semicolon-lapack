@@ -239,8 +239,8 @@ L80:;
         // slatps.f lines 499-504: Use the Level 2 BLAS solve
         CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
         CBLAS_TRANSPOSE cblas_trans = notran ? CblasNoTrans : CblasTrans;
-        CBLAS_DIAG cblas_siag = nounit ? CblasNonUnit : CblasUnit;
-        cblas_stpsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_siag, n, AP, X, 1);
+        CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
+        cblas_stpsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag, n, AP, X, 1);
     } else {
         // slatps.f lines 509-517: Use a Level 1 BLAS solve, scaling intermediate results
         if (xmax > bignum) {

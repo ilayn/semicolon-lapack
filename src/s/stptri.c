@@ -80,7 +80,7 @@ void stptri(
     }
 
     // Prepare CBLAS enum for diag
-    CBLAS_DIAG cblas_siag = nounit ? CblasNonUnit : CblasUnit;
+    CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
 
     if (upper) {
         // stptri.f lines 187-206: Compute inverse of upper triangular matrix
@@ -101,7 +101,7 @@ void stptri(
 
             // stptri.f lines 202-204: Compute elements 1:j-1 of j-th column
             if (j > 0) {
-                cblas_stpmv(CblasColMajor, CblasUpper, CblasNoTrans, cblas_siag,
+                cblas_stpmv(CblasColMajor, CblasUpper, CblasNoTrans, cblas_diag,
                             j, AP, &AP[jc], 1);
                 cblas_sscal(j, ajj, &AP[jc], 1);
             }
@@ -124,7 +124,7 @@ void stptri(
             if (j < n - 1) {
                 // stptri.f lines 220-226: Compute elements j+1:n of j-th column
                 // stptri.f lines 224-225: CALL DTPMV( 'Lower', 'No transpose', DIAG, N-J, AP( JCLAST ), AP( JC+1 ), 1 )
-                cblas_stpmv(CblasColMajor, CblasLower, CblasNoTrans, cblas_siag,
+                cblas_stpmv(CblasColMajor, CblasLower, CblasNoTrans, cblas_diag,
                             n - j - 1, &AP[jclast], &AP[jc + 1], 1);
                 cblas_sscal(n - j - 1, ajj, &AP[jc + 1], 1);
             }

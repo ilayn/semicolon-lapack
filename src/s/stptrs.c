@@ -104,10 +104,10 @@ void stptrs(
     } else {
         cblas_trans = CblasTrans;
     }
-    CBLAS_DIAG cblas_siag = nounit ? CblasNonUnit : CblasUnit;
+    CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
 
     for (j = 0; j < nrhs; j++) {
-        cblas_stpsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_siag,
+        cblas_stpsv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, AP, &B[j * ldb], 1);
     }
 }

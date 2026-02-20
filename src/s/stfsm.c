@@ -97,7 +97,7 @@ void stfsm(
     int lower, lside, misodd, nisodd, normaltransr, notrans;
     int m1, m2, n1, n2, k, info;
 
-    CBLAS_DIAG cblas_siag;
+    CBLAS_DIAG cblas_diag;
 
     info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');
@@ -141,7 +141,7 @@ void stfsm(
         return;
     }
 
-    cblas_siag = (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit;
+    cblas_diag = (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit;
 
     if (lside) {
 
@@ -168,28 +168,28 @@ void stfsm(
                     if (notrans) {
 
                         if (m == 1) {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                         m1, n, alpha, A, m, B, ldb);
                         } else {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                         m1, n, alpha, &A[0], m, B, ldb);
                             cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                         m2, n, m1, -ONE, &A[m1], m, B, ldb, alpha, &B[m1], ldb);
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                         m2, n, ONE, &A[m], m, &B[m1], ldb);
                         }
 
                     } else {
 
                         if (m == 1) {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                         m1, n, alpha, &A[0], m, B, ldb);
                         } else {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                         m2, n, alpha, &A[m], m, &B[m1], ldb);
                             cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                         m1, n, m2, -ONE, &A[m1], m, &B[m1], ldb, alpha, B, ldb);
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                         m1, n, ONE, &A[0], m, B, ldb);
                         }
 
@@ -199,20 +199,20 @@ void stfsm(
 
                     if (!notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                     m1, n, alpha, &A[m2], m, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     m2, n, m1, -ONE, &A[0], m, B, ldb, alpha, &B[m1], ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                     m2, n, ONE, &A[m1], m, &B[m1], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                     m2, n, alpha, &A[m1], m, &B[m1], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m1, n, m2, -ONE, &A[0], m, &B[m1], ldb, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                     m1, n, ONE, &A[m2], m, B, ldb);
 
                     }
@@ -226,28 +226,28 @@ void stfsm(
                     if (notrans) {
 
                         if (m == 1) {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                         m1, n, alpha, &A[0], m1, B, ldb);
                         } else {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                         m1, n, alpha, &A[0], m1, B, ldb);
                             cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                         m2, n, m1, -ONE, &A[m1 * m1], m1, B, ldb, alpha, &B[m1], ldb);
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                         m2, n, ONE, &A[1], m1, &B[m1], ldb);
                         }
 
                     } else {
 
                         if (m == 1) {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                         m1, n, alpha, &A[0], m1, B, ldb);
                         } else {
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                         m2, n, alpha, &A[1], m1, &B[m1], ldb);
                             cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                         m1, n, m2, -ONE, &A[m1 * m1], m1, &B[m1], ldb, alpha, B, ldb);
-                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                            cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                         m1, n, ONE, &A[0], m1, B, ldb);
                         }
 
@@ -257,20 +257,20 @@ void stfsm(
 
                     if (!notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                     m1, n, alpha, &A[m2 * m2], m2, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m2, n, m1, -ONE, &A[0], m2, B, ldb, alpha, &B[m1], ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                     m2, n, ONE, &A[m1 * m2], m2, &B[m1], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                     m2, n, alpha, &A[m1 * m2], m2, &B[m1], ldb);
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     m1, n, m2, -ONE, &A[0], m2, &B[m1], ldb, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                     m1, n, ONE, &A[m2 * m2], m2, B, ldb);
 
                     }
@@ -287,20 +287,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                     k, n, alpha, &A[1], m + 1, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[k + 1], m + 1, B, ldb, alpha, &B[k], ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                     k, n, ONE, &A[0], m + 1, &B[k], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                     k, n, alpha, &A[0], m + 1, &B[k], ldb);
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[k + 1], m + 1, &B[k], ldb, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                     k, n, ONE, &A[1], m + 1, B, ldb);
 
                     }
@@ -309,20 +309,20 @@ void stfsm(
 
                     if (!notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                     k, n, alpha, &A[k + 1], m + 1, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[0], m + 1, B, ldb, alpha, &B[k], ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                     k, n, ONE, &A[k], m + 1, &B[k], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                     k, n, alpha, &A[k], m + 1, &B[k], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[0], m + 1, &B[k], ldb, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                     k, n, ONE, &A[k + 1], m + 1, B, ldb);
 
                     }
@@ -335,20 +335,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                     k, n, alpha, &A[k], k, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[k * (k + 1)], k, B, ldb, alpha, &B[k], ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                     k, n, ONE, &A[0], k, &B[k], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                     k, n, alpha, &A[0], k, &B[k], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[k * (k + 1)], k, &B[k], ldb, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                     k, n, ONE, &A[k], k, B, ldb);
 
                     }
@@ -357,20 +357,20 @@ void stfsm(
 
                     if (!notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasTrans, cblas_diag,
                                     k, n, alpha, &A[k * (k + 1)], k, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[0], k, B, ldb, alpha, &B[k], ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, cblas_diag,
                                     k, n, ONE, &A[k * k], k, &B[k], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasLower, CblasTrans, cblas_diag,
                                     k, n, alpha, &A[k * k], k, &B[k], ldb);
                         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                     k, n, k, -ONE, &A[0], k, &B[k], ldb, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans, cblas_diag,
                                     k, n, ONE, &A[k * (k + 1)], k, B, ldb);
 
                     }
@@ -405,20 +405,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, n2, alpha, &A[n], n, &B[n1 * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n1, n2, -ONE, &B[n1 * ldb], ldb, &A[n1], n, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, n1, ONE, &A[0], n, B, ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, n1, alpha, &A[0], n, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, n2, n1, -ONE, B, ldb, &A[n1], n, alpha, &B[n1 * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, n2, ONE, &A[n], n, &B[n1 * ldb], ldb);
 
                     }
@@ -427,20 +427,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, n1, alpha, &A[n2], n, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n2, n1, -ONE, B, ldb, &A[0], n, alpha, &B[n1 * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, n2, ONE, &A[n1], n, &B[n1 * ldb], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, n2, alpha, &A[n1], n, &B[n1 * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, n1, n2, -ONE, &B[n1 * ldb], ldb, &A[0], n, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, n1, ONE, &A[n2], n, B, ldb);
 
                     }
@@ -453,20 +453,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, n2, alpha, &A[1], n1, &B[n1 * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, n1, n2, -ONE, &B[n1 * ldb], ldb, &A[n1 * n1], n1, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, n1, ONE, &A[0], n1, B, ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, n1, alpha, &A[0], n1, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n2, n1, -ONE, B, ldb, &A[n1 * n1], n1, alpha, &B[n1 * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, n2, ONE, &A[1], n1, &B[n1 * ldb], ldb);
 
                     }
@@ -475,20 +475,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, n1, alpha, &A[n2 * n2], n2, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, n2, n1, -ONE, B, ldb, &A[0], n2, alpha, &B[n1 * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, n2, ONE, &A[n1 * n2], n2, &B[n1 * ldb], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, n2, alpha, &A[n1 * n2], n2, &B[n1 * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, n1, n2, -ONE, &B[n1 * ldb], ldb, &A[0], n2, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, n1, ONE, &A[n2 * n2], n2, B, ldb);
 
                     }
@@ -505,20 +505,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, k, alpha, &A[0], n + 1, &B[k * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, k, k, -ONE, &B[k * ldb], ldb, &A[k + 1], n + 1, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, k, ONE, &A[1], n + 1, B, ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, k, alpha, &A[1], n + 1, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, k, k, -ONE, B, ldb, &A[k + 1], n + 1, alpha, &B[k * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, k, ONE, &A[0], n + 1, &B[k * ldb], ldb);
 
                     }
@@ -527,20 +527,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, k, alpha, &A[k + 1], n + 1, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, k, k, -ONE, B, ldb, &A[0], n + 1, alpha, &B[k * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, k, ONE, &A[k], n + 1, &B[k * ldb], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, k, alpha, &A[k], n + 1, &B[k * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, k, k, -ONE, &B[k * ldb], ldb, &A[0], n + 1, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, k, ONE, &A[k + 1], n + 1, B, ldb);
 
                     }
@@ -553,20 +553,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, k, alpha, &A[0], k, &B[k * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, k, k, -ONE, &B[k * ldb], ldb, &A[(k + 1) * k], k, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, k, ONE, &A[k], k, B, ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, k, alpha, &A[k], k, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, k, k, -ONE, B, ldb, &A[(k + 1) * k], k, alpha, &B[k * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, k, ONE, &A[0], k, &B[k * ldb], ldb);
 
                     }
@@ -575,20 +575,20 @@ void stfsm(
 
                     if (notrans) {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasNoTrans, cblas_diag,
                                     m, k, alpha, &A[(k + 1) * k], k, B, ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                     m, k, k, -ONE, B, ldb, &A[0], k, alpha, &B[k * ldb], ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasTrans, cblas_diag,
                                     m, k, ONE, &A[k * k], k, &B[k * ldb], ldb);
 
                     } else {
 
-                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasLower, CblasNoTrans, cblas_diag,
                                     m, k, alpha, &A[k * k], k, &B[k * ldb], ldb);
                         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                     m, k, k, -ONE, &B[k * ldb], ldb, &A[0], k, alpha, B, ldb);
-                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_siag,
+                        cblas_strsm(CblasColMajor, CblasRight, CblasUpper, CblasTrans, cblas_diag,
                                     m, k, ONE, &A[(k + 1) * k], k, B, ldb);
 
                     }

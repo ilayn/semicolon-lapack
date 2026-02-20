@@ -110,7 +110,7 @@ void strrfs(
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
     CBLAS_TRANSPOSE cblas_trans = notran ? CblasNoTrans : CblasTrans;
     CBLAS_TRANSPOSE cblas_transt = notran ? CblasTrans : CblasNoTrans;
-    CBLAS_DIAG cblas_siag = nounit ? CblasNonUnit : CblasUnit;
+    CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
 
     /* Do for each right hand side */
     for (int j = 0; j < nrhs; j++) {
@@ -128,7 +128,7 @@ void strrfs(
          * The sign does not matter for the absolute value usage below.
          */
         cblas_scopy(n, &X[j * ldx], 1, &work[n], 1);
-        cblas_strmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_siag,
+        cblas_strmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, A, lda, &work[n], 1);
         cblas_saxpy(n, -ONE, &B[j * ldb], 1, &work[n], 1);
 
@@ -275,7 +275,7 @@ void strrfs(
             if (kase == 1) {
                 /* Multiply by diag(W)*inv(op(A)**T) */
                 cblas_strsv(CblasColMajor, cblas_uplo, cblas_transt,
-                            cblas_siag, n, A, lda, &work[n], 1);
+                            cblas_diag, n, A, lda, &work[n], 1);
                 for (int i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
@@ -285,7 +285,7 @@ void strrfs(
                     work[n + i] = work[i] * work[n + i];
                 }
                 cblas_strsv(CblasColMajor, cblas_uplo, cblas_trans,
-                            cblas_siag, n, A, lda, &work[n], 1);
+                            cblas_diag, n, A, lda, &work[n], 1);
             }
         }
 
