@@ -337,8 +337,8 @@ static void run_dchkgg_single(dchkgg_params_t* params)
 
     uint64_t* rng = g_ws->rng_state;
 
-    const f64 safmin = dlamch("S");
     const f64 ulp = dlamch("P");
+    const f64 safmin = dlamch("S") / ulp;
     const f64 safmax = 1.0 / safmin;
     const f64 ulpinv = 1.0 / ulp;
 

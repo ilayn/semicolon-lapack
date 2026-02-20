@@ -136,4 +136,46 @@ static inline void rng_fill(uint64_t state[static 4], int idist, int n, f64* x) 
     }
 }
 
+/**
+ * Generate uniform random f32 in (0, 1).
+ * RNG operates at f64 precision, result is narrowed to f32.
+ */
+static inline f32 rng_uniform_f32(uint64_t state[static 4]) {
+    return (f32)rng_uniform(state);
+}
+
+/**
+ * Generate uniform random f32 in (-1, 1).
+ * RNG operates at f64 precision, result is narrowed to f32.
+ */
+static inline f32 rng_uniform_symmetric_f32(uint64_t state[static 4]) {
+    return (f32)rng_uniform_symmetric(state);
+}
+
+/**
+ * Generate standard normal random f32 N(0,1).
+ * RNG operates at f64 precision, result is narrowed to f32.
+ */
+static inline f32 rng_normal_f32(uint64_t state[static 4]) {
+    return (f32)rng_normal(state);
+}
+
+/**
+ * Generate random f32 value according to distribution type.
+ * RNG operates at f64 precision, result is narrowed to f32.
+ */
+static inline f32 rng_dist_f32(uint64_t state[static 4], int idist) {
+    return (f32)rng_dist(state, idist);
+}
+
+/**
+ * Fill f32 array with random values from specified distribution.
+ * RNG operates at f64 precision, each value is narrowed to f32.
+ */
+static inline void rng_fill_f32(uint64_t state[static 4], int idist, int n, f32* x) {
+    for (int i = 0; i < n; i++) {
+        x[i] = (f32)rng_dist(state, idist);
+    }
+}
+
 #endif /* TEST_RNG_H */

@@ -168,7 +168,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchktp_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * 3;
+    int lwork = NMAX * (NSMAX > 3 ? NSMAX : 3);
 
     g_workspace->AP = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->AINVP = malloc(NMAX * NMAX * sizeof(f64));

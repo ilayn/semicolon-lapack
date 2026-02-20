@@ -181,7 +181,7 @@ static int group_setup(void** state)
     int lwork = NMAX * (3 > NSMAX ? 3 : NSMAX);
     int lrwork = (NMAX > 2 * NSMAX) ? NMAX : 2 * NSMAX;
 
-    g_workspace->AB = malloc((NMAX + 1) * NMAX * sizeof(f64));
+    g_workspace->AB = malloc(((NMAX + 1) * NMAX + 1) * sizeof(f64));
     g_workspace->AINV = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->B = malloc(NMAX * NSMAX * sizeof(f64));
     g_workspace->X = malloc(NMAX * NSMAX * sizeof(f64));

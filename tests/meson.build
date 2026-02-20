@@ -8,6 +8,9 @@
 # Double precision tests
 subdir('d')
 
+# Single precision tests
+subdir('s')
+
 # Precision-independent tests
 test('rng_validation',
   executable('test_rng_validation', 'test_rng_validation.c',
