@@ -108,7 +108,7 @@ void sgtcon(
 
     /* Reverse communication loop for norm estimation */
     for (;;) {
-        slacn2(n, work + n, work, iwork, &ainvnm, &kase, isave);
+        slacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);
 
         if (kase == 0) {
             break;

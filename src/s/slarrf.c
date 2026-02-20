@@ -328,7 +328,7 @@ done:
     } else if (shift == SRIGHT) {
         /* store new L and D back into DPLUS, LPLUS */
         cblas_scopy(n, work, 1, dplus, 1);
-        cblas_scopy(n - 1, work + n, 1, lplus, 1);
+        cblas_scopy(n - 1, &work[n], 1, lplus, 1);
     }
 
     return;

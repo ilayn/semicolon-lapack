@@ -90,21 +90,21 @@ void dpftri(
 
                 dlauum("L", n1, A, n, info);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasTrans,
-                            n1, n2, 1.0, A + n1, n, 1.0, A, n);
+                            n1, n2, 1.0, &A[n1], n, 1.0, A, n);
                 cblas_dtrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            n2, n1, 1.0, A + n, n, A + n1, n);
-                dlauum("U", n2, A + n, n, info);
+                            n2, n1, 1.0, &A[n], n, &A[n1], n);
+                dlauum("U", n2, &A[n], n, info);
 
             } else {
 
-                dlauum("L", n1, A + n2, n, info);
+                dlauum("L", n1, &A[n2], n, info);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            n1, n2, 1.0, A, n, 1.0, A + n2, n);
+                            n1, n2, 1.0, A, n, 1.0, &A[n2], n);
                 cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            n1, n2, 1.0, A + n1, n, A, n);
-                dlauum("U", n2, A + n1, n, info);
+                            n1, n2, 1.0, &A[n1], n, A, n);
+                dlauum("U", n2, &A[n1], n, info);
 
             }
 
@@ -114,21 +114,21 @@ void dpftri(
 
                 dlauum("U", n1, A, n1, info);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            n1, n2, 1.0, A + n1 * n1, n1, 1.0, A, n1);
+                            n1, n2, 1.0, &A[n1 * n1], n1, 1.0, A, n1);
                 cblas_dtrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            n1, n2, 1.0, A + 1, n1, A + n1 * n1, n1);
-                dlauum("L", n2, A + 1, n1, info);
+                            n1, n2, 1.0, &A[1], n1, &A[n1 * n1], n1);
+                dlauum("L", n2, &A[1], n1, info);
 
             } else {
 
-                dlauum("U", n1, A + n2 * n2, n2, info);
+                dlauum("U", n1, &A[n2 * n2], n2, info);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            n1, n2, 1.0, A, n2, 1.0, A + n2 * n2, n2);
+                            n1, n2, 1.0, A, n2, 1.0, &A[n2 * n2], n2);
                 cblas_dtrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            n2, n1, 1.0, A + n1 * n2, n2, A, n2);
-                dlauum("L", n2, A + n1 * n2, n2, info);
+                            n2, n1, 1.0, &A[n1 * n2], n2, A, n2);
+                dlauum("L", n2, &A[n1 * n2], n2, info);
 
             }
 
@@ -140,23 +140,23 @@ void dpftri(
 
             if (lower) {
 
-                dlauum("L", k, A + 1, n + 1, info);
+                dlauum("L", k, &A[1], n + 1, info);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasTrans,
-                            k, k, 1.0, A + k + 1, n + 1, 1.0, A + 1, n + 1);
+                            k, k, 1.0, &A[k + 1], n + 1, 1.0, &A[1], n + 1);
                 cblas_dtrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0, A, n + 1, A + k + 1, n + 1);
+                            k, k, 1.0, A, n + 1, &A[k + 1], n + 1);
                 dlauum("U", k, A, n + 1, info);
 
             } else {
 
-                dlauum("L", k, A + k + 1, n + 1, info);
+                dlauum("L", k, &A[k + 1], n + 1, info);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            k, k, 1.0, A, n + 1, 1.0, A + k + 1, n + 1);
+                            k, k, 1.0, A, n + 1, 1.0, &A[k + 1], n + 1);
                 cblas_dtrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0, A + k, n + 1, A, n + 1);
-                dlauum("U", k, A + k, n + 1, info);
+                            k, k, 1.0, &A[k], n + 1, A, n + 1);
+                dlauum("U", k, &A[k], n + 1, info);
 
             }
 
@@ -164,23 +164,23 @@ void dpftri(
 
             if (lower) {
 
-                dlauum("U", k, A + k, k, info);
+                dlauum("U", k, &A[k], k, info);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            k, k, 1.0, A + k * (k + 1), k, 1.0, A + k, k);
+                            k, k, 1.0, &A[k * (k + 1)], k, 1.0, &A[k], k);
                 cblas_dtrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0, A, k, A + k * (k + 1), k);
+                            k, k, 1.0, A, k, &A[k * (k + 1)], k);
                 dlauum("L", k, A, k, info);
 
             } else {
 
-                dlauum("U", k, A + k * (k + 1), k, info);
+                dlauum("U", k, &A[k * (k + 1)], k, info);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            k, k, 1.0, A, k, 1.0, A + k * (k + 1), k);
+                            k, k, 1.0, A, k, 1.0, &A[k * (k + 1)], k);
                 cblas_dtrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0, A + k * k, k, A, k);
-                dlauum("L", k, A + k * k, k, info);
+                            k, k, 1.0, &A[k * k], k, A, k);
+                dlauum("L", k, &A[k * k], k, info);
 
             }
 

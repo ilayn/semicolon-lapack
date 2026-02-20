@@ -140,9 +140,9 @@ void sgtrfs(
         for (;;) {
             /* Compute residual R = B - op(A) * X */
             /* Copy B(:,j) to work[n:2n-1] */
-            cblas_scopy(n, B + j * ldb, 1, work + n, 1);
+            cblas_scopy(n, &B[j * ldb], 1, &work[n], 1);
             /* work[n:2n-1] = -1.0 * op(A) * X(:,j) + 1.0 * work[n:2n-1] */
-            slagtm(trans, n, 1, -ONE, DL, D, DU, X + j * ldx, ldx, ONE, work + n, n);
+            slagtm(trans, n, 1, -ONE, DL, D, DU, &X[j * ldx], ldx, ONE, &work[n], n);
 
             /* Compute abs(op(A))*abs(x) + abs(b) for use in backward error bound */
             if (notran) {
@@ -195,8 +195,8 @@ void sgtrfs(
             /* Test stopping criterion */
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
                 /* Update solution and try again */
-                sgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, work + n, n, &gttrs_info);
-                cblas_saxpy(n, ONE, work + n, 1, X + j * ldx, 1);
+                sgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, &work[n], n, &gttrs_info);
+                cblas_saxpy(n, ONE, &work[n], 1, &X[j * ldx], 1);
                 lstres = berr[j];
                 count++;
             } else {
@@ -216,7 +216,7 @@ void sgtrfs(
 
         kase = 0;
         for (;;) {
-            slacn2(n, work + 2 * n, work + n, iwork, &ferr[j], &kase, isave);
+            slacn2(n, &work[2 * n], &work[n], iwork, &ferr[j], &kase, isave);
 
             if (kase == 0) {
                 break;
@@ -224,7 +224,7 @@ void sgtrfs(
 
             if (kase == 1) {
                 /* Multiply by diag(W)*inv(op(A)**T) */
-                sgttrs(&transt, n, 1, DLF, DF, DUF, DU2, ipiv, work + n, n, &gttrs_info);
+                sgttrs(&transt, n, 1, DLF, DF, DUF, DU2, ipiv, &work[n], n, &gttrs_info);
                 for (i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
@@ -233,7 +233,7 @@ void sgtrfs(
                 for (i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
-                sgttrs(&transn, n, 1, DLF, DF, DUF, DU2, ipiv, work + n, n, &gttrs_info);
+                sgttrs(&transn, n, 1, DLF, DF, DUF, DU2, ipiv, &work[n], n, &gttrs_info);
             }
         }
 

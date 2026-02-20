@@ -97,26 +97,26 @@ void dpftrf(
                 }
                 cblas_dtrsm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            n2, n1, 1.0, A, n, A + n1, n);
+                            n2, n1, 1.0, A, n, &A[n1], n);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            n2, n1, -1.0, A + n1, n, 1.0, A + n, n);
-                dpotrf("U", n2, A + n, n, info);
+                            n2, n1, -1.0, &A[n1], n, 1.0, &A[n], n);
+                dpotrf("U", n2, &A[n], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
 
             } else {
 
-                dpotrf("L", n1, A + n2, n, info);
+                dpotrf("L", n1, &A[n2], n, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_dtrsm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            n1, n2, 1.0, A + n2, n, A, n);
+                            n1, n2, 1.0, &A[n2], n, A, n);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            n2, n1, -1.0, A, n, 1.0, A + n1, n);
-                dpotrf("U", n2, A + n1, n, info);
+                            n2, n1, -1.0, A, n, 1.0, &A[n1], n);
+                dpotrf("U", n2, &A[n1], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -133,26 +133,26 @@ void dpftrf(
                 }
                 cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            n1, n2, 1.0, A, n1, A + n1 * n1, n1);
+                            n1, n2, 1.0, A, n1, &A[n1 * n1], n1);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasTrans,
-                            n2, n1, -1.0, A + n1 * n1, n1, 1.0, A + 1, n1);
-                dpotrf("L", n2, A + 1, n1, info);
+                            n2, n1, -1.0, &A[n1 * n1], n1, 1.0, &A[1], n1);
+                dpotrf("L", n2, &A[1], n1, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
 
             } else {
 
-                dpotrf("U", n1, A + n2 * n2, n2, info);
+                dpotrf("U", n1, &A[n2 * n2], n2, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_dtrsm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            n2, n1, 1.0, A + n2 * n2, n2, A, n2);
+                            n2, n1, 1.0, &A[n2 * n2], n2, A, n2);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            n2, n1, -1.0, A, n2, 1.0, A + n1 * n2, n2);
-                dpotrf("L", n2, A + n1 * n2, n2, info);
+                            n2, n1, -1.0, A, n2, 1.0, &A[n1 * n2], n2);
+                dpotrf("L", n2, &A[n1 * n2], n2, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -167,15 +167,15 @@ void dpftrf(
 
             if (lower) {
 
-                dpotrf("L", k, A + 1, n + 1, info);
+                dpotrf("L", k, &A[1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_dtrsm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0, A + 1, n + 1, A + k + 1, n + 1);
+                            k, k, 1.0, &A[1], n + 1, &A[k + 1], n + 1);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            k, k, -1.0, A + k + 1, n + 1, 1.0, A, n + 1);
+                            k, k, -1.0, &A[k + 1], n + 1, 1.0, A, n + 1);
                 dpotrf("U", k, A, n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -183,16 +183,16 @@ void dpftrf(
 
             } else {
 
-                dpotrf("L", k, A + k + 1, n + 1, info);
+                dpotrf("L", k, &A[k + 1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_dtrsm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0, A + k + 1, n + 1, A, n + 1);
+                            k, k, 1.0, &A[k + 1], n + 1, A, n + 1);
                 cblas_dsyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            k, k, -1.0, A, n + 1, 1.0, A + k, n + 1);
-                dpotrf("U", k, A + k, n + 1, info);
+                            k, k, -1.0, A, n + 1, 1.0, &A[k], n + 1);
+                dpotrf("U", k, &A[k], n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }
@@ -203,15 +203,15 @@ void dpftrf(
 
             if (lower) {
 
-                dpotrf("U", k, A + k, k, info);
+                dpotrf("U", k, &A[k], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0, A + k, k, A + k * (k + 1), k);
+                            k, k, 1.0, &A[k], k, &A[k * (k + 1)], k);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasTrans,
-                            k, k, -1.0, A + k * (k + 1), k, 1.0, A, k);
+                            k, k, -1.0, &A[k * (k + 1)], k, 1.0, A, k);
                 dpotrf("L", k, A, k, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -219,16 +219,16 @@ void dpftrf(
 
             } else {
 
-                dpotrf("U", k, A + k * (k + 1), k, info);
+                dpotrf("U", k, &A[k * (k + 1)], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_dtrsm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0, A + k * (k + 1), k, A, k);
+                            k, k, 1.0, &A[k * (k + 1)], k, A, k);
                 cblas_dsyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            k, k, -1.0, A, k, 1.0, A + k * k, k);
-                dpotrf("L", k, A + k * k, k, info);
+                            k, k, -1.0, A, k, 1.0, &A[k * k], k);
+                dpotrf("L", k, &A[k * k], k, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }

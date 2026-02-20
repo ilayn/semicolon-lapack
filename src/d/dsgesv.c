@@ -113,7 +113,7 @@ void dsgesv(
 
     // Set up pointers into swork
     SA = swork;
-    SX = swork + n * n;
+    SX = &swork[n * n];
 
     // Compute some constants
     anrm = dlange("I", n, n, A, lda, work);

@@ -153,8 +153,8 @@ void dsposv(
     // Set the indices PTSA, PTSX for referencing SA and SX in SWORK.
     ptsa = 0;
     ptsx = n * n;
-    SA = swork + ptsa;
-    SX = swork + ptsx;
+    SA = &swork[ptsa];
+    SX = &swork[ptsx];
 
     // Convert B from f64 precision to single precision and store in SX.
     dlag2s(n, nrhs, B, ldb, SX, n, &iinfo);

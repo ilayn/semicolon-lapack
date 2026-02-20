@@ -138,11 +138,11 @@ void ssfrk(
                                 n1, k, alpha, A, lda,
                                 beta, C, n);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                                n2, k, alpha, A + n1, lda,
-                                beta, C + n, n);
+                                n2, k, alpha, &A[n1], lda,
+                                beta, &C[n], n);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                                n2, n1, k, alpha, A + n1, lda,
-                                A, lda, beta, C + n1, n);
+                                n2, n1, k, alpha, &A[n1], lda,
+                                A, lda, beta, &C[n1], n);
 
                 } else {
 
@@ -150,11 +150,11 @@ void ssfrk(
                                 n1, k, alpha, A, lda,
                                 beta, C, n);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                                n2, k, alpha, A + n1 * lda, lda,
-                                beta, C + n, n);
+                                n2, k, alpha, &A[n1 * lda], lda,
+                                beta, &C[n], n);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                                n2, n1, k, alpha, A + n1 * lda, lda,
-                                A, lda, beta, C + n1, n);
+                                n2, n1, k, alpha, &A[n1 * lda], lda,
+                                A, lda, beta, &C[n1], n);
 
                 }
 
@@ -164,25 +164,25 @@ void ssfrk(
 
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
                                 n1, k, alpha, A, lda,
-                                beta, C + n2, n);
+                                beta, &C[n2], n);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                                n2, k, alpha, A + (n2 - 1), lda,
-                                beta, C + n1, n);
+                                n2, k, alpha, &A[(n2 - 1)], lda,
+                                beta, &C[n1], n);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 n1, n2, k, alpha, A, lda,
-                                A + (n2 - 1), lda, beta, C, n);
+                                &A[(n2 - 1)], lda, beta, C, n);
 
                 } else {
 
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
                                 n1, k, alpha, A, lda,
-                                beta, C + n2, n);
+                                beta, &C[n2], n);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                                n2, k, alpha, A + (n2 - 1) * lda, lda,
-                                beta, C + n1, n);
+                                n2, k, alpha, &A[(n2 - 1) * lda], lda,
+                                beta, &C[n1], n);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 n1, n2, k, alpha, A, lda,
-                                A + (n2 - 1) * lda, lda, beta, C, n);
+                                &A[(n2 - 1) * lda], lda, beta, C, n);
 
                 }
 
@@ -198,11 +198,11 @@ void ssfrk(
                                 n1, k, alpha, A, lda,
                                 beta, C, n1);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                                n2, k, alpha, A + n1, lda,
-                                beta, C + 1, n1);
+                                n2, k, alpha, &A[n1], lda,
+                                beta, &C[1], n1);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 n1, n2, k, alpha, A, lda,
-                                A + n1, lda, beta, C + n1 * n1, n1);
+                                &A[n1], lda, beta, &C[n1 * n1], n1);
 
                 } else {
 
@@ -210,11 +210,11 @@ void ssfrk(
                                 n1, k, alpha, A, lda,
                                 beta, C, n1);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                                n2, k, alpha, A + n1 * lda, lda,
-                                beta, C + 1, n1);
+                                n2, k, alpha, &A[n1 * lda], lda,
+                                beta, &C[1], n1);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 n1, n2, k, alpha, A, lda,
-                                A + n1 * lda, lda, beta, C + n1 * n1, n1);
+                                &A[n1 * lda], lda, beta, &C[n1 * n1], n1);
 
                 }
 
@@ -224,24 +224,24 @@ void ssfrk(
 
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
                                 n1, k, alpha, A, lda,
-                                beta, C + n2 * n2, n2);
+                                beta, &C[n2 * n2], n2);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                                n2, k, alpha, A + n1, lda,
-                                beta, C + n1 * n2, n2);
+                                n2, k, alpha, &A[n1], lda,
+                                beta, &C[n1 * n2], n2);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                                n2, n1, k, alpha, A + n1, lda,
+                                n2, n1, k, alpha, &A[n1], lda,
                                 A, lda, beta, C, n2);
 
                 } else {
 
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
                                 n1, k, alpha, A, lda,
-                                beta, C + n2 * n2, n2);
+                                beta, &C[n2 * n2], n2);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                                n2, k, alpha, A + n1 * lda, lda,
-                                beta, C + n1 * n2, n2);
+                                n2, k, alpha, &A[n1 * lda], lda,
+                                beta, &C[n1 * n2], n2);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                                n2, n1, k, alpha, A + n1 * lda, lda,
+                                n2, n1, k, alpha, &A[n1 * lda], lda,
                                 A, lda, beta, C, n2);
 
                 }
@@ -260,25 +260,25 @@ void ssfrk(
 
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + 1, n + 1);
+                                beta, &C[1], n + 1);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                                nk, k, alpha, A + nk, lda,
+                                nk, k, alpha, &A[nk], lda,
                                 beta, C, n + 1);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                                nk, nk, k, alpha, A + nk, lda,
-                                A, lda, beta, C + nk + 1, n + 1);
+                                nk, nk, k, alpha, &A[nk], lda,
+                                A, lda, beta, &C[nk + 1], n + 1);
 
                 } else {
 
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + 1, n + 1);
+                                beta, &C[1], n + 1);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                                nk, k, alpha, A + nk * lda, lda,
+                                nk, k, alpha, &A[nk * lda], lda,
                                 beta, C, n + 1);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                                nk, nk, k, alpha, A + nk * lda, lda,
-                                A, lda, beta, C + nk + 1, n + 1);
+                                nk, nk, k, alpha, &A[nk * lda], lda,
+                                A, lda, beta, &C[nk + 1], n + 1);
 
                 }
 
@@ -288,25 +288,25 @@ void ssfrk(
 
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + nk + 1, n + 1);
+                                beta, &C[nk + 1], n + 1);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                                nk, k, alpha, A + nk, lda,
-                                beta, C + nk, n + 1);
+                                nk, k, alpha, &A[nk], lda,
+                                beta, &C[nk], n + 1);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 nk, nk, k, alpha, A, lda,
-                                A + nk, lda, beta, C, n + 1);
+                                &A[nk], lda, beta, C, n + 1);
 
                 } else {
 
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + nk + 1, n + 1);
+                                beta, &C[nk + 1], n + 1);
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                                nk, k, alpha, A + nk * lda, lda,
-                                beta, C + nk, n + 1);
+                                nk, k, alpha, &A[nk * lda], lda,
+                                beta, &C[nk], n + 1);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 nk, nk, k, alpha, A, lda,
-                                A + nk * lda, lda, beta, C, n + 1);
+                                &A[nk * lda], lda, beta, C, n + 1);
 
                 }
 
@@ -320,25 +320,25 @@ void ssfrk(
 
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + nk, nk);
+                                beta, &C[nk], nk);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                                nk, k, alpha, A + nk, lda,
+                                nk, k, alpha, &A[nk], lda,
                                 beta, C, nk);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                                 nk, nk, k, alpha, A, lda,
-                                A + nk, lda, beta, C + (nk + 1) * nk, nk);
+                                &A[nk], lda, beta, &C[(nk + 1) * nk], nk);
 
                 } else {
 
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + nk, nk);
+                                beta, &C[nk], nk);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                                nk, k, alpha, A + nk * lda, lda,
+                                nk, k, alpha, &A[nk * lda], lda,
                                 beta, C, nk);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                                 nk, nk, k, alpha, A, lda,
-                                A + nk * lda, lda, beta, C + (nk + 1) * nk, nk);
+                                &A[nk * lda], lda, beta, &C[(nk + 1) * nk], nk);
 
                 }
 
@@ -348,24 +348,24 @@ void ssfrk(
 
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + nk * (nk + 1), nk);
+                                beta, &C[nk * (nk + 1)], nk);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                                nk, k, alpha, A + nk, lda,
-                                beta, C + nk * nk, nk);
+                                nk, k, alpha, &A[nk], lda,
+                                beta, &C[nk * nk], nk);
                     cblas_sgemm(CblasColMajor, CblasNoTrans, CblasTrans,
-                                nk, nk, k, alpha, A + nk, lda,
+                                nk, nk, k, alpha, &A[nk], lda,
                                 A, lda, beta, C, nk);
 
                 } else {
 
                     cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
                                 nk, k, alpha, A, lda,
-                                beta, C + nk * (nk + 1), nk);
+                                beta, &C[nk * (nk + 1)], nk);
                     cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                                nk, k, alpha, A + nk * lda, lda,
-                                beta, C + nk * nk, nk);
+                                nk, k, alpha, &A[nk * lda], lda,
+                                beta, &C[nk * nk], nk);
                     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                                nk, nk, k, alpha, A + nk * lda, lda,
+                                nk, nk, k, alpha, &A[nk * lda], lda,
                                 A, lda, beta, C, nk);
 
                 }

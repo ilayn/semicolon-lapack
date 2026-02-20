@@ -144,7 +144,7 @@ void dgtsvx(
     /* Compute the solution vectors X */
     /* Copy B to X */
     for (j = 0; j < nrhs; j++) {
-        cblas_dcopy(n, B + j * ldb, 1, X + j * ldx, 1);
+        cblas_dcopy(n, &B[j * ldb], 1, &X[j * ldx], 1);
     }
     dgttrs(trans, n, nrhs, DLF, DF, DUF, DU2, ipiv, X, ldx, info);
 

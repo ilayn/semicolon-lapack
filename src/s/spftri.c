@@ -90,21 +90,21 @@ void spftri(
 
                 slauum("L", n1, A, n, info);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                            n1, n2, 1.0f, A + n1, n, 1.0f, A, n);
+                            n1, n2, 1.0f, &A[n1], n, 1.0f, A, n);
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            n2, n1, 1.0f, A + n, n, A + n1, n);
-                slauum("U", n2, A + n, n, info);
+                            n2, n1, 1.0f, &A[n], n, &A[n1], n);
+                slauum("U", n2, &A[n], n, info);
 
             } else {
 
-                slauum("L", n1, A + n2, n, info);
+                slauum("L", n1, &A[n2], n, info);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            n1, n2, 1.0f, A, n, 1.0f, A + n2, n);
+                            n1, n2, 1.0f, A, n, 1.0f, &A[n2], n);
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            n1, n2, 1.0f, A + n1, n, A, n);
-                slauum("U", n2, A + n1, n, info);
+                            n1, n2, 1.0f, &A[n1], n, A, n);
+                slauum("U", n2, &A[n1], n, info);
 
             }
 
@@ -114,21 +114,21 @@ void spftri(
 
                 slauum("U", n1, A, n1, info);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            n1, n2, 1.0f, A + n1 * n1, n1, 1.0f, A, n1);
+                            n1, n2, 1.0f, &A[n1 * n1], n1, 1.0f, A, n1);
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            n1, n2, 1.0f, A + 1, n1, A + n1 * n1, n1);
-                slauum("L", n2, A + 1, n1, info);
+                            n1, n2, 1.0f, &A[1], n1, &A[n1 * n1], n1);
+                slauum("L", n2, &A[1], n1, info);
 
             } else {
 
-                slauum("U", n1, A + n2 * n2, n2, info);
+                slauum("U", n1, &A[n2 * n2], n2, info);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            n1, n2, 1.0f, A, n2, 1.0f, A + n2 * n2, n2);
+                            n1, n2, 1.0f, A, n2, 1.0f, &A[n2 * n2], n2);
                 cblas_strmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            n2, n1, 1.0f, A + n1 * n2, n2, A, n2);
-                slauum("L", n2, A + n1 * n2, n2, info);
+                            n2, n1, 1.0f, &A[n1 * n2], n2, A, n2);
+                slauum("L", n2, &A[n1 * n2], n2, info);
 
             }
 
@@ -140,23 +140,23 @@ void spftri(
 
             if (lower) {
 
-                slauum("L", k, A + 1, n + 1, info);
+                slauum("L", k, &A[1], n + 1, info);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                            k, k, 1.0f, A + k + 1, n + 1, 1.0f, A + 1, n + 1);
+                            k, k, 1.0f, &A[k + 1], n + 1, 1.0f, &A[1], n + 1);
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0f, A, n + 1, A + k + 1, n + 1);
+                            k, k, 1.0f, A, n + 1, &A[k + 1], n + 1);
                 slauum("U", k, A, n + 1, info);
 
             } else {
 
-                slauum("L", k, A + k + 1, n + 1, info);
+                slauum("L", k, &A[k + 1], n + 1, info);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            k, k, 1.0f, A, n + 1, 1.0f, A + k + 1, n + 1);
+                            k, k, 1.0f, A, n + 1, 1.0f, &A[k + 1], n + 1);
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0f, A + k, n + 1, A, n + 1);
-                slauum("U", k, A + k, n + 1, info);
+                            k, k, 1.0f, &A[k], n + 1, A, n + 1);
+                slauum("U", k, &A[k], n + 1, info);
 
             }
 
@@ -164,23 +164,23 @@ void spftri(
 
             if (lower) {
 
-                slauum("U", k, A + k, k, info);
+                slauum("U", k, &A[k], k, info);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            k, k, 1.0f, A + k * (k + 1), k, 1.0f, A + k, k);
+                            k, k, 1.0f, &A[k * (k + 1)], k, 1.0f, &A[k], k);
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0f, A, k, A + k * (k + 1), k);
+                            k, k, 1.0f, A, k, &A[k * (k + 1)], k);
                 slauum("L", k, A, k, info);
 
             } else {
 
-                slauum("U", k, A + k * (k + 1), k, info);
+                slauum("U", k, &A[k * (k + 1)], k, info);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            k, k, 1.0f, A, k, 1.0f, A + k * (k + 1), k);
+                            k, k, 1.0f, A, k, 1.0f, &A[k * (k + 1)], k);
                 cblas_strmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0f, A + k * k, k, A, k);
-                slauum("L", k, A + k * k, k, info);
+                            k, k, 1.0f, &A[k * k], k, A, k);
+                slauum("L", k, &A[k * k], k, info);
 
             }
 

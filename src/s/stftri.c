@@ -100,8 +100,8 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, -1.0f, A, n, A + n1, n);
-                strtri("U", diag, n2, A + n, n, info);
+                            n2, n1, -1.0f, A, n, &A[n1], n);
+                strtri("U", diag, n2, &A[n], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -111,19 +111,19 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, 1.0f, A + n, n, A + n1, n);
+                            n2, n1, 1.0f, &A[n], n, &A[n1], n);
 
             } else {
 
-                strtri("L", diag, n1, A + n2, n, info);
+                strtri("L", diag, n1, &A[n2], n, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, -1.0f, A + n2, n, A, n);
-                strtri("U", diag, n2, A + n1, n, info);
+                            n1, n2, -1.0f, &A[n2], n, A, n);
+                strtri("U", diag, n2, &A[n1], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -133,7 +133,7 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, 1.0f, A + n1, n, A, n);
+                            n1, n2, 1.0f, &A[n1], n, A, n);
 
             }
 
@@ -148,8 +148,8 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, -1.0f, A, n1, A + n1 * n1, n1);
-                strtri("L", diag, n2, A + 1, n1, info);
+                            n1, n2, -1.0f, A, n1, &A[n1 * n1], n1);
+                strtri("L", diag, n2, &A[1], n1, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -159,19 +159,19 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, 1.0f, A + 1, n1, A + n1 * n1, n1);
+                            n1, n2, 1.0f, &A[1], n1, &A[n1 * n1], n1);
 
             } else {
 
-                strtri("U", diag, n1, A + n2 * n2, n2, info);
+                strtri("U", diag, n1, &A[n2 * n2], n2, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, -1.0f, A + n2 * n2, n2, A, n2);
-                strtri("L", diag, n2, A + n1 * n2, n2, info);
+                            n2, n1, -1.0f, &A[n2 * n2], n2, A, n2);
+                strtri("L", diag, n2, &A[n1 * n2], n2, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -181,7 +181,7 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, 1.0f, A + n1 * n2, n2, A, n2);
+                            n2, n1, 1.0f, &A[n1 * n2], n2, A, n2);
 
             }
 
@@ -193,14 +193,14 @@ void stftri(
 
             if (lower) {
 
-                strtri("L", diag, k, A + 1, n + 1, info);
+                strtri("L", diag, k, &A[1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, -1.0f, A + 1, n + 1, A + k + 1, n + 1);
+                            k, k, -1.0f, &A[1], n + 1, &A[k + 1], n + 1);
                 strtri("U", diag, k, A, n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -211,19 +211,19 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, 1.0f, A, n + 1, A + k + 1, n + 1);
+                            k, k, 1.0f, A, n + 1, &A[k + 1], n + 1);
 
             } else {
 
-                strtri("L", diag, k, A + k + 1, n + 1, info);
+                strtri("L", diag, k, &A[k + 1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, -1.0f, A + k + 1, n + 1, A, n + 1);
-                strtri("U", diag, k, A + k, n + 1, info);
+                            k, k, -1.0f, &A[k + 1], n + 1, A, n + 1);
+                strtri("U", diag, k, &A[k], n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }
@@ -233,7 +233,7 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, 1.0f, A + k, n + 1, A, n + 1);
+                            k, k, 1.0f, &A[k], n + 1, A, n + 1);
 
             }
 
@@ -241,14 +241,14 @@ void stftri(
 
             if (lower) {
 
-                strtri("U", diag, k, A + k, k, info);
+                strtri("U", diag, k, &A[k], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, -1.0f, A + k, k, A + k * (k + 1), k);
+                            k, k, -1.0f, &A[k], k, &A[k * (k + 1)], k);
                 strtri("L", diag, k, A, k, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -259,19 +259,19 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, 1.0f, A, k, A + k * (k + 1), k);
+                            k, k, 1.0f, A, k, &A[k * (k + 1)], k);
 
             } else {
 
-                strtri("U", diag, k, A + k * (k + 1), k, info);
+                strtri("U", diag, k, &A[k * (k + 1)], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, -1.0f, A + k * (k + 1), k, A, k);
-                strtri("L", diag, k, A + k * k, k, info);
+                            k, k, -1.0f, &A[k * (k + 1)], k, A, k);
+                strtri("L", diag, k, &A[k * k], k, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }
@@ -281,7 +281,7 @@ void stftri(
                 cblas_strmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, 1.0f, A + k * k, k, A, k);
+                            k, k, 1.0f, &A[k * k], k, A, k);
 
             }
 

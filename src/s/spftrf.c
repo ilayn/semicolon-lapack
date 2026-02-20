@@ -97,26 +97,26 @@ void spftrf(
                 }
                 cblas_strsm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            n2, n1, 1.0f, A, n, A + n1, n);
+                            n2, n1, 1.0f, A, n, &A[n1], n);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            n2, n1, -1.0f, A + n1, n, 1.0f, A + n, n);
-                spotrf("U", n2, A + n, n, info);
+                            n2, n1, -1.0f, &A[n1], n, 1.0f, &A[n], n);
+                spotrf("U", n2, &A[n], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
 
             } else {
 
-                spotrf("L", n1, A + n2, n, info);
+                spotrf("L", n1, &A[n2], n, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strsm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            n1, n2, 1.0f, A + n2, n, A, n);
+                            n1, n2, 1.0f, &A[n2], n, A, n);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            n2, n1, -1.0f, A, n, 1.0f, A + n1, n);
-                spotrf("U", n2, A + n1, n, info);
+                            n2, n1, -1.0f, A, n, 1.0f, &A[n1], n);
+                spotrf("U", n2, &A[n1], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -133,26 +133,26 @@ void spftrf(
                 }
                 cblas_strsm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            n1, n2, 1.0f, A, n1, A + n1 * n1, n1);
+                            n1, n2, 1.0f, A, n1, &A[n1 * n1], n1);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                            n2, n1, -1.0f, A + n1 * n1, n1, 1.0f, A + 1, n1);
-                spotrf("L", n2, A + 1, n1, info);
+                            n2, n1, -1.0f, &A[n1 * n1], n1, 1.0f, &A[1], n1);
+                spotrf("L", n2, &A[1], n1, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
 
             } else {
 
-                spotrf("U", n1, A + n2 * n2, n2, info);
+                spotrf("U", n1, &A[n2 * n2], n2, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strsm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            n2, n1, 1.0f, A + n2 * n2, n2, A, n2);
+                            n2, n1, 1.0f, &A[n2 * n2], n2, A, n2);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            n2, n1, -1.0f, A, n2, 1.0f, A + n1 * n2, n2);
-                spotrf("L", n2, A + n1 * n2, n2, info);
+                            n2, n1, -1.0f, A, n2, 1.0f, &A[n1 * n2], n2);
+                spotrf("L", n2, &A[n1 * n2], n2, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -167,15 +167,15 @@ void spftrf(
 
             if (lower) {
 
-                spotrf("L", k, A + 1, n + 1, info);
+                spotrf("L", k, &A[1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strsm(CblasColMajor, CblasRight, CblasLower,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0f, A + 1, n + 1, A + k + 1, n + 1);
+                            k, k, 1.0f, &A[1], n + 1, &A[k + 1], n + 1);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            k, k, -1.0f, A + k + 1, n + 1, 1.0f, A, n + 1);
+                            k, k, -1.0f, &A[k + 1], n + 1, 1.0f, A, n + 1);
                 spotrf("U", k, A, n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -183,16 +183,16 @@ void spftrf(
 
             } else {
 
-                spotrf("L", k, A + k + 1, n + 1, info);
+                spotrf("L", k, &A[k + 1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strsm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0f, A + k + 1, n + 1, A, n + 1);
+                            k, k, 1.0f, &A[k + 1], n + 1, A, n + 1);
                 cblas_ssyrk(CblasColMajor, CblasUpper, CblasTrans,
-                            k, k, -1.0f, A, n + 1, 1.0f, A + k, n + 1);
-                spotrf("U", k, A + k, n + 1, info);
+                            k, k, -1.0f, A, n + 1, 1.0f, &A[k], n + 1);
+                spotrf("U", k, &A[k], n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }
@@ -203,15 +203,15 @@ void spftrf(
 
             if (lower) {
 
-                spotrf("U", k, A + k, k, info);
+                spotrf("U", k, &A[k], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strsm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasTrans, CblasNonUnit,
-                            k, k, 1.0f, A + k, k, A + k * (k + 1), k);
+                            k, k, 1.0f, &A[k], k, &A[k * (k + 1)], k);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasTrans,
-                            k, k, -1.0f, A + k * (k + 1), k, 1.0f, A, k);
+                            k, k, -1.0f, &A[k * (k + 1)], k, 1.0f, A, k);
                 spotrf("L", k, A, k, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -219,16 +219,16 @@ void spftrf(
 
             } else {
 
-                spotrf("U", k, A + k * (k + 1), k, info);
+                spotrf("U", k, &A[k * (k + 1)], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_strsm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, 1.0f, A + k * (k + 1), k, A, k);
+                            k, k, 1.0f, &A[k * (k + 1)], k, A, k);
                 cblas_ssyrk(CblasColMajor, CblasLower, CblasNoTrans,
-                            k, k, -1.0f, A, k, 1.0f, A + k * k, k);
-                spotrf("L", k, A + k * k, k, info);
+                            k, k, -1.0f, A, k, 1.0f, &A[k * k], k);
+                spotrf("L", k, &A[k * k], k, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }

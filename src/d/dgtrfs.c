@@ -140,9 +140,9 @@ void dgtrfs(
         for (;;) {
             /* Compute residual R = B - op(A) * X */
             /* Copy B(:,j) to work[n:2n-1] */
-            cblas_dcopy(n, B + j * ldb, 1, work + n, 1);
+            cblas_dcopy(n, &B[j * ldb], 1, &work[n], 1);
             /* work[n:2n-1] = -1.0 * op(A) * X(:,j) + 1.0 * work[n:2n-1] */
-            dlagtm(trans, n, 1, -ONE, DL, D, DU, X + j * ldx, ldx, ONE, work + n, n);
+            dlagtm(trans, n, 1, -ONE, DL, D, DU, &X[j * ldx], ldx, ONE, &work[n], n);
 
             /* Compute abs(op(A))*abs(x) + abs(b) for use in backward error bound */
             if (notran) {
@@ -195,8 +195,8 @@ void dgtrfs(
             /* Test stopping criterion */
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
                 /* Update solution and try again */
-                dgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, work + n, n, &gttrs_info);
-                cblas_daxpy(n, ONE, work + n, 1, X + j * ldx, 1);
+                dgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, &work[n], n, &gttrs_info);
+                cblas_daxpy(n, ONE, &work[n], 1, &X[j * ldx], 1);
                 lstres = berr[j];
                 count++;
             } else {
@@ -216,7 +216,7 @@ void dgtrfs(
 
         kase = 0;
         for (;;) {
-            dlacn2(n, work + 2 * n, work + n, iwork, &ferr[j], &kase, isave);
+            dlacn2(n, &work[2 * n], &work[n], iwork, &ferr[j], &kase, isave);
 
             if (kase == 0) {
                 break;
@@ -224,7 +224,7 @@ void dgtrfs(
 
             if (kase == 1) {
                 /* Multiply by diag(W)*inv(op(A)**T) */
-                dgttrs(&transt, n, 1, DLF, DF, DUF, DU2, ipiv, work + n, n, &gttrs_info);
+                dgttrs(&transt, n, 1, DLF, DF, DUF, DU2, ipiv, &work[n], n, &gttrs_info);
                 for (i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
@@ -233,7 +233,7 @@ void dgtrfs(
                 for (i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
-                dgttrs(&transn, n, 1, DLF, DF, DUF, DU2, ipiv, work + n, n, &gttrs_info);
+                dgttrs(&transn, n, 1, DLF, DF, DUF, DU2, ipiv, &work[n], n, &gttrs_info);
             }
         }
 

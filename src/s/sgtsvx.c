@@ -144,7 +144,7 @@ void sgtsvx(
     /* Compute the solution vectors X */
     /* Copy B to X */
     for (j = 0; j < nrhs; j++) {
-        cblas_scopy(n, B + j * ldb, 1, X + j * ldx, 1);
+        cblas_scopy(n, &B[j * ldb], 1, &X[j * ldx], 1);
     }
     sgttrs(trans, n, nrhs, DLF, DF, DUF, DU2, ipiv, X, ldx, info);
 
