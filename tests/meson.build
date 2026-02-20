@@ -80,9 +80,11 @@ lapack_tests = {
   'ddrvsx': ['test_ddrvsx.c', 'eigen'],      # Non-symmetric Schur form expert (DGEESX)
   'ddrvvx': ['test_ddrvvx.c', 'eigen'],      # Non-symmetric eigenvalue expert (DGEEVX)
   'ddrvst': ['test_ddrvst.c', 'eigen'],      # Symmetric eigenvalue drivers
+  'ddrvst2stg': ['test_ddrvst2stg.c', 'eigen'], # 2-stage symmetric eigenvalue drivers
   'dchkst': ['test_dchkst.c', 'eigen'],      # Symmetric tridiagonal eigenvalue
   'dchkst2stg': ['test_dchkst2stg.c', 'eigen'], # Symmetric tridiagonal eigenvalue (2-stage)
   'dckglm': ['test_dckglm.c', 'glm'],       # GLM solver (DGGGLM)
+  'dcklse': ['test_dcklse.c', 'lse'],       # LSE solver (DGGLSE)
   'dckgqr': ['test_dckgqr.c', 'gqr'],       # GQR/GRQ factorization (DGGQRF/DGGRQF)
   'dckgsv': ['test_dckgsv.c', 'gsv'],       # GSVD (DGGSVD3)
   'ddrvab': ['test_ddrvab.c', 'solve'],      # DSGESV mixed-precision solver
