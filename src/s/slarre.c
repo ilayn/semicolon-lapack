@@ -105,7 +105,7 @@ void slarre(const char* range, const int n, f32* vl, f32* vu,
     const f32 TWO = 2.0f;
     const f32 FOUR = 4.0f;
     const f32 HNDRD = 100.0f;
-    const f32 PERT = 8.0f;
+    const f32 PERT = 4.0f;
     const f32 HALF = 0.5f;
     const f32 FOURTH = 0.25f;
     const f32 FAC = 0.5f;
@@ -152,8 +152,8 @@ void slarre(const char* range, const int n, f32* vl, f32* vu,
     eps = slamch("P");
 
     /* Set parameters */
-    rtl = sqrtf(eps);
-    bsrtol = sqrtf(eps);
+    rtl = HNDRD * eps;
+    bsrtol = sqrtf(eps) * (0.5e-3f);
 
     /* Treat case of 1x1 matrix for quick return */
     if (n == 1) {

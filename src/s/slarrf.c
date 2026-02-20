@@ -65,7 +65,6 @@ void slarrf(const int n, const f32* restrict D,
     /* Constants */
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
-    const f32 FOUR = 4.0f;
     const f32 QUART = 0.25f;
     const f32 MAXGROWTH1 = 8.0f;
     const f32 MAXGROWTH2 = 8.0f;
@@ -118,8 +117,8 @@ void slarrf(const int n, const f32* restrict D,
     rsigma = fmaxf(W[clstrt], W[clend]) + werr[clend];
 
     /* Use a small fudge to make sure that we really shift to the outside */
-    lsigma = lsigma - fabsf(lsigma) * FOUR * eps;
-    rsigma = rsigma + fabsf(rsigma) * FOUR * eps;
+    lsigma = lsigma - fabsf(lsigma) * TWO * eps;
+    rsigma = rsigma + fabsf(rsigma) * TWO * eps;
 
     /* Compute upper bounds for how much to back off the initial shifts */
     ldmax = QUART * mingap + TWO * pivmin;

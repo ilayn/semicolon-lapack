@@ -34,7 +34,7 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 30.0f
+#define THRESH 50.0f
 #define MAXTYP 21
 #define NTEST  37
 
