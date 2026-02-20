@@ -179,9 +179,9 @@ static void test_dpoequ_n1(void** state)
 
     spoequ(1, A, 1, S, &scond, &amax_out, &info);
     assert_info_success(info);
-    assert_true(fabsf(S[0] - 0.5f) < 1e-15);  /* 1/sqrt(4) = 0.5 */
-    assert_true(fabsf(amax_out - 4.0f) < 1e-15);
-    assert_true(fabsf(scond - 1.0f) < 1e-15);
+    assert_true((double)fabsf(S[0] - 0.5f) < 1e-15);  /* 1/sqrt(4) = 0.5 */
+    assert_true((double)fabsf(amax_out - 4.0f) < 1e-15);
+    assert_true((double)fabsf(scond - 1.0f) < 1e-15);
 }
 
 int main(void)

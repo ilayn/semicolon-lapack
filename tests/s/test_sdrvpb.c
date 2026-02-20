@@ -359,7 +359,7 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
                     char msg[256];
                     snprintf(msg, sizeof(msg),
                              "SPBSV uplo=%s n=%d kd=%d imat=%d test(%d)=%.5g",
-                             uplo, n, kd, imat, k + 1, result[k]);
+                             uplo, n, kd, imat, k + 1, (double)result[k]);
                     fail_msg("%s", msg);
                 }
             }
@@ -432,11 +432,11 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
             if (prefac) {
                 snprintf(msg, sizeof(msg),
                          "SPBSVX fact=%s uplo=%s n=%d kd=%d equed=%c imat=%d test(%d)=%.5g",
-                         fact, uplo, n, kd, equed, imat, k + 1, result[k]);
+                         fact, uplo, n, kd, equed, imat, k + 1, (double)result[k]);
             } else {
                 snprintf(msg, sizeof(msg),
                          "SPBSVX fact=%s uplo=%s n=%d kd=%d imat=%d test(%d)=%.5g",
-                         fact, uplo, n, kd, imat, k + 1, result[k]);
+                         fact, uplo, n, kd, imat, k + 1, (double)result[k]);
             }
             fail_msg("%s", msg);
         }

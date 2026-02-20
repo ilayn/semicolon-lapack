@@ -298,7 +298,7 @@ static void test_lu_pivot_consistency(void **state)
     f32 expected[4] = {3.0f, 2.0f, 4.0f, 1.0f};
 
     for (int i = 0; i < n; i++) {
-        assert_true(fabsf(B[i] - expected[i]) <= 1e-14);
+        assert_true((double)fabsf(B[i] - expected[i]) <= 1e-14);
     }
 }
 

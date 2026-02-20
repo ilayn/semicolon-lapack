@@ -373,7 +373,7 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
         for (int k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SPTSV test %d failed: result=%e >= thresh=%e",
-                         k + 1, result[k], THRESH);
+                         k + 1, (double)result[k], (double)THRESH);
             }
         }
     }
@@ -438,12 +438,12 @@ static void run_ddrvpt_single(int n, int imat, int ifact)
     for (int k = k1 - 1; k < 5; k++) {
         if (result[k] >= THRESH) {
             fail_msg("SPTSVX FACT=%s test %d: result=%e >= thresh=%e",
-                     fact, k + 1, result[k], THRESH);
+                     fact, k + 1, (double)result[k], (double)THRESH);
         }
     }
     if (result[5] >= THRESH) {
         fail_msg("SPTSVX FACT=%s test 6: result=%e >= thresh=%e",
-                 fact, result[5], THRESH);
+                 fact, (double)result[5], (double)THRESH);
     }
 }
 

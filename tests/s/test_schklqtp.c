@@ -63,7 +63,7 @@ static void run_dchklqtp_single(int m, int n, int l, int nb)
     slqt05(m, n, l, nb, result);
 
     for (int t = 0; t < NTESTS; t++) {
-        snprintf(ctx, sizeof(ctx), "m=%d n=%d l=%d nb=%d TEST %d resid=%.3e", m, n, l, nb, t + 1, result[t]);
+        snprintf(ctx, sizeof(ctx), "m=%d n=%d l=%d nb=%d TEST %d resid=%.3e", m, n, l, nb, t + 1, (double)result[t]);
         set_test_context(ctx);
         assert_residual_below(result[t], THRESH);
     }

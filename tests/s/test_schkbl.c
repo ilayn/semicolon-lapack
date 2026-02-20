@@ -363,7 +363,7 @@ static void test_dgebal(void** state)
     }
 
     print_message("SGEBAL: %d cases, max residual = %.3e (case %d)\n",
-                  knt, rmax, lmax_resid);
+                  knt, (double)rmax, lmax_resid);
     if (ninfo > 0)
         print_message("  INFO/index errors: %d (info case %d, idx case %d)\n",
                       ninfo, lmax_info, lmax_idx);

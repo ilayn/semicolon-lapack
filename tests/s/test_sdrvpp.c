@@ -331,7 +331,7 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
         for (int k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SPPSV UPLO=%s test %d failed: result=%e >= thresh=%e",
-                         uplo, k + 1, result[k], THRESH);
+                         uplo, k + 1, (double)result[k], (double)THRESH);
             }
         }
     }
@@ -399,17 +399,17 @@ static void run_ddrvpp_single(int n, int imat, int iuplo, int ifact, int iequed)
         for (int k = k1 - 1; k < NTESTS; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SPPSVX FACT=%s UPLO=%s EQUED=%c test %d: result=%e >= thresh=%e",
-                         fact, uplo, equed_inout, k + 1, result[k], THRESH);
+                         fact, uplo, equed_inout, k + 1, (double)result[k], (double)THRESH);
             }
         }
     } else {
         if (!prefac && result[0] >= THRESH) {
             fail_msg("SPPSVX FACT=%s UPLO=%s EQUED=%c test 1: result=%e >= thresh=%e",
-                     fact, uplo, equed_inout, result[0], THRESH);
+                     fact, uplo, equed_inout, (double)result[0], (double)THRESH);
         }
         if (result[5] >= THRESH) {
             fail_msg("SPPSVX FACT=%s UPLO=%s EQUED=%c test 6: result=%e >= thresh=%e",
-                     fact, uplo, equed_inout, result[5], THRESH);
+                     fact, uplo, equed_inout, (double)result[5], (double)THRESH);
         }
     }
 }

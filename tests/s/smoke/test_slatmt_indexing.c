@@ -83,7 +83,7 @@ static void test_nonsym_banded_givens(void** state)
             int upper_dist = j - i;  /* distance above diagonal */
 
             if (lower_dist > kl || upper_dist > ku) {
-                if (fabsf(A[i + j * lda]) > 1e-14) {
+                if ((double)fabsf(A[i + j * lda]) > 1e-14) {
                     errors++;
                 }
             }
@@ -125,14 +125,14 @@ static void test_symmetric_givens(void** state)
             if (diff > max_diff) max_diff = diff;
         }
     }
-    assert_true(max_diff < 1e-10);
+    assert_true((double)max_diff < 1e-10);
 
     /* Check bandwidth */
     int errors = 0;
     for (int j = 0; j < n; j++) {
         for (int i = 0; i < n; i++) {
             if (abs(i - j) > k) {
-                if (fabsf(A[i + j * lda]) > 1e-14) {
+                if ((double)fabsf(A[i + j * lda]) > 1e-14) {
                     errors++;
                 }
             }
@@ -176,7 +176,7 @@ static void test_band_storage_B(void** state)
     /* Check diagonal exists */
     int has_nonzero_diag = 0;
     for (int j = 0; j < n; j++) {
-        if (fabsf(A[0 + j * lda]) > 1e-14) {
+        if ((double)fabsf(A[0 + j * lda]) > 1e-14) {
             has_nonzero_diag = 1;
             break;
         }
@@ -219,7 +219,7 @@ static void test_band_storage_Q(void** state)
     /* Check diagonal exists (should be in row k = ku) */
     int has_nonzero_diag = 0;
     for (int j = 0; j < n; j++) {
-        if (fabsf(A[k + j * lda]) > 1e-14) {
+        if ((double)fabsf(A[k + j * lda]) > 1e-14) {
             has_nonzero_diag = 1;
             break;
         }
@@ -257,7 +257,7 @@ static void test_band_storage_Z(void** state)
     /* Check diagonal exists */
     int has_nonzero_diag = 0;
     for (int j = 0; j < n; j++) {
-        if (fabsf(A[ku + j * lda]) > 1e-14) {
+        if ((double)fabsf(A[ku + j * lda]) > 1e-14) {
             has_nonzero_diag = 1;
             break;
         }

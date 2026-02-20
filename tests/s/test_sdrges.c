@@ -518,7 +518,7 @@ check_results:
     for (int jr = 0; jr < 13; jr++) {
         if (result[jr] >= THRESH) {
             print_message("N=%d JTYPE=%d test(%d)=%g\n",
-                          n, jtype, jr + 1, result[jr]);
+                          n, jtype, jr + 1, (double)result[jr]);
             any_fail = 1;
         }
     }

@@ -1726,7 +1726,7 @@ L1750:
     for (int j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
             print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d\n",
-                          j + 1, ws->result[j], THRESH, n, jtype);
+                          j + 1, (double)ws->result[j], (double)THRESH, n, jtype);
         }
         assert_residual_below(ws->result[j], THRESH);
     }

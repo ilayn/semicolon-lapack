@@ -328,7 +328,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
 
     if (result[0] >= THRESH) {
         print_error("TEST 1 FAILED: m=%d, n=%d, kl=%d, ku=%d, nb=%d, imat=%d: resid=%.6e >= %.1f\n",
-                   m, n, kl, ku, nb, imat, result[0], THRESH);
+                   m, n, kl, ku, nb, imat, (double)result[0], (double)THRESH);
     }
     assert_residual_below(result[0], THRESH);
 
@@ -440,7 +440,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
             for (int k = 1; k < 6; k++) {
                 if (result[k] >= THRESH) {
                     print_error("TEST %d FAILED: trans='%c', n=%d, kl=%d, ku=%d, nrhs=%d, imat=%d: resid=%.6e >= %.1f\n",
-                               k + 1, trans[0], n, kl, ku, nrhs, imat, result[k], THRESH);
+                               k + 1, trans[0], n, kl, ku, nrhs, imat, (double)result[k], (double)THRESH);
                 }
                 assert_residual_below(result[k], THRESH);
             }
@@ -479,7 +479,7 @@ test7:
 
         if (result[6] >= THRESH) {
             print_error("TEST 7 FAILED: norm='%c', n=%d, kl=%d, ku=%d, imat=%d: resid=%.6e >= %.1f\n",
-                       norm[0], n, kl, ku, imat, result[6], THRESH);
+                       norm[0], n, kl, ku, imat, (double)result[6], (double)THRESH);
         }
         assert_residual_below(result[6], THRESH);
     }

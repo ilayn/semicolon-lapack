@@ -1106,7 +1106,7 @@ results:
         if (result[j] >= THRESH) {
             snprintf(ctx, sizeof(ctx),
                      "dchkbd M=%d N=%d type=%d test(%d)=%.4g",
-                     m, n, jtype, j + 1, result[j]);
+                     m, n, jtype, j + 1, (double)result[j]);
             set_test_context(ctx);
             assert_residual_below(result[j], THRESH);
             clear_test_context();

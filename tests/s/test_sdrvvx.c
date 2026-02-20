@@ -431,7 +431,7 @@ static void run_ddrvvx_random(ddrvvx_params_t* params)
         for (int j = 0; j < 9; j++) {
             if (result[j] >= 0.0f && result[j] >= THRESH) {
                 print_message("BALANC='%s', N=%d, IWK=%d, type %d, test(%d)=%g\n",
-                              BAL[ibal], n, iwk, jtype, j + 1, result[j]);
+                              BAL[ibal], n, iwk, jtype, j + 1, (double)result[j]);
                 any_fail = 1;
             }
         }
@@ -515,7 +515,7 @@ static void run_ddrvvx_precomp(ddrvvx_params_t* params)
     for (int j = 0; j < 11; j++) {
         if (result[j] >= 0.0f && result[j] >= THRESH) {
             print_message("N=%d, input example=%d, test(%d)=%g\n",
-                          n, idx + 1, j + 1, result[j]);
+                          n, idx + 1, j + 1, (double)result[j]);
             any_fail = 1;
         }
     }

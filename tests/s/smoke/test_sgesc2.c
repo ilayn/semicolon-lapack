@@ -267,7 +267,7 @@ static void test_dgesc2_identity(void **state)
 
     f32 resid = compute_residual(n, A_orig, n, b, b_orig, scale);
     assert_residual_ok(resid);
-    assert_true(fabsf(scale - 1.0f) < 1e-14);
+    assert_true((double)fabsf(scale - 1.0f) < 1e-14);
 
     free(A);
     free(A_orig);

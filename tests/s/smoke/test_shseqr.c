@@ -381,7 +381,7 @@ static void test_diagonal_matrix(void** state)
             if (err > resid) resid = err;
         }
     }
-    assert_true(resid < 1e-10);
+    assert_true((double)resid < 1e-10);
 }
 
 int main(void)

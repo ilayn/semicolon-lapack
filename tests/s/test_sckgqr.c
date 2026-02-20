@@ -194,7 +194,7 @@ static void test_dckgqr_case(void** state)
     for (int i = 0; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             print_message("  GRQ: M=%d P=%d N=%d type=%d test=%d ratio=%g\n",
-                          m, p, n, imat, i + 1, result[i]);
+                          m, p, n, imat, i + 1, (double)result[i]);
         }
         assert_residual_below(result[i], THRESH);
     }
@@ -231,7 +231,7 @@ static void test_dckgqr_case(void** state)
     for (int i = 0; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             print_message("  GQR: N=%d M=%d P=%d type=%d test=%d ratio=%g\n",
-                          n, m, p, imat, i + 1, result[i]);
+                          n, m, p, imat, i + 1, (double)result[i]);
         }
         assert_residual_below(result[i], THRESH);
     }

@@ -382,7 +382,7 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
     for (int j = 0; j < 15; j++) {
         if (result[j] >= 0.0f && result[j] >= THRESH) {
             print_message("N=%d, IWK=%d, type %d, test(%d)=%g\n",
-                          n, iwk, jtype, j + 1, result[j]);
+                          n, iwk, jtype, j + 1, (double)result[j]);
             any_fail = 1;
         }
     }
@@ -449,7 +449,7 @@ static void run_ddrvsx_precomp(ddrvsx_params_t* params)
     for (int j = 0; j < 17; j++) {
         if (result[j] >= 0.0f && result[j] >= THRESH) {
             print_message("N=%d, input example=%d, test(%d)=%g\n",
-                          n, idx + 1, j + 1, result[j]);
+                          n, idx + 1, j + 1, (double)result[j]);
             any_fail = 1;
         }
     }

@@ -232,9 +232,9 @@ static void test_dgeequ_identity(void **state)
     assert_int_equal(info, 0);
 
     /* For identity: amax=1, rowcnd=1, colcnd=1 */
-    assert_true(fabsf(amax - 1.0f) < 1e-14);
-    assert_true(fabsf(rowcnd - 1.0f) < 1e-14);
-    assert_true(fabsf(colcnd - 1.0f) < 1e-14);
+    assert_true((double)fabsf(amax - 1.0f) < 1e-14);
+    assert_true((double)fabsf(rowcnd - 1.0f) < 1e-14);
+    assert_true((double)fabsf(colcnd - 1.0f) < 1e-14);
 }
 
 /**

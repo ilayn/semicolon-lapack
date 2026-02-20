@@ -184,7 +184,7 @@ static void test_dckgsv_case(void** state)
     for (int i = 0; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             print_message("  GSV: M=%d P=%d N=%d type=%d test=%d ratio=%g\n",
-                          m, p, n, imat, i + 1, result[i]);
+                          m, p, n, imat, i + 1, (double)result[i]);
         }
         assert_residual_below(result[i], THRESH);
     }

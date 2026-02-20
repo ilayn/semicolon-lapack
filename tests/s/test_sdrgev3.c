@@ -407,7 +407,7 @@ gen_ok:
     if (result[1] > THRESH) {
         print_message("Left eigenvectors from SGGEV31 incorrectly "
                       "normalized. Bits of error=%g, N=%d JTYPE=%d\n",
-                      result[1], n, jtype);
+                      (double)result[1], n, jtype);
     }
 
     /*
@@ -420,7 +420,7 @@ gen_ok:
     if (result[3] > THRESH) {
         print_message("Right eigenvectors from SGGEV31 incorrectly "
                       "normalized. Bits of error=%g, N=%d JTYPE=%d\n",
-                      result[3], n, jtype);
+                      (double)result[3], n, jtype);
     }
 
     /*
@@ -519,7 +519,7 @@ check_results:
     for (int jr = 0; jr < 7; jr++) {
         if (result[jr] >= THRESH) {
             print_message("N=%d JTYPE=%d test(%d)=%g\n",
-                          n, jtype, jr + 1, result[jr]);
+                          n, jtype, jr + 1, (double)result[jr]);
             any_fail = 1;
         }
     }

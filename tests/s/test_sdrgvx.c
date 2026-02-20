@@ -211,7 +211,7 @@ static void test_ddrgvx(void** state)
     result[0] = res52[0];
     if (res52[1] > THRESH) {
         print_message("Left eigenvectors from SGGEVX incorrectly normalized: %.3g\n",
-                      res52[1]);
+                      (double)res52[1]);
     }
 
     /* Test (2): Right eigenvector residual via sget52 */
@@ -221,7 +221,7 @@ static void test_ddrgvx(void** state)
     result[1] = res52[0];
     if (res52[1] > THRESH) {
         print_message("Right eigenvectors from SGGEVX incorrectly normalized: %.3g\n",
-                      res52[1]);
+                      (double)res52[1]);
     }
 
     /* Test (3): Eigenvalue condition numbers */
@@ -269,7 +269,7 @@ static void test_ddrgvx(void** state)
         if (result[j] >= thr) {
             print_message("type=%d iwa=%d iwb=%d iwx=%d iwy=%d test(%d)=%g >= %.1f\n",
                           params->iptype, params->iwa + 1, params->iwb + 1,
-                          params->iwx + 1, params->iwy + 1, j + 1, result[j], thr);
+                          params->iwx + 1, params->iwy + 1, j + 1, (double)result[j], (double)thr);
             any_fail = 1;
         }
     }
@@ -379,7 +379,7 @@ static void test_ddrgvx_readin(void** state)
     result[0] = res52[0];
     if (res52[1] > THRESH) {
         print_message("Left eigenvectors from SGGEVX incorrectly normalized: "
-                      "%.3g (read-in #%d)\n", res52[1], ci + 1);
+                      "%.3g (read-in #%d)\n", (double)res52[1], ci + 1);
     }
 
     /* Test (2): Right eigenvector residual */
@@ -389,7 +389,7 @@ static void test_ddrgvx_readin(void** state)
     result[1] = res52[0];
     if (res52[1] > THRESH) {
         print_message("Right eigenvectors from SGGEVX incorrectly normalized: "
-                      "%.3g (read-in #%d)\n", res52[1], ci + 1);
+                      "%.3g (read-in #%d)\n", (double)res52[1], ci + 1);
     }
 
     /* Test (3): Eigenvalue condition numbers */
@@ -435,7 +435,7 @@ static void test_ddrgvx_readin(void** state)
     for (int j = 0; j < 4; j++) {
         if (result[j] >= thrsh2) {
             print_message("read-in #%d test(%d)=%g >= %.1f\n",
-                          ci + 1, j + 1, result[j], thrsh2);
+                          ci + 1, j + 1, (double)result[j], (double)thrsh2);
             any_fail = 1;
         }
     }

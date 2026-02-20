@@ -369,7 +369,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
         for (int k = 1; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGTSV test %d failed: result=%e >= thresh=%e",
-                         k + 1, result[k], THRESH);
+                         k + 1, (double)result[k], (double)THRESH);
             }
         }
     }
@@ -428,12 +428,12 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     for (int k = k1 - 1; k < nt; k++) {
         if (result[k] >= THRESH) {
             fail_msg("SGTSVX FACT=%s TRANS=%s test %d: result=%e >= thresh=%e",
-                     fact, trans, k + 1, result[k], THRESH);
+                     fact, trans, k + 1, (double)result[k], (double)THRESH);
         }
     }
     if (result[5] >= THRESH) {
         fail_msg("SGTSVX FACT=%s TRANS=%s test 6: result=%e >= thresh=%e",
-                 fact, trans, result[5], THRESH);
+                 fact, trans, (double)result[5], (double)THRESH);
     }
 }
 

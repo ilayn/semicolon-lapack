@@ -375,7 +375,7 @@ static void test_zero_matrix(void** state)
 
     /* All singular values should be zero */
     for (int i = 0; i < minmn; i++) {
-        assert_true(fabsf(fix->S[i]) < 1e-14);
+        assert_true((double)fabsf(fix->S[i]) < 1e-14);
     }
 }
 

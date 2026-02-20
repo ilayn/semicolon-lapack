@@ -289,7 +289,7 @@ static void run_ddrvsy_aa_2stage_single(int n, int imat, int iuplo)
     for (int i = 0; i < nt; i++) {
         if (result[i] >= THRESH) {
             fail_msg("SSYSV_AA_2STAGE UPLO=%s test %d failed: result=%e >= thresh=%e",
-                     uplo, i + 1, result[i], THRESH);
+                     uplo, i + 1, (double)result[i], (double)THRESH);
         }
     }
 }

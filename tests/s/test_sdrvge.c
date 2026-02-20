@@ -371,7 +371,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
         for (int k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGESV test %d failed: result=%e >= thresh=%e",
-                         k + 1, result[k], THRESH);
+                         k + 1, (double)result[k], (double)THRESH);
             }
         }
     }
@@ -477,22 +477,22 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
         for (int k = k1; k < NTESTS; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGESVX FACT=%s TRANS=%s EQUED=%c test %d: result=%e >= thresh=%e",
-                         fact, trans, equed, k + 1, result[k], THRESH);
+                         fact, trans, equed, k + 1, (double)result[k], (double)THRESH);
             }
         }
     } else {
         /* TRFCON case: only check tests 1, 6, 7 */
         if (!prefac && result[0] >= THRESH) {
             fail_msg("SGESVX FACT=%s TRANS=%s EQUED=%c test 1: result=%e >= thresh=%e",
-                     fact, trans, equed, result[0], THRESH);
+                     fact, trans, equed, (double)result[0], (double)THRESH);
         }
         if (result[5] >= THRESH) {
             fail_msg("SGESVX FACT=%s TRANS=%s EQUED=%c test 6: result=%e >= thresh=%e",
-                     fact, trans, equed, result[5], THRESH);
+                     fact, trans, equed, (double)result[5], (double)THRESH);
         }
         if (result[6] >= THRESH) {
             fail_msg("SGESVX FACT=%s TRANS=%s EQUED=%c test 7: result=%e >= thresh=%e",
-                     fact, trans, equed, result[6], THRESH);
+                     fact, trans, equed, (double)result[6], (double)THRESH);
         }
     }
 }

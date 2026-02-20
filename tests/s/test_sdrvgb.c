@@ -421,7 +421,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         for (int k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGBSV n=%d kl=%d ku=%d type %d test %d: result=%e >= thresh=%e",
-                         n, kl, ku, imat, k + 1, result[k], THRESH);
+                         n, kl, ku, imat, k + 1, (double)result[k], (double)THRESH);
             }
         }
     }
@@ -554,12 +554,12 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
                     fail_msg("SGBSVX FACT=%s TRANS=%s n=%d kl=%d ku=%d EQUED=%c "
                              "type %d test %d: result=%e >= thresh=%e",
                              fact, trans, n, kl, ku, equed_inout,
-                             imat, k + 1, result[k], THRESH);
+                             imat, k + 1, (double)result[k], (double)THRESH);
                 } else {
                     fail_msg("SGBSVX FACT=%s TRANS=%s n=%d kl=%d ku=%d "
                              "type %d test %d: result=%e >= thresh=%e",
                              fact, trans, n, kl, ku,
-                             imat, k + 1, result[k], THRESH);
+                             imat, k + 1, (double)result[k], (double)THRESH);
                 }
             }
         }
@@ -567,17 +567,17 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         if (!prefac && result[0] >= THRESH) {
             fail_msg("SGBSVX FACT=%s TRANS=%s n=%d kl=%d ku=%d "
                      "type %d test 1: result=%e >= thresh=%e",
-                     fact, trans, n, kl, ku, imat, result[0], THRESH);
+                     fact, trans, n, kl, ku, imat, (double)result[0], (double)THRESH);
         }
         if (result[5] >= THRESH) {
             fail_msg("SGBSVX FACT=%s TRANS=%s n=%d kl=%d ku=%d "
                      "type %d test 6: result=%e >= thresh=%e",
-                     fact, trans, n, kl, ku, imat, result[5], THRESH);
+                     fact, trans, n, kl, ku, imat, (double)result[5], (double)THRESH);
         }
         if (result[6] >= THRESH) {
             fail_msg("SGBSVX FACT=%s TRANS=%s n=%d kl=%d ku=%d "
                      "type %d test 7: result=%e >= thresh=%e",
-                     fact, trans, n, kl, ku, imat, result[6], THRESH);
+                     fact, trans, n, kl, ku, imat, (double)result[6], (double)THRESH);
         }
     }
 }

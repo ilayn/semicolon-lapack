@@ -41,10 +41,10 @@ extern void sormlq(const char* side, const char* trans,
                    f32* const restrict work, const int lwork, int* info);
 
 /* Simple xoshiro256+ for generating random test matrices */
-static uint64_t dlqt03_state[4] = {1988, 1989, 1990, 1991};
+static uint64_t slqt03_state[4] = {1988, 1989, 1990, 1991};
 
-static uint64_t dlqt03_next(void) {
-    uint64_t *s = dlqt03_state;
+static uint64_t slqt03_next(void) {
+    uint64_t *s = slqt03_state;
     uint64_t result = s[0] + s[3];
     uint64_t t = s[1] << 17;
     s[2] ^= s[0]; s[3] ^= s[1]; s[1] ^= s[2]; s[0] ^= s[3];
@@ -52,9 +52,12 @@ static uint64_t dlqt03_next(void) {
     return result;
 }
 
-static f32 dlqt03_drand(void) {
-    uint64_t x = dlqt03_next();
-    return ((f32)(x >> 11)) * 0x1.0fp-53 * 2.0f - 1.0f;
+static f32 slqt03_srand(void) {
+    union { uint32_t u; float f; } x;
+    uint32_t r = (uint32_t)(slqt03_next() >> 32);
+    r >>= 9;
+    x.u = ((uint32_t)128 << 23) | r;
+    return x.f - 3.0f;
 }
 
 /**
@@ -110,7 +113,7 @@ void slqt03(const int m, const int n, const int k,
         /* Generate MC by NC random matrix C */
         for (int j = 0; j < nc; j++) {
             for (int i = 0; i < mc; i++) {
-                C[i + j * lda] = dlqt03_drand();
+                C[i + j * lda] = slqt03_srand();
             }
         }
         cnorm = slange("1", mc, nc, C, lda, rwork);

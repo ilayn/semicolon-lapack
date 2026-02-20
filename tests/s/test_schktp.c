@@ -268,7 +268,7 @@ static void test_standard(void** state)
 
         if (result[0] >= THRESH) {
             print_message("TEST 1 failed: n=%d, imat=%d, uplo=%s, diag=%c, resid=%.3e\n",
-                         n, imat, uplo, diag, result[0]);
+                         n, imat, uplo, diag, (double)result[0]);
         }
         assert_residual_ok(result[0]);
     }
@@ -329,7 +329,7 @@ static void test_standard(void** state)
             for (int k = 1; k < 6; k++) {
                 if (result[k] >= THRESH) {
                     print_message("TEST %d failed: n=%d, imat=%d, uplo=%s, trans=%s, nrhs=%d, resid=%.3e\n",
-                                 k + 1, n, imat, uplo, trans, nrhs, result[k]);
+                                 k + 1, n, imat, uplo, trans, nrhs, (double)result[k]);
                 }
                 assert_residual_ok(result[k]);
             }
@@ -353,7 +353,7 @@ static void test_standard(void** state)
 
         if (result[6] >= THRESH) {
             print_message("TEST 7 failed: n=%d, imat=%d, uplo=%s, diag=%c, norm=%s, resid=%.3e\n",
-                         n, imat, uplo, diag, norm, result[6]);
+                         n, imat, uplo, diag, norm, (double)result[6]);
         }
         assert_residual_ok(result[6]);
     }
@@ -409,7 +409,7 @@ static void test_latps(void** state)
 
         if (result[7] >= THRESH) {
             print_message("TEST 8 failed: n=%d, imat=%d, uplo=%s, trans=%s, normin=N, resid=%.3e\n",
-                         n, imat, uplo, trans, result[7]);
+                         n, imat, uplo, trans, (double)result[7]);
         }
         assert_residual_ok(result[7]);
 
@@ -427,7 +427,7 @@ static void test_latps(void** state)
 
         if (result[8] >= THRESH) {
             print_message("TEST 9 failed: n=%d, imat=%d, uplo=%s, trans=%s, normin=Y, resid=%.3e\n",
-                         n, imat, uplo, trans, result[8]);
+                         n, imat, uplo, trans, (double)result[8]);
         }
         assert_residual_ok(result[8]);
     }

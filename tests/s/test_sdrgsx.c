@@ -413,7 +413,7 @@ static void test_ddrgsx(void** state)
     for (int j = 0; j < 9; j++) {
         if (result[j] >= THRESH) {
             print_message("sense=%s type=%d m=%d n=%d test(%d)=%g\n",
-                          sense, prtype, m, n, j + 1, result[j]);
+                          sense, prtype, m, n, j + 1, (double)result[j]);
             any_fail = 1;
         }
     }
@@ -654,7 +654,7 @@ static void test_ddrgsx_readin(void** state)
     for (int j = 0; j < 10; j++) {
         if (result[j] >= THRESH) {
             print_message("read-in #%d test(%d)=%g >= %.1f\n",
-                          ci + 1, j + 1, result[j], THRESH);
+                          ci + 1, j + 1, (double)result[j], (double)THRESH);
             any_fail = 1;
         }
     }

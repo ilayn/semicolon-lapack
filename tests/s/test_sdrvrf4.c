@@ -121,7 +121,7 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
 
     snprintf(ctx, sizeof(ctx),
              "n=%d k=%d form=%s uplo=%s trans=%s alpha=%.2f beta=%.2f resid=%.6e",
-             n, k, cform, uplo, trans, alpha, beta, result);
+             n, k, cform, uplo, trans, (double)alpha, (double)beta, (double)result);
     set_test_context(ctx);
     assert_residual_below(result, THRESH);
     clear_test_context();

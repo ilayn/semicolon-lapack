@@ -277,7 +277,7 @@ static void run_dckcsd_single(dckcsd_params_t* params)
     for (int i = 0; i < NTESTS; i++) {
         snprintf(ctx, sizeof(ctx),
                  "M=%d P=%d Q=%d type=%d test=%d ratio=%.6e",
-                 m, p, q, imat, i + 1, result[i]);
+                 m, p, q, imat, i + 1, (double)result[i]);
         set_test_context(ctx);
         assert_residual_ok(result[i]);
     }

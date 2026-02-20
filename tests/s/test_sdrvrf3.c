@@ -133,7 +133,7 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
 
     snprintf(ctx, sizeof(ctx),
              "m=%d n=%d form=%s side=%s uplo=%s trans=%s diag=%s alpha=%.2f resid=%.6e",
-             m, n, cform, side, uplo, trans, diag, alpha, result);
+             m, n, cform, side, uplo, trans, diag, (double)alpha, (double)result);
     set_test_context(ctx);
     assert_residual_below(result, THRESH);
     clear_test_context();

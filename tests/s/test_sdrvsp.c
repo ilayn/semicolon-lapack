@@ -333,7 +333,7 @@ static void run_ddrvsp_single(int n, int imat, int iuplo, int ifact)
             for (int i = 0; i < nt; i++) {
                 if (result[i] >= THRESH) {
                     fail_msg("SSPSV UPLO=%s test %d failed: result=%e >= thresh=%e",
-                             uplo, i + 1, result[i], THRESH);
+                             uplo, i + 1, (double)result[i], (double)THRESH);
                 }
             }
         }
@@ -412,7 +412,7 @@ static void run_ddrvsp_single(int n, int imat, int iuplo, int ifact)
     for (int i = k1 - 1; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             fail_msg("SSPSVX FACT=%s UPLO=%s test %d: result=%e >= thresh=%e",
-                     fact, uplo, i + 1, result[i], THRESH);
+                     fact, uplo, i + 1, (double)result[i], (double)THRESH);
         }
     }
 }

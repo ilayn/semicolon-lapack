@@ -98,7 +98,7 @@ static void run_ddrvrf1_single(int n, int iit, int iuplo, int iform)
         }
 
         snprintf(ctx, sizeof(ctx), "n=%d iit=%d uplo=%s form=%s norm=%s resid=%.6e",
-                 n, iit, uplo, cform, norms[inorm], result);
+                 n, iit, uplo, cform, norms[inorm], (double)result);
         set_test_context(ctx);
         assert_residual_below(result, THRESH);
     }
