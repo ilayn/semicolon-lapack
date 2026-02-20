@@ -92,7 +92,8 @@ def build_code_subs(lapack_names):
     subs.append((re.compile(r"\bcblas_idamax\b"), "cblas_isamax"))
 
     # --- 3. CBLAS general: cblas_d* -> cblas_s* ---
-    subs.append((re.compile(r"\bcblas_d(\w+)\b"), r"cblas_s\1"))
+    # Negative lookahead for 'iag' to avoid cblas_diag -> cblas_siag
+    subs.append((re.compile(r"\bcblas_d(?!iag\b)(\w+)\b"), r"cblas_s\1"))
 
     # --- 4. ILA embedded precision ---
     subs.append((re.compile(r"\biladlc\b"), "ilaslc"))
@@ -122,6 +123,7 @@ def build_code_subs(lapack_names):
     math_funcs = [
         ("copysign", "copysignf"),
         ("log10",    "log10f"),
+        ("ilogb",    "ilogbf"),
         ("atan2",    "atan2f"),
         ("ldexp",    "ldexpf"),
         ("floor",    "floorf"),
