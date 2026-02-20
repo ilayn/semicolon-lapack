@@ -98,6 +98,7 @@ lapack_tests = {
   'ddrges3': ['test_ddrges3.c', 'eigen'],     # Generalized Schur form (DGGES3)
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
   'ddrvsg': ['test_ddrvsg.c', 'eigen'],      # Generalized symmetric eigenvalue (DSYGV/DSPGV/DSBGV)
+  'ddrvsg2stg': ['test_ddrvsg2stg.c', 'eigen'],  # 2-stage generalized symmetric eigenvalue (DSYGV_2STAGE)
 
   # RNG validation
   'rng_validation': ['test_rng_validation.c', 'rng'],  # xoshiro256+ correctness
