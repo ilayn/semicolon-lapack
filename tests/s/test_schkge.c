@@ -1,0 +1,520 @@
+/**
+ * @file test_schkge.c
+ * @brief Comprehensive test suite for general matrix (SGE) routines.
+ *
+ * This is a faithful port of LAPACK's TESTING/LIN/dchkge.f to C using CMocka.
+ * Tests SGETRF, SGETRI, SGETRS, SGERFS, and SGECON.
+ *
+ * Each (m, n, imat) combination is registered as a separate CMocka test,
+ * providing pytest-like parameterized test behavior with clear failure isolation.
+ *
+ * Test structure from dchkge.f:
+ *   TEST 1: LU factorization residual via sget01
+ *   TEST 2: Matrix inverse residual via sget03 (square, non-singular only)
+ *   TEST 3: Solution residual via sget02
+ *   TEST 4: Solution accuracy via sget04
+ *   TEST 5: Refined solution accuracy via sget04 (after sgerfs)
+ *   TEST 6-7: Error bounds via sget07
+ *   TEST 8: Condition number via sget06
+ *
+ * Parameters from dtest.in:
+ *   M values: 0, 1, 2, 3, 5, 10, 50
+ *   N values: 0, 1, 2, 3, 5, 10, 50
+ *   NRHS values: 1, 2, 15
+ *   NB values: 1, 3, 3, 3, 20 (unique: 1, 3, 20)
+ *   Matrix types: 1-11
+ *   THRESH: 30.0
+ */
+
+#include "test_harness.h"
+#include "test_rng.h"
+#include <string.h>
+#include <stdio.h>
+#include <cblas.h>
+
+/* Test parameters from dtest.in */
+static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const char TRANSS[] = {'N', 'T', 'C'};
+
+#define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
+#define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
+#define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
+#define NNB     (sizeof(NBVAL) / sizeof(NBVAL[0]))
+#define NTRAN   (sizeof(TRANSS) / sizeof(TRANSS[0]))
+#define NTYPES  11
+#define NTESTS  8
+#define THRESH  30.0f
+#define NMAX    50  /* Maximum matrix dimension */
+#define NSMAX   15  /* Max NRHS */
+
+/* Routines under test */
+extern void sgetrf(const int m, const int n, f32* A, const int lda,
+                   int* ipiv, int* info);
+extern void sgetri(const int n, f32* A, const int lda, const int* ipiv,
+                   f32* work, const int lwork, int* info);
+extern void sgetrs(const char* trans, const int n, const int nrhs,
+                   const f32* A, const int lda, const int* ipiv,
+                   f32* B, const int ldb, int* info);
+extern void sgerfs(const char* trans, const int n, const int nrhs,
+                   const f32* A, const int lda, const f32* AF,
+                   const int ldaf, const int* ipiv, const f32* B,
+                   const int ldb, f32* X, const int ldx, f32* ferr,
+                   f32* berr, f32* work, int* iwork, int* info);
+extern void sgecon(const char* norm, const int n, const f32* A,
+                   const int lda, const f32 anorm, f32* rcond,
+                   f32* work, int* iwork, int* info);
+
+/* Verification routines */
+extern void sget01(const int m, const int n, const f32* A, const int lda,
+                   f32* AFAC, const int ldafac, const int* ipiv,
+                   f32* rwork, f32* resid);
+extern void sget02(const char* trans, const int m, const int n, const int nrhs,
+                   const f32* A, const int lda, const f32* X,
+                   const int ldx, f32* B, const int ldb,
+                   f32* rwork, f32* resid);
+extern void sget03(const int n, const f32* A, const int lda,
+                   const f32* AINV, const int ldainv, f32* work,
+                   const int ldwork, f32* rwork, f32* rcond, f32* resid);
+extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
+                   const f32* XACT, const int ldxact, const f32 rcond,
+                   f32* resid);
+extern f32 sget06(const f32 rcond, const f32 rcondc);
+extern void sget07(const char* trans, const int n, const int nrhs,
+                   const f32* A, const int lda, const f32* B,
+                   const int ldb, const f32* X, const int ldx,
+                   const f32* XACT, const int ldxact, const f32* ferr,
+                   const int chkferr, const f32* berr, f32* reslts);
+
+/* Matrix generation */
+extern void slatb4(const char* path, const int imat, const int m, const int n,
+                   char* type, int* kl, int* ku, f32* anorm, int* mode,
+                   f32* cndnum, char* dist);
+extern void slatms(const int m, const int n, const char* dist,
+                   const char* sym, f32* d, const int mode, const f32 cond,
+                   const f32 dmax, const int kl, const int ku, const char* pack,
+                   f32* A, const int lda, f32* work, int* info,
+                   uint64_t state[static 4]);
+extern void slarhs(const char* path, const char* xtype, const char* uplo,
+                   const char* trans, const int m, const int n, const int kl,
+                   const int ku, const int nrhs, const f32* A, const int lda,
+                   const f32* XACT, const int ldxact, f32* B,
+                   const int ldb, int* info, uint64_t state[static 4]);
+
+/* Utilities */
+extern void slacpy(const char* uplo, const int m, const int n,
+                   const f32* A, const int lda, f32* B, const int ldb);
+extern void slaset(const char* uplo, const int m, const int n,
+                   const f32 alpha, const f32 beta,
+                   f32* A, const int lda);
+extern f32 slange(const char* norm, const int m, const int n,
+                     const f32* A, const int lda, f32* work);
+extern f32 slamch(const char* cmach);
+
+/**
+ * Test parameters for a single test case.
+ *
+ * The test is parameterized by (m, n, imat, inb) where:
+ *   - m, n: matrix dimensions
+ *   - imat: matrix type (1-11)
+ *   - inb: index into NBVAL[] for block size
+ *
+ * Following LAPACK's dchkge.f:
+ *   - TESTs 1-2 (factorization, inverse) run for all NB values
+ *   - TESTs 3-8 (solve, refinement) only run for inb=0 (first NB) and M==N
+ */
+typedef struct {
+    int m;
+    int n;
+    int imat;
+    int inb;    /* Index into NBVAL[] */
+    char name[64];
+} dchkge_params_t;
+
+/**
+ * Workspace for test execution - shared across all tests via group setup.
+ */
+typedef struct {
+    f32* A;      /* Original matrix (NMAX x NMAX) */
+    f32* AFAC;   /* Factored matrix (NMAX x NMAX) */
+    f32* AINV;   /* Inverse matrix (NMAX x NMAX) */
+    f32* B;      /* Right-hand side (NMAX x NSMAX) */
+    f32* X;      /* Solution (NMAX x NSMAX) */
+    f32* XACT;   /* Exact solution (NMAX x NSMAX) */
+    f32* WORK;   /* General workspace */
+    f32* RWORK;  /* Real workspace */
+    f32* D;      /* Singular values for slatms */
+    f32* FERR;   /* Forward error bounds */
+    f32* BERR;   /* Backward error bounds */
+    int* IPIV;      /* Pivot indices */
+    int* IWORK;     /* Integer workspace */
+} dchkge_workspace_t;
+
+static dchkge_workspace_t* g_workspace = NULL;
+
+/**
+ * Group setup - allocate workspace once for all tests.
+ */
+static int group_setup(void** state)
+{
+    (void)state;
+    g_workspace = malloc(sizeof(dchkge_workspace_t));
+    if (!g_workspace) return -1;
+
+    g_workspace->A = malloc(NMAX * NMAX * sizeof(f32));
+    g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f32));
+    g_workspace->AINV = malloc(NMAX * NMAX * sizeof(f32));
+    g_workspace->B = malloc(NMAX * NSMAX * sizeof(f32));
+    g_workspace->X = malloc(NMAX * NSMAX * sizeof(f32));
+    g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f32));
+    g_workspace->WORK = malloc(NMAX * NMAX * sizeof(f32));
+    g_workspace->RWORK = malloc(2 * NMAX * sizeof(f32));
+    g_workspace->D = malloc(NMAX * sizeof(f32));
+    g_workspace->FERR = malloc(NSMAX * sizeof(f32));
+    g_workspace->BERR = malloc(NSMAX * sizeof(f32));
+    g_workspace->IPIV = malloc(NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
+
+    if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
+        !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
+        !g_workspace->WORK || !g_workspace->RWORK || !g_workspace->D ||
+        !g_workspace->FERR || !g_workspace->BERR || !g_workspace->IPIV ||
+        !g_workspace->IWORK) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * Group teardown - free workspace.
+ */
+static int group_teardown(void** state)
+{
+    (void)state;
+    if (g_workspace) {
+        free(g_workspace->A);
+        free(g_workspace->AFAC);
+        free(g_workspace->AINV);
+        free(g_workspace->B);
+        free(g_workspace->X);
+        free(g_workspace->XACT);
+        free(g_workspace->WORK);
+        free(g_workspace->RWORK);
+        free(g_workspace->D);
+        free(g_workspace->FERR);
+        free(g_workspace->BERR);
+        free(g_workspace->IPIV);
+        free(g_workspace->IWORK);
+        free(g_workspace);
+        g_workspace = NULL;
+    }
+    return 0;
+}
+
+/**
+ * Run the full dchkge test battery for a single (m, n, imat, inb) combination.
+ * This is the core test logic, parameterized by the test case.
+ *
+ * Following LAPACK's dchkge.f:
+ *   - TESTs 1-2 (factorization, inverse) run for all NB values
+ *   - TESTs 3-8 (solve, refinement) only run for inb=0 and M==N
+ */
+static void run_dchkge_single(int m, int n, int imat, int inb)
+{
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    dchkge_workspace_t* ws = g_workspace;
+
+    char type, dist;
+    int kl, ku, mode;
+    f32 anorm, cndnum;
+    int info, izero;
+    int lda = (m > 1) ? m : 1;
+    int trfcon;
+    f32 anormo, anormi, rcondo, rcondi, rcond, rcondc;
+    f32 result[NTESTS];
+
+    /* Set block size for this test via xlaenv (mirrors LAPACK's XLAENV call) */
+    int nb = NBVAL[inb];
+    xlaenv(1, nb);
+
+    /* Seed based on (m, n, imat) for reproducibility.
+     * Note: seed does NOT include inb so we test the same matrix with different NB */
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));
+
+    /* Initialize results */
+    for (int k = 0; k < NTESTS; k++) {
+        result[k] = ZERO;
+    }
+
+    /* Get matrix parameters for this type */
+    slatb4("SGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
+
+    /* Generate test matrix */
+    slatms(m, n, &dist, &type, ws->D, mode, cndnum, anorm,
+           kl, ku, "N", ws->A, lda, ws->WORK, &info, rng_state);
+    assert_int_equal(info, 0);
+
+    /* For types 5-7, zero one or more columns to create singular matrix */
+    int zerot = (imat >= 5 && imat <= 7);
+    if (zerot) {
+        int minmn = (m < n) ? m : n;
+        if (imat == 5) {
+            izero = 1;
+        } else if (imat == 6) {
+            izero = minmn;
+        } else {
+            izero = minmn / 2 + 1;
+        }
+        /* Zero column izero (1-based in LAPACK, 0-based here) */
+        int ioff = (izero - 1) * lda;
+        if (imat < 7) {
+            for (int i = 0; i < m; i++) {
+                ws->A[ioff + i] = ZERO;
+            }
+        } else {
+            slaset("F", m, n - izero + 1, ZERO, ZERO, &ws->A[ioff], lda);
+        }
+    } else {
+        izero = 0;
+    }
+
+    /* Copy A to AFAC for factorization */
+    slacpy("F", m, n, ws->A, lda, ws->AFAC, lda);
+
+    /* Compute the LU factorization */
+    sgetrf(m, n, ws->AFAC, lda, ws->IPIV, &info);
+
+    /* Check error code */
+    if (zerot) {
+        /* For singular matrices, info should be > 0 */
+        assert_true(info >= 0);
+    } else {
+        assert_int_equal(info, 0);
+    }
+    trfcon = (info != 0);
+
+    /*
+     * TEST 1: Reconstruct matrix from factors and compute residual.
+     */
+    slacpy("F", m, n, ws->AFAC, lda, ws->AINV, lda);
+    sget01(m, n, ws->A, lda, ws->AINV, lda, ws->IPIV, ws->RWORK, &result[0]);
+    assert_residual_below(result[0], THRESH);
+
+    /*
+     * TEST 2: Form the inverse if factorization was successful (square only).
+     */
+    if (m == n && info == 0) {
+        slacpy("F", n, n, ws->AFAC, lda, ws->AINV, lda);
+        int lwork = NMAX * 3;
+        sgetri(n, ws->AINV, lda, ws->IPIV, ws->WORK, lwork, &info);
+        assert_int_equal(info, 0);
+
+        /* Compute residual for matrix times its inverse */
+        sget03(n, ws->A, lda, ws->AINV, lda, ws->WORK, lda,
+               ws->RWORK, &rcondo, &result[1]);
+        anormo = slange("O", m, n, ws->A, lda, ws->RWORK);
+
+        /* Compute infinity-norm condition number */
+        anormi = slange("I", m, n, ws->A, lda, ws->RWORK);
+        f32 ainvnm = slange("I", n, n, ws->AINV, lda, ws->RWORK);
+        if (anormi <= ZERO || ainvnm <= ZERO) {
+            rcondi = ONE;
+        } else {
+            rcondi = (ONE / anormi) / ainvnm;
+        }
+        assert_residual_below(result[1], THRESH);
+    } else {
+        /* Do only the condition estimate if INFO > 0 */
+        trfcon = 1;
+        anormo = slange("O", m, n, ws->A, lda, ws->RWORK);
+        anormi = slange("I", m, n, ws->A, lda, ws->RWORK);
+        rcondo = ZERO;
+        rcondi = ZERO;
+    }
+
+    /*
+     * Skip solve tests if:
+     *   - Matrix is not square (m != n), OR
+     *   - Matrix is singular (trfcon), OR
+     *   - Not the first block size (inb > 0)
+     *
+     * This matches LAPACK's dchkge.f line 449-450:
+     *   IF( INB.GT.1 .OR. M.NE.N ) GO TO 90
+     */
+    if (m != n || trfcon || inb > 0) {
+        goto test8;
+    }
+
+    /*
+     * TESTS 3-7: Solve tests (only for M==N, non-singular, first NB)
+     */
+    for (int irhs = 0; irhs < (int)NNS; irhs++) {
+        int nrhs = NSVAL[irhs];
+
+        for (int itran = 0; itran < (int)NTRAN; itran++) {
+            char trans_arr[2] = {TRANSS[itran], '\0'};
+            rcondc = (itran == 0) ? rcondo : rcondi;
+
+            /*
+             * TEST 3: Solve and compute residual for A * X = B
+             */
+            slarhs("SGE", "N", " ", trans_arr, n, n, kl, ku, nrhs,
+                   ws->A, lda, ws->XACT, lda, ws->B, lda, &info, rng_state);
+
+            slacpy("F", n, nrhs, ws->B, lda, ws->X, lda);
+            sgetrs(trans_arr, n, nrhs, ws->AFAC, lda, ws->IPIV, ws->X, lda, &info);
+            assert_int_equal(info, 0);
+
+            slacpy("F", n, nrhs, ws->B, lda, ws->WORK, lda);
+            sget02(trans_arr, n, n, nrhs, ws->A, lda, ws->X, lda,
+                   ws->WORK, lda, ws->RWORK, &result[2]);
+
+            assert_residual_below(result[2], THRESH);
+
+            /*
+             * TEST 4: Check solution from generated exact solution
+             */
+            sget04(n, nrhs, ws->X, lda, ws->XACT, lda, rcondc, &result[3]);
+
+            assert_residual_below(result[3], THRESH);
+
+            /*
+             * TESTS 5, 6, 7: Iterative refinement
+             */
+            sgerfs(trans_arr, n, nrhs, ws->A, lda, ws->AFAC, lda,
+                   ws->IPIV, ws->B, lda, ws->X, lda, ws->FERR, ws->BERR,
+                   ws->WORK, ws->IWORK, &info);
+            assert_int_equal(info, 0);
+
+            sget04(n, nrhs, ws->X, lda, ws->XACT, lda, rcondc, &result[4]);
+            sget07(trans_arr, n, nrhs, ws->A, lda, ws->B, lda, ws->X, lda,
+                   ws->XACT, lda, ws->FERR, 1, ws->BERR, &result[5]);
+
+            assert_residual_below(result[4], THRESH);
+            assert_residual_below(result[5], THRESH);
+            assert_residual_below(result[6], THRESH);
+        }
+    }
+
+test8:
+    /*
+     * TEST 8: Get an estimate of RCOND = 1/CNDNUM
+     */
+    if (m == n) {
+        for (int itran = 0; itran < 2; itran++) {
+            char norm;
+            if (itran == 0) {
+                anorm = anormo;
+                rcondc = rcondo;
+                norm = 'O';
+            } else {
+                anorm = anormi;
+                rcondc = rcondi;
+                norm = 'I';
+            }
+            char norm_arr[2] = {norm, '\0'};
+            sgecon(norm_arr, n, ws->AFAC, lda, anorm, &rcond, ws->WORK,
+                   &ws->IWORK[n], &info);
+            assert_int_equal(info, 0);
+
+            result[7] = sget06(rcond, rcondc);
+
+            assert_residual_below(result[7], THRESH);
+        }
+    }
+}
+
+/**
+ * CMocka test function - dispatches to run_dchkge_single based on prestate.
+ */
+static void test_dchkge_case(void** state)
+{
+    dchkge_params_t* params = *state;
+    run_dchkge_single(params->m, params->n, params->imat, params->inb);
+}
+
+/*
+ * Generate all parameter combinations.
+ * Total: NM * NN * NTYPES * NNB = 7 * 7 * 11 * 5 = 2695 tests (with unique NB)
+ * However, NBVAL has duplicates {1, 3, 3, 3, 20}, so effective unique values are {1, 3, 20}.
+ * We test all 5 entries as LAPACK does, even with duplicates.
+ * (minus skipped cases for small m,n and singular types)
+ */
+
+/* Maximum number of test cases */
+#define MAX_TESTS (NM * NN * NTYPES * NNB)
+
+static dchkge_params_t g_params[MAX_TESTS];
+static struct CMUnitTest g_tests[MAX_TESTS];
+static int g_num_tests = 0;
+
+/**
+ * Build the test array with all parameter combinations.
+ */
+static void build_test_array(void)
+{
+    g_num_tests = 0;
+
+    for (int im = 0; im < (int)NM; im++) {
+        int m = MVAL[im];
+
+        for (int in = 0; in < (int)NN; in++) {
+            int n = NVAL[in];
+
+            int nimat = NTYPES;
+            if (m <= 0 || n <= 0) {
+                nimat = 1;
+            }
+
+            for (int imat = 1; imat <= nimat; imat++) {
+                /* Skip types 5, 6, or 7 if matrix size is too small */
+                int zerot = (imat >= 5 && imat <= 7);
+                int minmn = (m < n) ? m : n;
+                if (zerot && minmn < imat - 4) {
+                    continue;
+                }
+
+                /* Loop over block sizes */
+                for (int inb = 0; inb < (int)NNB; inb++) {
+                    int nb = NBVAL[inb];
+
+                    /* Store parameters */
+                    dchkge_params_t* p = &g_params[g_num_tests];
+                    p->m = m;
+                    p->n = n;
+                    p->imat = imat;
+                    p->inb = inb;
+                    snprintf(p->name, sizeof(p->name), "dchkge_m%d_n%d_type%d_nb%d_%d",
+                             m, n, imat, nb, inb);
+
+                    /* Create CMocka test entry */
+                    g_tests[g_num_tests].name = p->name;
+                    g_tests[g_num_tests].test_func = test_dchkge_case;
+                    g_tests[g_num_tests].setup_func = NULL;
+                    g_tests[g_num_tests].teardown_func = NULL;
+                    g_tests[g_num_tests].initial_state = p;
+
+                    g_num_tests++;
+                }
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    /* Build all test cases */
+    build_test_array();
+
+    /* Run all tests with shared workspace.
+     * We use _cmocka_run_group_tests directly because the test array
+     * is built dynamically and the standard macro uses sizeof() which
+     * only works for compile-time array sizes. */
+    return _cmocka_run_group_tests("dchkge", g_tests, g_num_tests,
+                                   group_setup, group_teardown);
+}

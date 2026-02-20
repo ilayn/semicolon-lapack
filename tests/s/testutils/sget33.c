@@ -1,0 +1,142 @@
+/**
+ * @file sget33.c
+ * @brief SGET33 tests SLANV2, a routine for putting 2 by 2 blocks into
+ *        standard form.
+ */
+
+#include "verify.h"
+#include <math.h>
+
+extern f32 slamch(const char* cmach);
+extern void slanv2(f32* a, f32* b, f32* c, f32* d,
+                   f32* rt1r, f32* rt1i, f32* rt2r, f32* rt2i,
+                   f32* cs, f32* sn);
+
+/**
+ * SGET33 tests SLANV2, a routine for putting 2 by 2 blocks into
+ * standard form.  In other words, it computes a two by two rotation
+ * [[C,S];[-S,C]] where in
+ *
+ *    [ C S ][T(1,1) T(1,2)][ C -S ] = [ T11 T12 ]
+ *    [-S C ][T(2,1) T(2,2)][ S  C ]   [ T21 T22 ]
+ *
+ * either
+ *    1) T21=0 (real eigenvalues), or
+ *    2) T11=T22 and T21*T12<0 (complex conjugate eigenvalues).
+ * We also verify that the residual is small.
+ *
+ * @param[out]    rmax    Value of the largest test ratio.
+ * @param[out]    lmax    Example number where largest test ratio achieved.
+ * @param[out]    ninfo   Number of examples returned with INFO != 0.
+ * @param[out]    knt     Total number of examples tested.
+ */
+void sget33(f32* rmax, int* lmax, int* ninfo, int* knt)
+{
+    const f32 ZERO = 0.0f;
+    const f32 ONE  = 1.0f;
+    const f32 TWO  = 2.0f;
+    const f32 FOUR = 4.0f;
+
+    f32 eps = slamch("P");
+    f32 smlnum = slamch("S") / eps;
+    f32 bignum = ONE / smlnum;
+
+    f32 val[4], vm[3];
+    val[0] = ONE;
+    val[1] = ONE + TWO * eps;
+    val[2] = TWO;
+    val[3] = TWO - FOUR * eps;
+    vm[0] = smlnum;
+    vm[1] = ONE;
+    vm[2] = bignum;
+
+    *knt = 0;
+    *ninfo = 0;
+    *lmax = 0;
+    *rmax = ZERO;
+
+    f32 t[2][2], t1[2][2], t2[2][2], q[2][2];
+    f32 cs, sn, wr1, wi1, wr2, wi2, res, sum, tnrm;
+
+    for (int i1 = 0; i1 < 4; i1++) {
+        for (int i2 = 0; i2 < 4; i2++) {
+            for (int i3 = 0; i3 < 4; i3++) {
+                for (int i4 = 0; i4 < 4; i4++) {
+                    for (int im1 = 0; im1 < 3; im1++) {
+                        for (int im2 = 0; im2 < 3; im2++) {
+                            for (int im3 = 0; im3 < 3; im3++) {
+                                for (int im4 = 0; im4 < 3; im4++) {
+                                    t[0][0] = val[i1] * vm[im1];
+                                    t[0][1] = val[i2] * vm[im2];
+                                    t[1][0] = -val[i3] * vm[im3];
+                                    t[1][1] = val[i4] * vm[im4];
+                                    tnrm = fabsf(t[0][0]);
+                                    if (fabsf(t[0][1]) > tnrm) tnrm = fabsf(t[0][1]);
+                                    if (fabsf(t[1][0]) > tnrm) tnrm = fabsf(t[1][0]);
+                                    if (fabsf(t[1][1]) > tnrm) tnrm = fabsf(t[1][1]);
+                                    t1[0][0] = t[0][0];
+                                    t1[0][1] = t[0][1];
+                                    t1[1][0] = t[1][0];
+                                    t1[1][1] = t[1][1];
+                                    q[0][0] = ONE;
+                                    q[0][1] = ZERO;
+                                    q[1][0] = ZERO;
+                                    q[1][1] = ONE;
+
+                                    slanv2(&t[0][0], &t[0][1],
+                                           &t[1][0], &t[1][1],
+                                           &wr1, &wi1, &wr2, &wi2,
+                                           &cs, &sn);
+                                    for (int j1 = 0; j1 < 2; j1++) {
+                                        res = q[j1][0] * cs + q[j1][1] * sn;
+                                        q[j1][1] = -q[j1][0] * sn +
+                                                    q[j1][1] * cs;
+                                        q[j1][0] = res;
+                                    }
+
+                                    res = ZERO;
+                                    res = res + fabsf(q[0][0] * q[0][0] +
+                                                q[0][1] * q[0][1] - ONE) / eps;
+                                    res = res + fabsf(q[1][1] * q[1][1] +
+                                                q[1][0] * q[1][0] - ONE) / eps;
+                                    res = res + fabsf(q[0][0] * q[1][0] +
+                                                q[0][1] * q[1][1]) / eps;
+                                    for (int j1 = 0; j1 < 2; j1++) {
+                                        for (int j2 = 0; j2 < 2; j2++) {
+                                            t2[j1][j2] = ZERO;
+                                            for (int j3 = 0; j3 < 2; j3++) {
+                                                t2[j1][j2] = t2[j1][j2] +
+                                                              t1[j1][j3] *
+                                                              q[j3][j2];
+                                            }
+                                        }
+                                    }
+                                    for (int j1 = 0; j1 < 2; j1++) {
+                                        for (int j2 = 0; j2 < 2; j2++) {
+                                            sum = t[j1][j2];
+                                            for (int j3 = 0; j3 < 2; j3++) {
+                                                sum = sum - q[j3][j1] *
+                                                            t2[j3][j2];
+                                            }
+                                            res = res + fabsf(sum) / eps / tnrm;
+                                        }
+                                    }
+                                    if (t[1][0] != ZERO &&
+                                        (t[0][0] != t[1][1] ||
+                                         copysignf(ONE, t[0][1]) *
+                                         copysignf(ONE, t[1][0]) > ZERO))
+                                        res = res + ONE / eps;
+                                    (*knt)++;
+                                    if (res > *rmax) {
+                                        *lmax = *knt;
+                                        *rmax = res;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

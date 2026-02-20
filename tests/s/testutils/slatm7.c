@@ -1,0 +1,201 @@
+/**
+ * @file slatm7.c
+ * @brief SLATM7 computes the entries of D as specified by MODE, COND, IRSIGN.
+ *
+ * SLATM7 is called by SLATMT to generate random test matrices.
+ */
+
+#include <math.h>
+#include "verify.h"
+#include "test_rng.h"
+
+/* Forward declaration */
+extern void xerbla(const char* srname, const int info);
+
+/**
+ * SLATM7 computes the entries of D as specified by MODE
+ * COND and IRSIGN. IDIST and ISEED determine the generation
+ * of random numbers. SLATM7 is called by SLATMT to generate
+ * random test matrices.
+ *
+ * @param[in] mode
+ *     On entry describes how D is to be computed:
+ *     MODE = 0 means do not change D.
+ *     MODE = 1 sets D(0)=1 and D(1:rank-1)=1.0/COND
+ *     MODE = 2 sets D(0:rank-2)=1 and D(rank-1)=1.0/COND
+ *     MODE = 3 sets D(i)=COND**(-(i)/(rank-1)) i=0:rank-1
+ *     MODE = 4 sets D(i)=1 - (i)/(N-1)*(1 - 1/COND)
+ *     MODE = 5 sets D to random numbers in the range
+ *              ( 1/COND , 1 ) such that their logarithms
+ *              are uniformly distributed.
+ *     MODE = 6 set D to random numbers from same distribution
+ *              as the rest of the matrix.
+ *     MODE < 0 has the same meaning as ABS(MODE), except that
+ *        the order of the elements of D is reversed.
+ *     Thus if MODE is positive, D has entries ranging from
+ *        1 to 1/COND, if negative, from 1/COND to 1.
+ *
+ * @param[in] cond
+ *     On entry, used as described under MODE above.
+ *     If used, it must be >= 1.
+ *
+ * @param[in] irsign
+ *     On entry, if MODE neither -6, 0 nor 6, determines sign of
+ *     entries of D:
+ *     0 => leave entries of D unchanged
+ *     1 => multiply each entry of D by 1 or -1 with probability .5
+ *
+ * @param[in] idist
+ *     On entry, IDIST specifies the type of distribution to be
+ *     used to generate a random matrix.
+ *     1 => UNIFORM( 0, 1 )
+ *     2 => UNIFORM( -1, 1 )
+ *     3 => NORMAL( 0, 1 )
+ *
+ * @param[out] d
+ *     Array to be computed according to MODE, COND and IRSIGN.
+ *     Dimension (n). 0-based indexing.
+ *     May be changed on exit if MODE is nonzero.
+ *
+ * @param[in] n
+ *     Number of entries of D.
+ *
+ * @param[in] rank
+ *     The rank of matrix to be generated for modes 1,2,3 only.
+ *     D(rank:n-1) = 0.
+ *
+ * @param[out] info
+ *     0  => normal termination
+ *    -1  => if MODE not in range -6 to 6
+ *    -2  => if MODE neither -6, 0 nor 6, and IRSIGN neither 0 nor 1
+ *    -3  => if MODE neither -6, 0 nor 6 and COND less than 1
+ *    -4  => if MODE equals 6 or -6 and IDIST not in range 1 to 3
+ *    -7  => if N negative
+ */
+void slatm7(const int mode, const f32 cond, const int irsign,
+            const int idist, f32* d, const int n, const int rank,
+            int* info, uint64_t state[static 4])
+{
+    const f32 ONE = 1.0f;
+    const f32 ZERO = 0.0f;
+    const f32 HALF = 0.5f;
+
+    f32 alpha, temp;
+    int i;
+    int absmode;
+
+    *info = 0;
+
+    /* Quick return if possible */
+    if (n == 0) {
+        return;
+    }
+
+    /* Set INFO if an error */
+    if (mode < -6 || mode > 6) {
+        *info = -1;
+    } else if ((mode != -6 && mode != 0 && mode != 6) &&
+               (irsign != 0 && irsign != 1)) {
+        *info = -2;
+    } else if ((mode != -6 && mode != 0 && mode != 6) && cond < ONE) {
+        *info = -3;
+    } else if ((mode == 6 || mode == -6) && (idist < 1 || idist > 3)) {
+        *info = -4;
+    } else if (n < 0) {
+        *info = -7;
+    }
+
+    if (*info != 0) {
+        xerbla("SLATM7", -(*info));
+        return;
+    }
+
+    /* Compute D according to COND and MODE */
+    if (mode != 0) {
+        absmode = (mode < 0) ? -mode : mode;
+
+        switch (absmode) {
+            case 1:
+                /* One large D value: D[0]=1, D[1:rank-1]=1/cond */
+                for (i = 1; i < rank; i++) {
+                    d[i] = ONE / cond;
+                }
+                for (i = rank; i < n; i++) {
+                    d[i] = ZERO;
+                }
+                d[0] = ONE;
+                break;
+
+            case 2:
+                /* One small D value: D[0:rank-2]=1, D[rank-1]=1/cond */
+                for (i = 0; i < rank - 1; i++) {
+                    d[i] = ONE;
+                }
+                for (i = rank; i < n; i++) {
+                    d[i] = ZERO;
+                }
+                d[rank - 1] = ONE / cond;
+                break;
+
+            case 3:
+                /* Exponentially distributed D values: D[i]=cond^(-i/(rank-1)) */
+                d[0] = ONE;
+                if (n > 1 && rank > 1) {
+                    alpha = powf(cond, -ONE / (f32)(rank - 1));
+                    for (i = 1; i < rank; i++) {
+                        d[i] = powf(alpha, (f32)i);
+                    }
+                    for (i = rank; i < n; i++) {
+                        d[i] = ZERO;
+                    }
+                }
+                break;
+
+            case 4:
+                /* Arithmetically distributed D values:
+                 * D[i] = 1 - i/(n-1)*(1 - 1/cond) */
+                d[0] = ONE;
+                if (n > 1) {
+                    temp = ONE / cond;
+                    alpha = (ONE - temp) / (f32)(n - 1);
+                    for (i = 1; i < n; i++) {
+                        d[i] = (f32)(n - 1 - i) * alpha + temp;
+                    }
+                }
+                break;
+
+            case 5:
+                /* Randomly distributed D values on (1/cond, 1): */
+                alpha = logf(ONE / cond);
+                for (i = 0; i < n; i++) {
+                    d[i] = exp(alpha * rng_uniform_f32(state));
+                }
+                break;
+
+            case 6:
+                /* Randomly distributed D values from IDIST */
+                rng_fill_f32(state, idist, n, d);
+                break;
+        }
+
+        /* If MODE neither -6 nor 0 nor 6, and IRSIGN = 1, assign
+         * random signs to D */
+        if ((mode != -6 && mode != 0 && mode != 6) && irsign == 1) {
+            for (i = 0; i < n; i++) {
+                temp = rng_uniform_f32(state);
+                if (temp > HALF) {
+                    d[i] = -d[i];
+                }
+            }
+        }
+
+        /* Reverse if MODE < 0 */
+        if (mode < 0) {
+            for (i = 0; i < n / 2; i++) {
+                temp = d[i];
+                d[i] = d[n - 1 - i];
+                d[n - 1 - i] = temp;
+            }
+        }
+    }
+}
