@@ -140,11 +140,11 @@ void cgtrfs(
         /* Loop until stopping criterion is satisfied */
         for (;;) {
             /* Compute residual R = B - op(A) * X */
-            cblas_ccopy(n, B + j * ldb, 1, work, 1);
+            cblas_ccopy(n, &B[j * ldb], 1, work, 1);
             {
                 const f32 neg_one = -ONE;
                 const f32 one = ONE;
-                clagtm(trans, n, 1, neg_one, DL, D, DU, X + j * ldx, ldx,
+                clagtm(trans, n, 1, neg_one, DL, D, DU, &X[j * ldx], ldx,
                         one, work, n);
             }
 
@@ -206,7 +206,7 @@ void cgtrfs(
                 cgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, work, n, &gttrs_info);
                 {
                     const c64 zone = CMPLXF(ONE, 0.0f);
-                    cblas_caxpy(n, &zone, work, 1, X + j * ldx, 1);
+                    cblas_caxpy(n, &zone, work, 1, &X[j * ldx], 1);
                 }
                 lstres = berr[j];
                 count++;
@@ -226,7 +226,7 @@ void cgtrfs(
 
         kase = 0;
         for (;;) {
-            clacn2(n, work + n, work, &ferr[j], &kase, isave);
+            clacn2(n, &work[n], work, &ferr[j], &kase, isave);
 
             if (kase == 0) {
                 break;

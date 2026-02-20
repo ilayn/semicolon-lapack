@@ -93,21 +93,21 @@ void zpftri(
 
                 zlauum("L", n1, A, n, info);
                 cblas_zherk(CblasColMajor, CblasLower, CblasConjTrans,
-                            n1, n2, 1.0, A + n1, n, 1.0, A, n);
+                            n1, n2, 1.0, &A[n1], n, 1.0, A, n);
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            n2, n1, &CONE, A + n, n, A + n1, n);
-                zlauum("U", n2, A + n, n, info);
+                            n2, n1, &CONE, &A[n], n, &A[n1], n);
+                zlauum("U", n2, &A[n], n, info);
 
             } else {
 
-                zlauum("L", n1, A + n2, n, info);
+                zlauum("L", n1, &A[n2], n, info);
                 cblas_zherk(CblasColMajor, CblasLower, CblasNoTrans,
-                            n1, n2, 1.0, A, n, 1.0, A + n2, n);
+                            n1, n2, 1.0, A, n, 1.0, &A[n2], n);
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasConjTrans, CblasNonUnit,
-                            n1, n2, &CONE, A + n1, n, A, n);
-                zlauum("U", n2, A + n1, n, info);
+                            n1, n2, &CONE, &A[n1], n, A, n);
+                zlauum("U", n2, &A[n1], n, info);
 
             }
 
@@ -117,21 +117,21 @@ void zpftri(
 
                 zlauum("U", n1, A, n1, info);
                 cblas_zherk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            n1, n2, 1.0, A + n1 * n1, n1, 1.0, A, n1);
+                            n1, n2, 1.0, &A[n1 * n1], n1, 1.0, A, n1);
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            n1, n2, &CONE, A + 1, n1, A + n1 * n1, n1);
-                zlauum("L", n2, A + 1, n1, info);
+                            n1, n2, &CONE, &A[1], n1, &A[n1 * n1], n1);
+                zlauum("L", n2, &A[1], n1, info);
 
             } else {
 
-                zlauum("U", n1, A + n2 * n2, n2, info);
+                zlauum("U", n1, &A[n2 * n2], n2, info);
                 cblas_zherk(CblasColMajor, CblasUpper, CblasConjTrans,
-                            n1, n2, 1.0, A, n2, 1.0, A + n2 * n2, n2);
+                            n1, n2, 1.0, A, n2, 1.0, &A[n2 * n2], n2);
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasConjTrans, CblasNonUnit,
-                            n2, n1, &CONE, A + n1 * n2, n2, A, n2);
-                zlauum("L", n2, A + n1 * n2, n2, info);
+                            n2, n1, &CONE, &A[n1 * n2], n2, A, n2);
+                zlauum("L", n2, &A[n1 * n2], n2, info);
 
             }
 
@@ -143,23 +143,23 @@ void zpftri(
 
             if (lower) {
 
-                zlauum("L", k, A + 1, n + 1, info);
+                zlauum("L", k, &A[1], n + 1, info);
                 cblas_zherk(CblasColMajor, CblasLower, CblasConjTrans,
-                            k, k, 1.0, A + k + 1, n + 1, 1.0, A + 1, n + 1);
+                            k, k, 1.0, &A[k + 1], n + 1, 1.0, &A[1], n + 1);
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, &CONE, A, n + 1, A + k + 1, n + 1);
+                            k, k, &CONE, A, n + 1, &A[k + 1], n + 1);
                 zlauum("U", k, A, n + 1, info);
 
             } else {
 
-                zlauum("L", k, A + k + 1, n + 1, info);
+                zlauum("L", k, &A[k + 1], n + 1, info);
                 cblas_zherk(CblasColMajor, CblasLower, CblasNoTrans,
-                            k, k, 1.0, A, n + 1, 1.0, A + k + 1, n + 1);
+                            k, k, 1.0, A, n + 1, 1.0, &A[k + 1], n + 1);
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasConjTrans, CblasNonUnit,
-                            k, k, &CONE, A + k, n + 1, A, n + 1);
-                zlauum("U", k, A + k, n + 1, info);
+                            k, k, &CONE, &A[k], n + 1, A, n + 1);
+                zlauum("U", k, &A[k], n + 1, info);
 
             }
 
@@ -167,23 +167,23 @@ void zpftri(
 
             if (lower) {
 
-                zlauum("U", k, A + k, k, info);
+                zlauum("U", k, &A[k], k, info);
                 cblas_zherk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            k, k, 1.0, A + k * (k + 1), k, 1.0, A + k, k);
+                            k, k, 1.0, &A[k * (k + 1)], k, 1.0, &A[k], k);
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, &CONE, A, k, A + k * (k + 1), k);
+                            k, k, &CONE, A, k, &A[k * (k + 1)], k);
                 zlauum("L", k, A, k, info);
 
             } else {
 
-                zlauum("U", k, A + k * (k + 1), k, info);
+                zlauum("U", k, &A[k * (k + 1)], k, info);
                 cblas_zherk(CblasColMajor, CblasUpper, CblasConjTrans,
-                            k, k, 1.0, A, k, 1.0, A + k * (k + 1), k);
+                            k, k, 1.0, A, k, 1.0, &A[k * (k + 1)], k);
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasConjTrans, CblasNonUnit,
-                            k, k, &CONE, A + k * k, k, A, k);
-                zlauum("L", k, A + k * k, k, info);
+                            k, k, &CONE, &A[k * k], k, A, k);
+                zlauum("L", k, &A[k * k], k, info);
 
             }
 

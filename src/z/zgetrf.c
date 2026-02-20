@@ -77,7 +77,7 @@ void zgetrf(
         for (j = 0; j < minmn; j += nb) {
             jb = minmn - j < nb ? minmn - j : nb;
 
-            zgetrf2(m - j, jb, A + j + j * lda, lda, &ipiv[j], &iinfo);
+            zgetrf2(m - j, jb, &A[j + j * lda], lda, &ipiv[j], &iinfo);
 
             if (*info == 0 && iinfo > 0) {
                 *info = iinfo + j;
@@ -91,18 +91,18 @@ void zgetrf(
             }
 
             if (j + jb < n) {
-                zlaswp(n - j - jb, A + (j + jb) * lda, lda, j, j + jb - 1, ipiv, 1);
+                zlaswp(n - j - jb, &A[(j + jb) * lda], lda, j, j + jb - 1, ipiv, 1);
 
                 cblas_ztrsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, CblasUnit,
-                            jb, n - j - jb, &ONE, A + j + j * lda, lda,
-                            A + j + (j + jb) * lda, lda);
+                            jb, n - j - jb, &ONE, &A[j + j * lda], lda,
+                            &A[j + (j + jb) * lda], lda);
 
                 if (j + jb < m) {
                     cblas_zgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                                 m - j - jb, n - j - jb, jb,
-                                &NEG_ONE, A + (j + jb) + j * lda, lda,
-                                A + j + (j + jb) * lda, lda,
-                                &ONE, A + (j + jb) + (j + jb) * lda, lda);
+                                &NEG_ONE, &A[(j + jb) + j * lda], lda,
+                                &A[j + (j + jb) * lda], lda,
+                                &ONE, &A[(j + jb) + (j + jb) * lda], lda);
                 }
             }
         }

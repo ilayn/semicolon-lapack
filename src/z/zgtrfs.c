@@ -140,11 +140,11 @@ void zgtrfs(
         /* Loop until stopping criterion is satisfied */
         for (;;) {
             /* Compute residual R = B - op(A) * X */
-            cblas_zcopy(n, B + j * ldb, 1, work, 1);
+            cblas_zcopy(n, &B[j * ldb], 1, work, 1);
             {
                 const f64 neg_one = -ONE;
                 const f64 one = ONE;
-                zlagtm(trans, n, 1, neg_one, DL, D, DU, X + j * ldx, ldx,
+                zlagtm(trans, n, 1, neg_one, DL, D, DU, &X[j * ldx], ldx,
                         one, work, n);
             }
 
@@ -206,7 +206,7 @@ void zgtrfs(
                 zgttrs(trans, n, 1, DLF, DF, DUF, DU2, ipiv, work, n, &gttrs_info);
                 {
                     const c128 zone = CMPLX(ONE, 0.0);
-                    cblas_zaxpy(n, &zone, work, 1, X + j * ldx, 1);
+                    cblas_zaxpy(n, &zone, work, 1, &X[j * ldx], 1);
                 }
                 lstres = berr[j];
                 count++;
@@ -226,7 +226,7 @@ void zgtrfs(
 
         kase = 0;
         for (;;) {
-            zlacn2(n, work + n, work, &ferr[j], &kase, isave);
+            zlacn2(n, &work[n], work, &ferr[j], &kase, isave);
 
             if (kase == 0) {
                 break;

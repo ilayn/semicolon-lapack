@@ -151,7 +151,7 @@ void zcposv(
     cte = anrm * eps * sqrt((f64)n) * BWDMAX;
 
     SA = swork;
-    SX = swork + n * n;
+    SX = &swork[n * n];
 
     zlag2c(n, nrhs, B, ldb, SX, n, &iinfo);
     if (iinfo != 0) {

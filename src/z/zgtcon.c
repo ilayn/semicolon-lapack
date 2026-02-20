@@ -107,7 +107,7 @@ void zgtcon(
 
     /* Reverse communication loop for norm estimation */
     for (;;) {
-        zlacn2(n, work + n, work, &ainvnm, &kase, isave);
+        zlacn2(n, &work[n], work, &ainvnm, &kase, isave);
 
         if (kase == 0) {
             break;

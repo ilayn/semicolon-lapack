@@ -104,8 +104,8 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, &neg_cone, A, n, A + n1, n);
-                ztrtri("U", diag, n2, A + n, n, info);
+                            n2, n1, &neg_cone, A, n, &A[n1], n);
+                ztrtri("U", diag, n2, &A[n], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -115,19 +115,19 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, &cone, A + n, n, A + n1, n);
+                            n2, n1, &cone, &A[n], n, &A[n1], n);
 
             } else {
 
-                ztrtri("L", diag, n1, A + n2, n, info);
+                ztrtri("L", diag, n1, &A[n2], n, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, &neg_cone, A + n2, n, A, n);
-                ztrtri("U", diag, n2, A + n1, n, info);
+                            n1, n2, &neg_cone, &A[n2], n, A, n);
+                ztrtri("U", diag, n2, &A[n1], n, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -137,7 +137,7 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, &cone, A + n1, n, A, n);
+                            n1, n2, &cone, &A[n1], n, A, n);
 
             }
 
@@ -152,8 +152,8 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, &neg_cone, A, n1, A + n1 * n1, n1);
-                ztrtri("L", diag, n2, A + 1, n1, info);
+                            n1, n2, &neg_cone, A, n1, &A[n1 * n1], n1);
+                ztrtri("L", diag, n2, &A[1], n1, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -163,19 +163,19 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n1, n2, &cone, A + 1, n1, A + n1 * n1, n1);
+                            n1, n2, &cone, &A[1], n1, &A[n1 * n1], n1);
 
             } else {
 
-                ztrtri("U", diag, n1, A + n2 * n2, n2, info);
+                ztrtri("U", diag, n1, &A[n2 * n2], n2, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, &neg_cone, A + n2 * n2, n2, A, n2);
-                ztrtri("L", diag, n2, A + n1 * n2, n2, info);
+                            n2, n1, &neg_cone, &A[n2 * n2], n2, A, n2);
+                ztrtri("L", diag, n2, &A[n1 * n2], n2, info);
                 if (*info > 0) {
                     *info = *info + n1;
                 }
@@ -185,7 +185,7 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            n2, n1, &cone, A + n1 * n2, n2, A, n2);
+                            n2, n1, &cone, &A[n1 * n2], n2, A, n2);
 
             }
 
@@ -197,14 +197,14 @@ void ztftri(
 
             if (lower) {
 
-                ztrtri("L", diag, k, A + 1, n + 1, info);
+                ztrtri("L", diag, k, &A[1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &neg_cone, A + 1, n + 1, A + k + 1, n + 1);
+                            k, k, &neg_cone, &A[1], n + 1, &A[k + 1], n + 1);
                 ztrtri("U", diag, k, A, n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -215,19 +215,19 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &cone, A, n + 1, A + k + 1, n + 1);
+                            k, k, &cone, A, n + 1, &A[k + 1], n + 1);
 
             } else {
 
-                ztrtri("L", diag, k, A + k + 1, n + 1, info);
+                ztrtri("L", diag, k, &A[k + 1], n + 1, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &neg_cone, A + k + 1, n + 1, A, n + 1);
-                ztrtri("U", diag, k, A + k, n + 1, info);
+                            k, k, &neg_cone, &A[k + 1], n + 1, A, n + 1);
+                ztrtri("U", diag, k, &A[k], n + 1, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }
@@ -237,7 +237,7 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &cone, A + k, n + 1, A, n + 1);
+                            k, k, &cone, &A[k], n + 1, A, n + 1);
 
             }
 
@@ -245,14 +245,14 @@ void ztftri(
 
             if (lower) {
 
-                ztrtri("U", diag, k, A + k, k, info);
+                ztrtri("U", diag, k, &A[k], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &neg_cone, A + k, k, A + k * (k + 1), k);
+                            k, k, &neg_cone, &A[k], k, &A[k * (k + 1)], k);
                 ztrtri("L", diag, k, A, k, info);
                 if (*info > 0) {
                     *info = *info + k;
@@ -263,19 +263,19 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &cone, A, k, A + k * (k + 1), k);
+                            k, k, &cone, A, k, &A[k * (k + 1)], k);
 
             } else {
 
-                ztrtri("U", diag, k, A + k * (k + 1), k, info);
+                ztrtri("U", diag, k, &A[k * (k + 1)], k, info);
                 if (*info > 0) {
                     return;
                 }
                 cblas_ztrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasConjTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &neg_cone, A + k * (k + 1), k, A, k);
-                ztrtri("L", diag, k, A + k * k, k, info);
+                            k, k, &neg_cone, &A[k * (k + 1)], k, A, k);
+                ztrtri("L", diag, k, &A[k * k], k, info);
                 if (*info > 0) {
                     *info = *info + k;
                 }
@@ -285,7 +285,7 @@ void ztftri(
                 cblas_ztrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasNoTrans,
                             (diag[0] == 'U' || diag[0] == 'u') ? CblasUnit : CblasNonUnit,
-                            k, k, &cone, A + k * k, k, A, k);
+                            k, k, &cone, &A[k * k], k, A, k);
 
             }
 

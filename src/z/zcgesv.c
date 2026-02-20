@@ -123,7 +123,7 @@ void zcgesv(
     }
 
     SA = swork;
-    SX = swork + n * n;
+    SX = &swork[n * n];
 
     anrm = zlange("I", n, n, A, lda, rwork);
     eps = dlamch("E");

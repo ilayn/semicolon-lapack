@@ -93,21 +93,21 @@ void cpftri(
 
                 clauum("L", n1, A, n, info);
                 cblas_cherk(CblasColMajor, CblasLower, CblasConjTrans,
-                            n1, n2, 1.0f, A + n1, n, 1.0f, A, n);
+                            n1, n2, 1.0f, &A[n1], n, 1.0f, A, n);
                 cblas_ctrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            n2, n1, &CONE, A + n, n, A + n1, n);
-                clauum("U", n2, A + n, n, info);
+                            n2, n1, &CONE, &A[n], n, &A[n1], n);
+                clauum("U", n2, &A[n], n, info);
 
             } else {
 
-                clauum("L", n1, A + n2, n, info);
+                clauum("L", n1, &A[n2], n, info);
                 cblas_cherk(CblasColMajor, CblasLower, CblasNoTrans,
-                            n1, n2, 1.0f, A, n, 1.0f, A + n2, n);
+                            n1, n2, 1.0f, A, n, 1.0f, &A[n2], n);
                 cblas_ctrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasConjTrans, CblasNonUnit,
-                            n1, n2, &CONE, A + n1, n, A, n);
-                clauum("U", n2, A + n1, n, info);
+                            n1, n2, &CONE, &A[n1], n, A, n);
+                clauum("U", n2, &A[n1], n, info);
 
             }
 
@@ -117,21 +117,21 @@ void cpftri(
 
                 clauum("U", n1, A, n1, info);
                 cblas_cherk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            n1, n2, 1.0f, A + n1 * n1, n1, 1.0f, A, n1);
+                            n1, n2, 1.0f, &A[n1 * n1], n1, 1.0f, A, n1);
                 cblas_ctrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            n1, n2, &CONE, A + 1, n1, A + n1 * n1, n1);
-                clauum("L", n2, A + 1, n1, info);
+                            n1, n2, &CONE, &A[1], n1, &A[n1 * n1], n1);
+                clauum("L", n2, &A[1], n1, info);
 
             } else {
 
-                clauum("U", n1, A + n2 * n2, n2, info);
+                clauum("U", n1, &A[n2 * n2], n2, info);
                 cblas_cherk(CblasColMajor, CblasUpper, CblasConjTrans,
-                            n1, n2, 1.0f, A, n2, 1.0f, A + n2 * n2, n2);
+                            n1, n2, 1.0f, A, n2, 1.0f, &A[n2 * n2], n2);
                 cblas_ctrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasConjTrans, CblasNonUnit,
-                            n2, n1, &CONE, A + n1 * n2, n2, A, n2);
-                clauum("L", n2, A + n1 * n2, n2, info);
+                            n2, n1, &CONE, &A[n1 * n2], n2, A, n2);
+                clauum("L", n2, &A[n1 * n2], n2, info);
 
             }
 
@@ -143,23 +143,23 @@ void cpftri(
 
             if (lower) {
 
-                clauum("L", k, A + 1, n + 1, info);
+                clauum("L", k, &A[1], n + 1, info);
                 cblas_cherk(CblasColMajor, CblasLower, CblasConjTrans,
-                            k, k, 1.0f, A + k + 1, n + 1, 1.0f, A + 1, n + 1);
+                            k, k, 1.0f, &A[k + 1], n + 1, 1.0f, &A[1], n + 1);
                 cblas_ctrmm(CblasColMajor, CblasLeft, CblasUpper,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, &CONE, A, n + 1, A + k + 1, n + 1);
+                            k, k, &CONE, A, n + 1, &A[k + 1], n + 1);
                 clauum("U", k, A, n + 1, info);
 
             } else {
 
-                clauum("L", k, A + k + 1, n + 1, info);
+                clauum("L", k, &A[k + 1], n + 1, info);
                 cblas_cherk(CblasColMajor, CblasLower, CblasNoTrans,
-                            k, k, 1.0f, A, n + 1, 1.0f, A + k + 1, n + 1);
+                            k, k, 1.0f, A, n + 1, 1.0f, &A[k + 1], n + 1);
                 cblas_ctrmm(CblasColMajor, CblasRight, CblasUpper,
                             CblasConjTrans, CblasNonUnit,
-                            k, k, &CONE, A + k, n + 1, A, n + 1);
-                clauum("U", k, A + k, n + 1, info);
+                            k, k, &CONE, &A[k], n + 1, A, n + 1);
+                clauum("U", k, &A[k], n + 1, info);
 
             }
 
@@ -167,23 +167,23 @@ void cpftri(
 
             if (lower) {
 
-                clauum("U", k, A + k, k, info);
+                clauum("U", k, &A[k], k, info);
                 cblas_cherk(CblasColMajor, CblasUpper, CblasNoTrans,
-                            k, k, 1.0f, A + k * (k + 1), k, 1.0f, A + k, k);
+                            k, k, 1.0f, &A[k * (k + 1)], k, 1.0f, &A[k], k);
                 cblas_ctrmm(CblasColMajor, CblasRight, CblasLower,
                             CblasNoTrans, CblasNonUnit,
-                            k, k, &CONE, A, k, A + k * (k + 1), k);
+                            k, k, &CONE, A, k, &A[k * (k + 1)], k);
                 clauum("L", k, A, k, info);
 
             } else {
 
-                clauum("U", k, A + k * (k + 1), k, info);
+                clauum("U", k, &A[k * (k + 1)], k, info);
                 cblas_cherk(CblasColMajor, CblasUpper, CblasConjTrans,
-                            k, k, 1.0f, A, k, 1.0f, A + k * (k + 1), k);
+                            k, k, 1.0f, A, k, 1.0f, &A[k * (k + 1)], k);
                 cblas_ctrmm(CblasColMajor, CblasLeft, CblasLower,
                             CblasConjTrans, CblasNonUnit,
-                            k, k, &CONE, A + k * k, k, A, k);
-                clauum("L", k, A + k * k, k, info);
+                            k, k, &CONE, &A[k * k], k, A, k);
+                clauum("L", k, &A[k * k], k, info);
 
             }
 

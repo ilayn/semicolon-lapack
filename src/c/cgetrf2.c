@@ -104,19 +104,19 @@ void cgetrf2(
     //                       [ A12 ]
     // Apply interchanges to [ --- ]
     //                       [ A22 ]
-    claswp(n2, A + n1 * lda, lda, 0, n1 - 1, ipiv, 1);
+    claswp(n2, &A[n1 * lda], lda, 0, n1 - 1, ipiv, 1);
 
     // Solve A12
     cblas_ctrsm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans, CblasUnit,
-                n1, n2, &ONE, A, lda, A + n1 * lda, lda);
+                n1, n2, &ONE, A, lda, &A[n1 * lda], lda);
 
     // Update A22
     cblas_cgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
-                m - n1, n2, n1, &NEG_ONE, A + n1, lda,
-                A + n1 * lda, lda, &ONE, A + n1 * lda + n1, lda);
+                m - n1, n2, n1, &NEG_ONE, &A[n1], lda,
+                &A[n1 * lda], lda, &ONE, &A[n1 * lda + n1], lda);
 
     // Factor A22
-    cgetrf2(m - n1, n2, A + n1 * lda + n1, lda, &ipiv[n1], &iinfo);
+    cgetrf2(m - n1, n2, &A[n1 * lda + n1], lda, &ipiv[n1], &iinfo);
 
     // Adjust INFO and the pivot indices
     if (*info == 0 && iinfo > 0) {

@@ -107,7 +107,7 @@ void cgtcon(
 
     /* Reverse communication loop for norm estimation */
     for (;;) {
-        clacn2(n, work + n, work, &ainvnm, &kase, isave);
+        clacn2(n, &work[n], work, &ainvnm, &kase, isave);
 
         if (kase == 0) {
             break;
