@@ -250,7 +250,6 @@ void claqz0(
             goto label80;
         }
         if (istart + 1 >= istop) {
-            istop = istart;
             break;
         }
 

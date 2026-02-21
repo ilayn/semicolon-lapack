@@ -373,7 +373,6 @@ void slaein(
                     cblas_sscal(n, rec, vi, 1);
                     scale *= rec;
                     vmax = ONE;
-                    vcrit = bignum;
                 }
 
                 xr = vr[i];

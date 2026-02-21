@@ -106,7 +106,6 @@ void ssytrd(const char* uplo, const int n, f32* A, const int lda,
     }
 
     nx = n;
-    iws = 1;
     if (nb > 1 && nb < n) {
         /* Determine when to cross over from blocked to unblocked code
            (last block is always handled by unblocked code). */

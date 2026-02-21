@@ -89,7 +89,6 @@ void slarrf(const int n, const f32* restrict D,
 
     fact = (f32)(1 << KTRYMAX);  /* 2^KTRYMAX */
     eps = slamch("P");
-    shift = 0;
     forcer = 0;
 
     /* Note that we cannot guarantee that for any of the shifts tried,

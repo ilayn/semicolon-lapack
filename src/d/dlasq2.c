@@ -150,8 +150,6 @@ void dlasq2(const int n, f64* restrict Z, int* info)
         return;
     }
     d = d + Z[2 * n - 2];
-    qmax = fmax(qmax, Z[2 * n - 2]);
-    zmax = fmax(qmax, zmax);
 
     /* Check for diagonality. */
     if (e == ZERO) {
@@ -369,7 +367,7 @@ L100:
             }
 
             /* While submatrix unfinished take a good dqds step. */
-            dlasq3(i0, &n0, Z, &pp, &dmin, &sigma, &desig, qmax, &nfail,
+            dlasq3(i0, &n0, Z, &pp, &dmin, &sigma, &desig, &nfail,
                    &iter, &ndiv, ieee, &ttype, &dmin1, &dmin2, &dn, &dn1,
                    &dn2, &g, &tau);
 
@@ -413,7 +411,6 @@ L100:
          * This might need to be done for several blocks.
          */
         i1 = i0;
-        n1 = n0;
 L145:
         tempq = Z[4 * i0];
         Z[4 * i0] = Z[4 * i0] + sigma;

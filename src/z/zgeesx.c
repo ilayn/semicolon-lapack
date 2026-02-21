@@ -182,7 +182,6 @@ void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
     /* Get machine constants */
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrt(smlnum) / eps;
     bignum = ONE / smlnum;
 

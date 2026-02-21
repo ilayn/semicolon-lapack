@@ -516,8 +516,6 @@ L130:
                         if (work[j] > vcrit) {
                             rec = 1.0 / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + n], 1);
-                            vmax = 1.0;
-                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_ddot(j - ki - 1, &T[(ki + 1) + j * ldt], 1,
@@ -545,8 +543,6 @@ L130:
                         if (beta > vcrit) {
                             rec = 1.0 / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + n], 1);
-                            vmax = 1.0;
-                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_ddot(j - ki - 1, &T[(ki + 1) + j * ldt], 1,
@@ -648,8 +644,6 @@ L130:
                             rec = 1.0 / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + n], 1);
                             cblas_dscal(n - ki, rec, &work[ki + n2], 1);
-                            vmax = 1.0;
-                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
@@ -684,8 +678,6 @@ L130:
                             rec = 1.0 / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + n], 1);
                             cblas_dscal(n - ki, rec, &work[ki + n2], 1);
-                            vmax = 1.0;
-                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_ddot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,

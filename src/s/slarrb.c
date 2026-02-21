@@ -243,7 +243,6 @@ void slarrb(const int n, const f32* D, const f32* lld,
     }
 
     for (i = ifirst + 1; i <= ilast; i++) {
-        k = 2 * i;
         ii = i - offset;
         tmp = W[ii] - werr[ii] - W[ii - 1] - werr[ii - 1];
         wgap[ii - 1] = (ZERO > tmp) ? ZERO : tmp;

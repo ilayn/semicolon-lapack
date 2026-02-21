@@ -113,7 +113,6 @@ void dgsvj1(const char* jobv, const int m, const int n, const int n1,
     roottol = sqrt(tol);
 
     emptsw = n1 * (n - n1);
-    notrot = 0;
     fastr[0] = ZERO;
 
     /* Tuning parameters */
@@ -134,7 +133,6 @@ void dgsvj1(const char* jobv, const int m, const int n, const int n1,
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
-        pskipped = 0;
 
         /* Block loop over row blocks */
         for (ibr = 0; ibr < nblr; ibr++) {

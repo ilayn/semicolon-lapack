@@ -181,7 +181,6 @@ void dlasda(const int icompq, const int smlsiz, const int n, const int sqre,
             nl = IWORK[ndiml + im1];
             nr = IWORK[ndimr + im1];
             nlf = ic - nl;
-            nrf = ic + 1;
             if (i == ll) {
                 sqrei = sqre;
             } else {

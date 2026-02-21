@@ -125,7 +125,6 @@ void csytrf_rk(
             }
         }
     } else {
-        iws = 1;
     }
     if (nb < nbmin) {
         nb = n;

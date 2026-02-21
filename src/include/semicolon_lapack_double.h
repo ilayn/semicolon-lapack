@@ -254,7 +254,7 @@ SEMICOLON_API void dlasdt(const int n, int* lvl, int* nd, int* restrict inode, i
 SEMICOLON_API void dlaset(const char* uplo, const int m, const int n, const f64 alpha, const f64 beta, f64* restrict A, const int lda);
 SEMICOLON_API void dlasq1(const int n, f64* restrict D, f64* restrict E, f64* restrict work, int* info);
 SEMICOLON_API void dlasq2(const int n, f64* restrict Z, int* info);
-SEMICOLON_API void dlasq3(const int i0, int* n0, f64* restrict Z, int* pp, f64* dmin, f64* sigma, f64* desig, const f64 qmax, int* nfail, int* iter, int* ndiv, const int ieee, int* ttype, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau);
+SEMICOLON_API void dlasq3(const int i0, int* n0, f64* restrict Z, int* pp, f64* dmin, f64* sigma, f64* desig, int* nfail, int* iter, int* ndiv, const int ieee, int* ttype, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau);
 SEMICOLON_API void dlasq4(const int i0, const int n0, const f64* restrict Z, const int pp, const int n0in, const f64 dmin, const f64 dmin1, const f64 dmin2, const f64 dn, const f64 dn1, const f64 dn2, f64* tau, int* ttype, f64* g);
 SEMICOLON_API void dlasq5(const int i0, const int n0, f64* restrict Z, const int pp, f64 tau, f64 sigma, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dnm1, f64* dnm2, const int ieee, const f64 eps);
 SEMICOLON_API void dlasq6(const int i0, const int n0, f64* restrict Z, const int pp, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dnm1, f64* dnm2);

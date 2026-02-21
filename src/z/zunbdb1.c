@@ -134,8 +134,6 @@ void zunbdb1(const int m, const int p, const int q,
                          creal(X11[i + i * ldx11]));
         c = cos(theta[i]);
         s = sin(theta[i]);
-        c = cos(theta[i]);
-        s = sin(theta[i]);
         {
             c128 conjtaup1 = conj(taup1[i]);
             zlarf1f("L", p - i, q - i - 1, &X11[i + i * ldx11], 1,

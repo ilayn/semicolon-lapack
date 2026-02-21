@@ -674,10 +674,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
             /* Swap aapp/aatmax, aaqq/aatmin */
             temp1 = aapp;
             aapp = aatmax;
-            aatmax = temp1;
             temp1 = aaqq;
             aaqq = aatmin;
-            aatmin = temp1;
             /* Swap lsvec/rsvec */
             kill = lsvec;
             lsvec = rsvec;
@@ -858,7 +856,6 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Phase 4: SVD computation branches                                    */
     /* -------------------------------------------------------------------- */
 
-    cond_ok = sqrt((f64)nr);
 
     if (!rsvec && !lsvec) {
         /* ============================================================== */

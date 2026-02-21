@@ -135,7 +135,6 @@ void dtfttp(
                 }
                 js = 0;
                 for (j = n1; j <= n - 1; j++) {
-                    ij = js;
                     for (ij = js; ij <= js + j; ij++) {
                         AP[ijp] = ARF[ij];
                         ijp++;
@@ -224,7 +223,6 @@ void dtfttp(
                 }
                 js = 0;
                 for (j = k; j <= n - 1; j++) {
-                    ij = js;
                     for (ij = js; ij <= js + j; ij++) {
                         AP[ijp] = ARF[ij];
                         ijp++;

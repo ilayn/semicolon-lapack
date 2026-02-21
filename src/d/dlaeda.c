@@ -109,7 +109,6 @@ void dlaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
     for (k = 1; k <= curlvl - 1; k++) {
         curr = ptr + curpbm * (1 << (curlvl - k)) + (1 << (curlvl - k - 1)) - 1;
         psiz1 = prmptr[curr + 1] - prmptr[curr];
-        psiz2 = prmptr[curr + 2] - prmptr[curr + 1];
         zptr1 = mid - psiz1;
 
         /* Apply Givens at CURR and CURR+1 */

@@ -39,7 +39,7 @@
  */
 void dlasq3(const int i0, int* n0, f64* restrict Z,
             int* pp, f64* dmin, f64* sigma, f64* desig,
-            const f64 qmax, int* nfail, int* iter, int* ndiv,
+            int* nfail, int* iter, int* ndiv,
             const int ieee, int* ttype, f64* dmin1, f64* dmin2,
             f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau)
 {
@@ -53,13 +53,11 @@ void dlasq3(const int i0, int* n0, f64* restrict Z,
 
     int ipn4, j4, n0in, nn;
     f64 eps, s, t, temp, tol, tol2;
-    f64 qmax_local;
 
     n0in = *n0;
     eps = dlamch("P");
     tol = eps * HUNDRD;
     tol2 = tol * tol;
-    qmax_local = qmax;
 
     /* Main deflation loop (Fortran label 10). */
     for (;;) {
@@ -163,8 +161,6 @@ compute_shift:
                 Z[4 * (*n0) - *pp + 3] = fmin(fmin(Z[4 * (*n0) - *pp + 3],
                                                      Z[4 * i0 - *pp + 3]),
                                                 Z[4 * i0 - *pp + 7]);
-                qmax_local = fmax(fmax(qmax_local, Z[4 * i0 + *pp]),
-                                  Z[4 * i0 + *pp + 4]);
                 *dmin = -ZERO;
             }
         }

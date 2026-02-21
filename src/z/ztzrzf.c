@@ -106,7 +106,6 @@ void ztzrzf(const int m, const int n,
 
     nbmin = 2;
     nx = 1;
-    iws = m;
 
     if (nb > 1 && nb < m) {
 

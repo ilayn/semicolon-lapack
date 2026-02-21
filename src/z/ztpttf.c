@@ -139,7 +139,6 @@ void ztpttf(
                 }
                 js = 0;
                 for (j = n1; j <= n - 1; j++) {
-                    ij = js;
                     for (ij = js; ij <= js + j; ij++) {
                         ARF[ij] = AP[ijp];
                         ijp++;
@@ -228,7 +227,6 @@ void ztpttf(
                 }
                 js = 0;
                 for (j = k; j <= n - 1; j++) {
-                    ij = js;
                     for (ij = js; ij <= js + j; ij++) {
                         ARF[ij] = AP[ijp];
                         ijp++;

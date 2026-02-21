@@ -124,12 +124,10 @@ void zhptrf(
                      * element in row IMAX, and ROWMAX is its absolute value
                      */
                     rowmax = ZERO;
-                    jmax = imax;
                     kx = imax + (imax + 1) * (imax + 2) / 2;
                     for (j = imax + 1; j <= k; j++) {
                         if (cabs1(AP[kx]) > rowmax) {
                             rowmax = cabs1(AP[kx]);
-                            jmax = j;
                         }
                         kx = kx + j + 1;
                     }
@@ -313,7 +311,6 @@ void zhptrf(
                     for (j = k; j < imax; j++) {
                         if (cabs1(AP[kx]) > rowmax) {
                             rowmax = cabs1(AP[kx]);
-                            jmax = j;
                         }
                         kx = kx + n - j - 1;
                     }

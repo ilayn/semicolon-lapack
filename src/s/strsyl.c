@@ -110,7 +110,6 @@ void strsyl(const char* trana, const char* tranb, const int isgn,
     /* Set constants to control overflow */
     eps = slamch("P");
     smlnum = slamch("S");
-    bignum = ONE / smlnum;
     smlnum = smlnum * (f32)(m * n) / eps;
     bignum = ONE / smlnum;
 

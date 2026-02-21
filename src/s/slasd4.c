@@ -69,7 +69,6 @@ void slasd4(const int n, const int i, const f32* restrict D,
     /* Compute machine epsilon */
     eps = slamch("Epsilon");
     rhoinv = ONE / rho;
-    tau2 = ZERO;
 
     /* The case i == n-1 (last eigenvalue) */
     if (i == n - 1) {

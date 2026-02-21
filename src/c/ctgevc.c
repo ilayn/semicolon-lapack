@@ -192,7 +192,6 @@ void ctgevc(
 
     /* Machine Constants */
     safmin = slamch("Safe minimum");
-    big = ONE / safmin;
     ulp = slamch("Epsilon") * slamch("Base");
     small_ = safmin * n / ulp;
     big = ONE / small_;
@@ -433,7 +432,6 @@ void ctgevc(
 
                 acoefa = fabsf(acoeff);
                 bcoefa = cabs1f(bcoeff);
-                xmax = ONE;
                 for (jr = 0; jr < n; jr++)
                     work[jr] = CZERO;
                 work[je] = CONE;

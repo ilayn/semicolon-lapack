@@ -135,7 +135,6 @@ void cgesvdq(const char* joba, const char* jobp, const char* jobr,
                 lwrk_zunmqr = 0;
             }
         }
-        minwrk = 2;
         optwrk = 2;
         if (!lsvec && !rsvec) {
             if (conda) {
@@ -412,7 +411,6 @@ void cgesvdq(const char* joba, const char* jobp, const char* jobr,
 
     epsln = slamch("E");
     sfmin = slamch("S");
-    nr = n;
 
     if (accla) {
         nr = 1;

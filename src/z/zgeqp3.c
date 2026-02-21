@@ -155,7 +155,6 @@ void zgeqp3(const int m, const int n,
             /* Apply Q^H to remaining columns: A(:, na:n-1) */
             zunmqr("L", "C", m, n - na, na, A, lda, tau,
                    &A[na * lda], lda, work, lwork, &iinfo);
-            iws = iws > (int)creal(work[0]) ? iws : (int)creal(work[0]);
         }
     }
 
@@ -188,7 +187,6 @@ void zgeqp3(const int m, const int n,
 
                 /* Determine if workspace is large enough for blocked code. */
                 minws = (sn + 1) * nb;
-                iws = iws > minws ? iws : minws;
                 if (lwork < minws) {
 
                     /*

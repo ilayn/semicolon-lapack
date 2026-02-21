@@ -140,7 +140,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             lwrk_zgelqf = (int)crealf(cdummy[0]);
         }
 
-        minwrk  = 2;
         optwrk  = 2;
         miniwrk = n;
 
@@ -707,10 +706,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             }
             temp1  = aapp;
             aapp   = aatmax;
-            aatmax = temp1;
             temp1  = aaqq;
             aaqq   = aatmin;
-            aatmin = temp1;
             kill   = lsvec;
             lsvec  = rsvec;
             rsvec  = kill;
@@ -867,7 +864,6 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Phase 3:                                                             */
     /* -------------------------------------------------------------------- */
 
-    cond_ok = sqrtf((f32)nr);
 
     if (!rsvec && !lsvec) {
         /* ============================================================== */

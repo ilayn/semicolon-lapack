@@ -109,7 +109,6 @@ void clar1v(const int n, const int b1, const int bn, const f32 lambda,
      * Compute the stationary transform (using the differential form)
      * until the index r2.
      */
-    sawnan1 = 0;
     neg1 = 0;
     s = work[inds + b1] - lambda;
 
@@ -162,7 +161,6 @@ void clar1v(const int n, const int b1, const int bn, const f32 lambda,
      * Compute the progressive transform (using the differential form)
      * until the index r1.
      */
-    sawnan2 = 0;
     neg2 = 0;
     work[indp + bn] = D[bn] - lambda;
 

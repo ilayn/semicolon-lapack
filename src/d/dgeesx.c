@@ -184,7 +184,6 @@ void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
     /* Get machine constants */
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrt(smlnum) / eps;
     bignum = ONE / smlnum;
 

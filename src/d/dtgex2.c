@@ -100,8 +100,6 @@ void dtgex2(
         return;
     }
 
-    weak = 0;
-    strong = 0;
 
     /* Make a local copy of selected block */
     dlaset("Full", LDST, LDST, ZERO, ZERO, li, LDST);

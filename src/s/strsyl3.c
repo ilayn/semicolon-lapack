@@ -390,7 +390,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -451,7 +450,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -577,7 +575,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -638,7 +635,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -764,7 +760,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -825,7 +820,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -951,7 +945,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the
@@ -1012,7 +1005,6 @@ void strsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     /* Simultaneously apply the robust update factor and the

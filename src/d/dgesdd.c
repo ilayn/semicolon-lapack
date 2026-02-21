@@ -501,7 +501,6 @@ void dgesdd(const char* jobz, const int m, const int n,
                 iu = nwork;
                 if (lwork >= m * n + 3 * n + bdspac) {
                     ldwrku = m;
-                    nwork = iu + ldwrku * n;
                     dlaset("F", m, n, ZERO, ZERO, &work[iu], ldwrku);
                     ir = -1;
                 } else {

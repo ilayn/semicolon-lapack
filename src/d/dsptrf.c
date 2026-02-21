@@ -110,12 +110,10 @@ void dsptrf(
                     kp = k;
                 } else {
                     rowmax = ZERO;
-                    jmax = imax;
                     kx = imax + (imax + 1) * (imax + 2) / 2;
                     for (j = imax + 1; j <= k; j++) {
                         if (fabs(AP[kx]) > rowmax) {
                             rowmax = fabs(AP[kx]);
-                            jmax = j;
                         }
                         kx = kx + j + 1;
                     }
@@ -237,7 +235,6 @@ void dsptrf(
                     for (j = k; j < imax; j++) {
                         if (fabs(AP[kx]) > rowmax) {
                             rowmax = fabs(AP[kx]);
-                            jmax = j;
                         }
                         kx = kx + n - j - 1;
                     }

@@ -171,7 +171,6 @@ void slarrj(const int n, const f32* D, const f32* E2,
 
         for (p = 0; p < olnint; p++) {
             k = 2 * i;
-            ii = i - offset;
             next = iwork[k];
             left = work[k];
             right = work[k + 1];

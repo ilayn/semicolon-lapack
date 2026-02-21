@@ -78,7 +78,6 @@ void claqz2(const int ilschur, const int ilq, const int ilz,
     }
 
     /* Determine required workspace */
-    ifst = 0;
     ilst = jw - 1;
     claqz0("S", "V", "V", jw, 0, jw - 1, &A[kwtop + kwtop * lda], lda,
            &B[kwtop + kwtop * ldb], ldb, alpha, beta, QC, ldqc, ZC,
@@ -208,8 +207,6 @@ void claqz2(const int ilschur, const int ilq, const int ilz,
         }
 
         /* Chase bulges down */
-        istartm = kwtop;
-        istopm = ihi;
         k = kwbot - 1;
         while (k >= kwtop) {
 

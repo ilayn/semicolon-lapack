@@ -88,7 +88,7 @@ void zgelsy(const int m, const int n, const int nrhs,
     int iascl, ibscl, ismin, ismax, mn, nb;
     int lwkmin, lwkopt;
     int iinfo;
-    f64 anrm, bignum, bnrm, smlnum, wsize;
+    f64 anrm, bignum, bnrm, smlnum;
     f64 smax, smaxpr, smin, sminpr;
     c128 c1, c2, s1, s2;
 
@@ -203,7 +203,6 @@ void zgelsy(const int m, const int n, const int nrhs,
      *   A * P = Q * R
      * tau stored in work[0..mn-1], sub-workspace in work[mn..] */
     zgeqp3(m, n, A, lda, jpvt, work, &work[mn], lwork - mn, rwork, &iinfo);
-    wsize = (f64)(mn) + creal(work[mn]);
 
     /* Determine RANK using incremental condition estimation */
     work[ismin] = CONE;
@@ -264,10 +263,6 @@ void zgelsy(const int m, const int n, const int nrhs,
      * sub-workspace in work[2*mn..] */
     zunmqr("L", "C", m, nrhs, mn, A, lda,
            work, B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
-    {
-        f64 wq = 2.0 * mn + creal(work[2 * mn]);
-        if (wq > wsize) wsize = wq;
-    }
 
     /* B(0:rank-1, 0:nrhs-1) := inv(T11) * B(0:rank-1, 0:nrhs-1) */
     cblas_ztrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,

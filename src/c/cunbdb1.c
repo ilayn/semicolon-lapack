@@ -134,8 +134,6 @@ void cunbdb1(const int m, const int p, const int q,
                          crealf(X11[i + i * ldx11]));
         c = cosf(theta[i]);
         s = sinf(theta[i]);
-        c = cosf(theta[i]);
-        s = sinf(theta[i]);
         {
             c64 conjtaup1 = conjf(taup1[i]);
             clarf1f("L", p - i, q - i - 1, &X11[i + i * ldx11], 1,

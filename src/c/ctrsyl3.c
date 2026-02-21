@@ -286,7 +286,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -342,7 +341,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -446,7 +444,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -502,7 +499,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -606,7 +602,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -662,7 +657,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -766,7 +760,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;
@@ -822,7 +815,6 @@ void ctrsyl3(const char* trana, const char* tranb, const int isgn,
                         scamin = scamin / ldexpf(1.0f, ilogbf(scaloc));
                         scaloc = scaloc / ldexpf(1.0f, ilogbf(scaloc));
                     }
-                    cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
 
                     scal = (scamin / swork[k + l * ldswork]) * scaloc;

@@ -208,7 +208,6 @@ void stgevc(
 
     /* Machine constants */
     safmin = slamch("Safe minimum");
-    big = ONE / safmin;
     ulp = slamch("Epsilon") * slamch("Base");
     small = safmin * n / ulp;
     big = ONE / small;

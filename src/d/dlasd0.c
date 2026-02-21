@@ -89,7 +89,6 @@ void dlasd0(const int n, const int sqre, f64* restrict D,
         nl = IWORK[ndiml + i - 1];
         nlp1 = nl + 1;
         nr = IWORK[ndimr + i - 1];
-        nrp1 = nr + 1;
         nlf = ic - nl;
         nrf = ic + 1;
         sqrei = 1;

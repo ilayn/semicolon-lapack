@@ -167,7 +167,6 @@ void zgeev(const char* jobvl, const char* jobvr, const int n,
     /* Get machine constants */
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrt(smlnum) / eps;
     bignum = ONE / smlnum;
 

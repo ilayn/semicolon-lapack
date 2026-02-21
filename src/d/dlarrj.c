@@ -171,7 +171,6 @@ void dlarrj(const int n, const f64* D, const f64* E2,
 
         for (p = 0; p < olnint; p++) {
             k = 2 * i;
-            ii = i - offset;
             next = iwork[k];
             left = work[k];
             right = work[k + 1];

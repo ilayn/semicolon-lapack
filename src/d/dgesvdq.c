@@ -86,8 +86,6 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     lwcon = 3 * n;
     lwsvd = (5 * n > 1) ? 5 * n : 1;
 
-    minwrk = 2;
-    optwrk = 2;
     if (!lsvec && !rsvec) {
         if (conda) {
             minwrk = n + lwqp3;
@@ -266,10 +264,9 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     /*
      * Numerical rank determination
      */
-    nr = n;
+    nr = 1;
     if (accla) {
         /* Aggressive truncation: |R(i,i)| < sqrt(n)*eps*|R(1,1)| */
-        nr = 1;
         rtmp = sqrt((f64)n) * epsln;
         for (p = 1; p < n; p++) {
             if (fabs(A[p + p * lda]) < rtmp * fabs(A[0])) break;

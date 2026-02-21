@@ -69,7 +69,6 @@ void dlasd4(const int n, const int i, const f64* restrict D,
     /* Compute machine epsilon */
     eps = dlamch("Epsilon");
     rhoinv = ONE / rho;
-    tau2 = ZERO;
 
     /* The case i == n-1 (last eigenvalue) */
     if (i == n - 1) {

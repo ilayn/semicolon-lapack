@@ -243,7 +243,6 @@ void dlarrb(const int n, const f64* D, const f64* lld,
     }
 
     for (i = ifirst + 1; i <= ilast; i++) {
-        k = 2 * i;
         ii = i - offset;
         tmp = W[ii] - werr[ii] - W[ii - 1] - werr[ii - 1];
         wgap[ii - 1] = (ZERO > tmp) ? ZERO : tmp;

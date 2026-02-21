@@ -212,7 +212,6 @@ void dggevx(const char* balanc, const char* jobvl, const char* jobvr,
 
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrt(smlnum) / eps;
     bignum = ONE / smlnum;
 

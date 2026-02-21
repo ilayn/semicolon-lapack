@@ -604,7 +604,6 @@ void cgesdd(const char* jobz, const int m, const int n,
                 } else {
                     ldwrku = (lwork - 3 * n) / n;
                 }
-                nwork = iu + ldwrku * n;
 
                 sbdsdc("U", "I", n, S, &rwork[ie], &rwork[iru],
                        n, &rwork[irvt], n, NULL, NULL,
@@ -1007,11 +1006,9 @@ void cgesdd(const char* jobz, const int m, const int n,
 
                 ldwkvt = m;
                 if (lwork >= m * n + 3 * m) {
-                    nwork = ivt + ldwkvt * n;
                     chunk = n;
                 } else {
                     chunk = (lwork - 3 * m) / m;
-                    nwork = ivt + ldwkvt * chunk;
                 }
 
                 sbdsdc("L", "I", m, S, &rwork[ie], &rwork[iru],

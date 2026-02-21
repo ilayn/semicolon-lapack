@@ -254,7 +254,7 @@ SEMICOLON_API void slasdt(const int n, int* lvl, int* nd, int* restrict inode, i
 SEMICOLON_API void slaset(const char* uplo, const int m, const int n, const f32 alpha, const f32 beta, f32* restrict A, const int lda);
 SEMICOLON_API void slasq1(const int n, f32* restrict D, f32* restrict E, f32* restrict work, int* info);
 SEMICOLON_API void slasq2(const int n, f32* restrict Z, int* info);
-SEMICOLON_API void slasq3(const int i0, int* n0, f32* restrict Z, int* pp, f32* dmin, f32* sigma, f32* desig, const f32 qmax, int* nfail, int* iter, int* ndiv, const int ieee, int* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau);
+SEMICOLON_API void slasq3(const int i0, int* n0, f32* restrict Z, int* pp, f32* dmin, f32* sigma, f32* desig, int* nfail, int* iter, int* ndiv, const int ieee, int* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau);
 SEMICOLON_API void slasq4(const int i0, const int n0, const f32* restrict Z, const int pp, const int n0in, const f32 dmin, const f32 dmin1, const f32 dmin2, const f32 dn, const f32 dn1, const f32 dn2, f32* tau, int* ttype, f32* g);
 SEMICOLON_API void slasq5(const int i0, const int n0, f32* restrict Z, const int pp, f32 tau, f32 sigma, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2, const int ieee, const f32 eps);
 SEMICOLON_API void slasq6(const int i0, const int n0, f32* restrict Z, const int pp, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2);

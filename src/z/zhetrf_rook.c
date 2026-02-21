@@ -118,7 +118,6 @@ void zhetrf_rook(
             }
         }
     } else {
-        iws = 1;
     }
     if (nb < nbmin) {
         nb = n;

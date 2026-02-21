@@ -208,7 +208,6 @@ void dtgevc(
 
     /* Machine constants */
     safmin = dlamch("Safe minimum");
-    big = ONE / safmin;
     ulp = dlamch("Epsilon") * dlamch("Base");
     small = safmin * n / ulp;
     big = ONE / small;

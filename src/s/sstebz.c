@@ -348,9 +348,7 @@ void sstebz(const char* range, const char* order, const int n,
         }
 
         if (abstol <= 0.0f) {
-            atoli = ulp * tnorm;
         } else {
-            atoli = abstol;
         }
 
         if (irange == 2) {

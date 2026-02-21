@@ -100,8 +100,6 @@ void stgex2(
         return;
     }
 
-    weak = 0;
-    strong = 0;
 
     /* Make a local copy of selected block */
     slaset("Full", LDST, LDST, ZERO, ZERO, li, LDST);

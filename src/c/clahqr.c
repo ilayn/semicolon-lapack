@@ -215,7 +215,6 @@ void clahqr(const int wantt, const int wantz, const int n,
             }
             if (m == l) {
                 h11 = H[l + l * ldh];
-                h22 = H[(l + 1) + (l + 1) * ldh];
                 h11s = h11 - t;
                 h21 = crealf(H[(l + 1) + l * ldh]);
                 s = cabs1f(h11s) + fabsf(h21);

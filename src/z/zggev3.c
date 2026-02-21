@@ -185,7 +185,6 @@ void zggev3(const char* jobvl, const char* jobvr, const int n,
 
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrt(smlnum) / eps;
     bignum = ONE / smlnum;
 

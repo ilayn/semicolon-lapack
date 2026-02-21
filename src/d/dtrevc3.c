@@ -644,8 +644,6 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                         if (work[j] > vcrit) {
                             rec = one / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
-                            vmax = one;
-                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -675,7 +673,6 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                             rec = one / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
                             vmax = one;
-                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -795,8 +792,6 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                             rec = one / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
                             cblas_dscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
-                            vmax = one;
-                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -832,8 +827,6 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
                             rec = one / vmax;
                             cblas_dscal(n - ki, rec, &work[ki + iv * n], 1);
                             cblas_dscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
-                            vmax = one;
-                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -

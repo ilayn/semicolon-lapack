@@ -84,8 +84,6 @@ void ctgex2(
     }
 
     m = LDST;
-    weak = 0;
-    strong = 0;
 
     /* Make a local copy of selected block in (A, B) */
     clacpy("Full", m, m, &A[j1 + j1 * lda], lda, s, LDST);

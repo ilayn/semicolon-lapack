@@ -150,7 +150,6 @@ void cgees(const char* jobvs, const char* sort, cselect1_t select,
     /* Get machine constants */
     eps = slamch("P");
     smlnum = slamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrtf(smlnum) / eps;
     bignum = ONE / smlnum;
 

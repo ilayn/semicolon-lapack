@@ -211,7 +211,6 @@ void zggesx(const char* jobvsl, const char* jobvsr, const char* sort,
 
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrt(smlnum) / eps;
     bignum = ONE / smlnum;
 

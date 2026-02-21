@@ -137,7 +137,6 @@ void dlascl(const char* type, const int kl, const int ku,
                finite CTOC, or a NaN if CTOC is infinite. */
             mul = ctoc / cfromc;
             done = 1;
-            cto1 = ctoc;
         } else {
             cto1 = ctoc / bignum;
             if (cto1 == ctoc) {

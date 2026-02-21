@@ -172,7 +172,6 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
     /* Get machine constants */
     eps = slamch("P");
     smlnum = slamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrtf(smlnum) / eps;
     bignum = ONE / smlnum;
 

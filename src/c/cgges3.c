@@ -205,7 +205,6 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
 
     eps = slamch("P");
     smlnum = slamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrtf(smlnum) / eps;
     bignum = ONE / smlnum;
 

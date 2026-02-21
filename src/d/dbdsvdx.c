@@ -187,7 +187,6 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
 
     /* Set RNGVX, which corresponds to RANGE for DSTEVX in TGK mode */
     iltgk = 0;
-    iutgk = 0;
     vltgk = ZERO;
     vutgk = ZERO;
 

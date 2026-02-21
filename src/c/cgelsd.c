@@ -182,7 +182,6 @@ void cgelsd(const int m, const int n, const int nrhs,
             if (2 * m + m * nrhs > minwrk) minwrk = 2 * m + m * nrhs;
         }
     } else {
-        nlvl = 0;
     }
     if (minwrk > maxwrk) minwrk = maxwrk;
     work[0] = (c64)maxwrk;

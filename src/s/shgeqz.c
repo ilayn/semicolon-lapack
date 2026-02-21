@@ -952,7 +952,6 @@ label_200:
                     temp = w21 / w11;
                     u2 = u2 - temp * u1;
                     w22 = w22 - temp * w12;
-                    w21 = ZERO;
 
                     /* Compute SCALE */
 

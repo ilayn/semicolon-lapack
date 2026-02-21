@@ -106,11 +106,9 @@ void dgsvj0(const char* jobv, const int m, const int n,
 
     /* Row-cyclic Jacobi SVD algorithm with column pivoting */
     emptsw = (n * (n - 1)) / 2;
-    notrot = 0;
     fastr[0] = ZERO;
 
     /* Tuning parameters */
-    swband = 0;
     kbl = (8 < n) ? 8 : n;
     nbl = n / kbl;
     if (nbl * kbl != n) nbl = nbl + 1;
@@ -118,7 +116,6 @@ void dgsvj0(const char* jobv, const int m, const int n,
     rowskip = (5 < kbl) ? 5 : kbl;
     lkahead = 1;
     swband = 0;
-    pskipped = 0;
 
     /* Main sweep loop */
     for (i = 0; i < nsweep; i++) {
@@ -126,11 +123,9 @@ void dgsvj0(const char* jobv, const int m, const int n,
         mxsinj = ZERO;
         iswrot = 0;
         notrot = 0;
-        pskipped = 0;
 
         /* Block loop */
         for (ibr = 0; ibr < nbl; ibr++) {
-            igl = ibr * kbl;
 
             for (ir1 = 0; ir1 <= (lkahead < nbl - ibr - 1 ? lkahead : nbl - ibr - 1); ir1++) {
                 igl = ibr * kbl + ir1 * kbl;

@@ -432,7 +432,6 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
     }
 
     emptsw = (n * (n - 1)) / 2;
-    notrot = 0;
     fastr[0] = ZERO;
 
     for (q = 0; q < n; q++) {
@@ -519,10 +518,8 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
         iswrot = 0;
 
         notrot = 0;
-        pskipped = 0;
 
         for (ibr = 0; ibr < nbl; ibr++) {
-            igl = ibr * kbl;
 
             for (ir1 = 0; ir1 <= ((lkahead < nbl - ibr - 1) ? lkahead : nbl - ibr - 1); ir1++) {
 

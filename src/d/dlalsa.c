@@ -146,7 +146,6 @@ void dlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
             nl = iwork[ndiml + im1];
             nr = iwork[ndimr + im1];
             nlf = ic - nl;
-            nrf = ic + 1;
             j = j - 1;
             dlals0(icompq, nl, nr, sqre, nrhs,
                    &BX[nlf], ldbx, &B[nlf], ldb,
@@ -181,7 +180,6 @@ L50:
             nl = iwork[ndiml + im1];
             nr = iwork[ndimr + im1];
             nlf = ic - nl;
-            nrf = ic + 1;
             if (i == ll) {
                 sqre = 0;
             } else {

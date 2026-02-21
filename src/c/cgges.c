@@ -198,7 +198,6 @@ void cgges(const char* jobvsl, const char* jobvsr, const char* sort,
     /* Get machine constants */
     eps = slamch("P");
     smlnum = slamch("S");
-    bignum = ONE / smlnum;
     smlnum = sqrtf(smlnum) / eps;
     bignum = ONE / smlnum;
 

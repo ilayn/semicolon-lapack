@@ -100,7 +100,6 @@ void ztrsyl(const char* trana, const char* tranb, const int isgn,
     /* Set constants to control overflow */
     eps = dlamch("P");
     smlnum = dlamch("S");
-    bignum = ONE / smlnum;
     smlnum = smlnum * (f64)(m * n) / eps;
     bignum = ONE / smlnum;
 

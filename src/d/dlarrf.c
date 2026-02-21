@@ -90,7 +90,6 @@ void dlarrf(const int n, const f64* restrict D,
 
     fact = (f64)(1 << KTRYMAX);  /* 2^KTRYMAX */
     eps = dlamch("P");
-    shift = 0;
     forcer = 0;
 
     /* Note that we cannot guarantee that for any of the shifts tried,

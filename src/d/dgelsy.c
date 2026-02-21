@@ -78,7 +78,7 @@ void dgelsy(const int m, const int n, const int nrhs,
     int iascl, ibscl, ismin, ismax, mn, nb;
     int lwkmin, lwkopt;
     int iinfo;
-    f64 anrm, bignum, bnrm, smlnum, wsize;
+    f64 anrm, bignum, bnrm, smlnum;
     f64 c1, c2, s1, s2, smax, smaxpr, smin, sminpr;
 
     /* Initialization */
@@ -192,7 +192,6 @@ void dgelsy(const int m, const int n, const int nrhs,
      *   A * P = Q * R
      * tau stored in work[0..mn-1], sub-workspace in work[mn..] */
     dgeqp3(m, n, A, lda, jpvt, work, &work[mn], lwork - mn, &iinfo);
-    wsize = (f64)(mn) + work[mn];
 
     /* Determine RANK using incremental condition estimation */
     work[ismin] = 1.0;
@@ -253,10 +252,6 @@ void dgelsy(const int m, const int n, const int nrhs,
      * sub-workspace in work[2*mn..] */
     dormqr("L", "T", m, nrhs, mn, A, lda,
            work, B, ldb, &work[2 * mn], lwork - 2 * mn, &iinfo);
-    {
-        f64 wq = 2.0 * mn + work[2 * mn];
-        if (wq > wsize) wsize = wq;
-    }
 
     /* B(0:rank-1, 0:nrhs-1) := inv(T11) * B(0:rank-1, 0:nrhs-1) */
     cblas_dtrsm(CblasColMajor, CblasLeft, CblasUpper, CblasNoTrans,
