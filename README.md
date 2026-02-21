@@ -4,9 +4,9 @@ A C implementation of LAPACK linear algebra library, removing the Fortran depend
 
 
 ## Rationale
-BLAS and LAPACK have been the foundation of numerical linear algebra for decades. Vendors have rewritten BLAS in C/Assembly for performance, but LAPACK remains in Fortran 77, and embedding Fortran into C projects brings a cascade of integration concerns, from name mangling and calling conventions to 1-based indexing and a Fortran runtime dependency. On top of that, the BLAS ecosystem is fragmented across providers (OpenBLAS, MKL, BLIS, Accelerate) each with their own symbol and linking conventions. A native C implementation built on the standard CBLAS interface sidesteps both problems.
+[BLAS and LAPACK libraries](https://netlib.org/lapack) have been the foundation of numerical linear algebra for decades. Vendors have rewritten BLAS in C/Assembly for performance, but LAPACK remains in Fortran 77, and embedding Fortran into C projects brings a cascade of integration concerns, from name mangling and calling conventions to 1-based indexing and a Fortran runtime dependency. On top of that, the BLAS ecosystem is fragmented across providers (OpenBLAS, MKL, BLIS, Accelerate) each with their own symbol and linking conventions. A native C implementation built on the standard CBLAS interface sidesteps both problems.
 
-This project is a line-by-line C translation of the reference LAPACK. Because we control the LAPACK layer code, our only external dependency is the ~100 CBLAS functions interface. This drastically reduces the ABI surface compared to projects wrapping vendor Fortran LAPACK, and makes LP64/ILP64 support a clean dual build without symbol mangling. A compile-time probe auto-detects the linked BLAS integer width (via a clever trick we learned from [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline)).
+This project is a line-by-line C translation of the reference LAPACK. Because we control the LAPACK layer code, our only external dependency is the ~150 CBLAS functions interface. This drastically reduces the ABI surface compared to projects wrapping vendor Fortran LAPACK, and makes LP64/ILP64 support a clean dual build without symbol mangling. A compile-time probe auto-detects the linked BLAS integer width (via a clever trick we learned from [libblastrampoline](https://github.com/JuliaLinearAlgebra/libblastrampoline)).
 
 In practice, this means a full BLAS/LAPACK stack that needs only a C compiler. For example, one can build OpenBLAS with only its CBLAS option and link it against this project, and you have a complete LAPACK stack built entirely with a C compiler.
 
@@ -17,16 +17,14 @@ All four precisions (double, single, complex, double-complex) are 99% translated
 > [!NOTE]
 > XBLAS extra-precision variants are out of scope.
 
-Testing is ported from LAPACK's official test suite, for double and single precision versions:
+Testing is ported from LAPACK's official test suite. Double and single precision tests are fully ported (~680k parametrized test cases). Complex precision tests are being ported.
 
-| | Ported | Total |
+| | double + single | complex (z/c) |
 |--|--------|-------|
-| LIN tests (dchk* + ddrv*) | 54 | 54 |
-| EIG tests (dchk* + ddrv*) | 22 | 33 |
-| Verification routines | 123 | 123 |
-| Matrix generators + helpers | 39 | 39 |
-
-The complex precision tests have not been ported yet. We expect frequent code changes in the near term.
+| LIN tests (xchk* + xdrv*) | 54 + 54 | 0 / 66 |
+| EIG tests (xchk* + xdrv*) | 33 + 33 | 0 / 33 |
+| Verification routines | 123 + 123 | 0 / 114 |
+| Matrix generators + helpers | 39 + 39 | 0 / 51 |
 
 
 ## Disclosure
@@ -63,7 +61,7 @@ There are also intentional, human-made modifications. For example, the LU factor
 
 ### Framework
 
-Tests use [CMocka 2.0+](https://cmocka.org/) testing framework with custom assertion macros for LAPACK-style normalized residual checks. There is no main reasons for this choice other than off-the-shelf support from meson.
+Tests use [CMocka 2.0+](https://cmocka.org/) testing framework with custom assertion macros for LAPACK-style normalized residual checks.
 
 ### Building and Running Tests
 

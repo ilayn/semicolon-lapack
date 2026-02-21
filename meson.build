@@ -47,6 +47,15 @@ extra_warnings = cc.get_supported_arguments([
 ])
 add_project_arguments(extra_warnings, language: 'c')
 
+# Complex arithmetic: -fcx-limited-range drops NaN/Inf recovery from complex
+# mult and div, inlining 4 FP ops instead of calling __muldc3/__mulsc3.
+# This flag is part of the -fast-math family and reduces complex routine
+# sizes ~3x (e.g. zlarfx: 94KB -> 29KB) but trades away C99/C11 math
+# correctness. Disabled: this library prioritizes correctness over size.
+# The flag here is to make such experiments easy.
+# cx_limited = cc.get_supported_arguments(['-fcx-limited-range'])
+# add_project_arguments(cx_limited, language: 'c')
+
 # Math library (required on some platforms)
 m_dep = cc.find_library('m', required: false)
 
