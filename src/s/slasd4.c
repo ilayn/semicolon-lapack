@@ -17,7 +17,7 @@ static const f32 FOUR = 4.0f;
 static const f32 EIGHT = 8.0f;
 static const f32 TEN = 10.0f;
 
-static const int MAXIT = 400;
+static const INT MAXIT = 400;
 
 /**
  * SLASD4 computes the square root of the I-th updated eigenvalue of a positive
@@ -37,20 +37,20 @@ static const int MAXIT = 400;
  * @param[out]    info
  *                         - = 0: successful exit. > 0: if info = 1, the updating process failed.
  */
-void slasd4(const int n, const int i, const f32* restrict D,
+void slasd4(const INT n, const INT i, const f32* restrict D,
             const f32* restrict Z, f32* restrict delta,
             const f32 rho, f32* sigma, f32* restrict work,
-            int* info)
+            INT* info)
 {
     /* Local variables */
-    int orgati, swtch, swtch3, geomavg;
-    int ii, iim1, iip1, ip1, iter, j, niter;
+    INT orgati, swtch, swtch3, geomavg;
+    INT ii, iim1, iip1, ip1, iter, j, niter;
     f32 a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
     f32 dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps;
     f32 erretm, eta, phi, prew, psi, rhoinv, sglb;
     f32 sgub, tau, tau2, temp, temp1, temp2, w;
     f32 dd[3], zz[3];
-    int iinfo;
+    INT iinfo;
 
     /* Quick return for n=1 and n=2 */
     *info = 0;

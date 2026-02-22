@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DSFRK performs one of the symmetric rank-k operations
@@ -60,17 +60,17 @@ void dsfrk(
     const char* transr,
     const char* uplo,
     const char* trans,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const f64 alpha,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64 beta,
     f64* restrict C)
 {
-    int lower, normaltransr, nisodd, notrans;
-    int nrowa, j, nk, n1, n2;
-    int info;
+    INT lower, normaltransr, nisodd, notrans;
+    INT nrowa, j, nk, n1, n2;
+    INT info;
 
     info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

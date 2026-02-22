@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -80,24 +80,24 @@
  */
 void dlasyf_rk(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     f64* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 EIGHT = 8.0;
     const f64 SEVTEN = 17.0;
 
-    int done;
-    int imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
+    INT done;
+    INT imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
     f64 absakk, alpha, colmax, d11, d12, d21, d22, dtemp, r1, rowmax, t, sfmin;
 
     *info = 0;

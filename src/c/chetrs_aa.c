@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -58,21 +58,21 @@
  */
 void chetrs_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
-    int upper, lquery;
-    int k, kp, lwkmin;
-    int minval;
+    INT upper, lquery;
+    INT k, kp, lwkmin;
+    INT minval;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

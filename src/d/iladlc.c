@@ -24,14 +24,14 @@
  * @return The column count up to and including the last non-zero column,
  *         or 0 if the matrix is empty or all zero.
  */
-int iladlc(
-    const int m,
-    const int n,
+INT iladlc(
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda)
+    const INT lda)
 {
     const f64 zero = 0.0;
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return 0;

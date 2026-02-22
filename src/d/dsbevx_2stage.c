@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -45,35 +45,35 @@ void dsbevx_2stage(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int alleig, indeig, lower, test, valeig, wantz, lquery;
+    INT alleig, indeig, lower, test, valeig, wantz, lquery;
     char order;
-    int i, iinfo, imax, indd, inde, indee, indibl;
-    int indisp, indiwo, indwrk, iscale, itmp1, j, jj;
-    int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, nsplit;
+    INT i, iinfo, imax, indd, inde, indee, indibl;
+    INT indisp, indiwo, indwrk, iscale, itmp1, j, jj;
+    INT llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll, vuu;
 

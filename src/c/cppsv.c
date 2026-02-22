@@ -43,12 +43,12 @@
  */
 void cppsv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict AP,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // cppsv.f lines 172-186: Test the input parameters
     *info = 0;

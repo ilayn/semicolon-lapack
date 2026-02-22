@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -38,22 +38,22 @@ void ctbcon(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* rcond,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int nounit, onenrm, upper;
-    int ix, kase, kase1;
+    INT nounit, onenrm, upper;
+    INT ix, kase, kase1;
     f32 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
+    INT isave[3];
     char normin;
 
     *info = 0;

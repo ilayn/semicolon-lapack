@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -51,37 +51,37 @@
  */
 void dgbrfs(
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict AFB,
-    const int ldafb,
-    const int* restrict ipiv,
+    const INT ldafb,
+    const INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int notran;
+    INT notran;
     char transt;
-    int count, i, j, k, kase, kk, nz;
+    INT count, i, j, k, kase, kk, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters */
     *info = 0;
@@ -159,8 +159,8 @@ void dgbrfs(
                 for (k = 0; k < n; k++) {
                     kk = ku - k;
                     xk = fabs(X[k + j * ldx]);
-                    int i_start = (k - ku > 0) ? k - ku : 0;
-                    int i_end = (k + kl < n - 1) ? k + kl : n - 1;
+                    INT i_start = (k - ku > 0) ? k - ku : 0;
+                    INT i_end = (k + kl < n - 1) ? k + kl : n - 1;
                     for (i = i_start; i <= i_end; i++) {
                         work[i] = work[i] + fabs(AB[kk + i + k * ldab]) * xk;
                     }
@@ -169,8 +169,8 @@ void dgbrfs(
                 for (k = 0; k < n; k++) {
                     s = ZERO;
                     kk = ku - k;
-                    int i_start = (k - ku > 0) ? k - ku : 0;
-                    int i_end = (k + kl < n - 1) ? k + kl : n - 1;
+                    INT i_start = (k - ku > 0) ? k - ku : 0;
+                    INT i_end = (k + kl < n - 1) ? k + kl : n - 1;
                     for (i = i_start; i <= i_end; i++) {
                         s = s + fabs(AB[kk + i + k * ldab]) * fabs(X[i + j * ldx]);
                     }

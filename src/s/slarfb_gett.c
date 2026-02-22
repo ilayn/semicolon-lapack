@@ -3,7 +3,7 @@
  * @brief SLARFB_GETT applies a real Householder block reflector H from the left to a real (K+M)-by-N triangular-pentagonal matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -64,20 +64,20 @@
  */
 void slarfb_gett(
     const char* ident,
-    const int m,
-    const int n,
-    const int k,
+    const INT m,
+    const INT n,
+    const INT k,
     const f32* restrict T,
-    const int ldt,
+    const INT ldt,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict work,
-    const int ldwork)
+    const INT ldwork)
 {
-    int lnotident;
-    int i, j;
+    INT lnotident;
+    INT i, j;
 
     if (m < 0 || n <= 0 || k == 0 || k > n)
         return;

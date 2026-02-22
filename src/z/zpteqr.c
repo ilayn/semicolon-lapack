@@ -71,17 +71,17 @@
  */
 void zpteqr(
     const char* compz,
-    const int n,
+    const INT n,
     f64* restrict D,
     f64* restrict E,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
-    int i, icompz, nru;
+    INT i, icompz, nru;
 
     // Dummy arrays for zbdsqr (ncvt=0 and ncc=0)
     c128 VT_dummy[1];

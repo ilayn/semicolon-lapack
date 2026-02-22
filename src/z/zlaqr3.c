@@ -5,11 +5,11 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /** @cond */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
@@ -50,17 +50,17 @@ static int iparmq_nmin(void)
  * @param[in] lwork   Dimension of work array. lwork >= 2*nw.
  *                    If lwork = -1, workspace query is assumed.
  */
-void zlaqr3(const int wantt, const int wantz, const int n,
-            const int ktop, const int kbot, const int nw,
-            c128* H, const int ldh,
-            const int iloz, const int ihiz,
-            c128* Z, const int ldz,
-            int* ns, int* nd,
+void zlaqr3(const INT wantt, const INT wantz, const INT n,
+            const INT ktop, const INT kbot, const INT nw,
+            c128* H, const INT ldh,
+            const INT iloz, const INT ihiz,
+            c128* Z, const INT ldz,
+            INT* ns, INT* nd,
             c128* SH,
-            c128* V, const int ldv,
-            const int nh, c128* T, const int ldt,
-            const int nv, c128* WV, const int ldwv,
-            c128* work, const int lwork)
+            c128* V, const INT ldv,
+            const INT nh, c128* T, const INT ldt,
+            const INT nv, c128* WV, const INT ldwv,
+            c128* work, const INT lwork)
 {
     const c128 czero = 0.0;
     const c128 cone = 1.0;
@@ -68,8 +68,8 @@ void zlaqr3(const int wantt, const int wantz, const int n,
 
     c128 s, tau;
     f64 foo, safmin, smlnum, ulp;
-    int i, ifst, ilst, info, infqr, j, jw, kcol, kln, knt;
-    int krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin;
+    INT i, ifst, ilst, info, infqr, j, jw, kcol, kln, knt;
+    INT krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin;
 
     /* Estimate optimal workspace */
     jw = nw < kbot - ktop + 1 ? nw : kbot - ktop + 1;
@@ -77,15 +77,15 @@ void zlaqr3(const int wantt, const int wantz, const int n,
         lwkopt = 1;
     } else {
         zgehrd(jw, 0, jw - 2, T, ldt, work, work, -1, &info);
-        lwk1 = (int)creal(work[0]);
+        lwk1 = (INT)creal(work[0]);
 
         zunmhr("R", "N", jw, jw, 0, jw - 2, T, ldt, work, V, ldv,
                work, -1, &info);
-        lwk2 = (int)creal(work[0]);
+        lwk2 = (INT)creal(work[0]);
 
         zlaqr4(1, 1, jw, 0, jw - 1, T, ldt, SH, 0, jw - 1,
                V, ldv, work, -1, &infqr);
-        lwk3 = (int)creal(work[0]);
+        lwk3 = (INT)creal(work[0]);
 
         lwkopt = lwk1 > lwk2 ? lwk1 : lwk2;
         lwkopt = jw + lwkopt;

@@ -29,9 +29,9 @@
  */
 void slaqz1(
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     const f32 sr1,
     const f32 sr2,
     const f32 si,

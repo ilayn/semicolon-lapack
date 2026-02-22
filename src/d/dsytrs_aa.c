@@ -3,7 +3,7 @@
  * @brief DSYTRS_AA solves a system of linear equations A*X = B with a real symmetric matrix using the factorization computed by DSYTRF_AA.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -57,20 +57,20 @@
  */
 void dsytrs_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int k, kp, lwkmin;
-    int minval;
+    INT upper, lquery;
+    INT k, kp, lwkmin;
+    INT minval;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

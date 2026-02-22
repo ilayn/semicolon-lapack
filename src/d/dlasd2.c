@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DLASD2 merges the two sets of singular values together into a single
@@ -45,20 +45,20 @@
  * @param[out]    info
  *                         - = 0: successful exit. < 0: illegal argument.
  */
-void dlasd2(const int nl, const int nr, const int sqre, int* k,
+void dlasd2(const INT nl, const INT nr, const INT sqre, INT* k,
             f64* restrict D, f64* restrict Z,
             const f64 alpha, const f64 beta,
-            f64* restrict U, const int ldu,
-            f64* restrict VT, const int ldvt,
+            f64* restrict U, const INT ldu,
+            f64* restrict VT, const INT ldvt,
             f64* restrict DSIGMA,
-            f64* restrict U2, const int ldu2,
-            f64* restrict VT2, const int ldvt2,
-            int* restrict IDXP, int* restrict IDX,
-            int* restrict IDXC, int* restrict IDXQ,
-            int* restrict COLTYP, int* info)
+            f64* restrict U2, const INT ldu2,
+            f64* restrict VT2, const INT ldvt2,
+            INT* restrict IDXP, INT* restrict IDX,
+            INT* restrict IDXC, INT* restrict IDXQ,
+            INT* restrict COLTYP, INT* info)
 {
-    int ctot[4], psm[4];
-    int ct, i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n;
+    INT ctot[4], psm[4];
+    INT ct, i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n;
     f64 c, eps, hlftol, s, tau, tol, z1;
 
     *info = 0;

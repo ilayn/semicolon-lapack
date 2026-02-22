@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -38,16 +38,16 @@
  *                           off-diagonal elements of an intermediate tridiagonal
  *                           form did not converge to zero.
  */
-void sspev(const char* jobz, const char* uplo, const int n,
+void sspev(const char* jobz, const char* uplo, const INT n,
            f32* restrict AP, f32* restrict W,
-           f32* restrict Z, const int ldz,
-           f32* restrict work, int* info)
+           f32* restrict Z, const INT ldz,
+           f32* restrict work, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantz;
-    int iinfo, imax, inde, indtau, indwrk, iscale;
+    INT wantz;
+    INT iinfo, imax, inde, indtau, indwrk, iscale;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

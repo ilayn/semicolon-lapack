@@ -7,7 +7,7 @@
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZHBEV computes all the eigenvalues and, optionally, eigenvectors of
@@ -56,22 +56,22 @@
 void zhbev(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int lower = (uplo[0] == 'L' || uplo[0] == 'l');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT lower = (uplo[0] == 'L' || uplo[0] == 'l');
 
     *info = 0;
     if (!(wantz || jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -121,7 +121,7 @@ void zhbev(
     /* Scale matrix to allowable range, if necessary. */
 
     f64 anrm = zlanhb("M", uplo, n, kd, AB, ldab, rwork);
-    int iscale = 0;
+    INT iscale = 0;
     f64 sigma;
     if (anrm > ZERO && anrm < rmin) {
         iscale = 1;
@@ -140,8 +140,8 @@ void zhbev(
 
     /* Call ZHBTRD to reduce Hermitian band matrix to tridiagonal form. */
 
-    int inde = 0;
-    int iinfo;
+    INT inde = 0;
+    INT iinfo;
     zhbtrd(jobz, uplo, n, kd, AB, ldab, W, &rwork[inde], Z, ldz,
            work, &iinfo);
 
@@ -150,14 +150,14 @@ void zhbev(
     if (!wantz) {
         dsterf(n, W, &rwork[inde], info);
     } else {
-        int indrwk = inde + n;
+        INT indrwk = inde + n;
         zsteqr(jobz, n, W, &rwork[inde], Z, ldz, &rwork[indrwk], info);
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 
     if (iscale == 1) {
-        int imax;
+        INT imax;
         if (*info == 0) {
             imax = n;
         } else {

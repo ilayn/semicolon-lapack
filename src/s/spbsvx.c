@@ -3,7 +3,7 @@
  * @brief SPBSVX computes the solution to a symmetric positive definite banded system with error bounds.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -52,31 +52,31 @@
 void spbsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict AFB,
-    const int ldafb,
+    const INT ldafb,
     char* equed,
     f32* restrict S,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int equil, nofact, rcequ, upper;
-    int i, infequ, j, j1, j2;
+    INT equil, nofact, rcequ, upper;
+    INT i, infequ, j, j1, j2;
     f32 amax, anorm, bignum = 0.0f, scond, smax, smin, smlnum = 0.0f;
 
     *info = 0;

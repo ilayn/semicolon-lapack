@@ -55,13 +55,13 @@
  *                      The scalar factors of the elementary reflectors.
  * @param[out]    work  Complex array, dimension (m).
  */
-void zlatrz(const int m, const int n, const int l,
-            c128* restrict A, const int lda,
+void zlatrz(const INT m, const INT n, const INT l,
+            c128* restrict A, const INT lda,
             c128* restrict tau,
             c128* restrict work)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
-    int i;
+    INT i;
     c128 alpha;
 
     /* Quick return if possible */

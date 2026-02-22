@@ -40,12 +40,12 @@
  *                           v(0:i) = 0, v(i+1) = 1 and v(ihi+1:n-1) = 0; v(i+2:ihi) is stored on
  *                           exit in A(i+2:ihi,i), and tau in tau(i).
  */
-void cgehd2(const int n, const int ilo, const int ihi,
-            c64* A, const int lda, c64* tau,
-            c64* work, int* info)
+void cgehd2(const INT n, const INT ilo, const INT ihi,
+            c64* A, const INT lda, c64* tau,
+            c64* work, INT* info)
 {
-    int i;
-    int max_n_1 = (n > 1) ? n : 1;
+    INT i;
+    INT max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
     *info = 0;
@@ -72,8 +72,8 @@ void cgehd2(const int n, const int ilo, const int ihi,
 
     for (i = ilo; i <= ihi - 1; i++) {
         /* Compute elementary reflector H(i) to annihilate A(i+2:ihi,i) */
-        int len = ihi - i;  /* length of reflector vector */
-        int start = (i + 2 < n) ? (i + 2) : (n - 1);
+        INT len = ihi - i;  /* length of reflector vector */
+        INT start = (i + 2 < n) ? (i + 2) : (n - 1);
 
         clarfg(len, &A[(i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);
 

@@ -78,20 +78,20 @@
  */
 void dsysv_rk(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkopt;
+    INT lquery;
+    INT lwkopt;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -115,7 +115,7 @@ void dsysv_rk(
             lwkopt = 1;
         } else {
             dsytrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
-            lwkopt = (int)work[0];
+            lwkopt = (INT)work[0];
         }
         work[0] = (f64)lwkopt;
     }

@@ -27,7 +27,7 @@
  * @param[out] v      Complex array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-void zlaqr1(const int n, const c128* H, const int ldh,
+void zlaqr1(const INT n, const c128* H, const INT ldh,
             const c128 s1, const c128 s2,
             c128* v)
 {

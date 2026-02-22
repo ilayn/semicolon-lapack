@@ -64,28 +64,28 @@ void dhsein(
     const char* side,
     const char* eigsrc,
     const char* initv,
-    int* restrict select,
-    const int n,
+    INT* restrict select,
+    const INT n,
     const f64* restrict H,
-    const int ldh,
+    const INT ldh,
     f64* restrict wr,
     const f64* restrict wi,
     f64* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     f64* restrict VR,
-    const int ldvr,
-    const int mm,
-    int* m,
+    const INT ldvr,
+    const INT mm,
+    INT* m,
     f64* restrict work,
-    int* restrict ifaill,
-    int* restrict ifailr,
-    int* info)
+    INT* restrict ifaill,
+    INT* restrict ifailr,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int bothv, fromqr, leftv, noinit_flag, pair, rightv;
-    int i, iinfo, k, kl, kln, kr, ksi, ksr, ldwork;
+    INT bothv, fromqr, leftv, noinit_flag, pair, rightv;
+    INT i, iinfo, k, kl, kln, kr, ksi, ksr, ldwork;
     f64 bignum, eps3 = 0.0, hnorm, smlnum, ulp, unfl, wki, wkr;
 
     /* Decode and test the input parameters */

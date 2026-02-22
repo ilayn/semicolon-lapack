@@ -3,7 +3,7 @@
  * @brief DLAQZ2 chases a 2x2 shift bulge in a matrix pencil down a single position.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -33,24 +33,24 @@
  * @param[in]     ldz      Leading dimension of Z.
  */
 void dlaqz2(
-    const int ilq,
-    const int ilz,
-    const int k,
-    const int istartm,
-    const int istopm,
-    const int ihi,
+    const INT ilq,
+    const INT ilz,
+    const INT k,
+    const INT istartm,
+    const INT istopm,
+    const INT ihi,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
-    const int nq,
-    const int qstart,
+    const INT ldb,
+    const INT nq,
+    const INT qstart,
     f64* restrict Q,
-    const int ldq,
-    const int nz,
-    const int zstart,
+    const INT ldq,
+    const INT nz,
+    const INT zstart,
     f64* restrict Z,
-    const int ldz)
+    const INT ldz)
 {
     const f64 ZERO = 0.0;
 

@@ -6,10 +6,10 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /** @cond */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
@@ -50,23 +50,23 @@ static int iparmq_nmin(void)
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  *                         - > 0: if info = i, CHSEQR failed to compute all eigenvalues.
  */
-void chseqr(const char* job, const char* compz, const int n,
-            const int ilo, const int ihi,
-            c64* H, const int ldh,
+void chseqr(const char* job, const char* compz, const INT n,
+            const INT ilo, const INT ihi,
+            c64* H, const INT ldh,
             c64* W,
-            c64* Z, const int ldz,
-            c64* work, const int lwork, int* info)
+            c64* Z, const INT ldz,
+            c64* work, const INT lwork, INT* info)
 {
-    const int ntiny = 15;
-    const int nl = 49;
+    const INT ntiny = 15;
+    const INT nl = 49;
     const c64 czero = 0.0f;
     const c64 cone = 1.0f;
 
     c64 hl[49 * 49];
     c64 workl[49];
 
-    int kbot, nmin;
-    int initz, lquery, wantt, wantz;
+    INT kbot, nmin;
+    INT initz, lquery, wantt, wantz;
 
     wantt = (job[0] == 'S' || job[0] == 's');
     initz = (compz[0] == 'I' || compz[0] == 'i');

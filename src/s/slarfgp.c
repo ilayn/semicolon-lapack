@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -35,13 +35,13 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void slarfgp(const int n, f32* alpha, f32* restrict x,
-             const int incx, f32* tau)
+void slarfgp(const INT n, f32* alpha, f32* restrict x,
+             const INT incx, f32* tau)
 {
     const f32 TWO = 2.0f;
     const f32 ONE = 1.0f;
     f32 xnorm, beta, bignum, eps, savealpha, smlnum;
-    int j, knt;
+    INT j, knt;
 
     if (n <= 0) {
         *tau = 0.0f;

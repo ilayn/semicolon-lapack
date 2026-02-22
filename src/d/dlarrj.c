@@ -45,17 +45,17 @@
  * @param[out]    info
  *                           Error flag.
  */
-void dlarrj(const int n, const f64* D, const f64* E2,
-            const int ifirst, const int ilast, const f64 rtol,
-            const int offset, f64* W, f64* werr,
-            f64* work, int* iwork, const f64 pivmin,
-            const f64 spdiam, int* info)
+void dlarrj(const INT n, const f64* D, const f64* E2,
+            const INT ifirst, const INT ilast, const f64 rtol,
+            const INT offset, f64* W, f64* werr,
+            f64* work, INT* iwork, const f64 pivmin,
+            const f64 spdiam, INT* info)
 {
     const f64 TWO = 2.0;
     const f64 HALF = 0.5;
 
-    int cnt, i, i1, i2, ii, iter, j, k, next, nint, olnint, p, prev, savi1;
-    int maxitr;
+    INT cnt, i, i1, i2, ii, iter, j, k, next, nint, olnint, p, prev, savi1;
+    INT maxitr;
     f64 dplus, fac, left, mid, right, s, tmp, width;
 
     *info = 0;
@@ -65,7 +65,7 @@ void dlarrj(const int n, const f64* D, const f64* E2,
         return;
     }
 
-    maxitr = (int)((log(spdiam + pivmin) - log(pivmin)) / log(TWO)) + 2;
+    maxitr = (INT)((log(spdiam + pivmin) - log(pivmin)) / log(TWO)) + 2;
 
     /*
      * Initialize unconverged intervals in [ work[2*i], work[2*i+1] ].

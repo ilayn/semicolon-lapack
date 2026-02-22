@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -42,33 +42,33 @@
  */
 void spprfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict AP,
     const f32* restrict AFP,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // spprfs.f lines 189-198: Parameters
-    const int ITMAX = 5;  // spprfs.f line 190
+    const INT ITMAX = 5;  // spprfs.f line 190
     const f32 ZERO = 0.0f;  // spprfs.f line 192
     const f32 ONE = 1.0f;  // spprfs.f line 194
     const f32 TWO = 2.0f;  // spprfs.f line 196
     const f32 THREE = 3.0f;  // spprfs.f line 198
 
     // spprfs.f lines 201-206: Local Scalars and Arrays
-    int upper;
-    int count, i, ik, j, k, kase, kk, nz;
+    INT upper;
+    INT count, i, ik, j, k, kase, kk, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int locinfo;
+    INT isave[3];
+    INT locinfo;
 
     // spprfs.f lines 224-240: Test the input parameters
     *info = 0;

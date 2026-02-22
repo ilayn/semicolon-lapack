@@ -6,7 +6,7 @@
 #include <complex.h>
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 
@@ -71,17 +71,17 @@
  */
 void csytrf_rk(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int i, iinfo, ip, iws, k, kb, ldwork, lwkopt, nb, nbmin;
+    INT upper, lquery;
+    INT i, iinfo, ip, iws, k, kb, ldwork, lwkopt, nb, nbmin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -45,28 +45,28 @@ void ztbrfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     const c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int notran, nounit, upper;
-    int i, j, k, kase, nz;
+    INT notran, nounit, upper;
+    INT i, j, k, kase, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -145,7 +145,7 @@ void ztbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         xk = cabs1(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1(AB[kd + i - k + k * ldab]) * xk;
@@ -154,7 +154,7 @@ void ztbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         xk = cabs1(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i < k; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1(AB[kd + i - k + k * ldab]) * xk;
@@ -166,7 +166,7 @@ void ztbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         xk = cabs1(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1(AB[i - k + k * ldab]) * xk;
@@ -175,7 +175,7 @@ void ztbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         xk = cabs1(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k + 1; i <= iend; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1(AB[i - k + k * ldab]) * xk;
@@ -190,7 +190,7 @@ void ztbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         s = ZERO;
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
                             s = s + cabs1(AB[kd + i - k + k * ldab]) *
                                     cabs1(X[i + j * ldx]);
@@ -200,7 +200,7 @@ void ztbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         s = cabs1(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i < k; i++) {
                             s = s + cabs1(AB[kd + i - k + k * ldab]) *
                                     cabs1(X[i + j * ldx]);
@@ -212,7 +212,7 @@ void ztbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         s = ZERO;
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
                             s = s + cabs1(AB[i - k + k * ldab]) *
                                     cabs1(X[i + j * ldx]);
@@ -222,7 +222,7 @@ void ztbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         s = cabs1(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k + 1; i <= iend; i++) {
                             s = s + cabs1(AB[i - k + k * ldab]) *
                                     cabs1(X[i + j * ldx]);

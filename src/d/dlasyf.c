@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
@@ -71,15 +71,15 @@ static const f64 ALPHA_BK = 0.6403882032022076;
  */
 void dlasyf(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     f64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f64* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
     *info = 0;
 
@@ -93,10 +93,10 @@ void dlasyf(
          *
          * KW is the column of W which corresponds to column K of A. */
 
-        int k = n - 1;
+        INT k = n - 1;
 
         while (1) {
-            int kw = nb - 1 - (n - 1 - k);
+            INT kw = nb - 1 - (n - 1 - k);
 
             if ((k <= n - nb && nb < n) || k < 0) {
                 break;
@@ -113,7 +113,7 @@ void dlasyf(
                             1.0, &W[0 + kw * ldw], 1);
             }
 
-            int kstep = 1;
+            INT kstep = 1;
 
             /* Determine rows and columns to be interchanged and whether
              * a 1-by-1 or 2-by-2 pivot block will be used */
@@ -122,14 +122,14 @@ void dlasyf(
             /* IMAX is the row-index of the largest off-diagonal element in
              * column K, and COLMAX is its absolute value.
              * Determine both COLMAX and IMAX. */
-            int imax = 0;
+            INT imax = 0;
             f64 colmax = 0.0;
             if (k > 0) {
                 imax = cblas_idamax(k, &W[0 + kw * ldw], 1);
                 colmax = fabs(W[imax + kw * ldw]);
             }
 
-            int kp;
+            INT kp;
 
             if (fmax(absakk, colmax) == 0.0) {
                 /* Column K is zero or underflow: set INFO and continue */
@@ -161,7 +161,7 @@ void dlasyf(
 
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row IMAX, and ROWMAX is its absolute value */
-                    int jmax = (imax + 1) + cblas_idamax(k - imax, &W[(imax + 1) + (kw - 1) * ldw], 1);
+                    INT jmax = (imax + 1) + cblas_idamax(k - imax, &W[(imax + 1) + (kw - 1) * ldw], 1);
                     f64 rowmax = fabs(W[jmax + (kw - 1) * ldw]);
 
                     if (imax > 0) {
@@ -188,10 +188,10 @@ void dlasyf(
                 }
 
                 /* KK is the column of A where pivoting step stopped */
-                int kk = k - kstep + 1;
+                INT kk = k - kstep + 1;
 
                 /* KKW is the column of W which corresponds to column KK of A */
-                int kkw = nb - 1 - (n - 1 - kk);
+                INT kkw = nb - 1 - (n - 1 - kk);
 
                 /* Interchange rows and columns KP and KK.
                  * Updated column KP is already stored in column KKW of W. */
@@ -287,7 +287,7 @@ void dlasyf(
                         /* Update elements in columns A(k-1) and A(k) as
                          * dot products of rows of ( W(kw-1) W(kw) ) and columns
                          * of D**(-1) */
-                        for (int j = 0; j <= k - 2; j++) {
+                        for (INT j = 0; j <= k - 2; j++) {
                             A[j + (k - 1) * lda] = d21 * (d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]);
                             A[j + k * lda] = d21 * (d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]);
                         }
@@ -316,7 +316,7 @@ void dlasyf(
          *
          * A11 := A11 - U12*D*U12**T = A11 - U12*W**T */
         if (k >= 0 && n - 1 - k > 0) {
-            int kw_after = nb - 1 - (n - 1 - k);
+            INT kw_after = nb - 1 - (n - 1 - k);
             cblas_dgemmt(CblasColMajor, CblasUpper, CblasNoTrans, CblasTrans,
                          k + 1, n - 1 - k,
                          -1.0, &A[0 + (k + 1) * lda], lda,
@@ -327,10 +327,10 @@ void dlasyf(
         /* Put U12 in standard form by partially undoing the interchanges
          * in columns k+1:n looping backwards from k+1 to n */
         {
-            int j = k + 1;
+            INT j = k + 1;
             do {
-                int jj = j;
-                int jp = ipiv[j];
+                INT jj = j;
+                INT jp = ipiv[j];
                 if (jp < 0) {
                     jp = -(jp + 1);
                     j++;
@@ -354,7 +354,7 @@ void dlasyf(
          *
          * K is the main loop index, increasing from 1 in steps of 1 or 2. */
 
-        int k = 0;
+        INT k = 0;
 
         while (1) {
             if ((k >= nb - 1 && nb < n) || k >= n) {
@@ -372,7 +372,7 @@ void dlasyf(
                             1.0, &W[k + k * ldw], 1);
             }
 
-            int kstep = 1;
+            INT kstep = 1;
 
             /* Determine rows and columns to be interchanged and whether
              * a 1-by-1 or 2-by-2 pivot block will be used */
@@ -381,14 +381,14 @@ void dlasyf(
             /* IMAX is the row-index of the largest off-diagonal element in
              * column K, and COLMAX is its absolute value.
              * Determine both COLMAX and IMAX. */
-            int imax = k;
+            INT imax = k;
             f64 colmax = 0.0;
             if (k < n - 1) {
                 imax = (k + 1) + cblas_idamax(n - k - 1, &W[(k + 1) + k * ldw], 1);
                 colmax = fabs(W[imax + k * ldw]);
             }
 
-            int kp;
+            INT kp;
 
             if (fmax(absakk, colmax) == 0.0) {
                 /* Column K is zero or underflow: set INFO and continue */
@@ -418,7 +418,7 @@ void dlasyf(
 
                     /* JMAX is the column-index of the largest off-diagonal
                      * element in row IMAX, and ROWMAX is its absolute value */
-                    int jmax = k + cblas_idamax(imax - k, &W[k + (k + 1) * ldw], 1);
+                    INT jmax = k + cblas_idamax(imax - k, &W[k + (k + 1) * ldw], 1);
                     f64 rowmax = fabs(W[jmax + (k + 1) * ldw]);
 
                     if (imax < n - 1) {
@@ -445,7 +445,7 @@ void dlasyf(
                 }
 
                 /* KK is the column of A where pivoting step stopped */
-                int kk = k + kstep - 1;
+                INT kk = k + kstep - 1;
 
                 /* Interchange rows and columns KP and KK.
                  * Updated column KP is already stored in column KK of W. */
@@ -541,7 +541,7 @@ void dlasyf(
                         /* Update elements in columns A(k) and A(k+1) as
                          * dot products of rows of ( W(k) W(k+1) ) and columns
                          * of D**(-1) */
-                        for (int j = k + 2; j <= n - 1; j++) {
+                        for (INT j = k + 2; j <= n - 1; j++) {
                             A[j + k * lda] = d21 * (d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]);
                             A[j + (k + 1) * lda] = d21 * (d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]);
                         }
@@ -580,10 +580,10 @@ void dlasyf(
         /* Put L21 in standard form by partially undoing the interchanges
          * of rows in columns 1:k-1 looping backwards from k-1 to 1 */
         {
-            int j = k - 1;
+            INT j = k - 1;
             do {
-                int jj = j;
-                int jp = ipiv[j];
+                INT jj = j;
+                INT jp = ipiv[j];
                 if (jp < 0) {
                     jp = -(jp + 1);
                     j--;

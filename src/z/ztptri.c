@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -30,9 +30,9 @@
 void ztptri(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     c128* restrict AP,
-    int* info)
+    INT* info)
 {
     // ztptri.f lines 132-133: Parameters
     const c128 ONE = CMPLX(1.0, 0.0);
@@ -40,8 +40,8 @@ void ztptri(
 
     // ztptri.f lines 151-164: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (!nounit && !(diag[0] == 'U' || diag[0] == 'u')) {
@@ -58,8 +58,8 @@ void ztptri(
     if (nounit) {
         if (upper) {
             // ztptri.f lines 169-175
-            int jj = -1;  // 0-based: start at -1 so first jj += (i+1) gives 0
-            for (int i = 0; i < n; i++) {
+            INT jj = -1;  // 0-based: start at -1 so first jj += (i+1) gives 0
+            for (INT i = 0; i < n; i++) {
                 jj = jj + (i + 1);  // ztptri.f line 172: JJ = JJ + INFO
                 if (AP[jj] == ZERO) {
                     *info = i + 1;  // 1-based error code
@@ -68,8 +68,8 @@ void ztptri(
             }
         } else {
             // ztptri.f lines 176-183
-            int jj = 0;  // ztptri.f line 177: JJ = 1 (0-based: 0)
-            for (int i = 0; i < n; i++) {
+            INT jj = 0;  // ztptri.f line 177: JJ = 1 (0-based: 0)
+            for (INT i = 0; i < n; i++) {
                 if (AP[jj] == ZERO) {
                     *info = i + 1;  // 1-based error code
                     return;
@@ -85,8 +85,8 @@ void ztptri(
 
     if (upper) {
         // ztptri.f lines 187-206: Compute inverse of upper triangular matrix
-        int jc = 0;  // ztptri.f line 191: JC = 1 (0-based: 0)
-        for (int j = 0; j < n; j++) {  // ztptri.f line 192: DO 30 J = 1, N
+        INT jc = 0;  // ztptri.f line 191: JC = 1 (0-based: 0)
+        for (INT j = 0; j < n; j++) {  // ztptri.f line 192: DO 30 J = 1, N
             c128 ajj;
             if (nounit) {
                 // ztptri.f lines 193-195
@@ -107,9 +107,9 @@ void ztptri(
         }
     } else {
         // ztptri.f lines 208-231: Compute inverse of lower triangular matrix
-        int jc = n * (n + 1) / 2 - 1;  // ztptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
-        int jclast = 0;  // Will be set in loop
-        for (int j = n - 1; j >= 0; j--) {  // ztptri.f line 213: DO 40 J = N, 1, -1
+        INT jc = n * (n + 1) / 2 - 1;  // ztptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
+        INT jclast = 0;  // Will be set in loop
+        for (INT j = n - 1; j >= 0; j--) {  // ztptri.f line 213: DO 40 J = N, 1, -1
             c128 ajj;
             if (nounit) {
                 // ztptri.f lines 214-216

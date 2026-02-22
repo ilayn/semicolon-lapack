@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -31,19 +31,19 @@
  */
 void zhetri_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -60,14 +60,14 @@ void zhetri_rook(
 
     /* Check that the diagonal matrix D is nonsingular. */
     if (upper) {
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             if (ipiv[k] >= 0 && A[k + k * lda] == ZERO) {
                 *info = k + 1;
                 return;
             }
         }
     } else {
-        for (int k = 0; k < n; k++) {
+        for (INT k = 0; k < n; k++) {
             if (ipiv[k] >= 0 && A[k + k * lda] == ZERO) {
                 *info = k + 1;
                 return;
@@ -77,9 +77,9 @@ void zhetri_rook(
 
     if (upper) {
 
-        int k = 0;
+        INT k = 0;
         while (k < n) {
-            int kstep;
+            INT kstep;
 
             if (ipiv[k] >= 0) {
 
@@ -130,13 +130,13 @@ void zhetri_rook(
 
             if (kstep == 1) {
 
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
 
                     if (kp > 0)
                         cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
 
-                    for (int j = kp + 1; j < k; j++) {
+                    for (INT j = kp + 1; j < k; j++) {
                         c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
@@ -152,13 +152,13 @@ void zhetri_rook(
             } else {
 
                 /* (1) Interchange rows and columns K and -IPIV(K) */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
 
                     if (kp > 0)
                         cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
 
-                    for (int j = kp + 1; j < k; j++) {
+                    for (INT j = kp + 1; j < k; j++) {
                         c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
@@ -183,7 +183,7 @@ void zhetri_rook(
                     if (kp > 0)
                         cblas_zswap(kp, &A[0 + k * lda], 1, &A[0 + kp * lda], 1);
 
-                    for (int j = kp + 1; j < k; j++) {
+                    for (INT j = kp + 1; j < k; j++) {
                         c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
@@ -202,9 +202,9 @@ void zhetri_rook(
 
     } else {
 
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
-            int kstep;
+            INT kstep;
 
             if (ipiv[k] >= 0) {
 
@@ -257,14 +257,14 @@ void zhetri_rook(
 
             if (kstep == 1) {
 
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
 
                     if (kp < n - 1)
                         cblas_zswap(n - kp - 1, &A[(kp + 1) + k * lda], 1,
                                     &A[(kp + 1) + kp * lda], 1);
 
-                    for (int j = k + 1; j < kp; j++) {
+                    for (INT j = k + 1; j < kp; j++) {
                         c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
@@ -280,14 +280,14 @@ void zhetri_rook(
             } else {
 
                 /* (1) Interchange rows and columns K and -IPIV(K) */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
 
                     if (kp < n - 1)
                         cblas_zswap(n - kp - 1, &A[(kp + 1) + k * lda], 1,
                                     &A[(kp + 1) + kp * lda], 1);
 
-                    for (int j = k + 1; j < kp; j++) {
+                    for (INT j = k + 1; j < kp; j++) {
                         c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;
@@ -313,7 +313,7 @@ void zhetri_rook(
                         cblas_zswap(n - kp - 1, &A[(kp + 1) + k * lda], 1,
                                     &A[(kp + 1) + kp * lda], 1);
 
-                    for (int j = k + 1; j < kp; j++) {
+                    for (INT j = k + 1; j < kp; j++) {
                         c128 temp = conj(A[j + k * lda]);
                         A[j + k * lda] = conj(A[kp + j * lda]);
                         A[kp + j * lda] = temp;

@@ -3,7 +3,7 @@
  * @brief SGGHRD reduces a pair of real matrices (A,B) to generalized upper Hessenberg form.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -55,24 +55,24 @@
 void sgghrd(
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict Z,
-    const int ldz,
-    int* info)
+    const INT ldz,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int ilq, ilz;
-    int icompq, icompz, jcol, jrow;
+    INT ilq, ilz;
+    INT icompq, icompz, jcol, jrow;
     f32 c, s, temp;
 
     if (compq[0] == 'N' || compq[0] == 'n') {

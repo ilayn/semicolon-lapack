@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -31,19 +31,19 @@
  */
 void chetri(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -62,7 +62,7 @@ void chetri(
     /* Check that the diagonal matrix D is nonsingular. */
     if (upper) {
         /* Upper triangular storage: examine D from bottom to top. */
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             if (ipiv[k] >= 0 && A[k + k * lda] == ZERO) {
                 *info = k + 1;
                 return;
@@ -70,7 +70,7 @@ void chetri(
         }
     } else {
         /* Lower triangular storage: examine D from top to bottom. */
-        for (int k = 0; k < n; k++) {
+        for (INT k = 0; k < n; k++) {
             if (ipiv[k] >= 0 && A[k + k * lda] == ZERO) {
                 *info = k + 1;
                 return;
@@ -82,9 +82,9 @@ void chetri(
         /* Compute inv(A) from the factorization A = U*D*U**H.
          *
          * K increases from 0 to n-1 in steps of 1 or 2. */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
-            int kstep;
+            INT kstep;
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block: invert it. */
                 A[k + k * lda] = CMPLXF(ONE / crealf(A[k + k * lda]), 0.0f);
@@ -134,7 +134,7 @@ void chetri(
             }
 
             /* Interchange rows and columns k and kp. */
-            int kp;
+            INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
             } else {
@@ -148,7 +148,7 @@ void chetri(
                 }
 
                 /* Swap and conjugate elements between kp and k */
-                for (int j = kp + 1; j < k; j++) {
+                for (INT j = kp + 1; j < k; j++) {
                     c64 temp = conjf(A[j + k * lda]);
                     A[j + k * lda] = conjf(A[kp + j * lda]);
                     A[kp + j * lda] = temp;
@@ -175,9 +175,9 @@ void chetri(
         /* Compute inv(A) from the factorization A = L*D*L**H.
          *
          * K decreases from n-1 to 0 in steps of 1 or 2. */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
-            int kstep;
+            INT kstep;
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block: invert it. */
                 A[k + k * lda] = CMPLXF(ONE / crealf(A[k + k * lda]), 0.0f);
@@ -229,7 +229,7 @@ void chetri(
             }
 
             /* Interchange rows and columns k and kp. */
-            int kp;
+            INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
             } else {
@@ -244,7 +244,7 @@ void chetri(
                 }
 
                 /* Swap and conjugate elements between k and kp */
-                for (int j = k + 1; j < kp; j++) {
+                for (INT j = k + 1; j < kp; j++) {
                     c64 temp = conjf(A[j + k * lda]);
                     A[j + k * lda] = conjf(A[kp + j * lda]);
                     A[kp + j * lda] = temp;

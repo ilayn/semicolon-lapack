@@ -67,19 +67,19 @@
  */
 void zsysv_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkopt, lwkopt_sytrf, lwkopt_sytrs;
+    INT lquery;
+    INT lwkopt, lwkopt_sytrf, lwkopt_sytrs;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -101,9 +101,9 @@ void zsysv_aa(
 
     if (*info == 0) {
         zsytrf_aa(uplo, n, A, lda, ipiv, work, -1, info);
-        lwkopt_sytrf = (int)creal(work[0]);
+        lwkopt_sytrf = (INT)creal(work[0]);
         zsytrs_aa(uplo, n, nrhs, A, lda, ipiv, B, ldb, work, -1, info);
-        lwkopt_sytrs = (int)creal(work[0]);
+        lwkopt_sytrs = (INT)creal(work[0]);
         lwkopt = (lwkopt_sytrf > lwkopt_sytrs) ? lwkopt_sytrf : lwkopt_sytrs;
         work[0] = (c128)lwkopt;
     }

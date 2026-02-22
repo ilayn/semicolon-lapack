@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -41,28 +41,28 @@
  *                           to the last iterate.
  */
 void slaein(
-    const int rightv,
-    const int noinit,
-    const int n,
+    const INT rightv,
+    const INT noinit,
+    const INT n,
     const f32* restrict H,
-    const int ldh,
+    const INT ldh,
     const f32 wr,
     const f32 wi,
     f32* restrict vr,
     f32* restrict vi,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict work,
     const f32 eps3,
     const f32 smlnum,
     const f32 bignum,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TENTH = 0.1f;
 
-    int i, i1, i2, i3, ierr, its, j;
+    INT i, i1, i2, i3, ierr, its, j;
     f32 absbii, absbjj, ei, ej, growto, norm, nrmsml;
     f32 rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
 

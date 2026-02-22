@@ -28,7 +28,7 @@
  */
 f32 clangt(
     const char* norm,
-    const int n,
+    const INT n,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU)
@@ -37,7 +37,7 @@ f32 clangt(
     const f32 ONE = 1.0f;
 
     f32 anorm, scale, sum, temp;
-    int i;
+    INT i;
 
     if (n <= 0) {
         anorm = ZERO;

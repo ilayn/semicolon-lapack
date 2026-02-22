@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -113,19 +113,19 @@ void zbbcsd(
     const char* jobv1t,
     const char* jobv2t,
     const char* trans,
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f64* restrict theta,
     f64* restrict phi,
     c128* restrict U1,
-    const int ldu1,
+    const INT ldu1,
     c128* restrict U2,
-    const int ldu2,
+    const INT ldu2,
     c128* restrict V1T,
-    const int ldv1t,
+    const INT ldv1t,
     c128* restrict V2T,
-    const int ldv2t,
+    const INT ldv2t,
     f64* restrict B11D,
     f64* restrict B11E,
     f64* restrict B12D,
@@ -135,10 +135,10 @@ void zbbcsd(
     f64* restrict B22D,
     f64* restrict B22E,
     f64* restrict rwork,
-    const int lrwork,
-    int* info)
+    const INT lrwork,
+    INT* info)
 {
-    const int maxitr = 6;
+    const INT maxitr = 6;
     const f64 hundred = 100.0;
     const f64 meighth = -0.125;
     const f64 one = 1.0;
@@ -147,10 +147,10 @@ void zbbcsd(
     const f64 piover2 = 1.57079632679489661923132169163975144210;
     const c128 negonecomplex = CMPLX(-1.0, 0.0);
 
-    int colmajor, lquery, restart11, restart12, restart21, restart22;
-    int wantu1, wantu2, wantv1t, wantv2t;
-    int i, imin, imax, iter, iu1cs, iu1sn, iu2cs, iu2sn;
-    int iv1tcs, iv1tsn, iv2tcs, iv2tsn, j, lrworkmin, lrworkopt, maxit, mini;
+    INT colmajor, lquery, restart11, restart12, restart21, restart22;
+    INT wantu1, wantu2, wantv1t, wantv2t;
+    INT i, imin, imax, iter, iu1cs, iu1sn, iu2cs, iu2sn;
+    INT iv1tcs, iv1tsn, iv2tcs, iv2tsn, j, lrworkmin, lrworkopt, maxit, mini;
     f64 b11bulge, b12bulge, b21bulge, b22bulge, dummy;
     f64 eps, mu, nu, r, sigma11, sigma21;
     f64 temp, thetamax, thetamin, thresh, tol, tolmul, unfl;

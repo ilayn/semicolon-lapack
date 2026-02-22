@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -66,17 +66,17 @@
  */
 void sggbal(
     const char* job,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
-    int* ilo,
-    int* ihi,
+    const INT ldb,
+    INT* ilo,
+    INT* ihi,
     f32* restrict lscale,
     f32* restrict rscale,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;
@@ -84,9 +84,9 @@ void sggbal(
     const f32 THREE = 3.0f;
     const f32 SCLFAC = 10.0f;
 
-    int i, icab, ir, irab, it, j, jc;
-    int k, kount, l, lcab, lrab, lsfmax, lsfmin;
-    int m, nr, nrp2;
+    INT i, icab, ir, irab, it, j, jc;
+    INT k, kount, l, lcab, lrab, lsfmax, lsfmin;
+    INT m, nr, nrp2;
     f32 alpha, basl, beta, cab, cmax, coef, coef2;
     f32 coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
     f32 sfmin, sum, t, ta, tb, tc;
@@ -142,7 +142,7 @@ void sggbal(
 
         /* Find row with one nonzero in columns 1 through L */
 
-        int done_permuting = 0;
+        INT done_permuting = 0;
         for (;;) {
             if (l == 0) {
                 rscale[0] = ONE;
@@ -150,10 +150,10 @@ void sggbal(
                 done_permuting = 1;
                 break;
             }
-            int found = 0;
+            INT found = 0;
             for (i = l; i >= 0; i--) {
-                int nz_col = -1;
-                int isolated = 1;
+                INT nz_col = -1;
+                INT isolated = 1;
                 for (j = 0; j <= l; j++) {
                     if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO) {
                         if (nz_col >= 0) {
@@ -195,10 +195,10 @@ void sggbal(
 
         if (!done_permuting) {
             for (;;) {
-                int found = 0;
+                INT found = 0;
                 for (j = k; j <= l; j++) {
-                    int nz_row = -1;
-                    int isolated = 1;
+                    INT nz_row = -1;
+                    INT isolated = 1;
                     for (i = k; i <= l; i++) {
                         if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO) {
                             if (nz_row >= 0) {
@@ -387,15 +387,15 @@ void sggbal(
 
     sfmin = slamch("S");
     sfmax = ONE / sfmin;
-    lsfmin = (int)(log10f(sfmin) / basl + ONE);
-    lsfmax = (int)(log10f(sfmax) / basl);
+    lsfmin = (INT)(log10f(sfmin) / basl + ONE);
+    lsfmax = (INT)(log10f(sfmax) / basl);
     for (i = k; i <= l; i++) {
         irab = cblas_isamax(n - k, &A[i + k * lda], lda);
         rab = fabsf(A[i + (irab + k) * lda]);
         irab = cblas_isamax(n - k, &B[i + k * ldb], ldb);
         rab = (rab > fabsf(B[i + (irab + k) * ldb])) ? rab : fabsf(B[i + (irab + k) * ldb]);
-        lrab = (int)(log10f(rab + sfmin) / basl + ONE);
-        ir = (int)(lscale[i] + (lscale[i] >= 0 ? HALF : -HALF));
+        lrab = (INT)(log10f(rab + sfmin) / basl + ONE);
+        ir = (INT)(lscale[i] + (lscale[i] >= 0 ? HALF : -HALF));
         ir = (ir > lsfmin) ? ir : lsfmin;
         ir = (ir < lsfmax) ? ir : lsfmax;
         ir = (ir < lsfmax - lrab) ? ir : lsfmax - lrab;
@@ -404,8 +404,8 @@ void sggbal(
         cab = fabsf(A[icab + i * lda]);
         icab = cblas_isamax(l + 1, &B[i * ldb], 1);
         cab = (cab > fabsf(B[icab + i * ldb])) ? cab : fabsf(B[icab + i * ldb]);
-        lcab = (int)(log10f(cab + sfmin) / basl + ONE);
-        jc = (int)(rscale[i] + (rscale[i] >= 0 ? HALF : -HALF));
+        lcab = (INT)(log10f(cab + sfmin) / basl + ONE);
+        jc = (INT)(rscale[i] + (rscale[i] >= 0 ? HALF : -HALF));
         jc = (jc > lsfmin) ? jc : lsfmin;
         jc = (jc < lsfmax) ? jc : lsfmax;
         jc = (jc < lsfmax - lcab) ? jc : lsfmax - lcab;

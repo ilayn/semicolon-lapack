@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <float.h>
 
@@ -64,18 +64,18 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ctrevc(const char* side, const char* howmny, int* select, const int n,
-            c64* T, const int ldt, c64* VL, const int ldvl,
-            c64* VR, const int ldvr, const int mm, int* m,
-            c64* work, f32* rwork, int* info)
+void ctrevc(const char* side, const char* howmny, INT* select, const INT n,
+            c64* T, const INT ldt, c64* VL, const INT ldvl,
+            c64* VR, const INT ldvr, const INT mm, INT* m,
+            c64* work, f32* rwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CMZERO = CMPLXF(0.0f, 0.0f);
     const c64 CMONE = CMPLXF(1.0f, 0.0f);
 
-    int allv, bothv, leftv, over, rightv, somev;
-    int i, ii, is, j, k, ki;
+    INT allv, bothv, leftv, over, rightv, somev;
+    INT i, ii, is, j, k, ki;
     f32 remax, scale, smin, smlnum, ulp, unfl;
 
     /* Decode and test the input parameters */

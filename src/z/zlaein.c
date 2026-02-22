@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -42,25 +42,25 @@
  *                             last iterate.
  */
 void zlaein(
-    const int rightv,
-    const int noinit,
-    const int n,
+    const INT rightv,
+    const INT noinit,
+    const INT n,
     const c128* restrict H,
-    const int ldh,
+    const INT ldh,
     const c128 w,
     c128* restrict V,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict rwork,
     const f64 eps3,
     const f64 smlnum,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 TENTH = 0.1;
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int i, ierr, its, j;
+    INT i, ierr, its, j;
     f64 growto, nrmsml, rootn, rtemp, scale, vnorm;
     c128 ei, ej, temp, x;
 

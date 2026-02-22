@@ -3,7 +3,7 @@
  * @brief SLAQZ4 executes a single multishift QZ sweep.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -38,38 +38,38 @@
  *                         - = 0: successful exit, < 0: illegal argument.
  */
 void slaqz4(
-    const int ilschur,
-    const int ilq,
-    const int ilz,
-    const int n,
-    const int ilo,
-    const int ihi,
-    const int nshifts,
-    const int nblock_desired,
+    const INT ilschur,
+    const INT ilq,
+    const INT ilz,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
+    const INT nshifts,
+    const INT nblock_desired,
     f32* restrict sr,
     f32* restrict si,
     f32* restrict ss,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict QC,
-    const int ldqc,
+    const INT ldqc,
     f32* restrict ZC,
-    const int ldzc,
+    const INT ldzc,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, ns, istartm, istopm, sheight, swidth, k, np;
-    int istartb, istopb, ishift, nblock, npos;
+    INT i, j, ns, istartm, istopm, sheight, swidth, k, np;
+    INT istartb, istopb, ishift, nblock, npos;
     f32 temp, v[3], c1, s1, c2, s2, swap;
 
     *info = 0;

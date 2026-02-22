@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -70,34 +70,34 @@
 void ctgevc(
     const char* side,
     const char* howmny,
-    const int* restrict select,
-    const int n,
+    const INT* restrict select,
+    const INT n,
     const c64* restrict S,
-    const int lds,
+    const INT lds,
     const c64* restrict P,
-    const int ldp,
+    const INT ldp,
     c64* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     c64* restrict VR,
-    const int ldvr,
-    const int mm,
-    int* m,
+    const INT ldvr,
+    const INT mm,
+    INT* m,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int compl_, compr, ilall, ilback, ilbbad, ilcomp;
-    int ihwmny, iside;
-    int i, ibeg, ieig, iend, im, isrc, j, je, jr;
+    INT compl_, compr, ilall, ilback, ilbbad, ilcomp;
+    INT ihwmny, iside;
+    INT i, ibeg, ieig, iend, im, isrc, j, je, jr;
     f32 acoefa, acoeff, anorm, ascale, bcoefa, big, bignum;
     f32 bnorm, bscale, dmin_, safmin, sbeta, scale, small_, temp, ulp, xmax;
     c64 bcoeff, ca, cb, d, salpha, sum_, suma, sumb;
-    int lsa, lsb;
+    INT lsa, lsb;
 
     *info = 0;
 

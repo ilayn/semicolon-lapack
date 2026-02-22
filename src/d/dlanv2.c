@@ -49,12 +49,12 @@ void dlanv2(f64* a, f64* b, f64* c, f64* d,
     f64 aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab;
     f64 sac, scale, sigma, sn1, tau, temp, z, safmin;
     f64 safmn2, safmx2, base;
-    int count;
+    INT count;
 
     safmin = dlamch("S");
     eps = dlamch("P");
     base = dlamch("B");
-    safmn2 = pow(base, (int)(log(safmin / eps) / log(base) / TWO));
+    safmn2 = pow(base, (INT)(log(safmin / eps) / log(base) / TWO));
     safmx2 = ONE / safmn2;
 
     if (*c == ZERO) {

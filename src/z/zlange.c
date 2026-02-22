@@ -34,20 +34,20 @@
  */
 f64 zlange(
     const char* norm,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 scale, sum, value, temp;
 
     /* Quick return if possible */
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
     if (minmn == 0) {
         return ZERO;
     }

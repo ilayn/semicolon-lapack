@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -99,34 +99,34 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void slaqp3rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int ioffset,
-    int* nb,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT ioffset,
+    INT* nb,
     const f32 abstol,
     const f32 reltol,
-    const int kp1,
+    const INT kp1,
     const f32 maxc2nrm,
     f32* restrict A,
-    const int lda,
-    int* done,
-    int* KB,
+    const INT lda,
+    INT* done,
+    INT* KB,
     f32* maxc2nrmk,
     f32* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     f32* restrict tau,
     f32* restrict vn1,
     f32* restrict vn2,
     f32* restrict auxv,
     f32* restrict F,
-    const int ldf,
-    int* restrict iwork,
-    int* info)
+    const INT ldf,
+    INT* restrict iwork,
+    INT* info)
 {
-    int itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
+    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
     f32 aik, hugeval, temp, temp2, tol3z;
-    int nb_val;
+    INT nb_val;
 
     *info = 0;
 

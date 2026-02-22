@@ -6,24 +6,24 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
-void slasda(const int icompq, const int smlsiz, const int n, const int sqre,
+void slasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
             f32* restrict D, f32* restrict E,
-            f32* restrict U, const int ldu,
-            f32* restrict VT, int* restrict K,
+            f32* restrict U, const INT ldu,
+            f32* restrict VT, INT* restrict K,
             f32* restrict DIFL, f32* restrict DIFR,
             f32* restrict Z, f32* restrict POLES,
-            int* restrict GIVPTR, int* restrict GIVCOL,
-            const int ldgcol, int* restrict PERM,
+            INT* restrict GIVPTR, INT* restrict GIVCOL,
+            const INT ldgcol, INT* restrict PERM,
             f32* restrict GIVNUM,
             f32* restrict C, f32* restrict S,
-            f32* restrict work, int* restrict IWORK, int* info)
+            f32* restrict work, INT* restrict IWORK, INT* info)
 {
-    int i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk;
-    int j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr;
-    int nl, nlf, nlp1, nlvl, nr, nrf, nrp1, nru;
-    int nwork1, nwork2, smlszp, sqrei, vf, vfi, vl, vli;
+    INT i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk;
+    INT j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr;
+    INT nl, nlf, nlp1, nlvl, nr, nrf, nrp1, nru;
+    INT nwork1, nwork2, smlszp, sqrei, vf, vfi, vl, vli;
     f32 alpha, beta;
 
     *info = 0;

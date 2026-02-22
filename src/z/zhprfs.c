@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -36,32 +36,32 @@
  */
 void zhprfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict AP,
     const c128* restrict AFP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const c128 ONE = CMPLX(1.0, 0.0);
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int upper;
-    int count, i, ik, j, k, kase, kk, nz;
+    INT upper;
+    INT count, i, ik, j, k, kase, kk, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

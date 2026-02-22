@@ -45,15 +45,15 @@
 void ztrttf(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict ARF,
-    int* info)
+    INT* info)
 {
-    int lower, nisodd, normaltransr;
-    int i, j, k, l, n1, n2, nt, nx2, np1x2;
-    int ij;
+    INT lower, nisodd, normaltransr;
+    INT i, j, k, l, n1, n2, nt, nx2, np1x2;
+    INT ij;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

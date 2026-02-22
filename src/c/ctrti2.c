@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -28,15 +28,15 @@
 void ctrti2(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int upper, nounit;
-    int j;
+    INT upper, nounit;
+    INT j;
     c64 ajj;
 
     // Test the input parameters

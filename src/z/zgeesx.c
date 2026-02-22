@@ -7,7 +7,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGEESX computes for an N-by-N complex nonsymmetric matrix A, the
@@ -89,22 +89,22 @@
  *                     the Schur form no longer satisfy select=true.
  */
 void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
-            const char* sense, const int n, c128* A, const int lda,
-            int* sdim, c128* W,
-            c128* VS, const int ldvs,
+            const char* sense, const INT n, c128* A, const INT lda,
+            INT* sdim, c128* W,
+            c128* VS, const INT ldvs,
             f64* rconde, f64* rcondv,
-            c128* work, const int lwork,
-            f64* rwork, int* bwork, int* info)
+            c128* work, const INT lwork,
+            f64* rwork, INT* bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
-    int hswork, i, ibal, icond, ierr, ieval;
-    int ihi, ilo, itau, iwrk, lwrk, maxwrk, minwrk;
+    INT lquery, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
+    INT hswork, i, ibal, icond, ierr, ieval;
+    INT ihi, ilo, itau, iwrk, lwrk, maxwrk, minwrk;
     f64 anrm, bignum, cscale = ONE, eps, smlnum;
     f64 dum[1];
-    int nb_gehrd, nb_unghr;
+    INT nb_gehrd, nb_unghr;
 
     *info = 0;
     wantvs = (jobvs[0] == 'V' || jobvs[0] == 'v');
@@ -146,7 +146,7 @@ void zgeesx(const char* jobvs, const char* sort, zselect1_t select,
             /* Query ZHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             zhseqr("S", jobvs, n, 0, n - 1, A, lda, W, VS, ldvs,
                    work, -1, &ieval);
-            hswork = (int)creal(work[0]);
+            hswork = (INT)creal(work[0]);
 
             if (!wantvs) {
                 maxwrk = maxwrk > hswork ? maxwrk : hswork;

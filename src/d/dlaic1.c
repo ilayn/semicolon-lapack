@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -49,8 +49,8 @@
  * @param[out]    c      Cosine needed in forming xhat.
  */
 void dlaic1(
-    const int job,
-    const int j,
+    const INT job,
+    const INT j,
     const f64* restrict x,
     const f64 sest,
     const f64* restrict w,

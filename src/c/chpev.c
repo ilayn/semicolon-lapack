@@ -7,7 +7,7 @@
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHPEV computes all the eigenvalues and, optionally, eigenvectors of a
@@ -48,19 +48,19 @@
 void chpev(
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 
     *info = 0;
     if (!(wantz || jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -104,7 +104,7 @@ void chpev(
     /* Scale matrix to allowable range, if necessary. */
 
     f32 anrm = clanhp("M", uplo, n, AP, rwork);
-    int iscale = 0;
+    INT iscale = 0;
     f32 sigma;
     if (anrm > ZERO && anrm < rmin) {
         iscale = 1;
@@ -119,9 +119,9 @@ void chpev(
 
     /* Call CHPTRD to reduce Hermitian packed matrix to tridiagonal form. */
 
-    int inde = 0;
-    int indtau = 0;
-    int iinfo;
+    INT inde = 0;
+    INT indtau = 0;
+    INT iinfo;
     chptrd(uplo, n, AP, W, &rwork[inde], &work[indtau], &iinfo);
 
     /*
@@ -132,16 +132,16 @@ void chpev(
     if (!wantz) {
         ssterf(n, W, &rwork[inde], info);
     } else {
-        int indwrk = indtau + n;
+        INT indwrk = indtau + n;
         cupgtr(uplo, n, AP, &work[indtau], Z, ldz, &work[indwrk], &iinfo);
-        int indrwk = inde + n;
+        INT indrwk = inde + n;
         csteqr(jobz, n, W, &rwork[inde], Z, ldz, &rwork[indrwk], info);
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 
     if (iscale == 1) {
-        int imax;
+        INT imax;
         if (*info == 0) {
             imax = n;
         } else {

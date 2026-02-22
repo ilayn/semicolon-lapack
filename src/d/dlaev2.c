@@ -29,7 +29,7 @@
 void dlaev2(const f64 a, const f64 b, const f64 c,
             f64* rt1, f64* rt2, f64* cs1, f64* sn1)
 {
-    int sgn1, sgn2;
+    INT sgn1, sgn2;
     f64 sm, df, adf, tb, ab, rt;
     f64 acmx, acmn;
     f64 cs, acs, ct, tn;

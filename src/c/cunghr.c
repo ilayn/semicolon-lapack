@@ -36,17 +36,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cunghr(const int n, const int ilo, const int ihi,
-            c64* A, const int lda, const c64* tau,
-            c64* work, const int lwork, int* info)
+void cunghr(const INT n, const INT ilo, const INT ihi,
+            c64* A, const INT lda, const c64* tau,
+            c64* work, const INT lwork, INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int lquery;
-    int i, iinfo, j, lwkopt, nb, nh;
-    int max_n_1 = (n > 1) ? n : 1;
-    int nh_max_1;
+    INT lquery;
+    INT i, iinfo, j, lwkopt, nb, nh;
+    INT max_n_1 = (n > 1) ? n : 1;
+    INT nh_max_1;
 
     /* Test the input parameters */
     *info = 0;

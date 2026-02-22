@@ -47,14 +47,14 @@
 f32 clanhp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j, k;
+    INT i, j, k;
     f32 absa, scale, sum, value;
 
     if (n == 0) {

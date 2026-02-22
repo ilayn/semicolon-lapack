@@ -71,17 +71,17 @@
  */
 void cpteqr(
     const char* compz,
-    const int n,
+    const INT n,
     f32* restrict D,
     f32* restrict E,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
-    int i, icompz, nru;
+    INT i, icompz, nru;
 
     // Dummy arrays for cbdsqr (ncvt=0 and ncc=0)
     c64 VT_dummy[1];

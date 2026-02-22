@@ -37,13 +37,13 @@
  */
 void sspsv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict AP,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     *info = 0;
     if (!(uplo[0] == 'U' || uplo[0] == 'u') && !(uplo[0] == 'L' || uplo[0] == 'l')) {

@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DLAQTR solves the real quasi-triangular system
@@ -59,16 +59,16 @@
  *                         - = 2: some diagonal 2 by 2 block has been perturbed by
  *                           a small number in DLALN2 to keep nonsingularity.
  */
-void dlaqtr(const int ltran, const int lreal, const int n,
-            const f64* T, const int ldt,
+void dlaqtr(const INT ltran, const INT lreal, const INT n,
+            const f64* T, const INT ldt,
             const f64* B, const f64 w,
-            f64* scale, f64* X, f64* work, int* info)
+            f64* scale, f64* X, f64* work, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int notran;
-    int i, ierr, j, j1, j2, jnext, k, n1, n2;
+    INT notran;
+    INT i, ierr, j, j1, j2, jnext, k, n1, n2;
     f64 bignum, eps, rec, scaloc, si, smin, sminw;
     f64 smlnum, sr, tjj, tmp, xj, xmax, xnorm, z;
     f64 d[4];  /* 2x2 stored column-major: d[0]=d(1,1), d[1]=d(2,1), d[2]=d(1,2), d[3]=d(2,2) */

@@ -43,15 +43,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void zunmhr(const char* side, const char* trans,
-            const int m, const int n,
-            const int ilo, const int ihi,
-            const c128* A, const int lda,
+            const INT m, const INT n,
+            const INT ilo, const INT ihi,
+            const c128* A, const INT lda,
             const c128* tau,
-            c128* C, const int ldc,
-            c128* work, const int lwork, int* info)
+            c128* C, const INT ldc,
+            c128* work, const INT lwork, INT* info)
 {
-    int left, lquery;
-    int i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
+    INT left, lquery;
+    INT i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
 
     *info = 0;
     nh = ihi - ilo;
@@ -120,7 +120,7 @@ void zunmhr(const char* side, const char* trans,
         i2 = ilo + 1;
     }
 
-    int iinfo;
+    INT iinfo;
     zunmqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 

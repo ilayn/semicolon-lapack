@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -56,34 +56,34 @@
  */
 void cptrfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const c64* restrict E,
     const f32* restrict DF,
     const c64* restrict EF,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int upper;
-    int count, i, ix, j, nz;
+    INT upper;
+    INT count, i, ix, j, nz;
     f32 eps, lstres, s, safe1, safe2, safmin;
     c64 bi, cx, dx, ex;
-    int max_n_1 = (1 > n) ? 1 : n;
-    int info_local;
+    INT max_n_1 = (1 > n) ? 1 : n;
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

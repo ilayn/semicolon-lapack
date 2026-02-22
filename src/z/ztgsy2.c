@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 #define LDZ 2
@@ -81,35 +81,35 @@
  */
 void ztgsy2(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict C,
-    const int ldc,
+    const INT ldc,
     const c128* restrict D,
-    const int ldd,
+    const INT ldd,
     const c128* restrict E,
-    const int lde,
+    const INT lde,
     c128* restrict F,
-    const int ldf,
+    const INT ldf,
     f64* scale,
     f64* rdsum,
     f64* rdscal,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int notran;
-    int i, ierr, j, k;
+    INT notran;
+    INT i, ierr, j, k;
     f64 scaloc;
     c128 alpha;
 
-    int ipiv[LDZ], jpiv[LDZ];
+    INT ipiv[LDZ], jpiv[LDZ];
     c128 rhs[LDZ], z[LDZ * LDZ];
 
     *info = 0;

@@ -8,7 +8,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGEEV computes for an N-by-N complex nonsymmetric matrix A, the
@@ -62,26 +62,26 @@
  *                     elements i:n-1 of W contain eigenvalues which have
  *                     converged.
  */
-void zgeev(const char* jobvl, const char* jobvr, const int n,
-           c128* A, const int lda,
+void zgeev(const char* jobvl, const char* jobvr, const INT n,
+           c128* A, const INT lda,
            c128* W,
-           c128* VL, const int ldvl,
-           c128* VR, const int ldvr,
-           c128* work, const int lwork,
-           f64* rwork, int* info)
+           c128* VL, const INT ldvl,
+           c128* VR, const INT ldvr,
+           c128* work, const INT lwork,
+           f64* rwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery, scalea, wantvl, wantvr;
+    INT lquery, scalea, wantvl, wantvr;
     char side[2];
-    int hswork, i, ibal, ierr, ihi, ilo, irwork, itau, iwrk, k;
-    int lwork_trevc, maxwrk, minwrk, nout;
+    INT hswork, i, ibal, ierr, ihi, ilo, irwork, itau, iwrk, k;
+    INT lwork_trevc, maxwrk, minwrk, nout;
     f64 anrm, bignum, cscale, eps, scl, smlnum;
     c128 tmp;
-    int select[1];
+    INT select[1];
     f64 dum[1];
-    int nb_gehrd, nb_unghr;
+    INT nb_gehrd, nb_unghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -122,7 +122,7 @@ void zgeev(const char* jobvl, const char* jobvr, const int n,
                 ztrevc3("L", "B", select, n, A, lda,
                         VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, rwork, -1, &ierr);
-                lwork_trevc = (int)creal(work[0]);
+                lwork_trevc = (INT)creal(work[0]);
                 maxwrk = maxwrk > (n + lwork_trevc) ?
                          maxwrk : (n + lwork_trevc);
                 zhseqr("S", "V", n, 0, n - 1, A, lda, W, VL, ldvl,
@@ -133,7 +133,7 @@ void zgeev(const char* jobvl, const char* jobvr, const int n,
                 ztrevc3("R", "B", select, n, A, lda,
                         VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, rwork, -1, &ierr);
-                lwork_trevc = (int)creal(work[0]);
+                lwork_trevc = (INT)creal(work[0]);
                 maxwrk = maxwrk > (n + lwork_trevc) ?
                          maxwrk : (n + lwork_trevc);
                 zhseqr("S", "V", n, 0, n - 1, A, lda, W, VR, ldvr,
@@ -142,7 +142,7 @@ void zgeev(const char* jobvl, const char* jobvr, const int n,
                 zhseqr("E", "N", n, 0, n - 1, A, lda, W, VR, ldvr,
                        work, -1, info);
             }
-            hswork = (int)creal(work[0]);
+            hswork = (INT)creal(work[0]);
             maxwrk = maxwrk > hswork ? maxwrk : hswork;
             maxwrk = maxwrk > minwrk ? maxwrk : minwrk;
         }
@@ -262,7 +262,7 @@ void zgeev(const char* jobvl, const char* jobvr, const int n,
                                     cimag(VL[k + i * ldvl]) *
                                     cimag(VL[k + i * ldvl]);
             }
-            k = (int)cblas_idamax(n, &rwork[irwork], 1);
+            k = (INT)cblas_idamax(n, &rwork[irwork], 1);
             tmp = conj(VL[k + i * ldvl]) / sqrt(rwork[irwork + k]);
             cblas_zscal(n, &tmp, &VL[i * ldvl], 1);
             VL[k + i * ldvl] = CMPLX(creal(VL[k + i * ldvl]), ZERO);
@@ -283,7 +283,7 @@ void zgeev(const char* jobvl, const char* jobvr, const int n,
                                     cimag(VR[k + i * ldvr]) *
                                     cimag(VR[k + i * ldvr]);
             }
-            k = (int)cblas_idamax(n, &rwork[irwork], 1);
+            k = (INT)cblas_idamax(n, &rwork[irwork], 1);
             tmp = conj(VR[k + i * ldvr]) / sqrt(rwork[irwork + k]);
             cblas_zscal(n, &tmp, &VR[i * ldvr], 1);
             VR[k + i * ldvr] = CMPLX(creal(VR[k + i * ldvr]), ZERO);

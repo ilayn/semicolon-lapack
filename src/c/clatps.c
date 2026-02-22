@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -46,20 +46,20 @@ void clatps(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     c64* restrict X,
     f32* scale,
     f32* restrict cnorm,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int upper, notran, nounit;
-    int i, imax, ip, j, jfirst, jinc, jlast, jlen;
+    INT upper, notran, nounit;
+    INT i, imax, ip, j, jfirst, jinc, jlast, jlen;
     f32 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
     c64 csumj, tjjs = 0.0f, uscal;
 

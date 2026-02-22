@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -45,24 +45,24 @@
  */
 void zgecon(
     const char* norm,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int onenrm;
+    INT onenrm;
     char normin;
-    int ix, kase, kase1;
+    INT ix, kase, kase1;
     f64 ainvnm, scale, sl, smlnum, su, hugeval;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     hugeval = DBL_MAX;
 

@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DTRSNA estimates reciprocal condition numbers for specified
@@ -59,24 +59,24 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dtrsna(const char* job, const char* howmny, const int* select,
-            const int n, const f64* T, const int ldt,
-            const f64* VL, const int ldvl,
-            const f64* VR, const int ldvr,
-            f64* S, f64* sep, const int mm, int* m,
-            f64* work, const int ldwork,
-            int* iwork, int* info)
+void dtrsna(const char* job, const char* howmny, const INT* select,
+            const INT n, const f64* T, const INT ldt,
+            const f64* VL, const INT ldvl,
+            const f64* VR, const INT ldvr,
+            f64* S, f64* sep, const INT mm, INT* m,
+            f64* work, const INT ldwork,
+            INT* iwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int wantbh, wants, wantsp, somcon;
-    int i, ierr, ifst, ilst, j, k, kase, ks, n2, nn;
-    int pair;
+    INT wantbh, wants, wantsp, somcon;
+    INT i, ierr, ifst, ilst, j, k, kase, ks, n2, nn;
+    INT pair;
     f64 bignum, cond, cs, delta, dumm = 0.0, eps, est, lnrm;
     f64 mu, prod, prod1, prod2, rnrm, scale, smlnum, sn;
-    int isave[3];
+    INT isave[3];
     f64 dummy[1];
 
     /* Decode and test the input parameters */

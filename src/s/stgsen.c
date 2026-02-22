@@ -50,40 +50,40 @@
  *                         - = 1: reordering failed
  */
 void stgsen(
-    const int ijob,
-    const int wantq,
-    const int wantz,
-    const int* restrict select,
-    const int n,
+    const INT ijob,
+    const INT wantq,
+    const INT wantz,
+    const INT* restrict select,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict alphar,
     f32* restrict alphai,
     f32* restrict beta,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict Z,
-    const int ldz,
-    int* m,
+    const INT ldz,
+    INT* m,
     f32* pl,
     f32* pr,
     f32* restrict dif,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    const int IDIFJB = 3;
+    const INT IDIFJB = 3;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, pair, swap, wantd, wantd1, wantd2, wantp;
-    int i, ierr, ijb, k, kase, kk, ks, liwmin, lwmin, mn2, n1, n2;
+    INT lquery, pair, swap, wantd, wantd1, wantd2, wantp;
+    INT i, ierr, ijb, k, kase, kk, ks, liwmin, lwmin, mn2, n1, n2;
     f32 dscale, dsum, eps, rdscal, smlnum;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     lquery = (lwork == -1 || liwork == -1);

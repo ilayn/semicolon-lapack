@@ -7,7 +7,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CTGSEN reorders the generalized Schur decomposition of a complex
@@ -64,40 +64,40 @@
  *                         - = 1: reordering failed
  */
 void ctgsen(
-    const int ijob,
-    const int wantq,
-    const int wantz,
-    const int* restrict select,
-    const int n,
+    const INT ijob,
+    const INT wantq,
+    const INT wantz,
+    const INT* restrict select,
+    const INT n,
     c64* A,
-    const int lda,
+    const INT lda,
     c64* B,
-    const int ldb,
+    const INT ldb,
     c64* alpha,
     c64* beta,
     c64* Q,
-    const int ldq,
+    const INT ldq,
     c64* Z,
-    const int ldz,
-    int* m,
+    const INT ldz,
+    INT* m,
     f32* pl,
     f32* pr,
     f32* dif,
     c64* work,
-    const int lwork,
-    int* iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* iwork,
+    const INT liwork,
+    INT* info)
 {
-    const int IDIFJB = 3;
+    const INT IDIFJB = 3;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, swap, wantd, wantd1, wantd2, wantp;
-    int i, ierr, ijb, k, kase, ks, liwmin, lwmin, mn2, n1, n2;
+    INT lquery, swap, wantd, wantd1, wantd2, wantp;
+    INT i, ierr, ijb, k, kase, ks, liwmin, lwmin, mn2, n1, n2;
     f32 dscale, dsum, rdscal, safmin;
     c64 temp1, temp2;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     lquery = (lwork == -1 || liwork == -1);
@@ -150,7 +150,7 @@ void ctgsen(
         liwmin = 1 > n + 2 ? 1 : n + 2;
     } else if (ijob == 3 || ijob == 5) {
         lwmin = 1 > 4 * (*m) * (n - *m) ? 1 : 4 * (*m) * (n - *m);
-        int tmp = 1 > 2 * (*m) * (n - *m) ? 1 : 2 * (*m) * (n - *m);
+        INT tmp = 1 > 2 * (*m) * (n - *m) ? 1 : 2 * (*m) * (n - *m);
         liwmin = tmp > n + 2 ? tmp : n + 2;
     } else {
         lwmin = 1;
@@ -205,8 +205,8 @@ void ctgsen(
             /* Swap the K-th block to position KS. Compute unitary Q
                and Z that will swap adjacent diagonal blocks in (A, B). */
             if (k != ks - 1) {
-                int ifst_val = k;
-                int ilst_val = ks - 1;
+                INT ifst_val = k;
+                INT ilst_val = ks - 1;
                 ctgexc(wantq, wantz, n, A, lda, B, ldb, Q, ldq,
                        Z, ldz, ifst_val, &ilst_val, &ierr);
             }

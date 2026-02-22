@@ -4,7 +4,7 @@
  *        using the unblocked version of the algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -69,19 +69,19 @@
  * Array elements marked * are not used by the routine.
  */
 void sgbtf2(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     f32* restrict AB,
-    const int ldab,
-    int* restrict ipiv,
-    int* info)
+    const INT ldab,
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j, jp, ju, km, kv;
+    INT i, j, jp, ju, km, kv;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
     kv = ku + kl;
@@ -129,7 +129,7 @@ void sgbtf2(
        of the factorization. 0-based, initialized to 0. */
     ju = 0;
 
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
 
     for (j = 0; j < minmn; j++) {
         /* Set fill-in elements in column j+kv to zero */
@@ -155,7 +155,7 @@ void sgbtf2(
         if (AB[kv + jp + j * ldab] != ZERO) {
             /* Update ju: index of last column affected by current stage
                0-based: ju = max(ju, min(j + ku + jp, n - 1)) */
-            int new_ju = j + ku + jp;
+            INT new_ju = j + ku + jp;
             if (new_ju > n - 1) new_ju = n - 1;
             if (new_ju > ju) ju = new_ju;
 

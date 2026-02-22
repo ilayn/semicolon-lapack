@@ -4,7 +4,7 @@
  *        an RQ factorization determined by SGERQF (blocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 
@@ -39,16 +39,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sorgrq(const int m, const int n, const int k,
-            f32* restrict A, const int lda,
+void sorgrq(const INT m, const INT n, const INT k,
+            f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict work, const int lwork,
-            int* info)
+            f32* restrict work, const INT lwork,
+            INT* info)
 {
-    int nb, nbmin, nx, iws, ldwork, lwkopt;
-    int i, ib, ii, iinfo, j, l;
-    int kk;
-    int lquery;
+    INT nb, nbmin, nx, iws, ldwork, lwkopt;
+    INT i, ib, ii, iinfo, j, l;
+    INT kk;
+    INT lquery;
     const f32 ZERO = 0.0f;
 
     /* Parameter validation */

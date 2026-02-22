@@ -4,7 +4,7 @@
  *        to standard form, using packed storage.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -37,15 +37,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dspgst(const int itype, const char* uplo, const int n,
+void dspgst(const INT itype, const char* uplo, const INT n,
             f64* restrict AP, const f64* restrict BP,
-            int* info)
+            INT* info)
 {
     const f64 ONE = 1.0;
     const f64 HALF = 0.5;
 
-    int upper;
-    int j, j1, j1j1, jj, k, k1, k1k1, kk;
+    INT upper;
+    INT j, j1, j1j1, jj, k, k1, k1k1, kk;
     f64 ajj, akk, bjj, bkk, ct;
 
     *info = 0;

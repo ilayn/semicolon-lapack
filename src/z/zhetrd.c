@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 #include "../include/lapack_tuning.h"
 
@@ -63,15 +63,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zhetrd(const char* uplo, const int n, c128* A, const int lda,
+void zhetrd(const char* uplo, const INT n, c128* A, const INT lda,
             f64* D, f64* E, c128* tau, c128* work,
-            const int lwork, int* info)
+            const INT lwork, INT* info)
 {
     const f64 ONE = 1.0;
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    int upper, lquery;
-    int i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
+    INT upper, lquery;
+    INT i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

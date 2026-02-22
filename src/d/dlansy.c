@@ -37,12 +37,12 @@
 f64 dlansy(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict work)
 {
-    int i, j;
+    INT i, j;
     f64 absa, scale, sum, value, temp;
 
     /* Quick return if possible */

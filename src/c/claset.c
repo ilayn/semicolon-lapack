@@ -26,17 +26,17 @@
  *                    described above.
  * @param[in]  lda    The leading dimension of A. lda >= max(1, m).
  */
-void claset(const char* uplo, const int m, const int n,
+void claset(const char* uplo, const INT m, const INT n,
             const c64 alpha, const c64 beta,
-            c64* restrict A, const int lda)
+            c64* restrict A, const INT lda)
 {
-    int i, j;
-    int minmn = m < n ? m : n;
+    INT i, j;
+    INT minmn = m < n ? m : n;
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         /* Set the strictly upper triangular or trapezoidal part to ALPHA */
         for (j = 1; j < n; j++) {
-            int imax = j < m ? j : m;
+            INT imax = j < m ? j : m;
             for (i = 0; i < imax; i++) {
                 A[i + j * lda] = alpha;
             }

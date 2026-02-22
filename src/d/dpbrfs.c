@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define ITMAX 5
@@ -40,33 +40,33 @@
  */
 void dpbrfs(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict AFB,
-    const int ldafb,
+    const INT ldafb,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int upper;
-    int count, i, j, k, kase, l, nz;
+    INT upper;
+    INT count, i, j, k, kase, l, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

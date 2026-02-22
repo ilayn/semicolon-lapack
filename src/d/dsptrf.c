@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -50,18 +50,18 @@
  */
 void dsptrf(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict AP,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 EIGHT = 8.0;
     const f64 SEVTEN = 17.0;
 
-    int upper;
-    int i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
     f64 absakk, alpha, colmax, d11, d12, d21, d22, r1, rowmax, t, wk, wkm1, wkp1;
 
     *info = 0;
@@ -177,7 +177,7 @@ void dsptrf(
                             wkm1 = d12 * (d11 * AP[knc + j] - AP[kc + j]);
                             wk = d12 * (d22 * AP[kc + j] - AP[knc + j]);
                             for (i = j; i >= 0; i--) {
-                                int jc = i + j * (j + 1) / 2;
+                                INT jc = i + j * (j + 1) / 2;
                                 AP[jc] = AP[jc] - AP[kc + i] * wk - AP[knc + i] * wkm1;
                             }
                             AP[kc + j] = wk;
@@ -299,7 +299,7 @@ void dsptrf(
                             wk = d21 * (d11 * AP[kc + j - k] - AP[knc + j - k - 1]);
                             wkp1 = d21 * (d22 * AP[knc + j - k - 1] - AP[kc + j - k]);
                             for (i = j; i < n; i++) {
-                                int jc = npp - (n - j) * (n - j + 1) / 2 + i - j;
+                                INT jc = npp - (n - j) * (n - j + 1) / 2 + i - j;
                                 AP[jc] = AP[jc] - AP[kc + i - k] * wk - AP[knc + i - k - 1] * wkp1;
                             }
                             AP[kc + j - k] = wk;

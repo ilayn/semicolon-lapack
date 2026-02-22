@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -115,21 +115,21 @@
  *                        < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void zunbdb(const char* trans, const char* signs,
-            const int m, const int p, const int q,
-            c128* restrict X11, const int ldx11,
-            c128* restrict X12, const int ldx12,
-            c128* restrict X21, const int ldx21,
-            c128* restrict X22, const int ldx22,
+            const INT m, const INT p, const INT q,
+            c128* restrict X11, const INT ldx11,
+            c128* restrict X12, const INT ldx12,
+            c128* restrict X21, const INT ldx21,
+            c128* restrict X22, const INT ldx22,
             f64* restrict theta, f64* restrict phi,
             c128* restrict taup1,
             c128* restrict taup2,
             c128* restrict tauq1,
             c128* restrict tauq2,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int colmajor, lquery;
-    int i, lworkmin, lworkopt;
+    INT colmajor, lquery;
+    INT i, lworkmin, lworkopt;
     f64 z1, z2, z3, z4;
 
     *info = 0;

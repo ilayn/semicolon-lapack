@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -35,24 +35,24 @@
 void zhbev_2stage(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lower, wantz, lquery;
-    int iinfo, imax, inde, indwrk, indrwk, iscale;
-    int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
+    INT lower, wantz, lquery;
+    INT iinfo, imax, inde, indwrk, indrwk, iscale;
+    INT llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

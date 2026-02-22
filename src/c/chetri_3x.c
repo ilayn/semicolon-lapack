@@ -6,7 +6,7 @@
 #include <math.h>
 #include <complex.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -63,23 +63,23 @@
  */
 void chetri_3x(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c64* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper;
-    int cut, i, icount, invd, ip, k, nnb, j, u11;
+    INT upper;
+    INT cut, i, icount, invd, ip, k, nnb, j, u11;
     f32 ak, akp1, t;
     c64 akkp1, d, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
-    int ldwork = n + nb + 1;
+    INT ldwork = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

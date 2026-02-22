@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -38,26 +38,26 @@ void dtprfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict AP,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     const f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int notran, nounit, upper;
-    int i, j, k, kase, kc, nz;
+    INT notran, nounit, upper;
+    INT i, j, k, kase, kc, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

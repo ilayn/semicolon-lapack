@@ -55,9 +55,9 @@
  *                        of squares from which scale_out has been factored out.
  */
 void zlassq(
-    const int n,
+    const INT n,
     const c128* restrict X,
-    const int incx,
+    const INT incx,
     f64* scale,
     f64* sumsq)
 {
@@ -69,8 +69,8 @@ void zlassq(
     const f64 ssml = ldexp(1.0, -FLOOR_HALF(DBL_MIN_EXP - DBL_MANT_DIG));
     const f64 sbig = ldexp(1.0, -CEIL_HALF(DBL_MAX_EXP + DBL_MANT_DIG - 1));
 
-    int i, ix;
-    int notbig;
+    INT i, ix;
+    INT notbig;
     f64 abig, amed, asml, ax, ymax, ymin;
 
     /* Quick return if possible */

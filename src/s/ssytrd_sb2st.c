@@ -7,24 +7,24 @@
 #include <math.h>
 
 void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
-                  const int n, const int kd,
-                  f32* AB, const int ldab,
+                  const INT n, const INT kd,
+                  f32* AB, const INT ldab,
                   f32* D, f32* E,
-                  f32* hous, const int lhous,
-                  f32* work, const int lwork, int* info)
+                  f32* hous, const INT lhous,
+                  f32* work, const INT lwork, INT* info)
 {
     const f32 rzero = 0.0f;
     const f32 zero = 0.0f;
 
-    int lquery, wantq, upper, afters1;
-    int i, m, k, ib, sweepid, myid, shift, stt, st;
-    int ed, stind, edind, blklastind, colpt, thed;
-    int stepercol, grsiz, thgrsiz, thgrnb, thgrid;
-    int ttype;
+    INT lquery, wantq, upper, afters1;
+    INT i, m, k, ib, sweepid, myid, shift, stt, st;
+    INT ed, stind, edind, blklastind, colpt, thed;
+    INT stepercol, grsiz, thgrsiz, thgrnb, thgrid;
+    INT ttype;
     /* nbtiles, nthreads: set but unused (OpenMP threading placeholders) */
-    int abdpos, abofdpos, dpos, ofdpos, awpos;
-    int inda, indw, apos, sizea, lda, indv, indtau;
-    int sizetau, ldv, lhmin, lwmin;
+    INT abdpos, abofdpos, dpos, ofdpos, awpos;
+    INT inda, indw, apos, sizea, lda, indv, indtau;
+    INT sizetau, ldv, lhmin, lwmin;
 
     *info = 0;
     afters1 = (stage1[0] == 'Y' || stage1[0] == 'y');
@@ -140,8 +140,8 @@ void ssytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     grsiz = 1;
     shift = 3;
     (void)ceilf((f32)n / (f32)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceilf((f32)shift / (f32)grsiz);
-    thgrnb = (int)ceilf((f32)(n - 1) / (f32)thgrsiz);
+    stepercol = (INT)ceilf((f32)shift / (f32)grsiz);
+    thgrnb = (INT)ceilf((f32)(n - 1) / (f32)thgrsiz);
 
     slacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     slaset("A", kd, n, zero, zero, &work[awpos], lda);

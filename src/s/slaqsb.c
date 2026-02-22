@@ -27,10 +27,10 @@
  */
 void slaqsb(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f32* restrict S,
     const f32 scond,
     const f32 amax,
@@ -38,7 +38,7 @@ void slaqsb(
 {
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 cj, large, small;
 
     if (n <= 0) {

@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 #define LDZ 8
@@ -59,37 +59,37 @@
  */
 void stgsy2(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict C,
-    const int ldc,
+    const INT ldc,
     const f32* restrict D,
-    const int ldd,
+    const INT ldd,
     const f32* restrict E,
-    const int lde,
+    const INT lde,
     f32* restrict F,
-    const int ldf,
+    const INT ldf,
     f32* scale,
     f32* rdsum,
     f32* rdscal,
-    int* restrict iwork,
-    int* pq,
-    int* info)
+    INT* restrict iwork,
+    INT* pq,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int notran;
-    int i, ie, ierr, ii, is, isp1, j, je, jj, js, jsp1;
-    int k, mb, nb, p, q, zdim;
+    INT notran;
+    INT i, ie, ierr, ii, is, isp1, j, je, jj, js, jsp1;
+    INT k, mb, nb, p, q, zdim;
     f32 alpha, scaloc;
 
-    int ipiv[LDZ], jpiv[LDZ];
+    INT ipiv[LDZ], jpiv[LDZ];
     f32 rhs[LDZ], z[LDZ * LDZ];
 
     *info = 0;

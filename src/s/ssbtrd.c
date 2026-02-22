@@ -3,7 +3,7 @@
  * @brief SSBTRD reduces a symmetric band matrix to symmetric tridiagonal form.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -38,23 +38,23 @@
 void ssbtrd(
     const char* vect,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict D,
     f32* restrict E,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int initq, upper, wantq;
-    int i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
-    int jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
+    INT initq, upper, wantq;
+    INT i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
+    INT jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
     f32 temp;
 
     initq = (vect[0] == 'V' || vect[0] == 'v');

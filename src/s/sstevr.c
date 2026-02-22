@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -112,30 +112,30 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  *                         - > 0: Internal error
  */
-void sstevr(const char* jobz, const char* range, const int n,
+void sstevr(const char* jobz, const char* range, const INT n,
             f32* D, f32* E,
             const f32 vl, const f32 vu,
-            const int il, const int iu,
+            const INT il, const INT iu,
             const f32 abstol,
-            int* m, f32* W, f32* Z, const int ldz,
-            int* isuppz, f32* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+            INT* m, f32* W, f32* Z, const INT ldz,
+            INT* isuppz, f32* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int wantz, alleig, valeig, indeig, lquery, test;
-    int tryrac;
-    int i, imax, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
+    INT wantz, alleig, valeig, indeig, lquery, test;
+    INT tryrac;
+    INT i, imax, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
     f32 bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, tnrm, vll, vuu;
 
     /* Workspace indices for fallback path (SSTEBZ/SSTEIN) */
-    int indibl, indisp, indifl, indiwo;
+    INT indibl, indisp, indifl, indiwo;
 
     /* ILAENV(10, 'SSTEVR', ...) = 1: IEEE arithmetic is trusted */
-    int ieee = 1;
+    INT ieee = 1;
 
     /* Decode JOBZ */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

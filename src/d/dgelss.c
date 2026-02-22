@@ -7,7 +7,7 @@
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGELSS computes the minimum norm solution to a real linear least
@@ -64,21 +64,21 @@
  *                           if info = i, i off-diagonal elements of an intermediate
  *                           bidiagonal form did not converge to zero.
  */
-void dgelss(const int m, const int n, const int nrhs,
-            f64* restrict A, const int lda,
-            f64* restrict B, const int ldb,
-            f64* restrict S, const f64 rcond, int* rank,
-            f64* restrict work, const int lwork,
-            int* info)
+void dgelss(const INT m, const INT n, const INT nrhs,
+            f64* restrict A, const INT lda,
+            f64* restrict B, const INT ldb,
+            f64* restrict S, const f64 rcond, INT* rank,
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int lquery;
-    int bdspac, bl, chunk, i, iascl, ibscl, ie, il, itau, itaup, itauq;
-    int iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr;
-    int lwork_dgeqrf, lwork_dormqr, lwork_dgebrd, lwork_dormbr, lwork_dorgbr;
-    int lwork_dgelqf, lwork_dormlq;
+    INT lquery;
+    INT bdspac, bl, chunk, i, iascl, ibscl, ie, il, itau, itaup, itauq;
+    INT iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr;
+    INT lwork_dgeqrf, lwork_dormqr, lwork_dgebrd, lwork_dormbr, lwork_dorgbr;
+    INT lwork_dgelqf, lwork_dormlq;
     f64 anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
     f64 wkopt[1];
-    int iinfo;
+    INT iinfo;
 
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -112,10 +112,10 @@ void dgelss(const int m, const int n, const int nrhs,
                 /* Path 1a - overdetermined, with many more rows than columns */
                 /* Compute space needed for DGEQRF */
                 dgeqrf(m, n, A, lda, NULL, wkopt, -1, &iinfo);
-                lwork_dgeqrf = (int)wkopt[0];
+                lwork_dgeqrf = (INT)wkopt[0];
                 /* Compute space needed for DORMQR */
                 dormqr("L", "T", m, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                lwork_dormqr = (int)wkopt[0];
+                lwork_dormqr = (INT)wkopt[0];
                 mm = n;
                 maxwrk = n + lwork_dgeqrf;
                 if (n + lwork_dormqr > maxwrk) maxwrk = n + lwork_dormqr;
@@ -126,13 +126,13 @@ void dgelss(const int m, const int n, const int nrhs,
                 bdspac = 5 * n > 1 ? 5 * n : 1;
                 /* Compute space needed for DGEBRD */
                 dgebrd(mm, n, A, lda, S, NULL, NULL, NULL, wkopt, -1, &iinfo);
-                lwork_dgebrd = (int)wkopt[0];
+                lwork_dgebrd = (INT)wkopt[0];
                 /* Compute space needed for DORMBR */
                 dormbr("Q", "L", "T", mm, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                lwork_dormbr = (int)wkopt[0];
+                lwork_dormbr = (INT)wkopt[0];
                 /* Compute space needed for DORGBR */
                 dorgbr("P", n, n, n, A, lda, NULL, wkopt, -1, &iinfo);
-                lwork_dorgbr = (int)wkopt[0];
+                lwork_dorgbr = (INT)wkopt[0];
                 /* Compute total workspace needed */
                 if (3 * n + lwork_dgebrd > maxwrk) maxwrk = 3 * n + lwork_dgebrd;
                 if (3 * n + lwork_dormbr > maxwrk) maxwrk = 3 * n + lwork_dormbr;
@@ -154,19 +154,19 @@ void dgelss(const int m, const int n, const int nrhs,
                     /* Path 2a - underdetermined, with many more columns than rows */
                     /* Compute space needed for DGELQF */
                     dgelqf(m, n, A, lda, NULL, wkopt, -1, &iinfo);
-                    lwork_dgelqf = (int)wkopt[0];
+                    lwork_dgelqf = (INT)wkopt[0];
                     /* Compute space needed for DGEBRD */
                     dgebrd(m, m, A, lda, S, NULL, NULL, NULL, wkopt, -1, &iinfo);
-                    lwork_dgebrd = (int)wkopt[0];
+                    lwork_dgebrd = (INT)wkopt[0];
                     /* Compute space needed for DORMBR */
                     dormbr("Q", "L", "T", m, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                    lwork_dormbr = (int)wkopt[0];
+                    lwork_dormbr = (INT)wkopt[0];
                     /* Compute space needed for DORGBR */
                     dorgbr("P", m, m, m, A, lda, NULL, wkopt, -1, &iinfo);
-                    lwork_dorgbr = (int)wkopt[0];
+                    lwork_dorgbr = (INT)wkopt[0];
                     /* Compute space needed for DORMLQ */
                     dormlq("L", "T", n, nrhs, m, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                    lwork_dormlq = (int)wkopt[0];
+                    lwork_dormlq = (INT)wkopt[0];
                     /* Compute total workspace needed */
                     maxwrk = m + lwork_dgelqf;
                     if (m * m + 4 * m + lwork_dgebrd > maxwrk) maxwrk = m * m + 4 * m + lwork_dgebrd;
@@ -183,13 +183,13 @@ void dgelss(const int m, const int n, const int nrhs,
                     /* Path 2 - underdetermined */
                     /* Compute space needed for DGEBRD */
                     dgebrd(m, n, A, lda, S, NULL, NULL, NULL, wkopt, -1, &iinfo);
-                    lwork_dgebrd = (int)wkopt[0];
+                    lwork_dgebrd = (INT)wkopt[0];
                     /* Compute space needed for DORMBR */
                     dormbr("Q", "L", "T", m, nrhs, m, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                    lwork_dormbr = (int)wkopt[0];
+                    lwork_dormbr = (INT)wkopt[0];
                     /* Compute space needed for DORGBR */
                     dorgbr("P", m, n, m, A, lda, NULL, wkopt, -1, &iinfo);
-                    lwork_dorgbr = (int)wkopt[0];
+                    lwork_dorgbr = (INT)wkopt[0];
                     maxwrk = 3 * m + lwork_dgebrd;
                     if (3 * m + lwork_dormbr > maxwrk) maxwrk = 3 * m + lwork_dormbr;
                     if (3 * m + lwork_dorgbr > maxwrk) maxwrk = 3 * m + lwork_dorgbr;
@@ -349,7 +349,7 @@ void dgelss(const int m, const int n, const int nrhs,
         /* Path 2a - underdetermined, with many more columns than rows
          * and sufficient workspace for an efficient algorithm */
         ldwork = m;
-        int temp1 = m > 2 * m - 4 ? m : 2 * m - 4;
+        INT temp1 = m > 2 * m - 4 ? m : 2 * m - 4;
         temp1 = temp1 > nrhs ? temp1 : nrhs;
         temp1 = temp1 > n - 3 * m ? temp1 : n - 3 * m;
         if (lwork >= 4 * m + m * lda + temp1) {

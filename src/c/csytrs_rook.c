@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CSYTRS_ROOK solves a system of linear equations A*X = B with
@@ -52,20 +52,20 @@
  */
 void csytrs_rook(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper;
-    int j, k, kp;
+    INT upper;
+    INT j, k, kp;
     c64 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

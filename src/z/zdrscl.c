@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -23,15 +23,15 @@
  *                      incx > 0.
  */
 void zdrscl(
-    const int n,
+    const INT n,
     const f64 sa,
     c128* restrict sx,
-    const int incx)
+    const INT incx)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int done;
+    INT done;
     f64 bignum, cden, cden1, cnum, cnum1, mul, smlnum;
 
     // Quick return if possible

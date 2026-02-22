@@ -64,23 +64,23 @@
  */
 void csycon_3(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f32 anorm,
     f32* rcond,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper;
-    int i, kase;
+    INT upper;
+    INT i, kase;
     f32 ainvnm;
-    int isave[3];
-    int dummy_info;
+    INT isave[3];
+    INT dummy_info;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

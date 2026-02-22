@@ -92,29 +92,29 @@
 void dsysvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict AF,
-    const int ldaf,
-    int* restrict ipiv,
+    const INT ldaf,
+    INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nofact, lquery;
-    int lwkmin, lwkopt, nb;
+    INT nofact, lquery;
+    INT lwkmin, lwkopt, nb;
     f64 anorm;
 
     /* Test the input parameters. */
@@ -148,7 +148,7 @@ void dsysvx(
         lwkopt = lwkmin;
         if (nofact) {
             nb = lapack_get_nb("SYTRF");
-            int nbnb = n * nb;
+            INT nbnb = n * nb;
             lwkopt = (lwkopt > nbnb) ? lwkopt : nbnb;
         }
         work[0] = (f64)lwkopt;

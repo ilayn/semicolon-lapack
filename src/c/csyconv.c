@@ -49,17 +49,17 @@
 void csyconv(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict E,
-    int* info)
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper, convert;
-    int i, ip, j;
+    INT upper, convert;
+    INT i, ip, j;
     c64 temp;
 
     *info = 0;

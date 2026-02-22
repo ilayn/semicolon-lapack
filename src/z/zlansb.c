@@ -29,16 +29,16 @@
 f64 zlansb(
     const char* norm,
     const char* uplo,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j, l;
+    INT i, j, l;
     f64 absa, scale, sum, value;
 
     if (n == 0) {
@@ -48,7 +48,7 @@ f64 zlansb(
         value = ZERO;
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 0; j < n; j++) {
-                int istart = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
+                INT istart = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
                 for (i = istart; i <= k; i++) {
                     sum = cabs(AB[i + j * ldab]);
                     if (value < sum || disnan(sum)) value = sum;
@@ -56,7 +56,7 @@ f64 zlansb(
             }
         } else {
             for (j = 0; j < n; j++) {
-                int iend = (n - j < k + 1) ? n - j : k + 1;
+                INT iend = (n - j < k + 1) ? n - j : k + 1;
                 for (i = 0; i < iend; i++) {
                     sum = cabs(AB[i + j * ldab]);
                     if (value < sum || disnan(sum)) value = sum;
@@ -71,7 +71,7 @@ f64 zlansb(
             for (j = 0; j < n; j++) {
                 sum = ZERO;
                 l = k - j;
-                int istart = (j - k > 0) ? j - k : 0;
+                INT istart = (j - k > 0) ? j - k : 0;
                 for (i = istart; i < j; i++) {
                     absa = cabs(AB[l + i + j * ldab]);
                     sum = sum + absa;
@@ -90,7 +90,7 @@ f64 zlansb(
             for (j = 0; j < n; j++) {
                 sum = work[j] + cabs(AB[j * ldab]);
                 l = -j;
-                int iend = (n < j + k + 1) ? n : j + k + 1;
+                INT iend = (n < j + k + 1) ? n : j + k + 1;
                 for (i = j + 1; i < iend; i++) {
                     absa = cabs(AB[l + i + j * ldab]);
                     sum = sum + absa;
@@ -107,14 +107,14 @@ f64 zlansb(
         if (k > 0) {
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 1; j < n; j++) {
-                    int len = (j < k) ? j : k;
-                    int start = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
+                    INT len = (j < k) ? j : k;
+                    INT start = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
                     zlassq(len, &AB[start + j * ldab], 1, &scale, &sum);
                 }
                 l = k;
             } else {
                 for (j = 0; j < n - 1; j++) {
-                    int len = (n - j - 1 < k) ? n - j - 1 : k;
+                    INT len = (n - j - 1 < k) ? n - j - 1 : k;
                     zlassq(len, &AB[1 + j * ldab], 1, &scale, &sum);
                 }
                 l = 0;

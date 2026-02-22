@@ -4,7 +4,7 @@
  *        definite matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 
@@ -38,17 +38,17 @@
  */
 void dpotrf(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -65,7 +65,7 @@ void dpotrf(
     if (n == 0) return;
 
     // Determine the block size (NB=64 from ilaenv for POTRF)
-    int nb = lapack_get_nb("POTRF");
+    INT nb = lapack_get_nb("POTRF");
 
     if (nb <= 1 || nb >= n) {
         // Use unblocked code
@@ -74,9 +74,9 @@ void dpotrf(
         // Use blocked code
         if (upper) {
             // Compute the Cholesky factorization A = U**T * U.
-            for (int j = 0; j < n; j += nb) {
+            for (INT j = 0; j < n; j += nb) {
                 // Update and factorize the current diagonal block
-                int jb = nb < (n - j) ? nb : (n - j);
+                INT jb = nb < (n - j) ? nb : (n - j);
 
                 // Fortran: DSYRK('Upper', 'T', JB, J-1, -ONE, A(1,J), LDA, ONE, A(J,J), LDA)
                 // 0-based: n_size = jb, k = j
@@ -113,9 +113,9 @@ void dpotrf(
             }
         } else {
             // Compute the Cholesky factorization A = L * L**T.
-            for (int j = 0; j < n; j += nb) {
+            for (INT j = 0; j < n; j += nb) {
                 // Update and factorize the current diagonal block
-                int jb = nb < (n - j) ? nb : (n - j);
+                INT jb = nb < (n - j) ? nb : (n - j);
 
                 // Fortran: DSYRK('Lower', 'N', JB, J-1, -ONE, A(J,1), LDA, ONE, A(J,J), LDA)
                 if (j > 0) {

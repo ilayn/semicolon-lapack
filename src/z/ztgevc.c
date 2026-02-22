@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -70,34 +70,34 @@
 void ztgevc(
     const char* side,
     const char* howmny,
-    const int* restrict select,
-    const int n,
+    const INT* restrict select,
+    const INT n,
     const c128* restrict S,
-    const int lds,
+    const INT lds,
     const c128* restrict P,
-    const int ldp,
+    const INT ldp,
     c128* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     c128* restrict VR,
-    const int ldvr,
-    const int mm,
-    int* m,
+    const INT ldvr,
+    const INT mm,
+    INT* m,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int compl_, compr, ilall, ilback, ilbbad, ilcomp;
-    int ihwmny, iside;
-    int i, ibeg, ieig, iend, im, isrc, j, je, jr;
+    INT compl_, compr, ilall, ilback, ilbbad, ilcomp;
+    INT ihwmny, iside;
+    INT i, ibeg, ieig, iend, im, isrc, j, je, jr;
     f64 acoefa, acoeff, anorm, ascale, bcoefa, big, bignum;
     f64 bnorm, bscale, dmin_, safmin, sbeta, scale, small_, temp, ulp, xmax;
     c128 bcoeff, ca, cb, d, salpha, sum_, suma, sumb;
-    int lsa, lsb;
+    INT lsa, lsb;
 
     *info = 0;
 

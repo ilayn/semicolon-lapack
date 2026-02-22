@@ -7,7 +7,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 #define NBMIN 8
@@ -75,21 +75,21 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ctrevc3(const char* side, const char* howmny, int* select,
-             const int n, c64* T, const int ldt,
-             c64* VL, const int ldvl,
-             c64* VR, const int ldvr,
-             const int mm, int* m,
-             c64* work, const int lwork,
-             f32* rwork, const int lrwork, int* info)
+void ctrevc3(const char* side, const char* howmny, INT* select,
+             const INT n, c64* T, const INT ldt,
+             c64* VL, const INT ldvl,
+             c64* VR, const INT ldvr,
+             const INT mm, INT* m,
+             c64* work, const INT lwork,
+             f32* rwork, const INT lrwork, INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const c64 czero = 0.0f;
     const c64 cone = 1.0f;
 
-    int allv, bothv, leftv, lquery, over, rightv, somev;
-    int i, ii, is, j, k, ki, iv, nb, maxwrk;
+    INT allv, bothv, leftv, lquery, over, rightv, somev;
+    INT i, ii, is, j, k, ki, iv, nb, maxwrk;
     f32 remax, scale, smin, smlnum, ulp, unfl;
 
     /* Decode and test the input parameters */

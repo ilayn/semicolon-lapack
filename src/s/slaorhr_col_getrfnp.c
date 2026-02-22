@@ -3,7 +3,7 @@
  * @brief SLAORHR_COL_GETRFNP computes the modified LU factorization without pivoting of a real general M-by-N matrix A.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -57,15 +57,15 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void slaorhr_col_getrfnp(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict D,
-    int* info)
+    INT* info)
 {
-    int iinfo, j, jb, nb;
-    int minmn;
+    INT iinfo, j, jb, nb;
+    INT minmn;
 
     *info = 0;
     if (m < 0) {

@@ -37,16 +37,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zungqr(const int m, const int n, const int k,
-            c128* restrict A, const int lda,
+void zungqr(const INT m, const INT n, const INT k,
+            c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int nb, nbmin, nx, iws, ldwork, lwkopt;
-    int i, ib, iinfo, j, l;
-    int ki, kk;
-    int lquery;
+    INT nb, nbmin, nx, iws, ldwork, lwkopt;
+    INT i, ib, iinfo, j, l;
+    INT ki, kk;
+    INT lquery;
     const c128 ZERO = CMPLX(0.0, 0.0);
 
     *info = 0;

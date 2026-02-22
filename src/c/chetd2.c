@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -52,16 +52,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void chetd2(const char* uplo, const int n, c64* restrict A,
-            const int lda, f32* restrict D, f32* restrict E,
-            c64* restrict tau, int* info)
+void chetd2(const char* uplo, const INT n, c64* restrict A,
+            const INT lda, f32* restrict D, f32* restrict E,
+            c64* restrict tau, INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 HALF = CMPLXF(0.5f, 0.0f);
 
-    int upper;
-    int i;
+    INT upper;
+    INT i;
     c64 alpha, taui;
     CBLAS_UPLO cblas_uplo;
 
@@ -134,8 +134,8 @@ void chetd2(const char* uplo, const int n, c64* restrict A,
 
         A[0] = CMPLXF(crealf(A[0]), 0.0f);
         for (i = 0; i <= n - 2; i++) {
-            int ni = n - i - 1;
-            int x_start = (i + 2 < n) ? (i + 2) : (n - 1);
+            INT ni = n - i - 1;
+            INT x_start = (i + 2 < n) ? (i + 2) : (n - 1);
 
             /* Generate elementary reflector H(i) = I - tau * v * v**H
              * to annihilate A(i+2:n-1, i). */

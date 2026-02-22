@@ -45,7 +45,7 @@
 f64 zlansp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     f64* restrict work)
 {
@@ -54,7 +54,7 @@ f64 zlansp(
     const f64 ZERO = 0.0;
 
     // zlansp.f lines 135-136: Local Scalars
-    int i, j, k;
+    INT i, j, k;
     f64 absa, scale, sum, value;
 
     // zlansp.f lines 150-263: Main logic

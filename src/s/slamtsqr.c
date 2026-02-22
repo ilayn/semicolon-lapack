@@ -47,15 +47,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void slamtsqr(const char* side, const char* trans,
-              const int m, const int n, const int k, const int mb, const int nb,
-              const f32* restrict A, const int lda,
-              const f32* restrict T, const int ldt,
-              f32* restrict C, const int ldc,
-              f32* restrict work, const int lwork,
-              int* info)
+              const INT m, const INT n, const INT k, const INT mb, const INT nb,
+              const f32* restrict A, const INT lda,
+              const f32* restrict T, const INT ldt,
+              f32* restrict C, const INT ldc,
+              f32* restrict work, const INT lwork,
+              INT* info)
 {
-    int left, right, tran, notran, lquery;
-    int i, ii, kk, lw, ctr, q, minmnk, lwmin;
+    INT left, right, tran, notran, lquery;
+    INT i, ii, kk, lw, ctr, q, minmnk, lwmin;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -121,7 +121,7 @@ void slamtsqr(const char* side, const char* trans,
 
     /* Determine if it is tall skinny or short and wide */
     {
-        int maxmnk = m > n ? m : n;
+        INT maxmnk = m > n ? m : n;
         maxmnk = maxmnk > k ? maxmnk : k;
         if ((mb <= k) || (mb >= maxmnk)) {
             sgemqrt(side, trans, m, n, k, nb, A, lda, T, ldt, C, ldc, work, info);

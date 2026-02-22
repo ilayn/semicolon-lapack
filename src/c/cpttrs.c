@@ -42,18 +42,18 @@
  */
 void cpttrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const c64* restrict E,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -75,6 +75,6 @@ void cpttrs(
      * ILAENV(1, 'CPTTRS', ...) returns NB=1 (no special case in ilaenv.f).
      * Therefore, we call cptts2 directly without blocking.
      */
-    int iuplo = upper ? 1 : 0;
+    INT iuplo = upper ? 1 : 0;
     cptts2(iuplo, n, nrhs, D, E, B, ldb);
 }

@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -23,10 +23,10 @@
  *                      incx > 0.
  */
 void crscl(
-    const int n,
+    const INT n,
     const c64 a,
     c64* restrict x,
-    const int incx)
+    const INT incx)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

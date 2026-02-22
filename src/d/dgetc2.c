@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -37,19 +37,19 @@
  *                           avoid the overflow.
  */
 void dgetc2(
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* restrict jpiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* restrict jpiv,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
 
     f64 eps, smlnum, bignum, smin, xmax;
-    int i, ip, ipv, j, jp, jpv;
+    INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
 

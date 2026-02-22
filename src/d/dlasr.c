@@ -37,11 +37,11 @@
  * @param[in]     lda     The leading dimension of A. lda >= max(1,m).
  */
 void dlasr(const char* side, const char* pivot, const char* direct,
-           const int m, const int n,
+           const INT m, const INT n,
            const f64* restrict C_rot, const f64* restrict S_rot,
-           f64* restrict A, const int lda)
+           f64* restrict A, const INT lda)
 {
-    int i, j;
+    INT i, j;
     f64 ctemp, stemp, temp;
 
     /* Quick return if possible */

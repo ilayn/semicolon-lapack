@@ -3,7 +3,7 @@
  * @brief DTPTRS solves a triangular system with a packed triangular matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -37,17 +37,17 @@ void dtptrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict AP,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nounit, upper;
-    int j, jc;
+    INT nounit, upper;
+    INT j, jc;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

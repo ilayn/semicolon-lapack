@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -47,12 +47,12 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void dlaed9(const int k, const int kstart, const int kstop, const int n,
-            f64* D, f64* Q, const int ldq, const f64 rho,
-            const f64* dlambda, f64* W, f64* S, const int lds,
-            int* info)
+void dlaed9(const INT k, const INT kstart, const INT kstop, const INT n,
+            f64* D, f64* Q, const INT ldq, const f64 rho,
+            const f64* dlambda, f64* W, f64* S, const INT lds,
+            INT* info)
 {
-    int i, j;
+    INT i, j;
     f64 temp;
 
     /* Test the input parameters. */

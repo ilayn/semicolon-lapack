@@ -3,7 +3,7 @@
  * @brief SLAUUM computes the product U * U**T or L**T * L (blocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 
@@ -37,16 +37,16 @@
  */
 void slauum(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f32 ONE = 1.0f;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -63,7 +63,7 @@ void slauum(
     if (n == 0) return;
 
     // Determine block size (NB=64 from ilaenv for LAUUM)
-    int nb = lapack_get_nb("LAUUM");
+    INT nb = lapack_get_nb("LAUUM");
 
     if (nb <= 1 || nb >= n) {
         // Use unblocked code
@@ -72,8 +72,8 @@ void slauum(
         // Use blocked code
         if (upper) {
             // Compute the product U * U**T
-            for (int i = 0; i < n; i += nb) {
-                int ib = nb < (n - i) ? nb : (n - i);
+            for (INT i = 0; i < n; i += nb) {
+                INT ib = nb < (n - i) ? nb : (n - i);
 
                 // Fortran: DTRMM('Right', 'Upper', 'Transpose', 'Non-unit', I-1, IB, ONE, A(I,I), LDA, A(1,I), LDA)
                 // 0-based: m = i, n = ib
@@ -103,8 +103,8 @@ void slauum(
             }
         } else {
             // Compute the product L**T * L
-            for (int i = 0; i < n; i += nb) {
-                int ib = nb < (n - i) ? nb : (n - i);
+            for (INT i = 0; i < n; i += nb) {
+                INT ib = nb < (n - i) ? nb : (n - i);
 
                 // Fortran: DTRMM('Left', 'Lower', 'Transpose', 'Non-unit', IB, I-1, ONE, A(I,I), LDA, A(I,1), LDA)
                 // 0-based: m = ib, n = i

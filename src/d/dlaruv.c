@@ -46,7 +46,7 @@
  * In the Fortran source this is MM(128,4) stored column-major.
  * Here we store it as MM[128][4] in row-major (C convention).
  */
-static const int MM[128][4] = {
+static const INT MM[128][4] = {
     {  494,  322, 2508, 2549},
     { 2637,  789, 3754, 1145},
     {  255, 1440, 1766, 2253},
@@ -177,10 +177,10 @@ static const int MM[128][4] = {
     {  545, 2366, 3801, 1537}
 };
 
-void dlaruv(int* restrict iseed, const int n, f64* restrict X)
+void dlaruv(INT* restrict iseed, const INT n, f64* restrict X)
 {
-    int i, it1, it2, it3, it4;
-    int i1, i2, i3, i4;
+    INT i, it1, it2, it3, it4;
+    INT i1, i2, i3, i4;
 
     /* Quick return for n < 1 */
     if (n < 1) {
@@ -192,7 +192,7 @@ void dlaruv(int* restrict iseed, const int n, f64* restrict X)
     i3 = iseed[2];
     i4 = iseed[3];
 
-    int nlv = n < LV ? n : LV;
+    INT nlv = n < LV ? n : LV;
 
     for (i = 0; i < nlv; i++) {
 

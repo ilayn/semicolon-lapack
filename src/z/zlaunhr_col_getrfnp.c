@@ -65,12 +65,12 @@
  *                      < 0: if info = -i, the i-th argument had an illegal value
  */
 void zlaunhr_col_getrfnp(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict D,
-    int* info)
+    INT* info)
 {
     *info = 0;
     if (m < 0) {
@@ -85,7 +85,7 @@ void zlaunhr_col_getrfnp(
         return;
     }
 
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
 
     if (minmn == 0) {
         return;

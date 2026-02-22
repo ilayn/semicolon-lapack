@@ -6,7 +6,7 @@
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f32 ZERO = 0.0f;
 static const f32 HALF = 0.5f;
@@ -39,19 +39,19 @@ static const f32 ONE = 1.0f;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument.
  */
-void cgsvj0(const char* jobv, const int m, const int n,
-            c64* restrict A, const int lda,
+void cgsvj0(const char* jobv, const INT m, const INT n,
+            c64* restrict A, const INT lda,
             c64* restrict D, f32* restrict SVA,
-            const int mv, c64* restrict V, const int ldv,
+            const INT mv, c64* restrict V, const INT ldv,
             const f32 eps, const f32 sfmin, const f32 tol,
-            const int nsweep, c64* restrict work, const int lwork,
-            int* info)
+            const INT nsweep, c64* restrict work, const INT lwork,
+            INT* info)
 {
-    int applv, rsvec, mvl;
-    int i, ibr, igl, ir1, p, q, kbl, nbl;
-    int blskip, rowskip, lkahead, swband;
-    int notrot, pskipped, iswrot, ijblsk, emptsw;
-    int ierr;
+    INT applv, rsvec, mvl;
+    INT i, ibr, igl, ir1, p, q, kbl, nbl;
+    INT blskip, rowskip, lkahead, swband;
+    INT notrot, pskipped, iswrot, ijblsk, emptsw;
+    INT ierr;
     c64 aapq, ompq;
     f32 aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
     f32 big, bigtheta, cs, sn, t, temp1, theta, thsign;
@@ -170,7 +170,7 @@ void cgsvj0(const char* jobv, const int m, const int n,
 
                             if (aaqq > ZERO) {
                                 aapp0 = aapp;
-                                int rotok;
+                                INT rotok;
 
                                 if (aaqq >= ONE) {
                                     rotok = (small * aapp) <= aaqq;
@@ -312,8 +312,8 @@ L2103:
 
             /* Off-diagonal blocks */
             igl = ibr * kbl;
-            for (int jbc = ibr + 1; jbc < nbl; jbc++) {
-                int jgl = jbc * kbl;
+            for (INT jbc = ibr + 1; jbc < nbl; jbc++) {
+                INT jgl = jbc * kbl;
                 ijblsk = 0;
 
                 for (p = igl; p < ((igl + kbl < n) ? igl + kbl : n); p++) {
@@ -327,7 +327,7 @@ L2103:
 
                             if (aaqq > ZERO) {
                                 aapp0 = aapp;
-                                int rotok;
+                                INT rotok;
 
                                 /* Safe Gram matrix computation */
                                 if (aaqq >= ONE) {

@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHEGV_2STAGE computes all the eigenvalues, and optionally, the eigenvectors
@@ -32,24 +32,24 @@
  *                         - = 0: success; < 0: illegal argument; > 0: CPOTRF/CHEEV error.
  */
 void chegv_2stage(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict W,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int lquery, upper, wantz;
-    int neig, lwmin, lhtrd, lwtrd, kd, ib;
+    INT lquery, upper, wantz;
+    INT neig, lwmin, lhtrd, lwtrd, kd, ib;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

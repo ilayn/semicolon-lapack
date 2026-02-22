@@ -65,33 +65,33 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
-void slarrd(const char* range, const char* order, const int n,
-            const f32 vl, const f32 vu, const int il, const int iu,
+void slarrd(const char* range, const char* order, const INT n,
+            const f32 vl, const f32 vu, const INT il, const INT iu,
             const f32* gers, const f32 reltol,
             const f32* D, const f32* E, const f32* E2,
-            const f32 pivmin, const int nsplit, const int* isplit,
-            int* m, f32* W, f32* werr,
+            const f32 pivmin, const INT nsplit, const INT* isplit,
+            INT* m, f32* W, f32* werr,
             f32* wl, f32* wu,
-            int* iblock, int* indexw,
-            f32* work, int* iwork, int* info)
+            INT* iblock, INT* indexw,
+            f32* work, INT* iwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 TWO = 2.0f;
     const f32 HALF = 0.5f;
     const f32 FUDGE = 2.0f;
 
-    const int ALLRNG = 1;
-    const int VALRNG = 2;
-    const int INDRNG = 3;
+    const INT ALLRNG = 1;
+    const INT VALRNG = 2;
+    const INT INDRNG = 3;
 
-    int ncnvrg, toofew;
-    int i, ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
+    INT ncnvrg, toofew;
+    INT i, ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
         im, in, ioff, iout, irange, itmax, itmp1,
         itmp2, iw, iwoff, j, jblk, jdisc, je, jee, nb,
         nwl, nwu;
     f32 atoli, eps, gl, gu, rtoli, tmp1, tmp2,
            tnorm, uflow, wkill, wlu = 0.0f, wul = 0.0f;
-    int idumma[1];
+    INT idumma[1];
 
     *info = 0;
     *m = 0;
@@ -196,7 +196,7 @@ void slarrd(const char* range, const char* order, const int n,
         /* RANGE='I': Compute an interval containing eigenvalues
          * IL through IU. The initial interval [GL,GU] from the global
          * Gerschgorin bounds GL and GU is refined by SLAEBZ. */
-        itmax = (int)((logf(tnorm + pivmin) - logf(pivmin)) /
+        itmax = (INT)((logf(tnorm + pivmin) - logf(pivmin)) /
                 logf(TWO)) + 2;
         /* 0-based: work[n+0..n+5], iwork[0..5]
          * Fortran: WORK(N+1)..WORK(N+6), IWORK(1)..IWORK(6) */
@@ -332,7 +332,7 @@ void slarrd(const char* range, const char* order, const int n,
             iwoff = *m - iwork[0];
 
             /* Compute Eigenvalues */
-            itmax = (int)((logf(gu - gl + pivmin) - logf(pivmin)) /
+            itmax = (INT)((logf(gu - gl + pivmin) - logf(pivmin)) /
                     logf(TWO)) + 2;
             slaebz(2, itmax, in, in, 1, nb, atoli, rtoli,
                    pivmin,

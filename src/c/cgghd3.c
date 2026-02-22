@@ -3,7 +3,7 @@
  * @brief CGGHD3 reduces a pair of complex matrices (A,B) to generalized upper Hessenberg form.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
@@ -80,28 +80,28 @@
 void cgghd3(
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int blk22, initq, initz, lquery, wantq, wantz;
-    int cola, i, ierr, j, j0, jcol, jj, jrow, k;
-    int kacc22, len, lwkopt, n2nb, nb, nblst, nbmin;
-    int nh, nnb, nx, ppw, ppwo, pw, top = 0, topq;
+    INT blk22, initq, initz, lquery, wantq, wantz;
+    INT cola, i, ierr, j, j0, jcol, jj, jrow, k;
+    INT kacc22, len, lwkopt, n2nb, nb, nblst, nbmin;
+    INT nh, nnb, nx, ppw, ppwo, pw, top = 0, topq;
     f32 c;
     c64 ctemp, s, c1, c2, s1, s2, temp, temp1, temp2, temp3;
 

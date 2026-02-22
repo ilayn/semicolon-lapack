@@ -27,18 +27,18 @@
  *                           - = 0: successful exit (always succeeds).
  */
 void clag2z(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const c64* restrict SA,
-    const int ldsa,
+    const INT ldsa,
     c128* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     *info = 0;
 
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             A[i + j * lda] = (c128)SA[i + j * ldsa];
         }
     }

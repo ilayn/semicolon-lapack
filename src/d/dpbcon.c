@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -32,25 +32,25 @@
  */
 void dpbcon(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64 anorm,
     f64* rcond,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper;
+    INT upper;
     char normin;
-    int ix, kase;
+    INT ix, kase;
     f64 ainvnm, scale, scalel, scaleu, smlnum;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

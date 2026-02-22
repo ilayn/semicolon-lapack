@@ -6,13 +6,13 @@
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 
-void dggqrf(const int n, const int m, const int p,
-            f64* restrict A, const int lda, f64* restrict taua,
-            f64* restrict B, const int ldb, f64* restrict taub,
-            f64* restrict work, const int lwork, int* info)
+void dggqrf(const INT n, const INT m, const INT p,
+            f64* restrict A, const INT lda, f64* restrict taua,
+            f64* restrict B, const INT ldb, f64* restrict taub,
+            f64* restrict work, const INT lwork, INT* info)
 {
-    int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
-    int minval;
+    INT lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
+    INT minval;
 
     *info = 0;
     nb1 = lapack_get_nb("GEQRF");
@@ -56,18 +56,18 @@ void dggqrf(const int n, const int m, const int p,
 
     /* QR factorization of N-by-M matrix A: A = Q*R */
     dgeqrf(n, m, A, lda, taua, work, lwork, info);
-    lopt = (int)work[0];
+    lopt = (INT)work[0];
 
     /* Update B := Q**T * B */
     {
-        int minmn = (n < m) ? n : m;
+        INT minmn = (n < m) ? n : m;
         dormqr("L", "T", n, p, minmn, A, lda, taua, B, ldb, work, lwork, info);
     }
-    if ((int)work[0] > lopt) lopt = (int)work[0];
+    if ((INT)work[0] > lopt) lopt = (INT)work[0];
 
     /* RQ factorization of N-by-P matrix B: B = T*Z */
     dgerqf(n, p, B, ldb, taub, work, lwork, info);
-    if ((int)work[0] > lopt) lopt = (int)work[0];
+    if ((INT)work[0] > lopt) lopt = (INT)work[0];
 
     work[0] = (f64)lopt;
 }

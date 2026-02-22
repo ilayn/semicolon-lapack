@@ -59,20 +59,20 @@
  * @param[out]    info
  *                           Error flag.
  */
-void slarrb(const int n, const f32* D, const f32* lld,
-            const int ifirst, const int ilast,
-            const f32 rtol1, const f32 rtol2, const int offset,
+void slarrb(const INT n, const f32* D, const f32* lld,
+            const INT ifirst, const INT ilast,
+            const f32 rtol1, const f32 rtol2, const INT offset,
             f32* W, f32* wgap, f32* werr,
-            f32* work, int* iwork,
+            f32* work, INT* iwork,
             const f32 pivmin, const f32 spdiam,
-            const int twist, int* info)
+            const INT twist, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 TWO = 2.0f;
     const f32 HALF = 0.5f;
 
-    int i, i1, ii, ip, iter, k, negcnt, next, nint, olnint, prev, r;
-    int maxitr;
+    INT i, i1, ii, ip, iter, k, negcnt, next, nint, olnint, prev, r;
+    INT maxitr;
     f32 back, cvrgd, gap, left, lgap, mid, mnwdth, rgap, right, tmp, width;
 
     *info = 0;
@@ -82,7 +82,7 @@ void slarrb(const int n, const f32* D, const f32* lld,
         return;
     }
 
-    maxitr = (int)((logf(spdiam + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
+    maxitr = (INT)((logf(spdiam + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
     mnwdth = TWO * pivmin;
 
     /* twist is 0-based; valid range is [0, n-1] */

@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DSYGVD computes all the eigenvalues, and optionally, the eigenvectors
@@ -30,24 +30,24 @@
  *                         - = 0: success; < 0: illegal argument; > 0: DPOTRF/DSYEVD error.
  */
 void dsygvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict W,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f64 ONE = 1.0;
-    int wantz, upper, lquery;
-    int liwmin, lwmin, lopt, liopt;
+    INT wantz, upper, lquery;
+    INT liwmin, lwmin, lopt, liopt;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -115,7 +115,7 @@ void dsygvd(
     dsyevd(jobz, uplo, n, A, lda, W, work, lwork, iwork, liwork, info);
 
     /* Update optimal workspace sizes */
-    lopt = (lopt > (int)work[0]) ? lopt : (int)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
     liopt = (liopt > iwork[0]) ? liopt : iwork[0];
 
     if (wantz && *info == 0) {

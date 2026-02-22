@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -42,10 +42,10 @@
  */
 void dpotf2(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
@@ -53,7 +53,7 @@ void dpotf2(
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -71,7 +71,7 @@ void dpotf2(
 
     if (upper) {
         // Compute the Cholesky factorization A = U**T * U.
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             // Compute U(j,j) and test for non-positive-definiteness.
             // Fortran: AJJ = A(J,J) - DDOT(J-1, A(1,J), 1, A(1,J), 1)
             // 0-based: length = j (number of elements above diagonal in column j)
@@ -104,7 +104,7 @@ void dpotf2(
         }
     } else {
         // Compute the Cholesky factorization A = L * L**T.
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             // Compute L(j,j) and test for non-positive-definiteness.
             // Fortran: AJJ = A(J,J) - DDOT(J-1, A(J,1), LDA, A(J,1), LDA)
             // 0-based: length = j (number of elements left of diagonal in row j)

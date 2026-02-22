@@ -54,22 +54,22 @@
 void chbgv(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     *info = 0;
     if (!wantz && !(jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -106,9 +106,9 @@ void chbgv(
     }
 
     /* Transform problem to standard eigenvalue problem. */
-    int inde = 0;
-    int indwrk = inde + n;
-    int iinfo;
+    INT inde = 0;
+    INT indwrk = inde + n;
+    INT iinfo;
     chbgst(jobz, uplo, n, ka, kb, AB, ldab, BB, ldbb, Z, ldz,
            work, &rwork[indwrk], &iinfo);
 

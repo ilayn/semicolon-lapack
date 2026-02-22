@@ -78,15 +78,15 @@
  *                           diagonal matrix D is exactly singular, so the
  *                           solution could not be computed.
  */
-void chesv(const char* uplo, const int n, const int nrhs,
-           c64* restrict A, const int lda,
-           int* restrict ipiv,
-           c64* restrict B, const int ldb,
-           c64* restrict work, const int lwork,
-           int* info)
+void chesv(const char* uplo, const INT n, const INT nrhs,
+           c64* restrict A, const INT lda,
+           INT* restrict ipiv,
+           c64* restrict B, const INT ldb,
+           c64* restrict work, const INT lwork,
+           INT* info)
 {
-    int lwkopt;
-    int lquery = (lwork == -1);
+    INT lwkopt;
+    INT lquery = (lwork == -1);
 
     /* Test the input parameters. */
     *info = 0;
@@ -110,7 +110,7 @@ void chesv(const char* uplo, const int n, const int nrhs,
             lwkopt = 1;
         } else {
             chetrf(uplo, n, A, lda, ipiv, work, -1, info);
-            lwkopt = (int)crealf(work[0]);
+            lwkopt = (INT)crealf(work[0]);
         }
         work[0] = (c64)lwkopt;
     }

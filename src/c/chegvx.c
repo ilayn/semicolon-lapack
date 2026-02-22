@@ -7,7 +7,7 @@
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHEGVX computes selected eigenvalues, and optionally, eigenvectors
@@ -44,34 +44,34 @@
  *                         - = 0: success; < 0: illegal argument; > 0: CPOTRF/CHEEVX error.
  */
 void chegvx(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
-    int wantz, upper, alleig, valeig, indeig, lquery;
-    int lwkopt, nb;
+    INT wantz, upper, alleig, valeig, indeig, lquery;
+    INT lwkopt, nb;
     char trans;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

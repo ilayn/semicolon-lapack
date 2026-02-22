@@ -45,7 +45,7 @@
 f32 clansp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* restrict work)
 {
@@ -54,7 +54,7 @@ f32 clansp(
     const f32 ZERO = 0.0f;
 
     // clansp.f lines 135-136: Local Scalars
-    int i, j, k;
+    INT i, j, k;
     f32 absa, scale, sum, value;
 
     // clansp.f lines 150-263: Main logic

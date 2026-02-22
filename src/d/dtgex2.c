@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define LDST 4
@@ -42,35 +42,35 @@
  *                         - = -16: lwork too small
  */
 void dtgex2(
-    const int wantq,
-    const int wantz,
-    const int n,
+    const INT wantq,
+    const INT wantz,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
-    const int j1,
-    const int n1,
-    const int n2,
+    const INT ldz,
+    const INT j1,
+    const INT n1,
+    const INT n2,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWENTY = 20.0;
 
-    int weak, strong;
-    int i, idum, linfo, m;
+    INT weak, strong;
+    INT i, idum, linfo, m;
     f64 bqra21, brqa21, ddum, dnorma, dnormb, dscale;
     f64 dsum, eps, f, g, sa, sb, scale, smlnum;
     f64 thresha, threshb;
 
-    int iwork[LDST + 2];
+    INT iwork[LDST + 2];
     f64 ai[2], ar[2], be[2];
     f64 ir[LDST * LDST], ircop[LDST * LDST];
     f64 li[LDST * LDST], licop[LDST * LDST];
@@ -89,9 +89,9 @@ void dtgex2(
     }
     m = n1 + n2;
 
-    int max_nm = n * m;
-    int max_m2 = m * m * 2;
-    int max_work = 1 > max_nm ? 1 : max_nm;
+    INT max_nm = n * m;
+    INT max_m2 = m * m * 2;
+    INT max_work = 1 > max_nm ? 1 : max_nm;
     max_work = max_work > max_m2 ? max_work : max_m2;
 
     if (lwork < max_work) {

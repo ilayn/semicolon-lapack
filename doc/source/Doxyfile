@@ -28,7 +28,8 @@ EXTRACT_STATIC         = NO
 ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
-PREDEFINED             = SEMICOLON_API=
+PREDEFINED             = SEMICOLON_API= \
+                         INT=INT
 
 #---------------------------------------------------------------------------
 # Output formats - only XML for Breathe

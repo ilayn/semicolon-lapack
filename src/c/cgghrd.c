@@ -61,24 +61,24 @@
 void cgghrd(
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     c64* restrict Z,
-    const int ldz,
-    int* info)
+    const INT ldz,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int ilq, ilz;
-    int icompq, icompz, jcol, jrow;
+    INT ilq, ilz;
+    INT icompq, icompz, jcol, jrow;
     f32 c;
     c64 ctemp, s;
 

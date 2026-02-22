@@ -39,17 +39,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dorgtr(const char* uplo, const int n,
-            f64* restrict A, const int lda,
+void dorgtr(const char* uplo, const INT n,
+            f64* restrict A, const INT lda,
             const f64* restrict tau,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int upper, lquery;
-    int i, j, iinfo, lwkopt, nb;
+    INT upper, lquery;
+    INT i, j, iinfo, lwkopt, nb;
 
     /* Test the input arguments */
     *info = 0;

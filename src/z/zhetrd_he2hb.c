@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -69,11 +69,11 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zhetrd_he2hb(const char* uplo, const int n, const int kd,
-                  c128* A, const int lda,
-                  c128* AB, const int ldab,
+void zhetrd_he2hb(const char* uplo, const INT n, const INT kd,
+                  c128* A, const INT lda,
+                  c128* AB, const INT ldab,
                   c128* tau,
-                  c128* work, const int lwork, int* info)
+                  c128* work, const INT lwork, INT* info)
 {
     const f64 rone = 1.0;
     const c128 zero = CMPLX(0.0, 0.0);
@@ -81,11 +81,11 @@ void zhetrd_he2hb(const char* uplo, const int n, const int kd,
     const c128 mone = CMPLX(-1.0, 0.0);
     const c128 mhalf = CMPLX(-0.5, 0.0);
 
-    int lquery, upper;
-    int i, j, iinfo, lwmin, pn, pk, lk;
-    int ldt, ldw, lds2, lds1;
-    int ls2, ls1, lw, lt;
-    int tpos, wpos, s2pos, s1pos;
+    INT lquery, upper;
+    INT i, j, iinfo, lwmin, pn, pk, lk;
+    INT ldt, ldw, lds2, lds1;
+    INT ls2, ls1, lw, lt;
+    INT tpos, wpos, s2pos, s1pos;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

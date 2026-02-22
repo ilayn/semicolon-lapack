@@ -28,7 +28,7 @@
  *
  * @return The norm value.
  */
-f32 clanht(const char* norm, const int n,
+f32 clanht(const char* norm, const INT n,
               const f32* restrict D,
               const c64* restrict E)
 {
@@ -41,7 +41,7 @@ f32 clanht(const char* norm, const int n,
     if (norm[0] == 'M' || norm[0] == 'm') {
         /* Find max(abs(A(i,j))). */
         anorm = fabsf(D[n - 1]);
-        for (int i = 0; i < n - 1; i++) {
+        for (INT i = 0; i < n - 1; i++) {
             f32 sum = fabsf(D[i]);
             if (anorm < sum || isnan(sum)) anorm = sum;
             sum = cabsf(E[i]);
@@ -56,7 +56,7 @@ f32 clanht(const char* norm, const int n,
             anorm = fabsf(D[0]) + cabsf(E[0]);
             f32 sum = cabsf(E[n - 2]) + fabsf(D[n - 1]);
             if (anorm < sum || isnan(sum)) anorm = sum;
-            for (int i = 1; i < n - 1; i++) {
+            for (INT i = 1; i < n - 1; i++) {
                 sum = fabsf(D[i]) + cabsf(E[i]) + cabsf(E[i - 1]);
                 if (anorm < sum || isnan(sum)) anorm = sum;
             }

@@ -28,7 +28,7 @@
  */
 void claqsp(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     const f32* restrict S,
     const f32 scond,
@@ -40,7 +40,7 @@ void claqsp(
     const f32 THRESH = 0.1f;  // claqsp.f line 144: THRESH = 0.1D+0
 
     // claqsp.f lines 147-148: Local Scalars
-    int i, j, jc;
+    INT i, j, jc;
     f32 cj, large, small;
 
     // claqsp.f lines 159-162: Quick return if possible

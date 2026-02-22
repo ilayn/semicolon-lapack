@@ -29,12 +29,12 @@
  * @param[out]    info
  *                         - = 0: successful exit.
  */
-void slarrc(const char* jobt, const int n, const f32 vl, const f32 vu,
+void slarrc(const char* jobt, const INT n, const f32 vl, const f32 vu,
             const f32* restrict D, const f32* restrict E,
-            const f32 pivmin, int* eigcnt, int* lcnt, int* rcnt, int* info)
+            const f32 pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info)
 {
-    int i;
-    int matt;
+    INT i;
+    INT matt;
     f32 lpivot, rpivot, sl, su, tmp, tmp2;
 
     (void)pivmin;

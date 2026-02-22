@@ -54,7 +54,7 @@
  * @param[out] csq    The desired unitary matrix Q.
  * @param[out] snq    The desired unitary matrix Q.
  */
-void zlags2(const int upper,
+void zlags2(const INT upper,
             const f64 a1, const c128 a2, const f64 a3,
             const f64 b1, const c128 b2, const f64 b3,
             f64* csu, c128* snu,

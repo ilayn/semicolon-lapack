@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f64 ONE = 1.0;
 static const f64 ZERO = 0.0;
@@ -47,16 +47,16 @@ static const f64 TWO = 2.0;
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  *                         - > 0: The algorithm failed to compute a singular value.
  */
-void dlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
+void dlalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             f64* restrict D, f64* restrict E,
-            f64* restrict B, const int ldb, const f64 rcond,
-            int* rank, f64* restrict work, int* restrict iwork,
-            int* info)
+            f64* restrict B, const INT ldb, const f64 rcond,
+            INT* rank, f64* restrict work, INT* restrict iwork,
+            INT* info)
 {
-    int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
-    int givptr, i, icmpq1, icmpq2, iwk, j, k_idx, nlvl;
-    int nm1, nsize, nsub, nwork, perm, poles, s_idx, sizei;
-    int smlszp, sqre, st, st1, u_idx, vt_idx, z_idx;
+    INT bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
+    INT givptr, i, icmpq1, icmpq2, iwk, j, k_idx, nlvl;
+    INT nm1, nsize, nsub, nwork, perm, poles, s_idx, sizei;
+    INT smlszp, sqre, st, st1, u_idx, vt_idx, z_idx;
     f64 cs, eps, orgnrm, r, rcnd, sn, tol;
 
     *info = 0;
@@ -171,7 +171,7 @@ void dlalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
     }
 
     /* Book-keeping and setting up some constants. */
-    nlvl = (int)(log((f64)n / (f64)(smlsiz + 1)) / log(TWO)) + 1;
+    nlvl = (INT)(log((f64)n / (f64)(smlsiz + 1)) / log(TWO)) + 1;
 
     smlszp = smlsiz + 1;
 

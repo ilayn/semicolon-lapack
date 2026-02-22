@@ -33,13 +33,13 @@
  *                           completed, but D(n-1) <= 0 (0-based).
  */
 void cpttrf(
-    const int n,
+    const INT n,
     f32* restrict D,
     c64* restrict E,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
-    int i, i4;
+    INT i, i4;
     f32 eir, eii, f, g;
 
     *info = 0;

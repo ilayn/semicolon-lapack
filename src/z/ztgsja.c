@@ -6,7 +6,7 @@
 #include <complex.h>
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 #define MAXIT 40
@@ -76,15 +76,15 @@
  *                         - = 1: the procedure does not converge after MAXIT cycles.
  */
 void ztgsja(const char* jobu, const char* jobv, const char* jobq,
-            const int m, const int p, const int n, const int k, const int l,
-            c128* restrict A, const int lda,
-            c128* restrict B, const int ldb,
+            const INT m, const INT p, const INT n, const INT k, const INT l,
+            c128* restrict A, const INT lda,
+            c128* restrict B, const INT ldb,
             const f64 tola, const f64 tolb,
             f64* restrict alpha, f64* restrict beta,
-            c128* restrict U, const int ldu,
-            c128* restrict V, const int ldv,
-            c128* restrict Q, const int ldq,
-            c128* restrict work, int* ncycle, int* info)
+            c128* restrict U, const INT ldu,
+            c128* restrict V, const INT ldv,
+            c128* restrict Q, const INT ldq,
+            c128* restrict work, INT* ncycle, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -92,14 +92,14 @@ void ztgsja(const char* jobu, const char* jobv, const char* jobq,
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int initu, wantu, initv, wantv, initq, wantq;
-    int upper;
-    int i, j, kcycle;
+    INT initu, wantu, initv, wantv, initq, wantq;
+    INT upper;
+    INT i, j, kcycle;
     f64 a1, a3, b1, b3;
     f64 csu, csv, csq;
     c128 a2, b2, snu, snv, snq;
     f64 error, gamma, rwk, ssmin;
-    int minval;
+    INT minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');
     wantu = initu || (jobu[0] == 'U' || jobu[0] == 'u');

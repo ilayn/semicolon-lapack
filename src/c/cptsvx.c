@@ -6,7 +6,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -79,27 +79,27 @@
  */
 void cptsvx(
     const char* fact,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const c64* restrict E,
     f32* restrict DF,
     c64* restrict EF,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
-    int nofact;
+    INT nofact;
     f32 anorm;
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

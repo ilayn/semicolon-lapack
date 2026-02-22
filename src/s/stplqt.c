@@ -4,7 +4,7 @@
  *        "triangular-pentagonal" matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -39,14 +39,14 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void stplqt(const int m, const int n, const int l, const int mb,
-            f32* restrict A, const int lda,
-            f32* restrict B, const int ldb,
-            f32* restrict T, const int ldt,
-            f32* restrict work, int* info)
+void stplqt(const INT m, const INT n, const INT l, const INT mb,
+            f32* restrict A, const INT lda,
+            f32* restrict B, const INT ldb,
+            f32* restrict T, const INT ldt,
+            f32* restrict work, INT* info)
 {
-    int i, ib, lb, nb, iinfo;
-    int minmn;
+    INT i, ib, lb, nb, iinfo;
+    INT minmn;
 
     *info = 0;
     minmn = m < n ? m : n;

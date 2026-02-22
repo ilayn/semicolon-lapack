@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -60,16 +60,16 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void slaorhr_col_getrfnp2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict D,
-    int* info)
+    INT* info)
 {
     f32 sfmin;
-    int i, n1, n2;
-    int iinfo;
+    INT i, n1, n2;
+    INT iinfo;
 
     *info = 0;
     if (m < 0) {

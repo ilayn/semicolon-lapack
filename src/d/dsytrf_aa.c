@@ -3,7 +3,7 @@
  * @brief DSYTRF_AA computes the factorization of a real symmetric matrix using Aasen's algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 
@@ -55,17 +55,17 @@
  */
 void dsytrf_aa(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int j, lwkmin, lwkopt;
-    int nb, mj, nj, k1, k2, j1, j2, j3, jb;
+    INT upper, lquery;
+    INT j, lwkmin, lwkopt;
+    INT nb, mj, nj, k1, k2, j1, j2, j3, jb;
     f64 alpha;
 
     nb = lapack_get_nb("SYTRF");

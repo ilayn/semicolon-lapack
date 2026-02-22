@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -70,24 +70,24 @@
  *                           working on the submatrix lying in rows and columns
  *                           info/(n+1) through mod(info,n+1).
  */
-void cstedc(const char* compz, const int n,
+void cstedc(const char* compz, const INT n,
             f32* D, f32* E,
-            c64* Z, const int ldz,
-            c64* work, const int lwork,
-            f32* rwork, const int lrwork,
-            int* iwork, const int liwork, int* info)
+            c64* Z, const INT ldz,
+            c64* work, const INT lwork,
+            f32* rwork, const INT lrwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int lquery;
-    int finish, i, icompz, ii, j, k, lgn, ll;
-    int liwmin = 1, lrwmin = 1, lwmin = 1, m, start;
+    INT lquery;
+    INT finish, i, icompz, ii, j, k, lgn, ll;
+    INT liwmin = 1, lrwmin = 1, lwmin = 1, m, start;
     f32 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'CSTEDC', ...) - hardcoded per project convention */
-    const int SMLSIZ = 25;
+    const INT SMLSIZ = 25;
 
     /*
      * Test the input parameters.
@@ -127,7 +127,7 @@ void cstedc(const char* compz, const int n,
             liwmin = 1;
             lrwmin = 2 * (n - 1);
         } else if (icompz == 1) {
-            lgn = (int)(logf((f32)n) / logf(TWO));
+            lgn = (INT)(logf((f32)n) / logf(TWO));
             if ((1 << lgn) < n)
                 lgn = lgn + 1;
             if ((1 << lgn) < n)

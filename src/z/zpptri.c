@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -29,16 +29,16 @@
  */
 void zpptri(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
-    int* info)
+    INT* info)
 {
     // zpptri.f lines 108-109: Parameters
     const f64 ONE = 1.0;
 
     // zpptri.f lines 128-138: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -62,9 +62,9 @@ void zpptri(
 
     if (upper) {
         // zpptri.f lines 153-165: Compute the product inv(U) * inv(U)**H
-        int jj = -1;
-        for (int j = 0; j < n; j++) {
-            int jc = jj + 1;
+        INT jj = -1;
+        for (INT j = 0; j < n; j++) {
+            INT jc = jj + 1;
             jj = jj + (j + 1);
             if (j > 0) {
                 cblas_zhpr(CblasColMajor, CblasUpper, j, ONE, &AP[jc], 1, AP);
@@ -74,9 +74,9 @@ void zpptri(
         }
     } else {
         // zpptri.f lines 167-182: Compute the product inv(L)**H * inv(L)
-        int jj = 0;
-        for (int j = 0; j < n; j++) {
-            int jjn = jj + n - j;
+        INT jj = 0;
+        for (INT j = 0; j < n; j++) {
+            INT jjn = jj + n - j;
             c128 dotc;
             cblas_zdotc_sub(n - j, &AP[jj], 1, &AP[jj], 1, &dotc);
             AP[jj] = creal(dotc);

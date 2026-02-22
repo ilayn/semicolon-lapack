@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -50,20 +50,20 @@
  *                         - = 1: the Jacobi-type procedure failed to converge.
  */
 void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
-             const int m, const int n, const int p,
-             int* k, int* l,
-             c128* restrict A, const int lda,
-             c128* restrict B, const int ldb,
+             const INT m, const INT n, const INT p,
+             INT* k, INT* l,
+             c128* restrict A, const INT lda,
+             c128* restrict B, const INT ldb,
              f64* restrict alpha, f64* restrict beta,
-             c128* restrict U, const int ldu,
-             c128* restrict V, const int ldv,
-             c128* restrict Q, const int ldq,
-             c128* restrict work, const int lwork,
+             c128* restrict U, const INT ldu,
+             c128* restrict V, const INT ldv,
+             c128* restrict Q, const INT ldq,
+             c128* restrict work, const INT lwork,
              f64* restrict rwork,
-             int* restrict iwork, int* info)
+             INT* restrict iwork, INT* info)
 {
-    int wantu, wantv, wantq, lquery;
-    int i, j, ibnd, isub, ncycle, lwkopt;
+    INT wantu, wantv, wantq, lquery;
+    INT i, j, ibnd, isub, ncycle, lwkopt;
     f64 anorm, bnorm, smax, temp, tola = 0.0, tolb = 0.0, ulp, unfl;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
@@ -103,7 +103,7 @@ void zggsvd3(const char* jobu, const char* jobv, const char* jobq,
         zggsvp3(jobu, jobv, jobq, m, p, n, A, lda, B, ldb,
                 tola, tolb, k, l, U, ldu, V, ldv, Q, ldq,
                 iwork, rwork, NULL, work, -1, info);
-        lwkopt = n + (int)creal(work[0]);
+        lwkopt = n + (INT)creal(work[0]);
         if (2 * n > lwkopt) lwkopt = 2 * n;
         if (lwkopt < 1) lwkopt = 1;
         work[0] = CMPLX((f64)lwkopt, 0.0);

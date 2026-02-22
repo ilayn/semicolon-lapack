@@ -41,15 +41,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void dgeqr(const int m, const int n,
-           f64* restrict A, const int lda,
-           f64* restrict T, const int tsize,
-           f64* restrict work, const int lwork,
-           int* info)
+void dgeqr(const INT m, const INT n,
+           f64* restrict A, const INT lda,
+           f64* restrict T, const INT tsize,
+           f64* restrict work, const INT lwork,
+           INT* info)
 {
-    int lquery, lminws, mint, minw;
-    int mb, nb, mintsz, nblcks, lwmin, lwreq;
-    int minmn;
+    INT lquery, lminws, mint, minw;
+    INT mb, nb, mintsz, nblcks, lwmin, lwreq;
+    INT minmn;
 
     *info = 0;
 
@@ -91,7 +91,7 @@ void dgeqr(const int m, const int n,
     lminws = 0;
 
     {
-        int tsize_req = nb * n * nblcks + 5;
+        INT tsize_req = nb * n * nblcks + 5;
         tsize_req = tsize_req > 1 ? tsize_req : 1;
         if ((tsize < tsize_req || lwork < lwreq)
             && (lwork >= n) && (tsize >= mintsz)

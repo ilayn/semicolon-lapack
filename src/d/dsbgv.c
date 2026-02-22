@@ -40,21 +40,21 @@
 void dsbgv(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
-    int upper, wantz;
-    int iinfo, inde, indwrk;
+    INT upper, wantz;
+    INT iinfo, inde, indwrk;
     char vect;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

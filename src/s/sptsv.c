@@ -43,15 +43,15 @@
  *                           unless i = n.
  */
 void sptsv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict D,
     f32* restrict E,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
     if (n < 0) {

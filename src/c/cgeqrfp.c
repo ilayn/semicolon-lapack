@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -42,15 +42,15 @@
  * @param[out]    info
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
-void cgeqrfp(const int m, const int n,
-             c64* restrict A, const int lda,
+void cgeqrfp(const INT m, const INT n,
+             c64* restrict A, const INT lda,
              c64* restrict tau,
-             c64* restrict work, const int lwork,
-             int* info)
+             c64* restrict work, const INT lwork,
+             INT* info)
 {
-    int k, nb, nbmin, nx, iws, ldwork;
-    int i, ib, iinfo;
-    int lquery;
+    INT k, nb, nbmin, nx, iws, ldwork;
+    INT i, ib, iinfo;
+    INT lquery;
 
     /* Parameter validation */
     *info = 0;

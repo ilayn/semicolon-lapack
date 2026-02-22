@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define MAXDIM 8
@@ -51,23 +51,23 @@
  *                       Array of dimension n, 0-based.
  */
 void dlatdf(
-    const int ijob,
-    const int n,
+    const INT ijob,
+    const INT n,
     const f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict rhs,
     f64* rdsum,
     f64* rdscal,
-    const int* restrict ipiv,
-    const int* restrict jpiv)
+    const INT* restrict ipiv,
+    const INT* restrict jpiv)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k, info;
+    INT i, j, k, info;
     f64 bm, bp, pmone, sminu, splus, temp;
 
-    int iwork[MAXDIM];
+    INT iwork[MAXDIM];
     f64 work[4 * MAXDIM];
     f64 xm[MAXDIM];
     f64 xp[MAXDIM];

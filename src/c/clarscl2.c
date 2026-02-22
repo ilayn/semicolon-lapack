@@ -24,13 +24,13 @@
  * @param[in]     ldx   The leading dimension of the matrix X. ldx >= m.
  */
 void clarscl2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict D,
     c64* restrict X,
-    const int ldx)
+    const INT ldx)
 {
-    int i, j;
+    INT i, j;
 
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {

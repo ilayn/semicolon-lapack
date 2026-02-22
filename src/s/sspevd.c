@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -49,17 +49,17 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = i, the algorithm failed to converge.
  */
-void sspevd(const char* jobz, const char* uplo, const int n,
+void sspevd(const char* jobz, const char* uplo, const INT n,
             f32* restrict AP, f32* restrict W,
-            f32* restrict Z, const int ldz,
-            f32* restrict work, const int lwork,
-            int* restrict iwork, const int liwork, int* info)
+            f32* restrict Z, const INT ldz,
+            f32* restrict work, const INT lwork,
+            INT* restrict iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, wantz;
-    int iinfo, inde, indtau, indwrk, iscale, liwmin, llwork, lwmin;
+    INT lquery, wantz;
+    INT iinfo, inde, indtau, indwrk, iscale, liwmin, llwork, lwmin;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

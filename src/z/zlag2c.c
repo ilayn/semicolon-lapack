@@ -34,20 +34,20 @@
  *                           in this case, the content of SA is unspecified.
  */
 void zlag2c(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     float complex* restrict SA,
-    const int ldsa,
-    int* info)
+    const INT ldsa,
+    INT* info)
 {
     const f64 rmax = (f64)FLT_MAX;
 
     *info = 0;
 
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             f64 re = creal(A[i + j * lda]);
             f64 im = cimag(A[i + j * lda]);
             if ((re < -rmax) || (re > rmax) ||

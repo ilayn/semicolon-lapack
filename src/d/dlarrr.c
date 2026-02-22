@@ -25,7 +25,7 @@
  *                         - = 1: the matrix warrants computations guaranteeing
  *                           only absolute accuracy.
  */
-void dlarrr(const int n, const f64* D, f64* E, int* info)
+void dlarrr(const INT n, const f64* D, f64* E, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 RELCOND = 0.999;
@@ -61,13 +61,13 @@ void dlarrr(const int n, const f64* D, f64* E, int* info)
        to losing at most 3 decimal digits: 1 / (1 - (OFFDIG + OFFDIG2)) <= 1000
        instead of the current OFFDIG + OFFDIG2 < 1 */
 
-    int yesrel = 1;
+    INT yesrel = 1;
     f64 offdig = ZERO;
     f64 offdig2;
     f64 tmp = sqrt(fabs(D[0]));
     if (tmp < rmin) yesrel = 0;
     if (yesrel) {
-        for (int i = 1; i < n; i++) {
+        for (INT i = 1; i < n; i++) {
             f64 tmp2 = sqrt(fabs(D[i]));
             if (tmp2 < rmin) { yesrel = 0; break; }
             offdig2 = fabs(E[i - 1]) / (tmp * tmp2);

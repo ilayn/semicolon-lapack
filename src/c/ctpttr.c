@@ -44,14 +44,14 @@
  */
 void ctpttr(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
-    int lower;
-    int i, j, k;
+    INT lower;
+    INT i, j, k;
 
     *info = 0;
     lower = (uplo[0] == 'L' || uplo[0] == 'l');

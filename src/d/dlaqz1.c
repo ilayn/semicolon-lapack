@@ -29,9 +29,9 @@
  */
 void dlaqz1(
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     const f64 sr1,
     const f64 sr2,
     const f64 si,

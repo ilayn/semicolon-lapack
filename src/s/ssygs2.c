@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SSYGS2 reduces a real symmetric-definite generalized eigenproblem
@@ -31,19 +31,19 @@
  *                         - = 0: successful exit; < 0: if -i, the i-th argument was illegal.
  */
 void ssygs2(
-    const int itype,
+    const INT itype,
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
-    int upper;
-    int k;
+    INT upper;
+    INT k;
     f32 akk, bkk, ct;
 
     *info = 0;

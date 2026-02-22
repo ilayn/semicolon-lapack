@@ -8,7 +8,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CGGES computes for a pair of N-by-N complex nonsymmetric matrices
@@ -94,29 +94,29 @@
  *                    - = n+3: reordering failed in CTGSEN.
  */
 void cgges(const char* jobvsl, const char* jobvsr, const char* sort,
-           cselect2_t selctg, const int n,
-           c64* A, const int lda,
-           c64* B, const int ldb,
-           int* sdim,
+           cselect2_t selctg, const INT n,
+           c64* A, const INT lda,
+           c64* B, const INT ldb,
+           INT* sdim,
            c64* alpha, c64* beta,
-           c64* VSL, const int ldvsl,
-           c64* VSR, const int ldvsr,
-           c64* work, const int lwork,
-           f32* rwork, int* bwork, int* info)
+           c64* VSL, const INT ldvsl,
+           c64* VSR, const INT ldvsr,
+           c64* work, const INT lwork,
+           f32* rwork, INT* bwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
-    int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int iright, irows, irwrk, itau, iwrk, lwkmin, lwkopt;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
+    INT i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT iright, irows, irwrk, itau, iwrk, lwkmin, lwkopt;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps,
            pvsl, pvsr, smlnum;
-    int idum[1];
+    INT idum[1];
     f32 dif[2];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     /* Decode the input arguments */
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {

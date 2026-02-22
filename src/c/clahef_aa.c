@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -61,22 +61,22 @@
  */
 void clahef_aa(
     const char* uplo,
-    const int j1,
-    const int m,
-    const int nb,
+    const INT j1,
+    const INT m,
+    const INT nb,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict H,
-    const int ldh,
+    const INT ldh,
     c64* restrict work)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int j, k, k1, i1, i2, mj;
+    INT j, k, k1, i1, i2, mj;
     c64 piv, alpha;
-    int minval;
+    INT minval;
 
     j = 0;
 

@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -57,19 +57,19 @@
  *                           full rank.
  */
 void cgels(const char* trans,
-           const int m, const int n, const int nrhs,
-           c64* restrict A, const int lda,
-           c64* restrict B, const int ldb,
-           c64* restrict work, const int lwork,
-           int* info)
+           const INT m, const INT n, const INT nrhs,
+           c64* restrict A, const INT lda,
+           c64* restrict B, const INT ldb,
+           c64* restrict work, const INT lwork,
+           INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int lquery, tpsd;
-    int brow, iascl, ibscl, mn, nb, scllen, wsize;
+    INT lquery, tpsd;
+    INT brow, iascl, ibscl, mn, nb, scllen, wsize;
     f32 anrm, bignum, bnrm, smlnum;
     f32 rwork[1];
-    int iinfo;
+    INT iinfo;
 
     /* Test the input arguments */
     *info = 0;
@@ -100,15 +100,15 @@ void cgels(const char* trans,
 
         if (m >= n) {
             nb = lapack_get_nb("GEQRF");
-            int nb2 = lapack_get_nb("ORMQR");
+            INT nb2 = lapack_get_nb("ORMQR");
             if (nb2 > nb) nb = nb2;
         } else {
             nb = lapack_get_nb("GELQF");
-            int nb2 = lapack_get_nb("ORMLQ");
+            INT nb2 = lapack_get_nb("ORMLQ");
             if (nb2 > nb) nb = nb2;
         }
 
-        int mn_nrhs = mn > nrhs ? mn : nrhs;
+        INT mn_nrhs = mn > nrhs ? mn : nrhs;
         wsize = mn + mn_nrhs * nb;
         if (wsize < 1) wsize = 1;
         work[0] = (c64)wsize;
@@ -123,7 +123,7 @@ void cgels(const char* trans,
 
     /* Quick return if possible */
     if (mn == 0 || nrhs == 0) {
-        int maxmn = m > n ? m : n;
+        INT maxmn = m > n ? m : n;
         claset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
         return;
     }
@@ -145,7 +145,7 @@ void cgels(const char* trans,
         iascl = 2;
     } else if (anrm == 0.0f) {
         /* Matrix all zero. Return zero solution. */
-        int maxmn = m > n ? m : n;
+        INT maxmn = m > n ? m : n;
         claset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
         work[0] = (c64)wsize;
         return;
@@ -197,8 +197,8 @@ void cgels(const char* trans,
             }
 
             /* B(n:m-1, 0:nrhs-1) = 0 */
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = n; i < m; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = n; i < m; i++) {
                     B[i + j * ldb] = CZERO;
                 }
             }
@@ -225,8 +225,8 @@ void cgels(const char* trans,
             }
 
             /* B(m:n-1, 0:nrhs-1) = 0 */
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = m; i < n; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = m; i < n; i++) {
                     B[i + j * ldb] = CZERO;
                 }
             }

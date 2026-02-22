@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 
@@ -70,17 +70,17 @@ void zlatrs3(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict scale,
     f64* restrict cnorm,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     /* Parameters from Fortran - match LAPACK exactly */
     const f64 ZERO = 0.0;
@@ -98,10 +98,10 @@ void zlatrs3(
     f64 XNRM[NBRHS];
 
     /* Local scalars */
-    int upper, notran, nounit, lquery;
-    int awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
-    int jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
-    int lanrm, lds, lscale, nb, nba, nbx, rhs, lwmin;
+    INT upper, notran, nounit, lquery;
+    INT awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
+    INT jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
+    INT lanrm, lds, lscale, nb, nba, nbx, rhs, lwmin;
     f64 anrm, bignum, bnrm, rscal, scal, scaloc;
     f64 scamin, smlnum, tmax;
 
@@ -122,7 +122,7 @@ void zlatrs3(
     if (nbx < 1) nbx = 1;
 
     /* Compute the workspace */
-    int minrhs = (nrhs < NBRHS) ? nrhs : NBRHS;
+    INT minrhs = (nrhs < NBRHS) ? nrhs : NBRHS;
     lscale = nba * ((nba > minrhs) ? nba : minrhs);
     lds = nba;
     lanrm = nba * nba;

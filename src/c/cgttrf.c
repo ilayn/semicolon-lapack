@@ -45,16 +45,16 @@
  *                           if it is used to solve a system of equations.
  */
 void cgttrf(
-    const int n,
+    const INT n,
     c64* restrict DL,
     c64* restrict D,
     c64* restrict DU,
     c64* restrict DU2,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
-    int i;
+    INT i;
     c64 fact, temp;
 
     *info = 0;

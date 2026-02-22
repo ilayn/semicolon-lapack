@@ -5,22 +5,22 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
-void cheev_2stage(const char* jobz, const char* uplo, const int n,
-                  c64* A, const int lda,
+void cheev_2stage(const char* jobz, const char* uplo, const INT n,
+                  c64* A, const INT lda,
                   f32* W,
-                  c64* work, const int lwork,
-                  f32* rwork, int* info)
+                  c64* work, const INT lwork,
+                  f32* rwork, INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const c64 cone = CMPLXF(1.0f, 0.0f);
 
-    int lower, lquery, wantz;
-    int iinfo, imax, inde, indtau, indwrk, iscale;
-    int llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
+    INT lower, lquery, wantz;
+    INT iinfo, imax, inde, indtau, indwrk, iscale;
+    INT llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

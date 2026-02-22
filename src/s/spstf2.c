@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -48,20 +48,20 @@
  */
 void spstf2(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* restrict piv,
-    int* rank,
+    const INT lda,
+    INT* restrict piv,
+    INT* rank,
     const f32 tol,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -80,14 +80,14 @@ void spstf2(
     }
 
     // Initialize PIV (0-based)
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }
 
     // Compute stopping value
-    int pvt = 0;
+    INT pvt = 0;
     f32 ajj = A[0];
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         if (A[i + i * lda] > ajj) {
             pvt = i;
             ajj = A[pvt + pvt * lda];
@@ -108,19 +108,19 @@ void spstf2(
     }
 
     // Set first half of WORK to zero, holds dot products
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         work[i] = ZERO;
     }
 
-    int jstop = -1;  // Track where we stop due to rank deficiency
+    INT jstop = -1;  // Track where we stop due to rank deficiency
 
     if (upper) {
         // Compute the Cholesky factorization P**T * A * P = U**T * U
-        for (int j = 0; j < n && jstop < 0; j++) {
+        for (INT j = 0; j < n && jstop < 0; j++) {
             // Find pivot, test for exit, else swap rows and columns
             // Update dot products, compute possible pivots which are
             // stored in the second half of WORK
-            for (int i = j; i < n; i++) {
+            for (INT i = j; i < n; i++) {
                 if (j > 0) {
                     f32 tmp = A[(j - 1) + i * lda];
                     work[i] = work[i] + tmp * tmp;
@@ -130,9 +130,9 @@ void spstf2(
 
             if (j > 0) {
                 // Find max in work[n+j : n+n-1]
-                int itemp = 0;
+                INT itemp = 0;
                 f32 wmax = work[n + j];
-                for (int i = 1; i < n - j; i++) {
+                for (INT i = 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -166,7 +166,7 @@ void spstf2(
                 f32 dtemp = work[j];
                 work[j] = work[pvt];
                 work[pvt] = dtemp;
-                int itemp = piv[pvt];
+                INT itemp = piv[pvt];
                 piv[pvt] = piv[j];
                 piv[j] = itemp;
             }
@@ -187,11 +187,11 @@ void spstf2(
         }
     } else {
         // Compute the Cholesky factorization P**T * A * P = L * L**T
-        for (int j = 0; j < n && jstop < 0; j++) {
+        for (INT j = 0; j < n && jstop < 0; j++) {
             // Find pivot, test for exit, else swap rows and columns
             // Update dot products, compute possible pivots which are
             // stored in the second half of WORK
-            for (int i = j; i < n; i++) {
+            for (INT i = j; i < n; i++) {
                 if (j > 0) {
                     f32 tmp = A[i + (j - 1) * lda];
                     work[i] = work[i] + tmp * tmp;
@@ -201,9 +201,9 @@ void spstf2(
 
             if (j > 0) {
                 // Find max in work[n+j : n+n-1]
-                int itemp = 0;
+                INT itemp = 0;
                 f32 wmax = work[n + j];
-                for (int i = 1; i < n - j; i++) {
+                for (INT i = 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -237,7 +237,7 @@ void spstf2(
                 f32 dtemp = work[j];
                 work[j] = work[pvt];
                 work[pvt] = dtemp;
-                int itemp = piv[pvt];
+                INT itemp = piv[pvt];
                 piv[pvt] = piv[j];
                 piv[j] = itemp;
             }

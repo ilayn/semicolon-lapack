@@ -6,7 +6,7 @@
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHEGST reduces a complex Hermitian-definite generalized eigenproblem
@@ -34,22 +34,22 @@
  *                         - = 0: successful exit; < 0: if -i, the i-th argument was illegal.
  */
 void chegst(
-    const int itype,
+    const INT itype,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 HALF = CMPLXF(0.5f, 0.0f);
     const c64 NEG_HALF = CMPLXF(-0.5f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
-    int upper;
-    int k, kb, nb;
+    INT upper;
+    INT k, kb, nb;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

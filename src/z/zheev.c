@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 #include "../include/lapack_tuning.h"
 
@@ -46,19 +46,19 @@
  *                           off-diagonal elements of an intermediate tridiagonal
  *                           form did not converge to zero.
  */
-void zheev(const char* jobz, const char* uplo, const int n,
-           c128* restrict A, const int lda,
+void zheev(const char* jobz, const char* uplo, const INT n,
+           c128* restrict A, const INT lda,
            f64* restrict W,
-           c128* restrict work, const int lwork,
+           c128* restrict work, const INT lwork,
            f64* restrict rwork,
-           int* info)
+           INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int lower, wantz, lquery;
-    int iinfo, imax, inde, indtau, indwrk, iscale, llwork, lwkopt, nb;
+    INT lower, wantz, lquery;
+    INT iinfo, imax, inde, indtau, indwrk, iscale, llwork, lwkopt, nb;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     /* Test the input parameters */

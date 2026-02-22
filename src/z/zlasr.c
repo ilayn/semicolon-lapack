@@ -38,11 +38,11 @@
  * @param[in]     lda     The leading dimension of A. lda >= max(1,m).
  */
 void zlasr(const char* side, const char* pivot, const char* direct,
-           const int m, const int n,
+           const INT m, const INT n,
            const f64* restrict C_rot, const f64* restrict S_rot,
-           c128* restrict A, const int lda)
+           c128* restrict A, const INT lda)
 {
-    int i, j;
+    INT i, j;
     f64 ctemp, stemp;
     c128 temp;
 

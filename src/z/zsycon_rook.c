@@ -53,20 +53,20 @@
  */
 void zsycon_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
-    int upper;
-    int i, kase;
+    INT upper;
+    INT i, kase;
     f64 ainvnm;
-    int isave[3];
-    int dummy_info;
+    INT isave[3];
+    INT dummy_info;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

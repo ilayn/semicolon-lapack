@@ -66,15 +66,15 @@
  *                           diagonal matrix D is exactly singular, so the
  *                           solution could not be computed.
  */
-void dsysv(const char* uplo, const int n, const int nrhs,
-           f64* restrict A, const int lda,
-           int* restrict ipiv,
-           f64* restrict B, const int ldb,
-           f64* restrict work, const int lwork,
-           int* info)
+void dsysv(const char* uplo, const INT n, const INT nrhs,
+           f64* restrict A, const INT lda,
+           INT* restrict ipiv,
+           f64* restrict B, const INT ldb,
+           f64* restrict work, const INT lwork,
+           INT* info)
 {
-    int lwkopt;
-    int lquery = (lwork == -1);
+    INT lwkopt;
+    INT lquery = (lwork == -1);
 
     /* Test the input parameters. */
     *info = 0;
@@ -98,7 +98,7 @@ void dsysv(const char* uplo, const int n, const int nrhs,
             lwkopt = 1;
         } else {
             dsytrf(uplo, n, A, lda, ipiv, work, -1, info);
-            lwkopt = (int)work[0];
+            lwkopt = (INT)work[0];
         }
         work[0] = (f64)lwkopt;
     }

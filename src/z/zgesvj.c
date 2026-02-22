@@ -6,14 +6,14 @@
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f64 ZERO = 0.0;
 static const f64 HALF = 0.5;
 static const f64 ONE = 1.0;
 static const c128 CZERO = CMPLX(0.0, 0.0);
 static const c128 CONE = CMPLX(1.0, 0.0);
-static const int NSWEEP = 30;
+static const INT NSWEEP = 30;
 
 /**
  * ZGESVJ computes the singular value decomposition (SVD) of a complex
@@ -206,21 +206,21 @@ static const int NSWEEP = 30;
  *                           description of rwork.
  */
 void zgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, c128* restrict A, const int lda,
-            f64* restrict SVA, const int mv,
-            c128* restrict V, const int ldv,
-            c128* restrict cwork, const int lwork,
-            f64* restrict rwork, const int lrwork, int* info)
+            const INT m, const INT n, c128* restrict A, const INT lda,
+            f64* restrict SVA, const INT mv,
+            c128* restrict V, const INT ldv,
+            c128* restrict cwork, const INT lwork,
+            f64* restrict rwork, const INT lrwork, INT* info)
 {
-    int lsvec, uctol, rsvec, applv, upper, lower, lquery;
-    int minmn, lwmin, lrwmin, mvl = 0;
-    int i, ibr, igl, ir1, p, q, kbl, nbl;
-    int rowskip, lkahead, swband, blskip;
-    int notrot, pskipped, emptsw, iswrot;
-    int ijblsk, jbc, jgl;
-    int n2, n4, n34;
-    int ierr;
-    int rotok, noscale, goscale;
+    INT lsvec, uctol, rsvec, applv, upper, lower, lquery;
+    INT minmn, lwmin, lrwmin, mvl = 0;
+    INT i, ibr, igl, ir1, p, q, kbl, nbl;
+    INT rowskip, lkahead, swband, blskip;
+    INT notrot, pskipped, emptsw, iswrot;
+    INT ijblsk, jbc, jgl;
+    INT n2, n4, n34;
+    INT ierr;
+    INT rotok, noscale, goscale;
     c128 aapq, ompq;
     f64 aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
     f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
@@ -919,7 +919,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
 
             offdiag_cleanup:
             {
-                int pp;
+                INT pp;
                 for (pp = igl; pp < ((igl + kbl < n) ? igl + kbl : n); pp++) {
                     SVA[pp] = fabs(SVA[pp]);
                 }

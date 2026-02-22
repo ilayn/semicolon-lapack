@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 
@@ -50,14 +50,14 @@
  */
 void zpstrf(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict piv,
-    int* rank,
+    const INT lda,
+    INT* restrict piv,
+    INT* rank,
     const f64 tol,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
@@ -66,7 +66,7 @@ void zpstrf(
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -84,7 +84,7 @@ void zpstrf(
         return;
     }
 
-    int nb = lapack_get_nb("POTRF");
+    INT nb = lapack_get_nb("POTRF");
 
     if (nb <= 1 || nb >= n) {
         zpstf2(uplo, n, A, lda, piv, rank, tol, work, info);
@@ -92,14 +92,14 @@ void zpstrf(
     }
 
     // Initialize PIV (0-based)
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }
 
     // Compute stopping value
-    int pvt = 0;
+    INT pvt = 0;
     f64 ajj = creal(A[0]);
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         f64 tmp = creal(A[i + i * lda]);
         if (tmp > ajj) {
             pvt = i;
@@ -120,19 +120,19 @@ void zpstrf(
         dstop = tol;
     }
 
-    int jstop = -1;
+    INT jstop = -1;
 
     if (upper) {
         // Compute the Cholesky factorization P**T * A * P = U**H * U
-        for (int k = 0; k < n && jstop < 0; k += nb) {
-            int jb = (nb < n - k) ? nb : (n - k);
+        for (INT k = 0; k < n && jstop < 0; k += nb) {
+            INT jb = (nb < n - k) ? nb : (n - k);
 
-            for (int i = k; i < n; i++) {
+            for (INT i = k; i < n; i++) {
                 work[i] = ZERO;
             }
 
-            for (int j = k; j < k + jb && jstop < 0; j++) {
-                for (int i = j; i < n; i++) {
+            for (INT j = k; j < k + jb && jstop < 0; j++) {
+                for (INT i = j; i < n; i++) {
                     if (j > k) {
                         c128 val = A[(j - 1) + i * lda];
                         work[i] = work[i] + creal(conj(val) * val);
@@ -141,9 +141,9 @@ void zpstrf(
                 }
 
                 if (j > 0) {
-                    int itemp = 0;
+                    INT itemp = 0;
                     f64 wmax = work[n + j];
-                    for (int i = 1; i < n - j; i++) {
+                    for (INT i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
                             itemp = i;
@@ -167,7 +167,7 @@ void zpstrf(
                         cblas_zswap(n - pvt - 1, &A[j + (pvt + 1) * lda], lda,
                                     &A[pvt + (pvt + 1) * lda], lda);
                     }
-                    for (int i = j + 1; i < pvt; i++) {
+                    for (INT i = j + 1; i < pvt; i++) {
                         c128 ztemp = conj(A[j + i * lda]);
                         A[j + i * lda] = conj(A[i + pvt * lda]);
                         A[i + pvt * lda] = ztemp;
@@ -177,7 +177,7 @@ void zpstrf(
                     f64 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
-                    int itemp = piv[pvt];
+                    INT itemp = piv[pvt];
                     piv[pvt] = piv[j];
                     piv[j] = itemp;
                 }
@@ -207,15 +207,15 @@ void zpstrf(
         }
     } else {
         // Compute the Cholesky factorization P**T * A * P = L * L**H
-        for (int k = 0; k < n && jstop < 0; k += nb) {
-            int jb = (nb < n - k) ? nb : (n - k);
+        for (INT k = 0; k < n && jstop < 0; k += nb) {
+            INT jb = (nb < n - k) ? nb : (n - k);
 
-            for (int i = k; i < n; i++) {
+            for (INT i = k; i < n; i++) {
                 work[i] = ZERO;
             }
 
-            for (int j = k; j < k + jb && jstop < 0; j++) {
-                for (int i = j; i < n; i++) {
+            for (INT j = k; j < k + jb && jstop < 0; j++) {
+                for (INT i = j; i < n; i++) {
                     if (j > k) {
                         c128 val = A[i + (j - 1) * lda];
                         work[i] = work[i] + creal(conj(val) * val);
@@ -224,9 +224,9 @@ void zpstrf(
                 }
 
                 if (j > 0) {
-                    int itemp = 0;
+                    INT itemp = 0;
                     f64 wmax = work[n + j];
-                    for (int i = 1; i < n - j; i++) {
+                    for (INT i = 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
                             itemp = i;
@@ -250,7 +250,7 @@ void zpstrf(
                         cblas_zswap(n - pvt - 1, &A[(pvt + 1) + j * lda], 1,
                                     &A[(pvt + 1) + pvt * lda], 1);
                     }
-                    for (int i = j + 1; i < pvt; i++) {
+                    for (INT i = j + 1; i < pvt; i++) {
                         c128 ztemp = conj(A[i + j * lda]);
                         A[i + j * lda] = conj(A[pvt + i * lda]);
                         A[pvt + i * lda] = ztemp;
@@ -260,7 +260,7 @@ void zpstrf(
                     f64 dtemp = work[j];
                     work[j] = work[pvt];
                     work[pvt] = dtemp;
-                    int itemp = piv[pvt];
+                    INT itemp = piv[pvt];
                     piv[pvt] = piv[j];
                     piv[j] = itemp;
                 }

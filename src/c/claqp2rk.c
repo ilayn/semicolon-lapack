@@ -6,7 +6,7 @@
 #include <complex.h>
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -81,28 +81,28 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void claqp2rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int ioffset,
-    int kmax,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT ioffset,
+    INT kmax,
     const f32 abstol,
     const f32 reltol,
-    const int kp1,
+    const INT kp1,
     const f32 maxc2nrm,
     c64* restrict A,
-    const int lda,
-    int* K,
+    const INT lda,
+    INT* K,
     f32* maxc2nrmk,
     f32* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     c64* restrict tau,
     f32* restrict vn1,
     f32* restrict vn2,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
-    int i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
+    INT i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
     f32 hugeval, taunan, temp, temp2, tol3z;
 
     *info = 0;

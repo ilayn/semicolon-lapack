@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -40,17 +40,17 @@
  *                           Schur form; the blocks are not swapped and T and
  *                           Q are unchanged.
  */
-void dlaexc(const int wantq, const int n, f64* T, const int ldt,
-            f64* Q, const int ldq, const int j1, const int n1,
-            const int n2, f64* work, int* info)
+void dlaexc(const INT wantq, const INT n, f64* T, const INT ldt,
+            f64* Q, const INT ldq, const INT j1, const INT n1,
+            const INT n2, f64* work, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TEN = 10.0;
-    const int LDD = 4;
-    const int LDX = 2;
+    const INT LDD = 4;
+    const INT LDX = 2;
 
-    int ierr, j2, j3, j4, k, nd;
+    INT ierr, j2, j3, j4, k, nd;
     f64 cs, dnorm, eps, scale, smlnum, sn, t11, t22;
     f64 t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
     f64 wr1, wr2, xnorm;

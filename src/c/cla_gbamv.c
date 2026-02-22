@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -49,18 +49,18 @@
  *                       and at least (1 + (n-1)*abs(incy)) otherwise.
  * @param[in]     incy   The increment for the elements of Y. incy != 0.
  */
-void cla_gbamv(const int trans, const int m, const int n,
-               const int kl, const int ku,
+void cla_gbamv(const INT trans, const INT m, const INT n,
+               const INT kl, const INT ku,
                const f32 alpha, const c64* restrict AB,
-               const int ldab, const c64* restrict X,
-               const int incx, const f32 beta,
-               f32* restrict Y, const int incy)
+               const INT ldab, const c64* restrict X,
+               const INT incx, const f32 beta,
+               f32* restrict Y, const INT incy)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int symb_zero;
+    INT symb_zero;
     f32 temp, safe1;
-    int i, info, iy, j, jx, kx, ky, lenx, leny, kd, ke;
+    INT i, info, iy, j, jx, kx, ky, lenx, leny, kd, ke;
 
     info = 0;
     if (!(trans == CblasNoTrans || trans == CblasTrans || trans == CblasConjTrans)) {
@@ -127,8 +127,8 @@ void cla_gbamv(const int trans, const int m, const int n,
                     Y[iy] = beta * fabsf(Y[iy]);
                 }
                 if (alpha != 0.0f) {
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1f(AB[kd + i - j + j * ldab]);
                         symb_zero = symb_zero &&
@@ -156,8 +156,8 @@ void cla_gbamv(const int trans, const int m, const int n,
                     Y[iy] = beta * fabsf(Y[iy]);
                 }
                 if (alpha != 0.0f) {
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1f(AB[ke - i + j + i * ldab]);
                         symb_zero = symb_zero &&
@@ -188,8 +188,8 @@ void cla_gbamv(const int trans, const int m, const int n,
                 }
                 if (alpha != 0.0f) {
                     jx = kx;
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1f(AB[kd + i - j + j * ldab]);
                         symb_zero = symb_zero &&
@@ -219,8 +219,8 @@ void cla_gbamv(const int trans, const int m, const int n,
                 }
                 if (alpha != 0.0f) {
                     jx = kx;
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1f(AB[ke - i + j + i * ldab]);
                         symb_zero = symb_zero &&

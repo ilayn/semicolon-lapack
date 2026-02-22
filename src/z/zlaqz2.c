@@ -6,7 +6,7 @@
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZLAQZ2 performs AED
@@ -43,25 +43,25 @@
  * @param[out]    info     = 0: successful exit.
  *                         < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zlaqz2(const int ilschur, const int ilq, const int ilz,
-            const int n, const int ilo, const int ihi, const int nw,
-            c128* restrict A, const int lda,
-            c128* restrict B, const int ldb,
-            c128* restrict Q, const int ldq,
-            c128* restrict Z, const int ldz,
-            int* ns, int* nd,
+void zlaqz2(const INT ilschur, const INT ilq, const INT ilz,
+            const INT n, const INT ilo, const INT ihi, const INT nw,
+            c128* restrict A, const INT lda,
+            c128* restrict B, const INT ldb,
+            c128* restrict Q, const INT ldq,
+            c128* restrict Z, const INT ldz,
+            INT* ns, INT* nd,
             c128* restrict alpha,
             c128* restrict beta,
-            c128* restrict QC, const int ldqc,
-            c128* restrict ZC, const int ldzc,
-            c128* restrict work, const int lwork,
-            f64* restrict rwork, const int rec, int* info)
+            c128* restrict QC, const INT ldqc,
+            c128* restrict ZC, const INT ldzc,
+            c128* restrict work, const INT lwork,
+            f64* restrict rwork, const INT rec, INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
     const f64 ZERO = 0.0;
 
-    int jw, kwtop, kwbot, istopm, istartm, k, k2, ztgexc_info,
+    INT jw, kwtop, kwbot, istopm, istartm, k, k2, ztgexc_info,
         ifst, ilst, lworkreq, qz_small_info;
     f64 smlnum, ulp, safmin, c1, tempr;
     c128 s, s1, temp;
@@ -82,10 +82,10 @@ void zlaqz2(const int ilschur, const int ilq, const int ilz,
     zlaqz0("S", "V", "V", jw, 0, jw - 1, &A[kwtop + kwtop * lda], lda,
            &B[kwtop + kwtop * ldb], ldb, alpha, beta, QC, ldqc, ZC,
            ldzc, work, -1, rwork, rec + 1, &qz_small_info);
-    lworkreq = (int)creal(work[0]) + 2 * jw * jw;
+    lworkreq = (INT)creal(work[0]) + 2 * jw * jw;
     {
-        int t1 = n * nw;
-        int t2 = 2 * nw * nw + n;
+        INT t1 = n * nw;
+        INT t2 = 2 * nw * nw + n;
         if (t1 > lworkreq) lworkreq = t1;
         if (t2 > lworkreq) lworkreq = t2;
     }
@@ -188,7 +188,7 @@ void zlaqz2(const int ilschur, const int ilq, const int ilz,
 
     if (kwtop != ilo && s != CZERO) {
         /* Reflect spike back, this will create optimally packed bulges */
-        for (int i = kwtop; i <= kwbot; i++) {
+        for (INT i = kwtop; i <= kwbot; i++) {
             A[i + (kwtop - 1) * lda] = A[kwtop + (kwtop - 1) * lda] *
                                         conj(QC[0 + (i - kwtop) * ldqc]);
         }

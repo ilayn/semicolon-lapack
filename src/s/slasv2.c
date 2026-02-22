@@ -36,7 +36,7 @@ void slasv2(const f32 f, const f32 g, const f32 h,
             f32* ssmin, f32* ssmax,
             f32* snr, f32* csr, f32* snl, f32* csl)
 {
-    int gasmal, swap, pmax;
+    INT gasmal, swap, pmax;
     f32 a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m;
     f32 mm, r, s, slt, srt, t, temp, tsign, tt;
     f32 eps;

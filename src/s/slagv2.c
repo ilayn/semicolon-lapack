@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -49,9 +49,9 @@
  */
 void slagv2(
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict alphar,
     f32* restrict alphai,
     f32* restrict beta,

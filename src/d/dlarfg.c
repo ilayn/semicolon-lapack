@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -36,12 +36,12 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void dlarfg(const int n, f64* alpha, f64* x,
-            const int incx, f64* tau)
+void dlarfg(const INT n, f64* alpha, f64* x,
+            const INT incx, f64* tau)
 {
     const f64 ONE = 1.0;
     f64 xnorm, beta, safmin, rsafmn;
-    int knt, j;
+    INT knt, j;
 
     if (n <= 1) {
         *tau = 0.0;

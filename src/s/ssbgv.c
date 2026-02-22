@@ -40,21 +40,21 @@
 void ssbgv(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
-    int upper, wantz;
-    int iinfo, inde, indwrk;
+    INT upper, wantz;
+    INT iinfo, inde, indwrk;
     char vect;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

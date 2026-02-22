@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -36,26 +36,26 @@
  *                    > 0: if info = i (1-based), CLAHQR failed to compute
  *                         all eigenvalues.
  */
-void clahqr(const int wantt, const int wantz, const int n,
-            const int ilo, const int ihi,
-            c64* H, const int ldh,
+void clahqr(const INT wantt, const INT wantz, const INT n,
+            const INT ilo, const INT ihi,
+            c64* H, const INT ldh,
             c64* W,
-            const int iloz, const int ihiz,
-            c64* Z, const int ldz,
-            int* info)
+            const INT iloz, const INT ihiz,
+            c64* Z, const INT ldz,
+            INT* info)
 {
     const c64 czero = 0.0f;
     const c64 cone = 1.0f;
     const f32 rzero = 0.0f;
     const f32 half = 0.5f;
     const f32 dat1 = 3.0f / 4.0f;
-    const int kexsh = 10;
+    const INT kexsh = 10;
 
     c64 sc, sum, t, t1, temp, u, v2, x, y;
     c64 h11, h11s, h22;
     f32 aa, ab, ba, bb, h10, h21, rtemp, s, safmin;
     f32 smlnum, sx, t2, tst, ulp;
-    int i, i1, i2, its, itmax, j, jhi, jlo, k, l, m, nh, nz, kdefl;
+    INT i, i1, i2, its, itmax, j, jhi, jlo, k, l, m, nh, nz, kdefl;
 
     c64 v[2];
 
@@ -93,7 +93,7 @@ void clahqr(const int wantt, const int wantz, const int n,
             cblas_cscal(jhi - i + 1, &sc, &H[i + i * ldh], ldh);
             {
                 c64 sc_conj = conjf(sc);
-                int cnt = ((jhi < i + 1) ? jhi : i + 1) - jlo + 1;
+                INT cnt = ((jhi < i + 1) ? jhi : i + 1) - jlo + 1;
                 cblas_cscal(cnt, &sc_conj, &H[jlo + i * ldh], 1);
             }
             if (wantz) {

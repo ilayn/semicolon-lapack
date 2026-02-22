@@ -4,7 +4,7 @@
  *        symmetric tridiagonal form by an orthogonal similarity transformation.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -41,16 +41,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dsptrd(const char* uplo, const int n, f64* restrict AP,
+void dsptrd(const char* uplo, const INT n, f64* restrict AP,
             f64* restrict D, f64* restrict E,
-            f64* restrict tau, int* info)
+            f64* restrict tau, INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
 
-    int upper;
-    int i, i1, i1i1, ii;
+    INT upper;
+    INT i, i1, i1i1, ii;
     f64 alpha, taui;
 
     *info = 0;

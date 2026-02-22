@@ -3,7 +3,7 @@
  * @brief DORHR_COL takes an M-by-N matrix Q_in with orthonormal columns and performs Householder Reconstruction.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -51,18 +51,18 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void dorhr_col(
-    const int m,
-    const int n,
-    const int nb,
+    const INT m,
+    const INT n,
+    const INT nb,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict T,
-    const int ldt,
+    const INT ldt,
     f64* restrict D,
-    int* info)
+    INT* info)
 {
-    int i, iinfo, j, jb, jbtemp1, jbtemp2, jnb;
-    int minval;
+    INT i, iinfo, j, jb, jbtemp1, jbtemp2, jnb;
+    INT minval;
 
     *info = 0;
     if (m < 0) {

@@ -89,34 +89,34 @@
 void cgesvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict AF,
-    const int ldaf,
-    int* restrict ipiv,
+    const INT ldaf,
+    INT* restrict ipiv,
     char* equed,
     f32* restrict R,
     f32* restrict C,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, infequ;
+    INT i, j, infequ;
     f32 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
-    int nofact, equil, notran, rowequ, colequ;
+    INT nofact, equil, notran, rowequ, colequ;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

@@ -42,26 +42,26 @@
  */
 void dgtcon(
     const char* norm,
-    const int n,
+    const INT n,
     const f64* restrict DL,
     const f64* restrict D,
     const f64* restrict DU,
     const f64* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f64 anorm,
     f64* rcond,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int onenrm;
-    int i, kase, kase1;
+    INT onenrm;
+    INT i, kase, kase1;
     f64 ainvnm;
-    int isave[3];
-    int ldb;
+    INT isave[3];
+    INT ldb;
 
     /* Test the input arguments */
     *info = 0;

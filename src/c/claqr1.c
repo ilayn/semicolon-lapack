@@ -27,7 +27,7 @@
  * @param[out] v      Complex array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-void claqr1(const int n, const c64* H, const int ldh,
+void claqr1(const INT n, const c64* H, const INT ldh,
             const c64 s1, const c64 s2,
             c64* v)
 {

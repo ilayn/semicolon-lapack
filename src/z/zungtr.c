@@ -40,17 +40,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zungtr(const char* uplo, const int n,
-            c128* restrict A, const int lda,
+void zungtr(const char* uplo, const INT n,
+            c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int upper, lquery;
-    int i, j, iinfo, lwkopt, nb;
+    INT upper, lquery;
+    INT i, j, iinfo, lwkopt, nb;
 
     /* Test the input arguments */
     *info = 0;

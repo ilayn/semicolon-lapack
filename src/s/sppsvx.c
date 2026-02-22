@@ -3,7 +3,7 @@
  * @brief SPPSVX computes the solution to a real system of linear equations A * X = B with symmetric positive definite matrix in packed storage (expert driver).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -57,30 +57,30 @@
 void sppsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict AP,
     f32* restrict AFP,
     char* equed,
     f32* restrict S,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // sppsvx.f lines 330-331: Parameters
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     // sppsvx.f lines 334-336: Local Scalars
-    int equil, nofact, rcequ;
-    int i, infequ, j;
+    INT equil, nofact, rcequ;
+    INT i, infequ, j;
     f32 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     // sppsvx.f lines 353-363: Initialize

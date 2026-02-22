@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */
@@ -57,14 +57,14 @@ static const f32 ALPHA_BK = 0.6403882032022076f;
  */
 void chetf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     /* Test the input parameters */
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     *info = 0;
     if (!upper && uplo[0] != 'L' && uplo[0] != 'l') {
         *info = -1;
@@ -91,12 +91,12 @@ void chetf2(
          * 1 or 2
          */
 
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
-            int kstep = 1;
+            INT kstep = 1;
             f32 absakk = fabsf(crealf(A[k + k * lda]));
 
-            int imax = 0;
+            INT imax = 0;
             f32 colmax = 0.0f;
             if (k > 0) {
                 imax = cblas_icamax(k, &A[0 + k * lda], 1);
@@ -110,17 +110,17 @@ void chetf2(
                 ipiv[k] = k;
                 A[k + k * lda] = crealf(A[k + k * lda]);
             } else {
-                int kp;
+                INT kp;
                 if (absakk >= ALPHA_BK * colmax) {
                     kp = k;
                 } else {
                     f32 rowmax = 0.0f;
                     if (imax + 1 <= k) {
-                        int jmax = imax + 1 + cblas_icamax(k - imax, &A[imax + (imax + 1) * lda], lda);
+                        INT jmax = imax + 1 + cblas_icamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                         rowmax = cabs1f(A[imax + jmax * lda]);
                     }
                     if (imax > 0) {
-                        int jmax = cblas_icamax(imax, &A[0 + imax * lda], 1);
+                        INT jmax = cblas_icamax(imax, &A[0 + imax * lda], 1);
                         rowmax = fmaxf(rowmax, cabs1f(A[jmax + imax * lda]));
                     }
 
@@ -134,12 +134,12 @@ void chetf2(
                     }
                 }
 
-                int kk = k - kstep + 1;
+                INT kk = k - kstep + 1;
                 if (kp != kk) {
                     if (kp > 0) {
                         cblas_cswap(kp, &A[0 + kk * lda], 1, &A[0 + kp * lda], 1);
                     }
-                    for (int j = kp + 1; j < kk; j++) {
+                    for (INT j = kp + 1; j < kk; j++) {
                         c64 t = conjf(A[j + kk * lda]);
                         A[j + kk * lda] = conjf(A[kp + j * lda]);
                         A[kp + j * lda] = t;
@@ -177,12 +177,12 @@ void chetf2(
                         c64 d12 = A[(k - 1) + k * lda] / d;
                         d = tt / d;
 
-                        for (int j = k - 2; j >= 0; j--) {
+                        for (INT j = k - 2; j >= 0; j--) {
                             c64 wkm1 = d * (d11 * A[j + (k - 1) * lda] -
                                                        conjf(d12) * A[j + k * lda]);
                             c64 wk = d * (d22 * A[j + k * lda] -
                                                      d12 * A[j + (k - 1) * lda]);
-                            for (int i = j; i >= 0; i--) {
+                            for (INT i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * conjf(wk) +
                                                   A[i + (k - 1) * lda] * conjf(wkm1);
                             }
@@ -212,12 +212,12 @@ void chetf2(
          * 1 or 2
          */
 
-        int k = 0;
+        INT k = 0;
         while (k < n) {
-            int kstep = 1;
+            INT kstep = 1;
             f32 absakk = fabsf(crealf(A[k + k * lda]));
 
-            int imax = k;
+            INT imax = k;
             f32 colmax = 0.0f;
             if (k < n - 1) {
                 imax = k + 1 + cblas_icamax(n - k - 1, &A[(k + 1) + k * lda], 1);
@@ -231,17 +231,17 @@ void chetf2(
                 ipiv[k] = k;
                 A[k + k * lda] = crealf(A[k + k * lda]);
             } else {
-                int kp;
+                INT kp;
                 if (absakk >= ALPHA_BK * colmax) {
                     kp = k;
                 } else {
                     f32 rowmax = 0.0f;
                     if (imax > k) {
-                        int jmax = k + cblas_icamax(imax - k, &A[imax + k * lda], lda);
+                        INT jmax = k + cblas_icamax(imax - k, &A[imax + k * lda], lda);
                         rowmax = cabs1f(A[imax + jmax * lda]);
                     }
                     if (imax < n - 1) {
-                        int jmax = imax + 1 + cblas_icamax(n - imax - 1, &A[(imax + 1) + imax * lda], 1);
+                        INT jmax = imax + 1 + cblas_icamax(n - imax - 1, &A[(imax + 1) + imax * lda], 1);
                         rowmax = fmaxf(rowmax, cabs1f(A[jmax + imax * lda]));
                     }
 
@@ -255,13 +255,13 @@ void chetf2(
                     }
                 }
 
-                int kk = k + kstep - 1;
+                INT kk = k + kstep - 1;
                 if (kp != kk) {
                     if (kp < n - 1) {
                         cblas_cswap(n - kp - 1, &A[(kp + 1) + kk * lda], 1,
                                     &A[(kp + 1) + kp * lda], 1);
                     }
-                    for (int j = kk + 1; j < kp; j++) {
+                    for (INT j = kk + 1; j < kp; j++) {
                         c64 t = conjf(A[j + kk * lda]);
                         A[j + kk * lda] = conjf(A[kp + j * lda]);
                         A[kp + j * lda] = t;
@@ -300,12 +300,12 @@ void chetf2(
                         c64 d21 = A[(k + 1) + k * lda] / d;
                         d = tt / d;
 
-                        for (int j = k + 2; j < n; j++) {
+                        for (INT j = k + 2; j < n; j++) {
                             c64 wk = d * (d11 * A[j + k * lda] -
                                                      d21 * A[j + (k + 1) * lda]);
                             c64 wkp1 = d * (d22 * A[j + (k + 1) * lda] -
                                                        conjf(d21) * A[j + k * lda]);
-                            for (int i = j; i < n; i++) {
+                            for (INT i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * conjf(wk) +
                                                   A[i + (k + 1) * lda] * conjf(wkp1);
                             }

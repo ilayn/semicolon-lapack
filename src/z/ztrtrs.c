@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -60,18 +60,18 @@ void ztrtrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
 
     // Test the input parameters
     *info = 0;
@@ -104,7 +104,7 @@ void ztrtrs(
 
     // Check for singularity
     if (nounit) {
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (A[i + i * lda] == ZERO) {
                 *info = i + 1;
                 return;

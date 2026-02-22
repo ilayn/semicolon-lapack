@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -49,13 +49,13 @@
  * @param[in]     ldt     The leading dimension of the array T. ldt >= k.
  */
 void zlarzt(const char* direct, const char* storev,
-            const int n, const int k,
-            c128* restrict V, const int ldv,
+            const INT n, const INT k,
+            c128* restrict V, const INT ldv,
             const c128* restrict tau,
-            c128* restrict T, const int ldt)
+            c128* restrict T, const INT ldt)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
-    int i, j, info;
+    INT i, j, info;
 
     /* Check for currently supported options */
     info = 0;

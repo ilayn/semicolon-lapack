@@ -45,21 +45,21 @@
  */
 void zsyequb(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict S,
     f64* scond,
     f64* amax,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
-    const int MAX_ITER = 100;
+    const INT MAX_ITER = 100;
 
     *info = 0;
-    int up = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT up = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!up && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -80,14 +80,14 @@ void zsyequb(
         return;
     }
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         S[i] = ZERO;
     }
 
     *amax = ZERO;
     if (up) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < j; i++) {
                 f64 absval = cabs1(A[i + j * lda]);
                 S[i] = (S[i] > absval) ? S[i] : absval;
                 S[j] = (S[j] > absval) ? S[j] : absval;
@@ -98,11 +98,11 @@ void zsyequb(
             *amax = (*amax > absdiag) ? *amax : absdiag;
         }
     } else {
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             f64 absdiag = cabs1(A[j + j * lda]);
             S[j] = (S[j] > absdiag) ? S[j] : absdiag;
             *amax = (*amax > absdiag) ? *amax : absdiag;
-            for (int i = j + 1; i < n; i++) {
+            for (INT i = j + 1; i < n; i++) {
                 f64 absval = cabs1(A[i + j * lda]);
                 S[i] = (S[i] > absval) ? S[i] : absval;
                 S[j] = (S[j] > absval) ? S[j] : absval;
@@ -110,23 +110,23 @@ void zsyequb(
             }
         }
     }
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         S[j] = ONE / S[j];
     }
 
     f64 tol_val = ONE / sqrt(2.0 * n);
     f64 avg = ZERO;
 
-    for (int iter = 0; iter < MAX_ITER; iter++) {
+    for (INT iter = 0; iter < MAX_ITER; iter++) {
         f64 scale = ZERO;
         f64 sumsq = ZERO;
 
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             work[i] = CMPLX(0.0, 0.0);
         }
         if (up) {
-            for (int j = 0; j < n; j++) {
-                for (int i = 0; i < j; i++) {
+            for (INT j = 0; j < n; j++) {
+                for (INT i = 0; i < j; i++) {
                     f64 absval = cabs1(A[i + j * lda]);
                     work[i] = work[i] + absval * S[j];
                     work[j] = work[j] + absval * S[i];
@@ -134,9 +134,9 @@ void zsyequb(
                 work[j] = work[j] + cabs1(A[j + j * lda]) * S[j];
             }
         } else {
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 work[j] = work[j] + cabs1(A[j + j * lda]) * S[j];
-                for (int i = j + 1; i < n; i++) {
+                for (INT i = j + 1; i < n; i++) {
                     f64 absval = cabs1(A[i + j * lda]);
                     work[i] = work[i] + absval * S[j];
                     work[j] = work[j] + absval * S[i];
@@ -145,13 +145,13 @@ void zsyequb(
         }
 
         avg = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             avg = avg + S[i] * creal(work[i]);
         }
         avg = avg / n;
 
         f64 std_dev = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             work[n + i] = S[i] * work[i] - avg;
         }
         zlassq(n, &work[n], 1, &scale, &sumsq);
@@ -161,7 +161,7 @@ void zsyequb(
             break;
         }
 
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 t = cabs1(A[i + i * lda]);
             f64 si = S[i];
             f64 c2 = (n - 1) * t;
@@ -178,23 +178,23 @@ void zsyequb(
             d = si - S[i];
             f64 u = ZERO;
             if (up) {
-                for (int j = 0; j <= i; j++) {
+                for (INT j = 0; j <= i; j++) {
                     t = cabs1(A[j + i * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
                 }
-                for (int j = i + 1; j < n; j++) {
+                for (INT j = i + 1; j < n; j++) {
                     t = cabs1(A[i + j * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
                 }
             } else {
-                for (int j = 0; j <= i; j++) {
+                for (INT j = 0; j <= i; j++) {
                     t = cabs1(A[i + j * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
                 }
-                for (int j = i + 1; j < n; j++) {
+                for (INT j = i + 1; j < n; j++) {
                     t = cabs1(A[j + i * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
@@ -213,8 +213,8 @@ void zsyequb(
     f64 t = ONE / sqrt(avg > ZERO ? avg : 1.0);
     f64 base = dlamch("B");
     f64 u = ONE / log(base);
-    for (int i = 0; i < n; i++) {
-        S[i] = pow(base, (int)(u * log(S[i] * t)));
+    for (INT i = 0; i < n; i++) {
+        S[i] = pow(base, (INT)(u * log(S[i] * t)));
         smin = (smin < S[i]) ? smin : S[i];
         smax = (smax > S[i]) ? smax : S[i];
     }

@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -30,23 +30,23 @@
 void ssbev_2stage(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lower, wantz, lquery;
-    int iinfo, imax, inde, indwrk, iscale;
-    int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
+    INT lower, wantz, lquery;
+    INT iinfo, imax, inde, indwrk, iscale;
+    INT llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

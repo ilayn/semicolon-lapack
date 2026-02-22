@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHPSVX uses the diagonal pivoting factorization A = U*D*U**H or
@@ -76,25 +76,25 @@
 void chpsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict AP,
     c64* restrict AFP,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int nofact;
+    INT nofact;
     f32 anorm;
 
     *info = 0;

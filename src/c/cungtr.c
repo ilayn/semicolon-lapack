@@ -40,17 +40,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cungtr(const char* uplo, const int n,
-            c64* restrict A, const int lda,
+void cungtr(const char* uplo, const INT n,
+            c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int upper, lquery;
-    int i, j, iinfo, lwkopt, nb;
+    INT upper, lquery;
+    INT i, j, iinfo, lwkopt, nb;
 
     /* Test the input arguments */
     *info = 0;

@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -69,15 +69,15 @@
  */
 void clahef_rook(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
@@ -86,8 +86,8 @@ void clahef_rook(
     const f32 EIGHT = 8.0f;
     const f32 SEVTEN = 17.0f;
 
-    int done;
-    int imax = 0, itemp, ii, j, jb, jj, jmax = 0, jp1, jp2, k, kk, kkw, kp, kstep, kw, p;
+    INT done;
+    INT imax = 0, itemp, ii, j, jb, jj, jmax = 0, jp1, jp2, k, kk, kkw, kp, kstep, kw, p;
     f32 absakk, alpha, colmax, dtemp, r1, rowmax, t, sfmin;
     c64 d11, d21, d22;
 

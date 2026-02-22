@@ -20,10 +20,10 @@
  *                   The vector whose elements will be summed.
  * @param[in] incx  The spacing between successive values of CX. incx > 0.
  */
-f32 scsum1(const int n, const c64* restrict CX, const int incx)
+f32 scsum1(const INT n, const c64* restrict CX, const INT incx)
 {
     f32 stemp;
-    int i, nincx;
+    INT i, nincx;
 
     stemp = 0.0f;
     if (n <= 0)

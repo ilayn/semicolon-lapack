@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -49,8 +49,8 @@
  *                         - = 0: successful exit.
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void sgebal(const char* job, const int n, f32* A, const int lda,
-            int* ilo, int* ihi, f32* scale, int* info)
+void sgebal(const char* job, const INT n, f32* A, const INT lda,
+            INT* ilo, INT* ihi, f32* scale, INT* info)
 {
     /* Constants */
     const f32 ZERO = 0.0f;
@@ -59,8 +59,8 @@ void sgebal(const char* job, const int n, f32* A, const int lda,
     const f32 FACTOR = 0.95f;
 
     /* Local variables */
-    int noconv, canswap;
-    int i, ica, ira, j, k, l;
+    INT noconv, canswap;
+    INT i, ica, ira, j, k, l;
     f32 c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
 
     /* Test the input parameters */

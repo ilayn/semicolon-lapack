@@ -6,15 +6,15 @@
 
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f32 ZERO = 0.0f;
 static const f32 ONE = 1.0f;
 
 /** @cond */
 /* Helper: max of 3 integers */
-static inline int max3i(int a, int b, int c) {
-    int m = (a > b) ? a : b;
+static inline INT max3i(INT a, INT b, INT c) {
+    INT m = (a > b) ? a : b;
     return (m > c) ? m : c;
 }
 /** @endcond */
@@ -353,22 +353,22 @@ static inline int max3i(int a, int b, int c) {
  */
 void sgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
-            const int m, const int n,
-            f32* restrict A, const int lda,
+            const INT m, const INT n,
+            f32* restrict A, const INT lda,
             f32* restrict SVA,
-            f32* restrict U, const int ldu,
-            f32* restrict V, const int ldv,
-            f32* restrict work, const int lwork,
-            int* restrict iwork, int* info)
+            f32* restrict U, const INT ldu,
+            f32* restrict V, const INT ldv,
+            f32* restrict work, const INT lwork,
+            INT* restrict iwork, INT* info)
 {
     /* Local variables */
     f32 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
     f32 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
     f32 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
-    int ierr, n1, nr, numrank, p, q, warning;
-    int almort, defr, errest, goscal, jracc, kill, lsvec;
-    int l2aber, l2kill, l2pert, l2rank, l2tran;
-    int noscal, rowpiv, rsvec, transp;
+    INT ierr, n1, nr, numrank, p, q, warning;
+    INT almort, defr, errest, goscal, jracc, kill, lsvec;
+    INT l2aber, l2kill, l2pert, l2rank, l2tran;
+    INT noscal, rowpiv, rsvec, transp;
 
     /* -------------------------------------------------------------------- */
     /* Chunk 1: Parse boolean flags from CHARACTER*1 job parameters         */
@@ -914,7 +914,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
         sgesvj("L", "N", "N", nr, nr, A, lda, SVA, n, V, ldv,
                work, lwork, info);
         scalem = work[0];
-        numrank = (int)(work[1] + 0.5f);
+        numrank = (INT)(work[1] + 0.5f);
 
     } else if (rsvec && !lsvec) {
         /* ============================================================== */
@@ -931,7 +931,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             sgesvj("L", "U", "N", n, nr, V, ldv, SVA, nr, A, lda,
                    work, lwork, info);
             scalem = work[0];
-            numrank = (int)(work[1] + 0.5f);
+            numrank = (INT)(work[1] + 0.5f);
 
         } else {
             /* Two more QR factorizations */
@@ -948,7 +948,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             sgesvj("L", "U", "N", nr, nr, V, ldv, SVA, nr, U, ldu,
                    &work[n], lwork - n, info);
             scalem = work[n];
-            numrank = (int)(work[n + 1] + 0.5f);
+            numrank = (INT)(work[n + 1] + 0.5f);
 
             if (nr < n) {
                 slaset("A", n - nr, nr, ZERO, ZERO, &V[nr], ldv);
@@ -993,7 +993,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
         sgesvj("L", "U", "N", nr, nr, U, ldu, SVA, nr, A, lda,
                &work[n], lwork - n, info);
         scalem = work[n];
-        numrank = (int)(work[n + 1] + 0.5f);
+        numrank = (INT)(work[n + 1] + 0.5f);
 
         /* Pad U if needed */
         if (nr < m) {
@@ -1165,7 +1165,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                     sgesvj("L", "U", "N", nr, nr, V, ldv, SVA, nr, U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[2 * n + n * nr + nr];
-                    numrank = (int)(work[2 * n + n * nr + nr + 1] + 0.5f);
+                    numrank = (INT)(work[2 * n + n * nr + nr + 1] + 0.5f);
 
                     for (p = 0; p < nr; p++) {
                         cblas_scopy(nr, &V[p * ldv], 1, &U[p * ldu], 1);
@@ -1192,7 +1192,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                     sgesvj("L", "U", "N", nr, nr, V, ldv, SVA, nr, U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[2 * n + n * nr + nr];
-                    numrank = (int)(work[2 * n + n * nr + nr + 1] + 0.5f);
+                    numrank = (INT)(work[2 * n + n * nr + nr + 1] + 0.5f);
 
                     for (p = 0; p < nr; p++) {
                         cblas_scopy(nr, &V[p * ldv], 1, &U[p * ldu], 1);
@@ -1225,7 +1225,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                     sgesvj("L", "U", "V", nr, nr, V, ldv, SVA, nr, U, ldu,
                            &work[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr, info);
                     scalem = work[2 * n + n * nr + nr];
-                    numrank = (int)(work[2 * n + n * nr + nr + 1] + 0.5f);
+                    numrank = (INT)(work[2 * n + n * nr + nr + 1] + 0.5f);
 
                     if (nr < n) {
                         slaset("A", n - nr, nr, ZERO, ZERO, &V[nr], ldv);
@@ -1315,7 +1315,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                 sgesvj("U", "U", "N", n, n, &work[n], n, SVA, n, U, ldu,
                        &work[n + n * n], lwork - n - n * n, info);
                 scalem = work[n + n * n];
-                numrank = (int)(work[n + n * n + 1] + 0.5f);
+                numrank = (INT)(work[n + n * n + 1] + 0.5f);
 
                 for (p = 0; p < n; p++) {
                     cblas_scopy(n, &work[n + p * n], 1, &U[p * ldu], 1);
@@ -1407,7 +1407,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             sgesvj("G", "U", "V", nr, nr, U, ldu, SVA, n, V, ldv,
                    &work[2 * n + n * nr], lwork - 2 * n - n * nr, info);
             scalem = work[2 * n + n * nr];
-            numrank = (int)(work[2 * n + n * nr + 1] + 0.5f);
+            numrank = (INT)(work[2 * n + n * nr + 1] + 0.5f);
 
             if (nr < n) {
                 slaset("A", n - nr, nr, ZERO, ZERO, &V[nr], ldv);

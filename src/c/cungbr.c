@@ -67,17 +67,17 @@
  * @param[out]    info  = 0:  successful exit
  *                      < 0:  if info = -i, the i-th argument had an illegal value
  */
-void cungbr(const char* vect, const int m, const int n, const int k,
-            c64* restrict A, const int lda,
+void cungbr(const char* vect, const INT m, const INT n, const INT k,
+            c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int i, iinfo, j, lwkopt, mn;
-    int lquery, wantq;
+    INT i, iinfo, j, lwkopt, mn;
+    INT lquery, wantq;
 
     *info = 0;
     wantq = (vect[0] == 'Q' || vect[0] == 'q');
@@ -121,7 +121,7 @@ void cungbr(const char* vect, const int m, const int n, const int k,
                 }
             }
         }
-        lwkopt = (int)crealf(work[0]);
+        lwkopt = (INT)crealf(work[0]);
         lwkopt = lwkopt > mn ? lwkopt : mn;
     }
 

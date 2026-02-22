@@ -42,25 +42,25 @@
  */
 void cgtcon(
     const char* norm,
-    const int n,
+    const INT n,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU,
     const c64* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f32 anorm,
     f32* rcond,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int onenrm;
-    int i, kase, kase1;
+    INT onenrm;
+    INT i, kase, kase1;
     f32 ainvnm;
-    int isave[3];
-    int ldb;
+    INT isave[3];
+    INT ldb;
 
     /* Test the input arguments */
     *info = 0;

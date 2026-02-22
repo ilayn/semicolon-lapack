@@ -4,7 +4,7 @@
  *        matrix A: A*P = Q*R using Level 3 BLAS.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
@@ -56,18 +56,18 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgeqp3(const int m, const int n,
-            f64* restrict A, const int lda,
-            int* restrict jpvt,
+void dgeqp3(const INT m, const INT n,
+            f64* restrict A, const INT lda,
+            INT* restrict jpvt,
             f64* restrict tau,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
-    int sm, sn, sminmn, topbmn;
-    int j, jb, fjb;
-    int lquery;
-    int iinfo;
+    INT iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
+    INT sm, sn, sminmn, topbmn;
+    INT j, jb, fjb;
+    INT lquery;
+    INT iinfo;
 
     /* Parameter validation */
     *info = 0;
@@ -146,13 +146,13 @@ void dgeqp3(const int m, const int n,
 
         /* QR factorization of the fixed columns */
         dgeqrf(m, na, A, lda, tau, work, lwork, &iinfo);
-        iws = iws > (int)work[0] ? iws : (int)work[0];
+        iws = iws > (INT)work[0] ? iws : (INT)work[0];
 
         if (na < n) {
             /* Apply Q^T to remaining columns: A(:, na:n-1) */
             dormqr("L", "T", m, n - na, na, A, lda, tau,
                    &A[na * lda], lda, work, lwork, &iinfo);
-            iws = iws > (int)work[0] ? iws : (int)work[0];
+            iws = iws > (INT)work[0] ? iws : (INT)work[0];
         }
     }
 

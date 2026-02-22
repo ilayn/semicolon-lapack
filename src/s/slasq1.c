@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -41,10 +41,10 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void slasq1(const int n, f32* restrict D, f32* restrict E,
-            f32* restrict work, int* info)
+void slasq1(const INT n, f32* restrict D, f32* restrict E,
+            f32* restrict work, INT* info)
 {
-    int i, iinfo;
+    INT i, iinfo;
     f32 eps, scale, safmin, sigmn, sigmx;
 
     *info = 0;

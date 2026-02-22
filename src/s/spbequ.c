@@ -30,20 +30,20 @@
  */
 void spbequ(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict S,
     f32* scond,
     f32* amax,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int upper;
-    int i, j;
+    INT upper;
+    INT i, j;
     f32 smin;
 
     *info = 0;

@@ -6,7 +6,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -49,13 +49,13 @@
  *                           eigenvalues; elements i:ihi of wr and wi contain
  *                           those eigenvalues which have been successfully computed.
  */
-SEMICOLON_API void slahqr(const int wantt, const int wantz, const int n,
-                          const int ilo, const int ihi,
-                          f32* H, const int ldh,
+SEMICOLON_API void slahqr(const INT wantt, const INT wantz, const INT n,
+                          const INT ilo, const INT ihi,
+                          f32* H, const INT ldh,
                           f32* wr, f32* wi,
-                          const int iloz, const int ihiz,
-                          f32* Z, const int ldz,
-                          int* info)
+                          const INT iloz, const INT ihiz,
+                          f32* Z, const INT ldz,
+                          INT* info)
 {
     /* Parameters */
     const f32 zero = 0.0f;
@@ -63,13 +63,13 @@ SEMICOLON_API void slahqr(const int wantt, const int wantz, const int n,
     const f32 two = 2.0f;
     const f32 dat1 = 3.0f / 4.0f;
     const f32 dat2 = -0.4375f;
-    const int kexsh = 10;
+    const INT kexsh = 10;
 
     /* Local scalars */
     f32 aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
     f32 rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
     f32 smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
-    int i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
+    INT i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
 
     /* Local array */
     f32 v[3];

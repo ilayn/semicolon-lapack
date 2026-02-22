@@ -39,12 +39,12 @@
  *                               replaced by diag(R) * A * diag(C).
  */
 void zlaqgb(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict R,
     const f64* restrict C,
     const f64 rowcnd,
@@ -55,9 +55,9 @@ void zlaqgb(
     const f64 ONE = 1.0;
     const f64 THRESH = 0.1;
 
-    int i, j;
+    INT i, j;
     f64 cj, large, small;
-    int i_start, i_end;
+    INT i_start, i_end;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {

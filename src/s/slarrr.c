@@ -25,7 +25,7 @@
  *                         - = 1: the matrix warrants computations guaranteeing
  *                           only absolute accuracy.
  */
-void slarrr(const int n, const f32* D, f32* E, int* info)
+void slarrr(const INT n, const f32* D, f32* E, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 RELCOND = 0.999f;
@@ -61,13 +61,13 @@ void slarrr(const int n, const f32* D, f32* E, int* info)
        to losing at most 3 decimal digits: 1 / (1 - (OFFDIG + OFFDIG2)) <= 1000
        instead of the current OFFDIG + OFFDIG2 < 1 */
 
-    int yesrel = 1;
+    INT yesrel = 1;
     f32 offdig = ZERO;
     f32 offdig2;
     f32 tmp = sqrtf(fabsf(D[0]));
     if (tmp < rmin) yesrel = 0;
     if (yesrel) {
-        for (int i = 1; i < n; i++) {
+        for (INT i = 1; i < n; i++) {
             f32 tmp2 = sqrtf(fabsf(D[i]));
             if (tmp2 < rmin) { yesrel = 0; break; }
             offdig2 = fabsf(E[i - 1]) / (tmp * tmp2);

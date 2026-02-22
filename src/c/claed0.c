@@ -7,7 +7,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -47,17 +47,17 @@
  *                             while working on the submatrix lying in rows
  *                             and columns INFO/(N+1) through mod(INFO,N+1).
  */
-void claed0(const int qsiz, const int n,
-            f32* D, f32* E, c64* Q, const int ldq,
-            c64* qstore, const int ldqs,
-            f32* rwork, int* iwork, int* info)
+void claed0(const INT qsiz, const INT n,
+            f32* D, f32* E, c64* Q, const INT ldq,
+            c64* qstore, const INT ldqs,
+            f32* rwork, INT* iwork, INT* info)
 {
     const f32 TWO = 2.0f;
 
     /* SMLSIZ from ILAENV(9, ...) */
-    const int SMLSIZ = 25;
+    const INT SMLSIZ = 25;
 
-    int curlvl, curprb, curr, i, igivcl, igivnm,
+    INT curlvl, curprb, curr, i, igivcl, igivnm,
         igivpt, indxq, iperm, iprmpt, iq, iqptr, iwrem,
         j, k, lgn, ll, matsiz, msd2, smm1, spm1,
         spm2, submat, subpbs, tlvls;
@@ -123,7 +123,7 @@ void claed0(const int qsiz, const int n,
      * routine
      */
     temp = logf((f32)n) / logf(TWO);
-    lgn = (int)temp;
+    lgn = (INT)temp;
     if ((1 << lgn) < n) {
         lgn = lgn + 1;
     }

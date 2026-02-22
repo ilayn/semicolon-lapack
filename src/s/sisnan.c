@@ -13,7 +13,7 @@
  *
  * @return Nonzero if din is NaN, zero otherwise.
  */
-int sisnan(const f32 din)
+INT sisnan(const f32 din)
 {
     return isnan(din);
 }

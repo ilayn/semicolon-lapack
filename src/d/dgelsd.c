@@ -7,7 +7,7 @@
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
 #define SMLSIZ 25
@@ -85,19 +85,19 @@
  *                           if info = i, i off-diagonal elements of an intermediate
  *                           bidiagonal form did not converge to zero.
  */
-void dgelsd(const int m, const int n, const int nrhs,
-            f64* restrict A, const int lda,
-            f64* restrict B, const int ldb,
-            f64* restrict S, const f64 rcond, int* rank,
-            f64* restrict work, const int lwork,
-            int* restrict iwork, int* info)
+void dgelsd(const INT m, const INT n, const INT nrhs,
+            f64* restrict A, const INT lda,
+            f64* restrict B, const INT ldb,
+            f64* restrict S, const f64 rcond, INT* rank,
+            f64* restrict work, const INT lwork,
+            INT* restrict iwork, INT* info)
 {
-    int lquery;
-    int iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork;
-    int maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork, smlsiz, wlalsd;
+    INT lquery;
+    INT iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork;
+    INT maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nwork, smlsiz, wlalsd;
     f64 anrm, bignum, bnrm, eps, sfmin, smlnum;
-    int iinfo;
-    int nb;
+    INT iinfo;
+    INT nb;
 
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -130,7 +130,7 @@ void dgelsd(const int m, const int n, const int nrhs,
     if (minmn > 0) {
         minmn = minmn > 1 ? minmn : 1;
     }
-    nlvl = (int)(log((f64)minmn / (f64)(smlsiz + 1)) / log(TWO)) + 1;
+    nlvl = (INT)(log((f64)minmn / (f64)(smlsiz + 1)) / log(TWO)) + 1;
     if (nlvl < 0) nlvl = 0;
 
     if (*info == 0) {
@@ -178,7 +178,7 @@ void dgelsd(const int m, const int n, const int nrhs,
                 if (m + nrhs * nb > maxwrk) maxwrk = m + nrhs * nb;
                 if (m * m + 4 * m + wlalsd > maxwrk) maxwrk = m * m + 4 * m + wlalsd;
                 /* Ensure the Path 2a case below is triggered */
-                int temp = m > 2 * m - 4 ? m : 2 * m - 4;
+                INT temp = m > 2 * m - 4 ? m : 2 * m - 4;
                 temp = temp > nrhs ? temp : nrhs;
                 temp = temp > n - 3 * m ? temp : n - 3 * m;
                 if (4 * m + m * m + temp > maxwrk) maxwrk = 4 * m + m * m + temp;
@@ -313,7 +313,7 @@ void dgelsd(const int m, const int n, const int nrhs,
         /* Path 2a - underdetermined, with many more columns than rows
          * and sufficient workspace for an efficient algorithm */
         ldwork = m;
-        int temp = m > 2 * m - 4 ? m : 2 * m - 4;
+        INT temp = m > 2 * m - 4 ? m : 2 * m - 4;
         temp = temp > nrhs ? temp : nrhs;
         temp = temp > n - 3 * m ? temp : n - 3 * m;
         wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + (smlsiz + 1) * (smlsiz + 1);

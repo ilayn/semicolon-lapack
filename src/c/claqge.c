@@ -34,10 +34,10 @@
  *                               replaced by diag(R) * A * diag(C).
  */
 void claqge(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict R,
     const f32* restrict C,
     const f32 rowcnd,
@@ -48,7 +48,7 @@ void claqge(
     const f32 ONE = 1.0f;
     const f32 THRESH = 0.1f;
 
-    int i, j;
+    INT i, j;
     f32 cj, large, small;
 
     // Quick return if possible

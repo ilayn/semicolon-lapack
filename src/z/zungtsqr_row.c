@@ -67,27 +67,27 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void zungtsqr_row(
-    const int m,
-    const int n,
-    const int mb,
-    const int nb,
+    const INT m,
+    const INT n,
+    const INT mb,
+    const INT nb,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict T,
-    const int ldt,
+    const INT ldt,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int lquery;
-    int nblocal, mb2, itmp, ib_bottom;
-    int lworkopt, num_all_row_blocks, jb_t, ib, imb;
-    int kb, kb_last, knb, mb1;
+    INT lquery;
+    INT nblocal, mb2, itmp, ib_bottom;
+    INT lworkopt, num_all_row_blocks, jb_t, ib, imb;
+    INT kb, kb_last, knb, mb1;
     c128 dummy[1];
-    int minval;
+    INT minval;
 
     *info = 0;
     lquery = (lwork == -1);

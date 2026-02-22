@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -64,36 +64,36 @@ void chbgvx(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
     f32* restrict rwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int alleig, indeig, test, upper, valeig, wantz;
-    int i, iinfo, indd, inde, indee, indisp, indiwk, indrwk, indwrk, itmp1, j, jj, nsplit;
+    INT alleig, indeig, test, upper, valeig, wantz;
+    INT i, iinfo, indd, inde, indee, indisp, indiwk, indrwk, indwrk, itmp1, j, jj, nsplit;
     f32 tmp1;
     char order, vect;
 

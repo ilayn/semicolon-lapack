@@ -28,7 +28,7 @@
  */
 f64 zlangt(
     const char* norm,
-    const int n,
+    const INT n,
     const c128* restrict DL,
     const c128* restrict D,
     const c128* restrict DU)
@@ -37,7 +37,7 @@ f64 zlangt(
     const f64 ONE = 1.0;
 
     f64 anorm, scale, sum, temp;
-    int i;
+    INT i;
 
     if (n <= 0) {
         anorm = ZERO;

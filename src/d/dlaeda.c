@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -54,12 +54,12 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dlaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
-            int* prmptr, int* perm, int* givptr, int* givcol,
-            f64* givnum, f64* Q, int* qptr, f64* Z,
-            f64* ztemp, int* info)
+void dlaeda(const INT n, const INT tlvls, const INT curlvl, const INT curpbm,
+            INT* prmptr, INT* perm, INT* givptr, INT* givcol,
+            f64* givnum, f64* Q, INT* qptr, f64* Z,
+            f64* ztemp, INT* info)
 {
-    int bsiz1, bsiz2, curr, i, k, mid, psiz1, psiz2, ptr, zptr1;
+    INT bsiz1, bsiz2, curr, i, k, mid, psiz1, psiz2, ptr, zptr1;
 
     /* Test the input parameters. */
     *info = 0;
@@ -89,8 +89,8 @@ void dlaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
     /* Determine size of these matrices. We add 0.5 to the value of
      * the sqrt in case the machine underestimates one of these square
      * roots. */
-    bsiz1 = (int)(0.5 + sqrt((f64)(qptr[curr + 1] - qptr[curr])));
-    bsiz2 = (int)(0.5 + sqrt((f64)(qptr[curr + 2] - qptr[curr + 1])));
+    bsiz1 = (INT)(0.5 + sqrt((f64)(qptr[curr + 1] - qptr[curr])));
+    bsiz2 = (INT)(0.5 + sqrt((f64)(qptr[curr + 2] - qptr[curr + 1])));
 
     for (k = 0; k < mid - bsiz1; k++) {
         Z[k] = 0.0;
@@ -136,8 +136,8 @@ void dlaeda(const int n, const int tlvls, const int curlvl, const int curpbm,
         /* Determine size of these matrices. We add 0.5 to the value of
          * the sqrt in case the machine underestimates one of these
          * square roots. */
-        bsiz1 = (int)(0.5 + sqrt((f64)(qptr[curr + 1] - qptr[curr])));
-        bsiz2 = (int)(0.5 + sqrt((f64)(qptr[curr + 2] - qptr[curr + 1])));
+        bsiz1 = (INT)(0.5 + sqrt((f64)(qptr[curr + 1] - qptr[curr])));
+        bsiz2 = (INT)(0.5 + sqrt((f64)(qptr[curr + 2] - qptr[curr + 1])));
         if (bsiz1 > 0) {
             cblas_dgemv(CblasColMajor, CblasTrans, bsiz1, bsiz1, 1.0,
                         &Q[qptr[curr]], bsiz1, &ztemp[0], 1, 0.0,

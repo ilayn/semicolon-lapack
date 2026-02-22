@@ -4,7 +4,7 @@
  *        stored in packed format using the factorization from DSPTRF.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -34,18 +34,18 @@
  */
 void dsptrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
 
-    int upper;
-    int j, k, kc, kp;
+    INT upper;
+    INT j, k, kc, kp;
     f64 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

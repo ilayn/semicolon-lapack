@@ -3,7 +3,7 @@
  * @brief DLAUU2 computes the product U * U**T or L**T * L (unblocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -36,16 +36,16 @@
  */
 void dlauu2(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f64 ONE = 1.0;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -63,7 +63,7 @@ void dlauu2(
 
     if (upper) {
         // Compute the product U * U**T.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 aii = A[i + i * lda];
             if (i < n - 1) {
                 // A(i,i) = dot(row i from col i to n-1)
@@ -86,7 +86,7 @@ void dlauu2(
         }
     } else {
         // Compute the product L**T * L.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 aii = A[i + i * lda];
             if (i < n - 1) {
                 // A(i,i) = dot(column i from row i to n-1)

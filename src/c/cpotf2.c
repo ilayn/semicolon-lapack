@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -46,10 +46,10 @@
  */
 void cpotf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
@@ -57,7 +57,7 @@ void cpotf2(
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -74,7 +74,7 @@ void cpotf2(
 
     if (upper) {
         /* Compute the Cholesky factorization A = U**H *U. */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             /* Compute U(J,J) and test for non-positive-definiteness. */
             c64 zdotc_result = CMPLXF(0.0f, 0.0f);
             if (j > 0) {
@@ -105,7 +105,7 @@ void cpotf2(
         }
     } else {
         /* Compute the Cholesky factorization A = L*L**H. */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             /* Compute L(J,J) and test for non-positive-definiteness. */
             c64 zdotc_result = CMPLXF(0.0f, 0.0f);
             if (j > 0) {

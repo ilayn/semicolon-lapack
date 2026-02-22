@@ -6,7 +6,7 @@
 #include <math.h>
 #include <complex.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -50,8 +50,8 @@
  * @param[out]    c      Cosine needed in forming xhat.
  */
 void claic1(
-    const int job,
-    const int j,
+    const INT job,
+    const INT j,
     const c64* restrict x,
     const f32 sest,
     const c64* restrict w,

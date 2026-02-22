@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -48,17 +48,17 @@
  *                       and at least (1 + (n-1)*abs(incy)) otherwise.
  * @param[in]     incy   The increment for the elements of Y. incy != 0.
  */
-void zla_geamv(const int trans, const int m, const int n,
+void zla_geamv(const INT trans, const INT m, const INT n,
                const f64 alpha, const c128* restrict A,
-               const int lda, const c128* restrict X,
-               const int incx, const f64 beta,
-               f64* restrict Y, const int incy)
+               const INT lda, const c128* restrict X,
+               const INT incx, const f64 beta,
+               f64* restrict Y, const INT incy)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int symb_zero;
+    INT symb_zero;
     f64 temp, safe1;
-    int i, info, iy, j, jx, kx, ky, lenx, leny;
+    INT i, info, iy, j, jx, kx, ky, lenx, leny;
 
     info = 0;
     if (!(trans == CblasNoTrans || trans == CblasTrans || trans == CblasConjTrans)) {

@@ -55,18 +55,18 @@
  *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void cpoequb(
-    const int n,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict S,
     f32* scond,
     f32* amax,
-    int* info)
+    INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    int i;
+    INT i;
     f32 smin, base, tmp;
 
     *info = 0;
@@ -107,7 +107,7 @@ void cpoequb(
         }
     } else {
         for (i = 0; i < n; i++) {
-            S[i] = powf(base, (int)(tmp * logf(S[i])));
+            S[i] = powf(base, (INT)(tmp * logf(S[i])));
         }
 
         *scond = sqrtf(smin) / sqrtf(*amax);

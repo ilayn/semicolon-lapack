@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -46,10 +46,10 @@
  */
 void spotrf2(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
@@ -57,7 +57,7 @@ void spotrf2(
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -84,9 +84,9 @@ void spotrf2(
         A[0] = sqrtf(A[0]);
     } else {
         // Use recursive code
-        int n1 = n / 2;
-        int n2 = n - n1;
-        int iinfo;
+        INT n1 = n / 2;
+        INT n2 = n - n1;
+        INT iinfo;
 
         // Factor A11
         spotrf2(uplo, n1, A, lda, &iinfo);

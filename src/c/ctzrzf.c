@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -44,14 +44,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ctzrzf(const int m, const int n,
-            c64* restrict A, const int lda,
+void ctzrzf(const INT m, const INT n,
+            c64* restrict A, const INT lda,
             c64* restrict tau,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
-    int lquery;
+    INT i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
+    INT lquery;
 
     /* Parameter validation */
     *info = 0;

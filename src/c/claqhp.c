@@ -31,7 +31,7 @@
  */
 void claqhp(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     const f32* restrict S,
     const f32 scond,
@@ -41,7 +41,7 @@ void claqhp(
     const f32 ONE = 1.0f;
     const f32 THRESH = 0.1f;
 
-    int i, j, jc;
+    INT i, j, jc;
     f32 cj, large, small;
 
     if (n <= 0) {

@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -35,17 +35,17 @@
  */
 void ssptri(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
-    int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
     f32 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

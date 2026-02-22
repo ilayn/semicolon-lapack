@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -59,23 +59,23 @@ void chgeqz(
     const char* job,
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     c64* restrict H,
-    const int ldh,
+    const INT ldh,
     c64* restrict T,
-    const int ldt,
+    const INT ldt,
     c64* restrict alpha,
     c64* restrict beta,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
@@ -83,10 +83,10 @@ void chgeqz(
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
 
-    int ilazr2, ilazro, ilq = 0, ilschr = 0, ilz = 0, lquery;
-    int icompq, icompz, ifirst, ifrstm, iiter, ilast;
-    int ilastm, in, ischur, istart, j, jc, jch, jiter;
-    int jr, maxit;
+    INT ilazr2, ilazro, ilq = 0, ilschr = 0, ilz = 0, lquery;
+    INT icompq, icompz, ifirst, ifrstm, iiter, ilast;
+    INT ilastm, in, ischur, istart, j, jc, jch, jiter;
+    INT jr, maxit;
     f32 absb, anorm, ascale, atol, bnorm, bscale, btol;
     f32 c, safmin, temp, temp2, tempr, ulp;
     c64 ad11, ad12, ad21, ad22, abi22, abi12;
@@ -560,7 +560,7 @@ L90:
             T[(j + 1) + j * ldt] = CZERO;
 
             {
-                int jrmax = (j + 2 < ilast) ? j + 2 : ilast;
+                INT jrmax = (j + 2 < ilast) ? j + 2 : ilast;
                 for (jr = ifrstm; jr <= jrmax; jr++) {
                     ctemp = c * H[jr + (j + 1) * ldh] + s * H[jr + j * ldh];
                     H[jr + j * ldh] = -conjf(s) * H[jr + (j + 1) * ldh] + c * H[jr + j * ldh];

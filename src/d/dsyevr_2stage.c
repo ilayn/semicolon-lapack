@@ -4,29 +4,29 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 void dsyevr_2stage(const char* jobz, const char* range, const char* uplo,
-                   const int n, f64* A, const int lda,
+                   const INT n, f64* A, const INT lda,
                    const f64 vl, const f64 vu,
-                   const int il, const int iu,
-                   const f64 abstol, int* m,
-                   f64* W, f64* Z, const int ldz, int* isuppz,
-                   f64* work, const int lwork,
-                   int* iwork, const int liwork, int* info)
+                   const INT il, const INT iu,
+                   const f64 abstol, INT* m,
+                   f64* W, f64* Z, const INT ldz, INT* isuppz,
+                   f64* work, const INT lwork,
+                   INT* iwork, const INT liwork, INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
     const f64 two = 2.0;
 
-    int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
+    INT alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     char order;
-    int i, ieeeok, iinfo, imax, indd, inddd, inde;
-    int indee, indibl, indifl, indisp, indiwo, indtau;
-    int indwk, indwkn, iscale, j, jj, liwmin;
-    int llwork, llwrkn, lwmin, nsplit;
-    int lhtrd, lwtrd, kd, ib, indhous;
+    INT i, ieeeok, iinfo, imax, indd, inddd, inde;
+    INT indee, indibl, indifl, indisp, indiwo, indtau;
+    INT indwk, indwkn, iscale, j, jj, liwmin;
+    INT llwork, llwrkn, lwmin, nsplit;
+    INT lhtrd, lwtrd, kd, ib, indhous;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll, vuu;
 

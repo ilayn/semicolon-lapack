@@ -7,7 +7,7 @@
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SGGEVX computes for a pair of N-by-N real nonsymmetric matrices (A,B)
@@ -85,31 +85,31 @@
  *                         - > 0: errors from QZ iteration or eigenvector computation
  */
 void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n,
-            f32* restrict A, const int lda,
-            f32* restrict B, const int ldb,
+            const char* sense, const INT n,
+            f32* restrict A, const INT lda,
+            f32* restrict B, const INT ldb,
             f32* restrict alphar, f32* restrict alphai,
             f32* restrict beta,
-            f32* restrict VL, const int ldvl,
-            f32* restrict VR, const int ldvr,
-            int* ilo, int* ihi,
+            f32* restrict VL, const INT ldvl,
+            f32* restrict VR, const INT ldvr,
+            INT* ilo, INT* ihi,
             f32* restrict lscale, f32* restrict rscale,
             f32* abnrm, f32* bbnrm,
             f32* restrict rconde, f32* restrict rcondv,
-            f32* restrict work, const int lwork,
-            int* restrict iwork, int* restrict bwork,
-            int* info)
+            f32* restrict work, const INT lwork,
+            INT* restrict iwork, INT* restrict bwork,
+            INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery, noscl;
-    int pair, wantsb, wantse, wantsn, wantsv;
-    int i, icols, ierr, ijobvl, ijobvr, in, irows;
-    int itau, iwrk, iwrk1, j, jc, jr, m, maxwrk, minwrk, mm;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery, noscl;
+    INT pair, wantsb, wantse, wantsn, wantsv;
+    INT i, icols, ierr, ijobvl, ijobvr, in, irows;
+    INT itau, iwrk, iwrk1, j, jc, jr, m, maxwrk, minwrk, mm;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
-    int ldumma[1];
-    int nb_geqrf, nb_ormqr, nb_orgqr;
+    INT ldumma[1];
+    INT nb_geqrf, nb_ormqr, nb_orgqr;
 
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {
         ijobvl = 1;
@@ -180,7 +180,7 @@ void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
                 minwrk = 10 * n;
             }
             if (wantsv || wantsb) {
-                int tmp = 2 * n * (n + 4) + 16;
+                INT tmp = 2 * n * (n + 4) + 16;
                 minwrk = minwrk > tmp ? minwrk : tmp;
             }
             maxwrk = minwrk;

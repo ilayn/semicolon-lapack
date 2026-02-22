@@ -33,15 +33,15 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void slasd1(const int nl, const int nr, const int sqre,
+void slasd1(const INT nl, const INT nr, const INT sqre,
             f32* restrict D, f32* alpha, f32* beta,
-            f32* restrict U, const int ldu,
-            f32* restrict VT, const int ldvt,
-            int* restrict IDXQ, int* restrict IWORK,
-            f32* restrict work, int* info)
+            f32* restrict U, const INT ldu,
+            f32* restrict VT, const INT ldvt,
+            INT* restrict IDXQ, INT* restrict IWORK,
+            f32* restrict work, INT* info)
 {
-    int coltyp, i, idx, idxc, idxp, iq, isigma, iu2, ivt2, iz;
-    int k, ldq, ldu2, ldvt2, m, n, n1, n2;
+    INT coltyp, i, idx, idxc, idxp, iq, isigma, iu2, ivt2, iz;
+    INT k, ldq, ldu2, ldvt2, m, n, n1, n2;
     f32 orgnrm;
 
     *info = 0;

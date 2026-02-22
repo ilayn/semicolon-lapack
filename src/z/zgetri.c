@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 
@@ -36,20 +36,20 @@
  *                           singular and its inverse could not be computed.
  */
 void zgetri(
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int lquery;
-    int i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
+    INT lquery;
+    INT i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
 
     // Test the input parameters
     *info = 0;

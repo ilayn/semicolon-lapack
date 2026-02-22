@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -44,24 +44,24 @@
  */
 void dgecon(
     const char* norm,
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64 anorm,
     f64* rcond,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int onenrm;
+    INT onenrm;
     char normin;
-    int ix, kase, kase1;
+    INT ix, kase, kase1;
     f64 ainvnm, scale, sl, smlnum, su, hugeval;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     hugeval = DBL_MAX;
 

@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -77,24 +77,24 @@
  */
 void sgetsls(
     const char* trans,
-    const int m,
-    const int n,
-    const int nrhs,
+    const INT m,
+    const INT n,
+    const INT nrhs,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    int i, iascl, ibscl, j, maxmn, brow;
-    int scllen, tszo = 0, tszm = 0, lwo = 0, lwm = 0, lw1, lw2;
-    int wsizeo, wsizem, info2;
-    int lquery, tran;
+    INT i, iascl, ibscl, j, maxmn, brow;
+    INT scllen, tszo = 0, tszm = 0, lwo = 0, lwm = 0, lw1, lw2;
+    INT wsizeo, wsizem, info2;
+    INT lquery, tran;
     f32 anrm, bignum, bnrm, smlnum;
     f32 tq[5], workq[1];
 
@@ -115,7 +115,7 @@ void sgetsls(
     } else if (lda < (1 > m ? 1 : m)) {
         *info = -6;
     } else {
-        int ldb_min = 1;
+        INT ldb_min = 1;
         if (m > ldb_min) ldb_min = m;
         if (n > ldb_min) ldb_min = n;
         if (ldb < ldb_min) {
@@ -124,7 +124,7 @@ void sgetsls(
     }
 
     if (*info == 0) {
-        int minmnrhs = m;
+        INT minmnrhs = m;
         if (n < minmnrhs) minmnrhs = n;
         if (nrhs < minmnrhs) minmnrhs = nrhs;
 
@@ -133,28 +133,28 @@ void sgetsls(
             wsizeo = 1;
         } else if (m >= n) {
             sgeqr(m, n, A, lda, tq, -1, workq, -1, &info2);
-            tszo = (int)tq[0];
-            lwo = (int)workq[0];
+            tszo = (INT)tq[0];
+            lwo = (INT)workq[0];
             sgemqr("L", trans, m, nrhs, n, A, lda, tq, tszo, B, ldb, workq, -1, &info2);
-            if ((int)workq[0] > lwo) lwo = (int)workq[0];
+            if ((INT)workq[0] > lwo) lwo = (INT)workq[0];
             sgeqr(m, n, A, lda, tq, -2, workq, -2, &info2);
-            tszm = (int)tq[0];
-            lwm = (int)workq[0];
+            tszm = (INT)tq[0];
+            lwm = (INT)workq[0];
             sgemqr("L", trans, m, nrhs, n, A, lda, tq, tszm, B, ldb, workq, -1, &info2);
-            if ((int)workq[0] > lwm) lwm = (int)workq[0];
+            if ((INT)workq[0] > lwm) lwm = (INT)workq[0];
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         } else {
             sgelq(m, n, A, lda, tq, -1, workq, -1, &info2);
-            tszo = (int)tq[0];
-            lwo = (int)workq[0];
+            tszo = (INT)tq[0];
+            lwo = (INT)workq[0];
             sgemlq("L", trans, n, nrhs, m, A, lda, tq, tszo, B, ldb, workq, -1, &info2);
-            if ((int)workq[0] > lwo) lwo = (int)workq[0];
+            if ((INT)workq[0] > lwo) lwo = (INT)workq[0];
             sgelq(m, n, A, lda, tq, -2, workq, -2, &info2);
-            tszm = (int)tq[0];
-            lwm = (int)workq[0];
+            tszm = (INT)tq[0];
+            lwm = (INT)workq[0];
             sgemlq("L", trans, n, nrhs, m, A, lda, tq, tszm, B, ldb, workq, -1, &info2);
-            if ((int)workq[0] > lwm) lwm = (int)workq[0];
+            if ((INT)workq[0] > lwm) lwm = (INT)workq[0];
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         }
@@ -183,7 +183,7 @@ void sgetsls(
     }
 
     {
-        int minmnrhs = m;
+        INT minmnrhs = m;
         if (n < minmnrhs) minmnrhs = n;
         if (nrhs < minmnrhs) minmnrhs = nrhs;
         if (minmnrhs == 0) {

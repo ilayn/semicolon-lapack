@@ -4,7 +4,7 @@
  *        real matrix, which is composed of two blocks.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -48,17 +48,17 @@
  * @param[in]     ldwork  The leading dimension of work.
  */
 void stprfb(const char* side, const char* trans, const char* direct,
-            const char* storev, const int m, const int n, const int k,
-            const int l, const f32* restrict V, const int ldv,
-            const f32* restrict T, const int ldt,
-            f32* restrict A, const int lda,
-            f32* restrict B, const int ldb,
-            f32* restrict work, const int ldwork)
+            const char* storev, const INT m, const INT n, const INT k,
+            const INT l, const f32* restrict V, const INT ldv,
+            const f32* restrict T, const INT ldt,
+            f32* restrict A, const INT lda,
+            f32* restrict B, const INT ldb,
+            f32* restrict work, const INT ldwork)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
-    int i, j, mp, np, kp;
-    int left, right, forward, backward, column, row;
+    INT i, j, mp, np, kp;
+    INT left, right, forward, backward, column, row;
 
     if (m <= 0 || n <= 0 || k <= 0 || l < 0) return;
 

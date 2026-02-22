@@ -50,16 +50,16 @@
  *                           singular, and the solution has not been computed.
  */
 void cgbsv(
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     c64* restrict AB,
-    const int ldab,
-    int* restrict ipiv,
+    const INT ldab,
+    INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     /* Test the input parameters */
     *info = 0;

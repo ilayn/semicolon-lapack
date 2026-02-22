@@ -46,31 +46,31 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
-void dstebz(const char* range, const char* order, const int n,
-            const f64 vl, const f64 vu, const int il, const int iu,
+void dstebz(const char* range, const char* order, const INT n,
+            const f64 vl, const f64 vu, const INT il, const INT iu,
             const f64 abstol,
             const f64* restrict D,
             const f64* restrict E,
-            int* m, int* nsplit,
+            INT* m, INT* nsplit,
             f64* restrict W,
-            int* restrict iblock,
-            int* restrict isplit,
+            INT* restrict iblock,
+            INT* restrict isplit,
             f64* restrict work,
-            int* restrict iwork,
-            int* info)
+            INT* restrict iwork,
+            INT* info)
 {
     /* Internal parameters from the Fortran source */
     const f64 FUDGE = 2.1;
     const f64 RELFAC = 2.0;
 
-    int ncnvrg, toofew;
-    int ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
+    INT ncnvrg, toofew;
+    INT ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
         im, in, iorder, iout, irange, itmax,
         itmp1, iw, iwoff, j, jb, jdisc, je, nb, nwl, nwu;
     f64 atoli, bnorm, gl, gu, pivmin, rtoli, safemn,
            tmp1, tmp2, tnorm, ulp, wkill, wl, wlu = 0.0, wu, wul = 0.0;
-    int idumma[1];
-    int m_val;
+    INT idumma[1];
+    INT m_val;
 
     *info = 0;
 
@@ -211,7 +211,7 @@ void dstebz(const char* range, const char* order, const int n,
         gu = gu + FUDGE * tnorm * ulp * n + FUDGE * pivmin;
 
         /* Compute iteration parameters */
-        itmax = (int)((log(tnorm + pivmin) - log(pivmin)) / log(2.0)) + 2;
+        itmax = (INT)((log(tnorm + pivmin) - log(pivmin)) / log(2.0)) + 2;
         if (abstol <= 0.0) {
             atoli = ulp * tnorm;
         } else {
@@ -476,7 +476,7 @@ void dstebz(const char* range, const char* order, const int n,
              *
              * ITMAX = INT((LOG(GU-GL+PIVMIN)-LOG(PIVMIN))/LOG(2)) + 2
              */
-            itmax = (int)((log(gu - gl + pivmin) - log(pivmin)) / log(2.0)) + 2;
+            itmax = (INT)((log(gu - gl + pivmin) - log(pivmin)) / log(2.0)) + 2;
 
             /*
              * DLAEBZ(2, ITMAX, IN, IN, 1, NB, ATOLI, RTOLI, PIVMIN,

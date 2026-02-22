@@ -39,17 +39,17 @@
  */
 void cpbsv(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;

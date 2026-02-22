@@ -28,7 +28,7 @@
  *
  * @return The norm value.
  */
-f64 zlanht(const char* norm, const int n,
+f64 zlanht(const char* norm, const INT n,
               const f64* restrict D,
               const c128* restrict E)
 {
@@ -41,7 +41,7 @@ f64 zlanht(const char* norm, const int n,
     if (norm[0] == 'M' || norm[0] == 'm') {
         /* Find max(abs(A(i,j))). */
         anorm = fabs(D[n - 1]);
-        for (int i = 0; i < n - 1; i++) {
+        for (INT i = 0; i < n - 1; i++) {
             f64 sum = fabs(D[i]);
             if (anorm < sum || isnan(sum)) anorm = sum;
             sum = cabs(E[i]);
@@ -56,7 +56,7 @@ f64 zlanht(const char* norm, const int n,
             anorm = fabs(D[0]) + cabs(E[0]);
             f64 sum = cabs(E[n - 2]) + fabs(D[n - 1]);
             if (anorm < sum || isnan(sum)) anorm = sum;
-            for (int i = 1; i < n - 1; i++) {
+            for (INT i = 1; i < n - 1; i++) {
                 sum = fabs(D[i]) + cabs(E[i]) + cabs(E[i - 1]);
                 if (anorm < sum || isnan(sum)) anorm = sum;
             }

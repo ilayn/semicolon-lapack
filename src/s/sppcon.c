@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -34,24 +34,24 @@
  */
 void sppcon(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict AP,
     const f32 anorm,
     f32* rcond,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // sppcon.f lines 136-137: Parameters
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
     // sppcon.f lines 140-146: Local Scalars and Arrays
-    int upper;
+    INT upper;
     char normin;
-    int ix, kase;
+    INT ix, kase;
     f32 ainvnm, scale, scalel, scaleu, smlnum;
-    int isave[3];
+    INT isave[3];
 
     // sppcon.f lines 164-176: Test the input parameters
     *info = 0;

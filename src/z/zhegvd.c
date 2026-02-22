@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZHEGVD computes all the eigenvalues, and optionally, the eigenvectors
@@ -34,26 +34,26 @@
  *                         - = 0: success; < 0: illegal argument; > 0: ZPOTRF/ZHEEVD error.
  */
 void zhegvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict W,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
-    int wantz, upper, lquery;
-    int liwmin, lrwmin, lwmin, lopt, lropt, liopt;
+    INT wantz, upper, lquery;
+    INT liwmin, lrwmin, lwmin, lopt, lropt, liopt;
     char trans;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -130,8 +130,8 @@ void zhegvd(
            iwork, liwork, info);
 
     /* Update optimal workspace sizes */
-    lopt = (lopt > (int)creal(work[0])) ? lopt : (int)creal(work[0]);
-    lropt = (lropt > (int)rwork[0]) ? lropt : (int)rwork[0];
+    lopt = (lopt > (INT)creal(work[0])) ? lopt : (INT)creal(work[0]);
+    lropt = (lropt > (INT)rwork[0]) ? lropt : (INT)rwork[0];
     liopt = (liopt > iwork[0]) ? liopt : iwork[0];
 
     if (wantz && *info == 0) {

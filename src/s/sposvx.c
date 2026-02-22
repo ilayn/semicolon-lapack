@@ -57,32 +57,32 @@
 void sposvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict AF,
-    const int ldaf,
+    const INT ldaf,
     char* equed,
     f32* restrict S,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     *info = 0;
-    int nofact = (fact[0] == 'N' || fact[0] == 'n');
-    int equil = (fact[0] == 'E' || fact[0] == 'e');
-    int rcequ = 0;
+    INT nofact = (fact[0] == 'N' || fact[0] == 'n');
+    INT equil = (fact[0] == 'E' || fact[0] == 'e');
+    INT rcequ = 0;
     f32 smlnum = 0.0f, bignum = 0.0f, scond = ONE, amax;
 
     if (nofact || equil) {
@@ -115,7 +115,7 @@ void sposvx(
         if (rcequ) {
             f32 smin_val = bignum;
             f32 smax_val = ZERO;
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 if (S[j] < smin_val) smin_val = S[j];
                 if (S[j] > smax_val) smax_val = S[j];
             }
@@ -145,7 +145,7 @@ void sposvx(
 
     if (equil) {
         // Compute row and column scalings to equilibrate the matrix A.
-        int infequ;
+        INT infequ;
         spoequ(n, A, lda, S, &scond, &amax, &infequ);
         if (infequ == 0) {
             // Equilibrate the matrix.
@@ -156,8 +156,8 @@ void sposvx(
 
     // Scale the right hand side.
     if (rcequ) {
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 B[i + j * ldb] = S[i] * B[i + j * ldb];
             }
         }
@@ -192,12 +192,12 @@ void sposvx(
 
     // Transform the solution matrix X to a solution of the original system.
     if (rcequ) {
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 X[i + j * ldx] = S[i] * X[i + j * ldx];
             }
         }
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ferr[j] / scond;
         }
     }

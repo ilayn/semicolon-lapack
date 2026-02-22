@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -53,34 +53,34 @@
  */
 void dsyrfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict AF,
-    const int ldaf,
-    const int* restrict ipiv,
+    const INT ldaf,
+    const INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int upper;
-    int count, i, j, k, kase, nz;
+    INT upper;
+    INT count, i, j, k, kase, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters. */
     *info = 0;

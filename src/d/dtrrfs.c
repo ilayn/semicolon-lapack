@@ -2,7 +2,7 @@
  * @brief DTRRFS provides error bounds for triangular solve. */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -44,28 +44,28 @@ void dtrrfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     const f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
     /* Test the input parameters */
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -92,7 +92,7 @@ void dtrrfs(
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ZERO;
             berr[j] = ZERO;
         }
@@ -100,7 +100,7 @@ void dtrrfs(
     }
 
     /* NZ = maximum number of nonzero elements in each row of A, plus 1 */
-    int nz = n + 1;
+    INT nz = n + 1;
     f64 eps = dlamch("E");
     f64 safmin = dlamch("S");
     f64 safe1 = nz * safmin;
@@ -113,7 +113,7 @@ void dtrrfs(
     CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
 
     /* Do for each right hand side */
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
 
         /*
          * Compute residual R = B - op(A) * X,
@@ -142,7 +142,7 @@ void dtrrfs(
          */
 
         /* Initialize work[0..n-1] = |B(:,j)| */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             work[i] = fabs(B[i + j * ldb]);
         }
 
@@ -150,16 +150,16 @@ void dtrrfs(
             /* Compute |A|*|X| + |B| */
             if (upper) {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 xk = fabs(X[k + j * ldx]);
-                        for (int i = 0; i <= k; i++) {
+                        for (INT i = 0; i <= k; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 xk = fabs(X[k + j * ldx]);
-                        for (int i = 0; i < k; i++) {
+                        for (INT i = 0; i < k; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
                         work[k] += xk;
@@ -167,16 +167,16 @@ void dtrrfs(
                 }
             } else {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 xk = fabs(X[k + j * ldx]);
-                        for (int i = k; i < n; i++) {
+                        for (INT i = k; i < n; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 xk = fabs(X[k + j * ldx]);
-                        for (int i = k + 1; i < n; i++) {
+                        for (INT i = k + 1; i < n; i++) {
                             work[i] += fabs(A[i + k * lda]) * xk;
                         }
                         work[k] += xk;
@@ -187,17 +187,17 @@ void dtrrfs(
             /* Compute |A**T|*|X| + |B| */
             if (upper) {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 s = ZERO;
-                        for (int i = 0; i <= k; i++) {
+                        for (INT i = 0; i <= k; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
                         work[k] += s;
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 s = fabs(X[k + j * ldx]);
-                        for (int i = 0; i < k; i++) {
+                        for (INT i = 0; i < k; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
                         work[k] += s;
@@ -205,17 +205,17 @@ void dtrrfs(
                 }
             } else {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 s = ZERO;
-                        for (int i = k; i < n; i++) {
+                        for (INT i = k; i < n; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
                         work[k] += s;
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f64 s = fabs(X[k + j * ldx]);
-                        for (int i = k + 1; i < n; i++) {
+                        for (INT i = k + 1; i < n; i++) {
                             s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                         }
                         work[k] += s;
@@ -226,7 +226,7 @@ void dtrrfs(
 
         /* Compute BERR(j) */
         f64 s = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (work[i] > safe2) {
                 f64 tmp = fabs(work[n + i]) / work[i];
                 if (tmp > s) s = tmp;
@@ -258,7 +258,7 @@ void dtrrfs(
          *   inv(op(A)) * diag(W),
          * where W = |R| + NZ*EPS*( |op(A)|*|X|+|B| )
          */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (work[i] > safe2) {
                 work[i] = fabs(work[n + i]) + nz * eps * work[i];
             } else {
@@ -266,8 +266,8 @@ void dtrrfs(
             }
         }
 
-        int kase = 0;
-        int isave[3] = {0, 0, 0};
+        INT kase = 0;
+        INT isave[3] = {0, 0, 0};
         for (;;) {
             dlacn2(n, &work[2 * n], &work[n], iwork, &ferr[j], &kase, isave);
             if (kase == 0) break;
@@ -276,12 +276,12 @@ void dtrrfs(
                 /* Multiply by diag(W)*inv(op(A)**T) */
                 cblas_dtrsv(CblasColMajor, cblas_uplo, cblas_transt,
                             cblas_diag, n, A, lda, &work[n], 1);
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
             } else {
                 /* Multiply by inv(op(A))*diag(W) */
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
                 cblas_dtrsv(CblasColMajor, cblas_uplo, cblas_trans,
@@ -291,7 +291,7 @@ void dtrrfs(
 
         /* Normalize error */
         f64 lstres = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 tmp = fabs(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }

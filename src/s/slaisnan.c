@@ -28,7 +28,7 @@
  *
  * @return 1 if din1 != din2 (true for NaN), 0 otherwise.
  */
-int slaisnan(const f32 din1, const f32 din2)
+INT slaisnan(const f32 din1, const f32 din2)
 {
     return (din1 != din2) ? 1 : 0;
 }

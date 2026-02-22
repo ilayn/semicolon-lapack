@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -33,20 +33,20 @@
  *                      calls. isave[0] = JUMP, isave[1] = J, isave[2] = ITER.
  */
 void dlacn2(
-    const int n,
+    const INT n,
     f64* restrict V,
     f64* restrict X,
-    int* restrict isgn,
+    INT* restrict isgn,
     f64* est,
-    int* kase,
-    int* restrict isave)
+    INT* kase,
+    INT* restrict isave)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int i, jlast;
+    INT i, jlast;
     f64 altsgn, estold, temp, xs;
 
     if (*kase == 0) {
@@ -84,8 +84,8 @@ L20:
         } else {
             X[i] = -ONE;
         }
-        isgn[i] = (int)(X[i] + 0.5);  // NINT equivalent
-        if (X[i] < 0) isgn[i] = (int)(X[i] - 0.5);
+        isgn[i] = (INT)(X[i] + 0.5);  // NINT equivalent
+        if (X[i] < 0) isgn[i] = (INT)(X[i] - 0.5);
     }
     *kase = 2;
     isave[0] = 2;  // JUMP = 2
@@ -123,8 +123,8 @@ L70:
         } else {
             xs = -ONE;
         }
-        int xs_int = (int)(xs + 0.5);
-        if (xs < 0) xs_int = (int)(xs - 0.5);
+        INT xs_int = (INT)(xs + 0.5);
+        if (xs < 0) xs_int = (INT)(xs - 0.5);
         if (xs_int != isgn[i]) {
             goto L90;
         }
@@ -144,8 +144,8 @@ L90:
         } else {
             X[i] = -ONE;
         }
-        isgn[i] = (int)(X[i] + 0.5);
-        if (X[i] < 0) isgn[i] = (int)(X[i] - 0.5);
+        isgn[i] = (INT)(X[i] + 0.5);
+        if (X[i] < 0) isgn[i] = (INT)(X[i] - 0.5);
     }
     *kase = 2;
     isave[0] = 4;  // JUMP = 4

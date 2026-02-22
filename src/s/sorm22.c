@@ -3,7 +3,7 @@
  * @brief SORM22 multiplies a general matrix by a banded orthogonal matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -52,22 +52,22 @@
 void sorm22(
     const char* side,
     const char* trans,
-    const int m,
-    const int n,
-    const int n1,
-    const int n2,
+    const INT m,
+    const INT n,
+    const INT n1,
+    const INT n2,
     const f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict C,
-    const int ldc,
+    const INT ldc,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int left, lquery, notran;
-    int i, ldwork, len, lwkopt, nb, nq, nw;
+    INT left, lquery, notran;
+    INT i, ldwork, len, lwkopt, nb, nq, nw;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

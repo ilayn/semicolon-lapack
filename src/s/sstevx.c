@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -57,23 +57,23 @@
  *                         - > 0: if info = i, then i eigenvectors failed to
  *                           converge.
  */
-void sstevx(const char* jobz, const char* range, const int n,
+void sstevx(const char* jobz, const char* range, const INT n,
             f32* restrict D, f32* restrict E,
             const f32 vl, const f32 vu,
-            const int il, const int iu, const f32 abstol,
-            int* m, f32* restrict W,
-            f32* restrict Z, const int ldz,
-            f32* restrict work, int* restrict iwork,
-            int* restrict ifail, int* info)
+            const INT il, const INT iu, const f32 abstol,
+            INT* m, f32* restrict W,
+            f32* restrict Z, const INT ldz,
+            f32* restrict work, INT* restrict iwork,
+            INT* restrict ifail, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     /* Test the input parameters. */
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int alleig = (range[0] == 'A' || range[0] == 'a');
-    int valeig = (range[0] == 'V' || range[0] == 'v');
-    int indeig = (range[0] == 'I' || range[0] == 'i');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT alleig = (range[0] == 'A' || range[0] == 'a');
+    INT valeig = (range[0] == 'V' || range[0] == 'v');
+    INT indeig = (range[0] == 'I' || range[0] == 'i');
 
     *info = 0;
     if (!wantz && !(jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -135,7 +135,7 @@ void sstevx(const char* jobz, const char* range, const int n,
     f32 rmax = rmax_val < rmax2 ? rmax_val : rmax2;
 
     /* Scale matrix to allowable range, if necessary. */
-    int iscale = 0;
+    INT iscale = 0;
     f32 vll = ZERO, vuu = ZERO;
     if (valeig) {
         vll = vl;
@@ -162,7 +162,7 @@ void sstevx(const char* jobz, const char* range, const int n,
     /* If all eigenvalues are desired and ABSTOL is less than or equal to
      * zero, then call SSTERF or SSTEQR. If this fails for some eigenvalue,
      * then try SSTEBZ. */
-    int test = 0;
+    INT test = 0;
     if (indeig) {
         if (il == 0 && iu == n - 1)
             test = 1;
@@ -170,13 +170,13 @@ void sstevx(const char* jobz, const char* range, const int n,
     if ((alleig || test) && abstol <= ZERO) {
         cblas_scopy(n, D, 1, W, 1);
         cblas_scopy(n - 1, E, 1, work, 1);
-        int indwrk = n;
+        INT indwrk = n;
         if (!wantz) {
             ssterf(n, W, work, info);
         } else {
             ssteqr("I", n, W, work, Z, ldz, &work[indwrk], info);
             if (*info == 0) {
-                for (int i = 0; i < n; i++)
+                for (INT i = 0; i < n; i++)
                     ifail[i] = 0;
             }
         }
@@ -195,7 +195,7 @@ void sstevx(const char* jobz, const char* range, const int n,
         order_str = "E";
     }
 
-    int nsplit;
+    INT nsplit;
     sstebz(range, order_str, n, vll, vuu, il, iu, abstol, D, E,
            m, &nsplit, W, iwork, &iwork[n], &work[0], &iwork[2 * n], info);
 
@@ -207,7 +207,7 @@ void sstevx(const char* jobz, const char* range, const int n,
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 rescale:
     if (iscale == 1) {
-        int imax;
+        INT imax;
         if (*info == 0) {
             imax = *m;
         } else {
@@ -219,10 +219,10 @@ rescale:
     /* If eigenvalues are not in order, then sort them, along with
      * eigenvectors. */
     if (wantz) {
-        for (int j = 0; j < *m - 1; j++) {
-            int imin = 0;
+        for (INT j = 0; j < *m - 1; j++) {
+            INT imin = 0;
             f32 tmp1 = W[j];
-            for (int jj = j + 1; jj < *m; jj++) {
+            for (INT jj = j + 1; jj < *m; jj++) {
                 if (W[jj] < tmp1) {
                     imin = jj;
                     tmp1 = W[jj];
@@ -234,7 +234,7 @@ rescale:
                 W[j] = tmp1;
                 cblas_sswap(n, &Z[0 + imin * ldz], 1, &Z[0 + j * ldz], 1);
                 if (*info != 0) {
-                    int itmp1 = ifail[imin];
+                    INT itmp1 = ifail[imin];
                     ifail[imin] = ifail[j];
                     ifail[j] = itmp1;
                 }

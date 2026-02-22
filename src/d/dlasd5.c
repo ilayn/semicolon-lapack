@@ -30,7 +30,7 @@ static const f64 FOUR = 4.0;
  * @param[out]    dsigma  The computed sigma_i, the i-th updated eigenvalue.
  * @param[out]    work    Array of dimension 2. Contains (D[j] + sigma_i) in its j-th component.
  */
-void dlasd5(const int i, const f64* restrict D, const f64* restrict Z,
+void dlasd5(const INT i, const f64* restrict D, const f64* restrict Z,
             f64* restrict delta, const f64 rho, f64* dsigma,
             f64* restrict work)
 {

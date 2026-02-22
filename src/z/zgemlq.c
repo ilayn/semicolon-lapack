@@ -47,15 +47,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zgemlq(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const c128* restrict A, const int lda,
-            const c128* restrict T, const int tsize,
-            c128* restrict C, const int ldc,
-            c128* restrict work, const int lwork,
-            int* info)
+            const INT m, const INT n, const INT k,
+            const c128* restrict A, const INT lda,
+            const c128* restrict T, const INT tsize,
+            c128* restrict C, const INT ldc,
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int left, right, tran, notran, lquery;
-    int mb, nb, lw, mn, minmnk, lwmin;
+    INT left, right, tran, notran, lquery;
+    INT mb, nb, lw, mn, minmnk, lwmin;
 
     /* Decode arguments */
     lquery = (lwork == -1);
@@ -65,8 +65,8 @@ void zgemlq(const char* side, const char* trans,
     right  = (side[0] == 'R' || side[0] == 'r');
 
     /* Read block sizes from T array (stored by ZGELQ) */
-    mb = (int)creal(T[1]);
-    nb = (int)creal(T[2]);
+    mb = (INT)creal(T[1]);
+    nb = (INT)creal(T[2]);
 
     if (left) {
         lw = n * mb;

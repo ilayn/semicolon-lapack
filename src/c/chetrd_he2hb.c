@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -69,11 +69,11 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void chetrd_he2hb(const char* uplo, const int n, const int kd,
-                  c64* A, const int lda,
-                  c64* AB, const int ldab,
+void chetrd_he2hb(const char* uplo, const INT n, const INT kd,
+                  c64* A, const INT lda,
+                  c64* AB, const INT ldab,
                   c64* tau,
-                  c64* work, const int lwork, int* info)
+                  c64* work, const INT lwork, INT* info)
 {
     const f32 rone = 1.0f;
     const c64 zero = CMPLXF(0.0f, 0.0f);
@@ -81,11 +81,11 @@ void chetrd_he2hb(const char* uplo, const int n, const int kd,
     const c64 mone = CMPLXF(-1.0f, 0.0f);
     const c64 mhalf = CMPLXF(-0.5f, 0.0f);
 
-    int lquery, upper;
-    int i, j, iinfo, lwmin, pn, pk, lk;
-    int ldt, ldw, lds2, lds1;
-    int ls2, ls1, lw, lt;
-    int tpos, wpos, s2pos, s1pos;
+    INT lquery, upper;
+    INT i, j, iinfo, lwmin, pn, pk, lk;
+    INT ldt, ldw, lds2, lds1;
+    INT ls2, ls1, lw, lt;
+    INT tpos, wpos, s2pos, s1pos;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

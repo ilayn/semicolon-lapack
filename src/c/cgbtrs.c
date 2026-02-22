@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -44,22 +44,22 @@
  */
 void cgbtrs(
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     const c64* restrict AB,
-    const int ldab,
-    const int* restrict ipiv,
+    const INT ldab,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int notran, lnoti;
-    int i, j, kd, l, lm;
+    INT notran, lnoti;
+    INT i, j, kd, l, lm;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');

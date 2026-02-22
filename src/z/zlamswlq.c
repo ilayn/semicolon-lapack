@@ -55,16 +55,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zlamswlq(const char* side, const char* trans,
-              const int m, const int n, const int k,
-              const int mb, const int nb,
-              const c128* restrict A, const int lda,
-              const c128* restrict T, const int ldt,
-              c128* restrict C, const int ldc,
-              c128* restrict work, const int lwork,
-              int* info)
+              const INT m, const INT n, const INT k,
+              const INT mb, const INT nb,
+              const c128* restrict A, const INT lda,
+              const c128* restrict T, const INT ldt,
+              c128* restrict C, const INT ldc,
+              c128* restrict work, const INT lwork,
+              INT* info)
 {
-    int left, right, tran, notran, lquery;
-    int i, ii, kk, ctr, lw, minmnk, lwmin;
+    INT left, right, tran, notran, lquery;
+    INT i, ii, kk, ctr, lw, minmnk, lwmin;
 
     /* Decode arguments */
     lquery = (lwork == -1);

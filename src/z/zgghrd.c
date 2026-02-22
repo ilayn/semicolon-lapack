@@ -61,24 +61,24 @@
 void zgghrd(
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict Q,
-    const int ldq,
+    const INT ldq,
     c128* restrict Z,
-    const int ldz,
-    int* info)
+    const INT ldz,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int ilq, ilz;
-    int icompq, icompz, jcol, jrow;
+    INT ilq, ilz;
+    INT icompq, icompz, jcol, jrow;
     f64 c;
     c128 ctemp, s;
 

@@ -4,7 +4,7 @@
  *        a QR factorization determined by DGEQRF (unblocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -34,13 +34,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dorg2r(const int m, const int n, const int k,
-            f64* restrict A, const int lda,
+void dorg2r(const INT m, const INT n, const INT k,
+            f64* restrict A, const INT lda,
             const f64* restrict tau,
             f64* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, j, l;
+    INT i, j, l;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 

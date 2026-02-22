@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -66,17 +66,17 @@
  */
 void dggbal(
     const char* job,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
-    int* ilo,
-    int* ihi,
+    const INT ldb,
+    INT* ilo,
+    INT* ihi,
     f64* restrict lscale,
     f64* restrict rscale,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
@@ -84,9 +84,9 @@ void dggbal(
     const f64 THREE = 3.0;
     const f64 SCLFAC = 10.0;
 
-    int i, icab, ir, irab, it, j, jc;
-    int k, kount, l, lcab, lrab, lsfmax, lsfmin;
-    int m, nr, nrp2;
+    INT i, icab, ir, irab, it, j, jc;
+    INT k, kount, l, lcab, lrab, lsfmax, lsfmin;
+    INT m, nr, nrp2;
     f64 alpha, basl, beta, cab, cmax, coef, coef2;
     f64 coef5, cor, ew, ewc, gamma, pgamma, rab, sfmax;
     f64 sfmin, sum, t, ta, tb, tc;
@@ -142,7 +142,7 @@ void dggbal(
 
         /* Find row with one nonzero in columns 1 through L */
 
-        int done_permuting = 0;
+        INT done_permuting = 0;
         for (;;) {
             if (l == 0) {
                 rscale[0] = ONE;
@@ -150,10 +150,10 @@ void dggbal(
                 done_permuting = 1;
                 break;
             }
-            int found = 0;
+            INT found = 0;
             for (i = l; i >= 0; i--) {
-                int nz_col = -1;
-                int isolated = 1;
+                INT nz_col = -1;
+                INT isolated = 1;
                 for (j = 0; j <= l; j++) {
                     if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO) {
                         if (nz_col >= 0) {
@@ -195,10 +195,10 @@ void dggbal(
 
         if (!done_permuting) {
             for (;;) {
-                int found = 0;
+                INT found = 0;
                 for (j = k; j <= l; j++) {
-                    int nz_row = -1;
-                    int isolated = 1;
+                    INT nz_row = -1;
+                    INT isolated = 1;
                     for (i = k; i <= l; i++) {
                         if (A[i + j * lda] != ZERO || B[i + j * ldb] != ZERO) {
                             if (nz_row >= 0) {
@@ -387,15 +387,15 @@ void dggbal(
 
     sfmin = dlamch("S");
     sfmax = ONE / sfmin;
-    lsfmin = (int)(log10(sfmin) / basl + ONE);
-    lsfmax = (int)(log10(sfmax) / basl);
+    lsfmin = (INT)(log10(sfmin) / basl + ONE);
+    lsfmax = (INT)(log10(sfmax) / basl);
     for (i = k; i <= l; i++) {
         irab = cblas_idamax(n - k, &A[i + k * lda], lda);
         rab = fabs(A[i + (irab + k) * lda]);
         irab = cblas_idamax(n - k, &B[i + k * ldb], ldb);
         rab = (rab > fabs(B[i + (irab + k) * ldb])) ? rab : fabs(B[i + (irab + k) * ldb]);
-        lrab = (int)(log10(rab + sfmin) / basl + ONE);
-        ir = (int)(lscale[i] + (lscale[i] >= 0 ? HALF : -HALF));
+        lrab = (INT)(log10(rab + sfmin) / basl + ONE);
+        ir = (INT)(lscale[i] + (lscale[i] >= 0 ? HALF : -HALF));
         ir = (ir > lsfmin) ? ir : lsfmin;
         ir = (ir < lsfmax) ? ir : lsfmax;
         ir = (ir < lsfmax - lrab) ? ir : lsfmax - lrab;
@@ -404,8 +404,8 @@ void dggbal(
         cab = fabs(A[icab + i * lda]);
         icab = cblas_idamax(l + 1, &B[i * ldb], 1);
         cab = (cab > fabs(B[icab + i * ldb])) ? cab : fabs(B[icab + i * ldb]);
-        lcab = (int)(log10(cab + sfmin) / basl + ONE);
-        jc = (int)(rscale[i] + (rscale[i] >= 0 ? HALF : -HALF));
+        lcab = (INT)(log10(cab + sfmin) / basl + ONE);
+        jc = (INT)(rscale[i] + (rscale[i] >= 0 ? HALF : -HALF));
         jc = (jc > lsfmin) ? jc : lsfmin;
         jc = (jc < lsfmax) ? jc : lsfmax;
         jc = (jc < lsfmax - lcab) ? jc : lsfmax - lcab;

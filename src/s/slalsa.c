@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SLALSA is an intermediate step in solving the least squares problem
@@ -55,22 +55,22 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  */
-void slalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            f32* restrict B, const int ldb,
-            f32* restrict BX, const int ldbx,
-            const f32* restrict U, const int ldu,
-            const f32* restrict VT, const int* restrict K,
+void slalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
+            f32* restrict B, const INT ldb,
+            f32* restrict BX, const INT ldbx,
+            const f32* restrict U, const INT ldu,
+            const f32* restrict VT, const INT* restrict K,
             const f32* restrict difl, const f32* restrict difr,
             const f32* restrict Z, const f32* restrict poles,
-            const int* restrict givptr, const int* restrict givcol,
-            const int ldgcol, const int* restrict perm,
+            const INT* restrict givptr, const INT* restrict givcol,
+            const INT ldgcol, const INT* restrict perm,
             const f32* restrict givnum,
             const f32* restrict C, const f32* restrict S,
-            f32* restrict work, int* restrict iwork, int* info)
+            f32* restrict work, INT* restrict iwork, INT* info)
 {
-    int i, ic, im1, inode, j, lf, ll, lvl, lvl2;
-    int nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;
-    int nr, nrf, nrp1, sqre;
+    INT i, ic, im1, inode, j, lf, ll, lvl, lvl2;
+    INT nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;
+    INT nr, nrf, nrp1, sqre;
 
     *info = 0;
 

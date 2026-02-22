@@ -90,14 +90,14 @@
  *                         - = -5: Problem in SLASQ2.
  *                         - = -6: Problem in SLASQ2.
  */
-void slarre(const char* range, const int n, f32* vl, f32* vu,
-            const int il, const int iu,
+void slarre(const char* range, const INT n, f32* vl, f32* vu,
+            const INT il, const INT iu,
             f32* D, f32* E, f32* E2,
             const f32 rtol1, const f32 rtol2, const f32 spltol,
-            int* nsplit, int* isplit, int* m,
+            INT* nsplit, INT* isplit, INT* m,
             f32* W, f32* werr, f32* wgap,
-            int* iblock, int* indexw, f32* gers,
-            f32* pivmin, f32* work, int* iwork, int* info)
+            INT* iblock, INT* indexw, f32* gers,
+            f32* pivmin, f32* work, INT* iwork, INT* info)
 {
     /* Parameters */
     const f32 ZERO = 0.0f;
@@ -111,14 +111,14 @@ void slarre(const char* range, const int n, f32* vl, f32* vu,
     const f32 FAC = 0.5f;
     const f32 MAXGROWTH = 64.0f;
     const f32 FUDGE = 2.0f;
-    const int MAXTRY = 6;
-    const int ALLRNG = 1;
-    const int INDRNG = 2;
-    const int VALRNG = 3;
+    const INT MAXTRY = 6;
+    const INT ALLRNG = 1;
+    const INT INDRNG = 2;
+    const INT VALRNG = 3;
 
     /* Local scalars */
-    int forceb, norep, usedqd;
-    int cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
+    INT forceb, norep, usedqd;
+    INT cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
         in, indl = 0, indu = 0, irange = 0, j, jblk, mb = 0, mm,
         wbegin, wend = 0;
     f32 avgap, bsrtol, clwdth, dmax_, dpivot, eabs,
@@ -127,7 +127,7 @@ void slarre(const char* range, const int n, f32* vl, f32* vu,
            tau, tmp, tmp1;
 
     /* Local arrays */
-    int iseed[4];
+    INT iseed[4];
 
     *info = 0;
     *nsplit = 0;
@@ -459,7 +459,7 @@ void slarre(const char* range, const int n, f32* vl, f32* vu,
             }
         }
 
-        int found_rrr = 0;
+        INT found_rrr = 0;
         for (idum = 0; idum < MAXTRY; idum++) {
             /* Compute L D L^T factorization of tridiagonal matrix T - sigma I. */
             /* Store D in WORK[0:in-1], L in WORK[in:2*in-2], and reciprocals of */

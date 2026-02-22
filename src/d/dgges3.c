@@ -7,7 +7,7 @@
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGGES3 computes for a pair of N-by-N real nonsymmetric matrices (A,B),
@@ -55,26 +55,26 @@
  *                         - > 0: errors from QZ iteration or reordering
  */
 void dgges3(const char* jobvsl, const char* jobvsr, const char* sort,
-            dselect3_t selctg, const int n,
-            f64* restrict A, const int lda,
-            f64* restrict B, const int ldb,
-            int* sdim,
+            dselect3_t selctg, const INT n,
+            f64* restrict A, const INT lda,
+            f64* restrict B, const INT ldb,
+            INT* sdim,
             f64* restrict alphar, f64* restrict alphai,
             f64* restrict beta,
-            f64* restrict VSL, const int ldvsl,
-            f64* restrict VSR, const int ldvsr,
-            f64* restrict work, const int lwork,
-            int* restrict bwork, int* info)
+            f64* restrict VSL, const INT ldvsl,
+            f64* restrict VSR, const INT ldvsr,
+            f64* restrict work, const INT lwork,
+            INT* restrict bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl, wantst;
-    int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int ip, iright, irows, itau, iwrk, lwkopt, lwkmin;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl, wantst;
+    INT i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT ip, iright, irows, itau, iwrk, lwkopt, lwkmin;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
     f64 pvsl, pvsr, safmax, safmin, smlnum;
-    int idum[1];
+    INT idum[1];
     f64 dif[2];
 
     /* Decode the input arguments */
@@ -134,25 +134,25 @@ void dgges3(const char* jobvsl, const char* jobvsr, const char* sort,
     /* Compute workspace */
     if (*info == 0) {
         dgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
-        lwkopt = lwkmin > (3 * n + (int)work[0]) ? lwkmin : (3 * n + (int)work[0]);
+        lwkopt = lwkmin > (3 * n + (INT)work[0]) ? lwkmin : (3 * n + (INT)work[0]);
         dormqr("L", "T", n, n, n, B, ldb, NULL, A, lda, work, -1, &ierr);
-        lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+        lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
         if (ilvsl) {
             dorgqr(n, n, n, VSL, ldvsl, NULL, work, -1, &ierr);
-            lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+            lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
         }
         dgghd3(jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb, VSL, ldvsl,
                VSR, ldvsr, work, -1, &ierr);
-        lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+        lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
         dlaqz0("S", jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb,
                alphar, alphai, beta, VSL, ldvsl, VSR, ldvsr,
                work, -1, 0, &ierr);
-        lwkopt = lwkopt > (2 * n + (int)work[0]) ? lwkopt : (2 * n + (int)work[0]);
+        lwkopt = lwkopt > (2 * n + (INT)work[0]) ? lwkopt : (2 * n + (INT)work[0]);
         if (wantst) {
             dtgsen(0, ilvsl, ilvsr, bwork, n, A, lda, B, ldb,
                    alphar, alphai, beta, VSL, ldvsl, VSR, ldvsr,
                    sdim, &pvsl, &pvsr, dif, work, -1, idum, 1, &ierr);
-            lwkopt = lwkopt > (2 * n + (int)work[0]) ? lwkopt : (2 * n + (int)work[0]);
+            lwkopt = lwkopt > (2 * n + (INT)work[0]) ? lwkopt : (2 * n + (INT)work[0]);
         }
         if (n == 0) {
             work[0] = 1;

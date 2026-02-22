@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -35,12 +35,12 @@
  *                      0 <= SCALE <= 1 to prevent overflow in the solution.
  */
 void cgesc2(
-    const int n,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict rhs,
-    const int* restrict ipiv,
-    const int* restrict jpiv,
+    const INT* restrict ipiv,
+    const INT* restrict jpiv,
     f32* scale)
 {
     const f32 ONE = 1.0f;
@@ -48,7 +48,7 @@ void cgesc2(
 
     f32 eps, smlnum, bignum;
     c64 temp;
-    int i, j, imax;
+    INT i, j, imax;
 
     if (n == 0) {
         *scale = ONE;

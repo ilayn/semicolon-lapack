@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -47,33 +47,33 @@ void ssbevx(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int alleig, indeig, lower, test, valeig, wantz;
+    INT alleig, indeig, lower, test, valeig, wantz;
     char order;
-    int i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo, indwrk;
-    int iscale, itmp1, j, jj, nsplit;
+    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo, indwrk;
+    INT iscale, itmp1, j, jj, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll, vuu;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -44,28 +44,28 @@ void dtbrfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     const f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int notran, nounit, upper;
-    int i, j, k, kase, nz;
+    INT notran, nounit, upper;
+    INT i, j, k, kase, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -136,7 +136,7 @@ void dtbrfs(
                     for (k = 0; k < n; k++) {
                         xk = fabs(X[k + j * ldx]);
                         // Fortran: DO I = MAX(1,K-KD), K -> 0-based: i from max(0,k-kd) to k
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
                             // AB(kd+1+i-k, k) in Fortran 1-based -> AB[kd+i-k + k*ldab] in 0-based
                             work[i] = work[i] + fabs(AB[kd + i - k + k * ldab]) * xk;
@@ -145,7 +145,7 @@ void dtbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         xk = fabs(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i < k; i++) {
                             work[i] = work[i] + fabs(AB[kd + i - k + k * ldab]) * xk;
                         }
@@ -157,7 +157,7 @@ void dtbrfs(
                     for (k = 0; k < n; k++) {
                         xk = fabs(X[k + j * ldx]);
                         // Fortran: DO I = K, MIN(N,K+KD) -> 0-based: i from k to min(n-1,k+kd)
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
                             // AB(1+i-k, k) in Fortran 1-based -> AB[i-k + k*ldab] in 0-based
                             work[i] = work[i] + fabs(AB[i - k + k * ldab]) * xk;
@@ -166,7 +166,7 @@ void dtbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         xk = fabs(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k + 1; i <= iend; i++) {
                             work[i] = work[i] + fabs(AB[i - k + k * ldab]) * xk;
                         }
@@ -180,7 +180,7 @@ void dtbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         s = ZERO;
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
                             s = s + fabs(AB[kd + i - k + k * ldab]) * fabs(X[i + j * ldx]);
                         }
@@ -189,7 +189,7 @@ void dtbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         s = fabs(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i < k; i++) {
                             s = s + fabs(AB[kd + i - k + k * ldab]) * fabs(X[i + j * ldx]);
                         }
@@ -200,7 +200,7 @@ void dtbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         s = ZERO;
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
                             s = s + fabs(AB[i - k + k * ldab]) * fabs(X[i + j * ldx]);
                         }
@@ -209,7 +209,7 @@ void dtbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         s = fabs(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k + 1; i <= iend; i++) {
                             s = s + fabs(AB[i - k + k * ldab]) * fabs(X[i + j * ldx]);
                         }

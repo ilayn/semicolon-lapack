@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 
@@ -40,16 +40,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zungrq(const int m, const int n, const int k,
-            c128* restrict A, const int lda,
+void zungrq(const INT m, const INT n, const INT k,
+            c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int nb, nbmin, nx, iws, ldwork, lwkopt;
-    int i, ib, ii, iinfo, j, l;
-    int kk;
-    int lquery;
+    INT nb, nbmin, nx, iws, ldwork, lwkopt;
+    INT i, ib, ii, iinfo, j, l;
+    INT kk;
+    INT lquery;
     const c128 ZERO = CMPLX(0.0, 0.0);
 
     /* Parameter validation */

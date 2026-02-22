@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 
@@ -53,14 +53,14 @@
  *                           to solve a system of equations.
  */
 void zgbtrf(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     c128* restrict AB,
-    const int ldab,
-    int* restrict ipiv,
-    int* info)
+    const INT ldab,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
@@ -70,9 +70,9 @@ void zgbtrf(
     c128 work13[LDWORK * NBMAX];
     c128 work31[LDWORK * NBMAX];
 
-    int i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
+    INT i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
     c128 temp;
-    int minmn;
+    INT minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
     kv = ku + kl;
@@ -183,7 +183,7 @@ void zgbtrf(
                 ipiv[jj] = jp + jj - j;  /* Store relative to block start initially */
 
                 if (AB[kv + jp + jj * ldab] != ZERO) {
-                    int new_ju = jj + ku + jp;
+                    INT new_ju = jj + ku + jp;
                     if (new_ju > n - 1) new_ju = n - 1;
                     if (new_ju > ju) ju = new_ju;
 

@@ -32,7 +32,7 @@
  * @param[out] v      Double precision array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-SEMICOLON_API void dlaqr1(const int n, const f64* H, const int ldh,
+SEMICOLON_API void dlaqr1(const INT n, const f64* H, const INT ldh,
                           const f64 sr1, const f64 si1,
                           const f64 sr2, const f64 si2,
                           f64* v)

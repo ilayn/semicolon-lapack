@@ -66,18 +66,18 @@
  * @param[out]    rqcorr  The Rayleigh Quotient correction to lambda.
  * @param[out]    work    Double precision array, dimension (4*n).
  */
-void slar1v(const int n, const int b1, const int bn, const f32 lambda,
+void slar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
             const f32* restrict D, const f32* restrict L,
             const f32* restrict LD, const f32* restrict LLD,
             const f32 pivmin, const f32 gaptol,
-            f32* restrict Z, const int wantnc, int* negcnt,
-            f32* ztz, f32* mingma, int* r,
-            int* restrict isuppz, f32* nrminv, f32* resid,
+            f32* restrict Z, const INT wantnc, INT* negcnt,
+            f32* ztz, f32* mingma, INT* r,
+            INT* restrict isuppz, f32* nrminv, f32* resid,
             f32* rqcorr, f32* restrict work)
 {
     /* Local variables */
-    int i, r1, r2, neg1, neg2;
-    int sawnan1, sawnan2;
+    INT i, r1, r2, neg1, neg2;
+    INT sawnan1, sawnan2;
     f32 dplus, dminus, s, tmp, eps;
 
     /* Workspace segment offsets (0-based):
@@ -85,10 +85,10 @@ void slar1v(const int n, const int b1, const int bn, const f32 lambda,
      *   work[indumn .. indumn+n-2]: U- values
      *   work[inds   .. inds+n-1]:   S  values (stationary transform)
      *   work[indp   .. indp+n-1]:   P  values (progressive transform) */
-    const int indlpl = 0;
-    const int indumn = n;
-    const int inds   = 2 * n;
-    const int indp   = 3 * n;
+    const INT indlpl = 0;
+    const INT indumn = n;
+    const INT inds   = 2 * n;
+    const INT indp   = 3 * n;
 
     eps = slamch("Precision");
 

@@ -3,7 +3,7 @@
  * @brief DPBTRS solves a system with a symmetric positive definite band matrix using Cholesky.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -29,17 +29,17 @@
  */
 void dpbtrs(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int upper;
-    int j;
+    INT upper;
+    INT j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

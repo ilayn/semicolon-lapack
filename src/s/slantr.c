@@ -41,19 +41,19 @@ f32 slantr(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 scale, sum, value, temp;
-    int udiag;  /* unit diagonal flag */
-    int minmn;
+    INT udiag;  /* unit diagonal flag */
+    INT minmn;
 
     /* Quick return if possible */
     minmn = (m < n) ? m : n;
@@ -69,7 +69,7 @@ f32 slantr(
             value = ONE;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int imax = (j < m) ? j : m;
+                    INT imax = (j < m) ? j : m;
                     for (i = 0; i < imax; i++) {
                         temp = fabsf(A[i + j * lda]);
                         if (value < temp || isnan(temp)) {
@@ -91,7 +91,7 @@ f32 slantr(
             value = ZERO;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int imax = (j + 1 < m) ? j + 1 : m;
+                    INT imax = (j + 1 < m) ? j + 1 : m;
                     for (i = 0; i < imax; i++) {
                         temp = fabsf(A[i + j * lda]);
                         if (value < temp || isnan(temp)) {
@@ -122,7 +122,7 @@ f32 slantr(
                     }
                 } else {
                     sum = ZERO;
-                    int imax = (j + 1 < m) ? j + 1 : m;
+                    INT imax = (j + 1 < m) ? j + 1 : m;
                     for (i = 0; i < imax; i++) {
                         sum += fabsf(A[i + j * lda]);
                     }
@@ -157,7 +157,7 @@ f32 slantr(
                     work[i] = ONE;
                 }
                 for (j = 0; j < n; j++) {
-                    int imax = (j < m) ? j : m;
+                    INT imax = (j < m) ? j : m;
                     for (i = 0; i < imax; i++) {
                         work[i] += fabsf(A[i + j * lda]);
                     }
@@ -167,7 +167,7 @@ f32 slantr(
                     work[i] = ZERO;
                 }
                 for (j = 0; j < n; j++) {
-                    int imax = (j + 1 < m) ? j + 1 : m;
+                    INT imax = (j + 1 < m) ? j + 1 : m;
                     for (i = 0; i < imax; i++) {
                         work[i] += fabsf(A[i + j * lda]);
                     }
@@ -175,7 +175,7 @@ f32 slantr(
             }
         } else {
             if (udiag) {
-                int minmn_local = (m < n) ? m : n;
+                INT minmn_local = (m < n) ? m : n;
                 for (i = 0; i < minmn_local; i++) {
                     work[i] = ONE;
                 }
@@ -212,7 +212,7 @@ f32 slantr(
                 scale = ONE;
                 sum = (f32)minmn;  /* count of unit diagonal elements */
                 for (j = 1; j < n; j++) {
-                    int col_len = (j < m) ? j : m;
+                    INT col_len = (j < m) ? j : m;
                     if (col_len > 0) {
                         slassq(col_len, &A[j * lda], 1, &scale, &sum);
                     }
@@ -221,7 +221,7 @@ f32 slantr(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int col_len = (j + 1 < m) ? j + 1 : m;
+                    INT col_len = (j + 1 < m) ? j + 1 : m;
                     if (col_len > 0) {
                         slassq(col_len, &A[j * lda], 1, &scale, &sum);
                     }
@@ -233,9 +233,9 @@ f32 slantr(
                 scale = ONE;
                 sum = (f32)minmn;  /* count of unit diagonal elements */
                 for (j = 0; j < n; j++) {
-                    int col_len = m - j - 1;
+                    INT col_len = m - j - 1;
                     if (col_len > 0) {
-                        int start_idx = (j + 1 < m) ? j + 1 : m;
+                        INT start_idx = (j + 1 < m) ? j + 1 : m;
                         slassq(col_len, &A[start_idx + j * lda], 1, &scale, &sum);
                     }
                 }
@@ -243,7 +243,7 @@ f32 slantr(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int col_len = m - j;
+                    INT col_len = m - j;
                     if (col_len > 0) {
                         slassq(col_len, &A[j + j * lda], 1, &scale, &sum);
                     }

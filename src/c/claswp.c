@@ -39,15 +39,15 @@
  * @endrst
  */
 void claswp(
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int k1,
-    const int k2,
-    const int* restrict ipiv,
-    const int incx)
+    const INT lda,
+    const INT k1,
+    const INT k2,
+    const INT* restrict ipiv,
+    const INT incx)
 {
-    int i, i1, i2, inc, ip, ix, ix0, j, k, n32;
+    INT i, i1, i2, inc, ip, ix, ix0, j, k, n32;
     c64 temp;
 
     // Interchange row i with row ipiv[k1 + (i - k1) * abs(incx)] for each of

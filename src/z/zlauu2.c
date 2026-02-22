@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -37,15 +37,15 @@
  */
 void zlauu2(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -62,7 +62,7 @@ void zlauu2(
 
     if (upper) {
         /* Compute the product U * U**H. */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 aii = creal(A[i + i * lda]);
             if (i < n - 1) {
                 c128 dotc;
@@ -83,7 +83,7 @@ void zlauu2(
         }
     } else {
         /* Compute the product L**H * L. */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 aii = creal(A[i + i * lda]);
             if (i < n - 1) {
                 c128 dotc;

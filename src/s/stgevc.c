@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -59,30 +59,30 @@
 void stgevc(
     const char* side,
     const char* howmny,
-    const int* restrict select,
-    const int n,
+    const INT* restrict select,
+    const INT n,
     const f32* restrict S,
-    const int lds,
+    const INT lds,
     const f32* restrict P,
-    const int ldp,
+    const INT ldp,
     f32* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     f32* restrict VR,
-    const int ldvr,
-    const int mm,
-    int* m,
+    const INT ldvr,
+    const INT mm,
+    INT* m,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 SAFETY = 100.0f;
 
-    int compl, compr, ilall, ilback, ilcplx;
-    int ihwmny, iside;
-    int ilabad, ilbbad;
-    int i, ibeg, iend, ieig, iinfo, ilcomp, im, j, ja, je, jr, jw, na, nw;
-    int il2by2;
+    INT compl, compr, ilall, ilback, ilcplx;
+    INT ihwmny, iside;
+    INT ilabad, ilbbad;
+    INT i, ibeg, iend, ieig, iinfo, ilcomp, im, j, ja, je, jr, jw, na, nw;
+    INT il2by2;
     f32 acoef, acoefa, anorm, ascale, bcoefa, bcoefi, bcoefr;
     f32 big, bignum, bnorm, bscale;
     f32 cim2a, cim2b, cimaga, cimagb, cre2a, cre2b, creala, crealb;
@@ -300,8 +300,8 @@ void stgevc(
                 bcoefi = ZERO;
 
                 scale = ONE;
-                int lsa = fabsf(sbeta) >= safmin && fabsf(acoef) < small;
-                int lsb = fabsf(salfar) >= safmin && fabsf(bcoefr) < small;
+                INT lsa = fabsf(sbeta) >= safmin && fabsf(acoef) < small;
+                INT lsb = fabsf(salfar) >= safmin && fabsf(bcoefr) < small;
                 if (lsa)
                     scale = (small / fabsf(sbeta)) * fminf(anorm, big);
                 if (lsb)
@@ -537,8 +537,8 @@ void stgevc(
                 bcoefi = ZERO;
 
                 scale = ONE;
-                int lsa = fabsf(sbeta) >= safmin && fabsf(acoef) < small;
-                int lsb = fabsf(salfar) >= safmin && fabsf(bcoefr) < small;
+                INT lsa = fabsf(sbeta) >= safmin && fabsf(acoef) < small;
+                INT lsb = fabsf(salfar) >= safmin && fabsf(bcoefr) < small;
                 if (lsa)
                     scale = (small / fabsf(sbeta)) * fminf(anorm, big);
                 if (lsb)
@@ -712,7 +712,7 @@ void stgevc(
                     for (jr = 0; jr < n; jr++)
                         work[(jw + 4) * n + jr] = work[(jw + 2) * n + 0] * VR[jr + 0 * ldvr];
 
-                    for (int jc = 1; jc <= je; jc++) {
+                    for (INT jc = 1; jc <= je; jc++) {
                         for (jr = 0; jr < n; jr++)
                             work[(jw + 4) * n + jr] = work[(jw + 4) * n + jr] +
                                                       work[(jw + 2) * n + jc] * VR[jr + jc * ldvr];

@@ -93,29 +93,29 @@
 void zhesvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict AF,
-    const int ldaf,
-    int* restrict ipiv,
+    const INT ldaf,
+    INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nofact, lquery;
-    int lwkmin, lwkopt, nb;
+    INT nofact, lquery;
+    INT lwkmin, lwkopt, nb;
     f64 anorm;
 
     /* Test the input parameters. */
@@ -149,7 +149,7 @@ void zhesvx(
         lwkopt = lwkmin;
         if (nofact) {
             nb = lapack_get_nb("HETRF");
-            int nbnb = n * nb;
+            INT nbnb = n * nb;
             lwkopt = (lwkopt > nbnb) ? lwkopt : nbnb;
         }
         work[0] = CMPLX((f64)lwkopt, 0.0);

@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <float.h>
 
@@ -60,14 +60,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void strevc(const char* side, const char* howmny, int* select, const int n,
-            const f32* T, const int ldt, f32* VL, const int ldvl,
-            f32* VR, const int ldvr, const int mm, int* m,
-            f32* work, int* info)
+void strevc(const char* side, const char* howmny, INT* select, const INT n,
+            const f32* T, const INT ldt, f32* VL, const INT ldvl,
+            f32* VR, const INT ldvr, const INT mm, INT* m,
+            f32* work, INT* info)
 {
     /* Local scalars */
-    int allv, bothv, leftv, over, pair, rightv, somev;
-    int i, ierr, ii, ip, is, j, j1, j2, jnxt, k, ki, n2;
+    INT allv, bothv, leftv, over, pair, rightv, somev;
+    INT i, ierr, ii, ip, is, j, j1, j2, jnxt, k, ki, n2;
     f32 beta, bignum, emax, rec, remax, scale;
     f32 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
 

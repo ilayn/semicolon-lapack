@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f32 ZERO = 0.0f;
 
@@ -37,15 +37,15 @@ static const f32 ZERO = 0.0f;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void slasdq(const char* uplo, const int sqre, const int n, const int ncvt,
-            const int nru, const int ncc, f32* restrict D,
-            f32* restrict E, f32* restrict VT, const int ldvt,
-            f32* restrict U, const int ldu,
-            f32* restrict C, const int ldc,
-            f32* restrict work, int* info)
+void slasdq(const char* uplo, const INT sqre, const INT n, const INT ncvt,
+            const INT nru, const INT ncc, f32* restrict D,
+            f32* restrict E, f32* restrict VT, const INT ldvt,
+            f32* restrict U, const INT ldu,
+            f32* restrict C, const INT ldc,
+            f32* restrict work, INT* info)
 {
-    int rotate;
-    int i, isub, iuplo, j, np1, sqre1;
+    INT rotate;
+    INT i, isub, iuplo, j, np1, sqre1;
     f32 cs, r, smin, sn;
 
     /* Test the input parameters */

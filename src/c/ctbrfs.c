@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -45,28 +45,28 @@ void ctbrfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     const c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int notran, nounit, upper;
-    int i, j, k, kase, nz;
+    INT notran, nounit, upper;
+    INT i, j, k, kase, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -145,7 +145,7 @@ void ctbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         xk = cabs1f(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1f(AB[kd + i - k + k * ldab]) * xk;
@@ -154,7 +154,7 @@ void ctbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         xk = cabs1f(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i < k; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1f(AB[kd + i - k + k * ldab]) * xk;
@@ -166,7 +166,7 @@ void ctbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         xk = cabs1f(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1f(AB[i - k + k * ldab]) * xk;
@@ -175,7 +175,7 @@ void ctbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         xk = cabs1f(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k + 1; i <= iend; i++) {
                             rwork[i] = rwork[i] +
                                        cabs1f(AB[i - k + k * ldab]) * xk;
@@ -190,7 +190,7 @@ void ctbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         s = ZERO;
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i <= k; i++) {
                             s = s + cabs1f(AB[kd + i - k + k * ldab]) *
                                     cabs1f(X[i + j * ldx]);
@@ -200,7 +200,7 @@ void ctbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         s = cabs1f(X[k + j * ldx]);
-                        int istart = (0 > k - kd) ? 0 : k - kd;
+                        INT istart = (0 > k - kd) ? 0 : k - kd;
                         for (i = istart; i < k; i++) {
                             s = s + cabs1f(AB[kd + i - k + k * ldab]) *
                                     cabs1f(X[i + j * ldx]);
@@ -212,7 +212,7 @@ void ctbrfs(
                 if (nounit) {
                     for (k = 0; k < n; k++) {
                         s = ZERO;
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k; i <= iend; i++) {
                             s = s + cabs1f(AB[i - k + k * ldab]) *
                                     cabs1f(X[i + j * ldx]);
@@ -222,7 +222,7 @@ void ctbrfs(
                 } else {
                     for (k = 0; k < n; k++) {
                         s = cabs1f(X[k + j * ldx]);
-                        int iend = (n - 1 < k + kd) ? n - 1 : k + kd;
+                        INT iend = (n - 1 < k + kd) ? n - 1 : k + kd;
                         for (i = k + 1; i <= iend; i++) {
                             s = s + cabs1f(AB[i - k + k * ldab]) *
                                     cabs1f(X[i + j * ldx]);

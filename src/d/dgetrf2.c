@@ -9,7 +9,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -50,18 +50,18 @@
  *                           has been completed, but U is exactly singular.
  */
 void dgetrf2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
 
-    int i, iinfo, n1, n2;
-    int minmn = m < n ? m : n;
+    INT i, iinfo, n1, n2;
+    INT minmn = m < n ? m : n;
 
     *info = 0;
     if (m < 0) {

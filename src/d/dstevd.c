@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -60,15 +60,15 @@
  *                         - > 0:  if INFO = i, the algorithm failed to converge; i
  *                           off-diagonal elements of E did not converge to zero.
  */
-void dstevd(const char* jobz, const int n, f64* D, f64* E,
-            f64* Z, const int ldz, f64* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+void dstevd(const char* jobz, const INT n, f64* D, f64* E,
+            f64* Z, const INT ldz, f64* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantz, lquery;
-    int iscale, liwmin, lwmin;
+    INT wantz, lquery;
+    INT iscale, liwmin, lwmin;
     f64 bignum, eps, rmax, rmin, safmin, sigma, smlnum, tnrm;
 
     /* Test the input parameters. */

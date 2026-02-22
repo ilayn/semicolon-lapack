@@ -11,7 +11,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -44,18 +44,18 @@
  *                           to solve a system of equations.
  */
 void zgetf2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const f64 sfmin = dlamch("S");
 
-    int i, j, jp;
-    int minmn = m < n ? m : n;
+    INT i, j, jp;
+    INT minmn = m < n ? m : n;
     c128 pivot, inv;
 
     *info = 0;

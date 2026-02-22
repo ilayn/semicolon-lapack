@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -48,33 +48,33 @@
 void ctgsna(
     const char* job,
     const char* howmny,
-    const int* restrict select,
-    const int n,
+    const INT* restrict select,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     const c64* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     const c64* restrict VR,
-    const int ldvr,
+    const INT ldvr,
     f32* restrict S,
     f32* restrict dif,
-    const int mm,
-    int* m,
+    const INT mm,
+    INT* m,
     c64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
-    const int IDIFJB = 3;
+    const INT IDIFJB = 3;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int lquery, somcon, wantbh, wantdf, wants;
-    int i, ierr, ilst, k, ks, lwmin, n1, n2;
+    INT lquery, somcon, wantbh, wantdf, wants;
+    INT i, ierr, ilst, k, ks, lwmin, n1, n2;
     f32 cond, eps, lnrm, rnrm, scale, smlnum;
     c64 yhax, yhbx;
     c64 dummy[1], dummy1[1];

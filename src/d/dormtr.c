@@ -59,15 +59,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dormtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n,
-            const f64* restrict A, const int lda,
+            const INT m, const INT n,
+            const f64* restrict A, const INT lda,
             const f64* restrict tau,
-            f64* restrict C, const int ldc,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict C, const INT ldc,
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int left, upper, lquery;
-    int i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
+    INT left, upper, lquery;
+    INT i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

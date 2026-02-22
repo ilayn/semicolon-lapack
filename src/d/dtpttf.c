@@ -40,15 +40,15 @@
 void dtpttf(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict AP,
     f64* restrict ARF,
-    int* info)
+    INT* info)
 {
-    int lower, nisodd, normaltransr;
-    int n1, n2, k;
-    int i, j, ij;
-    int ijp, jp, lda, js;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k;
+    INT i, j, ij;
+    INT ijp, jp, lda, js;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

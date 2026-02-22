@@ -49,14 +49,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgelqt(const int m, const int n, const int mb,
-            c64* restrict A, const int lda,
-            c64* restrict T, const int ldt,
+void cgelqt(const INT m, const INT n, const INT mb,
+            c64* restrict A, const INT lda,
+            c64* restrict T, const INT ldt,
             c64* restrict work,
-            int* info)
+            INT* info)
 {
-    int k, i, ib, iinfo;
-    int minmn;
+    INT k, i, ib, iinfo;
+    INT minmn;
 
     /* Parameter validation */
     *info = 0;

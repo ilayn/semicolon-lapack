@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHPGST reduces a complex Hermitian-definite generalized
@@ -38,20 +38,20 @@
  *                        < 0: if info = -i, the i-th argument had an illegal value
  */
 void chpgst(
-    const int itype,
+    const INT itype,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     const c64* restrict BP,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper;
-    int j, j1, j1j1, jj, k, k1, k1k1, kk;
+    INT upper;
+    INT j, j1, j1j1, jj, k, k1, k1k1, kk;
     f32 ajj, akk, bjj, bkk;
     c64 ct;
 

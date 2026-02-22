@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SGEBRD reduces a general real M-by-N matrix A to upper or lower
@@ -60,14 +60,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgebrd(const int m, const int n, f32* restrict A, const int lda,
+void sgebrd(const INT m, const INT n, f32* restrict A, const INT lda,
             f32* restrict D, f32* restrict E,
             f32* restrict tauq, f32* restrict taup,
-            f32* restrict work, const int lwork, int* info)
+            f32* restrict work, const INT lwork, INT* info)
 {
-    int i, j, iinfo;
-    int lquery, minmn, nb, nbmin, nx;
-    int ldwrkx, ldwrky, lwkmin, lwkopt, ws;
+    INT i, j, iinfo;
+    INT lquery, minmn, nb, nbmin, nx;
+    INT ldwrkx, ldwrky, lwkmin, lwkopt, ws;
 
     /* Test the input parameters */
     *info = 0;

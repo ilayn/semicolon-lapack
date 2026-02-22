@@ -7,13 +7,13 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 
-void cggrqf(const int m, const int p, const int n,
-            c64* restrict A, const int lda, c64* restrict taua,
-            c64* restrict B, const int ldb, c64* restrict taub,
-            c64* restrict work, const int lwork, int* info)
+void cggrqf(const INT m, const INT p, const INT n,
+            c64* restrict A, const INT lda, c64* restrict taua,
+            c64* restrict B, const INT ldb, c64* restrict taub,
+            c64* restrict work, const INT lwork, INT* info)
 {
-    int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
-    int minval, arow;
+    INT lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
+    INT minval, arow;
 
     *info = 0;
     nb1 = lapack_get_nb("GERQF");
@@ -57,20 +57,20 @@ void cggrqf(const int m, const int p, const int n,
 
     /* RQ factorization of M-by-N matrix A: A = R*Q */
     cgerqf(m, n, A, lda, taua, work, lwork, info);
-    lopt = (int)crealf(work[0]);
+    lopt = (INT)crealf(work[0]);
 
     /* Update B := B * Q**H */
     {
-        int minmn = (m < n) ? m : n;
+        INT minmn = (m < n) ? m : n;
         /* A(max(1, m-n+1), 1) in Fortran -> A[(m-n > 0 ? m-n : 0) * lda] in C */
         arow = (m - n > 0) ? (m - n) : 0;
         cunmrq("R", "C", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }
-    if ((int)crealf(work[0]) > lopt) lopt = (int)crealf(work[0]);
+    if ((INT)crealf(work[0]) > lopt) lopt = (INT)crealf(work[0]);
 
     /* QR factorization of P-by-N matrix B: B = Z*T */
     cgeqrf(p, n, B, ldb, taub, work, lwork, info);
-    if ((int)crealf(work[0]) > lopt) lopt = (int)crealf(work[0]);
+    if ((INT)crealf(work[0]) > lopt) lopt = (INT)crealf(work[0]);
 
     work[0] = (c64)lopt;
 }

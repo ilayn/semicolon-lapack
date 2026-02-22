@@ -4,7 +4,7 @@
  *        a RZ factorization determined by STZRZF (unblocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -54,15 +54,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sormr3(const char* side, const char* trans,
-            const int m, const int n, const int k, const int l,
-            const f32* restrict A, const int lda,
+            const INT m, const INT n, const INT k, const INT l,
+            const f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict C, const int ldc,
+            f32* restrict C, const INT ldc,
             f32* restrict work,
-            int* info)
+            INT* info)
 {
-    int mi, ni, nq;
-    int left, notran;
+    INT mi, ni, nq;
+    INT left, notran;
 
     /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');
@@ -103,7 +103,7 @@ void sormr3(const char* side, const char* trans,
     /* Determine loop direction:
      * (Left && Trans) or (Right && NoTrans): i = 0, 1, ..., k-1 (forward)
      * (Left && NoTrans) or (Right && Trans): i = k-1, k-2, ..., 0 (backward) */
-    int i_start, i_end, i_step;
+    INT i_start, i_end, i_step;
     if ((left && !notran) || (!left && notran)) {
         i_start = 0;
         i_end = k;
@@ -122,7 +122,7 @@ void sormr3(const char* side, const char* trans,
         /* ja = n - l: 0-based column index into A for the reflector vectors */
     }
 
-    for (int i = i_start; i != i_end; i += i_step) {
+    for (INT i = i_start; i != i_end; i += i_step) {
         if (left) {
             /* H(i) or H(i)^T is applied to C(i:m-1, 0:n-1) */
             mi = m - i;

@@ -7,7 +7,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 #define NBMIN 8
@@ -75,21 +75,21 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztrevc3(const char* side, const char* howmny, int* select,
-             const int n, c128* T, const int ldt,
-             c128* VL, const int ldvl,
-             c128* VR, const int ldvr,
-             const int mm, int* m,
-             c128* work, const int lwork,
-             f64* rwork, const int lrwork, int* info)
+void ztrevc3(const char* side, const char* howmny, INT* select,
+             const INT n, c128* T, const INT ldt,
+             c128* VL, const INT ldvl,
+             c128* VR, const INT ldvr,
+             const INT mm, INT* m,
+             c128* work, const INT lwork,
+             f64* rwork, const INT lrwork, INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
     const c128 czero = 0.0;
     const c128 cone = 1.0;
 
-    int allv, bothv, leftv, lquery, over, rightv, somev;
-    int i, ii, is, j, k, ki, iv, nb, maxwrk;
+    INT allv, bothv, leftv, lquery, over, rightv, somev;
+    INT i, ii, is, j, k, ki, iv, nb, maxwrk;
     f64 remax, scale, smin, smlnum, ulp, unfl;
 
     /* Decode and test the input parameters */

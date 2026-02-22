@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -41,13 +41,13 @@
  */
 void zsyswapr(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    const int i1,
-    const int i2)
+    const INT lda,
+    const INT i1,
+    const INT i2)
 {
-    int upper;
+    INT upper;
     c128 tmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

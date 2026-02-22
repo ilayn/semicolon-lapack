@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -42,33 +42,33 @@
  */
 void dpprfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict AP,
     const f64* restrict AFP,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // dpprfs.f lines 189-198: Parameters
-    const int ITMAX = 5;  // dpprfs.f line 190
+    const INT ITMAX = 5;  // dpprfs.f line 190
     const f64 ZERO = 0.0;  // dpprfs.f line 192
     const f64 ONE = 1.0;  // dpprfs.f line 194
     const f64 TWO = 2.0;  // dpprfs.f line 196
     const f64 THREE = 3.0;  // dpprfs.f line 198
 
     // dpprfs.f lines 201-206: Local Scalars and Arrays
-    int upper;
-    int count, i, ik, j, k, kase, kk, nz;
+    INT upper;
+    INT count, i, ik, j, k, kase, kk, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int locinfo;
+    INT isave[3];
+    INT locinfo;
 
     // dpprfs.f lines 224-240: Test the input parameters
     *info = 0;

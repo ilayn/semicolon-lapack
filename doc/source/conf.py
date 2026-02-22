@@ -19,7 +19,7 @@ class SemicolonCLexer(CLexer):
     aliases = ['semicolon-c']
     tokens = {
         'statements': [
-            (r'\b(f32|f64|c64|c128)\b', Keyword.Type),
+            (r'\b(INT|i32|i64|f32|f64|c64|c128)\b', Keyword.Type),
             inherit,
         ],
     }
@@ -126,6 +126,9 @@ todo_include_todos = True
 nitpick_ignore = [
     ('c:identifier', 'FILE'),
     ('c:identifier', 'size_t'),
+    ('c:identifier', 'INT'),
+    ('c:identifier', 'i32'),
+    ('c:identifier', 'i64'),
     ('c:identifier', 'int64_t'),
     ('c:identifier', 'int32_t'),
     ('c:identifier', 'f32'),

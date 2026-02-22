@@ -65,21 +65,21 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value
  */
 void cunmrq(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            c64* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict C, const int ldc,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict C, const INT ldc,
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    const int nbmax = 64;
-    const int ldt = nbmax + 1;
-    const int tsize = ldt * nbmax;
+    const INT nbmax = 64;
+    const INT ldt = nbmax + 1;
+    const INT tsize = ldt * nbmax;
 
-    int left, notran, lquery;
+    INT left, notran, lquery;
     char transt;
-    int i, i1, i2, i3, ib, iinfo, iwt, ldwork, lwkopt;
-    int mi = 0, nb, nbmin, ni = 0, nq, nw;
+    INT i, i1, i2, i3, ib, iinfo, iwt, ldwork, lwkopt;
+    INT mi = 0, nb, nbmin, ni = 0, nq, nw;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

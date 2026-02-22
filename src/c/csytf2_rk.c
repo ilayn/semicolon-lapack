@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_complex_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include <math.h>
 
@@ -60,18 +60,18 @@
  */
 void csytf2_rk(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper, done;
-    int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
+    INT upper, done;
+    INT i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, rowmax, dtemp, sfmin;
     c64 d11, d12, d21, d22, t, wk, wkm1, wkp1;
 

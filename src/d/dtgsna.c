@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -44,33 +44,33 @@
 void dtgsna(
     const char* job,
     const char* howmny,
-    const int* restrict select,
-    const int n,
+    const INT* restrict select,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     const f64* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     const f64* restrict VR,
-    const int ldvr,
+    const INT ldvr,
     f64* restrict S,
     f64* restrict dif,
-    const int mm,
-    int* m,
+    const INT mm,
+    INT* m,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
-    const int DIFDRI = 3;
+    const INT DIFDRI = 3;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 FOUR = 4.0;
 
-    int lquery, pair, somcon, wantbh, wantdf, wants;
-    int i, ierr, ifst, ilst, iz, k, ks, lwmin, n1, n2;
+    INT lquery, pair, somcon, wantbh, wantdf, wants;
+    INT i, ierr, ifst, ilst, iz, k, ks, lwmin, n1, n2;
     f64 alphai, alphar, alprqt, beta, c1, c2, cond = 0.0;
     f64 eps, lnrm, rnrm, root1, root2, scale, smlnum;
     f64 tmpii, tmpir, tmpri, tmprr, uhav, uhavi, uhbv, uhbvi;

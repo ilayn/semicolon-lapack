@@ -48,14 +48,14 @@
  *                           the first row of the current position of the block
  *                           being moved.
  */
-void strexc(const char* compq, const int n, f32* T, const int ldt,
-            f32* Q, const int ldq, int* ifst, int* ilst,
-            f32* work, int* info)
+void strexc(const char* compq, const INT n, f32* T, const INT ldt,
+            f32* Q, const INT ldq, INT* ifst, INT* ilst,
+            f32* work, INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int wantq;
-    int here, nbf, nbl, nbnext;
+    INT wantq;
+    INT here, nbf, nbl, nbnext;
 
     /* Decode and test the input arguments. */
     *info = 0;
@@ -82,8 +82,8 @@ void strexc(const char* compq, const int n, f32* T, const int ldt,
     if (n <= 1)
         return;
 
-    int ifst0 = *ifst;
-    int ilst0 = *ilst;
+    INT ifst0 = *ifst;
+    INT ilst0 = *ilst;
 
     /* Determine the first row of specified block
        and find out if it is 1 by 1 or 2 by 2. */

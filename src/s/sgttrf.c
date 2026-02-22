@@ -44,16 +44,16 @@
  *                           if it is used to solve a system of equations.
  */
 void sgttrf(
-    const int n,
+    const INT n,
     f32* restrict DL,
     f32* restrict D,
     f32* restrict DU,
     f32* restrict DU2,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
-    int i;
+    INT i;
     f32 fact, temp;
 
     *info = 0;

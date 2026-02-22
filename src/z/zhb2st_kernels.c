@@ -28,19 +28,19 @@
  */
 void zhb2st_kernels(
     const char* uplo,
-    const int wantz,
-    const int ttype,
-    const int st,
-    const int ed,
-    const int sweep,
-    const int n,
-    const int nb,
-    const int ib,
+    const INT wantz,
+    const INT ttype,
+    const INT st,
+    const INT ed,
+    const INT sweep,
+    const INT n,
+    const INT nb,
+    const INT ib,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict V,
     c128* restrict TAU,
-    const int ldvt,
+    const INT ldvt,
     c128* restrict WORK)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
@@ -48,8 +48,8 @@ void zhb2st_kernels(
 
     (void)wantz; (void)ib; (void)ldvt;
 
-    int upper;
-    int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
+    INT upper;
+    INT i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
     c128 ctmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

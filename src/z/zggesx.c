@@ -8,7 +8,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGGESX computes for a pair of N-by-N complex nonsymmetric matrices
@@ -70,33 +70,33 @@
  *                         - > 0: errors from QZ iteration or reordering
  */
 void zggesx(const char* jobvsl, const char* jobvsr, const char* sort,
-            zselect2_t selctg, const char* sense, const int n,
-            c128* A, const int lda,
-            c128* B, const int ldb,
-            int* sdim,
+            zselect2_t selctg, const char* sense, const INT n,
+            c128* A, const INT lda,
+            c128* B, const INT ldb,
+            INT* sdim,
             c128* alpha, c128* beta,
-            c128* VSL, const int ldvsl,
-            c128* VSR, const int ldvsr,
+            c128* VSL, const INT ldvsl,
+            c128* VSR, const INT ldvsr,
             f64* rconde, f64* rcondv,
-            c128* work, const int lwork,
+            c128* work, const INT lwork,
             f64* rwork,
-            int* iwork, const int liwork,
-            int* bwork, int* info)
+            INT* iwork, const INT liwork,
+            INT* bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery;
-    int wantsb, wantse, wantsn, wantst, wantsv;
-    int i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
-    int ileft, ilo, iright, irows, irwrk, itau, iwrk;
-    int liwmin, lwrk, maxwrk, minwrk;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery;
+    INT wantsb, wantse, wantsn, wantst, wantsv;
+    INT i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
+    INT ileft, ilo, iright, irows, irwrk, itau, iwrk;
+    INT liwmin, lwrk, maxwrk, minwrk;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
     f64 pl, pr, smlnum;
     f64 dif[2];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
         ijobvl = 1;

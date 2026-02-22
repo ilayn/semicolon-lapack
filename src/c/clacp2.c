@@ -27,18 +27,18 @@
  */
 void clacp2(
     const char* uplo,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         for (j = 0; j < n; j++) {
-            int imax = (j + 1 < m) ? j + 1 : m;
+            INT imax = (j + 1 < m) ? j + 1 : m;
             for (i = 0; i < imax; i++) {
                 B[i + j * ldb] = A[i + j * lda];
             }

@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -49,14 +49,14 @@
  */
 void zpstf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict piv,
-    int* rank,
+    const INT lda,
+    INT* restrict piv,
+    INT* rank,
     const f64 tol,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
@@ -64,7 +64,7 @@ void zpstf2(
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -83,17 +83,17 @@ void zpstf2(
     }
 
     // Initialize PIV (0-based)
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }
 
     // Compute stopping value
-    int pvt = 0;
-    for (int i = 0; i < n; i++) {
+    INT pvt = 0;
+    for (INT i = 0; i < n; i++) {
         work[i] = creal(A[i + i * lda]);
     }
     f64 ajj = work[0];
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         if (work[i] > ajj) {
             pvt = i;
             ajj = work[i];
@@ -114,20 +114,20 @@ void zpstf2(
     }
 
     // Set first half of WORK to zero, holds dot products
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         work[i] = ZERO;
     }
 
-    int jstop = -1;
+    INT jstop = -1;
 
     if (upper) {
         // Compute the Cholesky factorization P**T * A * P = U**H * U
-        for (int j = 0; j < n && jstop < 0; j++) {
+        for (INT j = 0; j < n && jstop < 0; j++) {
 
             // Find pivot, test for exit, else swap rows and columns
             // Update dot products, compute possible pivots which are
             // stored in the second half of WORK
-            for (int i = j; i < n; i++) {
+            for (INT i = j; i < n; i++) {
                 if (j > 0) {
                     work[i] = work[i] +
                               creal(conj(A[(j - 1) + i * lda]) *
@@ -137,9 +137,9 @@ void zpstf2(
             }
 
             if (j > 0) {
-                int itemp = 0;
+                INT itemp = 0;
                 f64 wmax = work[n + j];
-                for (int i = 1; i < n - j; i++) {
+                for (INT i = 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -164,7 +164,7 @@ void zpstf2(
                     cblas_zswap(n - pvt - 1, &A[j + (pvt + 1) * lda], lda,
                                 &A[pvt + (pvt + 1) * lda], lda);
                 }
-                for (int i = j + 1; i <= pvt - 1; i++) {
+                for (INT i = j + 1; i <= pvt - 1; i++) {
                     c128 ztemp = conj(A[j + i * lda]);
                     A[j + i * lda] = conj(A[i + pvt * lda]);
                     A[i + pvt * lda] = ztemp;
@@ -175,7 +175,7 @@ void zpstf2(
                 f64 dtemp = work[j];
                 work[j] = work[pvt];
                 work[pvt] = dtemp;
-                int itemp = piv[pvt];
+                INT itemp = piv[pvt];
                 piv[pvt] = piv[j];
                 piv[j] = itemp;
             }
@@ -198,12 +198,12 @@ void zpstf2(
         }
     } else {
         // Compute the Cholesky factorization P**T * A * P = L * L**H
-        for (int j = 0; j < n && jstop < 0; j++) {
+        for (INT j = 0; j < n && jstop < 0; j++) {
 
             // Find pivot, test for exit, else swap rows and columns
             // Update dot products, compute possible pivots which are
             // stored in the second half of WORK
-            for (int i = j; i < n; i++) {
+            for (INT i = j; i < n; i++) {
                 if (j > 0) {
                     work[i] = work[i] +
                               creal(conj(A[i + (j - 1) * lda]) *
@@ -213,9 +213,9 @@ void zpstf2(
             }
 
             if (j > 0) {
-                int itemp = 0;
+                INT itemp = 0;
                 f64 wmax = work[n + j];
-                for (int i = 1; i < n - j; i++) {
+                for (INT i = 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -240,7 +240,7 @@ void zpstf2(
                     cblas_zswap(n - pvt - 1, &A[(pvt + 1) + j * lda], 1,
                                 &A[(pvt + 1) + pvt * lda], 1);
                 }
-                for (int i = j + 1; i <= pvt - 1; i++) {
+                for (INT i = j + 1; i <= pvt - 1; i++) {
                     c128 ztemp = conj(A[i + j * lda]);
                     A[i + j * lda] = conj(A[pvt + i * lda]);
                     A[pvt + i * lda] = ztemp;
@@ -251,7 +251,7 @@ void zpstf2(
                 f64 dtemp = work[j];
                 work[j] = work[pvt];
                 work[pvt] = dtemp;
-                int itemp = piv[pvt];
+                INT itemp = piv[pvt];
                 piv[pvt] = piv[j];
                 piv[j] = itemp;
             }

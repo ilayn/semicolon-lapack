@@ -31,10 +31,10 @@
  */
 void cpotri(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

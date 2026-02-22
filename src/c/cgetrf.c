@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -39,18 +39,18 @@
  *                           by zero will occur if it is used to solve a system of equations.
  */
 void cgetrf(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int i, iinfo, j, jb, nb;
-    int minmn = m < n ? m : n;
+    INT i, iinfo, j, jb, nb;
+    INT minmn = m < n ? m : n;
 
     *info = 0;
     if (m < 0) {

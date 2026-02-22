@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -37,16 +37,16 @@
  * @param[out] WH     Complex array, dimension (ldwh, nh).
  * @param[in] ldwh    Leading dimension of WH. ldwh >= 2*nshfts.
  */
-void claqr5(const int wantt, const int wantz, const int kacc22,
-            const int n, const int ktop, const int kbot,
-            const int nshfts, c64* S,
-            c64* H, const int ldh,
-            const int iloz, const int ihiz,
-            c64* Z, const int ldz,
-            c64* V, const int ldv,
-            c64* U, const int ldu,
-            const int nv, c64* WV, const int ldwv,
-            const int nh, c64* WH, const int ldwh)
+void claqr5(const INT wantt, const INT wantz, const INT kacc22,
+            const INT n, const INT ktop, const INT kbot,
+            const INT nshfts, c64* S,
+            c64* H, const INT ldh,
+            const INT iloz, const INT ihiz,
+            c64* Z, const INT ldz,
+            c64* V, const INT ldv,
+            c64* U, const INT ldu,
+            const INT nv, c64* WV, const INT ldwv,
+            const INT nh, c64* WH, const INT ldwh)
 {
     const c64 czero = 0.0f;
     const c64 cone = 1.0f;
@@ -54,9 +54,9 @@ void claqr5(const int wantt, const int wantz, const int kacc22,
 
     c64 alpha, beta, refsum, t1, t2, t3;
     f32 h11, h12, h21, h22, safmin, scl, smlnum, tst1, tst2, ulp;
-    int i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
-    int k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
-    int accum, bmp22;
+    INT i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
+    INT k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
+    INT accum, bmp22;
 
     c64 vt[3];
 

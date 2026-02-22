@@ -32,14 +32,14 @@
  *                        formula above.
  */
 void zla_lin_berr(
-    const int n,
-    const int nz,
-    const int nrhs,
+    const INT n,
+    const INT nz,
+    const INT nrhs,
     const c128* restrict RES,
     const f64* restrict AYB,
     f64* restrict BERR)
 {
-    int i, j;
+    INT i, j;
     f64 tmp;
     f64 safe1;
 

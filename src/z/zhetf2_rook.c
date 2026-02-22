@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -46,14 +46,14 @@
  */
 void zhetf2_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
-    int upper, done;
-    int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
+    INT upper, done;
+    INT i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
     f64 absakk, alpha, colmax, d, d11, d22, r1, dtemp, rowmax, tt, sfmin;
     c128 d12, d21, t, wk, wkm1, wkp1;
 

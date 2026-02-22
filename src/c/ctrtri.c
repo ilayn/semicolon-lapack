@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -31,17 +31,17 @@
 void ctrtri(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper, nounit;
-    int j, jb, nb, nn;
+    INT upper, nounit;
+    INT j, jb, nb, nn;
 
     // Test the input parameters
     *info = 0;

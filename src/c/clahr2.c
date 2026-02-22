@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -35,15 +35,15 @@
  * @param[out]    Y      The n-by-nb matrix Y. Dimension (ldy, nb).
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
-void clahr2(const int n, const int k, const int nb,
-            c64* A, const int lda, c64* tau,
-            c64* T, const int ldt, c64* Y, const int ldy)
+void clahr2(const INT n, const INT k, const INT nb,
+            c64* A, const INT lda, c64* tau,
+            c64* T, const INT ldt, c64* Y, const INT ldy)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int i;
+    INT i;
     c64 ei = CMPLXF(0.0f, 0.0f);
 
     /* Quick return if possible */
@@ -96,8 +96,8 @@ void clahr2(const int n, const int k, const int nb,
         }
 
         /* Generate the elementary reflector H(i) to annihilate A(k+i+2:n-1, i) */
-        int len = n - k - i - 1;
-        int start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
+        INT len = n - k - i - 1;
+        INT start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
         clarfg(len, &A[(k + i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);
         ei = A[(k + i + 1) + i * lda];
         A[(k + i + 1) + i * lda] = ONE;

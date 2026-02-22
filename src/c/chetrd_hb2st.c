@@ -75,24 +75,24 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void chetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
-                  const int n, const int kd,
-                  c64* AB, const int ldab,
+                  const INT n, const INT kd,
+                  c64* AB, const INT ldab,
                   f32* D, f32* E,
-                  c64* hous, const int lhous,
-                  c64* work, const int lwork, int* info)
+                  c64* hous, const INT lhous,
+                  c64* work, const INT lwork, INT* info)
 {
     const f32 rzero = 0.0f;
     const c64 zero = CMPLXF(0.0f, 0.0f);
     const c64 one = CMPLXF(1.0f, 0.0f);
 
-    int lquery, wantq, upper, afters1;
-    int i, m, k, ib, sweepid, myid, shift, stt, st;
-    int ed, stind, edind, blklastind, colpt, thed;
-    int stepercol, grsiz, thgrsiz, thgrnb, thgrid;
-    int ttype;
-    int abdpos, abofdpos, dpos, ofdpos, awpos;
-    int inda, indw, apos, sizea, lda, indv, indtau;
-    int sizetau, ldv, lhmin, lwmin;
+    INT lquery, wantq, upper, afters1;
+    INT i, m, k, ib, sweepid, myid, shift, stt, st;
+    INT ed, stind, edind, blklastind, colpt, thed;
+    INT stepercol, grsiz, thgrsiz, thgrnb, thgrid;
+    INT ttype;
+    INT abdpos, abofdpos, dpos, ofdpos, awpos;
+    INT inda, indw, apos, sizea, lda, indv, indtau;
+    INT sizetau, ldv, lhmin, lwmin;
     f32 abstmp;
     c64 tmp;
 
@@ -252,8 +252,8 @@ void chetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     grsiz = 1;
     shift = 3;
     (void)ceilf((f32)n / (f32)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceilf((f32)shift / (f32)grsiz);
-    thgrnb = (int)ceilf((f32)(n - 1) / (f32)thgrsiz);
+    stepercol = (INT)ceilf((f32)shift / (f32)grsiz);
+    thgrnb = (INT)ceilf((f32)(n - 1) / (f32)thgrsiz);
 
     clacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     claset("A", kd, n, zero, zero, &work[awpos], lda);

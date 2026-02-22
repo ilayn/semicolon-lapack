@@ -6,7 +6,7 @@
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGEBRD reduces a general complex M-by-N matrix A to upper or lower
@@ -61,17 +61,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgebrd(const int m, const int n, c128* restrict A, const int lda,
+void zgebrd(const INT m, const INT n, c128* restrict A, const INT lda,
             f64* restrict D, f64* restrict E,
             c128* restrict tauq, c128* restrict taup,
-            c128* restrict work, const int lwork, int* info)
+            c128* restrict work, const INT lwork, INT* info)
 {
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int i, j, iinfo;
-    int lquery, minmn, nb, nbmin, nx;
-    int ldwrkx, ldwrky, lwkmin, lwkopt, ws;
+    INT i, j, iinfo;
+    INT lquery, minmn, nb, nbmin, nx;
+    INT ldwrkx, ldwrky, lwkmin, lwkopt, ws;
 
     /* Test the input parameters */
     *info = 0;

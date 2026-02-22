@@ -36,17 +36,17 @@
  */
 f64 dlangb(
     const char* norm,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k, l;
+    INT i, j, k, l;
     f64 scale, sum, value, temp;
 
     /* Quick return if possible */
@@ -66,8 +66,8 @@ f64 dlangb(
              *
              * These are the row indices in band storage for column j.
              */
-            int i_start = (ku - j > 0) ? ku - j : 0;
-            int i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
+            INT i_start = (ku - j > 0) ? ku - j : 0;
+            INT i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
             for (i = i_start; i <= i_end; i++) {
                 temp = fabs(AB[i + j * ldab]);
                 if (value < temp || isnan(temp)) {
@@ -80,8 +80,8 @@ f64 dlangb(
         value = ZERO;
         for (j = 0; j < n; j++) {
             sum = ZERO;
-            int i_start = (ku - j > 0) ? ku - j : 0;
-            int i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
+            INT i_start = (ku - j > 0) ? ku - j : 0;
+            INT i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
             for (i = i_start; i <= i_end; i++) {
                 sum += fabs(AB[i + j * ldab]);
             }
@@ -101,8 +101,8 @@ f64 dlangb(
              * In 0-based: k = ku - j, so AB[ku - j + i + j*ldab] = A(i,j)
              */
             k = ku - j;
-            int row_start = (j - ku > 0) ? j - ku : 0;
-            int row_end = (j + kl < n - 1) ? j + kl : n - 1;
+            INT row_start = (j - ku > 0) ? j - ku : 0;
+            INT row_end = (j + kl < n - 1) ? j + kl : n - 1;
             for (i = row_start; i <= row_end; i++) {
                 work[i] += fabs(AB[k + i + j * ldab]);
             }
@@ -127,7 +127,7 @@ f64 dlangb(
              */
             l = (j - ku > 0) ? j - ku : 0;
             k = ku - j + l;
-            int count = ((j + kl < n - 1) ? j + kl : n - 1) - l + 1;
+            INT count = ((j + kl < n - 1) ? j + kl : n - 1) - l + 1;
             dlassq(count, &AB[k + j * ldab], 1, &scale, &sum);
         }
         value = scale * sqrt(sum);

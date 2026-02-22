@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -38,16 +38,16 @@
  * @param[out] WH     Double precision array, dimension (ldwh, nh).
  * @param[in] ldwh    Leading dimension of WH. ldwh >= 2*nshfts.
  */
-SEMICOLON_API void dlaqr5(const int wantt, const int wantz, const int kacc22,
-                          const int n, const int ktop, const int kbot,
-                          const int nshfts, f64* sr, f64* si,
-                          f64* H, const int ldh,
-                          const int iloz, const int ihiz,
-                          f64* Z, const int ldz,
-                          f64* V, const int ldv,
-                          f64* U, const int ldu,
-                          const int nv, f64* WV, const int ldwv,
-                          const int nh, f64* WH, const int ldwh)
+SEMICOLON_API void dlaqr5(const INT wantt, const INT wantz, const INT kacc22,
+                          const INT n, const INT ktop, const INT kbot,
+                          const INT nshfts, f64* sr, f64* si,
+                          f64* H, const INT ldh,
+                          const INT iloz, const INT ihiz,
+                          f64* Z, const INT ldz,
+                          f64* V, const INT ldv,
+                          f64* U, const INT ldu,
+                          const INT nv, f64* WV, const INT ldwv,
+                          const INT nh, f64* WH, const INT ldwh)
 {
     /* Parameters */
     const f64 zero = 0.0;
@@ -56,9 +56,9 @@ SEMICOLON_API void dlaqr5(const int wantt, const int wantz, const int kacc22,
     /* Local scalars */
     f64 alpha, beta, h11, h12, h21, h22, refsum;
     f64 safmin, scl, smlnum, swap, t1, t2, t3, tst1, tst2, ulp;
-    int i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
-    int k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
-    int accum, bmp22;
+    INT i, i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
+    INT k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
+    INT accum, bmp22;
 
     /* Local array */
     f64 vt[3];

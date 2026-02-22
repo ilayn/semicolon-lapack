@@ -47,21 +47,21 @@
  *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
  */
 void dgeequ(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict R,
     f64* restrict C,
     f64* rowcnd,
     f64* colcnd,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j;
+    INT i, j;
     f64 bignum, rcmax, rcmin, smlnum;
 
     // Test the input parameters

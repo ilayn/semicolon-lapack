@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -54,24 +54,24 @@ void claqz0(
     const char* wants,
     const char* wantq,
     const char* wantz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict alpha,
     c64* restrict beta,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    const int rec,
-    int* info)
+    const INT rec,
+    INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
@@ -80,12 +80,12 @@ void claqz0(
     f32 smlnum, ulp, safmin, c1;
     f32 bnorm, btol;
     c64 eshift, s1, temp;
-    int istart, istop, iiter, maxit, istart2, k, nshifts;
-    int nblock, nw, nmin, nibble, n_undeflated, n_deflated;
-    int ns, sweep_info, shiftpos, lworkreq, k2, istartm;
-    int istopm, iwants, iwantq, iwantz, norm_info, aed_info;
-    int nwr, nbr, nsr, itemp1, itemp2, rcost;
-    int ilschur = 0, ilq = 0, ilz = 0;
+    INT istart, istop, iiter, maxit, istart2, k, nshifts;
+    INT nblock, nw, nmin, nibble, n_undeflated, n_deflated;
+    INT ns, sweep_info, shiftpos, lworkreq, k2, istartm;
+    INT istopm, iwants, iwantq, iwantz, norm_info, aed_info;
+    INT nwr, nbr, nsr, itemp1, itemp2, rcost;
+    INT ilschur = 0, ilq = 0, ilz = 0;
     char jbcmpz[4];
 
     /* Decode wantS, wantQ, wantZ */
@@ -169,8 +169,8 @@ void claqz0(
     nwr = iparmq(13, "CLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     nwr = (2 > nwr) ? 2 : nwr;
     {
-        int tmp = ihi - ilo + 1;
-        int tmp2 = (n - 1) / 3;
+        INT tmp = ihi - ilo + 1;
+        INT tmp2 = (n - 1) / 3;
         tmp = (tmp < tmp2) ? tmp : tmp2;
         nwr = (nwr < tmp) ? nwr : tmp;
     }
@@ -179,15 +179,15 @@ void claqz0(
 
     nsr = iparmq(15, "CLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     {
-        int tmp = (n + 6) / 9;
-        int tmp2 = ihi - ilo;
+        INT tmp = (n + 6) / 9;
+        INT tmp2 = ihi - ilo;
         nsr = (nsr < tmp) ? nsr : tmp;
         nsr = (nsr < tmp2) ? nsr : tmp2;
     }
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
     rcost = iparmq(17, "CLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    itemp1 = (int)(nsr / sqrtf(1.0f + 2.0f * nsr / ((f32)rcost / 100.0f * n)));
+    itemp1 = (INT)(nsr / sqrtf(1.0f + 2.0f * nsr / ((f32)rcost / 100.0f * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;
 
@@ -204,13 +204,13 @@ void claqz0(
     claqz2(ilschur, ilq, ilz, n, ilo, ihi, nw, A, lda, B, ldb,
            Q, ldq, Z, ldz, &n_undeflated, &n_deflated, alpha, beta,
            NULL, nw, NULL, nw, work, -1, rwork, rec, &aed_info);
-    itemp1 = (int)crealf(work[0]);
+    itemp1 = (INT)crealf(work[0]);
 
     /* Workspace query to CLAQZ3 */
     claqz3(ilschur, ilq, ilz, n, ilo, ihi, nsr, nbr, alpha, beta,
            A, lda, B, ldb, Q, ldq, Z, ldz, NULL, nbr, NULL, nbr,
            work, -1, &sweep_info);
-    itemp2 = (int)crealf(work[0]);
+    itemp2 = (INT)crealf(work[0]);
 
     lworkreq = (itemp1 + 2 * nw * nw > itemp2 + 2 * nbr * nbr) ?
                itemp1 + 2 * nw * nw : itemp2 + 2 * nbr * nbr;
@@ -242,7 +242,7 @@ void claqz0(
     istop = ihi;
     maxit = 30 * (ihi - ilo + 1);
     eshift = CZERO;
-    int ld = 0;
+    INT ld = 0;
 
     for (iiter = 0; iiter < maxit; iiter++) {
         if (iiter >= maxit - 1) {
@@ -315,7 +315,7 @@ void claqz0(
                     crot(k2 - 1 - istartm, &B[istartm + k2 * ldb], 1,
                          &B[istartm + (k2 - 1) * ldb], 1, c1, s1);
                     {
-                        int cnt = ((k2 + 1 < istop) ? k2 + 1 : istop) - istartm + 1;
+                        INT cnt = ((k2 + 1 < istop) ? k2 + 1 : istop) - istartm + 1;
                         crot(cnt, &A[istartm + k2 * lda], 1,
                              &A[istartm + (k2 - 1) * lda], 1, c1, s1);
                     }

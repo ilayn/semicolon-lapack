@@ -51,14 +51,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void dlatsqr(const int m, const int n, const int mb, const int nb,
-             f64* restrict A, const int lda,
-             f64* restrict T, const int ldt,
-             f64* restrict work, const int lwork,
-             int* info)
+void dlatsqr(const INT m, const INT n, const INT mb, const INT nb,
+             f64* restrict A, const INT lda,
+             f64* restrict T, const INT ldt,
+             f64* restrict work, const INT lwork,
+             INT* info)
 {
-    int lquery;
-    int i, ii, kk, ctr, minmn, lwmin;
+    INT lquery;
+    INT i, ii, kk, ctr, minmn, lwmin;
 
     *info = 0;
 

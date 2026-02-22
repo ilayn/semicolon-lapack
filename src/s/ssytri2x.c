@@ -4,7 +4,7 @@
  *        using the factorization computed by SSYTRF.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -35,25 +35,25 @@
  */
 void ssytri2x(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
-    int i, iinfo, ip, k, cut, nnb;
-    int count;
-    int j, u11, invd;
+    INT upper;
+    INT i, iinfo, ip, k, cut, nnb;
+    INT count;
+    INT j, u11, invd;
     f32 ak, akkp1, akp1, d, t;
     f32 u01_i_j, u01_ip1_j;
     f32 u11_i_j, u11_ip1_j;
-    const int ldw = n + nb + 1;
+    const INT ldw = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

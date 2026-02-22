@@ -8,7 +8,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGGEV computes for a pair of N-by-N complex nonsymmetric matrices
@@ -65,28 +65,28 @@
  *                   - = 1,...,n: the QZ iteration failed
  *                   - > n: other errors
  */
-void zggev(const char* jobvl, const char* jobvr, const int n,
-           c128* A, const int lda,
-           c128* B, const int ldb,
+void zggev(const char* jobvl, const char* jobvr, const INT n,
+           c128* A, const INT lda,
+           c128* B, const INT ldb,
            c128* alpha, c128* beta,
-           c128* VL, const int ldvl,
-           c128* VR, const int ldvr,
-           c128* work, const int lwork,
-           f64* rwork, int* info)
+           c128* VL, const INT ldvl,
+           c128* VR, const INT ldvr,
+           c128* work, const INT lwork,
+           f64* rwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int in, iright, irows, irwrk, itau, iwrk, jc, jr;
-    int lwkmin, lwkopt;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT in, iright, irows, irwrk, itau, iwrk, jc, jr;
+    INT lwkmin, lwkopt;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps,
            smlnum, temp;
-    int ldumma[1];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT ldumma[1];
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     /* Decode the input arguments */
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {

@@ -32,14 +32,14 @@
  *                        formula above.
  */
 void cla_lin_berr(
-    const int n,
-    const int nz,
-    const int nrhs,
+    const INT n,
+    const INT nz,
+    const INT nrhs,
     const c64* restrict RES,
     const f32* restrict AYB,
     f32* restrict BERR)
 {
-    int i, j;
+    INT i, j;
     f32 tmp;
     f32 safe1;
 

@@ -3,7 +3,7 @@
  * @brief DGGSVD3 computes the generalized singular value decomposition.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -48,19 +48,19 @@
  *                         - = 1: the Jacobi-type procedure failed to converge.
  */
 void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
-             const int m, const int n, const int p,
-             int* k, int* l,
-             f64* restrict A, const int lda,
-             f64* restrict B, const int ldb,
+             const INT m, const INT n, const INT p,
+             INT* k, INT* l,
+             f64* restrict A, const INT lda,
+             f64* restrict B, const INT ldb,
              f64* restrict alpha, f64* restrict beta,
-             f64* restrict U, const int ldu,
-             f64* restrict V, const int ldv,
-             f64* restrict Q, const int ldq,
-             f64* restrict work, const int lwork,
-             int* restrict iwork, int* info)
+             f64* restrict U, const INT ldu,
+             f64* restrict V, const INT ldv,
+             f64* restrict Q, const INT ldq,
+             f64* restrict work, const INT lwork,
+             INT* restrict iwork, INT* info)
 {
-    int wantu, wantv, wantq, lquery;
-    int i, j, ibnd, isub, ncycle, lwkopt;
+    INT wantu, wantv, wantq, lquery;
+    INT i, j, ibnd, isub, ncycle, lwkopt;
     f64 anorm, bnorm, smax, temp, tola = 0.0, tolb = 0.0, ulp, unfl;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
@@ -100,7 +100,7 @@ void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
         dggsvp3(jobu, jobv, jobq, m, p, n, A, lda, B, ldb,
                 tola, tolb, k, l, U, ldu, V, ldv, Q, ldq,
                 iwork, NULL, work, -1, info);
-        lwkopt = n + (int)work[0];
+        lwkopt = n + (INT)work[0];
         if (2 * n > lwkopt) lwkopt = 2 * n;
         if (lwkopt < 1) lwkopt = 1;
         work[0] = (f64)lwkopt;

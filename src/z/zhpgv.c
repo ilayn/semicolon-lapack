@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZHPGV computes all the eigenvalues and, optionally, the eigenvectors
@@ -57,21 +57,21 @@
  *                                no eigenvalues or eigenvectors were computed.
  */
 void zhpgv(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
     c128* restrict BP,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     *info = 0;
     if (itype < 1 || itype > 3) {
@@ -112,7 +112,7 @@ void zhpgv(
 
         /* Backtransform eigenvectors to the original problem. */
 
-        int neig = n;
+        INT neig = n;
         if (*info > 0)
             neig = *info - 1;
 
@@ -128,7 +128,7 @@ void zhpgv(
                 trans = 'C';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ztpsv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'N' ? CblasNoTrans : CblasConjTrans,
@@ -147,7 +147,7 @@ void zhpgv(
                 trans = 'N';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ztpmv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'C' ? CblasConjTrans : CblasNoTrans,

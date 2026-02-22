@@ -49,12 +49,12 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgebd2(const int m, const int n, f32* restrict A, const int lda,
+void sgebd2(const INT m, const INT n, f32* restrict A, const INT lda,
             f32* restrict D, f32* restrict E,
             f32* restrict tauq, f32* restrict taup,
-            f32* restrict work, int* info)
+            f32* restrict work, INT* info)
 {
-    int i;
+    INT i;
 
     /* Test the input parameters */
     *info = 0;

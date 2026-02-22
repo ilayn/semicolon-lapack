@@ -58,23 +58,23 @@
  *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
  */
 void dgbequb(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict R,
     f64* restrict C,
     f64* rowcnd,
     f64* colcnd,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j;
+    INT i, j;
     f64 bignum, rcmax, rcmin, smlnum, radix, logrdx;
 
     /* Test the input parameters */
@@ -121,8 +121,8 @@ void dgbequb(
          * Row range for column j: max(0, j-ku) to min(m-1, j+kl)
          * Band storage: AB[ku + i - j + j*ldab] = A(i,j)
          */
-        int i_start = (j - ku > 0) ? j - ku : 0;
-        int i_end = (j + kl < m - 1) ? j + kl : m - 1;
+        INT i_start = (j - ku > 0) ? j - ku : 0;
+        INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
             f64 abs_val = fabs(AB[ku + i - j + j * ldab]);
             if (abs_val > R[i]) {
@@ -134,7 +134,7 @@ void dgbequb(
     /* Round to power of radix */
     for (i = 0; i < m; i++) {
         if (R[i] > ZERO) {
-            R[i] = pow(radix, (int)(log(R[i]) / logrdx));
+            R[i] = pow(radix, (INT)(log(R[i]) / logrdx));
         }
     }
 
@@ -186,8 +186,8 @@ void dgbequb(
     /* Find the maximum element in each column,
      * assuming the row scaling computed above */
     for (j = 0; j < n; j++) {
-        int i_start = (j - ku > 0) ? j - ku : 0;
-        int i_end = (j + kl < m - 1) ? j + kl : m - 1;
+        INT i_start = (j - ku > 0) ? j - ku : 0;
+        INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
             f64 scaled_val = fabs(AB[ku + i - j + j * ldab]) * R[i];
             if (scaled_val > C[j]) {
@@ -196,7 +196,7 @@ void dgbequb(
         }
         /* Round to power of radix */
         if (C[j] > ZERO) {
-            C[j] = pow(radix, (int)(log(C[j]) / logrdx));
+            C[j] = pow(radix, (INT)(log(C[j]) / logrdx));
         }
     }
 

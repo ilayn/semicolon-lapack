@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -23,10 +23,10 @@
  *                      incx > 0.
  */
 void zrscl(
-    const int n,
+    const INT n,
     const c128 a,
     c128* restrict x,
-    const int incx)
+    const INT incx)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

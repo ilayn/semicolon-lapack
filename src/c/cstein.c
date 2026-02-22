@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -71,35 +71,35 @@
  *                           stored in array ifail.
  */
 void cstein(
-    const int n,
+    const INT n,
     const f32* restrict D,
     const f32* restrict E,
-    const int m,
+    const INT m,
     const f32* restrict W,
-    const int* restrict iblock,
-    const int* restrict isplit,
+    const INT* restrict iblock,
+    const INT* restrict isplit,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
-    const int MAXITS = 5;
-    const int EXTRA = 2;
+    const INT MAXITS = 5;
+    const INT EXTRA = 2;
     const f32 ODM3 = 1.0e-3f;
     const f32 ODM1 = 1.0e-1f;
 
-    int b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, jr, nblk, nrmchk;
+    INT b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, jr, nblk, nrmchk;
     f32 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm = 0.0f, ztr;
     uint64_t seed;
 
     /* Workspace offsets: each segment has n elements */
-    const int indrv1 = 0;
-    const int indrv2 = n;
-    const int indrv3 = 2 * n;
-    const int indrv4 = 3 * n;
-    const int indrv5 = 4 * n;
+    const INT indrv1 = 0;
+    const INT indrv2 = n;
+    const INT indrv3 = 2 * n;
+    const INT indrv4 = 3 * n;
+    const INT indrv5 = 4 * n;
 
     /* Test the input parameters. */
     *info = 0;
@@ -254,7 +254,7 @@ void cstein(
                  * jmax = index of element with largest absolute value.
                  * cblas_idamax returns 0-based index.
                  */
-                jmax = (int)cblas_isamax(blksiz, &work[indrv1], 1);
+                jmax = (INT)cblas_isamax(blksiz, &work[indrv1], 1);
                 scl = (f32)blksiz * onenrm *
                       fmaxf(eps, fabsf(work[indrv4 + blksiz - 1])) /
                       fabsf(work[indrv1 + jmax]);
@@ -295,7 +295,7 @@ void cstein(
 
 check_norm:
                 /* Check the infinity norm of the iterate. */
-                jmax = (int)cblas_isamax(blksiz, &work[indrv1], 1);
+                jmax = (INT)cblas_isamax(blksiz, &work[indrv1], 1);
                 nrm = fabsf(work[indrv1 + jmax]);
 
                 /*
@@ -324,7 +324,7 @@ convergence_failure:
 accept_eigenvector:
             /* Accept iterate as j-th eigenvector. Normalize. */
             scl = 1.0f / cblas_snrm2(blksiz, &work[indrv1], 1);
-            jmax = (int)cblas_isamax(blksiz, &work[indrv1], 1);
+            jmax = (INT)cblas_isamax(blksiz, &work[indrv1], 1);
             if (work[indrv1 + jmax] < 0.0f) {
                 scl = -scl;
             }

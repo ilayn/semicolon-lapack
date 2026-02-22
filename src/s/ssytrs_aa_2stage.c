@@ -3,7 +3,7 @@
  * @brief SSYTRS_AA_2STAGE solves a system of linear equations A*X = B using the factorization computed by SSYTRF_AA_2STAGE.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -60,20 +60,20 @@
  */
 void ssytrs_aa_2stage(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict TB,
-    const int ltb,
-    const int* restrict ipiv,
-    const int* restrict ipiv2,
+    const INT ltb,
+    const INT* restrict ipiv,
+    const INT* restrict ipiv2,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int ldtb, nb;
-    int upper;
+    INT ldtb, nb;
+    INT upper;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -101,7 +101,7 @@ void ssytrs_aa_2stage(
         return;
     }
 
-    nb = (int)TB[0];
+    nb = (INT)TB[0];
     ldtb = ltb / n;
 
     if (upper) {

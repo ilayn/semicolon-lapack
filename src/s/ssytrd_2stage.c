@@ -5,14 +5,14 @@
 
 #include "semicolon_lapack_single.h"
 
-void ssytrd_2stage(const char* vect, const char* uplo, const int n,
-                   f32* A, const int lda,
+void ssytrd_2stage(const char* vect, const char* uplo, const INT n,
+                   f32* A, const INT lda,
                    f32* D, f32* E, f32* tau,
-                   f32* hous2, const int lhous2,
-                   f32* work, const int lwork, int* info)
+                   f32* hous2, const INT lhous2,
+                   f32* work, const INT lwork, INT* info)
 {
-    int lquery, upper;
-    int kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
+    INT lquery, upper;
+    INT kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
 
     *info = 0;
     (void)(vect[0] == 'V' || vect[0] == 'v');  /* wantq set but not used */

@@ -10,7 +10,7 @@
 #define XERBLA_WEAK
 #endif
 
-XERBLA_WEAK void xerbla(const char *srname, int info) {
+XERBLA_WEAK void xerbla(const char *srname, INT info) {
     fprintf(stderr, " ** On entry to %s parameter number %d had an illegal value\n",
             srname, info);
 }

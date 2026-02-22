@@ -7,7 +7,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -67,36 +67,36 @@
 void sgbsvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict AFB,
-    const int ldafb,
-    int* restrict ipiv,
+    const INT ldafb,
+    INT* restrict ipiv,
     char* equed,
     f32* restrict R,
     f32* restrict C,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, j1, j2, infequ;
+    INT i, j, j1, j2, infequ;
     f32 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
-    int nofact, equil, notran, rowequ, colequ;
+    INT nofact, equil, notran, rowequ, colequ;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');
@@ -220,7 +220,7 @@ void sgbsvx(
         for (j = 0; j < n; j++) {
             j1 = (j - ku > 0) ? j - ku : 0;
             j2 = (j + kl < n - 1) ? j + kl : n - 1;
-            int len = j2 - j1 + 1;
+            INT len = j2 - j1 + 1;
             /* Source: AB at row ku + j1 - j, column j
              * Dest: AFB at row kl + ku + j1 - j, column j */
             cblas_scopy(len, &AB[ku + j1 - j + j * ldab], 1,
@@ -235,15 +235,15 @@ void sgbsvx(
              * leading rank-deficient INFO columns of A */
             anorm = ZERO;
             for (j = 0; j < *info; j++) {
-                int i_start = (ku - j > 0) ? ku - j : 0;
-                int i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
+                INT i_start = (ku - j > 0) ? ku - j : 0;
+                INT i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
                 for (i = i_start; i <= i_end; i++) {
                     f32 temp = fabsf(AB[i + j * ldab]);
                     if (anorm < temp) anorm = temp;
                 }
             }
-            int k_val = (*info - 1 < kl + ku) ? *info - 1 : kl + ku;
-            int start_offset = (kl + ku + 1 - *info > 0) ? kl + ku + 1 - *info : 0;
+            INT k_val = (*info - 1 < kl + ku) ? *info - 1 : kl + ku;
+            INT start_offset = (kl + ku + 1 - *info > 0) ? kl + ku + 1 - *info : 0;
             rpvgrw = slantb("M", "U", "N", *info, k_val, &AFB[start_offset], ldafb, work);
             if (rpvgrw == ZERO) {
                 rpvgrw = ONE;

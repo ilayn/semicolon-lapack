@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f32 ZERO = 0.0f;
 static const f32 HALF = 0.5f;
@@ -44,19 +44,19 @@ static const f32 ONE = 1.0f;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument.
  */
-void sgsvj1(const char* jobv, const int m, const int n, const int n1,
-            f32* restrict A, const int lda,
+void sgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
+            f32* restrict A, const INT lda,
             f32* restrict D, f32* restrict SVA,
-            const int mv, f32* restrict V, const int ldv,
+            const INT mv, f32* restrict V, const INT ldv,
             const f32 eps, const f32 sfmin, const f32 tol,
-            const int nsweep, f32* restrict work, const int lwork,
-            int* info)
+            const INT nsweep, f32* restrict work, const INT lwork,
+            INT* info)
 {
-    int applv, rsvec, mvl;
-    int i, ibr, igl, p, q, kbl, nblr, nblc;
-    int blskip, rowskip, swband;
-    int notrot, pskipped, iswrot, ijblsk, emptsw;
-    int ierr, jbc, jgl;
+    INT applv, rsvec, mvl;
+    INT i, ibr, igl, p, q, kbl, nblr, nblc;
+    INT blskip, rowskip, swband;
+    INT notrot, pskipped, iswrot, ijblsk, emptsw;
+    INT ierr, jbc, jgl;
     f32 aapp, aapp0, aapq, aaqq, apoaq, aqoap;
     f32 big, bigtheta, cs, sn, t, temp1, theta, thsign;
     f32 mxaapq, mxsinj, rootbig, rooteps, rootsfmin, roottol, small;
@@ -156,7 +156,7 @@ void sgsvj1(const char* jobv, const int m, const int n, const int n1,
 
                             if (aaqq > ZERO) {
                                 aapp0 = aapp;
-                                int rotok;
+                                INT rotok;
 
                                 /* Safe Gram matrix computation */
                                 if (aaqq >= ONE) {

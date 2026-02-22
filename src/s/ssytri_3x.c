@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -62,22 +62,22 @@
  */
 void ssytri_3x(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f32* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
-    int cut, i, icount, invd, ip, k, nnb, j, u11;
+    INT upper;
+    INT cut, i, icount, invd, ip, k, nnb, j, u11;
     f32 ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
-    int ldwork = n + nb + 1;
+    INT ldwork = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

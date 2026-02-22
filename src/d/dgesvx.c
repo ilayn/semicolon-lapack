@@ -88,34 +88,34 @@
 void dgesvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict AF,
-    const int ldaf,
-    int* restrict ipiv,
+    const INT ldaf,
+    INT* restrict ipiv,
     char* equed,
     f64* restrict R,
     f64* restrict C,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, infequ;
+    INT i, j, infequ;
     f64 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
-    int nofact, equil, notran, rowequ, colequ;
+    INT nofact, equil, notran, rowequ, colequ;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

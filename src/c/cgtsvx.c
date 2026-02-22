@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <string.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -57,8 +57,8 @@
 void cgtsvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU,
@@ -66,24 +66,24 @@ void cgtsvx(
     c64* restrict DF,
     c64* restrict DUF,
     c64* restrict DU2,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int nofact, notran;
+    INT nofact, notran;
     char norm;
     f32 anorm;
-    int ldb_min, ldx_min;
+    INT ldb_min, ldx_min;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

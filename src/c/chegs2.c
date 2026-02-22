@@ -4,7 +4,7 @@
  */
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHEGS2 reduces a complex Hermitian-definite generalized
@@ -45,22 +45,22 @@
  *                      < 0:  if INFO = -i, the i-th argument had an illegal value.
  */
 void chegs2(
-    const int itype,
+    const INT itype,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper;
-    int k;
+    INT upper;
+    INT k;
     f32 akk, bkk;
     c64 ct;
 

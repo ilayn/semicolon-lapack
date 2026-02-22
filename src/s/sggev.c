@@ -7,7 +7,7 @@
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SGGEV computes for a pair of N-by-N real nonsymmetric matrices (A,B)
@@ -59,24 +59,24 @@
  *                         - = 1,...,n: the QZ iteration failed
  *                         - > n: other errors
  */
-void sggev(const char* jobvl, const char* jobvr, const int n,
-           f32* restrict A, const int lda,
-           f32* restrict B, const int ldb,
+void sggev(const char* jobvl, const char* jobvr, const INT n,
+           f32* restrict A, const INT lda,
+           f32* restrict B, const INT ldb,
            f32* restrict alphar, f32* restrict alphai,
            f32* restrict beta,
-           f32* restrict VL, const int ldvl,
-           f32* restrict VR, const int ldvr,
-           f32* restrict work, const int lwork, int* info)
+           f32* restrict VL, const INT ldvl,
+           f32* restrict VR, const INT ldvr,
+           f32* restrict work, const INT lwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int in, iright, irows, itau, iwrk, jc, jr, maxwrk, minwrk;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT in, iright, irows, itau, iwrk, jc, jr, maxwrk, minwrk;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
-    int ldumma[1];
-    int nb_geqrf, nb_ormqr, nb_orgqr;
+    INT ldumma[1];
+    INT nb_geqrf, nb_ormqr, nb_orgqr;
 
     /* Decode the input arguments */
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {

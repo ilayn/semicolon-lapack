@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 
@@ -93,11 +93,11 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zlaed8(int* K, const int n, const int qsiz,
-            c128* Q, const int ldq, f64* D, f64* rho,
-            const int cutpnt, f64* Z, f64* dlambda, c128* Q2,
-            const int ldq2, f64* W, int* indxp, int* indx, int* indxq,
-            int* perm, int* givptr, int* givcol, f64* givnum, int* info)
+void zlaed8(INT* K, const INT n, const INT qsiz,
+            c128* Q, const INT ldq, f64* D, f64* rho,
+            const INT cutpnt, f64* Z, f64* dlambda, c128* Q2,
+            const INT ldq2, f64* W, INT* indxp, INT* indx, INT* indxq,
+            INT* perm, INT* givptr, INT* givcol, f64* givnum, INT* info)
 {
     const f64 MONE = -1.0;
     const f64 ZERO = 0.0;
@@ -105,7 +105,7 @@ void zlaed8(int* K, const int n, const int qsiz,
     const f64 TWO = 2.0;
     const f64 EIGHT = 8.0;
 
-    int i, imax, j, jlam, jmax, jp, k2, n1, n2;
+    INT i, imax, j, jlam, jmax, jp, k2, n1, n2;
     f64 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */

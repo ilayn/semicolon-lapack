@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SSYGV computes all the eigenvalues, and optionally, the eigenvectors
@@ -29,22 +29,22 @@
  *                         - = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEV error.
  */
 void ssygv(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict W,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
-    int wantz, upper, lquery;
-    int lwkmin, lwkopt, nb, neig;
+    INT wantz, upper, lquery;
+    INT lwkmin, lwkopt, nb, neig;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

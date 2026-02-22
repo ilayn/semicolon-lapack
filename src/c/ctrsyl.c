@@ -6,7 +6,7 @@
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CTRSYL solves the complex Sylvester matrix equation:
@@ -50,17 +50,17 @@
  *                           values were used to solve the equation (but the matrices
  *                           A and B are unchanged).
  */
-void ctrsyl(const char* trana, const char* tranb, const int isgn,
-            const int m, const int n,
-            const c64* A, const int lda,
-            const c64* B, const int ldb,
-            c64* C, const int ldc,
-            f32* scale, int* info)
+void ctrsyl(const char* trana, const char* tranb, const INT isgn,
+            const INT m, const INT n,
+            const c64* A, const INT lda,
+            const c64* B, const INT ldb,
+            c64* C, const INT ldc,
+            f32* scale, INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int notrna, notrnb;
-    int j, k, l;
+    INT notrna, notrnb;
+    INT j, k, l;
     f32 bignum, da11, db, eps, scaloc, sgn, smin, smlnum;
     c64 a11, suml, sumr, vec, x11;
     f32 dum[1];

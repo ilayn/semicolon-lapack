@@ -46,7 +46,7 @@
  * @param[out] csq    The desired orthogonal matrix Q.
  * @param[out] snq    The desired orthogonal matrix Q.
  */
-void slags2(const int upper,
+void slags2(const INT upper,
             const f32 a1, const f32 a2, const f32 a3,
             const f32 b1, const f32 b2, const f32 b3,
             f32* csu, f32* snu, f32* csv, f32* snv,

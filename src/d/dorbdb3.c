@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -80,26 +80,26 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dorbdb3(
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f64* restrict X11,
-    const int ldx11,
+    const INT ldx11,
     f64* restrict X21,
-    const int ldx21,
+    const INT ldx21,
     f64* restrict theta,
     f64* restrict phi,
     f64* restrict taup1,
     f64* restrict taup2,
     f64* restrict tauq1,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     f64 c, s;
-    int childinfo, i, ilarf, iorbdb5, llarf, lorbdb5, lworkmin, lworkopt;
-    int lquery;
-    int max_val;
+    INT childinfo, i, ilarf, iorbdb5, llarf, lorbdb5, lworkmin, lworkopt;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     lquery = (lwork == -1);

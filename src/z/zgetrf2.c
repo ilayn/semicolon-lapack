@@ -10,7 +10,7 @@
 #include <math.h>
 #include <complex.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -51,18 +51,18 @@
  *                           has been completed, but U is exactly singular.
  */
 void zgetrf2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int i, iinfo, n1, n2;
-    int minmn = m < n ? m : n;
+    INT i, iinfo, n1, n2;
+    INT minmn = m < n ? m : n;
 
     *info = 0;
     if (m < 0) {

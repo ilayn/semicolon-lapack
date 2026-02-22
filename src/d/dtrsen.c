@@ -75,22 +75,22 @@
  *                           reordered, and wr and wi contain the eigenvalues in
  *                           the same order as in T; s and sep are set to zero.
  */
-void dtrsen(const char* job, const char* compq, const int* select,
-            const int n, f64* T, const int ldt,
-            f64* Q, const int ldq,
-            f64* wr, f64* wi, int* m,
+void dtrsen(const char* job, const char* compq, const INT* select,
+            const INT n, f64* T, const INT ldt,
+            f64* Q, const INT ldq,
+            f64* wr, f64* wi, INT* m,
             f64* s, f64* sep,
-            f64* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+            f64* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantbh, wants, wantsp, wantq, lquery;
-    int ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
-    int pair, swap;
+    INT wantbh, wants, wantsp, wantq, lquery;
+    INT ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
+    INT pair, swap;
     f64 est, rnorm, scale;
-    int isave[3];
+    INT isave[3];
 
     /* Decode and test the input parameters */
     wantbh = (job[0] == 'B' || job[0] == 'b');

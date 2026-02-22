@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define MAXIT 40
@@ -75,27 +75,27 @@
  *                         - = 1: the procedure does not converge after MAXIT cycles.
  */
 void dtgsja(const char* jobu, const char* jobv, const char* jobq,
-            const int m, const int p, const int n, const int k, const int l,
-            f64* restrict A, const int lda,
-            f64* restrict B, const int ldb,
+            const INT m, const INT p, const INT n, const INT k, const INT l,
+            f64* restrict A, const INT lda,
+            f64* restrict B, const INT ldb,
             const f64 tola, const f64 tolb,
             f64* restrict alpha, f64* restrict beta,
-            f64* restrict U, const int ldu,
-            f64* restrict V, const int ldv,
-            f64* restrict Q, const int ldq,
-            f64* restrict work, int* ncycle, int* info)
+            f64* restrict U, const INT ldu,
+            f64* restrict V, const INT ldv,
+            f64* restrict Q, const INT ldq,
+            f64* restrict work, INT* ncycle, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 HUGENUM = DBL_MAX;
 
-    int initu, wantu, initv, wantv, initq, wantq;
-    int upper;
-    int i, j, kcycle;
+    INT initu, wantu, initv, wantv, initq, wantq;
+    INT upper;
+    INT i, j, kcycle;
     f64 a1, a2, a3, b1, b2, b3;
     f64 csu, snu, csv, snv, csq, snq;
     f64 error, gamma, rwk, ssmin;
-    int minval;
+    INT minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');
     wantu = initu || (jobu[0] == 'U' || jobu[0] == 'u');

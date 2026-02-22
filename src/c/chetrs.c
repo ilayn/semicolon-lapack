@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -33,20 +33,20 @@
  */
 void chetrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -75,12 +75,12 @@ void chetrs(
          * K is the main loop index, decreasing from n-1 to 0 in steps of
          * 1 or 2, depending on the size of the diagonal blocks.
          */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block.
                  * Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -99,7 +99,7 @@ void chetrs(
             } else {
                 /* 2x2 diagonal block.
                  * Interchange rows k-1 and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k - 1) {
                     cblas_cswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
                 }
@@ -119,7 +119,7 @@ void chetrs(
                 c64 akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
                 c64 ak = A[k + k * lda] / conjf(akm1k);
                 c64 denom = akm1 * ak - ONE;
-                for (int j = 0; j < nrhs; j++) {
+                for (INT j = 0; j < nrhs; j++) {
                     c64 bkm1 = B[(k - 1) + j * ldb] / akm1k;
                     c64 bk = B[k + j * ldb] / conjf(akm1k);
                     B[(k - 1) + j * ldb] = (ak * bkm1 - bk) / denom;
@@ -147,7 +147,7 @@ void chetrs(
                 }
 
                 /* Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -172,7 +172,7 @@ void chetrs(
                 }
 
                 /* Interchange rows k and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -187,12 +187,12 @@ void chetrs(
          * First solve L*D*X = B, overwriting B with X.
          *
          * K increases from 0 to n-1 in steps of 1 or 2. */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block.
                  * Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -211,7 +211,7 @@ void chetrs(
             } else {
                 /* 2x2 diagonal block.
                  * Interchange rows k+1 and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k + 1) {
                     cblas_cswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
                 }
@@ -231,7 +231,7 @@ void chetrs(
                 c64 akm1 = A[k + k * lda] / conjf(akm1k);
                 c64 ak = A[(k + 1) + (k + 1) * lda] / akm1k;
                 c64 denom = akm1 * ak - ONE;
-                for (int j = 0; j < nrhs; j++) {
+                for (INT j = 0; j < nrhs; j++) {
                     c64 bkm1 = B[k + j * ldb] / conjf(akm1k);
                     c64 bk = B[(k + 1) + j * ldb] / akm1k;
                     B[k + j * ldb] = (ak * bkm1 - bk) / denom;
@@ -259,7 +259,7 @@ void chetrs(
                 }
 
                 /* Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -284,7 +284,7 @@ void chetrs(
                 }
 
                 /* Interchange rows k and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_cswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }

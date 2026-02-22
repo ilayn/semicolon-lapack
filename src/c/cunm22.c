@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CUNM22 overwrites the general complex M-by-N matrix C with
@@ -53,16 +53,16 @@
  *                        < 0: if info = -i, the i-th argument had an illegal value
  */
 void cunm22(const char* side, const char* trans,
-            const int m, const int n, const int n1, const int n2,
-            const c64* restrict Q, const int ldq,
-            c64* restrict C, const int ldc,
-            c64* restrict work, const int lwork,
-            int* info)
+            const INT m, const INT n, const INT n1, const INT n2,
+            const c64* restrict Q, const INT ldq,
+            c64* restrict C, const INT ldc,
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int left, lquery, notran;
-    int i, ldwork, len, lwkopt, nb, nq, nw;
+    INT left, lquery, notran;
+    INT i, ldwork, len, lwkopt, nb, nq, nw;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

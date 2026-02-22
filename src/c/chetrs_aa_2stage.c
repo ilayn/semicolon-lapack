@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -61,22 +61,22 @@
  */
 void chetrs_aa_2stage(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict TB,
-    const int ltb,
-    const int* restrict ipiv,
-    const int* restrict ipiv2,
+    const INT ltb,
+    const INT* restrict ipiv,
+    const INT* restrict ipiv2,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int ldtb, nb;
-    int upper;
+    INT ldtb, nb;
+    INT upper;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -104,7 +104,7 @@ void chetrs_aa_2stage(
         return;
     }
 
-    nb = (int)crealf(TB[0]);
+    nb = (INT)crealf(TB[0]);
     ldtb = ltb / n;
 
     if (upper) {

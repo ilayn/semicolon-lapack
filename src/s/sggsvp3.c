@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -60,26 +60,26 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sggsvp3(const char* jobu, const char* jobv, const char* jobq,
-             const int m, const int p, const int n,
-             f32* restrict A, const int lda,
-             f32* restrict B, const int ldb,
+             const INT m, const INT p, const INT n,
+             f32* restrict A, const INT lda,
+             f32* restrict B, const INT ldb,
              const f32 tola, const f32 tolb,
-             int* k, int* l,
-             f32* restrict U, const int ldu,
-             f32* restrict V, const int ldv,
-             f32* restrict Q, const int ldq,
-             int* restrict iwork,
+             INT* k, INT* l,
+             f32* restrict U, const INT ldu,
+             f32* restrict V, const INT ldv,
+             f32* restrict Q, const INT ldq,
+             INT* restrict iwork,
              f32* restrict tau,
-             f32* restrict work, const int lwork,
-             int* info)
+             f32* restrict work, const INT lwork,
+             INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantu, wantv, wantq, lquery;
-    int forwrd = 1;
-    int i, j, lwkopt;
-    int minval, ierr;
+    INT wantu, wantv, wantq, lquery;
+    INT forwrd = 1;
+    INT i, j, lwkopt;
+    INT minval, ierr;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
     wantv = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -116,7 +116,7 @@ void sggsvp3(const char* jobu, const char* jobv, const char* jobq,
 
     if (*info == 0) {
         sgeqp3(p, n, B, ldb, iwork, tau, work, -1, &ierr);
-        lwkopt = (int)work[0];
+        lwkopt = (INT)work[0];
         if (wantv) {
             if (p > lwkopt) lwkopt = p;
         }
@@ -127,7 +127,7 @@ void sggsvp3(const char* jobu, const char* jobv, const char* jobq,
             if (n > lwkopt) lwkopt = n;
         }
         sgeqp3(m, n, A, lda, iwork, tau, work, -1, &ierr);
-        if ((int)work[0] > lwkopt) lwkopt = (int)work[0];
+        if ((INT)work[0] > lwkopt) lwkopt = (INT)work[0];
         if (lwkopt < 1) lwkopt = 1;
         work[0] = (f32)lwkopt;
     }

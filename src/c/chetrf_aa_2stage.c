@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 
@@ -66,24 +66,24 @@
  */
 void chetrf_aa_2stage(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict TB,
-    const int ltb,
-    int* restrict ipiv,
-    int* restrict ipiv2,
+    const INT ltb,
+    INT* restrict ipiv,
+    INT* restrict ipiv2,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE  = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper, tquery, wquery;
-    int i, j, k, i1, i2, td;
-    int ldtb, nb, kb, jb, nt, iinfo;
+    INT upper, tquery, wquery;
+    INT i, j, k, i1, i2, td;
+    INT ldtb, nb, kb, jb, nt, iinfo;
     c64 piv;
 
     *info = 0;
@@ -243,7 +243,7 @@ void chetrf_aa_2stage(
                        &ipiv[(j + 1) * nb], &iinfo);
 
                 for (k = 0; k < nb; k++) {
-                    int count = n - (k + 1) - (j + 1) * nb;
+                    INT count = n - (k + 1) - (j + 1) * nb;
                     if (count > 0) {
                         cblas_ccopy(count,
                                     &work[(k + 1) + k * n], 1,

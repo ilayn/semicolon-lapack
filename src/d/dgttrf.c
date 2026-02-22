@@ -44,16 +44,16 @@
  *                           if it is used to solve a system of equations.
  */
 void dgttrf(
-    const int n,
+    const INT n,
     f64* restrict DL,
     f64* restrict D,
     f64* restrict DU,
     f64* restrict DU2,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f64 ZERO = 0.0;
-    int i;
+    INT i;
     f64 fact, temp;
 
     *info = 0;

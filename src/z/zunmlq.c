@@ -53,21 +53,21 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zunmlq(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            c128* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict C, const int ldc,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict C, const INT ldc,
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
 
-    int left, notran, lquery;
-    int i, ib, ic, jc, iinfo, iwt, ldwork, lwkopt;
-    int mi, nb, nbmin, ni, nq, nw;
-    int i1, i2, i3;
+    INT left, notran, lquery;
+    INT i, ib, ic, jc, iinfo, iwt, ldwork, lwkopt;
+    INT mi, nb, nbmin, ni, nq, nw;
+    INT i1, i2, i3;
     char transt;
 
     /* Decode arguments */

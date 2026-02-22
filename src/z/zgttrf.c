@@ -45,16 +45,16 @@
  *                           if it is used to solve a system of equations.
  */
 void zgttrf(
-    const int n,
+    const INT n,
     c128* restrict DL,
     c128* restrict D,
     c128* restrict DU,
     c128* restrict DU2,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
-    int i;
+    INT i;
     c128 fact, temp;
 
     *info = 0;

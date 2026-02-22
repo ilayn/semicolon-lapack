@@ -24,13 +24,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void dlasrt(const char* id, const int n, f64* restrict D, int* info)
+void dlasrt(const char* id, const INT n, f64* restrict D, INT* info)
 {
-    const int SELECT = 20;
+    const INT SELECT = 20;
 
-    int dir, endd, i, j, start, stkpnt;
+    INT dir, endd, i, j, start, stkpnt;
     f64 d1, d2, d3, dmnmx, tmp;
-    int stack[2][32];
+    INT stack[2][32];
 
     /* Test the input parameters */
     *info = 0;

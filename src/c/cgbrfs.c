@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -52,39 +52,39 @@
  */
 void cgbrfs(
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const c64* restrict AFB,
-    const int ldafb,
-    const int* restrict ipiv,
+    const INT ldafb,
+    const INT* restrict ipiv,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
-    int notran;
+    INT notran;
     const char* transn;
     const char* transt;
-    int count, i, j, k, kase, kk, nz;
+    INT count, i, j, k, kase, kk, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters */
     *info = 0;
@@ -166,8 +166,8 @@ void cgbrfs(
                 for (k = 0; k < n; k++) {
                     kk = ku - k;
                     xk = cabs1f(X[k + j * ldx]);
-                    int i_start = (k - ku > 0) ? k - ku : 0;
-                    int i_end = (k + kl < n - 1) ? k + kl : n - 1;
+                    INT i_start = (k - ku > 0) ? k - ku : 0;
+                    INT i_end = (k + kl < n - 1) ? k + kl : n - 1;
                     for (i = i_start; i <= i_end; i++) {
                         rwork[i] = rwork[i] + cabs1f(AB[kk + i + k * ldab]) * xk;
                     }
@@ -176,8 +176,8 @@ void cgbrfs(
                 for (k = 0; k < n; k++) {
                     s = ZERO;
                     kk = ku - k;
-                    int i_start = (k - ku > 0) ? k - ku : 0;
-                    int i_end = (k + kl < n - 1) ? k + kl : n - 1;
+                    INT i_start = (k - ku > 0) ? k - ku : 0;
+                    INT i_end = (k + kl < n - 1) ? k + kl : n - 1;
                     for (i = i_start; i <= i_end; i++) {
                         s = s + cabs1f(AB[kk + i + k * ldab]) * cabs1f(X[i + j * ldx]);
                     }

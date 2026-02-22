@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -45,12 +45,12 @@ void dlatps(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const f64* restrict AP,
     f64* restrict X,
     f64* scale,
     f64* restrict cnorm,
-    int* info)
+    INT* info)
 {
     // dlatps.f lines 245-246: Parameters
     const f64 ZERO = 0.0;
@@ -58,8 +58,8 @@ void dlatps(
     const f64 ONE = 1.0;
 
     // dlatps.f lines 248-252: Local variables
-    int upper, notran, nounit;
-    int i, imax, ip, j, jfirst, jinc, jlast, jlen;
+    INT upper, notran, nounit;
+    INT i, imax, ip, j, jfirst, jinc, jlast, jlen;
     f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
     // dlatps.f lines 268-271

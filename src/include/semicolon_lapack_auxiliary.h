@@ -3,10 +3,10 @@
 
 #include "semicolon_lapack/semicolon_lapack.h"
 
-SEMICOLON_API void   xerbla(const char* srname, int info);
-SEMICOLON_API int    ieeeck(const int ispec, const float zero, const float one);
-SEMICOLON_API int    ilaenv2stage(const int ispec, const char* name, const char* opts, const int n1, const int n2, const int n3, const int n4);
-SEMICOLON_API int    iparam2stage(const int ispec, const char* name, const char* opts, const int ni, const int nbi, const int ibi, const int nxi);
-SEMICOLON_API int    iparmq(const int ispec, const char* name, const char* opts, const int n, const int ilo, const int ihi, const int lwork);
+SEMICOLON_API void   xerbla(const char* srname, INT info);
+SEMICOLON_API INT    ieeeck(const INT ispec, const float zero, const float one);
+SEMICOLON_API INT    ilaenv2stage(const INT ispec, const char* name, const char* opts, const INT n1, const INT n2, const INT n3, const INT n4);
+SEMICOLON_API INT    iparam2stage(const INT ispec, const char* name, const char* opts, const INT ni, const INT nbi, const INT ibi, const INT nxi);
+SEMICOLON_API INT    iparmq(const INT ispec, const char* name, const char* opts, const INT n, const INT ilo, const INT ihi, const INT lwork);
 
 #endif /* SEMICOLON_LAPACK_AUXILIARY_H */

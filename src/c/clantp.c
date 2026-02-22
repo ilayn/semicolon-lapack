@@ -30,15 +30,15 @@ f32 clantp(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int udiag;
-    int i, j, k;
+    INT udiag;
+    INT i, j, k;
     f32 scale, sum, value;
 
     if (n == 0) {

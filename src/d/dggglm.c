@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
@@ -107,26 +107,26 @@
  *                           be computed.
  */
 void dggglm(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict D,
     f64* restrict X,
     f64* restrict Y,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
-    int lquery;
-    int max_val;
+    INT i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     np = (n < p) ? n : p;
@@ -187,11 +187,11 @@ void dggglm(
 
     dggqrf(n, m, p, A, lda, work, B, ldb, &work[m],
            &work[m + np], lwork - m - np, info);
-    lopt = (int)work[m + np];
+    lopt = (INT)work[m + np];
 
     dormqr("L", "T", n, 1, m, A, lda, work, D,
            (1 > n ? 1 : n), &work[m + np], lwork - m - np, info);
-    lopt = (lopt > (int)work[m + np]) ? lopt : (int)work[m + np];
+    lopt = (lopt > (INT)work[m + np]) ? lopt : (INT)work[m + np];
 
     if (n > m) {
         dtrtrs("U", "N", "N", n - m, 1,
@@ -223,11 +223,11 @@ void dggglm(
         cblas_dcopy(m, D, 1, X, 1);
     }
 
-    int b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
+    INT b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
     b_row_start -= 1;
 
     dormrq("L", "T", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (f64)(m + np + ((lopt > (int)work[m + np]) ? lopt : (int)work[m + np]));
+    work[0] = (f64)(m + np + ((lopt > (INT)work[m + np]) ? lopt : (INT)work[m + np]));
 }

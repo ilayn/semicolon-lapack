@@ -6,7 +6,7 @@
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZTRSYL3 solves the complex Sylvester matrix equation:
@@ -59,27 +59,27 @@
  *                        values were used to solve the equation (but the matrices
  *                        A and B are unchanged).
  */
-void ztrsyl3(const char* trana, const char* tranb, const int isgn,
-             const int m, const int n,
-             const c128* A, const int lda,
-             const c128* B, const int ldb,
-             c128* C, const int ldc,
+void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
+             const INT m, const INT n,
+             const c128* A, const INT lda,
+             const c128* B, const INT ldb,
+             c128* C, const INT ldc,
              f64* scale,
-             f64* swork, const int ldswork,
-             int* info)
+             f64* swork, const INT ldswork,
+             INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int notrna, notrnb, lquery;
-    int awrk, bwrk, i, i1, i2, iinfo, j, j1, j2, jj;
-    int k, k1, k2, l, l1, l2, ll, nba, nb, nbb;
+    INT notrna, notrnb, lquery;
+    INT awrk, bwrk, i, i1, i2, iinfo, j, j1, j2, jj;
+    INT k, k1, k2, l, l1, l2, ll, nba, nb, nbb;
     f64 anrm, bignum, bnrm, cnrm, scal, scaloc;
     f64 scamin, sgn, xnrm, buf, smlnum;
     c128 csgn;
 
-    int max_mn = (m > n) ? m : n;
+    INT max_mn = (m > n) ? m : n;
     if (max_mn < 1) max_mn = 1;
 
     /* Decode and Test input parameters */
@@ -92,8 +92,8 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
      * with a minimum of 8 from ztrsyl3.f line 221.
      */
     {
-        int min_mn_local = (m < n) ? m : n;
-        int nb_calc = (min_mn_local * 8) / 100;
+        INT min_mn_local = (m < n) ? m : n;
+        INT nb_calc = (min_mn_local * 8) / 100;
         if (nb_calc < 24) nb_calc = 24;
         if (nb_calc > 80) nb_calc = 80;
         nb = (nb_calc > 8) ? nb_calc : 8;
@@ -147,8 +147,8 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
      * workspace is provided
      */
     {
-        int min_nba_nbb = (nba < nbb) ? nba : nbb;
-        int max_nba_nbb = (nba > nbb) ? nba : nbb;
+        INT min_nba_nbb = (nba < nbb) ? nba : nbb;
+        INT max_nba_nbb = (nba > nbb) ? nba : nbb;
         if (min_nba_nbb == 1 || ldswork < max_nba_nbb + max_mn) {
             ztrsyl(trana, tranb, isgn, m, n, A, lda, B, ldb,
                    C, ldc, scale, info);
@@ -157,7 +157,7 @@ void ztrsyl3(const char* trana, const char* tranb, const int isgn,
     }
 
     /* Use the tail of column 0 in swork as zlange workspace */
-    int rows = (nba > nbb) ? nba : nbb;
+    INT rows = (nba > nbb) ? nba : nbb;
     f64* wnrm = &swork[rows];
 
     /* Set constants to control overflow */

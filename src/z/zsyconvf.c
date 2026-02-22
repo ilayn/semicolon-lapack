@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -57,17 +57,17 @@
 void zsyconvf(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict E,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int upper, convert;
-    int i, ip;
+    INT upper, convert;
+    INT i, ip;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

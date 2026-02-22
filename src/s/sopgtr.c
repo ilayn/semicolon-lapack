@@ -34,15 +34,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sopgtr(const char* uplo, const int n, const f32* restrict AP,
+void sopgtr(const char* uplo, const INT n, const f32* restrict AP,
             const f32* restrict tau, f32* restrict Q,
-            const int ldq, f32* restrict work, int* info)
+            const INT ldq, f32* restrict work, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int upper;
-    int i, iinfo, ij, j;
+    INT upper;
+    INT i, iinfo, ij, j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

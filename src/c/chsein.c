@@ -77,28 +77,28 @@ void chsein(
     const char* side,
     const char* eigsrc,
     const char* initv,
-    const int* restrict select,
-    const int n,
+    const INT* restrict select,
+    const INT n,
     const c64* restrict H,
-    const int ldh,
+    const INT ldh,
     c64* restrict W,
     c64* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     c64* restrict VR,
-    const int ldvr,
-    const int mm,
-    int* m,
+    const INT ldvr,
+    const INT mm,
+    INT* m,
     c64* restrict work,
     f32* restrict rwork,
-    int* restrict ifaill,
-    int* restrict ifailr,
-    int* info)
+    INT* restrict ifaill,
+    INT* restrict ifailr,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const f32 RZERO = 0.0f;
 
-    int bothv, fromqr, leftv, noinit, rightv;
-    int i, iinfo, k, kl, kln, kr, ks, ldwork;
+    INT bothv, fromqr, leftv, noinit, rightv;
+    INT i, iinfo, k, kl, kln, kr, ks, ldwork;
     f32 eps3 = 0.0f, hnorm, smlnum, ulp, unfl;
     c64 wk;
 

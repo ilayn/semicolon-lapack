@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -51,18 +51,18 @@
  */
 void chptrf(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 EIGHT = 8.0f;
     const f32 SEVTEN = 17.0f;
 
-    int upper;
-    int i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
     f32 absakk, alpha, colmax, d, d11, d22, r1, rowmax, tt;
     c64 d12, d21, t, wk, wkm1, wkp1;
 
@@ -238,7 +238,7 @@ void chptrf(
                             wkm1 = d * (d11 * AP[knc + j] - conjf(d12) * AP[kc + j]);
                             wk = d * (d22 * AP[kc + j] - d12 * AP[knc + j]);
                             for (i = j; i >= 0; i--) {
-                                int jc_idx = i + j * (j + 1) / 2;
+                                INT jc_idx = i + j * (j + 1) / 2;
                                 AP[jc_idx] = AP[jc_idx] - AP[kc + i] * conjf(wk) - AP[knc + i] * conjf(wkm1);
                             }
                             AP[kc + j] = wk;
@@ -425,7 +425,7 @@ void chptrf(
                             wk = d * (d11 * AP[kc + j - k] - d21 * AP[knc + j - k - 1]);
                             wkp1 = d * (d22 * AP[knc + j - k - 1] - conjf(d21) * AP[kc + j - k]);
                             for (i = j; i < n; i++) {
-                                int jc_idx = npp - (n - j) * (n - j + 1) / 2 + i - j;
+                                INT jc_idx = npp - (n - j) * (n - j + 1) / 2 + i - j;
                                 AP[jc_idx] = AP[jc_idx] - AP[kc + i - k] * conjf(wk) - AP[knc + i - k - 1] * conjf(wkp1);
                             }
                             AP[kc + j - k] = wk;

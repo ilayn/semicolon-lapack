@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -47,21 +47,21 @@ void zlatrs(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict X,
     f64* scale,
     f64* restrict cnorm,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int upper, notran, nounit, normin_n;
-    int i, imax, j, jfirst, jinc, jlast;
+    INT upper, notran, nounit, normin_n;
+    INT i, imax, j, jfirst, jinc, jlast;
     f64 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
     c128 csumj, tjjs = 0.0, uscal;
 
@@ -411,9 +411,9 @@ void zlatrs(
                     // If the scaling needed for A in the dot product is 1,
                     // call ZDOTU to perform the dot product
                     if (upper) {
-                        csumj = cblas_zdotu(j, &A[j * lda], 1, X, 1);
+                        cblas_zdotu_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {
-                        csumj = cblas_zdotu(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1);
+                        cblas_zdotu_sub(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1, &csumj);
                     }
                 } else {
                     // Otherwise, use in-line code for the dot product
@@ -503,9 +503,9 @@ void zlatrs(
                     // If the scaling needed for A in the dot product is 1,
                     // call ZDOTC to perform the conjugated dot product
                     if (upper) {
-                        csumj = cblas_zdotc(j, &A[j * lda], 1, X, 1);
+                        cblas_zdotc_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {
-                        csumj = cblas_zdotc(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1);
+                        cblas_zdotc_sub(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1, &csumj);
                     }
                 } else {
                     // Otherwise, use in-line code for the dot product

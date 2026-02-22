@@ -118,26 +118,26 @@
 void cstegr(
     const char* jobz,
     const char* range,
-    const int n,
+    const INT n,
     f32* restrict D,
     f32* restrict E,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
-    int* restrict isuppz,
+    const INT ldz,
+    INT* restrict isuppz,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    int tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
+    INT tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
 
     (void)abstol;  // Unused parameter
 

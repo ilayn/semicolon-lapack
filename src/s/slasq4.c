@@ -27,11 +27,11 @@
  * @param[in,out] g      G is passed as an argument in order to save its
  *                        value between calls to SLASQ4.
  */
-void slasq4(const int i0, const int n0, const f32* restrict Z,
-            const int pp, const int n0in, const f32 dmin,
+void slasq4(const INT i0, const INT n0, const f32* restrict Z,
+            const INT pp, const INT n0in, const f32 dmin,
             const f32 dmin1, const f32 dmin2, const f32 dn,
             const f32 dn1, const f32 dn2, f32* tau,
-            int* ttype, f32* g)
+            INT* ttype, f32* g)
 {
     /* Constants from the Fortran source: CNST1 = 9/16 = 0.5630 (approx) */
     const f32 CNST1 = 0.5630f;
@@ -45,7 +45,7 @@ void slasq4(const int i0, const int n0, const f32* restrict Z,
     const f32 TWO = 2.0f;
     const f32 HUNDRD = 100.0f;
 
-    int i4, nn, np;
+    INT i4, nn, np;
     f32 a2, b1, b2, gam, gap1, gap2, s = ZERO;
 
     /*

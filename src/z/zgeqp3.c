@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 
@@ -58,19 +58,19 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgeqp3(const int m, const int n,
-            c128* restrict A, const int lda,
-            int* restrict jpvt,
+void zgeqp3(const INT m, const INT n,
+            c128* restrict A, const INT lda,
+            INT* restrict jpvt,
             c128* restrict tau,
-            c128* restrict work, const int lwork,
+            c128* restrict work, const INT lwork,
             f64* restrict rwork,
-            int* info)
+            INT* info)
 {
-    int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
-    int sm, sn, sminmn, topbmn;
-    int j, jb, fjb;
-    int lquery;
-    int iinfo;
+    INT iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
+    INT sm, sn, sminmn, topbmn;
+    INT j, jb, fjb;
+    INT lquery;
+    INT iinfo;
 
     /* Parameter validation */
     *info = 0;
@@ -149,7 +149,7 @@ void zgeqp3(const int m, const int n,
 
         /* QR factorization of the fixed columns */
         zgeqrf(m, na, A, lda, tau, work, lwork, &iinfo);
-        iws = iws > (int)creal(work[0]) ? iws : (int)creal(work[0]);
+        iws = iws > (INT)creal(work[0]) ? iws : (INT)creal(work[0]);
 
         if (na < n) {
             /* Apply Q^H to remaining columns: A(:, na:n-1) */

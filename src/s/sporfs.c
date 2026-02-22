@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -43,24 +43,24 @@
  */
 void sporfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict AF,
-    const int ldaf,
+    const INT ldaf,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // Parameters from the Fortran source
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
@@ -68,7 +68,7 @@ void sporfs(
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -91,7 +91,7 @@ void sporfs(
 
     // Quick return if possible
     if (n == 0 || nrhs == 0) {
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ZERO;
             berr[j] = ZERO;
         }
@@ -99,7 +99,7 @@ void sporfs(
     }
 
     // NZ = maximum number of nonzero elements in each row of A, plus 1
-    int nz = n + 1;
+    INT nz = n + 1;
     f32 eps = slamch("E");
     f32 safmin = slamch("S");
     f32 safe1 = nz * safmin;
@@ -108,8 +108,8 @@ void sporfs(
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
 
     // Do for each right hand side
-    for (int j = 0; j < nrhs; j++) {
-        int count = 1;
+    for (INT j = 0; j < nrhs; j++) {
+        INT count = 1;
         f32 lstres = THREE;
 
         for (;;) {
@@ -122,27 +122,27 @@ void sporfs(
 
             // Compute componentwise relative backward error
             // max(i) ( |R(i)| / ( |A|*|X| + |B| )(i) )
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 work[i] = fabsf(B[i + j * ldb]);
             }
 
             // Compute |A|*|X| + |B|
             if (upper) {
-                for (int k = 0; k < n; k++) {
+                for (INT k = 0; k < n; k++) {
                     f32 s = ZERO;
                     f32 xk = fabsf(X[k + j * ldx]);
-                    for (int i = 0; i < k; i++) {
+                    for (INT i = 0; i < k; i++) {
                         work[i] += fabsf(A[i + k * lda]) * xk;
                         s += fabsf(A[i + k * lda]) * fabsf(X[i + j * ldx]);
                     }
                     work[k] += fabsf(A[k + k * lda]) * xk + s;
                 }
             } else {
-                for (int k = 0; k < n; k++) {
+                for (INT k = 0; k < n; k++) {
                     f32 s = ZERO;
                     f32 xk = fabsf(X[k + j * ldx]);
                     work[k] += fabsf(A[k + k * lda]) * xk;
-                    for (int i = k + 1; i < n; i++) {
+                    for (INT i = k + 1; i < n; i++) {
                         work[i] += fabsf(A[i + k * lda]) * xk;
                         s += fabsf(A[i + k * lda]) * fabsf(X[i + j * ldx]);
                     }
@@ -151,7 +151,7 @@ void sporfs(
             }
 
             f32 s = ZERO;
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 if (work[i] > safe2) {
                     f32 tmp = fabsf(work[n + i]) / work[i];
                     if (tmp > s) s = tmp;
@@ -165,7 +165,7 @@ void sporfs(
             // Test stopping criterion
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
                 // Update solution and try again
-                int linfo;
+                INT linfo;
                 spotrs(uplo, n, 1, AF, ldaf, &work[n], n, &linfo);
                 cblas_saxpy(n, ONE, &work[n], 1, &X[j * ldx], 1);
                 lstres = berr[j];
@@ -178,7 +178,7 @@ void sporfs(
         // Bound error from formula
         // norm(X - XTRUE) / norm(X) <= FERR =
         // norm( |inv(A)| * ( |R| + NZ*EPS*( |A|*|X|+|B| ))) / norm(X)
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (work[i] > safe2) {
                 work[i] = fabsf(work[n + i]) + nz * eps * work[i];
             } else {
@@ -186,32 +186,32 @@ void sporfs(
             }
         }
 
-        int kase = 0;
-        int isave[3] = {0, 0, 0};
+        INT kase = 0;
+        INT isave[3] = {0, 0, 0};
         for (;;) {
             slacn2(n, &work[2 * n], &work[n], iwork, &ferr[j], &kase, isave);
             if (kase == 0) break;
 
             if (kase == 1) {
                 // Multiply by diag(W)*inv(A**T)
-                int linfo;
+                INT linfo;
                 spotrs(uplo, n, 1, AF, ldaf, &work[n], n, &linfo);
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
             } else if (kase == 2) {
                 // Multiply by inv(A)*diag(W)
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[n + i] = work[i] * work[n + i];
                 }
-                int linfo;
+                INT linfo;
                 spotrs(uplo, n, 1, AF, ldaf, &work[n], n, &linfo);
             }
         }
 
         // Normalize error
         lstres = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 tmp = fabsf(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }

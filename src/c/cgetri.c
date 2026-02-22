@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -36,20 +36,20 @@
  *                           singular and its inverse could not be computed.
  */
 void cgetri(
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int lquery;
-    int i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
+    INT lquery;
+    INT i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
 
     // Test the input parameters
     *info = 0;

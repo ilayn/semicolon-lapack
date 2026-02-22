@@ -3,7 +3,7 @@
  * @brief CGGBAK forms the right or left eigenvectors of a complex generalized eigenvalue problem.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -42,18 +42,18 @@
 void cggbak(
     const char* job,
     const char* side,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     const f32* restrict lscale,
     const f32* restrict rscale,
-    const int m,
+    const INT m,
     c64* restrict V,
-    const int ldv,
-    int* info)
+    const INT ldv,
+    INT* info)
 {
-    int leftv, rightv;
-    int i, k;
+    INT leftv, rightv;
+    INT i, k;
 
     /* Test the input parameters */
 
@@ -122,12 +122,12 @@ void cggbak(
 
         if (rightv) {
             for (i = ilo - 1; i >= 0; i--) {
-                k = (int)rscale[i];
+                k = (INT)rscale[i];
                 if (k == i) continue;
                 cblas_cswap(m, &V[i], ldv, &V[k], ldv);
             }
             for (i = ihi + 1; i < n; i++) {
-                k = (int)rscale[i];
+                k = (INT)rscale[i];
                 if (k == i) continue;
                 cblas_cswap(m, &V[i], ldv, &V[k], ldv);
             }
@@ -137,12 +137,12 @@ void cggbak(
 
         if (leftv) {
             for (i = ilo - 1; i >= 0; i--) {
-                k = (int)lscale[i];
+                k = (INT)lscale[i];
                 if (k == i) continue;
                 cblas_cswap(m, &V[i], ldv, &V[k], ldv);
             }
             for (i = ihi + 1; i < n; i++) {
-                k = (int)lscale[i];
+                k = (INT)lscale[i];
                 if (k == i) continue;
                 cblas_cswap(m, &V[i], ldv, &V[k], ldv);
             }

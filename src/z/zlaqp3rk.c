@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -100,40 +100,40 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void zlaqp3rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int ioffset,
-    int* nb,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT ioffset,
+    INT* nb,
     const f64 abstol,
     const f64 reltol,
-    const int kp1,
+    const INT kp1,
     const f64 maxc2nrm,
     c128* restrict A,
-    const int lda,
-    int* done,
-    int* KB,
+    const INT lda,
+    INT* done,
+    INT* KB,
     f64* maxc2nrmk,
     f64* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     c128* restrict tau,
     f64* restrict vn1,
     f64* restrict vn2,
     c128* restrict auxv,
     c128* restrict F,
-    const int ldf,
-    int* restrict iwork,
-    int* info)
+    const INT ldf,
+    INT* restrict iwork,
+    INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    int itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
+    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
     f64 hugeval, taunan, temp, temp2, tol3z;
     c128 aik;
     c128 neg_tau;
-    int nb_val;
+    INT nb_val;
 
     *info = 0;
 

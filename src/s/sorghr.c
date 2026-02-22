@@ -35,17 +35,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sorghr(const int n, const int ilo, const int ihi,
-            f32* A, const int lda, const f32* tau,
-            f32* work, const int lwork, int* info)
+void sorghr(const INT n, const INT ilo, const INT ihi,
+            f32* A, const INT lda, const f32* tau,
+            f32* work, const INT lwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery;
-    int i, iinfo, j, lwkopt, nb, nh;
-    int max_n_1 = (n > 1) ? n : 1;
-    int nh_max_1;
+    INT lquery;
+    INT i, iinfo, j, lwkopt, nb, nh;
+    INT max_n_1 = (n > 1) ? n : 1;
+    INT nh_max_1;
 
     /* Test the input parameters */
     *info = 0;

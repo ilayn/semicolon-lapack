@@ -8,7 +8,7 @@
 #include "../include/lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
 #define SMLSIZ 25
@@ -75,20 +75,20 @@
  *                           if info = i, i off-diagonal elements of an intermediate
  *                           bidiagonal form did not converge to zero.
  */
-void cgelsd(const int m, const int n, const int nrhs,
-            c64* restrict A, const int lda,
-            c64* restrict B, const int ldb,
-            f32* restrict S, const f32 rcond, int* rank,
-            c64* restrict work, const int lwork,
+void cgelsd(const INT m, const INT n, const INT nrhs,
+            c64* restrict A, const INT lda,
+            c64* restrict B, const INT ldb,
+            f32* restrict S, const f32 rcond, INT* rank,
+            c64* restrict work, const INT lwork,
             f32* restrict rwork,
-            int* restrict iwork, int* info)
+            INT* restrict iwork, INT* info)
 {
-    int lquery;
-    int iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork, lrwork;
-    int maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nrwork, nwork, smlsiz;
+    INT lquery;
+    INT iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork, lrwork;
+    INT maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nrwork, nwork, smlsiz;
     f32 anrm, bignum, bnrm, eps, sfmin, smlnum;
-    int iinfo;
-    int nb;
+    INT iinfo;
+    INT nb;
 
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -121,7 +121,7 @@ void cgelsd(const int m, const int n, const int nrhs,
     liwork = 1;
     lrwork = 1;
     if (minmn > 0) {
-        nlvl = (int)(logf((f32)minmn / (f32)(smlsiz + 1)) / logf(TWO)) + 1;
+        nlvl = (INT)(logf((f32)minmn / (f32)(smlsiz + 1)) / logf(TWO)) + 1;
         if (nlvl < 0) nlvl = 0;
         liwork = 3 * minmn * nlvl + 11 * minmn;
         mm = m;
@@ -166,7 +166,7 @@ void cgelsd(const int m, const int n, const int nrhs,
                 if (m + nrhs * nb > maxwrk) maxwrk = m + nrhs * nb;
                 if (m * m + 4 * m + m * nrhs > maxwrk) maxwrk = m * m + 4 * m + m * nrhs;
                 /* Ensure the Path 2a case below is triggered */
-                int temp = m > 2 * m - 4 ? m : 2 * m - 4;
+                INT temp = m > 2 * m - 4 ? m : 2 * m - 4;
                 temp = temp > nrhs ? temp : nrhs;
                 temp = temp > n - 3 * m ? temp : n - 3 * m;
                 if (4 * m + m * m + temp > maxwrk) maxwrk = 4 * m + m * m + temp;

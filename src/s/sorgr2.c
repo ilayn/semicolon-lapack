@@ -4,7 +4,7 @@
  *        an RQ factorization determined by SGERQF (unblocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -34,13 +34,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sorgr2(const int m, const int n, const int k,
-            f32* restrict A, const int lda,
+void sorgr2(const INT m, const INT n, const INT k,
+            f32* restrict A, const INT lda,
             const f32* restrict tau,
             f32* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, ii, j, l;
+    INT i, ii, j, l;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 

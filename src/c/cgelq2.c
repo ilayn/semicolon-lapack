@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -36,13 +36,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgelq2(const int m, const int n,
-            c64* restrict A, const int lda,
+void cgelq2(const INT m, const INT n,
+            c64* restrict A, const INT lda,
             c64* restrict tau,
             c64* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, k;
+    INT i, k;
     c64 aii;
 
     /* Parameter validation */

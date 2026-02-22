@@ -3,7 +3,7 @@
  * @brief DSPSVX computes the solution to a real system of linear equations A * X = B with error bounds.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -46,25 +46,25 @@
 void dspsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict AP,
     f64* restrict AFP,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nofact;
+    INT nofact;
     f64 anorm;
 
     *info = 0;

@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -59,24 +59,24 @@
  *                               i off-diagonal elements of an intermediate
  *                               tridiagonal form did not converge to zero.
  */
-void zhbevd_2stage(const char* jobz, const char* uplo, const int n,
-                   const int kd, c128* restrict AB,
-                   const int ldab, f64* restrict W,
-                   c128* restrict Z, const int ldz,
-                   c128* restrict work, const int lwork,
-                   f64* restrict rwork, const int lrwork,
-                   int* restrict iwork, const int liwork,
-                   int* info)
+void zhbevd_2stage(const char* jobz, const char* uplo, const INT n,
+                   const INT kd, c128* restrict AB,
+                   const INT ldab, f64* restrict W,
+                   c128* restrict Z, const INT ldz,
+                   c128* restrict work, const INT lwork,
+                   f64* restrict rwork, const INT lrwork,
+                   INT* restrict iwork, const INT liwork,
+                   INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int lower, lquery, wantz;
-    int iinfo, imax, inde, indwk2, indrwk, iscale;
-    int llwork, indwk, lhtrd = 0, lwtrd, ib, indhous;
-    int liwmin, llrwk, llwk2, lrwmin, lwmin;
+    INT lower, lquery, wantz;
+    INT iinfo, imax, inde, indwk2, indrwk, iscale;
+    INT llwork, indwk, lhtrd = 0, lwtrd, ib, indhous;
+    INT liwmin, llrwk, llwk2, lrwmin, lwmin;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -56,21 +56,21 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void cunmql(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const c64* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            const c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict C, const int ldc,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict C, const INT ldc,
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
 
-    int left, notran, lquery;
-    int i, ib, iinfo, iwt, ldwork, lwkopt;
-    int mi, nb, nbmin, ni, nq, nw;
-    int i1, i2, i3;
+    INT left, notran, lquery;
+    INT i, ib, iinfo, iwt, ldwork, lwkopt;
+    INT mi, nb, nbmin, ni, nq, nw;
+    INT i1, i2, i3;
 
     /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');

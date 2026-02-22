@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 #include "../include/lapack_tuning.h"
 
@@ -56,24 +56,24 @@
  *                         - > 0: Internal error
  */
 void ssyevr(const char* jobz, const char* range, const char* uplo,
-            const int n, f32* restrict A, const int lda,
-            const f32 vl, const f32 vu, const int il, const int iu,
-            const f32 abstol, int* m,
+            const INT n, f32* restrict A, const INT lda,
+            const f32 vl, const f32 vu, const INT il, const INT iu,
+            const f32 abstol, INT* m,
             f32* restrict W,
-            f32* restrict Z, const int ldz,
-            int* restrict isuppz,
-            f32* restrict work, const int lwork,
-            int* restrict iwork, const int liwork,
-            int* info)
+            f32* restrict Z, const INT ldz,
+            INT* restrict isuppz,
+            f32* restrict work, const INT lwork,
+            INT* restrict iwork, const INT liwork,
+            INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
-    int i, ieeeok, iinfo, imax, indd, inddd, inde, indee;
-    int indibl, indifl, indisp, indiwo, indtau, indwk, indwkn;
-    int iscale, j, jj, liwmin, llwork, llwrkn, lwkopt, lwmin, nb, nsplit;
+    INT alleig, indeig, lower, lquery, valeig, wantz, tryrac;
+    INT i, ieeeok, iinfo, imax, indd, inddd, inde, indee;
+    INT indibl, indifl, indisp, indiwo, indtau, indwk, indwkn;
+    INT iscale, j, jj, liwmin, llwork, llwrkn, lwkopt, lwmin, nb, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0f, vuu = 0.0f;
 
     /* Test the input parameters */

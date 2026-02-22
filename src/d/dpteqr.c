@@ -70,17 +70,17 @@
  */
 void dpteqr(
     const char* compz,
-    const int n,
+    const INT n,
     f64* restrict D,
     f64* restrict E,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int i, icompz, nru;
+    INT i, icompz, nru;
 
     // Dummy arrays for dbdsqr (ncvt=0 and ncc=0)
     f64 VT_dummy[1];

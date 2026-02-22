@@ -5,7 +5,7 @@
  *        using the compact WY representation for Q.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -37,15 +37,15 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dtpqrt2(const int m, const int n, const int l,
-             f64* restrict A, const int lda,
-             f64* restrict B, const int ldb,
-             f64* restrict T, const int ldt, int* info)
+void dtpqrt2(const INT m, const INT n, const INT l,
+             f64* restrict A, const INT lda,
+             f64* restrict B, const INT ldb,
+             f64* restrict T, const INT ldt, INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
-    int i, j, p, mp, np;
-    int minmn;
+    INT i, j, p, mp, np;
+    INT minmn;
     f64 alpha;
 
     *info = 0;

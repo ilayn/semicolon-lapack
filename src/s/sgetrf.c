@@ -3,7 +3,7 @@
  * @brief Blocked LU factorization using Level 3 BLAS.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 
@@ -38,18 +38,18 @@
  *                           by zero will occur if it is used to solve a system of equations.
  */
 void sgetrf(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
-    int i, iinfo, j, jb, nb;
-    int minmn = m < n ? m : n;
+    INT i, iinfo, j, jb, nb;
+    INT minmn = m < n ? m : n;
 
     *info = 0;
     if (m < 0) {

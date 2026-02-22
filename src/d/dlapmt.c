@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DLAPMT rearranges the columns of the M by N matrix X as specified
@@ -24,11 +24,11 @@
  * @param[in,out] K       Array (n). Permutation indices (0-based in C).
  *                        On exit, modified internally and then restored.
  */
-void dlapmt(const int forwrd, const int m, const int n,
-            f64* restrict X, const int ldx,
-            int* restrict K)
+void dlapmt(const INT forwrd, const INT m, const INT n,
+            f64* restrict X, const INT ldx,
+            INT* restrict K)
 {
-    int i, j, in;
+    INT i, j, in;
 
     if (n <= 1) return;
 

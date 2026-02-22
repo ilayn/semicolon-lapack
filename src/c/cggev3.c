@@ -8,7 +8,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CGGEV3 computes for a pair of N-by-N complex nonsymmetric matrices
@@ -67,26 +67,26 @@
  *                   - = 1,...,n: the QZ iteration failed
  *                   - > n: other errors
  */
-void cggev3(const char* jobvl, const char* jobvr, const int n,
-            c64* A, const int lda,
-            c64* B, const int ldb,
+void cggev3(const char* jobvl, const char* jobvr, const INT n,
+            c64* A, const INT lda,
+            c64* B, const INT ldb,
             c64* alpha, c64* beta,
-            c64* VL, const int ldvl,
-            c64* VR, const int ldvr,
-            c64* work, const int lwork,
-            f32* rwork, int* info)
+            c64* VL, const INT ldvl,
+            c64* VR, const INT ldvr,
+            c64* work, const INT lwork,
+            f32* rwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int in, iright, irows, irwrk, itau, iwrk, jc, jr, lwkopt, lwkmin;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT in, iright, irows, irwrk, itau, iwrk, jc, jr, lwkopt, lwkmin;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps, smlnum, temp;
     c64 x;
-    int ldumma[1];
+    INT ldumma[1];
 
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {
         ijobvl = 1;
@@ -134,37 +134,37 @@ void cggev3(const char* jobvl, const char* jobvr, const int n,
 
     if (*info == 0) {
         cgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
-        lwkopt = lwkmin > (n + (int)crealf(work[0])) ?
-                 lwkmin : (n + (int)crealf(work[0]));
+        lwkopt = lwkmin > (n + (INT)crealf(work[0])) ?
+                 lwkmin : (n + (INT)crealf(work[0]));
         cunmqr("L", "C", n, n, n, B, ldb, NULL, A, lda, work,
                -1, &ierr);
-        lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                 lwkopt : (n + (int)crealf(work[0]));
+        lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                 lwkopt : (n + (INT)crealf(work[0]));
         if (ilvl) {
             cungqr(n, n, n, VL, ldvl, NULL, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                     lwkopt : (n + (int)crealf(work[0]));
+            lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                     lwkopt : (n + (INT)crealf(work[0]));
         }
         if (ilv) {
             cgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                     lwkopt : (n + (int)crealf(work[0]));
+            lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                     lwkopt : (n + (INT)crealf(work[0]));
             claqz0("S", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
-            lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                     lwkopt : (n + (int)crealf(work[0]));
+            lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                     lwkopt : (n + (INT)crealf(work[0]));
         } else {
             cgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                     lwkopt : (n + (int)crealf(work[0]));
+            lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                     lwkopt : (n + (INT)crealf(work[0]));
             claqz0("E", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
-            lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                     lwkopt : (n + (int)crealf(work[0]));
+            lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                     lwkopt : (n + (INT)crealf(work[0]));
         }
         if (n == 0) {
             work[0] = CONE;

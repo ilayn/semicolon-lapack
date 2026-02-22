@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -40,19 +40,19 @@
  *          On the final return from ZLACON, kase will again be 0.
  */
 void zlacon(
-    const int n,
+    const INT n,
     c128* restrict V,
     c128* restrict X,
     f64* est,
-    int* kase)
+    INT* kase)
 {
-    static const int ITMAX = 5;
+    static const INT ITMAX = 5;
     const f64 one = 1.0;
     const f64 two = 2.0;
     const c128 czero = CMPLX(0.0, 0.0);
     const c128 cone = CMPLX(1.0, 0.0);
 
-    static int i, iter, j, jlast, jump;
+    static INT i, iter, j, jlast, jump;
     static f64 altsgn, estold, safmin, temp;
     f64 absxi;
 

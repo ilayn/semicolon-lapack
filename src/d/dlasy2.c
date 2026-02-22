@@ -5,15 +5,15 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /* Lookup tables for 2x2 pivoting (file scope for thread safety) */
-static const int locu12[4] = {2, 3, 0, 1};  /* 0-based: {3,4,1,2} - 1 */
-static const int locl21[4] = {1, 0, 3, 2};  /* 0-based: {2,1,4,3} - 1 */
-static const int locu22[4] = {3, 2, 1, 0};  /* 0-based: {4,3,2,1} - 1 */
-static const int xswpiv[4] = {0, 0, 1, 1};  /* FALSE, FALSE, TRUE, TRUE */
-static const int bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
+static const INT locu12[4] = {2, 3, 0, 1};  /* 0-based: {3,4,1,2} - 1 */
+static const INT locl21[4] = {1, 0, 3, 2};  /* 0-based: {2,1,4,3} - 1 */
+static const INT locu22[4] = {3, 2, 1, 0};  /* 0-based: {4,3,2,1} - 1 */
+static const INT xswpiv[4] = {0, 0, 1, 1};  /* FALSE, FALSE, TRUE, TRUE */
+static const INT bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
 
 /**
  * DLASY2 solves for the N1 by N2 matrix X, 1 <= N1,N2 <= 2, in
@@ -45,13 +45,13 @@ static const int bswpiv[4] = {0, 1, 0, 1};  /* FALSE, TRUE, FALSE, TRUE */
  * @note In the interests of speed, this routine does not check the inputs
  *       for errors.
  */
-void dlasy2(const int ltranl, const int ltranr, const int isgn,
-            const int n1, const int n2,
-            const f64* TL, const int ldtl,
-            const f64* TR, const int ldtr,
-            const f64* B, const int ldb,
-            f64* scale, f64* X, const int ldx,
-            f64* xnorm, int* info)
+void dlasy2(const INT ltranl, const INT ltranr, const INT isgn,
+            const INT n1, const INT n2,
+            const f64* TL, const INT ldtl,
+            const f64* TR, const INT ldtr,
+            const f64* B, const INT ldb,
+            f64* scale, f64* X, const INT ldx,
+            f64* xnorm, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -59,11 +59,11 @@ void dlasy2(const int ltranl, const int ltranr, const int isgn,
     const f64 HALF = 0.5;
     const f64 EIGHT = 8.0;
 
-    int i, ip, ipiv, ipsv, j, jp, jpsv, k;
+    INT i, ip, ipiv, ipsv, j, jp, jpsv, k;
     f64 bet, eps, gam, l21, sgn, smin, smlnum, tau1;
     f64 temp, u11, u12, u22, xmax;
     f64 btmp[4], t16[16], tmp[4], x2[2];  /* t16 stored column-major: t16[i + 4*j] */
-    int jpiv[4];
+    INT jpiv[4];
 
     *info = 0;
 

@@ -27,11 +27,11 @@
  *                         [ -conjg(S)   C  ]
  *                      where C*C + S*CONJG(S) = 1.0.
  */
-void crot(const int n, c64* restrict CX, const int incx,
-          c64* restrict CY, const int incy,
+void crot(const INT n, c64* restrict CX, const INT incx,
+          c64* restrict CY, const INT incy,
           const f32 c, const c64 s)
 {
-    int i, ix, iy;
+    INT i, ix, iy;
     c64 stemp;
 
     if (n <= 0) return;

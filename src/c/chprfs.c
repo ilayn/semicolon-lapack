@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -36,32 +36,32 @@
  */
 void chprfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict AP,
     const c64* restrict AFP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int upper;
-    int count, i, ik, j, k, kase, kk, nz;
+    INT upper;
+    INT count, i, ik, j, k, kase, kk, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

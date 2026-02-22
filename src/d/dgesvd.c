@@ -6,7 +6,7 @@
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /*
@@ -66,13 +66,13 @@
  *                         - > 0: if DBDSQR did not converge.
  */
 void dgesvd(const char* jobu, const char* jobvt,
-            const int m, const int n,
-            f64* restrict A, const int lda,
+            const INT m, const INT n,
+            f64* restrict A, const INT lda,
             f64* restrict S,
-            f64* restrict U, const int ldu,
-            f64* restrict VT, const int ldvt,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict U, const INT ldu,
+            f64* restrict VT, const INT ldvt,
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
     /* Constants */
     const f64 ZERO = 0.0;
@@ -82,16 +82,16 @@ void dgesvd(const char* jobu, const char* jobvt,
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
     /* Local variables */
-    int wntua, wntus, wntuas, wntuo, wntun;
-    int wntva, wntvs, wntvas, wntvo, wntvn;
-    int lquery, minmn, mnthr;
-    int bdspac = 0, minwrk, maxwrk, wrkbl = 0;
-    int lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m;
-    int lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q;
-    int lwork_dgelqf, lwork_dorglq_n, lwork_dorglq_m;
-    int ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk;
-    int i, ierr, iscl, ncu, ncvt, nru, nrvt;
-    int ldwrkr, ldwrku;
+    INT wntua, wntus, wntuas, wntuo, wntun;
+    INT wntva, wntvs, wntvas, wntvo, wntvn;
+    INT lquery, minmn, mnthr;
+    INT bdspac = 0, minwrk, maxwrk, wrkbl = 0;
+    INT lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m;
+    INT lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q;
+    INT lwork_dgelqf, lwork_dorglq_n, lwork_dorglq_m;
+    INT ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk;
+    INT i, ierr, iscl, ncu, ncvt, nru, nrvt;
+    INT ldwrkr, ldwrku;
     f64 anrm, bignum, eps, smlnum;
     f64 dum[1];
 
@@ -141,17 +141,17 @@ void dgesvd(const char* jobu, const char* jobvt,
 
             /* Query workspace for subroutines - pass NULL for unused arrays */
             dgeqrf(m, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dgeqrf = (int)dum[0];
+            lwork_dgeqrf = (INT)dum[0];
             dorgqr(m, n, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgqr_n = (int)dum[0];
+            lwork_dorgqr_n = (INT)dum[0];
             dorgqr(m, m, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgqr_m = (int)dum[0];
+            lwork_dorgqr_m = (INT)dum[0];
             dgebrd(n, n, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-            lwork_dgebrd = (int)dum[0];
+            lwork_dgebrd = (INT)dum[0];
             dorgbr("P", n, n, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgbr_p = (int)dum[0];
+            lwork_dorgbr_p = (INT)dum[0];
             dorgbr("Q", n, n, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgbr_q = (int)dum[0];
+            lwork_dorgbr_q = (INT)dum[0];
 
             if (m >= mnthr) {
                 if (wntun) {
@@ -244,16 +244,16 @@ void dgesvd(const char* jobu, const char* jobvt,
             } else {
                 /* Path 10 (M at least N, but not much larger) */
                 dgebrd(m, n, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-                lwork_dgebrd = (int)dum[0];
+                lwork_dgebrd = (INT)dum[0];
                 maxwrk = 3*n + lwork_dgebrd;
                 if (wntus || wntuo) {
                     dorgbr("Q", m, n, n, NULL, lda, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_q = (int)dum[0];
+                    lwork_dorgbr_q = (INT)dum[0];
                     maxwrk = (maxwrk > 3*n + lwork_dorgbr_q) ? maxwrk : 3*n + lwork_dorgbr_q;
                 }
                 if (wntua) {
                     dorgbr("Q", m, m, n, NULL, lda, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_q = (int)dum[0];
+                    lwork_dorgbr_q = (INT)dum[0];
                     maxwrk = (maxwrk > 3*n + lwork_dorgbr_q) ? maxwrk : 3*n + lwork_dorgbr_q;
                 }
                 if (!wntvn) {
@@ -269,17 +269,17 @@ void dgesvd(const char* jobu, const char* jobvt,
 
             /* Query workspace for subroutines - pass NULL for unused arrays */
             dgelqf(m, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dgelqf = (int)dum[0];
+            lwork_dgelqf = (INT)dum[0];
             dorglq(n, n, m, NULL, n, NULL, dum, -1, &ierr);
-            lwork_dorglq_n = (int)dum[0];
+            lwork_dorglq_n = (INT)dum[0];
             dorglq(m, n, m, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorglq_m = (int)dum[0];
+            lwork_dorglq_m = (INT)dum[0];
             dgebrd(m, m, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-            lwork_dgebrd = (int)dum[0];
+            lwork_dgebrd = (INT)dum[0];
             dorgbr("P", m, m, m, NULL, n, NULL, dum, -1, &ierr);
-            lwork_dorgbr_p = (int)dum[0];
+            lwork_dorgbr_p = (INT)dum[0];
             dorgbr("Q", m, m, m, NULL, n, NULL, dum, -1, &ierr);
-            lwork_dorgbr_q = (int)dum[0];
+            lwork_dorgbr_q = (INT)dum[0];
 
             if (n >= mnthr) {
                 if (wntvn) {
@@ -372,16 +372,16 @@ void dgesvd(const char* jobu, const char* jobvt,
             } else {
                 /* Path 10t (N greater than M, but not much larger) */
                 dgebrd(m, n, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-                lwork_dgebrd = (int)dum[0];
+                lwork_dgebrd = (INT)dum[0];
                 maxwrk = 3*m + lwork_dgebrd;
                 if (wntvs || wntvo) {
                     dorgbr("P", m, n, m, NULL, n, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_p = (int)dum[0];
+                    lwork_dorgbr_p = (INT)dum[0];
                     maxwrk = (maxwrk > 3*m + lwork_dorgbr_p) ? maxwrk : 3*m + lwork_dorgbr_p;
                 }
                 if (wntva) {
                     dorgbr("P", n, n, m, NULL, n, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_p = (int)dum[0];
+                    lwork_dorgbr_p = (INT)dum[0];
                     maxwrk = (maxwrk > 3*m + lwork_dorgbr_p) ? maxwrk : 3*m + lwork_dorgbr_p;
                 }
                 if (!wntun) {

@@ -3,7 +3,7 @@
  * @brief DTZRZF reduces an upper trapezoidal matrix to upper triangular form.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
@@ -43,14 +43,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dtzrzf(const int m, const int n,
-            f64* restrict A, const int lda,
+void dtzrzf(const INT m, const INT n,
+            f64* restrict A, const INT lda,
             f64* restrict tau,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
-    int lquery;
+    INT i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
+    INT lquery;
 
     /* Parameter validation */
     *info = 0;

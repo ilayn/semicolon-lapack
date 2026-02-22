@@ -6,7 +6,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -69,25 +69,25 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgelsy(const int m, const int n, const int nrhs,
-            c64* restrict A, const int lda,
-            c64* restrict B, const int ldb,
-            int* restrict jpvt, const f32 rcond,
-            int* rank,
-            c64* restrict work, const int lwork,
+void cgelsy(const INT m, const INT n, const INT nrhs,
+            c64* restrict A, const INT lda,
+            c64* restrict B, const INT ldb,
+            INT* restrict jpvt, const f32 rcond,
+            INT* rank,
+            c64* restrict work, const INT lwork,
             f32* restrict rwork,
-            int* info)
+            INT* info)
 {
     /* Constants from Fortran source: IMAX=1, IMIN=2 */
-    const int IMAX = 1;
-    const int IMIN = 2;
+    const INT IMAX = 1;
+    const INT IMIN = 2;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int lquery;
-    int iascl, ibscl, ismin, ismax, mn, nb;
-    int lwkmin, lwkopt;
-    int iinfo;
+    INT lquery;
+    INT iascl, ibscl, ismin, ismax, mn, nb;
+    INT lwkmin, lwkopt;
+    INT iinfo;
     f32 anrm, bignum, bnrm, smlnum;
     f32 smax, smaxpr, smin, sminpr;
     c64 c1, c2, s1, s2;
@@ -118,27 +118,27 @@ void cgelsy(const int m, const int n, const int nrhs,
             lwkmin = 1;
             lwkopt = 1;
         } else {
-            int nb1 = lapack_get_nb("GEQRF");
-            int nb2 = lapack_get_nb("GERQF");
-            int nb3 = lapack_get_nb("ORMQR");
-            int nb4 = lapack_get_nb("ORMRQ");
+            INT nb1 = lapack_get_nb("GEQRF");
+            INT nb2 = lapack_get_nb("GERQF");
+            INT nb3 = lapack_get_nb("ORMQR");
+            INT nb4 = lapack_get_nb("ORMRQ");
             nb = nb1;
             if (nb2 > nb) nb = nb2;
             if (nb3 > nb) nb = nb3;
             if (nb4 > nb) nb = nb4;
 
             /* LWKMIN = MN + MAX(2*MN, N+1, MN+NRHS) */
-            int t1 = 2 * mn;
-            int t2 = n + 1;
-            int t3 = mn + nrhs;
-            int tmax = t1;
+            INT t1 = 2 * mn;
+            INT t2 = n + 1;
+            INT t3 = mn + nrhs;
+            INT tmax = t1;
             if (t2 > tmax) tmax = t2;
             if (t3 > tmax) tmax = t3;
             lwkmin = mn + tmax;
 
             /* LWKOPT = MAX(1, MN+2*N+NB*(N+1), 2*MN+NB*NRHS) */
-            int w1 = mn + 2 * n + nb * (n + 1);
-            int w2 = 2 * mn + nb * nrhs;
+            INT w1 = mn + 2 * n + nb * (n + 1);
+            INT w2 = 2 * mn + nb * nrhs;
             lwkopt = lwkmin;
             if (w1 > lwkopt) lwkopt = w1;
             if (w2 > lwkopt) lwkopt = w2;
@@ -180,7 +180,7 @@ void cgelsy(const int m, const int n, const int nrhs,
         iascl = 2;
     } else if (anrm == 0.0f) {
         /* Matrix all zero. Return zero solution. */
-        int maxmn = m > n ? m : n;
+        INT maxmn = m > n ? m : n;
         claset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
         *rank = 0;
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
@@ -212,7 +212,7 @@ void cgelsy(const int m, const int n, const int nrhs,
 
     if (cabsf(A[0]) == 0.0f) {
         *rank = 0;
-        int maxmn = m > n ? m : n;
+        INT maxmn = m > n ? m : n;
         claset("F", maxmn, nrhs, CZERO, CZERO, B, ldb);
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
         return;
@@ -222,7 +222,7 @@ void cgelsy(const int m, const int n, const int nrhs,
 
     /* Rank determination loop (Fortran GO TO 10 pattern -> while loop) */
     while (*rank < mn) {
-        int i = *rank;  /* 0-based column index: Fortran I = RANK+1 */
+        INT i = *rank;  /* 0-based column index: Fortran I = RANK+1 */
         claic1(IMIN, *rank, &work[ismin], smin,
                &A[0 + i * lda], A[i + i * lda],
                &sminpr, &s1, &c1);
@@ -234,7 +234,7 @@ void cgelsy(const int m, const int n, const int nrhs,
             break;
         }
 
-        for (int ii = 0; ii < *rank; ii++) {
+        for (INT ii = 0; ii < *rank; ii++) {
             work[ismin + ii] = s1 * work[ismin + ii];
             work[ismax + ii] = s2 * work[ismax + ii];
         }
@@ -269,8 +269,8 @@ void cgelsy(const int m, const int n, const int nrhs,
                 CblasNonUnit, *rank, nrhs, &CONE, A, lda, B, ldb);
 
     /* B(rank:n-1, 0:nrhs-1) = 0 */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = *rank; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = *rank; i < n; i++) {
             B[i + j * ldb] = CZERO;
         }
     }
@@ -284,8 +284,8 @@ void cgelsy(const int m, const int n, const int nrhs,
 
     /* B(0:n-1, 0:nrhs-1) := P * B(0:n-1, 0:nrhs-1)
      * Apply column permutation: result[jpvt[i]] = B[i] */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             work[jpvt[i]] = B[i + j * ldb];
         }
         cblas_ccopy(n, work, 1, &B[j * ldb], 1);

@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -71,26 +71,26 @@
  *                                 principal minor of order i of B is not positive.
  */
 void chpgvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     c64* restrict BP,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
 
     *info = 0;
     if (itype < 1 || itype > 3) {
@@ -105,7 +105,7 @@ void chpgvd(
         *info = -9;
     }
 
-    int lwmin, lrwmin, liwmin;
+    INT lwmin, lrwmin, liwmin;
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
@@ -157,15 +157,15 @@ void chpgvd(
     chpgst(itype, uplo, n, AP, BP, info);
     chpevd(jobz, uplo, n, AP, W, Z, ldz, work, lwork, rwork,
            lrwork, iwork, liwork, info);
-    lwmin = (int)fmaxf((f32)lwmin, crealf(work[0]));
-    lrwmin = (int)fmaxf((f32)lrwmin, rwork[0]);
-    liwmin = (int)fmaxf((f32)liwmin, (f32)iwork[0]);
+    lwmin = (INT)fmaxf((f32)lwmin, crealf(work[0]));
+    lrwmin = (INT)fmaxf((f32)lrwmin, rwork[0]);
+    liwmin = (INT)fmaxf((f32)liwmin, (f32)iwork[0]);
 
     if (wantz) {
 
         /* Backtransform eigenvectors to the original problem. */
 
-        int neig = n;
+        INT neig = n;
         if (*info > 0)
             neig = *info - 1;
         if (itype == 1 || itype == 2) {
@@ -180,7 +180,7 @@ void chpgvd(
                 trans = 'C';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ctpsv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'N' ? CblasNoTrans : CblasConjTrans,
@@ -199,7 +199,7 @@ void chpgvd(
                 trans = 'N';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ctpmv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'C' ? CblasConjTrans : CblasNoTrans,

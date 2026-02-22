@@ -6,7 +6,7 @@
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGEEVX computes for an N-by-N real nonsymmetric matrix A, the
@@ -99,25 +99,25 @@
  *                           contain eigenvalues which have converged.
  */
 void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n, f64* A, const int lda,
+            const char* sense, const INT n, f64* A, const INT lda,
             f64* wr, f64* wi,
-            f64* VL, const int ldvl, f64* VR, const int ldvr,
-            int* ilo, int* ihi, f64* scale, f64* abnrm,
+            f64* VL, const INT ldvl, f64* VR, const INT ldvr,
+            INT* ilo, INT* ihi, f64* scale, f64* abnrm,
             f64* rconde, f64* rcondv,
-            f64* work, const int lwork, int* iwork, int* info)
+            f64* work, const INT lwork, INT* iwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
-    int hswork, i, icond, ierr, itau, iwrk, k;
-    int lwork_trevc, maxwrk, minwrk, nout;
+    INT lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
+    INT hswork, i, icond, ierr, itau, iwrk, k;
+    INT lwork_trevc, maxwrk, minwrk, nout;
     f64 anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
     f64 dum[1];
-    int select[1];  /* Dummy for dtrevc3 workspace query */
+    INT select[1];  /* Dummy for dtrevc3 workspace query */
     const char* side;
     char job_hseqr;
-    int nb_gehrd, nb_orghr;
+    INT nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -167,7 +167,7 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                 /* Query dtrevc3 for workspace */
                 dtrevc3("L", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
-                lwork_trevc = (int)work[0];
+                lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
                 /* Query dhseqr for workspace (0-based: ilo=0, ihi=n-1) */
                 dhseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VL, ldvl,
@@ -175,7 +175,7 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
             } else if (wantvr) {
                 dtrevc3("R", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
-                lwork_trevc = (int)work[0];
+                lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
                 dhseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VR, ldvr,
                        work, -1, info);
@@ -188,7 +188,7 @@ void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                            work, -1, info);
                 }
             }
-            hswork = (int)work[0];
+            hswork = (INT)work[0];
 
             if (!wantvl && !wantvr) {
                 minwrk = 2 * n;

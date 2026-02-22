@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -42,19 +42,19 @@
  *          On the final return from SLACON, kase will again be 0.
  */
 void slacon(
-    const int n,
+    const INT n,
     f32* restrict V,
     f32* restrict X,
-    int* restrict ISGN,
+    INT* restrict ISGN,
     f32* est,
-    int* kase)
+    INT* kase)
 {
-    static const int ITMAX = 5;
+    static const INT ITMAX = 5;
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const f32 two = 2.0f;
 
-    static int i, iter, j, jlast, jump;
+    static INT i, iter, j, jlast, jump;
     static f32 altsgn, estold, temp;
 
     if (*kase == 0) {
@@ -89,8 +89,8 @@ L20:
 
     for (i = 0; i < n; i++) {
         X[i] = (X[i] >= zero) ? one : -one;
-        ISGN[i] = (int)(X[i] + 0.5f);
-        if (X[i] < zero) ISGN[i] = (int)(X[i] - 0.5f);
+        ISGN[i] = (INT)(X[i] + 0.5f);
+        if (X[i] < zero) ISGN[i] = (INT)(X[i] - 0.5f);
     }
     *kase = 2;
     jump = 2;
@@ -114,7 +114,7 @@ L70:
     estold = *est;
     *est = cblas_sasum(n, V, 1);
     for (i = 0; i < n; i++) {
-        int new_sgn = (X[i] >= zero) ? 1 : -1;
+        INT new_sgn = (X[i] >= zero) ? 1 : -1;
         if (new_sgn != ISGN[i]) {
             goto L90;
         }
@@ -128,8 +128,8 @@ L90:
 
     for (i = 0; i < n; i++) {
         X[i] = (X[i] >= zero) ? one : -one;
-        ISGN[i] = (int)(X[i] + 0.5f);
-        if (X[i] < zero) ISGN[i] = (int)(X[i] - 0.5f);
+        ISGN[i] = (INT)(X[i] + 0.5f);
+        if (X[i] < zero) ISGN[i] = (INT)(X[i] - 0.5f);
     }
     *kase = 2;
     jump = 4;

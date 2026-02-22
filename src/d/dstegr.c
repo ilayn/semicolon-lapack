@@ -117,26 +117,26 @@
 void dstegr(
     const char* jobz,
     const char* range,
-    const int n,
+    const INT n,
     f64* restrict D,
     f64* restrict E,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
-    int* restrict isuppz,
+    const INT ldz,
+    INT* restrict isuppz,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    int tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
+    INT tryrac = 0;  // FALSE: don't try to use the high relative accuracy algorithm
 
     // DSTEGR is simply a wrapper around DSTEMR
     // Note: abstol is unused in dstemr, tryrac is set to false

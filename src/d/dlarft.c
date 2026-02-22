@@ -3,7 +3,7 @@
  * @brief DLARFT forms the triangular factor T of a block reflector H = I - V*T*V**T.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -35,15 +35,15 @@
  * @param[in]  ldt     Leading dimension of T. ldt >= k.
  */
 void dlarft(const char* direct, const char* storev,
-            const int n, const int k,
-            const f64* restrict V, const int ldv,
+            const INT n, const INT k,
+            const f64* restrict V, const INT ldv,
             const f64* restrict tau,
-            f64* restrict T, const int ldt)
+            f64* restrict T, const INT ldt)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
-    int l, i, j;
-    int dirf, colv, qr, lq, ql;
+    INT l, i, j;
+    INT dirf, colv, qr, lq, ql;
 
     /* Quick return if possible */
     if (n == 0 || k == 0) {

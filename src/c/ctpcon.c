@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -35,22 +35,22 @@ void ctpcon(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* rcond,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int nounit, onenrm, upper;
+    INT nounit, onenrm, upper;
     char normin;
-    int ix, kase, kase1;
+    INT ix, kase, kase1;
     f32 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

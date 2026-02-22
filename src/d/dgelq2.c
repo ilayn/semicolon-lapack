@@ -4,7 +4,7 @@
  *        using an unblocked algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -35,13 +35,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgelq2(const int m, const int n,
-            f64* restrict A, const int lda,
+void dgelq2(const INT m, const INT n,
+            f64* restrict A, const INT lda,
             f64* restrict tau,
             f64* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, k;
+    INT i, k;
     f64 aii;
 
     /* Parameter validation */

@@ -72,15 +72,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dormbr(const char* vect, const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const f64* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            const f64* restrict A, const INT lda,
             const f64* restrict tau,
-            f64* restrict C, const int ldc,
-            f64* restrict work, const int lwork, int* info)
+            f64* restrict C, const INT ldc,
+            f64* restrict work, const INT lwork, INT* info)
 {
-    int applyq, left, lquery, notran;
+    INT applyq, left, lquery, notran;
     char transt;
-    int i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
+    INT i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

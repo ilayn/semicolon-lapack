@@ -4,7 +4,7 @@
  *        L*D*L**T factorization computed by SPTTRF.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -34,14 +34,14 @@
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
  */
 void sptts2(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const f32* restrict E,
     f32* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
 
     if (n <= 1) {
         if (n == 1) {

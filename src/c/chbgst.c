@@ -3,7 +3,7 @@
  * @brief CHBGST reduces a Hermitian-definite banded generalized eigenproblem to standard form.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
@@ -57,26 +57,26 @@
 void chbgst(
     const char* vect,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const c64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
     const f32 ONE = 1.0f;
 
-    int update, upper, wantx;
-    int i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
+    INT update, upper, wantx;
+    INT i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
     f32 bii;
     c64 ra, ra1 = CZERO, t;
 
@@ -157,7 +157,7 @@ void chbgst(
             for (j = i + 1; j <= i1; j++) {
                 AB[i - j + ka + j * ldab] = AB[i - j + ka + j * ldab] / bii;
             }
-            int jmax = (1 > i - ka) ? 1 : (i - ka);
+            INT jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i - 1; j++) {
                 AB[j - i + ka + i * ldab] = AB[j - i + ka + i * ldab] / bii;
             }
@@ -176,7 +176,7 @@ void chbgst(
                 }
             }
             for (j = i; j <= i1; j++) {
-                int kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
+                INT kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
                     AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
                         - BB[k - i + kb + i * ldbb] * AB[i - j + ka + j * ldab];
@@ -358,7 +358,7 @@ void chbgst(
             for (j = i + 1; j <= i1; j++) {
                 AB[j - i + i * ldab] = AB[j - i + i * ldab] / bii;
             }
-            int jmax = (1 > i - ka) ? 1 : (i - ka);
+            INT jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i - 1; j++) {
                 AB[i - j + j * ldab] = AB[i - j + j * ldab] / bii;
             }
@@ -377,7 +377,7 @@ void chbgst(
                 }
             }
             for (j = i; j <= i1; j++) {
-                int kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
+                INT kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
                     AB[j - k + k * ldab] = AB[j - k + k * ldab]
                         - BB[i - k + k * ldbb] * AB[j - i + i * ldab];
@@ -595,7 +595,7 @@ void chbgst(
             for (j = i1; j <= i - 1; j++) {
                 AB[j - i + ka + i * ldab] = AB[j - i + ka + i * ldab] / bii;
             }
-            int jmin = (n < i + ka) ? n : (i + ka);
+            INT jmin = (n < i + ka) ? n : (i + ka);
             for (j = i + 1; j <= jmin; j++) {
                 AB[i - j + ka + j * ldab] = AB[i - j + ka + j * ldab] / bii;
             }
@@ -614,7 +614,7 @@ void chbgst(
                 }
             }
             for (j = i1; j <= i; j++) {
-                int kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
+                INT kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
                     AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
                         - BB[i - k + kb + k * ldbb] * AB[j - i + ka + i * ldab];
@@ -782,7 +782,7 @@ void chbgst(
         }
 
         if (kb > 1) {
-            int jmin = (i + kb < m) ? (i + kb) : m;
+            INT jmin = (i + kb < m) ? (i + kb) : m;
             for (j = 2; j <= jmin - 2 * ka - 1; j++) {
                 rwork[j - 1] = rwork[j + ka - 1];
                 work[j - 1] = work[j + ka - 1];
@@ -802,7 +802,7 @@ void chbgst(
             for (j = i1; j <= i - 1; j++) {
                 AB[i - j + j * ldab] = AB[i - j + j * ldab] / bii;
             }
-            int jmin = (n < i + ka) ? n : (i + ka);
+            INT jmin = (n < i + ka) ? n : (i + ka);
             for (j = i + 1; j <= jmin; j++) {
                 AB[j - i + i * ldab] = AB[j - i + i * ldab] / bii;
             }
@@ -821,7 +821,7 @@ void chbgst(
                 }
             }
             for (j = i1; j <= i; j++) {
-                int kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
+                INT kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
                     AB[k - j + j * ldab] = AB[k - j + j * ldab]
                         - BB[k - i + i * ldbb] * AB[i - j + j * ldab];
@@ -989,7 +989,7 @@ void chbgst(
         }
 
         if (kb > 1) {
-            int jmin = (i + kb < m) ? (i + kb) : m;
+            INT jmin = (i + kb < m) ? (i + kb) : m;
             for (j = 2; j <= jmin - 2 * ka - 1; j++) {
                 rwork[j - 1] = rwork[j + ka - 1];
                 work[j - 1] = work[j + ka - 1];

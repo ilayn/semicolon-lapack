@@ -5,7 +5,7 @@
  */
 
 #include <string.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -56,8 +56,8 @@
 void dgtsvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict DL,
     const f64* restrict D,
     const f64* restrict DU,
@@ -65,25 +65,25 @@ void dgtsvx(
     f64* restrict DF,
     f64* restrict DUF,
     f64* restrict DU2,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nofact, notran;
+    INT nofact, notran;
     char norm;
     f64 anorm;
-    int ldb_min, ldx_min;
-    int j;
+    INT ldb_min, ldx_min;
+    INT j;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

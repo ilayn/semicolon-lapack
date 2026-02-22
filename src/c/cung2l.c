@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -35,13 +35,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cung2l(const int m, const int n, const int k,
-            c64* restrict A, const int lda,
+void cung2l(const INT m, const INT n, const INT k,
+            c64* restrict A, const INT lda,
             const c64* restrict tau,
             c64* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, ii, j, l;
+    INT i, ii, j, l;
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 

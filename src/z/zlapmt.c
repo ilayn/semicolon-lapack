@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZLAPMT rearranges the columns of the M by N matrix X as specified
@@ -25,11 +25,11 @@
  * @param[in,out] K       Array (n). Permutation indices (0-based in C).
  *                        On exit, modified internally and then restored.
  */
-void zlapmt(const int forwrd, const int m, const int n,
-            c128* restrict X, const int ldx,
-            int* restrict K)
+void zlapmt(const INT forwrd, const INT m, const INT n,
+            c128* restrict X, const INT ldx,
+            INT* restrict K)
 {
-    int i, j, in;
+    INT i, j, in;
 
     if (n <= 1) return;
 

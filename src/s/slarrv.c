@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <string.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 
@@ -79,17 +79,17 @@
  *                         - = 5: the Rayleigh Quotient Iteration failed to converge to
  *                           full accuracy in MAXITR steps.
  */
-void slarrv(const int n, const f32 vl, const f32 vu,
+void slarrv(const INT n, const f32 vl, const f32 vu,
             f32* D, f32* L, const f32 pivmin,
-            const int* isplit, const int m, const int dol, const int dou,
+            const INT* isplit, const INT m, const INT dol, const INT dou,
             const f32 minrgp, const f32 rtol1, const f32 rtol2,
             f32* W, f32* werr, f32* wgap,
-            const int* iblock, const int* indexw, const f32* gers,
-            f32* Z, const int ldz, int* isuppz,
-            f32* work, int* iwork, int* info)
+            const INT* iblock, const INT* indexw, const f32* gers,
+            f32* Z, const INT ldz, INT* isuppz,
+            f32* work, INT* iwork, INT* info)
 {
     /* Parameters */
-    const int MAXITR = 10;
+    const INT MAXITR = 10;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
@@ -98,8 +98,8 @@ void slarrv(const int n, const f32 vl, const f32 vu,
     const f32 HALF = 0.5f;
 
     /* Local Scalars */
-    int eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
-    int done, i, ibegin, idone, iend, ii, iindc1,
+    INT eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
+    INT done, i, ibegin, idone, iend, ii, iindc1,
         iindc2, iindr, iindwk, iinfo, im, in, indeig,
         indld, indlld, indwrk, isupmn, isupmx, iter,
         itmp1, j, jblk, k, miniwsize, minwsize, nclus,
@@ -144,7 +144,7 @@ void slarrv(const int n, const f32 vl, const f32 vu,
     iindwk = 3 * n;
 
     miniwsize = 7 * n;
-    memset(iwork, 0, miniwsize * sizeof(int));
+    memset(iwork, 0, miniwsize * sizeof(INT));
 
     for (i = 0; i < n; i++) {
         iwork[iindr + i] = -1;

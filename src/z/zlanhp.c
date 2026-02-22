@@ -47,14 +47,14 @@
 f64 zlanhp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j, k;
+    INT i, j, k;
     f64 absa, scale, sum, value;
 
     if (n == 0) {

@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -49,18 +49,18 @@
  */
 void slasyf_rook(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f32* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
-    int done;
-    int imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
+    INT done;
+    INT imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, d11, d12, d21, d22;
     f32 dtemp, r1, rowmax, t, sfmin;
 

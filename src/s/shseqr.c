@@ -8,7 +8,7 @@
 
 /** @cond */
 /* ISPEC=12: NMIN - crossover to SLAHQR (from iparmq.f) */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
@@ -61,19 +61,19 @@ static int iparmq_nmin(void)
  *                           Elements 0:ilo-1 and i+1:n-1 of WR and WI contain those
  *                           eigenvalues which have been successfully computed.
  */
-void shseqr(const char* job, const char* compz, const int n,
-                          const int ilo, const int ihi,
-                          f32* H, const int ldh,
+void shseqr(const char* job, const char* compz, const INT n,
+                          const INT ilo, const INT ihi,
+                          f32* H, const INT ldh,
                           f32* wr, f32* wi,
-                          f32* Z, const int ldz,
-                          f32* work, const int lwork, int* info)
+                          f32* Z, const INT ldz,
+                          f32* work, const INT lwork, INT* info)
 {
     /* Parameters */
-    const int ntiny = 15;  /* Matrices of order NTINY or smaller use SLAHQR */
+    const INT ntiny = 15;  /* Matrices of order NTINY or smaller use SLAHQR */
     /* NL = 49: allocates local workspace to help small matrices through
      * a rare SLAHQR failure. Allows up to six simultaneous shifts and
      * a 16-by-16 deflation window. */
-    const int nl = 49;
+    const INT nl = 49;
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
@@ -82,8 +82,8 @@ void shseqr(const char* job, const char* compz, const int n,
     f32 workl[49];
 
     /* Local scalars */
-    int i, kbot, nmin;
-    int initz, lquery, wantt, wantz;
+    INT i, kbot, nmin;
+    INT initz, lquery, wantt, wantz;
 
     /* Decode and check the input parameters */
     wantt = (job[0] == 'S' || job[0] == 's');

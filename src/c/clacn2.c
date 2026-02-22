@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -42,20 +42,20 @@
  *                      between calls to CLACN2.
  */
 void clacn2(
-    const int n,
+    const INT n,
     c64* restrict V,
     c64* restrict X,
     f32* est,
-    int* kase,
-    int* restrict isave)
+    INT* kase,
+    INT* restrict isave)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int i, jlast;
+    INT i, jlast;
     f32 absxi, altsgn, estold, safmin, temp;
 
     safmin = slamch("Safe minimum");

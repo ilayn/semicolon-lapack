@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -40,19 +40,19 @@
  *          On the final return from CLACON, kase will again be 0.
  */
 void clacon(
-    const int n,
+    const INT n,
     c64* restrict V,
     c64* restrict X,
     f32* est,
-    int* kase)
+    INT* kase)
 {
-    static const int ITMAX = 5;
+    static const INT ITMAX = 5;
     const f32 one = 1.0f;
     const f32 two = 2.0f;
     const c64 czero = CMPLXF(0.0f, 0.0f);
     const c64 cone = CMPLXF(1.0f, 0.0f);
 
-    static int i, iter, j, jlast, jump;
+    static INT i, iter, j, jlast, jump;
     static f32 altsgn, estold, safmin, temp;
     f32 absxi;
 

@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -43,25 +43,25 @@ void ctprfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict AP,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     const c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int notran, nounit, upper;
-    int i, j, k, kase, kc, nz;
+    INT notran, nounit, upper;
+    INT i, j, k, kase, kc, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

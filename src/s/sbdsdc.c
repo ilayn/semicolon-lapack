@@ -7,7 +7,7 @@
 #include "semicolon_lapack_single.h"
 #include <stdlib.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f32 ZERO = 0.0f;
 static const f32 ONE = 1.0f;
@@ -15,7 +15,7 @@ static const f32 TWO = 2.0f;
 
 /* SMLSIZ: maximum size of subproblems at bottom of DC tree.
  * From ilaenv.f ISPEC=9, the default is 25. */
-static const int SMLSIZ = 25;
+static const INT SMLSIZ = 25;
 
 /**
  * SBDSDC computes the singular value decomposition (SVD) of a real
@@ -54,16 +54,16 @@ static const int SMLSIZ = 25;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void sbdsdc(const char* uplo, const char* compq, const int n,
+void sbdsdc(const char* uplo, const char* compq, const INT n,
             f32* restrict D, f32* restrict E,
-            f32* restrict U, const int ldu,
-            f32* restrict VT, const int ldvt,
-            f32* restrict Q, int* restrict IQ,
-            f32* restrict work, int* restrict IWORK, int* info)
+            f32* restrict U, const INT ldu,
+            f32* restrict VT, const INT ldvt,
+            f32* restrict Q, INT* restrict IQ,
+            f32* restrict work, INT* restrict IWORK, INT* info)
 {
-    int difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
-    int ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
-    int poles, qstart, smlszp, sqre, start, wstart, z;
+    INT difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
+    INT ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
+    INT poles, qstart, smlszp, sqre, start, wstart, z;
     f32 cs, eps, orgnrm, p, r, sn;
 
     /* Test the input parameters */
@@ -202,7 +202,7 @@ void sbdsdc(const char* uplo, const char* compq, const int n,
 
     eps = 0.9f * slamch("Epsilon");
 
-    mlvl = (int)(logf((f32)n / (f32)(SMLSIZ + 1)) / logf(TWO)) + 1;
+    mlvl = (INT)(logf((f32)n / (f32)(SMLSIZ + 1)) / logf(TWO)) + 1;
     smlszp = SMLSIZ + 1;
 
     if (icompq == 1) {

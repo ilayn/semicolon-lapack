@@ -65,17 +65,17 @@
  */
 void zhetri_3(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int lwkopt, nb;
+    INT upper, lquery;
+    INT lwkopt, nb;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

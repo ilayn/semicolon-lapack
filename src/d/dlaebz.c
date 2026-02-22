@@ -76,25 +76,25 @@
  *                         - = 1..MMAX: The last info intervals did not converge.
  *                         - = MMAX+1: More than MMAX intervals were generated.
  */
-void dlaebz(const int ijob, const int nitmax, const int n,
-            const int mmax, const int minp, const int nbmin,
+void dlaebz(const INT ijob, const INT nitmax, const INT n,
+            const INT mmax, const INT minp, const INT nbmin,
             const f64 abstol, const f64 reltol, const f64 pivmin,
             const f64* restrict D,
             const f64* restrict E,
             const f64* restrict E2,
-            int* restrict nval,
+            INT* restrict nval,
             f64* restrict AB,
             f64* restrict C,
-            int* mout,
-            int* restrict NAB,
+            INT* mout,
+            INT* restrict NAB,
             f64* restrict work,
-            int* restrict iwork,
-            int* info)
+            INT* restrict iwork,
+            INT* info)
 {
     (void)E;  /* E is in the API for compatibility but E2 is used instead */
     const f64 HALF = 0.5;
 
-    int itmp1, itmp2, j, ji, jit, kf, kfnew, kl, klnew;
+    INT itmp1, itmp2, j, ji, jit, kf, kfnew, kl, klnew;
     f64 tmp1, tmp2;
 
     /* Check for errors */
@@ -111,7 +111,7 @@ void dlaebz(const int ijob, const int nitmax, const int n,
          */
         *mout = 0;
         for (ji = 0; ji < minp; ji++) {
-            for (int jp = 0; jp < 2; jp++) {
+            for (INT jp = 0; jp < 2; jp++) {
                 /* Sturm sequence: tmp1 = D(1) - AB(ji, jp) */
                 tmp1 = D[0] - AB[ji + jp * mmax];
                 if (fabs(tmp1) < pivmin)
@@ -286,7 +286,7 @@ void dlaebz(const int ijob, const int nitmax, const int n,
                      * Ensure that N(w) is monotone
                      */
                     {
-                        int lo = NAB[ji + 0 * mmax] > itmp1 ? NAB[ji + 0 * mmax] : itmp1;
+                        INT lo = NAB[ji + 0 * mmax] > itmp1 ? NAB[ji + 0 * mmax] : itmp1;
                         itmp1 = NAB[ji + 1 * mmax] < lo ? NAB[ji + 1 * mmax] : lo;
                     }
 

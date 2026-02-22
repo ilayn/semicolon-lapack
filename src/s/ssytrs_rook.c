@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SSYTRS_ROOK solves a system of linear equations A*X = B with
@@ -51,17 +51,17 @@
  */
 void ssytrs_rook(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int upper;
-    int j, k, kp;
+    INT upper;
+    INT j, k, kp;
     f32 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

@@ -37,12 +37,12 @@
 f32 slansy(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict work)
 {
-    int i, j;
+    INT i, j;
     f32 absa, scale, sum, value, temp;
 
     /* Quick return if possible */

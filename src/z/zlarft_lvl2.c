@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -34,15 +34,15 @@
  * @param[in]  ldt     Leading dimension of T. ldt >= k.
  */
 void zlarft_lvl2(const char* direct, const char* storev,
-                 const int n, const int k,
-                 const c128* restrict V, const int ldv,
+                 const INT n, const INT k,
+                 const c128* restrict V, const INT ldv,
                  const c128* restrict tau,
-                 c128* restrict T, const int ldt)
+                 c128* restrict T, const INT ldt)
 {
     const c128 ONE  = 1.0;
     const c128 ZERO = 0.0;
 
-    int i, j, prevlastv, lastv;
+    INT i, j, prevlastv, lastv;
 
     if (n == 0)
         return;

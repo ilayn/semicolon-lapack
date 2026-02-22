@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /* Macro for min/max */
@@ -62,24 +62,24 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgbbrd(const char* vect, const int m, const int n, const int ncc,
-            const int kl, const int ku,
-            f64* restrict AB, const int ldab,
+void dgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
+            const INT kl, const INT ku,
+            f64* restrict AB, const INT ldab,
             f64* restrict D, f64* restrict E,
-            f64* restrict Q, const int ldq,
-            f64* restrict PT, const int ldpt,
-            f64* restrict C, const int ldc,
-            f64* restrict work, int* info)
+            f64* restrict Q, const INT ldq,
+            f64* restrict PT, const INT ldpt,
+            f64* restrict C, const INT ldc,
+            f64* restrict work, INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
     /* Test the input parameters */
-    int wantb = (vect[0] == 'B' || vect[0] == 'b');
-    int wantq = (vect[0] == 'Q' || vect[0] == 'q') || wantb;
-    int wantpt = (vect[0] == 'P' || vect[0] == 'p') || wantb;
-    int wantc = (ncc > 0);
-    int klu1 = kl + ku + 1;
+    INT wantb = (vect[0] == 'B' || vect[0] == 'b');
+    INT wantq = (vect[0] == 'Q' || vect[0] == 'q') || wantb;
+    INT wantpt = (vect[0] == 'P' || vect[0] == 'p') || wantb;
+    INT wantc = (ncc > 0);
+    INT klu1 = kl + ku + 1;
 
     *info = 0;
     if (!wantq && !wantpt && !(vect[0] == 'N' || vect[0] == 'n')) {
@@ -122,7 +122,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
         return;
     }
 
-    int minmn = MIN(m, n);
+    INT minmn = MIN(m, n);
 
     if (kl + ku > 1) {
         /*
@@ -130,7 +130,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
          * first to lower bidiagonal form and then transform to upper
          * bidiagonal
          */
-        int ml0, mu0;
+        INT ml0, mu0;
         if (ku > 0) {
             ml0 = 1;
             mu0 = 2;
@@ -146,23 +146,23 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
          * The sines of the plane rotations are stored in work[0:mn-1]
          * and the cosines in work[mn:2*mn-1].
          */
-        int mn = MAX(m, n);
-        int klm = MIN(m - 1, kl);
-        int kun = MIN(n - 1, ku);
-        int kb = klm + kun;
-        int kb1 = kb + 1;
-        int inca = kb1 * ldab;
-        int nr = 0;
-        int j1 = klm + 1;   /* 0-indexed: Fortran klm+2 becomes klm+1 */
-        int j2 = -kun;      /* 0-indexed: Fortran 1-kun becomes -kun */
+        INT mn = MAX(m, n);
+        INT klm = MIN(m - 1, kl);
+        INT kun = MIN(n - 1, ku);
+        INT kb = klm + kun;
+        INT kb1 = kb + 1;
+        INT inca = kb1 * ldab;
+        INT nr = 0;
+        INT j1 = klm + 1;   /* 0-indexed: Fortran klm+2 becomes klm+1 */
+        INT j2 = -kun;      /* 0-indexed: Fortran 1-kun becomes -kun */
 
-        for (int i = 0; i < minmn; i++) {
+        for (INT i = 0; i < minmn; i++) {
             /* Reduce i-th column and i-th row of matrix to bidiagonal form */
 
-            int ml = klm + 1;
-            int mu = kun + 1;
+            INT ml = klm + 1;
+            INT mu = kun + 1;
 
-            for (int kk = 0; kk < kb; kk++) {
+            for (INT kk = 0; kk < kb; kk++) {
                 j1 += kb;
                 j2 += kb;
 
@@ -177,8 +177,8 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
                 }
 
                 /* Apply plane rotations from the left */
-                for (int l = 0; l < kb; l++) {
-                    int nrt;
+                for (INT l = 0; l < kb; l++) {
+                    INT nrt;
                     if (j2 - klm + l > n - 1) {
                         nrt = nr - 1;
                     } else {
@@ -217,7 +217,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (wantq) {
                     /* Accumulate product of plane rotations in Q */
-                    for (int j = j1; j <= j2; j += kb1) {
+                    for (INT j = j1; j <= j2; j += kb1) {
                         /* Q columns j-1 and j (0-indexed: j-1 and j become j-1 and j) */
                         cblas_drot(m, &Q[(j - 1) * ldq], 1, &Q[j * ldq], 1,
                                    work[mn + j], work[j]);
@@ -226,7 +226,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (wantc) {
                     /* Apply plane rotations to C */
-                    for (int j = j1; j <= j2; j += kb1) {
+                    for (INT j = j1; j <= j2; j += kb1) {
                         /* C rows j-1 and j */
                         cblas_drot(ncc, &C[(j - 1)], ldc, &C[j], ldc,
                                    work[mn + j], work[j]);
@@ -239,7 +239,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
                     j2 -= kb1;
                 }
 
-                for (int j = j1; j <= j2; j += kb1) {
+                for (INT j = j1; j <= j2; j += kb1) {
                     /*
                      * Create nonzero element a(j-1,j+ku) above the band
                      * and store it in work[0:n-1]
@@ -260,8 +260,8 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
                 }
 
                 /* Apply plane rotations from the right */
-                for (int l = 0; l < kb; l++) {
-                    int nrt;
+                for (INT l = 0; l < kb; l++) {
+                    INT nrt;
                     if (j2 + l > m - 1) {
                         nrt = nr - 1;
                     } else {
@@ -299,7 +299,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
 
                 if (wantpt) {
                     /* Accumulate product of plane rotations in P**T */
-                    for (int j = j1; j <= j2; j += kb1) {
+                    for (INT j = j1; j <= j2; j += kb1) {
                         /* PT rows j+kun-1 and j+kun (0-indexed) */
                         cblas_drot(n, &PT[j + kun - 1], ldpt,
                                    &PT[j + kun], ldpt,
@@ -313,7 +313,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
                     j2 -= kb1;
                 }
 
-                for (int j = j1; j <= j2; j += kb1) {
+                for (INT j = j1; j <= j2; j += kb1) {
                     /*
                      * Create nonzero element a(j+kl+ku,j+ku-1) below the
                      * band and store it in work[0:n-1]
@@ -340,7 +340,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
          * plane rotations from the left, storing diagonal elements in D
          * and off-diagonal elements in E
          */
-        for (int i = 0; i < MIN(m - 1, n); i++) {
+        for (INT i = 0; i < MIN(m - 1, n); i++) {
             f64 rc, rs, ra;
             /* AB[0 + i*ldab] and AB[1 + i*ldab] */
             dlartg(AB[i * ldab], AB[1 + i * ldab], &rc, &rs, &ra);
@@ -370,7 +370,7 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
              * elements in E
              */
             f64 rb = AB[(ku - 1) + m * ldab];  /* AB[ku-1 + m*ldab] = A(m-1, m) in 0-indexed */
-            for (int i = m - 1; i >= 0; i--) {
+            for (INT i = m - 1; i >= 0; i--) {
                 f64 rc, rs, ra;
                 /* AB[ku + i*ldab] = diagonal element */
                 dlartg(AB[ku + i * ldab], rb, &rc, &rs, &ra);
@@ -387,10 +387,10 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
             /*
              * Copy off-diagonal elements to E and diagonal elements to D
              */
-            for (int i = 0; i < minmn - 1; i++) {
+            for (INT i = 0; i < minmn - 1; i++) {
                 E[i] = AB[(ku - 1) + (i + 1) * ldab];
             }
-            for (int i = 0; i < minmn; i++) {
+            for (INT i = 0; i < minmn; i++) {
                 D[i] = AB[ku + i * ldab];
             }
         }
@@ -399,10 +399,10 @@ void dgbbrd(const char* vect, const int m, const int n, const int ncc,
          * A is diagonal. Set elements of E to zero and copy diagonal
          * elements to D.
          */
-        for (int i = 0; i < minmn - 1; i++) {
+        for (INT i = 0; i < minmn - 1; i++) {
             E[i] = zero;
         }
-        for (int i = 0; i < minmn; i++) {
+        for (INT i = 0; i < minmn; i++) {
             D[i] = AB[i * ldab];
         }
     }

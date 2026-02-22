@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -35,21 +35,21 @@
  */
 void spocon(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32 anorm,
     f32* rcond,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -77,9 +77,9 @@ void spocon(
     f32 smlnum = slamch("S");
 
     // Estimate the 1-norm of inv(A).
-    int kase = 0;
+    INT kase = 0;
     char normin = 'N';
-    int isave[3] = {0, 0, 0};
+    INT isave[3] = {0, 0, 0};
     f32 ainvnm;
 
     for (;;) {
@@ -87,7 +87,7 @@ void spocon(
         if (kase == 0) break;
 
         f32 scalel, scaleu;
-        int linfo;
+        INT linfo;
 
         if (upper) {
             // Multiply by inv(U**T).
@@ -112,7 +112,7 @@ void spocon(
         // Multiply by 1/SCALE if doing so will not cause overflow.
         f32 scale = scalel * scaleu;
         if (scale != ONE) {
-            int ix = cblas_isamax(n, work, 1);
+            INT ix = cblas_isamax(n, work, 1);
             if (scale < fabsf(work[ix]) * smlnum || scale == ZERO) {
                 return;
             }

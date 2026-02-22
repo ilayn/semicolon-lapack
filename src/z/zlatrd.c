@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZLATRD reduces NB rows and columns of a complex Hermitian matrix A to
@@ -41,17 +41,17 @@
  *                      The n-by-nb matrix W.
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
-void zlatrd(const char* uplo, const int n, const int nb,
-            c128* restrict A, const int lda,
+void zlatrd(const char* uplo, const INT n, const INT nb,
+            c128* restrict A, const INT lda,
             f64* restrict E, c128* restrict tau,
-            c128* restrict W, const int ldw)
+            c128* restrict W, const INT ldw)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE  = CMPLX(1.0, 0.0);
     const c128 HALF = CMPLX(0.5, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int ii, iw;
+    INT ii, iw;
     c128 alpha;
 
     /* Quick return if possible */
@@ -163,7 +163,7 @@ void zlatrd(const char* uplo, const int n, const int nb,
             if (ii < n) {
                 /* Generate elementary reflector H(ii) to annihilate A(ii+2:n, ii). */
                 alpha = A[ii + (ii - 1) * lda];
-                int min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
+                INT min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
                 zlarfg(n - ii,
                        &alpha,
                        &A[min_row + (ii - 1) * lda],

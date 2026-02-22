@@ -64,16 +64,16 @@
  */
 void zsyr(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128 alpha,
     const c128* restrict X,
-    const int incx,
+    const INT incx,
     c128* restrict A,
-    const int lda)
+    const INT lda)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int i, info, ix, j, jx, kx;
+    INT i, info, ix, j, jx, kx;
     c128 temp;
 
     info = 0;

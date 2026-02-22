@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -36,17 +36,17 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dptcon(
-    const int n,
+    const INT n,
     const f64* restrict D,
     const f64* restrict E,
     const f64 anorm,
     f64* rcond,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
-    int i, ix;
+    INT i, ix;
     f64 ainvnm;
 
     *info = 0;

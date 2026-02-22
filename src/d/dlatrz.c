@@ -54,12 +54,12 @@
  *                      The scalar factors of the elementary reflectors.
  * @param[out]    work  Double precision array, dimension (m).
  */
-void dlatrz(const int m, const int n, const int l,
-            f64* restrict A, const int lda,
+void dlatrz(const INT m, const INT n, const INT l,
+            f64* restrict A, const INT lda,
             f64* restrict tau,
             f64* restrict work)
 {
-    int i;
+    INT i;
 
     /* Quick return if possible */
     if (m == 0) {

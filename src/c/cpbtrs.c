@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -30,17 +30,17 @@
  */
 void cpbtrs(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int upper;
-    int j;
+    INT upper;
+    INT j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

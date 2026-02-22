@@ -5,7 +5,7 @@
  *        matrix is tridiagonal.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 
@@ -68,11 +68,11 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void slaed1(const int n, f32* D, f32* Q, const int ldq,
-            int* indxq, const f32 rho, const int cutpnt,
-            f32* work, int* iwork, int* info)
+void slaed1(const INT n, f32* D, f32* Q, const INT ldq,
+            INT* indxq, const f32 rho, const INT cutpnt,
+            f32* work, INT* iwork, INT* info)
 {
-    int coltyp, i, idlmda, indx, indxc, indxp, iq2, is, iw, iz, k, n1, n2, zpp1;
+    INT coltyp, i, idlmda, indx, indxc, indxp, iq2, is, iw, iz, k, n1, n2, zpp1;
     f32 rho_local;
 
     /* Test the input parameters. */

@@ -9,19 +9,19 @@
 #include <math.h>
 
 /** @cond */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
 
-static int iparmq_nshfts(int nh)
+static INT iparmq_nshfts(INT nh)
 {
-    int ns = 2;
+    INT ns = 2;
     if (nh >= 30) ns = 4;
     if (nh >= 60) ns = 10;
     if (nh >= 150) {
         f64 lognh = log((f64)nh) / log(2.0);
-        int div = (int)(lognh + 0.5);
+        INT div = (INT)(lognh + 0.5);
         if (div < 1) div = 1;
         ns = nh / div;
         if (ns < 10) ns = 10;
@@ -34,9 +34,9 @@ static int iparmq_nshfts(int nh)
     return ns;
 }
 
-static int iparmq_nwr(int nh)
+static INT iparmq_nwr(INT nh)
 {
-    int ns = iparmq_nshfts(nh);
+    INT ns = iparmq_nshfts(nh);
     if (nh <= 500) {
         return ns;
     } else {
@@ -44,16 +44,16 @@ static int iparmq_nwr(int nh)
     }
 }
 
-static int iparmq_nibble(void)
+static INT iparmq_nibble(void)
 {
     return 14;
 }
 
-static int iparmq_kacc22(int ns)
+static INT iparmq_kacc22(INT ns)
 {
-    const int kacmin = 14;
-    const int k22min = 14;
-    int kacc = 0;
+    const INT kacmin = 14;
+    const INT k22min = 14;
+    INT kacc = 0;
     if (ns >= kacmin) kacc = 1;
     if (ns >= k22min) kacc = 2;
     return kacc;
@@ -93,17 +93,17 @@ static int iparmq_kacc22(int ns)
  *                    > 0: if info = i (1-based), ZLAQR0 failed to compute
  *                         all eigenvalues.
  */
-void zlaqr0(const int wantt, const int wantz, const int n,
-            const int ilo, const int ihi,
-            c128* H, const int ldh,
+void zlaqr0(const INT wantt, const INT wantz, const INT n,
+            const INT ilo, const INT ihi,
+            c128* H, const INT ldh,
             c128* W,
-            const int iloz, const int ihiz,
-            c128* Z, const int ldz,
-            c128* work, const int lwork, int* info)
+            const INT iloz, const INT ihiz,
+            c128* Z, const INT ldz,
+            c128* work, const INT lwork, INT* info)
 {
-    const int ntiny = 15;
-    const int kexnw = 5;
-    const int kexsh = 6;
+    const INT ntiny = 15;
+    const INT kexnw = 5;
+    const INT kexsh = 6;
     const f64 wilk1 = 0.75;
     const c128 czero = 0.0;
     const c128 cone = 1.0;
@@ -111,11 +111,11 @@ void zlaqr0(const int wantt, const int wantz, const int n,
 
     c128 aa, bb, cc, dd, det, rtdisc, swap, tr2;
     f64 s;
-    int i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
-    int kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
-    int lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
-    int nsmax, nsr, nve, nw, nwmax, nwr, nwupbd;
-    int sorted;
+    INT i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
+    INT kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
+    INT lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
+    INT nsmax, nsr, nve, nw, nwmax, nwr, nwupbd;
+    INT sorted;
 
     c128 zdum[1];
 
@@ -154,7 +154,7 @@ void zlaqr0(const int wantt, const int wantz, const int n,
                n, H, ldh, work, -1);
 
         lwkopt = 3 * nsr / 2;
-        if ((int)creal(work[0]) > lwkopt) lwkopt = (int)creal(work[0]);
+        if ((INT)creal(work[0]) > lwkopt) lwkopt = (INT)creal(work[0]);
 
         if (lwork == -1) {
             work[0] = (f64)lwkopt;

@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -46,28 +46,28 @@
  */
 void zgbcon(
     const char* norm,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const c128* restrict AB,
-    const int ldab,
-    const int* restrict ipiv,
+    const INT ldab,
+    const INT* restrict ipiv,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int lnoti, onenrm;
+    INT lnoti, onenrm;
     char normin;
-    int ix, j, jp, kase, kase1, kd, lm;
+    INT ix, j, jp, kase, kase1, kd, lm;
     f64 ainvnm, scale, smlnum;
     c128 t;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters */
     *info = 0;

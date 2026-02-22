@@ -40,20 +40,20 @@
  */
 void dgttrs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict DL,
     const f64* restrict D,
     const f64* restrict DU,
     const f64* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int notran;
-    int itrans;
-    int ldb_min;
+    INT notran;
+    INT itrans;
+    INT ldb_min;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');

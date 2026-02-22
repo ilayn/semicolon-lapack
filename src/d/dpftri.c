@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DPFTRI computes the inverse of a (real) symmetric positive definite
@@ -35,12 +35,12 @@
 void dpftri(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    int* info)
+    INT* info)
 {
-    int lower, nisodd, normaltransr;
-    int n1, n2, k;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

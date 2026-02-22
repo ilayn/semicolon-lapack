@@ -46,19 +46,19 @@
  *                           been completed unless i = n.
  */
 void zgtsv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict DL,
     c128* restrict D,
     c128* restrict DU,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
-    int j, k;
+    INT j, k;
     c128 mult, temp;
-    int ldb_min;
+    INT ldb_min;
 
     *info = 0;
     if (n < 0) {

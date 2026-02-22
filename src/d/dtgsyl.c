@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -117,34 +117,34 @@
  */
 void dtgsyl(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict C,
-    const int ldc,
+    const INT ldc,
     const f64* restrict D,
-    const int ldd,
+    const INT ldd,
     const f64* restrict E,
-    const int lde,
+    const INT lde,
     f64* restrict F,
-    const int ldf,
+    const INT ldf,
     f64* scale,
     f64* dif,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery, notran;
-    int i, ie, ifunc, iround, is, isolve, j, je, js, k;
-    int linfo, lwmin, mb, nb, p, ppqq, pq, q;
+    INT lquery, notran;
+    INT i, ie, ifunc, iround, is, isolve, j, je, js, k;
+    INT linfo, lwmin, mb, nb, p, ppqq, pq, q;
     f64 dscale, dsum, scale2, scaloc;
 
     *info = 0;

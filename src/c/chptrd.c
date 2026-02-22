@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHPTRD reduces a complex Hermitian matrix A stored in packed form to
@@ -73,15 +73,15 @@
  *  v(1:i) = 0 and v(i+1) = 1; v(i+2:n) is stored on exit in AP,
  *  overwriting A(i+2:n,i), and tau is stored in TAU(i).
  */
-void chptrd(const char* uplo, const int n, c64* AP,
-            f32* d, f32* e, c64* tau, int* info)
+void chptrd(const char* uplo, const INT n, c64* AP,
+            f32* d, f32* e, c64* tau, INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 HALF = CMPLXF(0.5f, 0.0f);
 
-    int upper;
-    int i, i1, i1i1, ii;
+    INT upper;
+    INT i, i1, i1i1, ii;
     c64 alpha, taui;
 
     *info = 0;

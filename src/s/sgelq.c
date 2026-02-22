@@ -45,15 +45,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgelq(const int m, const int n,
-           f32* restrict A, const int lda,
-           f32* restrict T, const int tsize,
-           f32* restrict work, const int lwork,
-           int* info)
+void sgelq(const INT m, const INT n,
+           f32* restrict A, const INT lda,
+           f32* restrict T, const INT tsize,
+           f32* restrict work, const INT lwork,
+           INT* info)
 {
-    int lquery, lminws, mint, minw;
-    int mb, nb, mintsz, nblcks, lwmin, lwopt, lwreq;
-    int minmn;
+    INT lquery, lminws, mint, minw;
+    INT mb, nb, mintsz, nblcks, lwmin, lwopt, lwreq;
+    INT minmn;
 
     *info = 0;
 

@@ -85,8 +85,8 @@ The naming pattern is ``mkl-{linking}-{integer}-{threading}``. For example:
    * - ``mkl-dynamic-ilp64-seq``
      - Shared, 64-bit int, single-threaded
 
-For most users, ``mkl-dynamic-lp64-seq`` is the right choice (this project
-uses 32-bit ``int`` for LAPACK indices).
+For most users, ``mkl-dynamic-lp64-seq`` is the right choice. For ILP64
+builds, use an ``ilp64`` variant (see :ref:`ilp64-builds`).
 
 If MKL is installed via conda, you need to point pkg-config at the conda
 environment's ``lib/pkgconfig`` directory:
@@ -111,7 +111,7 @@ All options are passed to ``meson setup`` with the ``-D`` prefix:
 
 .. list-table::
    :header-rows: 1
-   :widths: 20 15 15 50
+   :widths: 25 15 15 45
 
    * - Option
      - Type
@@ -121,6 +121,14 @@ All options are passed to ``meson setup`` with the ``-D`` prefix:
      - string
      - ``auto``
      - BLAS vendor or pkg-config package name
+   * - ``USE_INT64``
+     - boolean
+     - ``false``
+     - Build with 64-bit integers (ILP64). See :ref:`ilp64-builds`.
+   * - ``SYMBOL_MANGLING``
+     - string
+     - ``name##_64``
+     - ILP64 symbol naming pattern. See :ref:`ilp64-symbol-naming`.
    * - ``tests``
      - boolean
      - ``true``
@@ -139,59 +147,104 @@ All options are passed to ``meson setup`` with the ``-D`` prefix:
      - ``release``, ``debug``, ``debugoptimized``
 
 
-Installing
-----------
+.. _ilp64-builds:
+
+ILP64 Builds (64-bit Integers)
+------------------------------
+
+Why ILP64
+^^^^^^^^^
+
+Some applications need indices larger than 2**31 (>2 billion) elements. Standard
+32-bit integers overflow at dimension 46340 for dense square matrices. ILP64
+uses 64-bit integers for all LAPACK integer parameters, matching an ILP64 BLAS
+library underneath.
+
+The integer width of the library **must** match the linked BLAS. If the widths
+do not match, every CBLAS call silently corrupts memory. There are no compiler
+warnings and no linker errors for this mismatch on value parameters.
+
+To catch this, ``meson setup`` runs a configure-time probe that detects the
+actual integer width of the linked BLAS library. If the result contradicts
+``USE_INT64``, the build fails immediately with a clear error message instead
+of producing a silently broken library. The technique is adapted from
+`libblastrampoline <https://github.com/JuliaLinearAlgebra/libblastrampoline>`_
+(Julia's BLAS dispatch library): it calls ``cblas_idamax`` with a crafted ``n``
+value whose lower 32 bits equal 3 and whose full 64 bits are negative.  An LP64
+library reads only the lower 32 bits and returns normally; an ILP64 library
+reads the full value and returns early.
+
+The probe is skipped during cross-compilation since the compiled binary cannot
+run on the build host. In that case a warning is emitted and the user is
+responsible for ensuring consistency.
+
+Building
+^^^^^^^^
 
 .. code-block:: bash
 
-   meson install -C builddir
+   # With OpenBLAS ILP64:
+   meson setup builddir_ilp64 -DUSE_INT64=true -Dblas=openblas
 
-This installs:
+   # With MKL ILP64:
+   PKG_CONFIG_PATH=$CONDA_PREFIX/lib/pkgconfig \
+       meson setup builddir_ilp64 -DUSE_INT64=true -Dblas=mkl-dynamic-ilp64-seq
 
-- ``libsemilapack.a`` (or ``.so``) to ``<prefix>/lib64/``
-- All public headers to ``<prefix>/include/semicolon_lapack/``
-- A pkg-config file to ``<prefix>/lib64/pkgconfig/semicolon-lapack.pc``
+   ninja -C builddir_ilp64
+   meson install -C builddir_ilp64
 
-To install to a custom location, set ``--prefix`` at configure time:
+
+.. _ilp64-symbol-naming:
+
+Symbol Naming
+^^^^^^^^^^^^^
+
+ILP64 symbols carry a suffix (or prefix, or both) to distinguish them from LP64
+symbols. The default is ``_64``, following the convention used by Reference
+LAPACK, Julia, NumPy, and SciPy.
+
+This is typically the most annoying part of writing vendor agnostic code that
+tries to support arbitrary BLAS/LAPACK vendors. The SYMBOL_MANGLING option
+is provided to alleviate this pain by allowing users to specify whatever
+symbol naming convention they want.
+
+
+The ``SYMBOL_MANGLING`` option uses C token-pasting syntax. The literal ``name``
+is the placeholder for the base function name:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 45 25
+
+   * - Meson option
+     - ``dgetrf`` becomes
+   * - (default) ``name##_64``
+     - ``dgetrf_64``
+   * - ``name##_ilp64``
+     - ``dgetrf_ilp64``
+   * - ``ilp_##name``
+     - ``ilp_dgetrf``
+   * - ``LAPACKE_##name##_64``
+     - ``LAPACKE_dgetrf_64``
+
+Example:
 
 .. code-block:: bash
 
-   meson setup builddir --prefix=/opt/semicolon-lapack
-   ninja -C builddir
-   meson install -C builddir
+   meson setup builddir -DUSE_INT64=true -DSYMBOL_MANGLING='scipy_##name##_64'
+
+This option has no effect for LP64 builds.
 
 
-Using the Installed Library
----------------------------
-
-A single include gives access to all routines and precisions:
-
-.. code-block:: c
-
-   #include <semicolon_lapack/semicolon_lapack.h>
-
-   int main(void) {
-       double A[] = {2.0, 1.0, 1.0, 3.0};
-       int ipiv[2], info;
-       dgetrf(2, 2, A, 2, ipiv, &info);
-       return info;
-   }
-
-Compile and link using pkg-config:
+Shared Libraries
+----------------
 
 .. code-block:: bash
 
-   gcc myprogram.c $(pkg-config --cflags --libs semicolon-lapack) -o myprogram
+   meson setup builddir --default-library=shared
 
-The pkg-config file automatically propagates the BLAS dependency, so you do not
-need to add ``-lopenblas`` or ``-lblis`` manually.
-
-If the library was installed to a non-standard prefix:
-
-.. code-block:: bash
-
-   PKG_CONFIG_PATH=/opt/semicolon-lapack/lib64/pkgconfig \
-       gcc myprogram.c $(pkg-config --cflags --libs semicolon-lapack) -o myprogram
+For details on symbol visibility and the ``SEMICOLON_API`` macro, see
+:doc:`installing`.
 
 
 Reconfiguring

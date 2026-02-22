@@ -67,27 +67,27 @@
  * @param[out]    rqcorr  The Rayleigh Quotient correction to lambda.
  * @param[out]    work    Double precision array, dimension (4*n).
  */
-void zlar1v(const int n, const int b1, const int bn, const f64 lambda,
+void zlar1v(const INT n, const INT b1, const INT bn, const f64 lambda,
             const f64* restrict D, const f64* restrict L,
             const f64* restrict LD, const f64* restrict LLD,
             const f64 pivmin, const f64 gaptol,
-            c128* restrict Z, const int wantnc, int* negcnt,
-            f64* ztz, f64* mingma, int* r,
-            int* restrict isuppz, f64* nrminv, f64* resid,
+            c128* restrict Z, const INT wantnc, INT* negcnt,
+            f64* ztz, f64* mingma, INT* r,
+            INT* restrict isuppz, f64* nrminv, f64* resid,
             f64* rqcorr, f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int i, r1, r2, neg1, neg2;
-    int sawnan1, sawnan2;
+    INT i, r1, r2, neg1, neg2;
+    INT sawnan1, sawnan2;
     f64 dplus, dminus, s, tmp, eps;
 
-    const int indlpl = 0;
-    const int indumn = n;
-    const int inds   = 2 * n;
-    const int indp   = 3 * n;
+    const INT indlpl = 0;
+    const INT indumn = n;
+    const INT inds   = 2 * n;
+    const INT indp   = 3 * n;
 
     eps = dlamch("Precision");
 

@@ -38,11 +38,11 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, the updating process failed.
  */
-void dlaed4(const int n, const int i, const f64* restrict D,
+void dlaed4(const INT n, const INT i, const f64* restrict D,
             const f64* restrict Z, f64* restrict delta,
-            const f64 rho, f64* dlam, int* info)
+            const f64 rho, f64* dlam, INT* info)
 {
-    const int MAXIT = 30;
+    const INT MAXIT = 30;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
@@ -51,8 +51,8 @@ void dlaed4(const int n, const int i, const f64* restrict D,
     const f64 EIGHT = 8.0;
     const f64 TEN = 10.0;
 
-    int orgati, swtch, swtch3;
-    int ii, iim1, iip1, ip1, iter, j, niter;
+    INT orgati, swtch, swtch3;
+    INT ii, iim1, iip1, ip1, iter, j, niter;
     f64 a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
     f64 eps, erretm, eta, midpt, phi, prew, psi;
     f64 rhoinv, tau, temp, temp1, w;

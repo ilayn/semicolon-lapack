@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -34,9 +34,9 @@
  */
 void spptrf(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict AP,
-    int* info)
+    INT* info)
 {
     // spptrf.f lines 134-135: Parameters
     const f32 ONE = 1.0f;
@@ -44,7 +44,7 @@ void spptrf(
 
     // spptrf.f lines 157-167: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -62,9 +62,9 @@ void spptrf(
 
     if (upper) {
         // spptrf.f lines 174-197: Compute the Cholesky factorization A = U**T*U.
-        int jj = -1;  // spptrf.f line 178: JJ = 0 (0-based: jj starts at -1 so first jj+j = 0)
-        for (int j = 0; j < n; j++) {  // spptrf.f line 179: DO 10 J = 1, N
-            int jc = jj + 1;  // spptrf.f line 180: JC = JJ + 1 (0-based: jc = jj + 1)
+        INT jj = -1;  // spptrf.f line 178: JJ = 0 (0-based: jj starts at -1 so first jj+j = 0)
+        for (INT j = 0; j < n; j++) {  // spptrf.f line 179: DO 10 J = 1, N
+            INT jc = jj + 1;  // spptrf.f line 180: JC = JJ + 1 (0-based: jc = jj + 1)
             jj = jj + (j + 1);  // spptrf.f line 181: JJ = JJ + J (0-based: j+1)
 
             // spptrf.f lines 185-187: Compute elements 1:J-1 of column J.
@@ -87,8 +87,8 @@ void spptrf(
         }
     } else {
         // spptrf.f lines 198-225: Compute the Cholesky factorization A = L*L**T.
-        int jj = 0;  // spptrf.f line 202: JJ = 1 (0-based: jj = 0)
-        for (int j = 0; j < n; j++) {  // spptrf.f line 203: DO 20 J = 1, N
+        INT jj = 0;  // spptrf.f line 202: JJ = 1 (0-based: jj = 0)
+        for (INT j = 0; j < n; j++) {  // spptrf.f line 203: DO 20 J = 1, N
 
             // spptrf.f lines 207-213: Compute L(J,J) and test for non-positive-definiteness.
             f32 ajj = AP[jj];

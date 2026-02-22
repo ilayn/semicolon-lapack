@@ -3,7 +3,7 @@
  * @brief DORGTSQR_ROW generates an M-by-N real matrix Q_out with orthonormal columns from DLATSQR output using row-by-row algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -57,24 +57,24 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void dorgtsqr_row(
-    const int m,
-    const int n,
-    const int mb,
-    const int nb,
+    const INT m,
+    const INT n,
+    const INT mb,
+    const INT nb,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict T,
-    const int ldt,
+    const INT ldt,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int nblocal, mb2, itmp, ib_bottom;
-    int lworkopt, num_all_row_blocks, jb_t, ib, imb;
-    int kb, kb_last, knb, mb1;
+    INT lquery;
+    INT nblocal, mb2, itmp, ib_bottom;
+    INT lworkopt, num_all_row_blocks, jb_t, ib, imb;
+    INT kb, kb_last, knb, mb1;
     f64 dummy[1];
-    int minval;
+    INT minval;
 
     *info = 0;
     lquery = (lwork == -1);

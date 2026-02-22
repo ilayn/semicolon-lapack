@@ -39,9 +39,9 @@
  */
 void zlaqsy(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict S,
     const f64 scond,
     const f64 amax,
@@ -76,17 +76,17 @@ void zlaqsy(
         // Replace A by diag(S) * A * diag(S)
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             // Upper triangle of A is stored
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 f64 cj = S[j];
-                for (int i = 0; i <= j; i++) {
+                for (INT i = 0; i <= j; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }
             }
         } else {
             // Lower triangle of A is stored
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 f64 cj = S[j];
-                for (int i = j; i < n; i++) {
+                for (INT i = j; i < n; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }
             }

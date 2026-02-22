@@ -36,7 +36,7 @@ void dlasv2(const f64 f, const f64 g, const f64 h,
             f64* ssmin, f64* ssmax,
             f64* snr, f64* csr, f64* snl, f64* csl)
 {
-    int gasmal, swap, pmax;
+    INT gasmal, swap, pmax;
     f64 a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m;
     f64 mm, r, s, slt, srt, t, temp, tsign, tt;
     f64 eps;

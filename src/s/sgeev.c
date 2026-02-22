@@ -7,7 +7,7 @@
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SGEEV computes for an N-by-N real nonsymmetric matrix A, the
@@ -58,24 +58,24 @@
  *                           elements i:n-1 of wr and wi contain eigenvalues which
  *                           have converged.
  */
-void sgeev(const char* jobvl, const char* jobvr, const int n,
-           f32* A, const int lda,
+void sgeev(const char* jobvl, const char* jobvr, const INT n,
+           f32* A, const INT lda,
            f32* wr, f32* wi,
-           f32* VL, const int ldvl,
-           f32* VR, const int ldvr,
-           f32* work, const int lwork, int* info)
+           f32* VL, const INT ldvl,
+           f32* VR, const INT ldvr,
+           f32* work, const INT lwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, scalea, wantvl, wantvr;
+    INT lquery, scalea, wantvl, wantvr;
     char side[2];
-    int hswork, i, ibal, ierr, ihi, ilo, itau, iwrk, k;
-    int lwork_trevc, maxwrk, minwrk, nout;
+    INT hswork, i, ibal, ierr, ihi, ilo, itau, iwrk, k;
+    INT lwork_trevc, maxwrk, minwrk, nout;
     f32 anrm, bignum, cs, cscale, eps, r, scl, smlnum, sn;
-    int select[1];  /* Dummy select array for strevc3 */
+    INT select[1];  /* Dummy select array for strevc3 */
     f32 dum[1];
-    int nb_gehrd, nb_orghr;
+    INT nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -115,13 +115,13 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
                 /* Query SHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
                 shseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VL, ldvl,
                        work, -1, &ierr);
-                hswork = (int)work[0];
+                hswork = (INT)work[0];
                 maxwrk = maxwrk > (n + 1) ? maxwrk : (n + 1);
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
                 /* Query STREVC3 for workspace */
                 strevc3("L", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
-                lwork_trevc = (int)work[0];
+                lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
                 maxwrk = maxwrk > (4 * n) ? maxwrk : (4 * n);
             } else if (wantvr) {
@@ -131,13 +131,13 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
                 /* Query SHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
                 shseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VR, ldvr,
                        work, -1, &ierr);
-                hswork = (int)work[0];
+                hswork = (INT)work[0];
                 maxwrk = maxwrk > (n + 1) ? maxwrk : (n + 1);
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
                 /* Query STREVC3 for workspace */
                 strevc3("R", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
-                lwork_trevc = (int)work[0];
+                lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
                 maxwrk = maxwrk > (4 * n) ? maxwrk : (4 * n);
             } else {
@@ -145,7 +145,7 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
                 /* Query SHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
                 shseqr("E", "N", n, 0, n - 1, A, lda, wr, wi, VR, ldvr,
                        work, -1, &ierr);
-                hswork = (int)work[0];
+                hswork = (INT)work[0];
                 maxwrk = maxwrk > (n + 1) ? maxwrk : (n + 1);
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
             }
@@ -266,7 +266,7 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
                     work[iwrk + k] = VL[k + i * ldvl] * VL[k + i * ldvl] +
                                      VL[k + (i + 1) * ldvl] * VL[k + (i + 1) * ldvl];
                 }
-                k = (int)cblas_isamax(n, &work[iwrk], 1);
+                k = (INT)cblas_isamax(n, &work[iwrk], 1);
                 slartg(VL[k + i * ldvl], VL[k + (i + 1) * ldvl], &cs, &sn, &r);
                 cblas_srot(n, &VL[i * ldvl], 1, &VL[(i + 1) * ldvl], 1, cs, sn);
                 VL[k + (i + 1) * ldvl] = ZERO;
@@ -292,7 +292,7 @@ void sgeev(const char* jobvl, const char* jobvr, const int n,
                     work[iwrk + k] = VR[k + i * ldvr] * VR[k + i * ldvr] +
                                      VR[k + (i + 1) * ldvr] * VR[k + (i + 1) * ldvr];
                 }
-                k = (int)cblas_isamax(n, &work[iwrk], 1);
+                k = (INT)cblas_isamax(n, &work[iwrk], 1);
                 slartg(VR[k + i * ldvr], VR[k + (i + 1) * ldvr], &cs, &sn, &r);
                 cblas_srot(n, &VR[i * ldvr], 1, &VR[(i + 1) * ldvr], 1, cs, sn);
                 VR[k + (i + 1) * ldvr] = ZERO;

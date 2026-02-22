@@ -6,7 +6,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -46,20 +46,20 @@ void zlatps(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     c128* restrict X,
     f64* scale,
     f64* restrict cnorm,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int upper, notran, nounit;
-    int i, imax, ip, j, jfirst, jinc, jlast, jlen;
+    INT upper, notran, nounit;
+    INT i, imax, ip, j, jfirst, jinc, jlast, jlen;
     f64 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
     c128 csumj, tjjs = 0.0, uscal;
 

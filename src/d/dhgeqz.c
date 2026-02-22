@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -67,33 +67,33 @@ void dhgeqz(
     const char* job,
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     f64* restrict H,
-    const int ldh,
+    const INT ldh,
     f64* restrict T,
-    const int ldt,
+    const INT ldt,
     f64* restrict alphar,
     f64* restrict alphai,
     f64* restrict beta,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 HALF = 0.5;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 SAFETY = 100.0;
 
-    int ilazr2, ilazro, ilpivt, ilq = 0, ilschr = 0, ilz = 0, lquery;
-    int icompq, icompz, ifirst, ifrstm, iiter, ilast;
-    int ilastm, in, ischur, istart, j, jc, jch, jiter;
-    int jr, maxit;
+    INT ilazr2, ilazro, ilpivt, ilq = 0, ilschr = 0, ilz = 0, lquery;
+    INT icompq, icompz, ifirst, ifrstm, iiter, ilast;
+    INT ilastm, in, ischur, istart, j, jc, jch, jiter;
+    INT jr, maxit;
     f64 a11, a12, a1i, a1r, a21, a22, a2i, a2r, ad11;
     f64 ad11l, ad12, ad12l, ad21, ad21l, ad22, ad22l;
     f64 ad32l, an, anorm, ascale, atol, b11, b1a, b1i;
@@ -255,9 +255,9 @@ void dhgeqz(
          *    2: T(j,j)=0
          */
 
-        int do_split = 0;
-        int do_zero_t = 0;
-        int do_qz_step = 0;
+        INT do_split = 0;
+        INT do_zero_t = 0;
+        INT do_qz_step = 0;
         ifirst = ilo;
 
         if (ilast == ilo) {

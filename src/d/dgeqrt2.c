@@ -4,7 +4,7 @@
  *        the compact WY representation of Q.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -45,12 +45,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgeqrt2(const int m, const int n,
-             f64* restrict A, const int lda,
-             f64* restrict T, const int ldt,
-             int* info)
+void dgeqrt2(const INT m, const INT n,
+             f64* restrict A, const INT lda,
+             f64* restrict T, const INT ldt,
+             INT* info)
 {
-    int i, k;
+    INT i, k;
     f64 aii, alpha;
 
     /* Parameter validation */

@@ -89,15 +89,15 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value
  */
 void cunmbr(const char* vect, const char* side, const char* trans,
-            const int m, const int n, const int k,
-            c64* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict C, const int ldc,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict C, const INT ldc,
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    int applyq, left, lquery, notran;
-    int i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
+    INT applyq, left, lquery, notran;
+    INT i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
 
     *info = 0;
     applyq = (vect[0] == 'Q' || vect[0] == 'q');

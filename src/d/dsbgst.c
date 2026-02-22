@@ -3,7 +3,7 @@
  * @brief DSBGST reduces a symmetric-definite banded generalized eigenproblem to standard form.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -43,23 +43,23 @@
 void dsbgst(
     const char* vect,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int update, upper, wantx;
-    int i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
+    INT update, upper, wantx;
+    INT i, i0, i1, i2, inca, j, j1, j1t, j2, j2t, k, ka1, kbt, l, m, nr, nrt, nx;
     f64 bii, ra, ra1 = 0.0, t;
 
     *info = 0;
@@ -134,7 +134,7 @@ L10:
             for (j = i; j <= i1; j++) {
                 AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
-            int jmax = (1 > i - ka) ? 1 : (i - ka);
+            INT jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i; j++) {
                 AB[j - i + ka + (i - 1) * ldab] = AB[j - i + ka + (i - 1) * ldab] / bii;
             }
@@ -152,7 +152,7 @@ L10:
                 }
             }
             for (j = i; j <= i1; j++) {
-                int kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
+                INT kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
                     AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
                         - BB[k - i + kb + (i - 1) * ldbb] * AB[i - j + ka + (j - 1) * ldab];
@@ -347,7 +347,7 @@ L10:
             for (j = i; j <= i1; j++) {
                 AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
-            int jmax = (1 > i - ka) ? 1 : (i - ka);
+            INT jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i; j++) {
                 AB[i - j + (j - 1) * ldab] = AB[i - j + (j - 1) * ldab] / bii;
             }
@@ -365,7 +365,7 @@ L10:
                 }
             }
             for (j = i; j <= i1; j++) {
-                int kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
+                INT kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
                     AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
                         - BB[i - k + (k - 1) * ldbb] * AB[j - i + (i - 1) * ldab];
@@ -595,7 +595,7 @@ L490:
             for (j = i1; j <= i; j++) {
                 AB[j - i + ka + (i - 1) * ldab] = AB[j - i + ka + (i - 1) * ldab] / bii;
             }
-            int jmin = (n < i + ka) ? n : (i + ka);
+            INT jmin = (n < i + ka) ? n : (i + ka);
             for (j = i; j <= jmin; j++) {
                 AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
@@ -613,7 +613,7 @@ L490:
                 }
             }
             for (j = i1; j <= i; j++) {
-                int kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
+                INT kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
                     AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
                         - BB[i - k + kb + (k - 1) * ldbb] * AB[j - i + ka + (i - 1) * ldab];
@@ -799,7 +799,7 @@ L490:
         }
 
         if (kb > 1) {
-            int jmin = (i + kb < m) ? (i + kb) : m;
+            INT jmin = (i + kb < m) ? (i + kb) : m;
             for (j = 2; j <= jmin - 2 * ka - 1; j++) {
                 work[n + j - 1] = work[n + j + ka - 1];
                 work[j - 1] = work[j + ka - 1];
@@ -814,7 +814,7 @@ L490:
             for (j = i1; j <= i; j++) {
                 AB[i - j + (j - 1) * ldab] = AB[i - j + (j - 1) * ldab] / bii;
             }
-            int jmin = (n < i + ka) ? n : (i + ka);
+            INT jmin = (n < i + ka) ? n : (i + ka);
             for (j = i; j <= jmin; j++) {
                 AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
@@ -832,7 +832,7 @@ L490:
                 }
             }
             for (j = i1; j <= i; j++) {
-                int kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
+                INT kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
                     AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
                         - BB[k - i + (i - 1) * ldbb] * AB[i - j + (j - 1) * ldab];
@@ -1018,7 +1018,7 @@ L490:
         }
 
         if (kb > 1) {
-            int jmin = (i + kb < m) ? (i + kb) : m;
+            INT jmin = (i + kb < m) ? (i + kb) : m;
             for (j = 2; j <= jmin - 2 * ka - 1; j++) {
                 work[n + j - 1] = work[n + j + ka - 1];
                 work[j - 1] = work[j + ka - 1];

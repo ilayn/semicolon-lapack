@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -36,25 +36,25 @@
  */
 void zhetri2x(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int upper;
-    int i, iinfo, ip, k, cut, nnb;
-    int count;
-    int j, u11, invd;
+    INT upper;
+    INT i, iinfo, ip, k, cut, nnb;
+    INT count;
+    INT j, u11, invd;
     c128 ak, akkp1, akp1, d, t;
     c128 u01_i_j, u01_ip1_j;
     c128 u11_i_j, u11_ip1_j;
-    const int ldw = n + nb + 1;
+    const INT ldw = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

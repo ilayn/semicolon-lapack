@@ -3,7 +3,7 @@
  * @brief DSYTRF_AA_2STAGE computes the factorization of a real symmetric matrix using Aasen's 2-stage algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 
@@ -65,20 +65,20 @@
  */
 void dsytrf_aa_2stage(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict TB,
-    const int ltb,
-    int* restrict ipiv,
-    int* restrict ipiv2,
+    const INT ltb,
+    INT* restrict ipiv,
+    INT* restrict ipiv2,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, tquery, wquery;
-    int i, j, k, i1, i2, td;
-    int ldtb, nb, kb, jb, nt, iinfo;
+    INT upper, tquery, wquery;
+    INT i, j, k, i1, i2, td;
+    INT ldtb, nb, kb, jb, nt, iinfo;
     f64 piv;
 
     *info = 0;

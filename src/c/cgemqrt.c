@@ -59,14 +59,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void cgemqrt(const char* side, const char* trans,
-             const int m, const int n, const int k, const int nb,
-             const c64* restrict V, const int ldv,
-             const c64* restrict T, const int ldt,
-             c64* restrict C, const int ldc,
-             c64* restrict work, int* info)
+             const INT m, const INT n, const INT k, const INT nb,
+             const c64* restrict V, const INT ldv,
+             const c64* restrict T, const INT ldt,
+             c64* restrict C, const INT ldc,
+             c64* restrict work, INT* info)
 {
-    int left, right, tran, notran;
-    int i, ib, ldwork, kf, q;
+    INT left, right, tran, notran;
+    INT i, ib, ldwork, kf, q;
 
     /* Decode arguments */
     left   = (side[0] == 'L' || side[0] == 'l');

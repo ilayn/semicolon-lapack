@@ -5,7 +5,7 @@
  *        and converted by SSYCONV.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -40,20 +40,20 @@
  */
 void ssytrs2(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int upper;
-    int i, iinfo, j, k, kp;
+    INT upper;
+    INT i, iinfo, j, k, kp;
     f32 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

@@ -36,11 +36,11 @@
 #define LV 128
 #define TWOPI 6.2831853071795864769252867665590057683943
 
-void zlarnv(const int idist, int* restrict iseed, const int n,
+void zlarnv(const INT idist, INT* restrict iseed, const INT n,
             c128* restrict X)
 {
     f64 U[LV];
-    int i, iv, il;
+    INT i, iv, il;
 
     for (iv = 0; iv < n; iv += LV / 2) {
         il = LV / 2;

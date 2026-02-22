@@ -8,7 +8,7 @@
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGGES computes for a pair of N-by-N complex nonsymmetric matrices
@@ -94,29 +94,29 @@
  *                    - = n+3: reordering failed in ZTGSEN.
  */
 void zgges(const char* jobvsl, const char* jobvsr, const char* sort,
-           zselect2_t selctg, const int n,
-           c128* A, const int lda,
-           c128* B, const int ldb,
-           int* sdim,
+           zselect2_t selctg, const INT n,
+           c128* A, const INT lda,
+           c128* B, const INT ldb,
+           INT* sdim,
            c128* alpha, c128* beta,
-           c128* VSL, const int ldvsl,
-           c128* VSR, const int ldvsr,
-           c128* work, const int lwork,
-           f64* rwork, int* bwork, int* info)
+           c128* VSL, const INT ldvsl,
+           c128* VSR, const INT ldvsr,
+           c128* work, const INT lwork,
+           f64* rwork, INT* bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
-    int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int iright, irows, irwrk, itau, iwrk, lwkmin, lwkopt;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
+    INT i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT iright, irows, irwrk, itau, iwrk, lwkmin, lwkopt;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps,
            pvsl, pvsr, smlnum;
-    int idum[1];
+    INT idum[1];
     f64 dif[2];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     /* Decode the input arguments */
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {

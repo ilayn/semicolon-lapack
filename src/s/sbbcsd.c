@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -113,19 +113,19 @@ void sbbcsd(
     const char* jobv1t,
     const char* jobv2t,
     const char* trans,
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f32* restrict theta,
     f32* restrict phi,
     f32* restrict U1,
-    const int ldu1,
+    const INT ldu1,
     f32* restrict U2,
-    const int ldu2,
+    const INT ldu2,
     f32* restrict V1T,
-    const int ldv1t,
+    const INT ldv1t,
     f32* restrict V2T,
-    const int ldv2t,
+    const INT ldv2t,
     f32* restrict B11D,
     f32* restrict B11E,
     f32* restrict B12D,
@@ -135,10 +135,10 @@ void sbbcsd(
     f32* restrict B22D,
     f32* restrict B22E,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    const int maxitr = 6;
+    const INT maxitr = 6;
     const f32 hundred = 100.0f;
     const f32 meighth = -0.125f;
     const f32 one = 1.0f;
@@ -147,10 +147,10 @@ void sbbcsd(
     const f32 negone = -1.0f;
     const f32 piover2 = 1.57079632679489661923132169163975144210f;
 
-    int colmajor, lquery, restart11, restart12, restart21, restart22;
-    int wantu1, wantu2, wantv1t, wantv2t;
-    int i, imin, imax, iter, iu1cs, iu1sn, iu2cs, iu2sn;
-    int iv1tcs, iv1tsn, iv2tcs, iv2tsn, j, lworkmin, lworkopt, maxit, mini;
+    INT colmajor, lquery, restart11, restart12, restart21, restart22;
+    INT wantu1, wantu2, wantv1t, wantv2t;
+    INT i, imin, imax, iter, iu1cs, iu1sn, iu2cs, iu2sn;
+    INT iv1tcs, iv1tsn, iv2tcs, iv2tsn, j, lworkmin, lworkopt, maxit, mini;
     f32 b11bulge, b12bulge, b21bulge, b22bulge, dummy;
     f32 eps, mu, nu, r, sigma11, sigma21;
     f32 temp, thetamax, thetamin, thresh, tol, tolmul, unfl;

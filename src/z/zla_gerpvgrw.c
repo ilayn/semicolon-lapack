@@ -29,14 +29,14 @@
  * @return    The reciprocal pivot growth factor.
  */
 f64 zla_gerpvgrw(
-    const int n,
-    const int ncols,
+    const INT n,
+    const INT ncols,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict AF,
-    const int ldaf)
+    const INT ldaf)
 {
-    int i, j;
+    INT i, j;
     f64 amax, umax, rpvgrw;
 
     rpvgrw = 1.0;

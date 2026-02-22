@@ -6,7 +6,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 
@@ -104,15 +104,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void dlaed7(const int icompq, const int n, const int qsiz,
-            const int tlvls, const int curlvl, const int curpbm,
-            f64* D, f64* Q, const int ldq, int* indxq,
-            const f64 rho, const int cutpnt, f64* qstore,
-            int* qptr, int* prmptr, int* perm, int* givptr,
-            int* givcol, f64* givnum, f64* work, int* iwork,
-            int* info)
+void dlaed7(const INT icompq, const INT n, const INT qsiz,
+            const INT tlvls, const INT curlvl, const INT curpbm,
+            f64* D, f64* Q, const INT ldq, INT* indxq,
+            const f64 rho, const INT cutpnt, f64* qstore,
+            INT* qptr, INT* prmptr, INT* perm, INT* givptr,
+            INT* givcol, f64* givnum, f64* work, INT* iwork,
+            INT* info)
 {
-    int coltyp, curr, i, idlmda, indx, indxc, indxp,
+    INT coltyp, curr, i, idlmda, indx, indxc, indxp,
         iq2, is, iw, iz, k, ldq2, n1, n2, ptr;
     f64 rho_local;
 

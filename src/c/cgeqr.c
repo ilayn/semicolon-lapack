@@ -42,15 +42,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void cgeqr(const int m, const int n,
-           c64* restrict A, const int lda,
-           c64* restrict T, const int tsize,
-           c64* restrict work, const int lwork,
-           int* info)
+void cgeqr(const INT m, const INT n,
+           c64* restrict A, const INT lda,
+           c64* restrict T, const INT tsize,
+           c64* restrict work, const INT lwork,
+           INT* info)
 {
-    int lquery, lminws, mint, minw;
-    int mb, nb, mintsz, nblcks, lwmin, lwreq;
-    int minmn;
+    INT lquery, lminws, mint, minw;
+    INT mb, nb, mintsz, nblcks, lwmin, lwreq;
+    INT minmn;
 
     *info = 0;
 
@@ -92,7 +92,7 @@ void cgeqr(const int m, const int n,
     lminws = 0;
 
     {
-        int tsize_req = nb * n * nblcks + 5;
+        INT tsize_req = nb * n * nblcks + 5;
         tsize_req = tsize_req > 1 ? tsize_req : 1;
         if ((tsize < tsize_req || lwork < lwreq)
             && (lwork >= n) && (tsize >= mintsz)

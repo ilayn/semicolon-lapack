@@ -47,14 +47,14 @@ f64 dlansf(
     const char* norm,
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict A,
     f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j, ifm, ilu, noe, n1, k, l, lda;
+    INT i, j, ifm, ilu, noe, n1, k, l, lda;
     f64 scale, s, value, aa, temp;
 
     if (n == 0) {

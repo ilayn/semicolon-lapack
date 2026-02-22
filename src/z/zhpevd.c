@@ -5,7 +5,7 @@
  */
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -74,26 +74,26 @@
 void zhpevd(
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int wantz, lquery;
-    int iinfo, imax, inde, indrwk, indtau, indwrk;
-    int iscale, liwmin, llrwk, llwrk, lrwmin, lwmin;
+    INT wantz, lquery;
+    INT iinfo, imax, inde, indrwk, indtau, indwrk;
+    INT iscale, liwmin, llrwk, llwrk, lrwmin, lwmin;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -45,26 +45,26 @@ void ctrrfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     const c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -91,7 +91,7 @@ void ctrrfs(
 
     /* Quick return if possible */
     if (n == 0 || nrhs == 0) {
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ZERO;
             berr[j] = ZERO;
         }
@@ -99,7 +99,7 @@ void ctrrfs(
     }
 
     /* NZ = maximum number of nonzero elements in each row of A, plus 1 */
-    int nz = n + 1;
+    INT nz = n + 1;
     f32 eps = slamch("E");
     f32 safmin = slamch("S");
     f32 safe1 = nz * safmin;
@@ -120,7 +120,7 @@ void ctrrfs(
     CBLAS_DIAG cblas_siag = nounit ? CblasNonUnit : CblasUnit;
 
     /* Do for each right hand side */
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
 
         /*
          * Compute residual R = B - op(A) * X,
@@ -143,7 +143,7 @@ void ctrrfs(
          * numerator and denominator before dividing.
          */
 
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             rwork[i] = cabs1f(B[i + j * ldb]);
         }
 
@@ -152,16 +152,16 @@ void ctrrfs(
             /* Compute abs(A)*abs(X) + abs(B). */
             if (upper) {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 xk = cabs1f(X[k + j * ldx]);
-                        for (int i = 0; i <= k; i++) {
+                        for (INT i = 0; i <= k; i++) {
                             rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 xk = cabs1f(X[k + j * ldx]);
-                        for (int i = 0; i < k; i++) {
+                        for (INT i = 0; i < k; i++) {
                             rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         }
                         rwork[k] += xk;
@@ -169,16 +169,16 @@ void ctrrfs(
                 }
             } else {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 xk = cabs1f(X[k + j * ldx]);
-                        for (int i = k; i < n; i++) {
+                        for (INT i = k; i < n; i++) {
                             rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         }
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 xk = cabs1f(X[k + j * ldx]);
-                        for (int i = k + 1; i < n; i++) {
+                        for (INT i = k + 1; i < n; i++) {
                             rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         }
                         rwork[k] += xk;
@@ -190,17 +190,17 @@ void ctrrfs(
             /* Compute abs(A**H)*abs(X) + abs(B). */
             if (upper) {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 s = ZERO;
-                        for (int i = 0; i <= k; i++) {
+                        for (INT i = 0; i <= k; i++) {
                             s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                         }
                         rwork[k] += s;
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 s = cabs1f(X[k + j * ldx]);
-                        for (int i = 0; i < k; i++) {
+                        for (INT i = 0; i < k; i++) {
                             s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                         }
                         rwork[k] += s;
@@ -208,17 +208,17 @@ void ctrrfs(
                 }
             } else {
                 if (nounit) {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 s = ZERO;
-                        for (int i = k; i < n; i++) {
+                        for (INT i = k; i < n; i++) {
                             s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                         }
                         rwork[k] += s;
                     }
                 } else {
-                    for (int k = 0; k < n; k++) {
+                    for (INT k = 0; k < n; k++) {
                         f32 s = cabs1f(X[k + j * ldx]);
-                        for (int i = k + 1; i < n; i++) {
+                        for (INT i = k + 1; i < n; i++) {
                             s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                         }
                         rwork[k] += s;
@@ -228,7 +228,7 @@ void ctrrfs(
         }
 
         f32 s = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 f32 tmp = cabs1f(work[i]) / rwork[i];
                 if (tmp > s) s = tmp;
@@ -262,7 +262,7 @@ void ctrrfs(
          *    inv(op(A)) * diag(W),
          * where W = abs(R) + NZ*EPS*( abs(op(A))*abs(X)+abs(B) )))
          */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 rwork[i] = cabs1f(work[i]) + nz * eps * rwork[i];
             } else {
@@ -270,8 +270,8 @@ void ctrrfs(
             }
         }
 
-        int kase = 0;
-        int isave[3] = {0, 0, 0};
+        INT kase = 0;
+        INT isave[3] = {0, 0, 0};
         for (;;) {
             clacn2(n, &work[n], work, &ferr[j], &kase, isave);
             if (kase == 0) break;
@@ -280,12 +280,12 @@ void ctrrfs(
                 /* Multiply by diag(W)*inv(op(A)**H). */
                 cblas_ctrsv(CblasColMajor, cblas_uplo, cblas_transt,
                             cblas_siag, n, A, lda, work, 1);
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[i] = CMPLXF(rwork[i], 0.0f) * work[i];
                 }
             } else {
                 /* Multiply by inv(op(A))*diag(W). */
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[i] = CMPLXF(rwork[i], 0.0f) * work[i];
                 }
                 cblas_ctrsv(CblasColMajor, cblas_uplo, cblas_transn,
@@ -295,7 +295,7 @@ void ctrrfs(
 
         /* Normalize error. */
         f32 lstres = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 tmp = cabs1f(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }

@@ -67,27 +67,27 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void cungtsqr_row(
-    const int m,
-    const int n,
-    const int mb,
-    const int nb,
+    const INT m,
+    const INT n,
+    const INT mb,
+    const INT nb,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict T,
-    const int ldt,
+    const INT ldt,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int lquery;
-    int nblocal, mb2, itmp, ib_bottom;
-    int lworkopt, num_all_row_blocks, jb_t, ib, imb;
-    int kb, kb_last, knb, mb1;
+    INT lquery;
+    INT nblocal, mb2, itmp, ib_bottom;
+    INT lworkopt, num_all_row_blocks, jb_t, ib, imb;
+    INT kb, kb_last, knb, mb1;
     c64 dummy[1];
-    int minval;
+    INT minval;
 
     *info = 0;
     lquery = (lwork == -1);

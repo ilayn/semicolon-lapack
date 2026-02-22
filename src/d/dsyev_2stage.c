@@ -4,20 +4,20 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
-void dsyev_2stage(const char* jobz, const char* uplo, const int n,
-                  f64* A, const int lda,
+void dsyev_2stage(const char* jobz, const char* uplo, const INT n,
+                  f64* A, const INT lda,
                   f64* W,
-                  f64* work, const int lwork, int* info)
+                  f64* work, const INT lwork, INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    int lower, lquery, wantz;
-    int iinfo, imax, inde, indtau, indwrk, iscale;
-    int llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
+    INT lower, lquery, wantz;
+    INT iinfo, imax, inde, indtau, indwrk, iscale;
+    INT llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

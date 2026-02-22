@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -34,9 +34,9 @@
  */
 void dpptrf(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict AP,
-    int* info)
+    INT* info)
 {
     // dpptrf.f lines 134-135: Parameters
     const f64 ONE = 1.0;
@@ -44,7 +44,7 @@ void dpptrf(
 
     // dpptrf.f lines 157-167: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -62,9 +62,9 @@ void dpptrf(
 
     if (upper) {
         // dpptrf.f lines 174-197: Compute the Cholesky factorization A = U**T*U.
-        int jj = -1;  // dpptrf.f line 178: JJ = 0 (0-based: jj starts at -1 so first jj+j = 0)
-        for (int j = 0; j < n; j++) {  // dpptrf.f line 179: DO 10 J = 1, N
-            int jc = jj + 1;  // dpptrf.f line 180: JC = JJ + 1 (0-based: jc = jj + 1)
+        INT jj = -1;  // dpptrf.f line 178: JJ = 0 (0-based: jj starts at -1 so first jj+j = 0)
+        for (INT j = 0; j < n; j++) {  // dpptrf.f line 179: DO 10 J = 1, N
+            INT jc = jj + 1;  // dpptrf.f line 180: JC = JJ + 1 (0-based: jc = jj + 1)
             jj = jj + (j + 1);  // dpptrf.f line 181: JJ = JJ + J (0-based: j+1)
 
             // dpptrf.f lines 185-187: Compute elements 1:J-1 of column J.
@@ -87,8 +87,8 @@ void dpptrf(
         }
     } else {
         // dpptrf.f lines 198-225: Compute the Cholesky factorization A = L*L**T.
-        int jj = 0;  // dpptrf.f line 202: JJ = 1 (0-based: jj = 0)
-        for (int j = 0; j < n; j++) {  // dpptrf.f line 203: DO 20 J = 1, N
+        INT jj = 0;  // dpptrf.f line 202: JJ = 1 (0-based: jj = 0)
+        for (INT j = 0; j < n; j++) {  // dpptrf.f line 203: DO 20 J = 1, N
 
             // dpptrf.f lines 207-213: Compute L(J,J) and test for non-positive-definiteness.
             f64 ajj = AP[jj];

@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -58,28 +58,28 @@
 void cppsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict AP,
     c64* restrict AFP,
     char* equed,
     f32* restrict S,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int equil, nofact, rcequ;
-    int i, infequ, j;
+    INT equil, nofact, rcequ;
+    INT i, infequ, j;
     f32 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     *info = 0;

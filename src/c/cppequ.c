@@ -42,18 +42,18 @@
  */
 void cppequ(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* restrict S,
     f32* scond,
     f32* amax,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -75,16 +75,16 @@ void cppequ(
     *amax = S[0];
 
     if (upper) {
-        int jj = 0;
-        for (int i = 1; i < n; i++) {
+        INT jj = 0;
+        for (INT i = 1; i < n; i++) {
             jj = jj + (i + 1);
             S[i] = crealf(AP[jj]);
             if (S[i] < smin) smin = S[i];
             if (S[i] > *amax) *amax = S[i];
         }
     } else {
-        int jj = 0;
-        for (int i = 1; i < n; i++) {
+        INT jj = 0;
+        for (INT i = 1; i < n; i++) {
             jj = jj + n - i + 1;
             S[i] = crealf(AP[jj]);
             if (S[i] < smin) smin = S[i];
@@ -93,14 +93,14 @@ void cppequ(
     }
 
     if (smin <= ZERO) {
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
                 *info = i + 1;
                 return;
             }
         }
     } else {
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             S[i] = ONE / sqrtf(S[i]);
         }
 

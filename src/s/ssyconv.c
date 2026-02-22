@@ -48,17 +48,17 @@
 void ssyconv(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict E,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int upper, convert;
-    int i, ip, j;
+    INT upper, convert;
+    INT i, ip, j;
     f32 temp;
 
     *info = 0;

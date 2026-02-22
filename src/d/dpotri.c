@@ -30,10 +30,10 @@
  */
 void dpotri(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

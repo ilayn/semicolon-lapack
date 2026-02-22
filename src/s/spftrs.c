@@ -43,14 +43,14 @@
 void spftrs(
     const char* transr,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int lower, normaltransr;
+    INT lower, normaltransr;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

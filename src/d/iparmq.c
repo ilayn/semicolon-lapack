@@ -33,34 +33,34 @@
  *
  * @return The requested parameter value, or -1 if ispec is invalid.
  */
-int iparmq(
-    const int ispec,
+INT iparmq(
+    const INT ispec,
     const char* name,
     const char* opts,
-    const int n,
-    const int ilo,
-    const int ihi,
-    const int lwork)
+    const INT n,
+    const INT ilo,
+    const INT ihi,
+    const INT lwork)
 {
     /* Parameters */
-    const int INMIN = 12;
-    const int INWIN = 13;
-    const int INIBL = 14;
-    const int ISHFTS = 15;
-    const int IACC22 = 16;
-    const int ICOST = 17;
+    const INT INMIN = 12;
+    const INT INWIN = 13;
+    const INT INIBL = 14;
+    const INT ISHFTS = 15;
+    const INT IACC22 = 16;
+    const INT ICOST = 17;
 
     /* Default values from LAPACK iparmq.f */
-    const int NMIN = 75;      /* Crossover point for xLAHQR vs xLAQR0 */
-    const int K22MIN = 14;    /* Min size for 2x2 block structure */
-    const int KACMIN = 14;    /* Min size for accumulation */
-    const int NIBBLE = 14;    /* Nibble crossover point */
-    const int KNWSWP = 500;   /* Deflation window size threshold */
-    const int RCOST = 10;     /* Relative cost (percentage) */
+    const INT NMIN = 75;      /* Crossover point for xLAHQR vs xLAQR0 */
+    const INT K22MIN = 14;    /* Min size for 2x2 block structure */
+    const INT KACMIN = 14;    /* Min size for accumulation */
+    const INT NIBBLE = 14;    /* Nibble crossover point */
+    const INT KNWSWP = 500;   /* Deflation window size threshold */
+    const INT RCOST = 10;     /* Relative cost (percentage) */
     const f64 TWO = 2.0;
 
-    int nh = 0, ns = 0;
-    int result;
+    INT nh = 0, ns = 0;
+    INT result;
 
     /* Unused parameters (matching Fortran interface) */
     (void)opts;
@@ -78,7 +78,7 @@ int iparmq(
             ns = 10;
         }
         if (nh >= 150) {
-            int log2_nh = (int)(log((f64)nh) / log(TWO) + 0.5);
+            INT log2_nh = (INT)(log((f64)nh) / log(TWO) + 0.5);
             ns = nh / log2_nh;
             if (ns < 10) {
                 ns = 10;
@@ -126,7 +126,7 @@ int iparmq(
 
         /* Convert first 6 characters of NAME to uppercase for comparison */
         char subnam[7];
-        int i;
+        INT i;
         for (i = 0; i < 6 && name[i] != '\0'; i++) {
             char c = name[i];
             /* Convert lowercase to uppercase (ASCII) */

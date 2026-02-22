@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -38,17 +38,17 @@
  *                           avoid the overflow.
  */
 void cgetc2(
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* restrict jpiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* restrict jpiv,
+    INT* info)
 {
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
     f32 eps, smlnum, bignum, smin, xmax;
-    int i, ip, ipv, j, jp, jpv;
+    INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
 

@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 #include "semicolon_lapack_complex_single.h"
 
@@ -72,29 +72,29 @@
  *                           - > 0: if info = i, U(i-1,i-1) is exactly zero
  */
 void zcgesv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     c128* restrict work,
     c64* restrict swork,
     f64* restrict rwork,
-    int* iter,
-    int* info)
+    INT* iter,
+    INT* info)
 {
-    const int ITERMAX = 30;
+    const INT ITERMAX = 30;
     const f64 BWDMAX = 1.0;
     const c128 NEGONE = CMPLX(-1.0, + 0.0);
     const c128 ONE = CMPLX(1.0, + 0.0);
 
-    int i, iiter, iinfo;
+    INT i, iiter, iinfo;
     f64 anrm, cte, eps, rnrm, xnrm;
-    int converged;
+    INT converged;
 
     c64* SA;
     c64* SX;
@@ -158,8 +158,8 @@ void zcgesv(
 
     converged = 1;
     for (i = 0; i < nrhs; i++) {
-        int imax_x = izmax1(n, &X[i * ldx], 1);
-        int imax_r = izmax1(n, &work[i * n], 1);
+        INT imax_x = izmax1(n, &X[i * ldx], 1);
+        INT imax_r = izmax1(n, &work[i * n], 1);
         xnrm = cabs1(X[imax_x + i * ldx]);
         rnrm = cabs1(work[imax_r + i * n]);
         if (rnrm > xnrm * cte) {
@@ -194,8 +194,8 @@ void zcgesv(
 
         converged = 1;
         for (i = 0; i < nrhs; i++) {
-            int imax_x = izmax1(n, &X[i * ldx], 1);
-            int imax_r = izmax1(n, &work[i * n], 1);
+            INT imax_x = izmax1(n, &X[i * ldx], 1);
+            INT imax_r = izmax1(n, &work[i * n], 1);
             xnrm = cabs1(X[imax_x + i * ldx]);
             rnrm = cabs1(work[imax_r + i * n]);
             if (rnrm > xnrm * cte) {

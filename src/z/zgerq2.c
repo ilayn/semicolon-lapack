@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -38,13 +38,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgerq2(const int m, const int n,
-            c128* restrict A, const int lda,
+void zgerq2(const INT m, const INT n,
+            c128* restrict A, const INT lda,
             c128* restrict tau,
             c128* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, k;
+    INT i, k;
 
     /* Parameter validation */
     *info = 0;

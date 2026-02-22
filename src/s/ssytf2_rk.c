@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -59,20 +59,20 @@
  */
 void ssytf2_rk(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict E,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 EIGHT = 8.0f;
     const f32 SEVTEN = 17.0f;
 
-    int upper, done;
-    int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
+    INT upper, done;
+    INT i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, d11, d12, d21, d22, rowmax, dtemp, t, wk, wkm1, wkp1, sfmin;
 
     *info = 0;

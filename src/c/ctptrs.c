@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -38,17 +38,17 @@ void ctptrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict AP,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int nounit, upper;
-    int j, jc;
+    INT nounit, upper;
+    INT j, jc;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

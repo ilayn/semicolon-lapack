@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -62,27 +62,27 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void cggsvp3(const char* jobu, const char* jobv, const char* jobq,
-             const int m, const int p, const int n,
-             c64* restrict A, const int lda,
-             c64* restrict B, const int ldb,
+             const INT m, const INT p, const INT n,
+             c64* restrict A, const INT lda,
+             c64* restrict B, const INT ldb,
              const f32 tola, const f32 tolb,
-             int* k, int* l,
-             c64* restrict U, const int ldu,
-             c64* restrict V, const int ldv,
-             c64* restrict Q, const int ldq,
-             int* restrict iwork,
+             INT* k, INT* l,
+             c64* restrict U, const INT ldu,
+             c64* restrict V, const INT ldv,
+             c64* restrict Q, const INT ldq,
+             INT* restrict iwork,
              f32* restrict rwork,
              c64* restrict tau,
-             c64* restrict work, const int lwork,
-             int* info)
+             c64* restrict work, const INT lwork,
+             INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int wantu, wantv, wantq, lquery;
-    int forwrd = 1;
-    int i, j, lwkopt;
-    int minval, ierr;
+    INT wantu, wantv, wantq, lquery;
+    INT forwrd = 1;
+    INT i, j, lwkopt;
+    INT minval, ierr;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
     wantv = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -119,7 +119,7 @@ void cggsvp3(const char* jobu, const char* jobv, const char* jobq,
 
     if (*info == 0) {
         cgeqp3(p, n, B, ldb, iwork, tau, work, -1, rwork, &ierr);
-        lwkopt = (int)crealf(work[0]);
+        lwkopt = (INT)crealf(work[0]);
         if (wantv) {
             if (p > lwkopt) lwkopt = p;
         }
@@ -130,7 +130,7 @@ void cggsvp3(const char* jobu, const char* jobv, const char* jobq,
             if (n > lwkopt) lwkopt = n;
         }
         cgeqp3(m, n, A, lda, iwork, tau, work, -1, rwork, &ierr);
-        if ((int)crealf(work[0]) > lwkopt) lwkopt = (int)crealf(work[0]);
+        if ((INT)crealf(work[0]) > lwkopt) lwkopt = (INT)crealf(work[0]);
         if (lwkopt < 1) lwkopt = 1;
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
     }

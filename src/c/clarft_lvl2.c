@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -34,15 +34,15 @@
  * @param[in]  ldt     Leading dimension of T. ldt >= k.
  */
 void clarft_lvl2(const char* direct, const char* storev,
-                 const int n, const int k,
-                 const c64* restrict V, const int ldv,
+                 const INT n, const INT k,
+                 const c64* restrict V, const INT ldv,
                  const c64* restrict tau,
-                 c64* restrict T, const int ldt)
+                 c64* restrict T, const INT ldt)
 {
     const c64 ONE  = 1.0f;
     const c64 ZERO = 0.0f;
 
-    int i, j, prevlastv, lastv;
+    INT i, j, prevlastv, lastv;
 
     if (n == 0)
         return;

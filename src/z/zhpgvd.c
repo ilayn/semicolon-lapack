@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -71,26 +71,26 @@
  *                                 principal minor of order i of B is not positive.
  */
 void zhpgvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
     c128* restrict BP,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
 
     *info = 0;
     if (itype < 1 || itype > 3) {
@@ -105,7 +105,7 @@ void zhpgvd(
         *info = -9;
     }
 
-    int lwmin, lrwmin, liwmin;
+    INT lwmin, lrwmin, liwmin;
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
@@ -157,15 +157,15 @@ void zhpgvd(
     zhpgst(itype, uplo, n, AP, BP, info);
     zhpevd(jobz, uplo, n, AP, W, Z, ldz, work, lwork, rwork,
            lrwork, iwork, liwork, info);
-    lwmin = (int)fmax((f64)lwmin, creal(work[0]));
-    lrwmin = (int)fmax((f64)lrwmin, rwork[0]);
-    liwmin = (int)fmax((f64)liwmin, (f64)iwork[0]);
+    lwmin = (INT)fmax((f64)lwmin, creal(work[0]));
+    lrwmin = (INT)fmax((f64)lrwmin, rwork[0]);
+    liwmin = (INT)fmax((f64)liwmin, (f64)iwork[0]);
 
     if (wantz) {
 
         /* Backtransform eigenvectors to the original problem. */
 
-        int neig = n;
+        INT neig = n;
         if (*info > 0)
             neig = *info - 1;
         if (itype == 1 || itype == 2) {
@@ -180,7 +180,7 @@ void zhpgvd(
                 trans = 'C';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ztpsv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'N' ? CblasNoTrans : CblasConjTrans,
@@ -199,7 +199,7 @@ void zhpgvd(
                 trans = 'N';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ztpmv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'C' ? CblasConjTrans : CblasNoTrans,

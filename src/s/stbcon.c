@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -37,22 +37,22 @@ void stbcon(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* rcond,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int nounit, onenrm, upper;
-    int ix, kase, kase1;
+    INT nounit, onenrm, upper;
+    INT ix, kase, kase1;
     f32 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
+    INT isave[3];
     char normin;
 
     *info = 0;

@@ -42,12 +42,12 @@
  */
 void dppsv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict AP,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // dppsv.f lines 172-186: Test the input parameters
     *info = 0;

@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -82,28 +82,28 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void zgeqp3rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int kmax,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT kmax,
     f64 abstol,
     f64 reltol,
     c128* restrict A,
-    const int lda,
-    int* K,
+    const INT lda,
+    INT* K,
     f64* maxc2nrmk,
     f64* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     c128* restrict tau,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    int lquery, done;
-    int iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
-    int kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
+    INT lquery, done;
+    INT iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
+    INT kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
     f64 eps, hugeval, maxc2nrm, safmin;
 
     *info = 0;

@@ -5,7 +5,7 @@
 
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -48,19 +48,19 @@
  */
 void csytri_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper;
-    int k, kp, kstep;
+    INT upper;
+    INT k, kp, kstep;
     c64 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

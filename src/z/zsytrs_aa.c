@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -58,22 +58,22 @@
  */
 void zsytrs_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int upper, lquery;
-    int k, kp, lwkmin;
-    int minval;
+    INT upper, lquery;
+    INT k, kp, lwkmin;
+    INT minval;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

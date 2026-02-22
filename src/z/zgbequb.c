@@ -59,23 +59,23 @@
  *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
  */
 void zgbequb(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict R,
     f64* restrict C,
     f64* rowcnd,
     f64* colcnd,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j;
+    INT i, j;
     f64 bignum, rcmax, rcmin, smlnum, radix, logrdx;
 
     /* Test the input parameters */
@@ -122,8 +122,8 @@ void zgbequb(
          * Row range for column j: max(0, j-ku) to min(m-1, j+kl)
          * Band storage: AB[ku + i - j + j*ldab] = A(i,j)
          */
-        int i_start = (j - ku > 0) ? j - ku : 0;
-        int i_end = (j + kl < m - 1) ? j + kl : m - 1;
+        INT i_start = (j - ku > 0) ? j - ku : 0;
+        INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
             c128 zdum = AB[ku + i - j + j * ldab];
             f64 abs_val = fabs(creal(zdum)) + fabs(cimag(zdum));
@@ -136,7 +136,7 @@ void zgbequb(
     /* Round to power of radix */
     for (i = 0; i < m; i++) {
         if (R[i] > ZERO) {
-            R[i] = pow(radix, (int)(log(R[i]) / logrdx));
+            R[i] = pow(radix, (INT)(log(R[i]) / logrdx));
         }
     }
 
@@ -188,8 +188,8 @@ void zgbequb(
     /* Find the maximum element in each column,
      * assuming the row scaling computed above */
     for (j = 0; j < n; j++) {
-        int i_start = (j - ku > 0) ? j - ku : 0;
-        int i_end = (j + kl < m - 1) ? j + kl : m - 1;
+        INT i_start = (j - ku > 0) ? j - ku : 0;
+        INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
             c128 zdum = AB[ku + i - j + j * ldab];
             f64 scaled_val = (fabs(creal(zdum)) + fabs(cimag(zdum))) * R[i];
@@ -199,7 +199,7 @@ void zgbequb(
         }
         /* Round to power of radix */
         if (C[j] > ZERO) {
-            C[j] = pow(radix, (int)(log(C[j]) / logrdx));
+            C[j] = pow(radix, (INT)(log(C[j]) / logrdx));
         }
     }
 

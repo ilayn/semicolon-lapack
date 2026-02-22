@@ -54,21 +54,21 @@
  *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
  */
 void dgeequb(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict R,
     f64* restrict C,
     f64* rowcnd,
     f64* colcnd,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j;
+    INT i, j;
     f64 bignum, rcmax, rcmin, smlnum, radix, logrdx;
 
     // Test the input parameters
@@ -117,7 +117,7 @@ void dgeequb(
     // Round to power of radix
     for (i = 0; i < m; i++) {
         if (R[i] > ZERO) {
-            R[i] = pow(radix, (int)(log(R[i]) / logrdx));
+            R[i] = pow(radix, (INT)(log(R[i]) / logrdx));
         }
     }
 
@@ -177,7 +177,7 @@ void dgeequb(
         }
         // Round to power of radix
         if (C[j] > ZERO) {
-            C[j] = pow(radix, (int)(log(C[j]) / logrdx));
+            C[j] = pow(radix, (INT)(log(C[j]) / logrdx));
         }
     }
 

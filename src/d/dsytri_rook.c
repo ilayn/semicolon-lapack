@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -47,15 +47,15 @@
  */
 void dsytri_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
-    int upper;
-    int k, kp, kstep;
+    INT upper;
+    INT k, kp, kstep;
     f64 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

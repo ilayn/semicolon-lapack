@@ -4,7 +4,7 @@
  */
 
 #include "semicolon_lapack_complex_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include <math.h>
 
@@ -50,22 +50,22 @@
  */
 void clasyf_rook(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
-    int done;
-    int imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
+    INT done;
+    INT imax = 0, itemp, j, jj, jmax = 0, jp1, jp2, k, kk, kw, kkw, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, dtemp, rowmax, sfmin;
     c64 d11, d12, d21, d22, r1, t;
 

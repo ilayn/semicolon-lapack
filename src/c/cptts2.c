@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -39,15 +39,15 @@
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
  */
 void cptts2(
-    const int iuplo,
-    const int n,
-    const int nrhs,
+    const INT iuplo,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const c64* restrict E,
     c64* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
 
     /* Quick return if possible */
 

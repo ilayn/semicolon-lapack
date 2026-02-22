@@ -6,13 +6,13 @@
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 
-void sggrqf(const int m, const int p, const int n,
-            f32* restrict A, const int lda, f32* restrict taua,
-            f32* restrict B, const int ldb, f32* restrict taub,
-            f32* restrict work, const int lwork, int* info)
+void sggrqf(const INT m, const INT p, const INT n,
+            f32* restrict A, const INT lda, f32* restrict taua,
+            f32* restrict B, const INT ldb, f32* restrict taub,
+            f32* restrict work, const INT lwork, INT* info)
 {
-    int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
-    int minval, arow;
+    INT lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
+    INT minval, arow;
 
     *info = 0;
     nb1 = lapack_get_nb("GERQF");
@@ -56,20 +56,20 @@ void sggrqf(const int m, const int p, const int n,
 
     /* RQ factorization of M-by-N matrix A: A = R*Q */
     sgerqf(m, n, A, lda, taua, work, lwork, info);
-    lopt = (int)work[0];
+    lopt = (INT)work[0];
 
     /* Update B := B * Q**T */
     {
-        int minmn = (m < n) ? m : n;
+        INT minmn = (m < n) ? m : n;
         /* A(max(1, m-n+1), 1) in Fortran -> A[(m-n > 0 ? m-n : 0) * lda] in C */
         arow = (m - n > 0) ? (m - n) : 0;
         sormrq("R", "T", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }
-    if ((int)work[0] > lopt) lopt = (int)work[0];
+    if ((INT)work[0] > lopt) lopt = (INT)work[0];
 
     /* QR factorization of P-by-N matrix B: B = Z*T */
     sgeqrf(p, n, B, ldb, taub, work, lwork, info);
-    if ((int)work[0] > lopt) lopt = (int)work[0];
+    if ((INT)work[0] > lopt) lopt = (INT)work[0];
 
     work[0] = (f32)lopt;
 }

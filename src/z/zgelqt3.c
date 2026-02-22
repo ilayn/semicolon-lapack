@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -47,16 +47,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgelqt3(const int m, const int n,
-             c128* restrict A, const int lda,
-             c128* restrict T, const int ldt,
-             int* info)
+void zgelqt3(const INT m, const INT n,
+             c128* restrict A, const INT lda,
+             c128* restrict T, const INT ldt,
+             INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEGONE = CMPLX(-1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int i, j, m1, m2, i1, j1, iinfo;
+    INT i, j, m1, m2, i1, j1, iinfo;
 
     *info = 0;
     if (m < 0) {

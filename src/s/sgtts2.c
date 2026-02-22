@@ -37,18 +37,18 @@
  * @param[in] ldb     The leading dimension of the array B. ldb >= max(1, n).
  */
 void sgtts2(
-    const int itrans,
-    const int n,
-    const int nrhs,
+    const INT itrans,
+    const INT n,
+    const INT nrhs,
     const f32* restrict DL,
     const f32* restrict D,
     const f32* restrict DU,
     const f32* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f32* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
     f32 temp;
 
     /* Quick return if possible */

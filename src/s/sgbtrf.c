@@ -4,7 +4,7 @@
  *        using the blocked version of the algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 
@@ -52,14 +52,14 @@
  *                           to solve a system of equations.
  */
 void sgbtrf(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     f32* restrict AB,
-    const int ldab,
-    int* restrict ipiv,
-    int* info)
+    const INT ldab,
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
@@ -69,9 +69,9 @@ void sgbtrf(
     f32 work13[LDWORK * NBMAX];
     f32 work31[LDWORK * NBMAX];
 
-    int i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
+    INT i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
     f32 temp;
-    int minmn;
+    INT minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
     kv = ku + kl;
@@ -182,7 +182,7 @@ void sgbtrf(
                 ipiv[jj] = jp + jj - j;  /* Store relative to block start initially */
 
                 if (AB[kv + jp + jj * ldab] != ZERO) {
-                    int new_ju = jj + ku + jp;
+                    INT new_ju = jj + ku + jp;
                     if (new_ju > n - 1) new_ju = n - 1;
                     if (new_ju > ju) ju = new_ju;
 

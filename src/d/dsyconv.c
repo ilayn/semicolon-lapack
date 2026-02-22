@@ -48,17 +48,17 @@
 void dsyconv(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f64* restrict E,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int upper, convert;
-    int i, ip, j;
+    INT upper, convert;
+    INT i, ip, j;
     f64 temp;
 
     *info = 0;

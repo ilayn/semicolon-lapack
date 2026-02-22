@@ -3,7 +3,7 @@
  * @brief ZSYTRF_AA computes the factorization of a complex symmetric matrix using Aasen's algorithm.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
@@ -56,17 +56,17 @@
  */
 void zsytrf_aa(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int j, lwkmin, lwkopt;
-    int nb, mj, nj, k1, k2, j1, j2, j3, jb;
+    INT upper, lquery;
+    INT j, lwkmin, lwkopt;
+    INT nb, mj, nj, k1, k2, j1, j2, j3, jb;
     c128 alpha;
 
     const c128 ONE = CMPLX(1.0, 0.0);

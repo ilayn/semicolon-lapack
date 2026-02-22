@@ -3,7 +3,7 @@
  * @brief Computes the inverse of a triangular matrix (blocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
@@ -30,17 +30,17 @@
 void dtrtri(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
     const f64 NEG_ONE = -1.0;
 
-    int upper, nounit;
-    int j, jb, nb, nn;
+    INT upper, nounit;
+    INT j, jb, nb, nn;
 
     // Test the input parameters
     *info = 0;

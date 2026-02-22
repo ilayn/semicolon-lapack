@@ -5,7 +5,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -49,14 +49,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgeqrt3(const int m, const int n,
-             c64* restrict A, const int lda,
-             c64* restrict T, const int ldt,
-             int* info)
+void cgeqrt3(const INT m, const INT n,
+             c64* restrict A, const INT lda,
+             c64* restrict T, const INT ldt,
+             INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
-    int i, j, n1, n2, iinfo;
+    INT i, j, n1, n2, iinfo;
 
     /* Parameter validation */
     *info = 0;

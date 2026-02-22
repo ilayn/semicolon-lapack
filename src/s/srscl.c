@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -21,15 +21,15 @@
  *                      incx > 0.
  */
 void srscl(
-    const int n,
+    const INT n,
     const f32 sa,
     f32* restrict sx,
-    const int incx)
+    const INT incx)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int done;
+    INT done;
     f32 bignum, cden, cden1, cnum, cnum1, mul, smlnum;
 
     // Quick return if possible

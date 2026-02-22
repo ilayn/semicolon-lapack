@@ -38,12 +38,12 @@
 f32 clansy(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict work)
 {
-    int i, j;
+    INT i, j;
     f32 absa, scale, sum, value, temp;
 
     /* Quick return if possible */

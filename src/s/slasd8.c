@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /** @cond */
 static inline f32 dlamc3(f32 a, f32 b)
@@ -26,16 +26,16 @@ static inline f32 dlamc3(f32 a, f32 b)
  *
  * SLASD8 is called from SLASD6.
  */
-void slasd8(const int icompq, const int k,
+void slasd8(const INT icompq, const INT k,
             f32* restrict D, f32* restrict Z,
             f32* restrict VF, f32* restrict VL,
             f32* restrict DIFL, f32* restrict DIFR,
-            const int lddifr, const f32* restrict DSIGMA,
-            f32* restrict work, int* info)
+            const INT lddifr, const f32* restrict DSIGMA,
+            f32* restrict work, INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int i, j, iwk1, iwk2, iwk3;
+    INT i, j, iwk1, iwk2, iwk3;
     f32 diflj, difrj = 0.0f, dj, dsigj, dsigjp = 0.0f, rho, temp;
 
     *info = 0;

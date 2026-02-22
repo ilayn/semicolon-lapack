@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 #define NBMAX 32
@@ -35,11 +35,11 @@
  */
 void cpbtrf(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c64* restrict AB,
-    const int ldab,
-    int* info)
+    const INT ldab,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
@@ -47,9 +47,9 @@ void cpbtrf(
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
-    int i, i2, i3, ib, ii, j, jj, nb;
+    INT i, i2, i3, ib, ii, j, jj, nb;
     c64 work[LDWORK * NBMAX];
-    int upper;
+    INT upper;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -185,7 +185,7 @@ void cpbtrf(
                     if (i3 > 0) {
                         // Copy the upper triangle of A31 into the work array
                         for (jj = 0; jj < ib; jj++) {
-                            int minval = (jj + 1 < i3) ? (jj + 1) : i3;
+                            INT minval = (jj + 1 < i3) ? (jj + 1) : i3;
                             for (ii = 0; ii < minval; ii++) {
                                 work[ii + jj * LDWORK] = AB[kd - jj + ii + (jj + i) * ldab];
                             }
@@ -207,7 +207,7 @@ void cpbtrf(
                                     ldab - 1);
                         // Copy the upper triangle of A31 back into place
                         for (jj = 0; jj < ib; jj++) {
-                            int minval = (jj + 1 < i3) ? (jj + 1) : i3;
+                            INT minval = (jj + 1 < i3) ? (jj + 1) : i3;
                             for (ii = 0; ii < minval; ii++) {
                                 AB[kd - jj + ii + (jj + i) * ldab] = work[ii + jj * LDWORK];
                             }

@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -65,20 +65,20 @@
  */
 void ssytrs_3(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int upper;
-    int i, j, k, kp;
+    INT upper;
+    INT i, j, k, kp;
     f32 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

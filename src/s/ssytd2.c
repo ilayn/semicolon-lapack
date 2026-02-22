@@ -4,7 +4,7 @@
  *        form by an orthogonal similarity transformation (unblocked algorithm).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -50,16 +50,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ssytd2(const char* uplo, const int n, f32* restrict A,
-            const int lda, f32* restrict D, f32* restrict E,
-            f32* restrict tau, int* info)
+void ssytd2(const char* uplo, const INT n, f32* restrict A,
+            const INT lda, f32* restrict D, f32* restrict E,
+            f32* restrict tau, INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;
 
-    int upper;
-    int i;
+    INT upper;
+    INT i;
     f32 alpha, taui;
     CBLAS_UPLO cblas_uplo;
 
@@ -123,8 +123,8 @@ void ssytd2(const char* uplo, const int n, f32* restrict A,
         cblas_uplo = CblasLower;
 
         for (i = 0; i <= n - 2; i++) {
-            int ni = n - i - 1;
-            int x_start = (i + 2 < n) ? (i + 2) : (n - 1);
+            INT ni = n - i - 1;
+            INT x_start = (i + 2 < n) ? (i + 2) : (n - 1);
 
             /* Generate elementary reflector H(i) = I - tau * v * v**T
              * to annihilate A(i+2:n-1, i). */

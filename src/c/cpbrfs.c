@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -39,34 +39,34 @@
  */
 void cpbrfs(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const c64* restrict AFB,
-    const int ldafb,
+    const INT ldafb,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int upper;
-    int count, i, j, k, kase, l, nz;
+    INT upper;
+    INT count, i, j, k, kase, l, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

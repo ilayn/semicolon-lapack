@@ -40,22 +40,22 @@
  */
 void clagtm(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 alpha,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU,
     const c64* restrict X,
-    const int ldx,
+    const INT ldx,
     const f32 beta,
     c64* restrict B,
-    const int ldb)
+    const INT ldb)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return;

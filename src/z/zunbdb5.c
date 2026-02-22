@@ -6,7 +6,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**
@@ -46,19 +46,19 @@
  * @param[out]    info    = 0: successful exit.
  *                        < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void zunbdb5(const int m1, const int m2, const int n,
-             c128* restrict X1, const int incx1,
-             c128* restrict X2, const int incx2,
-             c128* restrict Q1, const int ldq1,
-             c128* restrict Q2, const int ldq2,
-             c128* restrict work, const int lwork,
-             int* info)
+void zunbdb5(const INT m1, const INT m2, const INT n,
+             c128* restrict X1, const INT incx1,
+             c128* restrict X2, const INT incx2,
+             c128* restrict Q1, const INT ldq1,
+             c128* restrict Q2, const INT ldq2,
+             c128* restrict work, const INT lwork,
+             INT* info)
 {
     const f64 REALZERO = 0.0;
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int childinfo, i, j;
+    INT childinfo, i, j;
     f64 eps, norm, scl, ssq;
 
     *info = 0;

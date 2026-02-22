@@ -7,13 +7,13 @@
 #include "semicolon_lapack_complex_single.h"
 #include "../include/lapack_tuning.h"
 
-void cggqrf(const int n, const int m, const int p,
-            c64* restrict A, const int lda, c64* restrict taua,
-            c64* restrict B, const int ldb, c64* restrict taub,
-            c64* restrict work, const int lwork, int* info)
+void cggqrf(const INT n, const INT m, const INT p,
+            c64* restrict A, const INT lda, c64* restrict taua,
+            c64* restrict B, const INT ldb, c64* restrict taub,
+            c64* restrict work, const INT lwork, INT* info)
 {
-    int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
-    int minval;
+    INT lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
+    INT minval;
 
     *info = 0;
     nb1 = lapack_get_nb("GEQRF");
@@ -57,18 +57,18 @@ void cggqrf(const int n, const int m, const int p,
 
     /* QR factorization of N-by-M matrix A: A = Q*R */
     cgeqrf(n, m, A, lda, taua, work, lwork, info);
-    lopt = (int)crealf(work[0]);
+    lopt = (INT)crealf(work[0]);
 
     /* Update B := Q**H * B */
     {
-        int minmn = (n < m) ? n : m;
+        INT minmn = (n < m) ? n : m;
         cunmqr("L", "C", n, p, minmn, A, lda, taua, B, ldb, work, lwork, info);
     }
-    if ((int)crealf(work[0]) > lopt) lopt = (int)crealf(work[0]);
+    if ((INT)crealf(work[0]) > lopt) lopt = (INT)crealf(work[0]);
 
     /* RQ factorization of N-by-P matrix B: B = T*Z */
     cgerqf(n, p, B, ldb, taub, work, lwork, info);
-    if ((int)crealf(work[0]) > lopt) lopt = (int)crealf(work[0]);
+    if ((INT)crealf(work[0]) > lopt) lopt = (INT)crealf(work[0]);
 
     work[0] = (c64)lopt;
 }

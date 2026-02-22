@@ -27,7 +27,7 @@
  */
 f64 dlangt(
     const char* norm,
-    const int n,
+    const INT n,
     const f64* restrict DL,
     const f64* restrict D,
     const f64* restrict DU)
@@ -36,7 +36,7 @@ f64 dlangt(
     const f64 ONE = 1.0;
 
     f64 anorm, scale, sum, temp;
-    int i;
+    INT i;
 
     if (n <= 0) {
         anorm = ZERO;

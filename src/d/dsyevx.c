@@ -5,7 +5,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
 
@@ -50,23 +50,23 @@
  *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void dsyevx(const char* jobz, const char* range, const char* uplo,
-            const int n, f64* restrict A, const int lda,
-            const f64 vl, const f64 vu, const int il, const int iu,
-            const f64 abstol, int* m,
+            const INT n, f64* restrict A, const INT lda,
+            const f64 vl, const f64 vu, const INT il, const INT iu,
+            const f64 abstol, INT* m,
             f64* restrict W,
-            f64* restrict Z, const int ldz,
-            f64* restrict work, const int lwork,
-            int* restrict iwork,
-            int* restrict ifail,
-            int* info)
+            f64* restrict Z, const INT ldz,
+            f64* restrict work, const INT lwork,
+            INT* restrict iwork,
+            INT* restrict ifail,
+            INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int alleig, indeig, lower, lquery, test, valeig, wantz;
-    int i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo;
-    int indtau, indwkn, indwrk, iscale, itmp1, j, jj, llwork;
-    int llwrkn, lwkmin, lwkopt, nb, nsplit;
+    INT alleig, indeig, lower, lquery, test, valeig, wantz;
+    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo;
+    INT indtau, indwkn, indwrk, iscale, itmp1, j, jj, llwork;
+    INT llwrkn, lwkmin, lwkopt, nb, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
     /* Test the input parameters */

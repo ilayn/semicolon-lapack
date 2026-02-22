@@ -7,7 +7,7 @@
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -38,14 +38,14 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void clarfgp(const int n, c64* alpha, c64* restrict x,
-             const int incx, c64* tau)
+void clarfgp(const INT n, c64* alpha, c64* restrict x,
+             const INT incx, c64* tau)
 {
     const f32 TWO = 2.0f;
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int j, knt;
+    INT j, knt;
     f32 alphi, alphr, beta, bignum, eps, smlnum, xnorm;
     c64 savealpha;
 

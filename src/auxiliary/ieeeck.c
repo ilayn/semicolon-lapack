@@ -29,7 +29,7 @@
  *          = 0: Arithmetic failed to produce the correct answers
  *          = 1: Arithmetic produced the correct answers
  */
-int ieeeck(const int ispec, const float zero, const float one)
+INT ieeeck(const INT ispec, const float zero, const float one)
 {
     float nan1, nan2, nan3, nan4, nan5, nan6;
     float neginf, negzro, newzro, posinf;

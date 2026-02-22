@@ -47,14 +47,14 @@ f32 slansf(
     const char* norm,
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict A,
     f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j, ifm, ilu, noe, n1, k, l, lda;
+    INT i, j, ifm, ilu, noe, n1, k, l, lda;
     f32 scale, s, value, aa, temp;
 
     if (n == 0) {

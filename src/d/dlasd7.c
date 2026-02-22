@@ -6,26 +6,26 @@
 
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
-void dlasd7(const int icompq, const int nl, const int nr, const int sqre,
-            int* k, f64* restrict D, f64* restrict Z,
+void dlasd7(const INT icompq, const INT nl, const INT nr, const INT sqre,
+            INT* k, f64* restrict D, f64* restrict Z,
             f64* restrict ZW, f64* restrict VF,
             f64* restrict VFW, f64* restrict VL,
             f64* restrict VLW, const f64 alpha, const f64 beta,
-            f64* restrict DSIGMA, int* restrict IDX,
-            int* restrict IDXP, int* restrict IDXQ,
-            int* restrict PERM, int* givptr,
-            int* restrict GIVCOL, const int ldgcol,
-            f64* restrict GIVNUM, const int ldgnum,
-            f64* c, f64* s, int* info)
+            f64* restrict DSIGMA, INT* restrict IDX,
+            INT* restrict IDXP, INT* restrict IDXQ,
+            INT* restrict PERM, INT* givptr,
+            INT* restrict GIVCOL, const INT ldgcol,
+            f64* restrict GIVNUM, const INT ldgnum,
+            f64* c, f64* s, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 EIGHT = 8.0;
 
-    int i, idxi, idxj, idxjp, j, jp, jprev = 0, k2, m, n, nlp1, nlp2;
+    INT i, idxi, idxj, idxjp, j, jp, jprev = 0, k2, m, n, nlp1, nlp2;
     f64 eps, hlftol, tau, tol, z1;
 
     *info = 0;

@@ -64,12 +64,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void dorgbr(const char* vect, const int m, const int n, const int k,
-            f64* restrict A, const int lda,
+void dorgbr(const char* vect, const INT m, const INT n, const INT k,
+            f64* restrict A, const INT lda,
             const f64* restrict tau,
-            f64* restrict work, const int lwork, int* info)
+            f64* restrict work, const INT lwork, INT* info)
 {
-    int i, j, iinfo, lquery, mn, wantq, lwkopt;
+    INT i, j, iinfo, lquery, mn, wantq, lwkopt;
 
     /* Test the input arguments */
     *info = 0;
@@ -112,7 +112,7 @@ void dorgbr(const char* vect, const int m, const int n, const int k,
                 }
             }
         }
-        lwkopt = (int)work[0];
+        lwkopt = (INT)work[0];
         if (lwkopt < mn) lwkopt = mn;
     }
 

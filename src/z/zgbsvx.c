@@ -8,7 +8,7 @@
 #include <math.h>
 #include <complex.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -68,36 +68,36 @@
 void zgbsvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     c128* restrict AFB,
-    const int ldafb,
-    int* restrict ipiv,
+    const INT ldafb,
+    INT* restrict ipiv,
     char* equed,
     f64* restrict R,
     f64* restrict C,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, j1, j2, infequ;
+    INT i, j, j1, j2, infequ;
     f64 amax, anorm, bignum, colcnd, rcmax, rcmin, rowcnd, rpvgrw, smlnum;
     char norm;
-    int nofact, equil, notran, rowequ, colequ;
+    INT nofact, equil, notran, rowequ, colequ;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');
@@ -221,7 +221,7 @@ void zgbsvx(
         for (j = 0; j < n; j++) {
             j1 = (j - ku > 0) ? j - ku : 0;
             j2 = (j + kl < n - 1) ? j + kl : n - 1;
-            int len = j2 - j1 + 1;
+            INT len = j2 - j1 + 1;
             /* Source: AB at row ku + j1 - j, column j
              * Dest: AFB at row kl + ku + j1 - j, column j */
             cblas_zcopy(len, &AB[ku + j1 - j + j * ldab], 1,
@@ -236,15 +236,15 @@ void zgbsvx(
              * leading rank-deficient INFO columns of A */
             anorm = ZERO;
             for (j = 0; j < *info; j++) {
-                int i_start = (ku - j > 0) ? ku - j : 0;
-                int i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
+                INT i_start = (ku - j > 0) ? ku - j : 0;
+                INT i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
                 for (i = i_start; i <= i_end; i++) {
                     f64 temp = cabs(AB[i + j * ldab]);
                     if (anorm < temp) anorm = temp;
                 }
             }
-            int k_val = (*info - 1 < kl + ku) ? *info - 1 : kl + ku;
-            int start_offset = (kl + ku + 1 - *info > 0) ? kl + ku + 1 - *info : 0;
+            INT k_val = (*info - 1 < kl + ku) ? *info - 1 : kl + ku;
+            INT start_offset = (kl + ku + 1 - *info > 0) ? kl + ku + 1 - *info : 0;
             rpvgrw = zlantb("M", "U", "N", *info, k_val, &AFB[start_offset], ldafb, rwork);
             if (rpvgrw == ZERO) {
                 rpvgrw = ONE;

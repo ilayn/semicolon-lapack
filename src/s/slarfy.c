@@ -3,7 +3,7 @@
  * @brief SLARFY applies an elementary reflector to a symmetric matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -34,9 +34,9 @@
  * @param[in]     ldc    The leading dimension of the array C. LDC >= max(1, N).
  * @param[out]    work   Double precision array, dimension (N).
  */
-void slarfy(const char* uplo, const int n, const f32* restrict V,
-            const int incv, const f32 tau, f32* restrict C,
-            const int ldc, f32* restrict work)
+void slarfy(const char* uplo, const INT n, const f32* restrict V,
+            const INT incv, const f32 tau, f32* restrict C,
+            const INT ldc, f32* restrict work)
 {
     f32 alpha;
     CBLAS_UPLO cblas_uplo;

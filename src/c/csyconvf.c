@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -57,17 +57,17 @@
 void csyconvf(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper, convert;
-    int i, ip;
+    INT upper, convert;
+    INT i, ip;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

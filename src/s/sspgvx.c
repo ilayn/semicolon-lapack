@@ -5,7 +5,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SSPGVX computes selected eigenvalues, and optionally, eigenvectors
@@ -39,29 +39,29 @@
  *                         - = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEVX error.
  */
 void sspgvx(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict AP,
     f32* restrict BP,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
-    int upper, wantz, alleig, valeig, indeig;
-    int j;
+    INT upper, wantz, alleig, valeig, indeig;
+    INT j;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

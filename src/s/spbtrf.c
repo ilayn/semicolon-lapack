@@ -3,7 +3,7 @@
  * @brief SPBTRF computes the Cholesky factorization of a symmetric positive definite band matrix.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 #define NBMAX 32
@@ -34,18 +34,18 @@
  */
 void spbtrf(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
-    int* info)
+    const INT ldab,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, i2, i3, ib, ii, j, jj, nb;
+    INT i, i2, i3, ib, ii, j, jj, nb;
     f32 work[LDWORK * NBMAX];
-    int upper;
+    INT upper;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -181,7 +181,7 @@ void spbtrf(
                     if (i3 > 0) {
                         // Copy the upper triangle of A31 into the work array
                         for (jj = 0; jj < ib; jj++) {
-                            int minval = (jj + 1 < i3) ? (jj + 1) : i3;
+                            INT minval = (jj + 1 < i3) ? (jj + 1) : i3;
                             for (ii = 0; ii < minval; ii++) {
                                 work[ii + jj * LDWORK] = AB[kd - jj + ii + (jj + i) * ldab];
                             }
@@ -203,7 +203,7 @@ void spbtrf(
                                     ldab - 1);
                         // Copy the upper triangle of A31 back into place
                         for (jj = 0; jj < ib; jj++) {
-                            int minval = (jj + 1 < i3) ? (jj + 1) : i3;
+                            INT minval = (jj + 1 < i3) ? (jj + 1) : i3;
                             for (ii = 0; ii < minval; ii++) {
                                 AB[kd - jj + ii + (jj + i) * ldab] = work[ii + jj * LDWORK];
                             }

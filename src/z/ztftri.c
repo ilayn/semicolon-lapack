@@ -5,7 +5,7 @@
 
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZTFTRI computes the inverse of a triangular matrix A stored in RFP
@@ -43,15 +43,15 @@ void ztftri(
     const char* transr,
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     c128* restrict A,
-    int* info)
+    INT* info)
 {
     const c128 cone = CMPLX(1.0, 0.0);
     const c128 neg_cone = CMPLX(-1.0, 0.0);
 
-    int lower, nisodd, normaltransr;
-    int n1, n2, k;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

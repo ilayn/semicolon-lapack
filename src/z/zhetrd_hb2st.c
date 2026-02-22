@@ -75,24 +75,24 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
-                  const int n, const int kd,
-                  c128* AB, const int ldab,
+                  const INT n, const INT kd,
+                  c128* AB, const INT ldab,
                   f64* D, f64* E,
-                  c128* hous, const int lhous,
-                  c128* work, const int lwork, int* info)
+                  c128* hous, const INT lhous,
+                  c128* work, const INT lwork, INT* info)
 {
     const f64 rzero = 0.0;
     const c128 zero = CMPLX(0.0, 0.0);
     const c128 one = CMPLX(1.0, 0.0);
 
-    int lquery, wantq, upper, afters1;
-    int i, m, k, ib, sweepid, myid, shift, stt, st;
-    int ed, stind, edind, blklastind, colpt, thed;
-    int stepercol, grsiz, thgrsiz, thgrnb, thgrid;
-    int ttype;
-    int abdpos, abofdpos, dpos, ofdpos, awpos;
-    int inda, indw, apos, sizea, lda, indv, indtau;
-    int sizetau, ldv, lhmin, lwmin;
+    INT lquery, wantq, upper, afters1;
+    INT i, m, k, ib, sweepid, myid, shift, stt, st;
+    INT ed, stind, edind, blklastind, colpt, thed;
+    INT stepercol, grsiz, thgrsiz, thgrnb, thgrid;
+    INT ttype;
+    INT abdpos, abofdpos, dpos, ofdpos, awpos;
+    INT inda, indw, apos, sizea, lda, indv, indtau;
+    INT sizetau, ldv, lhmin, lwmin;
     f64 abstmp;
     c128 tmp;
 
@@ -252,8 +252,8 @@ void zhetrd_hb2st(const char* stage1, const char* vect, const char* uplo,
     grsiz = 1;
     shift = 3;
     (void)ceil((f64)n / (f64)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceil((f64)shift / (f64)grsiz);
-    thgrnb = (int)ceil((f64)(n - 1) / (f64)thgrsiz);
+    stepercol = (INT)ceil((f64)shift / (f64)grsiz);
+    thgrnb = (INT)ceil((f64)(n - 1) / (f64)thgrsiz);
 
     zlacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     zlaset("A", kd, n, zero, zero, &work[awpos], lda);

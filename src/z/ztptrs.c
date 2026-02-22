@@ -4,7 +4,7 @@
  */
 
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -38,17 +38,17 @@ void ztptrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict AP,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int nounit, upper;
-    int j, jc;
+    INT nounit, upper;
+    INT j, jc;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
