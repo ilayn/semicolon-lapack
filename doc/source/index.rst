@@ -42,6 +42,7 @@ Contents
    :caption: Overview
 
    building
+   installing
    dense-details
    conventions
 
