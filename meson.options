@@ -8,3 +8,9 @@ option('tests', type: 'boolean', value: true,
 
 option('benchmarks', type: 'boolean', value: false,
        description: 'Build benchmark executables for profiling')
+
+option('USE_INT64', type: 'boolean', value: false,
+       description: 'Use 64-bit integers for LAPACK index parameters')
+
+option('SYMBOL_MANGLING', type: 'string', value: 'name##_64',
+       description: 'If USE_INT64 is true, token-pasting pattern for ILP64 symbol names (e.g. name##_64, scipy_##name##_64)')
