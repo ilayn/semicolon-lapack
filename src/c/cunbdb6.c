@@ -4,6 +4,7 @@
  *        orthonormal basis using Gram-Schmidt.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -50,13 +51,13 @@
  * @param[out]    info   = 0: successful exit.
  *                       < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cunbdb6(const int m1, const int m2, const int n,
-             c64* restrict X1, const int incx1,
-             c64* restrict X2, const int incx2,
-             const c64* restrict Q1, const int ldq1,
-             const c64* restrict Q2, const int ldq2,
-             c64* restrict work, const int lwork,
-             int* info)
+void cunbdb6(const INT m1, const INT m2, const INT n,
+             c64* restrict X1, const INT incx1,
+             c64* restrict X2, const INT incx2,
+             const c64* restrict Q1, const INT ldq1,
+             const c64* restrict Q2, const INT ldq2,
+             c64* restrict work, const INT lwork,
+             INT* info)
 {
     const f32 ALPHA = 0.83f;
     const f32 REALZERO = 0.0f;
@@ -64,7 +65,7 @@ void cunbdb6(const int m1, const int m2, const int n,
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int i, ix;
+    INT i, ix;
     f32 eps, norm, norm_new, scl, ssq;
 
     *info = 0;

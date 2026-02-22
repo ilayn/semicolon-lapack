@@ -4,6 +4,7 @@
  *        communication for evaluating matrix-vector products.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -42,20 +43,20 @@
  *                      between calls to ZLACN2.
  */
 void zlacn2(
-    const int n,
+    const INT n,
     c128* restrict V,
     c128* restrict X,
     f64* est,
-    int* kase,
-    int* restrict isave)
+    INT* kase,
+    INT* restrict isave)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int i, jlast;
+    INT i, jlast;
     f64 absxi, altsgn, estold, safmin, temp;
 
     safmin = dlamch("Safe minimum");

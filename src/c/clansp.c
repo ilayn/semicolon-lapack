@@ -3,6 +3,7 @@
  * @brief CLANSP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a symmetric matrix supplied in packed form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -45,7 +46,7 @@
 f32 clansp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* restrict work)
 {
@@ -54,7 +55,7 @@ f32 clansp(
     const f32 ZERO = 0.0f;
 
     // clansp.f lines 135-136: Local Scalars
-    int i, j, k;
+    INT i, j, k;
     f32 absa, scale, sum, value;
 
     // clansp.f lines 150-263: Main logic

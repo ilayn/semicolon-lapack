@@ -4,6 +4,7 @@
  *        complex Hermitian matrix using divide and conquer algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -57,23 +58,23 @@
  *                           the submatrix lying in rows and columns INFO/(N+1)
  *                           through mod(INFO,N+1).
  */
-void cheevd(const char* jobz, const char* uplo, const int n,
-            c64* restrict A, const int lda,
+void cheevd(const char* jobz, const char* uplo, const INT n,
+            c64* restrict A, const INT lda,
             f32* restrict W,
-            c64* restrict work, const int lwork,
-            f32* restrict rwork, const int lrwork,
-            int* restrict iwork, const int liwork,
-            int* info)
+            c64* restrict work, const INT lwork,
+            f32* restrict rwork, const INT lrwork,
+            INT* restrict iwork, const INT liwork,
+            INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int lower, wantz, lquery;
-    int iinfo, imax, inde, indrwk, indtau, indwk2, indwrk, iscale;
-    int liopt, liwmin, llrwk, llwork, llwrk2, lopt, lropt, lrwmin, lwmin;
+    INT lower, wantz, lquery;
+    INT iinfo, imax, inde, indrwk, indtau, indwk2, indwrk, iscale;
+    INT liopt, liwmin, llrwk, llwork, llwrk2, lopt, lropt, lrwmin, lwmin;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
-    int nb;
+    INT nb;
 
     /* Test the input parameters */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

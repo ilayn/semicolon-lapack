@@ -4,6 +4,7 @@
  *        tridiagonal form by an orthogonal similarity transformation.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 #include "../include/lapack_tuning.h"
@@ -62,14 +63,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ssytrd(const char* uplo, const int n, f32* A, const int lda,
+void ssytrd(const char* uplo, const INT n, f32* A, const INT lda,
             f32* D, f32* E, f32* tau, f32* work,
-            const int lwork, int* info)
+            const INT lwork, INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int upper, lquery;
-    int i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
+    INT upper, lquery;
+    INT i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
 
     /* Test the input parameters */
     *info = 0;

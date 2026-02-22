@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 /**
  * @file slatrz.c
@@ -54,12 +55,12 @@
  *                      The scalar factors of the elementary reflectors.
  * @param[out]    work  Double precision array, dimension (m).
  */
-void slatrz(const int m, const int n, const int l,
-            f32* restrict A, const int lda,
+void slatrz(const INT m, const INT n, const INT l,
+            f32* restrict A, const INT lda,
             f32* restrict tau,
             f32* restrict work)
 {
-    int i;
+    INT i;
 
     /* Quick return if possible */
     if (m == 0) {

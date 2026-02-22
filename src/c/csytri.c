@@ -4,6 +4,7 @@
  *        using the factorization computed by CSYTRF.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -31,19 +32,19 @@
  */
 void csytri(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -61,14 +62,14 @@ void csytri(
 
     /* Check that the diagonal matrix D is nonsingular. */
     if (upper) {
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             if (ipiv[k] >= 0 && A[k + k * lda] == ZERO) {
                 *info = k + 1;
                 return;
             }
         }
     } else {
-        for (int k = 0; k < n; k++) {
+        for (INT k = 0; k < n; k++) {
             if (ipiv[k] >= 0 && A[k + k * lda] == ZERO) {
                 *info = k + 1;
                 return;
@@ -80,9 +81,9 @@ void csytri(
         /* Compute inv(A) from the factorization A = U*D*U**T.
          *
          * K increases from 0 to n-1 in steps of 1 or 2. */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
-            int kstep;
+            INT kstep;
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block: invert it. */
                 A[k + k * lda] = ONE / A[k + k * lda];
@@ -130,7 +131,7 @@ void csytri(
             }
 
             /* Interchange rows and columns k and kp. */
-            int kp;
+            INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
             } else {
@@ -167,9 +168,9 @@ void csytri(
         /* Compute inv(A) from the factorization A = L*D*L**T.
          *
          * K decreases from n-1 to 0 in steps of 1 or 2. */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
-            int kstep;
+            INT kstep;
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block: invert it. */
                 A[k + k * lda] = ONE / A[k + k * lda];
@@ -220,7 +221,7 @@ void csytri(
             }
 
             /* Interchange rows and columns k and kp. */
-            int kp;
+            INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
             } else {

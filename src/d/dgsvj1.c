@@ -4,6 +4,7 @@
  *        targeting specific pivot pairs in off-diagonal blocks.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <cblas.h>
@@ -44,19 +45,19 @@ static const f64 ONE = 1.0;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument.
  */
-void dgsvj1(const char* jobv, const int m, const int n, const int n1,
-            f64* restrict A, const int lda,
+void dgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
+            f64* restrict A, const INT lda,
             f64* restrict D, f64* restrict SVA,
-            const int mv, f64* restrict V, const int ldv,
+            const INT mv, f64* restrict V, const INT ldv,
             const f64 eps, const f64 sfmin, const f64 tol,
-            const int nsweep, f64* restrict work, const int lwork,
-            int* info)
+            const INT nsweep, f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int applv, rsvec, mvl;
-    int i, ibr, igl, p, q, kbl, nblr, nblc;
-    int blskip, rowskip, swband;
-    int notrot, pskipped, iswrot, ijblsk, emptsw;
-    int ierr, jbc, jgl;
+    INT applv, rsvec, mvl;
+    INT i, ibr, igl, p, q, kbl, nblr, nblc;
+    INT blskip, rowskip, swband;
+    INT notrot, pskipped, iswrot, ijblsk, emptsw;
+    INT ierr, jbc, jgl;
     f64 aapp, aapp0, aapq, aaqq, apoaq, aqoap;
     f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
     f64 mxaapq, mxsinj, rootbig, rooteps, rootsfmin, roottol, small;
@@ -156,7 +157,7 @@ void dgsvj1(const char* jobv, const int m, const int n, const int n1,
 
                             if (aaqq > ZERO) {
                                 aapp0 = aapp;
-                                int rotok;
+                                INT rotok;
 
                                 /* Safe Gram matrix computation */
                                 if (aaqq >= ONE) {

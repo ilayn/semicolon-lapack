@@ -3,6 +3,7 @@
  * @brief STPTRS solves a triangular system with a packed triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -37,17 +38,17 @@ void stptrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict AP,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int nounit, upper;
-    int j, jc;
+    INT nounit, upper;
+    INT j, jc;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

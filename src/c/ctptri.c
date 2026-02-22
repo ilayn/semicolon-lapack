@@ -3,6 +3,7 @@
  * @brief CTPTRI computes the inverse of a triangular matrix stored in packed format.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -30,9 +31,9 @@
 void ctptri(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     c64* restrict AP,
-    int* info)
+    INT* info)
 {
     // ctptri.f lines 132-133: Parameters
     const c64 ONE = CMPLXF(1.0f, 0.0f);
@@ -40,8 +41,8 @@ void ctptri(
 
     // ctptri.f lines 151-164: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (!nounit && !(diag[0] == 'U' || diag[0] == 'u')) {
@@ -58,8 +59,8 @@ void ctptri(
     if (nounit) {
         if (upper) {
             // ctptri.f lines 169-175
-            int jj = -1;  // 0-based: start at -1 so first jj += (i+1) gives 0
-            for (int i = 0; i < n; i++) {
+            INT jj = -1;  // 0-based: start at -1 so first jj += (i+1) gives 0
+            for (INT i = 0; i < n; i++) {
                 jj = jj + (i + 1);  // ctptri.f line 172: JJ = JJ + INFO
                 if (AP[jj] == ZERO) {
                     *info = i + 1;  // 1-based error code
@@ -68,8 +69,8 @@ void ctptri(
             }
         } else {
             // ctptri.f lines 176-183
-            int jj = 0;  // ctptri.f line 177: JJ = 1 (0-based: 0)
-            for (int i = 0; i < n; i++) {
+            INT jj = 0;  // ctptri.f line 177: JJ = 1 (0-based: 0)
+            for (INT i = 0; i < n; i++) {
                 if (AP[jj] == ZERO) {
                     *info = i + 1;  // 1-based error code
                     return;
@@ -85,8 +86,8 @@ void ctptri(
 
     if (upper) {
         // ctptri.f lines 187-206: Compute inverse of upper triangular matrix
-        int jc = 0;  // ctptri.f line 191: JC = 1 (0-based: 0)
-        for (int j = 0; j < n; j++) {  // ctptri.f line 192: DO 30 J = 1, N
+        INT jc = 0;  // ctptri.f line 191: JC = 1 (0-based: 0)
+        for (INT j = 0; j < n; j++) {  // ctptri.f line 192: DO 30 J = 1, N
             c64 ajj;
             if (nounit) {
                 // ctptri.f lines 193-195
@@ -107,9 +108,9 @@ void ctptri(
         }
     } else {
         // ctptri.f lines 208-231: Compute inverse of lower triangular matrix
-        int jc = n * (n + 1) / 2 - 1;  // ctptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
-        int jclast = 0;  // Will be set in loop
-        for (int j = n - 1; j >= 0; j--) {  // ctptri.f line 213: DO 40 J = N, 1, -1
+        INT jc = n * (n + 1) / 2 - 1;  // ctptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
+        INT jclast = 0;  // Will be set in loop
+        for (INT j = n - 1; j >= 0; j--) {  // ctptri.f line 213: DO 40 J = N, 1, -1
             c64 ajj;
             if (nounit) {
                 // ctptri.f lines 214-216

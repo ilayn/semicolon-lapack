@@ -3,6 +3,7 @@
  * @brief CPBSVX computes the solution to a Hermitian positive definite banded system with error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -53,31 +54,31 @@
 void cpbsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict AFB,
-    const int ldafb,
+    const INT ldafb,
     char* equed,
     f32* restrict S,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int equil, nofact, rcequ, upper;
-    int i, infequ, j, j1, j2;
+    INT equil, nofact, rcequ, upper;
+    INT i, infequ, j, j1, j2;
     f32 amax, anorm, bignum = 0.0f, scond, smax, smin, smlnum = 0.0f;
 
     *info = 0;

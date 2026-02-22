@@ -3,6 +3,7 @@
  * @brief CGEHRD reduces a general matrix to upper Hessenberg form.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -39,21 +40,21 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgehrd(const int n, const int ilo, const int ihi,
-            c64* A, const int lda, c64* tau,
-            c64* work, const int lwork, int* info)
+void cgehrd(const INT n, const INT ilo, const INT ihi,
+            c64* A, const INT lda, c64* tau,
+            c64* work, const INT lwork, INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int lquery;
-    int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
+    INT lquery;
+    INT i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
     c64 ei;
-    int max_n_1 = (n > 1) ? n : 1;
+    INT max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
     *info = 0;

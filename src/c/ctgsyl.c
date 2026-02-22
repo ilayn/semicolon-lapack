@@ -3,6 +3,7 @@
  * @brief CTGSYL solves the generalized Sylvester equation.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -118,35 +119,35 @@
  */
 void ctgsyl(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const c64* A,
-    const int lda,
+    const INT lda,
     const c64* B,
-    const int ldb,
+    const INT ldb,
     c64* C,
-    const int ldc,
+    const INT ldc,
     const c64* D,
-    const int ldd,
+    const INT ldd,
     const c64* E,
-    const int lde,
+    const INT lde,
     c64* F,
-    const int ldf,
+    const INT ldf,
     f32* scale,
     f32* dif,
     c64* work,
-    const int lwork,
-    int* iwork,
-    int* info)
+    const INT lwork,
+    INT* iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int lquery, notran;
-    int i, ie, ifunc, iround, is, isolve, j, je, js, k;
-    int linfo, lwmin, mb, nb, p, pq, q;
+    INT lquery, notran;
+    INT i, ie, ifunc, iround, is, isolve, j, je, js, k;
+    INT linfo, lwmin, mb, nb, p, pq, q;
     f32 dscale, dsum, scale2 = 0.0f, scaloc;
 
     *info = 0;

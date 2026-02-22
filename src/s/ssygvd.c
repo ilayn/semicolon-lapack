@@ -4,6 +4,7 @@
  *        real generalized symmetric-definite eigenproblem using divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 
@@ -30,24 +31,24 @@
  *                         - = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEVD error.
  */
 void ssygvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict W,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
-    int wantz, upper, lquery;
-    int liwmin, lwmin, lopt, liopt;
+    INT wantz, upper, lquery;
+    INT liwmin, lwmin, lopt, liopt;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -115,7 +116,7 @@ void ssygvd(
     ssyevd(jobz, uplo, n, A, lda, W, work, lwork, iwork, liwork, info);
 
     /* Update optimal workspace sizes */
-    lopt = (lopt > (int)work[0]) ? lopt : (int)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
     liopt = (liopt > iwork[0]) ? liopt : iwork[0];
 
     if (wantz && *info == 0) {

@@ -3,6 +3,7 @@
  * @brief ZTZRZF reduces an upper trapezoidal matrix to upper triangular form.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -44,14 +45,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztzrzf(const int m, const int n,
-            c128* restrict A, const int lda,
+void ztzrzf(const INT m, const INT n,
+            c128* restrict A, const INT lda,
             c128* restrict tau,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
-    int lquery;
+    INT i, ib, iws, ki, kk, ldwork, lwkmin, lwkopt, mu, nb, nbmin, nx;
+    INT lquery;
 
     /* Parameter validation */
     *info = 0;

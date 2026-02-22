@@ -3,6 +3,7 @@
  * @brief SLANSB returns the value of the 1-norm, Frobenius norm, infinity norm, or max element of a symmetric band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -28,16 +29,16 @@
 f32 slansb(
     const char* norm,
     const char* uplo,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j, l;
+    INT i, j, l;
     f32 absa, scale, sum, value;
 
     if (n == 0) {
@@ -47,7 +48,7 @@ f32 slansb(
         value = ZERO;
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             for (j = 0; j < n; j++) {
-                int istart = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
+                INT istart = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
                 for (i = istart; i <= k; i++) {
                     sum = fabsf(AB[i + j * ldab]);
                     if (value < sum || sisnan(sum)) value = sum;
@@ -55,7 +56,7 @@ f32 slansb(
             }
         } else {
             for (j = 0; j < n; j++) {
-                int iend = (n - j < k + 1) ? n - j : k + 1;
+                INT iend = (n - j < k + 1) ? n - j : k + 1;
                 for (i = 0; i < iend; i++) {
                     sum = fabsf(AB[i + j * ldab]);
                     if (value < sum || sisnan(sum)) value = sum;
@@ -70,7 +71,7 @@ f32 slansb(
             for (j = 0; j < n; j++) {
                 sum = ZERO;
                 l = k - j;
-                int istart = (j - k > 0) ? j - k : 0;
+                INT istart = (j - k > 0) ? j - k : 0;
                 for (i = istart; i < j; i++) {
                     absa = fabsf(AB[l + i + j * ldab]);
                     sum = sum + absa;
@@ -89,7 +90,7 @@ f32 slansb(
             for (j = 0; j < n; j++) {
                 sum = work[j] + fabsf(AB[j * ldab]);
                 l = -j;
-                int iend = (n < j + k + 1) ? n : j + k + 1;
+                INT iend = (n < j + k + 1) ? n : j + k + 1;
                 for (i = j + 1; i < iend; i++) {
                     absa = fabsf(AB[l + i + j * ldab]);
                     sum = sum + absa;
@@ -106,14 +107,14 @@ f32 slansb(
         if (k > 0) {
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 1; j < n; j++) {
-                    int len = (j < k) ? j : k;
-                    int start = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
+                    INT len = (j < k) ? j : k;
+                    INT start = (k + 1 - j - 1 > 0) ? k + 1 - j - 1 : 0;
                     slassq(len, &AB[start + j * ldab], 1, &scale, &sum);
                 }
                 l = k;
             } else {
                 for (j = 0; j < n - 1; j++) {
-                    int len = (n - j - 1 < k) ? n - j - 1 : k;
+                    INT len = (n - j - 1 < k) ? n - j - 1 : k;
                     slassq(len, &AB[1 + j * ldab], 1, &scale, &sum);
                 }
                 l = 0;

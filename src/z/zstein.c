@@ -4,6 +4,7 @@
  *        T corresponding to specified eigenvalues, using inverse iteration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdint.h>
 #include <complex.h>
@@ -71,35 +72,35 @@
  *                           stored in array ifail.
  */
 void zstein(
-    const int n,
+    const INT n,
     const f64* restrict D,
     const f64* restrict E,
-    const int m,
+    const INT m,
     const f64* restrict W,
-    const int* restrict iblock,
-    const int* restrict isplit,
+    const INT* restrict iblock,
+    const INT* restrict isplit,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
-    const int MAXITS = 5;
-    const int EXTRA = 2;
+    const INT MAXITS = 5;
+    const INT EXTRA = 2;
     const f64 ODM3 = 1.0e-3;
     const f64 ODM1 = 1.0e-1;
 
-    int b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, jr, nblk, nrmchk;
+    INT b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, jr, nblk, nrmchk;
     f64 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm = 0.0, ztr;
     uint64_t seed;
 
     /* Workspace offsets: each segment has n elements */
-    const int indrv1 = 0;
-    const int indrv2 = n;
-    const int indrv3 = 2 * n;
-    const int indrv4 = 3 * n;
-    const int indrv5 = 4 * n;
+    const INT indrv1 = 0;
+    const INT indrv2 = n;
+    const INT indrv3 = 2 * n;
+    const INT indrv4 = 3 * n;
+    const INT indrv5 = 4 * n;
 
     /* Test the input parameters. */
     *info = 0;
@@ -254,7 +255,7 @@ void zstein(
                  * jmax = index of element with largest absolute value.
                  * cblas_idamax returns 0-based index.
                  */
-                jmax = (int)cblas_idamax(blksiz, &work[indrv1], 1);
+                jmax = (INT)cblas_idamax(blksiz, &work[indrv1], 1);
                 scl = (f64)blksiz * onenrm *
                       fmax(eps, fabs(work[indrv4 + blksiz - 1])) /
                       fabs(work[indrv1 + jmax]);
@@ -295,7 +296,7 @@ void zstein(
 
 check_norm:
                 /* Check the infinity norm of the iterate. */
-                jmax = (int)cblas_idamax(blksiz, &work[indrv1], 1);
+                jmax = (INT)cblas_idamax(blksiz, &work[indrv1], 1);
                 nrm = fabs(work[indrv1 + jmax]);
 
                 /*
@@ -324,7 +325,7 @@ convergence_failure:
 accept_eigenvector:
             /* Accept iterate as j-th eigenvector. Normalize. */
             scl = 1.0 / cblas_dnrm2(blksiz, &work[indrv1], 1);
-            jmax = (int)cblas_idamax(blksiz, &work[indrv1], 1);
+            jmax = (INT)cblas_idamax(blksiz, &work[indrv1], 1);
             if (work[indrv1 + jmax] < 0.0) {
                 scl = -scl;
             }

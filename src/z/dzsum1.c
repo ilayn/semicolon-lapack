@@ -4,6 +4,7 @@
  *        vector and returns a f64 precision result.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_double.h"
@@ -20,10 +21,10 @@
  *                   The vector whose elements will be summed.
  * @param[in] incx  The spacing between successive values of CX. incx > 0.
  */
-f64 dzsum1(const int n, const c128* restrict CX, const int incx)
+f64 dzsum1(const INT n, const c128* restrict CX, const INT incx)
 {
     f64 stemp;
-    int i, nincx;
+    INT i, nincx;
 
     stemp = 0.0;
     if (n <= 0)

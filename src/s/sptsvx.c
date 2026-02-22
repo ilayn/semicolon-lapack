@@ -5,6 +5,7 @@
  *        symmetric positive definite tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -77,26 +78,26 @@
  */
 void sptsvx(
     const char* fact,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const f32* restrict E,
     f32* restrict DF,
     f32* restrict EF,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
-    int nofact;
+    INT nofact;
     f32 anorm;
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

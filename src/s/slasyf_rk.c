@@ -3,6 +3,7 @@
  * @brief SLASYF_RK computes a partial factorization of a real symmetric indefinite matrix using bounded Bunch-Kaufman (rook) diagonal pivoting method.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -80,24 +81,24 @@
  */
 void slasyf_rk(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     f32* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 EIGHT = 8.0f;
     const f32 SEVTEN = 17.0f;
 
-    int done;
-    int imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
+    INT done;
+    INT imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, d11, d12, d21, d22, dtemp, r1, rowmax, t, sfmin;
 
     *info = 0;

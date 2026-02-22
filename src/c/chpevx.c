@@ -4,6 +4,7 @@
  *        of a complex Hermitian matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -67,23 +68,23 @@
  *                           Their indices are stored in array IFAIL.
  */
 void chpevx(const char* jobz, const char* range, const char* uplo,
-            const int n, c64* restrict AP,
-            const f32 vl, const f32 vu, const int il, const int iu,
-            const f32 abstol, int* m, f32* restrict W,
-            c64* restrict Z, const int ldz,
+            const INT n, c64* restrict AP,
+            const f32 vl, const f32 vu, const INT il, const INT iu,
+            const f32 abstol, INT* m, f32* restrict W,
+            c64* restrict Z, const INT ldz,
             c64* restrict work,
             f32* restrict rwork,
-            int* restrict iwork,
-            int* restrict ifail,
-            int* info)
+            INT* restrict iwork,
+            INT* restrict ifail,
+            INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int alleig, indeig, test, valeig, wantz;
-    int i, iinfo, imax, indd, inde, indee, indisp, indiwk, indrwk;
-    int indtau, indwrk, iscale, itmp1, j, jj, nsplit;
+    INT alleig, indeig, test, valeig, wantz;
+    INT i, iinfo, imax, indd, inde, indee, indisp, indiwk, indrwk;
+    INT indtau, indwrk, iscale, itmp1, j, jj, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     f32 tmp1, vll, vuu;
 

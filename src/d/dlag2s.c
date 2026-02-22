@@ -3,6 +3,7 @@
  * @brief Convert f64 precision matrix to single precision.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"
@@ -34,21 +35,21 @@
  *                           in this case, the content of SA is unspecified.
  */
 void dlag2s(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     float * restrict SA,
-    const int ldsa,
-    int* info)
+    const INT ldsa,
+    INT* info)
 {
     // Maximum single precision value
     const f64 rmax = (f64)FLT_MAX;
 
     *info = 0;
 
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             f64 val = A[i + j * lda];
             if (fabs(val) > rmax) {
                 *info = 1;

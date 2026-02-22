@@ -4,6 +4,7 @@
  *        Hermitian matrix A using the factorization computed by ZHETRF.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -33,20 +34,20 @@
  */
 void zhetrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -75,12 +76,12 @@ void zhetrs(
          * K is the main loop index, decreasing from n-1 to 0 in steps of
          * 1 or 2, depending on the size of the diagonal blocks.
          */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block.
                  * Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -99,7 +100,7 @@ void zhetrs(
             } else {
                 /* 2x2 diagonal block.
                  * Interchange rows k-1 and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k - 1) {
                     cblas_zswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
                 }
@@ -119,7 +120,7 @@ void zhetrs(
                 c128 akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
                 c128 ak = A[k + k * lda] / conj(akm1k);
                 c128 denom = akm1 * ak - ONE;
-                for (int j = 0; j < nrhs; j++) {
+                for (INT j = 0; j < nrhs; j++) {
                     c128 bkm1 = B[(k - 1) + j * ldb] / akm1k;
                     c128 bk = B[k + j * ldb] / conj(akm1k);
                     B[(k - 1) + j * ldb] = (ak * bkm1 - bk) / denom;
@@ -147,7 +148,7 @@ void zhetrs(
                 }
 
                 /* Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -172,7 +173,7 @@ void zhetrs(
                 }
 
                 /* Interchange rows k and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -187,12 +188,12 @@ void zhetrs(
          * First solve L*D*X = B, overwriting B with X.
          *
          * K increases from 0 to n-1 in steps of 1 or 2. */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block.
                  * Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -211,7 +212,7 @@ void zhetrs(
             } else {
                 /* 2x2 diagonal block.
                  * Interchange rows k+1 and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k + 1) {
                     cblas_zswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
                 }
@@ -231,7 +232,7 @@ void zhetrs(
                 c128 akm1 = A[k + k * lda] / conj(akm1k);
                 c128 ak = A[(k + 1) + (k + 1) * lda] / akm1k;
                 c128 denom = akm1 * ak - ONE;
-                for (int j = 0; j < nrhs; j++) {
+                for (INT j = 0; j < nrhs; j++) {
                     c128 bkm1 = B[k + j * ldb] / conj(akm1k);
                     c128 bk = B[(k + 1) + j * ldb] / akm1k;
                     B[k + j * ldb] = (ak * bkm1 - bk) / denom;
@@ -259,7 +260,7 @@ void zhetrs(
                 }
 
                 /* Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -284,7 +285,7 @@ void zhetrs(
                 }
 
                 /* Interchange rows k and -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_zswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }

@@ -3,6 +3,7 @@
  * @brief ZTREXC reorders the Schur factorization of a complex matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -39,12 +40,12 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztrexc(const char* compq, const int n, c128* T, const int ldt,
-            c128* Q, const int ldq, const int ifst, const int ilst,
-            int* info)
+void ztrexc(const char* compq, const INT n, c128* T, const INT ldt,
+            c128* Q, const INT ldq, const INT ifst, const INT ilst,
+            INT* info)
 {
-    int wantq;
-    int k, m1, m2, m3;
+    INT wantq;
+    INT k, m1, m2, m3;
     f64 cs;
     c128 sn, t11, t22, temp;
 

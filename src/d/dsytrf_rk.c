@@ -3,6 +3,7 @@
  * @brief DSYTRF_RK computes the factorization of a real symmetric indefinite matrix using the bounded Bunch-Kaufman (rook) diagonal pivoting method (BLAS3 blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdlib.h>
 #include <cblas.h>
@@ -70,17 +71,17 @@
  */
 void dsytrf_rk(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int i, iinfo, ip, iws, k, kb, ldwork, lwkopt, nb, nbmin;
+    INT upper, lquery;
+    INT i, iinfo, ip, iws, k, kb, ldwork, lwkopt, nb, nbmin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

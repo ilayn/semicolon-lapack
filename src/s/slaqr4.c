@@ -4,27 +4,28 @@
  *        multi-shift QR with aggressive early deflation.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
 /** @cond */
 
 /* ISPEC=12: NMIN - crossover to SLAHQR (must be at least 11) */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
 
 /* ISPEC=15: number of simultaneous shifts */
-static int iparmq_nshfts(int nh)
+static INT iparmq_nshfts(INT nh)
 {
-    int ns = 2;
+    INT ns = 2;
     if (nh >= 30) ns = 4;
     if (nh >= 60) ns = 10;
     if (nh >= 150) {
         /* ns = max(10, nh / nint(log(nh)/log(2))) */
         f32 lognh = logf((f32)nh) / logf(2.0f);
-        int div = (int)(lognh + 0.5f);  /* nint */
+        INT div = (INT)(lognh + 0.5f);  /* nint */
         if (div < 1) div = 1;
         ns = nh / div;
         if (ns < 10) ns = 10;
@@ -39,9 +40,9 @@ static int iparmq_nshfts(int nh)
 }
 
 /* ISPEC=13: deflation window size */
-static int iparmq_nwr(int nh)
+static INT iparmq_nwr(INT nh)
 {
-    int ns = iparmq_nshfts(nh);
+    INT ns = iparmq_nshfts(nh);
     if (nh <= 500) {
         return ns;
     } else {
@@ -50,18 +51,18 @@ static int iparmq_nwr(int nh)
 }
 
 /* ISPEC=14: nibble crossover point */
-static int iparmq_nibble(void)
+static INT iparmq_nibble(void)
 {
     return 14;
 }
 
 /* ISPEC=16: accumulation mode (0, 1, or 2) */
-static int iparmq_kacc22(int ns)
+static INT iparmq_kacc22(INT ns)
 {
     /* For SLAQR4: use NS-based threshold */
-    const int kacmin = 14;
-    const int k22min = 14;
-    int kacc = 0;
+    const INT kacmin = 14;
+    const INT k22min = 14;
+    INT kacc = 0;
     if (ns >= kacmin) kacc = 1;
     if (ns >= k22min) kacc = 2;
     return kacc;
@@ -120,18 +121,18 @@ static int iparmq_kacc22(int ns)
  *                           eigenvalues. Elements ilo:info contain those
  *                           eigenvalues which have been successfully computed.
  */
-SEMICOLON_API void slaqr4(const int wantt, const int wantz, const int n,
-                          const int ilo, const int ihi,
-                          f32* H, const int ldh,
+SEMICOLON_API void slaqr4(const INT wantt, const INT wantz, const INT n,
+                          const INT ilo, const INT ihi,
+                          f32* H, const INT ldh,
                           f32* wr, f32* wi,
-                          const int iloz, const int ihiz,
-                          f32* Z, const int ldz,
-                          f32* work, const int lwork, int* info)
+                          const INT iloz, const INT ihiz,
+                          f32* Z, const INT ldz,
+                          f32* work, const INT lwork, INT* info)
 {
     /* Parameters */
-    const int ntiny = 15;   /* Matrices of order NTINY or smaller use SLAHQR */
-    const int kexnw = 5;    /* Exceptional deflation window frequency */
-    const int kexsh = 6;    /* Exceptional shifts frequency */
+    const INT ntiny = 15;   /* Matrices of order NTINY or smaller use SLAHQR */
+    const INT kexnw = 5;    /* Exceptional deflation window frequency */
+    const INT kexsh = 6;    /* Exceptional shifts frequency */
     const f32 wilk1 = 0.75f;
     const f32 wilk2 = -0.4375f;
     const f32 zero = 0.0f;
@@ -139,11 +140,11 @@ SEMICOLON_API void slaqr4(const int wantt, const int wantz, const int n,
 
     /* Local scalars */
     f32 aa, bb, cc, cs, dd, sn, ss, swap;
-    int i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
-    int kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
-    int lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
-    int nsmax, nsr, nve, nw, nwmax, nwr, nwupbd;
-    int sorted;
+    INT i, inf, it, itmax, k, kacc22, kbot, kdu, ks;
+    INT kt, ktop, ku, kv, kwh, kwtop, kwv, ld, ls;
+    INT lwkopt, ndec = -1, ndfl, nh, nho, nibble, nmin, ns;
+    INT nsmax, nsr, nve, nw, nwmax, nwr, nwupbd;
+    INT sorted;
 
     /* Local array for dummy Z in SLAHQR call */
     f32 zdum[1];
@@ -193,7 +194,7 @@ SEMICOLON_API void slaqr4(const int wantt, const int wantz, const int n,
 
         /* Optimal workspace = MAX(3*NSR/2, SLAQR2 workspace) */
         lwkopt = 3 * nsr / 2;
-        if ((int)work[0] > lwkopt) lwkopt = (int)work[0];
+        if ((INT)work[0] > lwkopt) lwkopt = (INT)work[0];
 
         /* Quick return in case of workspace query */
         if (lwork == -1) {

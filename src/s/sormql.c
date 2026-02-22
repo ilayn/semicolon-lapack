@@ -4,6 +4,7 @@
  *        a QL factorization determined by SGEQLF (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
@@ -56,21 +57,21 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sormql(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const f32* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            const f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict C, const int ldc,
-            f32* restrict work, const int lwork,
-            int* info)
+            f32* restrict C, const INT ldc,
+            f32* restrict work, const INT lwork,
+            INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
 
-    int left, notran, lquery;
-    int i, ib, iinfo, iwt, ldwork, lwkopt;
-    int mi, nb, nbmin, ni, nq, nw;
-    int i1, i2, i3;
+    INT left, notran, lquery;
+    INT i, ib, iinfo, iwt, ldwork, lwkopt;
+    INT mi, nb, nbmin, ni, nq, nw;
+    INT i1, i2, i3;
 
     /* Decode arguments */
     left = (side[0] == 'L' || side[0] == 'l');

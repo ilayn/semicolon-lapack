@@ -4,6 +4,7 @@
  *        using the factorization computed by SSYTRF.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -30,15 +31,15 @@
  */
 void ssytri(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -59,7 +60,7 @@ void ssytri(
         /* Upper triangular storage: examine D from bottom to top.
          * Fortran: DO INFO = N, 1, -1: checks IPIV(INFO)>0 .AND. A(INFO,INFO)==0
          * 0-based: check ipiv[k] >= 0 && A[k,k] == 0 */
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             if (ipiv[k] >= 0 && A[k + k * lda] == 0.0f) {
                 *info = k + 1;  /* 1-based info */
                 return;
@@ -67,7 +68,7 @@ void ssytri(
         }
     } else {
         /* Lower triangular storage: examine D from top to bottom. */
-        for (int k = 0; k < n; k++) {
+        for (INT k = 0; k < n; k++) {
             if (ipiv[k] >= 0 && A[k + k * lda] == 0.0f) {
                 *info = k + 1;
                 return;
@@ -79,9 +80,9 @@ void ssytri(
         /* Compute inv(A) from the factorization A = U*D*U**T.
          *
          * K increases from 0 to n-1 in steps of 1 or 2. */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
-            int kstep;
+            INT kstep;
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block: invert it. */
                 A[k + k * lda] = 1.0f / A[k + k * lda];
@@ -135,7 +136,7 @@ void ssytri(
             /* Interchange rows and columns k and kp.
              * Fortran: KP = ABS(IPIV(K)) (1-based)
              * 0-based: for 1x1, kp = ipiv[k]; for 2x2, kp = -(ipiv[k]+1) */
-            int kp;
+            INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
             } else {
@@ -176,9 +177,9 @@ void ssytri(
         /* Compute inv(A) from the factorization A = L*D*L**T.
          *
          * K decreases from n-1 to 0 in steps of 1 or 2. */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
-            int kstep;
+            INT kstep;
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block: invert it. */
                 A[k + k * lda] = 1.0f / A[k + k * lda];
@@ -233,7 +234,7 @@ void ssytri(
             }
 
             /* Interchange rows and columns k and kp. */
-            int kp;
+            INT kp;
             if (ipiv[k] >= 0) {
                 kp = ipiv[k];
             } else {

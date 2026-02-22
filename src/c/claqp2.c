@@ -4,6 +4,7 @@
  *        block using an unblocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -43,27 +44,27 @@
  *                        The vector with the exact column norms.
  * @param[out]    work    Single complex array, dimension (n).
  */
-void claqp2(const int m, const int n, const int offset,
-            c64* restrict A, const int lda,
-            int* restrict jpvt,
+void claqp2(const INT m, const INT n, const INT offset,
+            c64* restrict A, const INT lda,
+            INT* restrict jpvt,
             c64* restrict tau,
             f32* restrict vn1,
             f32* restrict vn2,
             c64* restrict work)
 {
-    int mn = (m - offset) < n ? (m - offset) : n;
+    INT mn = (m - offset) < n ? (m - offset) : n;
     f32 tol3z = sqrtf(FLT_EPSILON);
 
     /* Compute factorization. */
-    for (int i = 0; i < mn; i++) {
-        int offpi = offset + i;
+    for (INT i = 0; i < mn; i++) {
+        INT offpi = offset + i;
 
         /* Determine i-th pivot column and swap if necessary. */
-        int pvt = i + cblas_isamax(n - i, &vn1[i], 1);
+        INT pvt = i + cblas_isamax(n - i, &vn1[i], 1);
 
         if (pvt != i) {
             cblas_cswap(m, &A[0 + pvt * lda], 1, &A[0 + i * lda], 1);
-            int itemp = jpvt[pvt];
+            INT itemp = jpvt[pvt];
             jpvt[pvt] = jpvt[i];
             jpvt[i] = itemp;
             vn1[pvt] = vn1[i];
@@ -87,7 +88,7 @@ void claqp2(const int m, const int n, const int offset,
         }
 
         /* Update partial column norms. */
-        for (int j = i + 1; j < n; j++) {
+        for (INT j = i + 1; j < n; j++) {
             if (vn1[j] != 0.0f) {
                 /*
                  * NOTE: The following lines follow from the analysis in

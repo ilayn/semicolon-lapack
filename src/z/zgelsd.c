@@ -4,6 +4,7 @@
  *        squares problem using the SVD with divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "../include/lapack_tuning.h"
 #include <complex.h>
@@ -75,20 +76,20 @@
  *                           if info = i, i off-diagonal elements of an intermediate
  *                           bidiagonal form did not converge to zero.
  */
-void zgelsd(const int m, const int n, const int nrhs,
-            c128* restrict A, const int lda,
-            c128* restrict B, const int ldb,
-            f64* restrict S, const f64 rcond, int* rank,
-            c128* restrict work, const int lwork,
+void zgelsd(const INT m, const INT n, const INT nrhs,
+            c128* restrict A, const INT lda,
+            c128* restrict B, const INT ldb,
+            f64* restrict S, const f64 rcond, INT* rank,
+            c128* restrict work, const INT lwork,
             f64* restrict rwork,
-            int* restrict iwork, int* info)
+            INT* restrict iwork, INT* info)
 {
-    int lquery;
-    int iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork, lrwork;
-    int maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nrwork, nwork, smlsiz;
+    INT lquery;
+    INT iascl, ibscl, ie, il, itau, itaup, itauq, ldwork, liwork, lrwork;
+    INT maxmn, maxwrk, minmn, minwrk, mm, mnthr, nlvl, nrwork, nwork, smlsiz;
     f64 anrm, bignum, bnrm, eps, sfmin, smlnum;
-    int iinfo;
-    int nb;
+    INT iinfo;
+    INT nb;
 
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -121,7 +122,7 @@ void zgelsd(const int m, const int n, const int nrhs,
     liwork = 1;
     lrwork = 1;
     if (minmn > 0) {
-        nlvl = (int)(log((f64)minmn / (f64)(smlsiz + 1)) / log(TWO)) + 1;
+        nlvl = (INT)(log((f64)minmn / (f64)(smlsiz + 1)) / log(TWO)) + 1;
         if (nlvl < 0) nlvl = 0;
         liwork = 3 * minmn * nlvl + 11 * minmn;
         mm = m;
@@ -166,7 +167,7 @@ void zgelsd(const int m, const int n, const int nrhs,
                 if (m + nrhs * nb > maxwrk) maxwrk = m + nrhs * nb;
                 if (m * m + 4 * m + m * nrhs > maxwrk) maxwrk = m * m + 4 * m + m * nrhs;
                 /* Ensure the Path 2a case below is triggered */
-                int temp = m > 2 * m - 4 ? m : 2 * m - 4;
+                INT temp = m > 2 * m - 4 ? m : 2 * m - 4;
                 temp = temp > nrhs ? temp : nrhs;
                 temp = temp > n - 3 * m ? temp : n - 3 * m;
                 if (4 * m + m * m + temp > maxwrk) maxwrk = 4 * m + m * m + temp;

@@ -3,6 +3,7 @@
  * @brief SLAQZ2 chases a 2x2 shift bulge in a matrix pencil down a single position.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -33,24 +34,24 @@
  * @param[in]     ldz      Leading dimension of Z.
  */
 void slaqz2(
-    const int ilq,
-    const int ilz,
-    const int k,
-    const int istartm,
-    const int istopm,
-    const int ihi,
+    const INT ilq,
+    const INT ilz,
+    const INT k,
+    const INT istartm,
+    const INT istopm,
+    const INT ihi,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
-    const int nq,
-    const int qstart,
+    const INT ldb,
+    const INT nq,
+    const INT qstart,
     f32* restrict Q,
-    const int ldq,
-    const int nz,
-    const int zstart,
+    const INT ldq,
+    const INT nz,
+    const INT zstart,
     f32* restrict Z,
-    const int ldz)
+    const INT ldz)
 {
     const f32 ZERO = 0.0f;
 

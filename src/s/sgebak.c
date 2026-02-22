@@ -5,6 +5,7 @@
  *        balanced matrix output by SGEBAL.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 
@@ -40,16 +41,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void sgebak(const char* job, const char* side, const int n, const int ilo,
-            const int ihi, const f32* scale, const int m, f32* V,
-            const int ldv, int* info)
+void sgebak(const char* job, const char* side, const INT n, const INT ilo,
+            const INT ihi, const f32* scale, const INT m, f32* V,
+            const INT ldv, INT* info)
 {
     /* Constants */
     const f32 ONE = 1.0f;
 
     /* Local variables */
-    int leftv, rightv;
-    int i, ii, k;
+    INT leftv, rightv;
+    INT i, ii, k;
     f32 s;
 
     /* Decode and test the input parameters */
@@ -122,7 +123,7 @@ L30:
                     if (i < 0) continue;
                 }
                 /* scale stores 0-based indices */
-                k = (int)scale[i];
+                k = (INT)scale[i];
                 if (k == i) continue;
                 cblas_sswap(m, &V[i + 0 * ldv], ldv, &V[k + 0 * ldv], ldv);
             }
@@ -138,7 +139,7 @@ L30:
                     if (i < 0) continue;
                 }
                 /* scale stores 0-based indices */
-                k = (int)scale[i];
+                k = (INT)scale[i];
                 if (k == i) continue;
                 cblas_sswap(m, &V[i + 0 * ldv], ldv, &V[k + 0 * ldv], ldv);
             }

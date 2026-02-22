@@ -3,6 +3,7 @@
  * @brief DSBGVX computes selected eigenvalues of a generalized symmetric-definite banded eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -60,34 +61,34 @@ void dsbgvx(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int alleig, indeig, test, upper, valeig, wantz;
-    int i, iinfo, indd, inde, indee, indisp, indiwo, indwrk, itmp1, j, jj, nsplit;
+    INT alleig, indeig, test, upper, valeig, wantz;
+    INT i, iinfo, indd, inde, indee, indisp, indiwo, indwrk, itmp1, j, jj, nsplit;
     f64 tmp1;
     char order, vect;
 

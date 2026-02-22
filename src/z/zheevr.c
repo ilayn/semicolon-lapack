@@ -4,6 +4,7 @@
  *        of a complex Hermitian matrix using the RRR algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -59,36 +60,36 @@ void zheevr(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
-    int* restrict isuppz,
+    const INT ldz,
+    INT* restrict isuppz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
-    int i, ieeeok, iinfo, imax, indibl, indifl, indisp, indiwo;
-    int indrd, indrdd, indre, indree, indrwk, indtau, indwk, indwkn;
-    int iscale, itmp1, j, jj, liwmin, llwork, llrwork, llwrkn;
-    int lrwmin, lwkopt, lwmin, nb, nsplit;
+    INT alleig, indeig, lower, lquery, valeig, wantz, tryrac;
+    INT i, ieeeok, iinfo, imax, indibl, indifl, indisp, indiwo;
+    INT indrd, indrdd, indre, indree, indrwk, indtau, indwk, indwkn;
+    INT iscale, itmp1, j, jj, liwmin, llwork, llrwork, llwrkn;
+    INT lrwmin, lwkopt, lwmin, nb, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 

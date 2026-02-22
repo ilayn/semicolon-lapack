@@ -3,6 +3,7 @@
  * @brief SPPEQU computes row and column scalings for equilibration of packed symmetric matrices.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -41,12 +42,12 @@
  */
 void sppequ(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict AP,
     f32* restrict S,
     f32* scond,
     f32* amax,
-    int* info)
+    INT* info)
 {
     // sppequ.f lines 131-133: Parameters
     const f32 ZERO = 0.0f;
@@ -54,7 +55,7 @@ void sppequ(
 
     // sppequ.f lines 154-164: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -84,8 +85,8 @@ void sppequ(
         // i + i*(i+1)/2 (0-based), which equals i*(i+3)/2
         // The Fortran code uses JJ = JJ + I for I = 2..N (1-based)
         // which corresponds to jj = jj + (i+1) for i = 1..n-1 (0-based)
-        int jj = 0;  // sppequ.f line 185: JJ = 1 (but 0-based here)
-        for (int i = 1; i < n; i++) {
+        INT jj = 0;  // sppequ.f line 185: JJ = 1 (but 0-based here)
+        for (INT i = 1; i < n; i++) {
             // sppequ.f line 187: JJ = JJ + I (where I is 1-based, so I = i+1)
             jj = jj + (i + 1);
             S[i] = AP[jj];
@@ -98,8 +99,8 @@ void sppequ(
         // In lower packed storage, diagonal element A(i,i) is at position
         // i + (i-1)*(2*n-i)/2 (1-based Fortran)
         // The Fortran code uses JJ = JJ + N - I + 2 for I = 2..N (1-based)
-        int jj = 0;  // sppequ.f line 198: JJ = 1 (but 0-based here)
-        for (int i = 1; i < n; i++) {
+        INT jj = 0;  // sppequ.f line 198: JJ = 1 (but 0-based here)
+        for (INT i = 1; i < n; i++) {
             // sppequ.f line 200: JJ = JJ + N - I + 2 (where I is 1-based, so I = i+1)
             // JJ = JJ + N - (i+1) + 2 = JJ + N - i + 1
             jj = jj + n - i + 1;
@@ -111,7 +112,7 @@ void sppequ(
 
     if (smin <= ZERO) {
         // sppequ.f lines 207-216: Find the first non-positive diagonal element and return.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
                 *info = i + 1;  // 1-based for error reporting
                 return;
@@ -120,7 +121,7 @@ void sppequ(
     } else {
         // sppequ.f lines 217-224: Set the scale factors to the reciprocals
         // of the diagonal elements.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             S[i] = ONE / sqrtf(S[i]);
         }
 

@@ -4,6 +4,7 @@
  *        using an unblocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -35,13 +36,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgeqr2(const int m, const int n,
-            f32* restrict A, const int lda,
+void sgeqr2(const INT m, const INT n,
+            f32* restrict A, const INT lda,
             f32* restrict tau,
             f32* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, k;
+    INT i, k;
     f32 aii;
 
     /* Parameter validation */

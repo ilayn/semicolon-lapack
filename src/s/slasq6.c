@@ -3,6 +3,7 @@
  * @brief SLASQ6 computes one dqd transform in ping-pong form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -23,11 +24,11 @@
  * @param[out]    dnm1   d(N0-1).
  * @param[out]    dnm2   d(N0-2).
  */
-void slasq6(const int i0, const int n0, f32* restrict Z,
-            const int pp, f32* dmin, f32* dmin1, f32* dmin2,
+void slasq6(const INT i0, const INT n0, f32* restrict Z,
+            const INT pp, f32* dmin, f32* dmin1, f32* dmin2,
             f32* dn, f32* dnm1, f32* dnm2)
 {
-    int j4, j4p2;
+    INT j4, j4p2;
     f32 d, emin, safmin, temp;
 
     if ((n0 - i0 - 1) <= 0) {

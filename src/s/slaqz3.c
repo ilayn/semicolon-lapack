@@ -3,6 +3,7 @@
  * @brief SLAQZ3 performs aggressive early deflation (AED).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -41,41 +42,41 @@
  *                         - = 0: successful exit, < 0: illegal argument.
  */
 void slaqz3(
-    const int ilschur,
-    const int ilq,
-    const int ilz,
-    const int n,
-    const int ilo,
-    const int ihi,
-    const int nw,
+    const INT ilschur,
+    const INT ilq,
+    const INT ilz,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
+    const INT nw,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict Z,
-    const int ldz,
-    int* ns,
-    int* nd,
+    const INT ldz,
+    INT* ns,
+    INT* nd,
     f32* restrict alphar,
     f32* restrict alphai,
     f32* restrict beta,
     f32* restrict QC,
-    const int ldqc,
+    const INT ldqc,
     f32* restrict ZC,
-    const int ldzc,
+    const INT ldzc,
     f32* restrict work,
-    const int lwork,
-    const int rec,
-    int* info)
+    const INT lwork,
+    const INT rec,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int bulge;
-    int jw, kwtop, kwbot, istopm, istartm, k, k2, dtgexc_info;
-    int ifst, ilst, lworkreq, qz_small_info;
+    INT bulge;
+    INT jw, kwtop, kwbot, istopm, istartm, k, k2, dtgexc_info;
+    INT ifst, ilst, lworkreq, qz_small_info;
     f32 s, smlnum, ulp, safmin, c1, s1, temp;
 
     *info = 0;
@@ -94,15 +95,15 @@ void slaqz3(
     ilst = jw - 1;
     stgexc(1, 1, jw, A, lda, B, ldb, QC, ldqc, ZC, ldzc,
            &ifst, &ilst, work, -1, &dtgexc_info);
-    lworkreq = (int)work[0];
+    lworkreq = (INT)work[0];
     slaqz0("S", "V", "V", jw, 0, jw - 1, &A[kwtop + kwtop * lda], lda,
            &B[kwtop + kwtop * ldb], ldb, alphar, alphai, beta, QC, ldqc,
            ZC, ldzc, work, -1, rec + 1, &qz_small_info);
-    lworkreq = (lworkreq > (int)work[0] + 2 * jw * jw) ? lworkreq : (int)work[0] + 2 * jw * jw;
+    lworkreq = (lworkreq > (INT)work[0] + 2 * jw * jw) ? lworkreq : (INT)work[0] + 2 * jw * jw;
     {
-        int tmp1 = n * nw;
-        int tmp2 = 2 * nw * nw + n;
-        int tmp = (tmp1 > tmp2) ? tmp1 : tmp2;
+        INT tmp1 = n * nw;
+        INT tmp2 = 2 * nw * nw + n;
+        INT tmp = (tmp1 > tmp2) ? tmp1 : tmp2;
         lworkreq = (lworkreq > tmp) ? lworkreq : tmp;
     }
     if (lwork == -1) {
@@ -264,7 +265,7 @@ void slaqz3(
         /* A(KWTOP:KWBOT, KWTOP-1) = A(KWTOP, KWTOP-1) * QC(1, 1:JW-ND) */
         {
             f32 a_val = A[kwtop + (kwtop - 1) * lda];
-            for (int i = kwtop; i <= kwbot; i++) {
+            for (INT i = kwtop; i <= kwbot; i++) {
                 A[i + (kwtop - 1) * lda] = a_val * QC[0 + (i - kwtop) * ldqc];
             }
         }

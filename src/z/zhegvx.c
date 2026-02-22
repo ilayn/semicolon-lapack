@@ -4,6 +4,7 @@
  *        complex generalized Hermitian-definite eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -44,34 +45,34 @@
  *                         - = 0: success; < 0: illegal argument; > 0: ZPOTRF/ZHEEVX error.
  */
 void zhegvx(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
-    int wantz, upper, alleig, valeig, indeig, lquery;
-    int lwkopt, nb;
+    INT wantz, upper, alleig, valeig, indeig, lquery;
+    INT lwkopt, nb;
     char trans;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

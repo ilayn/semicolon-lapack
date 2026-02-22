@@ -4,6 +4,7 @@
  *        upper Hessenberg matrix, using the single-shift QR algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -36,26 +37,26 @@
  *                    > 0: if info = i (1-based), ZLAHQR failed to compute
  *                         all eigenvalues.
  */
-void zlahqr(const int wantt, const int wantz, const int n,
-            const int ilo, const int ihi,
-            c128* H, const int ldh,
+void zlahqr(const INT wantt, const INT wantz, const INT n,
+            const INT ilo, const INT ihi,
+            c128* H, const INT ldh,
             c128* W,
-            const int iloz, const int ihiz,
-            c128* Z, const int ldz,
-            int* info)
+            const INT iloz, const INT ihiz,
+            c128* Z, const INT ldz,
+            INT* info)
 {
     const c128 czero = 0.0;
     const c128 cone = 1.0;
     const f64 rzero = 0.0;
     const f64 half = 0.5;
     const f64 dat1 = 3.0 / 4.0;
-    const int kexsh = 10;
+    const INT kexsh = 10;
 
     c128 sc, sum, t, t1, temp, u, v2, x, y;
     c128 h11, h11s, h22;
     f64 aa, ab, ba, bb, h10, h21, rtemp, s, safmin;
     f64 smlnum, sx, t2, tst, ulp;
-    int i, i1, i2, its, itmax, j, jhi, jlo, k, l, m, nh, nz, kdefl;
+    INT i, i1, i2, its, itmax, j, jhi, jlo, k, l, m, nh, nz, kdefl;
 
     c128 v[2];
 
@@ -93,7 +94,7 @@ void zlahqr(const int wantt, const int wantz, const int n,
             cblas_zscal(jhi - i + 1, &sc, &H[i + i * ldh], ldh);
             {
                 c128 sc_conj = conj(sc);
-                int cnt = ((jhi < i + 1) ? jhi : i + 1) - jlo + 1;
+                INT cnt = ((jhi < i + 1) ? jhi : i + 1) - jlo + 1;
                 cblas_zscal(cnt, &sc_conj, &H[jlo + i * ldh], 1);
             }
             if (wantz) {

@@ -3,6 +3,7 @@
  * @brief SPOEQU computes row and column scalings for equilibration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -36,13 +37,13 @@
  *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void spoequ(
-    const int n,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict S,
     f32* scond,
     f32* amax,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -70,7 +71,7 @@ void spoequ(
     S[0] = A[0];
     f32 smin = S[0];
     *amax = S[0];
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         S[i] = A[i + i * lda];
         if (S[i] < smin) smin = S[i];
         if (S[i] > *amax) *amax = S[i];
@@ -78,7 +79,7 @@ void spoequ(
 
     if (smin <= ZERO) {
         // Find the first non-positive diagonal element and return.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
                 *info = i + 1;  // 1-based for error reporting
                 return;
@@ -86,7 +87,7 @@ void spoequ(
         }
     } else {
         // Set the scale factors to the reciprocals of the diagonal elements.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             S[i] = ONE / sqrtf(S[i]);
         }
 

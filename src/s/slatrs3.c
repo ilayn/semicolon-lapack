@@ -3,6 +3,7 @@
  * @brief SLATRS3 solves a triangular system with scale factors to prevent overflow.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -66,17 +67,17 @@ void slatrs3(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict scale,
     f32* restrict cnorm,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     /* Parameters from Fortran - match LAPACK exactly */
     const f32 ZERO = 0.0f;
@@ -91,10 +92,10 @@ void slatrs3(
     f32 XNRM[NBRHS];
 
     /* Local scalars */
-    int upper, notran, nounit, lquery;
-    int awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
-    int jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
-    int lanrm, lds, lscale, nb, nba, nbx, rhs, lwmin;
+    INT upper, notran, nounit, lquery;
+    INT awrk, i, ifirst, iinc, ilast, ii, i1, i2, j;
+    INT jfirst, jinc, jlast, j1, j2, k, kk, k1, k2;
+    INT lanrm, lds, lscale, nb, nba, nbx, rhs, lwmin;
     f32 anrm, bignum, bnrm, rscal, scal, scaloc;
     f32 scamin, smlnum, tmax;
 
@@ -120,7 +121,7 @@ void slatrs3(
      * 1. Local scale factors: NBA * max(NBA, min(NRHS, NBRHS))
      * 2. Upper bounds of blocks: NBA * NBA
      */
-    int minrhs = (nrhs < NBRHS) ? nrhs : NBRHS;
+    INT minrhs = (nrhs < NBRHS) ? nrhs : NBRHS;
     lscale = nba * ((nba > minrhs) ? nba : minrhs);
     lds = nba;
     lanrm = nba * nba;

@@ -3,6 +3,7 @@
  * @brief CGEEVX computes eigenvalues, eigenvectors, and condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -100,28 +101,28 @@
  *                      contain eigenvalues which have converged.
  */
 void cgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n, c64* A, const int lda,
+            const char* sense, const INT n, c64* A, const INT lda,
             c64* W,
-            c64* VL, const int ldvl,
-            c64* VR, const int ldvr,
-            int* ilo, int* ihi, f32* scale, f32* abnrm,
+            c64* VL, const INT ldvl,
+            c64* VR, const INT ldvr,
+            INT* ilo, INT* ihi, f32* scale, f32* abnrm,
             f32* rconde, f32* rcondv,
-            c64* work, const int lwork,
-            f32* rwork, int* info)
+            c64* work, const INT lwork,
+            f32* rwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
-    int hswork, i, icond, ierr, itau, iwrk, k;
-    int lwork_trevc, maxwrk, minwrk, nout;
+    INT lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
+    INT hswork, i, icond, ierr, itau, iwrk, k;
+    INT lwork_trevc, maxwrk, minwrk, nout;
     f32 anrm, bignum, cscale, eps, scl, smlnum;
     c64 tmp;
-    int select[1];
+    INT select[1];
     f32 dum[1];
     const char* side;
     char job_hseqr;
-    int nb_gehrd, nb_unghr;
+    INT nb_gehrd, nb_unghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -171,7 +172,7 @@ void cgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                 ctrevc3("L", "B", select, n, A, lda,
                         VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, rwork, -1, &ierr);
-                lwork_trevc = (int)crealf(work[0]);
+                lwork_trevc = (INT)crealf(work[0]);
                 maxwrk = maxwrk > lwork_trevc ? maxwrk : lwork_trevc;
                 chseqr("S", "V", n, 0, n - 1, A, lda, W, VL, ldvl,
                        work, -1, info);
@@ -179,7 +180,7 @@ void cgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                 ctrevc3("R", "B", select, n, A, lda,
                         VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, rwork, -1, &ierr);
-                lwork_trevc = (int)crealf(work[0]);
+                lwork_trevc = (INT)crealf(work[0]);
                 maxwrk = maxwrk > lwork_trevc ? maxwrk : lwork_trevc;
                 chseqr("S", "V", n, 0, n - 1, A, lda, W, VR, ldvr,
                        work, -1, info);
@@ -192,7 +193,7 @@ void cgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                            work, -1, info);
                 }
             }
-            hswork = (int)crealf(work[0]);
+            hswork = (INT)crealf(work[0]);
 
             if (!wantvl && !wantvr) {
                 minwrk = 2 * n;
@@ -353,7 +354,7 @@ void cgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                            cimagf(VL[k + i * ldvl]) *
                            cimagf(VL[k + i * ldvl]);
             }
-            k = (int)cblas_isamax(n, rwork, 1);
+            k = (INT)cblas_isamax(n, rwork, 1);
             tmp = conjf(VL[k + i * ldvl]) / sqrtf(rwork[k]);
             cblas_cscal(n, &tmp, &VL[i * ldvl], 1);
             VL[k + i * ldvl] = CMPLXF(crealf(VL[k + i * ldvl]), ZERO);
@@ -374,7 +375,7 @@ void cgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                            cimagf(VR[k + i * ldvr]) *
                            cimagf(VR[k + i * ldvr]);
             }
-            k = (int)cblas_isamax(n, rwork, 1);
+            k = (INT)cblas_isamax(n, rwork, 1);
             tmp = conjf(VR[k + i * ldvr]) / sqrtf(rwork[k]);
             cblas_cscal(n, &tmp, &VR[i * ldvr], 1);
             VR[k + i * ldvr] = CMPLXF(crealf(VR[k + i * ldvr]), ZERO);

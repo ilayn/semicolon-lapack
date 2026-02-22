@@ -3,6 +3,7 @@
  * @brief SSBEVD computes all eigenvalues and eigenvectors using divide-and-conquer.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -37,24 +38,24 @@
 void ssbevd(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lower, lquery, wantz;
-    int iinfo, inde, indwk2, indwrk, iscale, liwmin, llwrk2, lwmin;
+    INT lower, lquery, wantz;
+    INT iinfo, inde, indwk2, indwrk, iscale, liwmin, llwrk2, lwmin;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -3,6 +3,7 @@
  * @brief CSYCONVF_ROOK converts between factorization formats used in CSYTRF_ROOK and CSYTRF_RK/ZSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -55,17 +56,17 @@
 void csyconvf_rook(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    const int* restrict ipiv,
-    int* info)
+    const INT* restrict ipiv,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper, convert;
-    int i, ip, ip2;
+    INT upper, convert;
+    INT i, ip, ip2;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

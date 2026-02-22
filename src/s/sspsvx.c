@@ -3,6 +3,7 @@
  * @brief SSPSVX computes the solution to a real system of linear equations A * X = B with error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -46,25 +47,25 @@
 void sspsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict AP,
     f32* restrict AFP,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int nofact;
+    INT nofact;
     f32 anorm;
 
     *info = 0;

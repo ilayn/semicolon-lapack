@@ -3,6 +3,7 @@
  * @brief DSYGST reduces a symmetric-definite generalized eigenproblem to standard form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <cblas.h>
@@ -31,19 +32,19 @@
  *                         - = 0: successful exit; < 0: if -i, the i-th argument was illegal.
  */
 void dsygst(
-    const int itype,
+    const INT itype,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 HALF = 0.5;
-    int upper;
-    int k, kb, nb;
+    INT upper;
+    INT k, kb, nb;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

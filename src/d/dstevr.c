@@ -4,6 +4,7 @@
  *        of a real symmetric tridiagonal matrix T.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -112,30 +113,30 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  *                         - > 0: Internal error
  */
-void dstevr(const char* jobz, const char* range, const int n,
+void dstevr(const char* jobz, const char* range, const INT n,
             f64* D, f64* E,
             const f64 vl, const f64 vu,
-            const int il, const int iu,
+            const INT il, const INT iu,
             const f64 abstol,
-            int* m, f64* W, f64* Z, const int ldz,
-            int* isuppz, f64* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+            INT* m, f64* W, f64* Z, const INT ldz,
+            INT* isuppz, f64* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int wantz, alleig, valeig, indeig, lquery, test;
-    int tryrac;
-    int i, imax, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
+    INT wantz, alleig, valeig, indeig, lquery, test;
+    INT tryrac;
+    INT i, imax, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
     f64 bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, tnrm, vll, vuu;
 
     /* Workspace indices for fallback path (DSTEBZ/DSTEIN) */
-    int indibl, indisp, indifl, indiwo;
+    INT indibl, indisp, indifl, indiwo;
 
     /* ILAENV(10, 'DSTEVR', ...) = 1: IEEE arithmetic is trusted */
-    int ieee = 1;
+    INT ieee = 1;
 
     /* Decode JOBZ */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

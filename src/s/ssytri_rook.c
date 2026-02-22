@@ -3,6 +3,7 @@
  * @brief SSYTRI_ROOK computes the inverse of a real symmetric matrix using the factorization computed by SSYTRF_ROOK.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 #include <math.h>
@@ -47,15 +48,15 @@
  */
 void ssytri_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
-    int upper;
-    int k, kp, kstep;
+    INT upper;
+    INT k, kp, kstep;
     f32 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

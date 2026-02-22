@@ -4,6 +4,7 @@
  *        matrix to suitable accuracy.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -65,33 +66,33 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: some eigenvalues failed to converge or were not computed.
  */
-void dlarrd(const char* range, const char* order, const int n,
-            const f64 vl, const f64 vu, const int il, const int iu,
+void dlarrd(const char* range, const char* order, const INT n,
+            const f64 vl, const f64 vu, const INT il, const INT iu,
             const f64* gers, const f64 reltol,
             const f64* D, const f64* E, const f64* E2,
-            const f64 pivmin, const int nsplit, const int* isplit,
-            int* m, f64* W, f64* werr,
+            const f64 pivmin, const INT nsplit, const INT* isplit,
+            INT* m, f64* W, f64* werr,
             f64* wl, f64* wu,
-            int* iblock, int* indexw,
-            f64* work, int* iwork, int* info)
+            INT* iblock, INT* indexw,
+            f64* work, INT* iwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 TWO = 2.0;
     const f64 HALF = 0.5;
     const f64 FUDGE = 2.0;
 
-    const int ALLRNG = 1;
-    const int VALRNG = 2;
-    const int INDRNG = 3;
+    const INT ALLRNG = 1;
+    const INT VALRNG = 2;
+    const INT INDRNG = 3;
 
-    int ncnvrg, toofew;
-    int i, ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
+    INT ncnvrg, toofew;
+    INT i, ib, ibegin, idiscl, idiscu, ie, iend, iinfo,
         im, in, ioff, iout, irange, itmax, itmp1,
         itmp2, iw, iwoff, j, jblk, jdisc, je, jee, nb,
         nwl, nwu;
     f64 atoli, eps, gl, gu, rtoli, tmp1, tmp2,
            tnorm, uflow, wkill, wlu = 0.0, wul = 0.0;
-    int idumma[1];
+    INT idumma[1];
 
     *info = 0;
     *m = 0;
@@ -196,7 +197,7 @@ void dlarrd(const char* range, const char* order, const int n,
         /* RANGE='I': Compute an interval containing eigenvalues
          * IL through IU. The initial interval [GL,GU] from the global
          * Gerschgorin bounds GL and GU is refined by DLAEBZ. */
-        itmax = (int)((log(tnorm + pivmin) - log(pivmin)) /
+        itmax = (INT)((log(tnorm + pivmin) - log(pivmin)) /
                 log(TWO)) + 2;
         /* 0-based: work[n+0..n+5], iwork[0..5]
          * Fortran: WORK(N+1)..WORK(N+6), IWORK(1)..IWORK(6) */
@@ -332,7 +333,7 @@ void dlarrd(const char* range, const char* order, const int n,
             iwoff = *m - iwork[0];
 
             /* Compute Eigenvalues */
-            itmax = (int)((log(gu - gl + pivmin) - log(pivmin)) /
+            itmax = (INT)((log(gu - gl + pivmin) - log(pivmin)) /
                     log(TWO)) + 2;
             dlaebz(2, itmax, in, in, 1, nb, atoli, rtoli,
                    pivmin,

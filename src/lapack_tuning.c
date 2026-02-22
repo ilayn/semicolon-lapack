@@ -12,4 +12,5 @@
  */
 
 #define LAPACK_TUNING_IMPLEMENTATION
+#include "internal_build_defs.h"
 #include "lapack_tuning.h"

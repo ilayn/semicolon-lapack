@@ -3,6 +3,7 @@
  * @brief Computes the inverse of a triangular matrix (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -31,17 +32,17 @@
 void ztrtri(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int upper, nounit;
-    int j, jb, nb, nn;
+    INT upper, nounit;
+    INT j, jb, nb, nn;
 
     // Test the input parameters
     *info = 0;

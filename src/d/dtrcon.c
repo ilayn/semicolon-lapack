@@ -1,6 +1,7 @@
 /** @file dtrcon.c
  * @brief DTRCON estimates the reciprocal condition number of a triangular matrix. */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -39,18 +40,18 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dtrcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const f64* restrict A, const int lda,
+            const INT n, const f64* restrict A, const INT lda,
             f64* rcond, f64* restrict work,
-            int* restrict iwork, int* info)
+            INT* restrict iwork, INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper, onenrm, nounit;
+    INT upper, onenrm, nounit;
     char normin;
-    int ix, kase, kase1;
+    INT ix, kase, kase1;
     f64 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
+    INT isave[3];
 
     /* Test the input parameters */
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief ZHESV_AA_2STAGE computes the solution to system of linear equations A * X = B for HE matrices using Aasen's 2-stage algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -81,22 +82,22 @@
  */
 void zhesv_aa_2stage(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict TB,
-    const int ltb,
-    int* restrict ipiv,
-    int* restrict ipiv2,
+    const INT ltb,
+    INT* restrict ipiv,
+    INT* restrict ipiv2,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, tquery, wquery;
-    int lwkmin, lwkopt;
+    INT upper, tquery, wquery;
+    INT lwkmin, lwkopt;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -122,7 +123,7 @@ void zhesv_aa_2stage(
 
     if (*info == 0) {
         zhetrf_aa_2stage(uplo, n, A, lda, TB, -1, ipiv, ipiv2, work, -1, info);
-        lwkopt = (lwkmin > (int)creal(work[0])) ? lwkmin : (int)creal(work[0]);
+        lwkopt = (lwkmin > (INT)creal(work[0])) ? lwkmin : (INT)creal(work[0]);
         work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 

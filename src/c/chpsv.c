@@ -3,6 +3,7 @@
  * @brief CHPSV computes the solution to a complex system of linear equations A * X = B.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -39,13 +40,13 @@
  */
 void chpsv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict AP,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     *info = 0;
     if (!(uplo[0] == 'U' || uplo[0] == 'u') && !(uplo[0] == 'L' || uplo[0] == 'l')) {

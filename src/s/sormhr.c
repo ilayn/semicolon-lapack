@@ -4,6 +4,7 @@
  *        where Q is from the Hessenberg reduction produced by SGEHRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 
@@ -41,15 +42,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 SEMICOLON_API void sormhr(const char* side, const char* trans,
-                          const int m, const int n,
-                          const int ilo, const int ihi,
-                          const f32* A, const int lda,
+                          const INT m, const INT n,
+                          const INT ilo, const INT ihi,
+                          const f32* A, const INT lda,
                           const f32* tau,
-                          f32* C, const int ldc,
-                          f32* work, const int lwork, int* info)
+                          f32* C, const INT ldc,
+                          f32* work, const INT lwork, INT* info)
 {
-    int left, lquery;
-    int i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
+    INT left, lquery;
+    INT i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
 
     *info = 0;
     nh = ihi - ilo;
@@ -119,7 +120,7 @@ SEMICOLON_API void sormhr(const char* side, const char* trans,
         i2 = ilo + 1;
     }
 
-    int iinfo;
+    INT iinfo;
     sormqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 

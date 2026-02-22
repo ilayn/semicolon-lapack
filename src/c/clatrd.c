@@ -4,6 +4,7 @@
  *        real tridiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -41,17 +42,17 @@
  *                      The n-by-nb matrix W.
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
-void clatrd(const char* uplo, const int n, const int nb,
-            c64* restrict A, const int lda,
+void clatrd(const char* uplo, const INT n, const INT nb,
+            c64* restrict A, const INT lda,
             f32* restrict E, c64* restrict tau,
-            c64* restrict W, const int ldw)
+            c64* restrict W, const INT ldw)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE  = CMPLXF(1.0f, 0.0f);
     const c64 HALF = CMPLXF(0.5f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int ii, iw;
+    INT ii, iw;
     c64 alpha;
 
     /* Quick return if possible */
@@ -163,7 +164,7 @@ void clatrd(const char* uplo, const int n, const int nb,
             if (ii < n) {
                 /* Generate elementary reflector H(ii) to annihilate A(ii+2:n, ii). */
                 alpha = A[ii + (ii - 1) * lda];
-                int min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
+                INT min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
                 clarfg(n - ii,
                        &alpha,
                        &A[min_row + (ii - 1) * lda],

@@ -3,6 +3,7 @@
  * @brief SLARTGP generates a plane rotation so that the diagonal is nonnegative.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -30,7 +31,7 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
 {
     f32 safmin = slamch("S");
     f32 eps = slamch("E");
-    f32 safmn2 = powf(slamch("B"), (int)(logf(safmin / eps) / logf(slamch("B")) / 2.0f));
+    f32 safmn2 = powf(slamch("B"), (INT)(logf(safmin / eps) / logf(slamch("B")) / 2.0f));
     f32 safmx2 = 1.0f / safmn2;
 
     if (g == 0.0f) {
@@ -47,7 +48,7 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
         f32 scale = fmaxf(fabsf(f1), fabsf(g1));
 
         if (scale >= safmx2) {
-            int count = 0;
+            INT count = 0;
             do {
                 count++;
                 f1 = f1 * safmn2;
@@ -58,11 +59,11 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
             *r = sqrtf(f1 * f1 + g1 * g1);
             *cs = f1 / (*r);
             *sn = g1 / (*r);
-            for (int i = 0; i < count; i++) {
+            for (INT i = 0; i < count; i++) {
                 *r = (*r) * safmx2;
             }
         } else if (scale <= safmn2) {
-            int count = 0;
+            INT count = 0;
             do {
                 count++;
                 f1 = f1 * safmx2;
@@ -73,7 +74,7 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
             *r = sqrtf(f1 * f1 + g1 * g1);
             *cs = f1 / (*r);
             *sn = g1 / (*r);
-            for (int i = 0; i < count; i++) {
+            for (INT i = 0; i < count; i++) {
                 *r = (*r) * safmn2;
             }
         } else {

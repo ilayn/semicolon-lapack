@@ -3,6 +3,7 @@
  * @brief DLAGTS solves (T - lambda*I)*x = y or (T - lambda*I)^T*x = y.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"
@@ -58,19 +59,19 @@
  *                           element of the solution vector x (job > 0 only).
  */
 void dlagts(
-    const int job,
-    const int n,
+    const INT job,
+    const INT n,
     const f64* restrict A,
     const f64* restrict B,
     const f64* restrict C,
     const f64* restrict D,
-    const int* restrict in,
+    const INT* restrict in,
     f64* restrict Y,
     f64* tol,
-    int* info)
+    INT* info)
 {
-    int k;
-    int absjob;
+    INT k;
+    INT absjob;
     f64 absak, ak, bignum, eps, pert, sfmin, temp;
 
     *info = 0;

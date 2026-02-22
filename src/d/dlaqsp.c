@@ -3,6 +3,7 @@
  * @brief DLAQSP scales a symmetric matrix in packed storage, using scaling factors computed by dppequ.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -27,7 +28,7 @@
  */
 void dlaqsp(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict AP,
     const f64* restrict S,
     const f64 scond,
@@ -39,7 +40,7 @@ void dlaqsp(
     const f64 THRESH = 0.1;  // dlaqsp.f line 142: THRESH = 0.1D+0
 
     // dlaqsp.f lines 145-146: Local Scalars
-    int i, j, jc;
+    INT i, j, jc;
     f64 cj, large, small;
 
     // dlaqsp.f lines 157-160: Quick return if possible

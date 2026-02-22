@@ -3,6 +3,7 @@
  * @brief ZLABRD reduces the first nb rows and columns of a general matrix to a bidiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -47,18 +48,18 @@
  *                      of A.
  * @param[in]     ldy   The leading dimension of the array Y. ldy >= max(1,n).
  */
-void zlabrd(const int m, const int n, const int nb,
-            c128* restrict A, const int lda,
+void zlabrd(const INT m, const INT n, const INT nb,
+            c128* restrict A, const INT lda,
             f64* restrict D, f64* restrict E,
             c128* restrict tauq, c128* restrict taup,
-            c128* restrict X, const int ldx,
-            c128* restrict Y, const int ldy)
+            c128* restrict X, const INT ldx,
+            c128* restrict Y, const INT ldy)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE  = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int i;
+    INT i;
     c128 alpha;
 
     /* Quick return if possible */

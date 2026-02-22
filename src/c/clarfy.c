@@ -3,6 +3,7 @@
  * @brief CLARFY applies an elementary reflector to a Hermitian matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -35,11 +36,11 @@
  * @param[in]     ldc    The leading dimension of the array C. LDC >= max(1, N).
  * @param[out]    work   Complex*16 array, dimension (N).
  */
-void clarfy(const char* uplo, const int n,
+void clarfy(const char* uplo, const INT n,
             const c64* restrict V,
-            const int incv, const c64 tau,
+            const INT incv, const c64 tau,
             c64* restrict C,
-            const int ldc, c64* restrict work)
+            const INT ldc, c64* restrict work)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);

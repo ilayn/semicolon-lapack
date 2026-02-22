@@ -3,6 +3,7 @@
  * @brief CTBTRS solves a triangular banded system of equations.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -40,19 +41,19 @@ void ctbtrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int nounit, upper;
-    int j;
+    INT nounit, upper;
+    INT j;
 
     *info = 0;
     nounit = (diag[0] == 'N' || diag[0] == 'n');

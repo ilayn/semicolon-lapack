@@ -3,6 +3,7 @@
  * @brief STRSNA estimates condition numbers for eigenvalues and eigenvectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -59,24 +60,24 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void strsna(const char* job, const char* howmny, const int* select,
-            const int n, const f32* T, const int ldt,
-            const f32* VL, const int ldvl,
-            const f32* VR, const int ldvr,
-            f32* S, f32* sep, const int mm, int* m,
-            f32* work, const int ldwork,
-            int* iwork, int* info)
+void strsna(const char* job, const char* howmny, const INT* select,
+            const INT n, const f32* T, const INT ldt,
+            const f32* VL, const INT ldvl,
+            const f32* VR, const INT ldvr,
+            f32* S, f32* sep, const INT mm, INT* m,
+            f32* work, const INT ldwork,
+            INT* iwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int wantbh, wants, wantsp, somcon;
-    int i, ierr, ifst, ilst, j, k, kase, ks, n2, nn;
-    int pair;
+    INT wantbh, wants, wantsp, somcon;
+    INT i, ierr, ifst, ilst, j, k, kase, ks, n2, nn;
+    INT pair;
     f32 bignum, cond, cs, delta, dumm = 0.0f, eps, est, lnrm;
     f32 mu, prod, prod1, prod2, rnrm, scale, smlnum, sn;
-    int isave[3];
+    INT isave[3];
     f32 dummy[1];
 
     /* Decode and test the input parameters */

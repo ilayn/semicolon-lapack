@@ -3,6 +3,7 @@
  * @brief CSYMV computes a matrix-vector product for a complex symmetric matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
@@ -36,17 +37,17 @@
  * @param[in]     incy   The increment for the elements of Y. incy must not
  *                       be zero.
  */
-void csymv(const char* uplo, const int n,
+void csymv(const char* uplo, const INT n,
            const c64 alpha,
-           const c64* restrict A, const int lda,
-           const c64* restrict X, const int incx,
+           const c64* restrict A, const INT lda,
+           const c64* restrict X, const INT incx,
            const c64 beta,
-           c64* restrict Y, const int incy)
+           c64* restrict Y, const INT incy)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int i, info, ix, iy, j, jx, jy, kx, ky;
+    INT i, info, ix, iy, j, jx, jy, kx, ky;
     c64 temp1, temp2;
 
     /* Test the input parameters. */

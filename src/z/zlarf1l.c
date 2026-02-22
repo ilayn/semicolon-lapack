@@ -4,19 +4,20 @@
  *        matrix assuming v(lastv) = 1 where lastv is the last non-zero element.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
 
 /** @cond */
-static int ilazlc(
-    const int m,
-    const int n,
+static INT ilazlc(
+    const INT m,
+    const INT n,
     const c128* restrict A,
-    const int lda)
+    const INT lda)
 {
     const c128 zero = CMPLX(0.0, 0.0);
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return 0;
@@ -34,14 +35,14 @@ static int ilazlc(
     }
 }
 
-static int ilazlr(
-    const int m,
-    const int n,
+static INT ilazlr(
+    const INT m,
+    const INT n,
     const c128* restrict A,
-    const int lda)
+    const INT lda)
 {
     const c128 zero = CMPLX(0.0, 0.0);
-    int i, j, result;
+    INT i, j, result;
 
     if (m == 0) {
         return 0;
@@ -90,18 +91,18 @@ static int ilazlr(
  * @param[in]     ldc    The leading dimension of C. ldc >= max(1, m).
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
-void zlarf1l(const char* side, const int m, const int n,
-             const c128* restrict v, const int incv,
+void zlarf1l(const char* side, const INT m, const INT n,
+             const c128* restrict v, const INT incv,
              const c128 tau,
-             c128* restrict C, const int ldc,
+             c128* restrict C, const INT ldc,
              c128* restrict work)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
     c128 neg_tau;
     c128 one_minus_tau;
-    int applyleft;
-    int firstv, lastv, lastc, i, j;
+    INT applyleft;
+    INT firstv, lastv, lastc, i, j;
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
     firstv = 0;  /* 0-based */

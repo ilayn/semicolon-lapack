@@ -4,6 +4,7 @@
  *        vector and returns a f32 precision result.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"
@@ -20,10 +21,10 @@
  *                   The vector whose elements will be summed.
  * @param[in] incx  The spacing between successive values of CX. incx > 0.
  */
-f32 scsum1(const int n, const c64* restrict CX, const int incx)
+f32 scsum1(const INT n, const c64* restrict CX, const INT incx)
 {
     f32 stemp;
-    int i, nincx;
+    INT i, nincx;
 
     stemp = 0.0f;
     if (n <= 0)

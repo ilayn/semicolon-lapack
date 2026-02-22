@@ -3,6 +3,7 @@
  * @brief LU factorization with complete pivoting.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -38,17 +39,17 @@
  *                           avoid the overflow.
  */
 void zgetc2(
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* restrict jpiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* restrict jpiv,
+    INT* info)
 {
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     f64 eps, smlnum, bignum, smin, xmax;
-    int i, ip, ipv, j, jp, jpv;
+    INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
 

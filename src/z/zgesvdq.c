@@ -3,6 +3,7 @@
  * @brief ZGESVDQ computes SVD with a QR-Preconditioned QR SVD Method.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -25,21 +26,21 @@ static const c128 CONE = CMPLX(1.0, 0.0);
  */
 void zgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, c128* restrict A, const int lda,
-             f64* restrict S, c128* restrict U, const int ldu,
-             c128* restrict V, const int ldv, int* numrank,
-             int* restrict iwork, const int liwork,
-             c128* restrict cwork, const int lcwork,
-             f64* restrict rwork, const int lrwork, int* info)
+             const INT m, const INT n, c128* restrict A, const INT lda,
+             f64* restrict S, c128* restrict U, const INT ldu,
+             c128* restrict V, const INT ldv, INT* numrank,
+             INT* restrict iwork, const INT liwork,
+             c128* restrict cwork, const INT lcwork,
+             f64* restrict rwork, const INT lrwork, INT* info)
 {
-    int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
-    int wntvr, wntva, rsvec, dntwv;
-    int accla, acclm, acclh, conda;
-    int rowprm, rtrans, lquery;
-    int ierr, nr, n1 = 0, optratio, p, q;
-    int ascaled;
+    INT wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
+    INT wntvr, wntva, rsvec, dntwv;
+    INT accla, acclm, acclh, conda;
+    INT rowprm, rtrans, lquery;
+    INT ierr, nr, n1 = 0, optratio, p, q;
+    INT ascaled;
 
-    int lwcon, lwqp3, lwrk_zgelqf, lwrk_zgesvd, lwrk_zgesvd2,
+    INT lwcon, lwqp3, lwrk_zgelqf, lwrk_zgesvd, lwrk_zgesvd2,
         lwrk_zgeqp3 = 0, lwrk_zgeqrf, lwrk_zunmlq, lwrk_zunmqr = 0,
         lwrk_zunmqr2, lwlqf, lwqrf, lwsvd, lwsvd2, lwunq,
         lwunq2, lwunlq, minwrk, minwrk2, optwrk, optwrk2,
@@ -122,15 +123,15 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
         lwsvd = (3 * n > 1) ? 3 * n : 1;
         if (lquery) {
             zgeqp3(m, n, A, lda, iwork, NULL, cdummy, -1, rdummy, &ierr);
-            lwrk_zgeqp3 = (int)creal(cdummy[0]);
+            lwrk_zgeqp3 = (INT)creal(cdummy[0]);
             if (wntus || wntur) {
                 zunmqr("L", "N", m, n, n, A, lda, NULL, U,
                         ldu, cdummy, -1, &ierr);
-                lwrk_zunmqr = (int)creal(cdummy[0]);
+                lwrk_zunmqr = (INT)creal(cdummy[0]);
             } else if (wntua) {
                 zunmqr("L", "N", m, m, n, A, lda, NULL, U,
                         ldu, cdummy, -1, &ierr);
-                lwrk_zunmqr = (int)creal(cdummy[0]);
+                lwrk_zunmqr = (INT)creal(cdummy[0]);
             } else {
                 lwrk_zunmqr = 0;
             }
@@ -148,7 +149,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
             if (lquery) {
                 zgesvd("N", "N", n, n, A, lda, S, U, ldu,
                         V, ldv, cdummy, -1, rdummy, &ierr);
-                lwrk_zgesvd = (int)creal(cdummy[0]);
+                lwrk_zgesvd = (INT)creal(cdummy[0]);
                 if (conda) {
                     optwrk = n + lwrk_zgeqp3;
                     if (optwrk < n + lwcon) optwrk = n + lwcon;
@@ -177,7 +178,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     zgesvd("O", "N", n, n, A, lda, S, U, ldu,
                             V, ldv, cdummy, -1, rdummy, &ierr);
                 }
-                lwrk_zgesvd = (int)creal(cdummy[0]);
+                lwrk_zgesvd = (INT)creal(cdummy[0]);
                 if (conda) {
                     optwrk = n + lwrk_zgeqp3;
                     if (optwrk < n + lwcon) optwrk = n + lwcon;
@@ -206,7 +207,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     zgesvd("N", "O", n, n, A, lda, S, U, ldu,
                             V, ldv, cdummy, -1, rdummy, &ierr);
                 }
-                lwrk_zgesvd = (int)creal(cdummy[0]);
+                lwrk_zgesvd = (INT)creal(cdummy[0]);
                 if (conda) {
                     optwrk = n + lwrk_zgeqp3;
                     if (optwrk < n + lwcon) optwrk = n + lwcon;
@@ -260,7 +261,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                 if (rtrans) {
                     zgesvd("O", "A", n, n, A, lda, S, U, ldu,
                             V, ldv, cdummy, -1, rdummy, &ierr);
-                    lwrk_zgesvd = (int)creal(cdummy[0]);
+                    lwrk_zgesvd = (INT)creal(cdummy[0]);
                     optwrk = lwrk_zgeqp3;
                     if (optwrk < lwrk_zgesvd) optwrk = lwrk_zgesvd;
                     if (optwrk < lwrk_zunmqr) optwrk = lwrk_zunmqr;
@@ -268,13 +269,13 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     optwrk = n + optwrk;
                     if (wntva) {
                         zgeqrf(n, n / 2, U, ldu, NULL, cdummy, -1, &ierr);
-                        lwrk_zgeqrf = (int)creal(cdummy[0]);
+                        lwrk_zgeqrf = (INT)creal(cdummy[0]);
                         zgesvd("S", "O", n / 2, n / 2, V, ldv, S, U,
                                 ldu, NULL, 1, cdummy, -1, rdummy, &ierr);
-                        lwrk_zgesvd2 = (int)creal(cdummy[0]);
+                        lwrk_zgesvd2 = (INT)creal(cdummy[0]);
                         zunmqr("R", "C", n, n, n / 2, U, ldu, NULL,
                                 V, ldv, cdummy, -1, &ierr);
-                        lwrk_zunmqr2 = (int)creal(cdummy[0]);
+                        lwrk_zunmqr2 = (INT)creal(cdummy[0]);
                         optwrk2 = lwrk_zgeqp3;
                         if (optwrk2 < n / 2 + lwrk_zgeqrf) optwrk2 = n / 2 + lwrk_zgeqrf;
                         if (optwrk2 < n / 2 + lwrk_zgesvd2) optwrk2 = n / 2 + lwrk_zgesvd2;
@@ -286,7 +287,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                 } else {
                     zgesvd("S", "O", n, n, A, lda, S, U, ldu,
                             V, ldv, cdummy, -1, rdummy, &ierr);
-                    lwrk_zgesvd = (int)creal(cdummy[0]);
+                    lwrk_zgesvd = (INT)creal(cdummy[0]);
                     optwrk = lwrk_zgeqp3;
                     if (optwrk < lwrk_zgesvd) optwrk = lwrk_zgesvd;
                     if (optwrk < lwrk_zunmqr) optwrk = lwrk_zunmqr;
@@ -294,13 +295,13 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
                     optwrk = n + optwrk;
                     if (wntva) {
                         zgelqf(n / 2, n, U, ldu, NULL, cdummy, -1, &ierr);
-                        lwrk_zgelqf = (int)creal(cdummy[0]);
+                        lwrk_zgelqf = (INT)creal(cdummy[0]);
                         zgesvd("S", "O", n / 2, n / 2, V, ldv, S, U,
                                 ldu, NULL, 1, cdummy, -1, rdummy, &ierr);
-                        lwrk_zgesvd2 = (int)creal(cdummy[0]);
+                        lwrk_zgesvd2 = (INT)creal(cdummy[0]);
                         zunmlq("R", "N", n, n, n / 2, U, ldu, NULL,
                                 V, ldv, cdummy, -1, &ierr);
-                        lwrk_zunmlq = (int)creal(cdummy[0]);
+                        lwrk_zunmlq = (INT)creal(cdummy[0]);
                         optwrk2 = lwrk_zgeqp3;
                         if (optwrk2 < n / 2 + lwrk_zgelqf) optwrk2 = n / 2 + lwrk_zgelqf;
                         if (optwrk2 < n / 2 + lwrk_zgesvd2) optwrk2 = n / 2 + lwrk_zgesvd2;
@@ -464,7 +465,7 @@ void zgesvdq(const char* joba, const char* jobp, const char* jobr,
          */
         if (rtrans) {
 
-            int minmn = (n < nr) ? n : nr;
+            INT minmn = (n < nr) ? n : nr;
             for (p = 0; p < minmn; p++) {
                 A[p + p * lda] = conj(A[p + p * lda]);
                 for (q = p + 1; q < n; q++) {

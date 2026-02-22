@@ -4,6 +4,7 @@
  *        then updates singular vectors by matrix multiplication.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -39,17 +40,17 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void slasd3(const int nl, const int nr, const int sqre, const int k,
-            f32* restrict D, f32* restrict Q, const int ldq,
+void slasd3(const INT nl, const INT nr, const INT sqre, const INT k,
+            f32* restrict D, f32* restrict Q, const INT ldq,
             const f32* restrict DSIGMA,
-            f32* restrict U, const int ldu,
-            const f32* restrict U2, const int ldu2,
-            f32* restrict VT, const int ldvt,
-            f32* restrict VT2, const int ldvt2,
-            const int* restrict IDXC, const int* restrict CTOT,
-            f32* restrict Z, int* info)
+            f32* restrict U, const INT ldu,
+            const f32* restrict U2, const INT ldu2,
+            f32* restrict VT, const INT ldvt,
+            f32* restrict VT2, const INT ldvt2,
+            const INT* restrict IDXC, const INT* restrict CTOT,
+            f32* restrict Z, INT* info)
 {
-    int ctemp, i, j, jc, ktemp, m, n;
+    INT ctemp, i, j, jc, ktemp, m, n;
     f32 rho, temp;
 
     *info = 0;
@@ -195,7 +196,7 @@ L100:
     }
 
     ktemp = CTOT[0];
-    int nrp1 = nr + sqre;
+    INT nrp1 = nr + sqre;
     if (ktemp > 0) {
         for (i = 0; i < k; i++) {
             Q[i + ktemp * ldq] = Q[i + 0 * ldq];

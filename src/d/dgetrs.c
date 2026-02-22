@@ -3,6 +3,7 @@
  * @brief Solves a system of linear equations using LU factorization.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -35,17 +36,17 @@
  */
 void dgetrs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
-    int notran;
+    INT notran;
 
     // Test the input parameters
     *info = 0;

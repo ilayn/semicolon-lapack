@@ -3,6 +3,7 @@
  * @brief ZDRSCL multiplies a vector by the reciprocal of a real scalar.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -23,15 +24,15 @@
  *                      incx > 0.
  */
 void zdrscl(
-    const int n,
+    const INT n,
     const f64 sa,
     c128* restrict sx,
-    const int incx)
+    const INT incx)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int done;
+    INT done;
     f64 bignum, cden, cden1, cnum, cnum1, mul, smlnum;
 
     // Quick return if possible

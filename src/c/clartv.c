@@ -3,6 +3,7 @@
  * @brief CLARTV applies a vector of plane rotations with real cosines and complex sines.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -26,16 +27,16 @@
  *                      The sines of the plane rotations.
  * @param[in]     incc  The increment between elements of C and S. incc > 0.
  */
-void clartv(const int n, c64* restrict X, const int incx,
-            c64* restrict Y, const int incy,
+void clartv(const INT n, c64* restrict X, const INT incx,
+            c64* restrict Y, const INT incy,
             const f32* restrict C, const c64* restrict S,
-            const int incc)
+            const INT incc)
 {
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         c64 xi = X[ix];
         c64 yi = Y[iy];
         X[ix] = C[ic] * xi + S[ic] * yi;

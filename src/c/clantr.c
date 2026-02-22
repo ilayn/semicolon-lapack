@@ -5,6 +5,7 @@
  *        a trapezoidal or triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -42,19 +43,19 @@ f32 clantr(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 scale, sum, value, temp;
-    int udiag;  /* unit diagonal flag */
-    int minmn;
+    INT udiag;  /* unit diagonal flag */
+    INT minmn;
 
     /* Quick return if possible */
     minmn = (m < n) ? m : n;
@@ -70,7 +71,7 @@ f32 clantr(
             value = ONE;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int imax = (j < m) ? j : m;
+                    INT imax = (j < m) ? j : m;
                     for (i = 0; i < imax; i++) {
                         temp = cabsf(A[i + j * lda]);
                         if (value < temp || isnan(temp)) {
@@ -92,7 +93,7 @@ f32 clantr(
             value = ZERO;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int imax = (j + 1 < m) ? j + 1 : m;
+                    INT imax = (j + 1 < m) ? j + 1 : m;
                     for (i = 0; i < imax; i++) {
                         temp = cabsf(A[i + j * lda]);
                         if (value < temp || isnan(temp)) {
@@ -123,7 +124,7 @@ f32 clantr(
                     }
                 } else {
                     sum = ZERO;
-                    int imax = (j + 1 < m) ? j + 1 : m;
+                    INT imax = (j + 1 < m) ? j + 1 : m;
                     for (i = 0; i < imax; i++) {
                         sum += cabsf(A[i + j * lda]);
                     }
@@ -158,7 +159,7 @@ f32 clantr(
                     work[i] = ONE;
                 }
                 for (j = 0; j < n; j++) {
-                    int imax = (j < m) ? j : m;
+                    INT imax = (j < m) ? j : m;
                     for (i = 0; i < imax; i++) {
                         work[i] += cabsf(A[i + j * lda]);
                     }
@@ -168,7 +169,7 @@ f32 clantr(
                     work[i] = ZERO;
                 }
                 for (j = 0; j < n; j++) {
-                    int imax = (j + 1 < m) ? j + 1 : m;
+                    INT imax = (j + 1 < m) ? j + 1 : m;
                     for (i = 0; i < imax; i++) {
                         work[i] += cabsf(A[i + j * lda]);
                     }
@@ -176,7 +177,7 @@ f32 clantr(
             }
         } else {
             if (udiag) {
-                int minmn_local = (m < n) ? m : n;
+                INT minmn_local = (m < n) ? m : n;
                 for (i = 0; i < minmn_local; i++) {
                     work[i] = ONE;
                 }
@@ -213,7 +214,7 @@ f32 clantr(
                 scale = ONE;
                 sum = (f32)minmn;  /* count of unit diagonal elements */
                 for (j = 1; j < n; j++) {
-                    int col_len = (j < m) ? j : m;
+                    INT col_len = (j < m) ? j : m;
                     if (col_len > 0) {
                         classq(col_len, &A[j * lda], 1, &scale, &sum);
                     }
@@ -222,7 +223,7 @@ f32 clantr(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int col_len = (j + 1 < m) ? j + 1 : m;
+                    INT col_len = (j + 1 < m) ? j + 1 : m;
                     if (col_len > 0) {
                         classq(col_len, &A[j * lda], 1, &scale, &sum);
                     }
@@ -234,9 +235,9 @@ f32 clantr(
                 scale = ONE;
                 sum = (f32)minmn;  /* count of unit diagonal elements */
                 for (j = 0; j < n; j++) {
-                    int col_len = m - j - 1;
+                    INT col_len = m - j - 1;
                     if (col_len > 0) {
-                        int start_idx = (j + 1 < m) ? j + 1 : m;
+                        INT start_idx = (j + 1 < m) ? j + 1 : m;
                         classq(col_len, &A[start_idx + j * lda], 1, &scale, &sum);
                     }
                 }
@@ -244,7 +245,7 @@ f32 clantr(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int col_len = m - j;
+                    INT col_len = m - j;
                     if (col_len > 0) {
                         classq(col_len, &A[j + j * lda], 1, &scale, &sum);
                     }

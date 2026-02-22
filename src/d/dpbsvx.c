@@ -3,6 +3,7 @@
  * @brief DPBSVX computes the solution to a symmetric positive definite banded system with error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -52,31 +53,31 @@
 void dpbsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict AFB,
-    const int ldafb,
+    const INT ldafb,
     char* equed,
     f64* restrict S,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int equil, nofact, rcequ, upper;
-    int i, infequ, j, j1, j2;
+    INT equil, nofact, rcequ, upper;
+    INT i, infequ, j, j1, j2;
     f64 amax, anorm, bignum = 0.0, scond, smax, smin, smlnum = 0.0;
 
     *info = 0;

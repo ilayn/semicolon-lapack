@@ -3,6 +3,7 @@
  * @brief ZGEES computes the eigenvalues, Schur form, and optionally Schur vectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -67,21 +68,21 @@
  *                     the Schur form no longer satisfy select=true.
  */
 void zgees(const char* jobvs, const char* sort, zselect1_t select,
-           const int n, c128* A, const int lda, int* sdim,
+           const INT n, c128* A, const INT lda, INT* sdim,
            c128* W,
-           c128* VS, const int ldvs,
-           c128* work, const int lwork,
-           f64* rwork, int* bwork, int* info)
+           c128* VS, const INT ldvs,
+           c128* work, const INT lwork,
+           f64* rwork, INT* bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery, scalea, wantst, wantvs;
-    int hswork, i, ibal, icond, ierr, ieval;
-    int ihi, ilo, itau, iwrk, maxwrk, minwrk;
+    INT lquery, scalea, wantst, wantvs;
+    INT hswork, i, ibal, icond, ierr, ieval;
+    INT ihi, ilo, itau, iwrk, maxwrk, minwrk;
     f64 anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
     f64 dum[1];
-    int nb_gehrd, nb_unghr;
+    INT nb_gehrd, nb_unghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -117,7 +118,7 @@ void zgees(const char* jobvs, const char* sort, zselect1_t select,
             /* Query ZHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             zhseqr("S", jobvs, n, 0, n - 1, A, lda, W, VS, ldvs,
                    work, -1, &ieval);
-            hswork = (int)creal(work[0]);
+            hswork = (INT)creal(work[0]);
 
             if (!wantvs) {
                 maxwrk = maxwrk > hswork ? maxwrk : hswork;

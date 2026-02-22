@@ -4,6 +4,7 @@
  *        a symmetric matrix and reduce its condition number.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -44,21 +45,21 @@
  */
 void ssyequb(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict S,
     f32* scond,
     f32* amax,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
-    const int MAX_ITER = 100;
+    const INT MAX_ITER = 100;
 
     *info = 0;
-    int up = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT up = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!up && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -79,14 +80,14 @@ void ssyequb(
         return;
     }
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         S[i] = ZERO;
     }
 
     *amax = ZERO;
     if (up) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < j; i++) {
                 f32 absval = fabsf(A[i + j * lda]);
                 S[i] = (S[i] > absval) ? S[i] : absval;
                 S[j] = (S[j] > absval) ? S[j] : absval;
@@ -97,11 +98,11 @@ void ssyequb(
             *amax = (*amax > absdiag) ? *amax : absdiag;
         }
     } else {
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             f32 absdiag = fabsf(A[j + j * lda]);
             S[j] = (S[j] > absdiag) ? S[j] : absdiag;
             *amax = (*amax > absdiag) ? *amax : absdiag;
-            for (int i = j + 1; i < n; i++) {
+            for (INT i = j + 1; i < n; i++) {
                 f32 absval = fabsf(A[i + j * lda]);
                 S[i] = (S[i] > absval) ? S[i] : absval;
                 S[j] = (S[j] > absval) ? S[j] : absval;
@@ -109,24 +110,24 @@ void ssyequb(
             }
         }
     }
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         S[j] = ONE / S[j];
     }
 
     f32 tol_val = ONE / sqrtf(2.0f * n);
     f32 avg = ZERO;
 
-    for (int iter = 0; iter < MAX_ITER; iter++) {
+    for (INT iter = 0; iter < MAX_ITER; iter++) {
         f32 scale = ZERO;
         f32 sumsq = ZERO;
 
         // beta = |A|s
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             work[i] = ZERO;
         }
         if (up) {
-            for (int j = 0; j < n; j++) {
-                for (int i = 0; i < j; i++) {
+            for (INT j = 0; j < n; j++) {
+                for (INT i = 0; i < j; i++) {
                     f32 absval = fabsf(A[i + j * lda]);
                     work[i] = work[i] + absval * S[j];
                     work[j] = work[j] + absval * S[i];
@@ -134,9 +135,9 @@ void ssyequb(
                 work[j] = work[j] + fabsf(A[j + j * lda]) * S[j];
             }
         } else {
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 work[j] = work[j] + fabsf(A[j + j * lda]) * S[j];
-                for (int i = j + 1; i < n; i++) {
+                for (INT i = j + 1; i < n; i++) {
                     f32 absval = fabsf(A[i + j * lda]);
                     work[i] = work[i] + absval * S[j];
                     work[j] = work[j] + absval * S[i];
@@ -146,13 +147,13 @@ void ssyequb(
 
         // avg = s^T beta / n
         avg = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             avg = avg + S[i] * work[i];
         }
         avg = avg / n;
 
         f32 std_dev = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             work[n + i] = S[i] * work[i] - avg;
         }
         slassq(n, &work[n], 1, &scale, &sumsq);
@@ -162,7 +163,7 @@ void ssyequb(
             break;
         }
 
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 t = fabsf(A[i + i * lda]);
             f32 si = S[i];
             f32 c2 = (n - 1) * t;
@@ -179,23 +180,23 @@ void ssyequb(
             d = si - S[i];
             f32 u = ZERO;
             if (up) {
-                for (int j = 0; j <= i; j++) {
+                for (INT j = 0; j <= i; j++) {
                     t = fabsf(A[j + i * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
                 }
-                for (int j = i + 1; j < n; j++) {
+                for (INT j = i + 1; j < n; j++) {
                     t = fabsf(A[i + j * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
                 }
             } else {
-                for (int j = 0; j <= i; j++) {
+                for (INT j = 0; j <= i; j++) {
                     t = fabsf(A[i + j * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
                 }
-                for (int j = i + 1; j < n; j++) {
+                for (INT j = i + 1; j < n; j++) {
                     t = fabsf(A[j + i * lda]);
                     u = u + S[j] * t;
                     work[j] = work[j] + d * t;
@@ -214,8 +215,8 @@ void ssyequb(
     f32 t = ONE / sqrtf(avg > ZERO ? avg : 1.0f);
     f32 base = slamch("B");
     f32 u = ONE / logf(base);
-    for (int i = 0; i < n; i++) {
-        S[i] = powf(base, (int)(u * logf(S[i] * t)));
+    for (INT i = 0; i < n; i++) {
+        S[i] = powf(base, (INT)(u * logf(S[i] * t)));
         smin = (smin < S[i]) ? smin : S[i];
         smax = (smax > S[i]) ? smax : S[i];
     }

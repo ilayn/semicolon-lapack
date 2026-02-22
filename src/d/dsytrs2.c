@@ -5,6 +5,7 @@
  *        and converted by DSYCONV.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -40,20 +41,20 @@
  */
 void dsytrs2(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
 
-    int upper;
-    int i, iinfo, j, k, kp;
+    INT upper;
+    INT i, iinfo, j, k, kp;
     f64 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

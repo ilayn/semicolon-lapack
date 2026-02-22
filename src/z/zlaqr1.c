@@ -4,6 +4,7 @@
  *        2-by-2 or 3-by-3 matrix H and specified shifts.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
@@ -27,7 +28,7 @@
  * @param[out] v      Complex array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-void zlaqr1(const int n, const c128* H, const int ldh,
+void zlaqr1(const INT n, const c128* H, const INT ldh,
             const c128 s1, const c128 s2,
             c128* v)
 {

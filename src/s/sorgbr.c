@@ -3,6 +3,7 @@
  * @brief SORGBR generates one of the orthogonal matrices Q or P**T determined by SGEBRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -64,12 +65,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void sorgbr(const char* vect, const int m, const int n, const int k,
-            f32* restrict A, const int lda,
+void sorgbr(const char* vect, const INT m, const INT n, const INT k,
+            f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict work, const int lwork, int* info)
+            f32* restrict work, const INT lwork, INT* info)
 {
-    int i, j, iinfo, lquery, mn, wantq, lwkopt;
+    INT i, j, iinfo, lquery, mn, wantq, lwkopt;
 
     /* Test the input arguments */
     *info = 0;
@@ -112,7 +113,7 @@ void sorgbr(const char* vect, const int m, const int n, const int k,
                 }
             }
         }
-        lwkopt = (int)work[0];
+        lwkopt = (INT)work[0];
         if (lwkopt < mn) lwkopt = mn;
     }
 

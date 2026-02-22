@@ -3,6 +3,7 @@
  * @brief DSBEV computes all eigenvalues and, optionally, eigenvectors of a symmetric band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -34,21 +35,21 @@
 void dsbev(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lower, wantz;
-    int iinfo, imax, inde, indwrk, iscale;
+    INT lower, wantz;
+    INT iinfo, imax, inde, indwrk, iscale;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

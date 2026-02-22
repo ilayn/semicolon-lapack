@@ -4,6 +4,7 @@
  *        divide-and-conquer with 2-stage reduction.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -47,21 +48,21 @@
  *                               lying in rows and columns INFO/(N+1) through
  *                               mod(INFO,N+1).
  */
-void cheevd_2stage(const char* jobz, const char* uplo, const int n,
-                   c64* A, const int lda,
+void cheevd_2stage(const char* jobz, const char* uplo, const INT n,
+                   c64* A, const INT lda,
                    f32* W,
-                   c64* work, const int lwork,
-                   f32* rwork, const int lrwork,
-                   int* iwork, const int liwork, int* info)
+                   c64* work, const INT lwork,
+                   f32* rwork, const INT lrwork,
+                   INT* iwork, const INT liwork, INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const c64 cone = CMPLXF(1.0f, 0.0f);
 
-    int lower, lquery, wantz;
-    int iinfo, imax, inde, indrwk, indtau, indwk2, indwrk, iscale;
-    int liwmin, llrwk, llwork, llwrk2, lrwmin, lwmin;
-    int lhtrd = 0, lwtrd, kd, ib, indhous;
+    INT lower, lquery, wantz;
+    INT iinfo, imax, inde, indrwk, indtau, indwk2, indwrk, iscale;
+    INT liwmin, llrwk, llwork, llwrk2, lrwmin, lwmin;
+    INT lhtrd = 0, lwtrd, kd, ib, indhous;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

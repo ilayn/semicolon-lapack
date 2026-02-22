@@ -4,6 +4,7 @@
  *        independently sorted sets into a single set sorted in ascending order.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -26,12 +27,12 @@
  *                       B[i] = A[index[i]] for i=0,...,n1+n2-1,
  *                       then B is sorted in ascending order.
  */
-void slamrg(const int n1, const int n2, const f32* A,
-            const int dtrd1, const int dtrd2, int* index)
+void slamrg(const INT n1, const INT n2, const f32* A,
+            const INT dtrd1, const INT dtrd2, INT* index)
 {
-    int n1sv = n1;
-    int n2sv = n2;
-    int ind1, ind2;
+    INT n1sv = n1;
+    INT n2sv = n2;
+    INT ind1, ind2;
 
     if (dtrd1 > 0) {
         ind1 = 0;
@@ -44,7 +45,7 @@ void slamrg(const int n1, const int n2, const f32* A,
         ind2 = n1 + n2 - 1;
     }
 
-    int i = 0;
+    INT i = 0;
 
     while (n1sv > 0 && n2sv > 0) {
         if (A[ind1] <= A[ind2]) {
@@ -61,13 +62,13 @@ void slamrg(const int n1, const int n2, const f32* A,
     }
 
     if (n1sv == 0) {
-        for (int j = 0; j < n2sv; j++) {
+        for (INT j = 0; j < n2sv; j++) {
             index[i] = ind2;
             i++;
             ind2 += dtrd2;
         }
     } else {
-        for (int j = 0; j < n1sv; j++) {
+        for (INT j = 0; j < n1sv; j++) {
             index[i] = ind1;
             i++;
             ind1 += dtrd1;

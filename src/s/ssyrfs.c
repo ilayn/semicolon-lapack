@@ -5,6 +5,7 @@
  *        error bounds and backward error estimates.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -53,34 +54,34 @@
  */
 void ssyrfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict AF,
-    const int ldaf,
-    const int* restrict ipiv,
+    const INT ldaf,
+    const INT* restrict ipiv,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int upper;
-    int count, i, j, k, kase, nz;
+    INT upper;
+    INT count, i, j, k, kase, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters. */
     *info = 0;

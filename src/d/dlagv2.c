@@ -3,6 +3,7 @@
  * @brief DLAGV2 computes the Generalized Schur factorization of a real 2-by-2 matrix pencil.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -49,9 +50,9 @@
  */
 void dlagv2(
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict alphar,
     f64* restrict alphai,
     f64* restrict beta,

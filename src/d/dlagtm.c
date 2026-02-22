@@ -4,6 +4,7 @@
  *        where A is a tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -39,23 +40,23 @@
  */
 void dlagtm(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64 alpha,
     const f64* restrict DL,
     const f64* restrict D,
     const f64* restrict DU,
     const f64* restrict X,
-    const int ldx,
+    const INT ldx,
     const f64 beta,
     f64* restrict B,
-    const int ldb)
+    const INT ldb)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
 
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return;

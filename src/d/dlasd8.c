@@ -4,6 +4,7 @@
  *        and stores, for each element in D, the distance to its two nearest poles.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <cblas.h>
@@ -26,16 +27,16 @@ static inline f64 dlamc3(f64 a, f64 b)
  *
  * DLASD8 is called from DLASD6.
  */
-void dlasd8(const int icompq, const int k,
+void dlasd8(const INT icompq, const INT k,
             f64* restrict D, f64* restrict Z,
             f64* restrict VF, f64* restrict VL,
             f64* restrict DIFL, f64* restrict DIFR,
-            const int lddifr, const f64* restrict DSIGMA,
-            f64* restrict work, int* info)
+            const INT lddifr, const f64* restrict DSIGMA,
+            f64* restrict work, INT* info)
 {
     const f64 ONE = 1.0;
 
-    int i, j, iwk1, iwk2, iwk3;
+    INT i, j, iwk1, iwk2, iwk3;
     f64 diflj, difrj = 0.0, dj, dsigj, dsigjp = 0.0, rho, temp;
 
     *info = 0;

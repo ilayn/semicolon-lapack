@@ -4,6 +4,7 @@
  *        matrix X with orthonormal columns.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <cblas.h>
 #include <complex.h>
@@ -69,24 +70,24 @@
  * @param[out]    info     = 0: successful exit.
  *                         < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zunbdb4(const int m, const int p, const int q,
-             c128* restrict X11, const int ldx11,
-             c128* restrict X21, const int ldx21,
+void zunbdb4(const INT m, const INT p, const INT q,
+             c128* restrict X11, const INT ldx11,
+             c128* restrict X21, const INT ldx21,
              f64* restrict theta,
              f64* restrict phi,
              c128* restrict taup1,
              c128* restrict taup2,
              c128* restrict tauq1,
              c128* restrict phantom,
-             c128* restrict work, const int lwork,
-             int* info)
+             c128* restrict work, const INT lwork,
+             INT* info)
 {
     const c128 NEGONE = CMPLX(-1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
     f64 c, s;
-    int childinfo, i, ilarf, iorbdb5, j, llarf, lorbdb5, lworkmin, lworkopt;
-    int lquery;
+    INT childinfo, i, ilarf, iorbdb5, j, llarf, lorbdb5, lworkmin, lworkopt;
+    INT lquery;
 
     *info = 0;
     lquery = (lwork == -1);

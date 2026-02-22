@@ -4,6 +4,7 @@
  *        form by a unitary similarity transformation (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -52,16 +53,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zhetd2(const char* uplo, const int n, c128* restrict A,
-            const int lda, f64* restrict D, f64* restrict E,
-            c128* restrict tau, int* info)
+void zhetd2(const char* uplo, const INT n, c128* restrict A,
+            const INT lda, f64* restrict D, f64* restrict E,
+            c128* restrict tau, INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 HALF = CMPLX(0.5, 0.0);
 
-    int upper;
-    int i;
+    INT upper;
+    INT i;
     c128 alpha, taui;
     CBLAS_UPLO cblas_uplo;
 
@@ -134,8 +135,8 @@ void zhetd2(const char* uplo, const int n, c128* restrict A,
 
         A[0] = CMPLX(creal(A[0]), 0.0);
         for (i = 0; i <= n - 2; i++) {
-            int ni = n - i - 1;
-            int x_start = (i + 2 < n) ? (i + 2) : (n - 1);
+            INT ni = n - i - 1;
+            INT x_start = (i + 2 < n) ? (i + 2) : (n - 1);
 
             /* Generate elementary reflector H(i) = I - tau * v * v**H
              * to annihilate A(i+2:n-1, i). */

@@ -4,6 +4,7 @@
  *        of a complex generalized Hermitian-definite eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -57,21 +58,21 @@
  *                                no eigenvalues or eigenvectors were computed.
  */
 void chpgv(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     c64* restrict BP,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     *info = 0;
     if (itype < 1 || itype > 3) {
@@ -112,7 +113,7 @@ void chpgv(
 
         /* Backtransform eigenvectors to the original problem. */
 
-        int neig = n;
+        INT neig = n;
         if (*info > 0)
             neig = *info - 1;
 
@@ -128,7 +129,7 @@ void chpgv(
                 trans = 'C';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ctpsv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'N' ? CblasNoTrans : CblasConjTrans,
@@ -147,7 +148,7 @@ void chpgv(
                 trans = 'N';
             }
 
-            for (int j = 0; j < neig; j++) {
+            for (INT j = 0; j < neig; j++) {
                 cblas_ctpmv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             trans == 'C' ? CblasConjTrans : CblasNoTrans,

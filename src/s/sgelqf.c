@@ -4,6 +4,7 @@
  *        using a blocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
@@ -30,15 +31,15 @@
  * @param[out]    info
  *                         - = 0: success; < 0: -i means i-th argument was illegal.
  */
-void sgelqf(const int m, const int n,
-            f32* restrict A, const int lda,
+void sgelqf(const INT m, const INT n,
+            f32* restrict A, const INT lda,
             f32* restrict tau,
-            f32* restrict work, const int lwork,
-            int* info)
+            f32* restrict work, const INT lwork,
+            INT* info)
 {
-    int k, nb, nbmin, nx, iws, ldwork;
-    int i, ib, iinfo;
-    int lquery;
+    INT k, nb, nbmin, nx, iws, ldwork;
+    INT i, ib, iinfo;
+    INT lquery;
 
     /* Parameter validation */
     *info = 0;

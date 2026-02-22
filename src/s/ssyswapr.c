@@ -3,6 +3,7 @@
  * @brief SSYSWAPR applies an elementary permutation on the rows and columns of a symmetric matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -40,13 +41,13 @@
  */
 void ssyswapr(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    const int i1,
-    const int i2)
+    const INT lda,
+    const INT i1,
+    const INT i2)
 {
-    int upper;
+    INT upper;
     f32 tmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

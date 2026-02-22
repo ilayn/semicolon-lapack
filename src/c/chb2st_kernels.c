@@ -3,6 +3,7 @@
  * @brief CHB2ST_KERNELS is an internal routine used by the CHETRD_HB2ST subroutine.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
@@ -28,19 +29,19 @@
  */
 void chb2st_kernels(
     const char* uplo,
-    const int wantz,
-    const int ttype,
-    const int st,
-    const int ed,
-    const int sweep,
-    const int n,
-    const int nb,
-    const int ib,
+    const INT wantz,
+    const INT ttype,
+    const INT st,
+    const INT ed,
+    const INT sweep,
+    const INT n,
+    const INT nb,
+    const INT ib,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict V,
     c64* restrict TAU,
-    const int ldvt,
+    const INT ldvt,
     c64* restrict WORK)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
@@ -48,8 +49,8 @@ void chb2st_kernels(
 
     (void)wantz; (void)ib; (void)ldvt;
 
-    int upper;
-    int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
+    INT upper;
+    INT i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
     c64 ctmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

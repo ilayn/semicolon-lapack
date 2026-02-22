@@ -4,6 +4,7 @@
  *        Used when the original matrix is dense.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -99,11 +100,11 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void slaed8(const int icompq, int* K, const int n, const int qsiz,
-            f32* D, f32* Q, const int ldq, int* indxq, f32* rho,
-            const int cutpnt, f32* Z, f32* dlambda, f32* Q2,
-            const int ldq2, f32* W, int* perm, int* givptr,
-            int* givcol, f32* givnum, int* indxp, int* indx, int* info)
+void slaed8(const INT icompq, INT* K, const INT n, const INT qsiz,
+            f32* D, f32* Q, const INT ldq, INT* indxq, f32* rho,
+            const INT cutpnt, f32* Z, f32* dlambda, f32* Q2,
+            const INT ldq2, f32* W, INT* perm, INT* givptr,
+            INT* givcol, f32* givnum, INT* indxp, INT* indx, INT* info)
 {
     const f32 MONE = -1.0f;
     const f32 ZERO = 0.0f;
@@ -111,7 +112,7 @@ void slaed8(const int icompq, int* K, const int n, const int qsiz,
     const f32 TWO = 2.0f;
     const f32 EIGHT = 8.0f;
 
-    int i, imax, j, jlam, jmax, jp, k2, n1, n2;
+    INT i, imax, j, jlam, jmax, jp, k2, n1, n2;
     f32 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */

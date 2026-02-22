@@ -3,6 +3,7 @@
  * @brief ZLAT2C converts a c128 triangular matrix to a complex triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <float.h>
@@ -41,16 +42,16 @@
  */
 void zlat2c(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     float complex* restrict SA,
-    const int ldsa,
-    int* info)
+    const INT ldsa,
+    INT* info)
 {
-    int i, j;
+    INT i, j;
     const f64 rmax = (f64)FLT_MAX;
-    int upper;
+    INT upper;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

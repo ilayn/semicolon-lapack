@@ -4,6 +4,7 @@
  *        real symmetric matrix A using the factorization computed by SSYTRF.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -32,17 +33,17 @@
  */
 void ssytrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -71,12 +72,12 @@ void ssytrs(
          * K is the main loop index, decreasing from n-1 to 0 in steps of
          * 1 or 2, depending on the size of the diagonal blocks.
          */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block.
                  * Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_sswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -97,7 +98,7 @@ void ssytrs(
             } else {
                 /* 2x2 diagonal block.
                  * Interchange rows k-1 and kp = -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k - 1) {
                     cblas_sswap(nrhs, &B[k - 1], ldb, &B[kp], ldb);
                 }
@@ -121,7 +122,7 @@ void ssytrs(
                 f32 akm1 = A[(k - 1) + (k - 1) * lda] / akm1k;
                 f32 ak = A[k + k * lda] / akm1k;
                 f32 denom = akm1 * ak - 1.0f;
-                for (int j = 0; j < nrhs; j++) {
+                for (INT j = 0; j < nrhs; j++) {
                     f32 bkm1 = B[(k - 1) + j * ldb] / akm1k;
                     f32 bk = B[k + j * ldb] / akm1k;
                     B[(k - 1) + j * ldb] = (ak * bkm1 - bk) / denom;
@@ -149,7 +150,7 @@ void ssytrs(
                 }
 
                 /* Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_sswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -171,7 +172,7 @@ void ssytrs(
                 }
 
                 /* Interchange rows k and kp = -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_sswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -186,12 +187,12 @@ void ssytrs(
          * First solve L*D*X = B, overwriting B with X.
          *
          * K increases from 0 to n-1 in steps of 1 or 2. */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
             if (ipiv[k] >= 0) {
                 /* 1x1 diagonal block.
                  * Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_sswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -211,7 +212,7 @@ void ssytrs(
             } else {
                 /* 2x2 diagonal block.
                  * Interchange rows k+1 and kp = -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k + 1) {
                     cblas_sswap(nrhs, &B[k + 1], ldb, &B[kp], ldb);
                 }
@@ -235,7 +236,7 @@ void ssytrs(
                 f32 akm1 = A[k + k * lda] / akm1k;
                 f32 ak = A[(k + 1) + (k + 1) * lda] / akm1k;
                 f32 denom = akm1 * ak - 1.0f;
-                for (int j = 0; j < nrhs; j++) {
+                for (INT j = 0; j < nrhs; j++) {
                     f32 bkm1 = B[k + j * ldb] / akm1k;
                     f32 bk = B[(k + 1) + j * ldb] / akm1k;
                     B[k + j * ldb] = (ak * bkm1 - bk) / denom;
@@ -263,7 +264,7 @@ void ssytrs(
                 }
 
                 /* Interchange rows k and ipiv[k]. */
-                int kp = ipiv[k];
+                INT kp = ipiv[k];
                 if (kp != k) {
                     cblas_sswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }
@@ -285,7 +286,7 @@ void ssytrs(
                 }
 
                 /* Interchange rows k and kp = -(ipiv[k]+1). */
-                int kp = -(ipiv[k] + 1);
+                INT kp = -(ipiv[k] + 1);
                 if (kp != k) {
                     cblas_sswap(nrhs, &B[k], ldb, &B[kp], ldb);
                 }

@@ -3,6 +3,7 @@
  * @brief ZUNM22 multiplies a general matrix by a banded unitary matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -53,16 +54,16 @@
  *                        < 0: if info = -i, the i-th argument had an illegal value
  */
 void zunm22(const char* side, const char* trans,
-            const int m, const int n, const int n1, const int n2,
-            const c128* restrict Q, const int ldq,
-            c128* restrict C, const int ldc,
-            c128* restrict work, const int lwork,
-            int* info)
+            const INT m, const INT n, const INT n1, const INT n2,
+            const c128* restrict Q, const INT ldq,
+            c128* restrict C, const INT ldc,
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int left, lquery, notran;
-    int i, ldwork, len, lwkopt, nb, nq, nw;
+    INT left, lquery, notran;
+    INT i, ldwork, len, lwkopt, nb, nq, nw;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

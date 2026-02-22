@@ -3,6 +3,7 @@
  * @brief SSBGVD computes all eigenvalues of a generalized symmetric-definite banded eigenproblem using D&C.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -52,27 +53,27 @@
 void ssbgvd(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int lquery, upper, wantz;
-    int iinfo, inde, indwk2, indwrk, liwmin, llwrk2, lwmin;
+    INT lquery, upper, wantz;
+    INT iinfo, inde, indwk2, indwrk, liwmin, llwrk2, lwmin;
     char vect;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

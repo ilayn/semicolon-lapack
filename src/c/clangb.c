@@ -5,6 +5,7 @@
  *        a general band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -37,17 +38,17 @@
  */
 f32 clangb(
     const char* norm,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, k, l;
+    INT i, j, k, l;
     f32 scale, sum, value, temp;
 
     /* Quick return if possible */
@@ -67,8 +68,8 @@ f32 clangb(
              *
              * These are the row indices in band storage for column j.
              */
-            int i_start = (ku - j > 0) ? ku - j : 0;
-            int i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
+            INT i_start = (ku - j > 0) ? ku - j : 0;
+            INT i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
             for (i = i_start; i <= i_end; i++) {
                 temp = cabsf(AB[i + j * ldab]);
                 if (value < temp || isnan(temp)) {
@@ -81,8 +82,8 @@ f32 clangb(
         value = ZERO;
         for (j = 0; j < n; j++) {
             sum = ZERO;
-            int i_start = (ku - j > 0) ? ku - j : 0;
-            int i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
+            INT i_start = (ku - j > 0) ? ku - j : 0;
+            INT i_end = (n - 1 + ku - j < kl + ku) ? n - 1 + ku - j : kl + ku;
             for (i = i_start; i <= i_end; i++) {
                 sum += cabsf(AB[i + j * ldab]);
             }
@@ -102,8 +103,8 @@ f32 clangb(
              * In 0-based: k = ku - j, so AB[ku - j + i + j*ldab] = A(i,j)
              */
             k = ku - j;
-            int row_start = (j - ku > 0) ? j - ku : 0;
-            int row_end = (j + kl < n - 1) ? j + kl : n - 1;
+            INT row_start = (j - ku > 0) ? j - ku : 0;
+            INT row_end = (j + kl < n - 1) ? j + kl : n - 1;
             for (i = row_start; i <= row_end; i++) {
                 work[i] += cabsf(AB[k + i + j * ldab]);
             }
@@ -128,7 +129,7 @@ f32 clangb(
              */
             l = (j - ku > 0) ? j - ku : 0;
             k = ku - j + l;
-            int count = ((j + kl < n - 1) ? j + kl : n - 1) - l + 1;
+            INT count = ((j + kl < n - 1) ? j + kl : n - 1) - l + 1;
             classq(count, &AB[k + j * ldab], 1, &scale, &sum);
         }
         value = scale * sqrtf(sum);

@@ -3,6 +3,7 @@
  * @brief CLAPMT performs a forward or backward permutation of the columns of a matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -25,11 +26,11 @@
  * @param[in,out] K       Array (n). Permutation indices (0-based in C).
  *                        On exit, modified internally and then restored.
  */
-void clapmt(const int forwrd, const int m, const int n,
-            c64* restrict X, const int ldx,
-            int* restrict K)
+void clapmt(const INT forwrd, const INT m, const INT n,
+            c64* restrict X, const INT ldx,
+            INT* restrict K)
 {
-    int i, j, in;
+    INT i, j, in;
 
     if (n <= 1) return;
 

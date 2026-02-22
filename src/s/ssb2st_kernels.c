@@ -3,20 +3,21 @@
  * @brief SSB2ST_KERNELS is an internal routine used by SSYTRD_SB2ST.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
-void ssb2st_kernels(const char* uplo, const int wantz, const int ttype,
-                    const int st, const int ed, const int sweep,
-                    const int n, const int nb, const int ib,
-                    f32* A, const int lda,
-                    f32* V, f32* tau, const int ldvt,
+void ssb2st_kernels(const char* uplo, const INT wantz, const INT ttype,
+                    const INT st, const INT ed, const INT sweep,
+                    const INT n, const INT nb, const INT ib,
+                    f32* A, const INT lda,
+                    f32* V, f32* tau, const INT ldvt,
                     f32* work)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    int upper;
-    int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
+    INT upper;
+    INT i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
     f32 ctmp;
 
     (void)ib;

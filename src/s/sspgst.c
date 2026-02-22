@@ -4,6 +4,7 @@
  *        to standard form, using packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -37,15 +38,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sspgst(const int itype, const char* uplo, const int n,
+void sspgst(const INT itype, const char* uplo, const INT n,
             f32* restrict AP, const f32* restrict BP,
-            int* info)
+            INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
 
-    int upper;
-    int j, j1, j1j1, jj, k, k1, k1k1, kk;
+    INT upper;
+    INT j, j1, j1j1, jj, k, k1, k1k1, kk;
     f32 ajj, akk, bjj, bkk, ct;
 
     *info = 0;

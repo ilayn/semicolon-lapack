@@ -3,6 +3,7 @@
  * @brief CTPTTR copies a triangular matrix from standard packed format (TP) to standard full format (TR).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -44,14 +45,14 @@
  */
 void ctpttr(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
-    int lower;
-    int i, j, k;
+    INT lower;
+    INT i, j, k;
 
     *info = 0;
     lower = (uplo[0] == 'L' || uplo[0] == 'l');

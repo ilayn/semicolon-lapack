@@ -3,6 +3,7 @@
  * @brief Solve a system using LU factorization with complete pivoting.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -33,19 +34,19 @@
  *                      0 <= SCALE <= 1 to prevent overflow in the solution.
  */
 void dgesc2(
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict rhs,
-    const int* restrict ipiv,
-    const int* restrict jpiv,
+    const INT* restrict ipiv,
+    const INT* restrict jpiv,
     f64* scale)
 {
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
     f64 eps, smlnum, bignum, temp;
-    int i, j, imax;
+    INT i, j, imax;
 
     // Quick return if possible
     if (n == 0) {

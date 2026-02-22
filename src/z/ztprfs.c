@@ -3,6 +3,7 @@
  * @brief ZTPRFS provides error bounds and backward error estimates for packed triangular systems.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -43,25 +44,25 @@ void ztprfs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict AP,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     const c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int notran, nounit, upper;
-    int i, j, k, kase, kc, nz;
+    INT notran, nounit, upper;
+    INT i, j, k, kase, kc, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -4,6 +4,7 @@
  *        2-by-2 or 3-by-3 matrix H and specified shifts.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -27,7 +28,7 @@
  * @param[out] v      Complex array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-void claqr1(const int n, const c64* H, const int ldh,
+void claqr1(const INT n, const c64* H, const INT ldh,
             const c64 s1, const c64 s2,
             c64* v)
 {

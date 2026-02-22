@@ -4,6 +4,7 @@
  *        for GT (tridiagonal) matrices.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"
@@ -46,19 +47,19 @@
  *                           been completed unless i = n.
  */
 void cgtsv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict DL,
     c64* restrict D,
     c64* restrict DU,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
-    int j, k;
+    INT j, k;
     c64 mult, temp;
-    int ldb_min;
+    INT ldb_min;
 
     *info = 0;
     if (n < 0) {

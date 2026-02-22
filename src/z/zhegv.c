@@ -4,6 +4,7 @@
  *        of a complex generalized Hermitian-definite eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -53,25 +54,25 @@
  *                               principal minor of order i of B is not positive.
  */
 void zhegv(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict W,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int lquery = (lwork == -1);
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT lquery = (lwork == -1);
 
     *info = 0;
     if (itype < 1 || itype > 3) {
@@ -88,9 +89,9 @@ void zhegv(
         *info = -8;
     }
 
-    int lwkopt = 1;
+    INT lwkopt = 1;
     if (*info == 0) {
-        int nb = lapack_get_nb("HETRD");
+        INT nb = lapack_get_nb("HETRD");
         lwkopt = (nb + 1) * n;
         if (lwkopt < 1) {
             lwkopt = 1;
@@ -124,7 +125,7 @@ void zhegv(
 
     if (wantz) {
 
-        int neig = n;
+        INT neig = n;
         if (*info > 0) {
             neig = *info - 1;
         }

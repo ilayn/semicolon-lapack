@@ -3,6 +3,7 @@
  * @brief DLASDT creates a tree of subproblems for bidiagonal divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 
@@ -17,28 +18,28 @@
  * @param[out]    ndimr  Integer array, dimension (n). On exit, row dimensions of right children.
  * @param[in]     msub   The maximum row dimension each subproblem at the bottom of the tree can be of.
  */
-void dlasdt(const int n, int* lvl, int* nd,
-            int* restrict inode, int* restrict ndiml, int* restrict ndimr,
-            const int msub)
+void dlasdt(const INT n, INT* lvl, INT* nd,
+            INT* restrict inode, INT* restrict ndiml, INT* restrict ndimr,
+            const INT msub)
 {
-    int maxn = (n > 1) ? n : 1;
+    INT maxn = (n > 1) ? n : 1;
     f64 temp = log((f64)maxn / (f64)(msub + 1)) / log(2.0);
-    *lvl = (int)temp + 1;
+    *lvl = (INT)temp + 1;
 
-    int i = n / 2;
+    INT i = n / 2;
     inode[0] = i;
     ndiml[0] = i;
     ndimr[0] = n - i - 1;
 
-    int il = -1;
-    int ir = 0;
-    int llst = 1;
+    INT il = -1;
+    INT ir = 0;
+    INT llst = 1;
 
-    for (int nlvl = 1; nlvl <= *lvl - 1; nlvl++) {
-        for (int j = 0; j < llst; j++) {
+    for (INT nlvl = 1; nlvl <= *lvl - 1; nlvl++) {
+        for (INT j = 0; j < llst; j++) {
             il += 2;
             ir += 2;
-            int ncrnt = llst - 1 + j;
+            INT ncrnt = llst - 1 + j;
             ndiml[il] = ndiml[ncrnt] / 2;
             ndimr[il] = ndiml[ncrnt] - ndiml[il] - 1;
             inode[il] = inode[ncrnt] - ndimr[il] - 1;

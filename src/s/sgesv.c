@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 /**
  * @file sgesv.c
@@ -41,14 +42,14 @@
  *                           singular, so the solution could not be computed.
  */
 void sgesv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

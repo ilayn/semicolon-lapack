@@ -3,6 +3,7 @@
  * @brief DGEQP3RK computes a truncated Householder QR factorization with column pivoting of a real m-by-n matrix using Level 3 BLAS.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -77,27 +78,27 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void dgeqp3rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int kmax,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT kmax,
     f64 abstol,
     f64 reltol,
     f64* restrict A,
-    const int lda,
-    int* K,
+    const INT lda,
+    INT* K,
     f64* maxc2nrmk,
     f64* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     f64* restrict tau,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
-    int lquery, done;
-    int iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
-    int kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
+    INT lquery, done;
+    INT iinfo, ioffset, iws, j, jb, jbf, jmaxb, jmax, jmaxc2nrm;
+    INT kp1, lwkopt, minmn, n_sub, nb, nbmin, nx, kf;
     f64 eps, hugeval, maxc2nrm, safmin;
 
     *info = 0;

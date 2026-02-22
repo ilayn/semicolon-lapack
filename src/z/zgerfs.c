@@ -3,6 +3,7 @@
  * @brief ZGERFS improves the computed solution and provides error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -45,35 +46,35 @@
  */
 void zgerfs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict AF,
-    const int ldaf,
-    const int* restrict ipiv,
+    const INT ldaf,
+    const INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const c128 ONE = CMPLX(1.0, 0.0);
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int notran;
+    INT notran;
     char transn, transt;
-    int count, i, j, k, kase, nz;
+    INT count, i, j, k, kase, nz;
     f64 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');

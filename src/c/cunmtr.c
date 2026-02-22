@@ -4,6 +4,7 @@
  *        matrix Q from CHETRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "../include/lapack_tuning.h"
 #include <complex.h>
@@ -60,15 +61,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void cunmtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n,
-            const c64* restrict A, const int lda,
+            const INT m, const INT n,
+            const c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict C, const int ldc,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict C, const INT ldc,
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    int left, upper, lquery;
-    int i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
+    INT left, upper, lquery;
+    INT i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

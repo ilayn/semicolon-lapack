@@ -3,6 +3,7 @@
  * @brief DLANSP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a symmetric matrix supplied in packed form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -44,7 +45,7 @@
 f64 dlansp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict AP,
     f64* restrict work)
 {
@@ -53,7 +54,7 @@ f64 dlansp(
     const f64 ZERO = 0.0;
 
     // dlansp.f lines 133-134: Local Scalars
-    int i, j, k;
+    INT i, j, k;
     f64 absa, scale, sum, value;
 
     // dlansp.f lines 148-252: Main logic

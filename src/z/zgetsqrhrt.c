@@ -3,6 +3,7 @@
  * @brief ZGETSQRHRT computes a NB2-sized column blocked QR-factorization of a complex M-by-N matrix A using TSQR and Householder reconstruction.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -63,25 +64,25 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void zgetsqrhrt(
-    const int m,
-    const int n,
-    const int mb1,
-    const int nb1,
-    const int nb2,
+    const INT m,
+    const INT n,
+    const INT mb1,
+    const INT nb1,
+    const INT nb2,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict T,
-    const int ldt,
+    const INT ldt,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int lquery;
-    int i, iinfo, j, lw1, lw2, lwt, ldwt, lworkopt;
-    int nb1local, nb2local, num_all_row_blocks;
-    int minval;
+    INT lquery;
+    INT i, iinfo, j, lw1, lw2, lwt, ldwt, lworkopt;
+    INT nb1local, nb2local, num_all_row_blocks;
+    INT minval;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -110,7 +111,7 @@ void zgetsqrhrt(
                 nb1local = (nb1 < n) ? nb1 : n;
 
                 if (m - n > 0) {
-                    num_all_row_blocks = (int)ceil((f64)(m - n) / (f64)(mb1 - n));
+                    num_all_row_blocks = (INT)ceil((f64)(m - n) / (f64)(mb1 - n));
                 } else {
                     num_all_row_blocks = 1;
                 }

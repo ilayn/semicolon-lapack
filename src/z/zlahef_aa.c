@@ -3,6 +3,7 @@
  * @brief ZLAHEF_AA factorizes a panel of a complex hermitian matrix A using Aasen's algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -61,22 +62,22 @@
  */
 void zlahef_aa(
     const char* uplo,
-    const int j1,
-    const int m,
-    const int nb,
+    const INT j1,
+    const INT m,
+    const INT nb,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c128* restrict H,
-    const int ldh,
+    const INT ldh,
     c128* restrict work)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int j, k, k1, i1, i2, mj;
+    INT j, k, k1, i1, i2, mj;
     c128 piv, alpha;
-    int minval;
+    INT minval;
 
     j = 0;
 

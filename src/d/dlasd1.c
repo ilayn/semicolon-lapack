@@ -4,6 +4,7 @@
  *        specified size. Used by sbdsdc.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 
@@ -33,15 +34,15 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void dlasd1(const int nl, const int nr, const int sqre,
+void dlasd1(const INT nl, const INT nr, const INT sqre,
             f64* restrict D, f64* alpha, f64* beta,
-            f64* restrict U, const int ldu,
-            f64* restrict VT, const int ldvt,
-            int* restrict IDXQ, int* restrict IWORK,
-            f64* restrict work, int* info)
+            f64* restrict U, const INT ldu,
+            f64* restrict VT, const INT ldvt,
+            INT* restrict IDXQ, INT* restrict IWORK,
+            f64* restrict work, INT* info)
 {
-    int coltyp, i, idx, idxc, idxp, iq, isigma, iu2, ivt2, iz;
-    int k, ldq, ldu2, ldvt2, m, n, n1, n2;
+    INT coltyp, i, idx, idxc, idxp, iq, isigma, iu2, ivt2, iz;
+    INT k, ldq, ldu2, ldvt2, m, n, n1, n2;
     f64 orgnrm;
 
     *info = 0;

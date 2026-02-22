@@ -3,6 +3,7 @@
  * @brief SPBSV computes the solution to a symmetric positive definite banded system A * X = B.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -38,17 +39,17 @@
  */
 void spbsv(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;

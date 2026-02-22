@@ -4,6 +4,7 @@
  *        implicit zero-shift QR algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 #include <math.h>
@@ -75,12 +76,12 @@
  *                           similar to the input matrix B; if info = i, i
  *                           elements of E have not converged to zero.
  */
-void sbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
-            const int ncc, f32* restrict D, f32* restrict E,
-            f32* restrict VT, const int ldvt,
-            f32* restrict U, const int ldu,
-            f32* restrict C, const int ldc,
-            f32* restrict work, int* info)
+void sbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru,
+            const INT ncc, f32* restrict D, f32* restrict E,
+            f32* restrict VT, const INT ldvt,
+            f32* restrict U, const INT ldu,
+            f32* restrict C, const INT ldc,
+            f32* restrict work, INT* info)
 {
     /* Constants from LAPACK */
     const f32 ZERO = 0.0f;
@@ -90,12 +91,12 @@ void sbdsqr(const char* uplo, const int n, const int ncvt, const int nru,
     const f32 TEN = 10.0f;
     const f32 HNDRD = 100.0f;
     const f32 MEIGTH = -0.125f;
-    const int MAXITR = 6;
+    const INT MAXITR = 6;
 
     /* Local variables */
-    int lower, rotate;
-    int i, idir, isub, iter, iterdivn, j, ll, lll, m;
-    int maxitdivn, nm1, nm12, nm13, oldll, oldm;
+    INT lower, rotate;
+    INT i, idir, isub, iter, iterdivn, j, ll, lll, m;
+    INT maxitdivn, nm1, nm12, nm13, oldll, oldm;
     f32 abse, abss, cosl, cosr, cs, eps, f, g, h, mu;
     f32 oldcs, oldsn, r, shift, sigmn, sigmx, sinl, sinr;
     f32 sll, smax, smin, sminoa, sn, thresh, tol, tolmul, unfl;

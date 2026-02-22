@@ -3,30 +3,31 @@
  * @brief SSYEVR_2STAGE computes selected eigenvalues and optionally eigenvectors using RRR.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 #include <math.h>
 
 void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
-                   const int n, f32* A, const int lda,
+                   const INT n, f32* A, const INT lda,
                    const f32 vl, const f32 vu,
-                   const int il, const int iu,
-                   const f32 abstol, int* m,
-                   f32* W, f32* Z, const int ldz, int* isuppz,
-                   f32* work, const int lwork,
-                   int* iwork, const int liwork, int* info)
+                   const INT il, const INT iu,
+                   const f32 abstol, INT* m,
+                   f32* W, f32* Z, const INT ldz, INT* isuppz,
+                   f32* work, const INT lwork,
+                   INT* iwork, const INT liwork, INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const f32 two = 2.0f;
 
-    int alleig, indeig, lower, lquery, valeig, wantz, tryrac;
+    INT alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     char order;
-    int i, ieeeok, iinfo, imax, indd, inddd, inde;
-    int indee, indibl, indifl, indisp, indiwo, indtau;
-    int indwk, indwkn, iscale, j, jj, liwmin;
-    int llwork, llwrkn, lwmin, nsplit;
-    int lhtrd, lwtrd, kd, ib, indhous;
+    INT i, ieeeok, iinfo, imax, indd, inddd, inde;
+    INT indee, indibl, indifl, indisp, indiwo, indtau;
+    INT indwk, indwkn, iscale, j, jj, liwmin;
+    INT llwork, llwrkn, lwmin, nsplit;
+    INT lhtrd, lwtrd, kd, ib, indhous;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f32 sigma, smlnum, tmp1, vll, vuu;
 

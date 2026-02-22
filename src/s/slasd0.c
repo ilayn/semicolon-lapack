@@ -5,6 +5,7 @@
  *        divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <stddef.h>
 
@@ -36,14 +37,14 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void slasd0(const int n, const int sqre, f32* restrict D,
-            f32* restrict E, f32* restrict U, const int ldu,
-            f32* restrict VT, const int ldvt, const int smlsiz,
-            int* restrict IWORK, f32* restrict work, int* info)
+void slasd0(const INT n, const INT sqre, f32* restrict D,
+            f32* restrict E, f32* restrict U, const INT ldu,
+            f32* restrict VT, const INT ldvt, const INT smlsiz,
+            INT* restrict IWORK, f32* restrict work, INT* info)
 {
-    int i, ic, idxq, idxqc, inode, itemp, iwk;
-    int j, lf, ll, lvl, m, ncc, nd, ndb1, ndiml, ndimr;
-    int nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqrei;
+    INT i, ic, idxq, idxqc, inode, itemp, iwk;
+    INT j, lf, ll, lvl, m, ncc, nd, ndb1, ndiml, ndimr;
+    INT nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqrei;
     f32 alpha, beta;
 
     *info = 0;

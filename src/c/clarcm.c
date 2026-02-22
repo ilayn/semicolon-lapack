@@ -3,6 +3,7 @@
  * @brief CLARCM performs a very simple matrix-matrix multiplication: C := A * B.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -30,19 +31,19 @@
  * @param[out]    rwork   Single precision array, dimension (2*M*N).
  */
 void clarcm(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict C,
-    const int ldc,
+    const INT ldc,
     f32* restrict rwork)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
-    int i, j, l;
+    INT i, j, l;
 
     if ((m == 0) || (n == 0)) {
         return;

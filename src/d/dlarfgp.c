@@ -4,6 +4,7 @@
  *        with non-negative beta.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -35,13 +36,13 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void dlarfgp(const int n, f64* alpha, f64* restrict x,
-             const int incx, f64* tau)
+void dlarfgp(const INT n, f64* alpha, f64* restrict x,
+             const INT incx, f64* tau)
 {
     const f64 TWO = 2.0;
     const f64 ONE = 1.0;
     f64 xnorm, beta, bignum, eps, savealpha, smlnum;
-    int j, knt;
+    INT j, knt;
 
     if (n <= 0) {
         *tau = 0.0;

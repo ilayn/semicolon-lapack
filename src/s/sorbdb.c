@@ -3,6 +3,7 @@
  * @brief SORBDB simultaneously bidiagonalizes the blocks of an M-by-M partitioned orthogonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -92,17 +93,17 @@
 void sorbdb(
     const char* trans,
     const char* signs,
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f32* restrict X11,
-    const int ldx11,
+    const INT ldx11,
     f32* restrict X12,
-    const int ldx12,
+    const INT ldx12,
     f32* restrict X21,
-    const int ldx21,
+    const INT ldx21,
     f32* restrict X22,
-    const int ldx22,
+    const INT ldx22,
     f32* restrict theta,
     f32* restrict phi,
     f32* restrict taup1,
@@ -110,12 +111,12 @@ void sorbdb(
     f32* restrict tauq1,
     f32* restrict tauq2,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 one = 1.0f;
-    int colmajor, lquery;
-    int i, lworkmin, lworkopt;
+    INT colmajor, lquery;
+    INT i, lworkmin, lworkopt;
     f32 z1, z2, z3, z4;
 
     *info = 0;

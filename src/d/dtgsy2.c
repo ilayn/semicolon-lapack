@@ -3,6 +3,7 @@
  * @brief DTGSY2 solves the generalized Sylvester equation (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -59,37 +60,37 @@
  */
 void dtgsy2(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict C,
-    const int ldc,
+    const INT ldc,
     const f64* restrict D,
-    const int ldd,
+    const INT ldd,
     const f64* restrict E,
-    const int lde,
+    const INT lde,
     f64* restrict F,
-    const int ldf,
+    const INT ldf,
     f64* scale,
     f64* rdsum,
     f64* rdscal,
-    int* restrict iwork,
-    int* pq,
-    int* info)
+    INT* restrict iwork,
+    INT* pq,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int notran;
-    int i, ie, ierr, ii, is, isp1, j, je, jj, js, jsp1;
-    int k, mb, nb, p, q, zdim;
+    INT notran;
+    INT i, ie, ierr, ii, is, isp1, j, je, jj, js, jsp1;
+    INT k, mb, nb, p, q, zdim;
     f64 alpha, scaloc;
 
-    int ipiv[LDZ], jpiv[LDZ];
+    INT ipiv[LDZ], jpiv[LDZ];
     f64 rhs[LDZ], z[LDZ * LDZ];
 
     *info = 0;

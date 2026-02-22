@@ -4,6 +4,7 @@
  *        tridiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -51,23 +52,23 @@
 void chbtrd(
     const char* vect,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict D,
     f32* restrict E,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const c64 CONE = 1.0f;
 
-    int initq, upper, wantq;
-    int i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
-    int jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
+    INT initq, upper, wantq;
+    INT i, i2, ibl, inca, incx, iqaend, iqb, iqend, j, j1, j1end, j1inc, j2;
+    INT jend, jin, jinc, k, kd1, kdm1, kdn, l, last, lend, nq, nr, nrt;
     f32 abst;
     c64 t, temp;
 

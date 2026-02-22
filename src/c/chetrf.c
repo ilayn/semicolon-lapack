@@ -4,6 +4,7 @@
  *        using the Bunch-Kaufman diagonal pivoting method.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -51,16 +52,16 @@
  */
 void chetrf(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int lquery = (lwork == -1);
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT lquery = (lwork == -1);
 
     /* Test the input parameters */
     *info = 0;
@@ -75,8 +76,8 @@ void chetrf(
     }
 
     /* Determine the block size */
-    int nb = lapack_get_nb("HETRF");
-    int lwkopt = n * nb > 1 ? n * nb : 1;
+    INT nb = lapack_get_nb("HETRF");
+    INT lwkopt = n * nb > 1 ? n * nb : 1;
 
     if (*info == 0) {
         work[0] = (c64)lwkopt;
@@ -89,10 +90,10 @@ void chetrf(
         return;
     }
 
-    int nbmin = 2;
-    int ldwork = n;
+    INT nbmin = 2;
+    INT ldwork = n;
     if (nb > 1 && nb < n) {
-        int iws = ldwork * nb;
+        INT iws = ldwork * nb;
         if (lwork < iws) {
             nb = lwork / ldwork;
             if (nb < 1) nb = 1;
@@ -111,10 +112,10 @@ void chetrf(
          * K is the main loop index, decreasing from n-1 to 0 in steps of
          * kb, where kb is the number of columns factorized by clahef.
          * ============================================================ */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
             if (k + 1 > nb) {
-                int kb, iinfo;
+                INT kb, iinfo;
                 clahef(uplo, k + 1, nb, &kb, A, lda, ipiv, work, ldwork, &iinfo);
 
                 /* Set info on the first occurrence of a zero pivot */
@@ -124,7 +125,7 @@ void chetrf(
 
                 k -= kb;
             } else {
-                int iinfo;
+                INT iinfo;
                 chetf2(uplo, k + 1, A, lda, ipiv, &iinfo);
 
                 /* Set info on the first occurrence of a zero pivot */
@@ -141,10 +142,10 @@ void chetrf(
          *
          * K is the main loop index, increasing from 0 in steps of kb.
          * ============================================================ */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
             if (k <= n - 1 - nb) {
-                int kb, iinfo;
+                INT kb, iinfo;
                 clahef(uplo, n - k, nb, &kb, &A[k + k * lda], lda,
                        &ipiv[k], work, ldwork, &iinfo);
 
@@ -153,7 +154,7 @@ void chetrf(
                 }
 
                 /* Adjust IPIV */
-                for (int j = k; j < k + kb; j++) {
+                for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
                         ipiv[j] += k;
                     } else {
@@ -163,7 +164,7 @@ void chetrf(
 
                 k += kb;
             } else {
-                int iinfo;
+                INT iinfo;
                 chetf2(uplo, n - k, &A[k + k * lda], lda, &ipiv[k], &iinfo);
 
                 if (*info == 0 && iinfo > 0) {
@@ -171,8 +172,8 @@ void chetrf(
                 }
 
                 /* Adjust IPIV for the unblocked portion */
-                int kb = n - k;
-                for (int j = k; j < k + kb; j++) {
+                INT kb = n - k;
+                for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
                         ipiv[j] += k;
                     } else {

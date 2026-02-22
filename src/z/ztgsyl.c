@@ -3,6 +3,7 @@
  * @brief ZTGSYL solves the generalized Sylvester equation.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -118,35 +119,35 @@
  */
 void ztgsyl(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const c128* A,
-    const int lda,
+    const INT lda,
     const c128* B,
-    const int ldb,
+    const INT ldb,
     c128* C,
-    const int ldc,
+    const INT ldc,
     const c128* D,
-    const int ldd,
+    const INT ldd,
     const c128* E,
-    const int lde,
+    const INT lde,
     c128* F,
-    const int ldf,
+    const INT ldf,
     f64* scale,
     f64* dif,
     c128* work,
-    const int lwork,
-    int* iwork,
-    int* info)
+    const INT lwork,
+    INT* iwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int lquery, notran;
-    int i, ie, ifunc, iround, is, isolve, j, je, js, k;
-    int linfo, lwmin, mb, nb, p, pq, q;
+    INT lquery, notran;
+    INT i, ie, ifunc, iround, is, isolve, j, je, js, k;
+    INT linfo, lwmin, mb, nb, p, pq, q;
     f64 dscale, dsum, scale2 = 0.0, scaloc;
 
     *info = 0;

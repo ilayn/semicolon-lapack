@@ -4,6 +4,7 @@
  *        A * X = B for symmetric positive definite matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -41,13 +42,13 @@
  */
 void dposv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

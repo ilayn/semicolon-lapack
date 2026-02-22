@@ -3,6 +3,7 @@
  * @brief DSYCONVF_ROOK converts between factorization formats used in DSYTRF_ROOK and DSYTRF_RK/DSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -54,17 +55,17 @@
 void dsyconvf_rook(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict E,
-    const int* restrict ipiv,
-    int* info)
+    const INT* restrict ipiv,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int upper, convert;
-    int i, ip, ip2;
+    INT upper, convert;
+    INT i, ip, ip2;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

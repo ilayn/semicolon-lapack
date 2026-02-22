@@ -4,6 +4,7 @@
  *        1-norm) of a real symmetric positive definite tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -36,17 +37,17 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sptcon(
-    const int n,
+    const INT n,
     const f32* restrict D,
     const f32* restrict E,
     const f32 anorm,
     f32* rcond,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
-    int i, ix;
+    INT i, ix;
     f32 ainvnm;
 
     *info = 0;

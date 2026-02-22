@@ -3,6 +3,7 @@
  * @brief Solves a triangular banded system with scaling to prevent overflow.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -49,21 +50,21 @@ void dlatbs(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict X,
     f64* scale,
     f64* restrict cnorm,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
     const f64 ONE = 1.0;
 
-    int upper, notran, nounit, normin_n;
-    int i, imax, j, jfirst, jinc, jlast, jlen, maind;
+    INT upper, notran, nounit, normin_n;
+    INT i, imax, j, jfirst, jinc, jlast, jlen, maind;
     f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
     *info = 0;

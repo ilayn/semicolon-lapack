@@ -5,6 +5,7 @@
  *        algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 #include <math.h>
@@ -49,13 +50,13 @@
  *                           eigenvalues; elements i:ihi of wr and wi contain
  *                           those eigenvalues which have been successfully computed.
  */
-SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
-                          const int ilo, const int ihi,
-                          f64* H, const int ldh,
+SEMICOLON_API void dlahqr(const INT wantt, const INT wantz, const INT n,
+                          const INT ilo, const INT ihi,
+                          f64* H, const INT ldh,
                           f64* wr, f64* wi,
-                          const int iloz, const int ihiz,
-                          f64* Z, const int ldz,
-                          int* info)
+                          const INT iloz, const INT ihiz,
+                          f64* Z, const INT ldz,
+                          INT* info)
 {
     /* Parameters */
     const f64 zero = 0.0;
@@ -63,13 +64,13 @@ SEMICOLON_API void dlahqr(const int wantt, const int wantz, const int n,
     const f64 two = 2.0;
     const f64 dat1 = 3.0 / 4.0;
     const f64 dat2 = -0.4375;
-    const int kexsh = 10;
+    const INT kexsh = 10;
 
     /* Local scalars */
     f64 aa, ab, ba, bb, cs, det, h11, h12, h21, h21s, h22;
     f64 rt1i, rt1r, rt2i, rt2r, rtdisc, s, safmin;
     f64 smlnum, sn, sum, t1, t2, t3, tr, tst, ulp, v2, v3;
-    int i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
+    INT i, i1, i2, its, itmax, j, k, l, m, nh, nr, nz, kdefl;
 
     /* Local array */
     f64 v[3];

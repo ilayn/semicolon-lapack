@@ -3,6 +3,7 @@
  * @brief SLASYF_AA factorizes a panel of a real symmetric matrix A using Aasen's algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -60,19 +61,19 @@
  */
 void slasyf_aa(
     const char* uplo,
-    const int j1,
-    const int m,
-    const int nb,
+    const INT j1,
+    const INT m,
+    const INT nb,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f32* restrict H,
-    const int ldh,
+    const INT ldh,
     f32* restrict work)
 {
-    int j, k, k1, i1, i2, mj;
+    INT j, k, k1, i1, i2, mj;
     f32 piv, alpha;
-    int minval;
+    INT minval;
 
     j = 0;
 

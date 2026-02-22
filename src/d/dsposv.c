@@ -5,6 +5,7 @@
  *        precision iterative refinement.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -90,38 +91,38 @@
  */
 void dsposv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict work,
     float* restrict swork,
-    int* iter,
-    int* info)
+    INT* iter,
+    INT* info)
 {
-    const int ITERMAX = 30;
+    const INT ITERMAX = 30;
     const f64 BWDMAX = 1.0;
     const f64 NEGONE = -1.0;
     const f64 ONE = 1.0;
 
-    int i, iiter, iinfo;
+    INT i, iiter, iinfo;
     f64 anrm, cte, eps, rnrm, xnrm;
-    int converged;
+    INT converged;
 
     // Pointers into swork
     float* SA;   // n x n
     float* SX;   // n x nrhs
-    int ptsa, ptsx;
+    INT ptsa, ptsx;
 
     *info = 0;
     *iter = 0;
 
     // Test the input parameters
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -193,8 +194,8 @@ void dsposv(
     // Check whether the NRHS normwise backward errors satisfy the stopping criterion
     converged = 1;
     for (i = 0; i < nrhs; i++) {
-        int imax_x = cblas_idamax(n, &X[i * ldx], 1);
-        int imax_r = cblas_idamax(n, &work[i * n], 1);
+        INT imax_x = cblas_idamax(n, &X[i * ldx], 1);
+        INT imax_r = cblas_idamax(n, &work[i * n], 1);
         xnrm = fabs(X[imax_x + i * ldx]);
         rnrm = fabs(work[imax_r + i * n]);
         if (rnrm > xnrm * cte) {
@@ -237,8 +238,8 @@ void dsposv(
         // Check whether the NRHS normwise backward errors satisfy the stopping criterion
         converged = 1;
         for (i = 0; i < nrhs; i++) {
-            int imax_x = cblas_idamax(n, &X[i * ldx], 1);
-            int imax_r = cblas_idamax(n, &work[i * n], 1);
+            INT imax_x = cblas_idamax(n, &X[i * ldx], 1);
+            INT imax_r = cblas_idamax(n, &work[i * n], 1);
             xnrm = fabs(X[imax_x + i * ldx]);
             rnrm = fabs(work[imax_r + i * n]);
             if (rnrm > xnrm * cte) {

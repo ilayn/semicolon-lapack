@@ -4,6 +4,7 @@
  *        of a complex generalized Hermitian-definite eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -73,33 +74,33 @@
  *                       > 0:  CPPTRF or CHPEVX returned an error code.
  */
 void chpgvx(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     c64* restrict BP,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
     f32* restrict rwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int alleig = (range[0] == 'A' || range[0] == 'a');
-    int valeig = (range[0] == 'V' || range[0] == 'v');
-    int indeig = (range[0] == 'I' || range[0] == 'i');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT alleig = (range[0] == 'A' || range[0] == 'a');
+    INT valeig = (range[0] == 'V' || range[0] == 'v');
+    INT indeig = (range[0] == 'I' || range[0] == 'i');
 
     *info = 0;
     if (itype < 1 || itype > 3) {
@@ -165,7 +166,7 @@ void chpgvx(
             CBLAS_TRANSPOSE cblas_trans = (trans == 'N') ?
                 CblasNoTrans : CblasConjTrans;
 
-            for (int j = 0; j < *m; j++) {
+            for (INT j = 0; j < *m; j++) {
                 cblas_ctpsv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             cblas_trans, CblasNonUnit,
@@ -182,7 +183,7 @@ void chpgvx(
             CBLAS_TRANSPOSE cblas_trans = (trans == 'N') ?
                 CblasNoTrans : CblasConjTrans;
 
-            for (int j = 0; j < *m; j++) {
+            for (INT j = 0; j < *m; j++) {
                 cblas_ctpmv(CblasColMajor,
                             upper ? CblasUpper : CblasLower,
                             cblas_trans, CblasNonUnit,

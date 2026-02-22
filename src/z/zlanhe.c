@@ -5,6 +5,7 @@
  *        a complex Hermitian matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
@@ -40,12 +41,12 @@
 f64 zlanhe(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict work)
 {
-    int i, j;
+    INT i, j;
     f64 absa, scale, sum, value;
 
     if (n == 0) {

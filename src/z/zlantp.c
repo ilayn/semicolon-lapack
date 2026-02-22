@@ -3,6 +3,7 @@
  * @brief ZLANTP returns the value of the 1-norm, Frobenius norm, infinity norm, or max element of a packed triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
@@ -30,15 +31,15 @@ f64 zlantp(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int udiag;
-    int i, j, k;
+    INT udiag;
+    INT i, j, k;
     f64 scale, sum, value;
 
     if (n == 0) {

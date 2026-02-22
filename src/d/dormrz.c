@@ -4,6 +4,7 @@
  *        an RZ factorization determined by DTZRZF (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
@@ -67,24 +68,24 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dormrz(const char* side, const char* trans,
-            const int m, const int n, const int k, const int l,
-            f64* restrict A, const int lda,
+            const INT m, const INT n, const INT k, const INT l,
+            f64* restrict A, const INT lda,
             const f64* restrict tau,
-            f64* restrict C, const int ldc,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict C, const INT ldc,
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
     /* NBMAX is the maximum block size (hardcoded in LAPACK Fortran source);
      * LDT is the leading dimension of the T array stored in WORK;
      * TSIZE is the size of the T array. */
-    const int NBMAX = 64;
-    const int ldt_val = NBMAX + 1;  /* 65 */
-    const int TSIZE = ldt_val * NBMAX;  /* 65*64 = 4160 */
+    const INT NBMAX = 64;
+    const INT ldt_val = NBMAX + 1;  /* 65 */
+    const INT TSIZE = ldt_val * NBMAX;  /* 65*64 = 4160 */
 
-    int left, notran, lquery;
-    int i, ib, ic, iinfo, iwt, ja, jc;
-    int ldwork, lwkopt, mi = 0, nb, nbmin, ni = 0, nq, nw;
-    int i1, i2, i3;
+    INT left, notran, lquery;
+    INT i, ib, ic, iinfo, iwt, ja, jc;
+    INT ldwork, lwkopt, mi = 0, nb, nbmin, ni = 0, nq, nw;
+    INT i1, i2, i3;
     char transt;
 
     /* Decode arguments */

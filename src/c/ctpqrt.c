@@ -4,6 +4,7 @@
  *        "triangular-pentagonal" matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -40,14 +41,14 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ctpqrt(const int m, const int n, const int l, const int nb,
-            c64* restrict A, const int lda,
-            c64* restrict B, const int ldb,
-            c64* restrict T, const int ldt,
-            c64* restrict work, int* info)
+void ctpqrt(const INT m, const INT n, const INT l, const INT nb,
+            c64* restrict A, const INT lda,
+            c64* restrict B, const INT ldb,
+            c64* restrict T, const INT ldt,
+            c64* restrict work, INT* info)
 {
-    int i, ib, lb, mb, iinfo;
-    int minmn;
+    INT i, ib, lb, mb, iinfo;
+    INT minmn;
 
     *info = 0;
     minmn = m < n ? m : n;

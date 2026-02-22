@@ -4,6 +4,7 @@
  *        general matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -42,10 +43,10 @@
  *                      (n) if side = 'L'
  *                      or (m) if side = 'R'.
  */
-void slarz(const char* side, const int m, const int n, const int l,
-           const f32* restrict v, const int incv,
+void slarz(const char* side, const INT m, const INT n, const INT l,
+           const f32* restrict v, const INT incv,
            const f32 tau,
-           f32* restrict C, const int ldc,
+           f32* restrict C, const INT ldc,
            f32* restrict work)
 {
     if (side[0] == 'L' || side[0] == 'l') {

@@ -5,6 +5,7 @@
  *        N-by-NRHS matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -67,15 +68,15 @@
  *                           diagonal matrix D is exactly singular, so the
  *                           solution could not be computed.
  */
-void zsysv(const char* uplo, const int n, const int nrhs,
-           c128* restrict A, const int lda,
-           int* restrict ipiv,
-           c128* restrict B, const int ldb,
-           c128* restrict work, const int lwork,
-           int* info)
+void zsysv(const char* uplo, const INT n, const INT nrhs,
+           c128* restrict A, const INT lda,
+           INT* restrict ipiv,
+           c128* restrict B, const INT ldb,
+           c128* restrict work, const INT lwork,
+           INT* info)
 {
-    int lwkopt;
-    int lquery = (lwork == -1);
+    INT lwkopt;
+    INT lquery = (lwork == -1);
 
     /* Test the input parameters. */
     *info = 0;
@@ -99,7 +100,7 @@ void zsysv(const char* uplo, const int n, const int nrhs,
             lwkopt = 1;
         } else {
             zsytrf(uplo, n, A, lda, ipiv, work, -1, info);
-            lwkopt = (int)creal(work[0]);
+            lwkopt = (INT)creal(work[0]);
         }
         work[0] = (c128)lwkopt;
     }

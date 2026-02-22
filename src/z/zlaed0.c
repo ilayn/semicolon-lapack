@@ -5,6 +5,7 @@
  *        divide and conquer method.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -47,17 +48,17 @@
  *                             while working on the submatrix lying in rows
  *                             and columns INFO/(N+1) through mod(INFO,N+1).
  */
-void zlaed0(const int qsiz, const int n,
-            f64* D, f64* E, c128* Q, const int ldq,
-            c128* qstore, const int ldqs,
-            f64* rwork, int* iwork, int* info)
+void zlaed0(const INT qsiz, const INT n,
+            f64* D, f64* E, c128* Q, const INT ldq,
+            c128* qstore, const INT ldqs,
+            f64* rwork, INT* iwork, INT* info)
 {
     const f64 TWO = 2.0;
 
     /* SMLSIZ from ILAENV(9, ...) */
-    const int SMLSIZ = 25;
+    const INT SMLSIZ = 25;
 
-    int curlvl, curprb, curr, i, igivcl, igivnm,
+    INT curlvl, curprb, curr, i, igivcl, igivnm,
         igivpt, indxq, iperm, iprmpt, iq, iqptr, iwrem,
         j, k, lgn, ll, matsiz, msd2, smm1, spm1,
         spm2, submat, subpbs, tlvls;
@@ -123,7 +124,7 @@ void zlaed0(const int qsiz, const int n,
      * routine
      */
     temp = log((f64)n) / log(TWO);
-    lgn = (int)temp;
+    lgn = (INT)temp;
     if ((1 << lgn) < n) {
         lgn = lgn + 1;
     }

@@ -4,6 +4,7 @@
  *        eigenvectors. Used when the original matrix is tridiagonal.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -63,15 +64,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void slaed3(const int k, const int n, const int n1, f32* D,
-            f32* Q, const int ldq, const f32 rho,
-            f32* dlambda, f32* Q2, int* indx, int* ctot,
-            f32* W, f32* S, int* info)
+void slaed3(const INT k, const INT n, const INT n1, f32* D,
+            f32* Q, const INT ldq, const f32 rho,
+            f32* dlambda, f32* Q2, INT* indx, INT* ctot,
+            f32* W, f32* S, INT* info)
 {
     const f32 one = 1.0f;
     const f32 zero = 0.0f;
 
-    int i, ii, iq2, j, n12, n2, n23;
+    INT i, ii, iq2, j, n12, n2, n23;
     f32 temp;
 
     /* Test the input parameters. */

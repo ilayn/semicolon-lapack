@@ -3,6 +3,7 @@
  * @brief ZTPCON estimates the reciprocal condition number of a packed triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -35,22 +36,22 @@ void ztpcon(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     f64* rcond,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int nounit, onenrm, upper;
+    INT nounit, onenrm, upper;
     char normin;
-    int ix, kase, kase1;
+    INT ix, kase, kase1;
     f64 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -3,6 +3,7 @@
  * @brief CSYTRF_RK computes the factorization of a complex symmetric indefinite matrix using the bounded Bunch-Kaufman (rook) diagonal pivoting method (BLAS3 blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <stdlib.h>
@@ -71,17 +72,17 @@
  */
 void csytrf_rk(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int i, iinfo, ip, iws, k, kb, ldwork, lwkopt, nb, nbmin;
+    INT upper, lquery;
+    INT i, iinfo, ip, iws, k, kb, ldwork, lwkopt, nb, nbmin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

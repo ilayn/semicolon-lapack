@@ -3,6 +3,7 @@
  * @brief DLAQP2RK computes truncated QR factorization with column pivoting of a real matrix block using Level 2 BLAS.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -80,28 +81,28 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void dlaqp2rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int ioffset,
-    int kmax,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT ioffset,
+    INT kmax,
     const f64 abstol,
     const f64 reltol,
-    const int kp1,
+    const INT kp1,
     const f64 maxc2nrm,
     f64* restrict A,
-    const int lda,
-    int* K,
+    const INT lda,
+    INT* K,
     f64* maxc2nrmk,
     f64* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     f64* restrict tau,
     f64* restrict vn1,
     f64* restrict vn2,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
-    int i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
+    INT i, itemp, j, jmaxc2nrm, kk, kp, minmnfact, minmnupdt;
     f64 hugeval, temp, temp2, tol3z;
 
     *info = 0;

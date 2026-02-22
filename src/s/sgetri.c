@@ -3,6 +3,7 @@
  * @brief Computes the inverse of a matrix using LU factorization.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
@@ -35,20 +36,20 @@
  *                           singular and its inverse could not be computed.
  */
 void sgetri(
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
-    int lquery;
-    int i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
+    INT lquery;
+    INT i, iws, j, jb, jj, jp, ldwork, lwkopt, nb, nbmin, nn;
 
     // Test the input parameters
     *info = 0;

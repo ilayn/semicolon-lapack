@@ -3,6 +3,7 @@
  * @brief SSYSV_AA computes the solution to system of linear equations A * X = B for SY matrices using Aasen's algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -66,20 +67,20 @@
  */
 void ssysv_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkmin, lwkopt, lwkopt_sytrf, lwkopt_sytrs;
-    int tmp1;
+    INT lquery;
+    INT lwkmin, lwkopt, lwkopt_sytrf, lwkopt_sytrs;
+    INT tmp1;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -104,9 +105,9 @@ void ssysv_aa(
 
     if (*info == 0) {
         ssytrf_aa(uplo, n, A, lda, ipiv, work, -1, info);
-        lwkopt_sytrf = (int)work[0];
+        lwkopt_sytrf = (INT)work[0];
         ssytrs_aa(uplo, n, nrhs, A, lda, ipiv, B, ldb, work, -1, info);
-        lwkopt_sytrs = (int)work[0];
+        lwkopt_sytrs = (INT)work[0];
         tmp1 = (lwkmin > lwkopt_sytrf) ? lwkmin : lwkopt_sytrf;
         lwkopt = (tmp1 > lwkopt_sytrs) ? tmp1 : lwkopt_sytrs;
         work[0] = (f32)lwkopt;

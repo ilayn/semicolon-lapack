@@ -4,6 +4,7 @@
  *        the least squares problem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -60,18 +61,18 @@
  *                             working on the submatrix lying in rows and columns
  *                             INFO/(N+1) through MOD(INFO,N+1).
  */
-void clalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
+void clalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             f32* restrict D, f32* restrict E,
-            c64* restrict B, const int ldb, const f32 rcond,
-            int* rank, c64* restrict work,
-            f32* restrict rwork, int* restrict iwork, int* info)
+            c64* restrict B, const INT ldb, const f32 rcond,
+            INT* rank, c64* restrict work,
+            f32* restrict rwork, INT* restrict iwork, INT* info)
 {
-    int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
-    int givptr, i, icmpq1, icmpq2, irwb, irwib, irwrb;
-    int irwu, irwvt, irwwrk, iwk, j, jcol, jimag;
-    int jreal, jrow, k_idx, nlvl, nm1, nrwork, nsize, nsub;
-    int perm, poles, s_idx, sizei, smlszp, sqre, st, st1;
-    int u_idx, vt_idx, z_idx;
+    INT bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
+    INT givptr, i, icmpq1, icmpq2, irwb, irwib, irwrb;
+    INT irwu, irwvt, irwwrk, iwk, j, jcol, jimag;
+    INT jreal, jrow, k_idx, nlvl, nm1, nrwork, nsize, nsub;
+    INT perm, poles, s_idx, sizei, smlszp, sqre, st, st1;
+    INT u_idx, vt_idx, z_idx;
     f32 cs, eps, orgnrm, r, rcnd, sn, tol;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
@@ -257,7 +258,7 @@ void clalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
 
     /* Book-keeping and setting up some constants. */
 
-    nlvl = (int)(logf((f32)n / (f32)(smlsiz + 1)) / logf(2.0f)) + 1;
+    nlvl = (INT)(logf((f32)n / (f32)(smlsiz + 1)) / logf(2.0f)) + 1;
 
     smlszp = smlsiz + 1;
 

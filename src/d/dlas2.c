@@ -3,6 +3,7 @@
  * @brief DLAS2 computes singular values of a 2-by-2 triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 

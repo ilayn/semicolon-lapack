@@ -4,6 +4,7 @@
  *        the matrix of Schur vectors for GE matrices with extended options.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -70,33 +71,33 @@
  *                         - > 0: errors from QZ iteration or reordering
  */
 void cggesx(const char* jobvsl, const char* jobvsr, const char* sort,
-            cselect2_t selctg, const char* sense, const int n,
-            c64* A, const int lda,
-            c64* B, const int ldb,
-            int* sdim,
+            cselect2_t selctg, const char* sense, const INT n,
+            c64* A, const INT lda,
+            c64* B, const INT ldb,
+            INT* sdim,
             c64* alpha, c64* beta,
-            c64* VSL, const int ldvsl,
-            c64* VSR, const int ldvsr,
+            c64* VSL, const INT ldvsl,
+            c64* VSR, const INT ldvsr,
             f32* rconde, f32* rcondv,
-            c64* work, const int lwork,
+            c64* work, const INT lwork,
             f32* rwork,
-            int* iwork, const int liwork,
-            int* bwork, int* info)
+            INT* iwork, const INT liwork,
+            INT* bwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery;
-    int wantsb, wantse, wantsn, wantst, wantsv;
-    int i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
-    int ileft, ilo, iright, irows, irwrk, itau, iwrk;
-    int liwmin, lwrk, maxwrk, minwrk;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery;
+    INT wantsb, wantse, wantsn, wantst, wantsv;
+    INT i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
+    INT ileft, ilo, iright, irows, irwrk, itau, iwrk;
+    INT liwmin, lwrk, maxwrk, minwrk;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps;
     f32 pl, pr, smlnum;
     f32 dif[2];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
         ijobvl = 1;

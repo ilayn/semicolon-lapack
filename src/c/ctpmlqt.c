@@ -5,6 +5,7 @@
  *        complex matrix C, which consists of two blocks A and B.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -55,16 +56,16 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ctpmlqt(const char* side, const char* trans, const int m, const int n,
-             const int k, const int l, const int mb,
-             const c64* restrict V, const int ldv,
-             const c64* restrict T, const int ldt,
-             c64* restrict A, const int lda,
-             c64* restrict B, const int ldb,
-             c64* restrict work, int* info)
+void ctpmlqt(const char* side, const char* trans, const INT m, const INT n,
+             const INT k, const INT l, const INT mb,
+             const c64* restrict V, const INT ldv,
+             const c64* restrict T, const INT ldt,
+             c64* restrict A, const INT lda,
+             c64* restrict B, const INT ldb,
+             c64* restrict work, INT* info)
 {
-    int left, right, tran, notran;
-    int i, ib, nb, lb, kf, ldaq;
+    INT left, right, tran, notran;
+    INT i, ib, nb, lb, kf, ldaq;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

@@ -3,6 +3,7 @@
  * @brief DSYTRI_3 computes the inverse of a real symmetric indefinite matrix using the factorization computed by DSYTRF_RK or DSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -64,17 +65,17 @@
  */
 void dsytri_3(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int lwkopt, nb;
+    INT upper, lquery;
+    INT lwkopt, nb;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

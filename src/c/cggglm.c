@@ -3,6 +3,7 @@
  * @brief CGGGLM solves a general Gauss-Markov linear model (GLM) problem.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -108,27 +109,27 @@
  *                           be computed.
  */
 void cggglm(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict D,
     c64* restrict X,
     c64* restrict Y,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 zero = CMPLXF(0.0f, 0.0f);
     const c64 one = CMPLXF(1.0f, 0.0f);
     const c64 neg_one = CMPLXF(-1.0f, 0.0f);
 
-    int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
-    int lquery;
-    int max_val;
+    INT i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     np = (n < p) ? n : p;
@@ -189,11 +190,11 @@ void cggglm(
 
     cggqrf(n, m, p, A, lda, work, B, ldb, &work[m],
            &work[m + np], lwork - m - np, info);
-    lopt = (int)crealf(work[m + np]);
+    lopt = (INT)crealf(work[m + np]);
 
     cunmqr("L", "C", n, 1, m, A, lda, work, D,
            (1 > n ? 1 : n), &work[m + np], lwork - m - np, info);
-    lopt = (lopt > (int)crealf(work[m + np])) ? lopt : (int)crealf(work[m + np]);
+    lopt = (lopt > (INT)crealf(work[m + np])) ? lopt : (INT)crealf(work[m + np]);
 
     if (n > m) {
         ctrtrs("U", "N", "N", n - m, 1,
@@ -225,11 +226,11 @@ void cggglm(
         cblas_ccopy(m, D, 1, X, 1);
     }
 
-    int b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
+    INT b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
     b_row_start -= 1;
 
     cunmrq("L", "C", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (c64)(m + np + ((lopt > (int)crealf(work[m + np])) ? lopt : (int)crealf(work[m + np])));
+    work[0] = (c64)(m + np + ((lopt > (INT)crealf(work[m + np])) ? lopt : (INT)crealf(work[m + np])));
 }

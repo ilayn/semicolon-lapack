@@ -3,6 +3,7 @@
  * @brief ZGSVJ0 is a pre-processor for ZGESVJ that applies Jacobi rotations.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
@@ -39,19 +40,19 @@ static const f64 ONE = 1.0;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument.
  */
-void zgsvj0(const char* jobv, const int m, const int n,
-            c128* restrict A, const int lda,
+void zgsvj0(const char* jobv, const INT m, const INT n,
+            c128* restrict A, const INT lda,
             c128* restrict D, f64* restrict SVA,
-            const int mv, c128* restrict V, const int ldv,
+            const INT mv, c128* restrict V, const INT ldv,
             const f64 eps, const f64 sfmin, const f64 tol,
-            const int nsweep, c128* restrict work, const int lwork,
-            int* info)
+            const INT nsweep, c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int applv, rsvec, mvl;
-    int i, ibr, igl, ir1, p, q, kbl, nbl;
-    int blskip, rowskip, lkahead, swband;
-    int notrot, pskipped, iswrot, ijblsk, emptsw;
-    int ierr;
+    INT applv, rsvec, mvl;
+    INT i, ibr, igl, ir1, p, q, kbl, nbl;
+    INT blskip, rowskip, lkahead, swband;
+    INT notrot, pskipped, iswrot, ijblsk, emptsw;
+    INT ierr;
     c128 aapq, ompq;
     f64 aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
     f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
@@ -170,7 +171,7 @@ void zgsvj0(const char* jobv, const int m, const int n,
 
                             if (aaqq > ZERO) {
                                 aapp0 = aapp;
-                                int rotok;
+                                INT rotok;
 
                                 if (aaqq >= ONE) {
                                     rotok = (small * aapp) <= aaqq;
@@ -312,8 +313,8 @@ L2103:
 
             /* Off-diagonal blocks */
             igl = ibr * kbl;
-            for (int jbc = ibr + 1; jbc < nbl; jbc++) {
-                int jgl = jbc * kbl;
+            for (INT jbc = ibr + 1; jbc < nbl; jbc++) {
+                INT jgl = jbc * kbl;
                 ijblsk = 0;
 
                 for (p = igl; p < ((igl + kbl < n) ? igl + kbl : n); p++) {
@@ -327,7 +328,7 @@ L2103:
 
                             if (aaqq > ZERO) {
                                 aapp0 = aapp;
-                                int rotok;
+                                INT rotok;
 
                                 /* Safe Gram matrix computation */
                                 if (aaqq >= ONE) {

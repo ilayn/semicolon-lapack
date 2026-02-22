@@ -3,6 +3,7 @@
  * @brief ZTBCON estimates the reciprocal of the condition number of a triangular band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -38,22 +39,22 @@ void ztbcon(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* rcond,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int nounit, onenrm, upper;
-    int ix, kase, kase1;
+    INT nounit, onenrm, upper;
+    INT ix, kase, kase1;
     f64 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
+    INT isave[3];
     char normin;
 
     *info = 0;

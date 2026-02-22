@@ -3,19 +3,20 @@
  * @brief CLARF applies an elementary reflector to a general rectangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
 
 /** @cond */
-static int ilaclc(
-    const int m,
-    const int n,
+static INT ilaclc(
+    const INT m,
+    const INT n,
     const c64* restrict A,
-    const int lda)
+    const INT lda)
 {
     const c64 zero = CMPLXF(0.0f, 0.0f);
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return 0;
@@ -33,14 +34,14 @@ static int ilaclc(
     }
 }
 
-static int ilaclr(
-    const int m,
-    const int n,
+static INT ilaclr(
+    const INT m,
+    const INT n,
     const c64* restrict A,
-    const int lda)
+    const INT lda)
 {
     const c64 zero = CMPLXF(0.0f, 0.0f);
-    int i, j, result;
+    INT i, j, result;
 
     if (m == 0) {
         return 0;
@@ -85,16 +86,16 @@ static int ilaclr(
  * @param[in]     ldc    The leading dimension of C. ldc >= max(1, m).
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
-void clarf(const char* side, const int m, const int n,
-           const c64* restrict v, const int incv,
+void clarf(const char* side, const INT m, const INT n,
+           const c64* restrict v, const INT incv,
            const c64 tau,
-           c64* restrict C, const int ldc,
+           c64* restrict C, const INT ldc,
            c64* restrict work)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
-    int applyleft;
-    int lastv, lastc, i;
+    INT applyleft;
+    INT lastv, lastc, i;
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
     lastv = 0;

@@ -3,6 +3,7 @@
  * @brief ZUNCSD computes the CS decomposition of an M-by-M partitioned unitary matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -145,48 +146,48 @@ void zuncsd(
     const char* jobv2t,
     const char* trans,
     const char* signs,
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     c128* X11,
-    const int ldx11,
+    const INT ldx11,
     c128* X12,
-    const int ldx12,
+    const INT ldx12,
     c128* X21,
-    const int ldx21,
+    const INT ldx21,
     c128* X22,
-    const int ldx22,
+    const INT ldx22,
     f64* restrict theta,
     c128* restrict U1,
-    const int ldu1,
+    const INT ldu1,
     c128* restrict U2,
-    const int ldu2,
+    const INT ldu2,
     c128* restrict V1T,
-    const int ldv1t,
+    const INT ldv1t,
     c128* restrict V2T,
-    const int ldv2t,
+    const INT ldv2t,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    INT* info)
 {
     const c128 one = CMPLX(1.0, 0.0);
     const c128 zero = CMPLX(0.0, 0.0);
 
-    int childinfo, i;
-    int ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
-    int ib21d = 0, ib21e = 0, ib22d = 0, ib22e = 0, ibbcsd = 0, iorbdb = 0;
-    int iorglq = 0, iorgqr = 0, iphi, itaup1 = 0, itaup2 = 0, itauq1 = 0, itauq2 = 0;
-    int j;
-    int lbbcsdwork = 0, lbbcsdworkmin, lbbcsdworkopt;
-    int lorbdbwork = 0, lorbdbworkopt;
-    int lorglqwork = 0, lorglqworkmin, lorglqworkopt;
-    int lorgqrwork = 0, lorgqrworkmin, lorgqrworkopt;
-    int lworkmin, lworkopt;
-    int lrworkmin, lrworkopt;
-    int colmajor, defaultsigns, lquery, lrquery, wantu1, wantu2, wantv1t, wantv2t;
+    INT childinfo, i;
+    INT ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
+    INT ib21d = 0, ib21e = 0, ib22d = 0, ib22e = 0, ibbcsd = 0, iorbdb = 0;
+    INT iorglq = 0, iorgqr = 0, iphi, itaup1 = 0, itaup2 = 0, itauq1 = 0, itauq2 = 0;
+    INT j;
+    INT lbbcsdwork = 0, lbbcsdworkmin, lbbcsdworkopt;
+    INT lorbdbwork = 0, lorbdbworkopt;
+    INT lorglqwork = 0, lorglqworkmin, lorglqworkopt;
+    INT lorgqrwork = 0, lorgqrworkmin, lorgqrworkopt;
+    INT lworkmin, lworkopt;
+    INT lrworkmin, lrworkopt;
+    INT colmajor, defaultsigns, lquery, lrquery, wantu1, wantu2, wantv1t, wantv2t;
 
     *info = 0;
     wantu1 = (jobu1[0] == 'Y' || jobu1[0] == 'y');
@@ -231,8 +232,8 @@ void zuncsd(
     }
 
     /* Work with transpose if convenient */
-    int minpmp = (p < m - p) ? p : (m - p);
-    int minqmq = (q < m - q) ? q : (m - q);
+    INT minpmp = (p < m - p) ? p : (m - p);
+    INT minqmq = (q < m - q) ? q : (m - q);
     if (*info == 0 && minpmp < minqmq) {
         const char* transt = colmajor ? "T" : "N";
         const char* signst = defaultsigns ? "O" : "D";
@@ -272,7 +273,7 @@ void zuncsd(
                NULL, NULL, NULL, ldu1, NULL, ldu2, NULL, ldv1t,
                NULL, ldv2t, NULL, NULL, NULL, NULL, NULL,
                NULL, NULL, NULL, rwork, -1, &childinfo);
-        lbbcsdworkopt = (int)rwork[0];
+        lbbcsdworkopt = (INT)rwork[0];
         lbbcsdworkmin = lbbcsdworkopt;
         lrworkopt = ibbcsd + lbbcsdworkopt - 1;
         lrworkmin = ibbcsd + lbbcsdworkmin - 1;
@@ -285,21 +286,21 @@ void zuncsd(
         itauq2 = itauq1 + (1 > q ? 1 : q);
         iorgqr = itauq2 + (1 > (m - q) ? 1 : (m - q));
 
-        int ld_temp = (1 > (m - q)) ? 1 : (m - q);
+        INT ld_temp = (1 > (m - q)) ? 1 : (m - q);
         zungqr(m - q, m - q, m - q, NULL, ld_temp, NULL, work, -1, &childinfo);
-        lorgqrworkopt = (int)creal(work[0]);
+        lorgqrworkopt = (INT)creal(work[0]);
         lorgqrworkmin = (1 > (m - q)) ? 1 : (m - q);
 
         iorglq = itauq2 + (1 > (m - q) ? 1 : (m - q));
         zunglq(m - q, m - q, m - q, NULL, ld_temp, NULL, work, -1, &childinfo);
-        lorglqworkopt = (int)creal(work[0]);
+        lorglqworkopt = (INT)creal(work[0]);
         lorglqworkmin = (1 > (m - q)) ? 1 : (m - q);
 
         iorbdb = itauq2 + (1 > (m - q) ? 1 : (m - q));
         zunbdb(trans, signs, m, p, q, X11, ldx11, X12, ldx12,
                X21, ldx21, X22, ldx22, theta, NULL, NULL, NULL,
                NULL, NULL, work, -1, &childinfo);
-        lorbdbworkopt = (int)creal(work[0]);
+        lorbdbworkopt = (INT)creal(work[0]);
 
         lworkopt = iorgqr + lorgqrworkopt;
         if (iorglq + lorglqworkopt > lworkopt) lworkopt = iorglq + lorglqworkopt;

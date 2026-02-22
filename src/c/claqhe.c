@@ -3,6 +3,7 @@
  * @brief CLAQHE scales a Hermitian matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <float.h>
 #include "semicolon_lapack_complex_single.h"
@@ -39,9 +40,9 @@
  */
 void claqhe(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict S,
     const f32 scond,
     const f32 amax,
@@ -71,19 +72,19 @@ void claqhe(
         // Replace A by diag(S) * A * diag(S)
         if (uplo[0] == 'U' || uplo[0] == 'u') {
             // Upper triangle of A is stored
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 f32 cj = S[j];
-                for (int i = 0; i < j; i++) {
+                for (INT i = 0; i < j; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }
                 A[j + j * lda] = CMPLXF(cj * cj * crealf(A[j + j * lda]), 0.0f);
             }
         } else {
             // Lower triangle of A is stored
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 f32 cj = S[j];
                 A[j + j * lda] = CMPLXF(cj * cj * crealf(A[j + j * lda]), 0.0f);
-                for (int i = j + 1; i < n; i++) {
+                for (INT i = j + 1; i < n; i++) {
                     A[i + j * lda] = cj * S[i] * A[i + j * lda];
                 }
             }

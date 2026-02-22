@@ -4,6 +4,7 @@
  *        and off-diagonal e.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
@@ -37,15 +38,15 @@ static const f64 ZERO = 0.0;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void dlasdq(const char* uplo, const int sqre, const int n, const int ncvt,
-            const int nru, const int ncc, f64* restrict D,
-            f64* restrict E, f64* restrict VT, const int ldvt,
-            f64* restrict U, const int ldu,
-            f64* restrict C, const int ldc,
-            f64* restrict work, int* info)
+void dlasdq(const char* uplo, const INT sqre, const INT n, const INT ncvt,
+            const INT nru, const INT ncc, f64* restrict D,
+            f64* restrict E, f64* restrict VT, const INT ldvt,
+            f64* restrict U, const INT ldu,
+            f64* restrict C, const INT ldc,
+            f64* restrict work, INT* info)
 {
-    int rotate;
-    int i, isub, iuplo, j, np1, sqre1;
+    INT rotate;
+    INT i, isub, iuplo, j, np1, sqre1;
     f64 cs, r, smin, sn;
 
     /* Test the input parameters */

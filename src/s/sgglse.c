@@ -3,6 +3,7 @@
  * @brief SGGLSE solves the linear equality-constrained least squares (LSE) problem.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -102,25 +103,25 @@
  *                           be computed.
  */
 void sgglse(
-    const int m,
-    const int n,
-    const int p,
+    const INT m,
+    const INT n,
+    const INT p,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict C,
     f32* restrict D,
     f32* restrict X,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 one = 1.0f;
 
-    int lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
-    int lquery;
-    int max_val;
+    INT lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     mn = (m < n) ? m : n;
@@ -175,11 +176,11 @@ void sgglse(
 
     sggrqf(p, m, n, B, ldb, work, A, lda, &work[p],
            &work[p + mn], lwork - p - mn, info);
-    lopt = (int)work[p + mn];
+    lopt = (INT)work[p + mn];
 
     sormqr("L", "T", m, 1, mn, A, lda, &work[p],
            C, (1 > m ? 1 : m), &work[p + mn], lwork - p - mn, info);
-    lopt = (lopt > (int)work[p + mn]) ? lopt : (int)work[p + mn];
+    lopt = (lopt > (INT)work[p + mn]) ? lopt : (INT)work[p + mn];
 
     if (p > 0) {
         strtrs("U", "N", "N", p, 1, &B[0 + (n - p) * ldb], ldb, D, p, info);
@@ -223,5 +224,5 @@ void sgglse(
 
     sormrq("L", "T", n, 1, p, B, ldb, work, X, n,
            &work[p + mn], lwork - p - mn, info);
-    work[0] = (f32)(p + mn + ((lopt > (int)work[p + mn]) ? lopt : (int)work[p + mn]));
+    work[0] = (f32)(p + mn + ((lopt > (INT)work[p + mn]) ? lopt : (INT)work[p + mn]));
 }

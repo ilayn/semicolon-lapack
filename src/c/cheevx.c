@@ -4,6 +4,7 @@
  *        complex Hermitian matrix using bisection and inverse iteration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -73,25 +74,25 @@
  *                           Their indices are stored in array IFAIL.
  */
 void cheevx(const char* jobz, const char* range, const char* uplo,
-            const int n, c64* restrict A, const int lda,
-            const f32 vl, const f32 vu, const int il, const int iu,
-            const f32 abstol, int* m,
+            const INT n, c64* restrict A, const INT lda,
+            const f32 vl, const f32 vu, const INT il, const INT iu,
+            const f32 abstol, INT* m,
             f32* restrict W,
-            c64* restrict Z, const int ldz,
-            c64* restrict work, const int lwork,
+            c64* restrict Z, const INT ldz,
+            c64* restrict work, const INT lwork,
             f32* restrict rwork,
-            int* restrict iwork,
-            int* restrict ifail,
-            int* info)
+            INT* restrict iwork,
+            INT* restrict ifail,
+            INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int alleig, indeig, lower, lquery, test, valeig, wantz;
-    int i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwk;
-    int indrwk, indtau, indwrk, iscale, itmp1, j, jj;
-    int llwork, lwkmin, lwkopt, nb, nsplit;
+    INT alleig, indeig, lower, lquery, test, valeig, wantz;
+    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwk;
+    INT indrwk, indtau, indwrk, iscale, itmp1, j, jj;
+    INT llwork, lwkmin, lwkopt, nb, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, vll = 0.0f, vuu = 0.0f;
 

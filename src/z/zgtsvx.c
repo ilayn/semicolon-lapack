@@ -4,6 +4,7 @@
  *        for GT matrices with condition estimation and error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <string.h>
 #include <cblas.h>
@@ -57,8 +58,8 @@
 void zgtsvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict DL,
     const c128* restrict D,
     const c128* restrict DU,
@@ -66,24 +67,24 @@ void zgtsvx(
     c128* restrict DF,
     c128* restrict DUF,
     c128* restrict DU2,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nofact, notran;
+    INT nofact, notran;
     char norm;
     f64 anorm;
-    int ldb_min, ldx_min;
+    INT ldb_min, ldx_min;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

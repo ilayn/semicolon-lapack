@@ -3,6 +3,7 @@
  * @brief SLAQSP scales a symmetric matrix in packed storage, using scaling factors computed by sppequ.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -27,7 +28,7 @@
  */
 void slaqsp(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict AP,
     const f32* restrict S,
     const f32 scond,
@@ -39,7 +40,7 @@ void slaqsp(
     const f32 THRESH = 0.1f;  // slaqsp.f line 142: THRESH = 0.1D+0
 
     // slaqsp.f lines 145-146: Local Scalars
-    int i, j, jc;
+    INT i, j, jc;
     f32 cj, large, small;
 
     // slaqsp.f lines 157-160: Quick return if possible

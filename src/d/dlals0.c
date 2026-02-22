@@ -4,6 +4,7 @@
  *        problem using divide and conquer SVD approach. Used by dgelsd.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <cblas.h>
@@ -16,18 +17,18 @@ static inline f64 dlamc3(f64 a, f64 b)
 }
 /** @endcond */
 
-void dlals0(const int icompq, const int nl, const int nr, const int sqre,
-            const int nrhs, f64* restrict B, const int ldb,
-            f64* restrict BX, const int ldbx,
-            const int* restrict perm, const int givptr,
-            const int* restrict givcol, const int ldgcol,
-            const f64* restrict givnum, const int ldgnum,
+void dlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
+            const INT nrhs, f64* restrict B, const INT ldb,
+            f64* restrict BX, const INT ldbx,
+            const INT* restrict perm, const INT givptr,
+            const INT* restrict givcol, const INT ldgcol,
+            const f64* restrict givnum, const INT ldgnum,
             const f64* restrict poles, const f64* restrict difl,
             const f64* restrict difr, const f64* restrict Z,
-            const int k, const f64 c, const f64 s,
-            f64* restrict work, int* info)
+            const INT k, const f64 c, const f64 s,
+            f64* restrict work, INT* info)
 {
-    int i, j, m, n, nlp1;
+    INT i, j, m, n, nlp1;
     f64 diflj, difrj = 0.0, dj, dsigj, dsigjp = 0.0, temp;
 
     *info = 0;

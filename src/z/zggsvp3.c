@@ -3,6 +3,7 @@
  * @brief ZGGSVP3 computes unitary matrices U, V, Q for GSVD preprocessing.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -62,27 +63,27 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
-             const int m, const int p, const int n,
-             c128* restrict A, const int lda,
-             c128* restrict B, const int ldb,
+             const INT m, const INT p, const INT n,
+             c128* restrict A, const INT lda,
+             c128* restrict B, const INT ldb,
              const f64 tola, const f64 tolb,
-             int* k, int* l,
-             c128* restrict U, const int ldu,
-             c128* restrict V, const int ldv,
-             c128* restrict Q, const int ldq,
-             int* restrict iwork,
+             INT* k, INT* l,
+             c128* restrict U, const INT ldu,
+             c128* restrict V, const INT ldv,
+             c128* restrict Q, const INT ldq,
+             INT* restrict iwork,
              f64* restrict rwork,
              c128* restrict tau,
-             c128* restrict work, const int lwork,
-             int* info)
+             c128* restrict work, const INT lwork,
+             INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int wantu, wantv, wantq, lquery;
-    int forwrd = 1;
-    int i, j, lwkopt;
-    int minval, ierr;
+    INT wantu, wantv, wantq, lquery;
+    INT forwrd = 1;
+    INT i, j, lwkopt;
+    INT minval, ierr;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
     wantv = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -119,7 +120,7 @@ void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
 
     if (*info == 0) {
         zgeqp3(p, n, B, ldb, iwork, tau, work, -1, rwork, &ierr);
-        lwkopt = (int)creal(work[0]);
+        lwkopt = (INT)creal(work[0]);
         if (wantv) {
             if (p > lwkopt) lwkopt = p;
         }
@@ -130,7 +131,7 @@ void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
             if (n > lwkopt) lwkopt = n;
         }
         zgeqp3(m, n, A, lda, iwork, tau, work, -1, rwork, &ierr);
-        if ((int)creal(work[0]) > lwkopt) lwkopt = (int)creal(work[0]);
+        if ((INT)creal(work[0]) > lwkopt) lwkopt = (INT)creal(work[0]);
         if (lwkopt < 1) lwkopt = 1;
         work[0] = CMPLX((f64)lwkopt, 0.0);
     }

@@ -3,6 +3,7 @@
  * @brief DSYTRS_ROOK solves a system of linear equations A*X = B with a real symmetric matrix A using the factorization computed by DSYTRF_ROOK.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
@@ -51,17 +52,17 @@
  */
 void dsytrs_rook(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int upper;
-    int j, k, kp;
+    INT upper;
+    INT j, k, kp;
     f64 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

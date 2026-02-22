@@ -3,6 +3,7 @@
  * @brief CLASSQ updates a sum of squares represented in scaled form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <float.h>
@@ -55,9 +56,9 @@
  *                        of squares from which scale_out has been factored out.
  */
 void classq(
-    const int n,
+    const INT n,
     const c64* restrict X,
-    const int incx,
+    const INT incx,
     f32* scale,
     f32* sumsq)
 {
@@ -69,8 +70,8 @@ void classq(
     const f32 ssml = ldexpf(1.0f, -FLOOR_HALF(FLT_MIN_EXP - FLT_MANT_DIG));
     const f32 sbig = ldexpf(1.0f, -CEIL_HALF(FLT_MAX_EXP + FLT_MANT_DIG - 1));
 
-    int i, ix;
-    int notbig;
+    INT i, ix;
+    INT notbig;
     f32 abig, amed, asml, ax, ymax, ymin;
 
     /* Quick return if possible */

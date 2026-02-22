@@ -3,6 +3,7 @@
  * @brief SORBDB4 simultaneously bidiagonalizes the blocks of a tall and skinny matrix with orthonormal columns.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -88,13 +89,13 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sorbdb4(
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f32* restrict X11,
-    const int ldx11,
+    const INT ldx11,
     f32* restrict X21,
-    const int ldx21,
+    const INT ldx21,
     f32* restrict theta,
     f32* restrict phi,
     f32* restrict taup1,
@@ -102,15 +103,15 @@ void sorbdb4(
     f32* restrict tauq1,
     f32* restrict phantom,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 negone = -1.0f;
     const f32 zero = 0.0f;
     f32 c, s;
-    int childinfo, i, ilarf, iorbdb5, j, llarf, lorbdb5, lworkmin, lworkopt;
-    int lquery;
-    int max_val;
+    INT childinfo, i, ilarf, iorbdb5, j, llarf, lorbdb5, lworkmin, lworkopt;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     lquery = (lwork == -1);

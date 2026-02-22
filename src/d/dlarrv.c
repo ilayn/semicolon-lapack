@@ -4,6 +4,7 @@
  *        T = L D L^T given L, D and the eigenvalues of L D L^T.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <string.h>
 #include <cblas.h>
@@ -79,17 +80,17 @@
  *                         - = 5: the Rayleigh Quotient Iteration failed to converge to
  *                           full accuracy in MAXITR steps.
  */
-void dlarrv(const int n, const f64 vl, const f64 vu,
+void dlarrv(const INT n, const f64 vl, const f64 vu,
             f64* D, f64* L, const f64 pivmin,
-            const int* isplit, const int m, const int dol, const int dou,
+            const INT* isplit, const INT m, const INT dol, const INT dou,
             const f64 minrgp, const f64 rtol1, const f64 rtol2,
             f64* W, f64* werr, f64* wgap,
-            const int* iblock, const int* indexw, const f64* gers,
-            f64* Z, const int ldz, int* isuppz,
-            f64* work, int* iwork, int* info)
+            const INT* iblock, const INT* indexw, const f64* gers,
+            f64* Z, const INT ldz, INT* isuppz,
+            f64* work, INT* iwork, INT* info)
 {
     /* Parameters */
-    const int MAXITR = 10;
+    const INT MAXITR = 10;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
@@ -98,8 +99,8 @@ void dlarrv(const int n, const f64 vl, const f64 vu,
     const f64 HALF = 0.5;
 
     /* Local Scalars */
-    int eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
-    int done, i, ibegin, idone, iend, ii, iindc1,
+    INT eskip, needbs, stp2ii, tryrqc, usedbs, usedrq;
+    INT done, i, ibegin, idone, iend, ii, iindc1,
         iindc2, iindr, iindwk, iinfo, im, in, indeig,
         indld, indlld, indwrk, isupmn, isupmx, iter,
         itmp1, j, jblk, k, miniwsize, minwsize, nclus,
@@ -144,7 +145,7 @@ void dlarrv(const int n, const f64 vl, const f64 vu,
     iindwk = 3 * n;
 
     miniwsize = 7 * n;
-    memset(iwork, 0, miniwsize * sizeof(int));
+    memset(iwork, 0, miniwsize * sizeof(INT));
 
     for (i = 0; i < n; i++) {
         iwork[iindr + i] = -1;

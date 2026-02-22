@@ -3,6 +3,7 @@
  * @brief SSYSV_ROOK computes the solution to system of linear equations A * X = B for SY matrices.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -93,19 +94,19 @@
  */
 void ssysv_rook(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkopt;
+    INT lquery;
+    INT lwkopt;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -130,7 +131,7 @@ void ssysv_rook(
             lwkopt = 1;
         } else {
             ssytrf_rook(uplo, n, A, lda, ipiv, work, -1, info);
-            lwkopt = (int)work[0];
+            lwkopt = (INT)work[0];
         }
         work[0] = (f32)lwkopt;
     }

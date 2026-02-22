@@ -4,6 +4,7 @@
  *        complex generalized Hermitian-definite banded eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -54,22 +55,22 @@
 void zhbgv(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     c128* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     *info = 0;
     if (!wantz && !(jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -106,9 +107,9 @@ void zhbgv(
     }
 
     /* Transform problem to standard eigenvalue problem. */
-    int inde = 0;
-    int indwrk = inde + n;
-    int iinfo;
+    INT inde = 0;
+    INT indwrk = inde + n;
+    INT iinfo;
     zhbgst(jobz, uplo, n, ka, kb, AB, ldab, BB, ldbb, Z, ldz,
            work, &rwork[indwrk], &iinfo);
 

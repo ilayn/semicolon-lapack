@@ -3,6 +3,7 @@
  * @brief CGBBRD reduces a complex general band matrix to real upper bidiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -63,25 +64,25 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgbbrd(const char* vect, const int m, const int n, const int ncc,
-            const int kl, const int ku,
-            c64* restrict AB, const int ldab,
+void cgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
+            const INT kl, const INT ku,
+            c64* restrict AB, const INT ldab,
             f32* restrict D, f32* restrict E,
-            c64* restrict Q, const int ldq,
-            c64* restrict PT, const int ldpt,
-            c64* restrict C, const int ldc,
+            c64* restrict Q, const INT ldq,
+            c64* restrict PT, const INT ldpt,
+            c64* restrict C, const INT ldc,
             c64* restrict work,
-            f32* restrict rwork, int* info)
+            f32* restrict rwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int wantb = (vect[0] == 'B' || vect[0] == 'b');
-    int wantq = (vect[0] == 'Q' || vect[0] == 'q') || wantb;
-    int wantpt = (vect[0] == 'P' || vect[0] == 'p') || wantb;
-    int wantc = (ncc > 0);
-    int klu1 = kl + ku + 1;
+    INT wantb = (vect[0] == 'B' || vect[0] == 'b');
+    INT wantq = (vect[0] == 'Q' || vect[0] == 'q') || wantb;
+    INT wantpt = (vect[0] == 'P' || vect[0] == 'p') || wantb;
+    INT wantc = (ncc > 0);
+    INT klu1 = kl + ku + 1;
 
     *info = 0;
     if (!wantq && !wantpt && !(vect[0] == 'N' || vect[0] == 'n')) {
@@ -122,10 +123,10 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
         return;
     }
 
-    int minmn = MIN(m, n);
+    INT minmn = MIN(m, n);
 
     if (kl + ku > 1) {
-        int ml0, mu0;
+        INT ml0, mu0;
         if (ku > 0) {
             ml0 = 1;
             mu0 = 2;
@@ -134,21 +135,21 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
             mu0 = 1;
         }
 
-        int klm = MIN(m - 1, kl);
-        int kun = MIN(n - 1, ku);
-        int kb = klm + kun;
-        int kb1 = kb + 1;
-        int inca = kb1 * ldab;
-        int nr = 0;
-        int j1 = klm + 1;
-        int j2 = -kun;
+        INT klm = MIN(m - 1, kl);
+        INT kun = MIN(n - 1, ku);
+        INT kb = klm + kun;
+        INT kb1 = kb + 1;
+        INT inca = kb1 * ldab;
+        INT nr = 0;
+        INT j1 = klm + 1;
+        INT j2 = -kun;
 
-        for (int i = 0; i < minmn; i++) {
+        for (INT i = 0; i < minmn; i++) {
 
-            int ml = klm + 1;
-            int mu = kun + 1;
+            INT ml = klm + 1;
+            INT mu = kun + 1;
 
-            for (int kk = 0; kk < kb; kk++) {
+            for (INT kk = 0; kk < kb; kk++) {
                 j1 += kb;
                 j2 += kb;
 
@@ -157,8 +158,8 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                            &work[j1], kb1, &rwork[j1], kb1);
                 }
 
-                for (int l = 0; l < kb; l++) {
-                    int nrt;
+                for (INT l = 0; l < kb; l++) {
+                    INT nrt;
                     if (j2 - klm + l > n - 1) {
                         nrt = nr - 1;
                     } else {
@@ -189,14 +190,14 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                 }
 
                 if (wantq) {
-                    for (int j = j1; j <= j2; j += kb1) {
+                    for (INT j = j1; j <= j2; j += kb1) {
                         crot(m, &Q[(j - 1) * ldq], 1, &Q[j * ldq], 1,
                              rwork[j], conjf(work[j]));
                     }
                 }
 
                 if (wantc) {
-                    for (int j = j1; j <= j2; j += kb1) {
+                    for (INT j = j1; j <= j2; j += kb1) {
                         crot(ncc, &C[(j - 1)], ldc, &C[j], ldc,
                              rwork[j], work[j]);
                     }
@@ -207,7 +208,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                     j2 -= kb1;
                 }
 
-                for (int j = j1; j <= j2; j += kb1) {
+                for (INT j = j1; j <= j2; j += kb1) {
                     work[j + kun] = work[j] * AB[(j + kun) * ldab];
                     AB[(j + kun) * ldab] = rwork[j] * AB[(j + kun) * ldab];
                 }
@@ -217,8 +218,8 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                            &work[j1 + kun], kb1, &rwork[j1 + kun], kb1);
                 }
 
-                for (int l = 0; l < kb; l++) {
-                    int nrt;
+                for (INT l = 0; l < kb; l++) {
+                    INT nrt;
                     if (j2 + l > m - 1) {
                         nrt = nr - 1;
                     } else {
@@ -248,7 +249,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                 }
 
                 if (wantpt) {
-                    for (int j = j1; j <= j2; j += kb1) {
+                    for (INT j = j1; j <= j2; j += kb1) {
                         crot(n, &PT[j + kun - 1], ldpt,
                              &PT[j + kun], ldpt,
                              rwork[j + kun], conjf(work[j + kun]));
@@ -260,7 +261,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
                     j2 -= kb1;
                 }
 
-                for (int j = j1; j <= j2; j += kb1) {
+                for (INT j = j1; j <= j2; j += kb1) {
                     work[j + kb] = work[j + kun] * AB[(klu1 - 1) + (j + kun) * ldab];
                     AB[(klu1 - 1) + (j + kun) * ldab] = rwork[j + kun] * AB[(klu1 - 1) + (j + kun) * ldab];
                 }
@@ -275,7 +276,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
     }
 
     if (ku == 0 && kl > 0) {
-        for (int i = 0; i < MIN(m - 1, n); i++) {
+        for (INT i = 0; i < MIN(m - 1, n); i++) {
             f32 rc;
             c64 rs, ra;
             clartg(AB[i * ldab], AB[1 + i * ldab], &rc, &rs, &ra);
@@ -293,7 +294,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
         }
     } else if (ku > 0 && m < n) {
         c64 rb = AB[(ku - 1) + m * ldab];
-        for (int i = m - 1; i >= 0; i--) {
+        for (INT i = m - 1; i >= 0; i--) {
             f32 rc;
             c64 rs, ra;
             clartg(AB[ku + i * ldab], rb, &rc, &rs, &ra);
@@ -309,7 +310,7 @@ void cgbbrd(const char* vect, const int m, const int n, const int ncc,
     }
 
     c64 t = AB[ku];
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         f32 abst = cabsf(t);
         D[i] = abst;
         if (abst != ZERO) {

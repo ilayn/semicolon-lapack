@@ -3,6 +3,7 @@
  * @brief CLATRS solves a triangular system with scaling to prevent overflow.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -47,21 +48,21 @@ void clatrs(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict X,
     f32* scale,
     f32* restrict cnorm,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int upper, notran, nounit, normin_n;
-    int i, imax, j, jfirst, jinc, jlast;
+    INT upper, notran, nounit, normin_n;
+    INT i, imax, j, jfirst, jinc, jlast;
     f32 bignum, grow, rec, smlnum, tjj, tmax, tscal, xbnd, xj, xmax;
     c64 csumj, tjjs = 0.0f, uscal;
 

@@ -5,6 +5,7 @@
  *        DSPTRD using packed storage.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -34,15 +35,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dopgtr(const char* uplo, const int n, const f64* restrict AP,
+void dopgtr(const char* uplo, const INT n, const f64* restrict AP,
             const f64* restrict tau, f64* restrict Q,
-            const int ldq, f64* restrict work, int* info)
+            const INT ldq, f64* restrict work, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int upper;
-    int i, iinfo, ij, j;
+    INT upper;
+    INT i, iinfo, ij, j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

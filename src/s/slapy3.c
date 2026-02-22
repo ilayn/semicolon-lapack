@@ -3,6 +3,7 @@
  * @brief SLAPY3 returns sqrt(x**2+y**2+z**2).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

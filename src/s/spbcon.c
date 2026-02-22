@@ -3,6 +3,7 @@
  * @brief SPBCON estimates the reciprocal condition number of a symmetric positive definite band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -32,25 +33,25 @@
  */
 void spbcon(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f32 anorm,
     f32* rcond,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
+    INT upper;
     char normin;
-    int ix, kase;
+    INT ix, kase;
     f32 ainvnm, scale, scalel, scaleu, smlnum;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -3,6 +3,7 @@
  * @brief ZPPSVX computes the solution to a complex system of linear equations A * X = B with Hermitian positive definite matrix in packed storage (expert driver).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -58,28 +59,28 @@
 void zppsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict AP,
     c128* restrict AFP,
     char* equed,
     f64* restrict S,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int equil, nofact, rcequ;
-    int i, infequ, j;
+    INT equil, nofact, rcequ;
+    INT i, infequ, j;
     f64 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     *info = 0;

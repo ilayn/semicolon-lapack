@@ -4,6 +4,7 @@
  *        real M-by-N matrix A for M <= N.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -49,14 +50,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void slaswlq(const int m, const int n, const int mb, const int nb,
-             f32* restrict A, const int lda,
-             f32* restrict T, const int ldt,
-             f32* restrict work, const int lwork,
-             int* info)
+void slaswlq(const INT m, const INT n, const INT mb, const INT nb,
+             f32* restrict A, const INT lda,
+             f32* restrict T, const INT ldt,
+             f32* restrict work, const INT lwork,
+             INT* info)
 {
-    int lquery;
-    int i, ii, kk, ctr, minmn, lwmin;
+    INT lquery;
+    INT i, ii, kk, ctr, minmn, lwmin;
 
     *info = 0;
 

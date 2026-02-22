@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 /**
@@ -55,13 +56,13 @@
  *                      The scalar factors of the elementary reflectors.
  * @param[out]    work  Complex array, dimension (m).
  */
-void clatrz(const int m, const int n, const int l,
-            c64* restrict A, const int lda,
+void clatrz(const INT m, const INT n, const INT l,
+            c64* restrict A, const INT lda,
             c64* restrict tau,
             c64* restrict work)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
-    int i;
+    INT i;
     c64 alpha;
 
     /* Quick return if possible */

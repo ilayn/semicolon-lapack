@@ -3,6 +3,7 @@
  * @brief ZLAHEF_RK computes a partial factorization of a complex Hermitian indefinite matrix using bounded Bunch-Kaufman (rook) diagonal pivoting method.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -81,16 +82,16 @@
  */
 void zlahef_rk(
     const char* uplo,
-    const int n,
-    const int nb,
-    int* kb,
+    const INT n,
+    const INT nb,
+    INT* kb,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     c128* restrict W,
-    const int ldw,
-    int* info)
+    const INT ldw,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 CZERO = CMPLX(0.0, 0.0);
@@ -100,8 +101,8 @@ void zlahef_rk(
     const f64 EIGHT = 8.0;
     const f64 SEVTEN = 17.0;
 
-    int done;
-    int imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
+    INT done;
+    INT imax = 0, itemp, j, jmax = 0, k, kk, kw, kkw, kp, kstep, p, ii;
     f64 absakk, alpha, colmax, dtemp, r1, rowmax, sfmin, t;
     c128 d11, d21, d22;
 

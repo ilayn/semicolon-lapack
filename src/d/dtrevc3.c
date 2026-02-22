@@ -6,6 +6,7 @@
  * Faithful port from LAPACK SRC/dtrevc3.f
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <float.h>
@@ -46,28 +47,28 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-SEMICOLON_API void dtrevc3(const char* side, const char* howmny, int* select,
-                           const int n, f64* T, const int ldt,
-                           f64* VL, const int ldvl,
-                           f64* VR, const int ldvr,
-                           const int mm, int* m,
-                           f64* work, const int lwork, int* info)
+SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
+                           const INT n, f64* T, const INT ldt,
+                           f64* VL, const INT ldvl,
+                           f64* VR, const INT ldvr,
+                           const INT mm, INT* m,
+                           f64* work, const INT lwork, INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
     /* Local variables */
-    int bothv, rightv, leftv;
-    int allv, over, somev;
-    int lquery;
-    int i, j, k, ki, ki2, is, ip, ii;
-    int j1, j2, jnxt, ierr;
-    int iv, nb, maxwrk;
+    INT bothv, rightv, leftv;
+    INT allv, over, somev;
+    INT lquery;
+    INT i, j, k, ki, ki2, is, ip, ii;
+    INT j1, j2, jnxt, ierr;
+    INT iv, nb, maxwrk;
     f64 beta, bignum, emax, rec, remax, scale;
     f64 smin, smlnum, ulp, unfl, vcrit, vmax, wi, wr, xnorm;
     f64 x[4];  /* 2x2 matrix, column-major */
-    int iscomplex[NBMAX];
-    int pair;
+    INT iscomplex[NBMAX];
+    INT pair;
 
     /* Decode and test input parameters */
     bothv = (side[0] == 'B' || side[0] == 'b');

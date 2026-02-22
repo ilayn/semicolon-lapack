@@ -4,6 +4,7 @@
  *        using the Bunch-Kaufman diagonal pivoting method.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 
@@ -42,16 +43,16 @@
  */
 void ssytrf(
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int lquery = (lwork == -1);
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT lquery = (lwork == -1);
 
     /* Test the input parameters */
     *info = 0;
@@ -66,8 +67,8 @@ void ssytrf(
     }
 
     /* Determine the block size */
-    int nb = lapack_get_nb("SYTRF");
-    int lwkopt = n * nb > 1 ? n * nb : 1;
+    INT nb = lapack_get_nb("SYTRF");
+    INT lwkopt = n * nb > 1 ? n * nb : 1;
 
     if (*info == 0) {
         work[0] = (f32)lwkopt;
@@ -80,10 +81,10 @@ void ssytrf(
         return;
     }
 
-    int nbmin = 2;
-    int ldwork = n;
+    INT nbmin = 2;
+    INT ldwork = n;
     if (nb > 1 && nb < n) {
-        int iws = ldwork * nb;
+        INT iws = ldwork * nb;
         if (lwork < iws) {
             nb = lwork / ldwork;
             if (nb < 1) nb = 1;
@@ -102,7 +103,7 @@ void ssytrf(
          * K is the main loop index, decreasing from n-1 to 0 in steps of
          * kb, where kb is the number of columns factorized by slasyf.
          * ============================================================ */
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
             if (k + 1 > nb) {
                 /* Factorize columns of the leading (k+1)-by-(k+1) submatrix
@@ -111,7 +112,7 @@ void ssytrf(
                  * Fortran: SLASYF(UPLO, K, NB, KB, A, LDA, IPIV, WORK, LDWORK, IINFO)
                  * Fortran K (1-based) = k+1 (the submatrix size).
                  * slasyf operates on A(0:k, 0:k) and factors the trailing nb columns. */
-                int kb, iinfo;
+                INT kb, iinfo;
                 slasyf(uplo, k + 1, nb, &kb, A, lda, ipiv, work, ldwork, &iinfo);
 
                 /* Set info on the first occurrence of a zero pivot */
@@ -125,7 +126,7 @@ void ssytrf(
                  *
                  * Fortran: SSYTF2(UPLO, K, A, LDA, IPIV, IINFO)
                  * Operates on A(0:k, 0:k). */
-                int iinfo;
+                INT iinfo;
                 ssytf2(uplo, k + 1, A, lda, ipiv, &iinfo);
 
                 /* Set info on the first occurrence of a zero pivot */
@@ -142,14 +143,14 @@ void ssytrf(
          *
          * K is the main loop index, increasing from 0 in steps of kb.
          * ============================================================ */
-        int k = 0;
+        INT k = 0;
         while (k < n) {
             if (k <= n - 1 - nb) {
                 /* Factorize columns k:k+kb-1 of A using blocked code.
                  *
                  * Fortran: SLASYF(UPLO, N-K+1, NB, KB, A(K,K), LDA, IPIV(K), WORK, LDWORK, IINFO)
                  * Submatrix size = n-k. Operates on A(k:n-1, k:n-1). */
-                int kb, iinfo;
+                INT kb, iinfo;
                 slasyf(uplo, n - k, nb, &kb, &A[k + k * lda], lda,
                        &ipiv[k], work, ldwork, &iinfo);
 
@@ -170,7 +171,7 @@ void ssytrf(
                  *          negative: ipiv[j] is -(local+1), need -(global+1)
                  *          where global = local + k, so -(global+1) = -(local+k+1)
                  *          = ipiv[j] - k (since ipiv[j] = -(local+1)) */
-                for (int j = k; j < k + kb; j++) {
+                for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
                         ipiv[j] += k;
                     } else {
@@ -184,7 +185,7 @@ void ssytrf(
                  *
                  * Fortran: SSYTF2(UPLO, N-K+1, A(K,K), LDA, IPIV(K), IINFO)
                  * Submatrix size = n-k. */
-                int iinfo;
+                INT iinfo;
                 ssytf2(uplo, n - k, &A[k + k * lda], lda, &ipiv[k], &iinfo);
 
                 if (*info == 0 && iinfo > 0) {
@@ -192,8 +193,8 @@ void ssytrf(
                 }
 
                 /* Adjust IPIV for the unblocked portion */
-                int kb = n - k;
-                for (int j = k; j < k + kb; j++) {
+                INT kb = n - k;
+                for (INT j = k; j < k + kb; j++) {
                     if (ipiv[j] >= 0) {
                         ipiv[j] += k;
                     } else {

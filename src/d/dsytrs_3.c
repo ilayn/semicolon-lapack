@@ -3,6 +3,7 @@
  * @brief DSYTRS_3 solves a system of linear equations A*X = B with a real symmetric matrix using the factorization computed by DSYTRF_RK or DSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdlib.h>
 #include <cblas.h>
@@ -65,20 +66,20 @@
  */
 void dsytrs_3(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
 
-    int upper;
-    int i, j, k, kp;
+    INT upper;
+    INT i, j, k, kp;
     f64 ak, akm1, akm1k, bk, bkm1, denom;
 
     *info = 0;

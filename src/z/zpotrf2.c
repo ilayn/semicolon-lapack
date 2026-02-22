@@ -4,6 +4,7 @@
  *        definite matrix using the recursive algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -47,10 +48,10 @@
  */
 void zpotrf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     const f64 ONE = 1.0;
@@ -59,7 +60,7 @@ void zpotrf2(
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -87,9 +88,9 @@ void zpotrf2(
         A[0] = sqrt(ajj);
     } else {
         // Use recursive code
-        int n1 = n / 2;
-        int n2 = n - n1;
-        int iinfo;
+        INT n1 = n / 2;
+        INT n2 = n - n1;
+        INT iinfo;
 
         // Factor A11
         zpotrf2(uplo, n1, A, lda, &iinfo);

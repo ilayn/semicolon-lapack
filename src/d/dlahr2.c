@@ -4,6 +4,7 @@
  *        so that elements below the k-th subdiagonal are zero.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -34,14 +35,14 @@
  * @param[out]    Y      The n-by-nb matrix Y. Dimension (ldy, nb).
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
-void dlahr2(const int n, const int k, const int nb,
-            f64* A, const int lda, f64* tau,
-            f64* T, const int ldt, f64* Y, const int ldy)
+void dlahr2(const INT n, const INT k, const INT nb,
+            f64* A, const INT lda, f64* tau,
+            f64* T, const INT ldt, f64* Y, const INT ldy)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i;
+    INT i;
     f64 ei = 0.0;
 
     /* Quick return if possible */
@@ -92,8 +93,8 @@ void dlahr2(const int n, const int k, const int nb,
         }
 
         /* Generate the elementary reflector H(i) to annihilate A(k+i+2:n-1, i) */
-        int len = n - k - i - 1;
-        int start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
+        INT len = n - k - i - 1;
+        INT start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
         dlarfg(len, &A[(k + i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);
         ei = A[(k + i + 1) + i * lda];
         A[(k + i + 1) + i * lda] = ONE;

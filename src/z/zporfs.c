@@ -4,6 +4,7 @@
  *        for Hermitian positive definite systems.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <float.h>
@@ -44,30 +45,30 @@
  */
 void zporfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict AF,
-    const int ldaf,
+    const INT ldaf,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
     const c128 ONE = CMPLX(1.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -90,7 +91,7 @@ void zporfs(
 
     // Quick return if possible
     if (n == 0 || nrhs == 0) {
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ZERO;
             berr[j] = ZERO;
         }
@@ -98,7 +99,7 @@ void zporfs(
     }
 
     // NZ = maximum number of nonzero elements in each row of A, plus 1
-    int nz = n + 1;
+    INT nz = n + 1;
     f64 eps = dlamch("E");
     f64 safmin = dlamch("S");
     f64 safe1 = nz * safmin;
@@ -108,8 +109,8 @@ void zporfs(
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
     // Do for each right hand side
-    for (int j = 0; j < nrhs; j++) {
-        int count = 1;
+    for (INT j = 0; j < nrhs; j++) {
+        INT count = 1;
         f64 lstres = THREE;
 
         for (;;) {
@@ -120,27 +121,27 @@ void zporfs(
 
             // Compute componentwise relative backward error
             // max(i) ( |R(i)| / ( |A|*|X| + |B| )(i) )
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 rwork[i] = cabs1(B[i + j * ldb]);
             }
 
             // Compute |A|*|X| + |B|
             if (upper) {
-                for (int k = 0; k < n; k++) {
+                for (INT k = 0; k < n; k++) {
                     f64 s = ZERO;
                     f64 xk = cabs1(X[k + j * ldx]);
-                    for (int i = 0; i < k; i++) {
+                    for (INT i = 0; i < k; i++) {
                         rwork[i] += cabs1(A[i + k * lda]) * xk;
                         s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                     }
                     rwork[k] += fabs(creal(A[k + k * lda])) * xk + s;
                 }
             } else {
-                for (int k = 0; k < n; k++) {
+                for (INT k = 0; k < n; k++) {
                     f64 s = ZERO;
                     f64 xk = cabs1(X[k + j * ldx]);
                     rwork[k] += fabs(creal(A[k + k * lda])) * xk;
-                    for (int i = k + 1; i < n; i++) {
+                    for (INT i = k + 1; i < n; i++) {
                         rwork[i] += cabs1(A[i + k * lda]) * xk;
                         s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                     }
@@ -149,7 +150,7 @@ void zporfs(
             }
 
             f64 s = ZERO;
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 if (rwork[i] > safe2) {
                     f64 tmp = cabs1(work[i]) / rwork[i];
                     if (tmp > s) s = tmp;
@@ -163,7 +164,7 @@ void zporfs(
             // Test stopping criterion
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
                 // Update solution and try again
-                int linfo;
+                INT linfo;
                 zpotrs(uplo, n, 1, AF, ldaf, work, n, &linfo);
                 cblas_zaxpy(n, &ONE, work, 1, &X[j * ldx], 1);
                 lstres = berr[j];
@@ -176,7 +177,7 @@ void zporfs(
         // Bound error from formula
         // norm(X - XTRUE) / norm(X) <= FERR =
         // norm( |inv(A)| * ( |R| + NZ*EPS*( |A|*|X|+|B| ))) / norm(X)
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 rwork[i] = cabs1(work[i]) + nz * eps * rwork[i];
             } else {
@@ -184,32 +185,32 @@ void zporfs(
             }
         }
 
-        int kase = 0;
-        int isave[3] = {0, 0, 0};
+        INT kase = 0;
+        INT isave[3] = {0, 0, 0};
         for (;;) {
             zlacn2(n, &work[n], work, &ferr[j], &kase, isave);
             if (kase == 0) break;
 
             if (kase == 1) {
                 // Multiply by diag(W)*inv(A**H)
-                int linfo;
+                INT linfo;
                 zpotrs(uplo, n, 1, AF, ldaf, work, n, &linfo);
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[i] = CMPLX(rwork[i], 0.0) * work[i];
                 }
             } else if (kase == 2) {
                 // Multiply by inv(A)*diag(W)
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[i] = CMPLX(rwork[i], 0.0) * work[i];
                 }
-                int linfo;
+                INT linfo;
                 zpotrs(uplo, n, 1, AF, ldaf, work, n, &linfo);
             }
         }
 
         // Normalize error
         lstres = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 tmp = cabs1(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }

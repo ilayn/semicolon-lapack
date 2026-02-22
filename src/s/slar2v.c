@@ -3,6 +3,7 @@
  * @brief SLAR2V applies a vector of plane rotations from both sides to 2-by-2 symmetric matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -20,16 +21,16 @@
  * @param[in]     incc   The increment between elements of C and S.
  */
 void slar2v(
-    const int n,
+    const INT n,
     f32* restrict X,
     f32* restrict Y,
     f32* restrict Z,
-    const int incx,
+    const INT incx,
     const f32* restrict C,
     const f32* restrict S,
-    const int incc)
+    const INT incc)
 {
-    int i, ic, ix;
+    INT i, ic, ix;
     f32 ci, si, t1, t2, t3, t4, t5, t6, xi, yi, zi;
 
     ix = 0;

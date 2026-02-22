@@ -4,6 +4,7 @@
  *        definite matrix (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -46,10 +47,10 @@
  */
 void zpotf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
@@ -57,7 +58,7 @@ void zpotf2(
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -74,7 +75,7 @@ void zpotf2(
 
     if (upper) {
         /* Compute the Cholesky factorization A = U**H *U. */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             /* Compute U(J,J) and test for non-positive-definiteness. */
             c128 zdotc_result = CMPLX(0.0, 0.0);
             if (j > 0) {
@@ -105,7 +106,7 @@ void zpotf2(
         }
     } else {
         /* Compute the Cholesky factorization A = L*L**H. */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             /* Compute L(J,J) and test for non-positive-definiteness. */
             c128 zdotc_result = CMPLX(0.0, 0.0);
             if (j > 0) {

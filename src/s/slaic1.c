@@ -3,6 +3,7 @@
  * @brief SLAIC1 applies one step of incremental condition estimation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -49,8 +50,8 @@
  * @param[out]    c      Cosine needed in forming xhat.
  */
 void slaic1(
-    const int job,
-    const int j,
+    const INT job,
+    const INT j,
     const f32* restrict x,
     const f32 sest,
     const f32* restrict w,

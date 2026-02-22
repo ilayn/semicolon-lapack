@@ -4,6 +4,7 @@
  *        the matrix of Schur vectors for GE matrices (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -84,27 +85,27 @@
  *                    - = n+3: reordering failed in ZTGSEN
  */
 void zgges3(const char* jobvsl, const char* jobvsr, const char* sort,
-            zselect2_t selctg, const int n,
-            c128* A, const int lda,
-            c128* B, const int ldb,
-            int* sdim,
+            zselect2_t selctg, const INT n,
+            c128* A, const INT lda,
+            c128* B, const INT ldb,
+            INT* sdim,
             c128* alpha, c128* beta,
-            c128* VSL, const int ldvsl,
-            c128* VSR, const int ldvsr,
-            c128* work, const int lwork,
-            f64* rwork, int* bwork, int* info)
+            c128* VSL, const INT ldvsl,
+            c128* VSR, const INT ldvsr,
+            c128* work, const INT lwork,
+            f64* rwork, INT* bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
-    int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int iright, irows, irwrk, itau, iwrk, lwkopt, lwkmin;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
+    INT i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT iright, irows, irwrk, itau, iwrk, lwkopt, lwkmin;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
     f64 pvsl, pvsr, smlnum;
-    int idum[1];
+    INT idum[1];
     f64 dif[2];
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
@@ -157,32 +158,32 @@ void zgges3(const char* jobvsl, const char* jobvsr, const char* sort,
 
     if (*info == 0) {
         zgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
-        lwkopt = lwkmin > (n + (int)creal(work[0])) ?
-                 lwkmin : (n + (int)creal(work[0]));
+        lwkopt = lwkmin > (n + (INT)creal(work[0])) ?
+                 lwkmin : (n + (INT)creal(work[0]));
         zunmqr("L", "C", n, n, n, B, ldb, NULL, A, lda, work,
                -1, &ierr);
-        lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                 lwkopt : (n + (int)creal(work[0]));
+        lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                 lwkopt : (n + (INT)creal(work[0]));
         if (ilvsl) {
             zungqr(n, n, n, VSL, ldvsl, NULL, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                     lwkopt : (n + (int)creal(work[0]));
+            lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                     lwkopt : (n + (INT)creal(work[0]));
         }
         zgghd3(jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb, VSL,
                ldvsl, VSR, ldvsr, work, -1, &ierr);
-        lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                 lwkopt : (n + (int)creal(work[0]));
+        lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                 lwkopt : (n + (INT)creal(work[0]));
         zlaqz0("S", jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb,
                alpha, beta, VSL, ldvsl, VSR, ldvsr, work, -1,
                rwork, 0, &ierr);
-        lwkopt = lwkopt > (int)creal(work[0]) ?
-                 lwkopt : (int)creal(work[0]);
+        lwkopt = lwkopt > (INT)creal(work[0]) ?
+                 lwkopt : (INT)creal(work[0]);
         if (wantst) {
             ztgsen(0, ilvsl, ilvsr, bwork, n, A, lda, B, ldb,
                    alpha, beta, VSL, ldvsl, VSR, ldvsr, sdim,
                    &pvsl, &pvsr, dif, work, -1, idum, 1, &ierr);
-            lwkopt = lwkopt > (int)creal(work[0]) ?
-                     lwkopt : (int)creal(work[0]);
+            lwkopt = lwkopt > (INT)creal(work[0]) ?
+                     lwkopt : (INT)creal(work[0]);
         }
         if (n == 0) {
             work[0] = CONE;

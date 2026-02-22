@@ -4,6 +4,7 @@
  *        obtained by merging two smaller ones by appending a row.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -46,18 +47,18 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void slasd6(const int icompq, const int nl, const int nr, const int sqre,
+void slasd6(const INT icompq, const INT nl, const INT nr, const INT sqre,
             f32* restrict D, f32* restrict VF,
             f32* restrict VL, f32* alpha, f32* beta,
-            int* restrict IDXQ, int* restrict PERM,
-            int* givptr, int* restrict GIVCOL, const int ldgcol,
-            f32* restrict GIVNUM, const int ldgnum,
+            INT* restrict IDXQ, INT* restrict PERM,
+            INT* givptr, INT* restrict GIVCOL, const INT ldgcol,
+            f32* restrict GIVNUM, const INT ldgnum,
             f32* restrict POLES, f32* restrict DIFL,
             f32* restrict DIFR, f32* restrict Z,
-            int* k, f32* c, f32* s,
-            f32* restrict work, int* restrict IWORK, int* info)
+            INT* k, f32* c, f32* s,
+            f32* restrict work, INT* restrict IWORK, INT* info)
 {
-    int i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n, n1, n2;
+    INT i, idx, idxc, idxp, isigma, ivfw, ivlw, iw, m, n, n1, n2;
     f32 orgnrm;
 
     *info = 0;

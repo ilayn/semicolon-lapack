@@ -3,6 +3,7 @@
  * @brief CHETF2_RK computes the factorization of a complex Hermitian indefinite matrix using the bounded Bunch-Kaufman (rook) diagonal pivoting method (BLAS2 unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -60,12 +61,12 @@
  */
 void chetf2_rk(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -73,8 +74,8 @@ void chetf2_rk(
     const f32 SEVTEN = 17.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper, done;
-    int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
+    INT upper, done;
+    INT i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, d11, d22, rowmax, dtemp, tt, d, r1, sfmin;
     c64 d12, d21, t, wk, wkm1, wkp1;
 

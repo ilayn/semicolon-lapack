@@ -3,6 +3,7 @@
  * @brief ZPFTRI computes the inverse of a Hermitian positive definite matrix in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -36,14 +37,14 @@
 void zpftri(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    int* info)
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int lower, nisodd, normaltransr;
-    int n1, n2, k;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

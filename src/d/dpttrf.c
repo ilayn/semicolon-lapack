@@ -4,6 +4,7 @@
  *        positive definite tridiagonal matrix A.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -32,13 +33,13 @@
  *                           completed, but D(n-1) <= 0 (0-based).
  */
 void dpttrf(
-    const int n,
+    const INT n,
     f64* restrict D,
     f64* restrict E,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
-    int i, i4;
+    INT i, i4;
     f64 ei;
 
     *info = 0;

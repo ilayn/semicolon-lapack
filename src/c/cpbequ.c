@@ -3,6 +3,7 @@
  * @brief CPBEQU computes row and column scalings to equilibrate a Hermitian positive definite band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -31,20 +32,20 @@
  */
 void cpbequ(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict S,
     f32* scond,
     f32* amax,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int upper;
-    int i, j;
+    INT upper;
+    INT i, j;
     f32 smin;
 
     *info = 0;

@@ -4,6 +4,7 @@
  *        real symmetric tridiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -73,15 +74,15 @@
  *  v(1:i) = 0 and v(i+1) = 1; v(i+2:n) is stored on exit in AP,
  *  overwriting A(i+2:n,i), and tau is stored in TAU(i).
  */
-void zhptrd(const char* uplo, const int n, c128* AP,
-            f64* d, f64* e, c128* tau, int* info)
+void zhptrd(const char* uplo, const INT n, c128* AP,
+            f64* d, f64* e, c128* tau, INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 HALF = CMPLX(0.5, 0.0);
 
-    int upper;
-    int i, i1, i1i1, ii;
+    INT upper;
+    INT i, i1, i1i1, ii;
     c128 alpha, taui;
 
     *info = 0;

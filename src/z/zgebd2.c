@@ -3,6 +3,7 @@
  * @brief ZGEBD2 reduces a general matrix to bidiagonal form using an unblocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -50,13 +51,13 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgebd2(const int m, const int n, c128* restrict A, const int lda,
+void zgebd2(const INT m, const INT n, c128* restrict A, const INT lda,
             f64* restrict D, f64* restrict E,
             c128* restrict tauq, c128* restrict taup,
-            c128* restrict work, int* info)
+            c128* restrict work, INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
-    int i;
+    INT i;
     c128 alpha;
 
     /* Test the input parameters */

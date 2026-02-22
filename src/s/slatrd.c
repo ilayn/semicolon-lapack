@@ -4,6 +4,7 @@
  *        tridiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -40,16 +41,16 @@
  *                      The n-by-nb matrix W.
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
-void slatrd(const char* uplo, const int n, const int nb,
-            f32* restrict A, const int lda,
+void slatrd(const char* uplo, const INT n, const INT nb,
+            f32* restrict A, const INT lda,
             f32* restrict E, f32* restrict tau,
-            f32* restrict W, const int ldw)
+            f32* restrict W, const INT ldw)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE  = 1.0f;
     const f32 HALF = 0.5f;
 
-    int ii, iw;
+    INT ii, iw;
     f32 alpha;
 
     /* Quick return if possible */
@@ -145,7 +146,7 @@ void slatrd(const char* uplo, const int n, const int nb,
 
             if (ii < n) {
                 /* Generate elementary reflector H(ii) to annihilate A(ii+2:n, ii). */
-                int min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
+                INT min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
                 slarfg(n - ii,
                        &A[ii + (ii - 1) * lda],
                        &A[min_row + (ii - 1) * lda],

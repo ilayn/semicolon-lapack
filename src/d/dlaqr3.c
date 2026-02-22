@@ -3,13 +3,14 @@
  * @brief DLAQR3 performs aggressive early deflation (recursive version).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 #include <math.h>
 
 /** @cond */
 /* ISPEC=12: NMIN - crossover to DLAHQR (from iparmq.f) */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
@@ -52,17 +53,17 @@ static int iparmq_nmin(void)
  * @param[in] lwork   Dimension of work array. lwork >= 2*nw.
  *                    If lwork = -1, workspace query is assumed.
  */
-SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
-                          const int ktop, const int kbot, const int nw,
-                          f64* H, const int ldh,
-                          const int iloz, const int ihiz,
-                          f64* Z, const int ldz,
-                          int* ns, int* nd,
+SEMICOLON_API void dlaqr3(const INT wantt, const INT wantz, const INT n,
+                          const INT ktop, const INT kbot, const INT nw,
+                          f64* H, const INT ldh,
+                          const INT iloz, const INT ihiz,
+                          f64* Z, const INT ldz,
+                          INT* ns, INT* nd,
                           f64* sr, f64* si,
-                          f64* V, const int ldv,
-                          const int nh, f64* T, const int ldt,
-                          const int nv, f64* WV, const int ldwv,
-                          f64* work, const int lwork)
+                          f64* V, const INT ldv,
+                          const INT nh, f64* T, const INT ldt,
+                          const INT nv, f64* WV, const INT ldwv,
+                          f64* work, const INT lwork)
 {
     /* Parameters */
     const f64 zero = 0.0;
@@ -71,9 +72,9 @@ SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
     /* Local scalars */
     f64 aa, bb, beta, cc, cs, dd, evi, evk, foo, s;
     f64 safmin, smlnum, sn, tau, ulp;
-    int i, ifst, ilst, info, infqr, j, jw, k, kcol, kend, kln;
-    int krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin;
-    int bulge, sorted;
+    INT i, ifst, ilst, info, infqr, j, jw, k, kcol, kend, kln;
+    INT krow, kwtop, ltop, lwk1, lwk2, lwk3, lwkopt, nmin;
+    INT bulge, sorted;
 
     /* Estimate optimal workspace */
     jw = nw < kbot - ktop + 1 ? nw : kbot - ktop + 1;
@@ -82,17 +83,17 @@ SEMICOLON_API void dlaqr3(const int wantt, const int wantz, const int n,
     } else {
         /* Workspace query call to DGEHRD */
         dgehrd(jw, 0, jw - 2, T, ldt, work, work, -1, &info);
-        lwk1 = (int)work[0];
+        lwk1 = (INT)work[0];
 
         /* Workspace query call to DORMHR */
         dormhr("R", "N", jw, jw, 0, jw - 2, T, ldt, work, V, ldv,
                work, -1, &info);
-        lwk2 = (int)work[0];
+        lwk2 = (INT)work[0];
 
         /* Workspace query call to DLAQR4 */
         dlaqr4(1, 1, jw, 0, jw - 1, T, ldt, sr, si, 0, jw - 1,
                V, ldv, work, -1, &infqr);
-        lwk3 = (int)work[0];
+        lwk3 = (INT)work[0];
 
         /* Optimal workspace = MAX(JW + MAX(LWK1, LWK2), LWK3) */
         lwkopt = lwk1 > lwk2 ? lwk1 : lwk2;

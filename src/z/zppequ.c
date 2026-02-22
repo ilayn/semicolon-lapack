@@ -3,6 +3,7 @@
  * @brief ZPPEQU computes row and column scalings for equilibration of packed Hermitian matrices.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
@@ -42,18 +43,18 @@
  */
 void zppequ(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     f64* restrict S,
     f64* scond,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -75,16 +76,16 @@ void zppequ(
     *amax = S[0];
 
     if (upper) {
-        int jj = 0;
-        for (int i = 1; i < n; i++) {
+        INT jj = 0;
+        for (INT i = 1; i < n; i++) {
             jj = jj + (i + 1);
             S[i] = creal(AP[jj]);
             if (S[i] < smin) smin = S[i];
             if (S[i] > *amax) *amax = S[i];
         }
     } else {
-        int jj = 0;
-        for (int i = 1; i < n; i++) {
+        INT jj = 0;
+        for (INT i = 1; i < n; i++) {
             jj = jj + n - i + 1;
             S[i] = creal(AP[jj]);
             if (S[i] < smin) smin = S[i];
@@ -93,14 +94,14 @@ void zppequ(
     }
 
     if (smin <= ZERO) {
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
                 *info = i + 1;
                 return;
             }
         }
     } else {
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             S[i] = ONE / sqrt(S[i]);
         }
 

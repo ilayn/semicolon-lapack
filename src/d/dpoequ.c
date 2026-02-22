@@ -3,6 +3,7 @@
  * @brief DPOEQU computes row and column scalings for equilibration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -36,13 +37,13 @@
  *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void dpoequ(
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict S,
     f64* scond,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -70,7 +71,7 @@ void dpoequ(
     S[0] = A[0];
     f64 smin = S[0];
     *amax = S[0];
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         S[i] = A[i + i * lda];
         if (S[i] < smin) smin = S[i];
         if (S[i] > *amax) *amax = S[i];
@@ -78,7 +79,7 @@ void dpoequ(
 
     if (smin <= ZERO) {
         // Find the first non-positive diagonal element and return.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (S[i] <= ZERO) {
                 *info = i + 1;  // 1-based for error reporting
                 return;
@@ -86,7 +87,7 @@ void dpoequ(
         }
     } else {
         // Set the scale factors to the reciprocals of the diagonal elements.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             S[i] = ONE / sqrt(S[i]);
         }
 

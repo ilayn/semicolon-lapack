@@ -3,6 +3,7 @@
  * @brief SLARMM returns a scale factor to prevent overflow in matrix updates.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

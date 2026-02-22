@@ -4,6 +4,7 @@
  *        complex Hermitian matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
@@ -48,19 +49,19 @@
 void zhpev(
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 
     *info = 0;
     if (!(wantz || jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -104,7 +105,7 @@ void zhpev(
     /* Scale matrix to allowable range, if necessary. */
 
     f64 anrm = zlanhp("M", uplo, n, AP, rwork);
-    int iscale = 0;
+    INT iscale = 0;
     f64 sigma;
     if (anrm > ZERO && anrm < rmin) {
         iscale = 1;
@@ -119,9 +120,9 @@ void zhpev(
 
     /* Call ZHPTRD to reduce Hermitian packed matrix to tridiagonal form. */
 
-    int inde = 0;
-    int indtau = 0;
-    int iinfo;
+    INT inde = 0;
+    INT indtau = 0;
+    INT iinfo;
     zhptrd(uplo, n, AP, W, &rwork[inde], &work[indtau], &iinfo);
 
     /*
@@ -132,16 +133,16 @@ void zhpev(
     if (!wantz) {
         dsterf(n, W, &rwork[inde], info);
     } else {
-        int indwrk = indtau + n;
+        INT indwrk = indtau + n;
         zupgtr(uplo, n, AP, &work[indtau], Z, ldz, &work[indwrk], &iinfo);
-        int indrwk = inde + n;
+        INT indrwk = inde + n;
         zsteqr(jobz, n, W, &rwork[inde], Z, ldz, &rwork[indrwk], info);
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 
     if (iscale == 1) {
-        int imax;
+        INT imax;
         if (*info == 0) {
             imax = n;
         } else {

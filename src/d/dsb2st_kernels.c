@@ -3,20 +3,21 @@
  * @brief DSB2ST_KERNELS is an internal routine used by DSYTRD_SB2ST.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
-void dsb2st_kernels(const char* uplo, const int wantz, const int ttype,
-                    const int st, const int ed, const int sweep,
-                    const int n, const int nb, const int ib,
-                    f64* A, const int lda,
-                    f64* V, f64* tau, const int ldvt,
+void dsb2st_kernels(const char* uplo, const INT wantz, const INT ttype,
+                    const INT st, const INT ed, const INT sweep,
+                    const INT n, const INT nb, const INT ib,
+                    f64* A, const INT lda,
+                    f64* V, f64* tau, const INT ldvt,
                     f64* work)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    int upper;
-    int i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
+    INT upper;
+    INT i, j1, j2, lm, ln, vpos, taupos, dpos, ofdpos;
     f64 ctmp;
 
     (void)ib;

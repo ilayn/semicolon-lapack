@@ -3,6 +3,7 @@
  * @brief DORM22 multiplies a general matrix by a banded orthogonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -52,22 +53,22 @@
 void dorm22(
     const char* side,
     const char* trans,
-    const int m,
-    const int n,
-    const int n1,
-    const int n2,
+    const INT m,
+    const INT n,
+    const INT n1,
+    const INT n2,
     const f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict C,
-    const int ldc,
+    const INT ldc,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ONE = 1.0;
 
-    int left, lquery, notran;
-    int i, ldwork, len, lwkopt, nb, nq, nw;
+    INT left, lquery, notran;
+    INT i, ldwork, len, lwkopt, nb, nq, nw;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

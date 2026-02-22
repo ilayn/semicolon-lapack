@@ -4,6 +4,7 @@
  *        Hessenberg matrix by inverse iteration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -41,28 +42,28 @@
  *                           to the last iterate.
  */
 void dlaein(
-    const int rightv,
-    const int noinit,
-    const int n,
+    const INT rightv,
+    const INT noinit,
+    const INT n,
     const f64* restrict H,
-    const int ldh,
+    const INT ldh,
     const f64 wr,
     const f64 wi,
     f64* restrict vr,
     f64* restrict vi,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict work,
     const f64 eps3,
     const f64 smlnum,
     const f64 bignum,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TENTH = 0.1;
 
-    int i, i1, i2, i3, ierr, its, j;
+    INT i, i1, i2, i3, ierr, its, j;
     f64 absbii, absbjj, ei, ej, growto, norm, nrmsml;
     f64 rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
 

@@ -3,6 +3,7 @@
  * @brief ZLAGS2 computes 2-by-2 unitary matrices U, V, and Q.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_double.h"
@@ -54,7 +55,7 @@
  * @param[out] csq    The desired unitary matrix Q.
  * @param[out] snq    The desired unitary matrix Q.
  */
-void zlags2(const int upper,
+void zlags2(const INT upper,
             const f64 a1, const c128 a2, const f64 a3,
             const f64 b1, const c128 b2, const f64 b3,
             f64* csu, c128* snu,

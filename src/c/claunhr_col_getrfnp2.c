@@ -4,6 +4,7 @@
  *        pivoting of a complex general M-by-N matrix A.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -88,16 +89,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void claunhr_col_getrfnp2(const int m, const int n,
-                           c64* restrict A, const int lda,
+void claunhr_col_getrfnp2(const INT m, const INT n,
+                           c64* restrict A, const INT lda,
                            c64* restrict D,
-                           int* info)
+                           INT* info)
 {
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
     f32 sfmin;
-    int i, iinfo, n1, n2;
+    INT i, iinfo, n1, n2;
 
     *info = 0;
     if (m < 0) {

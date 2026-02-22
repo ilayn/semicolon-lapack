@@ -4,6 +4,7 @@
  *        using the factorization computed by CSYTRF.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -36,25 +37,25 @@
  */
 void csytri2x(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper;
-    int i, iinfo, ip, k, cut, nnb;
-    int count;
-    int j, u11, invd;
+    INT upper;
+    INT i, iinfo, ip, k, cut, nnb;
+    INT count;
+    INT j, u11, invd;
     c64 ak, akkp1, akp1, d, t;
     c64 u01_i_j, u01_ip1_j;
     c64 u11_i_j, u11_ip1_j;
-    const int ldw = n + nb + 1;
+    const INT ldw = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

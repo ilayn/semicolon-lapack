@@ -4,6 +4,7 @@
  *        matrix using the Bunch-Kaufman diagonal pivoting method (unblocked).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -56,16 +57,16 @@ static const f32 ALPHA_BK = 0.6403882032022076f;
  */
 void csytf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
     /* Test the input parameters */
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     *info = 0;
     if (!upper && uplo[0] != 'L' && uplo[0] != 'l') {
         *info = -1;
@@ -88,13 +89,13 @@ void csytf2(
         /* Factorize A as U*D*U**T using the upper triangle of A
          * k decreases from n-1 to 0 in steps of 1 or 2 */
 
-        int k = n - 1;
+        INT k = n - 1;
         while (k >= 0) {
-            int kstep = 1;
+            INT kstep = 1;
             f32 absakk = cabs1f(A[k + k * lda]);
 
             /* Find largest off-diagonal element in column k */
-            int imax = 0;
+            INT imax = 0;
             f32 colmax = 0.0f;
             if (k > 0) {
                 imax = cblas_icamax(k, &A[0 + k * lda], 1);
@@ -109,7 +110,7 @@ void csytf2(
                 }
                 ipiv[k] = k;
             } else {
-                int kp;
+                INT kp;
                 if (absakk >= ALPHA_BK * colmax) {
                     /* No interchange, use 1-by-1 pivot block */
                     kp = k;
@@ -118,11 +119,11 @@ void csytf2(
                      * element in row imax, and rowmax is its absolute value */
                     f32 rowmax = 0.0f;
                     if (imax + 1 <= k) {
-                        int jmax = imax + 1 + cblas_icamax(k - imax, &A[imax + (imax + 1) * lda], lda);
+                        INT jmax = imax + 1 + cblas_icamax(k - imax, &A[imax + (imax + 1) * lda], lda);
                         rowmax = cabs1f(A[imax + jmax * lda]);
                     }
                     if (imax > 0) {
-                        int jmax = cblas_icamax(imax, &A[0 + imax * lda], 1);
+                        INT jmax = cblas_icamax(imax, &A[0 + imax * lda], 1);
                         rowmax = fmaxf(rowmax, cabs1f(A[jmax + imax * lda]));
                     }
 
@@ -141,7 +142,7 @@ void csytf2(
                     }
                 }
 
-                int kk = k - kstep + 1;
+                INT kk = k - kstep + 1;
                 if (kp != kk) {
                     /* Interchange rows and columns kk and kp
                      * in the leading submatrix A(0:k, 0:k) */
@@ -187,10 +188,10 @@ void csytf2(
                         c64 t = CONE / (d11 * d22 - CONE);
                         d12 = t / d12;
 
-                        for (int j = k - 2; j >= 0; j--) {
+                        for (INT j = k - 2; j >= 0; j--) {
                             c64 wkm1 = d12 * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
                             c64 wk = d12 * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
-                            for (int i = j; i >= 0; i--) {
+                            for (INT i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k - 1) * lda] * wkm1;
                             }
@@ -216,13 +217,13 @@ void csytf2(
         /* Factorize A as L*D*L**T using the lower triangle of A
          * k increases from 0 to n-1 in steps of 1 or 2 */
 
-        int k = 0;
+        INT k = 0;
         while (k < n) {
-            int kstep = 1;
+            INT kstep = 1;
             f32 absakk = cabs1f(A[k + k * lda]);
 
             /* Find largest off-diagonal element in column k */
-            int imax = k;
+            INT imax = k;
             f32 colmax = 0.0f;
             if (k < n - 1) {
                 imax = k + 1 + cblas_icamax(n - k - 1, &A[(k + 1) + k * lda], 1);
@@ -237,7 +238,7 @@ void csytf2(
                 }
                 ipiv[k] = k;
             } else {
-                int kp;
+                INT kp;
                 if (absakk >= ALPHA_BK * colmax) {
                     /* No interchange, use 1-by-1 pivot block */
                     kp = k;
@@ -246,11 +247,11 @@ void csytf2(
                      * element in row imax, and rowmax is its absolute value */
                     f32 rowmax = 0.0f;
                     if (imax > k) {
-                        int jmax = k + cblas_icamax(imax - k, &A[imax + k * lda], lda);
+                        INT jmax = k + cblas_icamax(imax - k, &A[imax + k * lda], lda);
                         rowmax = cabs1f(A[imax + jmax * lda]);
                     }
                     if (imax < n - 1) {
-                        int jmax = imax + 1 + cblas_icamax(n - imax - 1, &A[(imax + 1) + imax * lda], 1);
+                        INT jmax = imax + 1 + cblas_icamax(n - imax - 1, &A[(imax + 1) + imax * lda], 1);
                         rowmax = fmaxf(rowmax, cabs1f(A[jmax + imax * lda]));
                     }
 
@@ -269,7 +270,7 @@ void csytf2(
                     }
                 }
 
-                int kk = k + kstep - 1;
+                INT kk = k + kstep - 1;
                 if (kp != kk) {
                     /* Interchange rows and columns kk and kp
                      * in the trailing submatrix A(k:n-1, k:n-1) */
@@ -316,10 +317,10 @@ void csytf2(
                         c64 t = CONE / (d11 * d22 - CONE);
                         d21 = t / d21;
 
-                        for (int j = k + 2; j < n; j++) {
+                        for (INT j = k + 2; j < n; j++) {
                             c64 wk = d21 * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
                             c64 wkp1 = d21 * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
-                            for (int i = j; i < n; i++) {
+                            for (INT i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k + 1) * lda] * wkp1;
                             }

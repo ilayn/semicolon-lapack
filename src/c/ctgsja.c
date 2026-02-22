@@ -3,6 +3,7 @@
  * @brief CTGSJA computes the GSVD of two upper triangular matrices.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <float.h>
@@ -76,15 +77,15 @@
  *                         - = 1: the procedure does not converge after MAXIT cycles.
  */
 void ctgsja(const char* jobu, const char* jobv, const char* jobq,
-            const int m, const int p, const int n, const int k, const int l,
-            c64* restrict A, const int lda,
-            c64* restrict B, const int ldb,
+            const INT m, const INT p, const INT n, const INT k, const INT l,
+            c64* restrict A, const INT lda,
+            c64* restrict B, const INT ldb,
             const f32 tola, const f32 tolb,
             f32* restrict alpha, f32* restrict beta,
-            c64* restrict U, const int ldu,
-            c64* restrict V, const int ldv,
-            c64* restrict Q, const int ldq,
-            c64* restrict work, int* ncycle, int* info)
+            c64* restrict U, const INT ldu,
+            c64* restrict V, const INT ldv,
+            c64* restrict Q, const INT ldq,
+            c64* restrict work, INT* ncycle, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -92,14 +93,14 @@ void ctgsja(const char* jobu, const char* jobv, const char* jobq,
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int initu, wantu, initv, wantv, initq, wantq;
-    int upper;
-    int i, j, kcycle;
+    INT initu, wantu, initv, wantv, initq, wantq;
+    INT upper;
+    INT i, j, kcycle;
     f32 a1, a3, b1, b3;
     f32 csu, csv, csq;
     c64 a2, b2, snu, snv, snq;
     f32 error, gamma, rwk, ssmin;
-    int minval;
+    INT minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');
     wantu = initu || (jobu[0] == 'U' || jobu[0] == 'u');

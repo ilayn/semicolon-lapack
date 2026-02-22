@@ -4,6 +4,7 @@
  *        matrix assuming v(lastv) = 1 where lastv is the last non-zero element.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -31,16 +32,16 @@
  * @param[in]     ldc    The leading dimension of C. ldc >= max(1, m).
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
-void slarf1l(const char* side, const int m, const int n,
-             const f32* restrict v, const int incv,
+void slarf1l(const char* side, const INT m, const INT n,
+             const f32* restrict v, const INT incv,
              const f32 tau,
-             f32* restrict C, const int ldc,
+             f32* restrict C, const INT ldc,
              f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
-    int applyleft;
-    int firstv, lastv, lastc, i;
+    INT applyleft;
+    INT firstv, lastv, lastc, i;
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
     firstv = 0;  /* 0-based */

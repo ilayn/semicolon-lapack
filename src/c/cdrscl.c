@@ -3,6 +3,7 @@
  * @brief CDRSCL multiplies a vector by the reciprocal of a real scalar.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -23,15 +24,15 @@
  *                      incx > 0.
  */
 void cdrscl(
-    const int n,
+    const INT n,
     const f32 sa,
     c64* restrict sx,
-    const int incx)
+    const INT incx)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int done;
+    INT done;
     f32 bignum, cden, cden1, cnum, cnum1, mul, smlnum;
 
     // Quick return if possible

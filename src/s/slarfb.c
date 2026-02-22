@@ -4,6 +4,7 @@
  *        rectangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -31,15 +32,15 @@
  *                        ldwork >= max(1, m) if side='R'.
  */
 void slarfb(const char* side, const char* trans, const char* direct,
-            const char* storev, const int m, const int n, const int k,
-            const f32* restrict V, const int ldv,
-            const f32* restrict T, const int ldt,
-            f32* restrict C, const int ldc,
-            f32* restrict work, const int ldwork)
+            const char* storev, const INT m, const INT n, const INT k,
+            const f32* restrict V, const INT ldv,
+            const f32* restrict T, const INT ldt,
+            f32* restrict C, const INT ldc,
+            f32* restrict work, const INT ldwork)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
-    int i, j;
+    INT i, j;
     CBLAS_TRANSPOSE transt;
 
     /* Quick return if possible */

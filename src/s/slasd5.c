@@ -4,6 +4,7 @@
  *        symmetric rank-one modification of a 2-by-2 diagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
@@ -30,7 +31,7 @@ static const f32 FOUR = 4.0f;
  * @param[out]    dsigma  The computed sigma_i, the i-th updated eigenvalue.
  * @param[out]    work    Array of dimension 2. Contains (D[j] + sigma_i) in its j-th component.
  */
-void slasd5(const int i, const f32* restrict D, const f32* restrict Z,
+void slasd5(const INT i, const f32* restrict D, const f32* restrict Z,
             f32* restrict delta, const f32 rho, f32* dsigma,
             f32* restrict work)
 {

@@ -3,6 +3,7 @@
  * @brief SPPSV computes the solution to a real system of linear equations A * X = B with symmetric positive definite matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -42,12 +43,12 @@
  */
 void sppsv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict AP,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // sppsv.f lines 172-186: Test the input parameters
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief ZLACGV conjugates a complex vector.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -16,11 +17,11 @@
  * @param[in]     incx  The spacing between successive elements of X.
  */
 void zlacgv(
-    const int n,
+    const INT n,
     c128* restrict X,
-    const int incx)
+    const INT incx)
 {
-    int i, ioff;
+    INT i, ioff;
 
     if (incx == 1) {
         for (i = 0; i < n; i++) {

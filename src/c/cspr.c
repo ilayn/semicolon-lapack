@@ -3,6 +3,7 @@
  * @brief CSPR performs the symmetrical rank-1 update of a complex symmetric packed matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -33,15 +34,15 @@
  */
 void cspr(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64 alpha,
     const c64* restrict X,
-    const int incx,
+    const INT incx,
     c64* restrict AP)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int i, info, ix, j, jx, k, kk, kx;
+    INT i, info, ix, j, jx, k, kk, kx;
     c64 temp;
 
     info = 0;

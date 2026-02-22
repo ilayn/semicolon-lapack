@@ -4,6 +4,7 @@
  *        L*D*L**H factorization computed by ZPTTRF.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -39,15 +40,15 @@
  * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
  */
 void zptts2(
-    const int iuplo,
-    const int n,
-    const int nrhs,
+    const INT iuplo,
+    const INT n,
+    const INT nrhs,
     const f64* restrict D,
     const c128* restrict E,
     c128* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
 
     /* Quick return if possible */
 

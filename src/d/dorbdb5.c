@@ -3,6 +3,7 @@
  * @brief DORBDB5 orthogonalizes a column vector with respect to the columns of a matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -70,24 +71,24 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void dorbdb5(
-    const int m1,
-    const int m2,
-    const int n,
+    const INT m1,
+    const INT m2,
+    const INT n,
     f64* restrict X1,
-    const int incx1,
+    const INT incx1,
     f64* restrict X2,
-    const int incx2,
+    const INT incx2,
     const f64* restrict Q1,
-    const int ldq1,
+    const INT ldq1,
     const f64* restrict Q2,
-    const int ldq2,
+    const INT ldq2,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
-    int childinfo, i, j;
+    INT childinfo, i, j;
     f64 eps, norm, scl, ssq;
 
     *info = 0;

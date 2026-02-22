@@ -3,6 +3,7 @@
  * @brief CGELST solves overdetermined or underdetermined systems using QR or LQ factorization with compact WY representation.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -60,21 +61,21 @@
  */
 void cgelst(
     const char* trans,
-    const int m,
-    const int n,
-    const int nrhs,
+    const INT m,
+    const INT n,
+    const INT nrhs,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery, tpsd;
-    int brow, i, iascl, ibscl, j, lwopt, mn, mnnrhs, nb, nbmin, scllen;
+    INT lquery, tpsd;
+    INT brow, i, iascl, ibscl, j, lwopt, mn, mnnrhs, nb, nbmin, scllen;
     f32 anrm, bignum, bnrm, smlnum;
-    int max_mn, max_ldb;
+    INT max_mn, max_ldb;
 
     *info = 0;
     mn = (m < n) ? m : n;
@@ -95,7 +96,7 @@ void cgelst(
         if (ldb < max_ldb) {
             *info = -8;
         } else {
-            int min_work = (mn > nrhs) ? mn : nrhs;
+            INT min_work = (mn > nrhs) ? mn : nrhs;
             min_work = 1 > (mn + min_work) ? 1 : (mn + min_work);
             if (lwork < min_work && !lquery) {
                 *info = -10;

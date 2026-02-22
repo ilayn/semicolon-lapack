@@ -3,6 +3,7 @@
  * @brief ZUNGTSQR generates an M-by-N complex matrix Q_out with orthonormal columns.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -50,17 +51,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void zungtsqr(const int m, const int n, const int mb, const int nb,
-              c128* restrict A, const int lda,
-              c128* restrict T, const int ldt,
-              c128* restrict work, const int lwork,
-              int* info)
+void zungtsqr(const INT m, const INT n, const INT mb, const INT nb,
+              c128* restrict A, const INT lda,
+              c128* restrict T, const INT ldt,
+              c128* restrict work, const INT lwork,
+              INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int lquery;
-    int iinfo, ldc, lworkopt, lc, lw, nblocal, j;
+    INT lquery;
+    INT iinfo, ldc, lworkopt, lc, lw, nblocal, j;
 
     /* Test the input parameters */
 

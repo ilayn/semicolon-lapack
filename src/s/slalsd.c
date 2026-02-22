@@ -4,6 +4,7 @@
  *        the least squares problem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -47,16 +48,16 @@ static const f32 TWO = 2.0f;
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  *                         - > 0: The algorithm failed to compute a singular value.
  */
-void slalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
+void slalsd(const char* uplo, const INT smlsiz, const INT n, const INT nrhs,
             f32* restrict D, f32* restrict E,
-            f32* restrict B, const int ldb, const f32 rcond,
-            int* rank, f32* restrict work, int* restrict iwork,
-            int* info)
+            f32* restrict B, const INT ldb, const f32 rcond,
+            INT* rank, f32* restrict work, INT* restrict iwork,
+            INT* info)
 {
-    int bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
-    int givptr, i, icmpq1, icmpq2, iwk, j, k_idx, nlvl;
-    int nm1, nsize, nsub, nwork, perm, poles, s_idx, sizei;
-    int smlszp, sqre, st, st1, u_idx, vt_idx, z_idx;
+    INT bx, bxst, c_idx, difl_idx, difr_idx, givcol, givnum;
+    INT givptr, i, icmpq1, icmpq2, iwk, j, k_idx, nlvl;
+    INT nm1, nsize, nsub, nwork, perm, poles, s_idx, sizei;
+    INT smlszp, sqre, st, st1, u_idx, vt_idx, z_idx;
     f32 cs, eps, orgnrm, r, rcnd, sn, tol;
 
     *info = 0;
@@ -171,7 +172,7 @@ void slalsd(const char* uplo, const int smlsiz, const int n, const int nrhs,
     }
 
     /* Book-keeping and setting up some constants. */
-    nlvl = (int)(logf((f32)n / (f32)(smlsiz + 1)) / logf(TWO)) + 1;
+    nlvl = (INT)(logf((f32)n / (f32)(smlsiz + 1)) / logf(TWO)) + 1;
 
     smlszp = smlsiz + 1;
 

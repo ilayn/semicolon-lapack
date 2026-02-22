@@ -4,6 +4,7 @@
  *        positive symmetric rank-one modification to a positive diagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 
@@ -17,7 +18,7 @@ static const f64 FOUR = 4.0;
 static const f64 EIGHT = 8.0;
 static const f64 TEN = 10.0;
 
-static const int MAXIT = 400;
+static const INT MAXIT = 400;
 
 /**
  * DLASD4 computes the square root of the I-th updated eigenvalue of a positive
@@ -37,20 +38,20 @@ static const int MAXIT = 400;
  * @param[out]    info
  *                         - = 0: successful exit. > 0: if info = 1, the updating process failed.
  */
-void dlasd4(const int n, const int i, const f64* restrict D,
+void dlasd4(const INT n, const INT i, const f64* restrict D,
             const f64* restrict Z, f64* restrict delta,
             const f64 rho, f64* sigma, f64* restrict work,
-            int* info)
+            INT* info)
 {
     /* Local variables */
-    int orgati, swtch, swtch3, geomavg;
-    int ii, iim1, iip1, ip1, iter, j, niter;
+    INT orgati, swtch, swtch3, geomavg;
+    INT ii, iim1, iip1, ip1, iter, j, niter;
     f64 a, b, c, delsq, delsq2, sq2, dphi, dpsi, dtiim;
     f64 dtiip, dtipsq, dtisq, dtnsq, dtnsq1, dw, eps;
     f64 erretm, eta, phi, prew, psi, rhoinv, sglb;
     f64 sgub, tau, tau2, temp, temp1, temp2, w;
     f64 dd[3], zz[3];
-    int iinfo;
+    INT iinfo;
 
     /* Quick return for n=1 and n=2 */
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief ZTRSEN reorders the Schur factorization and computes condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
@@ -63,19 +64,19 @@
  *                   - = 0: successful exit
  *                   - < 0: if info = -i, the i-th argument had an illegal value
  */
-void ztrsen(const char* job, const char* compq, const int* select,
-            const int n, c128* T, const int ldt,
-            c128* Q, const int ldq,
-            c128* W, int* m, f64* s, f64* sep,
-            c128* work, const int lwork, int* info)
+void ztrsen(const char* job, const char* compq, const INT* select,
+            const INT n, c128* T, const INT ldt,
+            c128* Q, const INT ldq,
+            c128* W, INT* m, f64* s, f64* sep,
+            c128* work, const INT lwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantbh, wants, wantsp, wantq, lquery;
-    int ierr, k, kase, ks, lwmin = 0, n1, n2, nn;
+    INT wantbh, wants, wantsp, wantq, lquery;
+    INT ierr, k, kase, ks, lwmin = 0, n1, n2, nn;
     f64 est, rnorm, scale;
-    int isave[3];
+    INT isave[3];
     f64 rwork[1];
 
     /* Decode and test the input parameters. */
@@ -147,8 +148,8 @@ void ztrsen(const char* job, const char* compq, const int* select,
 
             /* Swap the K-th eigenvalue to position KS. */
             if (k != ks) {
-                int ifst = k;
-                int ilst = ks;
+                INT ifst = k;
+                INT ilst = ks;
                 ztrexc(compq, n, T, ldt, Q, ldq, ifst, ilst, &ierr);
             }
             ks++;

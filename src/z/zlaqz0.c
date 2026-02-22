@@ -3,6 +3,7 @@
  * @brief ZLAQZ0 computes the eigenvalues of a complex matrix pair (H,T) using multishift QZ.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -54,24 +55,24 @@ void zlaqz0(
     const char* wants,
     const char* wantq,
     const char* wantz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict alpha,
     c128* restrict beta,
     c128* restrict Q,
-    const int ldq,
+    const INT ldq,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    const int rec,
-    int* info)
+    const INT rec,
+    INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
@@ -80,12 +81,12 @@ void zlaqz0(
     f64 smlnum, ulp, safmin, c1;
     f64 bnorm, btol;
     c128 eshift, s1, temp;
-    int istart, istop, iiter, maxit, istart2, k, nshifts;
-    int nblock, nw, nmin, nibble, n_undeflated, n_deflated;
-    int ns, sweep_info, shiftpos, lworkreq, k2, istartm;
-    int istopm, iwants, iwantq, iwantz, norm_info, aed_info;
-    int nwr, nbr, nsr, itemp1, itemp2, rcost;
-    int ilschur = 0, ilq = 0, ilz = 0;
+    INT istart, istop, iiter, maxit, istart2, k, nshifts;
+    INT nblock, nw, nmin, nibble, n_undeflated, n_deflated;
+    INT ns, sweep_info, shiftpos, lworkreq, k2, istartm;
+    INT istopm, iwants, iwantq, iwantz, norm_info, aed_info;
+    INT nwr, nbr, nsr, itemp1, itemp2, rcost;
+    INT ilschur = 0, ilq = 0, ilz = 0;
     char jbcmpz[4];
 
     /* Decode wantS, wantQ, wantZ */
@@ -169,8 +170,8 @@ void zlaqz0(
     nwr = iparmq(13, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     nwr = (2 > nwr) ? 2 : nwr;
     {
-        int tmp = ihi - ilo + 1;
-        int tmp2 = (n - 1) / 3;
+        INT tmp = ihi - ilo + 1;
+        INT tmp2 = (n - 1) / 3;
         tmp = (tmp < tmp2) ? tmp : tmp2;
         nwr = (nwr < tmp) ? nwr : tmp;
     }
@@ -179,15 +180,15 @@ void zlaqz0(
 
     nsr = iparmq(15, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     {
-        int tmp = (n + 6) / 9;
-        int tmp2 = ihi - ilo;
+        INT tmp = (n + 6) / 9;
+        INT tmp2 = ihi - ilo;
         nsr = (nsr < tmp) ? nsr : tmp;
         nsr = (nsr < tmp2) ? nsr : tmp2;
     }
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
     rcost = iparmq(17, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    itemp1 = (int)(nsr / sqrt(1.0 + 2.0 * nsr / ((f64)rcost / 100.0 * n)));
+    itemp1 = (INT)(nsr / sqrt(1.0 + 2.0 * nsr / ((f64)rcost / 100.0 * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;
 
@@ -204,13 +205,13 @@ void zlaqz0(
     zlaqz2(ilschur, ilq, ilz, n, ilo, ihi, nw, A, lda, B, ldb,
            Q, ldq, Z, ldz, &n_undeflated, &n_deflated, alpha, beta,
            NULL, nw, NULL, nw, work, -1, rwork, rec, &aed_info);
-    itemp1 = (int)creal(work[0]);
+    itemp1 = (INT)creal(work[0]);
 
     /* Workspace query to ZLAQZ3 */
     zlaqz3(ilschur, ilq, ilz, n, ilo, ihi, nsr, nbr, alpha, beta,
            A, lda, B, ldb, Q, ldq, Z, ldz, NULL, nbr, NULL, nbr,
            work, -1, &sweep_info);
-    itemp2 = (int)creal(work[0]);
+    itemp2 = (INT)creal(work[0]);
 
     lworkreq = (itemp1 + 2 * nw * nw > itemp2 + 2 * nbr * nbr) ?
                itemp1 + 2 * nw * nw : itemp2 + 2 * nbr * nbr;
@@ -242,7 +243,7 @@ void zlaqz0(
     istop = ihi;
     maxit = 30 * (ihi - ilo + 1);
     eshift = CZERO;
-    int ld = 0;
+    INT ld = 0;
 
     for (iiter = 0; iiter < maxit; iiter++) {
         if (iiter >= maxit - 1) {
@@ -315,7 +316,7 @@ void zlaqz0(
                     zrot(k2 - 1 - istartm, &B[istartm + k2 * ldb], 1,
                          &B[istartm + (k2 - 1) * ldb], 1, c1, s1);
                     {
-                        int cnt = ((k2 + 1 < istop) ? k2 + 1 : istop) - istartm + 1;
+                        INT cnt = ((k2 + 1 < istop) ? k2 + 1 : istop) - istartm + 1;
                         zrot(cnt, &A[istartm + k2 * lda], 1,
                              &A[istartm + (k2 - 1) * lda], 1, c1, s1);
                     }

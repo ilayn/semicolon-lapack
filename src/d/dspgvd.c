@@ -5,6 +5,7 @@
  *        using divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
@@ -33,23 +34,23 @@
  *                         - = 0: success; < 0: illegal argument; > 0: DPPTRF/DSPEVD error.
  */
 void dspgvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict AP,
     f64* restrict BP,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    int wantz, upper, lquery;
-    int j, liwmin, lwmin, neig;
+    INT wantz, upper, lquery;
+    INT j, liwmin, lwmin, neig;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -109,7 +110,7 @@ void dspgvd(
 
     dspgst(itype, uplo, n, AP, BP, info);
     dspevd(jobz, uplo, n, AP, W, Z, ldz, work, lwork, iwork, liwork, info);
-    lwmin = (lwmin > (int)work[0]) ? lwmin : (int)work[0];
+    lwmin = (lwmin > (INT)work[0]) ? lwmin : (INT)work[0];
     liwmin = (liwmin > iwork[0]) ? liwmin : iwork[0];
 
     if (wantz) {

@@ -4,6 +4,7 @@
  *        unreduced symmetric tridiagonal matrix using the divide and conquer method.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdint.h>
 #include <cblas.h>
@@ -66,15 +67,15 @@
  *                           while working on the submatrix lying in rows and
  *                           columns info/(n+1) through mod(info,n+1).
  */
-void dlaed0(const int icompq, const int qsiz, const int n,
-            f64* D, f64* E, f64* Q, const int ldq,
-            f64* qstore, const int ldqs,
-            f64* work, int* iwork, int* info)
+void dlaed0(const INT icompq, const INT qsiz, const INT n,
+            f64* D, f64* E, f64* Q, const INT ldq,
+            f64* qstore, const INT ldqs,
+            f64* work, INT* iwork, INT* info)
 {
     /* SMLSIZ from ILAENV(9, 'DLAED0', ...) - hardcoded per project plan */
-    const int SMLSIZ = 25;
+    const INT SMLSIZ = 25;
 
-    int curlvl, curprb, curr, i, igivcl = 0, igivnm = 0,
+    INT curlvl, curprb, curr, i, igivcl = 0, igivnm = 0,
         igivpt = 0, indxq, iperm = 0, iprmpt = 0, iq = 0, iqptr = 0, iwrem = 0,
         j, k, lgn, matsiz, msd2, smm1, spm1,
         spm2, submat, subpbs, tlvls;
@@ -144,7 +145,7 @@ void dlaed0(const int icompq, const int qsiz, const int n,
          * routine
          */
         temp = log((f64)n) / log(2.0);
-        lgn = (int)temp;
+        lgn = (INT)temp;
         if ((1 << lgn) < n) {
             lgn = lgn + 1;
         }

@@ -3,6 +3,7 @@
  * @brief DSYCON_3 estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by DSYTRF_RK or DSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -66,22 +67,22 @@
  */
 void dsycon_3(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f64 anorm,
     f64* rcond,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    int upper;
-    int i, kase;
+    INT upper;
+    INT i, kase;
     f64 ainvnm;
-    int isave[3];
-    int dummy_info;
+    INT isave[3];
+    INT dummy_info;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

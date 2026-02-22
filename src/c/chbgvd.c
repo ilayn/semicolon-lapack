@@ -4,6 +4,7 @@
  *        complex generalized Hermitian-definite banded eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -75,34 +76,34 @@
 void chbgvd(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     c64* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int iinfo;
-    int inde, indwk2, indwrk, liwmin, llrwk, llwk2, lrwmin, lwmin;
+    INT iinfo;
+    INT inde, indwk2, indwrk, liwmin, llrwk, llwk2, lrwmin, lwmin;
     char vect;
 
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
 
     *info = 0;
     if (n <= 1) {

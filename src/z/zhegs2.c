@@ -2,6 +2,7 @@
  * @file zhegs2.c
  * @brief ZHEGS2 reduces a Hermitian-definite generalized eigenproblem to standard form.
  */
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -45,22 +46,22 @@
  *                      < 0:  if INFO = -i, the i-th argument had an illegal value.
  */
 void zhegs2(
-    const int itype,
+    const INT itype,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 HALF = 0.5;
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    int upper;
-    int k;
+    INT upper;
+    INT k;
     f64 akk, bkk;
     c128 ct;
 

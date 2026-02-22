@@ -4,6 +4,7 @@
  *        Used by zgelsd.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -94,22 +95,22 @@
  * @param[out]    info    = 0: successful exit.
  *                        < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            c128* restrict B, const int ldb,
-            c128* restrict BX, const int ldbx,
-            const f64* restrict U, const int ldu,
-            const f64* restrict VT, const int* restrict K,
+void zlalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
+            c128* restrict B, const INT ldb,
+            c128* restrict BX, const INT ldbx,
+            const f64* restrict U, const INT ldu,
+            const f64* restrict VT, const INT* restrict K,
             const f64* restrict difl, const f64* restrict difr,
             const f64* restrict Z, const f64* restrict poles,
-            const int* restrict givptr, const int* restrict givcol,
-            const int ldgcol, const int* restrict perm,
+            const INT* restrict givptr, const INT* restrict givcol,
+            const INT ldgcol, const INT* restrict perm,
             const f64* restrict givnum,
             const f64* restrict C, const f64* restrict S,
-            f64* restrict rwork, int* restrict iwork, int* info)
+            f64* restrict rwork, INT* restrict iwork, INT* info)
 {
-    int i, i1, ic, im1, inode, j, jcol, jimag, jreal;
-    int jrow, lf, ll, lvl, lvl2, nd, ndb1, ndiml;
-    int ndimr, nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqre;
+    INT i, i1, ic, im1, inode, j, jcol, jimag, jreal;
+    INT jrow, lf, ll, lvl, lvl2, nd, ndb1, ndiml;
+    INT ndimr, nl, nlf, nlp1, nlvl, nr, nrf, nrp1, sqre;
 
     *info = 0;
 

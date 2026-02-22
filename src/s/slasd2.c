@@ -4,6 +4,7 @@
  *        sorted set and performs deflation.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -45,20 +46,20 @@
  * @param[out]    info
  *                         - = 0: successful exit. < 0: illegal argument.
  */
-void slasd2(const int nl, const int nr, const int sqre, int* k,
+void slasd2(const INT nl, const INT nr, const INT sqre, INT* k,
             f32* restrict D, f32* restrict Z,
             const f32 alpha, const f32 beta,
-            f32* restrict U, const int ldu,
-            f32* restrict VT, const int ldvt,
+            f32* restrict U, const INT ldu,
+            f32* restrict VT, const INT ldvt,
             f32* restrict DSIGMA,
-            f32* restrict U2, const int ldu2,
-            f32* restrict VT2, const int ldvt2,
-            int* restrict IDXP, int* restrict IDX,
-            int* restrict IDXC, int* restrict IDXQ,
-            int* restrict COLTYP, int* info)
+            f32* restrict U2, const INT ldu2,
+            f32* restrict VT2, const INT ldvt2,
+            INT* restrict IDXP, INT* restrict IDX,
+            INT* restrict IDXC, INT* restrict IDXQ,
+            INT* restrict COLTYP, INT* info)
 {
-    int ctot[4], psm[4];
-    int ct, i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n;
+    INT ctot[4], psm[4];
+    INT ct, i, idxi, idxj, idxjp, j, jp, jprev, k2, m, n;
     f32 c, eps, hlftol, s, tau, tol, z1;
 
     *info = 0;

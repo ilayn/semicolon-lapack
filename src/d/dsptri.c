@@ -3,6 +3,7 @@
  * @brief DSPTRI computes the inverse of a real symmetric indefinite matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdlib.h>
 #include <cblas.h>
@@ -35,17 +36,17 @@
  */
 void dsptri(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f64* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper;
-    int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
     f64 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

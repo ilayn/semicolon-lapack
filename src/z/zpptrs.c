@@ -3,6 +3,7 @@
  * @brief ZPPTRS solves a system of linear equations using the Cholesky factorization of a packed matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -31,16 +32,16 @@
  */
 void zpptrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict AP,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // zpptrs.f lines 140-154: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -62,7 +63,7 @@ void zpptrs(
 
     if (upper) {
         // zpptrs.f lines 161-177: Solve A*X = B where A = U**H * U.
-        for (int i = 0; i < nrhs; i++) {  // zpptrs.f line 165: DO 10 I = 1, NRHS
+        for (INT i = 0; i < nrhs; i++) {  // zpptrs.f line 165: DO 10 I = 1, NRHS
             // zpptrs.f lines 169-171: Solve U**H *X = B, overwriting B with X.
             cblas_ztpsv(CblasColMajor, CblasUpper, CblasConjTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);
@@ -72,7 +73,7 @@ void zpptrs(
         }
     } else {
         // zpptrs.f lines 178-195: Solve A*X = B where A = L * L**H.
-        for (int i = 0; i < nrhs; i++) {  // zpptrs.f line 182: DO 20 I = 1, NRHS
+        for (INT i = 0; i < nrhs; i++) {  // zpptrs.f line 182: DO 20 I = 1, NRHS
             // zpptrs.f lines 186-187: Solve L*Y = B, overwriting B with X.
             cblas_ztpsv(CblasColMajor, CblasLower, CblasNoTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);

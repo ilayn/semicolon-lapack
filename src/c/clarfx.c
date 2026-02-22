@@ -4,6 +4,7 @@
  *        matrix, with loop unrolling when the reflector has order <= 10.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
@@ -35,12 +36,12 @@
  *                       (n) if side = "L", or (m) if side = 'R'.
  *                       Not referenced if H has order < 11.
  */
-void clarfx(const char* side, const int m, const int n,
+void clarfx(const char* side, const INT m, const INT n,
             const c64* restrict v, const c64 tau,
-            c64* restrict C, const int ldc,
+            c64* restrict C, const INT ldc,
             c64* restrict work)
 {
-    int j;
+    INT j;
     c64 sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
     c64 v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
 

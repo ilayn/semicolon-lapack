@@ -4,6 +4,7 @@
  *        1-norm) of a complex Hermitian positive definite tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -37,17 +38,17 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void zptcon(
-    const int n,
+    const INT n,
     const f64* restrict D,
     const c128* restrict E,
     const f64 anorm,
     f64* rcond,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
-    int i, ix;
+    INT i, ix;
     f64 ainvnm;
 
     *info = 0;

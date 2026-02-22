@@ -3,6 +3,7 @@
  * @brief DGEBRD reduces a general matrix to bidiagonal form using a blocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <cblas.h>
@@ -60,14 +61,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgebrd(const int m, const int n, f64* restrict A, const int lda,
+void dgebrd(const INT m, const INT n, f64* restrict A, const INT lda,
             f64* restrict D, f64* restrict E,
             f64* restrict tauq, f64* restrict taup,
-            f64* restrict work, const int lwork, int* info)
+            f64* restrict work, const INT lwork, INT* info)
 {
-    int i, j, iinfo;
-    int lquery, minmn, nb, nbmin, nx;
-    int ldwrkx, ldwrky, lwkmin, lwkopt, ws;
+    INT i, j, iinfo;
+    INT lquery, minmn, nb, nbmin, nx;
+    INT ldwrkx, ldwrky, lwkmin, lwkopt, ws;
 
     /* Test the input parameters */
     *info = 0;

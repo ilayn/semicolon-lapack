@@ -3,16 +3,17 @@
  * @brief DGGRQF computes a generalized RQ factorization of a pair of matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 
-void dggrqf(const int m, const int p, const int n,
-            f64* restrict A, const int lda, f64* restrict taua,
-            f64* restrict B, const int ldb, f64* restrict taub,
-            f64* restrict work, const int lwork, int* info)
+void dggrqf(const INT m, const INT p, const INT n,
+            f64* restrict A, const INT lda, f64* restrict taua,
+            f64* restrict B, const INT ldb, f64* restrict taub,
+            f64* restrict work, const INT lwork, INT* info)
 {
-    int lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
-    int minval, arow;
+    INT lquery, nb, nb1, nb2, nb3, lwkopt, lopt;
+    INT minval, arow;
 
     *info = 0;
     nb1 = lapack_get_nb("GERQF");
@@ -56,20 +57,20 @@ void dggrqf(const int m, const int p, const int n,
 
     /* RQ factorization of M-by-N matrix A: A = R*Q */
     dgerqf(m, n, A, lda, taua, work, lwork, info);
-    lopt = (int)work[0];
+    lopt = (INT)work[0];
 
     /* Update B := B * Q**T */
     {
-        int minmn = (m < n) ? m : n;
+        INT minmn = (m < n) ? m : n;
         /* A(max(1, m-n+1), 1) in Fortran -> A[(m-n > 0 ? m-n : 0) * lda] in C */
         arow = (m - n > 0) ? (m - n) : 0;
         dormrq("R", "T", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }
-    if ((int)work[0] > lopt) lopt = (int)work[0];
+    if ((INT)work[0] > lopt) lopt = (INT)work[0];
 
     /* QR factorization of P-by-N matrix B: B = Z*T */
     dgeqrf(p, n, B, ldb, taub, work, lwork, info);
-    if ((int)work[0] > lopt) lopt = (int)work[0];
+    if ((INT)work[0] > lopt) lopt = (INT)work[0];
 
     work[0] = (f64)lopt;
 }

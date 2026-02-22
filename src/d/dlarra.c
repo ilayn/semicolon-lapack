@@ -3,6 +3,7 @@
  * @brief DLARRA computes the splitting points with the specified threshold.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -35,12 +36,12 @@
  * @param[out]    info
  *                         - = 0: successful exit.
  */
-void dlarra(const int n, const f64* restrict D,
+void dlarra(const INT n, const f64* restrict D,
             f64* restrict E, f64* restrict E2,
             const f64 spltol, const f64 tnrm,
-            int* nsplit, int* restrict isplit, int* info)
+            INT* nsplit, INT* restrict isplit, INT* info)
 {
-    int i;
+    INT i;
     f64 eabs, tmp1;
 
     *info = 0;

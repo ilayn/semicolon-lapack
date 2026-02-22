@@ -3,6 +3,7 @@
  * @brief Mixed precision iterative refinement solver for general linear systems.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <string.h>
 #include <cblas.h>
@@ -59,28 +60,28 @@
  *                           - > 0: if info = i, U(i-1,i-1) is exactly zero
  */
 void dsgesv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict work,
     float * restrict swork,
-    int* iter,
-    int* info)
+    INT* iter,
+    INT* info)
 {
-    const int ITERMAX = 30;
+    const INT ITERMAX = 30;
     const f64 BWDMAX = 1.0;
     const f64 NEGONE = -1.0;
     const f64 ONE = 1.0;
 
-    int i, iiter, iinfo;
+    INT i, iiter, iinfo;
     f64 anrm, cte, eps, rnrm, xnrm;
-    int converged;
+    INT converged;
 
     // Pointers into swork
     float *SA;   // n x n
@@ -155,8 +156,8 @@ void dsgesv(
     // Check whether the NRHS normwise backward errors satisfy the stopping criterion
     converged = 1;
     for (i = 0; i < nrhs; i++) {
-        int imax_x = cblas_idamax(n, &X[i * ldx], 1);
-        int imax_r = cblas_idamax(n, &work[i * n], 1);
+        INT imax_x = cblas_idamax(n, &X[i * ldx], 1);
+        INT imax_r = cblas_idamax(n, &work[i * n], 1);
         xnrm = fabs(X[imax_x + i * ldx]);
         rnrm = fabs(work[imax_r + i * n]);
         if (rnrm > xnrm * cte) {
@@ -197,8 +198,8 @@ void dsgesv(
         // Check whether the NRHS normwise backward errors satisfy the stopping criterion
         converged = 1;
         for (i = 0; i < nrhs; i++) {
-            int imax_x = cblas_idamax(n, &X[i * ldx], 1);
-            int imax_r = cblas_idamax(n, &work[i * n], 1);
+            INT imax_x = cblas_idamax(n, &X[i * ldx], 1);
+            INT imax_r = cblas_idamax(n, &work[i * n], 1);
             xnrm = fabs(X[imax_x + i * ldx]);
             rnrm = fabs(work[imax_r + i * n]);
             if (rnrm > xnrm * cte) {

@@ -4,6 +4,7 @@
  *        defined as cto/cfrom.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_complex_single.h"
@@ -54,15 +55,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value.
  */
-void clascl(const char* type, const int kl, const int ku,
+void clascl(const char* type, const INT kl, const INT ku,
             const f32 cfrom, const f32 cto,
-            const int m, const int n,
-            c64* restrict A, const int lda,
-            int* info)
+            const INT m, const INT n,
+            c64* restrict A, const INT lda,
+            INT* info)
 {
     const f32 ZERO = 0.0f, ONE = 1.0f;
-    int i, j, itype, k1, k2, k3, k4;
-    int done;
+    INT i, j, itype, k1, k2, k3, k4;
+    INT done;
     f32 bignum, cfrom1, cfromc, cto1, ctoc, mul, smlnum;
 
     /* Test the input arguments */
@@ -203,7 +204,7 @@ void clascl(const char* type, const int kl, const int ku,
                 /* Fortran: DO I = 1, MIN(K3, K4-J)
                    With 1-based J: MIN(K3, K4 - (j+1)) = MIN(KL+1, N+1-(j+1)) = MIN(KL+1, N-j)
                    In 0-based: loop i = 0 to MIN(KL+1, N-j) - 1 */
-                int ilim = k3 < (k4 - (j + 1)) ? k3 : (k4 - (j + 1));
+                INT ilim = k3 < (k4 - (j + 1)) ? k3 : (k4 - (j + 1));
                 for (i = 0; i < ilim; i++) {
                     A[i + j * lda] *= mul;
                 }
@@ -219,7 +220,7 @@ void clascl(const char* type, const int kl, const int ku,
                    In 0-based: istart = MAX(KU-j, 0), iend = KU (inclusive)
                    i.e., loop i from MAX(K1-(j+1), 1)-1 = MAX(KU+1-j, 1)-1 = MAX(KU-j, 0)
                    to K3-1 = KU */
-                int istart = (k1 - (j + 1)) > 1 ? (k1 - (j + 1) - 1) : 0;
+                INT istart = (k1 - (j + 1)) > 1 ? (k1 - (j + 1) - 1) : 0;
                 for (i = istart; i < k3; i++) {
                     A[i + j * lda] *= mul;
                 }
@@ -236,8 +237,8 @@ void clascl(const char* type, const int kl, const int ku,
                    With 1-based J: MAX(KL+KU+2-(j+1), KL+1) = MAX(KL+KU+1-j, KL+1)
                                    MIN(2*KL+KU+1, KL+KU+1+M-(j+1)) = MIN(2*KL+KU+1, KL+KU+M-j)
                    Convert to 0-based row indices: subtract 1 from both bounds */
-                int istart_f = (k1 - (j + 1)) > k2 ? (k1 - (j + 1)) : k2;
-                int iend_f = k3 < (k4 - (j + 1)) ? k3 : (k4 - (j + 1));
+                INT istart_f = (k1 - (j + 1)) > k2 ? (k1 - (j + 1)) : k2;
+                INT iend_f = k3 < (k4 - (j + 1)) ? k3 : (k4 - (j + 1));
                 for (i = istart_f - 1; i < iend_f; i++) {
                     A[i + j * lda] *= mul;
                 }

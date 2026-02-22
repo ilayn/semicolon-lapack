@@ -4,6 +4,7 @@
  *        Hessenberg matrix by inverse iteration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -42,25 +43,25 @@
  *                             last iterate.
  */
 void claein(
-    const int rightv,
-    const int noinit,
-    const int n,
+    const INT rightv,
+    const INT noinit,
+    const INT n,
     const c64* restrict H,
-    const int ldh,
+    const INT ldh,
     const c64 w,
     c64* restrict V,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict rwork,
     const f32 eps3,
     const f32 smlnum,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 TENTH = 0.1f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int i, ierr, its, j;
+    INT i, ierr, its, j;
     f32 growto, nrmsml, rootn, rtemp, scale, vnorm;
     c64 ei, ej, temp, x;
 

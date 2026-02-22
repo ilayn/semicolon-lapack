@@ -4,6 +4,7 @@
  *        using the Pal-Walker-Kahan variant of the QL or QR algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -30,14 +31,14 @@
  *                           if info = i, then i elements of E have not
  *                           converged to zero.
  */
-void ssterf(const int n, f32* restrict D,
-            f32* restrict E, int* info)
+void ssterf(const INT n, f32* restrict D,
+            f32* restrict E, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
-    const int MAXIT = 30;
+    const INT MAXIT = 30;
 
     /* Test the input parameters. */
     *info = 0;
@@ -60,23 +61,23 @@ void ssterf(const int n, f32* restrict D,
     f32 ssfmin = sqrtf(safmin) / eps2;
 
     /* Compute the eigenvalues of the tridiagonal matrix. */
-    int nmaxit = n * MAXIT;
+    INT nmaxit = n * MAXIT;
     f32 sigma = ZERO;
-    int jtot = 0;
+    INT jtot = 0;
 
     /* Determine where the matrix splits and choose QL or QR iteration
      * for each block, according to whether top or bottom diagonal
      * element is smaller. */
 
     /* Fortran: L1=1..N (1-based). C: l1=0..n-1 (0-based). */
-    int l1 = 0;
+    INT l1 = 0;
 
     while (l1 < n) {
         /* Look for a small subdiagonal element: E(m) negligible. */
         if (l1 > 0)
             E[l1 - 1] = ZERO;
 
-        int m;
+        INT m;
         for (m = l1; m < n - 1; m++) {
             if (fabsf(E[m]) <= (sqrtf(fabsf(D[m])) * sqrtf(fabsf(D[m + 1]))) * eps) {
                 E[m] = ZERO;
@@ -90,35 +91,35 @@ void ssterf(const int n, f32* restrict D,
         }
         /* After this: the block is D[l..m], subdiagonals E[l..m-1]. */
 
-        int l = l1;
-        int lsv = l;
-        int lend = m;
-        int lendsv = lend;
+        INT l = l1;
+        INT lsv = l;
+        INT lend = m;
+        INT lendsv = lend;
         l1 = m + 1;
         if (lend == l)
             continue;
 
         /* Scale submatrix in rows and columns l to lend */
-        int subsize = lend - l + 1;
+        INT subsize = lend - l + 1;
         f32 anorm = slanst("M", subsize, &D[l], &E[l]);
-        int iscale = 0;
+        INT iscale = 0;
         if (anorm == ZERO)
             continue;
 
         if (anorm > ssfmax) {
             iscale = 1;
-            int linfo;
+            INT linfo;
             slascl("G", 0, 0, anorm, ssfmax, subsize, 1, &D[l], n, &linfo);
             slascl("G", 0, 0, anorm, ssfmax, subsize - 1, 1, &E[l], n, &linfo);
         } else if (anorm < ssfmin) {
             iscale = 2;
-            int linfo;
+            INT linfo;
             slascl("G", 0, 0, anorm, ssfmin, subsize, 1, &D[l], n, &linfo);
             slascl("G", 0, 0, anorm, ssfmin, subsize - 1, 1, &E[l], n, &linfo);
         }
 
         /* Square the subdiagonal elements */
-        for (int i = l; i < lend; i++) {
+        for (INT i = l; i < lend; i++) {
             E[i] = E[i] * E[i];
         }
 
@@ -132,7 +133,7 @@ void ssterf(const int n, f32* restrict D,
             /* QL Iteration */
             /* Look for small subdiagonal element. */
             for (;;) {
-                int mm;
+                INT mm;
                 if (l != lend) {
                     for (mm = l; mm < lend; mm++) {
                         if (fabsf(E[mm]) <= eps2 * fabsf(D[mm] * D[mm + 1]))
@@ -188,7 +189,7 @@ void ssterf(const int n, f32* restrict D,
                 p = gamma * gamma;
 
                 /* Inner loop */
-                for (int i = mm - 1; i >= l; i--) {
+                for (INT i = mm - 1; i >= l; i--) {
                     f32 bb = E[i];
                     r = p + bb;
                     if (i != mm - 1)
@@ -215,7 +216,7 @@ void ssterf(const int n, f32* restrict D,
             /* QR Iteration */
             /* Look for small superdiagonal element. */
             for (;;) {
-                int mm;
+                INT mm;
                 if (l != lend) {
                     for (mm = l; mm > lend; mm--) {
                         if (fabsf(E[mm - 1]) <= eps2 * fabsf(D[mm] * D[mm - 1]))
@@ -271,7 +272,7 @@ void ssterf(const int n, f32* restrict D,
                 p = gamma * gamma;
 
                 /* Inner loop */
-                for (int i = mm; i < l; i++) {
+                for (INT i = mm; i < l; i++) {
                     f32 bb = E[i];
                     r = p + bb;
                     if (i != mm)
@@ -298,12 +299,12 @@ void ssterf(const int n, f32* restrict D,
 
         /* Undo scaling if necessary */
         if (iscale == 1) {
-            int linfo;
+            INT linfo;
             slascl("G", 0, 0, ssfmax, anorm, lendsv - lsv + 1, 1,
                    &D[lsv], n, &linfo);
         }
         if (iscale == 2) {
-            int linfo;
+            INT linfo;
             slascl("G", 0, 0, ssfmin, anorm, lendsv - lsv + 1, 1,
                    &D[lsv], n, &linfo);
         }
@@ -311,7 +312,7 @@ void ssterf(const int n, f32* restrict D,
         /* Check for no convergence to an eigenvalue after a total
          * of N*MAXIT iterations. */
         if (jtot >= nmaxit) {
-            for (int i = 0; i < n - 1; i++) {
+            for (INT i = 0; i < n - 1; i++) {
                 if (E[i] != ZERO)
                     (*info)++;
             }
@@ -320,6 +321,6 @@ void ssterf(const int n, f32* restrict D,
     }
 
     /* Sort eigenvalues in increasing order. */
-    int linfo;
+    INT linfo;
     slasrt("I", n, D, &linfo);
 }

@@ -4,6 +4,7 @@
  *        complex Hermitian band matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -56,22 +57,22 @@
 void chbev(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
-    int lower = (uplo[0] == 'L' || uplo[0] == 'l');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT lower = (uplo[0] == 'L' || uplo[0] == 'l');
 
     *info = 0;
     if (!(wantz || jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -121,7 +122,7 @@ void chbev(
     /* Scale matrix to allowable range, if necessary. */
 
     f32 anrm = clanhb("M", uplo, n, kd, AB, ldab, rwork);
-    int iscale = 0;
+    INT iscale = 0;
     f32 sigma;
     if (anrm > ZERO && anrm < rmin) {
         iscale = 1;
@@ -140,8 +141,8 @@ void chbev(
 
     /* Call CHBTRD to reduce Hermitian band matrix to tridiagonal form. */
 
-    int inde = 0;
-    int iinfo;
+    INT inde = 0;
+    INT iinfo;
     chbtrd(jobz, uplo, n, kd, AB, ldab, W, &rwork[inde], Z, ldz,
            work, &iinfo);
 
@@ -150,14 +151,14 @@ void chbev(
     if (!wantz) {
         ssterf(n, W, &rwork[inde], info);
     } else {
-        int indrwk = inde + n;
+        INT indrwk = inde + n;
         csteqr(jobz, n, W, &rwork[inde], Z, ldz, &rwork[indrwk], info);
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 
     if (iscale == 1) {
-        int imax;
+        INT imax;
         if (*info == 0) {
             imax = n;
         } else {

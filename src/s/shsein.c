@@ -4,6 +4,7 @@
  *        eigenvectors of a real upper Hessenberg matrix H.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -64,28 +65,28 @@ void shsein(
     const char* side,
     const char* eigsrc,
     const char* initv,
-    int* restrict select,
-    const int n,
+    INT* restrict select,
+    const INT n,
     const f32* restrict H,
-    const int ldh,
+    const INT ldh,
     f32* restrict wr,
     const f32* restrict wi,
     f32* restrict VL,
-    const int ldvl,
+    const INT ldvl,
     f32* restrict VR,
-    const int ldvr,
-    const int mm,
-    int* m,
+    const INT ldvr,
+    const INT mm,
+    INT* m,
     f32* restrict work,
-    int* restrict ifaill,
-    int* restrict ifailr,
-    int* info)
+    INT* restrict ifaill,
+    INT* restrict ifailr,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int bothv, fromqr, leftv, noinit_flag, pair, rightv;
-    int i, iinfo, k, kl, kln, kr, ksi, ksr, ldwork;
+    INT bothv, fromqr, leftv, noinit_flag, pair, rightv;
+    INT i, iinfo, k, kl, kln, kr, ksi, ksr, ldwork;
     f32 bignum, eps3 = 0.0f, hnorm, smlnum, ulp, unfl, wki, wkr;
 
     /* Decode and test the input parameters */

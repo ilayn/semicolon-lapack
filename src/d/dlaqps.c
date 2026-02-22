@@ -4,6 +4,7 @@
  *        of a real M-by-N matrix A by using BLAS level 3.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -50,17 +51,17 @@
  *                        Matrix F**T = L*Y**T*A.
  * @param[in]     ldf     The leading dimension of the array F. ldf >= max(1, n).
  */
-void dlaqps(const int m, const int n, const int offset, const int nb,
-            int* kb,
-            f64* restrict A, const int lda,
-            int* restrict jpvt,
+void dlaqps(const INT m, const INT n, const INT offset, const INT nb,
+            INT* kb,
+            f64* restrict A, const INT lda,
+            INT* restrict jpvt,
             f64* restrict tau,
             f64* restrict vn1,
             f64* restrict vn2,
             f64* restrict auxv,
-            f64* restrict F, const int ldf)
+            f64* restrict F, const INT ldf)
 {
-    int itemp, j, k, lastrk, lsticc, pvt, rk;
+    INT itemp, j, k, lastrk, lsticc, pvt, rk;
     f64 akk, temp, temp2, tol3z;
 
     lastrk = m < n + offset ? m : n + offset;
@@ -79,7 +80,7 @@ void dlaqps(const int m, const int n, const int offset, const int nb,
          * Determine ith pivot column and swap if necessary.
          * pvt is 0-based column index.
          */
-        pvt = (k - 1) + (int)cblas_idamax(n - k + 1, &vn1[k - 1], 1);
+        pvt = (k - 1) + (INT)cblas_idamax(n - k + 1, &vn1[k - 1], 1);
         if (pvt != k - 1) {
             cblas_dswap(m, &A[pvt * lda], 1, &A[(k - 1) * lda], 1);
             cblas_dswap(k - 1, &F[pvt], ldf, &F[k - 1], ldf);
@@ -214,7 +215,7 @@ void dlaqps(const int m, const int n, const int offset, const int nb,
      * Recomputation of difficult columns.
      */
     while (lsticc > 0) {
-        itemp = (int)round(vn2[lsticc - 1]);
+        itemp = (INT)round(vn2[lsticc - 1]);
         vn1[lsticc - 1] = cblas_dnrm2(m - rk, &A[rk + (lsticc - 1) * lda], 1);
 
         /*

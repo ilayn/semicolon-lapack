@@ -5,6 +5,7 @@
  *        Representations.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdlib.h>
 #include <complex.h>
@@ -40,23 +41,23 @@
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: internal error.
  */
-void cstemr(const char* jobz, const char* range, const int n,
+void cstemr(const char* jobz, const char* range, const INT n,
             f32* D, f32* E, const f32 vl, const f32 vu,
-            const int il, const int iu, int* m, f32* W,
-            c64* Z, const int ldz, const int nzc, int* isuppz,
-            int* tryrac, f32* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+            const INT il, const INT iu, INT* m, f32* W,
+            c64* Z, const INT ldz, const INT nzc, INT* isuppz,
+            INT* tryrac, f32* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 FOUR = 4.0f;
     const f32 MINRGP = 1.0e-3f;
 
-    int wantz, alleig, valeig, indeig, lquery, zquery, laeswap;
-    int i, ibegin, iend, ifirst, iil, iindbl, iindw;
-    int iindwk, iinfo, iinspl, iiu, ilast, in, indd;
-    int inde2, inderr, indgp, indgrs, indwrk, itmp, itmp2;
-    int j, jblk, jj, liwmin, lwmin, nsplit, nzcmin, offset, wbegin, wend;
+    INT wantz, alleig, valeig, indeig, lquery, zquery, laeswap;
+    INT i, ibegin, iend, ifirst, iil, iindbl, iindw;
+    INT iindwk, iinfo, iinspl, iiu, ilast, in, indd;
+    INT inde2, inderr, indgp, indgrs, indwrk, itmp, itmp2;
+    INT j, jblk, jj, liwmin, lwmin, nsplit, nzcmin, offset, wbegin, wend;
     f32 bignum, cs, eps, pivmin, r1 = 0.0f, r2 = 0.0f, rmax, rmin;
     f32 rtol1, rtol2, safmin, scale, smlnum, sn;
     f32 thresh, tmp, tnrm, wl, wu;

@@ -4,6 +4,7 @@
  *        L D L^T - lambda I.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -67,27 +68,27 @@
  * @param[out]    rqcorr  The Rayleigh Quotient correction to lambda.
  * @param[out]    work    Single precision array, dimension (4*n).
  */
-void clar1v(const int n, const int b1, const int bn, const f32 lambda,
+void clar1v(const INT n, const INT b1, const INT bn, const f32 lambda,
             const f32* restrict D, const f32* restrict L,
             const f32* restrict LD, const f32* restrict LLD,
             const f32 pivmin, const f32 gaptol,
-            c64* restrict Z, const int wantnc, int* negcnt,
-            f32* ztz, f32* mingma, int* r,
-            int* restrict isuppz, f32* nrminv, f32* resid,
+            c64* restrict Z, const INT wantnc, INT* negcnt,
+            f32* ztz, f32* mingma, INT* r,
+            INT* restrict isuppz, f32* nrminv, f32* resid,
             f32* rqcorr, f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int i, r1, r2, neg1, neg2;
-    int sawnan1, sawnan2;
+    INT i, r1, r2, neg1, neg2;
+    INT sawnan1, sawnan2;
     f32 dplus, dminus, s, tmp, eps;
 
-    const int indlpl = 0;
-    const int indumn = n;
-    const int inds   = 2 * n;
-    const int indp   = 3 * n;
+    const INT indlpl = 0;
+    const INT indumn = n;
+    const INT inds   = 2 * n;
+    const INT indp   = 3 * n;
 
     eps = slamch("Precision");
 

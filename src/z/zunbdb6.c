@@ -4,6 +4,7 @@
  *        orthonormal basis using Gram-Schmidt.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -50,13 +51,13 @@
  * @param[out]    info   = 0: successful exit.
  *                       < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zunbdb6(const int m1, const int m2, const int n,
-             c128* restrict X1, const int incx1,
-             c128* restrict X2, const int incx2,
-             const c128* restrict Q1, const int ldq1,
-             const c128* restrict Q2, const int ldq2,
-             c128* restrict work, const int lwork,
-             int* info)
+void zunbdb6(const INT m1, const INT m2, const INT n,
+             c128* restrict X1, const INT incx1,
+             c128* restrict X2, const INT incx2,
+             const c128* restrict Q1, const INT ldq1,
+             const c128* restrict Q2, const INT ldq2,
+             c128* restrict work, const INT lwork,
+             INT* info)
 {
     const f64 ALPHA = 0.83;
     const f64 REALZERO = 0.0;
@@ -64,7 +65,7 @@ void zunbdb6(const int m1, const int m2, const int n,
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int i, ix;
+    INT i, ix;
     f64 eps, norm, norm_new, scl, ssq;
 
     *info = 0;

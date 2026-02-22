@@ -3,6 +3,7 @@
  * @brief SLARTV applies a vector of plane rotations with real cosines and real sines.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -25,16 +26,16 @@
  *                      The sines of the plane rotations.
  * @param[in]     incc  The increment between elements of C and S. incc > 0.
  */
-void slartv(const int n, f32* restrict X, const int incx,
-            f32* restrict Y, const int incy,
+void slartv(const INT n, f32* restrict X, const INT incx,
+            f32* restrict Y, const INT incy,
             const f32* restrict C, const f32* restrict S,
-            const int incc)
+            const INT incc)
 {
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         f32 xi = X[ix];
         f32 yi = Y[iy];
         X[ix] = C[ic] * xi + S[ic] * yi;

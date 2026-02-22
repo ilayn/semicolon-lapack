@@ -4,6 +4,7 @@
  *        a QL factorization determined by CGEQLF (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -38,16 +39,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cungql(const int m, const int n, const int k,
-            c64* restrict A, const int lda,
+void cungql(const INT m, const INT n, const INT k,
+            c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    int nb, nbmin, nx, iws, ldwork, lwkopt;
-    int i, ib, iinfo, j, l;
-    int kk;
-    int lquery;
+    INT nb, nbmin, nx, iws, ldwork, lwkopt;
+    INT i, ib, iinfo, j, l;
+    INT kk;
+    INT lquery;
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
     /* Parameter validation */

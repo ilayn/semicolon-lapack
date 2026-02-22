@@ -4,6 +4,7 @@
  *        an LQ factorization determined by DGELQF (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
@@ -39,16 +40,16 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dorglq(const int m, const int n, const int k,
-            f64* restrict A, const int lda,
+void dorglq(const INT m, const INT n, const INT k,
+            f64* restrict A, const INT lda,
             const f64* restrict tau,
-            f64* restrict work, const int lwork,
-            int* info)
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int nb, nbmin, nx, iws, ldwork, lwkopt;
-    int i, ib, iinfo, j, l;
-    int ki, kk;
-    int lquery;
+    INT nb, nbmin, nx, iws, ldwork, lwkopt;
+    INT i, ib, iinfo, j, l;
+    INT ki, kk;
+    INT lquery;
     const f64 ZERO = 0.0;
 
     /* Parameter validation */

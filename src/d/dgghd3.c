@@ -3,6 +3,7 @@
  * @brief DGGHD3 reduces a pair of real matrices (A,B) to generalized upper Hessenberg form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
@@ -79,28 +80,28 @@
 void dgghd3(
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int blk22, initq, initz, lquery, wantq, wantz;
-    int cola, i, ierr, j, j0, jcol, jj, jrow, k;
-    int kacc22, len, lwkopt, n2nb, nb, nblst, nbmin;
-    int nh, nnb, nx, ppw, ppwo, pw, top = 0, topq;
+    INT blk22, initq, initz, lquery, wantq, wantz;
+    INT cola, i, ierr, j, j0, jcol, jj, jrow, k;
+    INT kacc22, len, lwkopt, n2nb, nb, nblst, nbmin;
+    INT nh, nnb, nx, ppw, ppwo, pw, top = 0, topq;
     f64 c, c1, c2, s, s1, s2, temp, temp1, temp2, temp3;
 
     *info = 0;

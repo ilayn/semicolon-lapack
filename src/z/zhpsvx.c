@@ -3,6 +3,7 @@
  * @brief ZHPSVX computes the solution to a complex system of linear equations A * X = B for Hermitian packed matrices (expert driver).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -76,25 +77,25 @@
 void zhpsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict AP,
     c128* restrict AFP,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nofact;
+    INT nofact;
     f64 anorm;
 
     *info = 0;

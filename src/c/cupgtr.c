@@ -3,6 +3,7 @@
  * @brief CUPGTR generates a complex unitary matrix Q.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -33,15 +34,15 @@
  * @param[out]    info   = 0:  successful exit
  *                       < 0:  if INFO = -i, the i-th argument had an illegal value
  */
-void cupgtr(const char* uplo, const int n, const c64* AP,
-            const c64* tau, c64* Q, const int ldq,
-            c64* work, int* info) {
+void cupgtr(const char* uplo, const INT n, const c64* AP,
+            const c64* tau, c64* Q, const INT ldq,
+            c64* work, INT* info) {
 
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int upper;
-    int i, iinfo, ij, j;
+    INT upper;
+    INT i, iinfo, ij, j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

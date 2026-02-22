@@ -5,6 +5,7 @@
  *        real matrix C, which consists of two blocks A and B.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -56,16 +57,16 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void stpmqrt(const char* side, const char* trans, const int m, const int n,
-             const int k, const int l, const int nb,
-             const f32* restrict V, const int ldv,
-             const f32* restrict T, const int ldt,
-             f32* restrict A, const int lda,
-             f32* restrict B, const int ldb,
-             f32* restrict work, int* info)
+void stpmqrt(const char* side, const char* trans, const INT m, const INT n,
+             const INT k, const INT l, const INT nb,
+             const f32* restrict V, const INT ldv,
+             const f32* restrict T, const INT ldt,
+             f32* restrict A, const INT lda,
+             f32* restrict B, const INT ldb,
+             f32* restrict work, INT* info)
 {
-    int left, right, tran, notran;
-    int i, ib, mb, lb, kf, ldaq, ldvq;
+    INT left, right, tran, notran;
+    INT i, ib, mb, lb, kf, ldaq, ldvq;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

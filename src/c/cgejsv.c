@@ -4,6 +4,7 @@
  *        Jacobi rotations with sophisticated preprocessing for high accuracy.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -15,13 +16,13 @@ static const c64 CZERO = CMPLXF(0.0f, 0.0f);
 static const c64 CONE = CMPLXF(1.0f, 0.0f);
 
 /** @cond */
-static inline int max3i(int a, int b, int c) {
-    int m = (a > b) ? a : b;
+static inline INT max3i(INT a, INT b, INT c) {
+    INT m = (a > b) ? a : b;
     return (m > c) ? m : c;
 }
 
-static inline int max5i(int a, int b, int c, int d, int e) {
-    int m = (a > b) ? a : b;
+static inline INT max5i(INT a, INT b, INT c, INT d, INT e) {
+    INT m = (a > b) ? a : b;
     m = (m > c) ? m : c;
     m = (m > d) ? m : d;
     return (m > e) ? m : e;
@@ -30,33 +31,33 @@ static inline int max5i(int a, int b, int c, int d, int e) {
 
 void cgejsv(const char* joba, const char* jobu, const char* jobv,
             const char* jobr, const char* jobt, const char* jobp,
-            const int m, const int n,
-            c64* restrict A, const int lda,
+            const INT m, const INT n,
+            c64* restrict A, const INT lda,
             f32* restrict SVA,
-            c64* restrict U, const int ldu,
-            c64* restrict V, const int ldv,
-            c64* restrict cwork, const int lwork,
-            f32* restrict rwork, const int lrwork,
-            int* restrict iwork, int* info)
+            c64* restrict U, const INT ldu,
+            c64* restrict V, const INT ldv,
+            c64* restrict cwork, const INT lwork,
+            f32* restrict rwork, const INT lrwork,
+            INT* restrict iwork, INT* info)
 {
     /* Local variables */
     c64 ctemp;
     f32 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
     f32 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
     f32 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
-    int ierr, n1, nr, numrank, p, q, warning;
-    int almort, defr, errest, goscal, jracc, kill, lquery, lsvec;
-    int l2aber, l2kill, l2pert, l2rank, l2tran;
-    int noscal, rowpiv, rsvec, transp;
-    int iwoff = 0;
+    INT ierr, n1, nr, numrank, p, q, warning;
+    INT almort, defr, errest, goscal, jracc, kill, lquery, lsvec;
+    INT l2aber, l2kill, l2pert, l2rank, l2tran;
+    INT noscal, rowpiv, rsvec, transp;
+    INT iwoff = 0;
 
     /* Workspace query variables */
-    int optwrk, minwrk, minrwrk, miniwrk;
-    int lwcon, lwlqf, lwqp3, lwqrf, lwunmlq, lwunmqr, lwunmqrm;
-    int lwsvdj, lwsvdjv, lrwqp3, lrwcon, lrwsvdj;
-    int lwrk_zgelqf = 0, lwrk_zgeqp3 = 0, lwrk_zgeqp3n, lwrk_zgeqrf = 0;
-    int lwrk_zgesvj, lwrk_zgesvjv, lwrk_zgesvju, lwrk_zunmlq;
-    int lwrk_zunmqr, lwrk_zunmqrm;
+    INT optwrk, minwrk, minrwrk, miniwrk;
+    INT lwcon, lwlqf, lwqp3, lwqrf, lwunmlq, lwunmqr, lwunmqrm;
+    INT lwsvdj, lwsvdjv, lrwqp3, lrwcon, lrwsvdj;
+    INT lwrk_zgelqf = 0, lwrk_zgeqp3 = 0, lwrk_zgeqp3n, lwrk_zgeqrf = 0;
+    INT lwrk_zgesvj, lwrk_zgesvjv, lwrk_zgesvju, lwrk_zunmlq;
+    INT lwrk_zunmqr, lwrk_zunmqrm;
     c64 cdummy[1];
     f32 rdummy[1];
 
@@ -133,11 +134,11 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
 
         if (lquery) {
             cgeqp3(m, n, A, lda, iwork, NULL, cdummy, -1, rdummy, &ierr);
-            lwrk_zgeqp3 = (int)crealf(cdummy[0]);
+            lwrk_zgeqp3 = (INT)crealf(cdummy[0]);
             cgeqrf(n, n, A, lda, NULL, cdummy, -1, &ierr);
-            lwrk_zgeqrf = (int)crealf(cdummy[0]);
+            lwrk_zgeqrf = (INT)crealf(cdummy[0]);
             cgelqf(n, n, A, lda, NULL, cdummy, -1, &ierr);
-            lwrk_zgelqf = (int)crealf(cdummy[0]);
+            lwrk_zgelqf = (INT)crealf(cdummy[0]);
         }
 
         optwrk  = 2;
@@ -157,7 +158,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             if (lquery) {
                 cgesvj("L", "N", "N", n, n, A, lda, SVA, n,
                        V, ldv, cdummy, -1, rdummy, -1, &ierr);
-                lwrk_zgesvj = (int)crealf(cdummy[0]);
+                lwrk_zgesvj = (INT)crealf(cdummy[0]);
                 if (errest) {
                     optwrk = n + lwrk_zgeqp3;
                     if (n * n + lwcon > optwrk) optwrk = n * n + lwcon;
@@ -204,10 +205,10 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             if (lquery) {
                 cgesvj("L", "U", "N", n, n, U, ldu, SVA, n, A,
                        lda, cdummy, -1, rdummy, -1, &ierr);
-                lwrk_zgesvj = (int)crealf(cdummy[0]);
+                lwrk_zgesvj = (INT)crealf(cdummy[0]);
                 cunmlq("L", "C", n, n, n, A, lda, NULL,
                        V, ldv, cdummy, -1, &ierr);
-                lwrk_zunmlq = (int)crealf(cdummy[0]);
+                lwrk_zunmlq = (INT)crealf(cdummy[0]);
                 if (errest) {
                     optwrk = n + lwrk_zgeqp3;
                     if (lwcon > optwrk)              optwrk = lwcon;
@@ -244,7 +245,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             if (errest) {
                 minwrk = n + max5i(lwqp3, lwcon, n + lwqrf, lwsvdj, lwunmqrm);
             } else {
-                int mx = lwqp3;
+                INT mx = lwqp3;
                 if (n + lwqrf > mx) mx = n + lwqrf;
                 if (lwsvdj > mx) mx = lwsvdj;
                 if (lwunmqrm > mx) mx = lwunmqrm;
@@ -253,15 +254,15 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             if (lquery) {
                 cgesvj("L", "U", "N", n, n, U, ldu, SVA, n, A,
                        lda, cdummy, -1, rdummy, -1, &ierr);
-                lwrk_zgesvj = (int)crealf(cdummy[0]);
+                lwrk_zgesvj = (INT)crealf(cdummy[0]);
                 cunmqr("L", "N", m, n, n, A, lda, NULL, U,
                        ldu, cdummy, -1, &ierr);
-                lwrk_zunmqrm = (int)crealf(cdummy[0]);
+                lwrk_zunmqrm = (INT)crealf(cdummy[0]);
                 if (errest) {
                     optwrk = n + max5i(lwrk_zgeqp3, lwcon, n + lwrk_zgeqrf,
                                        lwrk_zgesvj, lwrk_zunmqrm);
                 } else {
-                    int mx = lwrk_zgeqp3;
+                    INT mx = lwrk_zgeqp3;
                     if (n + lwrk_zgeqrf > mx) mx = n + lwrk_zgeqrf;
                     if (lwrk_zgesvj > mx)  mx = lwrk_zgesvj;
                     if (lwrk_zunmqrm > mx) mx = lwrk_zunmqrm;
@@ -287,19 +288,19 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             /* Full SVD requested */
             if (!jracc) {
                 if (errest) {
-                    int t1 = n + lwqp3;
-                    int t2 = n + lwcon;
-                    int t3 = 2 * n + n * n + lwcon;
-                    int t4 = 2 * n + lwqrf;
-                    int t5 = 2 * n + lwqp3;
-                    int t6 = 2 * n + n * n + n + lwlqf;
-                    int t7 = 2 * n + n * n + n + n * n + lwcon;
-                    int t8 = 2 * n + n * n + n + lwsvdj;
-                    int t9 = 2 * n + n * n + n + lwsvdjv;
-                    int t10 = 2 * n + n * n + n + lwunmqr;
-                    int t11 = 2 * n + n * n + n + lwunmlq;
-                    int t12 = n + n * n + lwsvdj;
-                    int t13 = n + lwunmqrm;
+                    INT t1 = n + lwqp3;
+                    INT t2 = n + lwcon;
+                    INT t3 = 2 * n + n * n + lwcon;
+                    INT t4 = 2 * n + lwqrf;
+                    INT t5 = 2 * n + lwqp3;
+                    INT t6 = 2 * n + n * n + n + lwlqf;
+                    INT t7 = 2 * n + n * n + n + n * n + lwcon;
+                    INT t8 = 2 * n + n * n + n + lwsvdj;
+                    INT t9 = 2 * n + n * n + n + lwsvdjv;
+                    INT t10 = 2 * n + n * n + n + lwunmqr;
+                    INT t11 = 2 * n + n * n + n + lwunmlq;
+                    INT t12 = n + n * n + lwsvdj;
+                    INT t13 = n + lwunmqrm;
                     minwrk = t1;
                     if (t2 > minwrk)  minwrk = t2;
                     if (t3 > minwrk)  minwrk = t3;
@@ -314,18 +315,18 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     if (t12 > minwrk) minwrk = t12;
                     if (t13 > minwrk) minwrk = t13;
                 } else {
-                    int t1 = n + lwqp3;
-                    int t2 = 2 * n + n * n + lwcon;
-                    int t3 = 2 * n + lwqrf;
-                    int t4 = 2 * n + lwqp3;
-                    int t5 = 2 * n + n * n + n + lwlqf;
-                    int t6 = 2 * n + n * n + n + n * n + lwcon;
-                    int t7 = 2 * n + n * n + n + lwsvdj;
-                    int t8 = 2 * n + n * n + n + lwsvdjv;
-                    int t9 = 2 * n + n * n + n + lwunmqr;
-                    int t10 = 2 * n + n * n + n + lwunmlq;
-                    int t11 = n + n * n + lwsvdj;
-                    int t12 = n + lwunmqrm;
+                    INT t1 = n + lwqp3;
+                    INT t2 = 2 * n + n * n + lwcon;
+                    INT t3 = 2 * n + lwqrf;
+                    INT t4 = 2 * n + lwqp3;
+                    INT t5 = 2 * n + n * n + n + lwlqf;
+                    INT t6 = 2 * n + n * n + n + n * n + lwcon;
+                    INT t7 = 2 * n + n * n + n + lwsvdj;
+                    INT t8 = 2 * n + n * n + n + lwsvdjv;
+                    INT t9 = 2 * n + n * n + n + lwunmqr;
+                    INT t10 = 2 * n + n * n + n + lwunmlq;
+                    INT t11 = n + n * n + lwsvdj;
+                    INT t12 = n + lwunmqrm;
                     minwrk = t1;
                     if (t2 > minwrk)  minwrk = t2;
                     if (t3 > minwrk)  minwrk = t3;
@@ -344,12 +345,12 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             } else {
                 /* JRACC */
                 if (errest) {
-                    int t1 = n + lwqp3;
-                    int t2 = n + lwcon;
-                    int t3 = 2 * n + lwqrf;
-                    int t4 = 2 * n + n * n + lwsvdjv;
-                    int t5 = 2 * n + n * n + n + lwunmqr;
-                    int t6 = n + lwunmqrm;
+                    INT t1 = n + lwqp3;
+                    INT t2 = n + lwcon;
+                    INT t3 = 2 * n + lwqrf;
+                    INT t4 = 2 * n + n * n + lwsvdjv;
+                    INT t5 = 2 * n + n * n + n + lwunmqr;
+                    INT t6 = n + lwunmqrm;
                     minwrk = t1;
                     if (t2 > minwrk) minwrk = t2;
                     if (t3 > minwrk) minwrk = t3;
@@ -357,11 +358,11 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     if (t5 > minwrk) minwrk = t5;
                     if (t6 > minwrk) minwrk = t6;
                 } else {
-                    int t1 = n + lwqp3;
-                    int t2 = 2 * n + lwqrf;
-                    int t3 = 2 * n + n * n + lwsvdjv;
-                    int t4 = 2 * n + n * n + n + lwunmqr;
-                    int t5 = n + lwunmqrm;
+                    INT t1 = n + lwqp3;
+                    INT t2 = 2 * n + lwqrf;
+                    INT t3 = 2 * n + n * n + lwsvdjv;
+                    INT t4 = 2 * n + n * n + n + lwunmqr;
+                    INT t5 = n + lwunmqrm;
                     minwrk = t1;
                     if (t2 > minwrk) minwrk = t2;
                     if (t3 > minwrk) minwrk = t3;
@@ -373,40 +374,40 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             if (lquery) {
                 cunmqr("L", "N", m, n, n, A, lda, NULL, U,
                        ldu, cdummy, -1, &ierr);
-                lwrk_zunmqrm = (int)crealf(cdummy[0]);
+                lwrk_zunmqrm = (INT)crealf(cdummy[0]);
                 cunmqr("L", "N", n, n, n, A, lda, NULL, U,
                        ldu, cdummy, -1, &ierr);
-                lwrk_zunmqr = (int)crealf(cdummy[0]);
+                lwrk_zunmqr = (INT)crealf(cdummy[0]);
                 if (!jracc) {
                     cgeqp3(n, n, A, lda, iwork, NULL, cdummy,
                            -1, rdummy, &ierr);
-                    lwrk_zgeqp3n = (int)crealf(cdummy[0]);
+                    lwrk_zgeqp3n = (INT)crealf(cdummy[0]);
                     cgesvj("L", "U", "N", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
-                    lwrk_zgesvj = (int)crealf(cdummy[0]);
+                    lwrk_zgesvj = (INT)crealf(cdummy[0]);
                     cgesvj("U", "U", "N", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
-                    lwrk_zgesvju = (int)crealf(cdummy[0]);
+                    lwrk_zgesvju = (INT)crealf(cdummy[0]);
                     cgesvj("L", "U", "V", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
-                    lwrk_zgesvjv = (int)crealf(cdummy[0]);
+                    lwrk_zgesvjv = (INT)crealf(cdummy[0]);
                     cunmlq("L", "C", n, n, n, A, lda, NULL,
                            V, ldv, cdummy, -1, &ierr);
-                    lwrk_zunmlq = (int)crealf(cdummy[0]);
+                    lwrk_zunmlq = (INT)crealf(cdummy[0]);
                     if (errest) {
-                        int t1 = n + lwrk_zgeqp3;
-                        int t2 = n + lwcon;
-                        int t3 = 2 * n + n * n + lwcon;
-                        int t4 = 2 * n + lwrk_zgeqrf;
-                        int t5 = 2 * n + lwrk_zgeqp3n;
-                        int t6 = 2 * n + n * n + n + lwrk_zgelqf;
-                        int t7 = 2 * n + n * n + n + n * n + lwcon;
-                        int t8 = 2 * n + n * n + n + lwrk_zgesvj;
-                        int t9 = 2 * n + n * n + n + lwrk_zgesvjv;
-                        int t10 = 2 * n + n * n + n + lwrk_zunmqr;
-                        int t11 = 2 * n + n * n + n + lwrk_zunmlq;
-                        int t12 = n + n * n + lwrk_zgesvju;
-                        int t13 = n + lwrk_zunmqrm;
+                        INT t1 = n + lwrk_zgeqp3;
+                        INT t2 = n + lwcon;
+                        INT t3 = 2 * n + n * n + lwcon;
+                        INT t4 = 2 * n + lwrk_zgeqrf;
+                        INT t5 = 2 * n + lwrk_zgeqp3n;
+                        INT t6 = 2 * n + n * n + n + lwrk_zgelqf;
+                        INT t7 = 2 * n + n * n + n + n * n + lwcon;
+                        INT t8 = 2 * n + n * n + n + lwrk_zgesvj;
+                        INT t9 = 2 * n + n * n + n + lwrk_zgesvjv;
+                        INT t10 = 2 * n + n * n + n + lwrk_zunmqr;
+                        INT t11 = 2 * n + n * n + n + lwrk_zunmlq;
+                        INT t12 = n + n * n + lwrk_zgesvju;
+                        INT t13 = n + lwrk_zunmqrm;
                         optwrk = t1;
                         if (t2 > optwrk)  optwrk = t2;
                         if (t3 > optwrk)  optwrk = t3;
@@ -421,18 +422,18 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                         if (t12 > optwrk) optwrk = t12;
                         if (t13 > optwrk) optwrk = t13;
                     } else {
-                        int t1 = n + lwrk_zgeqp3;
-                        int t2 = 2 * n + n * n + lwcon;
-                        int t3 = 2 * n + lwrk_zgeqrf;
-                        int t4 = 2 * n + lwrk_zgeqp3n;
-                        int t5 = 2 * n + n * n + n + lwrk_zgelqf;
-                        int t6 = 2 * n + n * n + n + n * n + lwcon;
-                        int t7 = 2 * n + n * n + n + lwrk_zgesvj;
-                        int t8 = 2 * n + n * n + n + lwrk_zgesvjv;
-                        int t9 = 2 * n + n * n + n + lwrk_zunmqr;
-                        int t10 = 2 * n + n * n + n + lwrk_zunmlq;
-                        int t11 = n + n * n + lwrk_zgesvju;
-                        int t12 = n + lwrk_zunmqrm;
+                        INT t1 = n + lwrk_zgeqp3;
+                        INT t2 = 2 * n + n * n + lwcon;
+                        INT t3 = 2 * n + lwrk_zgeqrf;
+                        INT t4 = 2 * n + lwrk_zgeqp3n;
+                        INT t5 = 2 * n + n * n + n + lwrk_zgelqf;
+                        INT t6 = 2 * n + n * n + n + n * n + lwcon;
+                        INT t7 = 2 * n + n * n + n + lwrk_zgesvj;
+                        INT t8 = 2 * n + n * n + n + lwrk_zgesvjv;
+                        INT t9 = 2 * n + n * n + n + lwrk_zunmqr;
+                        INT t10 = 2 * n + n * n + n + lwrk_zunmlq;
+                        INT t11 = n + n * n + lwrk_zgesvju;
+                        INT t12 = n + lwrk_zunmqrm;
                         optwrk = t1;
                         if (t2 > optwrk)  optwrk = t2;
                         if (t3 > optwrk)  optwrk = t3;
@@ -450,21 +451,21 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     /* JRACC */
                     cgesvj("L", "U", "V", n, n, U, ldu, SVA,
                            n, V, ldv, cdummy, -1, rdummy, -1, &ierr);
-                    lwrk_zgesvjv = (int)crealf(cdummy[0]);
+                    lwrk_zgesvjv = (INT)crealf(cdummy[0]);
                     cunmqr("L", "N", n, n, n, NULL, n, NULL,
                            V, ldv, cdummy, -1, &ierr);
-                    lwrk_zunmqr = (int)crealf(cdummy[0]);
+                    lwrk_zunmqr = (INT)crealf(cdummy[0]);
                     cunmqr("L", "N", m, n, n, A, lda, NULL, U,
                            ldu, cdummy, -1, &ierr);
-                    lwrk_zunmqrm = (int)crealf(cdummy[0]);
+                    lwrk_zunmqrm = (INT)crealf(cdummy[0]);
                     if (errest) {
-                        int t1 = n + lwrk_zgeqp3;
-                        int t2 = n + lwcon;
-                        int t3 = 2 * n + lwrk_zgeqrf;
-                        int t4 = 2 * n + n * n;
-                        int t5 = 2 * n + n * n + lwrk_zgesvjv;
-                        int t6 = 2 * n + n * n + n + lwrk_zunmqr;
-                        int t7 = n + lwrk_zunmqrm;
+                        INT t1 = n + lwrk_zgeqp3;
+                        INT t2 = n + lwcon;
+                        INT t3 = 2 * n + lwrk_zgeqrf;
+                        INT t4 = 2 * n + n * n;
+                        INT t5 = 2 * n + n * n + lwrk_zgesvjv;
+                        INT t6 = 2 * n + n * n + n + lwrk_zunmqr;
+                        INT t7 = n + lwrk_zunmqrm;
                         optwrk = t1;
                         if (t2 > optwrk) optwrk = t2;
                         if (t3 > optwrk) optwrk = t3;
@@ -473,12 +474,12 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                         if (t6 > optwrk) optwrk = t6;
                         if (t7 > optwrk) optwrk = t7;
                     } else {
-                        int t1 = n + lwrk_zgeqp3;
-                        int t2 = 2 * n + lwrk_zgeqrf;
-                        int t3 = 2 * n + n * n;
-                        int t4 = 2 * n + n * n + lwrk_zgesvjv;
-                        int t5 = 2 * n + n * n + n + lwrk_zunmqr;
-                        int t6 = n + lwrk_zunmqrm;
+                        INT t1 = n + lwrk_zgeqp3;
+                        INT t2 = 2 * n + lwrk_zgeqrf;
+                        INT t3 = 2 * n + n * n;
+                        INT t4 = 2 * n + n * n + lwrk_zgesvjv;
+                        INT t5 = 2 * n + n * n + n + lwrk_zunmqr;
+                        INT t6 = n + lwrk_zunmqrm;
                         optwrk = t1;
                         if (t2 > optwrk) optwrk = t2;
                         if (t3 > optwrk) optwrk = t3;
@@ -925,7 +926,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                n, V, ldv, cwork, lwork, rwork, lrwork, info);
 
         scalem = rwork[0];
-        numrank = (int)(rwork[1] + 0.5f);
+        numrank = (INT)(rwork[1] + 0.5f);
 
     } else if ((rsvec && !lsvec && !jracc) ||
                (jracc && !lsvec && nr != n)) {
@@ -945,7 +946,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             cgesvj("L", "U", "N", n, nr, V, ldv, SVA, nr, A, lda,
                    cwork, lwork, rwork, lrwork, info);
             scalem = rwork[0];
-            numrank = (int)(rwork[1] + 0.5f);
+            numrank = (INT)(rwork[1] + 0.5f);
 
         } else {
 
@@ -965,7 +966,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
             cgesvj("L", "U", "N", nr, nr, V, ldv, SVA, nr, U, ldu,
                    &cwork[n], lwork - n, rwork, lrwork, info);
             scalem = rwork[0];
-            numrank = (int)(rwork[1] + 0.5f);
+            numrank = (INT)(rwork[1] + 0.5f);
             if (nr < n) {
                 claset("A", n - nr, nr, CZERO, CZERO, &V[nr], ldv);
                 claset("A", nr, n - nr, CZERO, CZERO, &V[nr * ldv], ldv);
@@ -991,7 +992,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         cgesvj("U", "N", "V", n, n, A, lda, SVA, n, V, ldv,
                cwork, lwork, rwork, lrwork, info);
         scalem = rwork[0];
-        numrank = (int)(rwork[1] + 0.5f);
+        numrank = (INT)(rwork[1] + 0.5f);
         clapmr(0, n, n, V, ldv, iwork);
 
     } else if (lsvec && !rsvec) {
@@ -1018,7 +1019,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
         cgesvj("L", "U", "N", nr, nr, U, ldu, SVA, nr, A,
                lda, &cwork[n], lwork - n, rwork, lrwork, info);
         scalem = rwork[0];
-        numrank = (int)(rwork[1] + 0.5f);
+        numrank = (INT)(rwork[1] + 0.5f);
 
         if (nr < m) {
             claset("A", m - nr, nr, CZERO, CZERO, &U[nr], ldu);
@@ -1186,7 +1187,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                        &cwork[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr,
                        rwork, lrwork, info);
                 scalem = rwork[0];
-                numrank = (int)(rwork[1] + 0.5f);
+                numrank = (INT)(rwork[1] + 0.5f);
                 for (p = 0; p < nr; p++) {
                     cblas_ccopy(nr, &V[p * ldv], 1, &U[p * ldu], 1);
                     cblas_csscal(nr, SVA[p], &V[p * ldv], 1);
@@ -1214,7 +1215,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                        ldu, &cwork[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr,
                        rwork, lrwork, info);
                 scalem = rwork[0];
-                numrank = (int)(rwork[1] + 0.5f);
+                numrank = (INT)(rwork[1] + 0.5f);
                 for (p = 0; p < nr; p++) {
                     cblas_ccopy(nr, &V[p * ldv], 1, &U[p * ldu], 1);
                     cblas_csscal(nr, SVA[p], &U[p * ldu], 1);
@@ -1245,7 +1246,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                        ldu, &cwork[2 * n + n * nr + nr], lwork - 2 * n - n * nr - nr,
                        rwork, lrwork, info);
                 scalem = rwork[0];
-                numrank = (int)(rwork[1] + 0.5f);
+                numrank = (INT)(rwork[1] + 0.5f);
                 if (nr < n) {
                     claset("A", n - nr, nr, CZERO, CZERO, &V[nr], ldv);
                     claset("A", nr, n - nr, CZERO, CZERO, &V[nr * ldv], ldv);
@@ -1334,7 +1335,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                    rwork, lrwork, info);
 
             scalem = rwork[0];
-            numrank = (int)(rwork[1] + 0.5f);
+            numrank = (INT)(rwork[1] + 0.5f);
             for (p = 0; p < n; p++) {
                 cblas_ccopy(n, &cwork[n + p * n], 1, &U[p * ldu], 1);
                 cblas_csscal(n, SVA[p], &cwork[n + p * n], 1);
@@ -1424,7 +1425,7 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                    n, V, ldv, &cwork[2 * n + n * nr], lwork - 2 * n - n * nr,
                    rwork, lrwork, info);
             scalem = rwork[0];
-            numrank = (int)(rwork[1] + 0.5f);
+            numrank = (INT)(rwork[1] + 0.5f);
 
             if (nr < n) {
                 claset("A", n - nr, nr, CZERO, CZERO, &V[nr], ldv);

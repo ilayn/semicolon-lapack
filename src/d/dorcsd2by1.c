@@ -3,6 +3,7 @@
  * @brief DORCSD2BY1 computes the CS decomposition of an M-by-Q matrix with orthonormal columns partitioned into a 2-by-1 block structure.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -107,35 +108,35 @@ void dorcsd2by1(
     const char* jobu1,
     const char* jobu2,
     const char* jobv1t,
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f64* restrict X11,
-    const int ldx11,
+    const INT ldx11,
     f64* restrict X21,
-    const int ldx21,
+    const INT ldx21,
     f64* restrict theta,
     f64* restrict U1,
-    const int ldu1,
+    const INT ldu1,
     f64* restrict U2,
-    const int ldu2,
+    const INT ldu2,
     f64* restrict V1T,
-    const int ldv1t,
+    const INT ldv1t,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
     const f64 one = 1.0;
     const f64 zero = 0.0;
 
-    int childinfo, i, ib11d, ib11e, ib12d, ib12e;
-    int ib21d, ib21e, ib22d, ib22e, ibbcsd, iorbdb;
-    int iorglq, iorgqr, iphi, itaup1, itaup2, itauq1;
-    int j, lbbcsd, lorbdb, lorglq, lorglqmin;
-    int lorglqopt, lorgqr, lorgqrmin, lorgqropt;
-    int lworkmin, lworkopt, r;
-    int lquery, wantu1, wantu2, wantv1t;
+    INT childinfo, i, ib11d, ib11e, ib12d, ib12e;
+    INT ib21d, ib21e, ib22d, ib22e, ibbcsd, iorbdb;
+    INT iorglq, iorgqr, iphi, itaup1, itaup2, itauq1;
+    INT j, lbbcsd, lorbdb, lorglq, lorglqmin;
+    INT lorglqopt, lorgqr, lorgqrmin, lorgqropt;
+    INT lworkmin, lworkopt, r;
+    INT lquery, wantu1, wantu2, wantv1t;
     f64 dum1[1];
     f64 dum2[1];
 
@@ -193,100 +194,100 @@ void dorcsd2by1(
         if (r == q) {
             dorbdb1(m, p, q, X11, ldx11, X21, ldx21, theta,
                     NULL, NULL, NULL, NULL, work, -1, &childinfo);
-            lorbdb = (int)work[0];
+            lorbdb = (INT)work[0];
             if (wantu1 && p > 0) {
                 dorgqr(p, p, q, U1, ldu1, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > p ? lorgqrmin : p;
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantu2 && m - p > 0) {
                 dorgqr(m - p, m - p, q, U2, ldu2, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > (m - p) ? lorgqrmin : (m - p);
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantv1t && q > 0) {
                 dorglq(q - 1, q - 1, q - 1, V1T, ldv1t, dum1, work, -1, &childinfo);
                 lorglqmin = lorglqmin > (q - 1) ? lorglqmin : (q - 1);
-                lorglqopt = lorglqopt > (int)work[0] ? lorglqopt : (int)work[0];
+                lorglqopt = lorglqopt > (INT)work[0] ? lorglqopt : (INT)work[0];
             }
             dbbcsd(jobu1, jobu2, jobv1t, "N", "N", m, p, q, theta,
                    NULL, U1, ldu1, U2, ldu2, V1T, ldv1t,
                    dum2, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    work, -1, &childinfo);
-            lbbcsd = (int)work[0];
+            lbbcsd = (INT)work[0];
         } else if (r == p) {
             dorbdb2(m, p, q, X11, ldx11, X21, ldx21, theta,
                     NULL, NULL, NULL, NULL, work, -1, &childinfo);
-            lorbdb = (int)work[0];
+            lorbdb = (INT)work[0];
             if (wantu1 && p > 0) {
                 dorgqr(p - 1, p - 1, p - 1, &U1[1 + 1 * ldu1], ldu1, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > (p - 1) ? lorgqrmin : (p - 1);
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantu2 && m - p > 0) {
                 dorgqr(m - p, m - p, q, U2, ldu2, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > (m - p) ? lorgqrmin : (m - p);
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantv1t && q > 0) {
                 dorglq(q, q, r, V1T, ldv1t, dum1, work, -1, &childinfo);
                 lorglqmin = lorglqmin > q ? lorglqmin : q;
-                lorglqopt = lorglqopt > (int)work[0] ? lorglqopt : (int)work[0];
+                lorglqopt = lorglqopt > (INT)work[0] ? lorglqopt : (INT)work[0];
             }
             dbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta,
                    NULL, V1T, ldv1t, dum2, 1, U1, ldu1, U2, ldu2,
                    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    work, -1, &childinfo);
-            lbbcsd = (int)work[0];
+            lbbcsd = (INT)work[0];
         } else if (r == m - p) {
             dorbdb3(m, p, q, X11, ldx11, X21, ldx21, theta,
                     NULL, NULL, NULL, NULL, work, -1, &childinfo);
-            lorbdb = (int)work[0];
+            lorbdb = (INT)work[0];
             if (wantu1 && p > 0) {
                 dorgqr(p, p, q, U1, ldu1, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > p ? lorgqrmin : p;
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantu2 && m - p > 0) {
                 dorgqr(m - p - 1, m - p - 1, m - p - 1, &U2[1 + 1 * ldu2], ldu2,
                        dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > (m - p - 1) ? lorgqrmin : (m - p - 1);
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantv1t && q > 0) {
                 dorglq(q, q, r, V1T, ldv1t, dum1, work, -1, &childinfo);
                 lorglqmin = lorglqmin > q ? lorglqmin : q;
-                lorglqopt = lorglqopt > (int)work[0] ? lorglqopt : (int)work[0];
+                lorglqopt = lorglqopt > (INT)work[0] ? lorglqopt : (INT)work[0];
             }
             dbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p,
                    theta, NULL, dum2, 1, V1T, ldv1t, U2, ldu2, U1, ldu1,
                    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    work, -1, &childinfo);
-            lbbcsd = (int)work[0];
+            lbbcsd = (INT)work[0];
         } else {
             dorbdb4(m, p, q, X11, ldx11, X21, ldx21, theta,
                     NULL, NULL, NULL, NULL, NULL, work, -1, &childinfo);
-            lorbdb = m + (int)work[0];
+            lorbdb = m + (INT)work[0];
             if (wantu1 && p > 0) {
                 dorgqr(p, p, m - q, U1, ldu1, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > p ? lorgqrmin : p;
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantu2 && m - p > 0) {
                 dorgqr(m - p, m - p, m - q, U2, ldu2, dum1, work, -1, &childinfo);
                 lorgqrmin = lorgqrmin > (m - p) ? lorgqrmin : (m - p);
-                lorgqropt = lorgqropt > (int)work[0] ? lorgqropt : (int)work[0];
+                lorgqropt = lorgqropt > (INT)work[0] ? lorgqropt : (INT)work[0];
             }
             if (wantv1t && q > 0) {
                 dorglq(q, q, q, V1T, ldv1t, dum1, work, -1, &childinfo);
                 lorglqmin = lorglqmin > q ? lorglqmin : q;
-                lorglqopt = lorglqopt > (int)work[0] ? lorglqopt : (int)work[0];
+                lorglqopt = lorglqopt > (INT)work[0] ? lorglqopt : (INT)work[0];
             }
             dbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q,
                    theta, NULL, U2, ldu2, U1, ldu1, dum2, 1, V1T, ldv1t,
                    NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                    work, -1, &childinfo);
-            lbbcsd = (int)work[0];
+            lbbcsd = (INT)work[0];
         }
 
         lworkmin = iorbdb + lorbdb - 1;

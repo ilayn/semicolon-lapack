@@ -3,6 +3,7 @@
  * @brief CPFTRS solves a system of linear equations using Cholesky factorization in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -44,16 +45,16 @@
 void cpftrs(
     const char* transr,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int lower, normaltransr;
+    INT lower, normaltransr;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

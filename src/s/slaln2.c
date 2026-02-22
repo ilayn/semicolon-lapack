@@ -3,6 +3,7 @@
  * @brief SLALN2 solves a 1-by-1 or 2-by-2 linear system of equations.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <float.h>
@@ -60,16 +61,16 @@
  *                         - = 0: No error, (ca A - w D) did not have to be perturbed.
  *                         - = 1: (ca A - w D) had to be perturbed.
  */
-void slaln2(const int ltrans, const int na, const int nw, const f32 smin,
-            const f32 ca, const f32* A, const int lda,
+void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
+            const f32 ca, const f32* A, const INT lda,
             const f32 d1, const f32 d2,
-            const f32* B, const int ldb,
+            const f32* B, const INT ldb,
             const f32 wr, const f32 wi,
-            f32* X, const int ldx,
-            f32* scale, f32* xnorm, int* info)
+            f32* X, const INT ldx,
+            f32* scale, f32* xnorm, INT* info)
 {
     /* Local scalars */
-    int icmax, j;
+    INT icmax, j;
     f32 bbnd, bi1, bi2, bignum, bnorm, br1, br2, ci21;
     f32 ci22, cmax, cnorm, cr21, cr22, csi, csr, li21;
     f32 lr21, smini, smlnum, temp, u22abs, ui11, ui11r;
@@ -83,13 +84,13 @@ void slaln2(const int ltrans, const int na, const int nw, const f32 smin,
 
     /* Pivot tables (converted from 1-based Fortran to 0-based C) */
     /* ZSWAP: whether to swap rows in final result */
-    static const int zswap[4] = {0, 0, 1, 1};
+    static const INT zswap[4] = {0, 0, 1, 1};
     /* RSWAP: whether to swap B rows before solving */
-    static const int rswap[4] = {0, 1, 0, 1};
+    static const INT rswap[4] = {0, 1, 0, 1};
     /* IPIVOT: pivot selection table (Fortran: IPIVOT(4,4), stored column-major)
      * Original Fortran DATA: 1,2,3,4, 2,1,4,3, 3,4,1,2, 4,3,2,1
      * Converted to 0-based: 0,1,2,3, 1,0,3,2, 2,3,0,1, 3,2,1,0 */
-    static const int ipivot[4][4] = {
+    static const INT ipivot[4][4] = {
         {0, 1, 2, 3},  /* column 0 (icmax=0) */
         {1, 0, 3, 2},  /* column 1 (icmax=1) */
         {2, 3, 0, 1},  /* column 2 (icmax=2) */

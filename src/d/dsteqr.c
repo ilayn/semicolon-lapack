@@ -4,6 +4,7 @@
  *        symmetric tridiagonal matrix using the implicit QL or QR method.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -52,21 +53,21 @@
  *                           if info = i, then i elements of E have not
  *                           converged to zero.
  */
-void dsteqr(const char* compz, const int n,
+void dsteqr(const char* compz, const INT n,
             f64* restrict D, f64* restrict E,
-            f64* restrict Z, const int ldz,
-            f64* restrict work, int* info)
+            f64* restrict Z, const INT ldz,
+            f64* restrict work, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
-    const int MAXIT = 30;
+    const INT MAXIT = 30;
 
     /* Test the input parameters. */
     *info = 0;
 
-    int icompz;
+    INT icompz;
     if (compz[0] == 'N' || compz[0] == 'n') {
         icompz = 0;
     } else if (compz[0] == 'V' || compz[0] == 'v') {
@@ -111,20 +112,20 @@ void dsteqr(const char* compz, const int n,
     if (icompz == 2)
         dlaset("F", n, n, ZERO, ONE, Z, ldz);
 
-    int nmaxit = n * MAXIT;
-    int jtot = 0;
+    INT nmaxit = n * MAXIT;
+    INT jtot = 0;
 
     /* Determine where the matrix splits and choose QL or QR iteration
      * for each block, according to whether top or bottom diagonal
      * element is smaller. */
-    int l1 = 0;
-    int nm1 = n - 1;
+    INT l1 = 0;
+    INT nm1 = n - 1;
 
     while (l1 < n) {
         if (l1 > 0)
             E[l1 - 1] = ZERO;
 
-        int m;
+        INT m;
         if (l1 <= nm1 - 1) {
             for (m = l1; m <= nm1 - 1; m++) {
                 f64 tst = fabs(E[m]);
@@ -141,29 +142,29 @@ void dsteqr(const char* compz, const int n,
             m = n - 1;
         }
 
-        int l = l1;
-        int lsv = l;
-        int lend = m;
-        int lendsv = lend;
+        INT l = l1;
+        INT lsv = l;
+        INT lend = m;
+        INT lendsv = lend;
         l1 = m + 1;
         if (lend == l)
             continue;
 
         /* Scale submatrix in rows and columns l to lend */
-        int subsize = lend - l + 1;
+        INT subsize = lend - l + 1;
         f64 anorm = dlanst("M", subsize, &D[l], &E[l]);
-        int iscale = 0;
+        INT iscale = 0;
         if (anorm == ZERO)
             continue;
 
         if (anorm > ssfmax) {
             iscale = 1;
-            int linfo;
+            INT linfo;
             dlascl("G", 0, 0, anorm, ssfmax, subsize, 1, &D[l], n, &linfo);
             dlascl("G", 0, 0, anorm, ssfmax, subsize - 1, 1, &E[l], n, &linfo);
         } else if (anorm < ssfmin) {
             iscale = 2;
-            int linfo;
+            INT linfo;
             dlascl("G", 0, 0, anorm, ssfmin, subsize, 1, &D[l], n, &linfo);
             dlascl("G", 0, 0, anorm, ssfmin, subsize - 1, 1, &E[l], n, &linfo);
         }
@@ -178,9 +179,9 @@ void dsteqr(const char* compz, const int n,
             /* QL Iteration
              * Look for small subdiagonal element. */
             for (;;) {
-                int mm;
+                INT mm;
                 if (l != lend) {
-                    int lendm1 = lend - 1;
+                    INT lendm1 = lend - 1;
                     for (mm = l; mm <= lendm1; mm++) {
                         f64 tst = fabs(E[mm]) * fabs(E[mm]);
                         if (tst <= (eps2 * fabs(D[mm])) * fabs(D[mm + 1]) + safmin)
@@ -241,8 +242,8 @@ void dsteqr(const char* compz, const int n,
                 p = ZERO;
 
                 /* Inner loop */
-                int mm1 = mm - 1;
-                for (int i = mm1; i >= l; i--) {
+                INT mm1 = mm - 1;
+                for (INT i = mm1; i >= l; i--) {
                     f64 f = s * E[i];
                     f64 b = c * E[i];
                     dlartg(g, f, &c, &s, &r);
@@ -263,7 +264,7 @@ void dsteqr(const char* compz, const int n,
 
                 /* If eigenvectors are desired, then apply saved rotations. */
                 if (icompz > 0) {
-                    int mmm = mm - l + 1;
+                    INT mmm = mm - l + 1;
                     dlasr("R", "V", "B", n, mmm, &work[l],
                           &work[n - 1 + l], &Z[0 + l * ldz], ldz);
                 }
@@ -276,9 +277,9 @@ void dsteqr(const char* compz, const int n,
             /* QR Iteration
              * Look for small superdiagonal element. */
             for (;;) {
-                int mm;
+                INT mm;
                 if (l != lend) {
-                    int lendp1 = lend + 1;
+                    INT lendp1 = lend + 1;
                     for (mm = l; mm >= lendp1; mm--) {
                         f64 tst = fabs(E[mm - 1]) * fabs(E[mm - 1]);
                         if (tst <= (eps2 * fabs(D[mm])) * fabs(D[mm - 1]) + safmin)
@@ -339,8 +340,8 @@ void dsteqr(const char* compz, const int n,
                 p = ZERO;
 
                 /* Inner loop */
-                int lm1 = l - 1;
-                for (int i = mm; i <= lm1; i++) {
+                INT lm1 = l - 1;
+                for (INT i = mm; i <= lm1; i++) {
                     f64 f = s * E[i];
                     f64 b = c * E[i];
                     dlartg(g, f, &c, &s, &r);
@@ -361,7 +362,7 @@ void dsteqr(const char* compz, const int n,
 
                 /* If eigenvectors are desired, then apply saved rotations. */
                 if (icompz > 0) {
-                    int mmm = l - mm + 1;
+                    INT mmm = l - mm + 1;
                     dlasr("R", "V", "F", n, mmm, &work[mm],
                           &work[n - 1 + mm], &Z[0 + mm * ldz], ldz);
                 }
@@ -374,13 +375,13 @@ void dsteqr(const char* compz, const int n,
 
         /* Undo scaling if necessary */
         if (iscale == 1) {
-            int linfo;
+            INT linfo;
             dlascl("G", 0, 0, ssfmax, anorm, lendsv - lsv + 1, 1,
                    &D[lsv], n, &linfo);
             dlascl("G", 0, 0, ssfmax, anorm, lendsv - lsv, 1,
                    &E[lsv], n, &linfo);
         } else if (iscale == 2) {
-            int linfo;
+            INT linfo;
             dlascl("G", 0, 0, ssfmin, anorm, lendsv - lsv + 1, 1,
                    &D[lsv], n, &linfo);
             dlascl("G", 0, 0, ssfmin, anorm, lendsv - lsv, 1,
@@ -390,7 +391,7 @@ void dsteqr(const char* compz, const int n,
         /* Check for no convergence to an eigenvalue after a total
          * of N*MAXIT iterations. */
         if (jtot >= nmaxit) {
-            for (int i = 0; i < n - 1; i++) {
+            for (INT i = 0; i < n - 1; i++) {
                 if (E[i] != ZERO)
                     (*info)++;
             }
@@ -401,15 +402,15 @@ void dsteqr(const char* compz, const int n,
     /* Order eigenvalues and eigenvectors. */
     if (icompz == 0) {
         /* Use Quick Sort */
-        int linfo;
+        INT linfo;
         dlasrt("I", n, D, &linfo);
     } else {
         /* Use Selection Sort to minimize swaps of eigenvectors */
-        for (int ii = 1; ii < n; ii++) {
-            int i = ii - 1;
-            int k = i;
+        for (INT ii = 1; ii < n; ii++) {
+            INT i = ii - 1;
+            INT k = i;
             f64 p = D[i];
-            for (int j = ii; j < n; j++) {
+            for (INT j = ii; j < n; j++) {
                 if (D[j] < p) {
                     k = j;
                     p = D[j];

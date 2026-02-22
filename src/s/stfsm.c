@@ -3,6 +3,7 @@
  * @brief STFSM solves a matrix equation (one operand is a triangular matrix in RFP format).
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -84,18 +85,18 @@ void stfsm(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32 alpha,
     const f32* restrict A,
     f32* restrict B,
-    const int ldb)
+    const INT ldb)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int lower, lside, misodd, nisodd, normaltransr, notrans;
-    int m1, m2, n1, n2, k, info;
+    INT lower, lside, misodd, nisodd, normaltransr, notrans;
+    INT m1, m2, n1, n2, k, info;
 
     CBLAS_DIAG cblas_diag;
 
@@ -133,8 +134,8 @@ void stfsm(
     }
 
     if (alpha == ZERO) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < m; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < m; i++) {
                 B[i + j * ldb] = ZERO;
             }
         }

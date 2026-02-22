@@ -3,6 +3,7 @@
  * @brief DLAR2V applies a vector of plane rotations from both sides to 2-by-2 symmetric matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -20,16 +21,16 @@
  * @param[in]     incc   The increment between elements of C and S.
  */
 void dlar2v(
-    const int n,
+    const INT n,
     f64* restrict X,
     f64* restrict Y,
     f64* restrict Z,
-    const int incx,
+    const INT incx,
     const f64* restrict C,
     const f64* restrict S,
-    const int incc)
+    const INT incc)
 {
-    int i, ic, ix;
+    INT i, ic, ix;
     f64 ci, si, t1, t2, t3, t4, t5, t6, xi, yi, zi;
 
     ix = 0;

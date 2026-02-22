@@ -4,6 +4,7 @@
  *        M-by-N matrix using a divide-and-conquer algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <stdlib.h>
@@ -53,36 +54,36 @@ static const c128 CONE = CMPLX(1.0, 0.0);
  * @param[out]    iwork   Integer array of dimension 8*min(m,n).
  * @param[out]    info    = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
-void zgesdd(const char* jobz, const int m, const int n,
-            c128* restrict A, const int lda,
+void zgesdd(const char* jobz, const INT m, const INT n,
+            c128* restrict A, const INT lda,
             f64* restrict S,
-            c128* restrict U, const int ldu,
-            c128* restrict VT, const int ldvt,
-            c128* restrict work, const int lwork,
-            f64* restrict rwork, int* restrict iwork, int* info)
+            c128* restrict U, const INT ldu,
+            c128* restrict VT, const INT ldvt,
+            c128* restrict work, const INT lwork,
+            f64* restrict rwork, INT* restrict iwork, INT* info)
 {
-    int lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
-    int blk, chunk, i, ie, ierr, il, ir, iru, irvt;
-    int iscl, itau, itaup, itauq, iu, ivt, ldwkvt;
-    int ldwrkl, ldwrkr, ldwrku, maxwrk, minmn, minwrk;
-    int mnthr1, mnthr2, nrwork, nwork, wrkbl;
-    int lwork_zgebrd_mn, lwork_zgebrd_mm, lwork_zgebrd_nn;
-    int lwork_zgelqf_mn, lwork_zgeqrf_mn;
-    int lwork_zungbr_p_mn, lwork_zungbr_p_nn;
-    int lwork_zungbr_q_mn, lwork_zungbr_q_mm;
-    int lwork_zunglq_mn, lwork_zunglq_nn;
-    int lwork_zungqr_mm, lwork_zungqr_mn;
-    int lwork_zunmbr_prc_mm, lwork_zunmbr_qln_mm;
-    int lwork_zunmbr_prc_mn, lwork_zunmbr_qln_mn;
-    int lwork_zunmbr_prc_nn, lwork_zunmbr_qln_nn;
+    INT lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
+    INT blk, chunk, i, ie, ierr, il, ir, iru, irvt;
+    INT iscl, itau, itaup, itauq, iu, ivt, ldwkvt;
+    INT ldwrkl, ldwrkr, ldwrku, maxwrk, minmn, minwrk;
+    INT mnthr1, mnthr2, nrwork, nwork, wrkbl;
+    INT lwork_zgebrd_mn, lwork_zgebrd_mm, lwork_zgebrd_nn;
+    INT lwork_zgelqf_mn, lwork_zgeqrf_mn;
+    INT lwork_zungbr_p_mn, lwork_zungbr_p_nn;
+    INT lwork_zungbr_q_mn, lwork_zungbr_q_mm;
+    INT lwork_zunglq_mn, lwork_zunglq_nn;
+    INT lwork_zungqr_mm, lwork_zungqr_mn;
+    INT lwork_zunmbr_prc_mm, lwork_zunmbr_qln_mm;
+    INT lwork_zunmbr_prc_mn, lwork_zunmbr_qln_mn;
+    INT lwork_zunmbr_prc_nn, lwork_zunmbr_qln_nn;
     f64 anrm, bignum, eps, smlnum;
     f64 dum[1];   /* For zlange work */
     c128 wkopt[1]; /* For workspace query results */
 
     *info = 0;
     minmn = (m < n) ? m : n;
-    mnthr1 = (int)(minmn * 17.0 / 9.0);
-    mnthr2 = (int)(minmn * 5.0 / 3.0);
+    mnthr1 = (INT)(minmn * 17.0 / 9.0);
+    mnthr2 = (INT)(minmn * 5.0 / 3.0);
     wntqa = (jobz[0] == 'A' || jobz[0] == 'a');
     wntqs = (jobz[0] == 'S' || jobz[0] == 's');
     wntqas = wntqa || wntqs;
@@ -113,40 +114,40 @@ void zgesdd(const char* jobz, const int m, const int n,
         if (m >= n && minmn > 0) {
 
             zgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
-            lwork_zgebrd_mn = (int)creal(wkopt[0]);
+            lwork_zgebrd_mn = (INT)creal(wkopt[0]);
 
             zgebrd(n, n, NULL, n, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
-            lwork_zgebrd_nn = (int)creal(wkopt[0]);
+            lwork_zgebrd_nn = (INT)creal(wkopt[0]);
 
             zgeqrf(m, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zgeqrf_mn = (int)creal(wkopt[0]);
+            lwork_zgeqrf_mn = (INT)creal(wkopt[0]);
 
             zungbr("P", n, n, n, NULL, n, NULL, wkopt, -1, &ierr);
-            lwork_zungbr_p_nn = (int)creal(wkopt[0]);
+            lwork_zungbr_p_nn = (INT)creal(wkopt[0]);
 
             zungbr("Q", m, m, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zungbr_q_mm = (int)creal(wkopt[0]);
+            lwork_zungbr_q_mm = (INT)creal(wkopt[0]);
 
             zungbr("Q", m, n, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zungbr_q_mn = (int)creal(wkopt[0]);
+            lwork_zungbr_q_mn = (INT)creal(wkopt[0]);
 
             zungqr(m, m, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zungqr_mm = (int)creal(wkopt[0]);
+            lwork_zungqr_mm = (INT)creal(wkopt[0]);
 
             zungqr(m, n, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zungqr_mn = (int)creal(wkopt[0]);
+            lwork_zungqr_mn = (INT)creal(wkopt[0]);
 
             zunmbr("P", "R", "C", n, n, n, NULL, n, NULL, NULL, n, wkopt, -1, &ierr);
-            lwork_zunmbr_prc_nn = (int)creal(wkopt[0]);
+            lwork_zunmbr_prc_nn = (INT)creal(wkopt[0]);
 
             zunmbr("Q", "L", "N", m, m, n, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
-            lwork_zunmbr_qln_mm = (int)creal(wkopt[0]);
+            lwork_zunmbr_qln_mm = (INT)creal(wkopt[0]);
 
             zunmbr("Q", "L", "N", m, n, n, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
-            lwork_zunmbr_qln_mn = (int)creal(wkopt[0]);
+            lwork_zunmbr_qln_mn = (INT)creal(wkopt[0]);
 
             zunmbr("Q", "L", "N", n, n, n, NULL, n, NULL, NULL, n, wkopt, -1, &ierr);
-            lwork_zunmbr_qln_nn = (int)creal(wkopt[0]);
+            lwork_zunmbr_qln_nn = (INT)creal(wkopt[0]);
 
             if (m >= mnthr1) {
                 if (wntqn) {
@@ -230,40 +231,40 @@ void zgesdd(const char* jobz, const int m, const int n,
         } else if (minmn > 0) {
 
             zgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
-            lwork_zgebrd_mn = (int)creal(wkopt[0]);
+            lwork_zgebrd_mn = (INT)creal(wkopt[0]);
 
             zgebrd(m, m, NULL, m, NULL, NULL, NULL, NULL, wkopt, -1, &ierr);
-            lwork_zgebrd_mm = (int)creal(wkopt[0]);
+            lwork_zgebrd_mm = (INT)creal(wkopt[0]);
 
             zgelqf(m, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zgelqf_mn = (int)creal(wkopt[0]);
+            lwork_zgelqf_mn = (INT)creal(wkopt[0]);
 
             zungbr("P", m, n, m, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zungbr_p_mn = (int)creal(wkopt[0]);
+            lwork_zungbr_p_mn = (INT)creal(wkopt[0]);
 
             zungbr("P", n, n, m, NULL, n, NULL, wkopt, -1, &ierr);
-            lwork_zungbr_p_nn = (int)creal(wkopt[0]);
+            lwork_zungbr_p_nn = (INT)creal(wkopt[0]);
 
             zungbr("Q", m, m, n, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zungbr_q_mm = (int)creal(wkopt[0]);
+            lwork_zungbr_q_mm = (INT)creal(wkopt[0]);
 
             zunglq(m, n, m, NULL, m, NULL, wkopt, -1, &ierr);
-            lwork_zunglq_mn = (int)creal(wkopt[0]);
+            lwork_zunglq_mn = (INT)creal(wkopt[0]);
 
             zunglq(n, n, m, NULL, n, NULL, wkopt, -1, &ierr);
-            lwork_zunglq_nn = (int)creal(wkopt[0]);
+            lwork_zunglq_nn = (INT)creal(wkopt[0]);
 
             zunmbr("P", "R", "C", m, m, m, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
-            lwork_zunmbr_prc_mm = (int)creal(wkopt[0]);
+            lwork_zunmbr_prc_mm = (INT)creal(wkopt[0]);
 
             zunmbr("P", "R", "C", m, n, m, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
-            lwork_zunmbr_prc_mn = (int)creal(wkopt[0]);
+            lwork_zunmbr_prc_mn = (INT)creal(wkopt[0]);
 
             zunmbr("P", "R", "C", n, n, m, NULL, n, NULL, NULL, n, wkopt, -1, &ierr);
-            lwork_zunmbr_prc_nn = (int)creal(wkopt[0]);
+            lwork_zunmbr_prc_nn = (INT)creal(wkopt[0]);
 
             zunmbr("Q", "L", "N", m, m, m, NULL, m, NULL, NULL, m, wkopt, -1, &ierr);
-            lwork_zunmbr_qln_mm = (int)creal(wkopt[0]);
+            lwork_zunmbr_qln_mm = (INT)creal(wkopt[0]);
 
             if (n >= mnthr1) {
                 if (wntqn) {

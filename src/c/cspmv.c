@@ -3,6 +3,7 @@
  * @brief CSPMV performs the matrix-vector operation y := alpha*A*x + beta*y for complex symmetric packed matrices.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
@@ -29,19 +30,19 @@
  */
 void cspmv(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64 alpha,
     const c64* restrict AP,
     const c64* restrict X,
-    const int incx,
+    const INT incx,
     const c64 beta,
     c64* restrict Y,
-    const int incy)
+    const INT incy)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int i, info, ix, iy, j, jx, jy, k, kk, kx, ky;
+    INT i, info, ix, iy, j, jx, jy, k, kk, kx, ky;
     c64 temp1, temp2;
 
     info = 0;

@@ -3,6 +3,7 @@
  * @brief ZGGLSE solves the linear equality-constrained least squares (LSE) problem.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -103,26 +104,26 @@
  *                           be computed.
  */
 void zgglse(
-    const int m,
-    const int n,
-    const int p,
+    const INT m,
+    const INT n,
+    const INT p,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict C,
     c128* restrict D,
     c128* restrict X,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 cone = CMPLX(1.0, 0.0);
     const c128 neg_cone = CMPLX(-1.0, 0.0);
 
-    int lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
-    int lquery;
-    int max_val;
+    INT lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     mn = (m < n) ? m : n;
@@ -177,11 +178,11 @@ void zgglse(
 
     zggrqf(p, m, n, B, ldb, work, A, lda, &work[p],
            &work[p + mn], lwork - p - mn, info);
-    lopt = (int)creal(work[p + mn]);
+    lopt = (INT)creal(work[p + mn]);
 
     zunmqr("L", "C", m, 1, mn, A, lda, &work[p],
            C, (1 > m ? 1 : m), &work[p + mn], lwork - p - mn, info);
-    lopt = (lopt > (int)creal(work[p + mn])) ? lopt : (int)creal(work[p + mn]);
+    lopt = (lopt > (INT)creal(work[p + mn])) ? lopt : (INT)creal(work[p + mn]);
 
     if (p > 0) {
         ztrtrs("U", "N", "N", p, 1, &B[0 + (n - p) * ldb], ldb, D, p, info);
@@ -225,5 +226,5 @@ void zgglse(
 
     zunmrq("L", "C", n, 1, p, B, ldb, work, X, n,
            &work[p + mn], lwork - p - mn, info);
-    work[0] = (c128)(p + mn + ((lopt > (int)creal(work[p + mn])) ? lopt : (int)creal(work[p + mn])));
+    work[0] = (c128)(p + mn + ((lopt > (INT)creal(work[p + mn])) ? lopt : (INT)creal(work[p + mn])));
 }

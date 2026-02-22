@@ -4,6 +4,7 @@
  *        M-by-N matrix using a divide-and-conquer algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <stdlib.h>
 #include <math.h>
@@ -53,29 +54,29 @@ static const f64 ONE = 1.0;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: DC did not converge.
  */
-void dgesdd(const char* jobz, const int m, const int n,
-            f64* restrict A, const int lda,
+void dgesdd(const char* jobz, const INT m, const INT n,
+            f64* restrict A, const INT lda,
             f64* restrict S,
-            f64* restrict U, const int ldu,
-            f64* restrict VT, const int ldvt,
-            f64* restrict work, const int lwork,
-            int* restrict IWORK, int* info)
+            f64* restrict U, const INT ldu,
+            f64* restrict VT, const INT ldvt,
+            f64* restrict work, const INT lwork,
+            INT* restrict IWORK, INT* info)
 {
-    int lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
-    int bdspac, blk, chunk, i, ie, ierr, il, ir, iscl;
-    int itau, itaup, itauq, iu, ivt, ldwkvt, ldwrkl, ldwrkr, ldwrku;
-    int maxwrk, minmn, minwrk, mnthr, nwork, wrkbl;
-    int lwork_dgebrd_mn, lwork_dgebrd_mm, lwork_dgebrd_nn;
-    int lwork_dgelqf_mn, lwork_dgeqrf_mn;
-    int lwork_dorglq_mn, lwork_dorglq_nn;
-    int lwork_dorgqr_mm, lwork_dorgqr_mn;
-    int lwork_dormbr_prt_mm, lwork_dormbr_qln_mm;
-    int lwork_dormbr_prt_mn, lwork_dormbr_qln_mn;
-    int lwork_dormbr_prt_nn, lwork_dormbr_qln_nn;
+    INT lquery, wntqa, wntqas, wntqn, wntqo, wntqs;
+    INT bdspac, blk, chunk, i, ie, ierr, il, ir, iscl;
+    INT itau, itaup, itauq, iu, ivt, ldwkvt, ldwrkl, ldwrkr, ldwrku;
+    INT maxwrk, minmn, minwrk, mnthr, nwork, wrkbl;
+    INT lwork_dgebrd_mn, lwork_dgebrd_mm, lwork_dgebrd_nn;
+    INT lwork_dgelqf_mn, lwork_dgeqrf_mn;
+    INT lwork_dorglq_mn, lwork_dorglq_nn;
+    INT lwork_dorgqr_mm, lwork_dorgqr_mn;
+    INT lwork_dormbr_prt_mm, lwork_dormbr_qln_mm;
+    INT lwork_dormbr_prt_mn, lwork_dormbr_qln_mn;
+    INT lwork_dormbr_prt_nn, lwork_dormbr_qln_nn;
     f64 anrm, bignum, eps, smlnum;
     f64 dum[1];   /* For dlange work and dbdsdc Q when not used */
     f64 dum1[1];  /* For workspace query results */
-    int idum[1];     /* For dbdsdc IQ when not used */
+    INT idum[1];     /* For dbdsdc IQ when not used */
 
     /* Test the input arguments */
     *info = 0;
@@ -107,7 +108,7 @@ void dgesdd(const char* jobz, const int m, const int n,
         minwrk = 1;
         maxwrk = 1;
         bdspac = 0;
-        mnthr = (int)(minmn * 11.0 / 6.0);
+        mnthr = (INT)(minmn * 11.0 / 6.0);
 
         if (m >= n && minmn > 0) {
             /* Compute space needed for DBDSDC */
@@ -119,33 +120,33 @@ void dgesdd(const char* jobz, const int m, const int n,
 
             /* Query workspace sizes - pass NULL for unused arrays, only work returns result */
             dgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, dum1, -1, &ierr);
-            lwork_dgebrd_mn = (int)dum1[0];
+            lwork_dgebrd_mn = (INT)dum1[0];
 
             dgebrd(n, n, NULL, n, NULL, NULL, NULL, NULL, dum1, -1, &ierr);
-            lwork_dgebrd_nn = (int)dum1[0];
+            lwork_dgebrd_nn = (INT)dum1[0];
 
             dgeqrf(m, n, NULL, m, NULL, dum1, -1, &ierr);
-            lwork_dgeqrf_mn = (int)dum1[0];
+            lwork_dgeqrf_mn = (INT)dum1[0];
 
             dorgbr("Q", n, n, n, NULL, n, NULL, dum1, -1, &ierr);
 
             dorgqr(m, m, n, NULL, m, NULL, dum1, -1, &ierr);
-            lwork_dorgqr_mm = (int)dum1[0];
+            lwork_dorgqr_mm = (INT)dum1[0];
 
             dorgqr(m, n, n, NULL, m, NULL, dum1, -1, &ierr);
-            lwork_dorgqr_mn = (int)dum1[0];
+            lwork_dorgqr_mn = (INT)dum1[0];
 
             dormbr("P", "R", "T", n, n, n, NULL, n, NULL, NULL, n, dum1, -1, &ierr);
-            lwork_dormbr_prt_nn = (int)dum1[0];
+            lwork_dormbr_prt_nn = (INT)dum1[0];
 
             dormbr("Q", "L", "N", n, n, n, NULL, n, NULL, NULL, n, dum1, -1, &ierr);
-            lwork_dormbr_qln_nn = (int)dum1[0];
+            lwork_dormbr_qln_nn = (INT)dum1[0];
 
             dormbr("Q", "L", "N", m, n, n, NULL, m, NULL, NULL, m, dum1, -1, &ierr);
-            lwork_dormbr_qln_mn = (int)dum1[0];
+            lwork_dormbr_qln_mn = (INT)dum1[0];
 
             dormbr("Q", "L", "N", m, m, n, NULL, m, NULL, NULL, m, dum1, -1, &ierr);
-            lwork_dormbr_qln_mm = (int)dum1[0];
+            lwork_dormbr_qln_mm = (INT)dum1[0];
 
             if (m >= mnthr) {
                 if (wntqn) {
@@ -220,33 +221,33 @@ void dgesdd(const char* jobz, const int m, const int n,
 
             /* Query workspace sizes - pass NULL for unused arrays, only work returns result */
             dgebrd(m, n, NULL, m, NULL, NULL, NULL, NULL, dum1, -1, &ierr);
-            lwork_dgebrd_mn = (int)dum1[0];
+            lwork_dgebrd_mn = (INT)dum1[0];
 
             dgebrd(m, m, NULL, m, NULL, NULL, NULL, NULL, dum1, -1, &ierr);
-            lwork_dgebrd_mm = (int)dum1[0];
+            lwork_dgebrd_mm = (INT)dum1[0];
 
             dgelqf(m, n, NULL, m, NULL, dum1, -1, &ierr);
-            lwork_dgelqf_mn = (int)dum1[0];
+            lwork_dgelqf_mn = (INT)dum1[0];
 
             dorglq(n, n, m, NULL, n, NULL, dum1, -1, &ierr);
-            lwork_dorglq_nn = (int)dum1[0];
+            lwork_dorglq_nn = (INT)dum1[0];
 
             dorglq(m, n, m, NULL, m, NULL, dum1, -1, &ierr);
-            lwork_dorglq_mn = (int)dum1[0];
+            lwork_dorglq_mn = (INT)dum1[0];
 
             dorgbr("P", m, m, m, NULL, n, NULL, dum1, -1, &ierr);
 
             dormbr("P", "R", "T", m, m, m, NULL, m, NULL, NULL, m, dum1, -1, &ierr);
-            lwork_dormbr_prt_mm = (int)dum1[0];
+            lwork_dormbr_prt_mm = (INT)dum1[0];
 
             dormbr("P", "R", "T", m, n, m, NULL, m, NULL, NULL, m, dum1, -1, &ierr);
-            lwork_dormbr_prt_mn = (int)dum1[0];
+            lwork_dormbr_prt_mn = (INT)dum1[0];
 
             dormbr("P", "R", "T", n, n, m, NULL, n, NULL, NULL, n, dum1, -1, &ierr);
-            lwork_dormbr_prt_nn = (int)dum1[0];
+            lwork_dormbr_prt_nn = (INT)dum1[0];
 
             dormbr("Q", "L", "N", m, m, m, NULL, m, NULL, NULL, m, dum1, -1, &ierr);
-            lwork_dormbr_qln_mm = (int)dum1[0];
+            lwork_dormbr_qln_mm = (INT)dum1[0];
 
             if (n >= mnthr) {
                 if (wntqn) {

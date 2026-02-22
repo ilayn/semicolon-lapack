@@ -4,6 +4,7 @@
  *        scaling factors computed by sgeequ.
  */
 
+#include "internal_build_defs.h"
 #include <float.h>
 #include "semicolon_lapack_single.h"
 
@@ -33,10 +34,10 @@
  *                               replaced by diag(R) * A * diag(C).
  */
 void slaqge(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict R,
     const f32* restrict C,
     const f32 rowcnd,
@@ -47,7 +48,7 @@ void slaqge(
     const f32 ONE = 1.0f;
     const f32 THRESH = 0.1f;
 
-    int i, j;
+    INT i, j;
     f32 cj, large, small;
 
     // Quick return if possible

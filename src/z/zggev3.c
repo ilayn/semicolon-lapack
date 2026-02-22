@@ -4,6 +4,7 @@
  *        right eigenvectors for GE matrices (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -67,26 +68,26 @@
  *                   - = 1,...,n: the QZ iteration failed
  *                   - > n: other errors
  */
-void zggev3(const char* jobvl, const char* jobvr, const int n,
-            c128* A, const int lda,
-            c128* B, const int ldb,
+void zggev3(const char* jobvl, const char* jobvr, const INT n,
+            c128* A, const INT lda,
+            c128* B, const INT ldb,
             c128* alpha, c128* beta,
-            c128* VL, const int ldvl,
-            c128* VR, const int ldvr,
-            c128* work, const int lwork,
-            f64* rwork, int* info)
+            c128* VL, const INT ldvl,
+            c128* VR, const INT ldvr,
+            c128* work, const INT lwork,
+            f64* rwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int in, iright, irows, irwrk, itau, iwrk, jc, jr, lwkopt, lwkmin;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT in, iright, irows, irwrk, itau, iwrk, jc, jr, lwkopt, lwkmin;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps, smlnum, temp;
     c128 x;
-    int ldumma[1];
+    INT ldumma[1];
 
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {
         ijobvl = 1;
@@ -134,37 +135,37 @@ void zggev3(const char* jobvl, const char* jobvr, const int n,
 
     if (*info == 0) {
         zgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
-        lwkopt = lwkmin > (n + (int)creal(work[0])) ?
-                 lwkmin : (n + (int)creal(work[0]));
+        lwkopt = lwkmin > (n + (INT)creal(work[0])) ?
+                 lwkmin : (n + (INT)creal(work[0]));
         zunmqr("L", "C", n, n, n, B, ldb, NULL, A, lda, work,
                -1, &ierr);
-        lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                 lwkopt : (n + (int)creal(work[0]));
+        lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                 lwkopt : (n + (INT)creal(work[0]));
         if (ilvl) {
             zungqr(n, n, n, VL, ldvl, NULL, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                     lwkopt : (n + (int)creal(work[0]));
+            lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                     lwkopt : (n + (INT)creal(work[0]));
         }
         if (ilv) {
             zgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                     lwkopt : (n + (int)creal(work[0]));
+            lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                     lwkopt : (n + (INT)creal(work[0]));
             zlaqz0("S", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
-            lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                     lwkopt : (n + (int)creal(work[0]));
+            lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                     lwkopt : (n + (INT)creal(work[0]));
         } else {
             zgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL,
                    ldvl, VR, ldvr, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                     lwkopt : (n + (int)creal(work[0]));
+            lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                     lwkopt : (n + (INT)creal(work[0]));
             zlaqz0("E", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alpha, beta, VL, ldvl, VR, ldvr, work, -1,
                    rwork, 0, &ierr);
-            lwkopt = lwkopt > (n + (int)creal(work[0])) ?
-                     lwkopt : (n + (int)creal(work[0]));
+            lwkopt = lwkopt > (n + (INT)creal(work[0])) ?
+                     lwkopt : (n + (INT)creal(work[0]));
         }
         if (n == 0) {
             work[0] = CONE;

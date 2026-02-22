@@ -3,6 +3,7 @@
  * @brief CLAQZ1 chases a 1x1 shift bulge in a matrix pencil down a single position.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -33,11 +34,11 @@
  * @param[in,out] Z        Complex array, dimension (ldz, nz).
  * @param[in]     ldz      The leading dimension of Z.
  */
-void claqz1(const int ilq, const int ilz, const int k, const int istartm,
-            const int istopm, const int ihi, c64* A, const int lda,
-            c64* B, const int ldb, const int nq, const int qstart,
-            c64* Q, const int ldq, const int nz, const int zstart,
-            c64* Z, const int ldz)
+void claqz1(const INT ilq, const INT ilz, const INT k, const INT istartm,
+            const INT istopm, const INT ihi, c64* A, const INT lda,
+            c64* B, const INT ldb, const INT nq, const INT qstart,
+            c64* Q, const INT ldq, const INT nz, const INT zstart,
+            c64* Z, const INT ldz)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 

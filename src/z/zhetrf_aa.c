@@ -3,6 +3,7 @@
  * @brief ZHETRF_AA computes the factorization of a complex hermitian matrix using Aasen's algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -56,20 +57,20 @@
  */
 void zhetrf_aa(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int upper, lquery;
-    int j, lwkmin, lwkopt;
-    int nb, mj, nj, k1, k2, j1, j2, j3, jb;
+    INT upper, lquery;
+    INT j, lwkmin, lwkopt;
+    INT nb, mj, nj, k1, k2, j1, j2, j3, jb;
     c128 alpha;
 
     nb = lapack_get_nb("HETRF");

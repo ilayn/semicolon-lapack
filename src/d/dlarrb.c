@@ -3,6 +3,7 @@
  * @brief DLARRB provides limited bisection to locate eigenvalues for more accuracy.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -59,20 +60,20 @@
  * @param[out]    info
  *                           Error flag.
  */
-void dlarrb(const int n, const f64* D, const f64* lld,
-            const int ifirst, const int ilast,
-            const f64 rtol1, const f64 rtol2, const int offset,
+void dlarrb(const INT n, const f64* D, const f64* lld,
+            const INT ifirst, const INT ilast,
+            const f64 rtol1, const f64 rtol2, const INT offset,
             f64* W, f64* wgap, f64* werr,
-            f64* work, int* iwork,
+            f64* work, INT* iwork,
             const f64 pivmin, const f64 spdiam,
-            const int twist, int* info)
+            const INT twist, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 TWO = 2.0;
     const f64 HALF = 0.5;
 
-    int i, i1, ii, ip, iter, k, negcnt, next, nint, olnint, prev, r;
-    int maxitr;
+    INT i, i1, ii, ip, iter, k, negcnt, next, nint, olnint, prev, r;
+    INT maxitr;
     f64 back, cvrgd, gap, left, lgap, mid, mnwdth, rgap, right, tmp, width;
 
     *info = 0;
@@ -82,7 +83,7 @@ void dlarrb(const int n, const f64* D, const f64* lld,
         return;
     }
 
-    maxitr = (int)((log(spdiam + pivmin) - log(pivmin)) / log(TWO)) + 2;
+    maxitr = (INT)((log(spdiam + pivmin) - log(pivmin)) / log(TWO)) + 2;
     mnwdth = TWO * pivmin;
 
     /* twist is 0-based; valid range is [0, n-1] */

@@ -5,6 +5,7 @@
  *        error bounds and backward error estimates.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -54,34 +55,34 @@
  */
 void csyrfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict AF,
-    const int ldaf,
-    const int* restrict ipiv,
+    const INT ldaf,
+    const INT* restrict ipiv,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int upper;
-    int count, i, j, k, kase, nz;
+    INT upper;
+    INT count, i, j, k, kase, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
     c64 neg_one = CMPLXF(-1.0f, 0.0f);
 
     /* Test the input parameters. */

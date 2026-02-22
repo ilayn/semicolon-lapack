@@ -3,6 +3,7 @@
  * @brief CHETF2_ROOK computes the factorization of a complex Hermitian indefinite matrix using the bounded Bunch-Kaufman ("rook") diagonal pivoting method (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -46,14 +47,14 @@
  */
 void chetf2_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
-    int upper, done;
-    int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
+    INT upper, done;
+    INT i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, d, d11, d22, r1, dtemp, rowmax, tt, sfmin;
     c64 d12, d21, t, wk, wkm1, wkp1;
 

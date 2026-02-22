@@ -5,6 +5,7 @@
  *        a general rectangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -33,20 +34,20 @@
  */
 f32 slange(
     const char* norm,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 scale, sum, value, temp;
 
     /* Quick return if possible */
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
     if (minmn == 0) {
         return ZERO;
     }

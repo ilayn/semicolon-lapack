@@ -4,6 +4,7 @@
  *        the compact WY representation of Q.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -46,15 +47,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgeqrt2(const int m, const int n,
-             c64* restrict A, const int lda,
-             c64* restrict T, const int ldt,
-             int* info)
+void cgeqrt2(const INT m, const INT n,
+             c64* restrict A, const INT lda,
+             c64* restrict T, const INT ldt,
+             INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int i, k;
+    INT i, k;
     c64 aii, alpha;
 
     /* Parameter validation */

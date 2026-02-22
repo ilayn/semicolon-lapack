@@ -4,6 +4,7 @@
  *        with non-negative beta.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -38,14 +39,14 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void zlarfgp(const int n, c128* alpha, c128* restrict x,
-             const int incx, c128* tau)
+void zlarfgp(const INT n, c128* alpha, c128* restrict x,
+             const INT incx, c128* tau)
 {
     const f64 TWO = 2.0;
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int j, knt;
+    INT j, knt;
     f64 alphi, alphr, beta, bignum, eps, smlnum, xnorm;
     c128 savealpha;
 

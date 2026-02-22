@@ -3,6 +3,7 @@
  * @brief DPFTRS solves a system of linear equations using Cholesky factorization in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -43,14 +44,14 @@
 void dpftrs(
     const char* transr,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int lower, normaltransr;
+    INT lower, normaltransr;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

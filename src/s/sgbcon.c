@@ -3,6 +3,7 @@
  * @brief Estimates the reciprocal of the condition number of a banded matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -45,27 +46,27 @@
  */
 void sgbcon(
     const char* norm,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const f32* restrict AB,
-    const int ldab,
-    const int* restrict ipiv,
+    const INT ldab,
+    const INT* restrict ipiv,
     const f32 anorm,
     f32* rcond,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int lnoti, onenrm;
+    INT lnoti, onenrm;
     char normin;
-    int ix, j, jp, kase, kase1, kd, lm;
+    INT ix, j, jp, kase, kase1, kd, lm;
     f32 ainvnm, scale, smlnum, t;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters */
     *info = 0;

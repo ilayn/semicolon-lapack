@@ -3,6 +3,7 @@
  * @brief DGGHRD reduces a pair of real matrices (A,B) to generalized upper Hessenberg form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -55,24 +56,24 @@
 void dgghrd(
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
-    int* info)
+    const INT ldz,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int ilq, ilz;
-    int icompq, icompz, jcol, jrow;
+    INT ilq, ilz;
+    INT icompq, icompz, jcol, jrow;
     f64 c, s, temp;
 
     if (compq[0] == 'N' || compq[0] == 'n') {

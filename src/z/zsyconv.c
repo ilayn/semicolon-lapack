@@ -3,6 +3,7 @@
  * @brief ZSYCONV converts A given by TRF into L and D and vice-versa.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -49,17 +50,17 @@
 void zsyconv(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict E,
-    int* info)
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int upper, convert;
-    int i, ip, j;
+    INT upper, convert;
+    INT i, ip, j;
     c128 temp;
 
     *info = 0;

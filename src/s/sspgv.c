@@ -4,6 +4,7 @@
  *        real generalized symmetric-definite eigenproblem (packed storage).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 
@@ -28,20 +29,20 @@
  *                         - = 0: success; < 0: illegal argument; > 0: SPPTRF/SSPEV error.
  */
 void sspgv(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict AP,
     f32* restrict BP,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
-    int wantz, upper;
-    int j, neig;
+    INT wantz, upper;
+    INT j, neig;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

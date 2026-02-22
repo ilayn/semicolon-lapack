@@ -3,6 +3,7 @@
  * @brief ZSYTRF_AA_2STAGE computes the factorization of a complex symmetric matrix using Aasen's 2-stage algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -66,24 +67,24 @@
  */
 void zsytrf_aa_2stage(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict TB,
-    const int ltb,
-    int* restrict ipiv,
-    int* restrict ipiv2,
+    const INT ltb,
+    INT* restrict ipiv,
+    INT* restrict ipiv2,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE  = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int upper, tquery, wquery;
-    int i, j, k, i1, i2, td;
-    int ldtb, nb, kb, jb, nt, iinfo;
+    INT upper, tquery, wquery;
+    INT i, j, k, i1, i2, td;
+    INT ldtb, nb, kb, jb, nt, iinfo;
     c128 piv;
 
     *info = 0;

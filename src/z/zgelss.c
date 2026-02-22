@@ -4,6 +4,7 @@
  *        squares problem using the SVD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
@@ -61,27 +62,27 @@
  *                           if info = i, i off-diagonal elements of an intermediate
  *                           bidiagonal form did not converge to zero.
  */
-void zgelss(const int m, const int n, const int nrhs,
-            c128* restrict A, const int lda,
-            c128* restrict B, const int ldb,
-            f64* restrict S, const f64 rcond, int* rank,
-            c128* restrict work, const int lwork,
+void zgelss(const INT m, const INT n, const INT nrhs,
+            c128* restrict A, const INT lda,
+            c128* restrict B, const INT ldb,
+            f64* restrict S, const f64 rcond, INT* rank,
+            c128* restrict work, const INT lwork,
             f64* restrict rwork,
-            int* info)
+            INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int lquery;
-    int bl, chunk, i, iascl, ibscl, ie, il, irwork, itau, itaup, itauq;
-    int iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr = 0;
-    int lwork_zgeqrf, lwork_zunmqr, lwork_zgebrd, lwork_zunmbr, lwork_zungbr;
-    int lwork_zgelqf, lwork_zunmlq;
+    INT lquery;
+    INT bl, chunk, i, iascl, ibscl, ie, il, irwork, itau, itaup, itauq;
+    INT iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr = 0;
+    INT lwork_zgeqrf, lwork_zunmqr, lwork_zgebrd, lwork_zunmbr, lwork_zungbr;
+    INT lwork_zgelqf, lwork_zunmlq;
     f64 anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
     c128 wkopt[1];
-    int iinfo;
+    INT iinfo;
 
     *info = 0;
     minmn = m < n ? m : n;
@@ -110,37 +111,37 @@ void zgelss(const int m, const int n, const int nrhs,
             if (m >= n && m >= mnthr) {
                 /* Path 1a - overdetermined, with many more rows than columns */
                 zgeqrf(m, n, A, lda, NULL, wkopt, -1, &iinfo);
-                lwork_zgeqrf = (int)creal(wkopt[0]);
+                lwork_zgeqrf = (INT)creal(wkopt[0]);
                 zunmqr("L", "C", m, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                lwork_zunmqr = (int)creal(wkopt[0]);
+                lwork_zunmqr = (INT)creal(wkopt[0]);
                 mm = n;
                 {
-                    int t = n + lwork_zgeqrf;
+                    INT t = n + lwork_zgeqrf;
                     if (t > maxwrk) maxwrk = t;
                 }
                 {
-                    int t = n + lwork_zunmqr;
+                    INT t = n + lwork_zunmqr;
                     if (t > maxwrk) maxwrk = t;
                 }
             }
             if (m >= n) {
                 /* Path 1 - overdetermined or exactly determined */
                 zgebrd(mm, n, A, lda, S, NULL, NULL, NULL, wkopt, -1, &iinfo);
-                lwork_zgebrd = (int)creal(wkopt[0]);
+                lwork_zgebrd = (INT)creal(wkopt[0]);
                 zunmbr("Q", "L", "C", mm, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                lwork_zunmbr = (int)creal(wkopt[0]);
+                lwork_zunmbr = (INT)creal(wkopt[0]);
                 zungbr("P", n, n, n, A, lda, NULL, wkopt, -1, &iinfo);
-                lwork_zungbr = (int)creal(wkopt[0]);
+                lwork_zungbr = (INT)creal(wkopt[0]);
                 {
-                    int t = 2 * n + lwork_zgebrd;
+                    INT t = 2 * n + lwork_zgebrd;
                     if (t > maxwrk) maxwrk = t;
                 }
                 {
-                    int t = 2 * n + lwork_zunmbr;
+                    INT t = 2 * n + lwork_zunmbr;
                     if (t > maxwrk) maxwrk = t;
                 }
                 {
-                    int t = 2 * n + lwork_zungbr;
+                    INT t = 2 * n + lwork_zungbr;
                     if (t > maxwrk) maxwrk = t;
                 }
                 if (n * nrhs > maxwrk) maxwrk = n * nrhs;
@@ -151,54 +152,54 @@ void zgelss(const int m, const int n, const int nrhs,
                 if (n >= mnthr) {
                     /* Path 2a - underdetermined, with many more columns than rows */
                     zgelqf(m, n, A, lda, NULL, wkopt, -1, &iinfo);
-                    lwork_zgelqf = (int)creal(wkopt[0]);
+                    lwork_zgelqf = (INT)creal(wkopt[0]);
                     zgebrd(m, m, A, lda, S, NULL, NULL, NULL, wkopt, -1, &iinfo);
-                    lwork_zgebrd = (int)creal(wkopt[0]);
+                    lwork_zgebrd = (INT)creal(wkopt[0]);
                     zunmbr("Q", "L", "C", m, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                    lwork_zunmbr = (int)creal(wkopt[0]);
+                    lwork_zunmbr = (INT)creal(wkopt[0]);
                     zungbr("P", m, m, m, A, lda, NULL, wkopt, -1, &iinfo);
-                    lwork_zungbr = (int)creal(wkopt[0]);
+                    lwork_zungbr = (INT)creal(wkopt[0]);
                     zunmlq("L", "C", n, nrhs, m, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                    lwork_zunmlq = (int)creal(wkopt[0]);
+                    lwork_zunmlq = (INT)creal(wkopt[0]);
                     maxwrk = m + lwork_zgelqf;
                     {
-                        int t = 3 * m + m * m + lwork_zgebrd;
+                        INT t = 3 * m + m * m + lwork_zgebrd;
                         if (t > maxwrk) maxwrk = t;
                     }
                     {
-                        int t = 3 * m + m * m + lwork_zunmbr;
+                        INT t = 3 * m + m * m + lwork_zunmbr;
                         if (t > maxwrk) maxwrk = t;
                     }
                     {
-                        int t = 3 * m + m * m + lwork_zungbr;
+                        INT t = 3 * m + m * m + lwork_zungbr;
                         if (t > maxwrk) maxwrk = t;
                     }
                     if (nrhs > 1) {
-                        int t = m * m + m + m * nrhs;
+                        INT t = m * m + m + m * nrhs;
                         if (t > maxwrk) maxwrk = t;
                     } else {
-                        int t = m * m + 2 * m;
+                        INT t = m * m + 2 * m;
                         if (t > maxwrk) maxwrk = t;
                     }
                     {
-                        int t = m + lwork_zunmlq;
+                        INT t = m + lwork_zunmlq;
                         if (t > maxwrk) maxwrk = t;
                     }
                 } else {
                     /* Path 2 - underdetermined */
                     zgebrd(m, n, A, lda, S, NULL, NULL, NULL, wkopt, -1, &iinfo);
-                    lwork_zgebrd = (int)creal(wkopt[0]);
+                    lwork_zgebrd = (INT)creal(wkopt[0]);
                     zunmbr("Q", "L", "C", m, nrhs, m, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                    lwork_zunmbr = (int)creal(wkopt[0]);
+                    lwork_zunmbr = (INT)creal(wkopt[0]);
                     zungbr("P", m, n, m, A, lda, NULL, wkopt, -1, &iinfo);
-                    lwork_zungbr = (int)creal(wkopt[0]);
+                    lwork_zungbr = (INT)creal(wkopt[0]);
                     maxwrk = 2 * m + lwork_zgebrd;
                     {
-                        int t = 2 * m + lwork_zunmbr;
+                        INT t = 2 * m + lwork_zunmbr;
                         if (t > maxwrk) maxwrk = t;
                     }
                     {
-                        int t = 2 * m + lwork_zungbr;
+                        INT t = 2 * m + lwork_zungbr;
                         if (t > maxwrk) maxwrk = t;
                     }
                     if (n * nrhs > maxwrk) maxwrk = n * nrhs;

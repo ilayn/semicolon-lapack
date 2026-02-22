@@ -4,6 +4,7 @@
  *        factorization A = U**H*D*U or A = L*D*L**H computed by ZPTTRF.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -42,18 +43,18 @@
  */
 void zpttrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict D,
     const c128* restrict E,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -75,6 +76,6 @@ void zpttrs(
      * ILAENV(1, 'ZPTTRS', ...) returns NB=1 (no special case in ilaenv.f).
      * Therefore, we call zptts2 directly without blocking.
      */
-    int iuplo = upper ? 1 : 0;
+    INT iuplo = upper ? 1 : 0;
     zptts2(iuplo, n, nrhs, D, E, B, ldb);
 }

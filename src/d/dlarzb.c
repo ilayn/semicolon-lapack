@@ -4,6 +4,7 @@
  *        distributed matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -51,16 +52,16 @@
  *                        if side = "R", ldwork >= max(1, m).
  */
 void dlarzb(const char* side, const char* trans, const char* direct,
-            const char* storev, const int m, const int n,
-            const int k, const int l,
-            const f64* restrict V, const int ldv,
-            const f64* restrict T, const int ldt,
-            f64* restrict C, const int ldc,
-            f64* restrict work, const int ldwork)
+            const char* storev, const INT m, const INT n,
+            const INT k, const INT l,
+            const f64* restrict V, const INT ldv,
+            const f64* restrict T, const INT ldt,
+            f64* restrict C, const INT ldc,
+            f64* restrict work, const INT ldwork)
 {
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
-    int i, j;
+    INT i, j;
     CBLAS_TRANSPOSE transt;
 
     /* Quick return if possible */

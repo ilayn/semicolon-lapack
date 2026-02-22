@@ -2,6 +2,7 @@
  * @brief DLARRF finds a new relatively robust representation such that at least one of the eigenvalues is relatively isolated.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -52,15 +53,15 @@
  *                         - = 0: successful exit
  *                         - = 1: failure
  */
-void dlarrf(const int n, const f64* restrict D,
+void dlarrf(const INT n, const f64* restrict D,
             const f64* restrict L, const f64* restrict LD,
-            const int clstrt, const int clend,
+            const INT clstrt, const INT clend,
             const f64* restrict W, f64* restrict wgap,
             const f64* restrict werr,
             const f64 spdiam, const f64 clgapl, const f64 clgapr,
             const f64 pivmin, f64* sigma,
             f64* restrict dplus, f64* restrict lplus,
-            f64* restrict work, int* info)
+            f64* restrict work, INT* info)
 {
     /* Constants */
     const f64 ONE = 1.0;
@@ -69,13 +70,13 @@ void dlarrf(const int n, const f64* restrict D,
     const f64 QUART = 0.25;
     const f64 MAXGROWTH1 = 8.0;
     const f64 MAXGROWTH2 = 8.0;
-    const int KTRYMAX = 1;
-    const int SLEFT = 1;
-    const int SRIGHT = 2;
+    const INT KTRYMAX = 1;
+    const INT SLEFT = 1;
+    const INT SRIGHT = 2;
 
     /* Local variables */
-    int i, indx, ktry, shift;
-    int forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
+    INT i, indx, ktry, shift;
+    INT forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
     f64 avgap, bestshift, clwdth, eps, fact, fail, fail2;
     f64 growthbound, ldelta, ldmax, lsigma;
     f64 max1, max2, mingap, oldp, prod, rdelta, rdmax;

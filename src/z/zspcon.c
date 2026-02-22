@@ -3,6 +3,7 @@
  * @brief ZSPCON estimates the reciprocal condition number of a symmetric packed matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -31,22 +32,22 @@
  */
 void zspcon(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper;
-    int i, ip, kase;
+    INT upper;
+    INT i, ip, kase;
     f64 ainvnm;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

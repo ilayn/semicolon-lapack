@@ -4,6 +4,7 @@
  *        complex generalized Hermitian-definite eigenproblem using 2-stage reduction.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -32,24 +33,24 @@
  *                         - = 0: success; < 0: illegal argument; > 0: ZPOTRF/ZHEEV error.
  */
 void zhegv_2stage(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict W,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int lquery, upper, wantz;
-    int neig, lwmin, lhtrd, lwtrd, kd, ib;
+    INT lquery, upper, wantz;
+    INT neig, lwmin, lhtrd, lwtrd, kd, ib;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

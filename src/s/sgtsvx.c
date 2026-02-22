@@ -4,6 +4,7 @@
  *        for GT matrices with condition estimation and error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <string.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -56,8 +57,8 @@
 void sgtsvx(
     const char* fact,
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict DL,
     const f32* restrict D,
     const f32* restrict DU,
@@ -65,25 +66,25 @@ void sgtsvx(
     f32* restrict DF,
     f32* restrict DUF,
     f32* restrict DU2,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int nofact, notran;
+    INT nofact, notran;
     char norm;
     f32 anorm;
-    int ldb_min, ldx_min;
-    int j;
+    INT ldb_min, ldx_min;
+    INT j;
 
     *info = 0;
     nofact = (fact[0] == 'N' || fact[0] == 'n');

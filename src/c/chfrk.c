@@ -3,6 +3,7 @@
  * @brief CHFRK performs a Hermitian rank-k operation for matrix in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <cblas.h>
 #include <complex.h>
@@ -64,17 +65,17 @@ void chfrk(
     const char* transr,
     const char* uplo,
     const char* trans,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const f32 alpha,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const f32 beta,
     c64* restrict C)
 {
-    int lower, normaltransr, nisodd, notrans;
-    int nrowa, j, nk, n1, n2;
-    int info;
+    INT lower, normaltransr, nisodd, notrans;
+    INT nrowa, j, nk, n1, n2;
+    INT info;
     c64 calpha, cbeta;
 
     info = 0;

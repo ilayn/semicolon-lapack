@@ -3,17 +3,18 @@
  * @brief CHETRD_2STAGE reduces a complex Hermitian matrix to tridiagonal form using 2-stage algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
-void chetrd_2stage(const char* vect, const char* uplo, const int n,
-                   c64* A, const int lda,
+void chetrd_2stage(const char* vect, const char* uplo, const INT n,
+                   c64* A, const INT lda,
                    f32* D, f32* E, c64* tau,
-                   c64* hous2, const int lhous2,
-                   c64* work, const int lwork, int* info)
+                   c64* hous2, const INT lhous2,
+                   c64* work, const INT lwork, INT* info)
 {
-    int lquery, upper;
-    int kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
+    INT lquery, upper;
+    INT kd, ib, lwmin, lhmin, lwrk, ldab, wpos, abpos;
 
     *info = 0;
     (void)(vect[0] == 'V' || vect[0] == 'v');  /* wantq set but not used */

@@ -3,6 +3,7 @@
  * @brief SLAQTR solves a real quasi-triangular system of equations.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -59,16 +60,16 @@
  *                         - = 2: some diagonal 2 by 2 block has been perturbed by
  *                           a small number in SLALN2 to keep nonsingularity.
  */
-void slaqtr(const int ltran, const int lreal, const int n,
-            const f32* T, const int ldt,
+void slaqtr(const INT ltran, const INT lreal, const INT n,
+            const f32* T, const INT ldt,
             const f32* B, const f32 w,
-            f32* scale, f32* X, f32* work, int* info)
+            f32* scale, f32* X, f32* work, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int notran;
-    int i, ierr, j, j1, j2, jnext, k, n1, n2;
+    INT notran;
+    INT i, ierr, j, j1, j2, jnext, k, n1, n2;
     f32 bignum, eps, rec, scaloc, si, smin, sminw;
     f32 smlnum, sr, tjj, tmp, xj, xmax, xnorm, z;
     f32 d[4];  /* 2x2 stored column-major: d[0]=d(1,1), d[1]=d(2,1), d[2]=d(1,2), d[3]=d(2,2) */

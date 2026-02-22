@@ -4,6 +4,7 @@
  *        of a complex Hermitian positive semidefinite matrix (unblocked).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -49,14 +50,14 @@
  */
 void cpstf2(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict piv,
-    int* rank,
+    const INT lda,
+    INT* restrict piv,
+    INT* rank,
     const f32 tol,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
@@ -64,7 +65,7 @@ void cpstf2(
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -83,17 +84,17 @@ void cpstf2(
     }
 
     // Initialize PIV (0-based)
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         piv[i] = i;
     }
 
     // Compute stopping value
-    int pvt = 0;
-    for (int i = 0; i < n; i++) {
+    INT pvt = 0;
+    for (INT i = 0; i < n; i++) {
         work[i] = crealf(A[i + i * lda]);
     }
     f32 ajj = work[0];
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         if (work[i] > ajj) {
             pvt = i;
             ajj = work[i];
@@ -114,20 +115,20 @@ void cpstf2(
     }
 
     // Set first half of WORK to zero, holds dot products
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         work[i] = ZERO;
     }
 
-    int jstop = -1;
+    INT jstop = -1;
 
     if (upper) {
         // Compute the Cholesky factorization P**T * A * P = U**H * U
-        for (int j = 0; j < n && jstop < 0; j++) {
+        for (INT j = 0; j < n && jstop < 0; j++) {
 
             // Find pivot, test for exit, else swap rows and columns
             // Update dot products, compute possible pivots which are
             // stored in the second half of WORK
-            for (int i = j; i < n; i++) {
+            for (INT i = j; i < n; i++) {
                 if (j > 0) {
                     work[i] = work[i] +
                               crealf(conjf(A[(j - 1) + i * lda]) *
@@ -137,9 +138,9 @@ void cpstf2(
             }
 
             if (j > 0) {
-                int itemp = 0;
+                INT itemp = 0;
                 f32 wmax = work[n + j];
-                for (int i = 1; i < n - j; i++) {
+                for (INT i = 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -164,7 +165,7 @@ void cpstf2(
                     cblas_cswap(n - pvt - 1, &A[j + (pvt + 1) * lda], lda,
                                 &A[pvt + (pvt + 1) * lda], lda);
                 }
-                for (int i = j + 1; i <= pvt - 1; i++) {
+                for (INT i = j + 1; i <= pvt - 1; i++) {
                     c64 ztemp = conjf(A[j + i * lda]);
                     A[j + i * lda] = conjf(A[i + pvt * lda]);
                     A[i + pvt * lda] = ztemp;
@@ -175,7 +176,7 @@ void cpstf2(
                 f32 dtemp = work[j];
                 work[j] = work[pvt];
                 work[pvt] = dtemp;
-                int itemp = piv[pvt];
+                INT itemp = piv[pvt];
                 piv[pvt] = piv[j];
                 piv[j] = itemp;
             }
@@ -198,12 +199,12 @@ void cpstf2(
         }
     } else {
         // Compute the Cholesky factorization P**T * A * P = L * L**H
-        for (int j = 0; j < n && jstop < 0; j++) {
+        for (INT j = 0; j < n && jstop < 0; j++) {
 
             // Find pivot, test for exit, else swap rows and columns
             // Update dot products, compute possible pivots which are
             // stored in the second half of WORK
-            for (int i = j; i < n; i++) {
+            for (INT i = j; i < n; i++) {
                 if (j > 0) {
                     work[i] = work[i] +
                               crealf(conjf(A[i + (j - 1) * lda]) *
@@ -213,9 +214,9 @@ void cpstf2(
             }
 
             if (j > 0) {
-                int itemp = 0;
+                INT itemp = 0;
                 f32 wmax = work[n + j];
-                for (int i = 1; i < n - j; i++) {
+                for (INT i = 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -240,7 +241,7 @@ void cpstf2(
                     cblas_cswap(n - pvt - 1, &A[(pvt + 1) + j * lda], 1,
                                 &A[(pvt + 1) + pvt * lda], 1);
                 }
-                for (int i = j + 1; i <= pvt - 1; i++) {
+                for (INT i = j + 1; i <= pvt - 1; i++) {
                     c64 ztemp = conjf(A[i + j * lda]);
                     A[i + j * lda] = conjf(A[pvt + i * lda]);
                     A[pvt + i * lda] = ztemp;
@@ -251,7 +252,7 @@ void cpstf2(
                 f32 dtemp = work[j];
                 work[j] = work[pvt];
                 work[pvt] = dtemp;
-                int itemp = piv[pvt];
+                INT itemp = piv[pvt];
                 piv[pvt] = piv[j];
                 piv[j] = itemp;
             }

@@ -4,6 +4,7 @@
  *        M-by-N matrix, optionally computing a subset of singular values/vectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -63,16 +64,16 @@ static const f32 ONE = 1.0f;
  *                         - > 0: i eigenvectors failed to converge in SBDSVDX.
  */
 void sgesvdx(const char* jobu, const char* jobvt, const char* range,
-             const int m, const int n, f32* restrict A, const int lda,
-             const f32 vl, const f32 vu, const int il, const int iu,
-             int* ns, f32* restrict S, f32* restrict U,
-             const int ldu, f32* restrict VT, const int ldvt,
-             f32* restrict work, const int lwork,
-             int* restrict iwork, int* info)
+             const INT m, const INT n, f32* restrict A, const INT lda,
+             const f32 vl, const f32 vu, const INT il, const INT iu,
+             INT* ns, f32* restrict S, f32* restrict U,
+             const INT ldu, f32* restrict VT, const INT ldvt,
+             f32* restrict work, const INT lwork,
+             INT* restrict iwork, INT* info)
 {
-    int alls, inds, lquery, vals, wantu, wantvt;
-    int i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;
-    int itemp, itgkz, iutgk, j, maxwrk, minmn, minwrk, mnthr;
+    INT alls, inds, lquery, vals, wantu, wantvt;
+    INT i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;
+    INT itemp, itgkz, iutgk, j, maxwrk, minmn, minwrk, mnthr;
     f32 anrm, bignum, eps, smlnum;
     char jobz, rngtgk;
 
@@ -143,12 +144,12 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
         maxwrk = 1;
         if (minmn > 0) {
             /* Get block size from tuning parameters */
-            int nb = lapack_get_nb("dgebrd");
+            INT nb = lapack_get_nb("dgebrd");
             if (nb < 1) nb = 32;
 
             if (m >= n) {
                 /* MNTHR from ILAENV(6, 'SGESVD', ...) - typically 1.6 * n */
-                mnthr = (int)(1.6f * n);
+                mnthr = (INT)(1.6f * n);
                 if (m >= mnthr) {
                     /* Path 1 (M much larger than N) */
                     maxwrk = n + n * nb;
@@ -179,7 +180,7 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
                 }
             } else {
                 /* MNTHR from ILAENV(6, 'SGESVD', ...) - typically 1.6 * m */
-                mnthr = (int)(1.6f * m);
+                mnthr = (INT)(1.6f * m);
                 if (n >= mnthr) {
                     /* Path 1t (N much larger than M) */
                     maxwrk = m + m * nb;
@@ -264,7 +265,7 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
     if (m >= n) {
         /* A has at least as many rows as columns */
         /* MNTHR from ILAENV(6, 'SGESVD', ...) */
-        mnthr = (int)(1.6f * n);
+        mnthr = (INT)(1.6f * n);
 
         if (m >= mnthr) {
             /* Path 1 (M much larger than N):
@@ -384,7 +385,7 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
     } else {
         /* A has more columns than rows */
         /* MNTHR from ILAENV(6, 'SGESVD', ...) */
-        mnthr = (int)(1.6f * m);
+        mnthr = (INT)(1.6f * m);
 
         if (n >= mnthr) {
             /* Path 1t (N much larger than M):

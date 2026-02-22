@@ -3,6 +3,7 @@
  * @brief ZLARFY applies an elementary reflector to a Hermitian matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -35,11 +36,11 @@
  * @param[in]     ldc    The leading dimension of the array C. LDC >= max(1, N).
  * @param[out]    work   Complex*16 array, dimension (N).
  */
-void zlarfy(const char* uplo, const int n,
+void zlarfy(const char* uplo, const INT n,
             const c128* restrict V,
-            const int incv, const c128 tau,
+            const INT incv, const c128 tau,
             c128* restrict C,
-            const int ldc, c128* restrict work)
+            const INT ldc, c128* restrict work)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);

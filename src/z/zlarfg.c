@@ -3,6 +3,7 @@
  * @brief ZLARFG generates an elementary reflector (Householder matrix).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -39,13 +40,13 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void zlarfg(const int n, c128* alpha, c128* x,
-            const int incx, c128* tau)
+void zlarfg(const INT n, c128* alpha, c128* x,
+            const INT incx, c128* tau)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int j, knt;
+    INT j, knt;
     f64 alphi, alphr, beta, rsafmn, safmin, xnorm;
 
     if (n <= 0) {

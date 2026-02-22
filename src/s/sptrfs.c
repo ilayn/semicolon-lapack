@@ -5,6 +5,7 @@
  *        tridiagonal, and provides error bounds and backward error estimates.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -46,31 +47,31 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sptrfs(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* restrict D,
     const f32* restrict E,
     const f32* restrict DF,
     const f32* restrict EF,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int count, i, ix, j, nz;
+    INT count, i, ix, j, nz;
     f32 bi, cx, dx, ex, eps, lstres, s, safe1, safe2, safmin;
-    int max_n_1 = (1 > n) ? 1 : n;
-    int info_local;
+    INT max_n_1 = (1 > n) ? 1 : n;
+    INT info_local;
 
     *info = 0;
     if (n < 0) {

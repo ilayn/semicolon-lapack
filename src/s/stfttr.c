@@ -3,6 +3,7 @@
  * @brief STFTTR copies a triangular matrix from rectangular full packed format (TF) to standard full format (TR).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -46,15 +47,15 @@
 void stfttr(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict ARF,
     f32* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
-    int lower, nisodd, normaltransr;
-    int n1, n2, k, nt, nx2, np1x2;
-    int i, j, l, ij;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k, nt, nx2, np1x2;
+    INT i, j, l, ij;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

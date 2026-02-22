@@ -3,6 +3,7 @@
  * @brief DLABRD reduces the first nb rows and columns of a general matrix to bidiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
@@ -46,14 +47,14 @@
  *                      of A.
  * @param[in]     ldy   The leading dimension of the array Y. ldy >= max(1,n).
  */
-void dlabrd(const int m, const int n, const int nb,
-            f64* restrict A, const int lda,
+void dlabrd(const INT m, const INT n, const INT nb,
+            f64* restrict A, const INT lda,
             f64* restrict D, f64* restrict E,
             f64* restrict tauq, f64* restrict taup,
-            f64* restrict X, const int ldx,
-            f64* restrict Y, const int ldy)
+            f64* restrict X, const INT ldx,
+            f64* restrict Y, const INT ldy)
 {
-    int i;
+    INT i;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {

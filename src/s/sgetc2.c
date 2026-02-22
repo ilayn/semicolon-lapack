@@ -3,6 +3,7 @@
  * @brief LU factorization with complete pivoting.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -37,19 +38,19 @@
  *                           avoid the overflow.
  */
 void sgetc2(
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* restrict jpiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* restrict jpiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
     f32 eps, smlnum, bignum, smin, xmax;
-    int i, ip, ipv, j, jp, jpv;
+    INT i, ip, ipv, j, jp, jpv;
 
     *info = 0;
 

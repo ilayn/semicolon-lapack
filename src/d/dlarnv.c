@@ -26,6 +26,7 @@
  *                       The generated random numbers.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -34,11 +35,11 @@
 
 #define TWO_PI 6.2831853071795864769252867665590057683943
 
-void dlarnv(const int idist, int* restrict iseed, const int n,
+void dlarnv(const INT idist, INT* restrict iseed, const INT n,
             f64* restrict X)
 {
     f64 U[LV];
-    int i, iv, il, il2;
+    INT i, iv, il, il2;
 
     for (iv = 0; iv < n; iv += LV / 2) {
         il = LV / 2;

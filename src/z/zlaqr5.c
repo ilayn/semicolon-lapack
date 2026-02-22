@@ -3,6 +3,7 @@
  * @brief ZLAQR5 performs a single small-bulge multi-shift QR sweep.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -37,16 +38,16 @@
  * @param[out] WH     Complex array, dimension (ldwh, nh).
  * @param[in] ldwh    Leading dimension of WH. ldwh >= 2*nshfts.
  */
-void zlaqr5(const int wantt, const int wantz, const int kacc22,
-            const int n, const int ktop, const int kbot,
-            const int nshfts, c128* S,
-            c128* H, const int ldh,
-            const int iloz, const int ihiz,
-            c128* Z, const int ldz,
-            c128* V, const int ldv,
-            c128* U, const int ldu,
-            const int nv, c128* WV, const int ldwv,
-            const int nh, c128* WH, const int ldwh)
+void zlaqr5(const INT wantt, const INT wantz, const INT kacc22,
+            const INT n, const INT ktop, const INT kbot,
+            const INT nshfts, c128* S,
+            c128* H, const INT ldh,
+            const INT iloz, const INT ihiz,
+            c128* Z, const INT ldz,
+            c128* V, const INT ldv,
+            c128* U, const INT ldu,
+            const INT nv, c128* WV, const INT ldwv,
+            const INT nh, c128* WH, const INT ldwh)
 {
     const c128 czero = 0.0;
     const c128 cone = 1.0;
@@ -54,9 +55,9 @@ void zlaqr5(const int wantt, const int wantz, const int kacc22,
 
     c128 alpha, beta, refsum, t1, t2, t3;
     f64 h11, h12, h21, h22, safmin, scl, smlnum, tst1, tst2, ulp;
-    int i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
-    int k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
-    int accum, bmp22;
+    INT i2, i4, incol, j, jbot, jcol, jlen, jrow, jtop;
+    INT k, k1, kdu, kms, krcol, m, m22, mbot, mtop, nbmps, ndcol, ns, nu;
+    INT accum, bmp22;
 
     c128 vt[3];
 

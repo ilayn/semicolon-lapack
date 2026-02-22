@@ -3,6 +3,7 @@
  * @brief SLAEV2 computes the eigendecomposition of a 2-by-2 symmetric matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -29,7 +30,7 @@
 void slaev2(const f32 a, const f32 b, const f32 c,
             f32* rt1, f32* rt2, f32* cs1, f32* sn1)
 {
-    int sgn1, sgn2;
+    INT sgn1, sgn2;
     f32 sm, df, adf, tb, ab, rt;
     f32 acmx, acmn;
     f32 cs, acs, ct, tn;

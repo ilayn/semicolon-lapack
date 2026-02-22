@@ -5,6 +5,7 @@
  *        real matrix C, which consists of two blocks A and B.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -54,16 +55,16 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dtpmlqt(const char* side, const char* trans, const int m, const int n,
-             const int k, const int l, const int mb,
-             const f64* restrict V, const int ldv,
-             const f64* restrict T, const int ldt,
-             f64* restrict A, const int lda,
-             f64* restrict B, const int ldb,
-             f64* restrict work, int* info)
+void dtpmlqt(const char* side, const char* trans, const INT m, const INT n,
+             const INT k, const INT l, const INT mb,
+             const f64* restrict V, const INT ldv,
+             const f64* restrict T, const INT ldt,
+             f64* restrict A, const INT lda,
+             f64* restrict B, const INT ldb,
+             f64* restrict work, INT* info)
 {
-    int left, right, tran, notran;
-    int i, ib, nb, lb, kf, ldaq;
+    INT left, right, tran, notran;
+    INT i, ib, nb, lb, kf, ldaq;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

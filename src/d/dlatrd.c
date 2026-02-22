@@ -4,6 +4,7 @@
  *        tridiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -40,16 +41,16 @@
  *                      The n-by-nb matrix W.
  * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1,n).
  */
-void dlatrd(const char* uplo, const int n, const int nb,
-            f64* restrict A, const int lda,
+void dlatrd(const char* uplo, const INT n, const INT nb,
+            f64* restrict A, const INT lda,
             f64* restrict E, f64* restrict tau,
-            f64* restrict W, const int ldw)
+            f64* restrict W, const INT ldw)
 {
     const f64 ZERO = 0.0;
     const f64 ONE  = 1.0;
     const f64 HALF = 0.5;
 
-    int ii, iw;
+    INT ii, iw;
     f64 alpha;
 
     /* Quick return if possible */
@@ -145,7 +146,7 @@ void dlatrd(const char* uplo, const int n, const int nb,
 
             if (ii < n) {
                 /* Generate elementary reflector H(ii) to annihilate A(ii+2:n, ii). */
-                int min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
+                INT min_row = (ii + 1 < n - 1) ? (ii + 1) : (n - 1);
                 dlarfg(n - ii,
                        &A[ii + (ii - 1) * lda],
                        &A[min_row + (ii - 1) * lda],

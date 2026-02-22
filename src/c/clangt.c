@@ -4,6 +4,7 @@
  *        or the largest absolute value of any element of a general tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -28,7 +29,7 @@
  */
 f32 clangt(
     const char* norm,
-    const int n,
+    const INT n,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU)
@@ -37,7 +38,7 @@ f32 clangt(
     const f32 ONE = 1.0f;
 
     f32 anorm, scale, sum, temp;
-    int i;
+    INT i;
 
     if (n <= 0) {
         anorm = ZERO;

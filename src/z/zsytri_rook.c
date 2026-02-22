@@ -3,6 +3,7 @@
  * @brief ZSYTRI_ROOK computes the inverse of a complex symmetric matrix using the factorization computed by ZSYTRF_ROOK.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -48,19 +49,19 @@
  */
 void zsytri_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int upper;
-    int k, kp, kstep;
+    INT upper;
+    INT k, kp, kstep;
     c128 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

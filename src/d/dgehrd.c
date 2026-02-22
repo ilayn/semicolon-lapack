@@ -3,6 +3,7 @@
  * @brief DGEHRD reduces a general matrix to upper Hessenberg form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
@@ -38,20 +39,20 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgehrd(const int n, const int ilo, const int ihi,
-            f64* A, const int lda, f64* tau,
-            f64* work, const int lwork, int* info)
+void dgehrd(const INT n, const INT ilo, const INT ihi,
+            f64* A, const INT lda, f64* tau,
+            f64* work, const INT lwork, INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery;
-    int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
+    INT lquery;
+    INT i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
     f64 ei;
-    int max_n_1 = (n > 1) ? n : 1;
+    INT max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
     *info = 0;

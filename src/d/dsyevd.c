@@ -4,6 +4,7 @@
  *        real symmetric matrix using divide and conquer algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -52,21 +53,21 @@
  *                           the submatrix lying in rows and columns INFO/(N+1)
  *                           through mod(INFO,N+1).
  */
-void dsyevd(const char* jobz, const char* uplo, const int n,
-            f64* restrict A, const int lda,
+void dsyevd(const char* jobz, const char* uplo, const INT n,
+            f64* restrict A, const INT lda,
             f64* restrict W,
-            f64* restrict work, const int lwork,
-            int* restrict iwork, const int liwork,
-            int* info)
+            f64* restrict work, const INT lwork,
+            INT* restrict iwork, const INT liwork,
+            INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lower, wantz, lquery;
-    int iinfo, inde, indtau, indwrk, indwk2, iscale;
-    int liopt, liwmin, llwork, llwrk2, lopt, lwmin;
+    INT lower, wantz, lquery;
+    INT iinfo, inde, indtau, indwrk, indwk2, iscale;
+    INT liopt, liwmin, llwork, llwrk2, lopt, lwmin;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
-    int nb;
+    INT nb;
 
     /* Test the input parameters */
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

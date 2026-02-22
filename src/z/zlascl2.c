@@ -3,6 +3,7 @@
  * @brief ZLASCL2 performs diagonal scaling on a matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -24,13 +25,13 @@
  * @param[in]     ldx   The leading dimension of the matrix X. ldx >= m.
  */
 void zlascl2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f64* restrict D,
     c128* restrict X,
-    const int ldx)
+    const INT ldx)
 {
-    int i, j;
+    INT i, j;
 
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {

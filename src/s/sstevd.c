@@ -4,6 +4,7 @@
  *        real symmetric tridiagonal matrix using divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -60,15 +61,15 @@
  *                         - > 0:  if INFO = i, the algorithm failed to converge; i
  *                           off-diagonal elements of E did not converge to zero.
  */
-void sstevd(const char* jobz, const int n, f32* D, f32* E,
-            f32* Z, const int ldz, f32* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+void sstevd(const char* jobz, const INT n, f32* D, f32* E,
+            f32* Z, const INT ldz, f32* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantz, lquery;
-    int iscale, liwmin, lwmin;
+    INT wantz, lquery;
+    INT iscale, liwmin, lwmin;
     f32 bignum, eps, rmax, rmin, safmin, sigma, smlnum, tnrm;
 
     /* Test the input parameters. */

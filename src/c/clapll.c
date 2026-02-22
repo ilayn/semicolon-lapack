@@ -3,6 +3,7 @@
  * @brief CLAPLL measures the linear dependence of two vectors.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -27,8 +28,8 @@
  * @param[in]     incy   The increment between successive elements of Y. INCY > 0.
  * @param[out]    ssmin  The smallest singular value of the N-by-2 matrix A = ( X Y ).
  */
-void clapll(const int n, c64* restrict x, const int incx,
-            c64* restrict y, const int incy, f32* ssmin)
+void clapll(const INT n, c64* restrict x, const INT incx,
+            c64* restrict y, const INT incy, f32* ssmin)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     c64 a11, a12, a22, c, tau, dot;

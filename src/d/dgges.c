@@ -4,6 +4,7 @@
  *        the matrix of Schur vectors for GE matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -55,28 +56,28 @@
  *                         - > 0: errors from QZ iteration or reordering
  */
 void dgges(const char* jobvsl, const char* jobvsr, const char* sort,
-           dselect3_t selctg, const int n,
-           f64* restrict A, const int lda,
-           f64* restrict B, const int ldb,
-           int* sdim,
+           dselect3_t selctg, const INT n,
+           f64* restrict A, const INT lda,
+           f64* restrict B, const INT ldb,
+           INT* sdim,
            f64* restrict alphar, f64* restrict alphai,
            f64* restrict beta,
-           f64* restrict VSL, const int ldvsl,
-           f64* restrict VSR, const int ldvsr,
-           f64* restrict work, const int lwork,
-           int* restrict bwork, int* info)
+           f64* restrict VSL, const INT ldvsl,
+           f64* restrict VSR, const INT ldvsr,
+           f64* restrict work, const INT lwork,
+           INT* restrict bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl, wantst;
-    int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int ip, iright, irows, itau, iwrk, maxwrk, minwrk;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl, wantst;
+    INT i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT ip, iright, irows, itau, iwrk, maxwrk, minwrk;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps;
     f64 pvsl, pvsr, safmax, safmin, smlnum;
-    int idum[1];
+    INT idum[1];
     f64 dif[2];
-    int nb_geqrf, nb_ormqr, nb_orgqr;
+    INT nb_geqrf, nb_ormqr, nb_orgqr;
 
     /* Decode the input arguments */
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {

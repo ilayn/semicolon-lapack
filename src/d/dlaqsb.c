@@ -3,6 +3,7 @@
  * @brief DLAQSB scales a symmetric band matrix using scaling factors computed by DPBEQU.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 #define THRESH 0.1
@@ -27,10 +28,10 @@
  */
 void dlaqsb(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict S,
     const f64 scond,
     const f64 amax,
@@ -38,7 +39,7 @@ void dlaqsb(
 {
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 cj, large, small;
 
     if (n <= 0) {

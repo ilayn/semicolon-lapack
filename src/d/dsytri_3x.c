@@ -3,6 +3,7 @@
  * @brief DSYTRI_3X computes the inverse of a real symmetric indefinite matrix using the factorization computed by DSYTRF_RK or DSYTRF_BK (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <stdlib.h>
 #include <cblas.h>
@@ -62,22 +63,22 @@
  */
 void dsytri_3x(
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     f64* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper;
-    int cut, i, icount, invd, ip, k, nnb, j, u11;
+    INT upper;
+    INT cut, i, icount, invd, ip, k, nnb, j, u11;
     f64 ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
-    int ldwork = n + nb + 1;
+    INT ldwork = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

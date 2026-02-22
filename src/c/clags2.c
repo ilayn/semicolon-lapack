@@ -3,6 +3,7 @@
  * @brief CLAGS2 computes 2-by-2 unitary matrices U, V, and Q.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"
@@ -54,7 +55,7 @@
  * @param[out] csq    The desired unitary matrix Q.
  * @param[out] snq    The desired unitary matrix Q.
  */
-void clags2(const int upper,
+void clags2(const INT upper,
             const f32 a1, const c64 a2, const f32 a3,
             const f32 b1, const c64 b2, const f32 b3,
             f32* csu, c64* snu,

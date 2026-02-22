@@ -4,6 +4,7 @@
  *        scaling factors computed by sgbequ.
  */
 
+#include "internal_build_defs.h"
 #include <float.h>
 #include "semicolon_lapack_single.h"
 
@@ -38,12 +39,12 @@
  *                               replaced by diag(R) * A * diag(C).
  */
 void slaqgb(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f32* restrict R,
     const f32* restrict C,
     const f32 rowcnd,
@@ -54,9 +55,9 @@ void slaqgb(
     const f32 ONE = 1.0f;
     const f32 THRESH = 0.1f;
 
-    int i, j;
+    INT i, j;
     f32 cj, large, small;
-    int i_start, i_end;
+    INT i_start, i_end;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) {

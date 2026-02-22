@@ -3,6 +3,7 @@
  * @brief CLAQZ3 executes a single multishift QZ sweep.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -38,38 +39,38 @@
  * @param[out]    info     = 0: successful exit.
  */
 void claqz3(
-    const int ilschur,
-    const int ilq,
-    const int ilz,
-    const int n,
-    const int ilo,
-    const int ihi,
-    const int nshifts,
-    const int nblock_desired,
+    const INT ilschur,
+    const INT ilq,
+    const INT ilz,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
+    const INT nshifts,
+    const INT nblock_desired,
     c64* restrict alpha,
     c64* restrict beta,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict Q,
-    const int ldq,
+    const INT ldq,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict QC,
-    const int ldqc,
+    const INT ldqc,
     c64* restrict ZC,
-    const int ldzc,
+    const INT ldzc,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const f32 ONE = 1.0f;
 
-    int i, j, ns, istartm, istopm, sheight, swidth, k, np;
-    int istartb, istopb, ishift, nblock, npos;
+    INT i, j, ns, istartm, istopm, sheight, swidth, k, np;
+    INT istartb, istopb, ishift, nblock, npos;
     f32 safmin, safmax, c, scale;
     c64 s, temp, temp2, temp3;
 

@@ -4,6 +4,7 @@
  *        using the blocked version of the algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -53,14 +54,14 @@
  *                           to solve a system of equations.
  */
 void cgbtrf(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     c64* restrict AB,
-    const int ldab,
-    int* restrict ipiv,
-    int* info)
+    const INT ldab,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
@@ -70,9 +71,9 @@ void cgbtrf(
     c64 work13[LDWORK * NBMAX];
     c64 work31[LDWORK * NBMAX];
 
-    int i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
+    INT i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
     c64 temp;
-    int minmn;
+    INT minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
     kv = ku + kl;
@@ -183,7 +184,7 @@ void cgbtrf(
                 ipiv[jj] = jp + jj - j;  /* Store relative to block start initially */
 
                 if (AB[kv + jp + jj * ldab] != ZERO) {
-                    int new_ju = jj + ku + jp;
+                    INT new_ju = jj + ku + jp;
                     if (new_ju > n - 1) new_ju = n - 1;
                     if (new_ju > ju) ju = new_ju;
 

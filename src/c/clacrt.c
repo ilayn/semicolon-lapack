@@ -3,6 +3,7 @@
  * @brief CLACRT performs a linear transformation of a pair of complex vectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -30,15 +31,15 @@
  *                         [ -S   C  ]
  */
 void clacrt(
-    const int n,
+    const INT n,
     c64* restrict cx,
-    const int incx,
+    const INT incx,
     c64* restrict cy,
-    const int incy,
+    const INT incy,
     const c64 c,
     const c64 s)
 {
-    int i, ix, iy;
+    INT i, ix, iy;
     c64 ctemp;
 
     if (n <= 0) {

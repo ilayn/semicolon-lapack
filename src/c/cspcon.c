@@ -3,6 +3,7 @@
  * @brief CSPCON estimates the reciprocal condition number of a symmetric packed matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -31,22 +32,22 @@
  */
 void cspcon(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f32 anorm,
     f32* rcond,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
-    int i, ip, kase;
+    INT upper;
+    INT i, ip, kase;
     f32 ainvnm;
-    int isave[3];
-    int info_local;
+    INT isave[3];
+    INT info_local;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

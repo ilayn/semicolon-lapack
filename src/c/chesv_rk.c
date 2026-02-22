@@ -3,6 +3,7 @@
  * @brief CHESV_RK computes the solution to system of linear equations A * X = B for HE matrices using CHETRF_RK/CHETRS_3.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -79,20 +80,20 @@
  */
 void chesv_rk(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict E,
-    int* restrict ipiv,
+    INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkopt;
+    INT lquery;
+    INT lwkopt;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -116,7 +117,7 @@ void chesv_rk(
             lwkopt = 1;
         } else {
             chetrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
-            lwkopt = (int)crealf(work[0]);
+            lwkopt = (INT)crealf(work[0]);
         }
         work[0] = (c64)lwkopt;
     }

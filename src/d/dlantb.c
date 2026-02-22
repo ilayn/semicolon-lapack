@@ -5,6 +5,7 @@
  *        a triangular band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -49,18 +50,18 @@ f64 dlantb(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, l;
+    INT i, j, l;
     f64 scale, sum, value;
-    int udiag;
+    INT udiag;
 
     /* Quick return if possible */
     if (n == 0) {
@@ -75,7 +76,7 @@ f64 dlantb(
             value = ONE;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i < k; i++) {
                         sum = fabs(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -85,7 +86,7 @@ f64 dlantb(
                 }
             } else {
                 for (j = 0; j < n; j++) {
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 1; i < i_end; i++) {
                         sum = fabs(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -98,7 +99,7 @@ f64 dlantb(
             value = ZERO;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i <= k; i++) {
                         sum = fabs(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -108,7 +109,7 @@ f64 dlantb(
                 }
             } else {
                 for (j = 0; j < n; j++) {
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 0; i < i_end; i++) {
                         sum = fabs(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -125,13 +126,13 @@ f64 dlantb(
             for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i < k; i++) {
                         sum += fabs(AB[i + j * ldab]);
                     }
                 } else {
                     sum = ZERO;
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i <= k; i++) {
                         sum += fabs(AB[i + j * ldab]);
                     }
@@ -144,13 +145,13 @@ f64 dlantb(
             for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 1; i < i_end; i++) {
                         sum += fabs(AB[i + j * ldab]);
                     }
                 } else {
                     sum = ZERO;
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 0; i < i_end; i++) {
                         sum += fabs(AB[i + j * ldab]);
                     }
@@ -170,7 +171,7 @@ f64 dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = k - j;
-                    int row_start = (j - k > 0) ? j - k : 0;
+                    INT row_start = (j - k > 0) ? j - k : 0;
                     for (i = row_start; i < j; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
                     }
@@ -181,7 +182,7 @@ f64 dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = k - j;
-                    int row_start = (j - k > 0) ? j - k : 0;
+                    INT row_start = (j - k > 0) ? j - k : 0;
                     for (i = row_start; i <= j; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
                     }
@@ -194,7 +195,7 @@ f64 dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = -j;
-                    int row_end = (j + k < n - 1) ? j + k : n - 1;
+                    INT row_end = (j + k < n - 1) ? j + k : n - 1;
                     for (i = j + 1; i <= row_end; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
                     }
@@ -205,7 +206,7 @@ f64 dlantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = -j;
-                    int row_end = (j + k < n - 1) ? j + k : n - 1;
+                    INT row_end = (j + k < n - 1) ? j + k : n - 1;
                     for (i = j; i <= row_end; i++) {
                         work[i] += fabs(AB[l + i + j * ldab]);
                     }
@@ -226,8 +227,8 @@ f64 dlantb(
                 sum = (f64)n;
                 if (k > 0) {
                     for (j = 1; j < n; j++) {
-                        int count = (j < k) ? j : k;
-                        int start = (k - j > 0) ? k - j : 0;
+                        INT count = (j < k) ? j : k;
+                        INT start = (k - j > 0) ? k - j : 0;
                         dlassq(count, &AB[start + j * ldab], 1, &scale, &sum);
                     }
                 }
@@ -235,8 +236,8 @@ f64 dlantb(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int count = (j + 1 < k + 1) ? j + 1 : k + 1;
-                    int start = (k - j > 0) ? k - j : 0;
+                    INT count = (j + 1 < k + 1) ? j + 1 : k + 1;
+                    INT start = (k - j > 0) ? k - j : 0;
                     dlassq(count, &AB[start + j * ldab], 1, &scale, &sum);
                 }
             }
@@ -246,7 +247,7 @@ f64 dlantb(
                 sum = (f64)n;
                 if (k > 0) {
                     for (j = 0; j < n - 1; j++) {
-                        int count = (n - 1 - j < k) ? n - 1 - j : k;
+                        INT count = (n - 1 - j < k) ? n - 1 - j : k;
                         dlassq(count, &AB[1 + j * ldab], 1, &scale, &sum);
                     }
                 }
@@ -254,7 +255,7 @@ f64 dlantb(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int count = (n - j < k + 1) ? n - j : k + 1;
+                    INT count = (n - j < k + 1) ? n - j : k + 1;
                     dlassq(count, &AB[j * ldab], 1, &scale, &sum);
                 }
             }

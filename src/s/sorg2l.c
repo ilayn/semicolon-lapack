@@ -4,6 +4,7 @@
  *        a QL factorization determined by SGEQLF (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -34,13 +35,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sorg2l(const int m, const int n, const int k,
-            f32* restrict A, const int lda,
+void sorg2l(const INT m, const INT n, const INT k,
+            f32* restrict A, const INT lda,
             const f32* restrict tau,
             f32* restrict work,
-            int* info)
+            INT* info)
 {
-    int i, ii, j, l;
+    INT i, ii, j, l;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 

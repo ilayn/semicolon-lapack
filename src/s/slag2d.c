@@ -3,6 +3,7 @@
  * @brief Convert single precision matrix to double precision.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -28,18 +29,18 @@
  *                           - = 0: successful exit (always succeeds).
  */
 void slag2d(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict SA,
-    const int ldsa,
+    const INT ldsa,
     double* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     *info = 0;
 
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             A[i + j * lda] = (double)SA[i + j * ldsa];
         }
     }

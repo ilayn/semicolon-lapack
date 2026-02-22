@@ -3,6 +3,7 @@
  * @brief SLARRK computes one eigenvalue of a symmetric tridiagonal matrix T to suitable accuracy.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -36,17 +37,17 @@
  *                         - = 0: Eigenvalue converged.
  *                         - = -1: Eigenvalue did NOT converge.
  */
-void slarrk(const int n, const int iw, const f32 gl, const f32 gu,
+void slarrk(const INT n, const INT iw, const f32 gl, const f32 gu,
             const f32* restrict D, const f32* restrict E2,
             const f32 pivmin, const f32 reltol,
-            f32* w, f32* werr, int* info)
+            f32* w, f32* werr, INT* info)
 {
     /* FUDGE = 2, a "fudge factor" to widen the Gershgorin intervals */
     const f32 FUDGE = 2.0f;
     const f32 HALF = 0.5f;
     const f32 TWO = 2.0f;
 
-    int i, it, itmax, negcnt;
+    INT i, it, itmax, negcnt;
     f32 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
 
     /* Quick return if possible */
@@ -62,7 +63,7 @@ void slarrk(const int n, const int iw, const f32 gl, const f32 gu,
     rtoli = reltol;
     atoli = FUDGE * TWO * pivmin;
 
-    itmax = (int)((logf(tnorm + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
+    itmax = (INT)((logf(tnorm + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
 
     *info = -1;
 

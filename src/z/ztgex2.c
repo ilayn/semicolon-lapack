@@ -4,6 +4,7 @@
  *        pair by a unitary equivalence transformation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -51,26 +52,26 @@
  *                                problem is ill-conditioned.
  */
 void ztgex2(
-    const int wantq,
-    const int wantz,
-    const int n,
+    const INT wantq,
+    const INT wantz,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict Q,
-    const int ldq,
+    const INT ldq,
     c128* restrict Z,
-    const int ldz,
-    const int j1,
-    int* info)
+    const INT ldz,
+    const INT j1,
+    INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
     const f64 TWENTY = 20.0;
 
-    int weak, strong;
-    int i, m;
+    INT weak, strong;
+    INT i, m;
     f64 cq, cz, eps, sa, sb, scale, smlnum, sum, thresha, threshb;
     c128 cdum, f, g, sq, sz;
 

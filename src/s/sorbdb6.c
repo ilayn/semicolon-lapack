@@ -3,6 +3,7 @@
  * @brief SORBDB6 orthogonalizes a column vector with respect to the columns of a matrix using Gram-Schmidt.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -70,26 +71,26 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sorbdb6(
-    const int m1,
-    const int m2,
-    const int n,
+    const INT m1,
+    const INT m2,
+    const INT n,
     f32* restrict X1,
-    const int incx1,
+    const INT incx1,
     f32* restrict X2,
-    const int incx2,
+    const INT incx2,
     const f32* restrict Q1,
-    const int ldq1,
+    const INT ldq1,
     const f32* restrict Q2,
-    const int ldq2,
+    const INT ldq2,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 alpha = 0.83f;
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const f32 negone = -1.0f;
-    int i, ix;
+    INT i, ix;
     f32 eps, norm, norm_new, scl, ssq;
 
     *info = 0;

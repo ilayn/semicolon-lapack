@@ -3,6 +3,7 @@
  * @brief DTRTRS solves a triangular system of equations.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -59,18 +60,18 @@ void dtrtrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
 
     // Test the input parameters
     *info = 0;
@@ -103,7 +104,7 @@ void dtrtrs(
 
     // Check for singularity
     if (nounit) {
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (A[i + i * lda] == ZERO) {
                 *info = i + 1;
                 return;

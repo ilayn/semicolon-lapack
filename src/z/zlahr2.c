@@ -4,6 +4,7 @@
  *        so that elements below the k-th subdiagonal are zero.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -35,15 +36,15 @@
  * @param[out]    Y      The n-by-nb matrix Y. Dimension (ldy, nb).
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
-void zlahr2(const int n, const int k, const int nb,
-            c128* A, const int lda, c128* tau,
-            c128* T, const int ldt, c128* Y, const int ldy)
+void zlahr2(const INT n, const INT k, const INT nb,
+            c128* A, const INT lda, c128* tau,
+            c128* T, const INT ldt, c128* Y, const INT ldy)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int i;
+    INT i;
     c128 ei = CMPLX(0.0, 0.0);
 
     /* Quick return if possible */
@@ -96,8 +97,8 @@ void zlahr2(const int n, const int k, const int nb,
         }
 
         /* Generate the elementary reflector H(i) to annihilate A(k+i+2:n-1, i) */
-        int len = n - k - i - 1;
-        int start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
+        INT len = n - k - i - 1;
+        INT start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
         zlarfg(len, &A[(k + i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);
         ei = A[(k + i + 1) + i * lda];
         A[(k + i + 1) + i * lda] = ONE;

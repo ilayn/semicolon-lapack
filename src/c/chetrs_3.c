@@ -3,6 +3,7 @@
  * @brief CHETRS_3 solves a system of linear equations A*X = B with a complex Hermitian matrix using the factorization computed by CHETRF_RK or ZHETRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -79,20 +80,20 @@
  */
 void chetrs_3(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int upper;
-    int i, j, k, kp;
+    INT upper;
+    INT i, j, k, kp;
     f32 s;
     c64 ak, akm1, akm1k, bk, bkm1, denom;
 

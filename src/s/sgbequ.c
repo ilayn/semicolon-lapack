@@ -3,6 +3,7 @@
  * @brief Computes row and column scaling factors to equilibrate a band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_single.h"
@@ -51,23 +52,23 @@
  *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
  */
 void sgbequ(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict R,
     f32* restrict C,
     f32* rowcnd,
     f32* colcnd,
     f32* amax,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j;
+    INT i, j;
     f32 bignum, rcmax, rcmin, smlnum;
 
     /* Test the input parameters */
@@ -112,8 +113,8 @@ void sgbequ(
          * Row range for column j: max(0, j-ku) to min(m-1, j+kl)
          * Band storage: AB[ku + i - j + j*ldab] = A(i,j)
          */
-        int i_start = (j - ku > 0) ? j - ku : 0;
-        int i_end = (j + kl < m - 1) ? j + kl : m - 1;
+        INT i_start = (j - ku > 0) ? j - ku : 0;
+        INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
             f32 abs_val = fabsf(AB[ku + i - j + j * ldab]);
             if (abs_val > R[i]) {
@@ -170,8 +171,8 @@ void sgbequ(
     /* Find the maximum element in each column,
      * assuming the row scaling computed above */
     for (j = 0; j < n; j++) {
-        int i_start = (j - ku > 0) ? j - ku : 0;
-        int i_end = (j + kl < m - 1) ? j + kl : m - 1;
+        INT i_start = (j - ku > 0) ? j - ku : 0;
+        INT i_end = (j + kl < m - 1) ? j + kl : m - 1;
         for (i = i_start; i <= i_end; i++) {
             f32 scaled_val = fabsf(AB[ku + i - j + j * ldab]) * R[i];
             if (scaled_val > C[j]) {

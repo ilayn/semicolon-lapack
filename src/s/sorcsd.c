@@ -3,6 +3,7 @@
  * @brief SORCSD computes the CS decomposition of an M-by-M partitioned orthogonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -138,43 +139,43 @@ void sorcsd(
     const char* jobv2t,
     const char* trans,
     const char* signs,
-    const int m,
-    const int p,
-    const int q,
+    const INT m,
+    const INT p,
+    const INT q,
     f32* restrict X11,
-    const int ldx11,
+    const INT ldx11,
     f32* restrict X12,
-    const int ldx12,
+    const INT ldx12,
     f32* restrict X21,
-    const int ldx21,
+    const INT ldx21,
     f32* restrict X22,
-    const int ldx22,
+    const INT ldx22,
     f32* restrict theta,
     f32* restrict U1,
-    const int ldu1,
+    const INT ldu1,
     f32* restrict U2,
-    const int ldu2,
+    const INT ldu2,
     f32* restrict V1T,
-    const int ldv1t,
+    const INT ldv1t,
     f32* restrict V2T,
-    const int ldv2t,
+    const INT ldv2t,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 one = 1.0f;
     const f32 zero = 0.0f;
 
-    int childinfo, i, ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
-    int ib21d = 0, ib21e = 0, ib22d = 0, ib22e = 0, ibbcsd = 0, iorbdb = 0;
-    int iorglq = 0, iorgqr = 0, iphi, itaup1 = 0, itaup2 = 0, itauq1 = 0, itauq2 = 0;
-    int j, lbbcsdwork = 0, lbbcsdworkmin, lbbcsdworkopt;
-    int lorbdbwork = 0, lorbdbworkopt;
-    int lorglqwork = 0, lorglqworkmin, lorglqworkopt;
-    int lorgqrwork = 0, lorgqrworkmin, lorgqrworkopt;
-    int lworkmin, lworkopt;
-    int colmajor, defaultsigns, lquery, wantu1, wantu2, wantv1t, wantv2t;
+    INT childinfo, i, ib11d = 0, ib11e = 0, ib12d = 0, ib12e = 0;
+    INT ib21d = 0, ib21e = 0, ib22d = 0, ib22e = 0, ibbcsd = 0, iorbdb = 0;
+    INT iorglq = 0, iorgqr = 0, iphi, itaup1 = 0, itaup2 = 0, itauq1 = 0, itauq2 = 0;
+    INT j, lbbcsdwork = 0, lbbcsdworkmin, lbbcsdworkopt;
+    INT lorbdbwork = 0, lorbdbworkopt;
+    INT lorglqwork = 0, lorglqworkmin, lorglqworkopt;
+    INT lorgqrwork = 0, lorgqrworkmin, lorgqrworkopt;
+    INT lworkmin, lworkopt;
+    INT colmajor, defaultsigns, lquery, wantu1, wantu2, wantv1t, wantv2t;
 
     *info = 0;
     wantu1 = (jobu1[0] == 'Y' || jobu1[0] == 'y');
@@ -217,8 +218,8 @@ void sorcsd(
         *info = -26;
     }
 
-    int minpmp = (p < m - p) ? p : (m - p);
-    int minqmq = (q < m - q) ? q : (m - q);
+    INT minpmp = (p < m - p) ? p : (m - p);
+    INT minqmq = (q < m - q) ? q : (m - q);
     if (*info == 0 && minpmp < minqmq) {
         const char* transt = colmajor ? "T" : "N";
         const char* signst = defaultsigns ? "O" : "D";
@@ -246,21 +247,21 @@ void sorcsd(
         itauq2 = itauq1 + (1 > q ? 1 : q);
         iorgqr = itauq2 + (1 > (m - q) ? 1 : (m - q));
 
-        int ld_temp = (1 > (m - q) ? 1 : (m - q));
+        INT ld_temp = (1 > (m - q) ? 1 : (m - q));
         sorgqr(m - q, m - q, m - q, NULL, ld_temp, NULL, work, -1, &childinfo);
-        lorgqrworkopt = (int)work[0];
+        lorgqrworkopt = (INT)work[0];
         lorgqrworkmin = (1 > (m - q) ? 1 : (m - q));
 
         iorglq = itauq2 + (1 > (m - q) ? 1 : (m - q));
         sorglq(m - q, m - q, m - q, NULL, ld_temp, NULL, work, -1, &childinfo);
-        lorglqworkopt = (int)work[0];
+        lorglqworkopt = (INT)work[0];
         lorglqworkmin = (1 > (m - q) ? 1 : (m - q));
 
         iorbdb = itauq2 + (1 > (m - q) ? 1 : (m - q));
         sorbdb(trans, signs, m, p, q, NULL, ldx11, NULL, ldx12,
                NULL, ldx21, NULL, ldx22, NULL, NULL, NULL, NULL, NULL, NULL,
                work, -1, &childinfo);
-        lorbdbworkopt = (int)work[0];
+        lorbdbworkopt = (INT)work[0];
         (void)lorbdbworkopt;  /* lorbdbworkmin = lorbdbworkopt; unused */
 
         ib11d = itauq2 + (1 > (m - q) ? 1 : (m - q));
@@ -276,7 +277,7 @@ void sorcsd(
         sbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q,
                NULL, NULL, NULL, ldu1, NULL, ldu2, NULL, ldv1t, NULL, ldv2t,
                NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, work, -1, &childinfo);
-        lbbcsdworkopt = (int)work[0];
+        lbbcsdworkopt = (INT)work[0];
         lbbcsdworkmin = lbbcsdworkopt;
 
         lworkopt = iorgqr + lorgqrworkopt;

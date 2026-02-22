@@ -3,6 +3,7 @@
  * @brief ZTGEXC reorders the generalized Schur decomposition of a complex matrix pair.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -42,22 +43,22 @@
  *                                ilst points to current position of block.
  */
 void ztgexc(
-    const int wantq,
-    const int wantz,
-    const int n,
+    const INT wantq,
+    const INT wantz,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict Q,
-    const int ldq,
+    const INT ldq,
     c128* restrict Z,
-    const int ldz,
-    const int ifst,
-    int* ilst,
-    int* info)
+    const INT ldz,
+    const INT ifst,
+    INT* ilst,
+    INT* info)
 {
-    int here;
+    INT here;
 
     *info = 0;
     if (n < 0) {

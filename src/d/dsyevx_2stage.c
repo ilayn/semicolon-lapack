@@ -4,6 +4,7 @@
  *        of a real symmetric matrix using 2-stage reduction.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 #include <math.h>
@@ -41,32 +42,32 @@ void dsyevx_2stage(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int alleig, indeig, lower, lquery, test, valeig, wantz;
-    int i, iinfo, imax, indd, inde, indee, indibl;
-    int indisp, indiwo, indtau, indwkn, indwrk, iscale;
-    int itmp1, j, jj, llwork, llwrkn;
-    int nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
+    INT alleig, indeig, lower, lquery, test, valeig, wantz;
+    INT i, iinfo, imax, indd, inde, indee, indibl;
+    INT indisp, indiwo, indtau, indwkn, indwrk, iscale;
+    INT itmp1, j, jj, llwork, llwrkn;
+    INT nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll, vuu;
 

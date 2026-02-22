@@ -4,6 +4,7 @@
  *        quasi-triangular matrix in Schur canonical form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -40,17 +41,17 @@
  *                           Schur form; the blocks are not swapped and T and
  *                           Q are unchanged.
  */
-void slaexc(const int wantq, const int n, f32* T, const int ldt,
-            f32* Q, const int ldq, const int j1, const int n1,
-            const int n2, f32* work, int* info)
+void slaexc(const INT wantq, const INT n, f32* T, const INT ldt,
+            f32* Q, const INT ldq, const INT j1, const INT n1,
+            const INT n2, f32* work, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TEN = 10.0f;
-    const int LDD = 4;
-    const int LDX = 2;
+    const INT LDD = 4;
+    const INT LDX = 2;
 
-    int ierr, j2, j3, j4, k, nd;
+    INT ierr, j2, j3, j4, k, nd;
     f32 cs, dnorm, eps, scale, smlnum, sn, t11, t22;
     f32 t33, tau, tau1, tau2, temp, thresh, wi1, wi2;
     f32 wr1, wr2, xnorm;

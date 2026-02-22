@@ -3,6 +3,7 @@
  * @brief SLANSP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a symmetric matrix supplied in packed form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -44,7 +45,7 @@
 f32 slansp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict AP,
     f32* restrict work)
 {
@@ -53,7 +54,7 @@ f32 slansp(
     const f32 ZERO = 0.0f;
 
     // slansp.f lines 133-134: Local Scalars
-    int i, j, k;
+    INT i, j, k;
     f32 absa, scale, sum, value;
 
     // slansp.f lines 148-252: Main logic

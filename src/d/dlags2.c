@@ -3,6 +3,7 @@
  * @brief DLAGS2 computes 2-by-2 orthogonal matrices U, V, and Q.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -46,7 +47,7 @@
  * @param[out] csq    The desired orthogonal matrix Q.
  * @param[out] snq    The desired orthogonal matrix Q.
  */
-void dlags2(const int upper,
+void dlags2(const INT upper,
             const f64 a1, const f64 a2, const f64 a3,
             const f64 b1, const f64 b2, const f64 b3,
             f64* csu, f64* snu, f64* csv, f64* snv,

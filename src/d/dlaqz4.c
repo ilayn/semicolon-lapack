@@ -3,6 +3,7 @@
  * @brief DLAQZ4 executes a single multishift QZ sweep.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -38,38 +39,38 @@
  *                         - = 0: successful exit, < 0: illegal argument.
  */
 void dlaqz4(
-    const int ilschur,
-    const int ilq,
-    const int ilz,
-    const int n,
-    const int ilo,
-    const int ihi,
-    const int nshifts,
-    const int nblock_desired,
+    const INT ilschur,
+    const INT ilq,
+    const INT ilz,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
+    const INT nshifts,
+    const INT nblock_desired,
     f64* restrict sr,
     f64* restrict si,
     f64* restrict ss,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict QC,
-    const int ldqc,
+    const INT ldqc,
     f64* restrict ZC,
-    const int ldzc,
+    const INT ldzc,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, ns, istartm, istopm, sheight, swidth, k, np;
-    int istartb, istopb, ishift, nblock, npos;
+    INT i, j, ns, istartm, istopm, sheight, swidth, k, np;
+    INT istartb, istopb, ishift, nblock, npos;
     f64 temp, v[3], c1, s1, c2, s2, swap;
 
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief CRSCL multiplies a vector by the reciprocal of a complex scalar.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -23,10 +24,10 @@
  *                      incx > 0.
  */
 void crscl(
-    const int n,
+    const INT n,
     const c64 a,
     c64* restrict x,
-    const int incx)
+    const INT incx)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

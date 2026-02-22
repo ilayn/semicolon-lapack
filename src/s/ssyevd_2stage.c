@@ -3,24 +3,25 @@
  * @brief SSYEVD_2STAGE computes eigenvalues and optionally eigenvectors using divide-and-conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 #include <math.h>
 
-void ssyevd_2stage(const char* jobz, const char* uplo, const int n,
-                   f32* A, const int lda,
+void ssyevd_2stage(const char* jobz, const char* uplo, const INT n,
+                   f32* A, const INT lda,
                    f32* W,
-                   f32* work, const int lwork,
-                   int* iwork, const int liwork, int* info)
+                   f32* work, const INT lwork,
+                   INT* iwork, const INT liwork, INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    int lower, lquery, wantz;
-    int iinfo, inde, indtau, indwrk, iscale;
-    int liwmin, llwork, lwmin;
-    /* int indwk2, llwrk2; - used only in eigenvector path (disabled) */
-    int lhtrd = 0, lwtrd, kd, ib, indhous;
+    INT lower, lquery, wantz;
+    INT iinfo, inde, indtau, indwrk, iscale;
+    INT liwmin, llwork, lwmin;
+    /* INT indwk2, llwrk2; - used only in eigenvector path (disabled) */
+    INT lhtrd = 0, lwtrd, kd, ib, indhous;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -3,6 +3,7 @@
  * @brief CGEBRD reduces a general complex matrix to bidiagonal form using a blocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -61,17 +62,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgebrd(const int m, const int n, c64* restrict A, const int lda,
+void cgebrd(const INT m, const INT n, c64* restrict A, const INT lda,
             f32* restrict D, f32* restrict E,
             c64* restrict tauq, c64* restrict taup,
-            c64* restrict work, const int lwork, int* info)
+            c64* restrict work, const INT lwork, INT* info)
 {
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
-    int i, j, iinfo;
-    int lquery, minmn, nb, nbmin, nx;
-    int ldwrkx, ldwrky, lwkmin, lwkopt, ws;
+    INT i, j, iinfo;
+    INT lquery, minmn, nb, nbmin, nx;
+    INT ldwrkx, ldwrky, lwkmin, lwkopt, ws;
 
     /* Test the input parameters */
     *info = 0;

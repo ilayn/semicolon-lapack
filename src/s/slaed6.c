@@ -3,6 +3,7 @@
  * @brief SLAED6 computes one Newton step in solution of the secular equation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -38,11 +39,11 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, failure to converge
  */
-void slaed6(const int kniter, const int orgati, const f32 rho,
+void slaed6(const INT kniter, const INT orgati, const f32 rho,
             const f32* restrict D, const f32* restrict Z,
-            const f32 finit, f32* tau, int* info)
+            const f32 finit, f32* tau, INT* info)
 {
-    const int MAXIT = 40;
+    const INT MAXIT = 40;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
@@ -52,7 +53,7 @@ void slaed6(const int kniter, const int orgati, const f32 rho,
 
     f32 dscale[3], zscale[3];
 
-    int i, niter, scale;
+    INT i, niter, scale;
     f32 a, b, base, c, ddf, df, eps, erretm, eta, f,
            fc, sclfac, sclinv, small1, small2, sminv1,
            sminv2, temp, temp1, temp2, temp3, temp4,
@@ -126,7 +127,7 @@ void slaed6(const int kniter, const int orgati, const f32 rho,
 
     eps = slamch("E");
     base = slamch("B");
-    small1 = powf(base, (int)(logf(slamch("S")) / logf(base) / THREE));
+    small1 = powf(base, (INT)(logf(slamch("S")) / logf(base) / THREE));
     sminv1 = ONE / small1;
     small2 = small1 * small1;
     sminv2 = sminv1 * sminv1;

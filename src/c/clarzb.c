@@ -4,6 +4,7 @@
  *        general distributed matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -52,16 +53,16 @@
  *                        if side = "R", ldwork >= max(1, m).
  */
 void clarzb(const char* side, const char* trans, const char* direct,
-            const char* storev, const int m, const int n,
-            const int k, const int l,
-            c64* restrict V, const int ldv,
-            c64* restrict T, const int ldt,
-            c64* restrict C, const int ldc,
-            c64* restrict work, const int ldwork)
+            const char* storev, const INT m, const INT n,
+            const INT k, const INT l,
+            c64* restrict V, const INT ldv,
+            c64* restrict T, const INT ldt,
+            c64* restrict C, const INT ldc,
+            c64* restrict work, const INT ldwork)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
-    int i, j;
+    INT i, j;
     CBLAS_TRANSPOSE transt;
 
     /* Quick return if possible */

@@ -3,6 +3,7 @@
  * @brief ZHETRS_AA_2STAGE solves a system of linear equations A*X = B using the factorization computed by ZHETRF_AA_2STAGE.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -61,22 +62,22 @@
  */
 void zhetrs_aa_2stage(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict TB,
-    const int ltb,
-    const int* restrict ipiv,
-    const int* restrict ipiv2,
+    const INT ltb,
+    const INT* restrict ipiv,
+    const INT* restrict ipiv2,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int ldtb, nb;
-    int upper;
+    INT ldtb, nb;
+    INT upper;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -104,7 +105,7 @@ void zhetrs_aa_2stage(
         return;
     }
 
-    nb = (int)creal(TB[0]);
+    nb = (INT)creal(TB[0]);
     ldtb = ltb / n;
 
     if (upper) {

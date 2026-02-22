@@ -3,6 +3,7 @@
  * @brief ZPFTRS solves a system of linear equations using Cholesky factorization in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -44,16 +45,16 @@
 void zpftrs(
     const char* transr,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int lower, normaltransr;
+    INT lower, normaltransr;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

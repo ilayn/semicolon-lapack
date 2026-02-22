@@ -3,6 +3,7 @@
  * @brief ZLARGV generates a vector of plane rotations with real cosines and complex sines.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_double.h"
@@ -47,9 +48,9 @@ static inline f64 abssq(c128 ff) {
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void zlargv(const int n, c128* restrict X, const int incx,
-            c128* restrict Y, const int incy,
-            f64* restrict C, const int incc)
+void zlargv(const INT n, c128* restrict X, const INT incx,
+            c128* restrict Y, const INT incy,
+            f64* restrict C, const INT incc)
 {
     const f64 two = 2.0;
     const f64 one = 1.0;
@@ -59,21 +60,21 @@ void zlargv(const int n, c128* restrict X, const int incx,
     f64 safmin = dlamch("S");
     f64 eps = dlamch("E");
     f64 safmn2 = pow(dlamch("B"),
-                        (int)(log(safmin / eps) / log(dlamch("B")) / two));
+                        (INT)(log(safmin / eps) / log(dlamch("B")) / two));
     f64 safmx2 = one / safmn2;
 
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         c128 f = X[ix];
         c128 g = Y[iy];
 
         f64 scale = (abs1(f) > abs1(g)) ? abs1(f) : abs1(g);
         c128 fs = f;
         c128 gs = g;
-        int count = 0;
+        INT count = 0;
         f64 cs;
         c128 sn, r;
         f64 f2, g2;
@@ -160,11 +161,11 @@ void zlargv(const int n, c128* restrict X, const int incx,
             sn = sn * conj(gs);
             if (count != 0) {
                 if (count > 0) {
-                    for (int j = 0; j < count; j++) {
+                    for (INT j = 0; j < count; j++) {
                         r = r * safmx2;
                     }
                 } else {
-                    for (int j = 0; j < -count; j++) {
+                    for (INT j = 0; j < -count; j++) {
                         r = r * safmn2;
                     }
                 }

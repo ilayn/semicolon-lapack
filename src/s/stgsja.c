@@ -3,6 +3,7 @@
  * @brief STGSJA computes the GSVD of two upper triangular matrices.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -75,27 +76,27 @@
  *                         - = 1: the procedure does not converge after MAXIT cycles.
  */
 void stgsja(const char* jobu, const char* jobv, const char* jobq,
-            const int m, const int p, const int n, const int k, const int l,
-            f32* restrict A, const int lda,
-            f32* restrict B, const int ldb,
+            const INT m, const INT p, const INT n, const INT k, const INT l,
+            f32* restrict A, const INT lda,
+            f32* restrict B, const INT ldb,
             const f32 tola, const f32 tolb,
             f32* restrict alpha, f32* restrict beta,
-            f32* restrict U, const int ldu,
-            f32* restrict V, const int ldv,
-            f32* restrict Q, const int ldq,
-            f32* restrict work, int* ncycle, int* info)
+            f32* restrict U, const INT ldu,
+            f32* restrict V, const INT ldv,
+            f32* restrict Q, const INT ldq,
+            f32* restrict work, INT* ncycle, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 HUGENUM = FLT_MAX;
 
-    int initu, wantu, initv, wantv, initq, wantq;
-    int upper;
-    int i, j, kcycle;
+    INT initu, wantu, initv, wantv, initq, wantq;
+    INT upper;
+    INT i, j, kcycle;
     f32 a1, a2, a3, b1, b2, b3;
     f32 csu, snu, csv, snv, csq, snq;
     f32 error, gamma, rwk, ssmin;
-    int minval;
+    INT minval;
 
     initu = (jobu[0] == 'I' || jobu[0] == 'i');
     wantu = initu || (jobu[0] == 'U' || jobu[0] == 'u');

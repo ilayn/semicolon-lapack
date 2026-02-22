@@ -4,6 +4,7 @@
  *        where Q is defined by an LQ factorization from DGELQ.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -46,15 +47,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dgemlq(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const f64* restrict A, const int lda,
-            const f64* restrict T, const int tsize,
-            f64* restrict C, const int ldc,
-            f64* restrict work, const int lwork,
-            int* info)
+            const INT m, const INT n, const INT k,
+            const f64* restrict A, const INT lda,
+            const f64* restrict T, const INT tsize,
+            f64* restrict C, const INT ldc,
+            f64* restrict work, const INT lwork,
+            INT* info)
 {
-    int left, right, tran, notran, lquery;
-    int mb, nb, lw, mn, minmnk, lwmin;
+    INT left, right, tran, notran, lquery;
+    INT mb, nb, lw, mn, minmnk, lwmin;
 
     /* Decode arguments */
     lquery = (lwork == -1);
@@ -64,8 +65,8 @@ void dgemlq(const char* side, const char* trans,
     right  = (side[0] == 'R' || side[0] == 'r');
 
     /* Read block sizes from T array (stored by DGELQ) */
-    mb = (int)T[1];
-    nb = (int)T[2];
+    mb = (INT)T[1];
+    nb = (INT)T[2];
 
     if (left) {
         lw = n * mb;

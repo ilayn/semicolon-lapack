@@ -4,6 +4,7 @@
  *        of a complex Hermitian band matrix using the 2stage technique.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -59,24 +60,24 @@
  *                               i off-diagonal elements of an intermediate
  *                               tridiagonal form did not converge to zero.
  */
-void chbevd_2stage(const char* jobz, const char* uplo, const int n,
-                   const int kd, c64* restrict AB,
-                   const int ldab, f32* restrict W,
-                   c64* restrict Z, const int ldz,
-                   c64* restrict work, const int lwork,
-                   f32* restrict rwork, const int lrwork,
-                   int* restrict iwork, const int liwork,
-                   int* info)
+void chbevd_2stage(const char* jobz, const char* uplo, const INT n,
+                   const INT kd, c64* restrict AB,
+                   const INT ldab, f32* restrict W,
+                   c64* restrict Z, const INT ldz,
+                   c64* restrict work, const INT lwork,
+                   f32* restrict rwork, const INT lrwork,
+                   INT* restrict iwork, const INT liwork,
+                   INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int lower, lquery, wantz;
-    int iinfo, imax, inde, indwk2, indrwk, iscale;
-    int llwork, indwk, lhtrd = 0, lwtrd, ib, indhous;
-    int liwmin, llrwk, llwk2, lrwmin, lwmin;
+    INT lower, lquery, wantz;
+    INT iinfo, imax, inde, indwk2, indrwk, iscale;
+    INT llwork, indwk, lhtrd = 0, lwtrd, ib, indhous;
+    INT liwmin, llrwk, llwk2, lrwmin, lwmin;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

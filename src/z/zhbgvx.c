@@ -4,6 +4,7 @@
  *        Hermitian-definite banded eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -64,36 +65,36 @@ void zhbgvx(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
-    const int ka,
-    const int kb,
+    const INT n,
+    const INT ka,
+    const INT kb,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     c128* restrict BB,
-    const int ldbb,
+    const INT ldbb,
     c128* restrict Q,
-    const int ldq,
+    const INT ldq,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
     f64* restrict rwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int alleig, indeig, test, upper, valeig, wantz;
-    int i, iinfo, indd, inde, indee, indisp, indiwk, indrwk, indwrk, itmp1, j, jj, nsplit;
+    INT alleig, indeig, test, upper, valeig, wantz;
+    INT i, iinfo, indd, inde, indee, indisp, indiwk, indrwk, indwrk, itmp1, j, jj, nsplit;
     f64 tmp1;
     char order, vect;
 

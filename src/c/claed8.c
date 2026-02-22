@@ -4,6 +4,7 @@
  *        Used when the original matrix is dense.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -93,11 +94,11 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void claed8(int* K, const int n, const int qsiz,
-            c64* Q, const int ldq, f32* D, f32* rho,
-            const int cutpnt, f32* Z, f32* dlambda, c64* Q2,
-            const int ldq2, f32* W, int* indxp, int* indx, int* indxq,
-            int* perm, int* givptr, int* givcol, f32* givnum, int* info)
+void claed8(INT* K, const INT n, const INT qsiz,
+            c64* Q, const INT ldq, f32* D, f32* rho,
+            const INT cutpnt, f32* Z, f32* dlambda, c64* Q2,
+            const INT ldq2, f32* W, INT* indxp, INT* indx, INT* indxq,
+            INT* perm, INT* givptr, INT* givcol, f32* givnum, INT* info)
 {
     const f32 MONE = -1.0f;
     const f32 ZERO = 0.0f;
@@ -105,7 +106,7 @@ void claed8(int* K, const int n, const int qsiz,
     const f32 TWO = 2.0f;
     const f32 EIGHT = 8.0f;
 
-    int i, imax, j, jlam, jmax, jp, k2, n1, n2;
+    INT i, imax, j, jlam, jmax, jp, k2, n1, n2;
     f32 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */

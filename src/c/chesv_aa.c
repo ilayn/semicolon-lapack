@@ -3,6 +3,7 @@
  * @brief CHESV_AA computes the solution to system of linear equations A * X = B for HE matrices using Aasen's algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -78,20 +79,20 @@
  */
 void chesv_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkmin, lwkopt, lwkopt_hetrf, lwkopt_hetrs;
-    int tmp1;
+    INT lquery;
+    INT lwkmin, lwkopt, lwkopt_hetrf, lwkopt_hetrs;
+    INT tmp1;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -116,9 +117,9 @@ void chesv_aa(
 
     if (*info == 0) {
         chetrf_aa(uplo, n, A, lda, ipiv, work, -1, info);
-        lwkopt_hetrf = (int)crealf(work[0]);
+        lwkopt_hetrf = (INT)crealf(work[0]);
         chetrs_aa(uplo, n, nrhs, A, lda, ipiv, B, ldb, work, -1, info);
-        lwkopt_hetrs = (int)crealf(work[0]);
+        lwkopt_hetrs = (INT)crealf(work[0]);
         tmp1 = (lwkmin > lwkopt_hetrf) ? lwkmin : lwkopt_hetrf;
         lwkopt = (tmp1 > lwkopt_hetrs) ? tmp1 : lwkopt_hetrs;
         work[0] = CMPLXF((f32)lwkopt, 0.0f);

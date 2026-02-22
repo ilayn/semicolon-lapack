@@ -3,6 +3,7 @@
  * @brief SLARRJ performs refinement of the initial estimates of the eigenvalues of the matrix T.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -45,17 +46,17 @@
  * @param[out]    info
  *                           Error flag.
  */
-void slarrj(const int n, const f32* D, const f32* E2,
-            const int ifirst, const int ilast, const f32 rtol,
-            const int offset, f32* W, f32* werr,
-            f32* work, int* iwork, const f32 pivmin,
-            const f32 spdiam, int* info)
+void slarrj(const INT n, const f32* D, const f32* E2,
+            const INT ifirst, const INT ilast, const f32 rtol,
+            const INT offset, f32* W, f32* werr,
+            f32* work, INT* iwork, const f32 pivmin,
+            const f32 spdiam, INT* info)
 {
     const f32 TWO = 2.0f;
     const f32 HALF = 0.5f;
 
-    int cnt, i, i1, i2, ii, iter, j, k, next, nint, olnint, p, prev, savi1;
-    int maxitr;
+    INT cnt, i, i1, i2, ii, iter, j, k, next, nint, olnint, p, prev, savi1;
+    INT maxitr;
     f32 dplus, fac, left, mid, right, s, tmp, width;
 
     *info = 0;
@@ -65,7 +66,7 @@ void slarrj(const int n, const f32* D, const f32* E2,
         return;
     }
 
-    maxitr = (int)((logf(spdiam + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
+    maxitr = (INT)((logf(spdiam + pivmin) - logf(pivmin)) / logf(TWO)) + 2;
 
     /*
      * Initialize unconverged intervals in [ work[2*i], work[2*i+1] ].

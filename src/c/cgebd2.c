@@ -3,6 +3,7 @@
  * @brief CGEBD2 reduces a general matrix to bidiagonal form using an unblocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -50,13 +51,13 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgebd2(const int m, const int n, c64* restrict A, const int lda,
+void cgebd2(const INT m, const INT n, c64* restrict A, const INT lda,
             f32* restrict D, f32* restrict E,
             c64* restrict tauq, c64* restrict taup,
-            c64* restrict work, int* info)
+            c64* restrict work, INT* info)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
-    int i;
+    INT i;
     c64 alpha;
 
     /* Test the input parameters */

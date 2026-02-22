@@ -4,6 +4,7 @@
  *        determined by ZGEBRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -89,15 +90,15 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value
  */
 void zunmbr(const char* vect, const char* side, const char* trans,
-            const int m, const int n, const int k,
-            c128* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict C, const int ldc,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict C, const INT ldc,
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
-    int applyq, left, lquery, notran;
-    int i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
+    INT applyq, left, lquery, notran;
+    INT i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
 
     *info = 0;
     applyq = (vect[0] == 'Q' || vect[0] == 'q');

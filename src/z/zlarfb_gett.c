@@ -3,6 +3,7 @@
  * @brief ZLARFB_GETT applies a complex Householder block reflector H from the left to a complex (K+M)-by-N triangular-pentagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -65,23 +66,23 @@
  */
 void zlarfb_gett(
     const char* ident,
-    const int m,
-    const int n,
-    const int k,
+    const INT m,
+    const INT n,
+    const INT k,
     const c128* restrict T,
-    const int ldt,
+    const INT ldt,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict work,
-    const int ldwork)
+    const INT ldwork)
 {
     const c128 CONE = 1.0;
     const c128 CNEG_ONE = -1.0;
 
-    int lnotident;
-    int i, j;
+    INT lnotident;
+    INT i, j;
 
     if (m < 0 || n <= 0 || k == 0 || k > n)
         return;

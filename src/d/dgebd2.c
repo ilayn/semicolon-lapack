@@ -3,6 +3,7 @@
  * @brief DGEBD2 reduces a general matrix to bidiagonal form using an unblocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -49,12 +50,12 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgebd2(const int m, const int n, f64* restrict A, const int lda,
+void dgebd2(const INT m, const INT n, f64* restrict A, const INT lda,
             f64* restrict D, f64* restrict E,
             f64* restrict tauq, f64* restrict taup,
-            f64* restrict work, int* info)
+            f64* restrict work, INT* info)
 {
-    int i;
+    INT i;
 
     /* Test the input parameters */
     *info = 0;

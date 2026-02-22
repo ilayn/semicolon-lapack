@@ -3,6 +3,7 @@
  * @brief ZSYTRI_3X computes the inverse of a complex symmetric indefinite matrix using the factorization computed by ZSYTRF_RK or ZSYTRF_BK (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <stdlib.h>
@@ -63,22 +64,22 @@
  */
 void zsytri_3x(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c128* restrict work,
-    const int nb,
-    int* info)
+    const INT nb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int upper;
-    int cut, i, icount, invd, ip, k, nnb, j, u11;
+    INT upper;
+    INT cut, i, icount, invd, ip, k, nnb, j, u11;
     c128 ak, akkp1, akp1, d, t, u01_i_j, u01_ip1_j, u11_i_j, u11_ip1_j;
-    int ldwork = n + nb + 1;
+    INT ldwork = n + nb + 1;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

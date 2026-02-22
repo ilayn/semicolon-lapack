@@ -3,6 +3,7 @@
  * @brief CLANHP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a complex Hermitian matrix supplied in packed form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -47,14 +48,14 @@
 f32 clanhp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict AP,
     f32* restrict work)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int i, j, k;
+    INT i, j, k;
     f32 absa, scale, sum, value;
 
     if (n == 0) {

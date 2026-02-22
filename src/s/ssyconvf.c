@@ -3,6 +3,7 @@
  * @brief SSYCONVF converts between factorization formats used in SSYTRF and SSYTRF_RK/DSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -56,17 +57,17 @@
 void ssyconvf(
     const char* uplo,
     const char* way,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict E,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int upper, convert;
-    int i, ip;
+    INT upper, convert;
+    INT i, ip;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 /**
@@ -41,20 +42,20 @@
  */
 void cgttrs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU,
     const c64* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int notran;
-    int itrans;
-    int ldb_min;
+    INT notran;
+    INT itrans;
+    INT ldb_min;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');

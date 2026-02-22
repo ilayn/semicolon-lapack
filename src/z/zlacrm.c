@@ -3,6 +3,7 @@
  * @brief ZLACRM multiplies a complex matrix by a square real matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -30,17 +31,17 @@
  * @param[out]    rwork   Double precision array, dimension (2*m*n).
  */
 void zlacrm(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict C,
-    const int ldc,
+    const INT ldc,
     f64* restrict rwork)
 {
-    int i, j, l;
+    INT i, j, l;
 
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;

@@ -3,6 +3,7 @@
  * @brief ZPBTF2 computes the Cholesky factorization of a Hermitian positive definite band matrix (unblocked).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -36,17 +37,17 @@
  */
 void zpbtf2(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c128* restrict AB,
-    const int ldab,
-    int* info)
+    const INT ldab,
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper;
-    int j, kld, kn;
+    INT upper;
+    INT j, kld, kn;
     f64 ajj;
 
     *info = 0;

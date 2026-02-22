@@ -4,6 +4,7 @@
  *        real symmetric tridiagonal matrix A.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -40,16 +41,16 @@
  *                           i off-diagonal elements of E did not converge to
  *                           zero.
  */
-void sstev(const char* jobz, const int n,
+void sstev(const char* jobz, const INT n,
            f32* restrict D, f32* restrict E,
-           f32* restrict Z, const int ldz,
-           f32* restrict work, int* info)
+           f32* restrict Z, const INT ldz,
+           f32* restrict work, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     /* Test the input parameters. */
-    int wantz = (jobz[0] == 'V' || jobz[0] == 'v');
+    INT wantz = (jobz[0] == 'V' || jobz[0] == 'v');
 
     *info = 0;
     if (!wantz && !(jobz[0] == 'N' || jobz[0] == 'n')) {
@@ -84,7 +85,7 @@ void sstev(const char* jobz, const int n,
     f32 rmax = sqrtf(bignum);
 
     /* Scale matrix to allowable range, if necessary. */
-    int iscale = 0;
+    INT iscale = 0;
     f32 tnrm = slanst("M", n, D, E);
     f32 sigma = ZERO;
     if (tnrm > ZERO && tnrm < rmin) {
@@ -109,7 +110,7 @@ void sstev(const char* jobz, const int n,
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
     if (iscale == 1) {
-        int imax;
+        INT imax;
         if (*info == 0) {
             imax = n;
         } else {

@@ -4,6 +4,7 @@
  *        matrix in standard form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -49,12 +50,12 @@ void slanv2(f32* a, f32* b, f32* c, f32* d,
     f32 aa, bb, bcmax, bcmis, cc, cs1, dd, eps, p, sab;
     f32 sac, scale, sigma, sn1, tau, temp, z, safmin;
     f32 safmn2, safmx2, base;
-    int count;
+    INT count;
 
     safmin = slamch("S");
     eps = slamch("P");
     base = slamch("B");
-    safmn2 = powf(base, (int)(logf(safmin / eps) / logf(base) / TWO));
+    safmn2 = powf(base, (INT)(logf(safmin / eps) / logf(base) / TWO));
     safmx2 = ONE / safmn2;
 
     if (*c == ZERO) {

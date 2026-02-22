@@ -3,6 +3,7 @@
  * @brief ZSPR performs the symmetrical rank-1 update of a complex symmetric packed matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -33,15 +34,15 @@
  */
 void zspr(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128 alpha,
     const c128* restrict X,
-    const int incx,
+    const INT incx,
     c128* restrict AP)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int i, info, ix, j, jx, k, kk, kx;
+    INT i, info, ix, j, jx, k, kk, kx;
     c128 temp;
 
     info = 0;

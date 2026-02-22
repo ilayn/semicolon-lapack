@@ -4,6 +4,7 @@
  *        matrix, with loop unrolling when the reflector has order <= 10.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 
@@ -35,12 +36,12 @@
  *                       (n) if side = "L", or (m) if side = 'R'.
  *                       Not referenced if H has order < 11.
  */
-void zlarfx(const char* side, const int m, const int n,
+void zlarfx(const char* side, const INT m, const INT n,
             const c128* restrict v, const c128 tau,
-            c128* restrict C, const int ldc,
+            c128* restrict C, const INT ldc,
             c128* restrict work)
 {
-    int j;
+    INT j;
     c128 sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
     c128 v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
 

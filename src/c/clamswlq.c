@@ -4,6 +4,7 @@
  *        Q*C, Q^H*C, C*Q, or C*Q^H using the Short-Wide LQ factorization.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -55,16 +56,16 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void clamswlq(const char* side, const char* trans,
-              const int m, const int n, const int k,
-              const int mb, const int nb,
-              const c64* restrict A, const int lda,
-              const c64* restrict T, const int ldt,
-              c64* restrict C, const int ldc,
-              c64* restrict work, const int lwork,
-              int* info)
+              const INT m, const INT n, const INT k,
+              const INT mb, const INT nb,
+              const c64* restrict A, const INT lda,
+              const c64* restrict T, const INT ldt,
+              c64* restrict C, const INT ldc,
+              c64* restrict work, const INT lwork,
+              INT* info)
 {
-    int left, right, tran, notran, lquery;
-    int i, ii, kk, ctr, lw, minmnk, lwmin;
+    INT left, right, tran, notran, lquery;
+    INT i, ii, kk, ctr, lw, minmnk, lwmin;
 
     /* Decode arguments */
     lquery = (lwork == -1);

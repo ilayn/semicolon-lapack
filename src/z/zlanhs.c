@@ -5,6 +5,7 @@
  *        of an upper Hessenberg matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
@@ -33,17 +34,17 @@
  */
 f64 zlanhs(
     const char* norm,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict work)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 scale, sum, value, temp;
-    int jmax;
+    INT jmax;
 
     if (n == 0) {
         return ZERO;

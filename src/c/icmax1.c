@@ -4,6 +4,7 @@
  *        absolute value.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"
@@ -20,10 +21,10 @@
  *                   first element of maximum absolute value.
  * @param[in] incx  The spacing between successive values of ZX. incx >= 1.
  */
-int icmax1(const int n, const c64* restrict ZX, const int incx)
+INT icmax1(const INT n, const c64* restrict ZX, const INT incx)
 {
     f32 dmax;
-    int i, ix, imax;
+    INT i, ix, imax;
 
     if (n < 1 || incx <= 0)
         return 0;

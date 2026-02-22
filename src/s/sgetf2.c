@@ -8,6 +8,7 @@
  * Inspired by faer (https://codeberg.org/sarah-quinones/faer).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -45,18 +46,18 @@
  *                           has been completed, but U is exactly singular.
  */
 void sgetf2(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 sfmin = FLT_MIN;
 
-    int i, j, k, jp;
-    int minmn = m < n ? m : n;
+    INT i, j, k, jp;
+    INT minmn = m < n ? m : n;
     f32 abs_val, max_val, pivot, inv, tmp;
 
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief DLARTGP generates a plane rotation so that the diagonal is nonnegative.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -30,7 +31,7 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
 {
     f64 safmin = dlamch("S");
     f64 eps = dlamch("E");
-    f64 safmn2 = pow(dlamch("B"), (int)(log(safmin / eps) / log(dlamch("B")) / 2.0));
+    f64 safmn2 = pow(dlamch("B"), (INT)(log(safmin / eps) / log(dlamch("B")) / 2.0));
     f64 safmx2 = 1.0 / safmn2;
 
     if (g == 0.0) {
@@ -47,7 +48,7 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
         f64 scale = fmax(fabs(f1), fabs(g1));
 
         if (scale >= safmx2) {
-            int count = 0;
+            INT count = 0;
             do {
                 count++;
                 f1 = f1 * safmn2;
@@ -58,11 +59,11 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
             *r = sqrt(f1 * f1 + g1 * g1);
             *cs = f1 / (*r);
             *sn = g1 / (*r);
-            for (int i = 0; i < count; i++) {
+            for (INT i = 0; i < count; i++) {
                 *r = (*r) * safmx2;
             }
         } else if (scale <= safmn2) {
-            int count = 0;
+            INT count = 0;
             do {
                 count++;
                 f1 = f1 * safmx2;
@@ -73,7 +74,7 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
             *r = sqrt(f1 * f1 + g1 * g1);
             *cs = f1 / (*r);
             *sn = g1 / (*r);
-            for (int i = 0; i < count; i++) {
+            for (INT i = 0; i < count; i++) {
                 *r = (*r) * safmn2;
             }
         } else {

@@ -3,6 +3,7 @@
  * @brief CPOTRI computes the inverse of a Hermitian positive definite matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -31,10 +32,10 @@
  */
 void cpotri(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

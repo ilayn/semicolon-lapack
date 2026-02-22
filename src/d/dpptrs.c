@@ -3,6 +3,7 @@
  * @brief DPPTRS solves a system of linear equations using the Cholesky factorization of a packed matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -30,16 +31,16 @@
  */
 void dpptrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict AP,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // dpptrs.f lines 140-154: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -61,7 +62,7 @@ void dpptrs(
 
     if (upper) {
         // dpptrs.f lines 161-176: Solve A*X = B where A = U**T * U.
-        for (int i = 0; i < nrhs; i++) {  // dpptrs.f line 165: DO 10 I = 1, NRHS
+        for (INT i = 0; i < nrhs; i++) {  // dpptrs.f line 165: DO 10 I = 1, NRHS
             // dpptrs.f lines 169-170: Solve U**T *X = B, overwriting B with X.
             cblas_dtpsv(CblasColMajor, CblasUpper, CblasTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);
@@ -71,7 +72,7 @@ void dpptrs(
         }
     } else {
         // dpptrs.f lines 177-193: Solve A*X = B where A = L * L**T.
-        for (int i = 0; i < nrhs; i++) {  // dpptrs.f line 181: DO 20 I = 1, NRHS
+        for (INT i = 0; i < nrhs; i++) {  // dpptrs.f line 181: DO 20 I = 1, NRHS
             // dpptrs.f lines 185-186: Solve L*Y = B, overwriting B with X.
             cblas_dtpsv(CblasColMajor, CblasLower, CblasNoTrans, CblasNonUnit,
                         n, AP, &B[i * ldb], 1);

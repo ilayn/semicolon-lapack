@@ -4,6 +4,7 @@
  *        complex generalized Hermitian-definite eigenproblem using divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -34,26 +35,26 @@
  *                         - = 0: success; < 0: illegal argument; > 0: CPOTRF/CHEEVD error.
  */
 void chegvd(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict W,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
-    int wantz, upper, lquery;
-    int liwmin, lrwmin, lwmin, lopt, lropt, liopt;
+    INT wantz, upper, lquery;
+    INT liwmin, lrwmin, lwmin, lopt, lropt, liopt;
     char trans;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -130,8 +131,8 @@ void chegvd(
            iwork, liwork, info);
 
     /* Update optimal workspace sizes */
-    lopt = (lopt > (int)crealf(work[0])) ? lopt : (int)crealf(work[0]);
-    lropt = (lropt > (int)rwork[0]) ? lropt : (int)rwork[0];
+    lopt = (lopt > (INT)crealf(work[0])) ? lopt : (INT)crealf(work[0]);
+    lropt = (lropt > (INT)rwork[0]) ? lropt : (INT)rwork[0];
     liopt = (liopt > iwork[0]) ? liopt : iwork[0];
 
     if (wantz && *info == 0) {

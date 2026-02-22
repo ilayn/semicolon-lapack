@@ -3,6 +3,7 @@
  * @brief ZLANSP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a symmetric matrix supplied in packed form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
@@ -45,7 +46,7 @@
 f64 zlansp(
     const char* norm,
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict AP,
     f64* restrict work)
 {
@@ -54,7 +55,7 @@ f64 zlansp(
     const f64 ZERO = 0.0;
 
     // zlansp.f lines 135-136: Local Scalars
-    int i, j, k;
+    INT i, j, k;
     f64 absa, scale, sum, value;
 
     // zlansp.f lines 150-263: Main logic

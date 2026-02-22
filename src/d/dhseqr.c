@@ -4,11 +4,12 @@
  *        the Schur decomposition.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /** @cond */
 /* ISPEC=12: NMIN - crossover to DLAHQR (from iparmq.f) */
-static int iparmq_nmin(void)
+static INT iparmq_nmin(void)
 {
     return 75;
 }
@@ -61,19 +62,19 @@ static int iparmq_nmin(void)
  *                           Elements 0:ilo-1 and i+1:n-1 of WR and WI contain those
  *                           eigenvalues which have been successfully computed.
  */
-void dhseqr(const char* job, const char* compz, const int n,
-                          const int ilo, const int ihi,
-                          f64* H, const int ldh,
+void dhseqr(const char* job, const char* compz, const INT n,
+                          const INT ilo, const INT ihi,
+                          f64* H, const INT ldh,
                           f64* wr, f64* wi,
-                          f64* Z, const int ldz,
-                          f64* work, const int lwork, int* info)
+                          f64* Z, const INT ldz,
+                          f64* work, const INT lwork, INT* info)
 {
     /* Parameters */
-    const int ntiny = 15;  /* Matrices of order NTINY or smaller use DLAHQR */
+    const INT ntiny = 15;  /* Matrices of order NTINY or smaller use DLAHQR */
     /* NL = 49: allocates local workspace to help small matrices through
      * a rare DLAHQR failure. Allows up to six simultaneous shifts and
      * a 16-by-16 deflation window. */
-    const int nl = 49;
+    const INT nl = 49;
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
@@ -82,8 +83,8 @@ void dhseqr(const char* job, const char* compz, const int n,
     f64 workl[49];
 
     /* Local scalars */
-    int i, kbot, nmin;
-    int initz, lquery, wantt, wantz;
+    INT i, kbot, nmin;
+    INT initz, lquery, wantt, wantz;
 
     /* Decode and check the input parameters */
     wantt = (job[0] == 'S' || job[0] == 's');

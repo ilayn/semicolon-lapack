@@ -3,6 +3,7 @@
  * @brief CLAIC1 applies one step of incremental condition estimation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <float.h>
@@ -50,8 +51,8 @@
  * @param[out]    c      Cosine needed in forming xhat.
  */
 void claic1(
-    const int job,
-    const int j,
+    const INT job,
+    const INT j,
     const c64* restrict x,
     const f32 sest,
     const c64* restrict w,

@@ -3,6 +3,7 @@
  * @brief ZLAQHB scales a Hermitian band matrix using scaling factors computed by ZPBEQU.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 
@@ -28,10 +29,10 @@
  */
 void zlaqhb(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64* restrict S,
     const f64 scond,
     const f64 amax,
@@ -39,7 +40,7 @@ void zlaqhb(
 {
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 cj, large, small;
 
     if (n <= 0) {

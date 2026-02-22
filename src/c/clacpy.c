@@ -3,6 +3,7 @@
  * @brief CLACPY copies all or part of one two-dimensional array to another.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -27,19 +28,19 @@
  */
 void clacpy(
     const char* uplo,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         // Copy upper triangular part
         for (j = 0; j < n; j++) {
-            int imax = (j + 1 < m) ? j + 1 : m;
+            INT imax = (j + 1 < m) ? j + 1 : m;
             for (i = 0; i < imax; i++) {
                 B[i + j * ldb] = A[i + j * lda];
             }

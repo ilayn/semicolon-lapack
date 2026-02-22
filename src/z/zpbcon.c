@@ -3,6 +3,7 @@
  * @brief ZPBCON estimates the reciprocal condition number of a Hermitian positive definite band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -34,24 +35,24 @@
  */
 void zpbcon(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int upper;
+    INT upper;
     char normin;
-    int ix, kase;
+    INT ix, kase;
     f64 ainvnm, scale, scalel, scaleu, smlnum;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

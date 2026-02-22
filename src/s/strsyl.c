@@ -3,6 +3,7 @@
  * @brief STRSYL solves the real Sylvester matrix equation.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -56,22 +57,22 @@
  *                           values were used to solve the equation (but the matrices
  *                           A and B are unchanged).
  */
-void strsyl(const char* trana, const char* tranb, const int isgn,
-            const int m, const int n,
-            const f32* A, const int lda,
-            const f32* B, const int ldb,
-            f32* C, const int ldc,
-            f32* scale, int* info)
+void strsyl(const char* trana, const char* tranb, const INT isgn,
+            const INT m, const INT n,
+            const f32* A, const INT lda,
+            const f32* B, const INT ldb,
+            f32* C, const INT ldc,
+            f32* scale, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int notrna, notrnb;
-    int ierr, j, k, k1, k2, knext, l, l1, l2, lnext;
+    INT notrna, notrnb;
+    INT ierr, j, k, k1, k2, knext, l, l1, l2, lnext;
     f32 a11, bignum, da11, db, eps, scaloc, sgn, smin;
     f32 smlnum, suml, sumr, xnorm;
     f32 dum[1], vec[4], x[4];  /* vec and x are 2x2, column-major */
-    int minval;
+    INT minval;
 
     /* Decode and test input parameters */
     notrna = (trana[0] == 'N' || trana[0] == 'n');

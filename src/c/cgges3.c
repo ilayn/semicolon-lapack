@@ -4,6 +4,7 @@
  *        the matrix of Schur vectors for GE matrices (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -84,27 +85,27 @@
  *                    - = n+3: reordering failed in CTGSEN
  */
 void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
-            cselect2_t selctg, const int n,
-            c64* A, const int lda,
-            c64* B, const int ldb,
-            int* sdim,
+            cselect2_t selctg, const INT n,
+            c64* A, const INT lda,
+            c64* B, const INT ldb,
+            INT* sdim,
             c64* alpha, c64* beta,
-            c64* VSL, const int ldvsl,
-            c64* VSR, const int ldvsr,
-            c64* work, const int lwork,
-            f32* rwork, int* bwork, int* info)
+            c64* VSL, const INT ldvsl,
+            c64* VSR, const INT ldvsr,
+            c64* work, const INT lwork,
+            f32* rwork, INT* bwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
-    int i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int iright, irows, irwrk, itau, iwrk, lwkopt, lwkmin;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, wantst;
+    INT i, icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT iright, irows, irwrk, itau, iwrk, lwkopt, lwkmin;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps;
     f32 pvsl, pvsr, smlnum;
-    int idum[1];
+    INT idum[1];
     f32 dif[2];
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
@@ -157,32 +158,32 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
 
     if (*info == 0) {
         cgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
-        lwkopt = lwkmin > (n + (int)crealf(work[0])) ?
-                 lwkmin : (n + (int)crealf(work[0]));
+        lwkopt = lwkmin > (n + (INT)crealf(work[0])) ?
+                 lwkmin : (n + (INT)crealf(work[0]));
         cunmqr("L", "C", n, n, n, B, ldb, NULL, A, lda, work,
                -1, &ierr);
-        lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                 lwkopt : (n + (int)crealf(work[0]));
+        lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                 lwkopt : (n + (INT)crealf(work[0]));
         if (ilvsl) {
             cungqr(n, n, n, VSL, ldvsl, NULL, work, -1, &ierr);
-            lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                     lwkopt : (n + (int)crealf(work[0]));
+            lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                     lwkopt : (n + (INT)crealf(work[0]));
         }
         cgghd3(jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb, VSL,
                ldvsl, VSR, ldvsr, work, -1, &ierr);
-        lwkopt = lwkopt > (n + (int)crealf(work[0])) ?
-                 lwkopt : (n + (int)crealf(work[0]));
+        lwkopt = lwkopt > (n + (INT)crealf(work[0])) ?
+                 lwkopt : (n + (INT)crealf(work[0]));
         claqz0("S", jobvsl, jobvsr, n, 0, n - 1, A, lda, B, ldb,
                alpha, beta, VSL, ldvsl, VSR, ldvsr, work, -1,
                rwork, 0, &ierr);
-        lwkopt = lwkopt > (int)crealf(work[0]) ?
-                 lwkopt : (int)crealf(work[0]);
+        lwkopt = lwkopt > (INT)crealf(work[0]) ?
+                 lwkopt : (INT)crealf(work[0]);
         if (wantst) {
             ctgsen(0, ilvsl, ilvsr, bwork, n, A, lda, B, ldb,
                    alpha, beta, VSL, ldvsl, VSR, ldvsr, sdim,
                    &pvsl, &pvsr, dif, work, -1, idum, 1, &ierr);
-            lwkopt = lwkopt > (int)crealf(work[0]) ?
-                     lwkopt : (int)crealf(work[0]);
+            lwkopt = lwkopt > (INT)crealf(work[0]) ?
+                     lwkopt : (INT)crealf(work[0]);
         }
         if (n == 0) {
             work[0] = CONE;

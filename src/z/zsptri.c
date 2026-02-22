@@ -3,6 +3,7 @@
  * @brief ZSPTRI computes the inverse of a complex symmetric indefinite matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <stdlib.h>
@@ -36,17 +37,17 @@
  */
 void zsptri(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int upper;
-    int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
     c128 ak, akkp1, akp1, d, t, temp;
 
     *info = 0;

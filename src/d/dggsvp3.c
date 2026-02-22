@@ -3,6 +3,7 @@
  * @brief DGGSVP3 computes orthogonal matrices U, V, Q for GSVD preprocessing.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -60,26 +61,26 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
-             const int m, const int p, const int n,
-             f64* restrict A, const int lda,
-             f64* restrict B, const int ldb,
+             const INT m, const INT p, const INT n,
+             f64* restrict A, const INT lda,
+             f64* restrict B, const INT ldb,
              const f64 tola, const f64 tolb,
-             int* k, int* l,
-             f64* restrict U, const int ldu,
-             f64* restrict V, const int ldv,
-             f64* restrict Q, const int ldq,
-             int* restrict iwork,
+             INT* k, INT* l,
+             f64* restrict U, const INT ldu,
+             f64* restrict V, const INT ldv,
+             f64* restrict Q, const INT ldq,
+             INT* restrict iwork,
              f64* restrict tau,
-             f64* restrict work, const int lwork,
-             int* info)
+             f64* restrict work, const INT lwork,
+             INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantu, wantv, wantq, lquery;
-    int forwrd = 1;
-    int i, j, lwkopt;
-    int minval, ierr;
+    INT wantu, wantv, wantq, lquery;
+    INT forwrd = 1;
+    INT i, j, lwkopt;
+    INT minval, ierr;
 
     wantu = (jobu[0] == 'U' || jobu[0] == 'u');
     wantv = (jobv[0] == 'V' || jobv[0] == 'v');
@@ -116,7 +117,7 @@ void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
 
     if (*info == 0) {
         dgeqp3(p, n, B, ldb, iwork, tau, work, -1, &ierr);
-        lwkopt = (int)work[0];
+        lwkopt = (INT)work[0];
         if (wantv) {
             if (p > lwkopt) lwkopt = p;
         }
@@ -127,7 +128,7 @@ void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
             if (n > lwkopt) lwkopt = n;
         }
         dgeqp3(m, n, A, lda, iwork, tau, work, -1, &ierr);
-        if ((int)work[0] > lwkopt) lwkopt = (int)work[0];
+        if ((INT)work[0] > lwkopt) lwkopt = (INT)work[0];
         if (lwkopt < 1) lwkopt = 1;
         work[0] = (f64)lwkopt;
     }

@@ -3,6 +3,7 @@
  * @brief DLASQ1 computes the singular values of a real square bidiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 #include <math.h>
@@ -41,10 +42,10 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void dlasq1(const int n, f64* restrict D, f64* restrict E,
-            f64* restrict work, int* info)
+void dlasq1(const INT n, f64* restrict D, f64* restrict E,
+            f64* restrict work, INT* info)
 {
-    int i, iinfo;
+    INT i, iinfo;
     f64 eps, scale, safmin, sigmn, sigmx;
 
     *info = 0;

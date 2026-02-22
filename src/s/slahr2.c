@@ -4,6 +4,7 @@
  *        so that elements below the k-th subdiagonal are zero.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -34,14 +35,14 @@
  * @param[out]    Y      The n-by-nb matrix Y. Dimension (ldy, nb).
  * @param[in]     ldy    The leading dimension of Y. ldy >= n.
  */
-void slahr2(const int n, const int k, const int nb,
-            f32* A, const int lda, f32* tau,
-            f32* T, const int ldt, f32* Y, const int ldy)
+void slahr2(const INT n, const INT k, const INT nb,
+            f32* A, const INT lda, f32* tau,
+            f32* T, const INT ldt, f32* Y, const INT ldy)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i;
+    INT i;
     f32 ei = 0.0f;
 
     /* Quick return if possible */
@@ -92,8 +93,8 @@ void slahr2(const int n, const int k, const int nb,
         }
 
         /* Generate the elementary reflector H(i) to annihilate A(k+i+2:n-1, i) */
-        int len = n - k - i - 1;
-        int start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
+        INT len = n - k - i - 1;
+        INT start = (k + i + 2 < n) ? (k + i + 2) : (n - 1);
         slarfg(len, &A[(k + i + 1) + i * lda], &A[start + i * lda], 1, &tau[i]);
         ei = A[(k + i + 1) + i * lda];
         A[(k + i + 1) + i * lda] = ONE;

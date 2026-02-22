@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 /**
  * @file sgeqrt.c
@@ -54,14 +55,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgeqrt(const int m, const int n, const int nb,
-            f32* restrict A, const int lda,
-            f32* restrict T, const int ldt,
+void sgeqrt(const INT m, const INT n, const INT nb,
+            f32* restrict A, const INT lda,
+            f32* restrict T, const INT ldt,
             f32* restrict work,
-            int* info)
+            INT* info)
 {
-    int k, i, ib, iinfo;
-    int minmn;
+    INT k, i, ib, iinfo;
+    INT minmn;
 
     /* Parameter validation */
     *info = 0;

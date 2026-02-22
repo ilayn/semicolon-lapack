@@ -3,6 +3,7 @@
  * @brief DGEESX computes Schur form with optional eigenvalue ordering and condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -84,22 +85,22 @@
  *                           the Schur form no longer satisfy select=true.
  */
 void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
-            const char* sense, const int n, f64* A, const int lda, int* sdim,
+            const char* sense, const INT n, f64* A, const INT lda, INT* sdim,
             f64* wr, f64* wi,
-            f64* VS, const int ldvs,
+            f64* VS, const INT ldvs,
             f64* rconde, f64* rcondv,
-            f64* work, const int lwork,
-            int* iwork, const int liwork, int* bwork, int* info)
+            f64* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* bwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int cursl, lastsl, lquery, lst2sl, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
-    int hswork, i, i1, i2, ibal, icond, ierr, ieval;
-    int ihi, ilo, inxt, ip, itau, iwrk, liwrk, lwrk, maxwrk, minwrk;
+    INT cursl, lastsl, lquery, lst2sl, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
+    INT hswork, i, i1, i2, ibal, icond, ierr, ieval;
+    INT ihi, ilo, inxt, ip, itau, iwrk, liwrk, lwrk, maxwrk, minwrk;
     f64 anrm, bignum, cscale = ONE, eps, smlnum;
     f64 dum[1];
-    int nb_gehrd, nb_orghr;
+    INT nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -143,7 +144,7 @@ void dgeesx(const char* jobvs, const char* sort, dselect2_t select,
             /* Query DHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             dhseqr("S", jobvs, n, 0, n - 1, A, lda, wr, wi, VS, ldvs,
                    work, -1, &ieval);
-            hswork = (int)work[0];
+            hswork = (INT)work[0];
 
             if (!wantvs) {
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);

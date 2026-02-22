@@ -3,6 +3,7 @@
  * @brief CPBSTF computes a split Cholesky factorization of a Hermitian positive definite band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -35,17 +36,17 @@
  */
 void cpbstf(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     c64* restrict AB,
-    const int ldab,
-    int* info)
+    const INT ldab,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
-    int j, kld, km, m;
+    INT upper;
+    INT j, kld, km, m;
     f32 ajj;
 
     *info = 0;

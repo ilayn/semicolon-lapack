@@ -4,6 +4,7 @@
  *        real matrix using the compact WY representation of Q.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -46,12 +47,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dgelqt3(const int m, const int n,
-             f64* restrict A, const int lda,
-             f64* restrict T, const int ldt,
-             int* info)
+void dgelqt3(const INT m, const INT n,
+             f64* restrict A, const INT lda,
+             f64* restrict T, const INT ldt,
+             INT* info)
 {
-    int i, j, m1, m2, i1, j1, iinfo;
+    INT i, j, m1, m2, i1, j1, iinfo;
 
     /* Parameter validation */
     *info = 0;

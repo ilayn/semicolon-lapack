@@ -4,6 +4,7 @@
  *        matrix using the LU factorization computed by SGBTRF.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -43,22 +44,22 @@
  */
 void sgbtrs(
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     const f32* restrict AB,
-    const int ldab,
-    const int* restrict ipiv,
+    const INT ldab,
+    const INT* restrict ipiv,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
-    int notran, lnoti;
-    int i, j, kd, l, lm;
+    INT notran, lnoti;
+    INT i, j, kd, l, lm;
 
     /* Test the input parameters */
     *info = 0;

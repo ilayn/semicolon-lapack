@@ -3,6 +3,7 @@
  * @brief DLANSF returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a symmetric matrix in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 
@@ -47,14 +48,14 @@ f64 dlansf(
     const char* norm,
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict A,
     f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j, ifm, ilu, noe, n1, k, l, lda;
+    INT i, j, ifm, ilu, noe, n1, k, l, lda;
     f64 scale, s, value, aa, temp;
 
     if (n == 0) {

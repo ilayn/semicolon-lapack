@@ -4,6 +4,7 @@
  *        using the LU factorization computed by cgttrf.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -38,18 +39,18 @@
  * @param[in] ldb     The leading dimension of the array B. ldb >= max(1, n).
  */
 void cgtts2(
-    const int itrans,
-    const int n,
-    const int nrhs,
+    const INT itrans,
+    const INT n,
+    const INT nrhs,
     const c64* restrict DL,
     const c64* restrict D,
     const c64* restrict DU,
     const c64* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb)
+    const INT ldb)
 {
-    int i, j;
+    INT i, j;
     c64 temp;
 
     /* Quick return if possible */

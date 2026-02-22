@@ -3,6 +3,7 @@
  * @brief SGEHRD reduces a general matrix to upper Hessenberg form.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
@@ -38,20 +39,20 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgehrd(const int n, const int ilo, const int ihi,
-            f32* A, const int lda, f32* tau,
-            f32* work, const int lwork, int* info)
+void sgehrd(const INT n, const INT ilo, const INT ihi,
+            f32* A, const INT lda, f32* tau,
+            f32* work, const INT lwork, INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery;
-    int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
+    INT lquery;
+    INT i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
     f32 ei;
-    int max_n_1 = (n > 1) ? n : 1;
+    INT max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
     *info = 0;

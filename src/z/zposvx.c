@@ -5,6 +5,7 @@
  *        condition estimation, and iterative refinement.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <float.h>
 #include "semicolon_lapack_complex_double.h"
@@ -58,32 +59,32 @@
 void zposvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict AF,
-    const int ldaf,
+    const INT ldaf,
     char* equed,
     f64* restrict S,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
     *info = 0;
-    int nofact = (fact[0] == 'N' || fact[0] == 'n');
-    int equil = (fact[0] == 'E' || fact[0] == 'e');
-    int rcequ = 0;
+    INT nofact = (fact[0] == 'N' || fact[0] == 'n');
+    INT equil = (fact[0] == 'E' || fact[0] == 'e');
+    INT rcequ = 0;
     f64 smlnum = 0.0, bignum = 0.0, scond = ONE, amax;
 
     if (nofact || equil) {
@@ -116,7 +117,7 @@ void zposvx(
         if (rcequ) {
             f64 smin_val = bignum;
             f64 smax_val = ZERO;
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 if (S[j] < smin_val) smin_val = S[j];
                 if (S[j] > smax_val) smax_val = S[j];
             }
@@ -146,7 +147,7 @@ void zposvx(
 
     if (equil) {
         // Compute row and column scalings to equilibrate the matrix A.
-        int infequ;
+        INT infequ;
         zpoequ(n, A, lda, S, &scond, &amax, &infequ);
         if (infequ == 0) {
             // Equilibrate the matrix.
@@ -157,8 +158,8 @@ void zposvx(
 
     // Scale the right hand side.
     if (rcequ) {
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 B[i + j * ldb] = S[i] * B[i + j * ldb];
             }
         }
@@ -193,12 +194,12 @@ void zposvx(
 
     // Transform the solution matrix X to a solution of the original system.
     if (rcequ) {
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 X[i + j * ldx] = S[i] * X[i + j * ldx];
             }
         }
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ferr[j] / scond;
         }
     }

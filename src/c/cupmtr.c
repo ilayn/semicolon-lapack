@@ -4,6 +4,7 @@
  *        from CHPTRD and a matrix C, using packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 
@@ -53,15 +54,15 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value
  */
 void cupmtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n,
+            const INT m, const INT n,
             c64* restrict AP,
             const c64* restrict tau,
-            c64* restrict C, const int ldc,
+            c64* restrict C, const INT ldc,
             c64* restrict work,
-            int* info)
+            INT* info)
 {
-    int left, notran, upper, forwrd;
-    int i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
+    INT left, notran, upper, forwrd;
+    INT i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
     c64 taui;
 
     *info = 0;

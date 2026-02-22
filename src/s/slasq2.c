@@ -3,6 +3,7 @@
  * @brief SLASQ2 computes all eigenvalues of a symmetric positive definite tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -41,7 +42,7 @@
  *                         - = 3, termination criterion of outer while loop not met
  *                           (program created more than N unreduced blocks)
  */
-void slasq2(const int n, f32* restrict Z, int* info)
+void slasq2(const INT n, f32* restrict Z, INT* info)
 {
     /* Constants from the Fortran source */
     const f32 CBIAS  = 1.50f;
@@ -53,8 +54,8 @@ void slasq2(const int n, f32* restrict Z, int* info)
     const f32 HUNDRD = 100.0f;
 
     /* Local scalars */
-    int ieee;
-    int i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb,
+    INT ieee;
+    INT i0, i1, i4, iinfo, ipn4, iter, iwhila, iwhilb,
         k, kmin, n0, n1, nbig, ndiv, nfail, pp, splt, ttype;
     f32 d, dee, deemin, desig, dmin, dmin1, dmin2, dn,
            dn1, dn2, e, emax, emin, eps, g, oldemn, qmax,

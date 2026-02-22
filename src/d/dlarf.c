@@ -3,6 +3,7 @@
  * @brief DLARF applies an elementary reflector to a general rectangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -29,16 +30,16 @@
  * @param[in]     ldc    The leading dimension of C. ldc >= max(1, m).
  * @param[out]    work   Workspace, dimension (n) if side='L', (m) if side='R'.
  */
-void dlarf(const char* side, const int m, const int n,
-           const f64* restrict v, const int incv,
+void dlarf(const char* side, const INT m, const INT n,
+           const f64* restrict v, const INT incv,
            const f64 tau,
-           f64* restrict C, const int ldc,
+           f64* restrict C, const INT ldc,
            f64* restrict work)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
-    int applyleft;
-    int lastv, lastc, i;
+    INT applyleft;
+    INT lastv, lastc, i;
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
     lastv = 0;

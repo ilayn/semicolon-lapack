@@ -3,6 +3,7 @@
  * @brief CGESVD computes the singular value decomposition (SVD) of a complex matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -70,13 +71,13 @@
  *                         - > 0: if CBDSQR did not converge.
  */
 void cgesvd(const char* jobu, const char* jobvt,
-            const int m, const int n,
-            c64* restrict A, const int lda,
+            const INT m, const INT n,
+            c64* restrict A, const INT lda,
             f32* restrict S,
-            c64* restrict U, const int ldu,
-            c64* restrict VT, const int ldvt,
-            c64* restrict work, const int lwork,
-            f32* restrict rwork, int* info)
+            c64* restrict U, const INT ldu,
+            c64* restrict VT, const INT ldvt,
+            c64* restrict work, const INT lwork,
+            f32* restrict rwork, INT* info)
 {
     /* Constants */
     static const f32 ZERO = 0.0f;
@@ -88,16 +89,16 @@ void cgesvd(const char* jobu, const char* jobvt,
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
     /* Local variables */
-    int wntua, wntus, wntuas, wntuo, wntun;
-    int wntva, wntvs, wntvas, wntvo, wntvn;
-    int lquery, minmn, mnthr;
-    int minwrk, maxwrk, wrkbl = 0;
-    int lwork_zgeqrf, lwork_zungqr_n, lwork_zungqr_m;
-    int lwork_zgebrd, lwork_zungbr_p, lwork_zungbr_q;
-    int lwork_zgelqf, lwork_zunglq_n, lwork_zunglq_m;
-    int ie = 0, irwork, itau, itauq, itaup, iwork, ir, iu, chunk, blk;
-    int i, ierr, iscl, ncu, ncvt, nru, nrvt;
-    int ldwrkr, ldwrku;
+    INT wntua, wntus, wntuas, wntuo, wntun;
+    INT wntva, wntvs, wntvas, wntvo, wntvn;
+    INT lquery, minmn, mnthr;
+    INT minwrk, maxwrk, wrkbl = 0;
+    INT lwork_zgeqrf, lwork_zungqr_n, lwork_zungqr_m;
+    INT lwork_zgebrd, lwork_zungbr_p, lwork_zungbr_q;
+    INT lwork_zgelqf, lwork_zunglq_n, lwork_zunglq_m;
+    INT ie = 0, irwork, itau, itauq, itaup, iwork, ir, iu, chunk, blk;
+    INT i, ierr, iscl, ncu, ncvt, nru, nrvt;
+    INT ldwrkr, ldwrku;
     f32 anrm, bignum, eps, smlnum;
     f32 dum[1];
     c64 cdum[1];
@@ -146,17 +147,17 @@ void cgesvd(const char* jobu, const char* jobvt,
 
             /* Query workspace for subroutines */
             cgeqrf(m, n, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zgeqrf = (int)crealf(cdum[0]);
+            lwork_zgeqrf = (INT)crealf(cdum[0]);
             cungqr(m, n, n, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zungqr_n = (int)crealf(cdum[0]);
+            lwork_zungqr_n = (INT)crealf(cdum[0]);
             cungqr(m, m, n, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zungqr_m = (int)crealf(cdum[0]);
+            lwork_zungqr_m = (INT)crealf(cdum[0]);
             cgebrd(n, n, NULL, lda, NULL, NULL, NULL, NULL, cdum, -1, &ierr);
-            lwork_zgebrd = (int)crealf(cdum[0]);
+            lwork_zgebrd = (INT)crealf(cdum[0]);
             cungbr("P", n, n, n, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zungbr_p = (int)crealf(cdum[0]);
+            lwork_zungbr_p = (INT)crealf(cdum[0]);
             cungbr("Q", n, n, n, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zungbr_q = (int)crealf(cdum[0]);
+            lwork_zungbr_q = (INT)crealf(cdum[0]);
 
             if (m >= mnthr) {
                 if (wntun) {
@@ -240,16 +241,16 @@ void cgesvd(const char* jobu, const char* jobvt,
             } else {
                 /* Path 10 (M at least N, but not much larger) */
                 cgebrd(m, n, NULL, lda, NULL, NULL, NULL, NULL, cdum, -1, &ierr);
-                lwork_zgebrd = (int)crealf(cdum[0]);
+                lwork_zgebrd = (INT)crealf(cdum[0]);
                 maxwrk = 2*n + lwork_zgebrd;
                 if (wntus || wntuo) {
                     cungbr("Q", m, n, n, NULL, lda, NULL, cdum, -1, &ierr);
-                    lwork_zungbr_q = (int)crealf(cdum[0]);
+                    lwork_zungbr_q = (INT)crealf(cdum[0]);
                     maxwrk = (maxwrk > 2*n + lwork_zungbr_q) ? maxwrk : 2*n + lwork_zungbr_q;
                 }
                 if (wntua) {
                     cungbr("Q", m, m, n, NULL, lda, NULL, cdum, -1, &ierr);
-                    lwork_zungbr_q = (int)crealf(cdum[0]);
+                    lwork_zungbr_q = (INT)crealf(cdum[0]);
                     maxwrk = (maxwrk > 2*n + lwork_zungbr_q) ? maxwrk : 2*n + lwork_zungbr_q;
                 }
                 if (!wntvn) {
@@ -263,17 +264,17 @@ void cgesvd(const char* jobu, const char* jobvt,
 
             /* Query workspace for subroutines */
             cgelqf(m, n, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zgelqf = (int)crealf(cdum[0]);
+            lwork_zgelqf = (INT)crealf(cdum[0]);
             cunglq(n, n, m, NULL, n, NULL, cdum, -1, &ierr);
-            lwork_zunglq_n = (int)crealf(cdum[0]);
+            lwork_zunglq_n = (INT)crealf(cdum[0]);
             cunglq(m, n, m, NULL, lda, NULL, cdum, -1, &ierr);
-            lwork_zunglq_m = (int)crealf(cdum[0]);
+            lwork_zunglq_m = (INT)crealf(cdum[0]);
             cgebrd(m, m, NULL, lda, NULL, NULL, NULL, NULL, cdum, -1, &ierr);
-            lwork_zgebrd = (int)crealf(cdum[0]);
+            lwork_zgebrd = (INT)crealf(cdum[0]);
             cungbr("P", m, m, m, NULL, n, NULL, cdum, -1, &ierr);
-            lwork_zungbr_p = (int)crealf(cdum[0]);
+            lwork_zungbr_p = (INT)crealf(cdum[0]);
             cungbr("Q", m, m, m, NULL, n, NULL, cdum, -1, &ierr);
-            lwork_zungbr_q = (int)crealf(cdum[0]);
+            lwork_zungbr_q = (INT)crealf(cdum[0]);
 
             if (n >= mnthr) {
                 if (wntvn) {
@@ -357,16 +358,16 @@ void cgesvd(const char* jobu, const char* jobvt,
             } else {
                 /* Path 10t (N greater than M, but not much larger) */
                 cgebrd(m, n, NULL, lda, NULL, NULL, NULL, NULL, cdum, -1, &ierr);
-                lwork_zgebrd = (int)crealf(cdum[0]);
+                lwork_zgebrd = (INT)crealf(cdum[0]);
                 maxwrk = 2*m + lwork_zgebrd;
                 if (wntvs || wntvo) {
                     cungbr("P", m, n, m, NULL, n, NULL, cdum, -1, &ierr);
-                    lwork_zungbr_p = (int)crealf(cdum[0]);
+                    lwork_zungbr_p = (INT)crealf(cdum[0]);
                     maxwrk = (maxwrk > 2*m + lwork_zungbr_p) ? maxwrk : 2*m + lwork_zungbr_p;
                 }
                 if (wntva) {
                     cungbr("P", n, n, m, NULL, n, NULL, cdum, -1, &ierr);
-                    lwork_zungbr_p = (int)crealf(cdum[0]);
+                    lwork_zungbr_p = (INT)crealf(cdum[0]);
                     maxwrk = (maxwrk > 2*m + lwork_zungbr_p) ? maxwrk : 2*m + lwork_zungbr_p;
                 }
                 if (!wntun) {

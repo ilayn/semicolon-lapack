@@ -4,6 +4,7 @@
  *        of a real symmetric matrix A in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -64,20 +65,20 @@
  *                         - > 0: if info = i, then i eigenvectors failed to converge.
  */
 void dspevx(const char* jobz, const char* range, const char* uplo,
-            const int n, f64* restrict AP,
-            const f64 vl, const f64 vu, const int il, const int iu,
-            const f64 abstol, int* m, f64* restrict W,
-            f64* restrict Z, const int ldz,
-            f64* restrict work, int* restrict iwork,
-            int* restrict ifail, int* info)
+            const INT n, f64* restrict AP,
+            const f64 vl, const f64 vu, const INT il, const INT iu,
+            const f64 abstol, INT* m, f64* restrict W,
+            f64* restrict Z, const INT ldz,
+            f64* restrict work, INT* restrict iwork,
+            INT* restrict ifail, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int alleig, indeig, test, valeig, wantz;
+    INT alleig, indeig, test, valeig, wantz;
     char order;
-    int i, iinfo, imax, indd, inde, indee, indisp, indiwo, indtau, indwrk;
-    int iscale, itmp1, j, jj, nsplit;
+    INT i, iinfo, imax, indd, inde, indee, indisp, indiwo, indtau, indwrk;
+    INT iscale, itmp1, j, jj, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     f64 tmp1, vll, vuu;
 

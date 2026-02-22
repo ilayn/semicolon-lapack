@@ -3,25 +3,26 @@
  * @brief SSYTRD_SY2SB reduces a real symmetric matrix to band-diagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 
-void ssytrd_sy2sb(const char* uplo, const int n, const int kd,
-                  f32* A, const int lda,
-                  f32* AB, const int ldab,
+void ssytrd_sy2sb(const char* uplo, const INT n, const INT kd,
+                  f32* A, const INT lda,
+                  f32* AB, const INT ldab,
                   f32* tau,
-                  f32* work, const int lwork, int* info)
+                  f32* work, const INT lwork, INT* info)
 {
     const f32 rone = 1.0f;
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
     const f32 half = 0.5f;
 
-    int lquery, upper;
-    int i, j, iinfo, lwmin, pn, pk, lk;
-    int ldt, ldw, lds2, lds1;
-    int ls2, ls1, lw, lt;
-    int tpos, wpos, s2pos, s1pos;
+    INT lquery, upper;
+    INT i, j, iinfo, lwmin, pn, pk, lk;
+    INT ldt, ldw, lds2, lds1;
+    INT ls2, ls1, lw, lt;
+    INT tpos, wpos, s2pos, s1pos;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

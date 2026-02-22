@@ -3,6 +3,7 @@
  * @brief DLARRC computes the number of eigenvalues of the symmetric tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -29,12 +30,12 @@
  * @param[out]    info
  *                         - = 0: successful exit.
  */
-void dlarrc(const char* jobt, const int n, const f64 vl, const f64 vu,
+void dlarrc(const char* jobt, const INT n, const f64 vl, const f64 vu,
             const f64* restrict D, const f64* restrict E,
-            const f64 pivmin, int* eigcnt, int* lcnt, int* rcnt, int* info)
+            const f64 pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info)
 {
-    int i;
-    int matt;
+    INT i;
+    INT matt;
     f64 lpivot, rpivot, sl, su, tmp, tmp2;
 
     (void)pivmin;

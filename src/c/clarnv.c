@@ -28,6 +28,7 @@
  *                       The generated random numbers.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -36,11 +37,11 @@
 #define LV 128
 #define TWOPI 6.2831853071795864769252867665590057683943f
 
-void clarnv(const int idist, int* restrict iseed, const int n,
+void clarnv(const INT idist, INT* restrict iseed, const INT n,
             c64* restrict X)
 {
     f32 U[LV];
-    int i, iv, il;
+    INT i, iv, il;
 
     for (iv = 0; iv < n; iv += LV / 2) {
         il = LV / 2;

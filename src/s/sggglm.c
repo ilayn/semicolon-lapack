@@ -3,6 +3,7 @@
  * @brief SGGGLM solves a general Gauss-Markov linear model (GLM) problem.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -107,26 +108,26 @@
  *                           be computed.
  */
 void sggglm(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict D,
     f32* restrict X,
     f32* restrict Y,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
-    int lquery;
-    int max_val;
+    INT i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     np = (n < p) ? n : p;
@@ -187,11 +188,11 @@ void sggglm(
 
     sggqrf(n, m, p, A, lda, work, B, ldb, &work[m],
            &work[m + np], lwork - m - np, info);
-    lopt = (int)work[m + np];
+    lopt = (INT)work[m + np];
 
     sormqr("L", "T", n, 1, m, A, lda, work, D,
            (1 > n ? 1 : n), &work[m + np], lwork - m - np, info);
-    lopt = (lopt > (int)work[m + np]) ? lopt : (int)work[m + np];
+    lopt = (lopt > (INT)work[m + np]) ? lopt : (INT)work[m + np];
 
     if (n > m) {
         strtrs("U", "N", "N", n - m, 1,
@@ -223,11 +224,11 @@ void sggglm(
         cblas_scopy(m, D, 1, X, 1);
     }
 
-    int b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
+    INT b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
     b_row_start -= 1;
 
     sormrq("L", "T", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (f32)(m + np + ((lopt > (int)work[m + np]) ? lopt : (int)work[m + np]));
+    work[0] = (f32)(m + np + ((lopt > (INT)work[m + np]) ? lopt : (INT)work[m + np]));
 }

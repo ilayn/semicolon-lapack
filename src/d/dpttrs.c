@@ -4,6 +4,7 @@
  *        L*D*L**T factorization of A computed by DPTTRF.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -36,15 +37,15 @@
  *                         - < 0: if info = -k, the k-th argument had an illegal value
  */
 void dpttrs(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict D,
     const f64* restrict E,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
     if (n < 0) {

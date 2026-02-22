@@ -4,6 +4,7 @@
  *        of a complex M-by-N matrix A by using BLAS level 3.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -51,21 +52,21 @@
  *                        Matrix F**H = L*Y**H*A.
  * @param[in]     ldf     The leading dimension of the array F. ldf >= max(1, n).
  */
-void zlaqps(const int m, const int n, const int offset, const int nb,
-            int* kb,
-            c128* restrict A, const int lda,
-            int* restrict jpvt,
+void zlaqps(const INT m, const INT n, const INT offset, const INT nb,
+            INT* kb,
+            c128* restrict A, const INT lda,
+            INT* restrict jpvt,
             c128* restrict tau,
             f64* restrict vn1,
             f64* restrict vn2,
             c128* restrict auxv,
-            c128* restrict F, const int ldf)
+            c128* restrict F, const INT ldf)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    int itemp, j, k, lastrk, lsticc, pvt, rk;
+    INT itemp, j, k, lastrk, lsticc, pvt, rk;
     f64 temp, temp2, tol3z;
     c128 akk;
     c128 neg_tau;
@@ -86,7 +87,7 @@ void zlaqps(const int m, const int n, const int offset, const int nb,
          * Determine ith pivot column and swap if necessary.
          * pvt is 0-based column index.
          */
-        pvt = (k - 1) + (int)cblas_idamax(n - k + 1, &vn1[k - 1], 1);
+        pvt = (k - 1) + (INT)cblas_idamax(n - k + 1, &vn1[k - 1], 1);
         if (pvt != k - 1) {
             cblas_zswap(m, &A[pvt * lda], 1, &A[(k - 1) * lda], 1);
             cblas_zswap(k - 1, &F[pvt], ldf, &F[k - 1], ldf);
@@ -228,7 +229,7 @@ void zlaqps(const int m, const int n, const int offset, const int nb,
      * Recomputation of difficult columns.
      */
     while (lsticc > 0) {
-        itemp = (int)round(vn2[lsticc - 1]);
+        itemp = (INT)round(vn2[lsticc - 1]);
         vn1[lsticc - 1] = cblas_dznrm2(m - rk, &A[rk + (lsticc - 1) * lda], 1);
 
         /*

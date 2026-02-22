@@ -3,6 +3,7 @@
  * @brief CTRSEN reorders the Schur factorization and computes condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -63,19 +64,19 @@
  *                   - = 0: successful exit
  *                   - < 0: if info = -i, the i-th argument had an illegal value
  */
-void ctrsen(const char* job, const char* compq, const int* select,
-            const int n, c64* T, const int ldt,
-            c64* Q, const int ldq,
-            c64* W, int* m, f32* s, f32* sep,
-            c64* work, const int lwork, int* info)
+void ctrsen(const char* job, const char* compq, const INT* select,
+            const INT n, c64* T, const INT ldt,
+            c64* Q, const INT ldq,
+            c64* W, INT* m, f32* s, f32* sep,
+            c64* work, const INT lwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantbh, wants, wantsp, wantq, lquery;
-    int ierr, k, kase, ks, lwmin = 0, n1, n2, nn;
+    INT wantbh, wants, wantsp, wantq, lquery;
+    INT ierr, k, kase, ks, lwmin = 0, n1, n2, nn;
     f32 est, rnorm, scale;
-    int isave[3];
+    INT isave[3];
     f32 rwork[1];
 
     /* Decode and test the input parameters. */
@@ -147,8 +148,8 @@ void ctrsen(const char* job, const char* compq, const int* select,
 
             /* Swap the K-th eigenvalue to position KS. */
             if (k != ks) {
-                int ifst = k;
-                int ilst = ks;
+                INT ifst = k;
+                INT ilst = ks;
                 ctrexc(compq, n, T, ldt, Q, ldq, ifst, ilst, &ierr);
             }
             ks++;

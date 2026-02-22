@@ -3,6 +3,7 @@
  * @brief DLARTV applies a vector of plane rotations with real cosines and real sines.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -25,16 +26,16 @@
  *                      The sines of the plane rotations.
  * @param[in]     incc  The increment between elements of C and S. incc > 0.
  */
-void dlartv(const int n, f64* restrict X, const int incx,
-            f64* restrict Y, const int incy,
+void dlartv(const INT n, f64* restrict X, const INT incx,
+            f64* restrict Y, const INT incy,
             const f64* restrict C, const f64* restrict S,
-            const int incc)
+            const INT incc)
 {
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         f64 xi = X[ix];
         f64 yi = Y[iy];
         X[ix] = C[ic] * xi + S[ic] * yi;

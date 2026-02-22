@@ -4,6 +4,7 @@
  *        general distributed matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -52,16 +53,16 @@
  *                        if side = "R", ldwork >= max(1, m).
  */
 void zlarzb(const char* side, const char* trans, const char* direct,
-            const char* storev, const int m, const int n,
-            const int k, const int l,
-            c128* restrict V, const int ldv,
-            c128* restrict T, const int ldt,
-            c128* restrict C, const int ldc,
-            c128* restrict work, const int ldwork)
+            const char* storev, const INT m, const INT n,
+            const INT k, const INT l,
+            c128* restrict V, const INT ldv,
+            c128* restrict T, const INT ldt,
+            c128* restrict C, const INT ldc,
+            c128* restrict work, const INT ldwork)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
-    int i, j;
+    INT i, j;
     CBLAS_TRANSPOSE transt;
 
     /* Quick return if possible */

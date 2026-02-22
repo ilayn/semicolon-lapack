@@ -3,6 +3,7 @@
  * @brief SLAED4 finds a single root of the secular equation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -38,11 +39,11 @@
  *                         - = 0: successful exit
  *                         - > 0: if info = 1, the updating process failed.
  */
-void slaed4(const int n, const int i, const f32* restrict D,
+void slaed4(const INT n, const INT i, const f32* restrict D,
             const f32* restrict Z, f32* restrict delta,
-            const f32 rho, f32* dlam, int* info)
+            const f32 rho, f32* dlam, INT* info)
 {
-    const int MAXIT = 30;
+    const INT MAXIT = 30;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
@@ -51,8 +52,8 @@ void slaed4(const int n, const int i, const f32* restrict D,
     const f32 EIGHT = 8.0f;
     const f32 TEN = 10.0f;
 
-    int orgati, swtch, swtch3;
-    int ii, iim1, iip1, ip1, iter, j, niter;
+    INT orgati, swtch, swtch3;
+    INT ii, iim1, iip1, ip1, iter, j, niter;
     f32 a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
     f32 eps, erretm, eta, midpt, phi, prew, psi;
     f32 rhoinv, tau, temp, temp1, w;

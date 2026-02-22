@@ -3,6 +3,7 @@
  * @brief SLAPMR rearranges rows of a matrix as specified by a permutation vector.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -41,14 +42,14 @@
  *          value on output.
  */
 void slapmr(
-    const int forwrd,
-    const int m,
-    const int n,
+    const INT forwrd,
+    const INT m,
+    const INT n,
     f32* restrict X,
-    const int ldx,
-    int* restrict K)
+    const INT ldx,
+    INT* restrict K)
 {
-    int i, in, j, jj;
+    INT i, in, j, jj;
     f32 temp;
 
     if (m <= 1)

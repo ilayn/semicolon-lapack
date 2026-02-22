@@ -3,6 +3,7 @@
  * @brief STRSEN reorders the real Schur factorization and computes condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <stddef.h>
@@ -75,22 +76,22 @@
  *                           reordered, and wr and wi contain the eigenvalues in
  *                           the same order as in T; s and sep are set to zero.
  */
-void strsen(const char* job, const char* compq, const int* select,
-            const int n, f32* T, const int ldt,
-            f32* Q, const int ldq,
-            f32* wr, f32* wi, int* m,
+void strsen(const char* job, const char* compq, const INT* select,
+            const INT n, f32* T, const INT ldt,
+            f32* Q, const INT ldq,
+            f32* wr, f32* wi, INT* m,
             f32* s, f32* sep,
-            f32* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+            f32* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int wantbh, wants, wantsp, wantq, lquery;
-    int ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
-    int pair, swap;
+    INT wantbh, wants, wantsp, wantq, lquery;
+    INT ierr, k, kase, kk, ks, lwmin, liwmin, n1, n2, nn;
+    INT pair, swap;
     f32 est, rnorm, scale;
-    int isave[3];
+    INT isave[3];
 
     /* Decode and test the input parameters */
     wantbh = (job[0] == 'B' || job[0] == 'b');

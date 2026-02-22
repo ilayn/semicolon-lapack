@@ -4,6 +4,7 @@
  *        factorization determined by ZGEQRF (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -61,15 +62,15 @@
  *                             value.
  */
 void zunm2r(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const c128* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            const c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict C, const int ldc,
+            c128* restrict C, const INT ldc,
             c128* restrict work,
-            int* info)
+            INT* info)
 {
-    int left, notran;
-    int i, i1, i2, i3, ic, jc, mi = 0, ni = 0, nq;
+    INT left, notran;
+    INT i, i1, i2, i3, ic, jc, mi = 0, ni = 0, nq;
     c128 taui;
 
     *info = 0;

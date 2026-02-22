@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 /**
@@ -42,14 +43,14 @@
  *                           singular, so the solution could not be computed.
  */
 void zgesv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

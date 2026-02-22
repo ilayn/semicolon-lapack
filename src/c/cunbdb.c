@@ -4,6 +4,7 @@
  *        partitioned unitary matrix X.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -115,21 +116,21 @@
  *                        < 0: if INFO = -i, the i-th argument had an illegal value.
  */
 void cunbdb(const char* trans, const char* signs,
-            const int m, const int p, const int q,
-            c64* restrict X11, const int ldx11,
-            c64* restrict X12, const int ldx12,
-            c64* restrict X21, const int ldx21,
-            c64* restrict X22, const int ldx22,
+            const INT m, const INT p, const INT q,
+            c64* restrict X11, const INT ldx11,
+            c64* restrict X12, const INT ldx12,
+            c64* restrict X21, const INT ldx21,
+            c64* restrict X22, const INT ldx22,
             f32* restrict theta, f32* restrict phi,
             c64* restrict taup1,
             c64* restrict taup2,
             c64* restrict tauq1,
             c64* restrict tauq2,
-            c64* restrict work, const int lwork,
-            int* info)
+            c64* restrict work, const INT lwork,
+            INT* info)
 {
-    int colmajor, lquery;
-    int i, lworkmin, lworkopt;
+    INT colmajor, lquery;
+    INT i, lworkmin, lworkopt;
     f32 z1, z2, z3, z4;
 
     *info = 0;

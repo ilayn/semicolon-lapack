@@ -3,6 +3,7 @@
  * @brief DGESVDQ computes SVD with a QR-Preconditioned QR SVD Method.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -22,21 +23,21 @@ static const f64 ONE = 1.0;
  */
 void dgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
-             const int m, const int n, f64* restrict A, const int lda,
-             f64* restrict S, f64* restrict U, const int ldu,
-             f64* restrict V, const int ldv, int* numrank,
-             int* restrict iwork, const int liwork,
-             f64* restrict work, const int lwork,
-             f64* restrict rwork, const int lrwork, int* info)
+             const INT m, const INT n, f64* restrict A, const INT lda,
+             f64* restrict S, f64* restrict U, const INT ldu,
+             f64* restrict V, const INT ldv, INT* numrank,
+             INT* restrict iwork, const INT liwork,
+             f64* restrict work, const INT lwork,
+             f64* restrict rwork, const INT lrwork, INT* info)
 {
-    int wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
-    int wntvr, wntva, rsvec, dntwv;
-    int accla, acclm, acclh, conda;
-    int rowprm, rtrans, lquery;
-    int lwqp3, lwcon, lwsvd, lworq, minwrk, optwrk;
-    int iminwrk, rminwrk;
-    int ierr, iwoff, nr, n1, optratio, p, q;
-    int ascaled;
+    INT wntus, wntur, wntua, wntuf, lsvc0, lsvec, dntwu;
+    INT wntvr, wntva, rsvec, dntwv;
+    INT accla, acclm, acclh, conda;
+    INT rowprm, rtrans, lquery;
+    INT lwqp3, lwcon, lwsvd, lworq, minwrk, optwrk;
+    INT iminwrk, rminwrk;
+    INT ierr, iwoff, nr, n1, optratio, p, q;
+    INT ascaled;
     f64 big, epsln, sconda, sfmin, rtmp;
 
     /* Decode job parameters */
@@ -324,7 +325,7 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
          */
         if (rtrans) {
             /* Compute SVD of R^T */
-            int minmn = (n < nr) ? n : nr;
+            INT minmn = (n < nr) ? n : nr;
             for (p = 0; p < minmn; p++) {
                 for (q = p + 1; q < n; q++) {
                     A[q + p * lda] = A[p + q * lda];

@@ -4,6 +4,7 @@
  *        stored in packed format using the factorization from CHPTRF.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -35,19 +36,19 @@
  */
 void chptrs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper;
-    int j, k, kc, kp;
+    INT upper;
+    INT j, k, kc, kp;
     f32 s;
     c64 ak, akm1, akm1k, bk, bkm1, denom;
 

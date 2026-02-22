@@ -3,24 +3,25 @@
  * @brief ZHEEV_2STAGE computes eigenvalues and optionally eigenvectors using 2-stage reduction.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
 #include <math.h>
 
-void zheev_2stage(const char* jobz, const char* uplo, const int n,
-                  c128* A, const int lda,
+void zheev_2stage(const char* jobz, const char* uplo, const INT n,
+                  c128* A, const INT lda,
                   f64* W,
-                  c128* work, const int lwork,
-                  f64* rwork, int* info)
+                  c128* work, const INT lwork,
+                  f64* rwork, INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
     const c128 cone = CMPLX(1.0, 0.0);
 
-    int lower, lquery, wantz;
-    int iinfo, imax, inde, indtau, indwrk, iscale;
-    int llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
+    INT lower, lquery, wantz;
+    INT iinfo, imax, inde, indtau, indwrk, iscale;
+    INT llwork, lwmin, lhtrd, lwtrd, kd, ib, indhous;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

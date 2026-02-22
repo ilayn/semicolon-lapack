@@ -3,6 +3,7 @@
  * @brief Compute contribution to reciprocal Dif-estimate using complete pivoting LU.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -52,21 +53,21 @@
  *                       Array of dimension n, 0-based.
  */
 void clatdf(
-    const int ijob,
-    const int n,
+    const INT ijob,
+    const INT n,
     const c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict rhs,
     f32* rdsum,
     f32* rdscal,
-    const int* restrict ipiv,
-    const int* restrict jpiv)
+    const INT* restrict ipiv,
+    const INT* restrict jpiv)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int i, j, k, info;
+    INT i, j, k, info;
     f32 rtemp, scale, sminu, splus;
     c64 bm, bp, pmone, temp;
 

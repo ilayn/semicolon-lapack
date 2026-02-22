@@ -4,6 +4,7 @@
  *        2-by-2 or 3-by-3 matrix H and specified shifts.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
@@ -32,7 +33,7 @@
  * @param[out] v      Double precision array, dimension (n).
  *                    A scalar multiple of the first column of the matrix K.
  */
-SEMICOLON_API void slaqr1(const int n, const f32* H, const int ldh,
+SEMICOLON_API void slaqr1(const INT n, const f32* H, const INT ldh,
                           const f32 sr1, const f32 si1,
                           const f32 sr2, const f32 si2,
                           f32* v)

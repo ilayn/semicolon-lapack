@@ -4,6 +4,7 @@
  *        complex Hermitian positive definite matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -36,21 +37,21 @@
  */
 void zpocon(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -77,9 +78,9 @@ void zpocon(
     f64 smlnum = dlamch("S");
 
     // Estimate the 1-norm of inv(A).
-    int kase = 0;
+    INT kase = 0;
     char normin = 'N';
-    int isave[3] = {0, 0, 0};
+    INT isave[3] = {0, 0, 0};
     f64 ainvnm;
 
     for (;;) {
@@ -87,7 +88,7 @@ void zpocon(
         if (kase == 0) break;
 
         f64 scalel, scaleu;
-        int linfo;
+        INT linfo;
 
         if (upper) {
             // Multiply by inv(U**H).
@@ -112,7 +113,7 @@ void zpocon(
         // Multiply by 1/SCALE if doing so will not cause overflow.
         f64 scale = scalel * scaleu;
         if (scale != ONE) {
-            int ix = cblas_izamax(n, work, 1);
+            INT ix = cblas_izamax(n, work, 1);
             if (scale < cabs1(work[ix]) * smlnum || scale == ZERO) {
                 return;
             }

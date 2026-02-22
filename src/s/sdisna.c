@@ -3,6 +3,7 @@
  * @brief SDISNA computes the reciprocal condition numbers for the eigenvectors.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -57,17 +58,17 @@
  */
 void sdisna(
     const char* job,
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32* restrict D,
     f32* restrict SEP,
-    int* info)
+    INT* info)
 {
     const f32 zero = 0.0f;
 
-    int eigen, left, right, sing;
-    int i, k;
-    int incr, decr;
+    INT eigen, left, right, sing;
+    INT i, k;
+    INT incr, decr;
     f32 anorm, eps, newgap, oldgap, safmin, thresh;
 
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief SHGEQZ computes eigenvalues of a real matrix pair (H,T) using the double-shift QZ method.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -67,33 +68,33 @@ void shgeqz(
     const char* job,
     const char* compq,
     const char* compz,
-    const int n,
-    const int ilo,
-    const int ihi,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
     f32* restrict H,
-    const int ldh,
+    const INT ldh,
     f32* restrict T,
-    const int ldt,
+    const INT ldt,
     f32* restrict alphar,
     f32* restrict alphai,
     f32* restrict beta,
     f32* restrict Q,
-    const int ldq,
+    const INT ldq,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 HALF = 0.5f;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 SAFETY = 100.0f;
 
-    int ilazr2, ilazro, ilpivt, ilq = 0, ilschr = 0, ilz = 0, lquery;
-    int icompq, icompz, ifirst, ifrstm, iiter, ilast;
-    int ilastm, in, ischur, istart, j, jc, jch, jiter;
-    int jr, maxit;
+    INT ilazr2, ilazro, ilpivt, ilq = 0, ilschr = 0, ilz = 0, lquery;
+    INT icompq, icompz, ifirst, ifrstm, iiter, ilast;
+    INT ilastm, in, ischur, istart, j, jc, jch, jiter;
+    INT jr, maxit;
     f32 a11, a12, a1i, a1r, a21, a22, a2i, a2r, ad11;
     f32 ad11l, ad12, ad12l, ad21, ad21l, ad22, ad22l;
     f32 ad32l, an, anorm, ascale, atol, b11, b1a, b1i;
@@ -255,9 +256,9 @@ void shgeqz(
          *    2: T(j,j)=0
          */
 
-        int do_split = 0;
-        int do_zero_t = 0;
-        int do_qz_step = 0;
+        INT do_split = 0;
+        INT do_zero_t = 0;
+        INT do_qz_step = 0;
         ifirst = ilo;
 
         if (ilast == ilo) {

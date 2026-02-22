@@ -3,6 +3,7 @@
  * @brief ZPOTRI computes the inverse of a Hermitian positive definite matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -31,10 +32,10 @@
  */
 void zpotri(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     // Test the input parameters
     *info = 0;

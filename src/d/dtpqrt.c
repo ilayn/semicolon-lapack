@@ -4,6 +4,7 @@
  *        "triangular-pentagonal" matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -39,14 +40,14 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dtpqrt(const int m, const int n, const int l, const int nb,
-            f64* restrict A, const int lda,
-            f64* restrict B, const int ldb,
-            f64* restrict T, const int ldt,
-            f64* restrict work, int* info)
+void dtpqrt(const INT m, const INT n, const INT l, const INT nb,
+            f64* restrict A, const INT lda,
+            f64* restrict B, const INT ldb,
+            f64* restrict T, const INT ldt,
+            f64* restrict work, INT* info)
 {
-    int i, ib, lb, mb, iinfo;
-    int minmn;
+    INT i, ib, lb, mb, iinfo;
+    INT minmn;
 
     *info = 0;
     minmn = m < n ? m : n;

@@ -5,6 +5,7 @@
  *        matrix is dense.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -97,15 +98,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void claed7(const int n, const int cutpnt, const int qsiz,
-            const int tlvls, const int curlvl, const int curpbm,
-            f32* D, c64* Q, const int ldq,
-            const f32 rho, int* indxq, f32* qstore,
-            int* qptr, int* prmptr, int* perm, int* givptr,
-            int* givcol, f32* givnum, c64* work,
-            f32* rwork, int* iwork, int* info)
+void claed7(const INT n, const INT cutpnt, const INT qsiz,
+            const INT tlvls, const INT curlvl, const INT curpbm,
+            f32* D, c64* Q, const INT ldq,
+            const f32 rho, INT* indxq, f32* qstore,
+            INT* qptr, INT* prmptr, INT* perm, INT* givptr,
+            INT* givcol, f32* givnum, c64* work,
+            f32* rwork, INT* iwork, INT* info)
 {
-    int coltyp, curr, i, idlmda, indx, indxc, indxp,
+    INT coltyp, curr, i, idlmda, indx, indxc, indxp,
         iq, iw, iz, k, n1, n2, ptr;
     f32 rho_local;
 

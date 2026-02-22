@@ -4,6 +4,7 @@
  *        for Hermitian positive definite systems.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <float.h>
@@ -44,30 +45,30 @@
  */
 void cporfs(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict AF,
-    const int ldaf,
+    const INT ldaf,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
     const c64 ONE = CMPLXF(1.0f, 0.0f);
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -90,7 +91,7 @@ void cporfs(
 
     // Quick return if possible
     if (n == 0 || nrhs == 0) {
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             ferr[j] = ZERO;
             berr[j] = ZERO;
         }
@@ -98,7 +99,7 @@ void cporfs(
     }
 
     // NZ = maximum number of nonzero elements in each row of A, plus 1
-    int nz = n + 1;
+    INT nz = n + 1;
     f32 eps = slamch("E");
     f32 safmin = slamch("S");
     f32 safe1 = nz * safmin;
@@ -108,8 +109,8 @@ void cporfs(
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
     // Do for each right hand side
-    for (int j = 0; j < nrhs; j++) {
-        int count = 1;
+    for (INT j = 0; j < nrhs; j++) {
+        INT count = 1;
         f32 lstres = THREE;
 
         for (;;) {
@@ -120,27 +121,27 @@ void cporfs(
 
             // Compute componentwise relative backward error
             // max(i) ( |R(i)| / ( |A|*|X| + |B| )(i) )
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 rwork[i] = cabs1f(B[i + j * ldb]);
             }
 
             // Compute |A|*|X| + |B|
             if (upper) {
-                for (int k = 0; k < n; k++) {
+                for (INT k = 0; k < n; k++) {
                     f32 s = ZERO;
                     f32 xk = cabs1f(X[k + j * ldx]);
-                    for (int i = 0; i < k; i++) {
+                    for (INT i = 0; i < k; i++) {
                         rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                     }
                     rwork[k] += fabsf(crealf(A[k + k * lda])) * xk + s;
                 }
             } else {
-                for (int k = 0; k < n; k++) {
+                for (INT k = 0; k < n; k++) {
                     f32 s = ZERO;
                     f32 xk = cabs1f(X[k + j * ldx]);
                     rwork[k] += fabsf(crealf(A[k + k * lda])) * xk;
-                    for (int i = k + 1; i < n; i++) {
+                    for (INT i = k + 1; i < n; i++) {
                         rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                     }
@@ -149,7 +150,7 @@ void cporfs(
             }
 
             f32 s = ZERO;
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 if (rwork[i] > safe2) {
                     f32 tmp = cabs1f(work[i]) / rwork[i];
                     if (tmp > s) s = tmp;
@@ -163,7 +164,7 @@ void cporfs(
             // Test stopping criterion
             if (berr[j] > eps && TWO * berr[j] <= lstres && count <= ITMAX) {
                 // Update solution and try again
-                int linfo;
+                INT linfo;
                 cpotrs(uplo, n, 1, AF, ldaf, work, n, &linfo);
                 cblas_caxpy(n, &ONE, work, 1, &X[j * ldx], 1);
                 lstres = berr[j];
@@ -176,7 +177,7 @@ void cporfs(
         // Bound error from formula
         // norm(X - XTRUE) / norm(X) <= FERR =
         // norm( |inv(A)| * ( |R| + NZ*EPS*( |A|*|X|+|B| ))) / norm(X)
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 rwork[i] = cabs1f(work[i]) + nz * eps * rwork[i];
             } else {
@@ -184,32 +185,32 @@ void cporfs(
             }
         }
 
-        int kase = 0;
-        int isave[3] = {0, 0, 0};
+        INT kase = 0;
+        INT isave[3] = {0, 0, 0};
         for (;;) {
             clacn2(n, &work[n], work, &ferr[j], &kase, isave);
             if (kase == 0) break;
 
             if (kase == 1) {
                 // Multiply by diag(W)*inv(A**H)
-                int linfo;
+                INT linfo;
                 cpotrs(uplo, n, 1, AF, ldaf, work, n, &linfo);
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[i] = CMPLXF(rwork[i], 0.0f) * work[i];
                 }
             } else if (kase == 2) {
                 // Multiply by inv(A)*diag(W)
-                for (int i = 0; i < n; i++) {
+                for (INT i = 0; i < n; i++) {
                     work[i] = CMPLXF(rwork[i], 0.0f) * work[i];
                 }
-                int linfo;
+                INT linfo;
                 cpotrs(uplo, n, 1, AF, ldaf, work, n, &linfo);
             }
         }
 
         // Normalize error
         lstres = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 tmp = cabs1f(X[i + j * ldx]);
             if (tmp > lstres) lstres = tmp;
         }

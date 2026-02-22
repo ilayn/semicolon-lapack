@@ -3,6 +3,7 @@
  * @brief DTGEXC reorders the generalized real Schur decomposition.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -40,27 +41,27 @@
  *                         - = 1: swap failed, matrices partially reordered
  */
 void dtgexc(
-    const int wantq,
-    const int wantz,
-    const int n,
+    const INT wantq,
+    const INT wantz,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
-    int* ifst,
-    int* ilst,
+    const INT ldz,
+    INT* ifst,
+    INT* ilst,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int lquery;
-    int here, lwmin, nbf, nbl, nbnext;
+    INT lquery;
+    INT here, lwmin, nbf, nbl, nbnext;
 
     *info = 0;
     lquery = (lwork == -1);

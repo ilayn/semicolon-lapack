@@ -3,19 +3,20 @@
  * @brief IPARAM2STAGE sets problem and machine dependent parameters for 2-stage algorithms.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_auxiliary.h"
 #include "lapack_tuning.h"
 #include <string.h>
 
-int iparam2stage(const int ispec, const char* name, const char* opts,
-                 const int ni, const int nbi, const int ibi, const int nxi)
+INT iparam2stage(const INT ispec, const char* name, const char* opts,
+                 const INT ni, const INT nbi, const INT ibi, const INT nxi)
 {
-    int kd, ib, lhous, lwork, nthreads;
-    int factoptnb, qroptnb, lqoptnb;
-    int rprec, cprec;
+    INT kd, ib, lhous, lwork, nthreads;
+    INT factoptnb, qroptnb, lqoptnb;
+    INT rprec, cprec;
     char prec, algo[4], stag[6], vect;
     char subnam[13];
-    int i, ic;
+    INT i, ic;
 
     if (ispec < 17 || ispec > 21) {
         return -1;
@@ -100,26 +101,26 @@ int iparam2stage(const int ispec, const char* name, const char* opts,
 
         if (strcmp(algo, "TRD") == 0) {
             if (strcmp(stag, "2STAG") == 0) {
-                int tmp1 = 2 * nbi * nbi;
-                int tmp2 = nbi * nthreads;
-                int maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
-                int factmax = (nbi + 1 > factoptnb) ? nbi + 1 : factoptnb;
+                INT tmp1 = 2 * nbi * nbi;
+                INT tmp2 = nbi * nthreads;
+                INT maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
+                INT factmax = (nbi + 1 > factoptnb) ? nbi + 1 : factoptnb;
                 lwork = ni * nbi + ni * factmax + maxval + (nbi + 1) * ni;
             } else if (strcmp(stag, "HE2HB") == 0 || strcmp(stag, "SY2SB") == 0) {
-                int factmax = (nbi > factoptnb) ? nbi : factoptnb;
+                INT factmax = (nbi > factoptnb) ? nbi : factoptnb;
                 lwork = ni * nbi + ni * factmax + 2 * nbi * nbi;
             } else if (strcmp(stag, "HB2ST") == 0 || strcmp(stag, "SB2ST") == 0) {
                 lwork = (2 * nbi + 1) * ni + nbi * nthreads;
             }
         } else if (strcmp(algo, "BRD") == 0) {
             if (strcmp(stag, "2STAG") == 0) {
-                int tmp1 = 2 * nbi * nbi;
-                int tmp2 = nbi * nthreads;
-                int maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
-                int factmax = (nbi + 1 > factoptnb) ? nbi + 1 : factoptnb;
+                INT tmp1 = 2 * nbi * nbi;
+                INT tmp2 = nbi * nthreads;
+                INT maxval = (tmp1 > tmp2) ? tmp1 : tmp2;
+                INT factmax = (nbi + 1 > factoptnb) ? nbi + 1 : factoptnb;
                 lwork = 2 * ni * nbi + ni * factmax + maxval + (nbi + 1) * ni;
             } else if (strcmp(stag, "GE2GB") == 0) {
-                int factmax = (nbi > factoptnb) ? nbi : factoptnb;
+                INT factmax = (nbi > factoptnb) ? nbi : factoptnb;
                 lwork = ni * nbi + ni * factmax + 2 * nbi * nbi;
             } else if (strcmp(stag, "GB2BD") == 0) {
                 lwork = (3 * nbi + 1) * ni + nbi * nthreads;

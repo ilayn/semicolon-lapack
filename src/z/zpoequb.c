@@ -3,6 +3,7 @@
  * @brief ZPOEQUB computes row and column scalings for equilibrating a Hermitian positive definite matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
@@ -55,18 +56,18 @@
  *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
  */
 void zpoequb(
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict S,
     f64* scond,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 zero = 0.0;
     const f64 one = 1.0;
 
-    int i;
+    INT i;
     f64 smin, base, tmp;
 
     *info = 0;
@@ -107,7 +108,7 @@ void zpoequb(
         }
     } else {
         for (i = 0; i < n; i++) {
-            S[i] = pow(base, (int)(tmp * log(S[i])));
+            S[i] = pow(base, (INT)(tmp * log(S[i])));
         }
 
         *scond = sqrt(smin) / sqrt(*amax);

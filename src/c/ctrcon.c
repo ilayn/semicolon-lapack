@@ -1,6 +1,7 @@
 /** @file ctrcon.c
  * @brief CTRCON estimates the reciprocal condition number of a triangular matrix. */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -40,18 +41,18 @@
  *                           - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void ctrcon(const char* norm, const char* uplo, const char* diag,
-            const int n, const c64* restrict A, const int lda,
+            const INT n, const c64* restrict A, const INT lda,
             f32* rcond, c64* restrict work,
-            f32* restrict rwork, int* info)
+            f32* restrict rwork, INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper, onenrm, nounit;
+    INT upper, onenrm, nounit;
     char normin;
-    int ix, kase, kase1;
+    INT ix, kase, kase1;
     f32 ainvnm, anorm, scale, smlnum, xnorm;
-    int isave[3];
+    INT isave[3];
 
     /* Test the input parameters */
     *info = 0;

@@ -4,6 +4,7 @@
  *        real generalized symmetric-definite eigenproblem (packed storage).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
@@ -39,29 +40,29 @@
  *                         - = 0: success; < 0: illegal argument; > 0: DPPTRF/DSPEVX error.
  */
 void dspgvx(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict AP,
     f64* restrict BP,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
-    int upper, wantz, alleig, valeig, indeig;
-    int j;
+    INT upper, wantz, alleig, valeig, indeig;
+    INT j;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

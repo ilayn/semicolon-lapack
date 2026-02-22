@@ -3,6 +3,7 @@
  * @brief SORMBR applies the orthogonal matrix Q or P**T determined by SGEBRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 
@@ -72,15 +73,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void sormbr(const char* vect, const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const f32* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            const f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict C, const int ldc,
-            f32* restrict work, const int lwork, int* info)
+            f32* restrict C, const INT ldc,
+            f32* restrict work, const INT lwork, INT* info)
 {
-    int applyq, left, lquery, notran;
+    INT applyq, left, lquery, notran;
     char transt;
-    int i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
+    INT i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

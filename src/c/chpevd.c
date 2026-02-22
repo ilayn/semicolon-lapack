@@ -3,6 +3,7 @@
  * @brief CHPEVD computes the eigenvalues and, optionally, eigenvectors for a
  *        complex Hermitian matrix in packed storage.
  */
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -74,26 +75,26 @@
 void chpevd(
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
     f32* restrict W,
     c64* restrict Z,
-    const int ldz,
+    const INT ldz,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    const int lrwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lrwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int wantz, lquery;
-    int iinfo, imax, inde, indrwk, indtau, indwrk;
-    int iscale, liwmin, llrwk, llwrk, lrwmin, lwmin;
+    INT wantz, lquery;
+    INT iinfo, imax, inde, indrwk, indtau, indwrk;
+    INT iscale, liwmin, llrwk, llwrk, lrwmin, lwmin;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

@@ -2,6 +2,7 @@
  * @brief DLASQ3 checks for deflation, computes shift and calls dqds.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -37,10 +38,10 @@
  *                        value between calls to DLASQ3.
  * @param[in,out] tau    This is the shift.
  */
-void dlasq3(const int i0, int* n0, f64* restrict Z,
-            int* pp, f64* dmin, f64* sigma, f64* desig,
-            int* nfail, int* iter, int* ndiv,
-            const int ieee, int* ttype, f64* dmin1, f64* dmin2,
+void dlasq3(const INT i0, INT* n0, f64* restrict Z,
+            INT* pp, f64* dmin, f64* sigma, f64* desig,
+            INT* nfail, INT* iter, INT* ndiv,
+            const INT ieee, INT* ttype, f64* dmin1, f64* dmin2,
             f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau)
 {
     const f64 CBIAS = 1.50;
@@ -51,7 +52,7 @@ void dlasq3(const int i0, int* n0, f64* restrict Z,
     const f64 TWO = 2.0;
     const f64 HUNDRD = 100.0;
 
-    int ipn4, j4, n0in, nn;
+    INT ipn4, j4, n0in, nn;
     f64 eps, s, t, temp, tol, tol2;
 
     n0in = *n0;

@@ -4,6 +4,7 @@
  *        to calculate error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -48,17 +49,17 @@
  *                       and at least (1 + (n-1)*abs(incy)) otherwise.
  * @param[in]     incy   The increment for the elements of Y. incy != 0.
  */
-void cla_geamv(const int trans, const int m, const int n,
+void cla_geamv(const INT trans, const INT m, const INT n,
                const f32 alpha, const c64* restrict A,
-               const int lda, const c64* restrict X,
-               const int incx, const f32 beta,
-               f32* restrict Y, const int incy)
+               const INT lda, const c64* restrict X,
+               const INT incx, const f32 beta,
+               f32* restrict Y, const INT incy)
 {
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
-    int symb_zero;
+    INT symb_zero;
     f32 temp, safe1;
-    int i, info, iy, j, jx, kx, ky, lenx, leny;
+    INT i, info, iy, j, jx, kx, ky, lenx, leny;
 
     info = 0;
     if (!(trans == CblasNoTrans || trans == CblasTrans || trans == CblasConjTrans)) {

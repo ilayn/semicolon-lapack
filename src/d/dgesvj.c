@@ -183,6 +183,7 @@
  *                           description of work.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <cblas.h>
@@ -190,23 +191,23 @@
 static const f64 ZERO = 0.0;
 static const f64 HALF = 0.5;
 static const f64 ONE = 1.0;
-static const int NSWEEP = 30;
+static const INT NSWEEP = 30;
 
 void dgesvj(const char* joba, const char* jobu, const char* jobv,
-            const int m, const int n, f64* restrict A, const int lda,
-            f64* restrict SVA, const int mv,
-            f64* restrict V, const int ldv,
-            f64* restrict work, const int lwork, int* info)
+            const INT m, const INT n, f64* restrict A, const INT lda,
+            f64* restrict SVA, const INT mv,
+            f64* restrict V, const INT ldv,
+            f64* restrict work, const INT lwork, INT* info)
 {
-    int lsvec, uctol, rsvec, applv, upper, lower, lquery;
-    int minmn, lwmin, mvl = 0;
-    int i, ibr, igl, ir1, p, q, kbl, nbl;
-    int rowskip, lkahead, swband, blskip;
-    int notrot, pskipped, emptsw, iswrot;
-    int ijblsk, jbc, jgl;
-    int n2, n4, n34;
-    int ierr;
-    int rotok, noscale, goscale;
+    INT lsvec, uctol, rsvec, applv, upper, lower, lquery;
+    INT minmn, lwmin, mvl = 0;
+    INT i, ibr, igl, ir1, p, q, kbl, nbl;
+    INT rowskip, lkahead, swband, blskip;
+    INT notrot, pskipped, emptsw, iswrot;
+    INT ijblsk, jbc, jgl;
+    INT n2, n4, n34;
+    INT ierr;
+    INT rotok, noscale, goscale;
     f64 aapp, aapp0, aapq, aaqq, apoaq, aqoap;
     f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
     f64 ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
@@ -965,7 +966,7 @@ void dgesvj(const char* joba, const char* jobu, const char* jobv,
 
             offdiag_cleanup:
             {
-                int pp;
+                INT pp;
                 for (pp = igl; pp < ((igl + kbl < n) ? igl + kbl : n); pp++) {
                     SVA[pp] = fabs(SVA[pp]);
                 }

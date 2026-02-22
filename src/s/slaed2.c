@@ -3,6 +3,7 @@
  * @brief SLAED2 merges eigenvalues and deflates the secular equation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -90,10 +91,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value.
  */
-void slaed2(int* K, const int n, const int n1, f32* D, f32* Q,
-            const int ldq, int* indxq, f32* rho, f32* Z,
-            f32* dlambda, f32* W, f32* Q2, int* indx,
-            int* indxc, int* indxp, int* coltyp, int* info)
+void slaed2(INT* K, const INT n, const INT n1, f32* D, f32* Q,
+            const INT ldq, INT* indxq, f32* rho, f32* Z,
+            f32* dlambda, f32* W, f32* Q2, INT* indx,
+            INT* indxc, INT* indxp, INT* coltyp, INT* info)
 {
     const f32 MONE = -1.0f;
     const f32 ZERO = 0.0f;
@@ -101,8 +102,8 @@ void slaed2(int* K, const int n, const int n1, f32* D, f32* Q,
     const f32 TWO = 2.0f;
     const f32 EIGHT = 8.0f;
 
-    int ctot[4], psm[4];
-    int ct, i, imax, iq1, iq2, j, jmax, js, k2, n2, nj, pj = 0;
+    INT ctot[4], psm[4];
+    INT ct, i, imax, iq1, iq2, j, jmax, js, k2, n2, nj, pj = 0;
     f32 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */

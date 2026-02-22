@@ -3,6 +3,7 @@
  * @brief DPBEQU computes row and column scalings to equilibrate a symmetric positive definite band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -30,20 +31,20 @@
  */
 void dpbequ(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict S,
     f64* scond,
     f64* amax,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int upper;
-    int i, j;
+    INT upper;
+    INT i, j;
     f64 smin;
 
     *info = 0;

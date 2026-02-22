@@ -4,6 +4,7 @@
  *        complex Hermitian positive definite matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -36,21 +37,21 @@
  */
 void cpocon(
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const f32 anorm,
     f32* rcond,
     c64* restrict work,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -77,9 +78,9 @@ void cpocon(
     f32 smlnum = slamch("S");
 
     // Estimate the 1-norm of inv(A).
-    int kase = 0;
+    INT kase = 0;
     char normin = 'N';
-    int isave[3] = {0, 0, 0};
+    INT isave[3] = {0, 0, 0};
     f32 ainvnm;
 
     for (;;) {
@@ -87,7 +88,7 @@ void cpocon(
         if (kase == 0) break;
 
         f32 scalel, scaleu;
-        int linfo;
+        INT linfo;
 
         if (upper) {
             // Multiply by inv(U**H).
@@ -112,7 +113,7 @@ void cpocon(
         // Multiply by 1/SCALE if doing so will not cause overflow.
         f32 scale = scalel * scaleu;
         if (scale != ONE) {
-            int ix = cblas_icamax(n, work, 1);
+            INT ix = cblas_icamax(n, work, 1);
             if (scale < cabs1f(work[ix]) * smlnum || scale == ZERO) {
                 return;
             }

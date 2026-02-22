@@ -3,6 +3,7 @@
  * @brief SORGTSQR_ROW generates an M-by-N real matrix Q_out with orthonormal columns from SLATSQR output using row-by-row algorithm.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -57,24 +58,24 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void sorgtsqr_row(
-    const int m,
-    const int n,
-    const int mb,
-    const int nb,
+    const INT m,
+    const INT n,
+    const INT mb,
+    const INT nb,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict T,
-    const int ldt,
+    const INT ldt,
     f32* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int nblocal, mb2, itmp, ib_bottom;
-    int lworkopt, num_all_row_blocks, jb_t, ib, imb;
-    int kb, kb_last, knb, mb1;
+    INT lquery;
+    INT nblocal, mb2, itmp, ib_bottom;
+    INT lworkopt, num_all_row_blocks, jb_t, ib, imb;
+    INT kb, kb_last, knb, mb1;
     f32 dummy[1];
-    int minval;
+    INT minval;
 
     *info = 0;
     lquery = (lwork == -1);

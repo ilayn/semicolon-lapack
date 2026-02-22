@@ -3,6 +3,7 @@
  * @brief CPPTRF computes the Cholesky factorization of a packed Hermitian positive definite matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -35,15 +36,15 @@
  */
 void cpptrf(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -60,9 +61,9 @@ void cpptrf(
 
     if (upper) {
         // Compute the Cholesky factorization A = U**H * U.
-        int jj = -1;
-        for (int j = 0; j < n; j++) {
-            int jc = jj + 1;
+        INT jj = -1;
+        for (INT j = 0; j < n; j++) {
+            INT jc = jj + 1;
             jj = jj + (j + 1);
 
             // Compute elements 1:J-1 of column J.
@@ -87,8 +88,8 @@ void cpptrf(
         }
     } else {
         // Compute the Cholesky factorization A = L * L**H.
-        int jj = 0;
-        for (int j = 0; j < n; j++) {
+        INT jj = 0;
+        for (INT j = 0; j < n; j++) {
 
             // Compute L(J,J) and test for non-positive-definiteness.
             f32 ajj = crealf(AP[jj]);

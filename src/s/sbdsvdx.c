@@ -4,6 +4,7 @@
  *        N-by-N bidiagonal matrix using eigenvalues of an associated tridiagonal.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
@@ -59,18 +60,18 @@ static const f32 FUDGE = 2.0f;
  *                         - < 0: illegal argument.
  *                         - > 0: i eigenvectors failed to converge in SSTEVX.
  */
-void sbdsvdx(const char* uplo, const char* jobz, const char* range, const int n,
+void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
              f32* restrict D, f32* restrict E,
-             const f32 vl, const f32 vu, const int il, const int iu,
-             int* ns, f32* restrict S, f32* restrict Z,
-             const int ldz, f32* restrict work, int* restrict iwork,
-             int* info)
+             const f32 vl, const f32 vu, const INT il, const INT iu,
+             INT* ns, f32* restrict S, f32* restrict Z,
+             const INT ldz, f32* restrict work, INT* restrict iwork,
+             INT* info)
 {
-    int allsv, indsv, lower, split, sveq0, valsv, wantz;
-    int i, icolz, idbeg, idend, idptr, idtgk, ieptr, ietgk;
-    int iifail, iiwork, iltgk, irowu, irowv, irowz, isbeg;
-    int isplt, itemp, iutgk, j, k, ns_local, nsl, ntgk;
-    int nru, nrv;
+    INT allsv, indsv, lower, split, sveq0, valsv, wantz;
+    INT i, icolz, idbeg, idend, idptr, idtgk, ieptr, ietgk;
+    INT iifail, iiwork, iltgk, irowu, irowv, irowz, isbeg;
+    INT isplt, itemp, iutgk, j, k, ns_local, nsl, ntgk;
+    INT nru, nrv;
     f32 abstol, emin, eps, mu, nrmu, nrmv, ortol, smax, smin;
     f32 sqrt2, thresh, tol, ulp, vltgk, vutgk, zjtji;
     char rngvx = 'I';

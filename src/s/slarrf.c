@@ -2,6 +2,7 @@
  * @brief SLARRF finds a new relatively robust representation such that at least one of the eigenvalues is relatively isolated.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -52,15 +53,15 @@
  *                         - = 0: successful exit
  *                         - = 1: failure
  */
-void slarrf(const int n, const f32* restrict D,
+void slarrf(const INT n, const f32* restrict D,
             const f32* restrict L, const f32* restrict LD,
-            const int clstrt, const int clend,
+            const INT clstrt, const INT clend,
             const f32* restrict W, f32* restrict wgap,
             const f32* restrict werr,
             const f32 spdiam, const f32 clgapl, const f32 clgapr,
             const f32 pivmin, f32* sigma,
             f32* restrict dplus, f32* restrict lplus,
-            f32* restrict work, int* info)
+            f32* restrict work, INT* info)
 {
     /* Constants */
     const f32 ONE = 1.0f;
@@ -68,13 +69,13 @@ void slarrf(const int n, const f32* restrict D,
     const f32 QUART = 0.25f;
     const f32 MAXGROWTH1 = 8.0f;
     const f32 MAXGROWTH2 = 8.0f;
-    const int KTRYMAX = 1;
-    const int SLEFT = 1;
-    const int SRIGHT = 2;
+    const INT KTRYMAX = 1;
+    const INT SLEFT = 1;
+    const INT SRIGHT = 2;
 
     /* Local variables */
-    int i, indx, ktry, shift;
-    int forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
+    INT i, indx, ktry, shift;
+    INT forcer, nofail, sawnan1, sawnan2, dorrr1, tryrrr1;
     f32 avgap, bestshift, clwdth, eps, fact, fail, fail2;
     f32 growthbound, ldelta, ldmax, lsigma;
     f32 max1, max2, mingap, oldp, prod, rdelta, rdmax;

@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 /**
@@ -41,20 +42,20 @@
  */
 void zgttrs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict DL,
     const c128* restrict D,
     const c128* restrict DU,
     const c128* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int notran;
-    int itrans;
-    int ldb_min;
+    INT notran;
+    INT itrans;
+    INT ldb_min;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');

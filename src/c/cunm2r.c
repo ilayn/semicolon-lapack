@@ -4,6 +4,7 @@
  *        factorization determined by CGEQRF (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -61,15 +62,15 @@
  *                             value.
  */
 void cunm2r(const char* side, const char* trans,
-            const int m, const int n, const int k,
-            const c64* restrict A, const int lda,
+            const INT m, const INT n, const INT k,
+            const c64* restrict A, const INT lda,
             const c64* restrict tau,
-            c64* restrict C, const int ldc,
+            c64* restrict C, const INT ldc,
             c64* restrict work,
-            int* info)
+            INT* info)
 {
-    int left, notran;
-    int i, i1, i2, i3, ic, jc, mi = 0, ni = 0, nq;
+    INT left, notran;
+    INT i, i1, i2, i3, ic, jc, mi = 0, ni = 0, nq;
     c64 taui;
 
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief SLAPLL measures the linear dependence of two vectors.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -25,8 +26,8 @@
  * @param[in]     incy   The increment between successive elements of Y. INCY > 0.
  * @param[out]    ssmin  The smallest singular value of the N-by-2 matrix A = ( X Y ).
  */
-void slapll(const int n, f32* restrict x, const int incx,
-            f32* restrict y, const int incy, f32* ssmin)
+void slapll(const INT n, f32* restrict x, const INT incx,
+            f32* restrict y, const INT incy, f32* ssmin)
 {
     f32 a11, a12, a22, c, tau, ssmax;
 

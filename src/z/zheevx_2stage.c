@@ -4,6 +4,7 @@
  *        of a complex Hermitian matrix using 2-stage reduction.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -44,34 +45,34 @@ void zheevx_2stage(
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const f64 vl,
     const f64 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f64 abstol,
-    int* m,
+    INT* m,
     f64* restrict W,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict work,
-    const int lwork,
+    const INT lwork,
     f64* restrict rwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int alleig, indeig, lower, lquery, test, valeig, wantz;
-    int i, iinfo, imax, indd, inde, indee, indibl;
-    int indisp, indiwk, indtau, indwrk, indrwk, iscale;
-    int itmp1, j, jj, llwork;
-    int nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
+    INT alleig, indeig, lower, lquery, test, valeig, wantz;
+    INT i, iinfo, imax, indd, inde, indee, indibl;
+    INT indisp, indiwk, indtau, indwrk, indrwk, iscale;
+    INT itmp1, j, jj, llwork;
+    INT nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
     f64 sigma, smlnum, tmp1, vll, vuu;
 

@@ -4,6 +4,7 @@
  *        right eigenvectors for GE matrices (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -59,23 +60,23 @@
  *                         - = 1,...,n: the QZ iteration failed
  *                         - > n: other errors
  */
-void dggev3(const char* jobvl, const char* jobvr, const int n,
-            f64* restrict A, const int lda,
-            f64* restrict B, const int ldb,
+void dggev3(const char* jobvl, const char* jobvr, const INT n,
+            f64* restrict A, const INT lda,
+            f64* restrict B, const INT ldb,
             f64* restrict alphar, f64* restrict alphai,
             f64* restrict beta,
-            f64* restrict VL, const int ldvl,
-            f64* restrict VR, const int ldvr,
-            f64* restrict work, const int lwork, int* info)
+            f64* restrict VL, const INT ldvl,
+            f64* restrict VR, const INT ldvr,
+            f64* restrict work, const INT lwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int in, iright, irows, itau, iwrk, jc, jr, lwkopt, lwkmin;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT in, iright, irows, itau, iwrk, jc, jr, lwkopt, lwkmin;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps, smlnum, temp;
-    int ldumma[1];
+    INT ldumma[1];
 
     /* Decode the input arguments */
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {
@@ -126,29 +127,29 @@ void dggev3(const char* jobvl, const char* jobvr, const int n,
     /* Compute workspace */
     if (*info == 0) {
         dgeqrf(n, n, B, ldb, NULL, work, -1, &ierr);
-        lwkopt = lwkmin > (3 * n + (int)work[0]) ? lwkmin : (3 * n + (int)work[0]);
+        lwkopt = lwkmin > (3 * n + (INT)work[0]) ? lwkmin : (3 * n + (INT)work[0]);
         dormqr("L", "T", n, n, n, B, ldb, NULL, A, lda, work, -1, &ierr);
-        lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+        lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
         if (ilvl) {
             dorgqr(n, n, n, VL, ldvl, NULL, work, -1, &ierr);
-            lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+            lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
         }
         if (ilv) {
             dgghd3(jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb, VL, ldvl,
                    VR, ldvr, work, -1, &ierr);
-            lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+            lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
             dlaqz0("S", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alphar, alphai, beta, VL, ldvl, VR, ldvr,
                    work, -1, 0, &ierr);
-            lwkopt = lwkopt > (2 * n + (int)work[0]) ? lwkopt : (2 * n + (int)work[0]);
+            lwkopt = lwkopt > (2 * n + (INT)work[0]) ? lwkopt : (2 * n + (INT)work[0]);
         } else {
             dgghd3("N", "N", n, 0, n - 1, A, lda, B, ldb, VL, ldvl,
                    VR, ldvr, work, -1, &ierr);
-            lwkopt = lwkopt > (3 * n + (int)work[0]) ? lwkopt : (3 * n + (int)work[0]);
+            lwkopt = lwkopt > (3 * n + (INT)work[0]) ? lwkopt : (3 * n + (INT)work[0]);
             dlaqz0("E", jobvl, jobvr, n, 0, n - 1, A, lda, B, ldb,
                    alphar, alphai, beta, VL, ldvl, VR, ldvr,
                    work, -1, 0, &ierr);
-            lwkopt = lwkopt > (2 * n + (int)work[0]) ? lwkopt : (2 * n + (int)work[0]);
+            lwkopt = lwkopt > (2 * n + (INT)work[0]) ? lwkopt : (2 * n + (INT)work[0]);
         }
         if (n == 0) {
             work[0] = 1;

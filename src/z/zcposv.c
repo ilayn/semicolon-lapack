@@ -5,6 +5,7 @@
  *        precision iterative refinement.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -94,28 +95,28 @@
  */
 void zcposv(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     c128* restrict work,
     c64* restrict swork,
     f64* restrict rwork,
-    int* iter,
-    int* info)
+    INT* iter,
+    INT* info)
 {
-    const int ITERMAX = 30;
+    const INT ITERMAX = 30;
     const f64 BWDMAX = 1.0;
     const c128 NEGONE = CMPLX(-1.0, + 0.0);
     const c128 ONE = CMPLX(1.0, + 0.0);
 
-    int i, iiter, iinfo;
+    INT i, iiter, iinfo;
     f64 anrm, cte, eps, rnrm, xnrm;
-    int converged;
+    INT converged;
 
     c64* SA;
     c64* SX;
@@ -123,7 +124,7 @@ void zcposv(
     *info = 0;
     *iter = 0;
 
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -183,8 +184,8 @@ void zcposv(
 
     converged = 1;
     for (i = 0; i < nrhs; i++) {
-        int imax_x = izmax1(n, &X[i * ldx], 1);
-        int imax_r = izmax1(n, &work[i * n], 1);
+        INT imax_x = izmax1(n, &X[i * ldx], 1);
+        INT imax_r = izmax1(n, &work[i * n], 1);
         xnrm = cabs1(X[imax_x + i * ldx]);
         rnrm = cabs1(work[imax_r + i * n]);
         if (rnrm > xnrm * cte) {
@@ -221,8 +222,8 @@ void zcposv(
 
         converged = 1;
         for (i = 0; i < nrhs; i++) {
-            int imax_x = izmax1(n, &X[i * ldx], 1);
-            int imax_r = izmax1(n, &work[i * n], 1);
+            INT imax_x = izmax1(n, &X[i * ldx], 1);
+            INT imax_r = izmax1(n, &work[i * n], 1);
             xnrm = cabs1(X[imax_x + i * ldx]);
             rnrm = cabs1(work[imax_r + i * n]);
             if (rnrm > xnrm * cte) {

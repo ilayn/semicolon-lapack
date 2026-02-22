@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 /**
  * @file dgbsv.c
@@ -49,16 +50,16 @@
  *                           singular, and the solution has not been computed.
  */
 void dgbsv(
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     f64* restrict AB,
-    const int ldab,
-    int* restrict ipiv,
+    const INT ldab,
+    INT* restrict ipiv,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     /* Test the input parameters */
     *info = 0;

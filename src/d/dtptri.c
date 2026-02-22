@@ -3,6 +3,7 @@
  * @brief DTPTRI computes the inverse of a triangular matrix stored in packed format.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -29,9 +30,9 @@
 void dtptri(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     f64* restrict AP,
-    int* info)
+    INT* info)
 {
     // dtptri.f lines 132-133: Parameters
     const f64 ONE = 1.0;
@@ -39,8 +40,8 @@ void dtptri(
 
     // dtptri.f lines 151-164: Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int nounit = (diag[0] == 'N' || diag[0] == 'n');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT nounit = (diag[0] == 'N' || diag[0] == 'n');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (!nounit && !(diag[0] == 'U' || diag[0] == 'u')) {
@@ -57,8 +58,8 @@ void dtptri(
     if (nounit) {
         if (upper) {
             // dtptri.f lines 169-175
-            int jj = -1;  // 0-based: start at -1 so first jj += (i+1) gives 0
-            for (int i = 0; i < n; i++) {
+            INT jj = -1;  // 0-based: start at -1 so first jj += (i+1) gives 0
+            for (INT i = 0; i < n; i++) {
                 jj = jj + (i + 1);  // dtptri.f line 172: JJ = JJ + INFO
                 if (AP[jj] == ZERO) {
                     *info = i + 1;  // 1-based error code
@@ -67,8 +68,8 @@ void dtptri(
             }
         } else {
             // dtptri.f lines 176-183
-            int jj = 0;  // dtptri.f line 177: JJ = 1 (0-based: 0)
-            for (int i = 0; i < n; i++) {
+            INT jj = 0;  // dtptri.f line 177: JJ = 1 (0-based: 0)
+            for (INT i = 0; i < n; i++) {
                 if (AP[jj] == ZERO) {
                     *info = i + 1;  // 1-based error code
                     return;
@@ -84,8 +85,8 @@ void dtptri(
 
     if (upper) {
         // dtptri.f lines 187-206: Compute inverse of upper triangular matrix
-        int jc = 0;  // dtptri.f line 191: JC = 1 (0-based: 0)
-        for (int j = 0; j < n; j++) {  // dtptri.f line 192: DO 30 J = 1, N
+        INT jc = 0;  // dtptri.f line 191: JC = 1 (0-based: 0)
+        for (INT j = 0; j < n; j++) {  // dtptri.f line 192: DO 30 J = 1, N
             f64 ajj;
             if (nounit) {
                 // dtptri.f lines 193-195
@@ -109,9 +110,9 @@ void dtptri(
         }
     } else {
         // dtptri.f lines 208-231: Compute inverse of lower triangular matrix
-        int jc = n * (n + 1) / 2 - 1;  // dtptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
-        int jclast = 0;  // Will be set in loop
-        for (int j = n - 1; j >= 0; j--) {  // dtptri.f line 213: DO 40 J = N, 1, -1
+        INT jc = n * (n + 1) / 2 - 1;  // dtptri.f line 212: JC = N*(N+1)/2 (0-based: subtract 1)
+        INT jclast = 0;  // Will be set in loop
+        for (INT j = n - 1; j >= 0; j--) {  // dtptri.f line 213: DO 40 J = N, 1, -1
             f64 ajj;
             if (nounit) {
                 // dtptri.f lines 214-216

@@ -4,6 +4,7 @@
  *        complex matrix, which is composed of two blocks.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -49,18 +50,18 @@
  * @param[in]     ldwork  The leading dimension of work.
  */
 void ctprfb(const char* side, const char* trans, const char* direct,
-            const char* storev, const int m, const int n, const int k,
-            const int l, const c64* restrict V, const int ldv,
-            const c64* restrict T, const int ldt,
-            c64* restrict A, const int lda,
-            c64* restrict B, const int ldb,
-            c64* restrict work, const int ldwork)
+            const char* storev, const INT m, const INT n, const INT k,
+            const INT l, const c64* restrict V, const INT ldv,
+            const c64* restrict T, const INT ldt,
+            c64* restrict A, const INT lda,
+            c64* restrict B, const INT ldb,
+            c64* restrict work, const INT ldwork)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
-    int i, j, mp, np, kp;
-    int left, right, forward, backward, column, row;
+    INT i, j, mp, np, kp;
+    INT left, right, forward, backward, column, row;
 
     if (m <= 0 || n <= 0 || k <= 0 || l < 0) return;
 

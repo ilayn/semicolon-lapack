@@ -4,6 +4,7 @@
  *        real generalized symmetric-definite eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <cblas.h>
@@ -29,22 +30,22 @@
  *                         - = 0: success; < 0: illegal argument; > 0: DPOTRF/DSYEV error.
  */
 void dsygv(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* uplo,
-    const int n,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict W,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ONE = 1.0;
-    int wantz, upper, lquery;
-    int lwkmin, lwkopt, nb, neig;
+    INT wantz, upper, lquery;
+    INT lwkmin, lwkopt, nb, neig;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

@@ -3,6 +3,7 @@
  * @brief SLAGTF factorizes (T - lambda*I) = P*L*U for a tridiagonal matrix T.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_single.h"
@@ -59,17 +60,17 @@
  *                         - < 0: if info = -k, the k-th argument had an illegal value.
  */
 void slagtf(
-    const int n,
+    const INT n,
     f32* restrict A,
     const f32 lambda,
     f32* restrict B,
     f32* restrict C,
     const f32 tol,
     f32* restrict D,
-    int* restrict in,
-    int* info)
+    INT* restrict in,
+    INT* info)
 {
-    int k;
+    INT k;
     f32 eps, mult, piv1, piv2, scale1, scale2, temp, tl;
 
     *info = 0;

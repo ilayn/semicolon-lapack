@@ -3,6 +3,7 @@
  * @brief ZTREVC computes eigenvectors of a complex upper triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -64,18 +65,18 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztrevc(const char* side, const char* howmny, int* select, const int n,
-            c128* T, const int ldt, c128* VL, const int ldvl,
-            c128* VR, const int ldvr, const int mm, int* m,
-            c128* work, f64* rwork, int* info)
+void ztrevc(const char* side, const char* howmny, INT* select, const INT n,
+            c128* T, const INT ldt, c128* VL, const INT ldvl,
+            c128* VR, const INT ldvr, const INT mm, INT* m,
+            c128* work, f64* rwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CMZERO = CMPLX(0.0, 0.0);
     const c128 CMONE = CMPLX(1.0, 0.0);
 
-    int allv, bothv, leftv, over, rightv, somev;
-    int i, ii, is, j, k, ki;
+    INT allv, bothv, leftv, over, rightv, somev;
+    INT i, ii, is, j, k, ki;
     f64 remax, scale, smin, smlnum, ulp, unfl;
 
     /* Decode and test the input parameters */

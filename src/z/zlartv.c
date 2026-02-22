@@ -3,6 +3,7 @@
  * @brief ZLARTV applies a vector of plane rotations with real cosines and complex sines.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -26,16 +27,16 @@
  *                      The sines of the plane rotations.
  * @param[in]     incc  The increment between elements of C and S. incc > 0.
  */
-void zlartv(const int n, c128* restrict X, const int incx,
-            c128* restrict Y, const int incy,
+void zlartv(const INT n, c128* restrict X, const INT incx,
+            c128* restrict Y, const INT incy,
             const f64* restrict C, const c128* restrict S,
-            const int incc)
+            const INT incc)
 {
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         c128 xi = X[ix];
         c128 yi = Y[iy];
         X[ix] = C[ic] * xi + S[ic] * yi;

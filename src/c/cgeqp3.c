@@ -4,6 +4,7 @@
  *        matrix A: A*P = Q*R using Level 3 BLAS.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -58,19 +59,19 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgeqp3(const int m, const int n,
-            c64* restrict A, const int lda,
-            int* restrict jpvt,
+void cgeqp3(const INT m, const INT n,
+            c64* restrict A, const INT lda,
+            INT* restrict jpvt,
             c64* restrict tau,
-            c64* restrict work, const int lwork,
+            c64* restrict work, const INT lwork,
             f32* restrict rwork,
-            int* info)
+            INT* info)
 {
-    int iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
-    int sm, sn, sminmn, topbmn;
-    int j, jb, fjb;
-    int lquery;
-    int iinfo;
+    INT iws, lwkopt, minmn, minws, na, nb, nbmin, nfxd, nx;
+    INT sm, sn, sminmn, topbmn;
+    INT j, jb, fjb;
+    INT lquery;
+    INT iinfo;
 
     /* Parameter validation */
     *info = 0;
@@ -149,7 +150,7 @@ void cgeqp3(const int m, const int n,
 
         /* QR factorization of the fixed columns */
         cgeqrf(m, na, A, lda, tau, work, lwork, &iinfo);
-        iws = iws > (int)crealf(work[0]) ? iws : (int)crealf(work[0]);
+        iws = iws > (INT)crealf(work[0]) ? iws : (INT)crealf(work[0]);
 
         if (na < n) {
             /* Apply Q^H to remaining columns: A(:, na:n-1) */

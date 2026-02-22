@@ -3,6 +3,7 @@
  * @brief DLARZT forms the triangular factor T of a block reflector H = I - V**T*T*V.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -48,13 +49,13 @@
  * @param[in]     ldt     The leading dimension of the array T. ldt >= k.
  */
 void dlarzt(const char* direct, const char* storev,
-            const int n, const int k,
-            f64* restrict V, const int ldv,
+            const INT n, const INT k,
+            f64* restrict V, const INT ldv,
             const f64* restrict tau,
-            f64* restrict T, const int ldt)
+            f64* restrict T, const INT ldt)
 {
     const f64 ZERO = 0.0;
-    int i, j, info;
+    INT i, j, info;
 
     /* Check for currently supported options */
     info = 0;

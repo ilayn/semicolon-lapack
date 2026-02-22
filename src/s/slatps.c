@@ -3,6 +3,7 @@
  * @brief SLATPS solves a triangular system with the matrix held in packed storage, with scaling to prevent overflow.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -45,12 +46,12 @@ void slatps(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const f32* restrict AP,
     f32* restrict X,
     f32* scale,
     f32* restrict cnorm,
-    int* info)
+    INT* info)
 {
     // slatps.f lines 245-246: Parameters
     const f32 ZERO = 0.0f;
@@ -58,8 +59,8 @@ void slatps(
     const f32 ONE = 1.0f;
 
     // slatps.f lines 248-252: Local variables
-    int upper, notran, nounit;
-    int i, imax, ip, j, jfirst, jinc, jlast, jlen;
+    INT upper, notran, nounit;
+    INT i, imax, ip, j, jfirst, jinc, jlast, jlen;
     f32 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
 
     // slatps.f lines 268-271

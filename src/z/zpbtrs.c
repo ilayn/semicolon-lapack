@@ -3,6 +3,7 @@
  * @brief ZPBTRS solves a system with a Hermitian positive definite band matrix using Cholesky.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -30,17 +31,17 @@
  */
 void zpbtrs(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int upper;
-    int j;
+    INT upper;
+    INT j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

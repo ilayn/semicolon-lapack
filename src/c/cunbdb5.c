@@ -4,6 +4,7 @@
  *        columns of Q.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -46,19 +47,19 @@
  * @param[out]    info    = 0: successful exit.
  *                        < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void cunbdb5(const int m1, const int m2, const int n,
-             c64* restrict X1, const int incx1,
-             c64* restrict X2, const int incx2,
-             c64* restrict Q1, const int ldq1,
-             c64* restrict Q2, const int ldq2,
-             c64* restrict work, const int lwork,
-             int* info)
+void cunbdb5(const INT m1, const INT m2, const INT n,
+             c64* restrict X1, const INT incx1,
+             c64* restrict X2, const INT incx2,
+             c64* restrict Q1, const INT ldq1,
+             c64* restrict Q2, const INT ldq2,
+             c64* restrict work, const INT lwork,
+             INT* info)
 {
     const f32 REALZERO = 0.0f;
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int childinfo, i, j;
+    INT childinfo, i, j;
     f32 eps, norm, scl, ssq;
 
     *info = 0;

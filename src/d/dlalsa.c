@@ -4,6 +4,7 @@
  *        Used by dgelsd.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 
@@ -55,22 +56,22 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had illegal value.
  */
-void dlalsa(const int icompq, const int smlsiz, const int n, const int nrhs,
-            f64* restrict B, const int ldb,
-            f64* restrict BX, const int ldbx,
-            const f64* restrict U, const int ldu,
-            const f64* restrict VT, const int* restrict K,
+void dlalsa(const INT icompq, const INT smlsiz, const INT n, const INT nrhs,
+            f64* restrict B, const INT ldb,
+            f64* restrict BX, const INT ldbx,
+            const f64* restrict U, const INT ldu,
+            const f64* restrict VT, const INT* restrict K,
             const f64* restrict difl, const f64* restrict difr,
             const f64* restrict Z, const f64* restrict poles,
-            const int* restrict givptr, const int* restrict givcol,
-            const int ldgcol, const int* restrict perm,
+            const INT* restrict givptr, const INT* restrict givcol,
+            const INT ldgcol, const INT* restrict perm,
             const f64* restrict givnum,
             const f64* restrict C, const f64* restrict S,
-            f64* restrict work, int* restrict iwork, int* info)
+            f64* restrict work, INT* restrict iwork, INT* info)
 {
-    int i, ic, im1, inode, j, lf, ll, lvl, lvl2;
-    int nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;
-    int nr, nrf, nrp1, sqre;
+    INT i, ic, im1, inode, j, lf, ll, lvl, lvl2;
+    INT nd, ndb1, ndiml, ndimr, nl, nlf, nlp1, nlvl;
+    INT nr, nrf, nrp1, sqre;
 
     *info = 0;
 

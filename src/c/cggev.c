@@ -4,6 +4,7 @@
  *        right eigenvectors for GE matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -65,28 +66,28 @@
  *                   - = 1,...,n: the QZ iteration failed
  *                   - > n: other errors
  */
-void cggev(const char* jobvl, const char* jobvr, const int n,
-           c64* A, const int lda,
-           c64* B, const int ldb,
+void cggev(const char* jobvl, const char* jobvr, const INT n,
+           c64* A, const INT lda,
+           c64* B, const INT ldb,
            c64* alpha, c64* beta,
-           c64* VL, const int ldvl,
-           c64* VR, const int ldvr,
-           c64* work, const int lwork,
-           f32* rwork, int* info)
+           c64* VL, const INT ldvl,
+           c64* VR, const INT ldvr,
+           c64* work, const INT lwork,
+           f32* rwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
-    int in, iright, irows, irwrk, itau, iwrk, jc, jr;
-    int lwkmin, lwkopt;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT icols, ierr, ihi, ijobvl, ijobvr, ileft, ilo;
+    INT in, iright, irows, irwrk, itau, iwrk, jc, jr;
+    INT lwkmin, lwkopt;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps,
            smlnum, temp;
-    int ldumma[1];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT ldumma[1];
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     /* Decode the input arguments */
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {

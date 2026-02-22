@@ -5,6 +5,7 @@
  *        using the compact WY representation for Q.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -37,15 +38,15 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void stplqt2(const int m, const int n, const int l,
-             f32* restrict A, const int lda,
-             f32* restrict B, const int ldb,
-             f32* restrict T, const int ldt, int* info)
+void stplqt2(const INT m, const INT n, const INT l,
+             f32* restrict A, const INT lda,
+             f32* restrict B, const INT ldb,
+             f32* restrict T, const INT ldt, INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
-    int i, j, p, mp, np;
-    int minmn;
+    INT i, j, p, mp, np;
+    INT minmn;
     f32 alpha;
 
     *info = 0;

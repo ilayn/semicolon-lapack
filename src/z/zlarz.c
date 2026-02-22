@@ -4,6 +4,7 @@
  *        general matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -46,10 +47,10 @@
  *                      (n) if side = 'L'
  *                      or (m) if side = 'R'.
  */
-void zlarz(const char* side, const int m, const int n, const int l,
-           const c128* restrict v, const int incv,
+void zlarz(const char* side, const INT m, const INT n, const INT l,
+           const c128* restrict v, const INT incv,
            const c128 tau,
-           c128* restrict C, const int ldc,
+           c128* restrict C, const INT ldc,
            c128* restrict work)
 {
     const c128 ONE = CMPLX(1.0, 0.0);

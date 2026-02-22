@@ -5,6 +5,7 @@
  *        the product of elementary reflectors as returned by DSPTRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -51,14 +52,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void dopmtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n, f64* restrict AP,
+            const INT m, const INT n, f64* restrict AP,
             const f64* restrict tau, f64* restrict C,
-            const int ldc, f64* restrict work, int* info)
+            const INT ldc, f64* restrict work, INT* info)
 {
     const f64 ONE = 1.0;
 
-    int forwrd, left, notran, upper;
-    int i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
+    INT forwrd, left, notran, upper;
+    INT i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
     f64 aii;
 
     *info = 0;

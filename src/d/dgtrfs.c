@@ -4,6 +4,7 @@
  *        when the coefficient matrix is tridiagonal.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -48,8 +49,8 @@
  */
 void dgtrfs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* restrict DL,
     const f64* restrict D,
     const f64* restrict DU,
@@ -57,30 +58,30 @@ void dgtrfs(
     const f64* restrict DF,
     const f64* restrict DUF,
     const f64* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int notran;
+    INT notran;
     char transn, transt;
-    int count, i, j, kase, nz;
+    INT count, i, j, kase, nz;
     f64 eps, lstres, s, safe1, safe2, safmin;
-    int isave[3];
-    int ldb_min, ldx_min;
-    int gttrs_info;
+    INT isave[3];
+    INT ldb_min, ldx_min;
+    INT gttrs_info;
 
     /* Test the input parameters */
     *info = 0;

@@ -4,6 +4,7 @@
  *        where A is a tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -39,23 +40,23 @@
  */
 void slagtm(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 alpha,
     const f32* restrict DL,
     const f32* restrict D,
     const f32* restrict DU,
     const f32* restrict X,
-    const int ldx,
+    const INT ldx,
     const f32 beta,
     f32* restrict B,
-    const int ldb)
+    const INT ldb)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return;

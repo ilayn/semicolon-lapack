@@ -3,6 +3,7 @@
  * @brief CLARGV generates a vector of plane rotations with real cosines and complex sines.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"
@@ -47,9 +48,9 @@ static inline f32 abssq(c64 ff) {
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void clargv(const int n, c64* restrict X, const int incx,
-            c64* restrict Y, const int incy,
-            f32* restrict C, const int incc)
+void clargv(const INT n, c64* restrict X, const INT incx,
+            c64* restrict Y, const INT incy,
+            f32* restrict C, const INT incc)
 {
     const f32 two = 2.0f;
     const f32 one = 1.0f;
@@ -59,21 +60,21 @@ void clargv(const int n, c64* restrict X, const int incx,
     f32 safmin = slamch("S");
     f32 eps = slamch("E");
     f32 safmn2 = powf(slamch("B"),
-                        (int)(logf(safmin / eps) / logf(slamch("B")) / two));
+                        (INT)(logf(safmin / eps) / logf(slamch("B")) / two));
     f32 safmx2 = one / safmn2;
 
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         c64 f = X[ix];
         c64 g = Y[iy];
 
         f32 scale = (abs1(f) > abs1(g)) ? abs1(f) : abs1(g);
         c64 fs = f;
         c64 gs = g;
-        int count = 0;
+        INT count = 0;
         f32 cs;
         c64 sn, r;
         f32 f2, g2;
@@ -160,11 +161,11 @@ void clargv(const int n, c64* restrict X, const int incx,
             sn = sn * conjf(gs);
             if (count != 0) {
                 if (count > 0) {
-                    for (int j = 0; j < count; j++) {
+                    for (INT j = 0; j < count; j++) {
                         r = r * safmx2;
                     }
                 } else {
-                    for (int j = 0; j < -count; j++) {
+                    for (INT j = 0; j < -count; j++) {
                         r = r * safmn2;
                     }
                 }

@@ -3,6 +3,7 @@
  * @brief SLARGV generates a vector of plane rotations with real cosines and real sines.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -28,18 +29,18 @@
  *                      The cosines of the plane rotations.
  * @param[in]     incc  The increment between elements of C. incc > 0.
  */
-void slargv(const int n, f32* restrict X, const int incx,
-            f32* restrict Y, const int incy,
-            f32* restrict C, const int incc)
+void slargv(const INT n, f32* restrict X, const INT incx,
+            f32* restrict Y, const INT incy,
+            f32* restrict C, const INT incc)
 {
     const f32 zero = 0.0f;
     const f32 one = 1.0f;
 
-    int ix = 0;
-    int iy = 0;
-    int ic = 0;
+    INT ix = 0;
+    INT iy = 0;
+    INT ic = 0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         f32 f = X[ix];
         f32 g = Y[iy];
 

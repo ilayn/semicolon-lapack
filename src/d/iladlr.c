@@ -3,6 +3,7 @@
  * @brief ILADLR scans a matrix for its last non-zero row.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -24,14 +25,14 @@
  * @return The row count up to and including the last non-zero row,
  *         or 0 if the matrix is empty or all zero.
  */
-int iladlr(
-    const int m,
-    const int n,
+INT iladlr(
+    const INT m,
+    const INT n,
     const f64* restrict A,
-    const int lda)
+    const INT lda)
 {
     const f64 zero = 0.0;
-    int i, j, result;
+    INT i, j, result;
 
     if (m == 0) {
         return 0;

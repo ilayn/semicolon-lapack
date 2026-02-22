@@ -3,6 +3,7 @@
  * @brief SLASQ5 computes one dqds transform in ping-pong form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -27,13 +28,13 @@
  * @param[in]     ieee   Flag for IEEE or non IEEE arithmetic (1=IEEE, 0=non-IEEE).
  * @param[in]     eps    This is the value of epsilon used.
  */
-void slasq5(const int i0, const int n0, f32* restrict Z,
-            const int pp, f32 tau, f32 sigma,
+void slasq5(const INT i0, const INT n0, f32* restrict Z,
+            const INT pp, f32 tau, f32 sigma,
             f32* dmin, f32* dmin1, f32* dmin2,
             f32* dn, f32* dnm1, f32* dnm2,
-            const int ieee, const f32 eps)
+            const INT ieee, const f32 eps)
 {
-    int j4, j4p2;
+    INT j4, j4p2;
     f32 d, emin, temp, dthresh;
 
     if ((n0 - i0 - 1) <= 0) {

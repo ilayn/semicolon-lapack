@@ -3,6 +3,7 @@
  * @brief SLAQZ1 computes the first column of the product for QZ shifts.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -29,9 +30,9 @@
  */
 void slaqz1(
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     const f32 sr1,
     const f32 sr2,
     const f32 si,

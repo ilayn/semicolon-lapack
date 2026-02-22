@@ -3,6 +3,7 @@
  * @brief ZSYMV computes a matrix-vector product for a complex symmetric matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 
@@ -36,17 +37,17 @@
  * @param[in]     incy   The increment for the elements of Y. incy must not
  *                       be zero.
  */
-void zsymv(const char* uplo, const int n,
+void zsymv(const char* uplo, const INT n,
            const c128 alpha,
-           const c128* restrict A, const int lda,
-           const c128* restrict X, const int incx,
+           const c128* restrict A, const INT lda,
+           const c128* restrict X, const INT incx,
            const c128 beta,
-           c128* restrict Y, const int incy)
+           c128* restrict Y, const INT incy)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
 
-    int i, info, ix, iy, j, jx, jy, kx, ky;
+    INT i, info, ix, iy, j, jx, jy, kx, ky;
     c128 temp1, temp2;
 
     /* Test the input parameters. */

@@ -3,6 +3,7 @@
  * @brief ZGGGLM solves a general Gauss-Markov linear model (GLM) problem.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -108,27 +109,27 @@
  *                           be computed.
  */
 void zggglm(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict D,
     c128* restrict X,
     c128* restrict Y,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 zero = CMPLX(0.0, 0.0);
     const c128 one = CMPLX(1.0, 0.0);
     const c128 neg_one = CMPLX(-1.0, 0.0);
 
-    int i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
-    int lquery;
-    int max_val;
+    INT i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
+    INT lquery;
+    INT max_val;
 
     *info = 0;
     np = (n < p) ? n : p;
@@ -189,11 +190,11 @@ void zggglm(
 
     zggqrf(n, m, p, A, lda, work, B, ldb, &work[m],
            &work[m + np], lwork - m - np, info);
-    lopt = (int)creal(work[m + np]);
+    lopt = (INT)creal(work[m + np]);
 
     zunmqr("L", "C", n, 1, m, A, lda, work, D,
            (1 > n ? 1 : n), &work[m + np], lwork - m - np, info);
-    lopt = (lopt > (int)creal(work[m + np])) ? lopt : (int)creal(work[m + np]);
+    lopt = (lopt > (INT)creal(work[m + np])) ? lopt : (INT)creal(work[m + np]);
 
     if (n > m) {
         ztrtrs("U", "N", "N", n - m, 1,
@@ -225,11 +226,11 @@ void zggglm(
         cblas_zcopy(m, D, 1, X, 1);
     }
 
-    int b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
+    INT b_row_start = (1 > n - p + 1) ? 1 : (n - p + 1);
     b_row_start -= 1;
 
     zunmrq("L", "C", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
-    work[0] = (c128)(m + np + ((lopt > (int)creal(work[m + np])) ? lopt : (int)creal(work[m + np])));
+    work[0] = (c128)(m + np + ((lopt > (INT)creal(work[m + np])) ? lopt : (INT)creal(work[m + np])));
 }

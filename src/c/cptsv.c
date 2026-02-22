@@ -4,6 +4,7 @@
  *        A*X = B, where A is a Hermitian positive definite tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -44,15 +45,15 @@
  *                           unless i = n.
  */
 void cptsv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f32* restrict D,
     c64* restrict E,
     c64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int max_n_1 = (1 > n) ? 1 : n;
+    INT max_n_1 = (1 > n) ? 1 : n;
 
     *info = 0;
     if (n < 0) {

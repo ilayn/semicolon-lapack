@@ -3,6 +3,7 @@
  * @brief SLAGTS solves (T - lambda*I)*x = y or (T - lambda*I)^T*x = y.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_single.h"
@@ -58,19 +59,19 @@
  *                           element of the solution vector x (job > 0 only).
  */
 void slagts(
-    const int job,
-    const int n,
+    const INT job,
+    const INT n,
     const f32* restrict A,
     const f32* restrict B,
     const f32* restrict C,
     const f32* restrict D,
-    const int* restrict in,
+    const INT* restrict in,
     f32* restrict Y,
     f32* tol,
-    int* info)
+    INT* info)
 {
-    int k;
-    int absjob;
+    INT k;
+    INT absjob;
     f32 absak, ak, bignum, eps, pert, sfmin, temp;
 
     *info = 0;

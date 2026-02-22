@@ -4,6 +4,7 @@
  *        with non-negative diagonal elements using an unblocked algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -47,13 +48,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgeqr2p(const int m, const int n,
-             c64* restrict A, const int lda,
+void cgeqr2p(const INT m, const INT n,
+             c64* restrict A, const INT lda,
              c64* restrict tau,
              c64* restrict work,
-             int* info)
+             INT* info)
 {
-    int i, k;
+    INT i, k;
 
     /* Parameter validation */
     *info = 0;

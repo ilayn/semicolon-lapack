@@ -4,6 +4,7 @@
  *        general matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -46,10 +47,10 @@
  *                      (n) if side = 'L'
  *                      or (m) if side = 'R'.
  */
-void clarz(const char* side, const int m, const int n, const int l,
-           const c64* restrict v, const int incv,
+void clarz(const char* side, const INT m, const INT n, const INT l,
+           const c64* restrict v, const INT incv,
            const c64 tau,
-           c64* restrict C, const int ldc,
+           c64* restrict C, const INT ldc,
            c64* restrict work)
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);

@@ -3,6 +3,7 @@
  * @brief CSYSV_AA computes the solution to system of linear equations A * X = B for SY matrices using Aasen's algorithm.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -67,19 +68,19 @@
  */
 void csysv_aa(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int lquery;
-    int lwkopt, lwkopt_sytrf, lwkopt_sytrs;
+    INT lquery;
+    INT lwkopt, lwkopt_sytrf, lwkopt_sytrs;
 
     *info = 0;
     lquery = (lwork == -1);
@@ -101,9 +102,9 @@ void csysv_aa(
 
     if (*info == 0) {
         csytrf_aa(uplo, n, A, lda, ipiv, work, -1, info);
-        lwkopt_sytrf = (int)crealf(work[0]);
+        lwkopt_sytrf = (INT)crealf(work[0]);
         csytrs_aa(uplo, n, nrhs, A, lda, ipiv, B, ldb, work, -1, info);
-        lwkopt_sytrs = (int)crealf(work[0]);
+        lwkopt_sytrs = (INT)crealf(work[0]);
         lwkopt = (lwkopt_sytrf > lwkopt_sytrs) ? lwkopt_sytrf : lwkopt_sytrs;
         work[0] = (c64)lwkopt;
     }

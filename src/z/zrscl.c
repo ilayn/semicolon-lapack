@@ -3,6 +3,7 @@
  * @brief ZRSCL multiplies a vector by the reciprocal of a complex scalar.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -23,10 +24,10 @@
  *                      incx > 0.
  */
 void zrscl(
-    const int n,
+    const INT n,
     const c128 a,
     c128* restrict x,
-    const int incx)
+    const INT incx)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

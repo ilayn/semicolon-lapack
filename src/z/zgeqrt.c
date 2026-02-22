@@ -1,3 +1,4 @@
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 /**
@@ -55,14 +56,14 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgeqrt(const int m, const int n, const int nb,
-            c128* restrict A, const int lda,
-            c128* restrict T, const int ldt,
+void zgeqrt(const INT m, const INT n, const INT nb,
+            c128* restrict A, const INT lda,
+            c128* restrict T, const INT ldt,
             c128* restrict work,
-            int* info)
+            INT* info)
 {
-    int k, i, ib, iinfo;
-    int minmn;
+    INT k, i, ib, iinfo;
+    INT minmn;
 
     /* Parameter validation */
     *info = 0;

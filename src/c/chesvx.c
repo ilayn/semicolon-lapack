@@ -5,6 +5,7 @@
  *        iterative refinement.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <float.h>
 #include "semicolon_lapack_complex_single.h"
@@ -93,29 +94,29 @@
 void chesvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict AF,
-    const int ldaf,
-    int* restrict ipiv,
+    const INT ldaf,
+    INT* restrict ipiv,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* rcond,
     f32* restrict ferr,
     f32* restrict berr,
     c64* restrict work,
-    const int lwork,
+    const INT lwork,
     f32* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
 
-    int nofact, lquery;
-    int lwkmin, lwkopt, nb;
+    INT nofact, lquery;
+    INT lwkmin, lwkopt, nb;
     f32 anorm;
 
     /* Test the input parameters. */
@@ -149,7 +150,7 @@ void chesvx(
         lwkopt = lwkmin;
         if (nofact) {
             nb = lapack_get_nb("HETRF");
-            int nbnb = n * nb;
+            INT nbnb = n * nb;
             lwkopt = (lwkopt > nbnb) ? lwkopt : nbnb;
         }
         work[0] = CMPLXF((f32)lwkopt, 0.0f);

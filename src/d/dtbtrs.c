@@ -3,6 +3,7 @@
  * @brief DTBTRS solves a triangular banded system of equations.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -39,19 +40,19 @@ void dtbtrs(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ZERO = 0.0;
 
-    int nounit, upper;
-    int j;
+    INT nounit, upper;
+    INT j;
 
     *info = 0;
     nounit = (diag[0] == 'N' || diag[0] == 'n');

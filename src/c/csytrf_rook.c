@@ -3,6 +3,7 @@
  * @brief CSYTRF_ROOK computes the factorization of a complex symmetric matrix using the bounded Bunch-Kaufman ("rook") diagonal pivoting method.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -58,16 +59,16 @@
  */
 void csytrf_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
+    const INT lda,
+    INT* restrict ipiv,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int iinfo, iws, j, k, kb, ldwork, lwkopt, nb, nbmin;
+    INT upper, lquery;
+    INT iinfo, iws, j, k, kb, ldwork, lwkopt, nb, nbmin;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

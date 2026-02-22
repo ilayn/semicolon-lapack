@@ -4,6 +4,7 @@
  *        matrix, with loop unrolling when the reflector has order <= 10.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -34,12 +35,12 @@
  *                       (n) if side = "L", or (m) if side = 'R'.
  *                       Not referenced if H has order < 11.
  */
-void slarfx(const char* side, const int m, const int n,
+void slarfx(const char* side, const INT m, const INT n,
             const f32* restrict v, const f32 tau,
-            f32* restrict C, const int ldc,
+            f32* restrict C, const INT ldc,
             f32* restrict work)
 {
-    int j;
+    INT j;
     f32 sum, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
     f32 v1, v2, v3, v4, v5, v6, v7, v8, v9, v10;
 

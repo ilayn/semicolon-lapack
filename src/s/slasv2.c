@@ -3,6 +3,7 @@
  * @brief SLASV2 computes the singular value decomposition of a 2-by-2 triangular matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 
@@ -36,7 +37,7 @@ void slasv2(const f32 f, const f32 g, const f32 h,
             f32* ssmin, f32* ssmax,
             f32* snr, f32* csr, f32* snl, f32* csl)
 {
-    int gasmal, swap, pmax;
+    INT gasmal, swap, pmax;
     f32 a, clt, crt, d, fa, ft, ga, gt, ha, ht, l, m;
     f32 mm, r, s, slt, srt, t, temp, tsign, tt;
     f32 eps;

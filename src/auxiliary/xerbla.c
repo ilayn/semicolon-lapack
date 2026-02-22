@@ -1,6 +1,7 @@
 // xerbla.c
 // Error handler for LAPACK routines
 
+#include "internal_build_defs.h"
 #include <stdio.h>
 #include "semicolon_lapack_auxiliary.h"
 
@@ -10,7 +11,7 @@
 #define XERBLA_WEAK
 #endif
 
-XERBLA_WEAK void xerbla(const char *srname, int info) {
+XERBLA_WEAK void xerbla(const char *srname, INT info) {
     fprintf(stderr, " ** On entry to %s parameter number %d had an illegal value\n",
             srname, info);
 }

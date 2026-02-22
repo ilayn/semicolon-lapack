@@ -4,6 +4,7 @@
  *        norm(A)/norm(U) for a general banded matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -38,16 +39,16 @@
  * @return The reciprocal pivot growth factor.
  */
 f32 cla_gbrpvgrw(
-    const int n,
-    const int kl,
-    const int ku,
-    const int ncols,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT ncols,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     const c64* restrict AFB,
-    const int ldafb)
+    const INT ldafb)
 {
-    int i, j, kd;
+    INT i, j, kd;
     f32 amax, umax, rpvgrw;
 
     rpvgrw = 1.0f;

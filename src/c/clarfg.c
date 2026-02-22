@@ -3,6 +3,7 @@
  * @brief CLARFG generates an elementary reflector (Householder matrix).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
@@ -39,13 +40,13 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void clarfg(const int n, c64* alpha, c64* x,
-            const int incx, c64* tau)
+void clarfg(const INT n, c64* alpha, c64* x,
+            const INT incx, c64* tau)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int j, knt;
+    INT j, knt;
     f32 alphi, alphr, beta, rsafmn, safmin, xnorm;
 
     if (n <= 0) {

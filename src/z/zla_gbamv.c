@@ -3,6 +3,7 @@
  * @brief ZLA_GBAMV performs a matrix-vector operation to calculate error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -49,18 +50,18 @@
  *                       and at least (1 + (n-1)*abs(incy)) otherwise.
  * @param[in]     incy   The increment for the elements of Y. incy != 0.
  */
-void zla_gbamv(const int trans, const int m, const int n,
-               const int kl, const int ku,
+void zla_gbamv(const INT trans, const INT m, const INT n,
+               const INT kl, const INT ku,
                const f64 alpha, const c128* restrict AB,
-               const int ldab, const c128* restrict X,
-               const int incx, const f64 beta,
-               f64* restrict Y, const int incy)
+               const INT ldab, const c128* restrict X,
+               const INT incx, const f64 beta,
+               f64* restrict Y, const INT incy)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int symb_zero;
+    INT symb_zero;
     f64 temp, safe1;
-    int i, info, iy, j, jx, kx, ky, lenx, leny, kd, ke;
+    INT i, info, iy, j, jx, kx, ky, lenx, leny, kd, ke;
 
     info = 0;
     if (!(trans == CblasNoTrans || trans == CblasTrans || trans == CblasConjTrans)) {
@@ -127,8 +128,8 @@ void zla_gbamv(const int trans, const int m, const int n,
                     Y[iy] = beta * fabs(Y[iy]);
                 }
                 if (alpha != 0.0) {
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1(AB[kd + i - j + j * ldab]);
                         symb_zero = symb_zero &&
@@ -156,8 +157,8 @@ void zla_gbamv(const int trans, const int m, const int n,
                     Y[iy] = beta * fabs(Y[iy]);
                 }
                 if (alpha != 0.0) {
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1(AB[ke - i + j + i * ldab]);
                         symb_zero = symb_zero &&
@@ -188,8 +189,8 @@ void zla_gbamv(const int trans, const int m, const int n,
                 }
                 if (alpha != 0.0) {
                     jx = kx;
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1(AB[kd + i - j + j * ldab]);
                         symb_zero = symb_zero &&
@@ -219,8 +220,8 @@ void zla_gbamv(const int trans, const int m, const int n,
                 }
                 if (alpha != 0.0) {
                     jx = kx;
-                    int jmin = (i - kl > 0) ? i - kl : 0;
-                    int jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
+                    INT jmin = (i - kl > 0) ? i - kl : 0;
+                    INT jmax = (i + ku < lenx - 1) ? i + ku : lenx - 1;
                     for (j = jmin; j <= jmax; j++) {
                         temp = cabs1(AB[ke - i + j + i * ldab]);
                         symb_zero = symb_zero &&

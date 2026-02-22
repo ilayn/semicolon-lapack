@@ -3,6 +3,7 @@
  * @brief CHESWAPR applies an elementary permutation on the rows and columns of a Hermitian matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -43,14 +44,14 @@
  */
 void cheswapr(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int i1,
-    const int i2)
+    const INT lda,
+    const INT i1,
+    const INT i2)
 {
-    int upper;
-    int i;
+    INT upper;
+    INT i;
     c64 tmp;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

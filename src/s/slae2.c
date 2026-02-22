@@ -3,6 +3,7 @@
  * @brief SLAE2 computes the eigenvalues of a 2-by-2 symmetric matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

@@ -3,6 +3,7 @@
  * @brief CTGSY2 solves the generalized Sylvester equation (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -81,35 +82,35 @@
  */
 void ctgsy2(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const c64* restrict A,
-    const int lda,
+    const INT lda,
     const c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict C,
-    const int ldc,
+    const INT ldc,
     const c64* restrict D,
-    const int ldd,
+    const INT ldd,
     const c64* restrict E,
-    const int lde,
+    const INT lde,
     c64* restrict F,
-    const int ldf,
+    const INT ldf,
     f32* scale,
     f32* rdsum,
     f32* rdscal,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int notran;
-    int i, ierr, j, k;
+    INT notran;
+    INT i, ierr, j, k;
     f32 scaloc;
     c64 alpha;
 
-    int ipiv[LDZ], jpiv[LDZ];
+    INT ipiv[LDZ], jpiv[LDZ];
     c64 rhs[LDZ], z[LDZ * LDZ];
 
     *info = 0;

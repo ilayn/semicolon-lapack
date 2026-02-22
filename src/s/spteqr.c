@@ -4,6 +4,7 @@
  *        symmetric positive definite tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -70,17 +71,17 @@
  */
 void spteqr(
     const char* compz,
-    const int n,
+    const INT n,
     f32* restrict D,
     f32* restrict E,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int i, icompz, nru;
+    INT i, icompz, nru;
 
     // Dummy arrays for sbdsqr (ncvt=0 and ncc=0)
     f32 VT_dummy[1];

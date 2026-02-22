@@ -3,6 +3,7 @@
  * @brief CTFTTP copies a triangular matrix from rectangular full packed format (TF) to standard packed format (TP).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -41,15 +42,15 @@
 void ctfttp(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     const c64* restrict ARF,
     c64* restrict AP,
-    int* info)
+    INT* info)
 {
-    int lower, nisodd, normaltransr;
-    int n1, n2, k;
-    int i, j, ij;
-    int ijp, jp, lda, js;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k;
+    INT i, j, ij;
+    INT ijp, jp, lda, js;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

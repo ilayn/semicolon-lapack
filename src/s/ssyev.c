@@ -4,6 +4,7 @@
  *        real symmetric matrix using QR iteration.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -41,17 +42,17 @@
  *                         - > 0: if info = i, the algorithm failed to converge; i
  *                           off-diagonal elements did not converge to zero.
  */
-void ssyev(const char* jobz, const char* uplo, const int n,
-           f32* restrict A, const int lda,
+void ssyev(const char* jobz, const char* uplo, const INT n,
+           f32* restrict A, const INT lda,
            f32* restrict W,
-           f32* restrict work, const int lwork,
-           int* info)
+           f32* restrict work, const INT lwork,
+           INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lower, wantz, lquery;
-    int iinfo, imax, inde, indtau, indwrk, iscale, llwork, lwkopt, nb;
+    INT lower, wantz, lquery;
+    INT iinfo, imax, inde, indtau, indwrk, iscale, llwork, lwkopt, nb;
     f32 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     /* Test the input parameters */

@@ -4,6 +4,7 @@
  *        real symmetric band matrix using 2-stage reduction to tridiagonal.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <cblas.h>
 #include <math.h>
@@ -30,23 +31,23 @@
 void dsbev_2stage(
     const char* jobz,
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f64* restrict W,
     f64* restrict Z,
-    const int ldz,
+    const INT ldz,
     f64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lower, wantz, lquery;
-    int iinfo, imax, inde, indwrk, iscale;
-    int llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
+    INT lower, wantz, lquery;
+    INT iinfo, imax, inde, indwrk, iscale;
+    INT llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous;
     f64 anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

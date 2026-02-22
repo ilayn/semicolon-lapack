@@ -3,6 +3,7 @@
  * @brief Convert f64 precision triangular matrix to single precision.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"
@@ -39,21 +40,21 @@
  */
 void dlat2s(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     float* restrict SA,
-    const int ldsa,
-    int* info)
+    const INT ldsa,
+    INT* info)
 {
     const f64 rmax = (f64)FLT_MAX;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     *info = 0;
 
     if (upper) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i <= j; i++) {
                 f64 val = A[i + j * lda];
                 if (val < -rmax || val > rmax) {
                     *info = 1;
@@ -63,8 +64,8 @@ void dlat2s(
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = j; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = j; i < n; i++) {
                 f64 val = A[i + j * lda];
                 if (val < -rmax || val > rmax) {
                     *info = 1;

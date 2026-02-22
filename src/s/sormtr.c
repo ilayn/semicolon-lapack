@@ -4,6 +4,7 @@
  *        matrix Q from SSYTRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "../include/lapack_tuning.h"
 
@@ -59,15 +60,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void sormtr(const char* side, const char* uplo, const char* trans,
-            const int m, const int n,
-            const f32* restrict A, const int lda,
+            const INT m, const INT n,
+            const f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict C, const int ldc,
-            f32* restrict work, const int lwork,
-            int* info)
+            f32* restrict C, const INT ldc,
+            f32* restrict work, const INT lwork,
+            INT* info)
 {
-    int left, upper, lquery;
-    int i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
+    INT left, upper, lquery;
+    INT i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

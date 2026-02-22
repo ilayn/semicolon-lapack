@@ -3,6 +3,7 @@
  * @brief CGEESX computes Schur form with optional eigenvalue ordering and condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -89,22 +90,22 @@
  *                     the Schur form no longer satisfy select=true.
  */
 void cgeesx(const char* jobvs, const char* sort, cselect1_t select,
-            const char* sense, const int n, c64* A, const int lda,
-            int* sdim, c64* W,
-            c64* VS, const int ldvs,
+            const char* sense, const INT n, c64* A, const INT lda,
+            INT* sdim, c64* W,
+            c64* VS, const INT ldvs,
             f32* rconde, f32* rcondv,
-            c64* work, const int lwork,
-            f32* rwork, int* bwork, int* info)
+            c64* work, const INT lwork,
+            f32* rwork, INT* bwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
-    int hswork, i, ibal, icond, ierr, ieval;
-    int ihi, ilo, itau, iwrk, lwrk, maxwrk, minwrk;
+    INT lquery, scalea, wantsb, wantse, wantsn, wantst, wantsv, wantvs;
+    INT hswork, i, ibal, icond, ierr, ieval;
+    INT ihi, ilo, itau, iwrk, lwrk, maxwrk, minwrk;
     f32 anrm, bignum, cscale = ONE, eps, smlnum;
     f32 dum[1];
-    int nb_gehrd, nb_unghr;
+    INT nb_gehrd, nb_unghr;
 
     *info = 0;
     wantvs = (jobvs[0] == 'V' || jobvs[0] == 'v');
@@ -146,7 +147,7 @@ void cgeesx(const char* jobvs, const char* sort, cselect1_t select,
             /* Query CHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             chseqr("S", jobvs, n, 0, n - 1, A, lda, W, VS, ldvs,
                    work, -1, &ieval);
-            hswork = (int)crealf(work[0]);
+            hswork = (INT)crealf(work[0]);
 
             if (!wantvs) {
                 maxwrk = maxwrk > hswork ? maxwrk : hswork;

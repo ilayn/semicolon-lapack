@@ -3,6 +3,7 @@
  * @brief ZPBSVX computes the solution to a Hermitian positive definite banded system with error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -53,31 +54,31 @@
 void zpbsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     c128* restrict AB,
-    const int ldab,
+    const INT ldab,
     c128* restrict AFB,
-    const int ldafb,
+    const INT ldafb,
     char* equed,
     f64* restrict S,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int equil, nofact, rcequ, upper;
-    int i, infequ, j, j1, j2;
+    INT equil, nofact, rcequ, upper;
+    INT i, infequ, j, j1, j2;
     f64 amax, anorm, bignum = 0.0, scond, smax, smin, smlnum = 0.0;
 
     *info = 0;

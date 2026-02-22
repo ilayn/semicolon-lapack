@@ -3,6 +3,7 @@
  * @brief DLASSQ updates a sum of squares represented in scaled form.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"
@@ -54,9 +55,9 @@
  *                        of squares from which scale_out has been factored out.
  */
 void dlassq(
-    const int n,
+    const INT n,
     const f64* restrict X,
-    const int incx,
+    const INT incx,
     f64* scale,
     f64* sumsq)
 {
@@ -68,8 +69,8 @@ void dlassq(
     const f64 ssml = ldexp(1.0, -FLOOR_HALF(DBL_MIN_EXP - DBL_MANT_DIG));
     const f64 sbig = ldexp(1.0, -CEIL_HALF(DBL_MAX_EXP + DBL_MANT_DIG - 1));
 
-    int i, ix;
-    int notbig;
+    INT i, ix;
+    INT notbig;
     f64 abig, amed, asml, ax, ymax, ymin;
 
     /* Quick return if possible */

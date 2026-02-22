@@ -4,6 +4,7 @@
  *        N-by-N (upper or lower) bidiagonal matrix using divide and conquer.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <stdlib.h>
 #include <math.h>
@@ -15,7 +16,7 @@ static const f64 TWO = 2.0;
 
 /* SMLSIZ: maximum size of subproblems at bottom of DC tree.
  * From ilaenv.f ISPEC=9, the default is 25. */
-static const int SMLSIZ = 25;
+static const INT SMLSIZ = 25;
 
 /**
  * DBDSDC computes the singular value decomposition (SVD) of a real
@@ -54,16 +55,16 @@ static const int SMLSIZ = 25;
  * @param[out]    info
  *                         - = 0: success. < 0: illegal argument. > 0: not converged.
  */
-void dbdsdc(const char* uplo, const char* compq, const int n,
+void dbdsdc(const char* uplo, const char* compq, const INT n,
             f64* restrict D, f64* restrict E,
-            f64* restrict U, const int ldu,
-            f64* restrict VT, const int ldvt,
-            f64* restrict Q, int* restrict IQ,
-            f64* restrict work, int* restrict IWORK, int* info)
+            f64* restrict U, const INT ldu,
+            f64* restrict VT, const INT ldvt,
+            f64* restrict Q, INT* restrict IQ,
+            f64* restrict work, INT* restrict IWORK, INT* info)
 {
-    int difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
-    int ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
-    int poles, qstart, smlszp, sqre, start, wstart, z;
+    INT difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
+    INT ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
+    INT poles, qstart, smlszp, sqre, start, wstart, z;
     f64 cs, eps, orgnrm, p, r, sn;
 
     /* Test the input parameters */
@@ -202,7 +203,7 @@ void dbdsdc(const char* uplo, const char* compq, const int n,
 
     eps = 0.9 * dlamch("Epsilon");
 
-    mlvl = (int)(log((f64)n / (f64)(SMLSIZ + 1)) / log(TWO)) + 1;
+    mlvl = (INT)(log((f64)n / (f64)(SMLSIZ + 1)) / log(TWO)) + 1;
     smlszp = SMLSIZ + 1;
 
     if (icompq == 1) {

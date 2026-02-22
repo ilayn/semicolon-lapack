@@ -4,6 +4,7 @@
  *        factorization determined by ctzrzf (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -64,14 +65,14 @@
  *                         < 0: if info = -i, the i-th argument had an illegal
  *                              value
  */
-void cunmr3(const char* side, const char* trans, const int m, const int n,
-            const int k, const int l, c64* restrict A,
-            const int lda, const c64* restrict tau,
-            c64* restrict C, const int ldc,
-            c64* restrict work, int* info)
+void cunmr3(const char* side, const char* trans, const INT m, const INT n,
+            const INT k, const INT l, c64* restrict A,
+            const INT lda, const c64* restrict tau,
+            c64* restrict C, const INT ldc,
+            c64* restrict work, INT* info)
 {
-    int left, notran;
-    int i, i1, i2, i3, ic, ja, jc, mi = 0, ni = 0, nq;
+    INT left, notran;
+    INT i, i1, i2, i3, ic, ja, jc, mi = 0, ni = 0, nq;
     c64 taui;
 
     *info = 0;

@@ -4,6 +4,7 @@
  *        right eigenvectors for GE matrices with extended options.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -88,34 +89,34 @@
  *                         - > 0: errors from QZ iteration or eigenvector computation
  */
 void zggevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n,
-            c128* restrict A, const int lda,
-            c128* restrict B, const int ldb,
+            const char* sense, const INT n,
+            c128* restrict A, const INT lda,
+            c128* restrict B, const INT ldb,
             c128* restrict alpha,
             c128* restrict beta,
-            c128* restrict VL, const int ldvl,
-            c128* restrict VR, const int ldvr,
-            int* ilo, int* ihi,
+            c128* restrict VL, const INT ldvl,
+            c128* restrict VR, const INT ldvr,
+            INT* ilo, INT* ihi,
             f64* restrict lscale, f64* restrict rscale,
             f64* abnrm, f64* bbnrm,
             f64* restrict rconde, f64* restrict rcondv,
-            c128* restrict work, const int lwork,
+            c128* restrict work, const INT lwork,
             f64* restrict rwork,
-            int* restrict iwork, int* restrict bwork,
-            int* info)
+            INT* restrict iwork, INT* restrict bwork,
+            INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
-    int wantsb, wantse, wantsn, wantsv;
-    int i, icols, ierr, ijobvl, ijobvr, in, irows;
-    int itau, iwrk, iwrk1, j, jc, jr, m, maxwrk, minwrk;
+    INT ilascl, ilbscl, ilv, ilvl, ilvr, lquery;
+    INT wantsb, wantse, wantsn, wantsv;
+    INT i, icols, ierr, ijobvl, ijobvr, in, irows;
+    INT itau, iwrk, iwrk1, j, jc, jr, m, maxwrk, minwrk;
     f64 anrm, anrmto = 0.0, bignum, bnrm, bnrmto = 0.0, eps, smlnum, temp;
-    int ldumma[1];
-    int nb_geqrf, nb_unmqr, nb_ungqr;
+    INT ldumma[1];
+    INT nb_geqrf, nb_unmqr, nb_ungqr;
 
     if (jobvl[0] == 'N' || jobvl[0] == 'n') {
         ijobvl = 1;

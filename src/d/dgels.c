@@ -4,6 +4,7 @@
  *        using QR or LQ factorization.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "../include/lapack_tuning.h"
@@ -56,16 +57,16 @@
  *                           full rank.
  */
 void dgels(const char* trans,
-           const int m, const int n, const int nrhs,
-           f64* restrict A, const int lda,
-           f64* restrict B, const int ldb,
-           f64* restrict work, const int lwork,
-           int* info)
+           const INT m, const INT n, const INT nrhs,
+           f64* restrict A, const INT lda,
+           f64* restrict B, const INT ldb,
+           f64* restrict work, const INT lwork,
+           INT* info)
 {
-    int lquery, tpsd;
-    int brow, iascl, ibscl, mn, nb, scllen, wsize;
+    INT lquery, tpsd;
+    INT brow, iascl, ibscl, mn, nb, scllen, wsize;
     f64 anrm, bignum, bnrm, smlnum;
-    int iinfo;
+    INT iinfo;
 
     /* Test the input arguments */
     *info = 0;
@@ -96,15 +97,15 @@ void dgels(const char* trans,
 
         if (m >= n) {
             nb = lapack_get_nb("GEQRF");
-            int nb2 = lapack_get_nb("ORMQR");
+            INT nb2 = lapack_get_nb("ORMQR");
             if (nb2 > nb) nb = nb2;
         } else {
             nb = lapack_get_nb("GELQF");
-            int nb2 = lapack_get_nb("ORMLQ");
+            INT nb2 = lapack_get_nb("ORMLQ");
             if (nb2 > nb) nb = nb2;
         }
 
-        int mn_nrhs = mn > nrhs ? mn : nrhs;
+        INT mn_nrhs = mn > nrhs ? mn : nrhs;
         wsize = mn + mn_nrhs * nb;
         if (wsize < 1) wsize = 1;
         work[0] = (f64)wsize;
@@ -119,7 +120,7 @@ void dgels(const char* trans,
 
     /* Quick return if possible */
     if (mn == 0 || nrhs == 0) {
-        int maxmn = m > n ? m : n;
+        INT maxmn = m > n ? m : n;
         dlaset("F", maxmn, nrhs, 0.0, 0.0, B, ldb);
         return;
     }
@@ -141,7 +142,7 @@ void dgels(const char* trans,
         iascl = 2;
     } else if (anrm == 0.0) {
         /* Matrix all zero. Return zero solution. */
-        int maxmn = m > n ? m : n;
+        INT maxmn = m > n ? m : n;
         dlaset("F", maxmn, nrhs, 0.0, 0.0, B, ldb);
         work[0] = (f64)wsize;
         return;
@@ -193,8 +194,8 @@ void dgels(const char* trans,
             }
 
             /* B(n:m-1, 0:nrhs-1) = 0 */
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = n; i < m; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = n; i < m; i++) {
                     B[i + j * ldb] = 0.0;
                 }
             }
@@ -221,8 +222,8 @@ void dgels(const char* trans,
             }
 
             /* B(m:n-1, 0:nrhs-1) = 0 */
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = m; i < n; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = m; i < n; i++) {
                     B[i + j * ldb] = 0.0;
                 }
             }

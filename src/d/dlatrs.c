@@ -3,6 +3,7 @@
  * @brief Solves a triangular system with scaling to prevent overflow.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -45,20 +46,20 @@ void dlatrs(
     const char* trans,
     const char* diag,
     const char* normin,
-    const int n,
+    const INT n,
     const f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict X,
     f64* scale,
     f64* restrict cnorm,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
     const f64 ONE = 1.0;
 
-    int upper, notran, nounit, normin_n;
-    int i, imax, j, jfirst, jinc, jlast;
+    INT upper, notran, nounit, normin_n;
+    INT i, imax, j, jfirst, jinc, jlast;
     f64 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0, tmax, tscal, uscal, xbnd, xj, xmax;
 
     *info = 0;

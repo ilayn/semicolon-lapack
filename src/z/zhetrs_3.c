@@ -3,6 +3,7 @@
  * @brief ZHETRS_3 solves a system of linear equations A*X = B with a complex Hermitian matrix using the factorization computed by ZHETRF_RK or ZHETRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -79,20 +80,20 @@
  */
 void zhetrs_3(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int upper;
-    int i, j, k, kp;
+    INT upper;
+    INT i, j, k, kp;
     f64 s;
     c128 ak, akm1, akm1k, bk, bkm1, denom;
 

@@ -4,6 +4,7 @@
  *        real matrix using the compact WY representation of Q.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -48,12 +49,12 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sgeqrt3(const int m, const int n,
-             f32* restrict A, const int lda,
-             f32* restrict T, const int ldt,
-             int* info)
+void sgeqrt3(const INT m, const INT n,
+             f32* restrict A, const INT lda,
+             f32* restrict T, const INT ldt,
+             INT* info)
 {
-    int i, j, n1, n2, iinfo;
+    INT i, j, n1, n2, iinfo;
 
     /* Parameter validation */
     *info = 0;

@@ -4,6 +4,7 @@
  *        symmetric tridiagonal matrix using the divide and conquer method.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -70,24 +71,24 @@
  *                           working on the submatrix lying in rows and columns
  *                           info/(n+1) through mod(info,n+1).
  */
-void zstedc(const char* compz, const int n,
+void zstedc(const char* compz, const INT n,
             f64* D, f64* E,
-            c128* Z, const int ldz,
-            c128* work, const int lwork,
-            f64* rwork, const int lrwork,
-            int* iwork, const int liwork, int* info)
+            c128* Z, const INT ldz,
+            c128* work, const INT lwork,
+            f64* rwork, const INT lrwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int lquery;
-    int finish, i, icompz, ii, j, k, lgn, ll;
-    int liwmin = 1, lrwmin = 1, lwmin = 1, m, start;
+    INT lquery;
+    INT finish, i, icompz, ii, j, k, lgn, ll;
+    INT liwmin = 1, lrwmin = 1, lwmin = 1, m, start;
     f64 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'ZSTEDC', ...) - hardcoded per project convention */
-    const int SMLSIZ = 25;
+    const INT SMLSIZ = 25;
 
     /*
      * Test the input parameters.
@@ -127,7 +128,7 @@ void zstedc(const char* compz, const int n,
             liwmin = 1;
             lrwmin = 2 * (n - 1);
         } else if (icompz == 1) {
-            lgn = (int)(log((f64)n) / log(TWO));
+            lgn = (INT)(log((f64)n) / log(TWO));
             if ((1 << lgn) < n)
                 lgn = lgn + 1;
             if ((1 << lgn) < n)

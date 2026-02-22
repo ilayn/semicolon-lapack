@@ -4,6 +4,7 @@
  *        and complex sines from both sides to a sequence of 2-by-2 Hermitian matrices.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -32,16 +33,16 @@
  * @param[in]     incc   The increment between elements of C and S. incc > 0.
  */
 void clar2v(
-    const int n,
+    const INT n,
     c64* restrict X,
     c64* restrict Y,
     c64* restrict Z,
-    const int incx,
+    const INT incx,
     const f32* restrict C,
     const c64* restrict S,
-    const int incc)
+    const INT incc)
 {
-    int i, ic, ix;
+    INT i, ic, ix;
     f32 ci, sii, sir, t1i, t1r, t5, t6, xi, yi, zii, zir;
     c64 si, t2, t3, t4, zi;
 

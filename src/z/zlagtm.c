@@ -4,6 +4,7 @@
  *        where A is a tridiagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -40,22 +41,22 @@
  */
 void zlagtm(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64 alpha,
     const c128* restrict DL,
     const c128* restrict D,
     const c128* restrict DU,
     const c128* restrict X,
-    const int ldx,
+    const INT ldx,
     const f64 beta,
     c128* restrict B,
-    const int ldb)
+    const INT ldb)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j;
+    INT i, j;
 
     if (n == 0) {
         return;

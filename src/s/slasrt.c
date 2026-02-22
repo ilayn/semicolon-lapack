@@ -3,6 +3,7 @@
  * @brief SLASRT sorts numbers in increasing or decreasing order.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -24,13 +25,13 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
-void slasrt(const char* id, const int n, f32* restrict D, int* info)
+void slasrt(const char* id, const INT n, f32* restrict D, INT* info)
 {
-    const int SELECT = 20;
+    const INT SELECT = 20;
 
-    int dir, endd, i, j, start, stkpnt;
+    INT dir, endd, i, j, start, stkpnt;
     f32 d1, d2, d3, dmnmx, tmp;
-    int stack[2][32];
+    INT stack[2][32];
 
     /* Test the input parameters */
     *info = 0;

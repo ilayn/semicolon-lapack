@@ -3,6 +3,7 @@
  * @brief DLAQP3RK computes a step of truncated QR factorization with column pivoting of a real matrix block using Level 3 BLAS.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -99,34 +100,34 @@
  *                         - = j (n+1 <= j <= 2*n): Inf detected in column j-n
  */
 void dlaqp3rk(
-    const int m,
-    const int n,
-    const int nrhs,
-    const int ioffset,
-    int* nb,
+    const INT m,
+    const INT n,
+    const INT nrhs,
+    const INT ioffset,
+    INT* nb,
     const f64 abstol,
     const f64 reltol,
-    const int kp1,
+    const INT kp1,
     const f64 maxc2nrm,
     f64* restrict A,
-    const int lda,
-    int* done,
-    int* KB,
+    const INT lda,
+    INT* done,
+    INT* KB,
     f64* maxc2nrmk,
     f64* relmaxc2nrmk,
-    int* restrict jpiv,
+    INT* restrict jpiv,
     f64* restrict tau,
     f64* restrict vn1,
     f64* restrict vn2,
     f64* restrict auxv,
     f64* restrict F,
-    const int ldf,
-    int* restrict iwork,
-    int* info)
+    const INT ldf,
+    INT* restrict iwork,
+    INT* info)
 {
-    int itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
+    INT itemp, j, k, minmnfact, minmnupdt, lsticc, kp, i = 0, iF;
     f64 aik, hugeval, temp, temp2, tol3z;
-    int nb_val;
+    INT nb_val;
 
     *info = 0;
 

@@ -4,6 +4,7 @@
  *        real symmetric matrix using its factorization.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -37,22 +38,22 @@
  */
 void ssycon(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     const f32 anorm,
     f32* rcond,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
     // Test the input parameters.
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -79,14 +80,14 @@ void ssycon(
     // Check that the diagonal matrix D is nonsingular.
     if (upper) {
         // Upper triangular storage: examine D from bottom to top.
-        for (int i = n - 1; i >= 0; i--) {
+        for (INT i = n - 1; i >= 0; i--) {
             if (ipiv[i] >= 0 && A[i + i * lda] == ZERO) {
                 return;
             }
         }
     } else {
         // Lower triangular storage: examine D from top to bottom.
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (ipiv[i] >= 0 && A[i + i * lda] == ZERO) {
                 return;
             }
@@ -94,10 +95,10 @@ void ssycon(
     }
 
     // Estimate the 1-norm of the inverse.
-    int kase = 0;
-    int isave[3] = {0, 0, 0};
+    INT kase = 0;
+    INT isave[3] = {0, 0, 0};
     f32 ainvnm;
-    int linfo;
+    INT linfo;
 
     for (;;) {
         slacn2(n, &work[n], work, iwork, &ainvnm, &kase, isave);

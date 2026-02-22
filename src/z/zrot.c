@@ -4,6 +4,7 @@
  *        to a pair of complex vectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -27,11 +28,11 @@
  *                         [ -conjg(S)   C  ]
  *                      where C*C + S*CONJG(S) = 1.0.
  */
-void zrot(const int n, c128* restrict CX, const int incx,
-          c128* restrict CY, const int incy,
+void zrot(const INT n, c128* restrict CX, const INT incx,
+          c128* restrict CY, const INT incy,
           const f64 c, const c128 s)
 {
-    int i, ix, iy;
+    INT i, ix, iy;
     c128 stemp;
 
     if (n <= 0) return;

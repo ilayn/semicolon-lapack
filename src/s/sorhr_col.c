@@ -3,6 +3,7 @@
  * @brief SORHR_COL takes an M-by-N matrix Q_in with orthonormal columns and performs Householder Reconstruction.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -51,18 +52,18 @@
  *                         - < 0:  if info = -i, the i-th argument had an illegal value
  */
 void sorhr_col(
-    const int m,
-    const int n,
-    const int nb,
+    const INT m,
+    const INT n,
+    const INT nb,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict T,
-    const int ldt,
+    const INT ldt,
     f32* restrict D,
-    int* info)
+    INT* info)
 {
-    int i, iinfo, j, jb, jbtemp1, jbtemp2, jnb;
-    int minval;
+    INT i, iinfo, j, jb, jbtemp1, jbtemp2, jnb;
+    INT minval;
 
     *info = 0;
     if (m < 0) {

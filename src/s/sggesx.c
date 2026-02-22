@@ -4,6 +4,7 @@
  *        the matrix of Schur vectors for GE matrices with extended options.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -65,31 +66,31 @@
  *                         - > 0: errors from QZ iteration or reordering
  */
 void sggesx(const char* jobvsl, const char* jobvsr, const char* sort,
-            sselect3_t selctg, const char* sense, const int n,
-            f32* restrict A, const int lda,
-            f32* restrict B, const int ldb,
-            int* sdim,
+            sselect3_t selctg, const char* sense, const INT n,
+            f32* restrict A, const INT lda,
+            f32* restrict B, const INT ldb,
+            INT* sdim,
             f32* restrict alphar, f32* restrict alphai,
             f32* restrict beta,
-            f32* restrict VSL, const int ldvsl,
-            f32* restrict VSR, const int ldvsr,
+            f32* restrict VSL, const INT ldvsl,
+            f32* restrict VSR, const INT ldvsr,
             f32* restrict rconde, f32* restrict rcondv,
-            f32* restrict work, const int lwork,
-            int* restrict iwork, const int liwork,
-            int* restrict bwork, int* info)
+            f32* restrict work, const INT lwork,
+            INT* restrict iwork, const INT liwork,
+            INT* restrict bwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl;
-    int wantsb, wantse, wantsn, wantst, wantsv;
-    int i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
-    int ileft, ilo, ip, iright, irows, itau, iwrk;
-    int liwmin, lwrk, maxwrk, minwrk;
+    INT cursl, ilascl, ilbscl, ilvsl, ilvsr, lastsl, lquery, lst2sl;
+    INT wantsb, wantse, wantsn, wantst, wantsv;
+    INT i, icols, ierr, ihi, ijob, ijobvl, ijobvr;
+    INT ileft, ilo, ip, iright, irows, itau, iwrk;
+    INT liwmin, lwrk, maxwrk, minwrk;
     f32 anrm, anrmto = 0.0f, bignum, bnrm, bnrmto = 0.0f, eps;
     f32 pl, pr, safmax, safmin, smlnum;
     f32 dif[2];
-    int nb_geqrf, nb_ormqr, nb_orgqr;
+    INT nb_geqrf, nb_ormqr, nb_orgqr;
 
     if (jobvsl[0] == 'N' || jobvsl[0] == 'n') {
         ijobvl = 1;

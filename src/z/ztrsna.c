@@ -3,6 +3,7 @@
  * @brief ZTRSNA estimates condition numbers for eigenvalues and eigenvectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
@@ -58,23 +59,23 @@
  *                    - = 0: successful exit
  *                    - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztrsna(const char* job, const char* howmny, const int* select,
-            const int n, const c128* T, const int ldt,
-            const c128* VL, const int ldvl,
-            const c128* VR, const int ldvr,
-            f64* S, f64* sep, const int mm, int* m,
-            c128* work, const int ldwork,
-            f64* rwork, int* info)
+void ztrsna(const char* job, const char* howmny, const INT* select,
+            const INT n, const c128* T, const INT ldt,
+            const c128* VL, const INT ldvl,
+            const c128* VR, const INT ldvr,
+            f64* S, f64* sep, const INT mm, INT* m,
+            c128* work, const INT ldwork,
+            f64* rwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int wantbh, wants, wantsp, somcon;
-    int i, ierr, ix, j, k, kase, ks;
+    INT wantbh, wants, wantsp, somcon;
+    INT i, ierr, ix, j, k, kase, ks;
     f64 eps, est, lnrm, rnrm, scale, smlnum, xnorm;
     c128 prod;
     char normin;
-    int isave[3];
+    INT isave[3];
     c128 dummy[1];
 
     /* Decode and test the input parameters */

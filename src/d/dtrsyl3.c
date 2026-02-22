@@ -3,6 +3,7 @@
  * @brief DTRSYL3 solves the real Sylvester matrix equation (blocked version).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <cblas.h>
@@ -70,22 +71,22 @@
  *                           values were used to solve the equation (but the matrices
  *                           A and B are unchanged).
  */
-void dtrsyl3(const char* trana, const char* tranb, const int isgn,
-             const int m, const int n,
-             const f64* A, const int lda,
-             const f64* B, const int ldb,
-             f64* C, const int ldc,
+void dtrsyl3(const char* trana, const char* tranb, const INT isgn,
+             const INT m, const INT n,
+             const f64* A, const INT lda,
+             const f64* B, const INT ldb,
+             f64* C, const INT ldc,
              f64* scale,
-             int* iwork, const int liwork,
-             f64* swork, const int ldswork,
-             int* info)
+             INT* iwork, const INT liwork,
+             f64* swork, const INT ldswork,
+             INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int notrna, notrnb, lquery, skip;
-    int awrk, bwrk, i, i1, i2, iinfo, j, j1, j2, jj;
-    int k, k1, k2, l, l1, l2, ll, nba, nb, nbb, pc;
+    INT notrna, notrnb, lquery, skip;
+    INT awrk, bwrk, i, i1, i2, iinfo, j, j1, j2, jj;
+    INT k, k1, k2, l, l1, l2, ll, nba, nb, nbb, pc;
     f64 anrm, bignum, bnrm, cnrm, scal, scaloc;
     f64 scamin, sgn, xnrm, buf, smlnum;
 
@@ -93,7 +94,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
     notrna = (trana[0] == 'N' || trana[0] == 'n');
     notrnb = (tranb[0] == 'N' || tranb[0] == 'n');
 
-    int max_mn = (m > n) ? m : n;
+    INT max_mn = (m > n) ? m : n;
     if (max_mn < 1) max_mn = 1;
 
     /* Use the same block size for all matrices.
@@ -102,8 +103,8 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
      * with a minimum of 8 from line 250.
      */
     {
-        int min_mn_local = (m < n) ? m : n;
-        int nb_calc = (min_mn_local * 16) / 100;
+        INT min_mn_local = (m < n) ? m : n;
+        INT nb_calc = (min_mn_local * 16) / 100;
         if (nb_calc < 48) nb_calc = 48;
         if (nb_calc > 240) nb_calc = 240;
         nb = (nb_calc > 8) ? nb_calc : 8;
@@ -160,8 +161,8 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
      * workspaces are provided
      */
     {
-        int min_nba_nbb = (nba < nbb) ? nba : nbb;
-        int max_nba_nbb = (nba > nbb) ? nba : nbb;
+        INT min_nba_nbb = (nba < nbb) ? nba : nbb;
+        INT max_nba_nbb = (nba > nbb) ? nba : nbb;
         if (min_nba_nbb == 1 || ldswork < max_nba_nbb + max_mn ||
             liwork < iwork[0]) {
             dtrsyl(trana, tranb, isgn, m, n, A, lda, B, ldb,
@@ -171,7 +172,7 @@ void dtrsyl3(const char* trana, const char* tranb, const int isgn,
     }
 
     /* Use the tail of column 0 in swork as dlange workspace */
-    int rows = (nba > nbb) ? nba : nbb;
+    INT rows = (nba > nbb) ? nba : nbb;
     f64* wnrm = &swork[rows];
 
     /* Set constants to control overflow */

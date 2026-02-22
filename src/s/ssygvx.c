@@ -4,6 +4,7 @@
  *        real generalized symmetric-definite eigenproblem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <cblas.h>
@@ -41,33 +42,33 @@
  *                         - = 0: success; < 0: illegal argument; > 0: SPOTRF/SSYEVX error.
  */
 void ssygvx(
-    const int itype,
+    const INT itype,
     const char* jobz,
     const char* range,
     const char* uplo,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict B,
-    const int ldb,
+    const INT ldb,
     const f32 vl,
     const f32 vu,
-    const int il,
-    const int iu,
+    const INT il,
+    const INT iu,
     const f32 abstol,
-    int* m,
+    INT* m,
     f32* restrict W,
     f32* restrict Z,
-    const int ldz,
+    const INT ldz,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* restrict ifail,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* restrict ifail,
+    INT* info)
 {
     const f32 ONE = 1.0f;
-    int wantz, upper, alleig, valeig, indeig, lquery;
-    int lwkmin, lwkopt, nb;
+    INT wantz, upper, alleig, valeig, indeig, lquery;
+    INT lwkmin, lwkopt, nb;
 
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');

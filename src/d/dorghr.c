@@ -3,6 +3,7 @@
  * @brief DORGHR generates the orthogonal matrix Q from DGEHRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 
@@ -35,17 +36,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void dorghr(const int n, const int ilo, const int ihi,
-            f64* A, const int lda, const f64* tau,
-            f64* work, const int lwork, int* info)
+void dorghr(const INT n, const INT ilo, const INT ihi,
+            f64* A, const INT lda, const f64* tau,
+            f64* work, const INT lwork, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery;
-    int i, iinfo, j, lwkopt, nb, nh;
-    int max_n_1 = (n > 1) ? n : 1;
-    int nh_max_1;
+    INT lquery;
+    INT i, iinfo, j, lwkopt, nb, nh;
+    INT max_n_1 = (n > 1) ? n : 1;
+    INT nh_max_1;
 
     /* Test the input parameters */
     *info = 0;

@@ -3,6 +3,7 @@
  * @brief SGEEVX computes eigenvalues, eigenvectors, and condition numbers.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -99,25 +100,25 @@
  *                           contain eigenvalues which have converged.
  */
 void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-            const char* sense, const int n, f32* A, const int lda,
+            const char* sense, const INT n, f32* A, const INT lda,
             f32* wr, f32* wi,
-            f32* VL, const int ldvl, f32* VR, const int ldvr,
-            int* ilo, int* ihi, f32* scale, f32* abnrm,
+            f32* VL, const INT ldvl, f32* VR, const INT ldvr,
+            INT* ilo, INT* ihi, f32* scale, f32* abnrm,
             f32* rconde, f32* rcondv,
-            f32* work, const int lwork, int* iwork, int* info)
+            f32* work, const INT lwork, INT* iwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
-    int hswork, i, icond, ierr, itau, iwrk, k;
-    int lwork_trevc, maxwrk, minwrk, nout;
+    INT lquery, scalea, wantvl, wantvr, wntsnb, wntsne, wntsnn, wntsnv;
+    INT hswork, i, icond, ierr, itau, iwrk, k;
+    INT lwork_trevc, maxwrk, minwrk, nout;
     f32 anrm, bignum, cs, cscale = ONE, eps, r, scl, smlnum, sn;
     f32 dum[1];
-    int select[1];  /* Dummy for strevc3 workspace query */
+    INT select[1];  /* Dummy for strevc3 workspace query */
     const char* side;
     char job_hseqr;
-    int nb_gehrd, nb_orghr;
+    INT nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -167,7 +168,7 @@ void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                 /* Query strevc3 for workspace */
                 strevc3("L", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
-                lwork_trevc = (int)work[0];
+                lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
                 /* Query shseqr for workspace (0-based: ilo=0, ihi=n-1) */
                 shseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VL, ldvl,
@@ -175,7 +176,7 @@ void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
             } else if (wantvr) {
                 strevc3("R", "B", select, n, A, lda, VL, ldvl, VR, ldvr,
                         n, &nout, work, -1, &ierr);
-                lwork_trevc = (int)work[0];
+                lwork_trevc = (INT)work[0];
                 maxwrk = maxwrk > (n + lwork_trevc) ? maxwrk : (n + lwork_trevc);
                 shseqr("S", "V", n, 0, n - 1, A, lda, wr, wi, VR, ldvr,
                        work, -1, info);
@@ -188,7 +189,7 @@ void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
                            work, -1, info);
                 }
             }
-            hswork = (int)work[0];
+            hswork = (INT)work[0];
 
             if (!wantvl && !wantvr) {
                 minwrk = 2 * n;

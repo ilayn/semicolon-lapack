@@ -3,6 +3,7 @@
  * @brief CLAUUM computes the product U * U**H or L**H * L (blocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -38,17 +39,17 @@
  */
 void clauum(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const f32 ONE = 1.0f;
 
     // Test the input parameters
     *info = 0;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
     } else if (n < 0) {
@@ -65,7 +66,7 @@ void clauum(
     if (n == 0) return;
 
     // Determine block size (NB=64 from ilaenv for LAUUM)
-    int nb = lapack_get_nb("LAUUM");
+    INT nb = lapack_get_nb("LAUUM");
 
     if (nb <= 1 || nb >= n) {
         // Use unblocked code
@@ -74,8 +75,8 @@ void clauum(
         // Use blocked code
         if (upper) {
             // Compute the product U * U**H
-            for (int i = 0; i < n; i += nb) {
-                int ib = nb < (n - i) ? nb : (n - i);
+            for (INT i = 0; i < n; i += nb) {
+                INT ib = nb < (n - i) ? nb : (n - i);
 
                 cblas_ctrmm(CblasColMajor, CblasRight, CblasUpper, CblasConjTrans,
                             CblasNonUnit, i, ib, &CONE,
@@ -98,8 +99,8 @@ void clauum(
             }
         } else {
             // Compute the product L**H * L
-            for (int i = 0; i < n; i += nb) {
-                int ib = nb < (n - i) ? nb : (n - i);
+            for (INT i = 0; i < n; i += nb) {
+                INT ib = nb < (n - i) ? nb : (n - i);
 
                 cblas_ctrmm(CblasColMajor, CblasLeft, CblasLower, CblasConjTrans,
                             CblasNonUnit, ib, i, &CONE,

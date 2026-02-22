@@ -4,6 +4,7 @@
  *        for GT (tridiagonal) matrices.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -45,19 +46,19 @@
  *                           been completed unless i = n.
  */
 void dgtsv(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict DL,
     f64* restrict D,
     f64* restrict DU,
     f64* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ZERO = 0.0;
-    int i, j;
+    INT i, j;
     f64 fact, temp;
-    int ldb_min;
+    INT ldb_min;
 
     *info = 0;
     if (n < 0) {

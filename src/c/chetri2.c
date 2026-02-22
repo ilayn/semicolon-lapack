@@ -4,6 +4,7 @@
  *        matrix A using the factorization computed by CHETRF.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -43,16 +44,16 @@
  */
 void chetri2(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c64* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int minsize, nbmax;
+    INT upper, lquery;
+    INT minsize, nbmax;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

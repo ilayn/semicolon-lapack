@@ -3,6 +3,7 @@
  * @brief CLARZT forms the triangular factor T of a block reflector H = I - V**H*T*V.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -49,13 +50,13 @@
  * @param[in]     ldt     The leading dimension of the array T. ldt >= k.
  */
 void clarzt(const char* direct, const char* storev,
-            const int n, const int k,
-            c64* restrict V, const int ldv,
+            const INT n, const INT k,
+            c64* restrict V, const INT ldv,
             const c64* restrict tau,
-            c64* restrict T, const int ldt)
+            c64* restrict T, const INT ldt)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
-    int i, j, info;
+    INT i, j, info;
 
     /* Check for currently supported options */
     info = 0;

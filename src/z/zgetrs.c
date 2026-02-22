@@ -3,6 +3,7 @@
  * @brief Solves a system of linear equations using LU factorization.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -36,17 +37,17 @@
  */
 void zgetrs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict A,
-    const int lda,
-    const int* restrict ipiv,
+    const INT lda,
+    const INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
-    int notran;
+    INT notran;
 
     // Test the input parameters
     *info = 0;

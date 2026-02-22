@@ -3,6 +3,7 @@
  * @brief SPBTRS solves a system with a symmetric positive definite band matrix using Cholesky.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -29,17 +30,17 @@
  */
 void spbtrs(
     const char* uplo,
-    const int n,
-    const int kd,
-    const int nrhs,
+    const INT n,
+    const INT kd,
+    const INT nrhs,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
-    int upper;
-    int j;
+    INT upper;
+    INT j;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

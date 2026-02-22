@@ -3,6 +3,7 @@
  * @brief SSFRK performs a symmetric rank-k operation for matrix in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <cblas.h>
 
@@ -60,17 +61,17 @@ void ssfrk(
     const char* transr,
     const char* uplo,
     const char* trans,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const f32 alpha,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32 beta,
     f32* restrict C)
 {
-    int lower, normaltransr, nisodd, notrans;
-    int nrowa, j, nk, n1, n2;
-    int info;
+    INT lower, normaltransr, nisodd, notrans;
+    INT nrowa, j, nk, n1, n2;
+    INT info;
 
     info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

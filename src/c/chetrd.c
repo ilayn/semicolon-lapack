@@ -4,6 +4,7 @@
  *        tridiagonal form by a unitary similarity transformation.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -63,15 +64,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void chetrd(const char* uplo, const int n, c64* A, const int lda,
+void chetrd(const char* uplo, const INT n, c64* A, const INT lda,
             f32* D, f32* E, c64* tau, c64* work,
-            const int lwork, int* info)
+            const INT lwork, INT* info)
 {
     const f32 ONE = 1.0f;
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 
-    int upper, lquery;
-    int i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
+    INT upper, lquery;
+    INT i, iinfo, iws, j, kk, ldwork = 1, lwkopt, nb, nbmin, nx;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

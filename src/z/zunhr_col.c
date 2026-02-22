@@ -3,6 +3,7 @@
  * @brief ZUNHR_COL takes an M-by-N complex matrix Q_in with orthonormal
  *        columns as input, and performs Householder Reconstruction (HR).
  */
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -56,17 +57,17 @@
  * @param[out]    info  = 0: successful exit
  *                      < 0: if info = -i, the i-th argument had an illegal value
  */
-void zunhr_col(const int m, const int n, const int nb,
-               c128* restrict A, const int lda,
-               c128* restrict T, const int ldt,
+void zunhr_col(const INT m, const INT n, const INT nb,
+               c128* restrict A, const INT lda,
+               c128* restrict T, const INT ldt,
                c128* restrict D,
-               int* info)
+               INT* info)
 {
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 
-    int i, iinfo, j, jb, jnb, nplusone;
+    INT i, iinfo, j, jb, jnb, nplusone;
 
     *info = 0;
     if (m < 0) {

@@ -4,6 +4,7 @@
  *        in packed format using the Bunch-Kaufman diagonal pivoting method.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -51,10 +52,10 @@
  */
 void zsptrf(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict AP,
-    int* restrict ipiv,
-    int* info)
+    INT* restrict ipiv,
+    INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -62,8 +63,8 @@ void zsptrf(
     const f64 SEVTEN = 17.0;
     const c128 CONE = CMPLX(1.0, 0.0);
 
-    int upper;
-    int i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT i, imax = 0, j, jmax, k, kc, kk, knc, kp, kpc, kstep, kx, npp;
     f64 absakk, alpha, colmax, rowmax;
     c128 d11, d12, d21, d22, r1, t, wk, wkm1, wkp1;
 
@@ -181,7 +182,7 @@ void zsptrf(
                             wkm1 = d12 * (d11 * AP[knc + j] - AP[kc + j]);
                             wk = d12 * (d22 * AP[kc + j] - AP[knc + j]);
                             for (i = j; i >= 0; i--) {
-                                int jc = i + j * (j + 1) / 2;
+                                INT jc = i + j * (j + 1) / 2;
                                 AP[jc] = AP[jc] - AP[kc + i] * wk - AP[knc + i] * wkm1;
                             }
                             AP[kc + j] = wk;
@@ -304,7 +305,7 @@ void zsptrf(
                             wk = d21 * (d11 * AP[kc + j - k] - AP[knc + j - k - 1]);
                             wkp1 = d21 * (d22 * AP[knc + j - k - 1] - AP[kc + j - k]);
                             for (i = j; i < n; i++) {
-                                int jc = npp - (n - j) * (n - j + 1) / 2 + i - j;
+                                INT jc = npp - (n - j) * (n - j + 1) / 2 + i - j;
                                 AP[jc] = AP[jc] - AP[kc + i - k] * wk - AP[knc + i - k - 1] * wkp1;
                             }
                             AP[kc + j - k] = wk;

@@ -3,6 +3,7 @@
  * @brief DTGSEN reorders the generalized real Schur decomposition.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -50,40 +51,40 @@
  *                         - = 1: reordering failed
  */
 void dtgsen(
-    const int ijob,
-    const int wantq,
-    const int wantz,
-    const int* restrict select,
-    const int n,
+    const INT ijob,
+    const INT wantq,
+    const INT wantz,
+    const INT* restrict select,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict alphar,
     f64* restrict alphai,
     f64* restrict beta,
     f64* restrict Q,
-    const int ldq,
+    const INT ldq,
     f64* restrict Z,
-    const int ldz,
-    int* m,
+    const INT ldz,
+    INT* m,
     f64* pl,
     f64* pr,
     f64* restrict dif,
     f64* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    const int liwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    const INT liwork,
+    INT* info)
 {
-    const int IDIFJB = 3;
+    const INT IDIFJB = 3;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int lquery, pair, swap, wantd, wantd1, wantd2, wantp;
-    int i, ierr, ijb, k, kase, kk, ks, liwmin, lwmin, mn2, n1, n2;
+    INT lquery, pair, swap, wantd, wantd1, wantd2, wantp;
+    INT i, ierr, ijb, k, kase, kk, ks, liwmin, lwmin, mn2, n1, n2;
     f64 dscale, dsum, eps, rdscal, smlnum;
-    int isave[3];
+    INT isave[3];
 
     *info = 0;
     lquery = (lwork == -1 || liwork == -1);

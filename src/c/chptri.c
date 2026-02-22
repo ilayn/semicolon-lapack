@@ -3,6 +3,7 @@
  * @brief CHPTRI computes the inverse of a complex Hermitian indefinite matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -35,17 +36,17 @@
  */
 void chptri(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict AP,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c64* restrict work,
-    int* info)
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
-    int upper;
-    int j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
+    INT upper;
+    INT j, k, kc, kcnext, kp, kpc, kstep, kx, npp;
     f32 ak, akp1, d, t;
     c64 akkp1, temp;
 

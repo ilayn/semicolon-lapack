@@ -3,6 +3,7 @@
  * @brief ZSYTRI_3 computes the inverse of a complex symmetric indefinite matrix using the factorization computed by ZSYTRF_RK or ZSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -65,17 +66,17 @@
  */
 void zsytri_3(
     const char* uplo,
-    const int n,
+    const INT n,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
-    int upper, lquery;
-    int lwkopt, nb;
+    INT upper, lquery;
+    INT lwkopt, nb;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

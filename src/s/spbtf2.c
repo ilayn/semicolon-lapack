@@ -3,6 +3,7 @@
  * @brief SPBTF2 computes the Cholesky factorization of a symmetric positive definite band matrix (unblocked).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -34,17 +35,17 @@
  */
 void spbtf2(
     const char* uplo,
-    const int n,
-    const int kd,
+    const INT n,
+    const INT kd,
     f32* restrict AB,
-    const int ldab,
-    int* info)
+    const INT ldab,
+    INT* info)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int upper;
-    int j, kld, kn;
+    INT upper;
+    INT j, kld, kn;
     f32 ajj;
 
     *info = 0;

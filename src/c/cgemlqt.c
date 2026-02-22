@@ -4,6 +4,7 @@
  *        of Q (or Q^H) and C, using the compact WY representation from CGELQT.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -58,14 +59,14 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
 void cgemlqt(const char* side, const char* trans,
-             const int m, const int n, const int k, const int mb,
-             const c64* restrict V, const int ldv,
-             const c64* restrict T, const int ldt,
-             c64* restrict C, const int ldc,
-             c64* restrict work, int* info)
+             const INT m, const INT n, const INT k, const INT mb,
+             const c64* restrict V, const INT ldv,
+             const c64* restrict T, const INT ldt,
+             c64* restrict C, const INT ldc,
+             c64* restrict work, INT* info)
 {
-    int left, right, tran, notran;
-    int i, ib, ldwork, kf, q;
+    INT left, right, tran, notran;
+    INT i, ib, ldwork, kf, q;
 
     /* Decode arguments */
     left   = (side[0] == 'L' || side[0] == 'l');

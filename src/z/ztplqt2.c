@@ -5,6 +5,7 @@
  *        using the compact WY representation for Q.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -38,15 +39,15 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztplqt2(const int m, const int n, const int l,
-             c128* restrict A, const int lda,
-             c128* restrict B, const int ldb,
-             c128* restrict T, const int ldt, int* info)
+void ztplqt2(const INT m, const INT n, const INT l,
+             c128* restrict A, const INT lda,
+             c128* restrict B, const INT ldb,
+             c128* restrict T, const INT ldt, INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 ZERO = CMPLX(0.0, 0.0);
-    int i, j, p, mp, np;
-    int minmn;
+    INT i, j, p, mp, np;
+    INT minmn;
     c128 alpha;
 
     *info = 0;

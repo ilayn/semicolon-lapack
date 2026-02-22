@@ -4,6 +4,7 @@
  *        when the coefficient matrix is tridiagonal.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <cblas.h>
@@ -49,8 +50,8 @@
  */
 void zgtrfs(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const c128* restrict DL,
     const c128* restrict D,
     const c128* restrict DU,
@@ -58,30 +59,30 @@ void zgtrfs(
     const c128* restrict DF,
     const c128* restrict DUF,
     const c128* restrict DU2,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* restrict ferr,
     f64* restrict berr,
     c128* restrict work,
     f64* restrict rwork,
-    int* info)
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int notran;
+    INT notran;
     char transn, transt;
-    int count, i, j, kase, nz;
+    INT count, i, j, kase, nz;
     f64 eps, lstres, s, safe1, safe2, safmin;
-    int isave[3];
-    int ldb_min, ldx_min;
-    int gttrs_info;
+    INT isave[3];
+    INT ldb_min, ldx_min;
+    INT gttrs_info;
 
     /* Test the input parameters */
     *info = 0;

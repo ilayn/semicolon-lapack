@@ -3,6 +3,7 @@
  * @brief STRTTP copies a triangular matrix from standard full format (TR) to standard packed format (TP).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -43,14 +44,14 @@
  */
 void strttp(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     f32* restrict AP,
-    int* info)
+    INT* info)
 {
-    int lower;
-    int i, j, k;
+    INT lower;
+    INT i, j, k;
 
     *info = 0;
     lower = (uplo[0] == 'L' || uplo[0] == 'l');

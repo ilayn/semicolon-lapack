@@ -3,6 +3,7 @@
  * @brief SGEES computes the eigenvalues, Schur form, and optionally Schur vectors.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
@@ -70,21 +71,21 @@
  *                           the Schur form no longer satisfy select=true.
  */
 void sgees(const char* jobvs, const char* sort, sselect2_t select,
-           const int n, f32* A, const int lda, int* sdim,
+           const INT n, f32* A, const INT lda, INT* sdim,
            f32* wr, f32* wi,
-           f32* VS, const int ldvs,
-           f32* work, const int lwork, int* bwork, int* info)
+           f32* VS, const INT ldvs,
+           f32* work, const INT lwork, INT* bwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int cursl, lastsl, lquery, lst2sl, scalea, wantst, wantvs;
-    int hswork, i, i1, i2, ibal, icond, ierr, ieval;
-    int ihi, ilo, inxt, ip, itau, iwrk, maxwrk, minwrk;
+    INT cursl, lastsl, lquery, lst2sl, scalea, wantst, wantvs;
+    INT hswork, i, i1, i2, ibal, icond, ierr, ieval;
+    INT ihi, ilo, inxt, ip, itau, iwrk, maxwrk, minwrk;
     f32 anrm, bignum, cscale = ONE, eps, s, sep, smlnum;
     f32 dum[1];
-    int idum[1];
-    int nb_gehrd, nb_orghr;
+    INT idum[1];
+    INT nb_gehrd, nb_orghr;
 
     /* Test the input arguments */
     *info = 0;
@@ -120,7 +121,7 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
             /* Query SHSEQR for workspace (0-based: ilo=0, ihi=n-1) */
             shseqr("S", jobvs, n, 0, n - 1, A, lda, wr, wi, VS, ldvs,
                    work, -1, &ieval);
-            hswork = (int)work[0];
+            hswork = (INT)work[0];
 
             if (!wantvs) {
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);

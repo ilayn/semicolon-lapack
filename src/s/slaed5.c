@@ -3,6 +3,7 @@
  * @brief SLAED5 solves the 2-by-2 secular equation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
@@ -29,7 +30,7 @@
  * @param[in]     rho    The scalar in the symmetric updating formula.
  * @param[out]    dlam   The computed lambda_I, the I-th updated eigenvalue.
  */
-void slaed5(const int i, const f32* restrict D,
+void slaed5(const INT i, const f32* restrict D,
             const f32* restrict Z, f32* restrict delta,
             const f32 rho, f32* dlam)
 {

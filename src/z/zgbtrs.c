@@ -4,6 +4,7 @@
  *        matrix using the LU factorization computed by ZGBTRF.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -44,22 +45,22 @@
  */
 void zgbtrs(
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     const c128* restrict AB,
-    const int ldab,
-    const int* restrict ipiv,
+    const INT ldab,
+    const INT* restrict ipiv,
     c128* restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int notran, lnoti;
-    int i, j, kd, l, lm;
+    INT notran, lnoti;
+    INT i, j, kd, l, lm;
 
     *info = 0;
     notran = (trans[0] == 'N' || trans[0] == 'n');

@@ -3,6 +3,7 @@
  * @brief CLABRD reduces the first nb rows and columns of a general matrix to a bidiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -47,18 +48,18 @@
  *                      of A.
  * @param[in]     ldy   The leading dimension of the array Y. ldy >= max(1,n).
  */
-void clabrd(const int m, const int n, const int nb,
-            c64* restrict A, const int lda,
+void clabrd(const INT m, const INT n, const INT nb,
+            c64* restrict A, const INT lda,
             f32* restrict D, f32* restrict E,
             c64* restrict tauq, c64* restrict taup,
-            c64* restrict X, const int ldx,
-            c64* restrict Y, const int ldy)
+            c64* restrict X, const INT ldx,
+            c64* restrict Y, const INT ldy)
 {
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
     const c64 ONE  = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
 
-    int i;
+    INT i;
     c64 alpha;
 
     /* Quick return if possible */

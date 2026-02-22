@@ -5,6 +5,7 @@
  *        complex matrix C, which consists of two blocks A and B.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -57,16 +58,16 @@
  *                         - = 0: successful exit.
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void ztpmqrt(const char* side, const char* trans, const int m, const int n,
-             const int k, const int l, const int nb,
-             const c128* restrict V, const int ldv,
-             const c128* restrict T, const int ldt,
-             c128* restrict A, const int lda,
-             c128* restrict B, const int ldb,
-             c128* restrict work, int* info)
+void ztpmqrt(const char* side, const char* trans, const INT m, const INT n,
+             const INT k, const INT l, const INT nb,
+             const c128* restrict V, const INT ldv,
+             const c128* restrict T, const INT ldt,
+             c128* restrict A, const INT lda,
+             c128* restrict B, const INT ldb,
+             c128* restrict work, INT* info)
 {
-    int left, right, tran, notran;
-    int i, ib, mb, lb, kf, ldaq, ldvq;
+    INT left, right, tran, notran;
+    INT i, ib, mb, lb, kf, ldaq, ldvq;
 
     *info = 0;
     left = (side[0] == 'L' || side[0] == 'l');

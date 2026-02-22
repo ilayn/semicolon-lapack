@@ -3,6 +3,7 @@
  * @brief ZGEHRD reduces a general matrix to upper Hessenberg form.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_double.h"
@@ -39,21 +40,21 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void zgehrd(const int n, const int ilo, const int ihi,
-            c128* A, const int lda, c128* tau,
-            c128* work, const int lwork, int* info)
+void zgehrd(const INT n, const INT ilo, const INT ihi,
+            c128* A, const INT lda, c128* tau,
+            c128* work, const INT lwork, INT* info)
 {
-    const int NBMAX = 64;
-    const int LDT = NBMAX + 1;
-    const int TSIZE = LDT * NBMAX;
+    const INT NBMAX = 64;
+    const INT LDT = NBMAX + 1;
+    const INT TSIZE = LDT * NBMAX;
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    int lquery;
-    int i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
+    INT lquery;
+    INT i, ib, iinfo, iwt, j, ldwork, lwkopt, nb, nbmin, nh, nx = 0;
     c128 ei;
-    int max_n_1 = (n > 1) ? n : 1;
+    INT max_n_1 = (n > 1) ? n : 1;
 
     /* Test the input parameters */
     *info = 0;

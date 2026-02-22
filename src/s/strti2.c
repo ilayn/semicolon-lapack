@@ -3,6 +3,7 @@
  * @brief Computes the inverse of a triangular matrix (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -27,15 +28,15 @@
 void strti2(
     const char* uplo,
     const char* diag,
-    const int n,
+    const INT n,
     f32* restrict A,
-    const int lda,
-    int* info)
+    const INT lda,
+    INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int upper, nounit;
-    int j;
+    INT upper, nounit;
+    INT j;
     f32 ajj;
 
     // Test the input parameters

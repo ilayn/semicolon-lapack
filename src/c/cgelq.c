@@ -3,6 +3,7 @@
  * @brief CGELQ computes an LQ factorization of a complex M-by-N matrix A.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -46,15 +47,15 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void cgelq(const int m, const int n,
-           c64* restrict A, const int lda,
-           c64* restrict T, const int tsize,
-           c64* restrict work, const int lwork,
-           int* info)
+void cgelq(const INT m, const INT n,
+           c64* restrict A, const INT lda,
+           c64* restrict T, const INT tsize,
+           c64* restrict work, const INT lwork,
+           INT* info)
 {
-    int lquery, lminws, mint, minw;
-    int mb, nb, mintsz, nblcks, lwmin, lwopt, lwreq;
-    int minmn;
+    INT lquery, lminws, mint, minw;
+    INT mb, nb, mintsz, nblcks, lwmin, lwopt, lwreq;
+    INT minmn;
 
     *info = 0;
 

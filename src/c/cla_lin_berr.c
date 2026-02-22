@@ -3,6 +3,7 @@
  * @brief CLA_LIN_BERR computes a component-wise relative backward error.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
@@ -32,14 +33,14 @@
  *                        formula above.
  */
 void cla_lin_berr(
-    const int n,
-    const int nz,
-    const int nrhs,
+    const INT n,
+    const INT nz,
+    const INT nrhs,
     const c64* restrict RES,
     const f32* restrict AYB,
     f32* restrict BERR)
 {
-    int i, j;
+    INT i, j;
     f32 tmp;
     f32 safe1;
 

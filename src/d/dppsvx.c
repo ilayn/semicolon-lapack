@@ -3,6 +3,7 @@
  * @brief DPPSVX computes the solution to a real system of linear equations A * X = B with symmetric positive definite matrix in packed storage (expert driver).
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -57,30 +58,30 @@
 void dppsvx(
     const char* fact,
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     f64* restrict AP,
     f64* restrict AFP,
     char* equed,
     f64* restrict S,
     f64* restrict B,
-    const int ldb,
+    const INT ldb,
     f64* restrict X,
-    const int ldx,
+    const INT ldx,
     f64* rcond,
     f64* restrict ferr,
     f64* restrict berr,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // dppsvx.f lines 330-331: Parameters
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
     // dppsvx.f lines 334-336: Local Scalars
-    int equil, nofact, rcequ;
-    int i, infequ, j;
+    INT equil, nofact, rcequ;
+    INT i, infequ, j;
     f64 amax, anorm, bignum, scond, smax, smin, smlnum;
 
     // dppsvx.f lines 353-363: Initialize

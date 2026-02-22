@@ -5,6 +5,7 @@
  *        a triangular band matrix.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
@@ -50,18 +51,18 @@ f32 clantb(
     const char* norm,
     const char* uplo,
     const char* diag,
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const c64* restrict AB,
-    const int ldab,
+    const INT ldab,
     f32* restrict work)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, l;
+    INT i, j, l;
     f32 scale, sum, value;
-    int udiag;
+    INT udiag;
 
     /* Quick return if possible */
     if (n == 0) {
@@ -76,7 +77,7 @@ f32 clantb(
             value = ONE;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i < k; i++) {
                         sum = cabsf(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -86,7 +87,7 @@ f32 clantb(
                 }
             } else {
                 for (j = 0; j < n; j++) {
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 1; i < i_end; i++) {
                         sum = cabsf(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -99,7 +100,7 @@ f32 clantb(
             value = ZERO;
             if (uplo[0] == 'U' || uplo[0] == 'u') {
                 for (j = 0; j < n; j++) {
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i <= k; i++) {
                         sum = cabsf(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -109,7 +110,7 @@ f32 clantb(
                 }
             } else {
                 for (j = 0; j < n; j++) {
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 0; i < i_end; i++) {
                         sum = cabsf(AB[i + j * ldab]);
                         if (value < sum || isnan(sum)) {
@@ -126,13 +127,13 @@ f32 clantb(
             for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i < k; i++) {
                         sum += cabsf(AB[i + j * ldab]);
                     }
                 } else {
                     sum = ZERO;
-                    int i_start = (k - j > 0) ? k - j : 0;
+                    INT i_start = (k - j > 0) ? k - j : 0;
                     for (i = i_start; i <= k; i++) {
                         sum += cabsf(AB[i + j * ldab]);
                     }
@@ -145,13 +146,13 @@ f32 clantb(
             for (j = 0; j < n; j++) {
                 if (udiag) {
                     sum = ONE;
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 1; i < i_end; i++) {
                         sum += cabsf(AB[i + j * ldab]);
                     }
                 } else {
                     sum = ZERO;
-                    int i_end = (n - j < k + 1) ? n - j : k + 1;
+                    INT i_end = (n - j < k + 1) ? n - j : k + 1;
                     for (i = 0; i < i_end; i++) {
                         sum += cabsf(AB[i + j * ldab]);
                     }
@@ -171,7 +172,7 @@ f32 clantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = k - j;
-                    int row_start = (j - k > 0) ? j - k : 0;
+                    INT row_start = (j - k > 0) ? j - k : 0;
                     for (i = row_start; i < j; i++) {
                         work[i] += cabsf(AB[l + i + j * ldab]);
                     }
@@ -182,7 +183,7 @@ f32 clantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = k - j;
-                    int row_start = (j - k > 0) ? j - k : 0;
+                    INT row_start = (j - k > 0) ? j - k : 0;
                     for (i = row_start; i <= j; i++) {
                         work[i] += cabsf(AB[l + i + j * ldab]);
                     }
@@ -195,7 +196,7 @@ f32 clantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = -j;
-                    int row_end = (j + k < n - 1) ? j + k : n - 1;
+                    INT row_end = (j + k < n - 1) ? j + k : n - 1;
                     for (i = j + 1; i <= row_end; i++) {
                         work[i] += cabsf(AB[l + i + j * ldab]);
                     }
@@ -206,7 +207,7 @@ f32 clantb(
                 }
                 for (j = 0; j < n; j++) {
                     l = -j;
-                    int row_end = (j + k < n - 1) ? j + k : n - 1;
+                    INT row_end = (j + k < n - 1) ? j + k : n - 1;
                     for (i = j; i <= row_end; i++) {
                         work[i] += cabsf(AB[l + i + j * ldab]);
                     }
@@ -227,8 +228,8 @@ f32 clantb(
                 sum = (f32)n;
                 if (k > 0) {
                     for (j = 1; j < n; j++) {
-                        int count = (j < k) ? j : k;
-                        int start = (k - j > 0) ? k - j : 0;
+                        INT count = (j < k) ? j : k;
+                        INT start = (k - j > 0) ? k - j : 0;
                         classq(count, &AB[start + j * ldab], 1, &scale, &sum);
                     }
                 }
@@ -236,8 +237,8 @@ f32 clantb(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int count = (j + 1 < k + 1) ? j + 1 : k + 1;
-                    int start = (k - j > 0) ? k - j : 0;
+                    INT count = (j + 1 < k + 1) ? j + 1 : k + 1;
+                    INT start = (k - j > 0) ? k - j : 0;
                     classq(count, &AB[start + j * ldab], 1, &scale, &sum);
                 }
             }
@@ -247,7 +248,7 @@ f32 clantb(
                 sum = (f32)n;
                 if (k > 0) {
                     for (j = 0; j < n - 1; j++) {
-                        int count = (n - 1 - j < k) ? n - 1 - j : k;
+                        INT count = (n - 1 - j < k) ? n - 1 - j : k;
                         classq(count, &AB[1 + j * ldab], 1, &scale, &sum);
                     }
                 }
@@ -255,7 +256,7 @@ f32 clantb(
                 scale = ZERO;
                 sum = ONE;
                 for (j = 0; j < n; j++) {
-                    int count = (n - j < k + 1) ? n - j : k + 1;
+                    INT count = (n - j < k + 1) ? n - j : k + 1;
                     classq(count, &AB[j * ldab], 1, &scale, &sum);
                 }
             }

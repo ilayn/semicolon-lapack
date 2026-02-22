@@ -4,6 +4,7 @@
  *        symmetric tridiagonal matrix using the divide and conquer method.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -70,22 +71,22 @@
  *                           working on the submatrix lying in rows and columns
  *                           info/(n+1) through mod(info,n+1).
  */
-void sstedc(const char* compz, const int n,
+void sstedc(const char* compz, const INT n,
             f32* D, f32* E,
-            f32* Z, const int ldz,
-            f32* work, const int lwork,
-            int* iwork, const int liwork, int* info)
+            f32* Z, const INT ldz,
+            f32* work, const INT lwork,
+            INT* iwork, const INT liwork, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
 
-    int lquery;
-    int i, icompz, ii, j, k, lgn, liwmin = 1, lwmin = 1, m, start, finish, storez, strtrw;
+    INT lquery;
+    INT i, icompz, ii, j, k, lgn, liwmin = 1, lwmin = 1, m, start, finish, storez, strtrw;
     f32 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'SSTEDC', ...) - hardcoded per project convention */
-    const int SMLSIZ = 25;
+    const INT SMLSIZ = 25;
 
     /*
      * Test the input parameters.
@@ -123,7 +124,7 @@ void sstedc(const char* compz, const int n,
             liwmin = 1;
             lwmin = 2 * (n - 1);
         } else {
-            lgn = (int)(logf((f32)n) / logf(TWO));
+            lgn = (INT)(logf((f32)n) / logf(TWO));
             if ((1 << lgn) < n)
                 lgn = lgn + 1;
             if ((1 << lgn) < n)

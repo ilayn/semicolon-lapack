@@ -3,6 +3,7 @@
  * @brief SLARFG generates an elementary reflector (Householder matrix).
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -36,12 +37,12 @@
  * @param[in]     incx   The increment between elements of x. incx > 0.
  * @param[out]    tau    The value tau.
  */
-void slarfg(const int n, f32* alpha, f32* x,
-            const int incx, f32* tau)
+void slarfg(const INT n, f32* alpha, f32* x,
+            const INT incx, f32* tau)
 {
     const f32 ONE = 1.0f;
     f32 xnorm, beta, safmin, rsafmn;
-    int knt, j;
+    INT knt, j;
 
     if (n <= 1) {
         *tau = 0.0f;

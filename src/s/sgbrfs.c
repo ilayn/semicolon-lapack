@@ -3,6 +3,7 @@
  * @brief Improves the computed solution for banded systems and provides error bounds.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <cblas.h>
@@ -51,37 +52,37 @@
  */
 void sgbrfs(
     const char* trans,
-    const int n,
-    const int kl,
-    const int ku,
-    const int nrhs,
+    const INT n,
+    const INT kl,
+    const INT ku,
+    const INT nrhs,
     const f32* restrict AB,
-    const int ldab,
+    const INT ldab,
     const f32* restrict AFB,
-    const int ldafb,
-    const int* restrict ipiv,
+    const INT ldafb,
+    const INT* restrict ipiv,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict X,
-    const int ldx,
+    const INT ldx,
     f32* restrict ferr,
     f32* restrict berr,
     f32* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
-    const int ITMAX = 5;
+    const INT ITMAX = 5;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int notran;
+    INT notran;
     char transt;
-    int count, i, j, k, kase, kk, nz;
+    INT count, i, j, k, kase, kk, nz;
     f32 eps, lstres, s, safe1, safe2, safmin, xk;
-    int isave[3];
-    int linfo;
+    INT isave[3];
+    INT linfo;
 
     /* Test the input parameters */
     *info = 0;
@@ -159,8 +160,8 @@ void sgbrfs(
                 for (k = 0; k < n; k++) {
                     kk = ku - k;
                     xk = fabsf(X[k + j * ldx]);
-                    int i_start = (k - ku > 0) ? k - ku : 0;
-                    int i_end = (k + kl < n - 1) ? k + kl : n - 1;
+                    INT i_start = (k - ku > 0) ? k - ku : 0;
+                    INT i_end = (k + kl < n - 1) ? k + kl : n - 1;
                     for (i = i_start; i <= i_end; i++) {
                         work[i] = work[i] + fabsf(AB[kk + i + k * ldab]) * xk;
                     }
@@ -169,8 +170,8 @@ void sgbrfs(
                 for (k = 0; k < n; k++) {
                     s = ZERO;
                     kk = ku - k;
-                    int i_start = (k - ku > 0) ? k - ku : 0;
-                    int i_end = (k + kl < n - 1) ? k + kl : n - 1;
+                    INT i_start = (k - ku > 0) ? k - ku : 0;
+                    INT i_end = (k + kl < n - 1) ? k + kl : n - 1;
                     for (i = i_start; i <= i_end; i++) {
                         s = s + fabsf(AB[kk + i + k * ldab]) * fabsf(X[i + j * ldx]);
                     }

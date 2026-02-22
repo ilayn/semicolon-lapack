@@ -3,6 +3,7 @@
  * @brief STGSYL solves the generalized Sylvester equation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -117,34 +118,34 @@
  */
 void stgsyl(
     const char* trans,
-    const int ijob,
-    const int m,
-    const int n,
+    const INT ijob,
+    const INT m,
+    const INT n,
     const f32* restrict A,
-    const int lda,
+    const INT lda,
     const f32* restrict B,
-    const int ldb,
+    const INT ldb,
     f32* restrict C,
-    const int ldc,
+    const INT ldc,
     const f32* restrict D,
-    const int ldd,
+    const INT ldd,
     const f32* restrict E,
-    const int lde,
+    const INT lde,
     f32* restrict F,
-    const int ldf,
+    const INT ldf,
     f32* scale,
     f32* dif,
     f32* restrict work,
-    const int lwork,
-    int* restrict iwork,
-    int* info)
+    const INT lwork,
+    INT* restrict iwork,
+    INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lquery, notran;
-    int i, ie, ifunc, iround, is, isolve, j, je, js, k;
-    int linfo, lwmin, mb, nb, p, ppqq, pq, q;
+    INT lquery, notran;
+    INT i, ie, ifunc, iround, is, isolve, j, je, js, k;
+    INT linfo, lwmin, mb, nb, p, ppqq, pq, q;
     f32 dscale, dsum, scale2, scaloc;
 
     *info = 0;

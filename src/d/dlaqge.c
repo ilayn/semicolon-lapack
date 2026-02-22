@@ -4,6 +4,7 @@
  *        scaling factors computed by dgeequ.
  */
 
+#include "internal_build_defs.h"
 #include <float.h>
 #include "semicolon_lapack_double.h"
 
@@ -33,10 +34,10 @@
  *                               replaced by diag(R) * A * diag(C).
  */
 void dlaqge(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     f64* restrict A,
-    const int lda,
+    const INT lda,
     const f64* restrict R,
     const f64* restrict C,
     const f64 rowcnd,
@@ -47,7 +48,7 @@ void dlaqge(
     const f64 ONE = 1.0;
     const f64 THRESH = 0.1;
 
-    int i, j;
+    INT i, j;
     f64 cj, large, small;
 
     // Quick return if possible

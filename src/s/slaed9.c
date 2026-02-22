@@ -4,6 +4,7 @@
  *        eigenvectors. Used when the original matrix is dense.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
@@ -47,12 +48,12 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  *                         - > 0: if info = 1, an eigenvalue did not converge.
  */
-void slaed9(const int k, const int kstart, const int kstop, const int n,
-            f32* D, f32* Q, const int ldq, const f32 rho,
-            const f32* dlambda, f32* W, f32* S, const int lds,
-            int* info)
+void slaed9(const INT k, const INT kstart, const INT kstop, const INT n,
+            f32* D, f32* Q, const INT ldq, const f32 rho,
+            const f32* dlambda, f32* W, f32* S, const INT lds,
+            INT* info)
 {
-    int i, j;
+    INT i, j;
     f32 temp;
 
     /* Test the input parameters. */

@@ -3,6 +3,7 @@
  * @brief ZLAQZ3 executes a single multishift QZ sweep.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <cblas.h>
@@ -38,38 +39,38 @@
  * @param[out]    info     = 0: successful exit.
  */
 void zlaqz3(
-    const int ilschur,
-    const int ilq,
-    const int ilz,
-    const int n,
-    const int ilo,
-    const int ihi,
-    const int nshifts,
-    const int nblock_desired,
+    const INT ilschur,
+    const INT ilq,
+    const INT ilz,
+    const INT n,
+    const INT ilo,
+    const INT ihi,
+    const INT nshifts,
+    const INT nblock_desired,
     c128* restrict alpha,
     c128* restrict beta,
     c128* restrict A,
-    const int lda,
+    const INT lda,
     c128* restrict B,
-    const int ldb,
+    const INT ldb,
     c128* restrict Q,
-    const int ldq,
+    const INT ldq,
     c128* restrict Z,
-    const int ldz,
+    const INT ldz,
     c128* restrict QC,
-    const int ldqc,
+    const INT ldqc,
     c128* restrict ZC,
-    const int ldzc,
+    const INT ldzc,
     c128* restrict work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
     const c128 CONE = CMPLX(1.0, 0.0);
     const f64 ONE = 1.0;
 
-    int i, j, ns, istartm, istopm, sheight, swidth, k, np;
-    int istartb, istopb, ishift, nblock, npos;
+    INT i, j, ns, istartm, istopm, sheight, swidth, k, np;
+    INT istartb, istopb, ishift, nblock, npos;
     f64 safmin, safmax, c, scale;
     c128 s, temp, temp2, temp3;
 

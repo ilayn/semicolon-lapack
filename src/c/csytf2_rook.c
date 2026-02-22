@@ -3,6 +3,7 @@
  * @brief CSYTF2_ROOK computes the factorization of a complex symmetric indefinite matrix using the bounded Bunch-Kaufman ("rook") diagonal pivoting method (unblocked algorithm).
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <cblas.h>
 #include <complex.h>
@@ -42,16 +43,16 @@
  */
 void csytf2_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    const int lda,
-    int* restrict ipiv,
-    int* info)
+    const INT lda,
+    INT* restrict ipiv,
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int upper, done;
-    int i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
+    INT upper, done;
+    INT i, imax = 0, j, jmax = 0, itemp, k, kk, kp, kstep, p, ii;
     f32 absakk, alpha, colmax, rowmax, dtemp, sfmin;
     c64 d11, d12, d21, d22, t, wk, wkm1, wkp1;
 

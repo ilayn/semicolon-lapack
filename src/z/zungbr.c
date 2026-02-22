@@ -4,6 +4,7 @@
  *        determined by ZGEBRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -67,17 +68,17 @@
  * @param[out]    info  = 0:  successful exit
  *                      < 0:  if info = -i, the i-th argument had an illegal value
  */
-void zungbr(const char* vect, const int m, const int n, const int k,
-            c128* restrict A, const int lda,
+void zungbr(const char* vect, const INT m, const INT n, const INT k,
+            c128* restrict A, const INT lda,
             const c128* restrict tau,
-            c128* restrict work, const int lwork,
-            int* info)
+            c128* restrict work, const INT lwork,
+            INT* info)
 {
     const c128 ZERO = CMPLX(0.0, 0.0);
     const c128 ONE = CMPLX(1.0, 0.0);
 
-    int i, iinfo, j, lwkopt, mn;
-    int lquery, wantq;
+    INT i, iinfo, j, lwkopt, mn;
+    INT lquery, wantq;
 
     *info = 0;
     wantq = (vect[0] == 'Q' || vect[0] == 'q');
@@ -121,7 +122,7 @@ void zungbr(const char* vect, const int m, const int n, const int k,
                 }
             }
         }
-        lwkopt = (int)creal(work[0]);
+        lwkopt = (INT)creal(work[0]);
         lwkopt = lwkopt > mn ? lwkopt : mn;
     }
 

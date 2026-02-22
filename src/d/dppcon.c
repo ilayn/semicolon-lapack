@@ -3,6 +3,7 @@
  * @brief DPPCON estimates the reciprocal of the condition number of a symmetric positive definite matrix in packed storage.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -34,24 +35,24 @@
  */
 void dppcon(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* restrict AP,
     const f64 anorm,
     f64* rcond,
     f64* restrict work,
-    int* restrict iwork,
-    int* info)
+    INT* restrict iwork,
+    INT* info)
 {
     // dppcon.f lines 136-137: Parameters
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
     // dppcon.f lines 140-146: Local Scalars and Arrays
-    int upper;
+    INT upper;
     char normin;
-    int ix, kase;
+    INT ix, kase;
     f64 ainvnm, scale, scalel, scaleu, smlnum;
-    int isave[3];
+    INT isave[3];
 
     // dppcon.f lines 164-176: Test the input parameters
     *info = 0;

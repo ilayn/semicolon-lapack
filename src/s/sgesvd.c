@@ -3,6 +3,7 @@
  * @brief SGESVD computes the singular value decomposition (SVD) of a general matrix.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <stdlib.h>
@@ -66,13 +67,13 @@
  *                         - > 0: if SBDSQR did not converge.
  */
 void sgesvd(const char* jobu, const char* jobvt,
-            const int m, const int n,
-            f32* restrict A, const int lda,
+            const INT m, const INT n,
+            f32* restrict A, const INT lda,
             f32* restrict S,
-            f32* restrict U, const int ldu,
-            f32* restrict VT, const int ldvt,
-            f32* restrict work, const int lwork,
-            int* info)
+            f32* restrict U, const INT ldu,
+            f32* restrict VT, const INT ldvt,
+            f32* restrict work, const INT lwork,
+            INT* info)
 {
     /* Constants */
     const f32 ZERO = 0.0f;
@@ -82,16 +83,16 @@ void sgesvd(const char* jobu, const char* jobvt,
     #define MAX3(a, b, c) ((a) > (b) ? ((a) > (c) ? (a) : (c)) : ((b) > (c) ? (b) : (c)))
 
     /* Local variables */
-    int wntua, wntus, wntuas, wntuo, wntun;
-    int wntva, wntvs, wntvas, wntvo, wntvn;
-    int lquery, minmn, mnthr;
-    int bdspac = 0, minwrk, maxwrk, wrkbl = 0;
-    int lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m;
-    int lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q;
-    int lwork_dgelqf, lwork_dorglq_n, lwork_dorglq_m;
-    int ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk;
-    int i, ierr, iscl, ncu, ncvt, nru, nrvt;
-    int ldwrkr, ldwrku;
+    INT wntua, wntus, wntuas, wntuo, wntun;
+    INT wntva, wntvs, wntvas, wntvo, wntvn;
+    INT lquery, minmn, mnthr;
+    INT bdspac = 0, minwrk, maxwrk, wrkbl = 0;
+    INT lwork_dgeqrf, lwork_dorgqr_n, lwork_dorgqr_m;
+    INT lwork_dgebrd, lwork_dorgbr_p, lwork_dorgbr_q;
+    INT lwork_dgelqf, lwork_dorglq_n, lwork_dorglq_m;
+    INT ie = 0, itau, itauq, itaup, iwork, ir, iu, chunk;
+    INT i, ierr, iscl, ncu, ncvt, nru, nrvt;
+    INT ldwrkr, ldwrku;
     f32 anrm, bignum, eps, smlnum;
     f32 dum[1];
 
@@ -141,17 +142,17 @@ void sgesvd(const char* jobu, const char* jobvt,
 
             /* Query workspace for subroutines - pass NULL for unused arrays */
             sgeqrf(m, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dgeqrf = (int)dum[0];
+            lwork_dgeqrf = (INT)dum[0];
             sorgqr(m, n, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgqr_n = (int)dum[0];
+            lwork_dorgqr_n = (INT)dum[0];
             sorgqr(m, m, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgqr_m = (int)dum[0];
+            lwork_dorgqr_m = (INT)dum[0];
             sgebrd(n, n, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-            lwork_dgebrd = (int)dum[0];
+            lwork_dgebrd = (INT)dum[0];
             sorgbr("P", n, n, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgbr_p = (int)dum[0];
+            lwork_dorgbr_p = (INT)dum[0];
             sorgbr("Q", n, n, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorgbr_q = (int)dum[0];
+            lwork_dorgbr_q = (INT)dum[0];
 
             if (m >= mnthr) {
                 if (wntun) {
@@ -244,16 +245,16 @@ void sgesvd(const char* jobu, const char* jobvt,
             } else {
                 /* Path 10 (M at least N, but not much larger) */
                 sgebrd(m, n, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-                lwork_dgebrd = (int)dum[0];
+                lwork_dgebrd = (INT)dum[0];
                 maxwrk = 3*n + lwork_dgebrd;
                 if (wntus || wntuo) {
                     sorgbr("Q", m, n, n, NULL, lda, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_q = (int)dum[0];
+                    lwork_dorgbr_q = (INT)dum[0];
                     maxwrk = (maxwrk > 3*n + lwork_dorgbr_q) ? maxwrk : 3*n + lwork_dorgbr_q;
                 }
                 if (wntua) {
                     sorgbr("Q", m, m, n, NULL, lda, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_q = (int)dum[0];
+                    lwork_dorgbr_q = (INT)dum[0];
                     maxwrk = (maxwrk > 3*n + lwork_dorgbr_q) ? maxwrk : 3*n + lwork_dorgbr_q;
                 }
                 if (!wntvn) {
@@ -269,17 +270,17 @@ void sgesvd(const char* jobu, const char* jobvt,
 
             /* Query workspace for subroutines - pass NULL for unused arrays */
             sgelqf(m, n, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dgelqf = (int)dum[0];
+            lwork_dgelqf = (INT)dum[0];
             sorglq(n, n, m, NULL, n, NULL, dum, -1, &ierr);
-            lwork_dorglq_n = (int)dum[0];
+            lwork_dorglq_n = (INT)dum[0];
             sorglq(m, n, m, NULL, lda, NULL, dum, -1, &ierr);
-            lwork_dorglq_m = (int)dum[0];
+            lwork_dorglq_m = (INT)dum[0];
             sgebrd(m, m, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-            lwork_dgebrd = (int)dum[0];
+            lwork_dgebrd = (INT)dum[0];
             sorgbr("P", m, m, m, NULL, n, NULL, dum, -1, &ierr);
-            lwork_dorgbr_p = (int)dum[0];
+            lwork_dorgbr_p = (INT)dum[0];
             sorgbr("Q", m, m, m, NULL, n, NULL, dum, -1, &ierr);
-            lwork_dorgbr_q = (int)dum[0];
+            lwork_dorgbr_q = (INT)dum[0];
 
             if (n >= mnthr) {
                 if (wntvn) {
@@ -372,16 +373,16 @@ void sgesvd(const char* jobu, const char* jobvt,
             } else {
                 /* Path 10t (N greater than M, but not much larger) */
                 sgebrd(m, n, NULL, lda, NULL, NULL, NULL, NULL, dum, -1, &ierr);
-                lwork_dgebrd = (int)dum[0];
+                lwork_dgebrd = (INT)dum[0];
                 maxwrk = 3*m + lwork_dgebrd;
                 if (wntvs || wntvo) {
                     sorgbr("P", m, n, m, NULL, n, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_p = (int)dum[0];
+                    lwork_dorgbr_p = (INT)dum[0];
                     maxwrk = (maxwrk > 3*m + lwork_dorgbr_p) ? maxwrk : 3*m + lwork_dorgbr_p;
                 }
                 if (wntva) {
                     sorgbr("P", n, n, m, NULL, n, NULL, dum, -1, &ierr);
-                    lwork_dorgbr_p = (int)dum[0];
+                    lwork_dorgbr_p = (INT)dum[0];
                     maxwrk = (maxwrk > 3*m + lwork_dorgbr_p) ? maxwrk : 3*m + lwork_dorgbr_p;
                 }
                 if (!wntun) {

@@ -3,6 +3,7 @@
  * @brief ZGEBAL balances a general complex matrix A.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <cblas.h>
@@ -50,8 +51,8 @@
  *                         - = 0: successful exit.
  *                         - < 0: if INFO = -i, the i-th argument had an illegal value.
  */
-void zgebal(const char* job, const int n, c128* A, const int lda,
-            int* ilo, int* ihi, f64* scale, int* info)
+void zgebal(const char* job, const INT n, c128* A, const INT lda,
+            INT* ilo, INT* ihi, f64* scale, INT* info)
 {
     /* Constants */
     const f64 ZERO = 0.0;
@@ -60,8 +61,8 @@ void zgebal(const char* job, const int n, c128* A, const int lda,
     const f64 FACTOR = 0.95;
 
     /* Local variables */
-    int noconv, canswap;
-    int i, ica, ira, j, k, l;
+    INT noconv, canswap;
+    INT i, ica, ira, j, k, l;
     f64 c, ca, f, g, r, ra, s, sfmax1, sfmax2, sfmin1, sfmin2;
 
     /* Test the input parameters */

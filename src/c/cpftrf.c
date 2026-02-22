@@ -3,6 +3,7 @@
  * @brief CPFTRF computes the Cholesky factorization of a Hermitian positive definite matrix in RFP format.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <cblas.h>
@@ -44,14 +45,14 @@
 void cpftrf(
     const char* transr,
     const char* uplo,
-    const int n,
+    const INT n,
     c64* restrict A,
-    int* info)
+    INT* info)
 {
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
-    int lower, nisodd, normaltransr;
-    int n1, n2, k;
+    INT lower, nisodd, normaltransr;
+    INT n1, n2, k;
 
     *info = 0;
     normaltransr = (transr[0] == 'N' || transr[0] == 'n');

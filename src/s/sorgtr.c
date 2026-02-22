@@ -4,6 +4,7 @@
  *        product of n-1 elementary reflectors of order N, as returned by SSYTRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "../include/lapack_tuning.h"
 
@@ -39,17 +40,17 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value.
  */
-void sorgtr(const char* uplo, const int n,
-            f32* restrict A, const int lda,
+void sorgtr(const char* uplo, const INT n,
+            f32* restrict A, const INT lda,
             const f32* restrict tau,
-            f32* restrict work, const int lwork,
-            int* info)
+            f32* restrict work, const INT lwork,
+            INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int upper, lquery;
-    int i, j, iinfo, lwkopt, nb;
+    INT upper, lquery;
+    INT i, j, iinfo, lwkopt, nb;
 
     /* Test the input arguments */
     *info = 0;

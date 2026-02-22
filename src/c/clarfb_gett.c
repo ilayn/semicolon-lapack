@@ -3,6 +3,7 @@
  * @brief CLARFB_GETT applies a complex Householder block reflector H from the left to a complex (K+M)-by-N triangular-pentagonal matrix.
  */
 
+#include "internal_build_defs.h"
 #include <complex.h>
 #include <cblas.h>
 #include "semicolon_lapack_complex_single.h"
@@ -65,23 +66,23 @@
  */
 void clarfb_gett(
     const char* ident,
-    const int m,
-    const int n,
-    const int k,
+    const INT m,
+    const INT n,
+    const INT k,
     const c64* restrict T,
-    const int ldt,
+    const INT ldt,
     c64* restrict A,
-    const int lda,
+    const INT lda,
     c64* restrict B,
-    const int ldb,
+    const INT ldb,
     c64* restrict work,
-    const int ldwork)
+    const INT ldwork)
 {
     const c64 CONE = 1.0f;
     const c64 CNEG_ONE = -1.0f;
 
-    int lnotident;
-    int i, j;
+    INT lnotident;
+    INT i, j;
 
     if (m < 0 || n <= 0 || k == 0 || k > n)
         return;

@@ -4,6 +4,7 @@
  *        representations and eigenvalues for each unreduced block.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <string.h>
 #include "semicolon_lapack_double.h"
@@ -90,14 +91,14 @@
  *                         - = -5: Problem in DLASQ2.
  *                         - = -6: Problem in DLASQ2.
  */
-void dlarre(const char* range, const int n, f64* vl, f64* vu,
-            const int il, const int iu,
+void dlarre(const char* range, const INT n, f64* vl, f64* vu,
+            const INT il, const INT iu,
             f64* D, f64* E, f64* E2,
             const f64 rtol1, const f64 rtol2, const f64 spltol,
-            int* nsplit, int* isplit, int* m,
+            INT* nsplit, INT* isplit, INT* m,
             f64* W, f64* werr, f64* wgap,
-            int* iblock, int* indexw, f64* gers,
-            f64* pivmin, f64* work, int* iwork, int* info)
+            INT* iblock, INT* indexw, f64* gers,
+            f64* pivmin, f64* work, INT* iwork, INT* info)
 {
     /* Parameters */
     const f64 ZERO = 0.0;
@@ -111,14 +112,14 @@ void dlarre(const char* range, const int n, f64* vl, f64* vu,
     const f64 FAC = 0.5;
     const f64 MAXGROWTH = 64.0;
     const f64 FUDGE = 2.0;
-    const int MAXTRY = 6;
-    const int ALLRNG = 1;
-    const int INDRNG = 2;
-    const int VALRNG = 3;
+    const INT MAXTRY = 6;
+    const INT ALLRNG = 1;
+    const INT INDRNG = 2;
+    const INT VALRNG = 3;
 
     /* Local scalars */
-    int forceb, norep, usedqd;
-    int cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
+    INT forceb, norep, usedqd;
+    INT cnt, cnt1, cnt2, i, ibegin, idum, iend, iinfo,
         in, indl = 0, indu = 0, irange = 0, j, jblk, mb = 0, mm,
         wbegin, wend = 0;
     f64 avgap, bsrtol, clwdth, dmax_, dpivot, eabs,
@@ -127,7 +128,7 @@ void dlarre(const char* range, const int n, f64* vl, f64* vu,
            tau, tmp, tmp1;
 
     /* Local arrays */
-    int iseed[4];
+    INT iseed[4];
 
     *info = 0;
     *nsplit = 0;
@@ -459,7 +460,7 @@ void dlarre(const char* range, const int n, f64* vl, f64* vu,
             }
         }
 
-        int found_rrr = 0;
+        INT found_rrr = 0;
         for (idum = 0; idum < MAXTRY; idum++) {
             /* Compute L D L^T factorization of tridiagonal matrix T - sigma I. */
             /* Store D in WORK[0:in-1], L in WORK[in:2*in-2], and reciprocals of */

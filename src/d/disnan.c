@@ -3,6 +3,7 @@
  * @brief DISNAN tests input for NaN.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 
@@ -13,7 +14,7 @@
  *
  * @return Nonzero if din is NaN, zero otherwise.
  */
-int disnan(const f64 din)
+INT disnan(const f64 din)
 {
     return isnan(din);
 }

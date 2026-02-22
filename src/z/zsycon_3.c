@@ -3,6 +3,7 @@
  * @brief ZSYCON_3 estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by ZSYTRF_RK or ZSYTRF_BK.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -64,23 +65,23 @@
  */
 void zsycon_3(
     const char* uplo,
-    const int n,
+    const INT n,
     const c128* restrict A,
-    const int lda,
+    const INT lda,
     const c128* restrict E,
-    const int* restrict ipiv,
+    const INT* restrict ipiv,
     const f64 anorm,
     f64* rcond,
     c128* restrict work,
-    int* info)
+    INT* info)
 {
     const c128 CZERO = CMPLX(0.0, 0.0);
 
-    int upper;
-    int i, kase;
+    INT upper;
+    INT i, kase;
     f64 ainvnm;
-    int isave[3];
-    int dummy_info;
+    INT isave[3];
+    INT dummy_info;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

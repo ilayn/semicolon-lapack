@@ -4,6 +4,7 @@
  *        positive definite tridiagonal matrix A.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -33,13 +34,13 @@
  *                           completed, but D(n-1) <= 0 (0-based).
  */
 void zpttrf(
-    const int n,
+    const INT n,
     f64* restrict D,
     c128* restrict E,
-    int* info)
+    INT* info)
 {
     const f64 ZERO = 0.0;
-    int i, i4;
+    INT i, i4;
     f64 eir, eii, f, g;
 
     *info = 0;

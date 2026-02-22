@@ -4,6 +4,7 @@
  *        general matrix.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
 
@@ -42,10 +43,10 @@
  *                      (n) if side = 'L'
  *                      or (m) if side = 'R'.
  */
-void dlarz(const char* side, const int m, const int n, const int l,
-           const f64* restrict v, const int incv,
+void dlarz(const char* side, const INT m, const INT n, const INT l,
+           const f64* restrict v, const INT incv,
            const f64 tau,
-           f64* restrict C, const int ldc,
+           f64* restrict C, const INT ldc,
            f64* restrict work)
 {
     if (side[0] == 'L' || side[0] == 'l') {

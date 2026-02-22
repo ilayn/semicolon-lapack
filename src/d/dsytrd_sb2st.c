@@ -3,28 +3,29 @@
  * @brief DSYTRD_SB2ST reduces a real symmetric band matrix to tridiagonal form.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 
 void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
-                  const int n, const int kd,
-                  f64* AB, const int ldab,
+                  const INT n, const INT kd,
+                  f64* AB, const INT ldab,
                   f64* D, f64* E,
-                  f64* hous, const int lhous,
-                  f64* work, const int lwork, int* info)
+                  f64* hous, const INT lhous,
+                  f64* work, const INT lwork, INT* info)
 {
     const f64 rzero = 0.0;
     const f64 zero = 0.0;
 
-    int lquery, wantq, upper, afters1;
-    int i, m, k, ib, sweepid, myid, shift, stt, st;
-    int ed, stind, edind, blklastind, colpt, thed;
-    int stepercol, grsiz, thgrsiz, thgrnb, thgrid;
-    int ttype;
+    INT lquery, wantq, upper, afters1;
+    INT i, m, k, ib, sweepid, myid, shift, stt, st;
+    INT ed, stind, edind, blklastind, colpt, thed;
+    INT stepercol, grsiz, thgrsiz, thgrnb, thgrid;
+    INT ttype;
     /* nbtiles, nthreads: set but unused (OpenMP threading placeholders) */
-    int abdpos, abofdpos, dpos, ofdpos, awpos;
-    int inda, indw, apos, sizea, lda, indv, indtau;
-    int sizetau, ldv, lhmin, lwmin;
+    INT abdpos, abofdpos, dpos, ofdpos, awpos;
+    INT inda, indw, apos, sizea, lda, indv, indtau;
+    INT sizetau, ldv, lhmin, lwmin;
 
     *info = 0;
     afters1 = (stage1[0] == 'Y' || stage1[0] == 'y');
@@ -140,8 +141,8 @@ void dsytrd_sb2st(const char* stage1, const char* vect, const char* uplo,
     grsiz = 1;
     shift = 3;
     (void)ceil((f64)n / (f64)kd);  /* nbtiles: unused OpenMP placeholder */
-    stepercol = (int)ceil((f64)shift / (f64)grsiz);
-    thgrnb = (int)ceil((f64)(n - 1) / (f64)thgrsiz);
+    stepercol = (INT)ceil((f64)shift / (f64)grsiz);
+    thgrnb = (INT)ceil((f64)(n - 1) / (f64)thgrsiz);
 
     dlacpy("A", kd + 1, n, AB, ldab, &work[apos], lda);
     dlaset("A", kd, n, zero, zero, &work[awpos], lda);

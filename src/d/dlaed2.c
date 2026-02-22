@@ -3,6 +3,7 @@
  * @brief DLAED2 merges eigenvalues and deflates the secular equation.
  */
 
+#include "internal_build_defs.h"
 #include <math.h>
 #include <cblas.h>
 #include "semicolon_lapack_double.h"
@@ -90,10 +91,10 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal
  *                           value.
  */
-void dlaed2(int* K, const int n, const int n1, f64* D, f64* Q,
-            const int ldq, int* indxq, f64* rho, f64* Z,
-            f64* dlambda, f64* W, f64* Q2, int* indx,
-            int* indxc, int* indxp, int* coltyp, int* info)
+void dlaed2(INT* K, const INT n, const INT n1, f64* D, f64* Q,
+            const INT ldq, INT* indxq, f64* rho, f64* Z,
+            f64* dlambda, f64* W, f64* Q2, INT* indx,
+            INT* indxc, INT* indxp, INT* coltyp, INT* info)
 {
     const f64 MONE = -1.0;
     const f64 ZERO = 0.0;
@@ -101,8 +102,8 @@ void dlaed2(int* K, const int n, const int n1, f64* D, f64* Q,
     const f64 TWO = 2.0;
     const f64 EIGHT = 8.0;
 
-    int ctot[4], psm[4];
-    int ct, i, imax, iq1, iq2, j, jmax, js, k2, n2, nj, pj = 0;
+    INT ctot[4], psm[4];
+    INT ct, i, imax, iq1, iq2, j, jmax, js, k2, n2, nj, pj = 0;
     f64 c, eps, s, t, tau, tol;
 
     /* Test the input parameters. */

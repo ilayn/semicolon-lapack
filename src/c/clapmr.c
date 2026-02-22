@@ -3,6 +3,7 @@
  * @brief CLAPMR rearranges rows of a matrix as specified by a permutation vector.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -42,14 +43,14 @@
  *          value on output.
  */
 void clapmr(
-    const int forwrd,
-    const int m,
-    const int n,
+    const INT forwrd,
+    const INT m,
+    const INT n,
     c64* restrict X,
-    const int ldx,
-    int* restrict K)
+    const INT ldx,
+    INT* restrict K)
 {
-    int i, in, j, jj;
+    INT i, in, j, jj;
     c64 temp;
 
     if (m <= 1)

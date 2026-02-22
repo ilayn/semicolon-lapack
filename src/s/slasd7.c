@@ -4,28 +4,29 @@
  *        sorted set. Then it tries to deflate the size of the problem.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <cblas.h>
 
-void slasd7(const int icompq, const int nl, const int nr, const int sqre,
-            int* k, f32* restrict D, f32* restrict Z,
+void slasd7(const INT icompq, const INT nl, const INT nr, const INT sqre,
+            INT* k, f32* restrict D, f32* restrict Z,
             f32* restrict ZW, f32* restrict VF,
             f32* restrict VFW, f32* restrict VL,
             f32* restrict VLW, const f32 alpha, const f32 beta,
-            f32* restrict DSIGMA, int* restrict IDX,
-            int* restrict IDXP, int* restrict IDXQ,
-            int* restrict PERM, int* givptr,
-            int* restrict GIVCOL, const int ldgcol,
-            f32* restrict GIVNUM, const int ldgnum,
-            f32* c, f32* s, int* info)
+            f32* restrict DSIGMA, INT* restrict IDX,
+            INT* restrict IDXP, INT* restrict IDXQ,
+            INT* restrict PERM, INT* givptr,
+            INT* restrict GIVCOL, const INT ldgcol,
+            f32* restrict GIVNUM, const INT ldgnum,
+            f32* c, f32* s, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWO = 2.0f;
     const f32 EIGHT = 8.0f;
 
-    int i, idxi, idxj, idxjp, j, jp, jprev = 0, k2, m, n, nlp1, nlp2;
+    INT i, idxi, idxj, idxjp, j, jp, jprev = 0, k2, m, n, nlp1, nlp2;
     f32 eps, hlftol, tau, tol, z1;
 
     *info = 0;

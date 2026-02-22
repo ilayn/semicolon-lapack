@@ -3,6 +3,7 @@
  * @brief SLARFT forms the triangular factor T of a block reflector H = I - V*T*V**T.
  */
 
+#include "internal_build_defs.h"
 #include <cblas.h>
 #include "semicolon_lapack_single.h"
 
@@ -35,15 +36,15 @@
  * @param[in]  ldt     Leading dimension of T. ldt >= k.
  */
 void slarft(const char* direct, const char* storev,
-            const int n, const int k,
-            const f32* restrict V, const int ldv,
+            const INT n, const INT k,
+            const f32* restrict V, const INT ldv,
             const f32* restrict tau,
-            f32* restrict T, const int ldt)
+            f32* restrict T, const INT ldt)
 {
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
-    int l, i, j;
-    int dirf, colv, qr, lq, ql;
+    INT l, i, j;
+    INT dirf, colv, qr, lq, ql;
 
     /* Quick return if possible */
     if (n == 0 || k == 0) {

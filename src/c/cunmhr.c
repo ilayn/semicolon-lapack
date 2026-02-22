@@ -5,6 +5,7 @@
  *        CGEHRD.
  */
 
+#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
@@ -43,15 +44,15 @@
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  */
 void cunmhr(const char* side, const char* trans,
-            const int m, const int n,
-            const int ilo, const int ihi,
-            const c64* A, const int lda,
+            const INT m, const INT n,
+            const INT ilo, const INT ihi,
+            const c64* A, const INT lda,
             const c64* tau,
-            c64* C, const int ldc,
-            c64* work, const int lwork, int* info)
+            c64* C, const INT ldc,
+            c64* work, const INT lwork, INT* info)
 {
-    int left, lquery;
-    int i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
+    INT left, lquery;
+    INT i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
 
     *info = 0;
     nh = ihi - ilo;
@@ -120,7 +121,7 @@ void cunmhr(const char* side, const char* trans,
         i2 = ilo + 1;
     }
 
-    int iinfo;
+    INT iinfo;
     cunmqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 
