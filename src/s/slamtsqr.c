@@ -4,7 +4,6 @@
  *        Q*C, Q^T*C, C*Q, or C*Q^T using the blocked reflectors from SLATSQR.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

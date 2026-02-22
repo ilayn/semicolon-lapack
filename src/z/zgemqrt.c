@@ -4,7 +4,6 @@
  *        of Q (or Q^H) and C, using the compact WY representation from ZGEQRT.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

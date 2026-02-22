@@ -3,7 +3,6 @@
  * @brief CSYCON_3 estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

@@ -3,9 +3,8 @@
  * @brief CHETRS_AA solves a system of linear equations A*X = B with a complex hermitian matrix using the factorization computed by CHETRF_AA.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

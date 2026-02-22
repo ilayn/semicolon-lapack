@@ -4,9 +4,8 @@
  *        Used by sgelsd.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SLALSA is an intermediate step in solving the least squares problem

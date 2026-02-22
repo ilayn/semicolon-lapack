@@ -3,11 +3,10 @@
  * @brief ZSPTRI computes the inverse of a complex symmetric indefinite matrix in packed storage.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

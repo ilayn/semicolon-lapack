@@ -3,7 +3,6 @@
  * @brief SLASDT creates a tree of subproblems for bidiagonal divide and conquer.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 

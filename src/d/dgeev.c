@@ -4,11 +4,10 @@
  *        of a general real matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGEEV computes for an N-by-N real nonsymmetric matrix A, the

@@ -3,7 +3,6 @@
  * @brief SORGBR generates one of the orthogonal matrices Q or P**T determined by SGEBRD.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

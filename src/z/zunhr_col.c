@@ -3,10 +3,9 @@
  * @brief ZUNHR_COL takes an M-by-N complex matrix Q_in with orthonormal
  *        columns as input, and performs Householder Reconstruction (HR).
  */
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZUNHR_COL takes an M-by-N complex matrix Q_in with orthonormal columns

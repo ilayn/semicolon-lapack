@@ -3,7 +3,6 @@
  * @brief CHETRI_3 computes the inverse of a complex Hermitian indefinite matrix using the factorization computed by CHETRF_RK or ZHETRF_BK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

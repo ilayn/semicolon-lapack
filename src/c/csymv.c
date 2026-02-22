@@ -3,7 +3,6 @@
  * @brief CSYMV computes a matrix-vector product for a complex symmetric matrix.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 

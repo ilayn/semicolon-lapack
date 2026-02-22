@@ -3,7 +3,6 @@
  * @brief SLARRJ performs refinement of the initial estimates of the eigenvalues of the matrix T.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

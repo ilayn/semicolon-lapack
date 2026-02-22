@@ -3,10 +3,9 @@
  * @brief CHPGST reduces a complex Hermitian-definite generalized eigenproblem to standard form, using packed storage.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CHPGST reduces a complex Hermitian-definite generalized

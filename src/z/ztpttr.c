@@ -3,7 +3,6 @@
  * @brief ZTPTTR copies a triangular matrix from standard packed format (TP) to standard full format (TR).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

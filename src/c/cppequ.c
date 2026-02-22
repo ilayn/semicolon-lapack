@@ -3,7 +3,6 @@
  * @brief CPPEQU computes row and column scalings for equilibration of packed Hermitian matrices.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"

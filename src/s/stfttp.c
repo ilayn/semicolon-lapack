@@ -3,7 +3,6 @@
  * @brief STFTTP copies a triangular matrix from rectangular full packed format (TF) to standard packed format (TP).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

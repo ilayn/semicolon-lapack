@@ -3,10 +3,9 @@
  * @brief ZLARCM performs a very simple matrix-matrix multiplication: C := A * B.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZLARCM performs a very simple matrix-matrix multiplication:

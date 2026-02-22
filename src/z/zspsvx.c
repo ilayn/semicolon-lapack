@@ -3,8 +3,7 @@
  * @brief ZSPSVX computes the solution to a complex system of linear equations A * X = B with error bounds.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

@@ -4,9 +4,8 @@
  *        1-norm) of a real symmetric positive definite tridiagonal matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

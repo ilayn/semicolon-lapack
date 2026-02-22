@@ -3,8 +3,7 @@
  * @brief SSYCONVF_ROOK converts between factorization formats used in SSYTRF_ROOK and SSYTRF_RK/DSYTRF_BK.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

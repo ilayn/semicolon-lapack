@@ -4,7 +4,6 @@
  *        an RZ factorization determined by STZRZF (blocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 

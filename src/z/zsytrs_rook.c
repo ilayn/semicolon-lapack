@@ -3,10 +3,9 @@
  * @brief ZSYTRS_ROOK solves a system of linear equations A*X = B with a complex symmetric matrix A using the factorization computed by ZSYTRF_ROOK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZSYTRS_ROOK solves a system of linear equations A*X = B with

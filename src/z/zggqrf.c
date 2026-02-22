@@ -3,7 +3,6 @@
  * @brief ZGGQRF computes a generalized QR factorization of a pair of matrices.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 #include "../include/lapack_tuning.h"

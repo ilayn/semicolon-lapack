@@ -4,7 +4,6 @@
  *        multi-shift QR with aggressive early deflation.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 

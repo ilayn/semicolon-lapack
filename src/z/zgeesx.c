@@ -3,12 +3,11 @@
  * @brief ZGEESX computes Schur form with optional eigenvalue ordering and condition numbers.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGEESX computes for an N-by-N complex nonsymmetric matrix A, the

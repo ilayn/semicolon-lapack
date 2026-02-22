@@ -3,10 +3,9 @@
  * @brief ZGBBRD reduces a complex general band matrix to real upper bidiagonal form.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

@@ -3,9 +3,8 @@
  * @brief SBBCSD computes the CS decomposition of an orthogonal matrix in bidiagonal-block form.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

@@ -4,7 +4,6 @@
  *        using the Pal-Walker-Kahan variant of the QL or QR algorithm.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

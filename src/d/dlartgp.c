@@ -3,7 +3,6 @@
  * @brief DLARTGP generates a plane rotation so that the diagonal is nonnegative.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 

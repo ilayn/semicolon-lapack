@@ -4,11 +4,10 @@
  *        the matrix of Schur vectors for GE matrices (blocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGGES3 computes for a pair of N-by-N real nonsymmetric matrices (A,B),

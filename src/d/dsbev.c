@@ -3,9 +3,8 @@
  * @brief DSBEV computes all eigenvalues and, optionally, eigenvectors of a symmetric band matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

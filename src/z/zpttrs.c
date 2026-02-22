@@ -4,7 +4,6 @@
  *        factorization A = U**H*D*U or A = L*D*L**H computed by ZPTTRF.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

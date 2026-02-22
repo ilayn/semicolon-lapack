@@ -3,9 +3,8 @@
  * @brief ZPPSVX computes the solution to a complex system of linear equations A * X = B with Hermitian positive definite matrix in packed storage (expert driver).
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

@@ -4,9 +4,8 @@
  *        tridiagonal form by a unitary similarity transformation.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 #include "../include/lapack_tuning.h"
 

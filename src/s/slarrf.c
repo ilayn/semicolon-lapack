@@ -2,9 +2,8 @@
  * @brief SLARRF finds a new relatively robust representation such that at least one of the eigenvalues is relatively isolated.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

@@ -3,9 +3,8 @@
  * @brief DGEQP3RK computes a truncated Householder QR factorization with column pivoting of a real m-by-n matrix using Level 3 BLAS.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

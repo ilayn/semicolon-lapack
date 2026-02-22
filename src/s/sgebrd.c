@@ -3,10 +3,9 @@
  * @brief SGEBRD reduces a general matrix to bidiagonal form using a blocked algorithm.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SGEBRD reduces a general real M-by-N matrix A to upper or lower

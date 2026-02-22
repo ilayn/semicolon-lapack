@@ -3,7 +3,6 @@
  * @brief DLAPMR rearranges rows of a matrix as specified by a permutation vector.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

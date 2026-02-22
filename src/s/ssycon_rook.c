@@ -3,7 +3,6 @@
  * @brief SSYCON_ROOK estimates the reciprocal of the condition number of a symmetric matrix using the factorization computed by SSYTRF_ROOK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

@@ -3,9 +3,8 @@
  * @brief CGELST solves overdetermined or underdetermined systems using QR or LQ factorization with compact WY representation.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

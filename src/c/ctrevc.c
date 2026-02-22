@@ -3,10 +3,9 @@
  * @brief CTREVC computes eigenvectors of a complex upper triangular matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <float.h>
 

@@ -4,7 +4,6 @@
  *        norm(A)/norm(U) for a general banded matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"

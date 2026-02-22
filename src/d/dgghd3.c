@@ -3,8 +3,7 @@
  * @brief DGGHD3 reduces a pair of real matrices (A,B) to generalized upper Hessenberg form.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 

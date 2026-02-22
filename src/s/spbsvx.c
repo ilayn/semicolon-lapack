@@ -3,8 +3,7 @@
  * @brief SPBSVX computes the solution to a symmetric positive definite banded system with error bounds.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

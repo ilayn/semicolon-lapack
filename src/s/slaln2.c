@@ -3,7 +3,6 @@
  * @brief SLALN2 solves a 1-by-1 or 2-by-2 linear system of equations.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <float.h>

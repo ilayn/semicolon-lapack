@@ -3,8 +3,7 @@
  * @brief SSYTRF_AA_2STAGE computes the factorization of a real symmetric matrix using Aasen's 2-stage algorithm.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 

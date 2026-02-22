@@ -6,11 +6,10 @@
  * Faithful port from LAPACK SRC/dtrevc3.f
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Internal constants */
 #define NBMIN 8

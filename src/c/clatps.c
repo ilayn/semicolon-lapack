@@ -3,11 +3,10 @@
  * @brief CLATPS solves a triangular system with the matrix held in packed storage, with scaling to prevent overflow.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

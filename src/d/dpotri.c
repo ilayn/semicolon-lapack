@@ -3,7 +3,6 @@
  * @brief DPOTRI computes the inverse of a symmetric positive definite matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

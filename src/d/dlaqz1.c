@@ -3,7 +3,6 @@
  * @brief DLAQZ1 computes the first column of the product for QZ shifts.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 

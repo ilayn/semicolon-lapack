@@ -29,7 +29,6 @@
  *                       The generated random numbers.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /* LV = max number of random values generated per call */

@@ -3,7 +3,6 @@
  * @brief CSYTRI_3 computes the inverse of a complex symmetric indefinite matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

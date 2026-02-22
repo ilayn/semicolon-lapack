@@ -3,8 +3,7 @@
  * @brief DPPSVX computes the solution to a real system of linear equations A * X = B with symmetric positive definite matrix in packed storage (expert driver).
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

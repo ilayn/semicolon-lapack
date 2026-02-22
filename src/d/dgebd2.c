@@ -3,7 +3,6 @@
  * @brief DGEBD2 reduces a general matrix to bidiagonal form using an unblocked algorithm.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

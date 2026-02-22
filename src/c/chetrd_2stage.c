@@ -3,7 +3,6 @@
  * @brief CHETRD_2STAGE reduces a complex Hermitian matrix to tridiagonal form using 2-stage algorithm.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

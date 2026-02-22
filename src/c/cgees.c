@@ -3,12 +3,11 @@
  * @brief CGEES computes the eigenvalues, Schur form, and optionally Schur vectors.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CGEES computes for an N-by-N complex nonsymmetric matrix A, the

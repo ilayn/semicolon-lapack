@@ -3,9 +3,8 @@
  * @brief DHGEQZ computes eigenvalues of a real matrix pair (H,T) using the double-shift QZ method.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

@@ -3,9 +3,8 @@
  * @brief SSYTRD_SY2SB reduces a real symmetric matrix to band-diagonal form.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 void ssytrd_sy2sb(const char* uplo, const INT n, const INT kd,
                   f32* A, const INT lda,

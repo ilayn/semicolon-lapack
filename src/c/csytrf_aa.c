@@ -3,8 +3,7 @@
  * @brief CSYTRF_AA computes the factorization of a complex symmetric matrix using Aasen's algorithm.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"

@@ -3,7 +3,6 @@
  * @brief CSYCONV converts A given by TRF into L and D and vice-versa.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

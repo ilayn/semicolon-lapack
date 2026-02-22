@@ -3,7 +3,6 @@
  * @brief ZLANSB returns the value of the 1-norm, Frobenius norm, infinity norm, or max element of a symmetric band matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"

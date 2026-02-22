@@ -3,7 +3,6 @@
  * @brief CHETRD_HB2ST reduces a complex Hermitian band matrix to real symmetric tridiagonal form.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_single.h"

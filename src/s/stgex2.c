@@ -4,9 +4,8 @@
  *        matrix pair by an orthogonal equivalence transformation.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 #define LDST 4

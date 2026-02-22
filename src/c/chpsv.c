@@ -3,7 +3,6 @@
  * @brief CHPSV computes the solution to a complex system of linear equations A * X = B.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

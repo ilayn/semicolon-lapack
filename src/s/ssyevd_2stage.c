@@ -3,9 +3,8 @@
  * @brief SSYEVD_2STAGE computes eigenvalues and optionally eigenvectors using divide-and-conquer.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 void ssyevd_2stage(const char* jobz, const char* uplo, const INT n,

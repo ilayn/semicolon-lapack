@@ -3,8 +3,7 @@
  * @brief SORGTSQR_ROW generates an M-by-N real matrix Q_out with orthonormal columns from SLATSQR output using row-by-row algorithm.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

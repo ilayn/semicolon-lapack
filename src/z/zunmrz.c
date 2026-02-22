@@ -4,7 +4,6 @@
  *        Q**H*C, C*Q**H, or C*Q where Q is from ZTZRZF.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>

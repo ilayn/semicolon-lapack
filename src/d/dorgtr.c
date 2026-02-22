@@ -4,7 +4,6 @@
  *        product of n-1 elementary reflectors of order N, as returned by DSYTRD.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
 

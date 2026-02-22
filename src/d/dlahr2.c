@@ -4,8 +4,7 @@
  *        so that elements below the k-th subdiagonal are zero.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

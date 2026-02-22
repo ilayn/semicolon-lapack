@@ -3,7 +3,6 @@
  * @brief SLASRT sorts numbers in increasing or decreasing order.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

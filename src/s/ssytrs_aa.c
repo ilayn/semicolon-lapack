@@ -3,8 +3,7 @@
  * @brief SSYTRS_AA solves a system of linear equations A*X = B with a real symmetric matrix using the factorization computed by SSYTRF_AA.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

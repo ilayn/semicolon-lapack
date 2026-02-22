@@ -3,7 +3,6 @@
  * @brief CTREXC reorders the Schur factorization of a complex matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

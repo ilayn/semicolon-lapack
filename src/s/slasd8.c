@@ -4,10 +4,9 @@
  *        and stores, for each element in D, the distance to its two nearest poles.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /** @cond */
 static inline f32 dlamc3(f32 a, f32 b)

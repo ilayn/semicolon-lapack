@@ -3,7 +3,6 @@
  * @brief ZSYCON_ROOK estimates the reciprocal of the condition number of a complex symmetric matrix using the factorization computed by ZSYTRF_ROOK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

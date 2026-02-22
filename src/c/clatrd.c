@@ -4,10 +4,9 @@
  *        real tridiagonal form.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CLATRD reduces NB rows and columns of a complex Hermitian matrix A to

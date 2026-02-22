@@ -4,7 +4,6 @@
  *        matrix A using the factorization computed by ZSYTRF.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>

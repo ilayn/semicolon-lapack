@@ -4,9 +4,8 @@
  *        stored in packed format using the factorization from CSPTRF.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

@@ -3,7 +3,6 @@
  * @brief DLANSP returns the value of the 1-norm, or the Frobenius norm, or the infinity norm, or the element of largest absolute value of a symmetric matrix supplied in packed form.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 

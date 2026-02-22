@@ -3,10 +3,9 @@
  * @brief CGGLSE solves the linear equality-constrained least squares (LSE) problem.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 

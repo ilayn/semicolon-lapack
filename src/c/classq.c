@@ -3,7 +3,6 @@
  * @brief CLASSQ updates a sum of squares represented in scaled form.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <float.h>

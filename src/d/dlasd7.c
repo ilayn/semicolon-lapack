@@ -4,10 +4,9 @@
  *        sorted set. Then it tries to deflate the size of the problem.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 void dlasd7(const INT icompq, const INT nl, const INT nr, const INT sqre,
             INT* k, f64* restrict D, f64* restrict Z,

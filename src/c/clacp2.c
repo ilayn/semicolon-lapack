@@ -3,7 +3,6 @@
  * @brief CLACP2 copies all or part of a real two-dimensional array to a complex array.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

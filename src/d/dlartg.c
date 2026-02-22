@@ -3,7 +3,6 @@
  * @brief DLARTG generates a plane rotation with real cosine and real sine.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"

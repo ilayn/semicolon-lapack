@@ -3,8 +3,7 @@
  * @brief DORGTSQR generates an M-by-N real matrix Q_out with orthonormal columns from DLATSQR output.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

@@ -4,11 +4,10 @@
  *        problem using divide and conquer SVD approach. Used by zgelsd.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /** @cond */
 static inline f64 dlamc3(f64 a, f64 b)

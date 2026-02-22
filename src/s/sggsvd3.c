@@ -3,8 +3,7 @@
  * @brief SGGSVD3 computes the generalized singular value decomposition.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

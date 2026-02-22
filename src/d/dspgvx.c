@@ -4,9 +4,8 @@
  *        real generalized symmetric-definite eigenproblem (packed storage).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DSPGVX computes selected eigenvalues, and optionally, eigenvectors

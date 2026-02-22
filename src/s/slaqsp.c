@@ -3,7 +3,6 @@
  * @brief SLAQSP scales a symmetric matrix in packed storage, using scaling factors computed by sppequ.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

@@ -4,10 +4,9 @@
  *        sorted set and performs deflation.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DLASD2 merges the two sets of singular values together into a single

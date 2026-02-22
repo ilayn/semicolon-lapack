@@ -3,7 +3,6 @@
  * @brief DSYTRI_3 computes the inverse of a real symmetric indefinite matrix using the factorization computed by DSYTRF_RK or DSYTRF_BK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

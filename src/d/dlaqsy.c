@@ -3,7 +3,6 @@
  * @brief DLAQSY equilibrates a symmetric matrix using scaling factors.
  */
 
-#include "internal_build_defs.h"
 #include <float.h>
 #include "semicolon_lapack_double.h"
 

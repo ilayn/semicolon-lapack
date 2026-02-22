@@ -3,7 +3,6 @@
  * @brief ZLACRT performs a linear transformation of a pair of complex vectors.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

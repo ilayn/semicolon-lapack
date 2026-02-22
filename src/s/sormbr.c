@@ -3,7 +3,6 @@
  * @brief SORMBR applies the orthogonal matrix Q or P**T determined by SGEBRD.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 

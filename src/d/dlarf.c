@@ -3,8 +3,7 @@
  * @brief DLARF applies an elementary reflector to a general rectangular matrix.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

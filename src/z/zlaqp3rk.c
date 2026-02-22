@@ -3,10 +3,9 @@
  * @brief ZLAQP3RK computes a step of truncated QR factorization with column pivoting of a complex matrix block using Level 3 BLAS.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

@@ -3,7 +3,6 @@
  * @brief SSB2ST_KERNELS is an internal routine used by SSYTRD_SB2ST.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 void ssb2st_kernels(const char* uplo, const INT wantz, const INT ttype,

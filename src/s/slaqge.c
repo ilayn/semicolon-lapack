@@ -4,7 +4,6 @@
  *        scaling factors computed by sgeequ.
  */
 
-#include "internal_build_defs.h"
 #include <float.h>
 #include "semicolon_lapack_single.h"
 

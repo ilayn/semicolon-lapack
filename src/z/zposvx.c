@@ -5,7 +5,6 @@
  *        condition estimation, and iterative refinement.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <float.h>
 #include "semicolon_lapack_complex_double.h"

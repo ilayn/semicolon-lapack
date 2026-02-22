@@ -3,7 +3,6 @@
  * @brief DSBGV computes all eigenvalues of a generalized symmetric-definite banded eigenproblem.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

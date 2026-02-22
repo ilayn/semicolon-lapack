@@ -3,7 +3,6 @@
  * @brief ZSYR performs the symmetric rank-1 update of a complex symmetric matrix.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 

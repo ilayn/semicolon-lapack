@@ -3,10 +3,9 @@
  * @brief STRSYL3 solves the real Sylvester matrix equation (blocked version).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * STRSYL3 solves the real Sylvester matrix equation:

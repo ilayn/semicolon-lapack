@@ -4,7 +4,6 @@
  *        representations and eigenvalues for each unreduced block.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <string.h>
 #include "semicolon_lapack_single.h"

@@ -3,7 +3,6 @@
  * @brief CSPR performs the symmetrical rank-1 update of a complex symmetric packed matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

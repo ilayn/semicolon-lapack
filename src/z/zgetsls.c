@@ -3,11 +3,10 @@
  * @brief ZGETSLS solves overdetermined or underdetermined linear systems using tall skinny QR or short wide LQ factorization.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

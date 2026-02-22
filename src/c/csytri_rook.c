@@ -3,10 +3,9 @@
  * @brief CSYTRI_ROOK computes the inverse of a complex symmetric matrix using the factorization computed by CSYTRF_ROOK.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

@@ -3,9 +3,8 @@
  * @brief DSYTRI_ROOK computes the inverse of a real symmetric matrix using the factorization computed by DSYTRF_ROOK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**

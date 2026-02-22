@@ -3,9 +3,8 @@
  * @brief SLAQZ0 computes the eigenvalues of a matrix pair (H,T) using multishift QZ.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

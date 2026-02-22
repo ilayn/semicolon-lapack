@@ -8,10 +8,9 @@
  * Inspired by faer (https://codeberg.org/sarah-quinones/faer).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

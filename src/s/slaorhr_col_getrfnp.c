@@ -3,8 +3,7 @@
  * @brief SLAORHR_COL_GETRFNP computes the modified LU factorization without pivoting of a real general M-by-N matrix A.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

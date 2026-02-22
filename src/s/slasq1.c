@@ -3,9 +3,8 @@
  * @brief SLASQ1 computes the singular values of a real square bidiagonal matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**

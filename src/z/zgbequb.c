@@ -3,7 +3,6 @@
  * @brief Computes row and column scaling factors with radix constraint for band matrices.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>

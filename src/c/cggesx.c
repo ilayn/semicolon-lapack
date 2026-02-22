@@ -4,12 +4,11 @@
  *        the matrix of Schur vectors for GE matrices with extended options.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CGGESX computes for a pair of N-by-N complex nonsymmetric matrices

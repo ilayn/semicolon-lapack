@@ -3,7 +3,6 @@
  * @brief IPARMQ returns problem and machine dependent parameters for HSEQR.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 

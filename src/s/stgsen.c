@@ -3,7 +3,6 @@
  * @brief STGSEN reorders the generalized real Schur decomposition.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

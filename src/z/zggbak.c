@@ -3,8 +3,7 @@
  * @brief ZGGBAK forms the right or left eigenvectors of a complex generalized eigenvalue problem.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

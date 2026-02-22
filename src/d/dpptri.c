@@ -3,8 +3,7 @@
  * @brief DPPTRI computes the inverse of a symmetric positive definite matrix using its Cholesky factorization in packed format.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

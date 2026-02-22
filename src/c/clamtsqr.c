@@ -4,7 +4,6 @@
  *        Q*C, Q^H*C, C*Q, or C*Q^H using the blocked reflectors from CLATSQR.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

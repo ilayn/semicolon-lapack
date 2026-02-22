@@ -4,8 +4,7 @@
  *        a RZ factorization determined by DTZRZF (unblocked algorithm).
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

@@ -4,10 +4,9 @@
  *        of a complex Hermitian positive semidefinite matrix (blocked).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 

@@ -3,7 +3,6 @@
  * @brief DLAGTS solves (T - lambda*I)*x = y or (T - lambda*I)^T*x = y.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"

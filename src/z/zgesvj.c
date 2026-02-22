@@ -3,11 +3,10 @@
  * @brief ZGESVJ computes the SVD of a complex M-by-N matrix using Jacobi rotations.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f64 ZERO = 0.0;
 static const f64 HALF = 0.5;

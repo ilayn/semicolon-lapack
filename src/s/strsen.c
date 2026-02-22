@@ -3,7 +3,6 @@
  * @brief STRSEN reorders the real Schur factorization and computes condition numbers.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 #include <stddef.h>

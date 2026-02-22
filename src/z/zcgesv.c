@@ -3,9 +3,8 @@
  * @brief Mixed precision iterative refinement solver for complex general linear systems.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 #include "semicolon_lapack_complex_single.h"
 

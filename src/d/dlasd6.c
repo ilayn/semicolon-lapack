@@ -4,10 +4,9 @@
  *        obtained by merging two smaller ones by appending a row.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DLASD6 computes the SVD of an updated upper bidiagonal matrix B

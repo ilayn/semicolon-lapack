@@ -3,9 +3,8 @@
  * @brief DPBTF2 computes the Cholesky factorization of a symmetric positive definite band matrix (unblocked).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

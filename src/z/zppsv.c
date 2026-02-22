@@ -3,7 +3,6 @@
  * @brief ZPPSV computes the solution to a complex system of linear equations A * X = B with Hermitian positive definite matrix in packed storage.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

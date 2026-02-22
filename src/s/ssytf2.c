@@ -4,9 +4,8 @@
  *        matrix using the Bunch-Kaufman diagonal pivoting method (unblocked).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /* Alpha for Bunch-Kaufman pivoting: (1 + sqrt(17)) / 8 */

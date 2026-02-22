@@ -3,8 +3,7 @@
  * @brief DPOTRS solves a system of linear equations using the Cholesky factorization.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

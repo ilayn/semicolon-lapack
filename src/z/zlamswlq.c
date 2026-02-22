@@ -4,7 +4,6 @@
  *        Q*C, Q^H*C, C*Q, or C*Q^H using the Short-Wide LQ factorization.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

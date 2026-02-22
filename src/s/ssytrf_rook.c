@@ -3,7 +3,6 @@
  * @brief SSYTRF_ROOK computes the factorization of a real symmetric matrix using the bounded Bunch-Kaufman ("rook") diagonal pivoting method.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 

@@ -3,7 +3,6 @@
  * @brief ZTREXC reorders the Schur factorization of a complex matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

@@ -4,7 +4,6 @@
  *        or the largest absolute value of any element of a general tridiagonal matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

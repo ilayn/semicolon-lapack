@@ -3,7 +3,6 @@
  * @brief DLANEG computes the Sturm count.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

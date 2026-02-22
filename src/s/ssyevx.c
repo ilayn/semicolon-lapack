@@ -4,9 +4,8 @@
  *        real symmetric matrix using bisection and inverse iteration.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 #include "../include/lapack_tuning.h"
 

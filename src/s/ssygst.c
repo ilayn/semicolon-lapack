@@ -3,10 +3,9 @@
  * @brief SSYGST reduces a symmetric-definite generalized eigenproblem to standard form.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SSYGST reduces a real symmetric-definite generalized eigenproblem to standard form.

@@ -3,9 +3,8 @@
  * @brief DGGBAL balances a pair of general real matrices (A,B).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

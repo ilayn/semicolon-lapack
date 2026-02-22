@@ -3,9 +3,8 @@
  * @brief SSYEVR_2STAGE computes selected eigenvalues and optionally eigenvectors using RRR.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,

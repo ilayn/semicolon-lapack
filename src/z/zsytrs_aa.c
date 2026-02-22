@@ -3,9 +3,8 @@
  * @brief ZSYTRS_AA solves a system of linear equations A*X = B with a complex symmetric matrix using the factorization computed by ZSYTRF_AA.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

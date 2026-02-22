@@ -3,7 +3,6 @@
  * @brief DTPTTR copies a triangular matrix from standard packed format (TP) to standard full format (TR).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

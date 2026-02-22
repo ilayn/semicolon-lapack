@@ -3,10 +3,9 @@
  * @brief ZUNGTSQR generates an M-by-N complex matrix Q_out with orthonormal columns.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZUNGTSQR generates an M-by-N complex matrix Q_out with orthonormal

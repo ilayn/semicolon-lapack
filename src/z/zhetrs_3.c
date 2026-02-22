@@ -3,10 +3,9 @@
  * @brief ZHETRS_3 solves a system of linear equations A*X = B with a complex Hermitian matrix using the factorization computed by ZHETRF_RK or ZHETRF_BK.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

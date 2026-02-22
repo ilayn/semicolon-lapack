@@ -3,9 +3,8 @@
  * @brief DTGSY2 solves the generalized Sylvester equation (unblocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define LDZ 8

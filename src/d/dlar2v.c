@@ -3,7 +3,6 @@
  * @brief DLAR2V applies a vector of plane rotations from both sides to 2-by-2 symmetric matrices.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

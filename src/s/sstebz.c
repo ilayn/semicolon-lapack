@@ -3,7 +3,6 @@
  * @brief SSTEBZ computes the eigenvalues of a symmetric tridiagonal matrix T.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

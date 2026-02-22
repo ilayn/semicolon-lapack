@@ -3,7 +3,6 @@
  * @brief CLAQZ1 chases a 1x1 shift bulge in a matrix pencil down a single position.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

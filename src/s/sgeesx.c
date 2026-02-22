@@ -3,11 +3,10 @@
  * @brief SGEESX computes Schur form with optional eigenvalue ordering and condition numbers.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SGEESX computes for an N-by-N real nonsymmetric matrix A, the

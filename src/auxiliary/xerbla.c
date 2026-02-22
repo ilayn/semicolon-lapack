@@ -1,7 +1,6 @@
 // xerbla.c
 // Error handler for LAPACK routines
 
-#include "internal_build_defs.h"
 #include <stdio.h>
 #include "semicolon_lapack_auxiliary.h"
 

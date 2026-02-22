@@ -3,7 +3,6 @@
  * @brief ZSYSV_ROOK computes the solution to system of linear equations A * X = B for SY matrices.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"

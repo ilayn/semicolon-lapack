@@ -3,7 +3,6 @@
  * @brief CSYSV_AA computes the solution to system of linear equations A * X = B for SY matrices using Aasen's algorithm.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

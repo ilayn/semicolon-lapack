@@ -4,7 +4,6 @@
  *        Q**H*C, C*Q**H, or C*Q where Q is from an RQ factorization.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>

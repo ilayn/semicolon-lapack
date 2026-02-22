@@ -3,7 +3,6 @@
  * @brief ZLA_LIN_BERR computes a component-wise relative backward error.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>

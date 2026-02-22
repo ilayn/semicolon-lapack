@@ -3,7 +3,6 @@
  * @brief SPBEQU computes row and column scalings to equilibrate a symmetric positive definite band matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

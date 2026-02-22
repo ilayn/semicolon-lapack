@@ -3,7 +3,6 @@
  * @brief SDISNA computes the reciprocal condition numbers for the eigenvectors.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

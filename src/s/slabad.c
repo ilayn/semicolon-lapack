@@ -3,7 +3,6 @@
  * @brief SLABAD is a no-op kept for compatibility.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

@@ -4,7 +4,6 @@
  *        vector and returns a f64 precision result.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
 #include "semicolon_lapack_complex_double.h"

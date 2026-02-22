@@ -3,12 +3,11 @@
  * @brief CTGSEN reorders the generalized Schur decomposition of a complex matrix pair.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CTGSEN reorders the generalized Schur decomposition of a complex

@@ -4,7 +4,6 @@
  *        unnecessary overflow.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

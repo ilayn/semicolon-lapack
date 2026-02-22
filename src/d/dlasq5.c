@@ -3,7 +3,6 @@
  * @brief DLASQ5 computes one dqds transform in ping-pong form.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 

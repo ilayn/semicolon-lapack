@@ -3,9 +3,8 @@
  * @brief SLAPMT performs a forward or backward permutation of the columns of a matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SLAPMT rearranges the columns of the M by N matrix X as specified

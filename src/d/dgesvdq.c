@@ -3,11 +3,10 @@
  * @brief DGESVDQ computes SVD with a QR-Preconditioned QR SVD Method.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f64 ZERO = 0.0;
 static const f64 ONE = 1.0;

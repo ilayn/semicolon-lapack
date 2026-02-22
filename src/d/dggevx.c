@@ -4,11 +4,10 @@
  *        right eigenvectors for GE matrices with extended options.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGGEVX computes for a pair of N-by-N real nonsymmetric matrices (A,B)

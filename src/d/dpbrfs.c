@@ -3,9 +3,8 @@
  * @brief DPBRFS improves the solution and provides error bounds for a symmetric positive definite band system.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define ITMAX 5

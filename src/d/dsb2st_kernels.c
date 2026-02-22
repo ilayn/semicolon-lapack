@@ -3,7 +3,6 @@
  * @brief DSB2ST_KERNELS is an internal routine used by DSYTRD_SB2ST.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 void dsb2st_kernels(const char* uplo, const INT wantz, const INT ttype,

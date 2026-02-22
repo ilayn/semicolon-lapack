@@ -3,11 +3,10 @@
  * @brief CTRSNA estimates condition numbers for eigenvalues and eigenvectors.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CTRSNA estimates reciprocal condition numbers for specified

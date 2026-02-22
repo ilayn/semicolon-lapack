@@ -3,8 +3,7 @@
  * @brief Computes the inverse of a triangular matrix (blocked algorithm).
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 

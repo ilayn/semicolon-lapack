@@ -3,9 +3,8 @@
  * @brief DLABRD reduces the first nb rows and columns of a general matrix to bidiagonal form.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DLABRD reduces the first NB rows and columns of a real general

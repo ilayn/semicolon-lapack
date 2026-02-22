@@ -3,10 +3,9 @@
  * @brief CLACRM multiplies a complex matrix by a square real matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CLACRM performs a very simple matrix-matrix multiplication:

@@ -5,9 +5,8 @@
  *        divide and conquer. Used by sbdsdc.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 void slasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
             f32* restrict D, f32* restrict E,

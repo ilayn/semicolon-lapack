@@ -3,7 +3,6 @@
  * @brief DLAMCH determines f64 precision machine parameters.
  */
 
-#include "internal_build_defs.h"
 #include <float.h>
 #include <math.h>
 #include "semicolon_lapack_double.h"

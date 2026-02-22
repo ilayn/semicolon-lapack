@@ -3,8 +3,7 @@
  * @brief CGGHD3 reduces a pair of complex matrices (A,B) to generalized upper Hessenberg form.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_single.h"
 #include "lapack_tuning.h"

@@ -2,10 +2,9 @@
  * @file zhegs2.c
  * @brief ZHEGS2 reduces a Hermitian-definite generalized eigenproblem to standard form.
  */
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZHEGS2 reduces a complex Hermitian-definite generalized

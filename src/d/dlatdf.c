@@ -3,9 +3,8 @@
  * @brief Compute contribution to reciprocal Dif-estimate using complete pivoting LU.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define MAXDIM 8

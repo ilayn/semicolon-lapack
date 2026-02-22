@@ -3,7 +3,6 @@
  * @brief IPARAM2STAGE sets problem and machine dependent parameters for 2-stage algorithms.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_auxiliary.h"
 #include "lapack_tuning.h"
 #include <string.h>

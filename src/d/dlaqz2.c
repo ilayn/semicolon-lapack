@@ -3,8 +3,7 @@
  * @brief DLAQZ2 chases a 2x2 shift bulge in a matrix pencil down a single position.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

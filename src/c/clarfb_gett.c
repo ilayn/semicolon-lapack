@@ -3,9 +3,8 @@
  * @brief CLARFB_GETT applies a complex Householder block reflector H from the left to a complex (K+M)-by-N triangular-pentagonal matrix.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

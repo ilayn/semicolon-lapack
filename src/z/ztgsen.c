@@ -3,12 +3,11 @@
  * @brief ZTGSEN reorders the generalized Schur decomposition of a complex matrix pair.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZTGSEN reorders the generalized Schur decomposition of a complex

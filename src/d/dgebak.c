@@ -5,9 +5,8 @@
  *        balanced matrix output by DGEBAL.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DGEBAK forms the right or left eigenvectors of a real general matrix

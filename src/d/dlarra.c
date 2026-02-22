@@ -3,7 +3,6 @@
  * @brief DLARRA computes the splitting points with the specified threshold.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_double.h"
 

@@ -3,7 +3,6 @@
  * @brief ZLAG2C converts a complex f64 precision matrix to a complex single precision matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>

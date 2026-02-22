@@ -3,10 +3,9 @@
  * @brief DLAQP2RK computes truncated QR factorization with column pivoting of a real matrix block using Level 2 BLAS.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

@@ -4,11 +4,10 @@
  *        T corresponding to specified eigenvalues, using inverse iteration.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <stdint.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

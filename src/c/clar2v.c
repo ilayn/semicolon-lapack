@@ -4,7 +4,6 @@
  *        and complex sines from both sides to a sequence of 2-by-2 Hermitian matrices.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

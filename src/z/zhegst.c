@@ -3,11 +3,10 @@
  * @brief ZHEGST reduces a Hermitian-definite generalized eigenproblem to standard form.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZHEGST reduces a complex Hermitian-definite generalized eigenproblem

@@ -3,7 +3,6 @@
  * @brief CLARTV applies a vector of plane rotations with real cosines and complex sines.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

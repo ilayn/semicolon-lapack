@@ -4,10 +4,9 @@
  *        unreduced symmetric tridiagonal matrix using the divide and conquer method.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <stdint.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

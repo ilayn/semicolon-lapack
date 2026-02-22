@@ -3,7 +3,6 @@
  * @brief CHPCON estimates the reciprocal condition number of a Hermitian packed matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

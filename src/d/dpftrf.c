@@ -3,9 +3,8 @@
  * @brief DPFTRF computes the Cholesky factorization of a symmetric positive definite matrix in RFP format.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DPFTRF computes the Cholesky factorization of a real symmetric

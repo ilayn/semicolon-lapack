@@ -4,10 +4,9 @@
  *        then updates singular vectors by matrix multiplication.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SLASD3 finds all the square roots of the roots of the secular

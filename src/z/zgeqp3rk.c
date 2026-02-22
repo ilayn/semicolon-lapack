@@ -3,10 +3,9 @@
  * @brief ZGEQP3RK computes a truncated Householder QR factorization with column pivoting of a complex m-by-n matrix using Level 3 BLAS.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

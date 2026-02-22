@@ -3,10 +3,9 @@
  * @brief SSYTRS_3 solves a system of linear equations A*X = B with a real symmetric matrix using the factorization computed by SSYTRF_RK or DSYTRF_BK.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

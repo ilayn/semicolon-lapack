@@ -3,9 +3,8 @@
  * @brief SGETSQRHRT computes a NB2-sized column blocked QR-factorization of a real M-by-N matrix A using TSQR and Householder reconstruction.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

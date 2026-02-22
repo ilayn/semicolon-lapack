@@ -3,7 +3,6 @@
  * @brief Convert f64 precision matrix to single precision.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_double.h"

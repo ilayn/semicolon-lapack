@@ -3,8 +3,7 @@
  * @brief DPBTRF computes the Cholesky factorization of a symmetric positive definite band matrix.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 #define NBMAX 32

@@ -3,9 +3,8 @@
  * @brief SORBDB6 orthogonalizes a column vector with respect to the columns of a matrix using Gram-Schmidt.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

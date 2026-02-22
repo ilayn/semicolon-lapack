@@ -3,9 +3,8 @@
  * @brief SSPRFS improves the solution and provides error bounds for packed symmetric systems.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

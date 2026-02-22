@@ -3,10 +3,9 @@
  * @brief ZHPEVD computes the eigenvalues and, optionally, eigenvectors for a
  *        complex Hermitian matrix in packed storage.
  */
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /**

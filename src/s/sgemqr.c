@@ -4,7 +4,6 @@
  *        where Q is defined by a QR factorization from SGEQR.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

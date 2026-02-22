@@ -4,9 +4,8 @@
  *        of a real symmetric matrix A in packed storage using divide and conquer.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

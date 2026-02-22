@@ -3,11 +3,10 @@
  * @brief ZLATRS solves a triangular system with scaling to prevent overflow.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -412,9 +411,9 @@ void zlatrs(
                     // If the scaling needed for A in the dot product is 1,
                     // call ZDOTU to perform the dot product
                     if (upper) {
-                        csumj = cblas_zdotu(j, &A[j * lda], 1, X, 1);
+                        cblas_zdotu_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {
-                        csumj = cblas_zdotu(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1);
+                        cblas_zdotu_sub(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1, &csumj);
                     }
                 } else {
                     // Otherwise, use in-line code for the dot product
@@ -504,9 +503,9 @@ void zlatrs(
                     // If the scaling needed for A in the dot product is 1,
                     // call ZDOTC to perform the conjugated dot product
                     if (upper) {
-                        csumj = cblas_zdotc(j, &A[j * lda], 1, X, 1);
+                        cblas_zdotc_sub(j, &A[j * lda], 1, X, 1, &csumj);
                     } else if (j < n - 1) {
-                        csumj = cblas_zdotc(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1);
+                        cblas_zdotc_sub(n - j - 1, &A[j + 1 + j * lda], 1, &X[j + 1], 1, &csumj);
                     }
                 } else {
                     // Otherwise, use in-line code for the dot product

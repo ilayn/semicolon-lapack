@@ -3,7 +3,6 @@
  * @brief SLAMCH determines single precision machine parameters.
  */
 
-#include "internal_build_defs.h"
 #include <float.h>
 #include <math.h>
 #include "semicolon_lapack_single.h"

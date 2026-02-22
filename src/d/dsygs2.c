@@ -4,9 +4,8 @@
  *        to standard form (unblocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * DSYGS2 reduces a real symmetric-definite generalized eigenproblem

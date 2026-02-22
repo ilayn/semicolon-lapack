@@ -3,7 +3,6 @@
  * @brief SLARRC computes the number of eigenvalues of the symmetric tridiagonal matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

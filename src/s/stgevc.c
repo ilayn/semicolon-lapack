@@ -3,9 +3,8 @@
  * @brief STGEVC computes eigenvectors of a pair of real matrices (S,P) in generalized Schur form.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

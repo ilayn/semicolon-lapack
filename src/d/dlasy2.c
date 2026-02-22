@@ -4,9 +4,8 @@
  *        of order 1 or 2.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /* Lookup tables for 2x2 pivoting (file scope for thread safety) */

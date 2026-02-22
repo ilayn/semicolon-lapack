@@ -4,9 +4,8 @@
  *        of a real symmetric positive semidefinite matrix (blocked).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 

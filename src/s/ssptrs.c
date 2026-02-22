@@ -4,8 +4,7 @@
  *        stored in packed format using the factorization from SSPTRF.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

@@ -3,7 +3,6 @@
  * @brief ZLARTV applies a vector of plane rotations with real cosines and complex sines.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

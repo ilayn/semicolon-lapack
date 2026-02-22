@@ -3,8 +3,7 @@
  * @brief DLAUUM computes the product U * U**T or L**T * L (blocked algorithm).
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 

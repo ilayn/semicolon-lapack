@@ -4,10 +4,9 @@
  *        complex generalized Hermitian-definite banded eigenproblem.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZHBGVD computes all the eigenvalues, and optionally, the eigenvectors

@@ -4,12 +4,11 @@
  *        squares problem using the SVD with divide and conquer.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include "../include/lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
 #define SMLSIZ 25

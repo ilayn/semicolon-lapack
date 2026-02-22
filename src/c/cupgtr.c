@@ -3,7 +3,6 @@
  * @brief CUPGTR generates a complex unitary matrix Q.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 

@@ -3,9 +3,8 @@
  * @brief SPFTRI computes the inverse of a symmetric positive definite matrix in RFP format.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SPFTRI computes the inverse of a (real) symmetric positive definite

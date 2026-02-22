@@ -4,10 +4,9 @@
  *        the least squares problem.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f32 ONE = 1.0f;
 static const f32 ZERO = 0.0f;

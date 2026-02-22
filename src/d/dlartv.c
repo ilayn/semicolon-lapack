@@ -3,7 +3,6 @@
  * @brief DLARTV applies a vector of plane rotations with real cosines and real sines.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

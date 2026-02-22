@@ -3,8 +3,7 @@
  * @brief SORM22 multiplies a general matrix by a banded orthogonal matrix.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

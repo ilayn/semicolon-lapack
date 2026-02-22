@@ -4,7 +4,6 @@
  *        using the Bunch-Kaufman diagonal pivoting method.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include "lapack_tuning.h"
 

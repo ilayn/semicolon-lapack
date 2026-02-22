@@ -4,7 +4,6 @@
  *        matrix, with loop unrolling when the reflector has order <= 10.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include "semicolon_lapack_complex_double.h"
 

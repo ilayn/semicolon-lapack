@@ -3,7 +3,6 @@
  * @brief SGTTRF computes an LU factorization of a real tridiagonal matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

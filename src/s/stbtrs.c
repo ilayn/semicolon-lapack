@@ -3,8 +3,7 @@
  * @brief STBTRS solves a triangular banded system of equations.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

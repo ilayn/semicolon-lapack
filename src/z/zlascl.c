@@ -4,7 +4,6 @@
  *        defined as cto/cfrom.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_lapack_complex_double.h"

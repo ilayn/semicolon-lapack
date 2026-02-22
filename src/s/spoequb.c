@@ -3,7 +3,6 @@
  * @brief SPOEQUB computes row and column scalings for equilibrating a symmetric positive definite matrix.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

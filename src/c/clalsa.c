@@ -4,10 +4,9 @@
  *        Used by cgelsd.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * CLALSA is an intermediate step in solving the least squares problem

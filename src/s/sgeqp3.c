@@ -4,8 +4,7 @@
  *        matrix A: A*P = Q*R using Level 3 BLAS.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 

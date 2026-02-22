@@ -3,8 +3,7 @@
  * @brief SLARZT forms the triangular factor T of a block reflector H = I - V**T*T*V.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

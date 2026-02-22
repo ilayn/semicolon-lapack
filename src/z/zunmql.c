@@ -4,7 +4,6 @@
  *        a QL factorization determined by ZGEQLF (blocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "../include/lapack_tuning.h"
 #include <complex.h>

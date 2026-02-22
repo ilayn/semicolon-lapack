@@ -4,12 +4,11 @@
  *        M-by-N matrix using a divide-and-conquer algorithm.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <stdlib.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 static const f64 ZERO = 0.0;
 static const f64 ONE = 1.0;

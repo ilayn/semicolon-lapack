@@ -3,11 +3,10 @@
  * @brief ZLAQZ2 performs AED.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZLAQZ2 performs AED

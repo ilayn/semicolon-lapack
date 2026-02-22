@@ -4,7 +4,6 @@
  *        factorization determined by ZGEQRF (unblocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

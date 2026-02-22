@@ -3,7 +3,6 @@
  * @brief ZLAT2C converts a c128 triangular matrix to a complex triangular matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 #include <float.h>

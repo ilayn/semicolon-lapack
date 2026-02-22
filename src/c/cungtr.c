@@ -4,7 +4,6 @@
  *        product of n-1 elementary reflectors of order N, as returned by CHETRD.
  */
 
-#include "internal_build_defs.h"
 #include <complex.h>
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"

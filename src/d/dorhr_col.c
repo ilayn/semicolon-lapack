@@ -3,8 +3,7 @@
  * @brief DORHR_COL takes an M-by-N matrix Q_in with orthonormal columns and performs Householder Reconstruction.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
 /**

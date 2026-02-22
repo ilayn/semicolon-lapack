@@ -3,11 +3,10 @@
  * @brief ZGEBRD reduces a general complex matrix to bidiagonal form using a blocked algorithm.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "lapack_tuning.h"
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGEBRD reduces a general complex M-by-N matrix A to upper or lower

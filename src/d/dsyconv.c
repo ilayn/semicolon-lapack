@@ -3,7 +3,6 @@
  * @brief DSYCONV converts A given by TRF into L and D and vice-versa.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

@@ -3,11 +3,10 @@
  * @brief CDRSCL multiplies a vector by the reciprocal of a real scalar.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <float.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**

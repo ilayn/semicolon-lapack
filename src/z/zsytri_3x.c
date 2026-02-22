@@ -3,11 +3,10 @@
  * @brief ZSYTRI_3X computes the inverse of a complex symmetric indefinite matrix using the factorization computed by ZSYTRF_RK or ZSYTRF_BK (blocked algorithm).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

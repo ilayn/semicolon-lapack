@@ -3,7 +3,6 @@
  * @brief ZHESV_RK computes the solution to system of linear equations A * X = B for HE matrices using ZHETRF_RK/ZHETRS_3.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

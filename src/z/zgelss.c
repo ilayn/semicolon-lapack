@@ -4,13 +4,12 @@
  *        squares problem using the SVD.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include "semicolon_lapack_double.h"
 #include "../include/lapack_tuning.h"
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * ZGELSS computes the minimum norm solution to a complex linear least

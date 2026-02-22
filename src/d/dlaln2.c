@@ -3,7 +3,6 @@
  * @brief DLALN2 solves a 1-by-1 or 2-by-2 linear system of equations.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 #include <math.h>
 #include <float.h>

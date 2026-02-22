@@ -3,7 +3,6 @@
  * @brief ZLAQSB scales a symmetric band matrix using scaling factors computed by ZPBEQU.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 

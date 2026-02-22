@@ -3,7 +3,6 @@
  * @brief SGEQR computes a QR factorization of a real M-by-N matrix A.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 

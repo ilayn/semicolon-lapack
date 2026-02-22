@@ -3,7 +3,6 @@
  * @brief SSPSV computes the solution to a real system of linear equations A * X = B.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 
 /**

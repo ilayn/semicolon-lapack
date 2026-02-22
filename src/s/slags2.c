@@ -3,7 +3,6 @@
  * @brief SLAGS2 computes 2-by-2 orthogonal matrices U, V, and Q.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 

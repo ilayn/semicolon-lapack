@@ -3,8 +3,7 @@
  * @brief SSPSVX computes the solution to a real system of linear equations A * X = B with error bounds.
  */
 
-#include "internal_build_defs.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
 /**

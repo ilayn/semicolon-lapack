@@ -3,9 +3,8 @@
  * @brief SSYTRS_ROOK solves a system of linear equations A*X = B with a real symmetric matrix A using the factorization computed by SSYTRF_ROOK.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /**
  * SSYTRS_ROOK solves a system of linear equations A*X = B with

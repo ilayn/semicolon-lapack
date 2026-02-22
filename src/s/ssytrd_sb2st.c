@@ -3,7 +3,6 @@
  * @brief SSYTRD_SB2ST reduces a real symmetric band matrix to tridiagonal form.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include <math.h>
 

@@ -3,11 +3,10 @@
  * @brief SGESVD computes the singular value decomposition (SVD) of a general matrix.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /*

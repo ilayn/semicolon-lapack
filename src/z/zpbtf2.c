@@ -3,10 +3,9 @@
  * @brief ZPBTF2 computes the Cholesky factorization of a Hermitian positive definite band matrix (unblocked).
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include <complex.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**

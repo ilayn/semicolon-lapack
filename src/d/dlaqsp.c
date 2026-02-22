@@ -3,7 +3,6 @@
  * @brief DLAQSP scales a symmetric matrix in packed storage, using scaling factors computed by dppequ.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_double.h"
 
 /**

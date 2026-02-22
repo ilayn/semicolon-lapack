@@ -4,7 +4,6 @@
  *        matrix A using the factorization computed by SSYTRF.
  */
 
-#include "internal_build_defs.h"
 #include "semicolon_lapack_single.h"
 #include "lapack_tuning.h"
 

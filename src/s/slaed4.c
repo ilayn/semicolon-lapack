@@ -3,7 +3,6 @@
  * @brief SLAED4 finds a single root of the secular equation.
  */
 
-#include "internal_build_defs.h"
 #include <math.h>
 #include "semicolon_lapack_single.h"
 
