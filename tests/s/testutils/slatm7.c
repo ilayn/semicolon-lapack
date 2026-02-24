@@ -166,7 +166,7 @@ void slatm7(const INT mode, const f32 cond, const INT irsign,
                 /* Randomly distributed D values on (1/cond, 1): */
                 alpha = logf(ONE / cond);
                 for (i = 0; i < n; i++) {
-                    d[i] = exp(alpha * rng_uniform_f32(state));
+                    d[i] = expf(alpha * rng_uniform_f32(state));
                 }
                 break;
 

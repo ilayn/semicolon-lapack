@@ -80,7 +80,7 @@ static inline void clear_test_context(void) {
  * Requires THRESH to be defined in the test file.
  */
 #define assert_residual_ok(resid) \
-    _assert_residual_below(resid, THRESH, #resid, __FILE__, __LINE__)
+    _assert_residual_below((double)(resid), (double)(THRESH), #resid, __FILE__, __LINE__)
 
 /**
  * Assert that a normalized residual is below a custom threshold.
@@ -89,7 +89,7 @@ static inline void clear_test_context(void) {
  * @param thresh  Custom threshold
  */
 #define assert_residual_below(resid, thresh) \
-    _assert_residual_below(resid, thresh, #resid, __FILE__, __LINE__)
+    _assert_residual_below((double)(resid), (double)(thresh), #resid, __FILE__, __LINE__)
 
 /**
  * Internal implementation of residual assertion.

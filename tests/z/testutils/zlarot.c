@@ -7,9 +7,6 @@
 
 #include "verify.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const INT info);
-
 /**
  * ZLAROT applies a (Givens) rotation to two adjacent rows or
  * columns, where one element of the first and/or last column/row

@@ -9,12 +9,6 @@
 #include <complex.h>
 #include "verify.h"
 
-/* Forward declaration for test utility */
-void zlakf2(const INT m, const INT n,
-            const c128* A, const INT lda, const c128* B,
-            const c128* D, const c128* E,
-            c128* Z, const INT ldz);
-
 /**
  * ZLATM6 generates test matrices for the generalized eigenvalue
  * problem, their corresponding right and left eigenvector matrices,

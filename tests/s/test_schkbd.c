@@ -425,9 +425,9 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         /* Bidiagonal, random entries */
         f32 temp1 = -2.0f * logf(ulp);
         for (INT j = 0; j < mnmin; j++) {
-            BD[j] = exp(temp1 * rng_uniform_symmetric_f32(rng));
+            BD[j] = expf(temp1 * rng_uniform_symmetric_f32(rng));
             if (j < mnmin - 1)
-                BE[j] = exp(temp1 * rng_uniform_symmetric_f32(rng));
+                BE[j] = expf(temp1 * rng_uniform_symmetric_f32(rng));
         }
 
         iinfo = 0;

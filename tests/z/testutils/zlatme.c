@@ -13,8 +13,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-extern void xerbla(const char* srname, const INT info);
-
 /**
  * ZLATME generates random non-symmetric square matrices with
  * specified eigenvalues for testing LAPACK programs.

@@ -11,9 +11,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const INT info);
-
 /**
  * ZLATM1 computes the entries of D(1..N) as specified by
  * MODE, COND and IRSIGN. IDIST and state determine the generation

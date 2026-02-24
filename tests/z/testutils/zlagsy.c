@@ -12,13 +12,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-extern void xerbla(const char* srname, const INT info);
-extern void zlarnv_rng(const INT idist, const INT n, c128* x, uint64_t state[static 4]);
-extern void zlacgv(const INT n, c128* x, const INT incx);
-extern void zsymv(const char* uplo, const INT n, const c128 alpha,
-                  const c128* A, const INT lda, const c128* x, const INT incx,
-                  const c128 beta, c128* y, const INT incy);
-
 /**
  * ZLAGSY generates a complex symmetric matrix A, by pre- and post-
  * multiplying a real diagonal matrix D with a random unitary matrix:

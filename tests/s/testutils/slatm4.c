@@ -184,7 +184,7 @@ void slatm4(const INT itype, const INT n, const INT nz1, const INT nz2,
                 /* Randomly distributed D values on (RCOND, 1) */
                 alpha = logf(rcond);
                 for (jd = kbeg - 1; jd < kend; jd++) {
-                    A[jd + jd * lda] = exp(alpha * rng_uniform_f32(state));
+                    A[jd + jd * lda] = expf(alpha * rng_uniform_f32(state));
                 }
                 break;
 

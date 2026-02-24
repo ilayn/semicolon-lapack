@@ -11,8 +11,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-extern void xerbla(const char* srname, const INT info);
-
 void zlatms(
     const INT m,
     const INT n,

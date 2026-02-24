@@ -15,12 +15,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-extern void xerbla(const char* srname, const INT info);
-extern c128 zlarnd_rng(const INT idist, uint64_t state[static 4]);
-extern void zlacgv(const INT n, c128* x, const INT incx);
-extern void zlaset(const char* uplo, const INT m, const INT n,
-                   const c128 alpha, const c128 beta, c128* A, const INT lda);
-
 /**
  * ZLAROR pre- or post-multiplies an M by N matrix A by a random
  * unitary matrix U, overwriting A. A may optionally be initialized

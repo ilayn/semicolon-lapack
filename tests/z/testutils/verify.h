@@ -605,4 +605,10 @@ void zsgt01(const INT itype, const char* uplo, const INT n, const INT m,
             c128* Z, const INT ldz,
             const f64* D, c128* work, f64* rwork, f64* result);
 
+/* Error checking utilities */
+extern INT    xerbla_ok;
+extern INT    xerbla_lerr;
+extern char   xerbla_srnamt[33];
+void chkxer(const char* srnamt, INT infot, INT* lerr, INT* ok);
+
 #endif /* VERIFY_Z_H */

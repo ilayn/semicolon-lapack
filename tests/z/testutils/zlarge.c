@@ -12,9 +12,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-extern void xerbla(const char* srname, const INT info);
-extern void zlarnv_rng(const INT idist, const INT n, c128* x, uint64_t state[static 4]);
-
 /**
  * ZLARGE pre- and post-multiplies a complex general n by n matrix A
  * with a random unitary matrix: A = U*A*U'.

@@ -641,13 +641,6 @@ static void test_ddrgsx_readin(void** state)
 
 int main(void)
 {
-    /* Count built-in test cases */
-    INT builtin_count = 0;
-    for (INT mm = 1; mm <= NSIZE - 1; mm++)
-        for (INT nn = 1; nn <= NSIZE - mm; nn++)
-            builtin_count++;
-    builtin_count *= 4 * 5;  /* ifunc x prtype */
-
     static ddrgsx_params_t all_params[4 * 5 * NSIZE * NSIZE];
     static ddrgsx_readin_params_t readin_params[NREADIN];
     static struct CMUnitTest all_tests[4 * 5 * NSIZE * NSIZE + NREADIN];

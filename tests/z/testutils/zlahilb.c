@@ -8,34 +8,32 @@
 
 #include "verify.h"
 
-extern void xerbla(const char* srname, const INT info);
-
 #define NMAX_EXACT   6
 #define NMAX_APPROX  11
 #define SIZE_D       8
 
 static const c128 D1[8] = {
-    -1.0 + 0.0*I,  0.0 + 1.0*I, -1.0 - 1.0*I,
-     0.0 - 1.0*I,  1.0 + 0.0*I, -1.0 + 1.0*I,
-     1.0 + 1.0*I,  1.0 - 1.0*I
+    CMPLX(-1.0, 0.0),  CMPLX(0.0, 1.0), CMPLX(-1.0, -1.0),
+     CMPLX(0.0, -1.0),  CMPLX(1.0, 0.0), CMPLX(-1.0, 1.0),
+     CMPLX(1.0, 1.0),  CMPLX(1.0, -1.0)
 };
 
 static const c128 D2[8] = {
-    -1.0 + 0.0*I,  0.0 - 1.0*I, -1.0 + 1.0*I,
-     0.0 + 1.0*I,  1.0 + 0.0*I, -1.0 - 1.0*I,
-     1.0 - 1.0*I,  1.0 + 1.0*I
+    CMPLX(-1.0, 0.0),  CMPLX(0.0, -1.0), CMPLX(-1.0, 1.0),
+     CMPLX(0.0, 1.0),  CMPLX(1.0, 0.0), CMPLX(-1.0, -1.0),
+     CMPLX(1.0, -1.0),  CMPLX(1.0, 1.0)
 };
 
 static const c128 INVD1[8] = {
-    -1.0 + 0.0*I,  0.0 - 1.0*I, -0.5 + 0.5*I,
-     0.0 + 1.0*I,  1.0 + 0.0*I, -0.5 - 0.5*I,
-     0.5 - 0.5*I,  0.5 + 0.5*I
+    CMPLX(-1.0, 0.0),  CMPLX(0.0, -1.0), CMPLX(-0.5, 0.5),
+     CMPLX(0.0, 1.0),  CMPLX(1.0, 0.0), CMPLX(-0.5, -0.5),
+     CMPLX(0.5, -0.5),  CMPLX(0.5, 0.5)
 };
 
 static const c128 INVD2[8] = {
-    -1.0 + 0.0*I,  0.0 + 1.0*I, -0.5 - 0.5*I,
-     0.0 - 1.0*I,  1.0 + 0.0*I, -0.5 + 0.5*I,
-     0.5 + 0.5*I,  0.5 - 0.5*I
+    CMPLX(-1.0, 0.0),  CMPLX(0.0, 1.0), CMPLX(-0.5, -0.5),
+     CMPLX(0.0, -1.0),  CMPLX(1.0, 0.0), CMPLX(-0.5, 0.5),
+     CMPLX(0.5, 0.5),  CMPLX(0.5, -0.5)
 };
 
 /**
