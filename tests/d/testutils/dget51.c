@@ -3,15 +3,9 @@
  * @brief DGET51 checks a decomposition of the form A = U B V'.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                  const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * DGET51 generally checks a decomposition of the form
@@ -45,11 +39,11 @@ extern void dlacpy(const char* uplo, const int m, const int n,
  * @param[out]    work    Workspace, dimension (2*n*n).
  * @param[out]    result  The computed test value.
  */
-void dget51(const int itype, const int n,
-            const f64* A, const int lda,
-            const f64* B, const int ldb,
-            const f64* U, const int ldu,
-            const f64* V, const int ldv,
+void dget51(const INT itype, const INT n,
+            const f64* A, const INT lda,
+            const f64* B, const INT ldb,
+            const f64* U, const INT ldu,
+            const f64* V, const INT ldv,
             f64* work, f64* result)
 {
     const f64 ZERO = 0.0;
@@ -85,8 +79,8 @@ void dget51(const int itype, const int n,
             /* ITYPE=2: Compute W = A - B */
             dlacpy(" ", n, n, B, ldb, work, n);
 
-            for (int jcol = 0; jcol < n; jcol++) {
-                for (int jrow = 0; jrow < n; jrow++) {
+            for (INT jcol = 0; jcol < n; jcol++) {
+                for (INT jrow = 0; jrow < n; jrow++) {
                     work[jrow + n * jcol] = work[jrow + n * jcol]
                                             - A[jrow + lda * jcol];
                 }
@@ -109,7 +103,7 @@ void dget51(const int itype, const int n,
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                     n, n, n, ONE, U, ldu, U, ldu, ZERO, work, n);
 
-        for (int jdiag = 0; jdiag < n; jdiag++) {
+        for (INT jdiag = 0; jdiag < n; jdiag++) {
             work[(n + 1) * jdiag] = work[(n + 1) * jdiag] - ONE;
         }
 

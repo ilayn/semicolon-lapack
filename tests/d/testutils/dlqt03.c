@@ -14,32 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include <stdint.h>
-#include <cblas.h>
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dorglq(const int m, const int n, const int k,
-                   f64* const restrict A, const int lda,
-                   const f64* const restrict tau,
-                   f64* const restrict work, const int lwork, int* info);
-extern void dormlq(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f64* const restrict A, const int lda,
-                   const f64* const restrict tau,
-                   f64* const restrict C, const int ldc,
-                   f64* const restrict work, const int lwork, int* info);
-
 /* Simple xoshiro256+ for generating random test matrices */
 static uint64_t dlqt03_state[4] = {1988, 1989, 1990, 1991};
 
@@ -72,20 +49,20 @@ static f64 dlqt03_drand(void) {
  * @param[out]    rwork   Workspace.
  * @param[out]    result  Array of dimension 4.
  */
-void dlqt03(const int m, const int n, const int k,
+void dlqt03(const INT m, const INT n, const INT k,
             const f64 * const restrict AF,
             f64 * const restrict C,
             f64 * const restrict CC,
             f64 * const restrict Q,
-            const int lda,
+            const INT lda,
             const f64 * const restrict tau,
-            f64 * const restrict work, const int lwork,
+            f64 * const restrict work, const INT lwork,
             f64 * const restrict rwork,
             f64 * restrict result)
 {
     f64 eps = dlamch("E");
-    int info;
-    int mc, nc;
+    INT info;
+    INT mc, nc;
     f64 cnorm, resid;
 
     /* Copy the first k rows of the factorization to Q and generate Q */
@@ -95,7 +72,7 @@ void dlqt03(const int m, const int n, const int k,
     }
     dorglq(n, n, k, Q, lda, tau, work, lwork, &info);
 
-    for (int iside = 0; iside < 2; iside++) {
+    for (INT iside = 0; iside < 2; iside++) {
         char side;
         if (iside == 0) {
             side = 'L';
@@ -108,15 +85,15 @@ void dlqt03(const int m, const int n, const int k,
         }
 
         /* Generate MC by NC random matrix C */
-        for (int j = 0; j < nc; j++) {
-            for (int i = 0; i < mc; i++) {
+        for (INT j = 0; j < nc; j++) {
+            for (INT i = 0; i < mc; i++) {
                 C[i + j * lda] = dlqt03_drand();
             }
         }
         cnorm = dlange("1", mc, nc, C, lda, rwork);
         if (cnorm == 0.0) cnorm = 1.0;
 
-        for (int itrans = 0; itrans < 2; itrans++) {
+        for (INT itrans = 0; itrans < 2; itrans++) {
             char trans = (itrans == 0) ? 'N' : 'T';
 
             /* Copy C to CC */

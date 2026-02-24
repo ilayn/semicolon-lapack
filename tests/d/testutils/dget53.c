@@ -6,8 +6,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f64 dlamch(const char* cmach);
-
 /**
  * DGET53 checks the generalized eigenvalues computed by DLAG2.
  *
@@ -43,9 +41,9 @@ extern f64 dlamch(const char* cmach);
  *                        = 2: ulp*max( s*norm(A), |w|*norm(B) ) < safe_minimum
  *                        = 3: same as 2, but s and w could not be scaled.
  */
-void dget53(const f64* A, const int lda, const f64* B, const int ldb,
+void dget53(const f64* A, const INT lda, const f64* B, const INT ldb,
             const f64 scale, const f64 wr, const f64 wi,
-            f64* result, int* info)
+            f64* result, INT* info)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

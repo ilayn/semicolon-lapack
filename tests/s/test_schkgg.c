@@ -55,7 +55,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -64,111 +63,81 @@
 #define MAXTYP 26
 #define NTEST  15
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* External function declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void sgeqr2(const int m, const int n, f32* A, const int lda,
-                   f32* tau, f32* work, int* info);
-extern void sorm2r(const char* side, const char* trans, const int m,
-                   const int n, const int k, const f32* A, const int lda,
-                   const f32* tau, f32* C, const int ldc, f32* work,
-                   int* info);
-extern void sgghrd(const char* compq, const char* compz, const int n,
-                   const int ilo, const int ihi, f32* A, const int lda,
-                   f32* B, const int ldb, f32* Q, const int ldq,
-                   f32* Z, const int ldz, int* info);
-extern void shgeqz(const char* job, const char* compq, const char* compz,
-                   const int n, const int ilo, const int ihi,
-                   f32* H, const int ldh, f32* T, const int ldt,
-                   f32* alphar, f32* alphai, f32* beta,
-                   f32* Q, const int ldq, f32* Z, const int ldz,
-                   f32* work, const int lwork, int* info);
-extern void stgevc(const char* side, const char* howmny,
-                   const int* select, const int n,
-                   const f32* S, const int lds, const f32* P, const int ldp,
-                   f32* VL, const int ldvl, f32* VR, const int ldvr,
-                   const int mm, int* m, f32* work, int* info);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-extern void slarfg(const int n, f32* alpha, f32* x, const int incx, f32* tau);
-
 /* ===================================================================== */
 /* DATA arrays from dchkgg.f lines 573-592                               */
 /* ===================================================================== */
 
-static const int kclass[MAXTYP] = {
+static const INT kclass[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     3
 };
 
-static const int katype[MAXTYP] = {
+static const INT katype[MAXTYP] = {
     0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4,
     2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0
 };
 
-static const int kbtype[MAXTYP] = {
+static const INT kbtype[MAXTYP] = {
     0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4,
     2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0
 };
 
-static const int kazero[MAXTYP] = {
+static const INT kazero[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3,
     1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1
 };
 
-static const int kbzero[MAXTYP] = {
+static const INT kbzero[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4,
     1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1
 };
 
-static const int kamagn[MAXTYP] = {
+static const INT kamagn[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1,
     1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1
 };
 
-static const int kbmagn[MAXTYP] = {
+static const INT kbmagn[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1,
     1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1
 };
 
-static const int ktrian[MAXTYP] = {
+static const INT ktrian[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
 
-static const int iasign[MAXTYP] = {
+static const INT iasign[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2,
     0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0
 };
 
-static const int ibsign[MAXTYP] = {
+static const INT ibsign[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2,
     0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static const int kz1[6] = {0, 1, 2, 1, 3, 3};
-static const int kz2[6] = {0, 0, 1, 2, 1, 1};
-static const int kadd[6] = {0, 0, 0, 0, 3, 2};
+static const INT kz1[6] = {0, 1, 2, 1, 3, 3};
+static const INT kz2[6] = {0, 0, 1, 2, 1, 1};
+static const INT kadd[6] = {0, 0, 0, 0, 3, 2};
 
 /* ===================================================================== */
 /* Test parameters and workspace                                         */
 /* ===================================================================== */
 
 typedef struct {
-    int jsize;    /* index into NVAL[] */
-    int jtype;    /* matrix type 1..26 */
+    INT jsize;    /* index into NVAL[] */
+    INT jtype;    /* matrix type 1..26 */
     char name[96];
 } dchkgg_params_t;
 
 typedef struct {
-    int nmax;
+    INT nmax;
     f32* A;
     f32* B;
     f32* H;
@@ -190,8 +159,8 @@ typedef struct {
     f32* alphi3;
     f32* beta3;
     f32* work;
-    int* llwork;
-    int lwork;
+    INT* llwork;
+    INT lwork;
     uint64_t rng_state[4];
 } dchkgg_workspace_t;
 
@@ -214,8 +183,8 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     g_ws->A      = malloc(n2 * sizeof(f32));
     g_ws->B      = malloc(n2 * sizeof(f32));
@@ -239,12 +208,12 @@ static int group_setup(void** state)
     g_ws->alphi3 = malloc(nmax * sizeof(f32));
     g_ws->beta3  = malloc(nmax * sizeof(f32));
 
-    int lwk1 = 2 * n2;
-    int lwk2 = 6 * nmax;
+    INT lwk1 = 2 * n2;
+    INT lwk2 = 6 * nmax;
     g_ws->lwork = (lwk1 > lwk2) ? lwk1 : lwk2;
     if (g_ws->lwork < 1) g_ws->lwork = 1;
     g_ws->work   = malloc(g_ws->lwork * sizeof(f32));
-    g_ws->llwork = malloc(nmax * sizeof(int));
+    g_ws->llwork = malloc(nmax * sizeof(INT));
 
     if (!g_ws->A || !g_ws->B || !g_ws->H || !g_ws->T ||
         !g_ws->S1 || !g_ws->P1 || !g_ws->S2 || !g_ws->P2 ||
@@ -299,18 +268,18 @@ static int group_teardown(void** state)
 
 static void run_dchkgg_single(dchkgg_params_t* params)
 {
-    const int n = NVAL[params->jsize];
-    const int jtype = params->jtype;
-    const int jt = jtype - 1;
+    const INT n = NVAL[params->jsize];
+    const INT jtype = params->jtype;
+    const INT jt = jtype - 1;
 
     if (n == 0) {
         /* n=0 is trivially correct */
         return;
     }
 
-    const int lda = g_ws->nmax;
-    const int ldu = g_ws->nmax;
-    const int lwork = g_ws->lwork;
+    const INT lda = g_ws->nmax;
+    const INT ldu = g_ws->nmax;
+    const INT lwork = g_ws->lwork;
 
     f32* A      = g_ws->A;
     f32* B      = g_ws->B;
@@ -333,7 +302,7 @@ static void run_dchkgg_single(dchkgg_params_t* params)
     f32* alphi3 = g_ws->alphi3;
     f32* beta3  = g_ws->beta3;
     f32* work   = g_ws->work;
-    int* llwork = g_ws->llwork;
+    INT* llwork = g_ws->llwork;
 
     uint64_t* rng = g_ws->rng_state;
 
@@ -342,7 +311,7 @@ static void run_dchkgg_single(dchkgg_params_t* params)
     const f32 safmax = 1.0f / safmin;
     const f32 ulpinv = 1.0f / ulp;
 
-    const int n1 = (n > 1) ? n : 1;
+    const INT n1 = (n > 1) ? n : 1;
 
     f32 rmagn[4];
     rmagn[0] = 0.0f;
@@ -351,10 +320,10 @@ static void run_dchkgg_single(dchkgg_params_t* params)
     rmagn[3] = safmin * ulpinv * (f32)n1;
 
     f32 result[NTEST];
-    for (int j = 0; j < NTEST; j++)
+    for (INT j = 0; j < NTEST; j++)
         result[j] = 0.0f;
 
-    int iinfo = 0;
+    INT iinfo = 0;
     f32 anorm, bnorm;
     char ctx[128];
 
@@ -364,7 +333,7 @@ static void run_dchkgg_single(dchkgg_params_t* params)
 
     if (kclass[jt] < 3) {
         /* Generate A (w/o rotation) */
-        int in = n;
+        INT in = n;
         if (abs(katype[jt]) == 3) {
             in = 2 * ((n - 1) / 2) + 1;
             if (in != n)
@@ -373,7 +342,7 @@ static void run_dchkgg_single(dchkgg_params_t* params)
         slatm4(katype[jt], in, kz1[kazero[jt] - 1], kz2[kazero[jt] - 1],
                iasign[jt], rmagn[kamagn[jt]], ulp,
                rmagn[ktrian[jt] * kamagn[jt]], 2, A, lda, rng);
-        int iadd = kadd[kazero[jt] - 1];
+        INT iadd = kadd[kazero[jt] - 1];
         if (iadd > 0 && iadd <= n)
             A[(iadd - 1) + (iadd - 1) * lda] = rmagn[kamagn[jt]];
 
@@ -387,7 +356,7 @@ static void run_dchkgg_single(dchkgg_params_t* params)
         slatm4(kbtype[jt], in, kz1[kbzero[jt] - 1], kz2[kbzero[jt] - 1],
                ibsign[jt], rmagn[kbmagn[jt]], 1.0f,
                rmagn[ktrian[jt] * kbmagn[jt]], 2, B, lda, rng);
-        int iadd_b = kadd[kbzero[jt] - 1];
+        INT iadd_b = kadd[kbzero[jt] - 1];
         if (iadd_b != 0 && iadd_b <= n)
             B[(iadd_b - 1) + (iadd_b - 1) * lda] = rmagn[kbmagn[jt]];
 
@@ -395,8 +364,8 @@ static void run_dchkgg_single(dchkgg_params_t* params)
             /* Include rotations:
              * Generate U, V as Householder transformations times
              * a diagonal matrix. */
-            for (int jc = 0; jc < n - 1; jc++) {
-                for (int jr = jc; jr < n; jr++) {
+            for (INT jc = 0; jc < n - 1; jc++) {
+                for (INT jr = jc; jr < n; jr++) {
                     U[jr + jc * ldu] = rng_normal_f32(rng);
                     V[jr + jc * ldu] = rng_normal_f32(rng);
                 }
@@ -417,8 +386,8 @@ static void run_dchkgg_single(dchkgg_params_t* params)
             work[4 * n - 1] = (rng_uniform_symmetric_f32(rng) >= 0.0f) ? 1.0f : -1.0f;
 
             /* Apply the diagonal matrices */
-            for (int jc = 0; jc < n; jc++) {
-                for (int jr = 0; jr < n; jr++) {
+            for (INT jc = 0; jc < n; jc++) {
+                for (INT jr = 0; jr < n; jr++) {
                     A[jr + jc * lda] = work[2 * n + jr] * work[3 * n + jc] *
                                        A[jr + jc * lda];
                     B[jr + jc * lda] = work[2 * n + jr] * work[3 * n + jc] *
@@ -440,8 +409,8 @@ static void run_dchkgg_single(dchkgg_params_t* params)
         }
     } else {
         /* Random matrices */
-        for (int jc = 0; jc < n; jc++) {
-            for (int jr = 0; jr < n; jr++) {
+        for (INT jc = 0; jc < n; jc++) {
+            for (INT jr = 0; jr < n; jr++) {
                 A[jr + jc * lda] = rmagn[kamagn[jt]] *
                                    rng_uniform_symmetric_f32(rng);
                 B[jr + jc * lda] = rmagn[kbmagn[jt]] *
@@ -584,14 +553,14 @@ gen_done:
 
     /* To test "SELECT" option, compute half of the eigenvectors
      * in one call, and half in another */
-    int i1 = n / 2;
-    for (int j = 0; j < i1; j++)
+    INT i1 = n / 2;
+    for (INT j = 0; j < i1; j++)
         llwork[j] = 1;
-    for (int j = i1; j < n; j++)
+    for (INT j = i1; j < n; j++)
         llwork[j] = 0;
 
     f32 dumma[4];
-    int in_out;
+    INT in_out;
 
     stgevc("L", "S", llwork, n, S1, lda, P1, lda, evectl, ldu,
            dumma, ldu, n, &in_out, work, &iinfo);
@@ -604,9 +573,9 @@ gen_done:
     }
 
     i1 = in_out;
-    for (int j = 0; j < i1; j++)
+    for (INT j = 0; j < i1; j++)
         llwork[j] = 0;
-    for (int j = i1; j < n; j++)
+    for (INT j = i1; j < n; j++)
         llwork[j] = 1;
 
     stgevc("L", "S", llwork, n, S1, lda, P1, lda,
@@ -644,9 +613,9 @@ gen_done:
     result[10] = ulpinv;
 
     i1 = n / 2;
-    for (int j = 0; j < i1; j++)
+    for (INT j = 0; j < i1; j++)
         llwork[j] = 1;
-    for (int j = i1; j < n; j++)
+    for (INT j = i1; j < n; j++)
         llwork[j] = 0;
 
     stgevc("R", "S", llwork, n, S1, lda, P1, lda, dumma, ldu,
@@ -660,9 +629,9 @@ gen_done:
     }
 
     i1 = in_out;
-    for (int j = 0; j < i1; j++)
+    for (INT j = 0; j < i1; j++)
         llwork[j] = 0;
-    for (int j = i1; j < n; j++)
+    for (INT j = i1; j < n; j++)
         llwork[j] = 1;
 
     stgevc("R", "S", llwork, n, S1, lda, P1, lda, dumma, ldu,
@@ -707,7 +676,7 @@ gen_done:
     {
         f32 temp1 = 0.0f;
         f32 temp2 = 0.0f;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             f32 d1 = fabsf(alphr1[j] - alphr3[j]) +
                      fabsf(alphi1[j] - alphi3[j]);
             if (d1 > temp1) temp1 = d1;
@@ -730,7 +699,7 @@ gen_done:
     /* Check results against threshold                                  */
     /* ================================================================ */
 
-    for (int jr = 0; jr < NTEST; jr++) {
+    for (INT jr = 0; jr < NTEST; jr++) {
         snprintf(ctx, sizeof(ctx), "dchkgg n=%d type=%d TEST %d",
                  n, jtype, jr + 1);
         set_test_context(ctx);
@@ -757,17 +726,17 @@ static void test_dchkgg_case(void** state)
 
 static dchkgg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
+        INT n = NVAL[in];
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             dchkgg_params_t* p = &g_params[g_num_tests];
-            p->jsize = (int)in;
+            p->jsize = (INT)in;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
                      "dchkgg_n%d_type%d", n, jtype);

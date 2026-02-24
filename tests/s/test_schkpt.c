@@ -24,14 +24,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
@@ -42,65 +43,15 @@ static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void spttrf(const int n, f32* D, f32* E, int* info);
-extern void spttrs(const int n, const int nrhs,
-                   const f32* D, const f32* E,
-                   f32* B, const int ldb, int* info);
-extern void sptrfs(const int n, const int nrhs,
-                   const f32* D, const f32* E,
-                   const f32* DF, const f32* EF,
-                   const f32* B, const int ldb,
-                   f32* X, const int ldx,
-                   f32* ferr, f32* berr,
-                   f32* work, int* info);
-extern void sptcon(const int n, const f32* D, const f32* E,
-                   const f32 anorm, f32* rcond,
-                   f32* work, int* info);
-
 /* Verification routines */
-extern void sptt01(const int n, const f32* D, const f32* E,
-                   const f32* DF, const f32* EF,
-                   f32* work, f32* resid);
-extern void sptt02(const int n, const int nrhs, const f32* D,
-                   const f32* E, const f32* X, const int ldx,
-                   f32* B, const int ldb, f32* resid);
-extern void sptt05(const int n, const int nrhs, const f32* D,
-                   const f32* E, const f32* B, const int ldb,
-                   const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact,
-                   const f32* ferr, const f32* berr, f32* reslts);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-extern f32 sget06(const f32 rcond, const f32 rcondc);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern f32 slanst(const char* norm, const int n,
-                     const f32* D, const f32* E);
-extern f32 slamch(const char* cmach);
-extern void slaptm(const int n, const int nrhs, const f32 alpha,
-                   const f32* D, const f32* E,
-                   const f32* X, const int ldx, const f32 beta,
-                   f32* B, const int ldb);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;
+    INT n;
+    INT imat;
     char name[64];
 } dchkpt_params_t;
 
@@ -187,11 +138,11 @@ static int group_teardown(void** state)
  * For types 1-6: Use slatms with controlled singular values.
  * For types 7-12: Generate diagonally dominant tridiagonal directly.
  */
-static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
-                                uint64_t state[static 4], int* izero, f32* Z)
+static void generate_pt_matrix(INT n, INT imat, f32* D, f32* E,
+                                uint64_t state[static 4], INT* izero, f32* Z)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
     const f32 ZERO = 0.0f;
     (void)ZERO;  /* Used in assignments below */
@@ -203,7 +154,7 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
 
     slatb4("SPT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    int zerot = (imat >= 8 && imat <= 10);
+    INT zerot = (imat >= 8 && imat <= 10);
 
     if (imat >= 1 && imat <= 6) {
         *izero = 0;
@@ -211,10 +162,10 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
         /* Types 1-6: Generate positive definite tridiagonal with controlled condition.
            Generate diagonally dominant matrix directly since this is simpler
            and still tests the PT routines correctly. */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             D[i] = rng_uniform_symmetric_f32(state);
         }
-        for (int i = 0; i < n - 1; i++) {
+        for (INT i = 0; i < n - 1; i++) {
             E[i] = rng_uniform_symmetric_f32(state);
         }
 
@@ -224,13 +175,13 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
         } else {
             D[0] = fabsf(D[0]) + fabsf(E[0]) + 1.0f;
             D[n - 1] = fabsf(D[n - 1]) + fabsf(E[n - 2]) + 1.0f;
-            for (int i = 1; i < n - 1; i++) {
+            for (INT i = 1; i < n - 1; i++) {
                 D[i] = fabsf(D[i]) + fabsf(E[i]) + fabsf(E[i - 1]) + 1.0f;
             }
         }
 
         /* Scale so maximum diagonal is anorm */
-        int ix = cblas_isamax(n, D, 1);
+        INT ix = cblas_isamax(n, D, 1);
         f32 dmax = D[ix];
         cblas_sscal(n, anorm / dmax, D, 1);
         if (n > 1) {
@@ -240,7 +191,7 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
         /* Apply condition number scaling for types 3-4 */
         if (imat == 3 || imat == 4) {
             /* Scale to increase condition number */
-            for (int i = 0; i < n / 2; i++) {
+            for (INT i = 0; i < n / 2; i++) {
                 D[i] *= cndnum;
             }
         }
@@ -251,10 +202,10 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
 
         if (!zerot || *izero == 0) {
             /* Let D and E have values from [-1,1]. */
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 D[i] = rng_uniform_symmetric_f32(state);
             }
-            for (int i = 0; i < n - 1; i++) {
+            for (INT i = 0; i < n - 1; i++) {
                 E[i] = rng_uniform_symmetric_f32(state);
             }
 
@@ -264,13 +215,13 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
             } else {
                 D[0] = fabsf(D[0]) + fabsf(E[0]);
                 D[n - 1] = fabsf(D[n - 1]) + fabsf(E[n - 2]);
-                for (int i = 1; i < n - 1; i++) {
+                for (INT i = 1; i < n - 1; i++) {
                     D[i] = fabsf(D[i]) + fabsf(E[i]) + fabsf(E[i - 1]);
                 }
             }
 
             /* Scale D and E so the maximum element is ANORM. */
-            int ix = cblas_isamax(n, D, 1);
+            INT ix = cblas_isamax(n, D, 1);
             f32 dmax = D[ix];
             cblas_sscal(n, anorm / dmax, D, 1);
             if (n > 1) {
@@ -332,14 +283,14 @@ static void generate_pt_matrix(int n, int imat, f32* D, f32* E,
  * Run the full dchkpt test battery for a single (n, imat) combination.
  * This is the core test logic, parameterized by the test case.
  */
-static void run_dchkpt_single(int n, int imat)
+static void run_dchkpt_single(INT n, INT imat)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     dchkpt_workspace_t* ws = g_workspace;
 
-    int info, izero;
-    int lda = (n > 1) ? n : 1;
+    INT info, izero;
+    INT lda = (n > 1) ? n : 1;
     f32 anorm = ZERO, rcond, rcondc, ainvnm;
     f32 result[NTESTS];
     f32 reslts[2];
@@ -350,7 +301,7 @@ static void run_dchkpt_single(int n, int imat)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -402,8 +353,8 @@ static void run_dchkpt_single(int n, int imat)
     /* Use SPTTRS to solve for one column at a time of inv(A),
        computing the maximum column sum as we go. */
     ainvnm = ZERO;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    for (INT i = 0; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
             ws->X[j] = ZERO;
         }
         ws->X[i] = ONE;
@@ -412,12 +363,12 @@ static void run_dchkpt_single(int n, int imat)
     }
     rcondc = ONE / fmaxf(ONE, anorm * ainvnm);
 
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
         /* Generate NRHS random solution vectors. */
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 ws->XACT[i + j * lda] = rng_uniform_symmetric_f32(rng_state);
             }
         }
@@ -512,7 +463,7 @@ static void test_dchkpt_case(void** state)
 
 static dchkpt_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -521,15 +472,15 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Store parameters */
             dchkpt_params_t* p = &g_params[g_num_tests];
             p->n = n;

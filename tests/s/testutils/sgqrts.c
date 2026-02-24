@@ -5,29 +5,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void sggqrf(const int n, const int m, const int p,
-                   f32* A, const int lda, f32* taua,
-                   f32* B, const int ldb, f32* taub,
-                   f32* work, const int lwork, int* info);
-extern void sorgqr(const int m, const int n, const int k,
-                   f32* A, const int lda, const f32* tau,
-                   f32* work, const int lwork, int* info);
-extern void sorgrq(const int m, const int n, const int k,
-                   f32* A, const int lda, const f32* tau,
-                   f32* work, const int lwork, int* info);
 
 /**
  * SGQRTS tests SGGQRF, which computes the GQR factorization of an
@@ -55,33 +34,33 @@ extern void sorgrq(const int m, const int n, const int k,
  * @param[out]    result  4 test ratios.
  */
 void sgqrts(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     const f32* A,
     f32* AF,
     f32* Q,
     f32* R,
-    const int lda,
+    const INT lda,
     f32* taua,
     const f32* B,
     f32* BF,
     f32* Z,
     f32* T,
     f32* BWK,
-    const int ldb,
+    const INT ldb,
     f32* taub,
     f32* work,
-    const int lwork,
+    const INT lwork,
     f32* rwork,
     f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 ROGUE = -1.0e+10f;
-    int info;
+    INT info;
     f32 anorm, bnorm, resid, ulp, unfl;
-    int mn, mp;
+    INT mn, mp;
 
     ulp = slamch("P");
     unfl = slamch("S");

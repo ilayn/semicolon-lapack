@@ -7,41 +7,10 @@
 
 #include <stdlib.h>
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations for LAPACK routines */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda,
-                   f32* B, const int ldb);
-extern void sgeqr(const int m, const int n, f32* A, const int lda,
-                  f32* T, const int tsize, f32* work, const int lwork,
-                  int* info);
-extern void sgelq(const int m, const int n, f32* A, const int lda,
-                  f32* T, const int tsize, f32* work, const int lwork,
-                  int* info);
-extern void sgemqr(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f32* A, const int lda,
-                   const f32* T, const int tsize,
-                   f32* C, const int ldc,
-                   f32* work, const int lwork, int* info);
-extern void sgemlq(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f32* A, const int lda,
-                   const f32* T, const int tsize,
-                   f32* C, const int ldc,
-                   f32* work, const int lwork, int* info);
-extern void slarnv(const int idist, int* iseed, const int n, f32* x);
-
 /**
  * STSQR01 tests SGEQR, SGELQ, SGEMLQ and SGEMQR.
  *
@@ -59,17 +28,17 @@ extern void slarnv(const int idist, int* iseed, const int n, f32* x);
  *                        RESULT[4] = | C Q - C Q |
  *                        RESULT[5] = | C Q^H - C Q^H |
  */
-void stsqr01(const char* tssw, const int m, const int n, const int mb,
-             const int nb, f32* result)
+void stsqr01(const char* tssw, const INT m, const INT n, const INT mb,
+             const INT nb, f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int ts, testzeros;
-    int info, j, k, l, lwork, tsize, mnb;
+    INT ts, testzeros;
+    INT info, j, k, l, lwork, tsize, mnb;
     f32 anorm, eps, resid, cnorm, dnorm;
 
-    int iseed[4] = {1988, 1989, 1990, 1991};
+    INT iseed[4] = {1988, 1989, 1990, 1991};
     f32 tquery[5], workquery[1];
 
     f32* A = NULL;
@@ -127,18 +96,18 @@ void stsqr01(const char* tssw, const int m, const int n, const int mb,
     if (ts) {
         /* Factor the matrix A in the array AF. */
         sgeqr(m, n, AF, m, tquery, -1, workquery, -1, &info);
-        tsize = (int)tquery[0];
-        lwork = (int)workquery[0];
+        tsize = (INT)tquery[0];
+        lwork = (INT)workquery[0];
         sgemqr("L", "N", m, m, k, AF, m, tquery, tsize, CF, m, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemqr("L", "N", m, n, k, AF, m, tquery, tsize, CF, m, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemqr("L", "T", m, n, k, AF, m, tquery, tsize, CF, m, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemqr("R", "N", n, m, k, AF, m, tquery, tsize, DF, n, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemqr("R", "T", n, m, k, AF, m, tquery, tsize, DF, n, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
 
         T = (f32*)malloc(tsize * sizeof(f32));
         work = (f32*)malloc(lwork * sizeof(f32));
@@ -245,18 +214,18 @@ void stsqr01(const char* tssw, const int m, const int n, const int mb,
     } else {
         /* Short and wide */
         sgelq(m, n, AF, m, tquery, -1, workquery, -1, &info);
-        tsize = (int)tquery[0];
-        lwork = (int)workquery[0];
+        tsize = (INT)tquery[0];
+        lwork = (INT)workquery[0];
         sgemlq("R", "N", n, n, k, AF, m, tquery, tsize, Q, n, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemlq("L", "N", n, m, k, AF, m, tquery, tsize, DF, n, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemlq("L", "T", n, m, k, AF, m, tquery, tsize, DF, n, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemlq("R", "N", m, n, k, AF, m, tquery, tsize, CF, m, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
         sgemlq("R", "T", m, n, k, AF, m, tquery, tsize, CF, m, workquery, -1, &info);
-        if ((int)workquery[0] > lwork) lwork = (int)workquery[0];
+        if ((INT)workquery[0] > lwork) lwork = (INT)workquery[0];
 
         T = (f32*)malloc(tsize * sizeof(f32));
         work = (f32*)malloc(lwork * sizeof(f32));

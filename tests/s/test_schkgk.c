@@ -11,7 +11,7 @@
  */
 
 #include "test_harness.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <string.h>
 
@@ -19,37 +19,24 @@
 
 typedef float f32;
 
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void sggbal(const char* job, const int n, f32* A, const int lda,
-                   f32* B, const int ldb, int* ilo, int* ihi,
-                   f32* lscale, f32* rscale, f32* work, int* info);
-extern void sggbak(const char* job, const char* side, const int n,
-                   const int ilo, const int ihi, const f32* lscale,
-                   const f32* rscale, const int m, f32* V, const int ldv,
-                   int* info);
-
 #define LD 50
 
 /* ---------- helpers ---------- */
 
 static void rowmajor_to_colmajor(const f32* rm, f32* cm,
-                                  int nrow, int ncol, int ld)
+                                  INT nrow, INT ncol, INT ld)
 {
     memset(cm, 0, (size_t)ld * ncol * sizeof(f32));
-    for (int i = 0; i < nrow; i++)
-        for (int j = 0; j < ncol; j++)
+    for (INT i = 0; i < nrow; i++)
+        for (INT j = 0; j < ncol; j++)
             cm[i + j * ld] = rm[i * ncol + j];
 }
 
 /* ---------- test case data from TESTING/dgbak.in ---------- */
 
 typedef struct {
-    int n;
-    int m;           /* number of eigenvector columns */
+    INT n;
+    INT m;           /* number of eigenvector columns */
     const f32* a_rm; /* n*n, row-major */
     const f32* b_rm; /* n*n, row-major */
     const f32* vl_rm; /* n*m, row-major */
@@ -301,15 +288,15 @@ static void test_dggbak(void** state)
     f32 vl[LD * LD], vr[LD * LD], vlf[LD * LD], vrf[LD * LD];
     f32 e[LD * LD], f[LD * LD], work[LD * LD];
     f32 lscale[LD], rscale[LD], dummy[1];
-    int ilo, ihi, info;
+    INT ilo, ihi, info;
     f32 rmax = 0.0f, vmax;
-    int ninfo = 0, knt = 0;
-    int lmax[4] = {0, 0, 0, 0};
+    INT ninfo = 0, knt = 0;
+    INT lmax[4] = {0, 0, 0, 0};
 
-    for (int tc = 0; tc < NCASES; tc++) {
+    for (INT tc = 0; tc < NCASES; tc++) {
         const dgbak_case_t* c = &cases[tc];
-        int n = c->n;
-        int m = c->m;
+        INT n = c->n;
+        INT m = c->m;
 
         /* Convert row-major to column-major */
         rowmajor_to_colmajor(c->a_rm, a, n, n, LD);
@@ -371,8 +358,8 @@ static void test_dggbak(void** state)
                     m, m, n, 1.0f, vlf, LD, work, LD, 0.0f, f, LD);
 
         vmax = 0.0f;
-        for (int j = 0; j < m; j++)
-            for (int i = 0; i < m; i++) {
+        for (INT j = 0; j < m; j++)
+            for (INT i = 0; i < m; i++) {
                 f32 diff = fabsf(e[i + j * LD] - f[i + j * LD]);
                 if (diff > vmax) vmax = diff;
             }
@@ -398,8 +385,8 @@ static void test_dggbak(void** state)
                     m, m, n, 1.0f, vlf, LD, work, LD, 0.0f, f, LD);
 
         vmax = 0.0f;
-        for (int j = 0; j < m; j++)
-            for (int i = 0; i < m; i++) {
+        for (INT j = 0; j < m; j++)
+            for (INT i = 0; i < m; i++) {
                 f32 diff = fabsf(e[i + j * LD] - f[i + j * LD]);
                 if (diff > vmax) vmax = diff;
             }

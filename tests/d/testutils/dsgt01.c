@@ -5,14 +5,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
 
 /**
  * DSGT01 checks a decomposition of the form
@@ -44,16 +38,16 @@ extern f64 dlange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace, dimension (n*n).
  * @param[out]    result The test ratio.
  */
-void dsgt01(const int itype, const char* uplo, const int n, const int m,
-            const f64* A, const int lda,
-            const f64* B, const int ldb,
-            f64* Z, const int ldz,
+void dsgt01(const INT itype, const char* uplo, const INT n, const INT m,
+            const f64* A, const INT lda,
+            const f64* B, const INT ldb,
+            f64* Z, const INT ldz,
             const f64* D, f64* work, f64* result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i;
+    INT i;
     f64 anorm, ulp;
     CBLAS_UPLO cblas_uplo;
 
@@ -84,7 +78,7 @@ void dsgt01(const int itype, const char* uplo, const int n, const int m,
         cblas_dsymm(CblasColMajor, CblasLeft, cblas_uplo,
                     n, m, ONE, B, ldb, Z, ldz, -ONE, work, n);
 
-        result[0] = (dlange("1", n, m, work, n, work) / anorm) /
+        result[0] = (dlange("1", n, m, work, n, &work[n * m]) / anorm) /
                     (n * ulp);
 
     } else if (itype == 2) {

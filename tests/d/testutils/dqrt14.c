@@ -12,24 +12,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlascl(const char* type, const int kl, const int ku,
-                   const f64 cfrom, const f64 cto,
-                   const int m, const int n, f64* A, const int lda,
-                   int* info);
-extern void dgeqr2(const int m, const int n, f64* A, const int lda,
-                   f64* tau, f64* work, int* info);
-extern void dgelq2(const int m, const int n, f64* A, const int lda,
-                   f64* tau, f64* work, int* info);
-extern void xerbla(const char* srname, const int info);
 
 /**
  * DQRT14 checks whether X is in the row space of A or A'.
@@ -71,15 +54,15 @@ extern void xerbla(const char* srname, const int info);
  * @return
  *     The computed residual: norm of trailing triangle / (max(M,N,NRHS) * eps)
  */
-f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
-              const f64* A, const int lda, const f64* X, const int ldx,
-              f64* work, const int lwork)
+f64 dqrt14(const char* trans, const INT m, const INT n, const INT nrhs,
+              const f64* A, const INT lda, const f64* X, const INT ldx,
+              f64* work, const INT lwork)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int tpsd;
-    int i, info, j, ldwork;
+    INT tpsd;
+    INT i, info, j, ldwork;
     f64 anrm, err, xnrm;
     f64 rwork[1];
 
@@ -124,7 +107,7 @@ f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
         }
 
         /* Compute QR factorization of [A, X] */
-        int minmn = (m < n + nrhs) ? m : n + nrhs;
+        INT minmn = (m < n + nrhs) ? m : n + nrhs;
         dgeqr2(m, n + nrhs, work, ldwork,
                &work[ldwork * (n + nrhs)],
                &work[ldwork * (n + nrhs) + minmn],
@@ -134,7 +117,7 @@ f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
            (0-based: rows n to min(m,j+1)-1 for column j from n to n+nrhs-1) */
         err = ZERO;
         for (j = n; j < n + nrhs; j++) {
-            int iend = (m < j + 1) ? m : j + 1;  /* min(m, j+1) */
+            INT iend = (m < j + 1) ? m : j + 1;  /* min(m, j+1) */
             for (i = n; i < iend; i++) {
                 f64 val = fabs(work[i + j * ldwork]);
                 if (val > err) err = val;
@@ -170,7 +153,7 @@ f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
     }
 
     /* Compute the result */
-    int maxmnr = m;
+    INT maxmnr = m;
     if (n > maxmnr) maxmnr = n;
     if (nrhs > maxmnr) maxmnr = nrhs;
 

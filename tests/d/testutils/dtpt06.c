@@ -10,10 +10,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const f64* AP, f64* work);
-
 /**
  * DTPT06 computes a test ratio comparing RCOND (the reciprocal
  * condition number of a triangular matrix A) and RCONDC, the estimate
@@ -35,7 +31,7 @@ extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
  *                        If one is zero: scaled version of the nonzero estimate.
  */
 void dtpt06(const f64 rcond, const f64 rcondc,
-            const char* uplo, const char* diag, const int n,
+            const char* uplo, const char* diag, const INT n,
             const f64* AP, f64* work, f64* rat)
 {
     const f64 ZERO = 0.0;

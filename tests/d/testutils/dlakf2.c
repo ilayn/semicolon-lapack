@@ -5,11 +5,6 @@
 
 #include "verify.h"
 
-/* Forward declarations */
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-
 /**
  * Form the 2*M*N by 2*M*N matrix
  *
@@ -50,14 +45,14 @@ extern void dlaset(const char* uplo, const int m, const int n,
  * @param[in] ldz
  *     The leading dimension of Z. (ldz >= 2*m*n)
  */
-void dlakf2(const int m, const int n,
-            const f64* A, const int lda,
+void dlakf2(const INT m, const INT n,
+            const f64* A, const INT lda,
             const f64* B, const f64* D, const f64* E,
-            f64* Z, const int ldz)
+            f64* Z, const INT ldz)
 {
     const f64 ZERO = 0.0;
 
-    int i, ik, j, jk, l, mn, mn2;
+    INT i, ik, j, jk, l, mn, mn2;
 
     mn = m * n;
     mn2 = 2 * mn;

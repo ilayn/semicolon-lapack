@@ -17,50 +17,33 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cblas.h>
-
 /* Test fixture */
 typedef struct {
-    int n;
+    INT n;
     f32* A;        /* Original matrix */
     f32* Acopy;    /* Copy for verification */
     f32* VS;       /* Schur vectors */
     f32* wr;       /* Real eigenvalues */
     f32* wi;       /* Imaginary eigenvalues */
     f32* work;     /* Workspace */
-    int* iwork;       /* Integer workspace */
-    int* bwork;       /* Boolean work for SELECT */
+    INT* iwork;       /* Integer workspace */
+    INT* bwork;       /* Boolean work for SELECT */
     uint64_t seed;
     uint64_t rng_state[4];
 } dgeesx_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-typedef int (*sselect2_t)(const f32* wr, const f32* wi);
-
-extern void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
-                   const char* sense, const int n, f32* A, const int lda,
-                   int* sdim, f32* wr, f32* wi, f32* VS, const int ldvs,
-                   f32* rconde, f32* rcondv,
-                   f32* work, const int lwork,
-                   int* iwork, const int liwork, int* bwork, int* info);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
+typedef INT (*sselect2_t)(const f32* wr, const f32* wi);
 
 /* Selection function: select eigenvalues with negative real part */
-static int select_negative_real(const f32* wr, const f32* wi)
+static INT select_negative_real(const f32* wr, const f32* wi)
 {
     (void)wi;
     return (*wr < 0.0f) ? 1 : 0;
 }
 
 /* Selection function: select eigenvalues inside unit circle */
-static int select_inside_unit_circle(const f32* wr, const f32* wi)
+static INT select_inside_unit_circle(const f32* wr, const f32* wi)
 {
     f32 magnitude = sqrtf((*wr) * (*wr) + (*wi) * (*wi));
     return (magnitude < 1.0f) ? 1 : 0;
@@ -80,15 +63,15 @@ static int setup_N(void** state, int n) {
     fix->VS = malloc(n * n * sizeof(f32));
     fix->wr = malloc(n * sizeof(f32));
     fix->wi = malloc(n * sizeof(f32));
-    fix->bwork = malloc(n * sizeof(int));
+    fix->bwork = malloc(n * sizeof(INT));
 
     /* Integer workspace for condition number computation */
-    int liwork = n * n / 4;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
-    fix->iwork = malloc(liwork * sizeof(int));
+    fix->iwork = malloc(liwork * sizeof(INT));
 
     /* Workspace: generous allocation */
-    int lwork = 12 * n * n;
+    INT lwork = 12 * n * n;
     fix->work = malloc(lwork * sizeof(f32));
 
     if (!fix->A || !fix->Acopy || !fix->VS ||
@@ -130,11 +113,11 @@ static int setup_20(void** state) { return setup_N(state, 20); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, f32* A, int lda, f32 anorm,
+static void generate_random_matrix(INT n, f32* A, INT lda, f32 anorm,
                                    uint64_t state[static 4])
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             A[i + j * lda] = anorm * rng_uniform_symmetric_f32(state);
         }
     }
@@ -146,9 +129,9 @@ static void generate_random_matrix(int n, f32* A, int lda, f32 anorm,
 static void test_basic(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
     f32 result[2];
 
@@ -159,8 +142,8 @@ static void test_basic(void** state)
     slacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute Schur decomposition */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("V", "N", NULL, "N", n, fix->A, lda, &sdim,
@@ -170,13 +153,13 @@ static void test_basic(void** state)
     assert_info_success(info);
 
     /* Eigenvalues should be finite */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr[j]));
         assert_true(isfinite(fix->wi[j]));
     }
 
     /* Verify Schur decomposition */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     shst01(n, 1, n, fix->Acopy, lda, fix->A, lda, fix->VS, lda,
            fix->work, lwork_verify, result);
 
@@ -190,9 +173,9 @@ static void test_basic(void** state)
 static void test_with_ordering(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
     f32 result[2];
 
@@ -203,8 +186,8 @@ static void test_with_ordering(void** state)
     slacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute Schur decomposition with ordering */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("V", "S", select_negative_real, "N", n, fix->A, lda, &sdim,
@@ -223,14 +206,14 @@ static void test_with_ordering(void** state)
     }
 
     /* Verify eigenvalue ordering */
-    for (int j = 0; j < sdim; j++) {
+    for (INT j = 0; j < sdim; j++) {
         if (fix->wi[j] == 0.0f) {
             assert_true(fix->wr[j] < 0.0f);
         }
     }
 
     /* Verify Schur decomposition */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     shst01(n, 1, n, fix->Acopy, lda, fix->A, lda, fix->VS, lda,
            fix->work, lwork_verify, result);
 
@@ -244,17 +227,17 @@ static void test_with_ordering(void** state)
 static void test_condition_eigenvalue(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0f, fix->rng_state);
 
     /* Compute with condition number for eigenvalue cluster */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("V", "S", select_negative_real, "E", n, fix->A, lda, &sdim,
@@ -285,17 +268,17 @@ static void test_condition_eigenvalue(void** state)
 static void test_condition_subspace(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0f, fix->rng_state);
 
     /* Compute with condition number for invariant subspace */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("V", "S", select_negative_real, "V", n, fix->A, lda, &sdim,
@@ -326,9 +309,9 @@ static void test_condition_subspace(void** state)
 static void test_condition_both(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
     f32 result[2];
 
@@ -337,8 +320,8 @@ static void test_condition_both(void** state)
     slacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute with both condition numbers */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("V", "S", select_inside_unit_circle, "B", n, fix->A, lda, &sdim,
@@ -364,7 +347,7 @@ static void test_condition_both(void** state)
     }
 
     /* Verify Schur decomposition */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     shst01(n, 1, n, fix->Acopy, lda, fix->A, lda, fix->VS, lda,
            fix->work, lwork_verify, result);
 
@@ -378,11 +361,11 @@ static void test_condition_both(void** state)
 static void test_workspace_query(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int sdim, info;
+    INT n = fix->n;
+    INT sdim, info;
     f32 rconde, rcondv;
     f32 work_query;
-    int iwork_query;
+    INT iwork_query;
 
     /* Query optimal workspace */
     sgeesx("V", "S", select_negative_real, "B", n, fix->A, n, &sdim,
@@ -399,17 +382,17 @@ static void test_workspace_query(void** state)
 static void test_no_vectors(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0f, fix->rng_state);
 
     /* Compute without Schur vectors */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("N", "N", NULL, "N", n, fix->A, lda, &sdim,
@@ -419,7 +402,7 @@ static void test_no_vectors(void** state)
     assert_info_success(info);
 
     /* Eigenvalues should be finite */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr[j]));
         assert_true(isfinite(fix->wi[j]));
     }
@@ -431,14 +414,14 @@ static void test_no_vectors(void** state)
 static void test_symmetric_matrix(void** state)
 {
     dgeesx_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f32 rconde, rcondv;
 
     /* Generate symmetric matrix */
-    for (int j = 0; j < n; j++) {
-        for (int i = j; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = j; i < n; i++) {
             f32 val = rng_uniform_symmetric_f32(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
@@ -446,8 +429,8 @@ static void test_symmetric_matrix(void** state)
     }
 
     /* Compute Schur decomposition */
-    int lwork = 10 * n * n;
-    int liwork = n * n / 4;
+    INT lwork = 10 * n * n;
+    INT liwork = n * n / 4;
     if (liwork < 1) liwork = 1;
 
     sgeesx("V", "N", NULL, "N", n, fix->A, lda, &sdim,
@@ -457,7 +440,7 @@ static void test_symmetric_matrix(void** state)
     assert_info_success(info);
 
     /* All eigenvalues should be real */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_double_equal(fix->wi[j], 0.0f, 1e-10);
     }
 }
@@ -485,7 +468,7 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_condition_both, setup_20, teardown),
     };
 
-    int result = 0;
+    INT result = 0;
     result += cmocka_run_group_tests_name("dgeesx_n5", tests_n5, NULL, NULL);
     result += cmocka_run_group_tests_name("dgeesx_n10", tests_n10, NULL, NULL);
     result += cmocka_run_group_tests_name("dgeesx_n20", tests_n20, NULL, NULL);

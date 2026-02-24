@@ -6,16 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slartg(const f32 f, const f32 g, f32* c, f32* s, f32* r);
 
 /* Constants */
 static const f32 ZERO = 0.0f;
@@ -71,20 +65,20 @@ static const f32 TWOPI = 6.28318530717958647692528676655900576839f;
  * @param[out] work   Workspace, dimension (3*max(m,n)).
  * @param[out] info   0=success, <0=argument error, >0=other error.
  */
-void slatmt(const int m, const int n, const char* dist,
-            const char* sym, f32* d, const int mode,
-            const f32 cond, const f32 dmax, const int rank,
-            const int kl, const int ku, const char* pack,
-            f32* A, const int lda, f32* work, int* info,
+void slatmt(const INT m, const INT n, const char* dist,
+            const char* sym, f32* d, const INT mode,
+            const f32 cond, const f32 dmax, const INT rank,
+            const INT kl, const INT ku, const char* pack,
+            f32* A, const INT lda, f32* work, INT* info,
             uint64_t state[static 4])
 {
     /* Local scalars */
     f32 alpha, angle, c, dummy, extra, s, temp;
-    int i, ic, icol = 0, idist, iendch, iinfo, il, ilda;
-    int ioffg, ioffst, ipack, ipackg, ir, ir1, ir2;
-    int irow = 0, irsign, iskew, isym, isympk, j, jc, jch;
-    int jkl, jku, jr, k, llb, minlda, mnmin, mr, nc, uub;
-    int givens, ilextr, iltemp, topdwn;
+    INT i, ic, icol = 0, idist, iendch, iinfo, il, ilda;
+    INT ioffg, ioffst, ipack, ipackg, ir, ir1, ir2;
+    INT irow = 0, irsign, iskew, isym, isympk, j, jc, jch;
+    INT jkl, jku, jr, k, llb, minlda, mnmin, mr, nc, uub;
+    INT givens, ilextr, iltemp, topdwn;
 
     *info = 0;
 
@@ -284,7 +278,7 @@ void slatmt(const int m, const int n, const char* dist,
          * to be careful about the addressing. For unpacked (iskew=0, ioffst=0):
          * A[0 + 0*lda], A[1 + 1*lda], etc. with stride = lda+1.
          * For band format, the formula is different. */
-        int diag_start = (1 - iskew) + ioffst - 1;  /* C 0-based offset */
+        INT diag_start = (1 - iskew) + ioffst - 1;  /* C 0-based offset */
         if (diag_start < 0) diag_start = 0;
         cblas_scopy(mnmin, d, 1, &A[diag_start], ilda + 1);
         if (ipack <= 2 || ipack >= 5) {
@@ -304,7 +298,7 @@ void slatmt(const int m, const int n, const char* dist,
             }
 
             /* Copy D to diagonal */
-            int diag_start = (1 - iskew) + ioffst - 1;
+            INT diag_start = (1 - iskew) + ioffst - 1;
             if (diag_start < 0) diag_start = 0;
             cblas_scopy(mnmin, d, 1, &A[diag_start], ilda + 1);
 
@@ -314,7 +308,7 @@ void slatmt(const int m, const int n, const char* dist,
                     /* Transform from bandwidth JKL, JKU-1 to JKL, JKU
                      * Last row actually rotated is M
                      * Last column actually rotated is MIN(M+JKU, N) */
-                    int limit = ((m + jku < n) ? m + jku : n) + jkl - 1;
+                    INT limit = ((m + jku < n) ? m + jku : n) + jkl - 1;
                     for (jr = 1; jr <= limit; jr++) {
                         extra = ZERO;
                         angle = TWOPI * rng_uniform_f32(state);
@@ -325,7 +319,7 @@ void slatmt(const int m, const int n, const char* dist,
                             il = ((n < jr + jku) ? n : jr + jku) + 1 - icol;
                             /* Fortran: A(JR-ISKEW*ICOL+IOFFST, ICOL)
                              * C: A[(jr-1) - iskew*(icol-1) + ioffst - 1 + (icol-1)*lda] */
-                            int aoff = (jr - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                            INT aoff = (jr - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                             if (ioffst == 0 && iskew == 0) {
                                 aoff = (jr - 1) + (icol - 1) * lda;
                             }
@@ -338,7 +332,7 @@ void slatmt(const int m, const int n, const char* dist,
                         ic = icol;
                         for (jch = jr - jkl; jch >= 1; jch -= jkl + jku) {
                             if (ir < m) {
-                                int idx = (ir + 1 - 1) - iskew * (ic + 1 - 1) + ioffst - 1 + (ic + 1 - 1) * lda;
+                                INT idx = (ir + 1 - 1) - iskew * (ic + 1 - 1) + ioffst - 1 + (ic + 1 - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = ir + ic * lda;
                                 }
@@ -349,7 +343,7 @@ void slatmt(const int m, const int n, const char* dist,
                             temp = ZERO;
                             iltemp = jch > jku ? 1 : 0;
                             {
-                                int aoff = (irow - 1) - iskew * (ic - 1) + ioffst - 1 + (ic - 1) * lda;
+                                INT aoff = (irow - 1) - iskew * (ic - 1) + ioffst - 1 + (ic - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     aoff = (irow - 1) + (ic - 1) * lda;
                                 }
@@ -357,7 +351,7 @@ void slatmt(const int m, const int n, const char* dist,
                                        &A[aoff], ilda, &temp, &extra);
                             }
                             if (iltemp) {
-                                int idx = (irow + 1 - 1) - iskew * (ic + 1 - 1) + ioffst - 1 + (ic + 1 - 1) * lda;
+                                INT idx = (irow + 1 - 1) - iskew * (ic + 1 - 1) + ioffst - 1 + (ic + 1 - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = irow + ic * lda;
                                 }
@@ -366,7 +360,7 @@ void slatmt(const int m, const int n, const char* dist,
                                 il = ic + 2 - icol;
                                 extra = ZERO;
                                 {
-                                    int aoff = (irow - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                                    INT aoff = (irow - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                                     if (ioffst == 0 && iskew == 0) {
                                         aoff = (irow - 1) + (icol - 1) * lda;
                                     }
@@ -383,7 +377,7 @@ void slatmt(const int m, const int n, const char* dist,
                 jku = uub;
                 for (jkl = 1; jkl <= llb; jkl++) {
                     /* Transform from bandwidth JKL-1, JKU to JKL, JKU */
-                    int limit = ((n + jkl < m) ? n + jkl : m) + jku - 1;
+                    INT limit = ((n + jkl < m) ? n + jkl : m) + jku - 1;
                     for (jc = 1; jc <= limit; jc++) {
                         extra = ZERO;
                         angle = TWOPI * rng_uniform_f32(state);
@@ -392,7 +386,7 @@ void slatmt(const int m, const int n, const char* dist,
                         irow = (1 > jc - jku) ? 1 : jc - jku;
                         if (jc < n) {
                             il = ((m < jc + jkl) ? m : jc + jkl) + 1 - irow;
-                            int aoff = (irow - 1) - iskew * (jc - 1) + ioffst - 1 + (jc - 1) * lda;
+                            INT aoff = (irow - 1) - iskew * (jc - 1) + ioffst - 1 + (jc - 1) * lda;
                             if (ioffst == 0 && iskew == 0) {
                                 aoff = (irow - 1) + (jc - 1) * lda;
                             }
@@ -405,7 +399,7 @@ void slatmt(const int m, const int n, const char* dist,
                         ir = irow;
                         for (jch = jc - jku; jch >= 1; jch -= jkl + jku) {
                             if (ic < n) {
-                                int idx = (ir + 1 - 1) - iskew * (ic + 1 - 1) + ioffst - 1 + (ic + 1 - 1) * lda;
+                                INT idx = (ir + 1 - 1) - iskew * (ic + 1 - 1) + ioffst - 1 + (ic + 1 - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = ir + ic * lda;
                                 }
@@ -416,7 +410,7 @@ void slatmt(const int m, const int n, const char* dist,
                             temp = ZERO;
                             iltemp = jch > jkl ? 1 : 0;
                             {
-                                int aoff = (ir - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                                INT aoff = (ir - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     aoff = (ir - 1) + (icol - 1) * lda;
                                 }
@@ -424,7 +418,7 @@ void slatmt(const int m, const int n, const char* dist,
                                        &A[aoff], ilda, &temp, &extra);
                             }
                             if (iltemp) {
-                                int idx = (ir + 1 - 1) - iskew * (icol + 1 - 1) + ioffst - 1 + (icol + 1 - 1) * lda;
+                                INT idx = (ir + 1 - 1) - iskew * (icol + 1 - 1) + ioffst - 1 + (icol + 1 - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = ir + icol * lda;
                                 }
@@ -433,7 +427,7 @@ void slatmt(const int m, const int n, const char* dist,
                                 il = ir + 2 - irow;
                                 extra = ZERO;
                                 {
-                                    int aoff = (irow - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                                    INT aoff = (irow - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                                     if (ioffst == 0 && iskew == 0) {
                                         aoff = (irow - 1) + (icol - 1) * lda;
                                     }
@@ -455,7 +449,7 @@ void slatmt(const int m, const int n, const char* dist,
                      * First row actually rotated is M
                      * First column actually rotated is MIN(M+JKU, N) */
                     iendch = ((m < n + jkl) ? m : n + jkl) - 1;
-                    int start_jc = ((m + jku < n) ? m + jku : n) - 1;
+                    INT start_jc = ((m + jku < n) ? m + jku : n) - 1;
                     for (jc = start_jc; jc >= 1 - jkl; jc--) {
                         extra = ZERO;
                         angle = TWOPI * rng_uniform_f32(state);
@@ -464,7 +458,7 @@ void slatmt(const int m, const int n, const char* dist,
                         irow = (1 > jc - jku + 1) ? 1 : jc - jku + 1;
                         if (jc > 0) {
                             il = ((m < jc + jkl + 1) ? m : jc + jkl + 1) + 1 - irow;
-                            int aoff = (irow - 1) - iskew * (jc - 1) + ioffst - 1 + (jc - 1) * lda;
+                            INT aoff = (irow - 1) - iskew * (jc - 1) + ioffst - 1 + (jc - 1) * lda;
                             if (ioffst == 0 && iskew == 0) {
                                 aoff = (irow - 1) + (jc - 1) * lda;
                             }
@@ -477,7 +471,7 @@ void slatmt(const int m, const int n, const char* dist,
                         for (jch = jc + jkl; jch <= iendch; jch += jkl + jku) {
                             ilextr = ic > 0 ? 1 : 0;
                             if (ilextr) {
-                                int idx = (jch - 1) - iskew * (ic - 1) + ioffst - 1 + (ic - 1) * lda;
+                                INT idx = (jch - 1) - iskew * (ic - 1) + ioffst - 1 + (ic - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = (jch - 1) + (ic - 1) * lda;
                                 }
@@ -488,7 +482,7 @@ void slatmt(const int m, const int n, const char* dist,
                             iltemp = jch + jku < n ? 1 : 0;
                             temp = ZERO;
                             {
-                                int aoff = (jch - 1) - iskew * (ic - 1) + ioffst - 1 + (ic - 1) * lda;
+                                INT aoff = (jch - 1) - iskew * (ic - 1) + ioffst - 1 + (ic - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     aoff = (jch - 1) + (ic - 1) * lda;
                                 }
@@ -496,7 +490,7 @@ void slatmt(const int m, const int n, const char* dist,
                                        &A[aoff], ilda, &extra, &temp);
                             }
                             if (iltemp) {
-                                int idx = (jch - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                                INT idx = (jch - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = (jch - 1) + (icol - 1) * lda;
                                 }
@@ -504,7 +498,7 @@ void slatmt(const int m, const int n, const char* dist,
                                 il = ((iendch < jch + jkl + jku) ? iendch : jch + jkl + jku) + 2 - jch;
                                 extra = ZERO;
                                 {
-                                    int aoff = (jch - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                                    INT aoff = (jch - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                                     if (ioffst == 0 && iskew == 0) {
                                         aoff = (jch - 1) + (icol - 1) * lda;
                                     }
@@ -523,7 +517,7 @@ void slatmt(const int m, const int n, const char* dist,
                      * First row actually rotated is MIN(N+JKL, M)
                      * First column actually rotated is N */
                     iendch = ((n < m + jku) ? n : m + jku) - 1;
-                    int start_jr = ((n + jkl < m) ? n + jkl : m) - 1;
+                    INT start_jr = ((n + jkl < m) ? n + jkl : m) - 1;
                     for (jr = start_jr; jr >= 1 - jku; jr--) {
                         extra = ZERO;
                         angle = TWOPI * rng_uniform_f32(state);
@@ -532,7 +526,7 @@ void slatmt(const int m, const int n, const char* dist,
                         icol = (1 > jr - jkl + 1) ? 1 : jr - jkl + 1;
                         if (jr > 0) {
                             il = ((n < jr + jku + 1) ? n : jr + jku + 1) + 1 - icol;
-                            int aoff = (jr - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
+                            INT aoff = (jr - 1) - iskew * (icol - 1) + ioffst - 1 + (icol - 1) * lda;
                             if (ioffst == 0 && iskew == 0) {
                                 aoff = (jr - 1) + (icol - 1) * lda;
                             }
@@ -545,7 +539,7 @@ void slatmt(const int m, const int n, const char* dist,
                         for (jch = jr + jku; jch <= iendch; jch += jkl + jku) {
                             ilextr = ir > 0 ? 1 : 0;
                             if (ilextr) {
-                                int idx = (ir - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
+                                INT idx = (ir - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = (ir - 1) + (jch - 1) * lda;
                                 }
@@ -556,7 +550,7 @@ void slatmt(const int m, const int n, const char* dist,
                             iltemp = jch + jkl < m ? 1 : 0;
                             temp = ZERO;
                             {
-                                int aoff = (ir - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
+                                INT aoff = (ir - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     aoff = (ir - 1) + (jch - 1) * lda;
                                 }
@@ -564,7 +558,7 @@ void slatmt(const int m, const int n, const char* dist,
                                        &A[aoff], ilda, &extra, &temp);
                             }
                             if (iltemp) {
-                                int idx = (irow - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
+                                INT idx = (irow - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
                                 if (ioffst == 0 && iskew == 0) {
                                     idx = (irow - 1) + (jch - 1) * lda;
                                 }
@@ -572,7 +566,7 @@ void slatmt(const int m, const int n, const char* dist,
                                 il = ((iendch < jch + jkl + jku) ? iendch : jch + jkl + jku) + 2 - jch;
                                 extra = ZERO;
                                 {
-                                    int aoff = (irow - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
+                                    INT aoff = (irow - 1) - iskew * (jch - 1) + ioffst - 1 + (jch - 1) * lda;
                                     if (ioffst == 0 && iskew == 0) {
                                         aoff = (irow - 1) + (jch - 1) * lda;
                                     }
@@ -600,7 +594,7 @@ void slatmt(const int m, const int n, const char* dist,
                     ipackg = 1;
                 }
                 {
-                    int diag_start = (1 - iskew) + ioffg - 1;
+                    INT diag_start = (1 - iskew) + ioffg - 1;
                     if (diag_start < 0) diag_start = 0;
                     cblas_scopy(mnmin, d, 1, &A[diag_start], ilda + 1);
                 }
@@ -611,7 +605,7 @@ void slatmt(const int m, const int n, const char* dist,
                         il = ((jc + 1 < k + 2) ? jc + 1 : k + 2);
                         extra = ZERO;
                         {
-                            int idx = (jc - 1) - iskew * (jc + 1 - 1) + ioffg - 1 + (jc + 1 - 1) * lda;
+                            INT idx = (jc - 1) - iskew * (jc + 1 - 1) + ioffg - 1 + (jc + 1 - 1) * lda;
                             if (ioffg == 0 && iskew == 0) {
                                 idx = (jc - 1) + jc * lda;
                             }
@@ -621,7 +615,7 @@ void slatmt(const int m, const int n, const char* dist,
                         c = cosf(angle);
                         s = sinf(angle);
                         {
-                            int aoff = (irow - 1) - iskew * (jc - 1) + ioffg - 1 + (jc - 1) * lda;
+                            INT aoff = (irow - 1) - iskew * (jc - 1) + ioffg - 1 + (jc - 1) * lda;
                             if (ioffg == 0 && iskew == 0) {
                                 aoff = (irow - 1) + (jc - 1) * lda;
                             }
@@ -629,11 +623,11 @@ void slatmt(const int m, const int n, const char* dist,
                                    &A[aoff], ilda, &extra, &temp);
                         }
                         {
-                            int aoff = (1 - iskew) * jc + ioffg - 1 + (jc - 1) * lda;
+                            INT aoff = (1 - iskew) * jc + ioffg - 1 + (jc - 1) * lda;
                             if (ioffg == 0 && iskew == 0) {
                                 aoff = (jc - 1) + (jc - 1) * lda;
                             }
-                            int len = ((k < n - jc) ? k : n - jc) + 1;
+                            INT len = ((k < n - jc) ? k : n - jc) + 1;
                             slarot(1, 1, 0, len, c, s,
                                    &A[aoff], ilda, &temp, &dummy);
                         }
@@ -642,21 +636,21 @@ void slatmt(const int m, const int n, const char* dist,
                         icol = jc;
                         for (jch = jc - k; jch >= 1; jch -= k) {
                             {
-                                int idx = (jch + 1 - 1) - iskew * (icol + 1 - 1) + ioffg - 1 + (icol + 1 - 1) * lda;
+                                INT idx = (jch + 1 - 1) - iskew * (icol + 1 - 1) + ioffg - 1 + (icol + 1 - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     idx = jch + icol * lda;
                                 }
                                 slartg(A[idx], extra, &c, &s, &dummy);
                             }
                             {
-                                int idx = (jch - 1) - iskew * (jch + 1 - 1) + ioffg - 1 + (jch + 1 - 1) * lda;
+                                INT idx = (jch - 1) - iskew * (jch + 1 - 1) + ioffg - 1 + (jch + 1 - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     idx = (jch - 1) + jch * lda;
                                 }
                                 temp = A[idx];
                             }
                             {
-                                int aoff = (1 - iskew) * jch + ioffg - 1 + (jch - 1) * lda;
+                                INT aoff = (1 - iskew) * jch + ioffg - 1 + (jch - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     aoff = (jch - 1) + (jch - 1) * lda;
                                 }
@@ -667,7 +661,7 @@ void slatmt(const int m, const int n, const char* dist,
                             il = ((jch + 1 < k + 2) ? jch + 1 : k + 2);
                             extra = ZERO;
                             {
-                                int aoff = (irow - 1) - iskew * (jch - 1) + ioffg - 1 + (jch - 1) * lda;
+                                INT aoff = (irow - 1) - iskew * (jch - 1) + ioffg - 1 + (jch - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     aoff = (irow - 1) + (jch - 1) * lda;
                                 }
@@ -684,11 +678,11 @@ void slatmt(const int m, const int n, const char* dist,
                 if (ipack != ipackg && ipack != 3) {
                     for (jc = 1; jc <= n; jc++) {
                         irow = ioffst - iskew * jc;
-                        int jr_end = ((n < jc + uub) ? n : jc + uub);
+                        INT jr_end = ((n < jc + uub) ? n : jc + uub);
                         for (jr = jc; jr <= jr_end; jr++) {
                             /* A[jr + irow - 1 + (jc-1)*lda] = A[(jc-1) - iskew*(jr-1) + ioffg - 1 + (jr-1)*lda] */
-                            int dest = jr + irow - 1 + (jc - 1) * lda;
-                            int src = (jc - 1) - iskew * (jr - 1) + ioffg - 1 + (jr - 1) * lda;
+                            INT dest = jr + irow - 1 + (jc - 1) * lda;
+                            INT src = (jc - 1) - iskew * (jr - 1) + ioffg - 1 + (jr - 1) * lda;
                             if (ioffst == 0 && iskew == 0) {
                                 dest = (jr - 1) + (jc - 1) * lda;
                             }
@@ -723,7 +717,7 @@ void slatmt(const int m, const int n, const char* dist,
                     ipackg = 2;
                 }
                 {
-                    int diag_start = (1 - iskew) + ioffg - 1;
+                    INT diag_start = (1 - iskew) + ioffg - 1;
                     if (diag_start < 0) diag_start = 0;
                     cblas_scopy(mnmin, d, 1, &A[diag_start], ilda + 1);
                 }
@@ -733,7 +727,7 @@ void slatmt(const int m, const int n, const char* dist,
                         il = ((n + 1 - jc < k + 2) ? n + 1 - jc : k + 2);
                         extra = ZERO;
                         {
-                            int idx = 1 + (1 - iskew) * jc + ioffg - 1 + (jc - 1) * lda;
+                            INT idx = 1 + (1 - iskew) * jc + ioffg - 1 + (jc - 1) * lda;
                             if (ioffg == 0 && iskew == 0) {
                                 idx = jc + (jc - 1) * lda;
                             }
@@ -743,7 +737,7 @@ void slatmt(const int m, const int n, const char* dist,
                         c = cosf(angle);
                         s = -sinf(angle);
                         {
-                            int aoff = (1 - iskew) * jc + ioffg - 1 + (jc - 1) * lda;
+                            INT aoff = (1 - iskew) * jc + ioffg - 1 + (jc - 1) * lda;
                             if (ioffg == 0 && iskew == 0) {
                                 aoff = (jc - 1) + (jc - 1) * lda;
                             }
@@ -752,7 +746,7 @@ void slatmt(const int m, const int n, const char* dist,
                         }
                         icol = (1 > jc - k + 1) ? 1 : jc - k + 1;
                         {
-                            int aoff = (jc - 1) - iskew * (icol - 1) + ioffg - 1 + (icol - 1) * lda;
+                            INT aoff = (jc - 1) - iskew * (icol - 1) + ioffg - 1 + (icol - 1) * lda;
                             if (ioffg == 0 && iskew == 0) {
                                 aoff = (jc - 1) + (icol - 1) * lda;
                             }
@@ -764,21 +758,21 @@ void slatmt(const int m, const int n, const char* dist,
                         icol = jc;
                         for (jch = jc + k; jch <= n - 1; jch += k) {
                             {
-                                int idx = (jch - 1) - iskew * (icol - 1) + ioffg - 1 + (icol - 1) * lda;
+                                INT idx = (jch - 1) - iskew * (icol - 1) + ioffg - 1 + (icol - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     idx = (jch - 1) + (icol - 1) * lda;
                                 }
                                 slartg(A[idx], extra, &c, &s, &dummy);
                             }
                             {
-                                int idx = 1 + (1 - iskew) * jch + ioffg - 1 + (jch - 1) * lda;
+                                INT idx = 1 + (1 - iskew) * jch + ioffg - 1 + (jch - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     idx = jch + (jch - 1) * lda;
                                 }
                                 temp = A[idx];
                             }
                             {
-                                int aoff = (jch - 1) - iskew * (icol - 1) + ioffg - 1 + (icol - 1) * lda;
+                                INT aoff = (jch - 1) - iskew * (icol - 1) + ioffg - 1 + (icol - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     aoff = (jch - 1) + (icol - 1) * lda;
                                 }
@@ -788,7 +782,7 @@ void slatmt(const int m, const int n, const char* dist,
                             il = ((n + 1 - jch < k + 2) ? n + 1 - jch : k + 2);
                             extra = ZERO;
                             {
-                                int aoff = (1 - iskew) * jch + ioffg - 1 + (jch - 1) * lda;
+                                INT aoff = (1 - iskew) * jch + ioffg - 1 + (jch - 1) * lda;
                                 if (ioffg == 0 && iskew == 0) {
                                     aoff = (jch - 1) + (jch - 1) * lda;
                                 }
@@ -805,10 +799,10 @@ void slatmt(const int m, const int n, const char* dist,
                 if (ipack != ipackg && ipack != 4) {
                     for (jc = n; jc >= 1; jc--) {
                         irow = ioffst - iskew * jc;
-                        int jr_start = ((1 > jc - uub) ? 1 : jc - uub);
+                        INT jr_start = ((1 > jc - uub) ? 1 : jc - uub);
                         for (jr = jc; jr >= jr_start; jr--) {
-                            int dest = jr + irow - 1 + (jc - 1) * lda;
-                            int src = (jc - 1) - iskew * (jr - 1) + ioffg - 1 + (jr - 1) * lda;
+                            INT dest = jr + irow - 1 + (jc - 1) * lda;
+                            INT src = (jc - 1) - iskew * (jr - 1) + ioffg - 1 + (jr - 1) * lda;
                             if (ioffst == 0 && iskew == 0) {
                                 dest = (jr - 1) + (jc - 1) * lda;
                             }
@@ -916,14 +910,14 @@ void slatmt(const int m, const int n, const char* dist,
             }
 
             for (j = 1; j <= uub; j++) {
-                int i_start = ((j + llb < m) ? j + llb : m);
+                INT i_start = ((j + llb < m) ? j + llb : m);
                 for (i = i_start; i >= 1; i--) {
                     A[(i - j + uub + 1 - 1) + (j - 1) * lda] = A[(i - 1) + (j - 1) * lda];
                 }
             }
 
             for (j = uub + 2; j <= n; j++) {
-                int i_end = ((j + llb < m) ? j + llb : m);
+                INT i_end = ((j + llb < m) ? j + llb : m);
                 for (i = j - uub; i <= i_end; i++) {
                     A[(i - j + uub + 1 - 1) + (j - 1) * lda] = A[(i - 1) + (j - 1) * lda];
                 }
@@ -954,7 +948,7 @@ void slatmt(const int m, const int n, const char* dist,
                 for (jr = 1; jr <= uub + 1 - jc; jr++) {
                     A[(jr - 1) + (jc - 1) * lda] = ZERO;
                 }
-                int jr_start = (1 > ((ir1 < ir2 - jc) ? ir1 : ir2 - jc)) ?
+                INT jr_start = (1 > ((ir1 < ir2 - jc) ? ir1 : ir2 - jc)) ?
                                1 : ((ir1 < ir2 - jc) ? ir1 : ir2 - jc);
                 for (jr = jr_start; jr <= lda; jr++) {
                     A[(jr - 1) + (jc - 1) * lda] = ZERO;

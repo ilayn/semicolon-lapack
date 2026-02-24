@@ -5,14 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slansp(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict AP,
-                     f32* const restrict work);
-
 /**
  * SPPT02 computes the residual in the solution of a symmetric system
  * of linear equations  A*x = b  when packed storage is used for the
@@ -59,14 +53,14 @@ extern f32 slansp(const char* norm, const char* uplo, const int n,
  *          The maximum over the number of right hand sides of
  *          norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
-void sppt02(const char* uplo, const int n, const int nrhs,
+void sppt02(const char* uplo, const INT n, const INT nrhs,
             const f32* const restrict A,
-            const f32* const restrict X, const int ldx,
-            f32* const restrict B, const int ldb,
+            const f32* const restrict X, const INT ldx,
+            f32* const restrict B, const INT ldb,
             f32* const restrict rwork,
             f32* resid)
 {
-    int j;
+    INT j;
     f32 anorm, bnorm, eps, xnorm;
     CBLAS_UPLO cblas_uplo;
 

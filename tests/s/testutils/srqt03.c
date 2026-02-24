@@ -14,32 +14,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include <stdint.h>
-#include <cblas.h>
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void sorgrq(const int m, const int n, const int k,
-                   f32* const restrict A, const int lda,
-                   const f32* const restrict tau,
-                   f32* const restrict work, const int lwork, int* info);
-extern void sormrq(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f32* const restrict A, const int lda,
-                   const f32* const restrict tau,
-                   f32* const restrict C, const int ldc,
-                   f32* const restrict work, const int lwork, int* info);
-
 /* Simple xoshiro256+ for generating random test matrices */
 static uint64_t srqt03_state[4] = {1988, 1989, 1990, 1991};
 
@@ -75,22 +52,22 @@ static f32 srqt03_srand(void) {
  * @param[out]    rwork   Workspace.
  * @param[out]    result  Array of dimension 4.
  */
-void srqt03(const int m, const int n, const int k,
+void srqt03(const INT m, const INT n, const INT k,
             const f32* const restrict AF,
             f32* const restrict C,
             f32* const restrict CC,
             f32* const restrict Q,
-            const int lda,
+            const INT lda,
             const f32* const restrict tau,
-            f32* const restrict work, const int lwork,
+            f32* const restrict work, const INT lwork,
             f32* const restrict rwork,
             f32* restrict result)
 {
     f32 eps = slamch("E");
-    int info;
-    int mc, nc;
+    INT info;
+    INT mc, nc;
     f32 cnorm, resid;
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
 
     /* Quick return if possible */
     if (minmn == 0) {
@@ -121,7 +98,7 @@ void srqt03(const int m, const int n, const int k,
      * tau for the last k reflectors starts at tau[minmn-k] (0-indexed). */
     sorgrq(n, n, k, Q, lda, &tau[minmn - k], work, lwork, &info);
 
-    for (int iside = 0; iside < 2; iside++) {
+    for (INT iside = 0; iside < 2; iside++) {
         char side;
         if (iside == 0) {
             side = 'L';
@@ -134,15 +111,15 @@ void srqt03(const int m, const int n, const int k,
         }
 
         /* Generate MC by NC random matrix C */
-        for (int j = 0; j < nc; j++) {
-            for (int i = 0; i < mc; i++) {
+        for (INT j = 0; j < nc; j++) {
+            for (INT i = 0; i < mc; i++) {
                 C[i + j * lda] = srqt03_srand();
             }
         }
         cnorm = slange("1", mc, nc, C, lda, rwork);
         if (cnorm == 0.0f) cnorm = 1.0f;
 
-        for (int itrans = 0; itrans < 2; itrans++) {
+        for (INT itrans = 0; itrans < 2; itrans++) {
             char trans = (itrans == 0) ? 'N' : 'T';
 
             /* Copy C to CC */

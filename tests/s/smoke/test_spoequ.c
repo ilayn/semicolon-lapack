@@ -15,22 +15,14 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
-
 /* Routine under test */
-extern void spoequ(const int n, const f32* const restrict A, const int lda,
-                   f32* const restrict S, f32* scond, f32* amax,
-                   int* info);
-
 /* Utilities */
-extern f32 slamch(const char* cmach);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f32* A;
     f32* S;
     f32* d;
@@ -40,7 +32,7 @@ typedef struct {
 
 static uint64_t g_seed = 5500;
 
-static int dpoequ_setup(void** state, int n)
+static int dpoequ_setup(void** state, INT n)
 {
     dpoequ_fixture_t* fix = malloc(sizeof(dpoequ_fixture_t));
     assert_non_null(fix);
@@ -88,12 +80,12 @@ static void test_dpoequ_wellcond(void** state)
     dpoequ_fixture_t* fix = *state;
     f32 eps = slamch("E");
 
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         char type, dist;
-        int kl, ku, mode;
+        INT kl, ku, mode;
         f32 anorm, cndnum;
-        int info;
+        INT info;
 
         slatb4("SPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -109,7 +101,7 @@ static void test_dpoequ_wellcond(void** state)
         assert_info_success(info);
 
         /* Verify S(i) = 1/sqrt(A(i,i)) */
-        for (int i = 0; i < fix->n; i++) {
+        for (INT i = 0; i < fix->n; i++) {
             f32 expected = 1.0f / sqrtf(fix->A[i + i * fix->lda]);
             f32 diff = fabsf(fix->S[i] - expected);
             f32 resid = diff / (expected * eps);
@@ -118,7 +110,7 @@ static void test_dpoequ_wellcond(void** state)
 
         /* Verify amax = max(A(i,i)) */
         f32 amax_expected = 0.0f;
-        for (int i = 0; i < fix->n; i++) {
+        for (INT i = 0; i < fix->n; i++) {
             if (fix->A[i + i * fix->lda] > amax_expected)
                 amax_expected = fix->A[i + i * fix->lda];
         }
@@ -138,12 +130,12 @@ static void test_dpoequ_wellcond(void** state)
 static void test_dpoequ_zero_diag(void** state)
 {
     dpoequ_fixture_t* fix = *state;
-    int info;
+    INT info;
 
     /* Generate a well-conditioned matrix first */
     fix->seed = g_seed++;
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
 
     slatb4("SPO", 4, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -156,7 +148,7 @@ static void test_dpoequ_zero_diag(void** state)
     assert_int_equal(info, 0);
 
     /* Set a diagonal element to zero */
-    int bad_idx = fix->n / 2;
+    INT bad_idx = fix->n / 2;
     fix->A[bad_idx + bad_idx * fix->lda] = 0.0f;
 
     f32 scond, amax_out;
@@ -175,7 +167,7 @@ static void test_dpoequ_n1(void** state)
     f32 A[1] = {4.0f};
     f32 S[1];
     f32 scond, amax_out;
-    int info;
+    INT info;
 
     spoequ(1, A, 1, S, &scond, &amax_out, &info);
     assert_info_success(info);

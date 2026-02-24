@@ -26,8 +26,8 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -35,42 +35,13 @@
 #define THRESH 30.0
 
 /* Routine under test */
-extern void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
-                    const int m, const int n, const int p,
-                    int* k, int* l,
-                    f64* A, const int lda,
-                    f64* B, const int ldb,
-                    f64* alpha, f64* beta,
-                    f64* U, const int ldu,
-                    f64* V, const int ldv,
-                    f64* Q, const int ldq,
-                    f64* work, const int lwork,
-                    int* iwork, int* info);
-
 /* Verification routine */
-extern void dgsvts3(const int m, const int p, const int n,
-                    const f64* A, f64* AF, const int lda,
-                    const f64* B, f64* BF, const int ldb,
-                    f64* U, const int ldu,
-                    f64* V, const int ldv,
-                    f64* Q, const int ldq,
-                    f64* alpha, f64* beta,
-                    f64* R, const int ldr,
-                    int* iwork,
-                    f64* work, const int lwork,
-                    f64* rwork,
-                    f64* result);
-
 /* Utilities */
-extern f64 dlamch(const char* cmach);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int m, p, n;
+    INT m, p, n;
     f64* A;
     f64* AF;
     f64* B;
@@ -83,8 +54,8 @@ typedef struct {
     f64* R;
     f64* work;
     f64* rwork;
-    int* iwork;
-    int lwork;
+    INT* iwork;
+    INT lwork;
     uint64_t seed;
     uint64_t rng_state[4];
 } dggsvd3_fixture_t;
@@ -94,7 +65,7 @@ static uint64_t g_seed = 2024;
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dggsvd3_setup(void** state, int m, int p, int n)
+static int dggsvd3_setup(void** state, INT m, INT p, INT n)
 {
     dggsvd3_fixture_t* fix = malloc(sizeof(dggsvd3_fixture_t));
     assert_non_null(fix);
@@ -104,24 +75,24 @@ static int dggsvd3_setup(void** state, int m, int p, int n)
     fix->n = n;
     fix->seed = g_seed++;
 
-    int maxmpn = m;
+    INT maxmpn = m;
     if (p > maxmpn) maxmpn = p;
     if (n > maxmpn) maxmpn = n;
 
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
-    int ldr = (n > 1) ? n : 1;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
+    INT ldr = (n > 1) ? n : 1;
 
     f64 work_query;
-    int k_dummy, l_dummy, info;
+    INT k_dummy, l_dummy, info;
     dggsvd3("U", "V", "Q", m, n, p, &k_dummy, &l_dummy,
             NULL, lda, NULL, ldb, NULL, NULL,
             NULL, ldu, NULL, ldv, NULL, ldq,
             &work_query, -1, NULL, &info);
-    fix->lwork = (int)work_query;
+    fix->lwork = (INT)work_query;
     if (fix->lwork < maxmpn * maxmpn) fix->lwork = maxmpn * maxmpn;
     if (fix->lwork < 1) fix->lwork = 1;
 
@@ -137,7 +108,7 @@ static int dggsvd3_setup(void** state, int m, int p, int n)
     fix->R = malloc(ldr * n * sizeof(f64));
     fix->work = malloc(fix->lwork * sizeof(f64));
     fix->rwork = malloc(maxmpn * sizeof(f64));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -192,11 +163,11 @@ static int setup_40_15_20(void** state) { return dggsvd3_setup(state, 40, 15, 20
 /**
  * Helper: generate random m x n matrix
  */
-static void generate_random_matrix(f64* A, int m, int n, int lda,
+static void generate_random_matrix(f64* A, INT m, INT n, INT lda,
                                    uint64_t state[static 4])
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             A[i + j * lda] = rng_uniform_symmetric(state);
         }
     }
@@ -208,14 +179,14 @@ static void generate_random_matrix(f64* A, int m, int n, int lda,
 static void test_workspace_query(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
-    int m = fix->m, p = fix->p, n = fix->n;
+    INT m = fix->m, p = fix->p, n = fix->n;
     f64 work_query;
-    int k, l, info;
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
+    INT k, l, info;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
 
     dggsvd3("U", "V", "Q", m, n, p, &k, &l,
             NULL, lda, NULL, ldb, NULL, NULL,
@@ -231,7 +202,7 @@ static void test_workspace_query(void** state)
 static void test_random_wellcond(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
-    int m = fix->m, p = fix->p, n = fix->n;
+    INT m = fix->m, p = fix->p, n = fix->n;
 
     if (m == 0 && p == 0 && n == 0) {
         skip();
@@ -240,12 +211,12 @@ static void test_random_wellcond(void** state)
 
     rng_seed(fix->rng_state, fix->seed);
 
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
-    int ldr = (n > 1) ? n : 1;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
+    INT ldr = (n > 1) ? n : 1;
 
     generate_random_matrix(fix->A, m, n, lda, fix->rng_state);
     generate_random_matrix(fix->B, p, n, ldb, fix->rng_state);
@@ -272,7 +243,7 @@ static void test_random_wellcond(void** state)
 static void test_diagonal_matrices(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
-    int m = fix->m, p = fix->p, n = fix->n;
+    INT m = fix->m, p = fix->p, n = fix->n;
 
     if (m == 0 || p == 0 || n == 0) {
         skip();
@@ -281,23 +252,23 @@ static void test_diagonal_matrices(void** state)
 
     rng_seed(fix->rng_state, fix->seed + 100);
 
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
-    int ldr = (n > 1) ? n : 1;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
+    INT ldr = (n > 1) ? n : 1;
 
     memset(fix->A, 0, lda * n * sizeof(f64));
     memset(fix->B, 0, ldb * n * sizeof(f64));
 
-    int minmn = (m < n) ? m : n;
-    int minpn = (p < n) ? p : n;
+    INT minmn = (m < n) ? m : n;
+    INT minpn = (p < n) ? p : n;
 
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         fix->A[i + i * lda] = rng_uniform(fix->rng_state) + 0.1;
     }
-    for (int i = 0; i < minpn; i++) {
+    for (INT i = 0; i < minpn; i++) {
         fix->B[i + i * ldb] = rng_uniform(fix->rng_state) + 0.1;
     }
 
@@ -323,7 +294,7 @@ static void test_diagonal_matrices(void** state)
 static void test_triangular_matrices(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
-    int m = fix->m, p = fix->p, n = fix->n;
+    INT m = fix->m, p = fix->p, n = fix->n;
 
     if (m == 0 || p == 0 || n == 0) {
         skip();
@@ -332,21 +303,21 @@ static void test_triangular_matrices(void** state)
 
     rng_seed(fix->rng_state, fix->seed + 200);
 
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
-    int ldr = (n > 1) ? n : 1;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
+    INT ldr = (n > 1) ? n : 1;
 
     memset(fix->A, 0, lda * n * sizeof(f64));
     memset(fix->B, 0, ldb * n * sizeof(f64));
 
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i <= j && i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i <= j && i < m; i++) {
             fix->A[i + j * lda] = rng_uniform_symmetric(fix->rng_state);
         }
-        for (int i = 0; i <= j && i < p; i++) {
+        for (INT i = 0; i <= j && i < p; i++) {
             fix->B[i + j * ldb] = rng_uniform_symmetric(fix->rng_state);
         }
     }
@@ -373,7 +344,7 @@ static void test_triangular_matrices(void** state)
 static void test_zero_A(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
-    int m = fix->m, p = fix->p, n = fix->n;
+    INT m = fix->m, p = fix->p, n = fix->n;
 
     if (p == 0 || n == 0) {
         skip();
@@ -382,12 +353,12 @@ static void test_zero_A(void** state)
 
     rng_seed(fix->rng_state, fix->seed + 300);
 
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
-    int ldr = (n > 1) ? n : 1;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
+    INT ldr = (n > 1) ? n : 1;
 
     memset(fix->A, 0, lda * n * sizeof(f64));
     generate_random_matrix(fix->B, p, n, ldb, fix->rng_state);
@@ -414,7 +385,7 @@ static void test_zero_A(void** state)
 static void test_zero_B(void** state)
 {
     dggsvd3_fixture_t* fix = *state;
-    int m = fix->m, p = fix->p, n = fix->n;
+    INT m = fix->m, p = fix->p, n = fix->n;
 
     if (m == 0 || n == 0) {
         skip();
@@ -423,12 +394,12 @@ static void test_zero_B(void** state)
 
     rng_seed(fix->rng_state, fix->seed + 400);
 
-    int lda = (m > 1) ? m : 1;
-    int ldb = (p > 1) ? p : 1;
-    int ldu = (m > 1) ? m : 1;
-    int ldv = (p > 1) ? p : 1;
-    int ldq = (n > 1) ? n : 1;
-    int ldr = (n > 1) ? n : 1;
+    INT lda = (m > 1) ? m : 1;
+    INT ldb = (p > 1) ? p : 1;
+    INT ldu = (m > 1) ? m : 1;
+    INT ldv = (p > 1) ? p : 1;
+    INT ldq = (n > 1) ? n : 1;
+    INT ldr = (n > 1) ? n : 1;
 
     generate_random_matrix(fix->A, m, n, lda, fix->rng_state);
     memset(fix->B, 0, ldb * n * sizeof(f64));

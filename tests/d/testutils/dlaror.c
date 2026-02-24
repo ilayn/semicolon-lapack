@@ -11,15 +11,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
 
 /**
  * DLAROR pre- or post-multiplies an M by N matrix A by a random
@@ -66,16 +60,16 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *     RNG state array of 4 uint64_t elements, passed through from caller.
  */
 void dlaror(const char* side, const char* init,
-            const int m, const int n,
-            f64* A, const int lda,
-            f64* X, int* info,
+            const INT m, const INT n,
+            f64* A, const INT lda,
+            f64* X, INT* info,
             uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TOOSML = 1.0e-20;
 
-    int irow, itype, ixfrm, j, jcol, kbeg, nxfrm;
+    INT irow, itype, ixfrm, j, jcol, kbeg, nxfrm;
     f64 factor, xnorm, xnorms;
 
     *info = 0;

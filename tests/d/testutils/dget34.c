@@ -6,14 +6,8 @@
  */
 
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
-
-extern f64 dlamch(const char* cmach);
-extern void dlaexc(const int wantq, const int n, f64* T, const int ldt,
-                   f64* Q, const int ldq, const int j1,
-                   const int n1, const int n2, f64* work, int* info);
 
 /**
  * DGET34 tests DLAEXC, a routine for swapping adjacent blocks (either
@@ -38,7 +32,7 @@ extern void dlaexc(const int wantq, const int n, f64* T, const int ldt,
  */
 #define LWORK 32
 
-void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
+void dget34(f64* rmax, INT* lmax, INT ninfo[2], INT* knt)
 {
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
@@ -66,9 +60,9 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
     f64 t[4 * 4], t1[4 * 4], q[4 * 4];
     f64 work[LWORK], result[2];
     f64 res;
-    int info;
+    INT info;
 
-    for (int i = 0; i < 16; i++)
+    for (INT i = 0; i < 16; i++)
         t[i] = val[3];
 
     ninfo[0] = 0;
@@ -77,16 +71,16 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
     *lmax = 0;
     *rmax = ZERO;
 
-    for (int ia = 0; ia < 9; ia++) {
-        for (int iam = 0; iam < 2; iam++) {
-            for (int ib = 0; ib < 9; ib++) {
-                for (int ic = 0; ic < 9; ic++) {
+    for (INT ia = 0; ia < 9; ia++) {
+        for (INT iam = 0; iam < 2; iam++) {
+            for (INT ib = 0; ib < 9; ib++) {
+                for (INT ic = 0; ic < 9; ic++) {
                     t[0 + 0 * 4] = val[ia] * vm[iam];
                     t[1 + 1 * 4] = val[ic];
                     t[0 + 1 * 4] = val[ib];
                     t[1 + 0 * 4] = ZERO;
                     memcpy(t1, t, 16 * sizeof(f64));
-                    for (int i = 0; i < 16; i++)
+                    for (INT i = 0; i < 16; i++)
                         q[i] = ZERO;
                     q[0 + 0 * 4] = ONE;
                     q[1 + 1 * 4] = ONE;
@@ -116,13 +110,13 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
         }
     }
 
-    for (int ia = 0; ia < 5; ia++) {
-        for (int iam = 0; iam < 2; iam++) {
-            for (int ib = 0; ib < 5; ib++) {
-                for (int ic11 = 0; ic11 < 5; ic11++) {
-                    for (int ic12 = 1; ic12 < 5; ic12++) {
-                        for (int ic21 = 1; ic21 < 4; ic21++) {
-                            for (int ic22 = -1; ic22 <= 1; ic22 += 2) {
+    for (INT ia = 0; ia < 5; ia++) {
+        for (INT iam = 0; iam < 2; iam++) {
+            for (INT ib = 0; ib < 5; ib++) {
+                for (INT ic11 = 0; ic11 < 5; ic11++) {
+                    for (INT ic12 = 1; ic12 < 5; ic12++) {
+                        for (INT ic21 = 1; ic21 < 4; ic21++) {
+                            for (INT ic22 = -1; ic22 <= 1; ic22 += 2) {
                                 t[0 + 0 * 4] = val[ia] * vm[iam];
                                 t[0 + 1 * 4] = val[ib];
                                 t[0 + 2 * 4] = -TWO * val[ib];
@@ -133,7 +127,7 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
                                 t[2 + 1 * 4] = -val[ic21];
                                 t[2 + 2 * 4] = val[ic11] * (f64)ic22;
                                 memcpy(t1, t, 16 * sizeof(f64));
-                                for (int i = 0; i < 16; i++)
+                                for (INT i = 0; i < 16; i++)
                                     q[i] = ZERO;
                                 q[0 + 0 * 4] = ONE;
                                 q[1 + 1 * 4] = ONE;
@@ -172,13 +166,13 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
         }
     }
 
-    for (int ia11 = 0; ia11 < 5; ia11++) {
-        for (int ia12 = 1; ia12 < 5; ia12++) {
-            for (int ia21 = 1; ia21 < 4; ia21++) {
-                for (int ia22 = -1; ia22 <= 1; ia22 += 2) {
-                    for (int icm = 0; icm < 2; icm++) {
-                        for (int ib = 0; ib < 5; ib++) {
-                            for (int ic = 0; ic < 5; ic++) {
+    for (INT ia11 = 0; ia11 < 5; ia11++) {
+        for (INT ia12 = 1; ia12 < 5; ia12++) {
+            for (INT ia21 = 1; ia21 < 4; ia21++) {
+                for (INT ia22 = -1; ia22 <= 1; ia22 += 2) {
+                    for (INT icm = 0; icm < 2; icm++) {
+                        for (INT ib = 0; ib < 5; ib++) {
+                            for (INT ic = 0; ic < 5; ic++) {
                                 t[0 + 0 * 4] = val[ia11];
                                 t[0 + 1 * 4] = val[ia12];
                                 t[0 + 2 * 4] = -TWO * val[ib];
@@ -189,7 +183,7 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
                                 t[2 + 1 * 4] = ZERO;
                                 t[2 + 2 * 4] = val[ic] * vm[icm];
                                 memcpy(t1, t, 16 * sizeof(f64));
-                                for (int i = 0; i < 16; i++)
+                                for (INT i = 0; i < 16; i++)
                                     q[i] = ZERO;
                                 q[0 + 0 * 4] = ONE;
                                 q[1 + 1 * 4] = ONE;
@@ -228,17 +222,17 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
         }
     }
 
-    for (int ia11 = 0; ia11 < 5; ia11++) {
-        for (int ia12 = 1; ia12 < 5; ia12++) {
-            for (int ia21 = 1; ia21 < 4; ia21++) {
-                for (int ia22 = -1; ia22 <= 1; ia22 += 2) {
-                    for (int ib = 0; ib < 5; ib++) {
-                        for (int ic11 = 2; ic11 < 4; ic11++) {
-                            for (int ic12 = 2; ic12 < 4; ic12++) {
-                                for (int ic21 = 2; ic21 < 4; ic21++) {
-                                    for (int ic22 = -1; ic22 <= 1; ic22 += 2) {
-                                        for (int icm = 4; icm < 7; icm++) {
-                                            int iam = 0;
+    for (INT ia11 = 0; ia11 < 5; ia11++) {
+        for (INT ia12 = 1; ia12 < 5; ia12++) {
+            for (INT ia21 = 1; ia21 < 4; ia21++) {
+                for (INT ia22 = -1; ia22 <= 1; ia22 += 2) {
+                    for (INT ib = 0; ib < 5; ib++) {
+                        for (INT ic11 = 2; ic11 < 4; ic11++) {
+                            for (INT ic12 = 2; ic12 < 4; ic12++) {
+                                for (INT ic21 = 2; ic21 < 4; ic21++) {
+                                    for (INT ic22 = -1; ic22 <= 1; ic22 += 2) {
+                                        for (INT icm = 4; icm < 7; icm++) {
+                                            INT iam = 0;
                                             t[0 + 0 * 4] = val[ia11] * vm[iam];
                                             t[0 + 1 * 4] = val[ia12] * vm[iam];
                                             t[0 + 2 * 4] = -TWO * val[ib];
@@ -262,7 +256,7 @@ void dget34(f64* rmax, int* lmax, int ninfo[2], int* knt)
                                                             (f64)ic22 *
                                                             fabs(val[icm]);
                                             memcpy(t1, t, 16 * sizeof(f64));
-                                            for (int i = 0; i < 16; i++)
+                                            for (INT i = 0; i < 16; i++)
                                                 q[i] = ZERO;
                                             q[0 + 0 * 4] = ONE;
                                             q[1 + 1 * 4] = ONE;

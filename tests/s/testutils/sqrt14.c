@@ -12,24 +12,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "verify.h"
 
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slascl(const char* type, const int kl, const int ku,
-                   const f32 cfrom, const f32 cto,
-                   const int m, const int n, f32* A, const int lda,
-                   int* info);
-extern void sgeqr2(const int m, const int n, f32* A, const int lda,
-                   f32* tau, f32* work, int* info);
-extern void sgelq2(const int m, const int n, f32* A, const int lda,
-                   f32* tau, f32* work, int* info);
-extern void xerbla(const char* srname, const int info);
 
 /**
  * SQRT14 checks whether X is in the row space of A or A'.
@@ -71,15 +55,15 @@ extern void xerbla(const char* srname, const int info);
  * @return
  *     The computed residual: norm of trailing triangle / (max(M,N,NRHS) * eps)
  */
-f32 sqrt14(const char* trans, const int m, const int n, const int nrhs,
-              const f32* A, const int lda, const f32* X, const int ldx,
-              f32* work, const int lwork)
+f32 sqrt14(const char* trans, const INT m, const INT n, const INT nrhs,
+              const f32* A, const INT lda, const f32* X, const INT ldx,
+              f32* work, const INT lwork)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int tpsd;
-    int i, info, j, ldwork;
+    INT tpsd;
+    INT i, info, j, ldwork;
     f32 anrm, err, xnrm;
     f32 rwork[1];
 
@@ -124,7 +108,7 @@ f32 sqrt14(const char* trans, const int m, const int n, const int nrhs,
         }
 
         /* Compute QR factorization of [A, X] */
-        int minmn = (m < n + nrhs) ? m : n + nrhs;
+        INT minmn = (m < n + nrhs) ? m : n + nrhs;
         sgeqr2(m, n + nrhs, work, ldwork,
                &work[ldwork * (n + nrhs)],
                &work[ldwork * (n + nrhs) + minmn],
@@ -134,7 +118,7 @@ f32 sqrt14(const char* trans, const int m, const int n, const int nrhs,
            (0-based: rows n to min(m,j+1)-1 for column j from n to n+nrhs-1) */
         err = ZERO;
         for (j = n; j < n + nrhs; j++) {
-            int iend = (m < j + 1) ? m : j + 1;  /* min(m, j+1) */
+            INT iend = (m < j + 1) ? m : j + 1;  /* min(m, j+1) */
             for (i = n; i < iend; i++) {
                 f32 val = fabsf(work[i + j * ldwork]);
                 if (val > err) err = val;
@@ -170,7 +154,7 @@ f32 sqrt14(const char* trans, const int m, const int n, const int nrhs,
     }
 
     /* Compute the result */
-    int maxmnr = m;
+    INT maxmnr = m;
     if (n > maxmnr) maxmnr = n;
     if (nrhs > maxmnr) maxmnr = nrhs;
 

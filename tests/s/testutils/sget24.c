@@ -7,29 +7,14 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slapy2(const f32 x, const f32 y);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-
 /* Forward declaration - defined in semicolon_lapack_double.h */
-typedef int (*dselect2_t_local)(const f32* wr, const f32* wi);
-extern void sgeesx(const char* jobvs, const char* sort, dselect2_t_local select,
-                   const char* sense, const int n, f32* A, const int lda,
-                   int* sdim, f32* wr, f32* wi, f32* VS, const int ldvs,
-                   f32* rconde, f32* rcondv, f32* work, const int lwork,
-                   int* iwork, const int liwork, int* bwork, int* info);
-
+typedef INT (*dselect2_t_local)(const f32* wr, const f32* wi);
 /* File-static globals for SSLCT COMMON block */
-static int g_selopt;
-static int g_seldim;
-static int g_selval[20];
+static INT g_selopt;
+static INT g_seldim;
+static INT g_selval[20];
 static f32 g_selwr[20];
 static f32 g_selwi[20];
 
@@ -39,16 +24,16 @@ static f32 g_selwi[20];
  * It is used by SGEESX to test whether the j-th eigenvalue is to be
  * reordered to the top left corner of the Schur form.
  */
-static int dslect(const f32* zr, const f32* zi)
+static INT dslect(const f32* zr, const f32* zi)
 {
-    int i;
+    INT i;
     f32 rmin, x;
 
     if (g_selopt == 0) {
         return (*zr < 0.0f);
     } else {
         rmin = slapy2(*zr - g_selwr[0], *zi - g_selwi[0]);
-        int val = g_selval[0];
+        INT val = g_selval[0];
         for (i = 1; i < g_seldim; i++) {
             x = slapy2(*zr - g_selwr[i], *zi - g_selwi[i]);
             if (x <= rmin) {
@@ -87,28 +72,28 @@ static int dslect(const f32* zr, const f32* zi)
  *   (16)     |RCONDE - RCDEIN| / cond(RCONDE)
  *   (17)     |RCONDV - RCDVIN| / cond(RCONDV)
  */
-void sget24(const int comp, const int jtype, const f32 thresh,
-            const int n, f32* A, const int lda,
+void sget24(const INT comp, const INT jtype, const f32 thresh,
+            const INT n, f32* A, const INT lda,
             f32* H, f32* HT,
             f32* wr, f32* wi, f32* wrt, f32* wit,
             f32* wrtmp, f32* witmp,
-            f32* VS, const int ldvs, f32* VS1,
+            f32* VS, const INT ldvs, f32* VS1,
             const f32 rcdein, const f32 rcdvin,
-            const int nslct, const int* islct,
-            f32* result, f32* work, const int lwork,
-            int* iwork, int* bwork, int* info)
+            const INT nslct, const INT* islct,
+            f32* result, f32* work, const INT lwork,
+            INT* iwork, INT* bwork, INT* info)
 {
     (void)jtype;
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 EPSIN = 5.9605e-8f;
 
-    int i, j, kmin, knteig, liwork, rsub, sdim, sdim1;
-    int iinfo, isort, itmp;
+    INT i, j, kmin, knteig, liwork, rsub, sdim, sdim1;
+    INT iinfo, isort, itmp;
     f32 anorm, eps, rcnde1, rcndv1, rconde, rcondv;
     f32 smlnum, tmp, tol, tolin, ulp, ulpinv, v;
     f32 vimin, vrmin, wnorm;
-    int ipnt[20];
+    INT ipnt[20];
 
     /* Check for errors */
     *info = 0;

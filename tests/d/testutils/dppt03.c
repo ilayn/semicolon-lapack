@@ -5,17 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansp(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict AP,
-                     f64* const restrict work);
-
 /**
  * DPPT03 computes the residual for a symmetric packed matrix times its
  * inverse:
@@ -53,14 +44,14 @@ extern f64 dlansp(const char* norm, const char* uplo, const int n,
  * @param[out] resid
  *          norm(I - A*AINV) / ( N * norm(A) * norm(AINV) * EPS )
  */
-void dppt03(const char* uplo, const int n,
+void dppt03(const char* uplo, const INT n,
             const f64* const restrict A,
             const f64* const restrict AINV,
-            f64* const restrict work, const int ldwork,
+            f64* const restrict work, const INT ldwork,
             f64* const restrict rwork,
             f64* rcond, f64* resid)
 {
-    int i, j, jj;
+    INT i, j, jj;
     f64 ainvnm, anorm, eps;
 
     if (n <= 0) {

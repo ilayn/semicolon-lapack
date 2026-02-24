@@ -19,46 +19,30 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
-
 /* Routine under test */
-extern void sstebz(const char* range, const char* order, const int n,
-                   const f32 vl, const f32 vu,
-                   const int il, const int iu, const f32 abstol,
-                   const f32* D, const f32* E,
-                   int* m, int* nsplit, f32* W,
-                   int* iblock, int* isplit,
-                   f32* work, int* iwork, int* info);
-
 /* Reference eigenvalue computation */
-extern void ssterf(const int n, f32* D, f32* E, int* info);
-
 /* Eigenvalue verification via Sturm sequence */
-extern void sstech(const int n, const f32* A, const f32* B,
-                   const f32* eig, const f32 tol, f32* work, int* info);
-
 /* Utility */
-extern f32 slamch(const char* cmach);
-
 /* -----------------------------------------------------------------------
  * Test fixture
  * ----------------------------------------------------------------------- */
 typedef struct {
-    int n;
+    INT n;
     f32* D;       /* diagonal (preserved - sstebz doesn't modify) */
     f32* E;       /* off-diagonal (preserved - sstebz doesn't modify) */
     f32* D2;      /* copy of D for ssterf */
     f32* E2;      /* copy of E for ssterf */
     f32* W;       /* eigenvalues from sstebz */
     f32* W_ref;   /* reference eigenvalues from ssterf */
-    int* iblock;     /* block info */
-    int* isplit;     /* split info */
+    INT* iblock;     /* block info */
+    INT* isplit;     /* split info */
     f32* work;    /* workspace (4*n) */
-    int* iwork;      /* int workspace (3*n) */
+    INT* iwork;      /* INT workspace (3*n) */
     uint64_t seed;
     uint64_t rng_state[4];
 } dstebz_fixture_t;
@@ -71,58 +55,58 @@ static uint64_t g_seed = 2024;
  * ----------------------------------------------------------------------- */
 
 /** Matrix type 1: Zero matrix */
-static void gen_zero(int n, f32* D, f32* E)
+static void gen_zero(INT n, f32* D, f32* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 0.0f;
-    for (int i = 0; i < n - 1; i++) E[i] = 0.0f;
+    for (INT i = 0; i < n; i++) D[i] = 0.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 0.0f;
 }
 
 /** Matrix type 2: Identity (D=1, E=0) */
-static void gen_identity(int n, f32* D, f32* E)
+static void gen_identity(INT n, f32* D, f32* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 1.0f;
-    for (int i = 0; i < n - 1; i++) E[i] = 0.0f;
+    for (INT i = 0; i < n; i++) D[i] = 1.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 0.0f;
 }
 
 /** Matrix type 3: 1-2-1 Toeplitz (D=2, E=1) */
-static void gen_toeplitz_121(int n, f32* D, f32* E)
+static void gen_toeplitz_121(INT n, f32* D, f32* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 2.0f;
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0f;
+    for (INT i = 0; i < n; i++) D[i] = 2.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0f;
 }
 
 /** Matrix type 4: Wilkinson (D[i]=|i - n/2|, E[i]=1) */
-static void gen_wilkinson(int n, f32* D, f32* E)
+static void gen_wilkinson(INT n, f32* D, f32* E)
 {
-    int half = n / 2;
-    for (int i = 0; i < n; i++) {
+    INT half = n / 2;
+    for (INT i = 0; i < n; i++) {
         D[i] = (f32)(i >= half ? i - half : half - i);
     }
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0f;
 }
 
 /** Matrix type 5: Random symmetric tridiagonal */
-static void gen_random(int n, f32* D, f32* E, uint64_t state[static 4])
+static void gen_random(INT n, f32* D, f32* E, uint64_t state[static 4])
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         D[i] = rng_uniform_symmetric_f32(state);
     }
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         E[i] = rng_uniform_symmetric_f32(state);
     }
 }
 
 /** Matrix type 6: Graded diagonal (D[i]=2^(-i), E[i]=1) */
-static void gen_graded(int n, f32* D, f32* E)
+static void gen_graded(INT n, f32* D, f32* E)
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         D[i] = powf(2.0f, -(f32)i);
     }
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0f;
 }
 
 /** Generate matrix of given type */
-static void generate_matrix(int n, int imat, f32* D, f32* E,
+static void generate_matrix(INT n, INT imat, f32* D, f32* E,
                             uint64_t state[static 4])
 {
     switch (imat) {
@@ -150,7 +134,7 @@ static int cmp_double(const void* a, const void* b)
 /* -----------------------------------------------------------------------
  * Setup / Teardown
  * ----------------------------------------------------------------------- */
-static int dstebz_setup(void** state, int n)
+static int dstebz_setup(void** state, INT n)
 {
     dstebz_fixture_t* fix = malloc(sizeof(dstebz_fixture_t));
     assert_non_null(fix);
@@ -158,10 +142,10 @@ static int dstebz_setup(void** state, int n)
     fix->n = n;
     fix->seed = g_seed++;
 
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
-    int work_sz = (n > 0) ? 4 * n : 4;
-    int iwork_sz = (n > 0) ? 3 * n : 3;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
+    INT work_sz = (n > 0) ? 4 * n : 4;
+    INT iwork_sz = (n > 0) ? 3 * n : 3;
 
     fix->D = malloc(n_alloc * sizeof(f32));
     fix->E = malloc(e_alloc * sizeof(f32));
@@ -169,10 +153,10 @@ static int dstebz_setup(void** state, int n)
     fix->E2 = malloc(e_alloc * sizeof(f32));
     fix->W = malloc(n_alloc * sizeof(f32));
     fix->W_ref = malloc(n_alloc * sizeof(f32));
-    fix->iblock = malloc(n_alloc * sizeof(int));
-    fix->isplit = malloc(n_alloc * sizeof(int));
+    fix->iblock = malloc(n_alloc * sizeof(INT));
+    fix->isplit = malloc(n_alloc * sizeof(INT));
     fix->work = malloc(work_sz * sizeof(f32));
-    fix->iwork = malloc(iwork_sz * sizeof(int));
+    fix->iwork = malloc(iwork_sz * sizeof(INT));
 
     assert_non_null(fix->D);
     assert_non_null(fix->E);
@@ -227,12 +211,12 @@ static int setup_50(void** state) { return dstebz_setup(state, 50); }
 static void test_range_all(void** state)
 {
     dstebz_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, info2;
-    int m, nsplit;
+    INT n = fix->n;
+    INT info, info2;
+    INT m, nsplit;
     f32 ulp = slamch("E");
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         generate_matrix(n, imat, fix->D, fix->E, fix->rng_state);
@@ -268,7 +252,7 @@ static void test_range_all(void** state)
 
         /* Compute max|W[i] - W_ref[i]| / (n * ulp * max|W_ref|) */
         f32 maxref = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 absref = fabsf(fix->W_ref[i]);
             if (absref > maxref) maxref = absref;
         }
@@ -276,7 +260,7 @@ static void test_range_all(void** state)
         if (maxref == 0.0f) maxref = 1.0f;
 
         f32 maxerr = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 err = fabsf(fix->W[i] - fix->W_ref[i]);
             if (err > maxerr) maxerr = err;
         }
@@ -298,9 +282,9 @@ static void test_range_all(void** state)
 static void test_range_value(void** state)
 {
     dstebz_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m, nsplit;
+    INT n = fix->n;
+    INT info;
+    INT m, nsplit;
 
     if (n < 8) {
         skip_test("RANGE='V' requires n >= 8 for meaningful subsets");
@@ -331,14 +315,14 @@ static void test_range_value(void** state)
     assert_info_success(info);
 
     /* Verify each eigenvalue is in (vl, vu] */
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         assert_true(fix->W[i] > vl);
         assert_true(fix->W[i] <= vu);
     }
 
     /* Count expected eigenvalues in (vl, vu] from reference */
-    int expected_m = 0;
-    for (int i = 0; i < n; i++) {
+    INT expected_m = 0;
+    for (INT i = 0; i < n; i++) {
         if (fix->W_ref[i] > vl && fix->W_ref[i] <= vu) {
             expected_m++;
         }
@@ -351,7 +335,7 @@ static void test_range_value(void** state)
     if (m > 0) {
         f32 ulp = slamch("E") * slamch("B");
         f32 max_eig = fabsf(fix->W_ref[n - 1]);  /* largest in magnitude */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 a = fabsf(fix->W_ref[i]);
             if (a > max_eig) max_eig = a;
         }
@@ -360,8 +344,8 @@ static void test_range_value(void** state)
 
         /* Compare sorted subset eigenvalues */
         f32 max_diff = 0.0f;
-        int ref_idx = 0;
-        for (int i = 0; i < n && ref_idx < m; i++) {
+        INT ref_idx = 0;
+        for (INT i = 0; i < n && ref_idx < m; i++) {
             if (fix->W_ref[i] > vl && fix->W_ref[i] <= vu) {
                 f32 diff = fabsf(fix->W[ref_idx] - fix->W_ref[i]);
                 if (diff > max_diff) max_diff = diff;
@@ -386,9 +370,9 @@ static void test_range_value(void** state)
 static void test_range_index(void** state)
 {
     dstebz_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m, nsplit;
+    INT n = fix->n;
+    INT info;
+    INT m, nsplit;
     f32 ulp = slamch("E");
 
     if (n < 8) {
@@ -399,8 +383,8 @@ static void test_range_index(void** state)
     gen_toeplitz_121(n, fix->D, fix->E);
 
     /* il and iu are 0-based indices */
-    int il = n / 4;
-    int iu = 3 * n / 4 - 1;
+    INT il = n / 4;
+    INT iu = 3 * n / 4 - 1;
 
     /* Call sstebz with RANGE='I' */
     sstebz("I", "E", n, 0.0f, 0.0f, il, iu, 2.0f * slamch("S"),
@@ -409,7 +393,7 @@ static void test_range_index(void** state)
     assert_info_success(info);
 
     /* Expected count */
-    int expected_m = iu - il + 1;
+    INT expected_m = iu - il + 1;
     assert_int_equal(m, expected_m);
 
     /* Get reference eigenvalues via ssterf */
@@ -427,14 +411,14 @@ static void test_range_index(void** state)
     /* Compare with the corresponding subset of sorted reference eigenvalues */
     /* Reference eigenvalues are sorted; 0-based il..iu correspond to positions [il..iu] */
     f32 maxref = 0.0f;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         f32 absref = fabsf(fix->W_ref[i]);
         if (absref > maxref) maxref = absref;
     }
     if (maxref == 0.0f) maxref = 1.0f;
 
     f32 maxerr = 0.0f;
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         f32 err = fabsf(fix->W[i] - fix->W_ref[il + i]);
         if (err > maxerr) maxerr = err;
     }

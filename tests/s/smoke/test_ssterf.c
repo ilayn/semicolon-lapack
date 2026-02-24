@@ -20,31 +20,22 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
 #include "test_rng.h"
 
 /* Routine under test */
-extern void ssterf(const int n, f32* D, f32* E, int* info);
-
 /* Reference eigenvalue computation */
-extern void ssteqr(const char* compz, const int n, f32* D, f32* E,
-                   f32* Z, const int ldz, f32* work, int* info);
-
 /* Verification routine: Sturm count check */
-extern void sstech(const int n, const f32* A, const f32* B,
-                   const f32* eig, const f32 tol, f32* work, int* info);
-
 /* Machine parameters */
-extern f32 slamch(const char* cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int n;
+    INT n;
     f32* D;      /* diagonal (input to ssterf, overwritten with eigenvalues) */
     f32* E;      /* off-diagonal (input to ssterf, destroyed) */
     f32* D_orig; /* saved copy of diagonal */
@@ -69,10 +60,10 @@ static uint64_t g_seed = 2024;
  * @param E     Output off-diagonal array, dimension n-1
  * @param seed  RNG seed (incremented after use)
  */
-static void generate_st_matrix(int n, int imat, f32* D, f32* E,
+static void generate_st_matrix(INT n, INT imat, f32* D, f32* E,
                                uint64_t state[static 4])
 {
-    int i;
+    INT i;
 
     if (n <= 0) return;
 
@@ -142,9 +133,9 @@ static void generate_st_matrix(int n, int imat, f32* D, f32* E,
  * Simple insertion sort for f64 array (ascending order).
  * Used to ensure eigenvalue arrays are sorted for comparison.
  */
-static void sort_ascending(int n, f32* x)
+static void sort_ascending(INT n, f32* x)
 {
-    int i, j;
+    INT i, j;
     f32 tmp;
     for (i = 1; i < n; i++) {
         tmp = x[i];
@@ -161,7 +152,7 @@ static void sort_ascending(int n, f32* x)
  * Setup fixture: allocate memory for given dimension.
  * Called before each test function.
  */
-static int dsterf_setup(void** state, int n)
+static int dsterf_setup(void** state, INT n)
 {
     dsterf_fixture_t* fix = malloc(sizeof(dsterf_fixture_t));
     assert_non_null(fix);
@@ -170,10 +161,10 @@ static int dsterf_setup(void** state, int n)
     fix->seed = g_seed++;
     rng_seed(fix->rng_state, fix->seed);
 
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
     /* ssteqr work size: max(1, 2*(n-1)) */
-    int work_size = (n > 1) ? 2 * (n - 1) : 1;
+    INT work_size = (n > 1) ? 2 * (n - 1) : 1;
     /* sstech also needs n workspace, take max */
     if (n_alloc > work_size) work_size = n_alloc;
 
@@ -233,10 +224,10 @@ static int setup_100(void** state) { return dsterf_setup(state, 100); }
  * Core test logic: generate matrix, compute eigenvalues with ssterf,
  * verify with sstech and compare with ssteqr.
  */
-static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
+static void run_dsterf_test(dsterf_fixture_t* fix, INT imat)
 {
-    int info;
-    int n = fix->n;
+    INT info;
+    INT n = fix->n;
     f32 ulp = slamch("P");  /* unit roundoff (eps * base) */
 
     if (n <= 0) return;
@@ -269,7 +260,7 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
     sort_ascending(n, fix->D2);
 
     /* Verification 1: sstech Sturm count check on ssterf eigenvalues */
-    int stech_info;
+    INT stech_info;
     sstech(n, fix->D_orig, fix->E_orig, fix->D, THRESH,
            fix->work, &stech_info);
     assert_info_success(stech_info);
@@ -277,13 +268,13 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
     /* Verification 2: Compare ssterf vs ssteqr eigenvalues */
     /* Compute max|D[i] - D2[i]| / (|max_eig| * n * ulp) */
     f32 max_eig = 0.0f;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         f32 abs_val = fabsf(fix->D[i]);
         if (abs_val > max_eig) max_eig = abs_val;
     }
 
     f32 max_diff = 0.0f;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         f32 diff = fabsf(fix->D[i] - fix->D2[i]);
         if (diff > max_diff) max_diff = diff;
     }
@@ -302,10 +293,10 @@ static void run_dsterf_test(dsterf_fixture_t* fix, int imat)
 /**
  * Additional verification for exact eigenvalue cases.
  */
-static void run_dsterf_exact_test(dsterf_fixture_t* fix, int imat)
+static void run_dsterf_exact_test(dsterf_fixture_t* fix, INT imat)
 {
-    int info;
-    int n = fix->n;
+    INT info;
+    INT n = fix->n;
 
     if (n <= 0) return;
 
@@ -326,12 +317,12 @@ static void run_dsterf_exact_test(dsterf_fixture_t* fix, int imat)
 
     if (imat == 1) {
         /* Zero matrix: all eigenvalues should be exactly 0 */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             assert_true(fix->D[i] == 0.0f);
         }
     } else if (imat == 2) {
         /* Identity: all eigenvalues should be exactly 1 */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             assert_true(fix->D[i] == 1.0f);
         }
     } else if (imat == 3) {
@@ -341,19 +332,19 @@ static void run_dsterf_exact_test(dsterf_fixture_t* fix, int imat)
         f32* exact = malloc(n * sizeof(f32));
         assert_non_null(exact);
 
-        for (int k = 1; k <= n; k++) {
+        for (INT k = 1; k <= n; k++) {
             exact[k - 1] = 2.0f - 2.0f * cosf((f32)k * pi / (f32)(n + 1));
         }
         sort_ascending(n, exact);
 
         f32 max_eig = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 abs_val = fabsf(exact[i]);
             if (abs_val > max_eig) max_eig = abs_val;
         }
 
         f32 max_diff = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 diff = fabsf(fix->D[i] - exact[i]);
             if (diff > max_diff) max_diff = diff;
         }
@@ -378,7 +369,7 @@ static void test_dsterf_all_types(void** state)
         skip_test("n=0: nothing to verify");
     }
 
-    for (int imat = 1; imat <= 7; imat++) {
+    for (INT imat = 1; imat <= 7; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         run_dsterf_test(fix, imat);
@@ -397,7 +388,7 @@ static void test_dsterf_exact(void** state)
     }
 
     /* Test types 1 (zero), 2 (identity), 3 (1-2-1 Toeplitz) */
-    for (int imat = 1; imat <= 3; imat++) {
+    for (INT imat = 1; imat <= 3; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         run_dsterf_exact_test(fix, imat);

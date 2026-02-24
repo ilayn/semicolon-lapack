@@ -5,11 +5,6 @@
 
 #include "verify.h"
 
-/* Forward declarations */
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-
 /**
  * Form the 2*M*N by 2*M*N matrix
  *
@@ -50,14 +45,14 @@ extern void slaset(const char* uplo, const int m, const int n,
  * @param[in] ldz
  *     The leading dimension of Z. (ldz >= 2*m*n)
  */
-void slakf2(const int m, const int n,
-            const f32* A, const int lda,
+void slakf2(const INT m, const INT n,
+            const f32* A, const INT lda,
             const f32* B, const f32* D, const f32* E,
-            f32* Z, const int ldz)
+            f32* Z, const INT ldz)
 {
     const f32 ZERO = 0.0f;
 
-    int i, ik, j, jk, l, mn, mn2;
+    INT i, ik, j, jk, l, mn, mn2;
 
     mn = m * n;
     mn2 = 2 * mn;

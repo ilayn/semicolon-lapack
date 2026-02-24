@@ -15,8 +15,6 @@
 #include "test_harness.h"
 #include "verify.h"
 
-extern f64 dlamch(const char* cmach);
-
 #define THRESH 30.0
 
 /* ------------------------------------------------------------------ */
@@ -26,7 +24,7 @@ extern f64 dlamch(const char* cmach);
 static void test_derrec(void** state)
 {
     (void)state;
-    int ok, nt;
+    INT ok, nt;
     derrec(&ok, &nt);
     assert_true(ok);
 }
@@ -39,7 +37,7 @@ static void test_dget31_dlaln2(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo[2], knt;
+    INT lmax, ninfo[2], knt;
 
     dget31(&rmax, &lmax, ninfo, &knt);
 
@@ -55,7 +53,7 @@ static void test_dget32_dlasy2(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo, knt;
+    INT lmax, ninfo, knt;
 
     dget32(&rmax, &lmax, &ninfo, &knt);
 
@@ -70,7 +68,7 @@ static void test_dget33_dlanv2(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo, knt;
+    INT lmax, ninfo, knt;
 
     dget33(&rmax, &lmax, &ninfo, &knt);
 
@@ -86,7 +84,7 @@ static void test_dget34_dlaexc(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo[2], knt;
+    INT lmax, ninfo[2], knt;
 
     dget34(&rmax, &lmax, ninfo, &knt);
 
@@ -102,7 +100,7 @@ static void test_dget35_dtrsyl(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo, knt;
+    INT lmax, ninfo, knt;
 
     dget35(&rmax, &lmax, &ninfo, &knt);
 
@@ -116,10 +114,10 @@ static void test_dget35_dtrsyl(void** state)
 static void test_dsyl01_dtrsyl3(void** state)
 {
     (void)state;
-    int ftrsyl[3];
+    INT ftrsyl[3];
     f64 rtrsyl[2];
-    int itrsyl[2];
-    int ktrsyl3;
+    INT itrsyl[2];
+    INT ktrsyl3;
 
     dsyl01(THRESH, ftrsyl, rtrsyl, itrsyl, &ktrsyl3);
 
@@ -136,7 +134,7 @@ static void test_dget36_dtrexc(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo[3], knt;
+    INT lmax, ninfo[3], knt;
 
     dget36(&rmax, &lmax, ninfo, &knt);
 
@@ -152,7 +150,7 @@ static void test_dget37_dtrsna(void** state)
 {
     (void)state;
     f64 rmax[3];
-    int lmax[3], ninfo[3], knt;
+    INT lmax[3], ninfo[3], knt;
 
     dget37(rmax, lmax, ninfo, &knt);
 
@@ -171,7 +169,7 @@ static void test_dget38_dtrsen(void** state)
 {
     (void)state;
     f64 rmax[3];
-    int lmax[3], ninfo[3], knt;
+    INT lmax[3], ninfo[3], knt;
 
     dget38(rmax, lmax, ninfo, &knt);
 
@@ -190,7 +188,7 @@ static void test_dget39_dlaqtr(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo, knt;
+    INT lmax, ninfo, knt;
 
     dget39(&rmax, &lmax, &ninfo, &knt);
 
@@ -205,7 +203,7 @@ static void test_dget40_dtgexc(void** state)
 {
     (void)state;
     f64 rmax;
-    int lmax, ninfo, knt;
+    INT lmax, ninfo, knt;
 
     dget40(&rmax, &lmax, &ninfo, &knt);
 

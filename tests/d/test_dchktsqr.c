@@ -28,12 +28,13 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include <stdio.h>
 
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NBVAL[] = {1, 3, 3, 3, 20};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -42,18 +43,15 @@ static const int NBVAL[] = {1, 3, 3, 3, 20};
 #define THRESH  30.0
 
 /* Verification routine */
-extern void dtsqr01(const char* tssw, const int m, const int n, const int mb,
-                    const int nb, f64* result);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int mode;   /* 0='TS', 1='SW' */
-    int m;
-    int n;
-    int imb;    /* Index into NBVAL[] for MB */
-    int inb;    /* Index into NBVAL[] for NB */
+    INT mode;   /* 0='TS', 1='SW' */
+    INT m;
+    INT n;
+    INT imb;    /* Index into NBVAL[] for MB */
+    INT inb;    /* Index into NBVAL[] for NB */
     char name[80];
 } dchktsqr_params_t;
 
@@ -63,7 +61,7 @@ typedef struct {
 
 static dchktsqr_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * CMocka test function - calls dtsqr01 for the given parameter combination.
@@ -73,8 +71,8 @@ static void test_dchktsqr_case(void** state)
     dchktsqr_params_t* p = *state;
     f64 result[NTESTS];
 
-    int mb = NBVAL[p->imb];
-    int nb = NBVAL[p->inb];
+    INT mb = NBVAL[p->imb];
+    INT nb = NBVAL[p->inb];
 
     xlaenv(1, mb);
     xlaenv(2, nb);
@@ -83,7 +81,7 @@ static void test_dchktsqr_case(void** state)
     dtsqr01(tssw, p->m, p->n, mb, nb, result);
 
     char ctx[128];
-    for (int t = 0; t < NTESTS; t++) {
+    for (INT t = 0; t < NTESTS; t++) {
         snprintf(ctx, sizeof(ctx), "%s m=%d n=%d mb=%d nb=%d test(%d)",
                  tssw, p->m, p->n, mb, nb, t + 1);
         set_test_context(ctx);
@@ -99,24 +97,24 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int mode = 0; mode < 2; mode++) {
+    for (INT mode = 0; mode < 2; mode++) {
         const char* tag = (mode == 0) ? "TS" : "SW";
 
-        for (int im = 0; im < (int)NM; im++) {
-            int m = MVAL[im];
+        for (INT im = 0; im < (INT)NM; im++) {
+            INT m = MVAL[im];
 
-            for (int jn = 0; jn < (int)NN; jn++) {
-                int n = NVAL[jn];
+            for (INT jn = 0; jn < (INT)NN; jn++) {
+                INT n = NVAL[jn];
 
                 if (m == 0 || n == 0) {
                     continue;
                 }
 
-                for (int inb = 0; inb < (int)NNB; inb++) {
-                    int mb = NBVAL[inb];
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    INT mb = NBVAL[inb];
 
-                    for (int imb = 0; imb < (int)NNB; imb++) {
-                        int nb = NBVAL[imb];
+                    for (INT imb = 0; imb < (INT)NNB; imb++) {
+                        INT nb = NBVAL[imb];
 
                         dchktsqr_params_t* p = &g_params[g_num_tests];
                         p->mode = mode;

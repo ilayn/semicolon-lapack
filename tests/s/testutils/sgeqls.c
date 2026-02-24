@@ -4,7 +4,7 @@
  *        QL factorization A = Q*L computed by SGEQLF.
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "semicolon_lapack_single.h"
 
@@ -36,17 +36,17 @@
  *                       < 0: if info = -i, the i-th argument had an illegal value
  */
 void sgeqls(
-    const int m,
-    const int n,
-    const int nrhs,
+    const INT m,
+    const INT n,
+    const INT nrhs,
     f32* A,
-    const int lda,
+    const INT lda,
     const f32* tau,
     f32* B,
-    const int ldb,
+    const INT ldb,
     f32* work,
-    const int lwork,
-    int* info)
+    const INT lwork,
+    INT* info)
 {
     const f32 ONE = 1.0f;
 

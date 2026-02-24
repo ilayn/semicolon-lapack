@@ -5,11 +5,8 @@
  * Faithful port of LAPACK TESTING/MATGEN/dlarot.f
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
 
 /**
  * DLAROT applies a (Givens) rotation to two adjacent rows or
@@ -75,18 +72,18 @@ extern void xerbla(const char* srname, const int info);
  *     (if lrows=false).
  */
 void dlarot(
-    const int lrows,
-    const int lleft,
-    const int lright,
-    const int nl,
+    const INT lrows,
+    const INT lleft,
+    const INT lright,
+    const INT nl,
     const f64 c,
     const f64 s,
     f64* A,
-    const int lda,
+    const INT lda,
     f64* xleft,
     f64* xright)
 {
-    int iinc, inext, ix, iy, iyt, nt;
+    INT iinc, inext, ix, iy, iyt, nt;
     f64 xt[2], yt[2];
 
     /* Set up indices, arrays for ends */

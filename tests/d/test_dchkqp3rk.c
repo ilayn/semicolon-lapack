@@ -23,15 +23,16 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 4};
-static const int NBVAL[] = {1, 3, 3, 3, 20};
-static const int NXVAL[] = {1, 0, 5, 9, 1};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 4};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -45,58 +46,19 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};
 #define BIGNUM  1.0e+38
 
 /* Routine under test */
-extern void dgeqp3rk(const int m, const int n, const int nrhs, const int kmax,
-                     f64 abstol, f64 reltol, f64* A, const int lda,
-                     int* K, f64* maxc2nrmk, f64* relmaxc2nrmk,
-                     int* jpiv, f64* tau, f64* work, const int lwork,
-                     int* iwork, int* info);
-
 /* Verification routines */
-extern f64 dqrt11(const int m, const int k, const f64* A, const int lda,
-                     const f64* tau, f64* work, const int lwork);
-extern f64 dqrt12(const int m, const int n, const f64* A, const int lda,
-                     const f64* S, f64* work, const int lwork);
-extern f64 dqpt01(const int m, const int n, const int k,
-                     const f64* A, const f64* AF, const int lda,
-                     const f64* tau, const int* jpvt,
-                     f64* work, const int lwork);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-extern void dlaord(const char* job, const int n, f64* X, const int incx);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dormqr(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f64* A, const int lda, const f64* tau,
-                   f64* C, const int ldc, f64* work, const int lwork,
-                   int* info);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int nrhs;
-    int imat;
-    int inb;
-    int kmax;
+    INT m;
+    INT n;
+    INT nrhs;
+    INT imat;
+    INT inb;
+    INT kmax;
     char name[128];
 } dchkqp3rk_params_t;
 
@@ -111,8 +73,8 @@ typedef struct {
     f64* S;       /* Singular values (NMAX) */
     f64* TAU;     /* Scalar factors of elementary reflectors (NMAX) */
     f64* WORK;    /* General workspace */
-    int* IWORK;      /* Integer workspace for pivot indicators + pivot array + internal */
-    int lwork;
+    INT* IWORK;      /* Integer workspace for pivot indicators + pivot array + internal */
+    INT lwork;
 } dchkqp3rk_workspace_t;
 
 static dchkqp3rk_workspace_t* g_workspace = NULL;
@@ -131,7 +93,7 @@ static int group_setup(void** state)
      * LWORK = MAX(1, M*MAX(M,N) + 4*MINMN + MAX(M,N), M*N + 2*MINMN + 4*N)
      * We use a generous upper bound for NMAX.
      */
-    int lwork = NMAX * NMAX * 3 + 10 * NMAX;
+    INT lwork = NMAX * NMAX * 3 + 10 * NMAX;
     g_workspace->lwork = lwork;
 
     /* A holds M-by-N matrix plus appended M-by-NRHS for RHS */
@@ -143,7 +105,7 @@ static int group_setup(void** state)
     g_workspace->TAU = malloc(NMAX * sizeof(f64));
     g_workspace->WORK = malloc(lwork * sizeof(f64));
     /* IWORK: N for zero indicators + N for pivot array + N for internal work */
-    g_workspace->IWORK = malloc(3 * NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(3 * NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->COPYA || !g_workspace->B ||
         !g_workspace->COPYB || !g_workspace->S || !g_workspace->TAU ||
@@ -204,20 +166,20 @@ static int group_teardown(void** state)
  *
  * @return 0 on success, -1 if this IMAT should be skipped for this size
  */
-static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
+static INT generate_matrix(INT m, INT n, INT imat, f64* COPYA, INT lda,
                            f64* S, f64* WORK, uint64_t rng_state[static 4])
 {
     const f64 ZERO = 0.0;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT minmn = (m < n) ? m : n;
+    INT info;
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
 
     if (imat == 1) {
         /* Matrix 1: Zero matrix */
         dlaset("F", m, n, ZERO, ZERO, COPYA, lda);
-        for (int i = 0; i < minmn; i++) {
+        for (INT i = 0; i < minmn; i++) {
             S[i] = ZERO;
         }
         return 0;
@@ -244,11 +206,11 @@ static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
 
     if (minmn >= 2 && imat >= 5 && imat <= 13) {
         /* Matrices 5-13: Contain zero columns, only for MINMN >= 2 */
-        int jb_zero = 0;
-        int nb_zero = 0;
-        int nb_gen = 0;
-        int j_inc = 1;
-        int j_first_nz = 1;
+        INT jb_zero = 0;
+        INT nb_zero = 0;
+        INT nb_gen = 0;
+        INT j_inc = 1;
+        INT j_first_nz = 1;
 
         if (imat == 5) {
             /* First column is zero */
@@ -311,7 +273,7 @@ static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
 
         char dist_str[2] = {dist, '\0'};
         char type_str[2] = {type, '\0'};
-        int ind_offset_gen = nb_zero * lda;
+        INT ind_offset_gen = nb_zero * lda;
         dlatms(m, nb_gen, dist_str,
                type_str, S, mode, cndnum, anorm,
                kl, ku, "N", &COPYA[ind_offset_gen], lda, WORK, &info, rng_state);
@@ -321,7 +283,7 @@ static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
         }
 
         /* Sort singular values in decreasing order for the generated part */
-        int minmnb_gen = (m < nb_gen) ? m : nb_gen;
+        INT minmnb_gen = (m < nb_gen) ? m : nb_gen;
         if (minmnb_gen > 0) {
             dlaord("D", minmnb_gen, S, 1);
         }
@@ -329,21 +291,21 @@ static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
         /* Swap the generated columns into correct positions */
         if (imat == 6 || imat == 7 || imat == 8 || imat == 10 || imat == 11) {
             /* Move columns from right block into left positions */
-            for (int j = 0; j < jb_zero - 1; j++) {
+            for (INT j = 0; j < jb_zero - 1; j++) {
                 cblas_dswap(m, &COPYA[(nb_zero + j) * lda], 1,
                             &COPYA[j * lda], 1);
             }
         } else if (imat == 12 || imat == 13) {
             /* Swap generated columns into even/odd positions */
-            for (int j = 0; j < nb_gen; j++) {
-                int ind_out = (nb_zero + j) * lda;
-                int ind_in = (j_inc * j + (j_first_nz - 1)) * lda;
+            for (INT j = 0; j < nb_gen; j++) {
+                INT ind_out = (nb_zero + j) * lda;
+                INT ind_in = (j_inc * j + (j_first_nz - 1)) * lda;
                 cblas_dswap(m, &COPYA[ind_out], 1, &COPYA[ind_in], 1);
             }
         }
 
         /* Add trailing zeros to singular values */
-        for (int i = minmnb_gen; i < minmn; i++) {
+        for (INT i = minmnb_gen; i < minmn; i++) {
             S[i] = ZERO;
         }
 
@@ -357,27 +319,27 @@ static int generate_matrix(int m, int n, int imat, f64* COPYA, int lda,
 /**
  * Run the full dchkqp3rk test battery for a single configuration.
  */
-static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int kmax)
+static void run_dchkqp3rk_single(INT m, INT n, INT nrhs, INT imat, INT inb, INT kmax)
 {
     const f64 ZERO = 0.0;
     const f64 NEGONE = -1.0;
     dchkqp3rk_workspace_t* ws = g_workspace;
 
-    int info;
-    int lda = (m > 1) ? m : 1;
-    int minmn = (m < n) ? m : n;
+    INT info;
+    INT lda = (m > 1) ? m : 1;
+    INT minmn = (m < n) ? m : n;
     f64 eps = dlamch("E");
     f64 result[NTESTS];
     char ctx[256];
 
     /* Set block size and crossover point */
-    int nb = NBVAL[inb];
-    int nx = NXVAL[inb];
+    INT nb = NBVAL[inb];
+    INT nx = NXVAL[inb];
     xlaenv(1, nb);
     xlaenv(3, nx);
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -388,7 +350,7 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     /* Generate RHS matrix B (COPYB) with dlatb4/dlatms for IMAT=14 parameters */
     {
         char type, dist;
-        int kl, ku, mode;
+        INT kl, ku, mode;
         f64 anorm, cndnum;
         dlatb4("DQK", 14, m, nrhs, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
         char dist_str[2] = {dist, '\0'};
@@ -412,7 +374,7 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     }
 
     /* Initialize pivot indicators (IWORK[0:n-1]) to zero */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         ws->IWORK[i] = 0;
     }
 
@@ -425,12 +387,12 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     dlacpy("A", m, n, ws->COPYA, lda, ws->A, lda);
     dlacpy("A", m, nrhs, ws->COPYB, lda, &ws->A[lda * n], lda);
     dlacpy("A", m, nrhs, ws->COPYB, lda, ws->B, lda);
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         ws->IWORK[n + i] = ws->IWORK[i];
     }
 
     /* Workspace size for DGEQP3RK */
-    int lw = (2 * n + nb * (n + nrhs + 1) > 1) ? (2 * n + nb * (n + nrhs + 1)) : 1;
+    INT lw = (2 * n + nb * (n + nrhs + 1) > 1) ? (2 * n + nb * (n + nrhs + 1)) : 1;
     if (3 * n + nrhs - 1 > lw) {
         lw = 3 * n + nrhs - 1;
     }
@@ -440,7 +402,7 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     f64 reltol = -1.0;
 
     /* Call DGEQP3RK */
-    int kfact;
+    INT kfact;
     f64 maxc2nrmk, relmaxc2nrmk;
     dgeqp3rk(m, n, nrhs, kmax, abstol, reltol, ws->A, lda,
              &kfact, &maxc2nrmk, &relmaxc2nrmk, &ws->IWORK[n], ws->TAU,
@@ -481,12 +443,12 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
 
     /* TEST 4: Verify R diagonal is non-increasing in absolute value
      *         Only when min(KFACT, MINMN) >= 2 */
-    int ktest4 = (kfact < minmn) ? kfact : minmn;
+    INT ktest4 = (kfact < minmn) ? kfact : minmn;
     if (ktest4 >= 2) {
         result[3] = ZERO;
         f64 r11 = ws->A[0];  /* R(0,0) */
         if (fabs(r11) > ZERO) {
-            for (int j = 0; j < kfact - 1; j++) {
+            for (INT j = 0; j < kfact - 1; j++) {
                 /* R(j,j) is at A[j + j*lda], R(j+1,j+1) is at A[(j+1) + (j+1)*lda] */
                 f64 rjj = fabs(ws->A[j + j * lda]);
                 f64 rjj1 = fabs(ws->A[(j + 1) + (j + 1) * lda]);
@@ -508,13 +470,13 @@ static void run_dchkqp3rk_single(int m, int n, int nrhs, int imat, int inb, int 
     if (minmn > 0) {
         /* B already contains COPYB; A[lda*n:] contains Q**T * COPYB from dgeqp3rk */
         /* Apply Q**T to B using dormqr */
-        int lwork_mqr = (nrhs > 1) ? nrhs : 1;
+        INT lwork_mqr = (nrhs > 1) ? nrhs : 1;
         dormqr("L", "T", m, nrhs, kfact, ws->A, lda, ws->TAU,
                ws->B, lda, ws->WORK, lwork_mqr, &info);
 
         if (info == 0) {
             /* Compute B := B - A[lda*n:] (where A[lda*n:] is Q**T * COPYB from dgeqp3rk) */
-            for (int i = 0; i < nrhs; i++) {
+            for (INT i = 0; i < nrhs; i++) {
                 cblas_daxpy(m, NEGONE, &ws->A[lda * n + i * lda], 1,
                             &ws->B[i * lda], 1);
             }
@@ -564,7 +526,7 @@ static void test_dchkqp3rk_case(void** state)
 
 static dchkqp3rk_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with parameter combinations.
@@ -573,28 +535,28 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
-            int minmn = (m < n) ? m : n;
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
+            INT minmn = (m < n) ? m : n;
 
-            for (int ins = 0; ins < (int)NNS; ins++) {
-                int nrhs = NSVAL[ins];
+            for (INT ins = 0; ins < (INT)NNS; ins++) {
+                INT nrhs = NSVAL[ins];
 
-                for (int imat = 1; imat <= NTYPES; imat++) {
+                for (INT imat = 1; imat <= NTYPES; imat++) {
                     /* Skip imat 5-13 for minmn < 2 */
                     if (minmn < 2 && imat >= 5 && imat <= 13) {
                         continue;
                     }
 
-                    for (int inb = 0; inb < (int)NNB; inb++) {
-                        int nb = NBVAL[inb];
+                    for (INT inb = 0; inb < (INT)NNB; inb++) {
+                        INT nb = NBVAL[inb];
 
                         /* Representative KMAX values */
-                        int kmax_vals[4];
-                        int num_kmax = 0;
+                        INT kmax_vals[4];
+                        INT num_kmax = 0;
 
                         kmax_vals[num_kmax++] = 0;
                         if (minmn >= 2) {
@@ -603,8 +565,8 @@ static void build_test_array(void)
                         kmax_vals[num_kmax++] = minmn;
                         kmax_vals[num_kmax++] = minmn + 1;
 
-                        for (int ik = 0; ik < num_kmax; ik++) {
-                            int kmax = kmax_vals[ik];
+                        for (INT ik = 0; ik < num_kmax; ik++) {
+                            INT kmax = kmax_vals[ik];
 
                             if (g_num_tests >= MAX_TESTS) {
                                 return;

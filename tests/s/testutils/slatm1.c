@@ -11,8 +11,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
 
 /**
  * SLATM1 computes the entries of D(1..N) as specified by
@@ -68,21 +66,21 @@ extern void xerbla(const char* srname, const int info);
  *    -7  => if N negative
  */
 void slatm1(
-    const int mode,
+    const INT mode,
     const f32 cond,
-    const int irsign,
-    const int idist,
+    const INT irsign,
+    const INT idist,
     f32* d,
-    const int n,
-    int* info,
+    const INT n,
+    INT* info,
     uint64_t state[static 4])
 {
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
 
-    int i;
+    INT i;
     f32 alpha, temp;
-    int absmode;
+    INT absmode;
 
     *info = 0;
 

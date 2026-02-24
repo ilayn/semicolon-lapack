@@ -4,15 +4,8 @@
  *        constrained least square problem (LSE).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dgglse(const int m, const int n, const int p,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* C, f64* D, f64* X,
-                   f64* work, const int lwork, int* info);
 
 /**
  * DLSETS tests DGGLSE - a subroutine for solving linear equality
@@ -40,26 +33,26 @@ extern void dgglse(const int m, const int n, const int p,
  *                        result[1] = norm( B*x - d )/ norm(B)*norm(X)*EPS
  */
 void dlsets(
-    const int m,
-    const int p,
-    const int n,
+    const INT m,
+    const INT p,
+    const INT n,
     const f64* A,
     f64* AF,
-    const int lda,
+    const INT lda,
     const f64* B,
     f64* BF,
-    const int ldb,
+    const INT ldb,
     const f64* C,
     f64* CF,
     const f64* D,
     f64* DF,
     f64* X,
     f64* work,
-    const int lwork,
+    const INT lwork,
     f64* rwork,
     f64* result)
 {
-    int info;
+    INT info;
 
     /* Copy the matrices A and B to the arrays AF and BF,
        and the vectors C and D to the arrays CF and DF, */

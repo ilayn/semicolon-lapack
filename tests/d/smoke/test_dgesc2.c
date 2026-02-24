@@ -13,25 +13,14 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void dgetc2(const int n, f64 * const restrict A, const int lda,
-                   int * const restrict ipiv, int * const restrict jpiv, int *info);
-extern void dgesc2(const int n, const f64 * const restrict A, const int lda,
-                   f64 * const restrict rhs, const int * const restrict ipiv,
-                   const int * const restrict jpiv, f64 *scale);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-extern f64 dlange(const char *norm, const int m, const int n,
-                     const f64 * const restrict A, const int lda,
-                     f64 * const restrict work);
-
 /*
  * Compute ||b - A*x/scale|| / (||A|| * ||x|| * eps)
  */
-static f64 compute_residual(int n, const f64 *A, int lda,
+static f64 compute_residual(INT n, const f64 *A, INT lda,
                                const f64 *x, const f64 *b,
                                f64 scale)
 {
@@ -67,8 +56,8 @@ static f64 compute_residual(int n, const f64 *A, int lda,
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64 *A;       /* Factored matrix */
     f64 *A_orig;  /* Original matrix */
     f64 *b;       /* RHS (overwritten with solution) */
@@ -76,14 +65,14 @@ typedef struct {
     f64 *x_exact; /* Known exact solution */
     f64 *d;       /* Singular values for dlatms */
     f64 *work;    /* Workspace */
-    int *ipiv;       /* Row pivot indices */
-    int *jpiv;       /* Column pivot indices */
+    INT* ipiv;       /* Row pivot indices */
+    INT* jpiv;       /* Column pivot indices */
     uint64_t seed;
 } dgesc2_fixture_t;
 
 static uint64_t g_seed = 1729;
 
-static int dgesc2_setup(void **state, int n)
+static int dgesc2_setup(void **state, INT n)
 {
     dgesc2_fixture_t *fix = malloc(sizeof(dgesc2_fixture_t));
     assert_non_null(fix);
@@ -99,8 +88,8 @@ static int dgesc2_setup(void **state, int n)
     fix->x_exact = malloc(n * sizeof(f64));
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(3 * n * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
-    fix->jpiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
+    fix->jpiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_orig);
@@ -143,12 +132,12 @@ static int setup_8(void **state) { return dgesc2_setup(state, 8); }
 /**
  * Core test logic.
  */
-static f64 run_dgesc2_test(dgesc2_fixture_t *fix, int imat)
+static f64 run_dgesc2_test(dgesc2_fixture_t *fix, INT imat)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
 
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -161,7 +150,7 @@ static f64 run_dgesc2_test(dgesc2_fixture_t *fix, int imat)
     memcpy(fix->A_orig, fix->A, fix->lda * fix->n * sizeof(f64));
 
     /* Generate known exact solution */
-    for (int i = 0; i < fix->n; i++) {
+    for (INT i = 0; i < fix->n; i++) {
         fix->x_exact[i] = 1.0 + (f64)i / fix->n;
     }
 
@@ -189,7 +178,7 @@ static void test_dgesc2_wellcond(void **state)
     dgesc2_fixture_t *fix = *state;
     f64 resid;
 
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         resid = run_dgesc2_test(fix, imat);
         assert_residual_ok(resid);
@@ -222,8 +211,8 @@ static void test_dgesc2_simple(void **state)
     f64 b_orig[3];
     memcpy(b_orig, b, 3 * sizeof(f64));
 
-    int ipiv[3], jpiv[3];
-    int info;
+    INT ipiv[3], jpiv[3];
+    INT info;
     f64 scale;
 
     dgetc2(3, A, 3, ipiv, jpiv, &info);
@@ -240,14 +229,14 @@ static void test_dgesc2_identity(void **state)
 {
     (void)state;
 
-    int n = 4;
+    INT n = 4;
     f64 *A = calloc(n * n, sizeof(f64));
     f64 *A_orig = calloc(n * n, sizeof(f64));
     f64 *b = malloc(n * sizeof(f64));
     f64 *b_orig = malloc(n * sizeof(f64));
-    int *ipiv = malloc(n * sizeof(int));
-    int *jpiv = malloc(n * sizeof(int));
-    int info;
+    INT* ipiv = malloc(n * sizeof(INT));
+    INT* jpiv = malloc(n * sizeof(INT));
+    INT info;
     f64 scale;
 
     assert_non_null(A);
@@ -255,7 +244,7 @@ static void test_dgesc2_identity(void **state)
     assert_non_null(b);
     assert_non_null(b_orig);
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         A[i + i * n] = 1.0;
         A_orig[i + i * n] = 1.0;
         b[i] = (f64)(i + 1);

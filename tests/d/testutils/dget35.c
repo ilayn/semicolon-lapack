@@ -4,18 +4,9 @@
  *        equation op(A)*X + ISGN*X*op(B) = scale*C.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                  const f64* A, const int lda, f64* work);
-extern void dtrsyl(const char* trana, const char* tranb, const int isgn,
-                   const int m, const int n,
-                   const f64* A, const int lda,
-                   const f64* B, const int ldb,
-                   f64* C, const int ldc, f64* scale, int* info);
 
 /**
  * DGET35 tests DTRSYL, a routine for solving the Sylvester matrix
@@ -34,16 +25,16 @@ extern void dtrsyl(const char* trana, const char* tranb, const int isgn,
  */
 #define LDA 6
 
-void dget35(f64* rmax, int* lmax, int* ninfo, int* knt)
+void dget35(f64* rmax, INT* lmax, INT* ninfo, INT* knt)
 {
     const f64 ZERO = 0.0;
     const f64 ONE  = 1.0;
     const f64 TWO  = 2.0;
     const f64 FOUR = 4.0;
 
-    static const int idim[8] = {1, 2, 3, 4, 3, 3, 6, 4};
+    static const INT idim[8] = {1, 2, 3, 4, 3, 3, 6, 4};
 
-    static const int ival[8][6][6] = {
+    static const INT ival[8][6][6] = {
         {
             {  1,   0,   0,   0,   0,   0},
             {  0,   0,   0,   0,   0,   0},
@@ -130,24 +121,24 @@ void dget35(f64* rmax, int* lmax, int* ninfo, int* knt)
     f64 a[LDA * LDA], b[LDA * LDA], c[LDA * LDA], cc[LDA * LDA];
     f64 dum[1];
     f64 scale, tnrm, cnrm, xnrm, rmul, res1, res, den;
-    int m, n, info;
+    INT m, n, info;
 
-    for (int itrana = 0; itrana < 2; itrana++) {
-        for (int itranb = 0; itranb < 2; itranb++) {
-            for (int isgn = -1; isgn <= 1; isgn += 2) {
-                for (int ima = 0; ima < 8; ima++) {
-                    for (int imlda1 = 0; imlda1 < 3; imlda1++) {
-                        for (int imlda2 = 0; imlda2 < 3; imlda2++) {
-                            for (int imloff = 0; imloff < 2; imloff++) {
-                                for (int imb = 0; imb < 8; imb++) {
-                                    for (int imldb1 = 0; imldb1 < 3; imldb1++) {
+    for (INT itrana = 0; itrana < 2; itrana++) {
+        for (INT itranb = 0; itranb < 2; itranb++) {
+            for (INT isgn = -1; isgn <= 1; isgn += 2) {
+                for (INT ima = 0; ima < 8; ima++) {
+                    for (INT imlda1 = 0; imlda1 < 3; imlda1++) {
+                        for (INT imlda2 = 0; imlda2 < 3; imlda2++) {
+                            for (INT imloff = 0; imloff < 2; imloff++) {
+                                for (INT imb = 0; imb < 8; imb++) {
+                                    for (INT imldb1 = 0; imldb1 < 3; imldb1++) {
                                         const char* trana = (itrana == 0) ? "N" : "T";
                                         const char* tranb = (itranb == 0) ? "N" : "T";
                                         m = idim[ima];
                                         n = idim[imb];
                                         tnrm = ZERO;
-                                        for (int i = 0; i < m; i++) {
-                                            for (int j = 0; j < m; j++) {
+                                        for (INT i = 0; i < m; i++) {
+                                            for (INT j = 0; j < m; j++) {
                                                 a[i + j * LDA] = (f64)ival[ima][i][j];
                                                 if (((i - j) < 0 ? (j - i) : (i - j)) <= 1) {
                                                     a[i + j * LDA] = a[i + j * LDA] *
@@ -162,8 +153,8 @@ void dget35(f64* rmax, int* lmax, int* ninfo, int* knt)
                                                     tnrm = fabs(a[i + j * LDA]);
                                             }
                                         }
-                                        for (int i = 0; i < n; i++) {
-                                            for (int j = 0; j < n; j++) {
+                                        for (INT i = 0; i < n; i++) {
+                                            for (INT j = 0; j < n; j++) {
                                                 b[i + j * LDA] = (f64)ival[imb][i][j];
                                                 if (((i - j) < 0 ? (j - i) : (i - j)) <= 1) {
                                                     b[i + j * LDA] = b[i + j * LDA] *
@@ -177,8 +168,8 @@ void dget35(f64* rmax, int* lmax, int* ninfo, int* knt)
                                             }
                                         }
                                         cnrm = ZERO;
-                                        for (int i = 0; i < m; i++) {
-                                            for (int j = 0; j < n; j++) {
+                                        for (INT i = 0; i < m; i++) {
+                                            for (INT j = 0; j < n; j++) {
                                                 c[i + j * LDA] = sin((f64)((i + 1) * (j + 1)));
                                                 if (c[i + j * LDA] > cnrm)
                                                     cnrm = c[i + j * LDA];

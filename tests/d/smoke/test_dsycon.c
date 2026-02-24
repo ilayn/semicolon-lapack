@@ -19,40 +19,26 @@
 
 /* Test threshold - condition estimation needs looser tolerance (LAPACK dtest.in uses 30) */
 #define THRESH 30.0
-#include <cblas.h>
-
 /* Routines under test */
-extern void dsytrf(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* const restrict ipiv,
-                   f64* const restrict work, const int lwork, int* info);
-extern void dsycon(const char* uplo, const int n,
-                   const f64* const restrict A, const int lda,
-                   const int* const restrict ipiv, const f64 anorm,
-                   f64* rcond, f64* const restrict work,
-                   int* const restrict iwork, int* info);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64* A;       /* Original matrix */
     f64* AFAC;    /* Factored matrix */
-    int* ipiv;       /* Pivot indices from dsytrf */
+    INT* ipiv;       /* Pivot indices from dsytrf */
     f64* d;       /* Singular values for dlatms */
     f64* work;    /* Workspace */
     f64* rwork;   /* Workspace for dlansy */
-    int* iwork;      /* Integer workspace for dsycon */
+    INT* iwork;      /* Integer workspace for dsycon */
     uint64_t seed;
 } dsycon_fixture_t;
 
 static uint64_t g_seed = 7400;
 
-static int dsycon_setup(void** state, int n)
+static int dsycon_setup(void** state, INT n)
 {
     dsycon_fixture_t* fix = malloc(sizeof(dsycon_fixture_t));
     assert_non_null(fix);
@@ -62,7 +48,7 @@ static int dsycon_setup(void** state, int n)
     fix->seed = g_seed++;
 
     /* Workspace: max(n*64, 2*n) for dsytrf/dsycon, dlatms needs 3*n */
-    int lwork = n * 64;
+    INT lwork = n * 64;
     if (lwork < 2 * n) {
         lwork = 2 * n;
     }
@@ -72,11 +58,11 @@ static int dsycon_setup(void** state, int n)
 
     fix->A = malloc(fix->lda * n * sizeof(f64));
     fix->AFAC = malloc(fix->lda * n * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(lwork * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AFAC);
@@ -115,13 +101,13 @@ static int setup_50(void** state) { return dsycon_setup(state, 50); }
  * Core test logic: generate symmetric matrix, factor with dsytrf,
  * estimate condition number with dsycon, compare to true condition number.
  */
-static void run_dsycon_test(dsycon_fixture_t* fix, int imat, const char* uplo)
+static void run_dsycon_test(dsycon_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
-    int info;
-    int lwork = fix->n * 64;
+    INT info;
+    INT lwork = fix->n * 64;
     if (lwork < 2 * fix->n) {
         lwork = 2 * fix->n;
     }
@@ -169,7 +155,7 @@ static void run_dsycon_test(dsycon_fixture_t* fix, int imat, const char* uplo)
 static void test_dsycon_wellcond_upper(void** state)
 {
     dsycon_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         run_dsycon_test(fix, imat, "U");
     }
@@ -182,7 +168,7 @@ static void test_dsycon_wellcond_upper(void** state)
 static void test_dsycon_wellcond_lower(void** state)
 {
     dsycon_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         run_dsycon_test(fix, imat, "L");
     }
@@ -195,7 +181,7 @@ static void test_dsycon_wellcond_lower(void** state)
 static void test_dsycon_illcond_upper(void** state)
 {
     dsycon_fixture_t* fix = *state;
-    for (int imat = 7; imat <= 8; imat++) {
+    for (INT imat = 7; imat <= 8; imat++) {
         fix->seed = g_seed++;
         run_dsycon_test(fix, imat, "U");
     }
@@ -208,7 +194,7 @@ static void test_dsycon_illcond_upper(void** state)
 static void test_dsycon_illcond_lower(void** state)
 {
     dsycon_fixture_t* fix = *state;
-    for (int imat = 7; imat <= 8; imat++) {
+    for (INT imat = 7; imat <= 8; imat++) {
         fix->seed = g_seed++;
         run_dsycon_test(fix, imat, "L");
     }
@@ -221,7 +207,7 @@ static void test_dsycon_illcond_lower(void** state)
 static void test_dsycon_scaled_upper(void** state)
 {
     dsycon_fixture_t* fix = *state;
-    for (int imat = 9; imat <= 10; imat++) {
+    for (INT imat = 9; imat <= 10; imat++) {
         fix->seed = g_seed++;
         run_dsycon_test(fix, imat, "U");
     }
@@ -234,7 +220,7 @@ static void test_dsycon_scaled_upper(void** state)
 static void test_dsycon_scaled_lower(void** state)
 {
     dsycon_fixture_t* fix = *state;
-    for (int imat = 9; imat <= 10; imat++) {
+    for (INT imat = 9; imat <= 10; imat++) {
         fix->seed = g_seed++;
         run_dsycon_test(fix, imat, "L");
     }

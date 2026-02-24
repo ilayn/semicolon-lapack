@@ -19,33 +19,17 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 /* Routine under test */
-extern void dstev(const char* jobz, const int n,
-                  f64* const restrict D, f64* const restrict E,
-                  f64* const restrict Z, const int ldz,
-                  f64* const restrict work, int* info);
-
 /* Verification routines */
-extern void dstt21(const int n, const int kband,
-                   const f64* AD, const f64* AE,
-                   const f64* SD, const f64* SE,
-                   const f64* U, const int ldu,
-                   f64* work, f64* result);
-extern void dstech(const int n, const f64* A, const f64* B,
-                   const f64* eig, const f64 tol, f64* work, int* info);
-
 /* Utilities */
-extern f64 dlamch(const char* cmach);
-
 /* ---------- Test fixture ---------- */
 typedef struct {
-    int n;
+    INT n;
     f64* AD;     /* original diagonal */
     f64* AE;     /* original off-diagonal */
     f64* D;      /* diagonal (overwritten by dstev) */
@@ -62,7 +46,7 @@ typedef struct {
 /* Global seed for reproducibility */
 static uint64_t g_seed = 7331;
 
-static int dstev_setup(void** state, int n)
+static int dstev_setup(void** state, INT n)
 {
     dstev_fixture_t* fix = malloc(sizeof(dstev_fixture_t));
     assert_non_null(fix);
@@ -79,10 +63,10 @@ static int dstev_setup(void** state, int n)
     fix->Z = malloc(n * n * sizeof(f64));
 
     /* workspace: max(2*(n-1), n*(n+1)) */
-    int work_stev = (n > 1) ? 2 * (n - 1) : 1;
-    int work_stt21 = n * (n + 1);
-    int work_stech = 2 * n;
-    int work_sz = work_stev;
+    INT work_stev = (n > 1) ? 2 * (n - 1) : 1;
+    INT work_stt21 = n * (n + 1);
+    INT work_stech = 2 * n;
+    INT work_sz = work_stev;
     if (work_stt21 > work_sz) work_sz = work_stt21;
     if (work_stech > work_sz) work_sz = work_stech;
     fix->work = malloc(work_sz * sizeof(f64));
@@ -132,61 +116,61 @@ static int setup_50(void** state) { return dstev_setup(state, 50); }
 /* ---------- Matrix generation helpers ---------- */
 
 /* Type 1: Zero matrix */
-static void gen_zero(int n, f64* D, f64* E)
+static void gen_zero(INT n, f64* D, f64* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 0.0;
-    for (int i = 0; i < n - 1; i++) E[i] = 0.0;
+    for (INT i = 0; i < n; i++) D[i] = 0.0;
+    for (INT i = 0; i < n - 1; i++) E[i] = 0.0;
 }
 
 /* Type 2: Identity (D=1, E=0) */
-static void gen_identity(int n, f64* D, f64* E)
+static void gen_identity(INT n, f64* D, f64* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 1.0;
-    for (int i = 0; i < n - 1; i++) E[i] = 0.0;
+    for (INT i = 0; i < n; i++) D[i] = 1.0;
+    for (INT i = 0; i < n - 1; i++) E[i] = 0.0;
 }
 
 /* Type 3: 1-2-1 Toeplitz (D=2, E=1) */
-static void gen_toeplitz_121(int n, f64* D, f64* E)
+static void gen_toeplitz_121(INT n, f64* D, f64* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 2.0;
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0;
+    for (INT i = 0; i < n; i++) D[i] = 2.0;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0;
 }
 
 /* Type 4: Wilkinson (D[i]=|i - n/2|, E[i]=1) */
-static void gen_wilkinson(int n, f64* D, f64* E)
+static void gen_wilkinson(INT n, f64* D, f64* E)
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         D[i] = fabs((f64)i - (f64)(n / 2));
     }
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0;
 }
 
 /* Type 5: Random symmetric tridiagonal */
-static void gen_random(int n, f64* D, f64* E, uint64_t state[static 4])
+static void gen_random(INT n, f64* D, f64* E, uint64_t state[static 4])
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         D[i] = rng_uniform_symmetric(state);
     }
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         E[i] = rng_uniform_symmetric(state);
     }
 }
 
 /* Type 6: Graded diagonal (D[i]=2^(-i), E[i]=1) */
-static void gen_graded(int n, f64* D, f64* E)
+static void gen_graded(INT n, f64* D, f64* E)
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         D[i] = pow(2.0, -(f64)i);
     }
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0;
 }
 
 /**
  * Generate test matrix of given type and copy to working arrays.
  */
-static void gen_matrix(dstev_fixture_t* fix, int imat)
+static void gen_matrix(dstev_fixture_t* fix, INT imat)
 {
-    int n = fix->n;
+    INT n = fix->n;
 
     switch (imat) {
     case 1: gen_zero(n, fix->AD, fix->AE); break;
@@ -215,10 +199,10 @@ static void gen_matrix(dstev_fixture_t* fix, int imat)
 static void test_jobz_V(void** state)
 {
     dstev_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         gen_matrix(fix, imat);
 
         dstev("V", n, fix->D, fix->E, fix->Z, n, fix->work, &info);
@@ -241,11 +225,11 @@ static void test_jobz_V(void** state)
 static void test_jobz_N(void** state)
 {
     dstev_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
     f64 ulp = dlamch("P");
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         gen_matrix(fix, imat);
 
         /* Get reference eigenvalues via JOBZ='V' */
@@ -269,13 +253,13 @@ static void test_jobz_N(void** state)
 
         /* Compare eigenvalues: max|D[i]-D2[i]| / (n * ulp * max|D|) */
         f64 maxd = 0.0;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 ad = fabs(fix->D[i]);
             if (ad > maxd) maxd = ad;
         }
 
         f64 maxdiff = 0.0;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 diff = fabs(fix->D[i] - fix->D2[i]);
             if (diff > maxdiff) maxdiff = diff;
         }
@@ -296,10 +280,10 @@ static void test_jobz_N(void** state)
 static void test_sturm(void** state)
 {
     dstev_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         /* Skip zero matrix for Sturm test (all zero eigenvalues are trivially correct) */
         if (imat == 1) continue;
 
@@ -309,7 +293,7 @@ static void test_sturm(void** state)
         assert_info_success(info);
 
         /* dstech verifies eigenvalues via Sturm sequences */
-        int stech_info;
+        INT stech_info;
         dstech(n, fix->AD, fix->AE, fix->D, THRESH, fix->work, &stech_info);
         assert_info_success(stech_info);
     }

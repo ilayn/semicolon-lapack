@@ -6,15 +6,6 @@
 #include <math.h>
 #include "verify.h"
 
-/* Forward declarations */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda,
-                   f32* B, const int ldb);
-extern void sgesvd(const char* jobu, const char* jobvt, const int m, const int n,
-                   f32* A, const int lda, f32* S,
-                   f32* U, const int ldu, f32* VT, const int ldvt,
-                   f32* work, const int lwork, int* info);
-
 /**
  * SLATM6 generates test matrices for the generalized eigenvalue
  * problem, their corresponding right and left eigenvector matrices,
@@ -106,9 +97,9 @@ extern void sgesvd(const char* jobu, const char* jobvt, const int m, const int n
  *     Double precision array, dimension (n).
  *     DIF(i) is the reciprocal condition number for eigenvector i.
  */
-void slatm6(const int type, const int n,
-            f32* A, const int lda, f32* B,
-            f32* X, const int ldx, f32* Y, const int ldy,
+void slatm6(const INT type, const INT n,
+            f32* A, const INT lda, f32* B,
+            f32* X, const INT ldx, f32* Y, const INT ldy,
             const f32 alpha, const f32 beta,
             const f32 wx, const f32 wy,
             f32* S, f32* DIF)
@@ -118,7 +109,7 @@ void slatm6(const int type, const int n,
     const f32 TWO = 2.0f;
     const f32 THREE = 3.0f;
 
-    int i, info, j;
+    INT i, info, j;
     f32 work[100];
     f32 Z[12 * 12];
 

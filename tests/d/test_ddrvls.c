@@ -27,19 +27,20 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /* Test parameters from dtest.in - full LAPACK test coverage */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};
 /* Block size parameters from dtest.in (NB, NX pairs) */
-static const int NBVAL[] = {1, 3, 3, 3, 20};
-static const int NXVAL[] = {1, 0, 5, 9, 1};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -54,72 +55,18 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};
 #define SMLSIZ  25      /* Size threshold for divide-conquer */
 
 /* Routines under test */
-extern void dgels(const char* trans, const int m, const int n, const int nrhs,
-                  f64* A, const int lda, f64* B, const int ldb,
-                  f64* work, const int lwork, int* info);
-extern void dgelst(const char* trans, const int m, const int n, const int nrhs,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* work, const int lwork, int* info);
-extern void dgelsy(const int m, const int n, const int nrhs,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   int* jpvt, const f64 rcond, int* rank,
-                   f64* work, const int lwork, int* info);
-extern void dgelss(const int m, const int n, const int nrhs,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* S, const f64 rcond, int* rank,
-                   f64* work, const int lwork, int* info);
-extern void dgelsd(const int m, const int n, const int nrhs,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* S, const f64 rcond, int* rank,
-                   f64* work, const int lwork, int* iwork, int* info);
-extern void dgetsls(const char* trans, const int m, const int n, const int nrhs,
-                    f64* A, const int lda, f64* B, const int ldb,
-                    f64* work, const int lwork, int* info);
-
 /* Verification routines */
-extern void dqrt13(const int scale, const int m, const int n,
-                   f64* A, const int lda, f64* norma,
-                   uint64_t state[static 4]);
-extern void dqrt16(const char* trans, const int m, const int n, const int nrhs,
-                   const f64* A, const int lda,
-                   const f64* X, const int ldx,
-                   f64* B, const int ldb,
-                   f64* rwork, f64* resid);
-extern f64 dqrt17(const char* trans, const int iresid,
-                     const int m, const int n, const int nrhs,
-                     const f64* A, const int lda,
-                     const f64* X, const int ldx,
-                     const f64* B, const int ldb,
-                     f64* C,
-                     f64* work, const int lwork);
-extern f64 dqrt14(const char* trans, const int m, const int n, const int nrhs,
-                     const f64* A, const int lda, const f64* X, const int ldx,
-                     f64* work, const int lwork);
-extern f64 dqrt12(const int m, const int n, const f64* A, const int lda,
-                     const f64* S, f64* work, const int lwork);
-extern void dqrt15(const int scale, const int rksel,
-                   const int m, const int n, const int nrhs,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* S, int* rank, f64* norma, f64* normb,
-                   f64* work, const int lwork,
-                   uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlarnv(const int idist, uint64_t* iseed, const int n, f64* x);
-extern f64 dlamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int nrhs;
-    int irank;   /* 1=full-rank, 2=rank-deficient */
-    int iscale;  /* 1=normal, 2=scaled up, 3=scaled down */
-    int inb;     /* Index into NBVAL[] */
+    INT m;
+    INT n;
+    INT nrhs;
+    INT irank;   /* 1=full-rank, 2=rank-deficient */
+    INT iscale;  /* 1=normal, 2=scaled up, 3=scaled down */
+    INT inb;     /* Index into NBVAL[] */
     char name[80];
 } ddrvls_params_t;
 
@@ -135,11 +82,11 @@ typedef struct {
     f64* S;       /* Singular values (min(MMAX,NMAX)) */
     f64* COPYS;   /* Copy of S for rank-deficient tests */
     f64* WORK;    /* General workspace */
-    int* IWORK;      /* Integer workspace */
-    int* JPVT;       /* Pivot array for DGELSY */
-    int lwork;       /* Workspace size */
-    int liwork;      /* Integer workspace size */
-    int lwlsy;       /* Workspace size for DGELSY */
+    INT* IWORK;      /* Integer workspace */
+    INT* JPVT;       /* Pivot array for DGELSY */
+    INT lwork;       /* Workspace size */
+    INT liwork;      /* Integer workspace size */
+    INT lwlsy;       /* Workspace size for DGELSY */
 } ddrvls_workspace_t;
 
 static ddrvls_workspace_t* g_workspace = NULL;
@@ -154,14 +101,14 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(ddrvls_workspace_t));
     if (!g_workspace) return -1;
 
-    int mmax = MMAX;
-    int nmax = NMAX;
-    int mnmax = (mmax > nmax) ? mmax : nmax;
-    int minmn = (mmax < nmax) ? mmax : nmax;
+    INT mmax = MMAX;
+    INT nmax = NMAX;
+    INT mnmax = (mmax > nmax) ? mmax : nmax;
+    INT minmn = (mmax < nmax) ? mmax : nmax;
 
     /* Compute workspace sizes (ddrvls.f lines 327-330) */
-    int lwork = 1;
-    int temp;
+    INT lwork = 1;
+    INT temp;
 
     /* (M+N)*NRHS */
     temp = (mmax + nmax) * NSMAX;
@@ -176,9 +123,9 @@ static int group_setup(void** state)
     if (temp > lwork) lwork = temp;
 
     /* MAX(M+MNMIN, NRHS*MNMIN, 2*N+M) */
-    int t1 = mmax + minmn;
-    int t2 = NSMAX * minmn;
-    int t3 = 2 * nmax + mmax;
+    INT t1 = mmax + minmn;
+    INT t2 = NSMAX * minmn;
+    INT t3 = 2 * nmax + mmax;
     temp = t1;
     if (t2 > temp) temp = t2;
     if (t3 > temp) temp = t3;
@@ -191,38 +138,38 @@ static int group_setup(void** state)
     if (temp > lwork) lwork = temp;
 
     /* LIWORK for DGELSY and DGELSD (ddrvls.f line 331, 385) */
-    int liwork = 1;
-    int nlvl = (int)(log((f64)minmn / (f64)(SMLSIZ + 1)) / log(2.0)) + 1;
+    INT liwork = 1;
+    INT nlvl = (INT)(log((f64)minmn / (f64)(SMLSIZ + 1)) / log(2.0)) + 1;
     if (nlvl < 1) nlvl = 1;
-    int liwork_gelsd = 3 * minmn * nlvl + 11 * minmn;
+    INT liwork_gelsd = 3 * minmn * nlvl + 11 * minmn;
     if (liwork_gelsd > liwork) liwork = liwork_gelsd;
     if (nmax > liwork) liwork = nmax;
 
     /* Add workspace for routines */
-    int nb = 20;
-    int lwork_gels = minmn + (minmn > NSMAX ? minmn : NSMAX);
+    INT nb = 20;
+    INT lwork_gels = minmn + (minmn > NSMAX ? minmn : NSMAX);
     if (lwork_gels > lwork) lwork = lwork_gels;
 
-    int lwork_gelst = minmn + (minmn > NSMAX ? minmn : NSMAX);
+    INT lwork_gelst = minmn + (minmn > NSMAX ? minmn : NSMAX);
     if (lwork_gelst > lwork) lwork = lwork_gelst;
 
-    int lwork_getsls = mmax * nmax + 4 * minmn;
+    INT lwork_getsls = mmax * nmax + 4 * minmn;
     if (lwork_getsls > lwork) lwork = lwork_getsls;
 
-    int lwork_gelsy = mmax * nmax + (nmax + 1) * (NSMAX + 1) + nb * (nmax + 1) + 2 * nmax;
+    INT lwork_gelsy = mmax * nmax + (nmax + 1) * (NSMAX + 1) + nb * (nmax + 1) + 2 * nmax;
     if (lwork_gelsy > lwork) lwork = lwork_gelsy;
 
-    int t = 2 * minmn;
+    INT t = 2 * minmn;
     if (mnmax > t) t = mnmax;
     if (NSMAX > t) t = NSMAX;
-    int lwork_gelss = 3 * minmn + t;
+    INT lwork_gelss = 3 * minmn + t;
     if (lwork_gelss > lwork) lwork = lwork_gelss;
 
-    int lwork_gelsd = 12 * minmn + 2 * minmn * SMLSIZ + 8 * minmn * nlvl +
+    INT lwork_gelsd = 12 * minmn + 2 * minmn * SMLSIZ + 8 * minmn * nlvl +
                       minmn * NSMAX + (SMLSIZ + 1) * (SMLSIZ + 1);
     if (lwork_gelsd > lwork) lwork = lwork_gelsd;
 
-    int lwork_extra = 3 * minmn * minmn + mmax * mmax + nmax * NSMAX;
+    INT lwork_extra = 3 * minmn * minmn + mmax * mmax + nmax * NSMAX;
     lwork += lwork_extra;
 
     g_workspace->lwork = lwork;
@@ -237,8 +184,8 @@ static int group_setup(void** state)
     g_workspace->S = calloc(minmn, sizeof(f64));
     g_workspace->COPYS = calloc(minmn, sizeof(f64));
     g_workspace->WORK = calloc(lwork, sizeof(f64));
-    g_workspace->IWORK = calloc(liwork, sizeof(int));
-    g_workspace->JPVT = calloc(nmax, sizeof(int));
+    g_workspace->IWORK = calloc(liwork, sizeof(INT));
+    g_workspace->JPVT = calloc(nmax, sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->COPYA ||
         !g_workspace->B || !g_workspace->COPYB || !g_workspace->C ||
@@ -280,12 +227,12 @@ static int group_teardown(void** state)
 /**
  * Run full-rank tests: DGELS (tests 1-2), DGELST (tests 3-4), DGETSLS (tests 5-6)
  */
-static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int nx)
+static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT nx)
 {
     ddrvls_workspace_t* ws = g_workspace;
     f64 result[6];
     f64 norma;
-    int info, lda, ldb;
+    INT info, lda, ldb;
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
     char ctx[128];
@@ -304,16 +251,16 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
     /* DGELS tests 1-2 */
-    for (int itran = 1; itran <= 2; itran++) {
+    for (INT itran = 1; itran <= 2; itran++) {
         const char* trans = (itran == 1) ? "N" : "T";
-        int nrows = (itran == 1) ? m : n;
-        int ncols = (itran == 1) ? n : m;
-        int ldwork = (ncols > 1) ? ncols : 1;
+        INT nrows = (itran == 1) ? m : n;
+        INT ncols = (itran == 1) ? n : m;
+        INT ldwork = (ncols > 1) ? ncols : 1;
 
         if (ncols > 0) {
             rng_seed(rng_state, 1989 + m * 100 + n * 10 + iscale + itran + nb);
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = 0; i < ncols; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = 0; i < ncols; i++) {
                     ws->WORK[i + j * ldwork] = ((f64)(i + j * ncols + 1)) / (ncols * nrhs + 1);
                 }
             }
@@ -348,16 +295,16 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     rng_seed(rng_state, 2988 + m * 100 + n * 10 + iscale + nb);
     dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-    for (int itran = 1; itran <= 2; itran++) {
+    for (INT itran = 1; itran <= 2; itran++) {
         const char* trans = (itran == 1) ? "N" : "T";
-        int nrows = (itran == 1) ? m : n;
-        int ncols = (itran == 1) ? n : m;
-        int ldwork = (ncols > 1) ? ncols : 1;
+        INT nrows = (itran == 1) ? m : n;
+        INT ncols = (itran == 1) ? n : m;
+        INT ldwork = (ncols > 1) ? ncols : 1;
 
         if (ncols > 0) {
             rng_seed(rng_state, 2989 + m * 100 + n * 10 + iscale + itran + nb);
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = 0; i < ncols; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = 0; i < ncols; i++) {
                     ws->WORK[i + j * ldwork] = ((f64)(i + j * ncols + 1)) / (ncols * nrhs + 1);
                 }
             }
@@ -392,16 +339,16 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
     rng_seed(rng_state, 3988 + m * 100 + n * 10 + iscale + nb);
     dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-    for (int itran = 1; itran <= 2; itran++) {
+    for (INT itran = 1; itran <= 2; itran++) {
         const char* trans = (itran == 1) ? "N" : "T";
-        int nrows = (itran == 1) ? m : n;
-        int ncols = (itran == 1) ? n : m;
-        int ldwork = (ncols > 1) ? ncols : 1;
+        INT nrows = (itran == 1) ? m : n;
+        INT ncols = (itran == 1) ? n : m;
+        INT ldwork = (ncols > 1) ? ncols : 1;
 
         if (ncols > 0) {
             rng_seed(rng_state, 3989 + m * 100 + n * 10 + iscale + itran + nb);
-            for (int j = 0; j < nrhs; j++) {
-                for (int i = 0; i < ncols; i++) {
+            for (INT j = 0; j < nrhs; j++) {
+                for (INT i = 0; i < ncols; i++) {
                     ws->WORK[i + j * ldwork] = ((f64)(i + j * ncols + 1)) / (ncols * nrhs + 1);
                 }
             }
@@ -438,14 +385,14 @@ static void run_fullrank_tests(int m, int n, int nrhs, int iscale, int nb, int n
 /**
  * Run rank-deficient tests: DGELSY (tests 7-10), DGELSS (tests 11-14), DGELSD (tests 15-18)
  */
-static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int nb, int nx)
+static void run_rankdef_tests(INT m, INT n, INT nrhs, INT iscale, INT irank, INT nb, INT nx)
 {
     ddrvls_workspace_t* ws = g_workspace;
     f64 result[NTESTS];
     f64 norma, normb, rcond;
-    int info, lda, ldb, crank, rank;
+    INT info, lda, ldb, crank, rank;
     f64 eps;
-    int mnmin = (m < n) ? m : n;
+    INT mnmin = (m < n) ? m : n;
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
     char ctx[128];
@@ -456,12 +403,12 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
     lda = (m > 1) ? m : 1;
     ldb = (m > n) ? m : n;
     if (ldb < 1) ldb = 1;
-    int ldwork = (m > 1) ? m : 1;
+    INT ldwork = (m > 1) ? m : 1;
 
     eps = dlamch("E");
     rcond = sqrt(eps) - (sqrt(eps) - eps) / 2.0;
 
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -472,10 +419,10 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
     dqrt15(iscale, irank, m, n, nrhs, ws->COPYA, lda, ws->COPYB, ldb,
            ws->COPYS, &rank, &norma, &normb, ws->WORK, ws->lwork, rng_state);
 
-    int itype = (irank - 1) * 3 + iscale;
+    INT itype = (irank - 1) * 3 + iscale;
 
     /* DGELSY (Tests 7-10) */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         ws->JPVT[j] = 0;
     }
 
@@ -544,7 +491,7 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
     if (n > crank) assert_residual_below(result[13], THRESH);
 
     /* DGELSD (Tests 15-18) */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         ws->IWORK[j] = 0;
     }
 
@@ -595,8 +542,8 @@ static void run_rankdef_tests(int m, int n, int nrhs, int iscale, int irank, int
  */
 static void run_ddrvls_single(ddrvls_params_t* p)
 {
-    int nb = NBVAL[p->inb];
-    int nx = NXVAL[p->inb];
+    INT nb = NBVAL[p->inb];
+    INT nx = NXVAL[p->inb];
 
     if (p->irank == 1) {
         /* Full-rank tests: DGELS, DGELST, DGETSLS */
@@ -627,7 +574,7 @@ static void test_ddrvls_case(void** state)
 
 static ddrvls_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -636,22 +583,22 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
 
-            for (int ins = 0; ins < (int)NNS; ins++) {
-                int nrhs = NSVAL[ins];
+            for (INT ins = 0; ins < (INT)NNS; ins++) {
+                INT nrhs = NSVAL[ins];
 
-                for (int irank = 1; irank <= 2; irank++) {
+                for (INT irank = 1; irank <= 2; irank++) {
 
-                    for (int iscale = 1; iscale <= 3; iscale++) {
-                        int itype = (irank - 1) * 3 + iscale;
+                    for (INT iscale = 1; iscale <= 3; iscale++) {
+                        INT itype = (irank - 1) * 3 + iscale;
 
-                        for (int inb = 0; inb < (int)NNB; inb++) {
-                            int nb = NBVAL[inb];
+                        for (INT inb = 0; inb < (INT)NNB; inb++) {
+                            INT nb = NBVAL[inb];
 
                             /* Store parameters */
                             ddrvls_params_t* p = &g_params[g_num_tests];

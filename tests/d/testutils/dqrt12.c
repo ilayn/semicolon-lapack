@@ -7,28 +7,10 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dlascl(const char* type, const int kl, const int ku,
-                   const f64 cfrom, const f64 cto,
-                   const int m, const int n, f64* A, const int lda,
-                   int* info);
-extern void dgebd2(const int m, const int n, f64* A, const int lda,
-                   f64* D, f64* E, f64* tauq, f64* taup,
-                   f64* work, int* info);
-extern void dbdsqr(const char* uplo, const int n, const int ncvt,
-                   const int nru, const int ncc, f64* D, f64* E,
-                   f64* VT, const int ldvt, f64* U, const int ldu,
-                   f64* C, const int ldc, f64* work, int* info);
-
 /**
  * DQRT12 computes the singular values of the upper trapezoid
  * of A(1:M,1:N) and returns the ratio
@@ -46,12 +28,12 @@ extern void dbdsqr(const char* uplo, const int n, const int ncvt,
  *
  * @return The test ratio || svd(R) - s || / (||s|| * eps * max(M,N)).
  */
-f64 dqrt12(const int m, const int n, const f64* A, const int lda,
-              const f64* S, f64* work, const int lwork)
+f64 dqrt12(const INT m, const INT n, const f64* A, const INT lda,
+              const f64* S, f64* work, const INT lwork)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int i, j, mn, info, iscl;
+    INT i, j, mn, info, iscl;
     f64 anrm, bignum, smlnum, nrmsvl;
     f64 dummy[1];
 
@@ -62,9 +44,9 @@ f64 dqrt12(const int m, const int n, const f64* A, const int lda,
     }
 
     /* Test for sufficient workspace */
-    int lwork_min1 = m * n + 4 * mn + ((m > n) ? m : n);
-    int lwork_min2 = m * n + 2 * mn + 4 * n;
-    int lwork_min = (lwork_min1 > lwork_min2) ? lwork_min1 : lwork_min2;
+    INT lwork_min1 = m * n + 4 * mn + ((m > n) ? m : n);
+    INT lwork_min2 = m * n + 2 * mn + 4 * n;
+    INT lwork_min = (lwork_min1 > lwork_min2) ? lwork_min1 : lwork_min2;
     if (lwork < lwork_min) {
         return ZERO;
     }
@@ -75,7 +57,7 @@ f64 dqrt12(const int m, const int n, const f64* A, const int lda,
     /* Copy upper triangle of A into work */
     dlaset("F", m, n, ZERO, ZERO, work, m);
     for (j = 0; j < n; j++) {
-        int imax = (j + 1 < m) ? (j + 1) : m;
+        INT imax = (j + 1 < m) ? (j + 1) : m;
         for (i = 0; i < imax; i++) {
             work[j * m + i] = A[j * lda + i];
         }
@@ -113,7 +95,7 @@ f64 dqrt12(const int m, const int n, const f64* A, const int lda,
         /* Compute singular values from bidiagonal form */
         dbdsqr("U", mn, 0, 0, 0,
                &work[m * n], &work[m * n + mn],
-               dummy, mn, dummy, 1, dummy, mn,
+               NULL, mn, NULL, 1, NULL, mn,
                &work[m * n + 2 * mn], &info);
 
         if (iscl == 1) {

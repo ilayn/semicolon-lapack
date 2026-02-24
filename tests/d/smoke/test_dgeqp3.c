@@ -16,30 +16,13 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void dgeqp3(const int m, const int n,
-                   f64 * restrict A, const int lda,
-                   int * restrict jpvt,
-                   f64 * restrict tau,
-                   f64 * restrict work, const int lwork,
-                   int *info);
-
 /* Auxiliary routines for verification */
-extern void dorgqr(const int m, const int n, const int k,
-                   f64 * restrict A, const int lda,
-                   const f64 * restrict tau,
-                   f64 * restrict work, const int lwork,
-                   int *info);
-extern f64 dlange(const char *norm, const int m, const int n,
-                     const f64 * restrict A, const int lda,
-                     f64 *work);
-extern f64 dlamch(const char *cmach);
-
 typedef struct {
-    int m, n;
-    int lda;
+    INT m, n;
+    INT lda;
     f64 *A;      /* original matrix */
     f64 *AF;     /* factored output */
     f64 *Q;      /* orthogonal factor */
@@ -49,22 +32,22 @@ typedef struct {
     f64 *work;
     f64 *d;
     f64 *genwork;
-    int *jpvt;
-    int lwork;
+    INT* jpvt;
+    INT lwork;
     uint64_t seed;
 } qp_fixture_t;
 
 static uint64_t g_seed = 9001;
 
-static int qp_setup(void **state, int m, int n)
+static int qp_setup(void **state, INT m, INT n)
 {
     qp_fixture_t *fix = malloc(sizeof(qp_fixture_t));
     assert_non_null(fix);
 
     fix->m = m;
     fix->n = n;
-    int maxmn = m > n ? m : n;
-    int minmn = m < n ? m : n;
+    INT maxmn = m > n ? m : n;
+    INT minmn = m < n ? m : n;
     fix->lda = m;
     fix->seed = g_seed++;
 
@@ -79,7 +62,7 @@ static int qp_setup(void **state, int m, int n)
     fix->work = calloc(fix->lwork, sizeof(f64));
     fix->d = calloc(minmn, sizeof(f64));
     fix->genwork = calloc(3 * maxmn, sizeof(f64));
-    fix->jpvt = calloc(n, sizeof(int));
+    fix->jpvt = calloc(n, sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -133,15 +116,15 @@ static int setup_10x20(void **state) { return qp_setup(state, 10, 20); }
  * 5. Check ||I - Q'*Q|| / (M * eps)
  * 6. Check |R(i,i)| >= |R(i+1,i+1)| (non-increasing diagonal)
  */
-static void run_qp3_test(qp_fixture_t *fix, int imat)
+static void run_qp3_test(qp_fixture_t *fix, INT imat)
 {
-    int info;
-    int m = fix->m, n = fix->n;
-    int lda = fix->lda;
-    int minmn = m < n ? m : n;
+    INT info;
+    INT m = fix->m, n = fix->n;
+    INT lda = fix->lda;
+    INT minmn = m < n ? m : n;
     f64 eps = dlamch("E");
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
 
     /* Generate matrix A */
@@ -153,11 +136,11 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
     assert_int_equal(info, 0);
 
     /* Copy A to AF */
-    for (int j = 0; j < n; j++)
+    for (INT j = 0; j < n; j++)
         cblas_dcopy(m, &fix->A[j * lda], 1, &fix->AF[j * lda], 1);
 
     /* Initialize jpvt to 0 (all free) */
-    for (int i = 0; i < n; i++)
+    for (INT i = 0; i < n; i++)
         fix->jpvt[i] = 0;
 
     /* Call dgeqp3 */
@@ -166,7 +149,7 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
     assert_info_success(info);
 
     /* Form Q (m x minmn) from Householder vectors in AF */
-    for (int j = 0; j < minmn; j++)
+    for (INT j = 0; j < minmn; j++)
         cblas_dcopy(m, &fix->AF[j * lda], 1, &fix->Q[j * m], 1);
     dorgqr(m, minmn, minmn, fix->Q, m, fix->tau,
             fix->work, fix->lwork, &info);
@@ -174,16 +157,16 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
 
     /* Extract R (minmn x n) from upper triangular part of AF */
     memset(fix->R, 0, minmn * n * sizeof(f64));
-    for (int j = 0; j < n; j++) {
-        int imax = j < minmn ? j + 1 : minmn;
-        for (int i = 0; i < imax; i++) {
+    for (INT j = 0; j < n; j++) {
+        INT imax = j < minmn ? j + 1 : minmn;
+        for (INT i = 0; i < imax; i++) {
             fix->R[i + j * minmn] = fix->AF[i + j * lda];
         }
     }
 
     /* Compute A*P: permute columns of A according to jpvt (0-based) */
-    for (int j = 0; j < n; j++) {
-        int srcj = fix->jpvt[j];
+    for (INT j = 0; j < n; j++) {
+        INT srcj = fix->jpvt[j];
         cblas_dcopy(m, &fix->A[srcj * lda], 1, &fix->AP[j * lda], 1);
     }
 
@@ -210,7 +193,7 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
                 minmn, minmn, m, 1.0, fix->Q, m,
                 fix->Q, m, 0.0, QtQ, minmn);
     /* Subtract I */
-    for (int i = 0; i < minmn; i++)
+    for (INT i = 0; i < minmn; i++)
         QtQ[i + i * minmn] -= 1.0;
 
     f64 orth_norm = dlange("1", minmn, minmn, QtQ, minmn, NULL);
@@ -218,7 +201,7 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
     assert_residual_ok(resid2);
 
     /* Check 3: |R(i,i)| >= |R(i+1,i+1)| for i = 0, ..., minmn-2 */
-    for (int i = 0; i < minmn - 1; i++) {
+    for (INT i = 0; i < minmn - 1; i++) {
         f64 ri = fabs(fix->R[i + i * minmn]);
         f64 ri1 = fabs(fix->R[(i + 1) + (i + 1) * minmn]);
         /* Allow small tolerance for floating point */
@@ -230,7 +213,7 @@ static void run_qp3_test(qp_fixture_t *fix, int imat)
 static void test_wellcond(void **state)
 {
     qp_fixture_t *fix = *state;
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_qp3_test(fix, imat);
     }
@@ -240,7 +223,7 @@ static void test_wellcond(void **state)
 static void test_illcond(void **state)
 {
     qp_fixture_t *fix = *state;
-    for (int imat = 8; imat <= 9; imat++) {
+    for (INT imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         run_qp3_test(fix, imat);
     }
@@ -250,7 +233,7 @@ static void test_illcond(void **state)
 static void test_scaled(void **state)
 {
     qp_fixture_t *fix = *state;
-    for (int imat = 10; imat <= 11; imat++) {
+    for (INT imat = 10; imat <= 11; imat++) {
         fix->seed = g_seed++;
         run_qp3_test(fix, imat);
     }
@@ -261,9 +244,9 @@ static void test_workspace_query(void **state)
 {
     qp_fixture_t *fix = *state;
     f64 wkopt;
-    int info;
-    int *jpvt = fix->jpvt;
-    for (int i = 0; i < fix->n; i++) jpvt[i] = 0;
+    INT info;
+    INT* jpvt = fix->jpvt;
+    for (INT i = 0; i < fix->n; i++) jpvt[i] = 0;
 
     dgeqp3(fix->m, fix->n, fix->AF, fix->lda, jpvt, fix->tau,
             &wkopt, -1, &info);

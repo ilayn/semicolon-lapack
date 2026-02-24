@@ -5,12 +5,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * SGTT05 tests the error bounds from iterative refinement for the
  * computed solution to a system of equations A*X = B, where A is a
@@ -53,17 +49,17 @@ extern f32 slamch(const char* cmach);
  */
 void sgtt05(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 * const restrict DL,
     const f32 * const restrict D,
     const f32 * const restrict DU,
     const f32 * const restrict B,
-    const int ldb,
+    const INT ldb,
     const f32 * const restrict X,
-    const int ldx,
+    const INT ldx,
     const f32 * const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f32 * const restrict ferr,
     const f32 * const restrict berr,
     f32 * const restrict reslts)
@@ -71,8 +67,8 @@ void sgtt05(
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int notran;
-    int i, imax, j, k, nz;
+    INT notran;
+    INT i, imax, j, k, nz;
     f32 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     /* Quick exit if n = 0 or nrhs = 0 */

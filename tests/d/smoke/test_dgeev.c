@@ -18,11 +18,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cblas.h>
-
 /* Test fixture */
 typedef struct {
-    int n;
+    INT n;
     f64* A;       /* Original matrix */
     f64* Acopy;   /* Copy for verification */
     f64* VL;      /* Left eigenvectors */
@@ -35,19 +33,6 @@ typedef struct {
 } dgeev_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-extern void dgeev(const char* jobvl, const char* jobvr, const int n,
-                  f64* A, const int lda, f64* wr, f64* wi,
-                  f64* VL, const int ldvl, f64* VR, const int ldvr,
-                  f64* work, const int lwork, int* info);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
     dgeev_fixture_t* fix = malloc(sizeof(dgeev_fixture_t));
@@ -65,7 +50,7 @@ static int setup_N(void** state, int n) {
     fix->wi = malloc(n * sizeof(f64));
 
     /* Workspace: generous allocation */
-    int lwork = 10 * n * n;
+    INT lwork = 10 * n * n;
     fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->Acopy || !fix->VL || !fix->VR ||
@@ -105,11 +90,11 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
+static void generate_random_matrix(INT n, f64* A, INT lda, f64 anorm,
                                    uint64_t state[static 4])
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             A[i + j * lda] = anorm * rng_uniform_symmetric(state);
         }
     }
@@ -120,9 +105,9 @@ static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
  */
 static void test_eigenvectors_both(dgeev_fixture_t* fix)
 {
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     /* Generate random matrix */
@@ -132,14 +117,14 @@ static void test_eigenvectors_both(dgeev_fixture_t* fix)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute eigenvalues and eigenvectors */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgeev("V", "V", n, fix->A, lda, fix->wr, fix->wi,
           fix->VL, lda, fix->VR, lda, fix->work, lwork, &info);
 
     assert_info_success(info);
 
     /* Eigenvalues should be finite */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr[j]));
         assert_true(isfinite(fix->wi[j]));
     }
@@ -165,9 +150,9 @@ static void test_eigenvectors_both(dgeev_fixture_t* fix)
  */
 static void test_eigenvectors_right(dgeev_fixture_t* fix)
 {
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     /* Generate random matrix */
@@ -177,7 +162,7 @@ static void test_eigenvectors_right(dgeev_fixture_t* fix)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute eigenvalues and right eigenvectors only */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgeev("N", "V", n, fix->A, lda, fix->wr, fix->wi,
           NULL, 1, fix->VR, lda, fix->work, lwork, &info);
 
@@ -195,9 +180,9 @@ static void test_eigenvectors_right(dgeev_fixture_t* fix)
  */
 static void test_eigenvectors_left(dgeev_fixture_t* fix)
 {
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     /* Generate random matrix */
@@ -207,7 +192,7 @@ static void test_eigenvectors_left(dgeev_fixture_t* fix)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute eigenvalues and left eigenvectors only */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgeev("V", "N", n, fix->A, lda, fix->wr, fix->wi,
           fix->VL, lda, NULL, 1, fix->work, lwork, &info);
 
@@ -226,22 +211,22 @@ static void test_eigenvectors_left(dgeev_fixture_t* fix)
 static void test_eigenvalues_only(void** state)
 {
     dgeev_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute eigenvalues only */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgeev("N", "N", n, fix->A, lda, fix->wr, fix->wi,
           NULL, 1, NULL, 1, fix->work, lwork, &info);
 
     assert_info_success(info);
 
     /* Eigenvalues should be finite */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr[j]));
         assert_true(isfinite(fix->wi[j]));
     }
@@ -253,8 +238,8 @@ static void test_eigenvalues_only(void** state)
 static void test_workspace_query(void** state)
 {
     dgeev_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
     f64 work_query;
 
     /* Query optimal workspace for various configurations */
@@ -280,14 +265,14 @@ static void test_workspace_query(void** state)
 static void test_symmetric_matrix(void** state)
 {
     dgeev_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     /* Generate symmetric random matrix */
-    for (int j = 0; j < n; j++) {
-        for (int i = j; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = j; i < n; i++) {
             f64 val = rng_uniform_symmetric(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
@@ -298,14 +283,14 @@ static void test_symmetric_matrix(void** state)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute eigenvalues and right eigenvectors */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgeev("N", "V", n, fix->A, lda, fix->wr, fix->wi,
           NULL, 1, fix->VR, lda, fix->work, lwork, &info);
 
     assert_info_success(info);
 
     /* For symmetric matrix, all eigenvalues should be real */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_double_equal(fix->wi[j], 0.0, 1e-10);
     }
 
@@ -322,15 +307,15 @@ static void test_symmetric_matrix(void** state)
 static void test_diagonal_matrix(void** state)
 {
     dgeev_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
 
     const f64 ZERO = 0.0;
 
     /* Create diagonal matrix with known eigenvalues */
     dlaset("F", n, n, ZERO, ZERO, fix->A, lda);
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         fix->A[j + j * lda] = (f64)(j + 1);
     }
 
@@ -338,27 +323,27 @@ static void test_diagonal_matrix(void** state)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute eigenvalues and eigenvectors */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgeev("V", "V", n, fix->A, lda, fix->wr, fix->wi,
           fix->VL, lda, fix->VR, lda, fix->work, lwork, &info);
 
     assert_info_success(info);
 
     /* All eigenvalues should be real (wi = 0) */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_double_equal(fix->wi[j], ZERO, 1e-10);
     }
 
     /* Each eigenvalue should be in the set {1, 2, ..., n} */
     /* (order may differ) */
-    int found[32] = {0};  /* Assuming n <= 32 */
-    for (int j = 0; j < n; j++) {
-        int idx = (int)(fix->wr[j] + 0.5) - 1;
+    INT found[32] = {0};  /* Assuming n <= 32 */
+    for (INT j = 0; j < n; j++) {
+        INT idx = (INT)(fix->wr[j] + 0.5) - 1;
         if (idx >= 0 && idx < n) {
             found[idx] = 1;
         }
     }
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(found[j]);
     }
 }
@@ -396,7 +381,7 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_both_n32, setup_32, teardown),
     };
 
-    int result = 0;
+    INT result = 0;
     result += cmocka_run_group_tests_name("dgeev_n5", tests_n5, NULL, NULL);
     result += cmocka_run_group_tests_name("dgeev_n10", tests_n10, NULL, NULL);
     result += cmocka_run_group_tests_name("dgeev_n20", tests_n20, NULL, NULL);

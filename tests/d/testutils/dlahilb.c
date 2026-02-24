@@ -6,12 +6,6 @@
 
 #include "verify.h"
 
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-
 /*
  * NMAX_EXACT   the largest dimension where the generated data is exact.
  * NMAX_APPROX  the largest dimension where the generated data has
@@ -78,15 +72,15 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *          be not exact.
  *     < 0: if info = -i, the i-th argument had an illegal value
  */
-void dlahilb(const int n, const int nrhs,
-             f64* A, const int lda,
-             f64* X, const int ldx,
-             f64* B, const int ldb,
-             f64* work, int* info)
+void dlahilb(const INT n, const INT nrhs,
+             f64* A, const INT lda,
+             f64* X, const INT ldx,
+             f64* B, const INT ldb,
+             f64* work, INT* info)
 {
-    int tm, ti, r;
-    int m;
-    int i, j;
+    INT tm, ti, r;
+    INT m;
+    INT i, j;
 
     *info = 0;
     if (n < 0 || n > NMAX_APPROX) {

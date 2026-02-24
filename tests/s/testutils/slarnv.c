@@ -33,14 +33,14 @@
  * @param[in,out] state
  *     The 4-element RNG state array, advanced on exit.
  */
-void slarnv_rng(const int idist, const int n, f32* x,
+void slarnv_rng(const INT idist, const INT n, f32* x,
                 uint64_t state[static 4])
 {
     if (n <= 0) {
         return;
     }
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         x[i] = rng_dist_f32(state, idist);
     }
 }

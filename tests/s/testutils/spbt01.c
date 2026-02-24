@@ -7,8 +7,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_single.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -37,9 +37,9 @@
  * @param[out]    resid   If uplo = 'L', norm(L*L' - A) / ( N * norm(A) * EPS )
  *                        If uplo = 'U', norm(U'*U - A) / ( N * norm(A) * EPS )
  */
-void spbt01(const char* uplo, const int n, const int kd,
-            const f32* A, const int lda,
-            f32* AFAC, const int ldafac,
+void spbt01(const char* uplo, const INT n, const INT kd,
+            const f32* A, const INT lda,
+            f32* AFAC, const INT ldafac,
             f32* rwork, f32* resid)
 {
     const f32 ZERO = 0.0f;
@@ -58,9 +58,9 @@ void spbt01(const char* uplo, const int n, const int kd,
     }
 
     if (uplo[0] == 'U' || uplo[0] == 'u') {
-        for (int k = n - 1; k >= 0; k--) {
-            int kc = (kd - k > 0) ? kd - k : 0;
-            int klen = kd - kc;
+        for (INT k = n - 1; k >= 0; k--) {
+            INT kc = (kd - k > 0) ? kd - k : 0;
+            INT klen = kd - kc;
 
             f32 t = cblas_sdot(klen + 1, &AFAC[kc + k * ldafac], 1,
                                   &AFAC[kc + k * ldafac], 1);
@@ -73,15 +73,15 @@ void spbt01(const char* uplo, const int n, const int kd,
             }
         }
 
-        for (int j = 0; j < n; j++) {
-            int mu = (kd - j > 0) ? kd - j : 0;
-            for (int i = mu; i <= kd; i++) {
+        for (INT j = 0; j < n; j++) {
+            INT mu = (kd - j > 0) ? kd - j : 0;
+            for (INT i = mu; i <= kd; i++) {
                 AFAC[i + j * ldafac] = AFAC[i + j * ldafac] - A[i + j * lda];
             }
         }
     } else {
-        for (int k = n - 1; k >= 0; k--) {
-            int klen = (kd < n - k - 1) ? kd : n - k - 1;
+        for (INT k = n - 1; k >= 0; k--) {
+            INT klen = (kd < n - k - 1) ? kd : n - k - 1;
 
             if (klen > 0) {
                 cblas_ssyr(CblasColMajor, CblasLower, klen, ONE,
@@ -93,9 +93,9 @@ void spbt01(const char* uplo, const int n, const int kd,
             cblas_sscal(klen + 1, t, &AFAC[0 + k * ldafac], 1);
         }
 
-        for (int j = 0; j < n; j++) {
-            int ml = (kd + 1 < n - j) ? kd + 1 : n - j;
-            for (int i = 0; i < ml; i++) {
+        for (INT j = 0; j < n; j++) {
+            INT ml = (kd + 1 < n - j) ? kd + 1 : n - j;
+            for (INT i = 0; i < ml; i++) {
                 AFAC[i + j * ldafac] = AFAC[i + j * ldafac] - A[i + j * lda];
             }
         }

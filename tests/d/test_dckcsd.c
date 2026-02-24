@@ -38,7 +38,7 @@
 #include "verify.h"
 #include "test_rng.h"
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 #define THRESH 30.0
 #define NTYPES 4
@@ -52,31 +52,25 @@ static const f64 GAPDIGIT = 18.0;
 static const f64 ORTH = 1.0e-12;
 
 /* (M,P,Q) triplets from csd.in */
-static const int MVAL[] = {0, 10, 10, 10, 10, 21, 24, 30, 22, 32, 55};
-static const int PVAL[] = {0,  4,  4,  0, 10,  9, 10, 20, 12, 12, 40};
-static const int QVAL[] = {0,  0, 10,  4,  4, 15, 12,  8, 20,  8, 20};
+static const INT MVAL[] = {0, 10, 10, 10, 10, 21, 24, 30, 22, 32, 55};
+static const INT PVAL[] = {0,  4,  4,  0, 10,  9, 10, 20, 12, 12, 40};
+static const INT QVAL[] = {0,  0, 10,  4,  4, 15, 12,  8, 20,  8, 20};
 #define NSIZES (sizeof(MVAL) / sizeof(MVAL[0]))
 
 /* External function declarations */
-extern f64  dlamch(const char* cmach);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-
 /* ===================================================================== */
 /* Test parameters and workspace                                         */
 /* ===================================================================== */
 
 typedef struct {
-    int im;       /* index into MVAL/PVAL/QVAL */
-    int imat;     /* matrix type 1..4 */
+    INT im;       /* index into MVAL/PVAL/QVAL */
+    INT imat;     /* matrix type 1..4 */
     char name[128];
 } dckcsd_params_t;
 
 typedef struct {
-    int mmax;
-    int ldx;
+    INT mmax;
+    INT ldx;
     f64* X;
     f64* XF;
     f64* U1;
@@ -84,9 +78,9 @@ typedef struct {
     f64* V1T;
     f64* V2T;
     f64* theta;
-    int* iwork;
+    INT* iwork;
     f64* work;
-    int lwork;
+    INT lwork;
     f64* rwork;
     uint64_t rng_state[4];
 } dckcsd_workspace_t;
@@ -98,38 +92,38 @@ static dckcsd_workspace_t* g_ws = NULL;
 /* Port of DLACSG embedded in dckcsd.f (lines 350-402)                   */
 /* ===================================================================== */
 
-static void dlacsg(const int m, const int p, const int q,
-                   const f64* theta, f64* X, const int ldx,
+static void dlacsg(const INT m, const INT p, const INT q,
+                   const f64* theta, f64* X, const INT ldx,
                    f64* work, uint64_t rng[static 4])
 {
-    int r = MIN4(p, m - p, q, m - q);
-    int info;
+    INT r = MIN4(p, m - p, q, m - q);
+    INT info;
 
     dlaset("Full", m, m, 0.0, 0.0, X, ldx);
 
-    for (int i = 0; i < MIN(p, q) - r; i++)
+    for (INT i = 0; i < MIN(p, q) - r; i++)
         X[i + i * ldx] = 1.0;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         X[(MIN(p, q) - r + i) + (MIN(p, q) - r + i) * ldx] = cos(theta[i]);
 
-    for (int i = 0; i < MIN(p, m - q) - r; i++)
+    for (INT i = 0; i < MIN(p, m - q) - r; i++)
         X[(p - 1 - i) + (m - 1 - i) * ldx] = -1.0;
-    for (int i = 0; i < r; i++) {
-        int k = MIN(p, m - q) - r;
+    for (INT i = 0; i < r; i++) {
+        INT k = MIN(p, m - q) - r;
         X[(p - k - 1 - i) + (m - k - 1 - i) * ldx] = -sin(theta[r - 1 - i]);
     }
 
-    for (int i = 0; i < MIN(m - p, q) - r; i++)
+    for (INT i = 0; i < MIN(m - p, q) - r; i++)
         X[(m - 1 - i) + (q - 1 - i) * ldx] = 1.0;
-    for (int i = 0; i < r; i++) {
-        int k2 = MIN(m - p, q) - r;
+    for (INT i = 0; i < r; i++) {
+        INT k2 = MIN(m - p, q) - r;
         X[(m - k2 - 1 - i) + (q - k2 - 1 - i) * ldx] = sin(theta[r - 1 - i]);
     }
 
-    for (int i = 0; i < MIN(m - p, m - q) - r; i++)
+    for (INT i = 0; i < MIN(m - p, m - q) - r; i++)
         X[(p + i) + (q + i) * ldx] = 1.0;
-    for (int i = 0; i < r; i++) {
-        int k3 = MIN(m - p, m - q) - r;
+    for (INT i = 0; i < r; i++) {
+        INT k3 = MIN(m - p, m - q) - r;
         X[(p + k3 + i) + (q + k3 + i) * ldx] = cos(theta[i]);
     }
 
@@ -151,14 +145,14 @@ static int group_setup(void** state)
     if (!g_ws) return -1;
 
     g_ws->mmax = 1;
-    for (int i = 0; i < (int)NSIZES; i++) {
+    for (INT i = 0; i < (INT)NSIZES; i++) {
         if (MVAL[i] > g_ws->mmax) g_ws->mmax = MVAL[i];
     }
 
-    int mmax = g_ws->mmax;
+    INT mmax = g_ws->mmax;
     g_ws->ldx = mmax;
     if (g_ws->ldx < 1) g_ws->ldx = 1;
-    int ldx = g_ws->ldx;
+    INT ldx = g_ws->ldx;
 
     g_ws->X     = malloc((size_t)ldx * mmax * sizeof(f64));
     g_ws->XF    = malloc((size_t)ldx * mmax * sizeof(f64));
@@ -167,7 +161,7 @@ static int group_setup(void** state)
     g_ws->V1T   = malloc((size_t)ldx * mmax * sizeof(f64));
     g_ws->V2T   = malloc((size_t)ldx * mmax * sizeof(f64));
     g_ws->theta = malloc((size_t)mmax * sizeof(f64));
-    g_ws->iwork = malloc((size_t)mmax * sizeof(int));
+    g_ws->iwork = malloc((size_t)mmax * sizeof(INT));
     g_ws->rwork = malloc((size_t)mmax * sizeof(f64));
 
     g_ws->lwork = mmax * mmax;
@@ -210,12 +204,12 @@ static int group_teardown(void** state)
 
 static void run_dckcsd_single(dckcsd_params_t* params)
 {
-    const int m = MVAL[params->im];
-    const int p = PVAL[params->im];
-    const int q = QVAL[params->im];
-    const int imat = params->imat;
+    const INT m = MVAL[params->im];
+    const INT p = PVAL[params->im];
+    const INT q = QVAL[params->im];
+    const INT imat = params->imat;
 
-    int ldx   = g_ws->ldx;
+    INT ldx   = g_ws->ldx;
     f64* X    = g_ws->X;
     f64* XF   = g_ws->XF;
     f64* U1   = g_ws->U1;
@@ -223,13 +217,13 @@ static void run_dckcsd_single(dckcsd_params_t* params)
     f64* V1T  = g_ws->V1T;
     f64* V2T  = g_ws->V2T;
     f64* theta = g_ws->theta;
-    int* iwork = g_ws->iwork;
+    INT* iwork = g_ws->iwork;
     f64* work  = g_ws->work;
-    int lwork  = g_ws->lwork;
+    INT lwork  = g_ws->lwork;
     f64* rwork = g_ws->rwork;
     uint64_t* rng = g_ws->rng_state;
 
-    int iinfo;
+    INT iinfo;
     char ctx[256];
 
     if (imat == 1) {
@@ -242,26 +236,26 @@ static void run_dckcsd_single(dckcsd_params_t* params)
             return;
         }
     } else if (imat == 2) {
-        int r = MIN4(p, m - p, q, m - q);
-        for (int i = 0; i < r; i++)
+        INT r = MIN4(p, m - p, q, m - q);
+        for (INT i = 0; i < r; i++)
             theta[i] = PIOVER2 * rng_uniform(rng);
         dlacsg(m, p, q, theta, X, ldx, work, rng);
-        for (int i = 0; i < m; i++)
-            for (int j = 0; j < m; j++)
+        for (INT i = 0; i < m; i++)
+            for (INT j = 0; j < m; j++)
                 X[i + j * ldx] += ORTH * rng_uniform_symmetric(rng);
     } else if (imat == 3) {
-        int r = MIN4(p, m - p, q, m - q);
-        for (int i = 0; i < r + 1; i++)
+        INT r = MIN4(p, m - p, q, m - q);
+        for (INT i = 0; i < r + 1; i++)
             theta[i] = pow(10.0, -rng_uniform(rng) * GAPDIGIT);
-        for (int i = 1; i < r + 1; i++)
+        for (INT i = 1; i < r + 1; i++)
             theta[i] = theta[i - 1] + theta[i];
-        for (int i = 0; i < r; i++)
+        for (INT i = 0; i < r; i++)
             theta[i] = PIOVER2 * theta[i] / theta[r];
         dlacsg(m, p, q, theta, X, ldx, work, rng);
     } else {
         dlaset("Full", m, m, 0.0, 1.0, X, ldx);
-        for (int i = 0; i < m; i++) {
-            int j = (int)(rng_uniform(rng) * m);
+        for (INT i = 0; i < m; i++) {
+            INT j = (INT)(rng_uniform(rng) * m);
             if (j != i) {
                 cblas_drot(m, &X[i * ldx], 1, &X[j * ldx], 1, 0.0, 1.0);
             }
@@ -274,7 +268,7 @@ static void run_dckcsd_single(dckcsd_params_t* params)
            V1T, ldx, V2T, ldx, theta, iwork,
            work, lwork, rwork, result);
 
-    for (int i = 0; i < NTESTS; i++) {
+    for (INT i = 0; i < NTESTS; i++) {
         snprintf(ctx, sizeof(ctx),
                  "M=%d P=%d Q=%d type=%d test=%d ratio=%.6e",
                  m, p, q, imat, i + 1, result[i]);
@@ -302,10 +296,10 @@ int main(void)
 {
     static dckcsd_params_t all_params[NSIZES * NTYPES];
     static struct CMUnitTest all_tests[NSIZES * NTYPES];
-    int ntests = 0;
+    INT ntests = 0;
 
-    for (int im = 0; im < (int)NSIZES; im++) {
-        for (int imat = 1; imat <= NTYPES; imat++) {
+    for (INT im = 0; im < (INT)NSIZES; im++) {
+        for (INT imat = 1; imat <= NTYPES; imat++) {
             dckcsd_params_t* p = &all_params[ntests];
             p->im = im;
             p->imat = imat;

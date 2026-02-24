@@ -9,8 +9,6 @@
 #include "verify.h"
 
 /* Forward declaration */
-extern f32 slamch(const char* cmach);
-
 /**
  * SSTECH checks whether EIG[0],...,EIG[n-1] are accurate eigenvalues
  * of the tridiagonal matrix T with diagonal A and off-diagonal B.
@@ -28,10 +26,10 @@ extern f32 slamch(const char* cmach);
  * @param[out]    info 0 if all eigenvalues correct; >0 if interval
  *                     containing the info-th eigenvalue has wrong count.
  */
-void sstech(const int n, const f32* const restrict A,
+void sstech(const INT n, const f32* const restrict A,
             const f32* const restrict B,
             const f32* const restrict eig, const f32 tol,
-            f32* const restrict work, int* info)
+            f32* const restrict work, INT* info)
 {
     const f32 ZERO = 0.0f;
 
@@ -54,19 +52,19 @@ void sstech(const int n, const f32* const restrict A,
 
     /* Compute maximum absolute eigenvalue */
     f32 mx = fabsf(eig[0]);
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         mx = fmaxf(mx, fabsf(eig[i]));
     }
     eps = fmaxf(eps * mx, unflep);
 
     /* Sort eigenvalues from eig into work (selection sort ascending) */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         work[i] = eig[i];
     }
-    for (int i = 0; i < n - 1; i++) {
-        int isub = 0;
+    for (INT i = 0; i < n - 1; i++) {
+        INT isub = 0;
         f32 emin = work[0];
-        for (int j = 1; j < n - i; j++) {
+        for (INT j = 1; j < n - i; j++) {
             if (work[j] < emin) {
                 isub = j;
                 emin = work[j];
@@ -85,8 +83,8 @@ void sstech(const int n, const f32* const restrict A,
      * In the Fortran code, tpnt starts at 1 (top/right of interval)
      * and bpnt at 1 (bottom/left of interval).
      * After the selection sort above, work is in descending order. */
-    int tpnt = 0;
-    int bpnt = 0;
+    INT tpnt = 0;
+    INT bpnt = 0;
 
     /* Loop over all intervals */
     while (tpnt < n) {
@@ -103,10 +101,10 @@ void sstech(const int n, const f32* const restrict A,
         }
 
         /* Count eigenvalues in interval [lower, upper] */
-        int numl, numu;
+        INT numl, numu;
         sstect(n, A, B, lower, &numl);
         sstect(n, A, B, upper, &numu);
-        int count = numu - numl;
+        INT count = numu - numl;
         if (count != bpnt - tpnt + 1) {
             /* Wrong number of eigenvalues in interval */
             *info = tpnt + 1;  /* 1-based index */

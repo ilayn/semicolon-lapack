@@ -7,15 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int kd, const f64* AB, const int ldab,
-                     f64* work);
-
 /**
  * DTBT02 computes the residual for the computed solution to a
  * triangular system of linear equations op(A)*X = B, when A is a
@@ -52,15 +47,15 @@ extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
  *                        norm(op(A)*x - b) / ( norm(op(A)) * norm(x) * EPS ).
  */
 void dtbt02(const char* uplo, const char* trans, const char* diag,
-            const int n, const int kd, const int nrhs,
-            const f64* AB, const int ldab,
-            const f64* X, const int ldx,
-            const f64* B, const int ldb,
+            const INT n, const INT kd, const INT nrhs,
+            const f64* AB, const INT ldab,
+            const f64* X, const INT ldx,
+            const f64* B, const INT ldb,
             f64* work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int j;
+    INT j;
     f64 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0 */

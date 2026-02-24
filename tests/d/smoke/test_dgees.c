@@ -19,40 +19,25 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cblas.h>
-
 /* Test fixture */
 typedef struct {
-    int n;
+    INT n;
     f64* A;       /* Original matrix */
     f64* Acopy;   /* Copy for verification */
     f64* VS;      /* Schur vectors */
     f64* wr;      /* Real eigenvalues */
     f64* wi;      /* Imaginary eigenvalues */
     f64* work;    /* Workspace */
-    int* bwork;      /* Boolean work for SELECT */
+    INT* bwork;      /* Boolean work for SELECT */
     uint64_t seed;
     uint64_t rng_state[4];
 } dgees_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-typedef int (*dselect2_t)(const f64* wr, const f64* wi);
-
-extern void dgees(const char* jobvs, const char* sort, dselect2_t select,
-                  const int n, f64* A, const int lda, int* sdim,
-                  f64* wr, f64* wi, f64* VS, const int ldvs,
-                  f64* work, const int lwork, int* bwork, int* info);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
+typedef INT (*dselect2_t)(const f64* wr, const f64* wi);
 
 /* Selection function: select eigenvalues with negative real part */
-static int select_negative_real(const f64* wr, const f64* wi)
+static INT select_negative_real(const f64* wr, const f64* wi)
 {
     (void)wi;  /* unused */
     return (*wr < 0.0) ? 1 : 0;
@@ -73,10 +58,10 @@ static int setup_N(void** state, int n) {
     fix->VS = malloc(n * n * sizeof(f64));
     fix->wr = malloc(n * sizeof(f64));
     fix->wi = malloc(n * sizeof(f64));
-    fix->bwork = malloc(n * sizeof(int));
+    fix->bwork = malloc(n * sizeof(INT));
 
     /* Workspace: generous allocation */
-    int lwork = 10 * n * n;
+    INT lwork = 10 * n * n;
     fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->Acopy || !fix->VS ||
@@ -116,11 +101,11 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate random test matrix.
  */
-static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
+static void generate_random_matrix(INT n, f64* A, INT lda, f64 anorm,
                                    uint64_t state[static 4])
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             A[i + j * lda] = anorm * rng_uniform_symmetric(state);
         }
     }
@@ -131,9 +116,9 @@ static void generate_random_matrix(int n, f64* A, int lda, f64 anorm,
  */
 static void test_schur_with_vectors(dgees_fixture_t* fix)
 {
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f64 result[2];
 
     /* Generate random matrix */
@@ -143,21 +128,21 @@ static void test_schur_with_vectors(dgees_fixture_t* fix)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute Schur decomposition */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgees("V", "N", NULL, n, fix->A, lda, &sdim,
           fix->wr, fix->wi, fix->VS, lda, fix->work, lwork, NULL, &info);
 
     assert_info_success(info);
 
     /* Eigenvalues should be finite */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr[j]));
         assert_true(isfinite(fix->wi[j]));
     }
 
     /* Test: | A - VS*T*VS' | / ( |A| n ulp ) and | I - VS*VS' | / ( n ulp ) */
     /* Here A (in fix->A) now contains T (the Schur form) */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     dhst01(n, 1, n, fix->Acopy, lda, fix->A, lda, fix->VS, lda,
            fix->work, lwork_verify, result);
 
@@ -166,9 +151,9 @@ static void test_schur_with_vectors(dgees_fixture_t* fix)
 
     /* Verify that T is quasi-triangular (2x2 blocks on diagonal for complex eigenvalues) */
     f64 ulp = dlamch("P");
-    for (int j = 0; j < n - 1; j++) {
+    for (INT j = 0; j < n - 1; j++) {
         /* Elements below subdiagonal should be zero */
-        for (int i = j + 2; i < n; i++) {
+        for (INT i = j + 2; i < n; i++) {
             assert_double_equal(fix->A[i + j * lda], 0.0, ulp * 100);
         }
     }
@@ -183,9 +168,9 @@ static void test_schur_with_vectors(dgees_fixture_t* fix)
  */
 static void test_schur_with_ordering(dgees_fixture_t* fix)
 {
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
@@ -194,7 +179,7 @@ static void test_schur_with_ordering(dgees_fixture_t* fix)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute Schur decomposition with ordering */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgees("V", "S", select_negative_real, n, fix->A, lda, &sdim,
           fix->wr, fix->wi, fix->VS, lda, fix->work, lwork, fix->bwork, &info);
 
@@ -213,7 +198,7 @@ static void test_schur_with_ordering(dgees_fixture_t* fix)
     }
 
     /* Verify eigenvalue ordering: first sdim eigenvalues should have wr < 0 */
-    for (int j = 0; j < sdim; j++) {
+    for (INT j = 0; j < sdim; j++) {
         if (fix->wi[j] == 0.0) {
             /* Real eigenvalue */
             assert_true(fix->wr[j] < 0.0);
@@ -227,7 +212,7 @@ static void test_schur_with_ordering(dgees_fixture_t* fix)
     }
 
     /* Remaining eigenvalues should not satisfy the selection criterion */
-    for (int j = sdim; j < n; j++) {
+    for (INT j = sdim; j < n; j++) {
         if (fix->wi[j] == 0.0) {
             assert_true(fix->wr[j] >= 0.0);
         }
@@ -240,22 +225,22 @@ static void test_schur_with_ordering(dgees_fixture_t* fix)
 static void test_eigenvalues_only(void** state)
 {
     dgees_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
 
     /* Generate random matrix */
     generate_random_matrix(n, fix->A, lda, 1.0, fix->rng_state);
 
     /* Compute eigenvalues only */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgees("N", "N", NULL, n, fix->A, lda, &sdim,
           fix->wr, fix->wi, NULL, 1, fix->work, lwork, NULL, &info);
 
     assert_info_success(info);
 
     /* Eigenvalues should be finite */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr[j]));
         assert_true(isfinite(fix->wi[j]));
     }
@@ -267,8 +252,8 @@ static void test_eigenvalues_only(void** state)
 static void test_workspace_query(void** state)
 {
     dgees_fixture_t* fix = *state;
-    int n = fix->n;
-    int sdim, info;
+    INT n = fix->n;
+    INT sdim, info;
     f64 work_query;
 
     /* Query optimal workspace */
@@ -285,14 +270,14 @@ static void test_workspace_query(void** state)
 static void test_symmetric_matrix(void** state)
 {
     dgees_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
     f64 result[2];
 
     /* Generate symmetric random matrix */
-    for (int j = 0; j < n; j++) {
-        for (int i = j; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = j; i < n; i++) {
             f64 val = rng_uniform_symmetric(fix->rng_state);
             fix->A[i + j * lda] = val;
             fix->A[j + i * lda] = val;
@@ -303,21 +288,21 @@ static void test_symmetric_matrix(void** state)
     dlacpy(" ", n, n, fix->A, lda, fix->Acopy, lda);
 
     /* Compute Schur decomposition */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgees("V", "N", NULL, n, fix->A, lda, &sdim,
           fix->wr, fix->wi, fix->VS, lda, fix->work, lwork, NULL, &info);
 
     assert_info_success(info);
 
     /* For symmetric matrix, all eigenvalues should be real */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_double_equal(fix->wi[j], 0.0, 1e-10);
     }
 
     /* Schur form should be diagonal (since all eigenvalues are real) */
     f64 ulp = dlamch("P");
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             if (i != j) {
                 assert_double_equal(fix->A[i + j * lda], 0.0, ulp * 1000);
             }
@@ -325,7 +310,7 @@ static void test_symmetric_matrix(void** state)
     }
 
     /* Verify decomposition */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     dhst01(n, 1, n, fix->Acopy, lda, fix->A, lda, fix->VS, lda,
            fix->work, lwork_verify, result);
 
@@ -339,9 +324,9 @@ static void test_symmetric_matrix(void** state)
 static void test_identity_matrix(void** state)
 {
     dgees_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int sdim, info;
+    INT n = fix->n;
+    INT lda = n;
+    INT sdim, info;
 
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -350,14 +335,14 @@ static void test_identity_matrix(void** state)
     dlaset("F", n, n, ZERO, ONE, fix->A, lda);
 
     /* Compute Schur decomposition */
-    int lwork = 8 * n * n;
+    INT lwork = 8 * n * n;
     dgees("V", "N", NULL, n, fix->A, lda, &sdim,
           fix->wr, fix->wi, fix->VS, lda, fix->work, lwork, NULL, &info);
 
     assert_info_success(info);
 
     /* All eigenvalues should be 1 */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_double_equal(fix->wr[j], ONE, 1e-10);
         assert_double_equal(fix->wi[j], ZERO, 1e-10);
     }
@@ -402,7 +387,7 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_vectors_n32, setup_32, teardown),
     };
 
-    int result = 0;
+    INT result = 0;
     result += cmocka_run_group_tests_name("dgees_n5", tests_n5, NULL, NULL);
     result += cmocka_run_group_tests_name("dgees_n10", tests_n10, NULL, NULL);
     result += cmocka_run_group_tests_name("dgees_n20", tests_n20, NULL, NULL);

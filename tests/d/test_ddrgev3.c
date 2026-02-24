@@ -43,7 +43,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -51,30 +50,15 @@
 #define MAXTYP 27
 
 /* Test dimensions from dgg.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 16};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16};
 #define NSIZES ((int)(sizeof(NVAL) / sizeof(NVAL[0])))
 #define NMAX 16   /* max(NVAL) */
 
 /* External declarations */
-extern void dggev3(const char* jobvl, const char* jobvr, const int n,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* alphar, f64* alphai, f64* beta,
-                   f64* VL, const int ldvl, f64* VR, const int ldvr,
-                   f64* work, const int lwork, int* info);
-extern f64  dlamch(const char* cmach);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta_val, f64* A, const int lda);
-extern void dlarfg(const int n, f64* alpha, f64* x, const int incx, f64* tau);
-extern void dorm2r(const char* side, const char* trans, const int m,
-                   const int n, const int k, const f64* A, const int lda,
-                   const f64* tau, f64* C, const int ldc, f64* work, int* info);
-
 /* Parameters for each test case */
 typedef struct {
-    int jsize;   /* index into NVAL[] */
-    int jtype;   /* matrix type 1..27 */
+    INT jsize;   /* index into NVAL[] */
+    INT jtype;   /* matrix type 1..27 */
     char name[64];
 } ddrgev3_params_t;
 
@@ -94,7 +78,7 @@ typedef struct {
     f64* alphi1;
     f64* beta1;
     f64* work;
-    int lwork;
+    INT lwork;
 } ddrgev3_workspace_t;
 
 static ddrgev3_workspace_t* g_ws = NULL;
@@ -105,8 +89,8 @@ static int group_setup(void** state)
     g_ws = calloc(1, sizeof(ddrgev3_workspace_t));
     if (!g_ws) return -1;
 
-    const int lda = NMAX;
-    const int n2 = lda * NMAX;
+    const INT lda = NMAX;
+    const INT n2 = lda * NMAX;
 
     g_ws->A      = malloc(n2 * sizeof(f64));
     g_ws->B      = malloc(n2 * sizeof(f64));
@@ -123,8 +107,8 @@ static int group_setup(void** state)
     g_ws->beta1  = malloc(NMAX * sizeof(f64));
 
     /* Workspace: MAX( 8*N, N*(N+1) ) from the Fortran */
-    int minwrk = 8 * NMAX;
-    int tmp = NMAX * (NMAX + 1);
+    INT minwrk = 8 * NMAX;
+    INT tmp = NMAX * (NMAX + 1);
     if (tmp > minwrk) minwrk = tmp;
     g_ws->lwork = minwrk;
     g_ws->work = malloc(g_ws->lwork * sizeof(f64));
@@ -164,47 +148,47 @@ static int group_teardown(void** state)
 }
 
 /* DATA arrays from ddrgev3.f (converted to 0-based) */
-static const int kclass[MAXTYP] = {
+static const INT kclass[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     3, 4
 };
-static const int kz1[6]  = {0, 1, 2, 1, 3, 3};
-static const int kz2[6]  = {0, 0, 1, 2, 1, 1};
-static const int kadd[6] = {0, 0, 0, 0, 3, 2};
-static const int katype[MAXTYP] = {
+static const INT kz1[6]  = {0, 1, 2, 1, 3, 3};
+static const INT kz2[6]  = {0, 0, 1, 2, 1, 1};
+static const INT kadd[6] = {0, 0, 0, 0, 3, 2};
+static const INT katype[MAXTYP] = {
     0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4,
     4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0, 0
 };
-static const int kbtype[MAXTYP] = {
+static const INT kbtype[MAXTYP] = {
     0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4,
     1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0
 };
-static const int kazero[MAXTYP] = {
+static const INT kazero[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3,
     5, 5, 5, 5, 3, 3, 3, 3, 1, 1
 };
-static const int kbzero[MAXTYP] = {
+static const INT kbzero[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4,
     6, 6, 6, 6, 4, 4, 4, 4, 1, 1
 };
-static const int kamagn[MAXTYP] = {
+static const INT kamagn[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1,
     2, 3, 3, 2, 1, 3
 };
-static const int kbmagn[MAXTYP] = {
+static const INT kbmagn[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1,
     3, 2, 3, 2, 1, 3
 };
-static const int ktrian[MAXTYP] = {
+static const INT ktrian[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 };
-static const int iasign[MAXTYP] = {
+static const INT iasign[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0,
     2, 2, 2, 2, 2, 0, 0
 };
-static const int ibsign[MAXTYP] = {
+static const INT ibsign[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0
 };
@@ -212,11 +196,11 @@ static const int ibsign[MAXTYP] = {
 static void test_ddrgev3(void** state)
 {
     ddrgev3_params_t* params = (ddrgev3_params_t*)(*state);
-    const int n = NVAL[params->jsize];
-    const int jtype = params->jtype;  /* 1-based */
-    const int lda = NMAX;
-    const int ldq = NMAX;
-    const int ldqe = NMAX;
+    const INT n = NVAL[params->jsize];
+    const INT jtype = params->jtype;  /* 1-based */
+    const INT lda = NMAX;
+    const INT ldq = NMAX;
+    const INT ldqe = NMAX;
 
     /* Quick return for n=0 */
     if (n == 0) return;
@@ -227,7 +211,7 @@ static void test_ddrgev3(void** state)
     const f64 ulpinv = 1.0 / ulp;
 
     /* RMAGN(0:3) */
-    const int n1 = (n > 1) ? n : 1;
+    const INT n1 = (n > 1) ? n : 1;
     f64 rmagn[4];
     rmagn[0] = 0.0;
     rmagn[1] = 1.0;
@@ -239,16 +223,16 @@ static void test_ddrgev3(void** state)
     rng_seed(rng_state, (uint64_t)(params->jsize * 1000 + jtype));
 
     f64 result[7];
-    for (int i = 0; i < 7; i++) result[i] = -1.0;
+    for (INT i = 0; i < 7; i++) result[i] = -1.0;
 
-    int iinfo = 0;
-    int jt = jtype - 1;  /* 0-based index into DATA arrays */
+    INT iinfo = 0;
+    INT jt = jtype - 1;  /* 0-based index into DATA arrays */
 
     /* Generate test matrices A and B */
     if (kclass[jt] < 3) {
 
         /* Generate A (w/o rotation) */
-        int in = n;
+        INT in = n;
         if (abs(katype[jt]) == 3) {
             in = 2 * ((n - 1) / 2) + 1;
             if (in != n)
@@ -259,7 +243,7 @@ static void test_ddrgev3(void** state)
                 rmagn[kamagn[jt]], ulp,
                 rmagn[ktrian[jt] * kamagn[jt]], 2,
                 g_ws->A, lda, rng_state);
-        int iadd = kadd[kazero[jt] - 1];
+        INT iadd = kadd[kazero[jt] - 1];
         if (iadd > 0 && iadd <= n)
             g_ws->A[(iadd - 1) + (iadd - 1) * lda] = 1.0;
 
@@ -286,8 +270,8 @@ static void test_ddrgev3(void** state)
              * Generate Q, Z as Householder transformations times
              * a diagonal matrix.
              */
-            for (int jc = 0; jc < n - 1; jc++) {
-                for (int jr = jc; jr < n; jr++) {
+            for (INT jc = 0; jc < n - 1; jc++) {
+                for (INT jr = jc; jr < n; jr++) {
                     g_ws->Q[jr + jc * ldq] = rng_dist(rng_state, 3);
                     g_ws->Z[jr + jc * ldq] = rng_dist(rng_state, 3);
                 }
@@ -310,8 +294,8 @@ static void test_ddrgev3(void** state)
             g_ws->work[4 * n - 1] = copysign(1.0, rng_dist(rng_state, 2));
 
             /* Apply the diagonal matrices */
-            for (int jc = 0; jc < n; jc++) {
-                for (int jr = 0; jr < n; jr++) {
+            for (INT jc = 0; jc < n; jc++) {
+                for (INT jr = 0; jr < n; jr++) {
                     g_ws->A[jr + jc * lda] = g_ws->work[2 * n + jr] *
                                               g_ws->work[3 * n + jc] *
                                               g_ws->A[jr + jc * lda];
@@ -335,8 +319,8 @@ static void test_ddrgev3(void** state)
         }
     } else if (kclass[jt] == 3) {
         /* Random matrices (class 3, type 26) */
-        for (int jc = 0; jc < n; jc++) {
-            for (int jr = 0; jr < n; jr++) {
+        for (INT jc = 0; jc < n; jc++) {
+            for (INT jr = 0; jr < n; jr++) {
                 g_ws->A[jr + jc * lda] = rmagn[kamagn[jt]] *
                                           rng_dist(rng_state, 2);
                 g_ws->B[jr + jc * lda] = rmagn[kbmagn[jt]] *
@@ -345,27 +329,27 @@ static void test_ddrgev3(void** state)
         }
     } else {
         /* Random upper Hessenberg pencil with singular B (class 4, type 27) */
-        for (int jc = 0; jc < n; jc++) {
-            int jrmax = jc + 1;
+        for (INT jc = 0; jc < n; jc++) {
+            INT jrmax = jc + 1;
             if (jrmax > n - 1) jrmax = n - 1;
-            for (int jr = 0; jr <= jrmax; jr++) {
+            for (INT jr = 0; jr <= jrmax; jr++) {
                 g_ws->A[jr + jc * lda] = rmagn[kamagn[jt]] *
                                           rng_dist(rng_state, 2);
             }
-            for (int jr = jc + 2; jr < n; jr++) {
+            for (INT jr = jc + 2; jr < n; jr++) {
                 g_ws->A[jr + jc * lda] = 0.0;
             }
         }
-        for (int jc = 0; jc < n; jc++) {
-            for (int jr = 0; jr <= jc; jr++) {
+        for (INT jc = 0; jc < n; jc++) {
+            for (INT jr = 0; jr <= jc; jr++) {
                 g_ws->B[jr + jc * lda] = rmagn[kamagn[jt]] *
                                           rng_dist(rng_state, 2);
             }
-            for (int jr = jc + 1; jr < n; jr++) {
+            for (INT jr = jc + 1; jr < n; jr++) {
                 g_ws->B[jr + jc * lda] = 0.0;
             }
         }
-        for (int jc = 0; jc < n; jc += 4) {
+        for (INT jc = 0; jc < n; jc += 4) {
             g_ws->B[jc + jc * lda] = 0.0;
         }
     }
@@ -378,7 +362,7 @@ gen_error:
     return;
 gen_ok:
 
-    for (int i = 0; i < 7; i++) result[i] = -1.0;
+    for (INT i = 0; i < 7; i++) result[i] = -1.0;
 
     /*
      * Call DGGEV3 to compute eigenvalues and eigenvectors.
@@ -431,7 +415,7 @@ gen_ok:
     dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
     dggev3("N", "N", n, g_ws->S, lda, g_ws->T, lda,
            g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
-           g_ws->QE, ldqe, g_ws->QE, ldqe,
+           NULL, ldqe, g_ws->QE, ldqe,
            g_ws->work, g_ws->lwork, &iinfo);
     if (iinfo != 0 && iinfo != n + 1) {
         result[0] = ulpinv;
@@ -440,7 +424,7 @@ gen_ok:
         goto check_results;
     }
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         if (g_ws->alphar[j] != g_ws->alphr1[j] ||
             g_ws->alphai[j] != g_ws->alphi1[j] ||
             g_ws->beta[j]   != g_ws->beta1[j]) {
@@ -465,7 +449,7 @@ gen_ok:
         goto check_results;
     }
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         if (g_ws->alphar[j] != g_ws->alphr1[j] ||
             g_ws->alphai[j] != g_ws->alphi1[j] ||
             g_ws->beta[j]   != g_ws->beta1[j]) {
@@ -473,8 +457,8 @@ gen_ok:
         }
     }
 
-    for (int j = 0; j < n; j++) {
-        for (int jc = 0; jc < n; jc++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT jc = 0; jc < n; jc++) {
             if (g_ws->Q[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
                 result[5] = ulpinv;
         }
@@ -497,7 +481,7 @@ gen_ok:
         goto check_results;
     }
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         if (g_ws->alphar[j] != g_ws->alphr1[j] ||
             g_ws->alphai[j] != g_ws->alphi1[j] ||
             g_ws->beta[j]   != g_ws->beta1[j]) {
@@ -505,8 +489,8 @@ gen_ok:
         }
     }
 
-    for (int j = 0; j < n; j++) {
-        for (int jc = 0; jc < n; jc++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT jc = 0; jc < n; jc++) {
             if (g_ws->Z[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
                 result[6] = ulpinv;
         }
@@ -515,8 +499,8 @@ gen_ok:
 check_results:
     ;
     /* Check results against threshold */
-    int any_fail = 0;
-    for (int jr = 0; jr < 7; jr++) {
+    INT any_fail = 0;
+    for (INT jr = 0; jr < 7; jr++) {
         if (result[jr] >= THRESH) {
             print_message("N=%d JTYPE=%d test(%d)=%g\n",
                           n, jtype, jr + 1, result[jr]);
@@ -531,10 +515,10 @@ int main(void)
     /* Total: NSIZES * MAXTYP test cases (7 * 27 = 189) */
     static ddrgev3_params_t all_params[NSIZES * MAXTYP];
     static struct CMUnitTest all_tests[NSIZES * MAXTYP];
-    int idx = 0;
+    INT idx = 0;
 
-    for (int js = 0; js < NSIZES; js++) {
-        for (int jt = 1; jt <= MAXTYP; jt++) {
+    for (INT js = 0; js < NSIZES; js++) {
+        for (INT jt = 1; jt <= MAXTYP; jt++) {
             ddrgev3_params_t* p = &all_params[idx];
             p->jsize = js;
             p->jtype = jt;

@@ -27,16 +27,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
@@ -52,75 +51,19 @@ static const char TRANSS[] = {'N', 'T', 'C'};
 #define NBW     4   /* Number of bandwidth values to test */
 
 /* Routines under test */
-extern void sgbtrf(const int m, const int n, const int kl, const int ku,
-                   f32* AB, const int ldab, int* ipiv, int* info);
-extern void sgbtrs(const char* trans, const int n, const int kl, const int ku,
-                   const int nrhs, const f32* AB, const int ldab,
-                   const int* ipiv, f32* B, const int ldb, int* info);
-extern void sgbrfs(const char* trans, const int n, const int kl, const int ku,
-                   const int nrhs, const f32* AB, const int ldab,
-                   const f32* AFB, const int ldafb, const int* ipiv,
-                   const f32* B, const int ldb, f32* X, const int ldx,
-                   f32* ferr, f32* berr, f32* work, int* iwork,
-                   int* info);
-extern void sgbcon(const char* norm, const int n, const int kl, const int ku,
-                   const f32* AB, const int ldab, const int* ipiv,
-                   const f32 anorm, f32* rcond, f32* work,
-                   int* iwork, int* info);
-
 /* Verification routines */
-extern void sgbt01(int m, int n, int kl, int ku,
-                   const f32* A, int lda, const f32* AFAC, int ldafac,
-                   const int* ipiv, f32* work, f32* resid);
-extern void sgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
-                   const f32* A, int lda, const f32* X, int ldx,
-                   f32* B, int ldb, f32* rwork, f32* resid);
-extern void sgbt05(const char* trans, int n, int kl, int ku, int nrhs,
-                   const f32* AB, int ldab, const f32* B, int ldb,
-                   const f32* X, int ldx, const f32* XACT, int ldxact,
-                   const f32* FERR, const f32* BERR, f32* reslts);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-extern f32 sget06(const f32 rcond, const f32 rcondc);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f32* A, const int lda,
-                   const f32* XACT, const int ldxact, f32* B,
-                   const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern f32 slangb(const char* norm, const int n, const int kl, const int ku,
-                     const f32* AB, const int ldab, f32* work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int kl;
-    int ku;
-    int imat;
-    int inb;    /* Index into NBVAL[] */
+    INT m;
+    INT n;
+    INT kl;
+    INT ku;
+    INT imat;
+    INT inb;    /* Index into NBVAL[] */
     char name[80];
 } dchkgb_params_t;
 
@@ -142,8 +85,8 @@ typedef struct {
     f32* D;      /* Singular values for slatms */
     f32* FERR;   /* Forward error bounds */
     f32* BERR;   /* Backward error bounds */
-    int* IPIV;      /* Pivot indices */
-    int* IWORK;     /* Integer workspace */
+    INT* IPIV;      /* Pivot indices */
+    INT* IWORK;     /* Integer workspace */
 } dchkgb_workspace_t;
 
 static dchkgb_workspace_t* g_workspace = NULL;
@@ -173,8 +116,8 @@ static int group_setup(void** state)
     g_workspace->D = malloc(NMAX * sizeof(f32));
     g_workspace->FERR = malloc(NSMAX * sizeof(f32));
     g_workspace->BERR = malloc(NSMAX * sizeof(f32));
-    g_workspace->IPIV = malloc(NMAX * sizeof(int));
-    g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
+    g_workspace->IPIV = malloc(NMAX * sizeof(INT));
+    g_workspace->IWORK = malloc(2 * NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -219,25 +162,25 @@ static int group_teardown(void** state)
  *   - TEST 1 (factorization) runs for all NB values
  *   - TESTs 2-7 (solve, refinement, condition) only run for inb=0 and M==N
  */
-static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
+static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     dchkgb_workspace_t* ws = g_workspace;
 
     char type, dist;
-    int kl_gen, ku_gen, mode;
+    INT kl_gen, ku_gen, mode;
     f32 anorm_gen, cndnum;
-    int info, izero;
-    int lda = kl + ku + 1;
-    int ldafac = 2 * kl + ku + 1;
-    int ldb = (n > 1) ? n : 1;
-    int trfcon;
+    INT info, izero;
+    INT lda = kl + ku + 1;
+    INT ldafac = 2 * kl + ku + 1;
+    INT ldb = (n > 1) ? n : 1;
+    INT trfcon;
     f32 anormo = 0.0f, anormi = 0.0f, rcondo = 0.0f, rcondi = 0.0f, rcond, rcondc;
     f32 result[NTESTS];
 
     /* Set block size for this test via xlaenv */
-    int nb = NBVAL[inb];
+    INT nb = NBVAL[inb];
     xlaenv(1, nb);
 
     /* Seed based on (m, n, kl, ku, imat) for reproducibility */
@@ -246,7 +189,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
                     (uint64_t)(m * 10000 + n * 1000 + kl * 100 + ku * 10 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -266,9 +209,9 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
     }
 
     /* For types 2-4, zero one or more columns to create singular matrix */
-    int zerot = (imat >= 2 && imat <= 4);
+    INT zerot = (imat >= 2 && imat <= 4);
     if (zerot) {
-        int minmn = (m < n) ? m : n;
+        INT minmn = (m < n) ? m : n;
         if (imat == 2) {
             izero = 1;
         } else if (imat == 3) {
@@ -277,20 +220,20 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
             izero = minmn / 2 + 1;
         }
         /* Zero column izero (1-based) in band storage */
-        int ioff = (izero - 1) * lda;
-        int i1 = (ku + 2 - izero > 1) ? ku + 2 - izero - 1 : 0;
-        int i2 = (ku + 1 + m - izero < kl + ku + 1) ? ku + 1 + m - izero : kl + ku + 1;
+        INT ioff = (izero - 1) * lda;
+        INT i1 = (ku + 2 - izero > 1) ? ku + 2 - izero - 1 : 0;
+        INT i2 = (ku + 1 + m - izero < kl + ku + 1) ? ku + 1 + m - izero : kl + ku + 1;
         if (imat < 4) {
             /* Zero single column */
-            for (int i = i1; i < i2; i++) {
+            for (INT i = i1; i < i2; i++) {
                 ws->A[ioff + i] = ZERO;
             }
         } else {
             /* Zero columns izero through n */
-            for (int j = izero - 1; j < n; j++) {
-                int ji1 = (ku + 1 - j - 1 > 0) ? ku + 1 - j - 1 : 0;
-                int ji2 = (ku + 1 + m - j - 1 < kl + ku + 1) ? ku + 1 + m - j - 1 : kl + ku + 1;
-                for (int i = ji1; i < ji2; i++) {
+            for (INT j = izero - 1; j < n; j++) {
+                INT ji1 = (ku + 1 - j - 1 > 0) ? ku + 1 - j - 1 : 0;
+                INT ji2 = (ku + 1 + m - j - 1 < kl + ku + 1) ? ku + 1 + m - j - 1 : kl + ku + 1;
+                for (INT i = ji1; i < ji2; i++) {
                     ws->A[j * lda + i] = ZERO;
                 }
             }
@@ -301,8 +244,8 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
 
     /* Copy A to AFAC for factorization (into rows kl+1 to 2*kl+ku+1) */
     if (m > 0 && n > 0) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < kl + ku + 1; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < kl + ku + 1; i++) {
                 ws->AFAC[(kl + i) + j * ldafac] = ws->A[i + j * lda];
             }
         }
@@ -348,7 +291,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
 
     if (info == 0) {
         /* Form the inverse of A to get a good estimate of CNDNUM */
-        int ldb_inv = (n > 1) ? n : 1;
+        INT ldb_inv = (n > 1) ? n : 1;
         slaset("F", n, n, ZERO, ONE, ws->WORK, ldb_inv);
 
         sgbtrs("N", n, kl, ku, n, ws->AFAC, ldafac, ws->IPIV, ws->WORK, ldb_inv, &info);
@@ -383,11 +326,11 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
     /*
      * TESTs 2-6: Solve tests for each NRHS and each TRANS
      */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
         char xtype = 'N';
 
-        for (int itran = 0; itran < (int)NTRAN; itran++) {
+        for (INT itran = 0; itran < (INT)NTRAN; itran++) {
             char trans[2] = {TRANSS[itran], '\0'};
             if (itran == 0) {
                 rcondc = rcondo;
@@ -437,7 +380,7 @@ static void run_dchkgb_single(int m, int n, int kl, int ku, int imat, int inb)
             result[5] = reslts[1];
 
             /* Check results 2-6 */
-            for (int k = 1; k < 6; k++) {
+            for (INT k = 1; k < 6; k++) {
                 if (result[k] >= THRESH) {
                     print_error("TEST %d FAILED: trans='%c', n=%d, kl=%d, ku=%d, nrhs=%d, imat=%d: resid=%.6e >= %.1f\n",
                                k + 1, trans[0], n, kl, ku, nrhs, imat, (double)result[k], (double)THRESH);
@@ -457,7 +400,7 @@ test7:
         return;
     }
 
-    for (int itran = 0; itran < 2; itran++) {
+    for (INT itran = 0; itran < 2; itran++) {
         f32 anorm_est;
         char norm[2];
         if (itran == 0) {
@@ -500,7 +443,7 @@ static void test_dchkgb(void** state)
  * Generate bandwidth values for a given m, n.
  * Following dchkgb.f: KLVAL(1)=0, KLVAL(2)=(5*M+1)/4, KLVAL(3)=(3M-1)/4, KLVAL(4)=(M+1)/4
  */
-static void get_klval(int m, int klval[NBW])
+static void get_klval(INT m, INT klval[NBW])
 {
     klval[0] = 0;
     klval[1] = m + (m + 1) / 4;
@@ -508,7 +451,7 @@ static void get_klval(int m, int klval[NBW])
     klval[3] = (m + 1) / 4;
 }
 
-static void get_kuval(int n, int kuval[NBW])
+static void get_kuval(INT n, INT kuval[NBW])
 {
     kuval[0] = 0;
     kuval[1] = n + (n + 1) / 4;
@@ -522,42 +465,42 @@ static void get_kuval(int n, int kuval[NBW])
 int main(void)
 {
     /* Count total tests */
-    int test_count = 0;
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
-        int klval[NBW];
+    INT test_count = 0;
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
+        INT klval[NBW];
         get_klval(m, klval);
-        int nkl = (m + 1 < NBW) ? m + 1 : NBW;
+        INT nkl = (m + 1 < NBW) ? m + 1 : NBW;
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
-            int kuval[NBW];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
+            INT kuval[NBW];
             get_kuval(n, kuval);
-            int nku = (n + 1 < NBW) ? n + 1 : NBW;
-            int nimat = NTYPES;
+            INT nku = (n + 1 < NBW) ? n + 1 : NBW;
+            INT nimat = NTYPES;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
             }
 
-            for (int ikl = 0; ikl < nkl; ikl++) {
-                int kl = klval[ikl];
+            for (INT ikl = 0; ikl < nkl; ikl++) {
+                INT kl = klval[ikl];
                 if (kl > m - 1 && m > 0) kl = m - 1;
                 if (kl < 0) kl = 0;
 
-                for (int iku = 0; iku < nku; iku++) {
-                    int ku = kuval[iku];
+                for (INT iku = 0; iku < nku; iku++) {
+                    INT ku = kuval[iku];
                     if (ku > n - 1 && n > 0) ku = n - 1;
                     if (ku < 0) ku = 0;
 
-                    for (int imat = 1; imat <= nimat; imat++) {
+                    for (INT imat = 1; imat <= nimat; imat++) {
                         /* Skip types 2-4 if matrix is too small */
-                        int zerot = (imat >= 2 && imat <= 4);
-                        int minmn = (m < n) ? m : n;
+                        INT zerot = (imat >= 2 && imat <= 4);
+                        INT minmn = (m < n) ? m : n;
                         if (zerot && minmn < imat - 1) {
                             continue;
                         }
 
-                        for (int inb = 0; inb < (int)NNB; inb++) {
+                        for (INT inb = 0; inb < (INT)NNB; inb++) {
                             test_count++;
                         }
                     }
@@ -576,43 +519,43 @@ int main(void)
     }
 
     /* Generate tests */
-    int idx = 0;
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
-        int klval[NBW];
+    INT idx = 0;
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
+        INT klval[NBW];
         get_klval(m, klval);
-        int nkl = (m + 1 < NBW) ? m + 1 : NBW;
+        INT nkl = (m + 1 < NBW) ? m + 1 : NBW;
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
-            int kuval[NBW];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
+            INT kuval[NBW];
             get_kuval(n, kuval);
-            int nku = (n + 1 < NBW) ? n + 1 : NBW;
-            int nimat = NTYPES;
+            INT nku = (n + 1 < NBW) ? n + 1 : NBW;
+            INT nimat = NTYPES;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
             }
 
-            for (int ikl = 0; ikl < nkl; ikl++) {
-                int kl = klval[ikl];
+            for (INT ikl = 0; ikl < nkl; ikl++) {
+                INT kl = klval[ikl];
                 if (kl > m - 1 && m > 0) kl = m - 1;
                 if (kl < 0) kl = 0;
 
-                for (int iku = 0; iku < nku; iku++) {
-                    int ku = kuval[iku];
+                for (INT iku = 0; iku < nku; iku++) {
+                    INT ku = kuval[iku];
                     if (ku > n - 1 && n > 0) ku = n - 1;
                     if (ku < 0) ku = 0;
 
-                    for (int imat = 1; imat <= nimat; imat++) {
+                    for (INT imat = 1; imat <= nimat; imat++) {
                         /* Skip types 2-4 if matrix is too small */
-                        int zerot = (imat >= 2 && imat <= 4);
-                        int minmn = (m < n) ? m : n;
+                        INT zerot = (imat >= 2 && imat <= 4);
+                        INT minmn = (m < n) ? m : n;
                         if (zerot && minmn < imat - 1) {
                             continue;
                         }
 
-                        for (int inb = 0; inb < (int)NNB; inb++) {
-                            int nb = NBVAL[inb];
+                        for (INT inb = 0; inb < (INT)NNB; inb++) {
+                            INT nb = NBVAL[inb];
                             params[idx].m = m;
                             params[idx].n = n;
                             params[idx].kl = kl;
@@ -641,7 +584,7 @@ int main(void)
      * We use _cmocka_run_group_tests directly because the test array
      * is built dynamically and the standard macro uses sizeof() which
      * only works for compile-time array sizes. */
-    int result = _cmocka_run_group_tests("dchkgb", tests, idx,
+    INT result = _cmocka_run_group_tests("dchkgb", tests, idx,
                                          group_setup, group_teardown);
 
     free(tests);

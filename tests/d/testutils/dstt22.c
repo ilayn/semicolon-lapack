@@ -7,18 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /**
  * DSTT22 checks a set of M eigenvalues and eigenvectors,
  *
@@ -45,17 +35,17 @@ extern f64 dlansy(const char* norm, const char* uplo, const int n,
  * @param[in]     ldwork  Leading dimension of work. ldwork >= max(1, m).
  * @param[out]    result  Array of dimension (2). The two test ratios.
  */
-void dstt22(const int n, const int m, const int kband,
+void dstt22(const INT n, const INT m, const INT kband,
             const f64* const restrict AD, const f64* const restrict AE,
             const f64* const restrict SD, const f64* const restrict SE,
-            const f64* const restrict U, const int ldu,
-            f64* const restrict work, const int ldwork,
+            const f64* const restrict U, const INT ldu,
+            f64* const restrict work, const INT ldwork,
             f64* restrict result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k;
+    INT i, j, k;
     f64 anorm, aukj, ulp, unfl, wnorm;
 
     result[0] = ZERO;

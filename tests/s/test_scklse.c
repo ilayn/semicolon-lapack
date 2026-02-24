@@ -17,7 +17,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -28,9 +27,9 @@
 #define NTYPES 8
 
 /* Dimension triplets from TESTING/lse.in */
-static const int MVAL[] = { 6,  0,  5,  8, 10, 30};
-static const int PVAL[] = { 0,  5,  5,  5,  8, 20};
-static const int NVAL[] = { 5,  5,  6,  8, 12, 40};
+static const INT MVAL[] = { 6,  0,  5,  8, 10, 30};
+static const INT PVAL[] = { 0,  5,  5,  5,  8, 20};
+static const INT NVAL[] = { 5,  5,  6,  8, 12, 40};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Maximum dimension */
@@ -40,12 +39,10 @@ static const int NVAL[] = { 5,  5,  6,  8, 12, 40};
 #define MAX_TESTS (NN * NTYPES)
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int ik;
-    int imat;
+    INT ik;
+    INT imat;
     char name[64];
 } dcklse_params_t;
 
@@ -73,9 +70,9 @@ static int group_setup(void** state)
     g_ws = malloc(sizeof(dcklse_workspace_t));
     if (!g_ws) return -1;
 
-    int lda = NMAX;
-    int ldb = NMAX;
-    int lwork = NMAX * NMAX;
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
 
     g_ws->A     = malloc(lda * NMAX * sizeof(f32));
     g_ws->AF    = malloc(lda * NMAX * sizeof(f32));
@@ -124,15 +121,15 @@ static int group_teardown(void** state)
 static void test_dcklse_case(void** state)
 {
     dcklse_params_t* params = *state;
-    int ik = params->ik;
-    int imat = params->imat;
+    INT ik = params->ik;
+    INT imat = params->imat;
 
-    int m = MVAL[ik];
-    int p = PVAL[ik];
-    int n = NVAL[ik];
-    int lda = NMAX;
-    int ldb = NMAX;
-    int lwork = NMAX * NMAX;
+    INT m = MVAL[ik];
+    INT p = PVAL[ik];
+    INT n = NVAL[ik];
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
 
     /* Skip invalid dimension triplets: need P <= N <= M+P */
     if (p > n || n > m + p) {
@@ -141,9 +138,9 @@ static void test_dcklse_case(void** state)
 
     /* Set up parameters with SLATB9 */
     char type;
-    int kla, kua, klb, kub;
+    INT kla, kua, klb, kub;
     f32 anorm, bnorm, cndnma, cndnmb;
-    int modea, modeb;
+    INT modea, modeb;
     char dista, distb;
 
     slatb9("LSE", imat, m, p, n, &type, &kla, &kua, &klb, &kub,
@@ -155,7 +152,7 @@ static void test_dcklse_case(void** state)
     rng_seed(rng_state, 2024 + (uint64_t)ik * 100 + (uint64_t)imat);
 
     /* Generate test matrix A (M x N) */
-    int iinfo;
+    INT iinfo;
     char dista_str[2] = {dista, '\0'};
     char type_str[2] = {type, '\0'};
     slatms(m, n, dista_str, type_str, g_ws->rwork, modea, cndnma,
@@ -194,22 +191,22 @@ static void test_dcklse_case(void** state)
 /* Parameterized test arrays */
 static dcklse_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int ik = 0; ik < (int)NN; ik++) {
-        int m = MVAL[ik];
-        int p = PVAL[ik];
-        int n = NVAL[ik];
+    for (INT ik = 0; ik < (INT)NN; ik++) {
+        INT m = MVAL[ik];
+        INT p = PVAL[ik];
+        INT n = NVAL[ik];
 
         /* Skip invalid dimension triplets */
         if (p > n || n > m + p)
             continue;
 
-        for (int imat = 1; imat <= NTYPES; imat++) {
+        for (INT imat = 1; imat <= NTYPES; imat++) {
             dcklse_params_t* par = &g_params[g_num_tests];
             par->ik = ik;
             par->imat = imat;

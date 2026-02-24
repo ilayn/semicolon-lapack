@@ -20,15 +20,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -43,77 +42,18 @@ static const char UPLOS[] = {'U', 'L'};
 #define NBW     4   /* Number of bandwidth values per N */
 
 /* Routines under test */
-extern void spbtrf(const char* uplo, const int n, const int kd, f32* AB,
-                   const int ldab, int* info);
-extern void spbtrs(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab, f32* B, const int ldb,
-                   int* info);
-extern void spbrfs(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab, const f32* AFB,
-                   const int ldafb, const f32* B, const int ldb,
-                   f32* X, const int ldx, f32* ferr, f32* berr,
-                   f32* work, int* iwork, int* info);
-extern void spbcon(const char* uplo, const int n, const int kd,
-                   const f32* AB, const int ldab, const f32 anorm,
-                   f32* rcond, f32* work, int* iwork, int* info);
-
 /* Verification routines */
-extern void spbt01(const char* uplo, const int n, const int kd,
-                   const f32* A, const int lda,
-                   f32* AFAC, const int ldafac,
-                   f32* rwork, f32* resid);
-extern void spbt02(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f32* A, const int lda,
-                   const f32* X, const int ldx,
-                   f32* B, const int ldb,
-                   f32* rwork, f32* resid);
-extern void spbt05(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab,
-                   const f32* B, const int ldb,
-                   const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact,
-                   const f32* ferr, const f32* berr,
-                   f32* reslts);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-extern f32 sget06(const f32 rcond, const f32 rcondc);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f32* A, const int lda,
-                   f32* X, const int ldx, f32* B, const int ldb,
-                   int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-extern f32 slansb(const char* norm, const char* uplo, const int n,
-                     const int k, const f32* AB, const int ldab, f32* work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int kd;
-    int imat;
-    int iuplo;  /* 0='U', 1='L' */
-    int inb;    /* Index into NBVAL[] */
+    INT n;
+    INT kd;
+    INT imat;
+    INT iuplo;  /* 0='U', 1='L' */
+    INT inb;    /* Index into NBVAL[] */
     char name[64];
 } dchkpb_params_t;
 
@@ -132,7 +72,7 @@ typedef struct {
     f32* D;      /* Singular values for slatms */
     f32* FERR;   /* Forward error bounds */
     f32* BERR;   /* Backward error bounds */
-    int* IWORK;     /* Integer workspace */
+    INT* IWORK;     /* Integer workspace */
 } dchkpb_workspace_t;
 
 static dchkpb_workspace_t* g_workspace = NULL;
@@ -148,7 +88,7 @@ static int group_setup(void** state)
 
     /* Band storage: (KD+1) rows × N columns, with KD up to NMAX + (NMAX+1)/4 */
     /* Max ldab = NMAX + (NMAX+1)/4 + 1 = 50 + 12 + 1 = 63 for NMAX=50 */
-    int max_ldab = NMAX + (NMAX + 1) / 4 + 1;
+    INT max_ldab = NMAX + (NMAX + 1) / 4 + 1;
     g_workspace->A = malloc(max_ldab * NMAX * sizeof(f32));
     g_workspace->AFAC = malloc(max_ldab * NMAX * sizeof(f32));
     g_workspace->AINV = malloc(NMAX * NMAX * sizeof(f32));
@@ -156,13 +96,13 @@ static int group_setup(void** state)
     g_workspace->X = malloc(NMAX * NSMAX * sizeof(f32));
     g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f32));
     /* WORK needs NMAX * (3*NMAX + NSMAX + 30) for slatms full matrix generation */
-    int work_size = NMAX * (3 * NMAX + NSMAX + 30);
+    INT work_size = NMAX * (3 * NMAX + NSMAX + 30);
     g_workspace->WORK = malloc(work_size * sizeof(f32));
     g_workspace->RWORK = malloc((NMAX > 2 * NSMAX ? NMAX : 2 * NSMAX) * sizeof(f32));
     g_workspace->D = malloc(NMAX * sizeof(f32));
     g_workspace->FERR = malloc(NSMAX * sizeof(f32));
     g_workspace->BERR = malloc(NSMAX * sizeof(f32));
-    g_workspace->IWORK = malloc(NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -206,7 +146,7 @@ static int group_teardown(void** state)
  *   - TEST 1 (factorization) runs for all NB values
  *   - TESTs 2-7 (solve, refinement, condition) only run for inb=0 (first NB)
  */
-static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
+static void run_dchkpb_single(INT n, INT kd, INT iuplo, INT imat, INT inb)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -216,15 +156,15 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     char packit;
-    int kl, ku, mode, koff;
+    INT kl, ku, mode, koff;
     f32 anorm_param, cndnum;
-    int info, izero;
-    int lda = (n > 1) ? n : 1;
-    int ldab = kd + 1;
+    INT info, izero;
+    INT lda = (n > 1) ? n : 1;
+    INT ldab = kd + 1;
     f32 rcondc = 1.0f, rcond, anorm, ainvnm;
 
     /* Set block size for this test via xlaenv */
-    int nb = NBVAL[inb];
+    INT nb = NBVAL[inb];
     xlaenv(1, nb);
     f32 result[NTESTS];
     char ctx[128];
@@ -234,7 +174,7 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 10000 + kd * 1000 + iuplo * 100 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -253,7 +193,7 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
     slatb4("SPB", imat, n, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
     /* For types 2-4, check if we need to create a singular matrix */
-    int zerot = (imat >= 2 && imat <= 4);
+    INT zerot = (imat >= 2 && imat <= 4);
     if (zerot && n < imat - 1) {
         /* Skip if N is too small for this singular type */
         return;
@@ -287,25 +227,25 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
         }
 
         /* Zero the row and column izero in band storage */
-        int i1 = (izero - kd > 0) ? izero - kd : 0;
-        int i2 = (izero + kd < n - 1) ? izero + kd : n - 1;
+        INT i1 = (izero - kd > 0) ? izero - kd : 0;
+        INT i2 = (izero + kd < n - 1) ? izero + kd : n - 1;
 
         if (iuplo == 0) {
             /* Upper triangular storage */
-            int ioff = izero * ldab + kd;
-            for (int i = i1; i < izero; i++) {
+            INT ioff = izero * ldab + kd;
+            for (INT i = i1; i < izero; i++) {
                 ws->A[ioff - izero + i] = ZERO;
             }
-            for (int i = izero; i <= i2; i++) {
+            for (INT i = izero; i <= i2; i++) {
                 ws->A[kd + izero - i + i * ldab] = ZERO;
             }
         } else {
             /* Lower triangular storage */
-            for (int i = i1; i < izero; i++) {
+            for (INT i = i1; i < izero; i++) {
                 ws->A[izero - i + i * ldab] = ZERO;
             }
-            int ioff = izero * ldab;
-            for (int i = izero; i <= i2; i++) {
+            INT ioff = izero * ldab;
+            for (INT i = izero; i <= i2; i++) {
                 ws->A[ioff + i - izero] = ZERO;
             }
         }
@@ -368,8 +308,8 @@ static void run_dchkpb_single(int n, int kd, int iuplo, int imat, int inb)
     /*
      * TESTS 2-6: Solve tests (only for first NB)
      */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
         /*
          * TEST 2: Solve and compute residual for A * X = B
@@ -451,7 +391,7 @@ static void test_dchkpb_case(void** state)
 
 static dchkpb_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -460,43 +400,43 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
         /* Compute KD values for this N */
-        int kdval[NBW];
+        INT kdval[NBW];
         kdval[0] = 0;
         kdval[1] = n + (n + 1) / 4;
         kdval[2] = (3 * n - 1) / 4;
         kdval[3] = (n + 1) / 4;
 
         /* Limit number of KD values for small N */
-        int nkd = (n >= 4) ? 4 : ((n > 0) ? n : 1);
+        INT nkd = (n >= 4) ? 4 : ((n > 0) ? n : 1);
         if (nkd > NBW) nkd = NBW;
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int ikd = 0; ikd < nkd; ikd++) {
-            int kd = kdval[ikd];
+        for (INT ikd = 0; ikd < nkd; ikd++) {
+            INT kd = kdval[ikd];
             /* Limit kd to n-1 to avoid edge cases with oversized bandwidth */
             if (n > 0 && kd > n - 1) {
                 kd = n - 1;
             }
 
-            for (int iuplo = 0; iuplo < (int)NUPLO; iuplo++) {
-                for (int imat = 1; imat <= nimat; imat++) {
+            for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+                for (INT imat = 1; imat <= nimat; imat++) {
                     /* Skip types 2, 3, or 4 if matrix size is too small */
-                    int zerot = (imat >= 2 && imat <= 4);
+                    INT zerot = (imat >= 2 && imat <= 4);
                     if (zerot && n < imat - 1) {
                         continue;
                     }
 
                     /* Loop over block sizes */
-                    for (int inb = 0; inb < (int)NNB; inb++) {
-                        int nb = NBVAL[inb];
+                    for (INT inb = 0; inb < (INT)NNB; inb++) {
+                        INT nb = NBVAL[inb];
 
                         /* Store parameters */
                         dchkpb_params_t* p = &g_params[g_num_tests];

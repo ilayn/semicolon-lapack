@@ -5,18 +5,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dggglm(const int n, const int m, const int p,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   f64* D, f64* X, f64* Y,
-                   f64* work, const int lwork, int* info);
 
 /**
  * DGLMTS tests DGGGLM - a subroutine for solving the generalized
@@ -42,27 +32,27 @@ extern void dggglm(const int n, const int m, const int p,
  *                        norm( d - A*x - B*u ) / ((norm(A)+norm(B))*(norm(x)+norm(u))*EPS)
  */
 void dglmts(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     const f64* A,
     f64* AF,
-    const int lda,
+    const INT lda,
     const f64* B,
     f64* BF,
-    const int ldb,
+    const INT ldb,
     const f64* D,
     f64* DF,
     f64* X,
     f64* U,
     f64* work,
-    const int lwork,
+    const INT lwork,
     f64* rwork,
     f64* result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int info;
+    INT info;
     f64 anorm, bnorm, dnorm, eps, unfl, xnorm, ynorm;
 
     eps = dlamch("E");

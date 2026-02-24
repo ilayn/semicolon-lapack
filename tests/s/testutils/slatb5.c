@@ -7,9 +7,7 @@
 #include <math.h>
 #include "verify.h"
 
-extern f32 slamch(const char* cmach);
-
-static int first = 1;
+static INT first = 1;
 static f32 eps, small, large, badc1, badc2;
 
 /**
@@ -37,13 +35,13 @@ static f32 eps, small, large, badc1, badc2;
  */
 void slatb5(
     const char* path,
-    const int imat,
-    const int n,
+    const INT imat,
+    const INT n,
     char* type,
-    int* kl,
-    int* ku,
+    INT* kl,
+    INT* ku,
     f32* anorm,
-    int* mode,
+    INT* mode,
     f32* cndnum,
     char* dist)
 {

@@ -4,8 +4,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_single.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -14,14 +14,14 @@
 
 static const f32 PIOVER2 = 1.57079632679489661923132169163975144210e0f;
 
-void scsdts(const int m, const int p, const int q,
-            const f32* X, f32* XF, const int ldx,
-            f32* U1, const int ldu1,
-            f32* U2, const int ldu2,
-            f32* V1T, const int ldv1t,
-            f32* V2T, const int ldv2t,
-            f32* theta, int* iwork,
-            f32* work, const int lwork,
+void scsdts(const INT m, const INT p, const INT q,
+            const f32* X, f32* XF, const INT ldx,
+            f32* U1, const INT ldu1,
+            f32* U2, const INT ldu2,
+            f32* V1T, const INT ldv1t,
+            f32* V2T, const INT ldv2t,
+            f32* theta, INT* iwork,
+            f32* work, const INT lwork,
             f32* rwork, f32* result)
 {
     const f32 zero = 0.0f;
@@ -43,11 +43,11 @@ void scsdts(const int m, const int p, const int q,
     } else {
         eps2 = ulp;
     }
-    int r = MIN(MIN(p, m - p), MIN(q, m - q));
+    INT r = MIN(MIN(p, m - p), MIN(q, m - q));
 
     slacpy("Full", m, m, X, ldx, XF, ldx);
 
-    int info;
+    INT info;
     sorcsd("Y", "Y", "Y", "Y", "N", "D", m, p, q,
            &XF[0], ldx, &XF[q * ldx], ldx,
            &XF[p], ldx, &XF[p + q * ldx], ldx,
@@ -65,9 +65,9 @@ void scsdts(const int m, const int p, const int q,
     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                 p, q, p, one, U1, ldu1, work, ldx, zero, &XF[0], ldx);
 
-    for (int i = 0; i < MIN(p, q) - r; i++)
+    for (INT i = 0; i < MIN(p, q) - r; i++)
         XF[i + i * ldx] -= one;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         XF[(MIN(p, q) - r + i) + (MIN(p, q) - r + i) * ldx] -= cosf(theta[i]);
 
     /* X12 block: U1'*X12*V2 - D12 */
@@ -78,9 +78,9 @@ void scsdts(const int m, const int p, const int q,
                 p, m - q, p, one, U1, ldu1, work, ldx,
                 zero, &XF[q * ldx], ldx);
 
-    for (int i = 0; i < MIN(p, m - q) - r; i++)
+    for (INT i = 0; i < MIN(p, m - q) - r; i++)
         XF[(p - 1 - i) + (m - 1 - i) * ldx] += one;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         XF[(p - (MIN(p, m - q) - r) - 1 - i) + (m - (MIN(p, m - q) - r) - 1 - i) * ldx] +=
             sinf(theta[r - 1 - i]);
 
@@ -92,9 +92,9 @@ void scsdts(const int m, const int p, const int q,
                 m - p, q, m - p, one, U2, ldu2, work, ldx,
                 zero, &XF[p], ldx);
 
-    for (int i = 0; i < MIN(m - p, q) - r; i++)
+    for (INT i = 0; i < MIN(m - p, q) - r; i++)
         XF[(m - 1 - i) + (q - 1 - i) * ldx] -= one;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         XF[(m - (MIN(m - p, q) - r) - 1 - i) + (q - (MIN(m - p, q) - r) - 1 - i) * ldx] -=
             sinf(theta[r - 1 - i]);
 
@@ -106,9 +106,9 @@ void scsdts(const int m, const int p, const int q,
                 m - p, m - q, m - p, one, U2, ldu2, work, ldx,
                 zero, &XF[p + q * ldx], ldx);
 
-    for (int i = 0; i < MIN(m - p, m - q) - r; i++)
+    for (INT i = 0; i < MIN(m - p, m - q) - r; i++)
         XF[(p + i) + (q + i) * ldx] -= one;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         XF[(p + (MIN(m - p, m - q) - r) + i) + (q + (MIN(m - p, m - q) - r) + i) * ldx] -=
             cosf(theta[i]);
 
@@ -156,7 +156,7 @@ void scsdts(const int m, const int p, const int q,
 
     /* Check sorting */
     result[8] = zero;
-    for (int i = 0; i < r; i++) {
+    for (INT i = 0; i < r; i++) {
         if (theta[i] < zero || theta[i] > PIOVER2)
             result[8] = ulpinv;
         if (i > 0) {
@@ -193,9 +193,9 @@ void scsdts(const int m, const int p, const int q,
     cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
                 p, q, p, one, U1, ldu1, work, ldx, zero, XF, ldx);
 
-    for (int i = 0; i < MIN(p, q) - r; i++)
+    for (INT i = 0; i < MIN(p, q) - r; i++)
         XF[i + i * ldx] -= one;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         XF[(MIN(p, q) - r + i) + (MIN(p, q) - r + i) * ldx] -= cosf(theta[i]);
 
     /* X21 block */
@@ -206,9 +206,9 @@ void scsdts(const int m, const int p, const int q,
                 m - p, q, m - p, one, U2, ldu2, work, ldx,
                 zero, &XF[p], ldx);
 
-    for (int i = 0; i < MIN(m - p, q) - r; i++)
+    for (INT i = 0; i < MIN(m - p, q) - r; i++)
         XF[(m - 1 - i) + (q - 1 - i) * ldx] -= one;
-    for (int i = 0; i < r; i++)
+    for (INT i = 0; i < r; i++)
         XF[(m - (MIN(m - p, q) - r) - 1 - i) + (q - (MIN(m - p, q) - r) - 1 - i) * ldx] -=
             sinf(theta[r - 1 - i]);
 
@@ -241,7 +241,7 @@ void scsdts(const int m, const int p, const int q,
 
     /* Check sorting */
     result[14] = zero;
-    for (int i = 0; i < r; i++) {
+    for (INT i = 0; i < r; i++) {
         if (theta[i] < zero || theta[i] > PIOVER2)
             result[14] = ulpinv;
         if (i > 0) {

@@ -9,11 +9,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const f64* A, const int lda,
-                     f64* work);
-
 /**
  * DTRT06 computes a test ratio comparing RCOND (the reciprocal
  * condition number of a triangular matrix A) and RCONDC, the estimate
@@ -35,8 +30,8 @@ extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
  * @param[out]    rat     The test ratio.
  */
 void dtrt06(const f64 rcond, const f64 rcondc,
-            const char* uplo, const char* diag, const int n,
-            const f64* A, const int lda, f64* work, f64* rat)
+            const char* uplo, const char* diag, const INT n,
+            const f64* A, const INT lda, f64* work, f64* rat)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

@@ -6,15 +6,6 @@
 #include <math.h>
 #include "verify.h"
 
-/* Forward declarations */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda,
-                   f64* B, const int ldb);
-extern void dgesvd(const char* jobu, const char* jobvt, const int m, const int n,
-                   f64* A, const int lda, f64* S,
-                   f64* U, const int ldu, f64* VT, const int ldvt,
-                   f64* work, const int lwork, int* info);
-
 /**
  * DLATM6 generates test matrices for the generalized eigenvalue
  * problem, their corresponding right and left eigenvector matrices,
@@ -106,9 +97,9 @@ extern void dgesvd(const char* jobu, const char* jobvt, const int m, const int n
  *     Double precision array, dimension (n).
  *     DIF(i) is the reciprocal condition number for eigenvector i.
  */
-void dlatm6(const int type, const int n,
-            f64* A, const int lda, f64* B,
-            f64* X, const int ldx, f64* Y, const int ldy,
+void dlatm6(const INT type, const INT n,
+            f64* A, const INT lda, f64* B,
+            f64* X, const INT ldx, f64* Y, const INT ldy,
             const f64 alpha, const f64 beta,
             const f64 wx, const f64 wy,
             f64* S, f64* DIF)
@@ -118,7 +109,7 @@ void dlatm6(const int type, const int n,
     const f64 TWO = 2.0;
     const f64 THREE = 3.0;
 
-    int i, info, j;
+    INT i, info, j;
     f64 work[100];
     f64 Z[12 * 12];
 

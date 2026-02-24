@@ -5,14 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlansp(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict AP,
-                     f64* const restrict work);
-
 /**
  * DPPT01 reconstructs a symmetric positive definite packed matrix A
  * from its L*L' or U'*U factorization and computes the residual
@@ -44,13 +38,13 @@ extern f64 dlansp(const char* norm, const char* uplo, const int n,
  *          If uplo = 'L', norm(L*L' - A) / ( N * norm(A) * EPS )
  *          If uplo = 'U', norm(U'*U - A) / ( N * norm(A) * EPS )
  */
-void dppt01(const char* uplo, const int n,
+void dppt01(const char* uplo, const INT n,
             const f64* const restrict A,
             f64* const restrict AFAC,
             f64* const restrict rwork,
             f64* resid)
 {
-    int i, k, kc, npp;
+    INT i, k, kc, npp;
     f64 anorm, eps, t;
 
     if (n <= 0) {

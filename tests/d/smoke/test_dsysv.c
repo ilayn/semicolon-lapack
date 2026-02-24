@@ -16,36 +16,22 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void dsysv(const char* uplo, const int n, const int nrhs,
-                  f64* const restrict A, const int lda,
-                  int* const restrict ipiv,
-                  f64* const restrict B, const int ldb,
-                  f64* const restrict work, const int lwork,
-                  int* info);
-
 /* Norm computation */
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda;
+    INT n, nrhs;
+    INT lda;
     f64* A;       /* Original matrix */
     f64* AFAC;    /* Matrix for factorization (overwritten by dsysv) */
     f64* B;       /* Original RHS */
     f64* X;       /* RHS copy (overwritten with solution by dsysv) */
     f64* XACT;    /* Known exact solution */
-    int* ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f64* d;       /* Singular values for dlatms */
     f64* work;    /* Workspace */
     f64* rwork;   /* Workspace for norm computation */
@@ -54,7 +40,7 @@ typedef struct {
 
 static uint64_t g_seed = 7200;
 
-static int dsysv_setup(void** state, int n, int nrhs)
+static int dsysv_setup(void** state, INT n, INT nrhs)
 {
     dsysv_fixture_t* fix = malloc(sizeof(dsysv_fixture_t));
     assert_non_null(fix);
@@ -64,14 +50,14 @@ static int dsysv_setup(void** state, int n, int nrhs)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    int lwork = n * 64;
+    INT lwork = n * 64;
 
     fix->A = malloc(fix->lda * n * sizeof(f64));
     fix->AFAC = malloc(fix->lda * n * sizeof(f64));
     fix->B = malloc(fix->lda * nrhs * sizeof(f64));
     fix->X = malloc(fix->lda * nrhs * sizeof(f64));
     fix->XACT = malloc(fix->lda * nrhs * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(lwork * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
@@ -127,12 +113,12 @@ static int setup_50_nrhs5(void** state) { return dsysv_setup(state, 50, 5); }
  *
  * Residual = ||B - A*X|| / (||A|| * ||X|| * N * EPS)
  */
-static f64 run_dsysv_test(dsysv_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dsysv_test(dsysv_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
 
     dlatb4("DSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -144,8 +130,8 @@ static f64 run_dsysv_test(dsysv_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Generate known exact solution XACT */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->lda] = 1.0 + (f64)i / fix->n;
         }
     }
@@ -163,7 +149,7 @@ static f64 run_dsysv_test(dsysv_fixture_t* fix, int imat, const char* uplo)
     memcpy(fix->X, fix->B, fix->lda * fix->nrhs * sizeof(f64));
 
     /* Call dsysv */
-    int lwork = fix->n * 64;
+    INT lwork = fix->n * 64;
     dsysv(uplo, fix->n, fix->nrhs, fix->AFAC, fix->lda, fix->ipiv,
           fix->X, fix->lda, fix->work, lwork, &info);
     assert_info_success(info);
@@ -208,7 +194,7 @@ static f64 run_dsysv_test(dsysv_fixture_t* fix, int imat, const char* uplo)
 static void test_dsysv_upper(void** state)
 {
     dsysv_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dsysv_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -221,7 +207,7 @@ static void test_dsysv_upper(void** state)
 static void test_dsysv_lower(void** state)
 {
     dsysv_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dsysv_test(fix, imat, "L");
         assert_residual_ok(resid);

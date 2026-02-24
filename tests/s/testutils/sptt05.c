@@ -7,8 +7,8 @@
  */
 
 #include "semicolon_lapack_single.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 
 /**
@@ -41,16 +41,16 @@
  * @param[out]    reslts  Array of length 2 with test results.
  */
 void sptt05(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* const restrict D,
     const f32* const restrict E,
     const f32* const restrict B,
-    const int ldb,
+    const INT ldb,
     const f32* const restrict X,
-    const int ldx,
+    const INT ldx,
     const f32* const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f32* const restrict FERR,
     const f32* const restrict BERR,
     f32* const restrict reslts)
@@ -68,17 +68,17 @@ void sptt05(
     f32 eps = slamch("E");
     f32 unfl = slamch("S");
     f32 ovfl = ONE / unfl;
-    int nz = 4;
+    INT nz = 4;
 
     /* Test 1: Compute the maximum of
        norm(X - XACT) / ( norm(X) * FERR )
        over all the vectors X and XACT using the infinity-norm. */
     f32 errbnd = ZERO;
-    for (int j = 0; j < nrhs; j++) {
-        int imax = cblas_isamax(n, &X[j * ldx], 1);
+    for (INT j = 0; j < nrhs; j++) {
+        INT imax = cblas_isamax(n, &X[j * ldx], 1);
         f32 xnorm = fmaxf(fabsf(X[imax + j * ldx]), unfl);
         f32 diff = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             diff = fmaxf(diff, fabsf(X[i + j * ldx] - XACT[i + j * ldxact]));
         }
 
@@ -101,14 +101,14 @@ void sptt05(
 
     /* Test 2: Compute the maximum of BERR / ( NZ*EPS + (*) ), where
        (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i ) */
-    for (int k = 0; k < nrhs; k++) {
+    for (INT k = 0; k < nrhs; k++) {
         f32 axbi;
         if (n == 1) {
             axbi = fabsf(B[k * ldb]) + fabsf(D[0] * X[k * ldx]);
         } else {
             axbi = fabsf(B[k * ldb]) + fabsf(D[0] * X[k * ldx]) +
                    fabsf(E[0] * X[1 + k * ldx]);
-            for (int i = 1; i < n - 1; i++) {
+            for (INT i = 1; i < n - 1; i++) {
                 f32 tmp = fabsf(B[i + k * ldb]) +
                             fabsf(E[i - 1] * X[i - 1 + k * ldx]) +
                             fabsf(D[i] * X[i + k * ldx]) +

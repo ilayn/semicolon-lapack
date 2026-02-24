@@ -22,48 +22,24 @@
 /* Test threshold - matches LAPACK dchkhs.f */
 #define THRESH 30.0
 
-#include <cblas.h>
 #include "test_rng.h"
 #include "verify.h"
 
 /* Routine under test */
-extern void dtrevc(const char* side, const char* howmny, int* select,
-                   const int n, const f64* T, const int ldt,
-                   f64* VL, const int ldvl, f64* VR, const int ldvr,
-                   const int mm, int* m, f64* work, int* info);
-
 /* Utilities */
-extern f64 dlamch(const char* cmach);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-
 /* Reference LAPACK for Schur decomposition (from OpenBLAS) */
-extern void dgehrd_(const int* n, const int* ilo, const int* ihi,
-                    f64* A, const int* lda, f64* tau,
-                    f64* work, const int* lwork, int* info);
-extern void dorghr_(const int* n, const int* ilo, const int* ihi,
-                    f64* A, const int* lda, const f64* tau,
-                    f64* work, const int* lwork, int* info);
-extern void dhseqr_(const char* job, const char* compz, const int* n,
-                    const int* ilo, const int* ihi, f64* H, const int* ldh,
-                    f64* wr, f64* wi, f64* Z, const int* ldz,
-                    f64* work, const int* lwork, int* info);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
+    INT n;
     f64* T;       /* Schur form matrix */
     f64* VR;      /* Right eigenvectors */
     f64* VL;      /* Left eigenvectors */
     f64* wr;      /* Real parts of eigenvalues */
     f64* wi;      /* Imaginary parts of eigenvalues */
     f64* work;    /* Workspace */
-    int* select;     /* Selection array */
+    INT* select;     /* Selection array */
     uint64_t rng_state[4]; /* RNG state */
 } dtrevc_fixture_t;
 
@@ -72,7 +48,7 @@ static uint64_t g_seed = 2024;
 /**
  * Setup fixture
  */
-static int dtrevc_setup(void** state, int n)
+static int dtrevc_setup(void** state, INT n)
 {
     dtrevc_fixture_t* fix = malloc(sizeof(dtrevc_fixture_t));
     assert_non_null(fix);
@@ -87,7 +63,7 @@ static int dtrevc_setup(void** state, int n)
     fix->wr = malloc(n * sizeof(f64));
     fix->wi = malloc(n * sizeof(f64));
     fix->work = malloc((n * (n + 1) + 10 * n) * sizeof(f64));
-    fix->select = malloc(n * sizeof(int));
+    fix->select = malloc(n * sizeof(INT));
 
     assert_non_null(fix->T);
     assert_non_null(fix->VR);
@@ -137,15 +113,15 @@ static int setup_20(void** state) { return dtrevc_setup(state, 20); }
  * - 2x2 blocks for complex conjugate pairs
  * - Random values in the strictly upper triangular part
  */
-static void generate_schur_matrix(f64* T, int n, f64* wr, f64* wi,
+static void generate_schur_matrix(f64* T, INT n, f64* wr, f64* wi,
                                   uint64_t state[static 4])
 {
     /* Initialize to zero */
-    for (int i = 0; i < n * n; i++)
+    for (INT i = 0; i < n * n; i++)
         T[i] = 0.0;
 
     /* Place eigenvalues on diagonal - mix of real and complex */
-    int j = 0;
+    INT j = 0;
     while (j < n) {
         f64 u = rng_uniform(state);
 
@@ -185,8 +161,8 @@ static void generate_schur_matrix(f64* T, int n, f64* wr, f64* wi,
      * - Don't modify T(j, j+1) if it's the superdiagonal of a 2x2 block
      * A 2x2 block is identified by T(j+1, j) != 0
      */
-    for (int col = 0; col < n; col++) {
-        for (int row = 0; row < col; row++) {
+    for (INT col = 0; col < n; col++) {
+        for (INT row = 0; row < col; row++) {
             /* Check if (row, col) is within a 2x2 block */
             /* Case 1: row is first row of 2x2 block and col = row+1 (superdiagonal) */
             if (row + 1 < n && T[row + 1 + row * n] != 0.0 && col == row + 1) {
@@ -207,8 +183,8 @@ static void generate_schur_matrix(f64* T, int n, f64* wr, f64* wi,
 static void test_right_eigenvectors(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
     f64 result[2];
 
     /* Generate Schur matrix */
@@ -236,8 +212,8 @@ static void test_right_eigenvectors(void** state)
 static void test_left_eigenvectors(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
     f64 result[2];
 
     /* Generate Schur matrix */
@@ -265,8 +241,8 @@ static void test_left_eigenvectors(void** state)
 static void test_both_eigenvectors(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
     f64 result[2];
 
     /* Generate Schur matrix */
@@ -298,8 +274,8 @@ static void test_both_eigenvectors(void** state)
 static void test_selected_eigenvectors(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
 
     if (n < 3) {
         skip_test("n too small for selection test");
@@ -310,15 +286,15 @@ static void test_selected_eigenvectors(void** state)
     generate_schur_matrix(fix->T, n, fix->wr, fix->wi, fix->rng_state);
 
     /* Select every other eigenvalue (respecting complex pairs) */
-    int nselected = 0;
-    for (int j = 0; j < n; j++) {
+    INT nselected = 0;
+    for (INT j = 0; j < n; j++) {
         if (fix->wi[j] == 0.0) {
             /* Real eigenvalue */
             fix->select[j] = (j % 2 == 0);
             if (fix->select[j]) nselected++;
         } else if (fix->wi[j] > 0.0) {
             /* First of complex pair - select both or neither */
-            int sel = (j % 3 == 0);
+            INT sel = (j % 3 == 0);
             fix->select[j] = sel;
             fix->select[j + 1] = 0;  /* Will be set to 0 by dtrevc */
             if (sel) nselected += 2;
@@ -349,8 +325,8 @@ static void test_selected_eigenvectors(void** state)
 static void test_backtransform(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
     f64 result[2];
 
     /* Generate Schur matrix */
@@ -381,15 +357,15 @@ static void test_backtransform(void** state)
 static void test_diagonal_matrix(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
     f64 result[2];
 
     /* Create diagonal matrix */
-    for (int i = 0; i < n * n; i++)
+    for (INT i = 0; i < n * n; i++)
         fix->T[i] = 0.0;
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         fix->T[i + i * n] = (f64)(i + 1);  /* Eigenvalues 1, 2, ..., n */
         fix->wr[i] = (f64)(i + 1);
         fix->wi[i] = 0.0;
@@ -414,8 +390,8 @@ static void test_diagonal_matrix(void** state)
 static void test_all_complex_eigenvalues(void** state)
 {
     dtrevc_fixture_t* fix = *state;
-    int n = fix->n;
-    int info, m;
+    INT n = fix->n;
+    INT info, m;
     f64 result[2];
 
     if (n % 2 != 0) {
@@ -424,10 +400,10 @@ static void test_all_complex_eigenvalues(void** state)
     }
 
     /* Create matrix with only complex eigenvalue pairs */
-    for (int i = 0; i < n * n; i++)
+    for (INT i = 0; i < n * n; i++)
         fix->T[i] = 0.0;
 
-    for (int j = 0; j < n; j += 2) {
+    for (INT j = 0; j < n; j += 2) {
         f64 real_part = (f64)(j + 1);
         f64 imag_part = 0.5;
 

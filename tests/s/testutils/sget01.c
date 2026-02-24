@@ -4,18 +4,9 @@
  *        computes the residual.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32 * const restrict A, const int lda,
-                     f32 * const restrict work);
-extern void slaswp(const int n, f32 * const restrict A, const int lda,
-                   const int k1, const int k2,
-                   const int * const restrict ipiv, const int incx);
 
 /**
  * SGET01 reconstructs a matrix A from its L*U factorization and
@@ -41,22 +32,22 @@ extern void slaswp(const int n, f32 * const restrict A, const int lda,
  * @param[out]    resid   norm(L*U - A) / ( N * norm(A) * EPS )
  */
 void sget01(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f32 * const restrict A,
-    const int lda,
+    const INT lda,
     f32 * const restrict AFAC,
-    const int ldafac,
-    const int * const restrict ipiv,
+    const INT ldafac,
+    const INT* const restrict ipiv,
     f32 * const restrict rwork,
     f32 *resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, k;
+    INT i, j, k;
     f32 anorm, eps, t;
-    int minmn;
+    INT minmn;
 
     // Quick exit if m = 0 or n = 0
     if (m <= 0 || n <= 0) {

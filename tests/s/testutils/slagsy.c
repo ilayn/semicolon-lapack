@@ -8,13 +8,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
-extern f32 slamch(const char* cmach);
 
 /**
  * SLAGSY generates a real symmetric matrix A, by pre- and post-
@@ -48,20 +45,20 @@ extern f32 slamch(const char* cmach);
  *     < 0: if info = -i, the i-th argument had an illegal value
  */
 void slagsy(
-    const int n,
-    const int k,
+    const INT n,
+    const INT k,
     const f32* d,
     f32* A,
-    const int lda,
+    const INT lda,
     f32* work,
-    int* info,
+    INT* info,
     uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
 
-    int i, j;
+    INT i, j;
     f32 alpha, tau, wa, wb, wn;
     f32 safmin = slamch("S");
 
@@ -92,7 +89,7 @@ void slagsy(
     /* Generate lower triangle of symmetric matrix */
     for (i = n - 2; i >= 0; i--) {
         /* Generate random reflection */
-        int len = n - i;
+        INT len = n - i;
         for (j = 0; j < len; j++) {
             work[j] = rng_normal_f32(state);
         }
@@ -125,7 +122,7 @@ void slagsy(
     /* Reduce number of subdiagonals to k */
     for (i = 0; i < n - 1 - k; i++) {
         /* Generate reflection to annihilate A(k+i+1:n-1, i) */
-        int len = n - k - i;
+        INT len = n - k - i;
         wn = cblas_snrm2(len, &A[k + i + i * lda], 1);
         wa = (A[k + i + i * lda] >= 0.0f) ? wn : -wn;
         if (wn < safmin) {

@@ -15,30 +15,24 @@
 
 typedef float f32;
 
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void sgebal(const char* job, const int n, f32* A, const int lda,
-                   int* ilo, int* ihi, f32* scale, int* info);
-
 #define LDA 20
 
 /* ---------- helpers ---------- */
 
-static void rowmajor_to_colmajor(const f32* rm, f32* cm, int n, int ld)
+static void rowmajor_to_colmajor(const f32* rm, f32* cm, INT n, INT ld)
 {
     memset(cm, 0, (size_t)ld * n * sizeof(f32));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ld] = rm[i * n + j];
 }
 
 /* ---------- test case data from TESTING/dbal.in ---------- */
 
 typedef struct {
-    int n;
-    int iloin;
-    int ihiin;
+    INT n;
+    INT iloin;
+    INT ihiin;
     const f32* a_rm;
     const f32* ain_rm;
     const f32* scalin;
@@ -301,16 +295,16 @@ static void test_dgebal(void** state)
 
     f32 a[LDA * LDA], ain[LDA * LDA];
     f32 scale[LDA];
-    int ilo, ihi, info;
+    INT ilo, ihi, info;
     f32 rmax = 0.0f, vmax;
-    int ninfo = 0, knt = 0;
-    int lmax_info = 0, lmax_idx = 0, lmax_resid = 0;
+    INT ninfo = 0, knt = 0;
+    INT lmax_info = 0, lmax_idx = 0, lmax_resid = 0;
 
-    for (int tc = 0; tc < NCASES; tc++) {
+    for (INT tc = 0; tc < NCASES; tc++) {
         const dbal_case_t* c = &cases[tc];
-        int n = c->n;
-        int iloin = c->iloin;
-        int ihiin = c->ihiin;
+        INT n = c->n;
+        INT iloin = c->iloin;
+        INT ihiin = c->ihiin;
 
         rowmajor_to_colmajor(c->a_rm, a, n, LDA);
         rowmajor_to_colmajor(c->ain_rm, ain, n, LDA);
@@ -333,8 +327,8 @@ static void test_dgebal(void** state)
 
         /* Compare balanced matrix */
         vmax = 0.0f;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 f32 aij = a[i + j * LDA];
                 f32 ainij = ain[i + j * LDA];
                 f32 temp = fabsf(aij);
@@ -346,7 +340,7 @@ static void test_dgebal(void** state)
         }
 
         /* Compare scale factors */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 si = scale[i];
             f32 ei = c->scalin[i];
             f32 temp = fabsf(si);

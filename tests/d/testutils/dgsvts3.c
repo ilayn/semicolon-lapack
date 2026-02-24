@@ -4,31 +4,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
-                    const int m, const int n, const int p,
-                    int* k, int* l,
-                    f64* A, const int lda,
-                    f64* B, const int ldb,
-                    f64* alpha, f64* beta,
-                    f64* U, const int ldu,
-                    f64* V, const int ldv,
-                    f64* Q, const int ldq,
-                    f64* work, const int lwork,
-                    int* iwork, int* info);
 
 /**
  * DGSVTS3 tests DGGSVD3, which computes the GSVD of an M-by-N matrix A
@@ -66,24 +43,24 @@ extern void dggsvd3(const char* jobu, const char* jobv, const char* jobq,
  *                        result[4] = norm(I - Q'*Q) / (n*ulp)
  *                        result[5] = 0 if alpha is in decreasing order, ulpinv otherwise
  */
-void dgsvts3(const int m, const int p, const int n,
-             const f64* A, f64* AF, const int lda,
-             const f64* B, f64* BF, const int ldb,
-             f64* U, const int ldu,
-             f64* V, const int ldv,
-             f64* Q, const int ldq,
+void dgsvts3(const INT m, const INT p, const INT n,
+             const f64* A, f64* AF, const INT lda,
+             const f64* B, f64* BF, const INT ldb,
+             f64* U, const INT ldu,
+             f64* V, const INT ldv,
+             f64* Q, const INT ldq,
              f64* alpha, f64* beta,
-             f64* R, const int ldr,
-             int* iwork,
-             f64* work, const int lwork,
+             f64* R, const INT ldr,
+             INT* iwork,
+             f64* work, const INT lwork,
              f64* rwork,
              f64* result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k, l, info;
-    int minval;
+    INT i, j, k, l, info;
+    INT minval;
     f64 anorm, bnorm, resid, temp, ulp, ulpinv, unfl;
 
     ulp = dlamch("P");
@@ -140,7 +117,7 @@ void dgsvts3(const int m, const int p, const int n,
 
     resid = dlange("1", m, n, AF, lda, rwork);
     if (anorm > ZERO) {
-        int maxmn = (m > n) ? m : n;
+        INT maxmn = (m > n) ? m : n;
         if (maxmn < 1) maxmn = 1;
         result[0] = ((resid / (f64)maxmn) / anorm) / ulp;
     } else {
@@ -161,7 +138,7 @@ void dgsvts3(const int m, const int p, const int n,
 
     resid = dlange("1", p, n, BF, ldb, rwork);
     if (bnorm > ZERO) {
-        int maxpn = (p > n) ? p : n;
+        INT maxpn = (p > n) ? p : n;
         if (maxpn < 1) maxpn = 1;
         result[1] = ((resid / (f64)maxpn) / bnorm) / ulp;
     } else {

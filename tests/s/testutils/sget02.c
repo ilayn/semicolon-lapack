@@ -4,15 +4,9 @@
  *        equations.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32 * const restrict A, const int lda,
-                     f32 * const restrict work);
 
 /**
  * SGET02 computes the residual for a solution of a system of linear
@@ -50,24 +44,24 @@ extern f32 slange(const char* norm, const int m, const int n,
  */
 void sget02(
     const char* trans,
-    const int m,
-    const int n,
-    const int nrhs,
+    const INT m,
+    const INT n,
+    const INT nrhs,
     const f32 * const restrict A,
-    const int lda,
+    const INT lda,
     const f32 * const restrict X,
-    const int ldx,
+    const INT ldx,
     f32 * const restrict B,
-    const int ldb,
+    const INT ldb,
     f32 * const restrict rwork,
     f32 *resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int j, n1, n2;
+    INT j, n1, n2;
     f32 anorm, bnorm, eps, xnorm;
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
 
     // Quick exit if m = 0 or n = 0 or nrhs = 0
     if (m <= 0 || n <= 0 || nrhs == 0) {

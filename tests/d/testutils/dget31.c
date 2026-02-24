@@ -7,13 +7,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f64 dlamch(const char* cmach);
-extern void dlaln2(const int ltrans, const int na, const int nw,
-                   const f64 smin, const f64 ca, const f64* A, const int lda,
-                   const f64 d1, const f64 d2, const f64* B, const int ldb,
-                   const f64 wr, const f64 wi, f64* X, const int ldx,
-                   f64* scale, f64* xnorm, int* info);
-
 /**
  * DGET31 tests DLALN2, a routine for solving
  *
@@ -31,7 +24,7 @@ extern void dlaln2(const int ltrans, const int na, const int nw,
  * @param[out]    ninfo   Number of examples with INFO < 0 (ninfo[0]) and > 0 (ninfo[1]).
  * @param[out]    knt     Total number of examples tested.
  */
-void dget31(f64* rmax, int* lmax, int ninfo[2], int* knt)
+void dget31(f64* rmax, INT* lmax, INT ninfo[2], INT* knt)
 {
     const f64 ZERO  = 0.0;
     const f64 HALF  = 0.5;
@@ -82,25 +75,25 @@ void dget31(f64* rmax, int* lmax, int ninfo[2], int* knt)
 
     f64 a[2 * 2], b[2 * 2], x[2 * 2];
     f64 d1, d2, ca, smin, wr, wi, scale, xnorm, res, den, tmp;
-    int na, nw, info;
+    INT na, nw, info;
 
-    for (int id1 = 0; id1 < 4; id1++) {
+    for (INT id1 = 0; id1 < 4; id1++) {
         d1 = vdd[id1];
-        for (int id2 = 0; id2 < 4; id2++) {
+        for (INT id2 = 0; id2 < 4; id2++) {
             d2 = vdd[id2];
-            for (int ica = 0; ica < 5; ica++) {
+            for (INT ica = 0; ica < 5; ica++) {
                 ca = vca[ica];
-                for (int itrans = 0; itrans <= 1; itrans++) {
-                    for (int ismin = 0; ismin < 4; ismin++) {
+                for (INT itrans = 0; itrans <= 1; itrans++) {
+                    for (INT ismin = 0; ismin < 4; ismin++) {
                         smin = vsmin[ismin];
 
                         na = 1;
                         nw = 1;
-                        for (int ia = 0; ia < 3; ia++) {
+                        for (INT ia = 0; ia < 3; ia++) {
                             a[0] = vab[ia];
-                            for (int ib = 0; ib < 3; ib++) {
+                            for (INT ib = 0; ib < 3; ib++) {
                                 b[0] = vab[ib];
-                                for (int iwr = 0; iwr < 4; iwr++) {
+                                for (INT iwr = 0; iwr < 4; iwr++) {
                                     if (d1 == ONE && d2 == ONE && ca == ONE) {
                                         wr = vwr[iwr] * a[0];
                                     } else {
@@ -147,18 +140,18 @@ void dget31(f64* rmax, int* lmax, int ninfo[2], int* knt)
 
                         na = 1;
                         nw = 2;
-                        for (int ia = 0; ia < 3; ia++) {
+                        for (INT ia = 0; ia < 3; ia++) {
                             a[0] = vab[ia];
-                            for (int ib = 0; ib < 3; ib++) {
+                            for (INT ib = 0; ib < 3; ib++) {
                                 b[0] = vab[ib];
                                 b[0 + 1 * 2] = -HALF * vab[ib];
-                                for (int iwr = 0; iwr < 4; iwr++) {
+                                for (INT iwr = 0; iwr < 4; iwr++) {
                                     if (d1 == ONE && d2 == ONE && ca == ONE) {
                                         wr = vwr[iwr] * a[0];
                                     } else {
                                         wr = vwr[iwr];
                                     }
-                                    for (int iwi = 0; iwi < 4; iwi++) {
+                                    for (INT iwi = 0; iwi < 4; iwi++) {
                                         if (d1 == ONE && d2 == ONE &&
                                             ca == ONE) {
                                             wi = vwi[iwi] * a[0];
@@ -217,15 +210,15 @@ void dget31(f64* rmax, int* lmax, int ninfo[2], int* knt)
 
                         na = 2;
                         nw = 1;
-                        for (int ia = 0; ia < 3; ia++) {
+                        for (INT ia = 0; ia < 3; ia++) {
                             a[0]         = vab[ia];
                             a[0 + 1 * 2] = -THREE * vab[ia];
                             a[1]         = -SEVEN * vab[ia];
                             a[1 + 1 * 2] = TWNONE * vab[ia];
-                            for (int ib = 0; ib < 3; ib++) {
+                            for (INT ib = 0; ib < 3; ib++) {
                                 b[0] = vab[ib];
                                 b[1] = -TWO * vab[ib];
-                                for (int iwr = 0; iwr < 4; iwr++) {
+                                for (INT iwr = 0; iwr < 4; iwr++) {
                                     if (d1 == ONE && d2 == ONE && ca == ONE) {
                                         wr = vwr[iwr] * a[0];
                                     } else {
@@ -301,23 +294,23 @@ void dget31(f64* rmax, int* lmax, int ninfo[2], int* knt)
 
                         na = 2;
                         nw = 2;
-                        for (int ia = 0; ia < 3; ia++) {
+                        for (INT ia = 0; ia < 3; ia++) {
                             a[0]         = TWO * vab[ia];
                             a[0 + 1 * 2] = -THREE * vab[ia];
                             a[1]         = -SEVEN * vab[ia];
                             a[1 + 1 * 2] = TWNONE * vab[ia];
-                            for (int ib = 0; ib < 3; ib++) {
+                            for (INT ib = 0; ib < 3; ib++) {
                                 b[0]         = vab[ib];
                                 b[1]         = -TWO * vab[ib];
                                 b[0 + 1 * 2] = FOUR * vab[ib];
                                 b[1 + 1 * 2] = -SEVEN * vab[ib];
-                                for (int iwr = 0; iwr < 4; iwr++) {
+                                for (INT iwr = 0; iwr < 4; iwr++) {
                                     if (d1 == ONE && d2 == ONE && ca == ONE) {
                                         wr = vwr[iwr] * a[0];
                                     } else {
                                         wr = vwr[iwr];
                                     }
-                                    for (int iwi = 0; iwi < 4; iwi++) {
+                                    for (INT iwi = 0; iwi < 4; iwi++) {
                                         if (d1 == ONE && d2 == ONE &&
                                             ca == ONE) {
                                             wi = vwi[iwi] * a[0];

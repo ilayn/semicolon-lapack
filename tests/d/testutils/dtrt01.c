@@ -6,15 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const f64* A, const int lda,
-                     f64* work);
-
 /**
  * DTRT01 computes the residual for a triangular matrix A times its inverse:
  *    RESID = norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS),
@@ -32,14 +27,14 @@ extern f64 dlantr(const char* norm, const char* uplo, const char* diag,
  * @param[out]    work    Array (n). Workspace.
  * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
  */
-void dtrt01(const char* uplo, const char* diag, const int n,
-            const f64* A, const int lda,
-            f64* AINV, const int ldainv,
+void dtrt01(const char* uplo, const char* diag, const INT n,
+            const f64* A, const INT lda,
+            f64* AINV, const INT ldainv,
             f64* rcond, f64* work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int j;
+    INT j;
     f64 ainvnm, anorm, eps;
 
     /* Quick exit if N = 0 */

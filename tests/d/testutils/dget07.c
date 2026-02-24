@@ -3,13 +3,10 @@
  * @brief DGET07 tests the error bounds from iterative refinement.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include <stdbool.h>
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
 
 /**
  * DGET07 tests the error bounds from iterative refinement for the
@@ -66,27 +63,27 @@ extern f64 dlamch(const char* cmach);
  */
 void dget07(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64 * const restrict A,
-    const int lda,
+    const INT lda,
     const f64 * const restrict B,
-    const int ldb,
+    const INT ldb,
     const f64 * const restrict X,
-    const int ldx,
+    const INT ldx,
     const f64 * const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f64 * const restrict ferr,
-    const int chkferr,
+    const INT chkferr,
     const f64 * const restrict berr,
     f64 * const restrict reslts)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, imax, j, k;
+    INT i, imax, j, k;
     f64 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
 
     // Quick exit if n = 0 or nrhs = 0
     if (n <= 0 || nrhs <= 0) {

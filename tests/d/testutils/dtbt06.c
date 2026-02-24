@@ -9,11 +9,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int kd, const f64* AB, const int ldab,
-                     f64* work);
-
 /**
  * DTBT06 computes a test ratio comparing RCOND (the reciprocal
  * condition number of a triangular matrix A) and RCONDC, the estimate
@@ -44,8 +39,8 @@ extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
  *                        If RAT = 0, the two estimates are exactly the same.
  */
 void dtbt06(const f64 rcond, const f64 rcondc,
-            const char* uplo, const char* diag, const int n, const int kd,
-            const f64* AB, const int ldab, f64* work, f64* rat)
+            const char* uplo, const char* diag, const INT n, const INT kd,
+            const f64* AB, const INT ldab, f64* work, f64* rat)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;

@@ -14,30 +14,22 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void dgetc2(const int n, f64 * const restrict A, const int lda,
-                   int * const restrict ipiv, int * const restrict jpiv, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-extern f64 dlange(const char *norm, const int m, const int n,
-                     const f64 * const restrict A, const int lda,
-                     f64 * const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64 *A;       /* Factored matrix (overwritten by dgetc2) */
     f64 *A_orig;  /* Original matrix */
     f64 *d;       /* Singular values for dlatms */
     f64 *work;    /* Workspace */
-    int *ipiv;       /* Row pivot indices */
-    int *jpiv;       /* Column pivot indices */
+    INT* ipiv;       /* Row pivot indices */
+    INT* jpiv;       /* Column pivot indices */
     uint64_t seed;
 } dgetc2_fixture_t;
 
@@ -46,16 +38,16 @@ static uint64_t g_seed = 1729;
 /**
  * Apply row permutation to matrix.
  */
-static void apply_row_perm(int n, f64 *A, int lda, const int *ipiv, int dir)
+static void apply_row_perm(INT n, f64 *A, INT lda, const INT* ipiv, INT dir)
 {
     if (dir > 0) {
-        for (int i = 0; i < n - 1; i++) {
+        for (INT i = 0; i < n - 1; i++) {
             if (ipiv[i] != i) {
                 cblas_dswap(n, &A[i], lda, &A[ipiv[i]], lda);
             }
         }
     } else {
-        for (int i = n - 2; i >= 0; i--) {
+        for (INT i = n - 2; i >= 0; i--) {
             if (ipiv[i] != i) {
                 cblas_dswap(n, &A[i], lda, &A[ipiv[i]], lda);
             }
@@ -66,16 +58,16 @@ static void apply_row_perm(int n, f64 *A, int lda, const int *ipiv, int dir)
 /**
  * Apply column permutation to matrix.
  */
-static void apply_col_perm(int n, f64 *A, int lda, const int *jpiv, int dir)
+static void apply_col_perm(INT n, f64 *A, INT lda, const INT* jpiv, INT dir)
 {
     if (dir > 0) {
-        for (int j = 0; j < n - 1; j++) {
+        for (INT j = 0; j < n - 1; j++) {
             if (jpiv[j] != j) {
                 cblas_dswap(n, &A[j * lda], 1, &A[jpiv[j] * lda], 1);
             }
         }
     } else {
-        for (int j = n - 2; j >= 0; j--) {
+        for (INT j = n - 2; j >= 0; j--) {
             if (jpiv[j] != j) {
                 cblas_dswap(n, &A[j * lda], 1, &A[jpiv[j] * lda], 1);
             }
@@ -87,8 +79,8 @@ static void apply_col_perm(int n, f64 *A, int lda, const int *jpiv, int dir)
  * Verify LU factorization with complete pivoting.
  * Computes ||P*L*U*Q - A|| / (n * ||A|| * eps)
  */
-static f64 verify_lu(int n, const f64 *A_orig, const f64 *LU,
-                        int lda, const int *ipiv, const int *jpiv)
+static f64 verify_lu(INT n, const f64 *A_orig, const f64 *LU,
+                        INT lda, const INT* ipiv, const INT* jpiv)
 {
     f64 eps = dlamch("E");
     f64 *lwork = malloc(n * sizeof(f64));
@@ -104,16 +96,16 @@ static f64 verify_lu(int n, const f64 *A_orig, const f64 *LU,
     assert_non_null(PLUQ);
 
     /* Extract L (unit lower triangular) */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         L[j + j * n] = 1.0;
-        for (int i = j + 1; i < n; i++) {
+        for (INT i = j + 1; i < n; i++) {
             L[i + j * n] = LU[i + j * lda];
         }
     }
 
     /* Extract U (upper triangular) */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i <= j; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i <= j; i++) {
             U[i + j * n] = LU[i + j * lda];
         }
     }
@@ -130,8 +122,8 @@ static f64 verify_lu(int n, const f64 *A_orig, const f64 *LU,
     apply_col_perm(n, PLUQ, n, jpiv, -1);
 
     /* Compute PLUQ - A */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             PLUQ[i + j * n] -= A_orig[i + j * lda];
         }
     }
@@ -156,7 +148,7 @@ static f64 verify_lu(int n, const f64 *A_orig, const f64 *LU,
     return resid;
 }
 
-static int dgetc2_setup(void **state, int n)
+static int dgetc2_setup(void **state, INT n)
 {
     dgetc2_fixture_t *fix = malloc(sizeof(dgetc2_fixture_t));
     assert_non_null(fix);
@@ -169,8 +161,8 @@ static int dgetc2_setup(void **state, int n)
     fix->A_orig = malloc(fix->lda * n * sizeof(f64));
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(3 * n * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
-    fix->jpiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
+    fix->jpiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_orig);
@@ -207,12 +199,12 @@ static int setup_8(void **state) { return dgetc2_setup(state, 8); }
 /**
  * Core test logic: generate matrix, factorize, verify.
  */
-static f64 run_dgetc2_test(dgetc2_fixture_t *fix, int imat)
+static f64 run_dgetc2_test(dgetc2_fixture_t *fix, INT imat)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
 
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -240,7 +232,7 @@ static void test_dgetc2_wellcond(void **state)
     dgetc2_fixture_t *fix = *state;
     f64 resid;
 
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         resid = run_dgetc2_test(fix, imat);
         assert_residual_ok(resid);
@@ -265,19 +257,19 @@ static void test_dgetc2_identity(void **state)
 {
     (void)state;
 
-    int n = 4;
+    INT n = 4;
     f64 *A = calloc(n * n, sizeof(f64));
     f64 *A_orig = calloc(n * n, sizeof(f64));
-    int *ipiv = malloc(n * sizeof(int));
-    int *jpiv = malloc(n * sizeof(int));
-    int info;
+    INT* ipiv = malloc(n * sizeof(INT));
+    INT* jpiv = malloc(n * sizeof(INT));
+    INT info;
 
     assert_non_null(A);
     assert_non_null(A_orig);
     assert_non_null(ipiv);
     assert_non_null(jpiv);
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         A[i + i * n] = 1.0;
         A_orig[i + i * n] = 1.0;
     }
@@ -304,8 +296,8 @@ static void test_dgetc2_simple(void **state)
     f64 A_orig[9];
     memcpy(A_orig, A, 9 * sizeof(f64));
 
-    int ipiv[3], jpiv[3];
-    int info;
+    INT ipiv[3], jpiv[3];
+    INT info;
 
     dgetc2(3, A, 3, ipiv, jpiv, &info);
 

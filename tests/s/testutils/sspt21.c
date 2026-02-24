@@ -8,22 +8,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f32 slamch(const char* cmach);
-extern f32 slansp(const char* norm, const char* uplo, const int n,
-                     const f32* AP, f32* work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void sopmtr(const char* side, const char* uplo, const char* trans,
-                   const int m, const int n, const f32* AP, const f32* tau,
-                   f32* C, const int ldc, f32* work, int* info);
 
 /**
  * SSPT21 generally checks a decomposition of the form
@@ -62,9 +48,9 @@ extern void sopmtr(const char* side, const char* uplo, const char* trans,
  * @param[out]    work   Workspace, dimension (n*n + n).
  * @param[out]    result Test ratios, dimension (2). result[1] only set if itype=1.
  */
-void sspt21(const int itype, const char* uplo, const int n, const int kband,
+void sspt21(const INT itype, const char* uplo, const INT n, const INT kband,
             const f32* AP, const f32* D, const f32* E,
-            const f32* U, const int ldu,
+            const f32* U, const INT ldu,
             f32* VP, const f32* tau,
             f32* work, f32* result)
 {
@@ -73,9 +59,9 @@ void sspt21(const int itype, const char* uplo, const int n, const int kband,
     const f32 TEN = 10.0f;
     const f32 HALF = 0.5f;
 
-    int lower;
+    INT lower;
     char cuplo;
-    int iinfo, j, jp, jp1, jr, lap;
+    INT iinfo, j, jp, jp1, jr, lap;
     f32 anorm, temp, ulp, unfl, vsave, wnorm;
 
     /* 1) Constants */

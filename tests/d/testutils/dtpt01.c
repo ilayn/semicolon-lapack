@@ -7,14 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const f64* AP, f64* work);
-
 /**
  * DTPT01 computes the residual for a triangular matrix A times its inverse
  * when A is stored in packed format:
@@ -31,15 +27,15 @@ extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
  * @param[out]    work    Array (n). Workspace.
  * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
  */
-void dtpt01(const char* uplo, const char* diag, const int n,
+void dtpt01(const char* uplo, const char* diag, const INT n,
             const f64* AP, f64* AINVP,
             f64* rcond, f64* work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int j, jc;
+    INT j, jc;
     f64 ainvnm, anorm, eps;
-    int unitd;
+    INT unitd;
 
     /* Quick exit if N = 0 */
     if (n <= 0) {

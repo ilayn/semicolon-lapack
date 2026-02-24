@@ -4,10 +4,10 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
 #include <math.h>
 
 #define NMAX    50
@@ -21,82 +21,16 @@
 #define LDAB_MAX  (NMAX + (NMAX + 1) / 4 + 1)
 
 /* Routines under test */
-extern void dpbsv(const char* uplo, const int n, const int kd, const int nrhs,
-                  f64* AB, const int ldab, f64* B, const int ldb, int* info);
-extern void dpbsvx(const char* fact, const char* uplo, const int n, const int kd,
-                   const int nrhs, f64* AB, const int ldab,
-                   f64* AFB, const int ldafb, char* equed, f64* S,
-                   f64* B, const int ldb, f64* X, const int ldx,
-                   f64* rcond, f64* ferr, f64* berr,
-                   f64* work, int* iwork, int* info);
-
 /* Supporting routines */
-extern void dpbtrf(const char* uplo, const int n, const int kd,
-                   f64* AB, const int ldab, int* info);
-extern void dpbtrs(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f64* AB, const int ldab, f64* B, const int ldb,
-                   int* info);
-extern void dpbequ(const char* uplo, const int n, const int kd,
-                   const f64* AB, const int ldab, f64* S,
-                   f64* scond, f64* amax, int* info);
-extern void dlaqsb(const char* uplo, const int n, const int kd,
-                   f64* AB, const int ldab, const f64* S,
-                   const f64 scond, const f64 amax, char* equed);
-extern f64 dlansb(const char* norm, const char* uplo, const int n,
-                     const int k, const f64* AB, const int ldab,
-                     f64* work);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlamch(const char* cmach);
-
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku,
-                   const char* pack, f64* A, const int lda,
-                   f64* work, int* info, uint64_t state[static 4]);
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n,
-                   const int kl, const int ku, const int nrhs,
-                   const f64* A, const int lda, f64* X, const int ldx,
-                   f64* B, const int ldb, int* info,
-                   uint64_t state[static 4]);
-
 /* Verification routines */
-extern void dpbt01(const char* uplo, const int n, const int kd,
-                   const f64* A, const int lda, f64* AFAC,
-                   const int ldafac, f64* rwork, f64* resid);
-extern void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f64* A, const int lda, const f64* X,
-                   const int ldx, f64* B, const int ldb,
-                   f64* rwork, f64* resid);
-extern void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
-                   const f64* AB, const int ldab,
-                   const f64* B, const int ldb,
-                   const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact,
-                   const f64* ferr, const f64* berr,
-                   f64* reslts);
-extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact, const f64 rcond,
-                   f64* resid);
-extern f64 dget06(const f64 rcond, const f64 rcondc);
-
 
 typedef struct {
-    int n;
-    int kd;
-    int imat;
-    int iuplo;
-    int ifact;
-    int iequed;
+    INT n;
+    INT kd;
+    INT imat;
+    INT iuplo;
+    INT ifact;
+    INT iequed;
     char name[96];
 } ddrvpb_params_t;
 
@@ -111,7 +45,7 @@ typedef struct {
     f64* S;
     f64* WORK;
     f64* RWORK;
-    int* IWORK;
+    INT* IWORK;
 } ddrvpb_workspace_t;
 
 static ddrvpb_workspace_t* g_workspace = NULL;
@@ -121,8 +55,8 @@ static int group_setup(void** state) {
     ddrvpb_workspace_t* ws = calloc(1, sizeof(*ws));
     if (!ws) return -1;
 
-    int band_sz = LDAB_MAX * NMAX;
-    int lwork = NMAX * NMAX;
+    INT band_sz = LDAB_MAX * NMAX;
+    INT lwork = NMAX * NMAX;
     if (lwork < NMAX * 3) lwork = NMAX * 3;
     if (lwork < NMAX * NRHS) lwork = NMAX * NRHS;
 
@@ -137,7 +71,7 @@ static int group_setup(void** state) {
     ws->S     = calloc(NMAX, sizeof(f64));
     ws->WORK  = calloc(lwork, sizeof(f64));
     ws->RWORK = calloc(NMAX + 2 * NRHS, sizeof(f64));
-    ws->IWORK = calloc(NMAX, sizeof(int));
+    ws->IWORK = calloc(NMAX, sizeof(INT));
 
     if (!ws->A || !ws->AFAC || !ws->ASAV || !ws->B || !ws->BSAV ||
         !ws->X || !ws->XACT || !ws->S || !ws->WORK || !ws->RWORK ||
@@ -169,7 +103,7 @@ static int group_teardown(void** state) {
     return 0;
 }
 
-static void get_kd_values(int n, int kdval[NBW]) {
+static void get_kd_values(INT n, INT kdval[NBW]) {
     kdval[0] = 0;
     kdval[1] = n + (n + 1) / 4;
     kdval[2] = (3 * n - 1) / 4;
@@ -177,8 +111,8 @@ static void get_kd_values(int n, int kdval[NBW]) {
 }
 
 
-static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
-                               int ifact, int iequed)
+static void run_ddrvpb_single(INT n, INT kd, INT imat, INT iuplo,
+                               INT ifact, INT iequed)
 {
     ddrvpb_workspace_t* ws = g_workspace;
     static const char* UPLOS[]  = {"U", "L"};
@@ -187,23 +121,23 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
 
     const char* uplo = UPLOS[iuplo];
     const char* fact = FACTS[ifact];
-    int prefac = (fact[0] == 'F' || fact[0] == 'f');
-    int nofact = (fact[0] == 'N' || fact[0] == 'n');
-    int equil  = (fact[0] == 'E' || fact[0] == 'e');
+    INT prefac = (fact[0] == 'F' || fact[0] == 'f');
+    INT nofact = (fact[0] == 'N' || fact[0] == 'n');
+    INT equil  = (fact[0] == 'E' || fact[0] == 'e');
 
-    int ldab = kd + 1;
-    int lda = (n > 1) ? n : 1;
-    int info;
+    INT ldab = kd + 1;
+    INT lda = (n > 1) ? n : 1;
+    INT info;
 
-    int zerot = (imat >= 2 && imat <= 4);
-    int izero = 0;
+    INT zerot = (imat >= 2 && imat <= 4);
+    INT izero = 0;
 
     f64 result[NTESTS];
-    for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Get matrix parameters from dlatb4 */
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
     dlatb4("DPB", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -213,7 +147,7 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
              + (uint64_t)iuplo * 50 + (uint64_t)imat);
 
     /* KOFF for upper triangular band packing */
-    int koff;
+    INT koff;
     char packit;
     if (iuplo == 0) {
         packit = 'Q';
@@ -241,24 +175,24 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
         else izero = n / 2 + 1;
 
         /* izero is 1-based */
-        int i1 = (izero - kd > 1) ? izero - kd : 1;
-        int i2 = (izero + kd < n) ? izero + kd : n;
+        INT i1 = (izero - kd > 1) ? izero - kd : 1;
+        INT i2 = (izero + kd < n) ? izero + kd : n;
 
         if (iuplo == 0) {
             /* Upper: zero column izero, then row izero */
-            int ioff = (izero - 1) * ldab + kd;
+            INT ioff = (izero - 1) * ldab + kd;
             /* Column: entries from row i1 to izero (column izero in upper band) */
-            for (int i = i1; i <= izero; i++)
+            for (INT i = i1; i <= izero; i++)
                 ws->A[ioff - izero + i] = 0.0;
             /* Row: entries from col izero+1 to i2 */
-            for (int i = izero + 1; i <= i2; i++)
+            for (INT i = izero + 1; i <= i2; i++)
                 ws->A[(i - 1) * ldab + kd + izero - i] = 0.0;
         } else {
             /* Lower: zero row izero (entries from col i1 to izero) */
-            for (int i = i1; i < izero; i++)
+            for (INT i = i1; i < izero; i++)
                 ws->A[(i - 1) * ldab + izero - i] = 0.0;
             /* Zero column izero (entries from row izero to i2) */
-            for (int i = izero; i <= i2; i++)
+            for (INT i = izero; i <= i2; i++)
                 ws->A[(izero - 1) * ldab + i - izero] = 0.0;
         }
     }
@@ -354,7 +288,7 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
 
             dget04(n, NRHS, ws->X, lda, ws->XACT, lda, rcondc, &result[2]);
 
-            for (int k = 0; k < 3; k++) {
+            for (INT k = 0; k < 3; k++) {
                 if (result[k] >= THRESH) {
                     char msg[256];
                     snprintf(msg, sizeof(msg),
@@ -397,7 +331,7 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
         return;
     }
 
-    int k1;
+    INT k1;
     if (info == 0) {
         if (!prefac) {
             dpbt01(uplo, n, kd, ws->A, ldab, ws->AFAC, ldab,
@@ -426,7 +360,7 @@ static void run_ddrvpb_single(int n, int kd, int imat, int iuplo,
 
     result[5] = dget06(rcond, rcondc);
 
-    for (int k = k1; k < NTESTS; k++) {
+    for (INT k = k1; k < NTESTS; k++) {
         if (result[k] >= THRESH) {
             char msg[256];
             if (prefac) {
@@ -450,40 +384,40 @@ static void test_ddrvpb_case(void** state) {
 }
 
 
-static int build_test_array(ddrvpb_params_t* params, struct CMUnitTest* tests)
+static INT build_test_array(ddrvpb_params_t* params, struct CMUnitTest* tests)
 {
-    static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-    static const int NN = sizeof(NVAL) / sizeof(NVAL[0]);
+    static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+    static const INT NN = sizeof(NVAL) / sizeof(NVAL[0]);
     static const char* FACTS[]  = {"F", "N", "E"};
     static const char* UPLOS[]  = {"U", "L"};
     static const char* EQUEDS[] = {"N", "Y"};
 
-    int idx = 0;
+    INT idx = 0;
 
-    for (int in = 0; in < NN; in++) {
-        int n = NVAL[in];
-        int nkd = (n > 4) ? 4 : ((n > 0) ? n : 1);
-        int nimat = (n <= 0) ? 1 : NTYPES;
+    for (INT in = 0; in < NN; in++) {
+        INT n = NVAL[in];
+        INT nkd = (n > 4) ? 4 : ((n > 0) ? n : 1);
+        INT nimat = (n <= 0) ? 1 : NTYPES;
 
-        int kdval[NBW];
+        INT kdval[NBW];
         get_kd_values(n, kdval);
 
-        for (int ikd = 0; ikd < nkd; ikd++) {
-            int kd = kdval[ikd];
-            int ldab = kd + 1;
+        for (INT ikd = 0; ikd < nkd; ikd++) {
+            INT kd = kdval[ikd];
+            INT ldab = kd + 1;
 
             /* Check workspace bounds */
             if ((long)ldab * n > (long)LDAB_MAX * NMAX) continue;
 
-            for (int iuplo = 0; iuplo < 2; iuplo++) {
-                for (int imat = 1; imat <= nimat; imat++) {
-                    int zerot = (imat >= 2 && imat <= 4);
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                for (INT imat = 1; imat <= nimat; imat++) {
+                    INT zerot = (imat >= 2 && imat <= 4);
                     if (zerot && n < imat - 1) continue;
 
-                    for (int iequed = 0; iequed < 2; iequed++) {
-                        int nfact = (iequed == 0) ? 3 : 1;
+                    for (INT iequed = 0; iequed < 2; iequed++) {
+                        INT nfact = (iequed == 0) ? 3 : 1;
 
-                        for (int ifact = 0; ifact < nfact; ifact++) {
+                        for (INT ifact = 0; ifact < nfact; ifact++) {
                             if (zerot && ifact == 0) continue;
 
                             if (params && tests) {
@@ -517,11 +451,11 @@ static int build_test_array(ddrvpb_params_t* params, struct CMUnitTest* tests)
 
 
 int main(void) {
-    int count = build_test_array(NULL, NULL);
+    INT count = build_test_array(NULL, NULL);
     ddrvpb_params_t* params = malloc(count * sizeof(*params));
     struct CMUnitTest* tests = malloc(count * sizeof(*tests));
     build_test_array(params, tests);
-    int result = _cmocka_run_group_tests("ddrvpb", tests, count,
+    INT result = _cmocka_run_group_tests("ddrvpb", tests, count,
                                           group_setup, group_teardown);
     free(tests);
     free(params);

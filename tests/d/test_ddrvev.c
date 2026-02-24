@@ -27,7 +27,7 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <string.h>
 
@@ -38,34 +38,21 @@
 #define MAXTYP 21
 
 /* Test dimensions from nep.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* External function declarations */
-extern void dgeev(const char* jobvl, const char* jobvr, const int n,
-                  f64* A, const int lda, f64* wr, f64* wi,
-                  f64* VL, const int ldvl, f64* VR, const int ldvr,
-                  f64* work, const int lwork, int* info);
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int n;
-    int jtype;    /* Matrix type (1-21) */
-    int iwk;      /* Workspace variant (1=minimal, 2=generous) */
+    INT n;
+    INT jtype;    /* Matrix type (1-21) */
+    INT iwk;      /* Workspace variant (1=minimal, 2=generous) */
     char name[96];
 } ddrvev_params_t;
 
 /* Workspace structure for all tests */
 typedef struct {
-    int nmax;
+    INT nmax;
 
     /* Matrices (all nmax x nmax) */
     f64* A;      /* Original matrix */
@@ -82,8 +69,8 @@ typedef struct {
 
     /* Work arrays */
     f64* work;
-    int* iwork;
-    int lwork;
+    INT* iwork;
+    INT lwork;
 
     /* Test results */
     f64 result[7];
@@ -101,10 +88,10 @@ static ddrvev_workspace_t* g_ws = NULL;
  * KMODE: 3*0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1
  * KCONDS: 3*0, 5*0, 4*1, 6*2, 3*0
  */
-static const int KTYPE[MAXTYP]  = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-static const int KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-static const int KMODE[MAXTYP]  = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-static const int KCONDS[MAXTYP] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+static const INT KTYPE[MAXTYP]  = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+static const INT KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+static const INT KMODE[MAXTYP]  = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+static const INT KCONDS[MAXTYP] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
 
 /**
  * Group setup: allocate shared workspace.
@@ -123,8 +110,8 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     /* Allocate matrices */
     g_ws->A   = malloc(n2 * sizeof(f64));
@@ -140,7 +127,7 @@ static int group_setup(void** state)
     /* Workspace: 5*N + 2*N^2 for generous allocation */
     g_ws->lwork = 5 * nmax + 2 * n2;
     g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
-    g_ws->iwork = malloc(nmax * sizeof(int));
+    g_ws->iwork = malloc(nmax * sizeof(INT));
 
     if (!g_ws->A || !g_ws->H || !g_ws->VL || !g_ws->VR || !g_ws->LRE ||
         !g_ws->WR || !g_ws->WI || !g_ws->WR1 || !g_ws->WI1 ||
@@ -182,13 +169,13 @@ static int group_teardown(void** state)
  *
  * Based on ddrvev.f lines 574-707.
  */
-static int generate_matrix(int n, int jtype, f64* A, int lda,
-                           f64* work, int* iwork, uint64_t state[static 4])
+static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
+                           f64* work, INT* iwork, uint64_t state[static 4])
 {
-    int itype = KTYPE[jtype - 1];
-    int imode = KMODE[jtype - 1];
+    INT itype = KTYPE[jtype - 1];
+    INT imode = KMODE[jtype - 1];
     f64 anorm, cond, conds;
-    int iinfo = 0;
+    INT iinfo = 0;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -215,13 +202,13 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
 
     } else if (itype == 2) {
         /* Identity matrix */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             A[j + j * lda] = anorm;
         }
 
     } else if (itype == 3) {
         /* Jordan block */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             A[j + j * lda] = anorm;
             if (j > 0) {
                 A[j + (j - 1) * lda] = 1.0;
@@ -257,7 +244,7 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
 
     } else if (itype == 9) {
         /* General, random eigenvalues via DLATMR */
-        int idumma[1] = {1};  /* Dummy pivot array */
+        INT idumma[1] = {1};  /* Dummy pivot array */
 
         dlatmr(n, n, "S", "N", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
@@ -283,22 +270,6 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
     return iinfo;
 }
 
-/**
- * Compute 2-norm using LAPACK's dlapy2 pattern.
- */
-static f64 dlapy2(f64 x, f64 y)
-{
-    f64 xabs = fabs(x);
-    f64 yabs = fabs(y);
-    f64 w = (xabs > yabs) ? xabs : yabs;
-    f64 z = (xabs < yabs) ? xabs : yabs;
-
-    if (z == 0.0) {
-        return w;
-    }
-    f64 temp = z / w;
-    return w * sqrt(1.0 + temp * temp);
-}
 
 /**
  * Run tests for a single (n, jtype, iwk) combination.
@@ -307,15 +278,15 @@ static f64 dlapy2(f64 x, f64 y)
  */
 static void run_ddrvev_single(ddrvev_params_t* params)
 {
-    int n = params->n;
-    int jtype = params->jtype;
-    int iwk = params->iwk;
+    INT n = params->n;
+    INT jtype = params->jtype;
+    INT iwk = params->iwk;
 
     ddrvev_workspace_t* ws = g_ws;
-    int lda = ws->nmax;
-    int ldvl = ws->nmax;
-    int ldvr = ws->nmax;
-    int ldlre = ws->nmax;
+    INT lda = ws->nmax;
+    INT ldvl = ws->nmax;
+    INT ldvr = ws->nmax;
+    INT ldlre = ws->nmax;
 
     f64* A = ws->A;
     f64* H = ws->H;
@@ -332,7 +303,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     f64 ulpinv = 1.0 / ulp;
 
     /* Initialize results to -1 (not computed) */
-    for (int j = 0; j < 7; j++) {
+    for (INT j = 0; j < 7; j++) {
         ws->result[j] = -1.0;
     }
 
@@ -342,7 +313,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     }
 
     /* Generate matrix */
-    int iinfo = generate_matrix(n, jtype, A, lda, work, ws->iwork, ws->rng_state);
+    INT iinfo = generate_matrix(n, jtype, A, lda, work, ws->iwork, ws->rng_state);
     if (iinfo != 0) {
         /* Matrix generation failed */
         ws->result[0] = ulpinv;
@@ -353,7 +324,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     }
 
     /* Determine workspace size */
-    int nnwork;
+    INT nnwork;
     if (iwk == 1) {
         nnwork = 4 * n;
     } else {
@@ -385,7 +356,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     /* Test 3: | |VR(i)| - 1 | / ulp and largest component real */
     ws->result[2] = 0.0;
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         f64 tnrm = 1.0;
         if (WI[j] == 0.0) {
             /* Real eigenvalue - single column */
@@ -407,7 +378,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         if (WI[j] > 0.0) {
             f64 vmx = 0.0;
             f64 vrmx = 0.0;
-            for (int jj = 0; jj < n; jj++) {
+            for (INT jj = 0; jj < n; jj++) {
                 f64 vtst = dlapy2(VR[jj + j * ldvr], VR[jj + (j + 1) * ldvr]);
                 if (vtst > vmx) vmx = vtst;
                 if (VR[jj + (j + 1) * ldvr] == 0.0 && fabs(VR[jj + j * ldvr]) > vrmx) {
@@ -422,7 +393,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     /* Test 4: | |VL(i)| - 1 | / ulp and largest component real */
     ws->result[3] = 0.0;
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         f64 tnrm = 1.0;
         if (WI[j] == 0.0) {
             tnrm = cblas_dnrm2(n, VL + j * ldvl, 1);
@@ -441,7 +412,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         if (WI[j] > 0.0) {
             f64 vmx = 0.0;
             f64 vrmx = 0.0;
-            for (int jj = 0; jj < n; jj++) {
+            for (INT jj = 0; jj < n; jj++) {
                 f64 vtst = dlapy2(VL[jj + j * ldvl], VL[jj + (j + 1) * ldvl]);
                 if (vtst > vmx) vmx = vtst;
                 if (VL[jj + (j + 1) * ldvl] == 0.0 && fabs(VL[jj + j * ldvl]) > vrmx) {
@@ -472,7 +443,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     } else {
         /* Test 5: W(full) = W(partial) */
         ws->result[4] = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
                 ws->result[4] = ulpinv;
             }
@@ -490,7 +461,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         print_message("DGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
                 ws->result[4] = ulpinv;
             }
@@ -498,8 +469,8 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
         /* Test 6: VR(full) = VR(partial) */
         ws->result[5] = 0.0;
-        for (int j = 0; j < n; j++) {
-            for (int jj = 0; jj < n; jj++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT jj = 0; jj < n; jj++) {
                 if (VR[jj + j * ldvr] != LRE[jj + j * ldlre]) {
                     ws->result[5] = ulpinv;
                 }
@@ -518,7 +489,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         print_message("DGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
                 ws->result[4] = ulpinv;
             }
@@ -526,8 +497,8 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
         /* Test 7: VL(full) = VL(partial) */
         ws->result[6] = 0.0;
-        for (int j = 0; j < n; j++) {
-            for (int jj = 0; jj < n; jj++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT jj = 0; jj < n; jj++) {
                 if (VL[jj + j * ldvl] != LRE[jj + j * ldlre]) {
                     ws->result[6] = ulpinv;
                 }
@@ -559,7 +530,7 @@ static void test_ddrvev_case(void** state)
 
 static ddrvev_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -569,10 +540,10 @@ static void build_test_array(void)
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
+        INT n = NVAL[in];
 
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
-            for (int iwk = 1; iwk <= 2; iwk++) {
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+            for (INT iwk = 1; iwk <= 2; iwk++) {
                 ddrvev_params_t* p = &g_params[g_num_tests];
                 p->n = n;
                 p->jtype = jtype;

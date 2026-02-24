@@ -20,14 +20,7 @@
 #define THRESH 20.0
 
 /* Routine under test */
-extern void dgeequ(const int m, const int n, const f64 * const restrict A,
-                   const int lda, f64 * const restrict R,
-                   f64 * const restrict C, f64 *rowcnd, f64 *colcnd,
-                   f64 *amax, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-
 /* Equilibration quality threshold */
 static const f64 DGEEQU_THRESH = 0.1;
 
@@ -36,8 +29,8 @@ static const f64 DGEEQU_THRESH = 0.1;
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int m, n;
-    int lda;
+    INT m, n;
+    INT lda;
     f64 *A;       /* Matrix */
     f64 *R;       /* Row scaling factors */
     f64 *C;       /* Column scaling factors */
@@ -49,12 +42,12 @@ typedef struct {
  * Generate a matrix with varying row/column magnitudes.
  * Each row is scaled by row_scale^i and each column by col_scale^j.
  */
-static void generate_unbalanced_matrix(int m, int n, f64 *A, int lda,
+static void generate_unbalanced_matrix(INT m, INT n, f64 *A, INT lda,
                                        f64 row_scale, f64 col_scale)
 {
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         f64 cscale = pow(col_scale, j);
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             f64 rscale = pow(row_scale, i);
             A[i + j * lda] = rscale * cscale * (1.0 + (f64)(i + j) / (m + n));
         }
@@ -65,7 +58,7 @@ static void generate_unbalanced_matrix(int m, int n, f64 *A, int lda,
  * Setup fixture: allocate memory for given dimensions.
  * Called before each test function.
  */
-static int dgeequ_setup(void **state, int m, int n)
+static int dgeequ_setup(void **state, INT m, INT n)
 {
     dgeequ_fixture_t *fix = malloc(sizeof(dgeequ_fixture_t));
     assert_non_null(fix);
@@ -131,17 +124,17 @@ static int setup_10x12(void **state) { return dgeequ_setup(state, 10, 12); }
 static void test_dgeequ_equilibration(void **state)
 {
     dgeequ_fixture_t *fix = *state;
-    int m = fix->m, n = fix->n, lda = fix->lda;
+    INT m = fix->m, n = fix->n, lda = fix->lda;
     f64 rowcnd, colcnd, amax;
-    int info;
+    INT info;
 
     /* Generate matrix with exponentially varying row/column magnitudes */
     generate_unbalanced_matrix(m, n, fix->A, lda, 10.0, 10.0);
 
     /* Compute expected amax (largest element) */
     f64 expected_amax = 0.0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             f64 val = fabs(fix->A[i + j * lda]);
             if (val > expected_amax) expected_amax = val;
         }
@@ -158,29 +151,29 @@ static void test_dgeequ_equilibration(void **state)
     assert_residual_below(amax_err, 1e-10);
 
     /* Verify that scaling factors are positive */
-    int r_positive = 1;
-    for (int i = 0; i < m; i++) {
+    INT r_positive = 1;
+    for (INT i = 0; i < m; i++) {
         if (fix->R[i] <= 0.0) r_positive = 0;
     }
     assert_true(r_positive);
 
-    int c_positive = 1;
-    for (int j = 0; j < n; j++) {
+    INT c_positive = 1;
+    for (INT j = 0; j < n; j++) {
         if (fix->C[j] <= 0.0) c_positive = 0;
     }
     assert_true(c_positive);
 
     /* Verify that after scaling by R, each row's max is approximately 1 */
     memset(fix->row_max, 0, m * sizeof(f64));
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             f64 scaled = fabs(fix->A[i + j * lda]) * fix->R[i];
             if (scaled > fix->row_max[i]) fix->row_max[i] = scaled;
         }
     }
 
-    int row_equil = 1;
-    for (int i = 0; i < m; i++) {
+    INT row_equil = 1;
+    for (INT i = 0; i < m; i++) {
         if (fabs(fix->row_max[i] - 1.0) > DGEEQU_THRESH) row_equil = 0;
     }
     assert_true(row_equil);
@@ -189,15 +182,15 @@ static void test_dgeequ_equilibration(void **state)
      * C is computed to equilibrate the row-scaled matrix, so the correct
      * check is R(i)*A(i,j)*C(j), not just A(i,j)*C(j). */
     memset(fix->col_max, 0, n * sizeof(f64));
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             f64 scaled = fabs(fix->A[i + j * lda]) * fix->R[i] * fix->C[j];
             if (scaled > fix->col_max[j]) fix->col_max[j] = scaled;
         }
     }
 
-    int col_equil = 1;
-    for (int j = 0; j < n; j++) {
+    INT col_equil = 1;
+    for (INT j = 0; j < n; j++) {
         if (fabs(fix->col_max[j] - 1.0) > DGEEQU_THRESH) col_equil = 0;
     }
     assert_true(col_equil);
@@ -210,10 +203,10 @@ static void test_dgeequ_equilibration(void **state)
 static void test_dgeequ_identity(void **state)
 {
     dgeequ_fixture_t *fix = *state;
-    int n = fix->n;
-    int lda = fix->lda;
+    INT n = fix->n;
+    INT lda = fix->lda;
     f64 rowcnd, colcnd, amax;
-    int info;
+    INT info;
 
     /* Only applicable for square matrices */
     if (fix->m != fix->n) {
@@ -222,7 +215,7 @@ static void test_dgeequ_identity(void **state)
 
     /* Set up identity matrix */
     memset(fix->A, 0, lda * n * sizeof(f64));
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         fix->A[i + i * lda] = 1.0;
     }
 
@@ -244,9 +237,9 @@ static void test_dgeequ_identity(void **state)
 static void test_dgeequ_zero_row(void **state)
 {
     dgeequ_fixture_t *fix = *state;
-    int m = fix->m, n = fix->n, lda = fix->lda;
+    INT m = fix->m, n = fix->n, lda = fix->lda;
     f64 rowcnd, colcnd, amax;
-    int info;
+    INT info;
 
     /* Only applicable for matrices with m >= 2 */
     if (m < 2) {
@@ -254,8 +247,8 @@ static void test_dgeequ_zero_row(void **state)
     }
 
     /* Matrix with zero first row */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             fix->A[i + j * lda] = (i == 0) ? 0.0 : 1.0;
         }
     }

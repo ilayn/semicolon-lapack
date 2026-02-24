@@ -3,13 +3,10 @@
  * @brief SGET07 tests the error bounds from iterative refinement.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include <stdbool.h>
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
 
 /**
  * SGET07 tests the error bounds from iterative refinement for the
@@ -66,27 +63,27 @@ extern f32 slamch(const char* cmach);
  */
 void sget07(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 * const restrict A,
-    const int lda,
+    const INT lda,
     const f32 * const restrict B,
-    const int ldb,
+    const INT ldb,
     const f32 * const restrict X,
-    const int ldx,
+    const INT ldx,
     const f32 * const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f32 * const restrict ferr,
-    const int chkferr,
+    const INT chkferr,
     const f32 * const restrict berr,
     f32 * const restrict reslts)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, imax, j, k;
+    INT i, imax, j, k;
     f32 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
 
     // Quick exit if n = 0 or nrhs = 0
     if (n <= 0 || nrhs <= 0) {

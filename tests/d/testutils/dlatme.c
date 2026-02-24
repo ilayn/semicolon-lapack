@@ -8,19 +8,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-
-/* Forward declarations for library functions */
-extern void xerbla(const char* srname, const int info);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dlarfg(const int n, f64* alpha, f64* x, const int incx,
-                   f64* tau);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
 
 /**
  * DLATME generates random non-symmetric square matrices with
@@ -123,20 +113,20 @@ extern f64 dlange(const char* norm, const int m, const int n,
  *     < 0: illegal argument
  *     > 0: error in called routine
  */
-void dlatme(const int n, const char* dist, f64* D,
-            const int mode, const f64 cond, const f64 dmax,
+void dlatme(const INT n, const char* dist, f64* D,
+            const INT mode, const f64 cond, const f64 dmax,
             const char* ei, const char* rsign, const char* upper,
-            const char* sim, f64* DS, const int modes, const f64 conds,
-            const int kl, const int ku, const f64 anorm,
-            f64* A, const int lda, f64* work, int* info,
+            const char* sim, f64* DS, const INT modes, const f64 conds,
+            const INT kl, const INT ku, const f64 anorm,
+            f64* A, const INT lda, f64* work, INT* info,
             uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 HALF = 0.5;
 
-    int badei, bads, useei;
-    int i, ic, icols, idist, iinfo, ir, irows, irsign, isim, iupper, j, jc, jcr, jr;
+    INT badei, bads, useei;
+    INT i, ic, icols, idist, iinfo, ir, irows, irsign, isim, iupper, j, jc, jcr, jr;
     f64 alpha, tau, temp, xnorms;
 
     *info = 0;

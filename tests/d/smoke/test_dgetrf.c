@@ -26,11 +26,9 @@
 #include "verify.h"
 #include "test_rng.h"
 #include <string.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -39,23 +37,14 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NMAX    50
 
 /* Routine under test */
-extern void dgetrf(const int m, const int n, f64* A,
-                   const int lda, int* ipiv, int* info);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int imat;
+    INT m;
+    INT n;
+    INT imat;
     char name[64];
 } dgetrf_params_t;
 
@@ -68,7 +57,7 @@ typedef struct {
     f64* D;      /* Singular values for dlatms */
     f64* WORK;   /* General workspace */
     f64* RWORK;  /* Real workspace */
-    int* IPIV;      /* Pivot indices */
+    INT* IPIV;      /* Pivot indices */
 } dgetrf_workspace_t;
 
 static dgetrf_workspace_t* g_workspace = NULL;
@@ -87,7 +76,7 @@ static int group_setup(void** state)
     g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->WORK = malloc(3 * NMAX * sizeof(f64));
     g_workspace->RWORK = malloc(NMAX * sizeof(f64));
-    g_workspace->IPIV = malloc(NMAX * sizeof(int));
+    g_workspace->IPIV = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->D ||
         !g_workspace->WORK || !g_workspace->RWORK || !g_workspace->IPIV) {
@@ -119,16 +108,16 @@ static int group_teardown(void** state)
 /**
  * Run the dgetrf test for a single (m, n, imat) combination.
  */
-static void run_dgetrf_single(int m, int n, int imat)
+static void run_dgetrf_single(INT m, INT n, INT imat)
 {
     dgetrf_workspace_t* ws = g_workspace;
 
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
-    int lda = (m > 1) ? m : 1;
-    int minmn = (m < n) ? m : n;
+    INT info;
+    INT lda = (m > 1) ? m : 1;
+    INT minmn = (m < n) ? m : n;
 
     /* Get matrix parameters for this type */
     dlatb4("DGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -141,8 +130,8 @@ static void run_dgetrf_single(int m, int n, int imat)
     assert_int_equal(info, 0);
 
     /* For types 5-7, zero one or more columns to create singular matrix */
-    int zerot = (imat >= 5 && imat <= 7);
-    int izero = 0;
+    INT zerot = (imat >= 5 && imat <= 7);
+    INT izero = 0;
     if (zerot) {
         if (imat == 5) {
             izero = 1;
@@ -151,9 +140,9 @@ static void run_dgetrf_single(int m, int n, int imat)
         } else {
             izero = minmn / 2 + 1;
         }
-        int ioff = (izero - 1) * lda;
+        INT ioff = (izero - 1) * lda;
         if (imat < 7) {
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 ws->A[ioff + i] = 0.0;
             }
         } else {
@@ -206,7 +195,7 @@ static void test_dgetrf_case(void** state)
 
 static dgetrf_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -215,21 +204,21 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
 
-            int nimat = NTYPES;
+            INT nimat = NTYPES;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
             }
 
-            for (int imat = 1; imat <= nimat; imat++) {
+            for (INT imat = 1; imat <= nimat; imat++) {
                 /* Skip types 5, 6, or 7 if matrix size is too small */
-                int zerot = (imat >= 5 && imat <= 7);
-                int minmn = (m < n) ? m : n;
+                INT zerot = (imat >= 5 && imat <= 7);
+                INT minmn = (m < n) ? m : n;
                 if (zerot && minmn < imat - 4) {
                     continue;
                 }

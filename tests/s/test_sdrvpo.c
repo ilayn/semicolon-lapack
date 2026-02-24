@@ -6,14 +6,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
 #include <math.h>
 
 /* Test parameters - matching LAPACK dchkaa.f defaults */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NTYPES  9
 #define NTESTS  6
@@ -22,69 +22,16 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routines under test */
-extern void sposv(const char* uplo, const int n, const int nrhs,
-                  f32* A, const int lda, f32* B, const int ldb, int* info);
-extern void sposvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   f32* A, const int lda, f32* AF, const int ldaf,
-                   char* equed, f32* S, f32* B, const int ldb,
-                   f32* X, const int ldx, f32* rcond,
-                   f32* ferr, f32* berr, f32* work, int* iwork, int* info);
-
 /* Supporting routines */
-extern void spotrf(const char* uplo, const int n, f32* A, const int lda, int* info);
-extern void spotri(const char* uplo, const int n, f32* A, const int lda, int* info);
-extern void spoequ(const int n, const f32* A, const int lda,
-                   f32* S, f32* scond, f32* amax, int* info);
-extern void slaqsy(const char* uplo, const int n, f32* A, const int lda,
-                   const f32* S, const f32 scond, const f32 amax, char* equed);
-
 /* Verification routines */
-extern void spot01(const char* uplo, const int n, const f32* A, const int lda,
-                   f32* AFAC, const int ldafac, f32* rwork, f32* resid);
-extern void spot02(const char* uplo, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* X, const int ldx,
-                   f32* B, const int ldb, f32* rwork, f32* resid);
-extern void spot05(const char* uplo, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* B, const int ldb,
-                   const f32* X, const int ldx, const f32* XACT, const int ldxact,
-                   const f32* ferr, const f32* berr, f32* reslts);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-extern f32 sget06(const f32 rcond, const f32 rcondc);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d,
-                   const int mode, const f32 cond, const f32 dmax,
-                   const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n,
-                   const int kl, const int ku, const int nrhs,
-                   const f32* A, const int lda, f32* XACT, const int ldxact,
-                   f32* B, const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slamch(const char* cmach);
-
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;      /* 0='U', 1='L' */
-    int ifact;      /* 0='F', 1='N', 2='E' */
-    int iequed;     /* 0='N', 1='Y' */
+    INT n;
+    INT imat;
+    INT iuplo;      /* 0='U', 1='L' */
+    INT ifact;      /* 0='F', 1='N', 2='E' */
+    INT iequed;     /* 0='N', 1='Y' */
     char name[64];
 } ddrvpo_params_t;
 
@@ -99,8 +46,8 @@ typedef struct {
     f32* S;
     f32* WORK;
     f32* RWORK;
-    int* IWORK;
-    int lwork;
+    INT* IWORK;
+    INT lwork;
 } ddrvpo_workspace_t;
 
 static ddrvpo_workspace_t* g_workspace = NULL;
@@ -111,8 +58,8 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(ddrvpo_workspace_t));
     if (!g_workspace) return -1;
 
-    int nmax = NMAX;
-    int lwork = nmax * (nmax > 3 ? nmax : 3);
+    INT nmax = NMAX;
+    INT lwork = nmax * (nmax > 3 ? nmax : 3);
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
     g_workspace->lwork = lwork;
@@ -126,7 +73,7 @@ static int group_setup(void** state)
     g_workspace->S = calloc(nmax, sizeof(f32));
     g_workspace->WORK = calloc(lwork, sizeof(f32));
     g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(f32));
-    g_workspace->IWORK = calloc(nmax, sizeof(int));
+    g_workspace->IWORK = calloc(nmax, sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->ASAV ||
         !g_workspace->B || !g_workspace->BSAV || !g_workspace->X ||
@@ -158,7 +105,7 @@ static int group_teardown(void** state)
     return 0;
 }
 
-static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
+static void run_ddrvpo_single(INT n, INT imat, INT iuplo, INT ifact, INT iequed)
 {
     static const char* UPLOS[] = {"U", "L"};
     static const char* FACTS[] = {"F", "N", "E"};
@@ -169,27 +116,27 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
     const char* fact = FACTS[ifact];
     char equed = EQUEDS[iequed][0];
 
-    int prefac = (fact[0] == 'F');
-    int nofact = (fact[0] == 'N');
-    int equil = (fact[0] == 'E');
+    INT prefac = (fact[0] == 'F');
+    INT nofact = (fact[0] == 'N');
+    INT equil = (fact[0] == 'E');
 
-    int lda = (n > 1) ? n : 1;
+    INT lda = (n > 1) ? n : 1;
     f32 result[NTESTS];
-    for (int k = 0; k < NTESTS; k++) result[k] = 0.0f;
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0f;
 
-    int zerot = (imat >= 3 && imat <= 5);
-    int izero = 0;
+    INT zerot = (imat >= 3 && imat <= 5);
+    INT izero = 0;
 
     /* Set up parameters with SLATB4 */
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
     slatb4("SPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix with SLATMS */
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + n * 1000 + imat * 100 + iuplo * 10);
-    int info;
+    INT info;
     slatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
            anorm, kl, ku, uplo, ws->A, lda, ws->WORK, &info, rng_state);
     if (info != 0) {
@@ -206,27 +153,27 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
         } else {
             izero = n / 2 + 1;
         }
-        int ioff = (izero - 1) * lda;
+        INT ioff = (izero - 1) * lda;
 
         if (iuplo == 0) {
             /* UPLO = 'U': zero column IZERO */
-            for (int i = 0; i < izero - 1; i++) {
+            for (INT i = 0; i < izero - 1; i++) {
                 ws->A[ioff + i] = 0.0f;
             }
             ioff = ioff + izero - 1;
-            for (int i = izero - 1; i < n; i++) {
+            for (INT i = izero - 1; i < n; i++) {
                 ws->A[ioff] = 0.0f;
                 ioff = ioff + lda;
             }
         } else {
             /* UPLO = 'L': zero row IZERO */
             ioff = izero - 1;
-            for (int i = 0; i < izero - 1; i++) {
+            for (INT i = 0; i < izero - 1; i++) {
                 ws->A[ioff] = 0.0f;
                 ioff = ioff + lda;
             }
             ioff = ioff - (izero - 1);
-            for (int i = izero - 1; i < n; i++) {
+            for (INT i = izero - 1; i < n; i++) {
                 ws->A[ioff + i] = 0.0f;
             }
         }
@@ -328,9 +275,9 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
 
         /* TEST 3: Check solution from generated exact solution */
         sget04(n, NRHS, ws->X, lda, ws->XACT, lda, rcondc, &result[2]);
-        int nt = 3;
+        INT nt = 3;
 
-        for (int k = 0; k < nt; k++) {
+        for (INT k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SPOSV UPLO=%s test %d failed: result=%e >= thresh=%e",
                          uplo, k + 1, (double)result[k], (double)THRESH);
@@ -359,7 +306,7 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
         return;
     }
 
-    int k1;
+    INT k1;
     if (info == 0) {
         if (!prefac) {
             /* TEST 1: Reconstruct matrix from factors */
@@ -395,7 +342,7 @@ static void run_ddrvpo_single(int n, int imat, int iuplo, int ifact, int iequed)
 
     /* Check results */
     if (info == 0) {
-        for (int k = k1 - 1; k < NTESTS; k++) {
+        for (INT k = k1 - 1; k < NTESTS; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SPOSVX FACT=%s UPLO=%s EQUED=%c test %d: result=%e >= thresh=%e",
                          fact, uplo, equed_inout, k + 1, (double)result[k], (double)THRESH);
@@ -424,7 +371,7 @@ static void test_ddrvpo_case(void** state)
 
 static ddrvpo_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
@@ -434,19 +381,19 @@ static void build_test_array(void)
 
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
-        int nimat = (n <= 0) ? 1 : NTYPES;
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        INT nimat = (n <= 0) ? 1 : NTYPES;
 
-        for (int imat = 1; imat <= nimat; imat++) {
-            int zerot = (imat >= 3 && imat <= 5);
+        for (INT imat = 1; imat <= nimat; imat++) {
+            INT zerot = (imat >= 3 && imat <= 5);
             if (zerot && n < imat - 2) continue;
 
-            for (int iuplo = 0; iuplo < 2; iuplo++) {
-                for (int iequed = 0; iequed < 2; iequed++) {
-                    int nfact = (iequed == 0) ? 3 : 1;
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                for (INT iequed = 0; iequed < 2; iequed++) {
+                    INT nfact = (iequed == 0) ? 3 : 1;
 
-                    for (int ifact = 0; ifact < nfact; ifact++) {
+                    for (INT ifact = 0; ifact < nfact; ifact++) {
                         if (zerot && ifact == 0) continue;
 
                         ddrvpo_params_t* p = &g_params[g_num_tests];

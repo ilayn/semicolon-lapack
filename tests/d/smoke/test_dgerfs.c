@@ -16,35 +16,17 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void dgetrf(const int m, const int n, f64 * const restrict A,
-                   const int lda, int * const restrict ipiv, int *info);
-extern void dgetrs(const char *trans, const int n, const int nrhs,
-                   const f64 * const restrict A, const int lda,
-                   const int * const restrict ipiv, f64 * const restrict B,
-                   const int ldb, int *info);
-extern void dgerfs(const char *trans, const int n, const int nrhs,
-                   const f64 * const restrict A, const int lda,
-                   const f64 * const restrict AF, const int ldaf,
-                   const int * const restrict ipiv,
-                   const f64 * const restrict B, const int ldb,
-                   f64 * const restrict X, const int ldx,
-                   f64 * const restrict ferr, f64 * const restrict berr,
-                   f64 * const restrict work, int * const restrict iwork,
-                   int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb;
+    INT n, nrhs;
+    INT lda, ldb;
     f64 *A;       /* Original matrix */
     f64 *AF;      /* Factored matrix */
     f64 *B;       /* Right-hand side */
@@ -57,8 +39,8 @@ typedef struct {
     f64 *ferr;    /* Forward error bounds */
     f64 *berr;    /* Backward error bounds */
     f64 *reslts;  /* Results from dget07 */
-    int *ipiv;       /* Pivot indices */
-    int *iwork;      /* Integer workspace for dgerfs */
+    INT* ipiv;       /* Pivot indices */
+    INT* iwork;      /* Integer workspace for dgerfs */
     uint64_t seed;   /* RNG seed */
 } dgerfs_fixture_t;
 
@@ -69,7 +51,7 @@ static uint64_t g_seed = 1729;
  * Setup fixture: allocate memory for given dimensions.
  * Called before each test function.
  */
-static int dgerfs_setup(void **state, int n, int nrhs)
+static int dgerfs_setup(void **state, INT n, INT nrhs)
 {
     dgerfs_fixture_t *fix = malloc(sizeof(dgerfs_fixture_t));
     assert_non_null(fix);
@@ -92,8 +74,8 @@ static int dgerfs_setup(void **state, int n, int nrhs)
     fix->ferr = malloc(nrhs * sizeof(f64));
     fix->berr = malloc(nrhs * sizeof(f64));
     fix->reslts = malloc(2 * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -153,12 +135,12 @@ static int setup_20(void **state) { return dgerfs_setup(state, 20, 1); }
  *
  * Populates fix->reslts with dget07 output and returns the dget02 residual.
  */
-static f64 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
+static f64 run_dgerfs_test(dgerfs_fixture_t *fix, INT imat, const char* trans)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
 
     /* Get matrix parameters */
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -171,8 +153,8 @@ static f64 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
     assert_int_equal(info, 0);
 
     /* Generate known exact solution XACT */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->ldb] = 1.0 + (f64)i / fix->n + (f64)j / fix->nrhs;
         }
     }
@@ -212,7 +194,7 @@ static f64 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
     free(B_copy);
 
     /* Compute error bounds using dget07 */
-    int chkferr = (imat <= 4);
+    INT chkferr = (imat <= 4);
     dget07(trans, fix->n, fix->nrhs, fix->A, fix->lda, fix->B_orig, fix->ldb,
            fix->X, fix->ldb, fix->XACT, fix->ldb,
            fix->ferr, chkferr, fix->berr, fix->reslts);
@@ -297,8 +279,8 @@ static void test_simple(void **state)
 {
     (void)state;
 
-    int n = 3;
-    int nrhs = 1;
+    INT n = 3;
+    INT nrhs = 1;
 
     /* System: A * x = b where solution is x = [1, 1, 1]' */
     f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
@@ -312,9 +294,9 @@ static void test_simple(void **state)
     f64 X[3];
     f64 ferr[1], berr[1];
     f64 work[9];
-    int iwork[3];
-    int ipiv[3];
-    int info;
+    INT iwork[3];
+    INT ipiv[3];
+    INT info;
 
     /* Factor */
     dgetrf(n, n, AF, n, ipiv, &info);
@@ -343,8 +325,8 @@ static void test_transpose(void **state)
 {
     (void)state;
 
-    int n = 3;
-    int nrhs = 1;
+    INT n = 3;
+    INT nrhs = 1;
 
     /* System: A' * x = b */
     f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
@@ -363,9 +345,9 @@ static void test_transpose(void **state)
     f64 X[3];
     f64 ferr[1], berr[1];
     f64 work[9];
-    int iwork[3];
-    int ipiv[3];
-    int info;
+    INT iwork[3];
+    INT ipiv[3];
+    INT info;
 
     /* Factor */
     dgetrf(n, n, AF, n, ipiv, &info);
@@ -394,8 +376,8 @@ static void test_multiple_rhs(void **state)
 {
     (void)state;
 
-    int n = 4;
-    int nrhs = 3;
+    INT n = 4;
+    INT nrhs = 3;
 
     f64 *A = calloc(n * n, sizeof(f64));
     f64 *AF = malloc(n * n * sizeof(f64));
@@ -405,9 +387,9 @@ static void test_multiple_rhs(void **state)
     f64 *ferr = malloc(nrhs * sizeof(f64));
     f64 *berr = malloc(nrhs * sizeof(f64));
     f64 *work = malloc(3 * n * sizeof(f64));
-    int *iwork = malloc(n * sizeof(int));
-    int *ipiv = malloc(n * sizeof(int));
-    int info;
+    INT* iwork = malloc(n * sizeof(INT));
+    INT* ipiv = malloc(n * sizeof(INT));
+    INT info;
 
     assert_non_null(A);
     assert_non_null(AF);
@@ -416,9 +398,9 @@ static void test_multiple_rhs(void **state)
     assert_non_null(X);
 
     /* Well-conditioned diagonal dominant matrix */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         A[i + i * n] = (f64)(n + 1);
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             if (i != j) {
                 A[i + j * n] = 1.0;
             }
@@ -427,10 +409,10 @@ static void test_multiple_rhs(void **state)
     memcpy(AF, A, n * n * sizeof(f64));
 
     /* Multiple RHS with known solutions */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             B[i + j * n] = 0.0;
-            for (int k = 0; k < n; k++) {
+            for (INT k = 0; k < n; k++) {
                 f64 xk = (f64)(k + 1) + (f64)j;
                 B[i + j * n] += A[i + k * n] * xk;
             }
@@ -453,8 +435,8 @@ static void test_multiple_rhs(void **state)
     assert_info_success(info);
 
     f64 tol = 1e-10;
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             f64 expected = (f64)(i + 1) + (f64)j;
             assert_true(fabs(X[i + j * n] - expected) < tol);
         }

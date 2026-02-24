@@ -6,12 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DTRT05 tests the error bounds from iterative refinement for the
  * computed solution to a system of equations A*X = B, where A is a
@@ -44,17 +42,17 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    reslts  Array (2). The test results.
  */
 void dtrt05(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs, const f64* A, const int lda,
-            const f64* B, const int ldb, const f64* X, const int ldx,
-            const f64* XACT, const int ldxact,
+            const INT n, const INT nrhs, const f64* A, const INT lda,
+            const f64* B, const INT ldb, const f64* X, const INT ldx,
+            const f64* XACT, const INT ldxact,
             const f64* ferr, const f64* berr, f64* reslts)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k, ifu, imax;
+    INT i, j, k, ifu, imax;
     f64 eps, unfl, ovfl, tmp, diff, xnorm, errbnd, axbi;
-    int upper, notran, unit;
+    INT upper, notran, unit;
 
     /* Quick exit if n = 0 or nrhs = 0 */
     if (n <= 0 || nrhs <= 0) {

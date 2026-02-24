@@ -28,16 +28,16 @@
  * @param[out] rwork Workspace array, dimension (n).
  * @param[out] resid The computed residual.
  */
-void dspt01(const char* uplo, const int n, const f64* A,
-            const f64* AFAC, const int* ipiv, f64* C, const int ldc,
+void dspt01(const char* uplo, const INT n, const f64* A,
+            const f64* AFAC, const INT* ipiv, f64* C, const INT ldc,
             f64* rwork, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, jc;
+    INT i, j, jc;
     f64 anorm, eps;
-    int info;
+    INT info;
 
     if (n <= 0) {
         *resid = ZERO;

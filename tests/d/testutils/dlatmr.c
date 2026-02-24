@@ -6,33 +6,20 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlansp(const char* norm, const char* uplo, const int n,
-                     const f64* AP, f64* work);
-extern f64 dlansb(const char* norm, const char* uplo, const int n,
-                     const int k, const f64* AB, const int ldab, f64* work);
-extern f64 dlangb(const char* norm, const int n, const int kl, const int ku,
-                     const f64* AB, const int ldab, f64* work);
-
 /* Local helper: case-insensitive character comparison */
-static int lsame(char c1, char c2) {
+static INT lsame(char c1, char c2) {
     if (c1 == c2) return 1;
     if (c1 >= 'a' && c1 <= 'z') c1 = c1 - 'a' + 'A';
     if (c2 >= 'a' && c2 <= 'z') c2 = c2 - 'a' + 'A';
     return (c1 == c2);
 }
 
-static int min_int(int a, int b) { return (a < b) ? a : b; }
-static int max_int(int a, int b) { return (a > b) ? a : b; }
+static INT min_int(INT a, INT b) { return (a < b) ? a : b; }
+static INT max_int(INT a, INT b) { return (a > b) ? a : b; }
 static f64 max_dbl(f64 a, f64 b) { return (a > b) ? a : b; }
 
 /**
@@ -40,42 +27,42 @@ static f64 max_dbl(f64 a, f64 b) { return (a > b) ? a : b; }
  * LAPACK programs.
  */
 void dlatmr(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const char* dist,
     const char* sym,
     f64* d,
-    const int mode,
+    const INT mode,
     const f64 cond,
     const f64 dmax,
     const char* rsign,
     const char* grade,
     f64* dl,
-    const int model,
+    const INT model,
     const f64 condl,
     f64* dr,
-    const int moder,
+    const INT moder,
     const f64 condr,
     const char* pivtng,
-    const int* ipivot,
-    const int kl,
-    const int ku,
+    const INT* ipivot,
+    const INT kl,
+    const INT ku,
     const f64 sparse,
     const f64 anorm,
     const char* pack,
     f64* A,
-    const int lda,
-    int* iwork,
-    int* info,
+    const INT lda,
+    INT* iwork,
+    INT* info,
     uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int badpvt, dzero, fulbnd;
-    int i, idist, igrade, iisub, ipack, ipvtng, irsign;
-    int isub, isym, j, jjsub, jsub, k, kll, kuu, mnmin;
-    int mnsub, mxsub, npvts;
+    INT badpvt, dzero, fulbnd;
+    INT i, idist, igrade, iisub, ipack, ipvtng, irsign;
+    INT isub, isym, j, jjsub, jsub, k, kll, kuu, mnmin;
+    INT mnsub, mxsub, npvts;
     f64 alpha, onorm, temp;
     f64 tempa[1];
 

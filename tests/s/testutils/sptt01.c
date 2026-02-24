@@ -25,7 +25,7 @@
  * @param[out]    resid The residual norm(L*D*L' - A) / (n * norm(A) * EPS).
  */
 void sptt01(
-    const int n,
+    const INT n,
     const f32* const restrict D,
     const f32* const restrict E,
     const f32* const restrict DF,
@@ -49,7 +49,7 @@ void sptt01(
      * work[n..2n-2] = off-diagonal differences
      */
     work[0] = DF[0] - D[0];
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         f32 de = DF[i] * EF[i];
         work[n + i] = de - E[i];
         work[i + 1] = de * EF[i] + DF[i + 1] - D[i + 1];
@@ -64,7 +64,7 @@ void sptt01(
         anorm = fmaxf(D[0] + fabsf(E[0]), D[n - 1] + fabsf(E[n - 2]));
         residval = fmaxf(fabsf(work[0]) + fabsf(work[n]),
                        fabsf(work[n - 1]) + fabsf(work[2 * n - 2]));
-        for (int i = 1; i < n - 1; i++) {
+        for (INT i = 1; i < n - 1; i++) {
             anorm = fmaxf(anorm, D[i] + fabsf(E[i]) + fabsf(E[i - 1]));
             residval = fmaxf(residval, fabsf(work[i]) + fabsf(work[n + i - 1]) +
                                       fabsf(work[n + i]));

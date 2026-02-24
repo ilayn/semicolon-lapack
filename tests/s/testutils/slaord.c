@@ -19,11 +19,11 @@
  *                      On exit, sorted in the prescribed order.
  * @param[in]     incx  The spacing between successive elements of X. incx >= 0.
  */
-void slaord(const char* job, const int n, f32* X, const int incx)
+void slaord(const char* job, const INT n, f32* X, const INT incx)
 {
-    int inc = incx < 0 ? -incx : incx;
+    INT inc = incx < 0 ? -incx : incx;
     f32 temp;
-    int i, ix, ixnext;
+    INT i, ix, ixnext;
 
     if (job[0] == 'I' || job[0] == 'i') {
         /* Sort in increasing order using insertion sort */

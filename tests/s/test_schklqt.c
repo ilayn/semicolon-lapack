@@ -21,12 +21,13 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include <string.h>
 #include <stdio.h>
 
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const int NBVAL[] = {1, 2, 3, 5, 10, 16};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
+static const INT NBVAL[] = {1, 2, 3, 5, 10, 16};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -34,20 +35,18 @@ static const int NBVAL[] = {1, 2, 3, 5, 10, 16};
 #define NTESTS  6
 #define THRESH  30.0f
 
-extern void slqt04(const int m, const int n, const int nb, f32* restrict result);
-
 typedef struct {
-    int m;
-    int n;
-    int nb;
+    INT m;
+    INT n;
+    INT nb;
     char name[64];
 } dchklqt_params_t;
 
-static void run_dchklqt_single(int m, int n, int nb)
+static void run_dchklqt_single(INT m, INT n, INT nb)
 {
     f32 result[NTESTS];
     char ctx[128];
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
 
     if (nb > minmn || nb <= 0 || minmn == 0) {
         return;
@@ -55,7 +54,7 @@ static void run_dchklqt_single(int m, int n, int nb)
 
     slqt04(m, n, nb, result);
 
-    for (int t = 0; t < NTESTS; t++) {
+    for (INT t = 0; t < NTESTS; t++) {
         snprintf(ctx, sizeof(ctx), "m=%d n=%d nb=%d TEST %d", m, n, nb, t + 1);
         set_test_context(ctx);
         assert_residual_below(result[t], THRESH);
@@ -74,21 +73,21 @@ static void test_dchklqt_case(void** state)
 
 static dchklqt_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
-            int minmn = (m < n) ? m : n;
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
+            INT minmn = (m < n) ? m : n;
 
-            for (int inb = 0; inb < (int)NNB; inb++) {
-                int nb = NBVAL[inb];
+            for (INT inb = 0; inb < (INT)NNB; inb++) {
+                INT nb = NBVAL[inb];
 
                 if (nb > minmn || nb <= 0 || minmn == 0) {
                     continue;

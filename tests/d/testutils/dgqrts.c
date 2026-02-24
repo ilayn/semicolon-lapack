@@ -5,29 +5,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dggqrf(const int n, const int m, const int p,
-                   f64* A, const int lda, f64* taua,
-                   f64* B, const int ldb, f64* taub,
-                   f64* work, const int lwork, int* info);
-extern void dorgqr(const int m, const int n, const int k,
-                   f64* A, const int lda, const f64* tau,
-                   f64* work, const int lwork, int* info);
-extern void dorgrq(const int m, const int n, const int k,
-                   f64* A, const int lda, const f64* tau,
-                   f64* work, const int lwork, int* info);
 
 /**
  * DGQRTS tests DGGQRF, which computes the GQR factorization of an
@@ -55,33 +34,33 @@ extern void dorgrq(const int m, const int n, const int k,
  * @param[out]    result  4 test ratios.
  */
 void dgqrts(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     const f64* A,
     f64* AF,
     f64* Q,
     f64* R,
-    const int lda,
+    const INT lda,
     f64* taua,
     const f64* B,
     f64* BF,
     f64* Z,
     f64* T,
     f64* BWK,
-    const int ldb,
+    const INT ldb,
     f64* taub,
     f64* work,
-    const int lwork,
+    const INT lwork,
     f64* rwork,
     f64* result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 ROGUE = -1.0e+10;
-    int info;
+    INT info;
     f64 anorm, bnorm, resid, ulp, unfl;
-    int mn, mp;
+    INT mn, mp;
 
     ulp = dlamch("P");
     unfl = dlamch("S");

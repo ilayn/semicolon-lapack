@@ -10,17 +10,17 @@
 #include "semicolon_lapack_double.h"
 #include "verify.h"
 
-void derrec(int* ok, int* nt)
+void derrec(INT* ok, INT* nt)
 {
-    const int NMAX = 4;
+    const INT NMAX = 4;
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int i, j, ifst, ilst, info, m;
+    INT i, j, ifst, ilst, info, m;
     f64 scale;
 
-    int sel[NMAX];
-    int iwork[NMAX];
+    INT sel[NMAX];
+    INT iwork[NMAX];
     f64 a[NMAX * NMAX], b[NMAX * NMAX], c[NMAX * NMAX];
     f64 s[NMAX], sep[NMAX], wi[NMAX], work[NMAX], wr[NMAX];
 

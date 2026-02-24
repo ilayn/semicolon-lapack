@@ -5,33 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void sgetsqrhrt(const int m, const int n, const int mb1, const int nb1,
-                       const int nb2, f32* const restrict A, const int lda,
-                       f32* restrict T, const int ldt,
-                       f32* restrict work, const int lwork, int* info);
-extern void sgemqrt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int nb,
-                    const f32* const restrict V, const int ldv,
-                    const f32* const restrict T, const int ldt,
-                    f32* const restrict C, const int ldc,
-                    f32* const restrict work, int* info);
 /**
  * SORHR_COL02 tests SORGTSQR_ROW and SORHR_COL inside SGETSQRHRT.
  *
@@ -42,15 +18,15 @@ extern void sgemqrt(const char* side, const char* trans,
  * @param[in]  nb2     Number of columns in column block (output).
  * @param[out] result  Results of each of the six tests.
  */
-void sorhr_col02(const int m, const int n, const int mb1, const int nb1,
-                 const int nb2, f32* restrict result)
+void sorhr_col02(const INT m, const INT n, const INT mb1, const INT nb1,
+                 const INT nb2, f32* restrict result)
 {
     f32 eps = slamch("E");
-    int k = m < n ? m : n;
-    int l = m > n ? m : n;
+    INT k = m < n ? m : n;
+    INT l = m > n ? m : n;
     if (l < 1) l = 1;
-    int info;
-    int j;
+    INT info;
+    INT j;
     f32 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
@@ -70,7 +46,7 @@ void sorhr_col02(const int m, const int n, const int mb1, const int nb1,
     }
     slacpy("F", m, n, A, m, AF, m);
 
-    int nrb;
+    INT nrb;
     if (mb1 - n > 0) {
         nrb = (m - n + mb1 - n - 1) / (mb1 - n);
         if (nrb < 1) nrb = 1;
@@ -82,13 +58,13 @@ void sorhr_col02(const int m, const int n, const int mb1, const int nb1,
     f32* T2 = malloc(nb2 * n * sizeof(f32));
     f32* DIAG = malloc(n * sizeof(f32));
 
-    int nb2_ub = nb2 < n ? nb2 : n;
+    INT nb2_ub = nb2 < n ? nb2 : n;
 
     f32 workquery;
-    int lwork;
+    INT lwork;
 
     sgetsqrhrt(m, n, mb1, nb1, nb2, AF, m, T2, nb2, &workquery, -1, &info);
-    lwork = (int)workquery;
+    lwork = (INT)workquery;
     if (nb2_ub * n > lwork) lwork = nb2_ub * n;
     if (nb2_ub * m > lwork) lwork = nb2_ub * m;
 

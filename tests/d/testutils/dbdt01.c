@@ -8,15 +8,8 @@
 
 #include <math.h>
 #include <string.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /**
  * DBDT01 reconstructs a general matrix A from its bidiagonal form
  *    A = Q * B * P'
@@ -45,17 +38,17 @@ extern f64 dlange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace array, dimension (m+n).
  * @param[out]    resid  The test ratio.
  */
-void dbdt01(const int m, const int n, const int kd,
-            const f64* const restrict A, const int lda,
-            const f64* const restrict Q, const int ldq,
+void dbdt01(const INT m, const INT n, const INT kd,
+            const f64* const restrict A, const INT lda,
+            const f64* const restrict Q, const INT ldq,
             const f64* const restrict D, const f64* const restrict E,
-            const f64* const restrict PT, const int ldpt,
+            const f64* const restrict PT, const INT ldpt,
             f64* const restrict work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 anorm, eps;
 
     /* Quick return if possible */

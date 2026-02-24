@@ -6,14 +6,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
 #include <math.h>
 
 /* Test parameters - matching LAPACK dchkaa.f defaults */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NTYPES  10
 #define NTESTS  3
@@ -22,55 +22,14 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routine under test */
-extern void ssysv_rook(const char* uplo, const int n, const int nrhs,
-                       f32* A, const int lda, int* ipiv,
-                       f32* B, const int ldb, f32* work, const int lwork,
-                       int* info);
-
 /* Supporting routines */
-extern void ssytrf_rook(const char* uplo, const int n, f32* A, const int lda,
-                        int* ipiv, f32* work, const int lwork, int* info);
-extern void ssytri_rook(const char* uplo, const int n, f32* A, const int lda,
-                        const int* ipiv, f32* work, int* info);
-
 /* Verification routines */
-extern void ssyt01_rook(const char* uplo, const int n,
-                        const f32* A, const int lda,
-                        const f32* AFAC, const int ldafac,
-                        const int* ipiv,
-                        f32* C, const int ldc, f32* rwork, f32* resid);
-extern void spot02(const char* uplo, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* X, const int ldx,
-                   f32* B, const int ldb, f32* rwork, f32* resid);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d,
-                   const int mode, const f32 cond, const f32 dmax,
-                   const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n,
-                   const int kl, const int ku, const int nrhs,
-                   const f32* A, const int lda, f32* XACT, const int ldxact,
-                   f32* B, const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                  const f32* A, const int lda, f32* work);
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;      /* 0='U', 1='L' */
+    INT n;
+    INT imat;
+    INT iuplo;      /* 0='U', 1='L' */
     char name[64];
 } ddrvsy_rook_params_t;
 
@@ -83,8 +42,8 @@ typedef struct {
     f32* XACT;
     f32* WORK;
     f32* RWORK;
-    int* IWORK;
-    int lwork;
+    INT* IWORK;
+    INT lwork;
 } ddrvsy_rook_workspace_t;
 
 static ddrvsy_rook_workspace_t* g_workspace = NULL;
@@ -95,16 +54,16 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(ddrvsy_rook_workspace_t));
     if (!g_workspace) return -1;
 
-    int nmax = NMAX;
-    int nb = 1;
+    INT nmax = NMAX;
+    INT nb = 1;
 
     xlaenv(1, nb);
     xlaenv(2, 2);
 
-    int lwork = 2 * nmax;
+    INT lwork = 2 * nmax;
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
     /* Workspace for ssytri_rook */
-    int lwork_tri = (nmax + nb + 1) * (nb + 3);
+    INT lwork_tri = (nmax + nb + 1) * (nb + 3);
     if (lwork < lwork_tri) lwork = lwork_tri;
 
     g_workspace->lwork = lwork;
@@ -116,7 +75,7 @@ static int group_setup(void** state)
     g_workspace->XACT = calloc(nmax * NRHS, sizeof(f32));
     g_workspace->WORK = calloc(lwork, sizeof(f32));
     g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(f32));
-    g_workspace->IWORK = calloc(2 * nmax, sizeof(int));
+    g_workspace->IWORK = calloc(2 * nmax, sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -145,30 +104,30 @@ static int group_teardown(void** state)
     return 0;
 }
 
-static void run_ddrvsy_rook_single(int n, int imat, int iuplo)
+static void run_ddrvsy_rook_single(INT n, INT imat, INT iuplo)
 {
     static const char* UPLOS[] = {"U", "L"};
 
     ddrvsy_rook_workspace_t* ws = g_workspace;
     const char* uplo = UPLOS[iuplo];
 
-    int lda = (n > 1) ? n : 1;
+    INT lda = (n > 1) ? n : 1;
     f32 result[NTESTS];
-    for (int k = 0; k < NTESTS; k++) result[k] = 0.0f;
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0f;
 
-    int zerot = (imat >= 3 && imat <= 6);
-    int izero = 0;
+    INT zerot = (imat >= 3 && imat <= 6);
+    INT izero = 0;
 
     /* Set up parameters with SLATB4 */
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
     slatb4("SSY", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix with SLATMS */
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + n * 1000 + imat * 100 + iuplo * 10);
-    int info;
+    INT info;
     slatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
            anorm, kl, ku, uplo, ws->A, lda, ws->WORK, &info, rng_state);
     if (info != 0) {
@@ -188,40 +147,40 @@ static void run_ddrvsy_rook_single(int n, int imat, int iuplo)
 
         if (imat < 6) {
             if (iuplo == 0) {
-                int ioff = (izero - 1) * lda;
-                for (int i = 0; i < izero - 1; i++) {
+                INT ioff = (izero - 1) * lda;
+                for (INT i = 0; i < izero - 1; i++) {
                     ws->A[ioff + i] = 0.0f;
                 }
                 ioff = ioff + izero - 1;
-                for (int i = izero - 1; i < n; i++) {
+                for (INT i = izero - 1; i < n; i++) {
                     ws->A[ioff] = 0.0f;
                     ioff = ioff + lda;
                 }
             } else {
-                int ioff = izero - 1;
-                for (int i = 0; i < izero - 1; i++) {
+                INT ioff = izero - 1;
+                for (INT i = 0; i < izero - 1; i++) {
                     ws->A[ioff] = 0.0f;
                     ioff = ioff + lda;
                 }
                 ioff = ioff - (izero - 1);
-                for (int i = izero - 1; i < n; i++) {
+                for (INT i = izero - 1; i < n; i++) {
                     ws->A[ioff + i] = 0.0f;
                 }
             }
         } else {
-            int ioff = 0;
+            INT ioff = 0;
             if (iuplo == 0) {
-                for (int j = 0; j < n; j++) {
-                    int i2 = (j + 1 < izero) ? j + 1 : izero;
-                    for (int i = 0; i < i2; i++) {
+                for (INT j = 0; j < n; j++) {
+                    INT i2 = (j + 1 < izero) ? j + 1 : izero;
+                    for (INT i = 0; i < i2; i++) {
                         ws->A[ioff + i] = 0.0f;
                     }
                     ioff = ioff + lda;
                 }
             } else {
-                for (int j = 0; j < n; j++) {
-                    int i1 = (j + 1 > izero) ? j : izero - 1;
-                    for (int i = i1; i < n; i++) {
+                for (INT j = 0; j < n; j++) {
+                    INT i1 = (j + 1 > izero) ? j : izero - 1;
+                    for (INT i = i1; i < n; i++) {
                         ws->A[ioff + i] = 0.0f;
                     }
                     ioff = ioff + lda;
@@ -268,7 +227,7 @@ static void run_ddrvsy_rook_single(int n, int imat, int iuplo)
     slacpy(uplo, n, n, ws->A, lda, ws->AFAC, lda);
     slacpy("Full", n, NRHS, ws->B, lda, ws->X, lda);
 
-    int lwork = 2 * n;
+    INT lwork = 2 * n;
     if (lwork < n * NRHS) lwork = n * NRHS;
     if (lwork < 1) lwork = 1;
     if (lwork > ws->lwork) lwork = ws->lwork;
@@ -277,7 +236,7 @@ static void run_ddrvsy_rook_single(int n, int imat, int iuplo)
                ws->X, lda, ws->WORK, lwork, &info);
 
     /* Adjust expected value of INFO to account for pivoting */
-    int k = 0;
+    INT k = 0;
     if (izero > 0) {
         k = izero - 1;
         for (;;) {
@@ -316,9 +275,9 @@ static void run_ddrvsy_rook_single(int n, int imat, int iuplo)
 
     /* TEST 3: Check solution from generated exact solution */
     sget04(n, NRHS, ws->X, lda, ws->XACT, lda, rcondc, &result[2]);
-    int nt = 3;
+    INT nt = 3;
 
-    for (int i = 0; i < nt; i++) {
+    for (INT i = 0; i < nt; i++) {
         if (result[i] >= THRESH) {
             fail_msg("SSYSV_ROOK UPLO=%s test %d failed: result=%e >= thresh=%e",
                      uplo, i + 1, (double)result[i], (double)THRESH);
@@ -336,7 +295,7 @@ static void test_ddrvsy_rook_case(void** state)
 
 static ddrvsy_rook_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
@@ -344,15 +303,15 @@ static void build_test_array(void)
 
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
-        int nimat = (n <= 0) ? 1 : NTYPES;
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        INT nimat = (n <= 0) ? 1 : NTYPES;
 
-        for (int imat = 1; imat <= nimat; imat++) {
-            int zerot = (imat >= 3 && imat <= 6);
+        for (INT imat = 1; imat <= nimat; imat++) {
+            INT zerot = (imat >= 3 && imat <= 6);
             if (zerot && n < imat - 2) continue;
 
-            for (int iuplo = 0; iuplo < 2; iuplo++) {
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
                 ddrvsy_rook_params_t* p = &g_params[g_num_tests];
                 p->n = n;
                 p->imat = imat;

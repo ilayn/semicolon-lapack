@@ -9,82 +9,27 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
 #define THRESH 50.0
 #define MAXTYP 21
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Generalized symmetric eigenvalue routines */
-extern void dsygv(const int itype, const char* jobz, const char* uplo,
-                  const int n, f64* A, const int lda, f64* B, const int ldb,
-                  f64* W, f64* work, const int lwork, int* info);
-extern void dsygv_2stage(const int itype, const char* jobz, const char* uplo,
-                         const int n, f64* A, const int lda, f64* B, const int ldb,
-                         f64* W, f64* work, const int lwork, int* info);
-extern void dsygvd(const int itype, const char* jobz, const char* uplo,
-                   const int n, f64* A, const int lda, f64* B, const int ldb,
-                   f64* W, f64* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-extern void dsygvx(const int itype, const char* jobz, const char* range,
-                   const char* uplo, const int n, f64* A, const int lda,
-                   f64* B, const int ldb, const f64 vl, const f64 vu,
-                   const int il, const int iu, const f64 abstol,
-                   int* m, f64* W, f64* Z, const int ldz,
-                   f64* work, const int lwork, int* iwork,
-                   int* ifail, int* info);
-
 /* Packed storage variants */
-extern void dspgv(const int itype, const char* jobz, const char* uplo,
-                  const int n, f64* AP, f64* BP, f64* W,
-                  f64* Z, const int ldz, f64* work, int* info);
-extern void dspgvd(const int itype, const char* jobz, const char* uplo,
-                   const int n, f64* AP, f64* BP, f64* W,
-                   f64* Z, const int ldz, f64* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-extern void dspgvx(const int itype, const char* jobz, const char* range,
-                   const char* uplo, const int n, f64* AP, f64* BP,
-                   const f64 vl, const f64 vu, const int il, const int iu,
-                   const f64 abstol, int* m, f64* W, f64* Z, const int ldz,
-                   f64* work, int* iwork, int* ifail, int* info);
-
 /* Banded storage variants */
-extern void dsbgv(const char* jobz, const char* uplo, const int n,
-                  const int ka, const int kb, f64* AB, const int ldab,
-                  f64* BB, const int ldbb, f64* W, f64* Z, const int ldz,
-                  f64* work, int* info);
-extern void dsbgvd(const char* jobz, const char* uplo, const int n,
-                   const int ka, const int kb, f64* AB, const int ldab,
-                   f64* BB, const int ldbb, f64* W, f64* Z, const int ldz,
-                   f64* work, const int lwork, int* iwork, const int liwork,
-                   int* info);
-extern void dsbgvx(const char* jobz, const char* range, const char* uplo,
-                   const int n, const int ka, const int kb,
-                   f64* AB, const int ldab, f64* BB, const int ldbb,
-                   f64* Q, const int ldq, const f64 vl, const f64 vu,
-                   const int il, const int iu, const f64 abstol,
-                   int* m, f64* W, f64* Z, const int ldz,
-                   f64* work, int* iwork, int* ifail, int* info);
-
 /* Utility routines */
-extern f64 dlamch(const char* cmach);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-
 typedef struct {
-    int n;
-    int jtype;
+    INT n;
+    INT jtype;
     char name[96];
 } ddrvsg2stg_params_t;
 
 typedef struct {
-    int nmax;
+    INT nmax;
 
     f64* A;
     f64* B;
@@ -97,9 +42,9 @@ typedef struct {
     f64* D2;
 
     f64* work;
-    int* iwork;
-    int nwork;
-    int liwork;
+    INT* iwork;
+    INT nwork;
+    INT liwork;
 
     f64 result[80];
 
@@ -113,13 +58,13 @@ static ddrvsg2stg_workspace_t* g_ws = NULL;
  * ka9/kb9 cycling state for banded types (16-21).
  * Reset per size, advanced per jtype==9 (KTYPE==9).
  */
-static int g_ka9 = 0;
-static int g_kb9 = 0;
-static int g_last_n = -1;
+static INT g_ka9 = 0;
+static INT g_kb9 = 0;
+static INT g_last_n = -1;
 
-static const int KTYPE[MAXTYP] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
-static const int KMAGN[MAXTYP] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
-static const int KMODE[MAXTYP] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
+static const INT KTYPE[MAXTYP] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
+static const INT KMAGN[MAXTYP] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
+static const INT KMODE[MAXTYP] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
 
 static int group_setup(void** state)
 {
@@ -134,16 +79,16 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     /* Workspace sizes from ddrvsg2stg.f docstring:
      * NWORK >= 1 + 5*N + 2*N*lg(N) + 3*N^2
      * LIWORK >= 6*N
      * where lg(N) = smallest integer k such that 2^k >= N. */
-    int lgn = 0;
+    INT lgn = 0;
     if (nmax > 0) {
-        lgn = (int)(log((f64)nmax) / log(2.0));
+        lgn = (INT)(log((f64)nmax) / log(2.0));
         if ((1 << lgn) < nmax) lgn++;
         if ((1 << lgn) < nmax) lgn++;
     }
@@ -156,7 +101,7 @@ static int group_setup(void** state)
      * lhtrd = 4*n (JOBZ='N'), lwtrd = n*kd + n*max(kd+1,nb) + 2*kd^2 + (kd+1)*n
      * with kd=32, nb=32 (iparam2stage, single-threaded real): 104*n + 2048 */
     {
-        int nwork_2stg = 104 * nmax + 2048;
+        INT nwork_2stg = 104 * nmax + 2048;
         if (nwork_2stg > g_ws->nwork) {
             g_ws->nwork = nwork_2stg;
         }
@@ -174,7 +119,7 @@ static int group_setup(void** state)
     g_ws->D2 = malloc(nmax * sizeof(f64));
 
     g_ws->work  = malloc(g_ws->nwork * sizeof(f64));
-    g_ws->iwork = malloc(g_ws->liwork * sizeof(int));
+    g_ws->iwork = malloc(g_ws->liwork * sizeof(INT));
 
     if (!g_ws->A || !g_ws->B || !g_ws->Z || !g_ws->AB || !g_ws->BB ||
         !g_ws->AP || !g_ws->BP || !g_ws->D || !g_ws->D2 ||
@@ -217,20 +162,20 @@ static int group_teardown(void** state)
 /*
  * Pack upper or lower triangle of dense A into packed storage AP.
  */
-static void pack_symmetric(int n, const char* uplo, const f64* A, int lda,
+static void pack_symmetric(INT n, const char* uplo, const f64* A, INT lda,
                            f64* AP)
 {
-    int ij = 0;
+    INT ij = 0;
     if (uplo[0] == 'U' || uplo[0] == 'u') {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i <= j; i++) {
                 AP[ij] = A[i + j * lda];
                 ij++;
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = j; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = j; i < n; i++) {
                 AP[ij] = A[i + j * lda];
                 ij++;
             }
@@ -241,20 +186,20 @@ static void pack_symmetric(int n, const char* uplo, const f64* A, int lda,
 /*
  * Convert dense matrix to LAPACK band storage.
  */
-static void dense_to_band(int n, int kd, const char* uplo, const f64* A,
-                          int lda, f64* AB, int ldab)
+static void dense_to_band(INT n, INT kd, const char* uplo, const f64* A,
+                          INT lda, f64* AB, INT ldab)
 {
     if (uplo[0] == 'U' || uplo[0] == 'u') {
-        for (int j = 0; j < n; j++) {
-            int imin = (j - kd > 0) ? j - kd : 0;
-            for (int i = imin; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            INT imin = (j - kd > 0) ? j - kd : 0;
+            for (INT i = imin; i <= j; i++) {
                 AB[(kd + i - j) + j * ldab] = A[i + j * lda];
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            int imax = (j + kd < n - 1) ? j + kd : n - 1;
-            for (int i = j; i <= imax; i++) {
+        for (INT j = 0; j < n; j++) {
+            INT imax = (j + kd < n - 1) ? j + kd : n - 1;
+            for (INT i = j; i <= imax; i++) {
                 AB[(i - j) + j * ldab] = A[i + j * lda];
             }
         }
@@ -267,15 +212,15 @@ static void dense_to_band(int n, int kd, const char* uplo, const f64* A,
  * Returns 0 on success, nonzero on failure.
  * Sets *ka_out and *kb_out to the half-bandwidths of A and B.
  */
-static int generate_A(int n, int jtype,
-                      f64* A, int lda,
-                      f64* work, int* iwork,
+static INT generate_A(INT n, INT jtype,
+                      f64* A, INT lda,
+                      f64* work, INT* iwork,
                       uint64_t rng[static 4],
-                      int* ka_out, int* kb_out)
+                      INT* ka_out, INT* kb_out)
 {
-    int itype = KTYPE[jtype - 1];
-    int imode = KMODE[jtype - 1];
-    int iinfo = 0;
+    INT itype = KTYPE[jtype - 1];
+    INT imode = KMODE[jtype - 1];
+    INT iinfo = 0;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -294,7 +239,7 @@ static int generate_A(int n, int jtype,
     }
 
     f64 cond = ulpinv;
-    int ka, kb;
+    INT ka, kb;
 
     dlaset("F", lda, n, 0.0, 0.0, A, lda);
 
@@ -305,7 +250,7 @@ static int generate_A(int n, int jtype,
     } else if (itype == 2) {
         ka = 0;
         kb = 0;
-        for (int jcol = 0; jcol < n; jcol++) {
+        for (INT jcol = 0; jcol < n; jcol++) {
             A[jcol + jcol * lda] = anorm;
         }
 
@@ -324,7 +269,7 @@ static int generate_A(int n, int jtype,
     } else if (itype == 7) {
         ka = 0;
         kb = 0;
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, 0, 0, 0.0, anorm, "NO",
@@ -333,7 +278,7 @@ static int generate_A(int n, int jtype,
     } else if (itype == 8) {
         ka = (n - 1 > 0) ? n - 1 : 0;
         kb = ka;
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "H", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, n, 0.0, anorm, "NO",
@@ -367,12 +312,12 @@ static int generate_A(int n, int jtype,
  */
 static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
 {
-    int n = params->n;
-    int jtype = params->jtype;
+    INT n = params->n;
+    INT jtype = params->jtype;
 
     ddrvsg2stg_workspace_t* ws = g_ws;
-    int nmax = ws->nmax;
-    int lda = (nmax > 1) ? nmax : 1;
+    INT nmax = ws->nmax;
+    INT lda = (nmax > 1) ? nmax : 1;
 
     f64* A    = ws->A;
     f64* B    = ws->B;
@@ -384,9 +329,9 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
     f64* D    = ws->D;
     f64* D2   = ws->D2;
     f64* work = ws->work;
-    int* iwork = ws->iwork;
-    int nwork = ws->nwork;
-    int liwork = ws->liwork;
+    INT* iwork = ws->iwork;
+    INT nwork = ws->nwork;
+    INT liwork = ws->liwork;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -396,9 +341,9 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
     f64 rtovfl = sqrt(ovfl);
     (void)rtunfl; (void)rtovfl; (void)ovfl;
 
-    int ntest = 0;
-    int iinfo;
-    int m;
+    INT ntest = 0;
+    INT iinfo;
+    INT m;
     f64 vl = 0.0, vu = 0.0;
     f64 anorm;
 
@@ -425,7 +370,7 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
     }
 
     /* Generate A */
-    int ka, kb;
+    INT ka, kb;
     iinfo = generate_A(n, jtype, A, lda, work, iwork, ws->rng_state,
                        &ka, &kb);
     if (iinfo != 0) {
@@ -437,15 +382,15 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
 
     /* Compute IL, IU (0-based) */
     f64 abstol = unfl + unfl;
-    int il, iu;
+    INT il, iu;
     if (n <= 1) {
         il = 0;
         iu = n - 1;
     } else {
-        il = (int)((n - 1) * rng_uniform(ws->rng_state2));
-        iu = (int)((n - 1) * rng_uniform(ws->rng_state2));
+        il = (INT)((n - 1) * rng_uniform(ws->rng_state2));
+        iu = (INT)((n - 1) * rng_uniform(ws->rng_state2));
         if (il > iu) {
-            int itemp = il;
+            INT itemp = il;
             il = iu;
             iu = itemp;
         }
@@ -453,8 +398,8 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
 
     memset(ws->result, 0, sizeof(ws->result));
 
-    for (int ibtype = 1; ibtype <= 3; ibtype++) {
-        for (int ibuplo = 0; ibuplo < 2; ibuplo++) {
+    for (INT ibtype = 1; ibtype <= 3; ibtype++) {
+        for (INT ibuplo = 0; ibuplo < 2; ibuplo++) {
             const char* uplo = (ibuplo == 0) ? "U" : "L";
 
             /* Generate B: well-conditioned positive definite */
@@ -513,7 +458,7 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
              * D2 computed using the 2-stage reduction */
             {
                 f64 temp1 = 0.0, temp2 = 0.0;
-                for (int j = 0; j < n; j++) {
+                for (INT j = 0; j < n; j++) {
                     temp1 = fmax(temp1, fmax(fabs(D[j]), fabs(D2[j])));
                     temp2 = fmax(temp2, fabs(D[j] - D2[j]));
                 }
@@ -791,7 +736,7 @@ L310:
                 dense_to_band(n, ka, uplo, A, lda, AB, lda);
                 dense_to_band(n, kb, uplo, B, lda, BB, lda);
 
-                int ldq = (n > 1) ? n : 1;
+                INT ldq = (n > 1) ? n : 1;
                 dsbgvx("V", "A", uplo, n, ka, kb, AB, lda, BB, lda,
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, iwork + n, iwork, &iinfo);
@@ -869,7 +814,7 @@ L620:
     } /* end ibtype loop */
 
     /* Check results against threshold */
-    for (int j = 0; j < ntest; j++) {
+    for (INT j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
             print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d ka=%d kb=%d\n",
                           j + 1, ws->result[j], THRESH, n, jtype, ka, kb);
@@ -888,16 +833,16 @@ static void test_ddrvsg2stg_case(void** state)
 
 static ddrvsg2stg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
+        INT n = NVAL[in];
 
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             ddrvsg2stg_params_t* p = &g_params[g_num_tests];
             p->n = n;
             p->jtype = jtype;

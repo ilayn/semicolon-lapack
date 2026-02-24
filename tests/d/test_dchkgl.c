@@ -14,32 +14,25 @@
 
 typedef double f64;
 
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                  const f64* A, const int lda, f64* work);
-extern void dggbal(const char* job, const int n, f64* A, const int lda,
-                   f64* B, const int ldb, int* ilo, int* ihi,
-                   f64* lscale, f64* rscale, f64* work, int* info);
-
 #define LDA 20
 #define LWORK (6 * LDA)
 
 /* ---------- helpers ---------- */
 
-static void rowmajor_to_colmajor(const f64* rm, f64* cm, int n, int ld)
+static void rowmajor_to_colmajor(const f64* rm, f64* cm, INT n, INT ld)
 {
     memset(cm, 0, (size_t)ld * n * sizeof(f64));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ld] = rm[i * n + j];
 }
 
 /* ---------- test case data from TESTING/dgbal.in ---------- */
 
 typedef struct {
-    int n;
-    int iloin;
-    int ihiin;
+    INT n;
+    INT iloin;
+    INT ihiin;
     const f64* a_rm;
     const f64* b_rm;
     const f64* ain_rm;
@@ -361,16 +354,16 @@ static void test_dggbal(void** state)
     f64 ain[LDA * LDA], bin[LDA * LDA];
     f64 lscale[LDA], rscale[LDA], work[LWORK];
     f64 dummy[1];
-    int ilo, ihi, info;
+    INT ilo, ihi, info;
     f64 rmax = 0.0, vmax;
-    int ninfo = 0, knt = 0;
-    int lmax_info = 0, lmax_idx = 0, lmax_resid = 0;
+    INT ninfo = 0, knt = 0;
+    INT lmax_info = 0, lmax_idx = 0, lmax_resid = 0;
 
-    for (int tc = 0; tc < NCASES; tc++) {
+    for (INT tc = 0; tc < NCASES; tc++) {
         const dgbal_case_t* c = &cases[tc];
-        int n = c->n;
-        int iloin = c->iloin;
-        int ihiin = c->ihiin;
+        INT n = c->n;
+        INT iloin = c->iloin;
+        INT ihiin = c->ihiin;
 
         rowmajor_to_colmajor(c->a_rm, a, n, LDA);
         rowmajor_to_colmajor(c->b_rm, b, n, LDA);
@@ -398,8 +391,8 @@ static void test_dggbal(void** state)
 
         /* Compare balanced matrices and scale vectors */
         vmax = 0.0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 f64 diff = fabs(a[i + j * LDA] - ain[i + j * LDA]);
                 if (diff > vmax) vmax = diff;
                 diff = fabs(b[i + j * LDA] - bin[i + j * LDA]);
@@ -407,7 +400,7 @@ static void test_dggbal(void** state)
             }
         }
 
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 diff = fabs(lscale[i] - c->lsclin[i]);
             if (diff > vmax) vmax = diff;
             diff = fabs(rscale[i] - c->rsclin[i]);

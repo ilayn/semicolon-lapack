@@ -30,7 +30,7 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <string.h>
 
@@ -38,74 +38,31 @@
 #define MAXTYP 21
 #define NTEST  37
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Matrix type parameters (from dchkst.f DATA statements lines 658-663) */
-static const int KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10};
-static const int KMAGN[MAXTYP] = {1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,2,3, 1};
-static const int KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3};
+static const INT KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10};
+static const INT KMAGN[MAXTYP] = {1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,2,3, 1};
+static const INT KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3};
 
 /* SREL and SRANGE flags (from dchkst.f lines 622-625) */
 #define SRANGE 0
 #define SREL   0
 
 /* External declarations - Reduction routines */
-extern void ssytrd(const char* uplo, const int n, f32* A, const int lda,
-                   f32* D, f32* E, f32* tau, f32* work, const int lwork,
-                   int* info);
-extern void sorgtr(const char* uplo, const int n, f32* A, const int lda,
-                   const f32* tau, f32* work, const int lwork, int* info);
-extern void ssptrd(const char* uplo, const int n, f32* AP,
-                   f32* D, f32* E, f32* tau, int* info);
-extern void sopgtr(const char* uplo, const int n, const f32* AP,
-                   const f32* tau, f32* Q, const int ldq, f32* work,
-                   int* info);
-
 /* External declarations - Tridiagonal eigenvalue solvers */
-extern void ssteqr(const char* compz, const int n, f32* D, f32* E,
-                   f32* Z, const int ldz, f32* work, int* info);
-extern void ssterf(const int n, f32* D, f32* E, int* info);
-extern void spteqr(const char* compz, const int n, f32* D, f32* E,
-                   f32* Z, const int ldz, f32* work, int* info);
-extern void sstedc(const char* compz, const int n, f32* D, f32* E,
-                   f32* Z, const int ldz, f32* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-extern void sstebz(const char* range, const char* order, const int n,
-                   const f32 vl, const f32 vu, const int il, const int iu,
-                   const f32 abstol, const f32* D, const f32* E,
-                   int* m, int* nsplit, f32* W, int* iblock, int* isplit,
-                   f32* work, int* iwork, int* info);
-extern void sstein(const int n, const f32* D, const f32* E,
-                   const int m, const f32* W, const int* iblock,
-                   const int* isplit, f32* Z, const int ldz,
-                   f32* work, int* iwork, int* ifail, int* info);
-extern void sstemr(const char* jobz, const char* range, const int n,
-                   f32* D, f32* E, const f32 vl, const f32 vu,
-                   const int il, const int iu, int* m, f32* W,
-                   f32* Z, const int ldz, const int nzc, int* isuppz,
-                   int* tryrac, f32* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-
 /* Utility routines */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int n;
-    int jtype;
+    INT n;
+    INT jtype;
     char name[96];
 } dchkst_params_t;
 
 /* Workspace structure */
 typedef struct {
-    int nmax;
+    INT nmax;
 
     f32* A;       /* nmax x nmax - original symmetric matrix */
     f32* U;       /* nmax x nmax - orthogonal from ssytrd/sorgtr */
@@ -125,15 +82,15 @@ typedef struct {
     f32* WA2;     /* nmax - eigenvalues from sstebz(I,E) */
     f32* WA3;     /* nmax - eigenvalues from sstebz(V,E) */
     f32* WR;      /* nmax - eigenvalues from sstemr */
-    int* IBLOCK;  /* nmax - block indices from sstebz */
-    int* ISPLIT;  /* nmax - split indices from sstebz */
-    int* IFAIL;   /* nmax - failure flags from sstein */
-    int* ISUPPZ;  /* 2*nmax - support from sstemr */
+    INT* IBLOCK;  /* nmax - block indices from sstebz */
+    INT* ISPLIT;  /* nmax - split indices from sstebz */
+    INT* IFAIL;   /* nmax - failure flags from sstein */
+    INT* ISUPPZ;  /* 2*nmax - support from sstemr */
 
     f32* work;
-    int* iwork;
-    int lwork;
-    int liwork;
+    INT* iwork;
+    INT lwork;
+    INT liwork;
 
     f32 result[NTEST + 1];
 
@@ -158,14 +115,14 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
-    int nap = (nmax * (nmax + 1)) / 2;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
+    INT nap = (nmax * (nmax + 1)) / 2;
 
     /* Compute workspace sizes (dchkst.f lines 741-746) */
-    int lgn = 0;
+    INT lgn = 0;
     if (nmax > 0) {
-        lgn = (int)(logf((f32)nmax) / logf(2.0f));
+        lgn = (INT)(logf((f32)nmax) / logf(2.0f));
         if ((1 << lgn) < nmax) lgn++;
         if ((1 << lgn) < nmax) lgn++;
         g_ws->lwork = 1 + 4 * nmax + 2 * nmax * lgn + 4 * n2;
@@ -198,14 +155,14 @@ static int group_setup(void** state)
     g_ws->WR  = malloc(nmax * sizeof(f32));
 
     /* Integer work arrays */
-    g_ws->IBLOCK = malloc(nmax * sizeof(int));
-    g_ws->ISPLIT = malloc(nmax * sizeof(int));
-    g_ws->IFAIL  = malloc(nmax * sizeof(int));
-    g_ws->ISUPPZ = malloc(2 * nmax * sizeof(int));
+    g_ws->IBLOCK = malloc(nmax * sizeof(INT));
+    g_ws->ISPLIT = malloc(nmax * sizeof(INT));
+    g_ws->IFAIL  = malloc(nmax * sizeof(INT));
+    g_ws->ISUPPZ = malloc(2 * nmax * sizeof(INT));
 
     /* Work arrays */
     g_ws->work  = malloc(g_ws->lwork * sizeof(f32));
-    g_ws->iwork = malloc(g_ws->liwork * sizeof(int));
+    g_ws->iwork = malloc(g_ws->liwork * sizeof(INT));
 
     if (!g_ws->A || !g_ws->U || !g_ws->V || !g_ws->Z ||
         !g_ws->AP || !g_ws->VP || !g_ws->TAU || !g_ws->SD || !g_ws->SE ||
@@ -262,14 +219,14 @@ static int group_teardown(void** state)
  * Generate test matrix according to jtype.
  * Based on dchkst.f lines 785-892.
  */
-static int generate_matrix(int n, int jtype, f32* A, int lda,
-                           f32* work, int* iwork,
+static INT generate_matrix(INT n, INT jtype, f32* A, INT lda,
+                           f32* work, INT* iwork,
                            uint64_t state[static 4])
 {
-    int itype = KTYPE[jtype - 1];
-    int imode = KMODE[jtype - 1];
+    INT itype = KTYPE[jtype - 1];
+    INT imode = KMODE[jtype - 1];
     f32 anorm, cond;
-    int iinfo = 0;
+    INT iinfo = 0;
 
     f32 ulp = slamch("P");
     f32 unfl = slamch("S");
@@ -298,7 +255,7 @@ static int generate_matrix(int n, int jtype, f32* A, int lda,
         iinfo = 0;
 
     } else if (itype == 2) {
-        for (int jc = 0; jc < n; jc++) {
+        for (INT jc = 0; jc < n; jc++) {
             A[jc + jc * lda] = anorm;
         }
 
@@ -311,14 +268,14 @@ static int generate_matrix(int n, int jtype, f32* A, int lda,
                n, n, "N", A, lda, work + n, &iinfo, state);
 
     } else if (itype == 7) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         slatmr(n, n, "S", "S", work, 6, 1.0f, 1.0f, "T", "N",
                work + n, 1, 1.0f, work + 2 * n, 1, 1.0f,
                "N", idumma, 0, 0, 0.0f, anorm, "NO",
                A, lda, iwork, &iinfo, state);
 
     } else if (itype == 8) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         slatmr(n, n, "S", "S", work, 6, 1.0f, 1.0f, "T", "N",
                work + n, 1, 1.0f, work + 2 * n, 1, 1.0f,
                "N", idumma, n, n, 0.0f, anorm, "NO",
@@ -331,7 +288,7 @@ static int generate_matrix(int n, int jtype, f32* A, int lda,
     } else if (itype == 10) {
         slatms(n, n, "S", "P", work, imode, cond, anorm,
                1, 1, "N", A, lda, work + n, &iinfo, state);
-        for (int i = 1; i < n; i++) {
+        for (INT i = 1; i < n; i++) {
             f32 temp1 = fabsf(A[i + (i - 1) * lda]) /
                         sqrtf(fabsf(A[(i - 1) + (i - 1) * lda] * A[i + i * lda]));
             if (temp1 > 0.5f) {
@@ -354,11 +311,11 @@ static int generate_matrix(int n, int jtype, f32* A, int lda,
  * Compute max |D1[j] - D2[j]| / max(unfl, ulp * max(|D1|, |D2|))
  * Used for tests 11, 12, 16, 26, 31, 34, 37.
  */
-static f32 eig_compare(const f32* D1, const f32* D2, int count,
+static f32 eig_compare(const f32* D1, const f32* D2, INT count,
                         f32 ulp, f32 unfl)
 {
     f32 temp1 = 0.0f, temp2 = 0.0f;
-    for (int j = 0; j < count; j++) {
+    for (INT j = 0; j < count; j++) {
         temp1 = fmaxf(temp1, fmaxf(fabsf(D1[j]), fabsf(D2[j])));
         temp2 = fmaxf(temp2, fabsf(D1[j] - D2[j]));
     }
@@ -370,13 +327,13 @@ static f32 eig_compare(const f32* D1, const f32* D2, int count,
 static void test_dchkst_case(void** state)
 {
     dchkst_params_t* params = *state;
-    int n = params->n;
-    int jtype = params->jtype;
+    INT n = params->n;
+    INT jtype = params->jtype;
 
     dchkst_ws_t* ws = g_ws;
-    int lda = ws->nmax;
-    int ldu = ws->nmax;
-    int nap = (n * (n + 1)) / 2;
+    INT lda = ws->nmax;
+    INT ldu = ws->nmax;
+    INT nap = (n * (n + 1)) / 2;
 
     f32* A   = ws->A;
     f32* U   = ws->U;
@@ -397,8 +354,8 @@ static void test_dchkst_case(void** state)
     f32* WA3 = ws->WA3;
     f32* WR  = ws->WR;
     f32* work = ws->work;
-    int* iwork = ws->iwork;
-    int lwork = ws->lwork;
+    INT* iwork = ws->iwork;
+    INT lwork = ws->lwork;
 
     f32 ulp = slamch("P");
     f32 unfl = slamch("S");
@@ -406,21 +363,21 @@ static void test_dchkst_case(void** state)
     f32 ulpinv = 1.0f / ulp;
     f32 rtunfl = sqrtf(unfl);
     f32 rtovfl = sqrtf(ovfl);
-    int log2ui = (int)(logf(ulpinv) / logf(2.0f));
+    INT log2ui = (INT)(logf(ulpinv) / logf(2.0f));
 
     f32 dumma[1] = {0.0f};
-    int iinfo;
-    int m, m2, m3, nsplit;
-    int ntest = 0;
+    INT iinfo;
+    INT m, m2, m3, nsplit;
+    INT ntest = 0;
     f32 temp1, temp2, temp3;
     f32 anorm, abstol, vl, vu;
-    int il, iu;
+    INT il, iu;
 
     /* Compute lgn and workspace sizes for this n (dchkst.f lines 736-746) */
-    int lgn = 0;
-    int lwedc, liwedc;
+    INT lgn = 0;
+    INT lwedc, liwedc;
     if (n > 0) {
-        lgn = (int)(logf((f32)n) / logf(2.0f));
+        lgn = (INT)(logf((f32)n) / logf(2.0f));
         if ((1 << lgn) < n) lgn++;
         if ((1 << lgn) < n) lgn++;
         lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
@@ -442,7 +399,7 @@ static void test_dchkst_case(void** state)
     }
 
     /* Initialize results to 0 */
-    for (int j = 0; j < NTEST; j++) {
+    for (INT j = 0; j < NTEST; j++) {
         ws->result[j] = 0.0f;
     }
 
@@ -522,9 +479,9 @@ static void test_dchkst_case(void** state)
      * ================================================================ */
 
     {
-        int idx = 0;
-        for (int jc = 0; jc < n; jc++) {
-            for (int jr = 0; jr <= jc; jr++) {
+        INT idx = 0;
+        for (INT jc = 0; jc < n; jc++) {
+            for (INT jr = 0; jr <= jc; jr++) {
                 AP[idx] = A[jr + jc * lda];
                 idx++;
             }
@@ -558,9 +515,9 @@ static void test_dchkst_case(void** state)
      * ================================================================ */
 
     {
-        int idx = 0;
-        for (int jc = 0; jc < n; jc++) {
-            for (int jr = jc; jr < n; jr++) {
+        INT idx = 0;
+        for (INT jc = 0; jc < n; jc++) {
+            for (INT jr = jc; jr < n; jr++) {
                 AP[idx] = A[jr + jc * lda];
                 idx++;
             }
@@ -616,7 +573,7 @@ static void test_dchkst_case(void** state)
     if (n > 0) cblas_scopy(n - 1, SE, 1, work, 1);
 
     ntest = 11;
-    ssteqr("N", n, D2, work, work + n, ldu, work + n, &iinfo);
+    ssteqr("N", n, D2, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
         print_message("SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[10] = ulpinv;
@@ -650,7 +607,7 @@ static void test_dchkst_case(void** state)
     ntest = 13;
     temp1 = THRESH * (0.5f - ulp);
 
-    for (int j = 0; j <= log2ui; j++) {
+    for (INT j = 0; j <= log2ui; j++) {
         sstech(n, SD, SE, D1, temp1, work, &iinfo);
         if (iinfo == 0) break;
         temp1 = temp1 * 2.0f;
@@ -694,7 +651,7 @@ static void test_dchkst_case(void** state)
         /* Test 16: eigenvalue comparison with 100*ulp */
         temp1 = 0.0f;
         temp2 = 0.0f;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmaxf(temp1, fmaxf(fabsf(D4[j]), fabsf(D5[j])));
             temp2 = fmaxf(temp2, fabsf(D4[j] - D5[j]));
         }
@@ -731,7 +688,7 @@ static void test_dchkst_case(void** state)
                 powf(0.5f, 4);
 
         temp1 = 0.0f;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmaxf(temp1, fabsf(D4[j] - WR[n - j - 1]) /
                     (abstol + fabsf(D4[j])));
         }
@@ -767,9 +724,9 @@ static void test_dchkst_case(void** state)
         il = 0;
         iu = n - 1;
     } else {
-        il = (int)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        iu = (int)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        if (iu < il) { int itemp = iu; iu = il; il = itemp; }
+        il = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        iu = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        if (iu < il) { INT itemp = iu; iu = il; il = itemp; }
     }
 
     sstebz("I", "E", n, vl, vu, il, iu, abstol, SD, SE, &m2, &nsplit,
@@ -931,12 +888,12 @@ static void test_dchkst_case(void** state)
         slaset("F", n, n, 0.0f, 1.0f, Z, ldu);
 
         ntest = 29;
-        il = (int)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        iu = (int)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        if (iu < il) { int itemp = iu; iu = il; il = itemp; }
+        il = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        iu = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        if (iu < il) { INT itemp = iu; iu = il; il = itemp; }
 
         {
-            int tryrac = 1;
+            INT tryrac = 1;
             sstemr("V", "I", n, D5, work, vl, vu, il, iu, &m, D1, Z, ldu, n,
                    ws->ISUPPZ, &tryrac, work + n, lwork - n,
                    iwork, ws->liwork, &iinfo);
@@ -957,7 +914,7 @@ static void test_dchkst_case(void** state)
 
         ntest = 31;
         {
-            int tryrac = 1;
+            INT tryrac = 1;
             sstemr("N", "I", n, D5, work, vl, vu, il, iu, &m, D2, Z, ldu, n,
                    ws->ISUPPZ, &tryrac, work + n, lwork - n,
                    iwork, ws->liwork, &iinfo);
@@ -1001,7 +958,7 @@ static void test_dchkst_case(void** state)
         }
 
         {
-            int tryrac = 1;
+            INT tryrac = 1;
             sstemr("V", "V", n, D5, work, vl, vu, il, iu, &m, D1, Z, ldu, n,
                    ws->ISUPPZ, &tryrac, work + n, lwork - n,
                    iwork, ws->liwork, &iinfo);
@@ -1022,7 +979,7 @@ static void test_dchkst_case(void** state)
 
         ntest = 34;
         {
-            int tryrac = 1;
+            INT tryrac = 1;
             sstemr("N", "V", n, D5, work, vl, vu, il, iu, &m, D2, Z, ldu, n,
                    ws->ISUPPZ, &tryrac, work + n, lwork - n,
                    iwork, ws->liwork, &iinfo);
@@ -1054,7 +1011,7 @@ static void test_dchkst_case(void** state)
 
     ntest = 35;
     {
-        int tryrac = 1;
+        INT tryrac = 1;
         sstemr("V", "A", n, D5, work, vl, vu, il, iu, &m, D1, Z, ldu, n,
                ws->ISUPPZ, &tryrac, work + n, lwork - n,
                iwork, ws->liwork, &iinfo);
@@ -1075,7 +1032,7 @@ static void test_dchkst_case(void** state)
 
     ntest = 37;
     {
-        int tryrac = 1;
+        INT tryrac = 1;
         sstemr("N", "A", n, D5, work, vl, vu, il, iu, &m, D2, Z, ldu, n,
                ws->ISUPPZ, &tryrac, work + n, lwork - n,
                iwork, ws->liwork, &iinfo);
@@ -1094,7 +1051,7 @@ L280:
     /* Check all computed results */
     {
         static char ctx[128];
-        for (int jr = 0; jr < ntest; jr++) {
+        for (INT jr = 0; jr < ntest; jr++) {
             snprintf(ctx, sizeof(ctx), "dchkst n=%d type=%d TEST %d", n, jtype, jr + 1);
             set_test_context(ctx);
             assert_residual_ok(ws->result[jr]);
@@ -1108,16 +1065,16 @@ L280:
 
 static dchkst_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
+        INT n = NVAL[in];
 
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             /* Skip type 9 — matches LAPACK's sep.in which tests types
                1-8, 10-21.  Type 9 (KTYPE=5, KMODE=1: one small eigenvalue,
                cond=ulpinv) produces tridiagonals where SSTEMR's MRRR

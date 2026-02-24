@@ -3,16 +3,9 @@
  * @brief DHST01 tests the reduction of a general matrix A to upper Hessenberg form.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * DHST01 tests the reduction of a general matrix A to upper Hessenberg
@@ -43,16 +36,16 @@ extern void dlacpy(const char* uplo, const int m, const int n,
  * @param[in] lwork   The length of work. lwork >= 2*n*n.
  * @param[out] result Array of 2 elements containing the test ratios.
  */
-void dhst01(const int n, const int ilo, const int ihi,
-            const f64* A, const int lda,
-            const f64* H, const int ldh,
-            const f64* Q, const int ldq,
-            f64* work, const int lwork, f64* result)
+void dhst01(const INT n, const INT ilo, const INT ihi,
+            const f64* A, const INT lda,
+            const f64* H, const INT ldh,
+            const f64* Q, const INT ldq,
+            f64* work, const INT lwork, f64* result)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int ldwork;
+    INT ldwork;
     f64 anorm, eps, smlnum, unfl, wnorm;
 
     /* Silence unused parameter warnings */

@@ -28,7 +28,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -39,31 +38,16 @@
 #define MAXTYP 21
 
 /* Test dimensions from nep.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Selection function type for dgees */
-typedef int (*dselect2_t)(const f64* wr, const f64* wi);
-
-/* External function declarations */
-extern void dgees(const char* jobvs, const char* sort, dselect2_t select,
-                  const int n, f64* A, const int lda, int* sdim,
-                  f64* wr, f64* wi, f64* VS, const int ldvs,
-                  f64* work, const int lwork, int* bwork, int* info);
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-extern void xerbla(const char* srname, const int info);
+typedef INT (*dselect2_t)(const f64* wr, const f64* wi);
 
 /* Common block for eigenvalue selection (mirrors SSLCT in ddrves.f) */
-static int g_selopt;       /* Selection option */
-static int g_seldim;       /* Dimension of selected eigenvalues */
-static int g_selval[20];   /* Selection indicators */
+static INT g_selopt;       /* Selection option */
+static INT g_seldim;       /* Dimension of selected eigenvalues */
+static INT g_selval[20];   /* Selection indicators */
 static f64 g_selwr[20]; /* Real parts of selected eigenvalues */
 static f64 g_selwi[20]; /* Imaginary parts of selected eigenvalues */
 
@@ -71,9 +55,9 @@ static f64 g_selwi[20]; /* Imaginary parts of selected eigenvalues */
  * Selection function for dgees.
  * Selects eigenvalues based on global selection criteria.
  */
-static int dslect(const f64* wr, const f64* wi)
+static INT dslect(const f64* wr, const f64* wi)
 {
-    int j;
+    INT j;
     f64 eps = dlamch("P");
 
     if (g_selopt == 0) {
@@ -95,16 +79,16 @@ static int dslect(const f64* wr, const f64* wi)
 
 /* Test parameters for a single test case */
 typedef struct {
-    int n;
-    int jtype;    /* Matrix type (1-21) */
-    int iwk;      /* Workspace variant (1=minimal, 2=generous) */
-    int isort;    /* Sort eigenvalues (0=no, 1=yes) */
+    INT n;
+    INT jtype;    /* Matrix type (1-21) */
+    INT iwk;      /* Workspace variant (1=minimal, 2=generous) */
+    INT isort;    /* Sort eigenvalues (0=no, 1=yes) */
     char name[96];
 } ddrves_params_t;
 
 /* Workspace structure for all tests */
 typedef struct {
-    int nmax;
+    INT nmax;
 
     /* Matrices (all nmax x nmax) */
     f64* A;      /* Working matrix */
@@ -120,9 +104,9 @@ typedef struct {
 
     /* Work arrays */
     f64* work;
-    int* iwork;
-    int* bwork;
-    int lwork;
+    INT* iwork;
+    INT* bwork;
+    INT lwork;
 
     /* Test results */
     f64 result[13];
@@ -140,10 +124,10 @@ static ddrves_workspace_t* g_ws = NULL;
  * KMODE: 3*0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1
  * KCONDS: 3*0, 5*0, 4*1, 6*2, 3*0
  */
-static const int KTYPE[MAXTYP]  = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-static const int KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-static const int KMODE[MAXTYP]  = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-static const int KCONDS[MAXTYP] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+static const INT KTYPE[MAXTYP]  = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+static const INT KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+static const INT KMODE[MAXTYP]  = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+static const INT KCONDS[MAXTYP] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
 
 /**
  * Group setup: allocate shared workspace.
@@ -162,8 +146,8 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     /* Allocate matrices */
     g_ws->A   = malloc(n2 * sizeof(f64));
@@ -178,8 +162,8 @@ static int group_setup(void** state)
     /* Workspace: 5*N + 2*N^2 for generous allocation */
     g_ws->lwork = 5 * nmax + 2 * n2;
     g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
-    g_ws->iwork = malloc(nmax * sizeof(int));
-    g_ws->bwork = malloc(nmax * sizeof(int));
+    g_ws->iwork = malloc(nmax * sizeof(INT));
+    g_ws->bwork = malloc(nmax * sizeof(INT));
 
     if (!g_ws->A || !g_ws->H || !g_ws->HT || !g_ws->VS ||
         !g_ws->WR || !g_ws->WI || !g_ws->WRT || !g_ws->WIT ||
@@ -221,13 +205,13 @@ static int group_teardown(void** state)
  *
  * Based on ddrves.f lines 583-700.
  */
-static int generate_matrix(int n, int jtype, f64* A, int lda,
-                           f64* work, int* iwork, uint64_t state[static 4])
+static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
+                           f64* work, INT* iwork, uint64_t state[static 4])
 {
-    int itype = KTYPE[jtype - 1];
-    int imode = KMODE[jtype - 1];
+    INT itype = KTYPE[jtype - 1];
+    INT imode = KMODE[jtype - 1];
     f64 anorm, cond, conds;
-    int iinfo = 0;
+    INT iinfo = 0;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -254,13 +238,13 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
 
     } else if (itype == 2) {
         /* Identity matrix */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             A[j + j * lda] = anorm;
         }
 
     } else if (itype == 3) {
         /* Jordan block */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             A[j + j * lda] = anorm;
             if (j > 0) {
                 A[j + (j - 1) * lda] = 1.0;
@@ -296,7 +280,7 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
 
     } else if (itype == 9) {
         /* General, random eigenvalues via DLATMR */
-        int idumma[1] = {1};  /* Dummy pivot array */
+        INT idumma[1] = {1};  /* Dummy pivot array */
 
         dlatmr(n, n, "S", "N", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
@@ -329,14 +313,14 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
  */
 static void run_ddrves_single(ddrves_params_t* params)
 {
-    int n = params->n;
-    int jtype = params->jtype;
-    int iwk = params->iwk;
-    int isort = params->isort;
+    INT n = params->n;
+    INT jtype = params->jtype;
+    INT iwk = params->iwk;
+    INT isort = params->isort;
 
     ddrves_workspace_t* ws = g_ws;
-    int lda = ws->nmax;
-    int ldvs = ws->nmax;
+    INT lda = ws->nmax;
+    INT ldvs = ws->nmax;
 
     f64* A = ws->A;
     f64* H = ws->H;
@@ -347,17 +331,17 @@ static void run_ddrves_single(ddrves_params_t* params)
     f64* WRT = ws->WRT;
     f64* WIT = ws->WIT;
     f64* work = ws->work;
-    int* bwork = ws->bwork;
+    INT* bwork = ws->bwork;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
     f64 ulpinv = 1.0 / ulp;
 
-    int rsub = (isort == 0) ? 0 : 6;
+    INT rsub = (isort == 0) ? 0 : 6;
     const char* sort = (isort == 0) ? "N" : "S";
 
     /* Initialize results to -1 (not computed) */
-    for (int j = 0; j < 13; j++) {
+    for (INT j = 0; j < 13; j++) {
         ws->result[j] = -1.0;
     }
 
@@ -367,7 +351,7 @@ static void run_ddrves_single(ddrves_params_t* params)
     }
 
     /* Generate matrix */
-    int iinfo = generate_matrix(n, jtype, A, lda, work, ws->iwork, ws->rng_state);
+    INT iinfo = generate_matrix(n, jtype, A, lda, work, ws->iwork, ws->rng_state);
     if (iinfo != 0) {
         /* Matrix generation failed */
         ws->result[rsub] = ulpinv;
@@ -378,7 +362,7 @@ static void run_ddrves_single(ddrves_params_t* params)
     }
 
     /* Determine workspace size */
-    int nnwork;
+    INT nnwork;
     if (iwk == 1) {
         nnwork = 3 * n;
     } else {
@@ -393,7 +377,7 @@ static void run_ddrves_single(ddrves_params_t* params)
     g_selopt = 1;
 
     /* Compute Schur form with vectors */
-    int sdim;
+    INT sdim;
     dgees("V", sort, dslect, n, H, lda, &sdim, WR, WI, VS, ldvs,
           work, nnwork, bwork, &iinfo);
 
@@ -410,8 +394,8 @@ static void run_ddrves_single(ddrves_params_t* params)
     ws->result[rsub] = 0.0;
 
     /* Check that elements below subdiagonal are zero */
-    for (int j = 0; j < n - 2; j++) {
-        for (int i = j + 2; i < n; i++) {
+    for (INT j = 0; j < n - 2; j++) {
+        for (INT i = j + 2; i < n; i++) {
             if (H[i + j * lda] != 0.0) {
                 ws->result[rsub] = ulpinv;
             }
@@ -419,14 +403,14 @@ static void run_ddrves_single(ddrves_params_t* params)
     }
 
     /* Check that we don't have two consecutive 2x2 blocks */
-    for (int i = 0; i < n - 2; i++) {
+    for (INT i = 0; i < n - 2; i++) {
         if (H[i + 1 + i * lda] != 0.0 && H[i + 2 + (i + 1) * lda] != 0.0) {
             ws->result[rsub] = ulpinv;
         }
     }
 
     /* Check 2x2 blocks have proper structure */
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         if (H[i + 1 + i * lda] != 0.0) {
             /* 2x2 block: check structure */
             if (H[i + i * lda] != H[i + 1 + (i + 1) * lda] ||
@@ -440,7 +424,7 @@ static void run_ddrves_single(ddrves_params_t* params)
     assert_residual_ok(ws->result[rsub]);
 
     /* Tests 2-3 (or 8-9): | A - VS*T*VS' | and | I - VS*VS' | */
-    int lwork_hst = 2 * n * n > 1 ? 2 * n * n : 1;
+    INT lwork_hst = 2 * n * n > 1 ? 2 * n * n : 1;
     f64 res[2];
     dhst01(n, 1, n, A, lda, H, lda, VS, ldvs, work, lwork_hst, res);
     ws->result[rsub + 1] = res[0];
@@ -451,7 +435,7 @@ static void run_ddrves_single(ddrves_params_t* params)
 
     /* Test 4 (or 10): Check eigenvalues match diagonal of T */
     ws->result[rsub + 3] = 0.0;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         if (H[i + i * lda] != WR[i]) {
             ws->result[rsub + 3] = ulpinv;
         }
@@ -466,7 +450,7 @@ static void run_ddrves_single(ddrves_params_t* params)
         }
     }
 
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         if (H[i + 1 + i * lda] != 0.0) {
             f64 tmp = sqrt(fabs(H[i + 1 + i * lda])) * sqrt(fabs(H[i + (i + 1) * lda]));
             f64 wival = fabs(WI[i] - tmp) / (ulp * tmp > unfl ? ulp * tmp : unfl);
@@ -494,8 +478,8 @@ static void run_ddrves_single(ddrves_params_t* params)
     } else {
         /* Test 5: Compare T matrices */
         ws->result[rsub + 4] = 0.0;
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++) {
                 if (H[i + j * lda] != HT[i + j * lda]) {
                     ws->result[rsub + 4] = ulpinv;
                 }
@@ -504,7 +488,7 @@ static void run_ddrves_single(ddrves_params_t* params)
 
         /* Test 6: Compare eigenvalues */
         ws->result[rsub + 5] = 0.0;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             if (WR[i] != WRT[i] || WI[i] != WIT[i]) {
                 ws->result[rsub + 5] = ulpinv;
             }
@@ -517,8 +501,8 @@ static void run_ddrves_single(ddrves_params_t* params)
     /* Test 13 (only for sorted case): SDIM validation */
     if (isort == 1) {
         /* Count expected selected eigenvalues */
-        int knteig = 0;
-        for (int i = 0; i < n; i++) {
+        INT knteig = 0;
+        for (INT i = 0; i < n; i++) {
             if (dslect(&WR[i], &WI[i])) {
                 knteig++;
             }
@@ -547,7 +531,7 @@ static void test_ddrves_case(void** state)
 
 static ddrves_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -557,11 +541,11 @@ static void build_test_array(void)
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
+        INT n = NVAL[in];
 
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
-            for (int iwk = 1; iwk <= 2; iwk++) {
-                for (int isort = 0; isort <= 1; isort++) {
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+            for (INT iwk = 1; iwk <= 2; iwk++) {
+                for (INT isort = 0; isort <= 1; isort++) {
                     ddrves_params_t* p = &g_params[g_num_tests];
                     p->n = n;
                     p->jtype = jtype;

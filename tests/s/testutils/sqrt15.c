@@ -8,25 +8,11 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slascl(const char* type, const int kl, const int ku,
-                   const f32 cfrom, const f32 cto,
-                   const int m, const int n, f32* A, const int lda,
-                   int* info);
-extern void slarf(const char* side, const int m, const int n,
-                  const f32* v, const int incv, const f32 tau,
-                  f32* C, const int ldc, f32* work);
-extern void xerbla(const char* srname, const int info);
+
 /* slaror declared in verify.h */
 
 /**
@@ -81,11 +67,11 @@ extern void xerbla(const char* srname, const int info);
  *     Length of work space required.
  *     LWORK >= MAX(M+MIN(M,N), NRHS*MIN(M,N), 2*N+M)
  */
-void sqrt15(const int scale, const int rksel,
-            const int m, const int n, const int nrhs,
-            f32* A, const int lda, f32* B, const int ldb,
-            f32* S, int* rank, f32* norma, f32* normb,
-            f32* work, const int lwork,
+void sqrt15(const INT scale, const INT rksel,
+            const INT m, const INT n, const INT nrhs,
+            f32* A, const INT lda, f32* B, const INT ldb,
+            f32* S, INT* rank, f32* norma, f32* normb,
+            f32* work, const INT lwork,
             uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
@@ -93,14 +79,14 @@ void sqrt15(const int scale, const int rksel,
     const f32 TWO = 2.0f;
     const f32 SVMIN = 0.1f;
 
-    int info, j, mn;
+    INT info, j, mn;
     f32 bignum, eps, smlnum, temp;
     f32 dummy[1];
 
     mn = (m < n) ? m : n;
 
     /* Check workspace */
-    int req_lwork = m + mn;
+    INT req_lwork = m + mn;
     if (mn * nrhs > req_lwork) req_lwork = mn * nrhs;
     if (2 * n + m > req_lwork) req_lwork = 2 * n + m;
     if (lwork < req_lwork) {

@@ -13,44 +13,31 @@
 
 #include "test_harness.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 #define THRESH 1.0
 #define NMAX   50
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const f64* A, const int lda, f64* ARF, int* info);
-extern void dtfsm(const char* transr, const char* side, const char* uplo,
-                  const char* trans, const char* diag, const int m, const int n,
-                  const f64 alpha, const f64* A, f64* B, const int ldb);
-extern void dgeqrf(const int m, const int n, f64* A, const int lda,
-                   f64* tau, f64* work, const int lwork, int* info);
-extern void dgelqf(const int m, const int n, f64* A, const int lda,
-                   f64* tau, f64* work, const int lwork, int* info);
-
 typedef struct {
-    int im;
-    int in;
-    int iform;
-    int iuplo;
-    int iside;
-    int itrans;
-    int idiag;
-    int ialpha;
+    INT im;
+    INT in;
+    INT iform;
+    INT iuplo;
+    INT iside;
+    INT itrans;
+    INT idiag;
+    INT ialpha;
     char name[80];
 } ddrvrf3_params_t;
 
-static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
-                                int iside, int itrans, int idiag, int ialpha)
+static void run_ddrvrf3_single(INT m, INT n, INT iform, INT iuplo,
+                                INT iside, INT itrans, INT idiag, INT ialpha)
 {
-    int lda = NMAX;
-    int info;
+    INT lda = NMAX;
+    INT info;
     char ctx[128];
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988);
@@ -71,7 +58,7 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
     else
         alpha = rng_uniform_symmetric(rng_state);
 
-    int na = (iside == 0) ? m : n;
+    INT na = (iside == 0) ? m : n;
 
     f64 A[NMAX * NMAX];
     f64 ARF[NMAX * (NMAX + 1) / 2];
@@ -81,32 +68,32 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
     f64 D_WORK_DGEQRF[NMAX];
     f64 D_WORK_DLANGE[NMAX];
 
-    for (int j = 0; j < na; j++)
-        for (int i = 0; i < na; i++)
+    for (INT j = 0; j < na; j++)
+        for (INT i = 0; i < na; i++)
             A[i + j * lda] = rng_uniform_symmetric(rng_state);
 
     if (iuplo == 0) {
         dgeqrf(na, na, A, lda, TAU, D_WORK_DGEQRF, lda, &info);
 
         if (idiag == 1) {
-            for (int j = 0; j < na; j++)
-                for (int i = 0; i <= j; i++)
+            for (INT j = 0; j < na; j++)
+                for (INT i = 0; i <= j; i++)
                     A[i + j * lda] /= (2.0 * A[j + j * lda]);
         }
     } else {
         dgelqf(na, na, A, lda, TAU, D_WORK_DGEQRF, lda, &info);
 
         if (idiag == 1) {
-            for (int i = 0; i < na; i++)
-                for (int j = 0; j <= i; j++)
+            for (INT i = 0; i < na; i++)
+                for (INT j = 0; j <= i; j++)
                     A[i + j * lda] /= (2.0 * A[i + i * lda]);
         }
     }
 
     dtrttf(cform, uplo, na, A, lda, ARF, &info);
 
-    for (int j = 0; j < n; j++)
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < m; i++) {
             B1[i + j * lda] = rng_uniform_symmetric(rng_state);
             B2[i + j * lda] = B1[i + j * lda];
         }
@@ -121,13 +108,13 @@ static void run_ddrvrf3_single(int m, int n, int iform, int iuplo,
 
     dtfsm(cform, side, uplo, trans, diag, m, n, alpha, ARF, B2, lda);
 
-    for (int j = 0; j < n; j++)
-        for (int i = 0; i < m; i++)
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < m; i++)
             B1[i + j * lda] = B2[i + j * lda] - B1[i + j * lda];
 
     f64 result = dlange("I", m, n, B1, lda, D_WORK_DLANGE);
 
-    int mn_max = (m > n) ? m : n;
+    INT mn_max = (m > n) ? m : n;
     if (mn_max < 1) mn_max = 1;
     result = result / sqrt(eps) / mn_max;
 
@@ -151,7 +138,7 @@ static void test_ddrvrf3_case(void** state)
 
 static ddrvrf3_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
@@ -161,14 +148,14 @@ static void build_test_array(void)
     const char transs[] = {'N', 'T'};
     const char diags[] = {'N', 'U'};
 
-    for (int im = 0; im < (int)NN; im++) {
-        for (int in = 0; in < (int)NN; in++) {
-            for (int iform = 0; iform < 2; iform++) {
-                for (int iuplo = 0; iuplo < 2; iuplo++) {
-                    for (int iside = 0; iside < 2; iside++) {
-                        for (int itrans = 0; itrans < 2; itrans++) {
-                            for (int idiag = 0; idiag < 2; idiag++) {
-                                for (int ialpha = 1; ialpha <= 3; ialpha++) {
+    for (INT im = 0; im < (INT)NN; im++) {
+        for (INT in = 0; in < (INT)NN; in++) {
+            for (INT iform = 0; iform < 2; iform++) {
+                for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                    for (INT iside = 0; iside < 2; iside++) {
+                        for (INT itrans = 0; itrans < 2; itrans++) {
+                            for (INT idiag = 0; idiag < 2; idiag++) {
+                                for (INT ialpha = 1; ialpha <= 3; ialpha++) {
                                     ddrvrf3_params_t* p = &g_params[g_num_tests];
                                     p->im = im;
                                     p->in = in;

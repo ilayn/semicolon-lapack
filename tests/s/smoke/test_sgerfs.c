@@ -16,35 +16,17 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void sgetrf(const int m, const int n, f32 * const restrict A,
-                   const int lda, int * const restrict ipiv, int *info);
-extern void sgetrs(const char *trans, const int n, const int nrhs,
-                   const f32 * const restrict A, const int lda,
-                   const int * const restrict ipiv, f32 * const restrict B,
-                   const int ldb, int *info);
-extern void sgerfs(const char *trans, const int n, const int nrhs,
-                   const f32 * const restrict A, const int lda,
-                   const f32 * const restrict AF, const int ldaf,
-                   const int * const restrict ipiv,
-                   const f32 * const restrict B, const int ldb,
-                   f32 * const restrict X, const int ldx,
-                   f32 * const restrict ferr, f32 * const restrict berr,
-                   f32 * const restrict work, int * const restrict iwork,
-                   int *info);
-
 /* Utilities */
-extern f32 slamch(const char *cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb;
+    INT n, nrhs;
+    INT lda, ldb;
     f32 *A;       /* Original matrix */
     f32 *AF;      /* Factored matrix */
     f32 *B;       /* Right-hand side */
@@ -57,8 +39,8 @@ typedef struct {
     f32 *ferr;    /* Forward error bounds */
     f32 *berr;    /* Backward error bounds */
     f32 *reslts;  /* Results from sget07 */
-    int *ipiv;       /* Pivot indices */
-    int *iwork;      /* Integer workspace for sgerfs */
+    INT* ipiv;       /* Pivot indices */
+    INT* iwork;      /* Integer workspace for sgerfs */
     uint64_t seed;   /* RNG seed */
 } dgerfs_fixture_t;
 
@@ -69,7 +51,7 @@ static uint64_t g_seed = 1729;
  * Setup fixture: allocate memory for given dimensions.
  * Called before each test function.
  */
-static int dgerfs_setup(void **state, int n, int nrhs)
+static int dgerfs_setup(void **state, INT n, INT nrhs)
 {
     dgerfs_fixture_t *fix = malloc(sizeof(dgerfs_fixture_t));
     assert_non_null(fix);
@@ -92,8 +74,8 @@ static int dgerfs_setup(void **state, int n, int nrhs)
     fix->ferr = malloc(nrhs * sizeof(f32));
     fix->berr = malloc(nrhs * sizeof(f32));
     fix->reslts = malloc(2 * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AF);
@@ -153,12 +135,12 @@ static int setup_20(void **state) { return dgerfs_setup(state, 20, 1); }
  *
  * Populates fix->reslts with sget07 output and returns the sget02 residual.
  */
-static f32 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
+static f32 run_dgerfs_test(dgerfs_fixture_t *fix, INT imat, const char* trans)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
+    INT info;
 
     /* Get matrix parameters */
     slatb4("SGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -171,8 +153,8 @@ static f32 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
     assert_int_equal(info, 0);
 
     /* Generate known exact solution XACT */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->ldb] = 1.0f + (f32)i / fix->n + (f32)j / fix->nrhs;
         }
     }
@@ -212,7 +194,7 @@ static f32 run_dgerfs_test(dgerfs_fixture_t *fix, int imat, const char* trans)
     free(B_copy);
 
     /* Compute error bounds using sget07 */
-    int chkferr = (imat <= 4);
+    INT chkferr = (imat <= 4);
     sget07(trans, fix->n, fix->nrhs, fix->A, fix->lda, fix->B_orig, fix->ldb,
            fix->X, fix->ldb, fix->XACT, fix->ldb,
            fix->ferr, chkferr, fix->berr, fix->reslts);
@@ -297,8 +279,8 @@ static void test_simple(void **state)
 {
     (void)state;
 
-    int n = 3;
-    int nrhs = 1;
+    INT n = 3;
+    INT nrhs = 1;
 
     /* System: A * x = b where solution is x = [1, 1, 1]' */
     f32 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
@@ -312,9 +294,9 @@ static void test_simple(void **state)
     f32 X[3];
     f32 ferr[1], berr[1];
     f32 work[9];
-    int iwork[3];
-    int ipiv[3];
-    int info;
+    INT iwork[3];
+    INT ipiv[3];
+    INT info;
 
     /* Factor */
     sgetrf(n, n, AF, n, ipiv, &info);
@@ -343,8 +325,8 @@ static void test_transpose(void **state)
 {
     (void)state;
 
-    int n = 3;
-    int nrhs = 1;
+    INT n = 3;
+    INT nrhs = 1;
 
     /* System: A' * x = b */
     f32 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
@@ -363,9 +345,9 @@ static void test_transpose(void **state)
     f32 X[3];
     f32 ferr[1], berr[1];
     f32 work[9];
-    int iwork[3];
-    int ipiv[3];
-    int info;
+    INT iwork[3];
+    INT ipiv[3];
+    INT info;
 
     /* Factor */
     sgetrf(n, n, AF, n, ipiv, &info);
@@ -394,8 +376,8 @@ static void test_multiple_rhs(void **state)
 {
     (void)state;
 
-    int n = 4;
-    int nrhs = 3;
+    INT n = 4;
+    INT nrhs = 3;
 
     f32 *A = calloc(n * n, sizeof(f32));
     f32 *AF = malloc(n * n * sizeof(f32));
@@ -405,9 +387,9 @@ static void test_multiple_rhs(void **state)
     f32 *ferr = malloc(nrhs * sizeof(f32));
     f32 *berr = malloc(nrhs * sizeof(f32));
     f32 *work = malloc(3 * n * sizeof(f32));
-    int *iwork = malloc(n * sizeof(int));
-    int *ipiv = malloc(n * sizeof(int));
-    int info;
+    INT* iwork = malloc(n * sizeof(INT));
+    INT* ipiv = malloc(n * sizeof(INT));
+    INT info;
 
     assert_non_null(A);
     assert_non_null(AF);
@@ -416,9 +398,9 @@ static void test_multiple_rhs(void **state)
     assert_non_null(X);
 
     /* Well-conditioned diagonal dominant matrix */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         A[i + i * n] = (f32)(n + 1);
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             if (i != j) {
                 A[i + j * n] = 1.0f;
             }
@@ -427,10 +409,10 @@ static void test_multiple_rhs(void **state)
     memcpy(AF, A, n * n * sizeof(f32));
 
     /* Multiple RHS with known solutions */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             B[i + j * n] = 0.0f;
-            for (int k = 0; k < n; k++) {
+            for (INT k = 0; k < n; k++) {
                 f32 xk = (f32)(k + 1) + (f32)j;
                 B[i + j * n] += A[i + k * n] * xk;
             }
@@ -453,8 +435,8 @@ static void test_multiple_rhs(void **state)
     assert_info_success(info);
 
     f32 tol = 1e-5f;
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             f32 expected = (f32)(i + 1) + (f32)j;
             assert_true(fabsf(X[i + j * n] - expected) < tol);
         }

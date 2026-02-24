@@ -6,14 +6,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
 #include <math.h>
 
 /* Test parameters - matching LAPACK dchkaa.f defaults */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NTYPES  8
 #define NTESTS  7
@@ -28,96 +28,18 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define LAFB    ((3*NMAX - 2) * NMAX)
 
 /* Routines under test */
-extern void dgbsv(const int n, const int kl, const int ku, const int nrhs,
-                   f64* AB, const int ldab, int* ipiv,
-                   f64* B, const int ldb, int* info);
-extern void dgbsvx(const char* fact, const char* trans, const int n,
-                    const int kl, const int ku, const int nrhs,
-                    f64* AB, const int ldab, f64* AFB, const int ldafb,
-                    int* ipiv, char* equed, f64* R, f64* C,
-                    f64* B, const int ldb, f64* X, const int ldx,
-                    f64* rcond, f64* ferr, f64* berr,
-                    f64* work, int* iwork, int* info);
-
 /* Supporting routines */
-extern void dgbtrf(const int m, const int n, const int kl, const int ku,
-                    f64* AB, const int ldab, int* ipiv, int* info);
-extern void dgbtrs(const char* trans, const int n, const int kl, const int ku,
-                    const int nrhs, const f64* AB, const int ldab,
-                    const int* ipiv, f64* B, const int ldb, int* info);
-extern void dgbequ(const int m, const int n, const int kl, const int ku,
-                    const f64* AB, const int ldab,
-                    f64* R, f64* C, f64* rowcnd, f64* colcnd,
-                    f64* amax, int* info);
-extern void dlaqgb(const int m, const int n, const int kl, const int ku,
-                    f64* AB, const int ldab,
-                    const f64* R, const f64* C,
-                    const f64 rowcnd, const f64 colcnd,
-                    const f64 amax, char* equed);
-extern f64 dlangb(const char* norm, const int n, const int kl, const int ku,
-                     const f64* AB, const int ldab, f64* work);
-extern f64 dlantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int k, const f64* AB, const int ldab,
-                     f64* work);
-
 /* Verification routines */
-extern void dgbt01(const int m, const int n, const int kl, const int ku,
-                    const f64* A, const int lda,
-                    const f64* AFAC, const int ldafac,
-                    const int* ipiv, f64* work, f64* resid);
-extern void dgbt02(const char* trans, const int m, const int n,
-                    const int kl, const int ku, const int nrhs,
-                    const f64* A, const int lda,
-                    const f64* X, const int ldx,
-                    f64* B, const int ldb,
-                    f64* rwork, f64* resid);
-extern void dgbt05(const char* trans, const int n, const int kl, const int ku,
-                    const int nrhs,
-                    const f64* AB, const int ldab,
-                    const f64* B, const int ldb,
-                    const f64* X, const int ldx,
-                    const f64* XACT, const int ldxact,
-                    const f64* ferr, const f64* berr,
-                    f64* reslts);
-extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
-                    const f64* XACT, const int ldxact, const f64 rcond,
-                    f64* resid);
-extern f64 dget06(const f64 rcond, const f64 rcondc);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                    char* type, int* kl, int* ku, f64* anorm, int* mode,
-                    f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                    const char* sym, f64* d,
-                    const int mode, const f64 cond, const f64 dmax,
-                    const int kl, const int ku, const char* pack,
-                    f64* A, const int lda, f64* work, int* info,
-                    uint64_t state[static 4]);
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                    const char* trans, const int m, const int n,
-                    const int kl, const int ku, const int nrhs,
-                    const f64* A, const int lda, const f64* XACT, const int ldxact,
-                    f64* B, const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                    const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                    const f64 alpha, const f64 beta,
-                    f64* A, const int lda);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlamch(const char* cmach);
-
 typedef struct {
-    int n;
-    int kl;
-    int ku;
-    int imat;
-    int ifact;     /* 0='F', 1='N', 2='E' */
-    int itran;     /* 0='N', 1='T', 2='C' */
-    int iequed;    /* 0='N', 1='R', 2='C', 3='B' */
+    INT n;
+    INT kl;
+    INT ku;
+    INT imat;
+    INT ifact;     /* 0='F', 1='N', 2='E' */
+    INT itran;     /* 0='N', 1='T', 2='C' */
+    INT iequed;    /* 0='N', 1='R', 2='C', 3='B' */
     char name[96];
 } ddrvgb_params_t;
 
@@ -132,7 +54,7 @@ typedef struct {
     f64* S;
     f64* WORK;
     f64* RWORK;
-    int* IWORK;
+    INT* IWORK;
 } ddrvgb_workspace_t;
 
 static ddrvgb_workspace_t* g_workspace = NULL;
@@ -143,7 +65,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(ddrvgb_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * NMAX;
+    INT lwork = NMAX * NMAX;
     if (lwork < 3 * NMAX) lwork = 3 * NMAX;
     if (lwork < NMAX * NRHS) lwork = NMAX * NRHS;
 
@@ -157,7 +79,7 @@ static int group_setup(void** state)
     g_workspace->S     = calloc(2 * NMAX, sizeof(f64));
     g_workspace->WORK  = calloc(lwork, sizeof(f64));
     g_workspace->RWORK = calloc(NMAX + 2 * NRHS, sizeof(f64));
-    g_workspace->IWORK = calloc(2 * NMAX, sizeof(int));
+    g_workspace->IWORK = calloc(2 * NMAX, sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFB || !g_workspace->ASAV ||
         !g_workspace->B || !g_workspace->BSAV || !g_workspace->X ||
@@ -193,19 +115,19 @@ static int group_teardown(void** state)
  * Copy band matrix A (lda rows) into AFB (ldafb rows) with KL row offset.
  * A has rows 0..kl+ku, AFB has rows kl..2*kl+ku for the same data.
  */
-static void copy_band_to_factor(const f64* A, int lda,
-                                 f64* AFB, int ldafb,
-                                 int kl, int ku, int n)
+static void copy_band_to_factor(const f64* A, INT lda,
+                                 f64* AFB, INT ldafb,
+                                 INT kl, INT ku, INT n)
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < kl + ku + 1; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < kl + ku + 1; i++) {
             AFB[(kl + i) + j * ldafb] = A[i + j * lda];
         }
     }
 }
 
-static void run_ddrvgb_single(int n, int kl, int ku, int imat,
-                               int ifact, int itran, int iequed)
+static void run_ddrvgb_single(INT n, INT kl, INT ku, INT imat,
+                               INT ifact, INT itran, INT iequed)
 {
     static const char* FACTS[]  = {"F", "N", "E"};
     static const char* TRANSS[] = {"N", "T", "C"};
@@ -216,20 +138,20 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
     const char* trans = TRANSS[itran];
     char equed = EQUEDS[iequed][0];
 
-    int prefac = (fact[0] == 'F');
-    int nofact = (fact[0] == 'N');
-    int equil  = (fact[0] == 'E');
+    INT prefac = (fact[0] == 'F');
+    INT nofact = (fact[0] == 'N');
+    INT equil  = (fact[0] == 'E');
 
-    int lda   = kl + ku + 1;
-    int ldafb = 2 * kl + ku + 1;
-    int ldb   = (n > 1) ? n : 1;
+    INT lda   = kl + ku + 1;
+    INT ldafb = 2 * kl + ku + 1;
+    INT ldb   = (n > 1) ? n : 1;
 
     f64 result[NTESTS];
-    for (int k = 0; k < NTESTS; k++) result[k] = 0.0;
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0;
 
     /* Set up parameters with DLATB4 */
     char type, dist;
-    int kl_out = kl, ku_out = ku, mode;
+    INT kl_out = kl, ku_out = ku, mode;
     f64 anorm, cndnum;
     dlatb4("DGB", imat, n, n, &type, &kl_out, &ku_out, &anorm, &mode,
            &cndnum, &dist);
@@ -237,7 +159,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
     /* Generate test matrix with DLATMS */
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + n * 1000 + kl * 100 + ku * 10 + imat);
-    int info;
+    INT info;
     dlatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
            anorm, kl, ku, "Z", ws->A, lda, ws->WORK, &info, rng_state);
     if (info != 0) {
@@ -246,8 +168,8 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
     }
 
     /* For types 2-4, zero one or more columns */
-    int izero = 0;
-    int zerot = (imat >= 2 && imat <= 4);
+    INT izero = 0;
+    INT zerot = (imat >= 2 && imat <= 4);
     if (zerot) {
         if (imat == 2)
             izero = 1;
@@ -258,22 +180,22 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
 
         if (imat < 4) {
             /* Zero single column IZERO (1-based) */
-            int ioff = (izero - 1) * lda;
-            int i1_f = ku + 2 - izero;
-            int i2_f = ku + 1 + (n - izero);
-            int i1 = (i1_f > 1) ? i1_f - 1 : 0;
-            int i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
-            for (int i = i1; i < i2; i++)
+            INT ioff = (izero - 1) * lda;
+            INT i1_f = ku + 2 - izero;
+            INT i2_f = ku + 1 + (n - izero);
+            INT i1 = (i1_f > 1) ? i1_f - 1 : 0;
+            INT i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
+            for (INT i = i1; i < i2; i++)
                 ws->A[ioff + i] = 0.0;
         } else {
             /* Zero columns IZERO..N (1-based) */
-            int ioff = (izero - 1) * lda;
-            for (int j = izero; j <= n; j++) {
-                int i1_f = ku + 2 - j;
-                int i2_f = ku + 1 + (n - j);
-                int i1 = (i1_f > 1) ? i1_f - 1 : 0;
-                int i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
-                for (int i = i1; i < i2; i++)
+            INT ioff = (izero - 1) * lda;
+            for (INT j = izero; j <= n; j++) {
+                INT i1_f = ku + 2 - j;
+                INT i2_f = ku + 1 + (n - j);
+                INT i1 = (i1_f > 1) ? i1_f - 1 : 0;
+                INT i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
+                for (INT i = i1; i < i2; i++)
                     ws->A[ioff + i] = 0.0;
                 ioff += lda;
             }
@@ -406,7 +328,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         dgbt01(n, n, kl, ku, ws->A, lda, ws->AFB, ldafb,
                ws->IWORK, ws->WORK, &result[0]);
 
-        int nt = 1;
+        INT nt = 1;
         if (izero == 0) {
             /* TEST 2: Compute residual of computed solution */
             dlacpy("Full", n, NRHS, ws->B, ldb, ws->WORK, ldb);
@@ -418,7 +340,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
             nt = 3;
         }
 
-        for (int k = 0; k < nt; k++) {
+        for (INT k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("DGBSV n=%d kl=%d ku=%d type %d test %d: result=%e >= thresh=%e",
                          n, kl, ku, imat, k + 1, result[k], THRESH);
@@ -467,22 +389,22 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
     if (info != 0 && info <= n) {
         /* Singularity detected at column INFO (1-based) */
         f64 anrmpv = 0.0;
-        for (int j = 0; j < info; j++) {
+        for (INT j = 0; j < info; j++) {
             /* Fortran: DO I = MAX(KU+2-J, 1), MIN(N+KU+1-J, KL+KU+1) */
-            int i1_f = ku + 2 - (j + 1);
-            int i2_f = n + ku + 1 - (j + 1);
-            int i1 = (i1_f > 1) ? i1_f - 1 : 0;
-            int i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
-            for (int i = i1; i < i2; i++) {
+            INT i1_f = ku + 2 - (j + 1);
+            INT i2_f = n + ku + 1 - (j + 1);
+            INT i1 = (i1_f > 1) ? i1_f - 1 : 0;
+            INT i2 = (i2_f < kl + ku + 1) ? i2_f : kl + ku + 1;
+            for (INT i = i1; i < i2; i++) {
                 f64 val = fabs(ws->A[i + j * lda]);
                 if (val > anrmpv) anrmpv = val;
             }
         }
         /* Fortran: DLANTB('M','U','N',INFO,MIN(INFO-1,KL+KU),
          *                  AFB(MAX(1,KL+KU+2-INFO)),LDAFB,WORK) */
-        int kband = (info - 1 < kl + ku) ? info - 1 : kl + ku;
-        int afb_off_f = kl + ku + 2 - info;
-        int afb_off = (afb_off_f > 1) ? afb_off_f - 1 : 0;
+        INT kband = (info - 1 < kl + ku) ? info - 1 : kl + ku;
+        INT afb_off_f = kl + ku + 2 - info;
+        INT afb_off = (afb_off_f > 1) ? afb_off_f - 1 : 0;
         rpvgrw = dlantb("M", "U", "N", info, kband,
                         &ws->AFB[afb_off], ldafb, ws->WORK);
         if (rpvgrw == 0.0)
@@ -505,7 +427,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         result[6] = 0.0;
 
     /* TEST 1: Reconstruct matrix from factors */
-    int k1;
+    INT k1;
     if (!prefac) {
         dgbt01(n, n, kl, ku, ws->A, lda, ws->AFB, ldafb,
                ws->IWORK, ws->WORK, &result[0]);
@@ -514,7 +436,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
         k1 = 1;
     }
 
-    int trfcon;
+    INT trfcon;
     if (info == 0) {
         trfcon = 0;
 
@@ -548,7 +470,7 @@ static void run_ddrvgb_single(int n, int kl, int ku, int imat,
 
     /* Check results */
     if (!trfcon) {
-        for (int k = k1; k < NTESTS; k++) {
+        for (INT k = k1; k < NTESTS; k++) {
             if (result[k] >= THRESH) {
                 if (prefac) {
                     fail_msg("DGBSVX FACT=%s TRANS=%s n=%d kl=%d ku=%d EQUED=%c "
@@ -593,7 +515,7 @@ static void test_ddrvgb_case(void** state)
  * Compute KL bandwidth values for a given N.
  * Order: 0, N-1, (3N-1)/4, (N+1)/4
  */
-static void get_klku_values(int n, int vals[NBW])
+static void get_klku_values(INT n, INT vals[NBW])
 {
     vals[0] = 0;
     vals[1] = (n > 0) ? n - 1 : 0;
@@ -605,49 +527,49 @@ static void get_klku_values(int n, int vals[NBW])
  * Count total test cases and optionally fill parameter/test arrays.
  * If params and tests are NULL, only counting is done.
  */
-static int build_test_array(ddrvgb_params_t* params, struct CMUnitTest* tests)
+static INT build_test_array(ddrvgb_params_t* params, struct CMUnitTest* tests)
 {
     static const char* FACTS[]  = {"F", "N", "E"};
     static const char* TRANSS[] = {"N", "T", "C"};
     static const char* EQUEDS[] = {"N", "R", "C", "B"};
 
-    int idx = 0;
+    INT idx = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
-        int nkl = (n > 4) ? 4 : ((n > 0) ? n : 1);
-        int nku = nkl;
-        int nimat = (n <= 0) ? 1 : NTYPES;
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        INT nkl = (n > 4) ? 4 : ((n > 0) ? n : 1);
+        INT nku = nkl;
+        INT nimat = (n <= 0) ? 1 : NTYPES;
 
-        int klval[NBW], kuval[NBW];
+        INT klval[NBW], kuval[NBW];
         get_klku_values(n, klval);
         get_klku_values(n, kuval);
 
-        for (int ikl = 0; ikl < nkl; ikl++) {
-            int kl = klval[ikl];
-            for (int iku = 0; iku < nku; iku++) {
-                int ku = kuval[iku];
-                int lda   = kl + ku + 1;
-                int ldafb = 2 * kl + ku + 1;
+        for (INT ikl = 0; ikl < nkl; ikl++) {
+            INT kl = klval[ikl];
+            for (INT iku = 0; iku < nku; iku++) {
+                INT ku = kuval[iku];
+                INT lda   = kl + ku + 1;
+                INT ldafb = 2 * kl + ku + 1;
 
                 /* Check that workspace is big enough */
                 if (lda * n > LA || ldafb * n > LAFB)
                     continue;
 
-                for (int imat = 1; imat <= nimat; imat++) {
-                    int zerot = (imat >= 2 && imat <= 4);
+                for (INT imat = 1; imat <= nimat; imat++) {
+                    INT zerot = (imat >= 2 && imat <= 4);
                     if (zerot && n < imat - 1)
                         continue;
 
-                    for (int iequed = 0; iequed < 4; iequed++) {
-                        int nfact = (iequed == 0) ? 3 : 1;
+                    for (INT iequed = 0; iequed < 4; iequed++) {
+                        INT nfact = (iequed == 0) ? 3 : 1;
 
-                        for (int ifact = 0; ifact < nfact; ifact++) {
+                        for (INT ifact = 0; ifact < nfact; ifact++) {
                             /* Skip FACT='F' for singular matrices */
                             if (zerot && ifact == 0)
                                 continue;
 
-                            for (int itran = 0; itran < NTRAN; itran++) {
+                            for (INT itran = 0; itran < NTRAN; itran++) {
                                 if (params && tests) {
                                     ddrvgb_params_t* p = &params[idx];
                                     p->n      = n;
@@ -682,7 +604,7 @@ static int build_test_array(ddrvgb_params_t* params, struct CMUnitTest* tests)
 
 int main(void)
 {
-    int count = build_test_array(NULL, NULL);
+    INT count = build_test_array(NULL, NULL);
     if (count == 0) return 0;
 
     ddrvgb_params_t* params = malloc(count * sizeof(*params));
@@ -694,7 +616,7 @@ int main(void)
     }
 
     build_test_array(params, tests);
-    int result = _cmocka_run_group_tests("ddrvgb", tests, count,
+    INT result = _cmocka_run_group_tests("ddrvgb", tests, count,
                                           group_setup, group_teardown);
     free(tests);
     free(params);

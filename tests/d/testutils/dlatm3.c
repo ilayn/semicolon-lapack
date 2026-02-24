@@ -48,21 +48,21 @@
  * @return The (isub,jsub) entry of the matrix.
  */
 f64 dlatm3(
-    const int m,
-    const int n,
-    const int i,
-    const int j,
-    int* isub,
-    int* jsub,
-    const int kl,
-    const int ku,
-    const int idist,
+    const INT m,
+    const INT n,
+    const INT i,
+    const INT j,
+    INT* isub,
+    INT* jsub,
+    const INT kl,
+    const INT ku,
+    const INT idist,
     const f64* d,
-    const int igrade,
+    const INT igrade,
     const f64* dl,
     const f64* dr,
-    const int ipvtng,
-    const int* iwork,
+    const INT ipvtng,
+    const INT* iwork,
     const f64 sparse,
     uint64_t state[static 4])
 {

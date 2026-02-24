@@ -7,12 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * STPT03 computes the residual for the solution to a scaled triangular
  * system of equations A*x = s*b or A'*x = s*b when the triangular
@@ -38,15 +36,15 @@ extern f32 slamch(const char* cmach);
  * @param[out]    resid   The maximum over NRHS of norm(op(A)*x - s*b) / (norm(op(A)) * norm(x) * EPS).
  */
 void stpt03(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs,
+            const INT n, const INT nrhs,
             const f32* AP, const f32 scale, const f32* cnorm,
-            const f32 tscal, const f32* X, const int ldx,
-            const f32* B, const int ldb,
+            const f32 tscal, const f32* X, const INT ldx,
+            const f32* B, const INT ldb,
             f32* work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int ix, j, jj;
+    INT ix, j, jj;
     f32 eps, err, smlnum, tnorm, xnorm, xscal;
 
     /* Quick exit if N = 0 or NRHS = 0 */

@@ -7,15 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /**
  * DBDT02 tests the change of basis C = U' * B by computing the
  * residual
@@ -38,16 +31,16 @@ extern f64 dlange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace array, dimension (m).
  * @param[out]    resid  The test ratio.
  */
-void dbdt02(const int m, const int n,
-            const f64* const restrict B, const int ldb,
-            const f64* const restrict C, const int ldc,
-            const f64* const restrict U, const int ldu,
+void dbdt02(const INT m, const INT n,
+            const f64* const restrict B, const INT ldb,
+            const f64* const restrict C, const INT ldc,
+            const f64* const restrict U, const INT ldu,
             f64* const restrict work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int j;
+    INT j;
     f64 bnorm, eps, realmn;
 
     /* Quick return if possible */

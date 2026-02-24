@@ -8,18 +8,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slascl(const char* type, const int kl, const int ku,
-                   const f32 cfrom, const f32 cto,
-                   const int m, const int n, f32* A, const int lda,
-                   int* info);
 
 /**
  * SQRT13 generates a full-rank matrix that may be scaled to have large
@@ -45,13 +36,13 @@ extern void slascl(const char* type, const int kl, const int ku,
  * @param[out] norma
  *     The one-norm of A.
  */
-void sqrt13(const int scale, const int m, const int n,
-            f32* A, const int lda, f32* norma,
+void sqrt13(const INT scale, const INT m, const INT n,
+            f32* A, const INT lda, f32* norma,
             uint64_t state[static 4])
 {
     const f32 ONE = 1.0f;
 
-    int info, j;
+    INT info, j;
     f32 bignum, smlnum;
     (void)(m < n);  /* minmn was computed but unused */
     f32 dummy[1];

@@ -8,15 +8,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /**
  * SSYT22 generally checks a decomposition of the form
  *
@@ -50,18 +43,18 @@ extern f32 slansy(const char* norm, const char* uplo, const int n,
  * @param[out]    work   Workspace array, dimension (2*n*n).
  * @param[out]    result Test ratios, dimension (2).
  */
-void ssyt22(const int itype, const char* uplo, const int n, const int m,
-            const int kband, const f32* const restrict A, const int lda,
+void ssyt22(const INT itype, const char* uplo, const INT n, const INT m,
+            const INT kband, const f32* const restrict A, const INT lda,
             const f32* const restrict D, const f32* const restrict E,
-            const f32* const restrict U, const int ldu,
-            const f32* const restrict V, const int ldv,
+            const f32* const restrict U, const INT ldu,
+            const f32* const restrict V, const INT ldv,
             const f32* const restrict tau,
             f32* const restrict work, f32* restrict result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int j, jj, jj1, jj2, nn, nnp1;
+    INT j, jj, jj1, jj2, nn, nnp1;
     f32 anorm, ulp, unfl, wnorm;
 
     (void)V;    /* unused */

@@ -6,8 +6,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f32 slamch(const char* cmach);
-
 /**
  * SSVDCT counts the number NUM of eigenvalues of a 2*N by 2*N
  * tridiagonal matrix T which are less than or equal to SHIFT.  T is
@@ -31,7 +29,7 @@ extern f32 slamch(const char* cmach);
  * @param[in]     shift  The shift, used as described under Purpose.
  * @param[out]    num    The number of eigenvalues of T less than or equal to SHIFT.
  */
-void ssvdct(const int n, const f32* s, const f32* e, const f32 shift, int* num)
+void ssvdct(const INT n, const f32* s, const f32* e, const f32 shift, INT* num)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
@@ -42,7 +40,7 @@ void ssvdct(const int n, const f32* s, const f32* e, const f32 shift, int* num)
     /* Find largest entry */
 
     f32 mx = fabsf(s[0]);
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         f32 as = fabsf(s[i + 1]);
         f32 ae = fabsf(e[i]);
         if (as > mx) mx = as;
@@ -98,7 +96,7 @@ void ssvdct(const int n, const f32* s, const f32* e, const f32 shift, int* num)
             u = sun;
         }
     }
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         tmp = (e[i] * m1) * m2;
         u = -tmp * (tmp / u) - sshift;
         if (u <= sun) {

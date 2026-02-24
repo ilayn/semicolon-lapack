@@ -3,15 +3,9 @@
  * @brief DGET54 checks a generalized decomposition of the form A = U*S*V' and B = U*T*V'.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                  const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
 
 /**
  * DGET54 checks a generalized decomposition of the form
@@ -47,12 +41,12 @@ extern void dlacpy(const char* uplo, const int m, const int n,
  * @param[out]    result  The value RESULT. Limited to 1/ulp to avoid overflow.
  *                        Errors are flagged by RESULT=10/ulp.
  */
-void dget54(const int n, const f64* A, const int lda,
-            const f64* B, const int ldb,
-            const f64* S, const int lds,
-            const f64* T, const int ldt,
-            const f64* U, const int ldu,
-            const f64* V, const int ldv,
+void dget54(const INT n, const f64* A, const INT lda,
+            const f64* B, const INT ldb,
+            const f64* S, const INT lds,
+            const f64* T, const INT ldt,
+            const f64* U, const INT ldu,
+            const f64* V, const INT ldv,
             f64* work, f64* result)
 {
     const f64 ZERO = 0.0;

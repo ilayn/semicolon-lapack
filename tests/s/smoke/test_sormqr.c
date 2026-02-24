@@ -17,36 +17,22 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
-
 /* Factorization routines */
-extern void sgeqrf(const int m, const int n,
-                   f32 * const restrict A, const int lda,
-                   f32 * const restrict tau,
-                   f32 * const restrict work, const int lwork, int *info);
-extern void sgelqf(const int m, const int n,
-                   f32 * const restrict A, const int lda,
-                   f32 * const restrict tau,
-                   f32 * const restrict work, const int lwork, int *info);
-extern void slacpy(const char *uplo, const int m, const int n,
-                   const f32 * const restrict A, const int lda,
-                   f32 * const restrict B, const int ldb);
-
 typedef struct {
-    int m, n;    /* dimensions of the matrix to factor */
-    int nrhs;    /* "other" dimension for C in the multiplication test */
-    int lda;
+    INT m, n;    /* dimensions of the matrix to factor */
+    INT nrhs;    /* "other" dimension for C in the multiplication test */
+    INT lda;
     f32 *A, *AF;
     f32 *C, *CC, *Q;
     f32 *tau, *work, *rwork;
     f32 *d, *genwork;
-    int lwork;
+    INT lwork;
     uint64_t seed;
 } orm_fixture_t;
 
 static uint64_t g_seed = 7001;
 
-static int orm_setup(void **state, int m, int n, int nrhs)
+static int orm_setup(void **state, INT m, INT n, INT nrhs)
 {
     orm_fixture_t *fix = malloc(sizeof(orm_fixture_t));
     assert_non_null(fix);
@@ -54,12 +40,12 @@ static int orm_setup(void **state, int m, int n, int nrhs)
     fix->m = m;
     fix->n = n;
     fix->nrhs = nrhs;
-    int maxmn = m > n ? m : n;
-    int maxall = maxmn > nrhs ? maxmn : nrhs;
+    INT maxmn = m > n ? m : n;
+    INT maxall = maxmn > nrhs ? maxmn : nrhs;
     fix->lda = maxall;
     fix->seed = g_seed++;
 
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
     fix->lwork = maxall * 64;
 
     fix->A = calloc(fix->lda * maxall, sizeof(f32));
@@ -116,15 +102,15 @@ static int setup_10x20(void **state) { return orm_setup(state, 10, 20, 5); }
 static void test_dormqr(void **state)
 {
     orm_fixture_t *fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = m < n ? m : n;
+    INT m = fix->m, n = fix->n;
+    INT minmn = m < n ? m : n;
     f32 result[4];
-    int info;
+    INT info;
 
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         char type, dist;
-        int kl, ku, mode;
+        INT kl, ku, mode;
         f32 anorm, cndnum;
 
         slatb4("SGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -159,15 +145,15 @@ static void test_dormqr(void **state)
 static void test_dormlq(void **state)
 {
     orm_fixture_t *fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = m < n ? m : n;
+    INT m = fix->m, n = fix->n;
+    INT minmn = m < n ? m : n;
     f32 result[4];
-    int info;
+    INT info;
 
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         char type, dist;
-        int kl, ku, mode;
+        INT kl, ku, mode;
         f32 anorm, cndnum;
 
         slatb4("SGE", imat, m, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);

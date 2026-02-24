@@ -23,17 +23,16 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values for least squares */
-static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
-static const int NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in */
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values for least squares */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in */
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -46,73 +45,17 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in 
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void sgeqrf(const int m, const int n, f32* A, const int lda,
-                   f32* tau, f32* work, const int lwork, int* info);
-extern void sorgqr(const int m, const int n, const int k,
-                   f32* A, const int lda, const f32* tau,
-                   f32* work, const int lwork, int* info);
-extern void sormqr(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f32* A, const int lda, const f32* tau,
-                   f32* C, const int ldc, f32* work, const int lwork,
-                   int* info);
-extern void sgels(const char* trans, const int m, const int n, const int nrhs,
-                  f32* A, const int lda, f32* B, const int ldb,
-                  f32* work, const int lwork, int* info);
-
 /* Verification routines */
-extern void sqrt01(const int m, const int n, const f32* A, f32* AF,
-                   f32* Q, f32* R, const int lda, f32* tau,
-                   f32* work, const int lwork, f32* rwork,
-                   f32* result);
-extern void sqrt02(const int m, const int n, const int k,
-                   const f32* A, f32* AF, f32* Q, f32* R,
-                   const int lda, const f32* tau,
-                   f32* work, const int lwork, f32* rwork,
-                   f32* result);
-extern void sqrt03(const int m, const int n, const int k,
-                   const f32* AF, f32* C, f32* CC, f32* Q,
-                   const int lda, const f32* tau,
-                   f32* work, const int lwork, f32* rwork,
-                   f32* result);
-extern void sget02(const char* trans, const int m, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* X,
-                   const int ldx, f32* B, const int ldb,
-                   f32* rwork, f32* resid);
-extern void sqrt01p(const int m, const int n, const f32* A, f32* AF,
-                    f32* Q, f32* R, const int lda, f32* tau,
-                    f32* work, const int lwork, f32* rwork,
-                    f32* result);
-extern int sgennd(const int m, const int n, const f32* A, const int lda);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f32* A, const int lda,
-                   const f32* XACT, const int ldxact, f32* B,
-                   const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern f32 slamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int imat;
-    int inb;    /* Index into NBVAL[] */
+    INT m;
+    INT n;
+    INT imat;
+    INT inb;    /* Index into NBVAL[] */
     char name[64];
 } dchkqr_params_t;
 
@@ -133,7 +76,7 @@ typedef struct {
     f32* WORK;   /* General workspace */
     f32* RWORK;  /* Real workspace */
     f32* D;      /* Singular values for slatms */
-    int* IWORK;     /* Integer workspace */
+    INT* IWORK;     /* Integer workspace */
 } dchkqr_workspace_t;
 
 static dchkqr_workspace_t* g_workspace = NULL;
@@ -147,7 +90,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchkqr_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * NMAX;
+    INT lwork = NMAX * NMAX;
 
     g_workspace->A = malloc(NMAX * NMAX * sizeof(f32));
     g_workspace->AF = malloc(NMAX * NMAX * sizeof(f32));
@@ -162,7 +105,7 @@ static int group_setup(void** state)
     g_workspace->WORK = malloc(lwork * sizeof(f32));
     g_workspace->RWORK = malloc(NMAX * sizeof(f32));
     g_workspace->D = malloc(NMAX * sizeof(f32));
-    g_workspace->IWORK = malloc(NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AF || !g_workspace->Q ||
         !g_workspace->R || !g_workspace->C || !g_workspace->CC ||
@@ -209,24 +152,24 @@ static int group_teardown(void** state)
  * Unlike dchkge/dchkpo/dchksy, ALL tests run for each NB value because
  * the QR factorization and Q operations are all affected by blocking.
  */
-static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
+static void run_dchkqr_single(INT m, INT n, INT imat, INT inb_idx)
 {
     const f32 ZERO = 0.0f;
     dchkqr_workspace_t* ws = g_workspace;
 
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
-    int lda = NMAX;
-    int lwork = NMAX * NMAX;
-    int minmn = (m < n) ? m : n;
+    INT info;
+    INT lda = NMAX;
+    INT lwork = NMAX * NMAX;
+    INT minmn = (m < n) ? m : n;
     f32 result[NTESTS];
     char ctx[128];  /* Context string for error messages */
 
     /* Set block size and crossover point for this test via xlaenv */
-    int nb = NBVAL[inb_idx];
-    int nx = NXVAL[inb_idx];
+    INT nb = NBVAL[inb_idx];
+    INT nx = NXVAL[inb_idx];
     xlaenv(1, nb);
     xlaenv(3, nx);
 
@@ -235,7 +178,7 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -248,13 +191,13 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
     assert_int_equal(info, 0);
 
     /* Set K values to test: MINMN, 0, 1, MINMN/2 */
-    int kval[4];
+    INT kval[4];
     kval[0] = minmn;
     kval[1] = 0;
     kval[2] = 1;
     kval[3] = minmn / 2;
 
-    int nk;
+    INT nk;
     if (minmn == 0) {
         nk = 1;
     } else if (minmn == 1) {
@@ -265,8 +208,8 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
         nk = 4;
     }
 
-    for (int ik = 0; ik < nk; ik++) {
-        int k = kval[ik];
+    for (INT ik = 0; ik < nk; ik++) {
+        INT k = kval[ik];
 
         if (ik == 0) {
             /*
@@ -342,7 +285,7 @@ static void run_dchkqr_single(int m, int n, int imat, int inb_idx)
              * Only run on first block size (INB.EQ.1 in Fortran, inb_idx == 0 in C)
              */
             if (k == n && inb_idx == 0) {
-                int nrhs = NSVAL[0];  /* Use first NRHS value */
+                INT nrhs = NSVAL[0];  /* Use first NRHS value */
 
                 snprintf(ctx, sizeof(ctx), "m=%d n=%d imat=%d k=%d nrhs=%d TEST 7 (SGELS)", m, n, imat, k, nrhs);
                 set_test_context(ctx);
@@ -392,7 +335,7 @@ static void test_dchkqr_case(void** state)
 
 static dchkqr_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -401,16 +344,16 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
 
-            for (int imat = 1; imat <= NTYPES; imat++) {
+            for (INT imat = 1; imat <= NTYPES; imat++) {
                 /* Loop over block sizes */
-                for (int inb = 0; inb < (int)NNB; inb++) {
-                    int nb = NBVAL[inb];
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    INT nb = NBVAL[inb];
 
                     /* Store parameters */
                     dchkqr_params_t* p = &g_params[g_num_tests];

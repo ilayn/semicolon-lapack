@@ -19,7 +19,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -33,9 +32,9 @@
 #define NTESTS 4
 
 /* Dimension triplets from TESTING/gqr.in */
-static const int MVAL[] = { 0,  3, 10 };
-static const int PVAL[] = { 0,  5, 20 };
-static const int NVAL[] = { 0,  3, 30 };
+static const INT MVAL[] = { 0,  3, 10 };
+static const INT PVAL[] = { 0,  5, 20 };
+static const INT NVAL[] = { 0,  3, 30 };
 #define NM (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NP (sizeof(PVAL) / sizeof(PVAL[0]))
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -47,14 +46,12 @@ static const int NVAL[] = { 0,  3, 30 };
 #define MAX_TESTS (NM * NP * NN * NTYPES)
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int im;
-    int ip;
-    int in;
-    int imat;
+    INT im;
+    INT ip;
+    INT in;
+    INT imat;
     char name[80];
 } dckgqr_params_t;
 
@@ -84,9 +81,9 @@ static int group_setup(void** state)
     g_ws = malloc(sizeof(dckgqr_workspace_t));
     if (!g_ws) return -1;
 
-    int lda = NMAX;
-    int ldb = NMAX;
-    int lwork = NMAX * NMAX;
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
 
     g_ws->A     = malloc(lda * NMAX * sizeof(f32));
     g_ws->AF    = malloc(lda * NMAX * sizeof(f32));
@@ -140,20 +137,20 @@ static int group_teardown(void** state)
 static void test_dckgqr_case(void** state)
 {
     dckgqr_params_t* params = *state;
-    int m = MVAL[params->im];
-    int p = PVAL[params->ip];
-    int n = NVAL[params->in];
-    int imat = params->imat;
-    int lda = NMAX;
-    int ldb = NMAX;
-    int lwork = NMAX * NMAX;
+    INT m = MVAL[params->im];
+    INT p = PVAL[params->ip];
+    INT n = NVAL[params->in];
+    INT imat = params->imat;
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
 
     char type;
-    int kla, kua, klb, kub;
+    INT kla, kua, klb, kub;
     f32 anorm, bnorm, cndnma, cndnmb;
-    int modea, modeb;
+    INT modea, modeb;
     char dista, distb;
-    int iinfo;
+    INT iinfo;
     f32 result[NTESTS];
 
     /* Seed RNG for reproducibility */
@@ -191,7 +188,7 @@ static void test_dckgqr_case(void** state)
            g_ws->BWK, ldb, g_ws->taub, g_ws->work, lwork,
            g_ws->rwork, result);
 
-    for (int i = 0; i < NTESTS; i++) {
+    for (INT i = 0; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             print_message("  GRQ: M=%d P=%d N=%d type=%d test=%d ratio=%g\n",
                           m, p, n, imat, i + 1, (double)result[i]);
@@ -228,7 +225,7 @@ static void test_dckgqr_case(void** state)
            g_ws->BWK, ldb, g_ws->taub, g_ws->work, lwork,
            g_ws->rwork, result);
 
-    for (int i = 0; i < NTESTS; i++) {
+    for (INT i = 0; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             print_message("  GQR: N=%d M=%d P=%d type=%d test=%d ratio=%g\n",
                           n, m, p, imat, i + 1, (double)result[i]);
@@ -240,16 +237,16 @@ static void test_dckgqr_case(void** state)
 /* Parameterized test arrays */
 static dckgqr_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        for (int ip = 0; ip < (int)NP; ip++) {
-            for (int in = 0; in < (int)NN; in++) {
-                for (int imat = 1; imat <= NTYPES; imat++) {
+    for (INT im = 0; im < (INT)NM; im++) {
+        for (INT ip = 0; ip < (INT)NP; ip++) {
+            for (INT in = 0; in < (INT)NN; in++) {
+                for (INT imat = 1; imat <= NTYPES; imat++) {
                     dckgqr_params_t* par = &g_params[g_num_tests];
                     par->im = im;
                     par->ip = ip;

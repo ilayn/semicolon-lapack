@@ -25,45 +25,27 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void ssysvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict AF, const int ldaf,
-                   int* const restrict ipiv,
-                   const f32* const restrict B, const int ldb,
-                   f32* const restrict X, const int ldx,
-                   f32* rcond,
-                   f32* const restrict ferr, f32* const restrict berr,
-                   f32* const restrict work, const int lwork,
-                   int* const restrict iwork, int* info);
-
 /* Norm computation */
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda;
+    INT n, nrhs;
+    INT lda;
     f32* A;       /* Original matrix (const input to ssysvx) */
     f32* AF;      /* Factored matrix output */
     f32* B;       /* Right-hand side (const input to ssysvx) */
     f32* X;       /* Solution output */
     f32* XACT;    /* Known exact solution */
-    int* ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f32* d;       /* Singular values for slatms */
     f32* ferr;    /* Forward error bounds */
     f32* berr;    /* Backward error bounds */
     f32* work;    /* Workspace */
-    int* iwork;      /* Integer workspace */
+    INT* iwork;      /* Integer workspace */
     f32* rwork;   /* Workspace for norm computation */
     f32 rcond;    /* Reciprocal condition number */
     uint64_t seed;
@@ -71,7 +53,7 @@ typedef struct {
 
 static uint64_t g_seed = 7600;
 
-static int dsysvx_setup(void** state, int n, int nrhs)
+static int dsysvx_setup(void** state, INT n, INT nrhs)
 {
     dsysvx_fixture_t* fix = malloc(sizeof(dsysvx_fixture_t));
     assert_non_null(fix);
@@ -81,19 +63,19 @@ static int dsysvx_setup(void** state, int n, int nrhs)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    int lwork = (n * 64 > 3 * n) ? n * 64 : 3 * n;
+    INT lwork = (n * 64 > 3 * n) ? n * 64 : 3 * n;
 
     fix->A = malloc(fix->lda * n * sizeof(f32));
     fix->AF = malloc(fix->lda * n * sizeof(f32));
     fix->B = malloc(fix->lda * nrhs * sizeof(f32));
     fix->X = malloc(fix->lda * nrhs * sizeof(f32));
     fix->XACT = malloc(fix->lda * nrhs * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->d = malloc(n * sizeof(f32));
     fix->ferr = malloc(nrhs * sizeof(f32));
     fix->berr = malloc(nrhs * sizeof(f32));
     fix->work = malloc(lwork * sizeof(f32));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
     fix->rwork = malloc(n * sizeof(f32));
 
     assert_non_null(fix->A);
@@ -151,13 +133,13 @@ static int setup_50_5(void** state) { return dsysvx_setup(state, 50, 5); }
  * Returns the normalized residual ||B - A*X|| / (||A|| * ||X|| * N * EPS).
  * Sets *out_info to the info value returned by ssysvx.
  */
-static f32 run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
-                              int* out_info)
+static f32 run_dsysvx_test(dsysvx_fixture_t* fix, INT imat, const char* uplo,
+                              INT* out_info)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm_param, cndnum;
-    int info;
+    INT info;
 
     slatb4("SSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
@@ -169,8 +151,8 @@ static f32 run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
     assert_int_equal(info, 0);
 
     /* Generate known exact solution XACT = 1 + i/n */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->lda] = 1.0f + (f32)i / fix->n;
         }
     }
@@ -183,10 +165,10 @@ static f32 run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
 
     /* Clear AF and ipiv so ssysvx computes fresh factorization */
     memset(fix->AF, 0, fix->lda * fix->n * sizeof(f32));
-    memset(fix->ipiv, 0, fix->n * sizeof(int));
+    memset(fix->ipiv, 0, fix->n * sizeof(INT));
 
     /* Call ssysvx with fact="N" */
-    int lwork = fix->n * 64;
+    INT lwork = fix->n * 64;
     ssysvx("N", uplo, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->AF, fix->lda, fix->ipiv,
            fix->B, fix->lda, fix->X, fix->lda,
@@ -233,13 +215,13 @@ static f32 run_dsysvx_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
  *
  * Returns the normalized residual for the fact="F" solve.
  */
-static f32 run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const char* uplo,
-                                       int* out_info)
+static f32 run_dsysvx_factored_test(dsysvx_fixture_t* fix, INT imat, const char* uplo,
+                                       INT* out_info)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm_param, cndnum;
-    int info;
+    INT info;
 
     slatb4("SSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
@@ -251,8 +233,8 @@ static f32 run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const char*
     assert_int_equal(info, 0);
 
     /* Generate known exact solution XACT = 1 + i/n */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->lda] = 1.0f + (f32)i / fix->n;
         }
     }
@@ -265,9 +247,9 @@ static f32 run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const char*
 
     /* First: call ssysvx with fact="N" to obtain AF and ipiv */
     memset(fix->AF, 0, fix->lda * fix->n * sizeof(f32));
-    memset(fix->ipiv, 0, fix->n * sizeof(int));
+    memset(fix->ipiv, 0, fix->n * sizeof(INT));
 
-    int lwork = fix->n * 64;
+    INT lwork = fix->n * 64;
     f32 rcond_first;
     ssysvx("N", uplo, fix->n, fix->nrhs, fix->A, fix->lda,
            fix->AF, fix->lda, fix->ipiv,
@@ -326,9 +308,9 @@ static f32 run_dsysvx_factored_test(dsysvx_fixture_t* fix, int imat, const char*
 static void test_dsysvx_upper_wellcond(void** state)
 {
     dsysvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        int info;
+        INT info;
         f32 resid = run_dsysvx_test(fix, imat, "U", &info);
         assert_true(info == 0 || info == fix->n + 1);
         if (info == 0) {
@@ -336,7 +318,7 @@ static void test_dsysvx_upper_wellcond(void** state)
         }
         assert_residual_ok(resid);
         /* BERR should be small for well-conditioned */
-        for (int j = 0; j < fix->nrhs; j++) {
+        for (INT j = 0; j < fix->nrhs; j++) {
             assert_residual_ok(fix->berr[j] / FLT_EPSILON);
         }
     }
@@ -348,16 +330,16 @@ static void test_dsysvx_upper_wellcond(void** state)
 static void test_dsysvx_lower_wellcond(void** state)
 {
     dsysvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        int info;
+        INT info;
         f32 resid = run_dsysvx_test(fix, imat, "L", &info);
         assert_true(info == 0 || info == fix->n + 1);
         if (info == 0) {
             assert_true(fix->rcond > 0.0f);
         }
         assert_residual_ok(resid);
-        for (int j = 0; j < fix->nrhs; j++) {
+        for (INT j = 0; j < fix->nrhs; j++) {
             assert_residual_ok(fix->berr[j] / FLT_EPSILON);
         }
     }
@@ -370,9 +352,9 @@ static void test_dsysvx_lower_wellcond(void** state)
 static void test_dsysvx_upper_illcond(void** state)
 {
     dsysvx_fixture_t* fix = *state;
-    for (int imat = 7; imat <= 8; imat++) {
+    for (INT imat = 7; imat <= 8; imat++) {
         fix->seed = g_seed++;
-        int info;
+        INT info;
         f32 resid = run_dsysvx_test(fix, imat, "U", &info);
         /* info can be 0, n+1 (ill-conditioned), or 1..n (singular) */
         assert_true(info >= 0);
@@ -391,9 +373,9 @@ static void test_dsysvx_upper_illcond(void** state)
 static void test_dsysvx_lower_illcond(void** state)
 {
     dsysvx_fixture_t* fix = *state;
-    for (int imat = 7; imat <= 8; imat++) {
+    for (INT imat = 7; imat <= 8; imat++) {
         fix->seed = g_seed++;
-        int info;
+        INT info;
         f32 resid = run_dsysvx_test(fix, imat, "L", &info);
         assert_true(info >= 0);
         if (info > 0 && info <= fix->n) {
@@ -409,16 +391,16 @@ static void test_dsysvx_lower_illcond(void** state)
 static void test_dsysvx_upper_factored(void** state)
 {
     dsysvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        int info;
+        INT info;
         f32 resid = run_dsysvx_factored_test(fix, imat, "U", &info);
         if (info > 0 && info <= fix->n) {
             continue;
         }
         assert_true(info == 0 || info == fix->n + 1);
         assert_residual_ok(resid);
-        for (int j = 0; j < fix->nrhs; j++) {
+        for (INT j = 0; j < fix->nrhs; j++) {
             assert_residual_ok(fix->berr[j] / FLT_EPSILON);
         }
     }
@@ -430,16 +412,16 @@ static void test_dsysvx_upper_factored(void** state)
 static void test_dsysvx_lower_factored(void** state)
 {
     dsysvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
-        int info;
+        INT info;
         f32 resid = run_dsysvx_factored_test(fix, imat, "L", &info);
         if (info > 0 && info <= fix->n) {
             continue;
         }
         assert_true(info == 0 || info == fix->n + 1);
         assert_residual_ok(resid);
-        for (int j = 0; j < fix->nrhs; j++) {
+        for (INT j = 0; j < fix->nrhs; j++) {
             assert_residual_ok(fix->berr[j] / FLT_EPSILON);
         }
     }

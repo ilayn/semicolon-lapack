@@ -17,32 +17,15 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void ssytrf(const char* uplo, const int n, f32* const restrict A,
-                   const int lda, int* const restrict ipiv,
-                   f32* const restrict work, const int lwork, int* info);
-extern void ssytrs(const char* uplo, const int n, const int nrhs,
-                   const f32* const restrict A, const int lda,
-                   const int* const restrict ipiv,
-                   f32* const restrict B, const int ldb, int* info);
-extern void ssyrfs(const char* uplo, const int n, const int nrhs,
-                   const f32* const restrict A, const int lda,
-                   const f32* const restrict AF, const int ldaf,
-                   const int* const restrict ipiv,
-                   const f32* const restrict B, const int ldb,
-                   f32* const restrict X, const int ldx,
-                   f32* const restrict ferr, f32* const restrict berr,
-                   f32* const restrict work, int* const restrict iwork,
-                   int* info);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda;
+    INT n, nrhs;
+    INT lda;
     f32* A;       /* Original matrix */
     f32* AF;      /* Factored matrix */
     f32* B;       /* RHS */
@@ -50,17 +33,17 @@ typedef struct {
     f32* XACT;    /* Exact solution */
     f32* ferr;
     f32* berr;
-    int* ipiv;
+    INT* ipiv;
     f32* d;
     f32* work;
-    int* iwork;
+    INT* iwork;
     f32* rwork;
     uint64_t seed;
 } dsyrfs_fixture_t;
 
 static uint64_t g_seed = 7500;
 
-static int dsyrfs_setup(void** state, int n, int nrhs)
+static int dsyrfs_setup(void** state, INT n, INT nrhs)
 {
     dsyrfs_fixture_t* fix = malloc(sizeof(dsyrfs_fixture_t));
     assert_non_null(fix);
@@ -70,7 +53,7 @@ static int dsyrfs_setup(void** state, int n, int nrhs)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    int worksize = n * 64;
+    INT worksize = n * 64;
     if (worksize < 3 * n) worksize = 3 * n;
 
     fix->A = malloc(fix->lda * n * sizeof(f32));
@@ -80,10 +63,10 @@ static int dsyrfs_setup(void** state, int n, int nrhs)
     fix->XACT = malloc(fix->lda * nrhs * sizeof(f32));
     fix->ferr = malloc(nrhs * sizeof(f32));
     fix->berr = malloc(nrhs * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->d = malloc(n * sizeof(f32));
     fix->work = malloc(worksize * sizeof(f32));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
     fix->rwork = malloc(n * sizeof(f32));
 
     assert_non_null(fix->A);
@@ -137,12 +120,12 @@ static int setup_20_nrhs5(void** state) { return dsyrfs_setup(state, 20, 5); }
 /**
  * Core test logic: generate symmetric indefinite matrix, solve, refine, verify.
  */
-static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
+static void run_dsyrfs_test(dsyrfs_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
+    INT info;
     const f32 eps = FLT_EPSILON;
 
     slatb4("SSY", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -155,8 +138,8 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Generate exact solution */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->lda] = 1.0f + (f32)i / fix->n;
         }
     }
@@ -169,7 +152,7 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
 
     /* Factor A via Bunch-Kaufman: copy to AF first */
     memcpy(fix->AF, fix->A, fix->lda * fix->n * sizeof(f32));
-    int lwork = fix->n * 64;
+    INT lwork = fix->n * 64;
     ssytrf(uplo, fix->n, fix->AF, fix->lda, fix->ipiv, fix->work, lwork, &info);
     assert_info_success(info);
 
@@ -186,15 +169,15 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
     assert_info_success(info);
 
     /* Verify: BERR should be small for well-conditioned matrices */
-    for (int j = 0; j < fix->nrhs; j++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
         assert_true(fix->berr[j] < 1.0f);
     }
 
     /* Compute manual residual: ||B - A*X|| / (||A|| * ||X|| * n * eps) */
     /* Use rwork as temporary for residual R = B - A*X */
-    for (int j = 0; j < fix->nrhs; j++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
         /* Copy B column to rwork */
-        for (int i = 0; i < fix->n; i++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->rwork[i] = fix->B[i + j * fix->lda];
         }
 
@@ -206,16 +189,16 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
 
         /* ||R|| */
         f32 rnorm = 0.0f;
-        for (int i = 0; i < fix->n; i++) {
+        for (INT i = 0; i < fix->n; i++) {
             f32 val = fabsf(fix->rwork[i]);
             if (val > rnorm) rnorm = val;
         }
 
         /* ||A|| (infinity norm via row sums of full symmetric matrix) */
         f32 anorm_comp = 0.0f;
-        for (int i = 0; i < fix->n; i++) {
+        for (INT i = 0; i < fix->n; i++) {
             f32 rowsum = 0.0f;
-            for (int k = 0; k < fix->n; k++) {
+            for (INT k = 0; k < fix->n; k++) {
                 rowsum += fabsf(fix->A[i + k * fix->lda]);
             }
             if (rowsum > anorm_comp) anorm_comp = rowsum;
@@ -223,7 +206,7 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
 
         /* ||X(:,j)|| */
         f32 xnorm = 0.0f;
-        for (int i = 0; i < fix->n; i++) {
+        for (INT i = 0; i < fix->n; i++) {
             f32 val = fabsf(fix->X[i + j * fix->lda]);
             if (val > xnorm) xnorm = val;
         }
@@ -237,7 +220,7 @@ static void run_dsyrfs_test(dsyrfs_fixture_t* fix, int imat, const char* uplo)
 static void test_dsyrfs_wellcond_upper(void** state)
 {
     dsyrfs_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         run_dsyrfs_test(fix, imat, "U");
     }
@@ -246,7 +229,7 @@ static void test_dsyrfs_wellcond_upper(void** state)
 static void test_dsyrfs_wellcond_lower(void** state)
 {
     dsyrfs_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         run_dsyrfs_test(fix, imat, "L");
     }

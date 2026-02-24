@@ -9,20 +9,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slascl(const char* type, const int kl, const int ku,
-                   const f32 cfrom, const f32 cto,
-                   const int m, const int n, f32* A, const int lda,
-                   int* info);
-extern void xerbla(const char* srname, const int info);
 
 /**
  * SQRT17 computes the ratio
@@ -95,21 +84,21 @@ extern void xerbla(const char* srname, const int info);
  * @return
  *     The computed ratio.
  */
-f32 sqrt17(const char* trans, const int iresid,
-              const int m, const int n, const int nrhs,
-              const f32* A, const int lda,
-              const f32* X, const int ldx,
-              const f32* B, const int ldb,
+f32 sqrt17(const char* trans, const INT iresid,
+              const INT m, const INT n, const INT nrhs,
+              const f32* A, const INT lda,
+              const f32* X, const INT ldx,
+              const f32* B, const INT ldb,
               f32* C,
-              f32* work, const int lwork)
+              f32* work, const INT lwork)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int info, iscl, ncols, nrows;
+    INT info, iscl, ncols, nrows;
     f32 err, norma, normb, normrs, smlnum;
     f32 rwork[1];
-    int tpsd;
+    INT tpsd;
 
     tpsd = (trans[0] == 'T' || trans[0] == 't');
 
@@ -176,7 +165,7 @@ f32 sqrt17(const char* trans, const int iresid,
         }
     }
 
-    int maxmnr = m;
+    INT maxmnr = m;
     if (n > maxmnr) maxmnr = n;
     if (nrhs > maxmnr) maxmnr = nrhs;
 

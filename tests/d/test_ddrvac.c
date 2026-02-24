@@ -14,12 +14,11 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
 /* Test parameters */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 16};
-static const int NSVAL[] = {2};  /* NRHS values */
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 16};
+static const INT NSVAL[] = {2};  /* NRHS values */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
@@ -31,40 +30,9 @@ static const char UPLOS[] = {'U', 'L'};
 #define MAXRHS  16
 
 /* Routine under test */
-extern void dsposv(const char* uplo, const int n, const int nrhs,
-                   f64* A, const int lda, const f64* B, const int ldb,
-                   f64* X, const int ldx, f64* work,
-                   float* swork, int* iter, int* info);
-
 /* Verification routine */
-extern void dpot06(const char* uplo, const int n, const int nrhs,
-                   const f64* A, const int lda, const f64* X, const int ldx,
-                   f64* B, const int ldb, f64* rwork, f64* resid);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f64* A, const int lda,
-                   f64* X, const int ldx, f64* B, const int ldb,
-                   int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-
 /**
  * Workspace for test execution.
  */
@@ -129,13 +97,13 @@ static int group_teardown(void** state)
 /**
  * Run a single test case.
  */
-static void run_test_single(int n, int nrhs, int imat, char uplo)
+static void run_test_single(INT n, INT nrhs, INT imat, char uplo)
 {
     char type, dist;
-    int kl, ku, mode, info, iter;
+    INT kl, ku, mode, info, iter;
     f64 anorm, cndnum;
-    int lda = (n > 1) ? n : 1;
-    int izero = 0;
+    INT lda = (n > 1) ? n : 1;
+    INT izero = 0;
 
     /* Seed based on test parameters (matches LAPACK ISEEDY = {1988, 1989, 1990, 1991}) */
     uint64_t rng_state[4];
@@ -156,7 +124,7 @@ static void run_test_single(int n, int nrhs, int imat, char uplo)
     }
 
     /* For types 3-5, zero one row and column to test singularity detection */
-    int zerot = (imat >= 3 && imat <= 5);
+    INT zerot = (imat >= 3 && imat <= 5);
     if (zerot) {
         if (imat == 3) {
             izero = 1;
@@ -167,27 +135,27 @@ static void run_test_single(int n, int nrhs, int imat, char uplo)
         }
 
         /* Zero row and column izero (1-based) */
-        int ioff = (izero - 1) * lda;
+        INT ioff = (izero - 1) * lda;
 
         if (uplo == 'U' || uplo == 'u') {
             /* Upper: zero column up to diagonal, then row from diagonal */
-            for (int i = 0; i < izero - 1; i++) {
+            for (INT i = 0; i < izero - 1; i++) {
                 g_ws->A[ioff + i] = 0.0;
             }
             ioff = ioff + izero - 1;
-            for (int i = izero - 1; i < n; i++) {
+            for (INT i = izero - 1; i < n; i++) {
                 g_ws->A[ioff] = 0.0;
                 ioff = ioff + lda;
             }
         } else {
             /* Lower: zero row up to diagonal, then column from diagonal */
             ioff = izero - 1;
-            for (int i = 0; i < izero - 1; i++) {
+            for (INT i = 0; i < izero - 1; i++) {
                 g_ws->A[ioff] = 0.0;
                 ioff = ioff + lda;
             }
             ioff = ioff - (izero - 1);
-            for (int i = izero - 1; i < n; i++) {
+            for (INT i = izero - 1; i < n; i++) {
                 g_ws->A[ioff + i] = 0.0;
             }
         }
@@ -264,17 +232,17 @@ static void test_dsposv(void** state)
     (void)state;
 
     for (size_t im = 0; im < NM; im++) {
-        int n = MVAL[im];
-        int nimat = NTYPES;
+        INT n = MVAL[im];
+        INT nimat = NTYPES;
 
         /* For empty matrix, only test type 1 */
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Skip types 3, 4, 5 if matrix is too small */
-            int zerot = (imat >= 3 && imat <= 5);
+            INT zerot = (imat >= 3 && imat <= 5);
             if (zerot && n < imat - 2) {
                 continue;
             }
@@ -284,7 +252,7 @@ static void test_dsposv(void** state)
                 char uplo = UPLOS[iuplo];
 
                 for (size_t irhs = 0; irhs < NNS; irhs++) {
-                    int nrhs = NSVAL[irhs];
+                    INT nrhs = NSVAL[irhs];
                     run_test_single(n, nrhs, imat, uplo);
                 }
             }

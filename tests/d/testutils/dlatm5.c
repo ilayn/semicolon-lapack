@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -163,16 +163,16 @@
  *
  *  PRTYPE = 5 special case common and/or close eigs.
  */
-void dlatm5(const int prtype, const int m, const int n,
-            f64* A, const int lda,
-            f64* B, const int ldb,
-            f64* C, const int ldc,
-            f64* D, const int ldd,
-            f64* E, const int lde,
-            f64* F, const int ldf,
-            f64* R, const int ldr,
-            f64* L, const int ldl,
-            const f64 alpha, int qblcka, int qblckb)
+void dlatm5(const INT prtype, const INT m, const INT n,
+            f64* A, const INT lda,
+            f64* B, const INT ldb,
+            f64* C, const INT ldc,
+            f64* D, const INT ldd,
+            f64* E, const INT lde,
+            f64* F, const INT ldf,
+            f64* R, const INT ldr,
+            f64* L, const INT ldl,
+            const f64 alpha, INT qblcka, INT qblckb)
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
@@ -180,7 +180,7 @@ void dlatm5(const int prtype, const int m, const int n,
     const f64 HALF = 0.5;
     const f64 TWO = 2.0;
 
-    int i, j, k;
+    INT i, j, k;
     f64 imeps, reeps;
 
     if (prtype == 1) {
@@ -338,7 +338,7 @@ void dlatm5(const int prtype, const int m, const int n,
         /* Now set the specific elements */
         for (i = 0; i < m; i++) {
             /* Using 1-based logic from Fortran: i_f = i + 1 */
-            int i_f = i + 1;
+            INT i_f = i + 1;
             if (i_f <= 4) {
                 A[i + i * lda] = ONE;
                 if (i_f > 2) {
@@ -379,7 +379,7 @@ void dlatm5(const int prtype, const int m, const int n,
         }
 
         for (i = 0; i < n; i++) {
-            int i_f = i + 1;
+            INT i_f = i + 1;
             E[i + i * lde] = ONE;
             if (i_f <= 4) {
                 B[i + i * ldb] = -ONE;

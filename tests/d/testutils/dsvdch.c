@@ -6,8 +6,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f64 dlamch(const char* cmach);
-
 /**
  * DSVDCH checks to see if SVD(1) ,..., SVD(N) are accurate singular
  * values of the bidiagonal matrix B with diagonal entries
@@ -37,8 +35,8 @@ extern f64 dlamch(const char* cmach);
  *                       > 0 if the interval containing the INFO-th singular value
  *                           contains the incorrect number of singular values.
  */
-void dsvdch(const int n, const f64* s, const f64* e,
-            const f64* svd, const f64 tol, int* info)
+void dsvdch(const INT n, const f64* s, const f64* e,
+            const f64* svd, const f64 tol, INT* info)
 {
     const f64 ONE = 1.0;
 
@@ -58,7 +56,7 @@ void dsvdch(const int n, const f64* s, const f64* e,
 
     /* The value of EPS works best when TOL >= 10. */
 
-    int nover10 = n / 10;
+    INT nover10 = n / 10;
     if (nover10 < 1) nover10 = 1;
     eps = tol * nover10 * eps;
 
@@ -66,8 +64,8 @@ void dsvdch(const int n, const f64* s, const f64* e,
        BPNT points to singular value at left  endpoint of interval */
 
     /* Fortran 1-based tpnt/bpnt → C 0-based */
-    int tpnt = 0;
-    int bpnt = 0;
+    INT tpnt = 0;
+    INT bpnt = 0;
 
     /* Begin loop over all intervals */
 
@@ -94,10 +92,10 @@ void dsvdch(const int n, const f64* s, const f64* e,
 
         /* Count singular values in interval [ LOWER, UPPER ] */
 
-        int numl, numu;
+        INT numl, numu;
         dsvdct(n, s, e, lower, &numl);
         dsvdct(n, s, e, upper, &numu);
-        int count = numu - numl;
+        INT count = numu - numl;
         if (lower < 0.0)
             count = count / 2;
         if (count != bpnt - tpnt + 1) {

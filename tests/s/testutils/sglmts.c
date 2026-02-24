@@ -5,18 +5,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void sggglm(const int n, const int m, const int p,
-                   f32* A, const int lda, f32* B, const int ldb,
-                   f32* D, f32* X, f32* Y,
-                   f32* work, const int lwork, int* info);
 
 /**
  * SGLMTS tests SGGGLM - a subroutine for solving the generalized
@@ -42,27 +32,27 @@ extern void sggglm(const int n, const int m, const int p,
  *                        norm( d - A*x - B*u ) / ((norm(A)+norm(B))*(norm(x)+norm(u))*EPS)
  */
 void sglmts(
-    const int n,
-    const int m,
-    const int p,
+    const INT n,
+    const INT m,
+    const INT p,
     const f32* A,
     f32* AF,
-    const int lda,
+    const INT lda,
     const f32* B,
     f32* BF,
-    const int ldb,
+    const INT ldb,
     const f32* D,
     f32* DF,
     f32* X,
     f32* U,
     f32* work,
-    const int lwork,
+    const INT lwork,
     f32* rwork,
     f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int info;
+    INT info;
     f32 anorm, bnorm, dnorm, eps, unfl, xnorm, ynorm;
 
     eps = slamch("E");

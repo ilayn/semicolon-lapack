@@ -43,41 +43,27 @@
 #define NRHS   2
 
 /* M,N pairs from dbb.in */
-static const int MVAL[] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 10, 10, 16, 16};
-static const int NVAL[] = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 10, 16, 10, 16};
+static const INT MVAL[] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 10, 10, 16, 16};
+static const INT NVAL[] = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 10, 16, 10, 16};
 #define NSIZES (sizeof(MVAL) / sizeof(MVAL[0]))
 
 /* Bandwidth values from dbb.in */
-static const int KK[] = {0, 1, 2, 3, 16};
+static const INT KK[] = {0, 1, 2, 3, 16};
 #define NWDTHS (sizeof(KK) / sizeof(KK[0]))
 
 /* External function declarations */
-extern f32  slamch(const char* cmach);
-extern void sgbbrd(const char* vect, const int m, const int n, const int ncc,
-                   const int kl, const int ku,
-                   f32* restrict AB, const int ldab,
-                   f32* restrict D, f32* restrict E,
-                   f32* restrict Q, const int ldq,
-                   f32* restrict PT, const int ldpt,
-                   f32* restrict C, const int ldc,
-                   f32* restrict work, int* info);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-
 /* ===================================================================== */
 /* DATA arrays from dchkbb.f lines 407-410                               */
 /* ===================================================================== */
 
 /*                    1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 */
-static const int ktype[MAXTYP] = {
+static const INT ktype[MAXTYP] = {
     1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9
 };
-static const int kmagn[MAXTYP] = {
+static const INT kmagn[MAXTYP] = {
     1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3
 };
-static const int kmode[MAXTYP] = {
+static const INT kmode[MAXTYP] = {
     0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0
 };
 
@@ -86,19 +72,19 @@ static const int kmode[MAXTYP] = {
 /* ===================================================================== */
 
 typedef struct {
-    int jsize;     /* index into MVAL[]/NVAL[] */
-    int jwidth;    /* index into KK[] */
-    int jtype;     /* matrix type 1..15 */
+    INT jsize;     /* index into MVAL[]/NVAL[] */
+    INT jwidth;    /* index into KK[] */
+    INT jtype;     /* matrix type 1..15 */
     char name[128];
 } dchkbb_params_t;
 
 typedef struct {
-    int mmax;
-    int nmax;
-    int kmax;
-    int mnmax;
-    int lda;
-    int ldab;
+    INT mmax;
+    INT nmax;
+    INT kmax;
+    INT mnmax;
+    INT lda;
+    INT ldab;
     f32* A;
     f32* AB;
     f32* BD;
@@ -108,8 +94,8 @@ typedef struct {
     f32* C;
     f32* CC;
     f32* work;
-    int lwork;
-    int* iwork;
+    INT lwork;
+    INT* iwork;
     uint64_t rng_state[4];
 } dchkbb_workspace_t;
 
@@ -138,18 +124,18 @@ static int group_setup(void** state)
     }
     g_ws->mnmax = (g_ws->mmax > g_ws->nmax) ? g_ws->mmax : g_ws->nmax;
 
-    int mmax  = g_ws->mmax;
-    int nmax  = g_ws->nmax;
-    int mnmax = g_ws->mnmax;
-    int kmax  = g_ws->kmax;
+    INT mmax  = g_ws->mmax;
+    INT nmax  = g_ws->nmax;
+    INT mnmax = g_ws->mnmax;
+    INT kmax  = g_ws->kmax;
 
     g_ws->lda = (mmax > nmax) ? mmax : nmax;
     if (g_ws->lda < 1) g_ws->lda = 1;
-    int lda = g_ws->lda;
+    INT lda = g_ws->lda;
 
     g_ws->ldab = 2 * kmax + 1;
     if (g_ws->ldab < 2) g_ws->ldab = 2;
-    int ldab = g_ws->ldab;
+    INT ldab = g_ws->ldab;
 
     g_ws->A    = malloc((size_t)lda * nmax * sizeof(f32));
     g_ws->AB   = malloc((size_t)ldab * nmax * sizeof(f32));
@@ -164,7 +150,7 @@ static int group_setup(void** state)
     g_ws->lwork = ((lda > nmax ? lda : nmax) + 1) * nmax;
     if (g_ws->lwork < 4 * mnmax) g_ws->lwork = 4 * mnmax;
     g_ws->work  = malloc((size_t)g_ws->lwork * sizeof(f32));
-    g_ws->iwork = malloc((size_t)mnmax * sizeof(int));
+    g_ws->iwork = malloc((size_t)mnmax * sizeof(INT));
 
     if (!g_ws->A || !g_ws->AB || !g_ws->BD || !g_ws->BE ||
         !g_ws->Q || !g_ws->P || !g_ws->C || !g_ws->CC ||
@@ -203,33 +189,33 @@ static int group_teardown(void** state)
 
 static void run_dchkbb_single(dchkbb_params_t* params)
 {
-    const int m = MVAL[params->jsize];
-    const int n = NVAL[params->jsize];
-    const int k = KK[params->jwidth];
-    const int jtype = params->jtype;
-    const int jt = jtype - 1;
+    const INT m = MVAL[params->jsize];
+    const INT n = NVAL[params->jsize];
+    const INT k = KK[params->jwidth];
+    const INT jtype = params->jtype;
+    const INT jt = jtype - 1;
 
     /* Skip if k >= m AND k >= n */
     if (k >= m && k >= n)
         return;
 
-    const int mnmin = (m < n) ? m : n;
-    int kl = (m - 1 < k) ? m - 1 : k;
+    const INT mnmin = (m < n) ? m : n;
+    INT kl = (m - 1 < k) ? m - 1 : k;
     if (kl < 0) kl = 0;
-    int ku = (n - 1 < k) ? n - 1 : k;
+    INT ku = (n - 1 < k) ? n - 1 : k;
     if (ku < 0) ku = 0;
 
-    int mxn = m;
+    INT mxn = m;
     if (n > mxn) mxn = n;
     if (mxn < 1) mxn = 1;
     const f32 amninv = 1.0f / (f32)mxn;
 
-    const int lda   = g_ws->lda;
-    const int ldab  = g_ws->ldab;
-    const int ldq   = (g_ws->mmax > 1) ? g_ws->mmax : 1;
-    const int ldp   = (g_ws->nmax > 1) ? g_ws->nmax : 1;
-    const int ldc   = lda;
-    const int lwork = g_ws->lwork;
+    const INT lda   = g_ws->lda;
+    const INT ldab  = g_ws->ldab;
+    const INT ldq   = (g_ws->mmax > 1) ? g_ws->mmax : 1;
+    const INT ldp   = (g_ws->nmax > 1) ? g_ws->nmax : 1;
+    const INT ldc   = lda;
+    const INT lwork = g_ws->lwork;
 
     f32* A     = g_ws->A;
     f32* AB    = g_ws->AB;
@@ -240,7 +226,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     f32* C     = g_ws->C;
     f32* CC    = g_ws->CC;
     f32* work  = g_ws->work;
-    int* iwork = g_ws->iwork;
+    INT* iwork = g_ws->iwork;
     uint64_t* rng = g_ws->rng_state;
 
     const f32 unfl    = slamch("S");
@@ -251,11 +237,11 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     const f32 rtovfl  = sqrtf(ovfl);
 
     f32 result[NTEST];
-    for (int i = 0; i < NTEST; i++)
+    for (INT i = 0; i < NTEST; i++)
         result[i] = 0.0f;
 
-    int iinfo = 0;
-    int ntest = 0;
+    INT iinfo = 0;
+    INT ntest = 0;
     char ctx[256];
 
     /* ----------------------------------------------------------- */
@@ -263,8 +249,8 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     /* ----------------------------------------------------------- */
 
     if (jtype <= MAXTYP) {
-        int itype = ktype[jt];
-        int imode = kmode[jt];
+        INT itype = ktype[jt];
+        INT imode = kmode[jt];
 
         f32 anorm;
         switch (kmagn[jt]) {
@@ -284,7 +270,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
 
         } else if (itype == 2) {
             /* Identity */
-            for (int jcol = 0; jcol < mnmin; jcol++)
+            for (INT jcol = 0; jcol < mnmin; jcol++)
                 A[jcol + jcol * lda] = anorm;
 
         } else if (itype == 4) {
@@ -299,7 +285,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
 
         } else if (itype == 9) {
             /* Nonhermitian, random entries */
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             slatmr(m, n, "S", "N", work, 6, 1.0f, 1.0f,
                    "T", "N", work + n, 1, 1.0f,
                    work + 2 * n, 1, 1.0f, "N", idumma, kl, ku,
@@ -322,7 +308,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
 
     /* Generate Right-Hand Side */
     {
-        int idumma[1] = {0};
+        INT idumma[1] = {0};
         slatmr(m, NRHS, "S", "N", work, 6, 1.0f, 1.0f,
                "T", "N", work + m, 1, 1.0f,
                work + 2 * m, 1, 1.0f, "N", idumma, m, NRHS,
@@ -343,12 +329,12 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     /* Copy A to band storage                                      */
     /* ----------------------------------------------------------- */
 
-    for (int j = 0; j < n; j++) {
-        int imin = j - ku;
+    for (INT j = 0; j < n; j++) {
+        INT imin = j - ku;
         if (imin < 0) imin = 0;
-        int imax = j + kl;
+        INT imax = j + kl;
         if (imax > m - 1) imax = m - 1;
-        for (int i = imin; i <= imax; i++)
+        for (INT i = imin; i <= imax; i++)
             AB[ku + i - j + j * ldab] = A[i + j * lda];
     }
 
@@ -394,7 +380,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     ntest = 4;
 
 check_results:
-    for (int jr = 0; jr < ntest; jr++) {
+    for (INT jr = 0; jr < ntest; jr++) {
         snprintf(ctx, sizeof(ctx), "dchkbb m=%d n=%d k=%d type=%d TEST %d",
                  m, n, k, jtype, jr + 1);
         set_test_context(ctx);
@@ -421,23 +407,23 @@ static void test_dchkbb_case(void** state)
 
 static dchkbb_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
     for (size_t is = 0; is < NSIZES; is++) {
-        int m = MVAL[is];
-        int n = NVAL[is];
+        INT m = MVAL[is];
+        INT n = NVAL[is];
         for (size_t iw = 0; iw < NWDTHS; iw++) {
-            int kval = KK[iw];
+            INT kval = KK[iw];
             if (kval >= m && kval >= n)
                 continue;
-            for (int jtype = 1; jtype <= MAXTYP; jtype++) {
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
                 dchkbb_params_t* p = &g_params[g_num_tests];
-                p->jsize = (int)is;
-                p->jwidth = (int)iw;
+                p->jsize = (INT)is;
+                p->jwidth = (INT)iw;
                 p->jtype = jtype;
                 snprintf(p->name, sizeof(p->name),
                          "dchkbb_m%d_n%d_k%d_type%d", m, n, kval, jtype);

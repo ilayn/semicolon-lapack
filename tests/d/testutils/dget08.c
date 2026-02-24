@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -38,12 +38,12 @@
  * @param[out]    resid   The maximum over the number of right hand sides of
  *                        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
-void dget08(const char* trans, const int m, const int n, const int nrhs,
-            const f64* A, const int lda, const f64* X, const int ldx,
-            f64* B, const int ldb, f64* rwork, f64* resid)
+void dget08(const char* trans, const INT m, const INT n, const INT nrhs,
+            const f64* A, const INT lda, const f64* X, const INT ldx,
+            f64* B, const INT ldb, f64* rwork, f64* resid)
 {
     (void)rwork;
-    int n1, n2;
+    INT n1, n2;
     f64 anorm, bnorm, xnorm, eps;
 
     /* Quick exit if m = 0 or n = 0 or nrhs = 0 */
@@ -67,9 +67,9 @@ void dget08(const char* trans, const int m, const int n, const int nrhs,
     /* Compute infinity norm of A */
     /* ||A||_inf = max over rows of sum of absolute values */
     anorm = 0.0;
-    for (int i = 0; i < n1; i++) {
+    for (INT i = 0; i < n1; i++) {
         f64 row_sum = 0.0;
-        for (int j = 0; j < n2; j++) {
+        for (INT j = 0; j < n2; j++) {
             row_sum += fabs(A[i + j * lda]);
         }
         if (row_sum > anorm) anorm = row_sum;
@@ -96,9 +96,9 @@ void dget08(const char* trans, const int m, const int n, const int nrhs,
     /* Compute the maximum over the number of right hand sides of
        norm(B - A*X) / (norm(A) * norm(X) * eps) */
     *resid = 0.0;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         /* Compute infinity norm of column j of B */
-        int idx = cblas_idamax(n1, &B[j * ldb], 1);
+        INT idx = cblas_idamax(n1, &B[j * ldb], 1);
         bnorm = fabs(B[idx + j * ldb]);
 
         /* Compute infinity norm of column j of X */

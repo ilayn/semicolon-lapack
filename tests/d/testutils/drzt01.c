@@ -6,22 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dormrz(const char* side, const char* trans,
-                   const int m, const int n, const int k, const int l,
-                   const f64* A, const int lda, const f64* tau,
-                   f64* C, const int ldc, f64* work, const int lwork,
-                   int* info);
-
 /**
  * DRZT01 returns
  *    || A - R*Q || / (M * eps * ||A||)
@@ -39,12 +27,12 @@ extern void dormrz(const char* side, const char* trans,
  *
  * @return || A - R*Q || / (M * eps * ||A||).
  */
-f64 drzt01(const int m, const int n, const f64* A, const f64* AF,
-              const int lda, const f64* tau, f64* work, const int lwork)
+f64 drzt01(const INT m, const INT n, const f64* A, const f64* AF,
+              const INT lda, const f64* tau, f64* work, const INT lwork)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int i, j, info;
+    INT i, j, info;
     f64 norma;
     f64 rwork[1];
 

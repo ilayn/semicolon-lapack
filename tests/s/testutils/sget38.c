@@ -4,32 +4,10 @@
  *        cluster of eigenvalues and/or its associated right invariant subspace.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void sgehrd(const int n, const int ilo, const int ihi,
-                   f32* A, const int lda, f32* tau,
-                   f32* work, const int lwork, int* info);
-extern void sorghr(const int n, const int ilo, const int ihi,
-                   f32* A, const int lda, const f32* tau,
-                   f32* work, const int lwork, int* info);
-extern void shseqr(const char* job, const char* compz, const int n,
-                   const int ilo, const int ihi,
-                   f32* H, const int ldh, f32* wr, f32* wi,
-                   f32* Z, const int ldz,
-                   f32* work, const int lwork, int* info);
-extern void strsen(const char* job, const char* compq, const int* select,
-                   const int n, f32* T, const int ldt, f32* Q, const int ldq,
-                   f32* wr, f32* wi, int* m, f32* s, f32* sep,
-                   f32* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
 
 #define LDT 20
 #define LWORK (2 * LDT * (10 + LDT))
@@ -37,9 +15,9 @@ extern void strsen(const char* job, const char* compq, const int* select,
 #define NCASES38 26
 
 typedef struct {
-    int n;
-    int ndim;
-    int iselec[LDT];  /* 1-based indices from Fortran */
+    INT n;
+    INT ndim;
+    INT iselec[LDT];  /* 1-based indices from Fortran */
     f32 sin_val;
     f32 sepin;
 } dget38_meta_t;
@@ -287,15 +265,15 @@ static const f32 dget38_data[] = {
     -1.0f, 0.0f, 3.0f, -6.0f, 2.0f, -5.0f, 12.0f, -14.0f, 36.0f, -25.0f,
 };
 
-static void rowmajor_to_colmajor(const f32* rows, f32* cm, int n, int ldcm)
+static void rowmajor_to_colmajor(const f32* rows, f32* cm, INT n, INT ldcm)
 {
     memset(cm, 0, (size_t)ldcm * n * sizeof(f32));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ldcm] = rows[i * n + j];
 }
 
-void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
+void sget38(f32 rmax[3], INT lmax[3], INT ninfo[3], INT* knt)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -323,7 +301,7 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
     val[1] = ONE;
     val[2] = sqrtf(sqrtf(bignum));
 
-    int select[LDT], ipnt[LDT], iwork[LIWORK];
+    INT select[LDT], ipnt[LDT], iwork[LIWORK];
     f32 q[LDT * LDT], qsav[LDT * LDT], qtmp[LDT * LDT];
     f32 t[LDT * LDT], tmp[LDT * LDT], tsav[LDT * LDT];
     f32 tsav1[LDT * LDT], ttmp[LDT * LDT];
@@ -332,9 +310,9 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
 
     const f32* dptr = dget38_data;
 
-    for (int ic = 0; ic < NCASES38; ic++) {
-        int n = dget38_meta[ic].n;
-        int ndim = dget38_meta[ic].ndim;
+    for (INT ic = 0; ic < NCASES38; ic++) {
+        INT n = dget38_meta[ic].n;
+        INT ndim = dget38_meta[ic].ndim;
         f32 sin_val = dget38_meta[ic].sin_val;
         f32 sepin = dget38_meta[ic].sepin;
 
@@ -343,18 +321,18 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
 
         f32 tnrm = slange("M", n, n, tmp, LDT, work);
 
-        for (int iscl = 0; iscl < 3; iscl++) {
+        for (INT iscl = 0; iscl < 3; iscl++) {
 
             (*knt)++;
             slacpy("F", n, n, tmp, LDT, t, LDT);
             f32 vmul = val[iscl];
-            for (int i = 0; i < n; i++)
+            for (INT i = 0; i < n; i++)
                 cblas_sscal(n, vmul, &t[i * LDT], 1);
             if (tnrm == ZERO)
                 vmul = ONE;
             slacpy("F", n, n, t, LDT, tsav, LDT);
 
-            int info;
+            INT info;
             sgehrd(n, 0, n - 1, t, LDT, work, &work[n], LWORK - n, &info);
             if (info != 0) {
                 lmax[0] = *knt;
@@ -373,17 +351,17 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
                 continue;
             }
 
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 ipnt[i] = i;
                 select[i] = 0;
             }
             cblas_scopy(n, wr, 1, wrtmp, 1);
             cblas_scopy(n, wi, 1, witmp, 1);
-            for (int i = 0; i < n - 1; i++) {
-                int kmin = i;
+            for (INT i = 0; i < n - 1; i++) {
+                INT kmin = i;
                 f32 vrmin = wrtmp[i];
                 f32 vimin = witmp[i];
-                for (int j = i + 1; j < n; j++) {
+                for (INT j = i + 1; j < n; j++) {
                     if (wrtmp[j] < vrmin) {
                         kmin = j;
                         vrmin = wrtmp[j];
@@ -394,16 +372,16 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
                 witmp[kmin] = witmp[i];
                 wrtmp[i] = vrmin;
                 witmp[i] = vimin;
-                int itmp = ipnt[i];
+                INT itmp = ipnt[i];
                 ipnt[i] = ipnt[kmin];
                 ipnt[kmin] = itmp;
             }
-            for (int i = 0; i < ndim; i++)
+            for (INT i = 0; i < ndim; i++)
                 select[ipnt[dget38_meta[ic].iselec[i] - 1]] = 1;
 
             slacpy("F", n, n, q, LDT, qsav, LDT);
             slacpy("F", n, n, t, LDT, tsav1, LDT);
-            int m;
+            INT m;
             f32 s, sep;
             strsen("B", "V", select, n, t, LDT, q, LDT, wrtmp, witmp,
                    &m, &s, &sep, work, LWORK, iwork, LIWORK, &info);
@@ -533,8 +511,8 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
                 vmax = ONE / eps;
             if (-ONE != septmp)
                 vmax = ONE / eps;
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++)
+                for (INT j = 0; j < n; j++) {
                     if (ttmp[i + j * LDT] != t[i + j * LDT])
                         vmax = ONE / eps;
                     if (qtmp[i + j * LDT] != q[i + j * LDT])
@@ -557,8 +535,8 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
                 vmax = ONE / eps;
             if (sep != septmp)
                 vmax = ONE / eps;
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++)
+                for (INT j = 0; j < n; j++) {
                     if (ttmp[i + j * LDT] != t[i + j * LDT])
                         vmax = ONE / eps;
                     if (qtmp[i + j * LDT] != q[i + j * LDT])
@@ -581,8 +559,8 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
                 vmax = ONE / eps;
             if (-ONE != septmp)
                 vmax = ONE / eps;
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++)
+                for (INT j = 0; j < n; j++) {
                     if (ttmp[i + j * LDT] != t[i + j * LDT])
                         vmax = ONE / eps;
                     if (qtmp[i + j * LDT] != qsav[i + j * LDT])
@@ -605,8 +583,8 @@ void sget38(f32 rmax[3], int lmax[3], int ninfo[3], int* knt)
                 vmax = ONE / eps;
             if (sep != septmp)
                 vmax = ONE / eps;
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++)
+                for (INT j = 0; j < n; j++) {
                     if (ttmp[i + j * LDT] != t[i + j * LDT])
                         vmax = ONE / eps;
                     if (qtmp[i + j * LDT] != qsav[i + j * LDT])

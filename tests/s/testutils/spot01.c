@@ -4,15 +4,9 @@
  *        Cholesky factorization and computes the residual.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
 
 /**
  * SPOT01 reconstructs a symmetric positive definite matrix A from
@@ -42,11 +36,11 @@ extern f32 slansy(const char* norm, const char* uplo, const int n,
  */
 void spot01(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* const restrict A,
-    const int lda,
+    const INT lda,
     f32* const restrict AFAC,
-    const int ldafac,
+    const INT ldafac,
     f32* const restrict rwork,
     f32* resid)
 {
@@ -70,7 +64,7 @@ void spot01(
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         // Compute the product U'*U, overwriting U.
         // Process columns from right to left.
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             // Compute the (k,k) element of the result.
             // AFAC(k,k) = dot(column k of AFAC, rows 0..k)
             // Fortran: T = DDOT(K, AFAC(1,K), 1, AFAC(1,K), 1)
@@ -88,7 +82,7 @@ void spot01(
     } else {
         // Compute the product L*L', overwriting L.
         // Process columns from right to left.
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             // Add a multiple of column k of the factor L to each of
             // columns k+1 through n-1.
             // Fortran: DSYR('Lower', N-K, ONE, AFAC(K+1,K), 1, AFAC(K+1,K+1), LDAFAC)
@@ -108,14 +102,14 @@ void spot01(
 
     // Compute the difference L*L' - A (or U'*U - A).
     if (uplo[0] == 'U' || uplo[0] == 'u') {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i <= j; i++) {
                 AFAC[i + j * ldafac] -= A[i + j * lda];
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = j; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = j; i < n; i++) {
                 AFAC[i + j * ldafac] -= A[i + j * lda];
             }
         }

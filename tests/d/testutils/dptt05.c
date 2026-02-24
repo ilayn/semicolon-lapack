@@ -7,8 +7,8 @@
  */
 
 #include "semicolon_lapack_double.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 
 /**
@@ -41,16 +41,16 @@
  * @param[out]    reslts  Array of length 2 with test results.
  */
 void dptt05(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* const restrict D,
     const f64* const restrict E,
     const f64* const restrict B,
-    const int ldb,
+    const INT ldb,
     const f64* const restrict X,
-    const int ldx,
+    const INT ldx,
     const f64* const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f64* const restrict FERR,
     const f64* const restrict BERR,
     f64* const restrict reslts)
@@ -68,17 +68,17 @@ void dptt05(
     f64 eps = dlamch("E");
     f64 unfl = dlamch("S");
     f64 ovfl = ONE / unfl;
-    int nz = 4;
+    INT nz = 4;
 
     /* Test 1: Compute the maximum of
        norm(X - XACT) / ( norm(X) * FERR )
        over all the vectors X and XACT using the infinity-norm. */
     f64 errbnd = ZERO;
-    for (int j = 0; j < nrhs; j++) {
-        int imax = cblas_idamax(n, &X[j * ldx], 1);
+    for (INT j = 0; j < nrhs; j++) {
+        INT imax = cblas_idamax(n, &X[j * ldx], 1);
         f64 xnorm = fmax(fabs(X[imax + j * ldx]), unfl);
         f64 diff = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             diff = fmax(diff, fabs(X[i + j * ldx] - XACT[i + j * ldxact]));
         }
 
@@ -101,14 +101,14 @@ void dptt05(
 
     /* Test 2: Compute the maximum of BERR / ( NZ*EPS + (*) ), where
        (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i ) */
-    for (int k = 0; k < nrhs; k++) {
+    for (INT k = 0; k < nrhs; k++) {
         f64 axbi;
         if (n == 1) {
             axbi = fabs(B[k * ldb]) + fabs(D[0] * X[k * ldx]);
         } else {
             axbi = fabs(B[k * ldb]) + fabs(D[0] * X[k * ldx]) +
                    fabs(E[0] * X[1 + k * ldx]);
-            for (int i = 1; i < n - 1; i++) {
+            for (INT i = 1; i < n - 1; i++) {
                 f64 tmp = fabs(B[i + k * ldb]) +
                             fabs(E[i - 1] * X[i - 1 + k * ldx]) +
                             fabs(D[i] * X[i + k * ldx]) +

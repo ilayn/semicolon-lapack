@@ -7,12 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * STBT05 tests the error bounds from iterative refinement for the
  * computed solution to a system of equations A*X = B, where A is a
@@ -55,18 +53,18 @@ extern f32 slamch(const char* cmach);
  * @param[out]    reslts  Array (2). The test results.
  */
 void stbt05(const char* uplo, const char* trans, const char* diag,
-            const int n, const int kd, const int nrhs,
-            const f32* AB, const int ldab,
-            const f32* B, const int ldb,
-            const f32* X, const int ldx,
-            const f32* XACT, const int ldxact,
+            const INT n, const INT kd, const INT nrhs,
+            const f32* AB, const INT ldab,
+            const f32* B, const INT ldb,
+            const f32* X, const INT ldx,
+            const f32* XACT, const INT ldxact,
             const f32* ferr, const f32* berr,
             f32* reslts)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int notran, unit, upper;
-    int i, ifu, imax, j, k, nz;
+    INT notran, unit, upper;
+    INT i, ifu, imax, j, k, nz;
     f32 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0. */
@@ -128,7 +126,7 @@ void stbt05(const char* uplo, const char* trans, const char* diag,
                 if (!notran) {
                     /* UPPER, TRANS: DO 40 J = MAX(I-KD,1), I-IFU
                      * Fortran: AB(KD+1-I+J, I) = A(J, I) (0-based: AB[kd+j-i + i*ldab]) */
-                    int jstart = (i - kd > 0) ? i - kd : 0;
+                    INT jstart = (i - kd > 0) ? i - kd : 0;
                     for (j = jstart; j < i + 1 - ifu; j++) {
                         tmp += fabsf(AB[kd + j - i + i * ldab]) * fabsf(X[j + k * ldx]);
                     }
@@ -141,7 +139,7 @@ void stbt05(const char* uplo, const char* trans, const char* diag,
                     if (unit) {
                         tmp += fabsf(X[i + k * ldx]);
                     }
-                    int jend = (i + kd < n - 1) ? i + kd : n - 1;
+                    INT jend = (i + kd < n - 1) ? i + kd : n - 1;
                     for (j = i + ifu; j <= jend; j++) {
                         tmp += fabsf(AB[kd + i - j + j * ldab]) * fabsf(X[j + k * ldx]);
                     }
@@ -150,7 +148,7 @@ void stbt05(const char* uplo, const char* trans, const char* diag,
                 if (notran) {
                     /* LOWER, NOTRAN: DO 60 J = MAX(I-KD,1), I-IFU
                      * Fortran: AB(1+I-J, J) = A(I, J) (0-based: AB[i-j + j*ldab]) */
-                    int jstart = (i - kd > 0) ? i - kd : 0;
+                    INT jstart = (i - kd > 0) ? i - kd : 0;
                     for (j = jstart; j < i + 1 - ifu; j++) {
                         tmp += fabsf(AB[i - j + j * ldab]) * fabsf(X[j + k * ldx]);
                     }
@@ -163,7 +161,7 @@ void stbt05(const char* uplo, const char* trans, const char* diag,
                     if (unit) {
                         tmp += fabsf(X[i + k * ldx]);
                     }
-                    int jend = (i + kd < n - 1) ? i + kd : n - 1;
+                    INT jend = (i + kd < n - 1) ? i + kd : n - 1;
                     for (j = i + ifu; j <= jend; j++) {
                         tmp += fabsf(AB[j - i + i * ldab]) * fabsf(X[j + k * ldx]);
                     }

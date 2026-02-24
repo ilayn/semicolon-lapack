@@ -27,16 +27,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
@@ -51,68 +50,9 @@ static const char TRANSS[] = {'N', 'T', 'C'};
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dgetrf(const int m, const int n, f64* A, const int lda,
-                   int* ipiv, int* info);
-extern void dgetri(const int n, f64* A, const int lda, const int* ipiv,
-                   f64* work, const int lwork, int* info);
-extern void dgetrs(const char* trans, const int n, const int nrhs,
-                   const f64* A, const int lda, const int* ipiv,
-                   f64* B, const int ldb, int* info);
-extern void dgerfs(const char* trans, const int n, const int nrhs,
-                   const f64* A, const int lda, const f64* AF,
-                   const int ldaf, const int* ipiv, const f64* B,
-                   const int ldb, f64* X, const int ldx, f64* ferr,
-                   f64* berr, f64* work, int* iwork, int* info);
-extern void dgecon(const char* norm, const int n, const f64* A,
-                   const int lda, const f64 anorm, f64* rcond,
-                   f64* work, int* iwork, int* info);
-
 /* Verification routines */
-extern void dget01(const int m, const int n, const f64* A, const int lda,
-                   f64* AFAC, const int ldafac, const int* ipiv,
-                   f64* rwork, f64* resid);
-extern void dget02(const char* trans, const int m, const int n, const int nrhs,
-                   const f64* A, const int lda, const f64* X,
-                   const int ldx, f64* B, const int ldb,
-                   f64* rwork, f64* resid);
-extern void dget03(const int n, const f64* A, const int lda,
-                   const f64* AINV, const int ldainv, f64* work,
-                   const int ldwork, f64* rwork, f64* rcond, f64* resid);
-extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact, const f64 rcond,
-                   f64* resid);
-extern f64 dget06(const f64 rcond, const f64 rcondc);
-extern void dget07(const char* trans, const int n, const int nrhs,
-                   const f64* A, const int lda, const f64* B,
-                   const int ldb, const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact, const f64* ferr,
-                   const int chkferr, const f64* berr, f64* reslts);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f64* A, const int lda,
-                   const f64* XACT, const int ldxact, f64* B,
-                   const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  *
@@ -126,10 +66,10 @@ extern f64 dlamch(const char* cmach);
  *   - TESTs 3-8 (solve, refinement) only run for inb=0 (first NB) and M==N
  */
 typedef struct {
-    int m;
-    int n;
-    int imat;
-    int inb;    /* Index into NBVAL[] */
+    INT m;
+    INT n;
+    INT imat;
+    INT inb;    /* Index into NBVAL[] */
     char name[64];
 } dchkge_params_t;
 
@@ -148,8 +88,8 @@ typedef struct {
     f64* D;      /* Singular values for dlatms */
     f64* FERR;   /* Forward error bounds */
     f64* BERR;   /* Backward error bounds */
-    int* IPIV;      /* Pivot indices */
-    int* IWORK;     /* Integer workspace */
+    INT* IPIV;      /* Pivot indices */
+    INT* IWORK;     /* Integer workspace */
 } dchkge_workspace_t;
 
 static dchkge_workspace_t* g_workspace = NULL;
@@ -174,8 +114,8 @@ static int group_setup(void** state)
     g_workspace->D = malloc(NMAX * sizeof(f64));
     g_workspace->FERR = malloc(NSMAX * sizeof(f64));
     g_workspace->BERR = malloc(NSMAX * sizeof(f64));
-    g_workspace->IPIV = malloc(NMAX * sizeof(int));
-    g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
+    g_workspace->IPIV = malloc(NMAX * sizeof(INT));
+    g_workspace->IWORK = malloc(2 * NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -222,23 +162,23 @@ static int group_teardown(void** state)
  *   - TESTs 1-2 (factorization, inverse) run for all NB values
  *   - TESTs 3-8 (solve, refinement) only run for inb=0 and M==N
  */
-static void run_dchkge_single(int m, int n, int imat, int inb)
+static void run_dchkge_single(INT m, INT n, INT imat, INT inb)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     dchkge_workspace_t* ws = g_workspace;
 
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info, izero;
-    int lda = (m > 1) ? m : 1;
-    int trfcon;
+    INT info, izero;
+    INT lda = (m > 1) ? m : 1;
+    INT trfcon;
     f64 anormo, anormi, rcondo, rcondi, rcond, rcondc;
     f64 result[NTESTS];
 
     /* Set block size for this test via xlaenv (mirrors LAPACK's XLAENV call) */
-    int nb = NBVAL[inb];
+    INT nb = NBVAL[inb];
     xlaenv(1, nb);
 
     /* Seed based on (m, n, imat) for reproducibility.
@@ -247,7 +187,7 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -260,9 +200,9 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
     assert_int_equal(info, 0);
 
     /* For types 5-7, zero one or more columns to create singular matrix */
-    int zerot = (imat >= 5 && imat <= 7);
+    INT zerot = (imat >= 5 && imat <= 7);
     if (zerot) {
-        int minmn = (m < n) ? m : n;
+        INT minmn = (m < n) ? m : n;
         if (imat == 5) {
             izero = 1;
         } else if (imat == 6) {
@@ -271,9 +211,9 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
             izero = minmn / 2 + 1;
         }
         /* Zero column izero (1-based in LAPACK, 0-based here) */
-        int ioff = (izero - 1) * lda;
+        INT ioff = (izero - 1) * lda;
         if (imat < 7) {
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 ws->A[ioff + i] = ZERO;
             }
         } else {
@@ -310,7 +250,7 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
      */
     if (m == n && info == 0) {
         dlacpy("F", n, n, ws->AFAC, lda, ws->AINV, lda);
-        int lwork = NMAX * 3;
+        INT lwork = NMAX * 3;
         dgetri(n, ws->AINV, lda, ws->IPIV, ws->WORK, lwork, &info);
         assert_int_equal(info, 0);
 
@@ -353,10 +293,10 @@ static void run_dchkge_single(int m, int n, int imat, int inb)
     /*
      * TESTS 3-7: Solve tests (only for M==N, non-singular, first NB)
      */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
-        for (int itran = 0; itran < (int)NTRAN; itran++) {
+        for (INT itran = 0; itran < (INT)NTRAN; itran++) {
             char trans_arr[2] = {TRANSS[itran], '\0'};
             rcondc = (itran == 0) ? rcondo : rcondi;
 
@@ -406,7 +346,7 @@ test8:
      * TEST 8: Get an estimate of RCOND = 1/CNDNUM
      */
     if (m == n) {
-        for (int itran = 0; itran < 2; itran++) {
+        for (INT itran = 0; itran < 2; itran++) {
             char norm;
             if (itran == 0) {
                 anorm = anormo;
@@ -451,7 +391,7 @@ static void test_dchkge_case(void** state)
 
 static dchkge_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -460,28 +400,28 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
 
-            int nimat = NTYPES;
+            INT nimat = NTYPES;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
             }
 
-            for (int imat = 1; imat <= nimat; imat++) {
+            for (INT imat = 1; imat <= nimat; imat++) {
                 /* Skip types 5, 6, or 7 if matrix size is too small */
-                int zerot = (imat >= 5 && imat <= 7);
-                int minmn = (m < n) ? m : n;
+                INT zerot = (imat >= 5 && imat <= 7);
+                INT minmn = (m < n) ? m : n;
                 if (zerot && minmn < imat - 4) {
                     continue;
                 }
 
                 /* Loop over block sizes */
-                for (int inb = 0; inb < (int)NNB; inb++) {
-                    int nb = NBVAL[inb];
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    INT nb = NBVAL[inb];
 
                     /* Store parameters */
                     dchkge_params_t* p = &g_params[g_num_tests];

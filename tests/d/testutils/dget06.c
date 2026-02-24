@@ -6,9 +6,6 @@
 #include <math.h>
 #include "verify.h"
 
-// Forward declaration
-extern f64 dlamch(const char* cmach);
-
 /**
  * DGET06 computes a test ratio to compare two values for RCOND.
  *

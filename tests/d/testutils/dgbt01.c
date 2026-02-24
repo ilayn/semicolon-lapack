@@ -6,8 +6,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_double.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -32,10 +32,10 @@
  * @param[out] work  Workspace array, dimension (2*kl+ku+1).
  * @param[out] resid norm(L*U - A) / (N * norm(A) * EPS)
  */
-void dgbt01(int m, int n, int kl, int ku,
-            const f64* A, int lda,
-            const f64* AFAC, int ldafac,
-            const int* ipiv,
+void dgbt01(INT m, INT n, INT kl, INT ku,
+            const f64* A, INT lda,
+            const f64* AFAC, INT ldafac,
+            const INT* ipiv,
             f64* work,
             f64* resid)
 {
@@ -50,13 +50,13 @@ void dgbt01(int m, int n, int kl, int ku,
 
     /* Determine EPS and the norm of A. */
     f64 eps = dlamch("Epsilon");
-    int kd = ku;  /* Row index of diagonal in A storage (0-based: row ku) */
+    INT kd = ku;  /* Row index of diagonal in A storage (0-based: row ku) */
     f64 anorm = ZERO;
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         /* For column j, the band elements are in rows i1 to i2 of A */
-        int i1 = (kd + 1 - j - 1 > 0) ? kd + 1 - j - 1 : 0;  /* max(kd+1-j, 1) - 1 in 0-based */
-        int i2_excl = (kd + m - j < kl + kd + 1) ? kd + m - j : kl + kd + 1; /* min(kd+m-j, kl+kd+1) in 0-based */
+        INT i1 = (kd + 1 - j - 1 > 0) ? kd + 1 - j - 1 : 0;  /* max(kd+1-j, 1) - 1 in 0-based */
+        INT i2_excl = (kd + m - j < kl + kd + 1) ? kd + m - j : kl + kd + 1; /* min(kd+m-j, kl+kd+1) in 0-based */
 
         if (i2_excl > i1) {
             f64 col_sum = cblas_dasum(i2_excl - i1, &A[i1 + j * lda], 1);
@@ -69,34 +69,34 @@ void dgbt01(int m, int n, int kl, int ku,
     /* Compute one column at a time of L*U - A. */
     kd = kl + ku;  /* Row index of diagonal in AFAC storage */
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         /* Copy the j-th column of U to work. */
-        int ju = (kl + ku < j) ? kl + ku : j;  /* min(kl+ku, j) */
-        int jl = (kl < m - j - 1) ? kl : m - j - 1;  /* min(kl, m-j-1) */
-        int lenj = ((m < j + 1) ? m : j + 1) - (j + 1) + ju + 1;  /* min(m, j+1) - (j+1) + ju + 1 */
+        INT ju = (kl + ku < j) ? kl + ku : j;  /* min(kl+ku, j) */
+        INT jl = (kl < m - j - 1) ? kl : m - j - 1;  /* min(kl, m-j-1) */
+        INT lenj = ((m < j + 1) ? m : j + 1) - (j + 1) + ju + 1;  /* min(m, j+1) - (j+1) + ju + 1 */
 
         if (lenj > 0) {
             /* Copy U column */
             cblas_dcopy(lenj, &AFAC[(kd - ju) + j * ldafac], 1, work, 1);
 
             /* Zero the rest */
-            for (int i = lenj; i < ju + jl + 1; i++) {
+            for (INT i = lenj; i < ju + jl + 1; i++) {
                 work[i] = ZERO;
             }
 
             /* Multiply by the unit lower triangular matrix L.
              * L is stored as a product of transformations and permutations. */
-            int i_start = (m - 2 < j) ? m - 2 : j;  /* min(m-1, j+1) - 1 in 0-based */
-            for (int i = i_start; i >= j - ju; i--) {
-                int il = (kl < m - i - 1) ? kl : m - i - 1;  /* min(kl, m-i-1) */
+            INT i_start = (m - 2 < j) ? m - 2 : j;  /* min(m-1, j+1) - 1 in 0-based */
+            for (INT i = i_start; i >= j - ju; i--) {
+                INT il = (kl < m - i - 1) ? kl : m - i - 1;  /* min(kl, m-i-1) */
                 if (il > 0) {
-                    int iw = i - j + ju;  /* 0-based work index */
+                    INT iw = i - j + ju;  /* 0-based work index */
                     f64 t = work[iw];
                     cblas_daxpy(il, t, &AFAC[(kd + 1) + i * ldafac], 1, &work[iw + 1], 1);
 
-                    int ip = ipiv[i];  /* ipiv is 0-based in our implementation */
+                    INT ip = ipiv[i];  /* ipiv is 0-based in our implementation */
                     if (i != ip) {
-                        int ip_work = ip - j + ju;
+                        INT ip_work = ip - j + ju;
                         work[iw] = work[ip_work];
                         work[ip_work] = t;
                     }
@@ -104,7 +104,7 @@ void dgbt01(int m, int n, int kl, int ku,
             }
 
             /* Subtract the corresponding column of A. */
-            int jua = (ju < ku) ? ju : ku;  /* min(ju, ku) */
+            INT jua = (ju < ku) ? ju : ku;  /* min(ju, ku) */
             if (jua + jl + 1 > 0) {
                 cblas_daxpy(jua + jl + 1, -ONE,
                            &A[(ku - jua) + j * lda], 1,

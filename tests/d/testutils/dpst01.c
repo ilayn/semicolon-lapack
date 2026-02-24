@@ -6,12 +6,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* A, const int lda, f64* work);
 
 /**
  * DPST01 reconstructs a symmetric positive semidefinite matrix A
@@ -49,17 +45,17 @@ extern f64 dlansy(const char* norm, const char* uplo, const int n,
  */
 void dpst01(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* const restrict A,
-    const int lda,
+    const INT lda,
     f64* const restrict AFAC,
-    const int ldafac,
+    const INT ldafac,
     f64* const restrict PERM,
-    const int ldperm,
-    const int* const restrict piv,
+    const INT ldperm,
+    const INT* const restrict piv,
     f64* const restrict rwork,
     f64* resid,
-    const int rank)
+    const INT rank)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -76,18 +72,18 @@ void dpst01(
         return;
     }
 
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     if (upper) {
         if (rank < n) {
-            for (int j = rank; j < n; j++) {
-                for (int i = rank; i <= j; i++) {
+            for (INT j = rank; j < n; j++) {
+                for (INT i = rank; i <= j; i++) {
                     AFAC[i + j * ldafac] = ZERO;
                 }
             }
         }
 
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             f64 t = cblas_ddot(k + 1, &AFAC[k * ldafac], 1,
                                   &AFAC[k * ldafac], 1);
             AFAC[k + k * ldafac] = t;
@@ -99,14 +95,14 @@ void dpst01(
         }
     } else {
         if (rank < n) {
-            for (int j = rank; j < n; j++) {
-                for (int i = j; i < n; i++) {
+            for (INT j = rank; j < n; j++) {
+                for (INT i = j; i < n; i++) {
                     AFAC[i + j * ldafac] = ZERO;
                 }
             }
         }
 
-        for (int k = n - 1; k >= 0; k--) {
+        for (INT k = n - 1; k >= 0; k--) {
             if (k + 1 < n) {
                 cblas_dsyr(CblasColMajor, CblasLower, n - k - 1, ONE,
                            &AFAC[(k + 1) + k * ldafac], 1,
@@ -119,8 +115,8 @@ void dpst01(
     }
 
     if (upper) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++) {
                 if (piv[i] <= piv[j]) {
                     if (i <= j) {
                         PERM[piv[i] + piv[j] * ldperm] = AFAC[i + j * ldafac];
@@ -131,8 +127,8 @@ void dpst01(
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++) {
                 if (piv[i] >= piv[j]) {
                     if (i >= j) {
                         PERM[piv[i] + piv[j] * ldperm] = AFAC[i + j * ldafac];
@@ -145,14 +141,14 @@ void dpst01(
     }
 
     if (upper) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i <= j; i++) {
                 PERM[i + j * ldperm] = PERM[i + j * ldperm] - A[i + j * lda];
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = j; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = j; i < n; i++) {
                 PERM[i + j * ldperm] = PERM[i + j * ldperm] - A[i + j * lda];
             }
         }

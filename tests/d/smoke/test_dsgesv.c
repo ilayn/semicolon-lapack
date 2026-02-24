@@ -22,26 +22,17 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void dsgesv(const int n, const int nrhs, f64 * const restrict A,
-                   const int lda, int * const restrict ipiv,
-                   const f64 * const restrict B, const int ldb,
-                   f64 * const restrict X, const int ldx,
-                   f64 * const restrict work, float * const restrict swork,
-                   int *iter, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n;
-    int nrhs;
-    int lda, ldb, ldx;
+    INT n;
+    INT nrhs;
+    INT lda, ldb, ldx;
     f64 *A;        /* Matrix (modified by dsgesv) */
     f64 *A_orig;   /* Pristine copy of A */
     f64 *B;        /* Right-hand side */
@@ -52,7 +43,7 @@ typedef struct {
     f64 *work;     /* Double workspace for dsgesv and dlatms */
     f64 *rwork;    /* Workspace for dget02 */
     float *swork;     /* Single precision workspace for dsgesv */
-    int *ipiv;        /* Pivot indices */
+    INT* ipiv;        /* Pivot indices */
     uint64_t seed;    /* RNG seed */
 } dsgesv_fixture_t;
 
@@ -62,7 +53,7 @@ static uint64_t g_seed = 1729;
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dsgesv_setup(void **state, int n, int nrhs)
+static int dsgesv_setup(void **state, INT n, INT nrhs)
 {
     dsgesv_fixture_t *fix = malloc(sizeof(dsgesv_fixture_t));
     assert_non_null(fix);
@@ -75,7 +66,7 @@ static int dsgesv_setup(void **state, int n, int nrhs)
     fix->seed = g_seed++;
 
     /* work needs to be large enough for both dlatms (3*n) and dsgesv (n*nrhs) */
-    int work_size = (3 * n > n * nrhs) ? 3 * n : n * nrhs;
+    INT work_size = (3 * n > n * nrhs) ? 3 * n : n * nrhs;
 
     fix->A = malloc(fix->lda * n * sizeof(f64));
     fix->A_orig = malloc(fix->lda * n * sizeof(f64));
@@ -87,7 +78,7 @@ static int dsgesv_setup(void **state, int n, int nrhs)
     fix->work = malloc(work_size * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
     fix->swork = malloc(n * (n + nrhs) * sizeof(float));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_orig);
@@ -157,15 +148,15 @@ static int setup_10_1_refine(void **state) { return dsgesv_setup(state, 10, 1); 
  * Populates resid_02, resid_04, and iter.
  * Returns 0 on success, nonzero if the matrix was singular (skip residual checks).
  */
-static int run_dsgesv_test(dsgesv_fixture_t *fix, int imat,
-                           f64 *resid_02, f64 *resid_04, int *iter_out)
+static INT run_dsgesv_test(dsgesv_fixture_t *fix, INT imat,
+                           f64 *resid_02, f64 *resid_04, INT* iter_out)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
-    int info, iter;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
+    INT info, iter;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
 
     /* Get matrix parameters */
     dlatb4("DGE", imat, n, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -179,8 +170,8 @@ static int run_dsgesv_test(dsgesv_fixture_t *fix, int imat,
     memcpy(fix->A_orig, fix->A, fix->lda * n * sizeof(f64));
 
     /* Generate known exact solution XACT */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             fix->XACT[i + j * fix->ldx] = 1.0 + (f64)i / n + (f64)j / nrhs;
         }
     }
@@ -224,9 +215,9 @@ static int run_dsgesv_test(dsgesv_fixture_t *fix, int imat,
 static void test_dsgesv_simple(void **state)
 {
     dsgesv_fixture_t *fix = *state;
-    int n = 3;
-    int nrhs = 1;
-    int info, iter;
+    INT n = 3;
+    INT nrhs = 1;
+    INT info, iter;
 
     /* System: A * x = b where solution is x = [1, 1, 1]' */
     f64 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};  /* Column-major */
@@ -252,19 +243,19 @@ static void test_dsgesv_simple(void **state)
 static void test_dsgesv_identity(void **state)
 {
     dsgesv_fixture_t *fix = *state;
-    int n = 4;
-    int nrhs = 2;
-    int info, iter;
+    INT n = 4;
+    INT nrhs = 2;
+    INT info, iter;
 
     /* Identity matrix */
     memset(fix->A, 0, fix->lda * n * sizeof(f64));
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         fix->A[i + i * fix->lda] = 1.0;
     }
 
     /* RHS = expected solution */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             fix->B[i + j * fix->ldb] = (f64)(i + 1) + (f64)j * 10;
         }
     }
@@ -275,8 +266,8 @@ static void test_dsgesv_identity(void **state)
     assert_info_success(info);
 
     f64 tol = 1e-14;
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             f64 expected = (f64)(i + 1) + (f64)j * 10;
             assert_true(fabs(fix->X[i + j * n] - expected) < tol);
         }
@@ -289,9 +280,9 @@ static void test_dsgesv_identity(void **state)
 static void test_dsgesv_singular(void **state)
 {
     dsgesv_fixture_t *fix = *state;
-    int n = 3;
-    int nrhs = 1;
-    int info, iter;
+    INT n = 3;
+    INT nrhs = 1;
+    INT info, iter;
 
     /* Singular matrix (all columns identical) */
     f64 A[9] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
@@ -312,20 +303,20 @@ static void test_dsgesv_singular(void **state)
 static void test_dsgesv_refinement(void **state)
 {
     dsgesv_fixture_t *fix = *state;
-    int n = 10;
-    int nrhs = 1;
-    int info, iter;
+    INT n = 10;
+    INT nrhs = 1;
+    INT info, iter;
 
     /* Create moderately ill-conditioned Hilbert-like matrix */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             fix->A[i + j * fix->lda] = 1.0 / (f64)(i + j + 1);
         }
     }
     memcpy(fix->A_orig, fix->A, fix->lda * n * sizeof(f64));
 
     /* Known solution: all ones */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         fix->XACT[i] = 1.0;
     }
 
@@ -348,10 +339,10 @@ static void test_dsgesv_type4(void **state)
 {
     dsgesv_fixture_t *fix = *state;
     f64 resid_02, resid_04;
-    int iter;
+    INT iter;
 
     fix->seed = g_seed++;
-    int rc = run_dsgesv_test(fix, 4, &resid_02, &resid_04, &iter);
+    INT rc = run_dsgesv_test(fix, 4, &resid_02, &resid_04, &iter);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -372,10 +363,10 @@ static void test_dsgesv_type8(void **state)
     }
 
     f64 resid_02, resid_04;
-    int iter;
+    INT iter;
 
     fix->seed = g_seed++;
-    int rc = run_dsgesv_test(fix, 8, &resid_02, &resid_04, &iter);
+    INT rc = run_dsgesv_test(fix, 8, &resid_02, &resid_04, &iter);
     if (rc != 0) {
         skip_test("singular matrix");
     }

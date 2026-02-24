@@ -6,10 +6,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-void xerbla(const char* srname, const int info);
 
 /**
  * DLAVSP performs one of the matrix-vector operations
@@ -44,18 +42,18 @@ void dlavsp(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* const restrict A,
-    const int* const restrict ipiv,
+    const INT* const restrict ipiv,
     f64* const restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
 
-    int nounit;
-    int j, k, kc, kcnext, kp;
+    INT nounit;
+    INT j, k, kc, kcnext, kp;
     f64 d11, d12, d21, d22, t1, t2;
 
     *info = 0;

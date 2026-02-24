@@ -33,7 +33,6 @@
 
 #include "test_harness.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -42,13 +41,13 @@
 #define NMAX 4
 
 /* Shared state for dlctsx callback (replaces Fortran COMMON /MN/) */
-static int g_sel_m, g_sel_n, g_sel_mplusn, g_sel_k;
-static int g_sel_fs;
+static INT g_sel_m, g_sel_n, g_sel_mplusn, g_sel_k;
+static INT g_sel_fs;
 
-static int dlctsx(const f64* ar, const f64* ai, const f64* beta)
+static INT dlctsx(const f64* ar, const f64* ai, const f64* beta)
 {
     (void)ar; (void)ai; (void)beta;
-    int res;
+    INT res;
     g_sel_k++;
     if (g_sel_fs) {
         res = (g_sel_k > g_sel_m) ? 1 : 0;
@@ -66,32 +65,11 @@ static int dlctsx(const f64* ar, const f64* ai, const f64* beta)
     return res;
 }
 
-extern void dggesx(const char* jobvsl, const char* jobvsr, const char* sort,
-                   int (*selctg)(const f64*, const f64*, const f64*),
-                   const char* sense, const int n,
-                   f64* A, const int lda, f64* B, const int ldb,
-                   int* sdim, f64* alphar, f64* alphai, f64* beta,
-                   f64* VSL, const int ldvsl, f64* VSR, const int ldvsr,
-                   f64* rconde, f64* rcondv,
-                   f64* work, const int lwork,
-                   int* iwork, const int liwork, int* bwork, int* info);
-extern void dgesvd(const char* jobu, const char* jobvt,
-                   const int m, const int n, f64* A, const int lda,
-                   f64* S, f64* U, const int ldu, f64* VT, const int ldvt,
-                   f64* work, const int lwork, int* info);
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                  const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta_val, f64* A, const int lda);
-
 typedef struct {
-    int ifunc;
-    int prtype;
-    int m;
-    int n;
+    INT ifunc;
+    INT prtype;
+    INT m;
+    INT n;
     char name[96];
 } ddrgsx_params_t;
 
@@ -108,10 +86,10 @@ typedef struct {
     f64* C;       /* Kronecker matrix for DIF */
     f64* S;       /* Singular values */
     f64* work;
-    int* iwork;
-    int* bwork;
-    int lwork;
-    int ldc;
+    INT* iwork;
+    INT* bwork;
+    INT lwork;
+    INT ldc;
 } ddrgsx_workspace_t;
 
 static ddrgsx_workspace_t* g_ws = NULL;
@@ -124,8 +102,8 @@ static int group_setup(void** state)
     if (!g_ws) return -1;
 
     /* Allocate for NMAX (accommodates read-in 4x4 matrices) */
-    const int ns = NMAX;
-    const int n2 = ns * ns;
+    const INT ns = NMAX;
+    const INT n2 = ns * ns;
 
     g_ws->A      = malloc(n2 * sizeof(f64));
     g_ws->B      = malloc(n2 * sizeof(f64));
@@ -144,13 +122,13 @@ static int group_setup(void** state)
     g_ws->S = malloc(g_ws->ldc * sizeof(f64));
 
     /* Workspace: max(10*(ns+1), 5*ns*ns/2) + extra for dgesvd */
-    int minwrk = 10 * (ns + 1);
-    int bdspac = 5 * n2 / 2;
+    INT minwrk = 10 * (ns + 1);
+    INT bdspac = 5 * n2 / 2;
     if (bdspac > minwrk) minwrk = bdspac;
     g_ws->lwork = minwrk + n2;  /* extra margin */
     g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
-    g_ws->iwork = malloc((ns + 6) * sizeof(int));
-    g_ws->bwork = malloc(ns * sizeof(int));
+    g_ws->iwork = malloc((ns + 6) * sizeof(INT));
+    g_ws->bwork = malloc(ns * sizeof(INT));
 
     if (!g_ws->A || !g_ws->B || !g_ws->AI || !g_ws->BI ||
         !g_ws->Q || !g_ws->Z || !g_ws->alphar || !g_ws->alphai ||
@@ -191,12 +169,12 @@ static void test_ddrgsx(void** state)
 {
     ddrgsx_params_t* params = (ddrgsx_params_t*)(*state);
 
-    const int ifunc = params->ifunc;
-    const int prtype = params->prtype;
-    const int m = params->m;
-    const int n = params->n;
-    const int mplusn = m + n;
-    const int lda = NMAX;
+    const INT ifunc = params->ifunc;
+    const INT prtype = params->prtype;
+    const INT m = params->m;
+    const INT n = params->n;
+    const INT mplusn = m + n;
+    const INT lda = NMAX;
 
     const f64 ulp = dlamch("P");
     const f64 ulpinv = 1.0 / ulp;
@@ -204,20 +182,20 @@ static void test_ddrgsx(void** state)
     const f64 thrsh2 = 10.0 * THRESH;
 
     f64 result[10];
-    for (int i = 0; i < 10; i++) result[i] = 0.0;
+    for (INT i = 0; i < 10; i++) result[i] = 0.0;
 
     /* Weight oscillates: sqrt(ulp), 1/sqrt(ulp), sqrt(ulp), ...
        Fortran initializes WEIGHT = SQRT(ULP), then flips at start of each
        iteration. Compute deterministically from the flat iteration index. */
-    int inner_count = 0;
-    for (int mm = 1; mm <= NSIZE - 1; mm++)
-        for (int nn = 1; nn <= NSIZE - mm; nn++)
+    INT inner_count = 0;
+    for (INT mm = 1; mm <= NSIZE - 1; mm++)
+        for (INT nn = 1; nn <= NSIZE - mm; nn++)
             inner_count++;
-    int inner_idx = 0;
-    for (int mm = 1; mm < m; mm++)
+    INT inner_idx = 0;
+    for (INT mm = 1; mm < m; mm++)
         inner_idx += NSIZE - mm;
     inner_idx += n - 1;
-    int iter_idx = ifunc * 5 * inner_count + (prtype - 1) * inner_count + inner_idx;
+    INT iter_idx = ifunc * 5 * inner_count + (prtype - 1) * inner_count + inner_idx;
     f64 weight = ((iter_idx % 2) == 0) ? 1.0 / sqrt(ulp) : sqrt(ulp);
 
     /* Reset selection callback state */
@@ -250,7 +228,7 @@ static void test_ddrgsx(void** state)
     dlacpy("Full", mplusn, mplusn, g_ws->AI, lda, g_ws->A, lda);
     dlacpy("Full", mplusn, mplusn, g_ws->BI, lda, g_ws->B, lda);
 
-    int mm, linfo;
+    INT mm, linfo;
     f64 pl[2], difest[2];
 
     /* Reset selection callback again for the actual call */
@@ -281,7 +259,7 @@ static void test_ddrgsx(void** state)
     dlacpy("Full", mplusn, mplusn, g_ws->BI, lda,
            &g_ws->work[mplusn * mplusn], mplusn);
     f64 abnrm = dlange("Fro", mplusn, 2 * mplusn, g_ws->work, mplusn,
-                        g_ws->work);
+                        NULL);
 
     /* Tests (1) to (4) via dget51 */
     dget51(1, mplusn, g_ws->A, lda, g_ws->AI, lda, g_ws->Q, lda,
@@ -298,8 +276,8 @@ static void test_ddrgsx(void** state)
     result[4] = 0.0;
     result[5] = 0.0;
 
-    for (int j = 0; j < mplusn; j++) {
-        int ilabad = 0;
+    for (INT j = 0; j < mplusn; j++) {
+        INT ilabad = 0;
         f64 temp2;
         if (g_ws->alphai[j] == 0.0) {
             temp2 = (fabs(g_ws->alphar[j] - g_ws->AI[j + j * lda]) /
@@ -321,7 +299,7 @@ static void test_ddrgsx(void** state)
                 }
             }
         } else {
-            int i1;
+            INT i1;
             if (g_ws->alphai[j] > 0.0) {
                 i1 = j;
             } else {
@@ -341,7 +319,7 @@ static void test_ddrgsx(void** state)
                 }
             }
             if (!ilabad) {
-                int iinfo;
+                INT iinfo;
                 dget53(&g_ws->AI[i1 + i1 * lda], lda,
                        &g_ws->BI[i1 + i1 * lda], lda,
                        g_ws->beta[j], g_ws->alphar[j], g_ws->alphai[j],
@@ -364,8 +342,8 @@ static void test_ddrgsx(void** state)
 
     /* Test (8): DIF accuracy vs exact */
     result[7] = 0.0;
-    int mn2 = mm * (mplusn - mm) * 2;
-    int ncmax = NMAX * NMAX;
+    INT mn2 = mm * (mplusn - mm) * 2;
+    INT ncmax = NMAX * NMAX;
     if (ifunc >= 2 && mn2 <= ncmax) {
         dlakf2(mm, mplusn - mm,
                g_ws->AI, lda,
@@ -374,7 +352,7 @@ static void test_ddrgsx(void** state)
                &g_ws->BI[mm + mm * lda],
                g_ws->C, g_ws->ldc);
 
-        int svd_info;
+        INT svd_info;
         dgesvd("N", "N", mn2, mn2, g_ws->C, g_ws->ldc, g_ws->S,
                g_ws->work, 1, &g_ws->work[1], 1,
                &g_ws->work[2], g_ws->lwork - 2, &svd_info);
@@ -409,8 +387,8 @@ static void test_ddrgsx(void** state)
     }
 
     /* Check results against thresholds */
-    int any_fail = 0;
-    for (int j = 0; j < 9; j++) {
+    INT any_fail = 0;
+    for (INT j = 0; j < 9; j++) {
         if (result[j] >= THRESH) {
             print_message("sense=%s type=%d m=%d n=%d test(%d)=%g\n",
                           sense, prtype, m, n, j + 1, result[j]);
@@ -430,9 +408,9 @@ static void test_ddrgsx(void** state)
 #define NREADIN 2
 
 typedef struct {
-    int mplusn;
-    int n;
-    int idx;
+    INT mplusn;
+    INT n;
+    INT idx;
     char name[64];
 } ddrgsx_readin_params_t;
 
@@ -466,11 +444,11 @@ static void test_ddrgsx_readin(void** state)
 {
     ddrgsx_readin_params_t* params = (ddrgsx_readin_params_t*)(*state);
 
-    const int mplusn = params->mplusn;
-    const int n = params->n;
-    const int m = mplusn - n;
-    const int lda = NMAX;
-    const int ci = params->idx;
+    const INT mplusn = params->mplusn;
+    const INT n = params->n;
+    const INT m = mplusn - n;
+    const INT lda = NMAX;
+    const INT ci = params->idx;
 
     const f64 ulp = dlamch("P");
     const f64 ulpinv = 1.0 / ulp;
@@ -478,11 +456,11 @@ static void test_ddrgsx_readin(void** state)
     const f64 thrsh2 = 10.0 * THRESH;
 
     f64 result[10];
-    for (int i = 0; i < 10; i++) result[i] = 0.0;
+    for (INT i = 0; i < 10; i++) result[i] = 0.0;
 
     /* Load precomputed matrices (lda may differ from mplusn) */
-    for (int j = 0; j < mplusn; j++)
-        for (int i = 0; i < mplusn; i++) {
+    for (INT j = 0; j < mplusn; j++)
+        for (INT i = 0; i < mplusn; i++) {
             g_ws->AI[i + j * lda] = readin_AI[ci][i + j * mplusn];
             g_ws->BI[i + j * lda] = readin_BI[ci][i + j * mplusn];
         }
@@ -497,7 +475,7 @@ static void test_ddrgsx_readin(void** state)
     dlacpy("Full", mplusn, mplusn, g_ws->AI, lda, g_ws->A, lda);
     dlacpy("Full", mplusn, mplusn, g_ws->BI, lda, g_ws->B, lda);
 
-    int mm, linfo;
+    INT mm, linfo;
     f64 pl[2], difest[2];
 
     /* Reset selection callback again */
@@ -528,7 +506,7 @@ static void test_ddrgsx_readin(void** state)
     dlacpy("Full", mplusn, mplusn, g_ws->BI, lda,
            &g_ws->work[mplusn * mplusn], mplusn);
     f64 abnrm = dlange("Fro", mplusn, 2 * mplusn, g_ws->work, mplusn,
-                        g_ws->work);
+                        NULL);
 
     /* Tests (1) to (4) via dget51 */
     dget51(1, mplusn, g_ws->A, lda, g_ws->AI, lda, g_ws->Q, lda,
@@ -545,8 +523,8 @@ static void test_ddrgsx_readin(void** state)
     result[4] = 0.0;
     result[5] = 0.0;
 
-    for (int j = 0; j < mplusn; j++) {
-        int ilabad = 0;
+    for (INT j = 0; j < mplusn; j++) {
+        INT ilabad = 0;
         f64 temp2;
         if (g_ws->alphai[j] == 0.0) {
             temp2 = (fabs(g_ws->alphar[j] - g_ws->AI[j + j * lda]) /
@@ -568,7 +546,7 @@ static void test_ddrgsx_readin(void** state)
                 }
             }
         } else {
-            int i1;
+            INT i1;
             if (g_ws->alphai[j] > 0.0) {
                 i1 = j;
             } else {
@@ -588,7 +566,7 @@ static void test_ddrgsx_readin(void** state)
                 }
             }
             if (!ilabad) {
-                int iinfo;
+                INT iinfo;
                 dget53(&g_ws->AI[i1 + i1 * lda], lda,
                        &g_ws->BI[i1 + i1 * lda], lda,
                        g_ws->beta[j], g_ws->alphar[j], g_ws->alphai[j],
@@ -650,8 +628,8 @@ static void test_ddrgsx_readin(void** state)
     }
 
     /* Check all 10 results against thresholds */
-    int any_fail = 0;
-    for (int j = 0; j < 10; j++) {
+    INT any_fail = 0;
+    for (INT j = 0; j < 10; j++) {
         if (result[j] >= THRESH) {
             print_message("read-in #%d test(%d)=%g >= %.1f\n",
                           ci + 1, j + 1, result[j], THRESH);
@@ -664,24 +642,24 @@ static void test_ddrgsx_readin(void** state)
 int main(void)
 {
     /* Count built-in test cases */
-    int builtin_count = 0;
-    for (int mm = 1; mm <= NSIZE - 1; mm++)
-        for (int nn = 1; nn <= NSIZE - mm; nn++)
+    INT builtin_count = 0;
+    for (INT mm = 1; mm <= NSIZE - 1; mm++)
+        for (INT nn = 1; nn <= NSIZE - mm; nn++)
             builtin_count++;
     builtin_count *= 4 * 5;  /* ifunc x prtype */
 
     static ddrgsx_params_t all_params[4 * 5 * NSIZE * NSIZE];
     static ddrgsx_readin_params_t readin_params[NREADIN];
     static struct CMUnitTest all_tests[4 * 5 * NSIZE * NSIZE + NREADIN];
-    int idx = 0;
+    INT idx = 0;
 
     static const char* sense_names[] = {"N", "E", "V", "B"};
 
     /* Section 1: Built-in tests via dlatm5 */
-    for (int ifunc = 0; ifunc <= 3; ifunc++) {
-        for (int prtype = 1; prtype <= 5; prtype++) {
-            for (int m = 1; m <= NSIZE - 1; m++) {
-                for (int n = 1; n <= NSIZE - m; n++) {
+    for (INT ifunc = 0; ifunc <= 3; ifunc++) {
+        for (INT prtype = 1; prtype <= 5; prtype++) {
+            for (INT m = 1; m <= NSIZE - 1; m++) {
+                for (INT n = 1; n <= NSIZE - m; n++) {
                     ddrgsx_params_t* p = &all_params[idx];
                     p->ifunc = ifunc;
                     p->prtype = prtype;
@@ -703,7 +681,7 @@ int main(void)
     }
 
     /* Section 2: Read-in precomputed test matrices (2 cases from dgd.in) */
-    for (int ci = 0; ci < NREADIN; ci++) {
+    for (INT ci = 0; ci < NREADIN; ci++) {
         ddrgsx_readin_params_t* rp = &readin_params[ci];
         rp->mplusn = 4;
         rp->n = 2;

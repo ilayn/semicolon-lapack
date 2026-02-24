@@ -5,11 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-
 /**
  * DPPT05 tests the error bounds from iterative refinement for the
  * computed solution to a system of equations A*X = B, where A is a
@@ -67,17 +64,17 @@ extern f64 dlamch(const char* cmach);
  *          RESLTS[1] = BERR / ( (n+1)*EPS + (*) )
  *          Dimension (2).
  */
-void dppt05(const char* uplo, const int n, const int nrhs,
+void dppt05(const char* uplo, const INT n, const INT nrhs,
             const f64* const restrict AP,
-            const f64* const restrict B, const int ldb,
-            const f64* const restrict X, const int ldx,
-            const f64* const restrict XACT, const int ldxact,
+            const f64* const restrict B, const INT ldb,
+            const f64* const restrict X, const INT ldx,
+            const f64* const restrict XACT, const INT ldxact,
             const f64* const restrict FERR,
             const f64* const restrict BERR,
             f64* const restrict reslts)
 {
-    int upper;
-    int i, imax, j, jc, k;
+    INT upper;
+    INT i, imax, j, jc, k;
     f64 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     if (n <= 0 || nrhs <= 0) {

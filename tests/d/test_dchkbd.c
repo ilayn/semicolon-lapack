@@ -76,7 +76,7 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <string.h>
 
@@ -86,57 +86,23 @@
 #define NRHS   2
 
 /* M,N pairs from svd.in */
-static const int MVAL[] = {0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 10, 10, 16, 16, 30, 30, 40, 40};
-static const int NVAL[] = {0, 1, 3, 0, 1, 2, 0, 1, 0, 1, 3, 10, 16, 10, 16, 30, 40, 30, 40};
+static const INT MVAL[] = {0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 10, 10, 16, 16, 30, 30, 40, 40};
+static const INT NVAL[] = {0, 1, 3, 0, 1, 2, 0, 1, 0, 1, 3, 10, 16, 10, 16, 30, 40, 30, 40};
 #define NSIZES ((int)(sizeof(MVAL) / sizeof(MVAL[0])))
 
 /* External function declarations */
-extern f64  dlamch(const char* cmach);
-extern void dgebrd(const int m, const int n, f64* restrict A, const int lda,
-                   f64* restrict D, f64* restrict E,
-                   f64* restrict tauq, f64* restrict taup,
-                   f64* restrict work, const int lwork, int* info);
-extern void dorgbr(const char* vect, const int m, const int n, const int k,
-                   f64* restrict A, const int lda, const f64* restrict tau,
-                   f64* restrict work, const int lwork, int* info);
-extern void dbdsqr(const char* uplo, const int n, const int ncvt,
-                   const int nru, const int ncc,
-                   f64* restrict D, f64* restrict E,
-                   f64* restrict VT, const int ldvt,
-                   f64* restrict U, const int ldu,
-                   f64* restrict C, const int ldc,
-                   f64* restrict work, int* info);
-extern void dbdsdc(const char* uplo, const char* compq, const int n,
-                   f64* restrict D, f64* restrict E,
-                   f64* restrict U, const int ldu,
-                   f64* restrict VT, const int ldvt,
-                   f64* restrict Q, int* restrict IQ,
-                   f64* restrict work, int* restrict iwork, int* info);
-extern void dbdsvdx(const char* uplo, const char* jobz, const char* range,
-                    const int n, f64* restrict D, f64* restrict E,
-                    const f64 vl, const f64 vu, const int il, const int iu,
-                    int* ns, f64* restrict S, f64* restrict Z, const int ldz,
-                    f64* restrict work, int* restrict iwork, int* info);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-extern void dlascl(const char* type, const int kl, const int ku,
-                   const f64 cfrom, const f64 cto, const int m, const int n,
-                   f64* A, const int lda, int* info);
-
 /* ===================================================================== */
 /* DATA arrays from dchkbd.f lines 564-567                               */
 /* ===================================================================== */
 
 /*                    1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 */
-static const int ktype[MAXTYP] = {
+static const INT ktype[MAXTYP] = {
     1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9, 10
 };
-static const int kmagn[MAXTYP] = {
+static const INT kmagn[MAXTYP] = {
     1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 0
 };
-static const int kmode[MAXTYP] = {
+static const INT kmode[MAXTYP] = {
     0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 0
 };
 
@@ -145,19 +111,19 @@ static const int kmode[MAXTYP] = {
 /* ===================================================================== */
 
 typedef struct {
-    int jsize;     /* index into MVAL[]/NVAL[] */
-    int jtype;     /* matrix type 1..16 */
+    INT jsize;     /* index into MVAL[]/NVAL[] */
+    INT jtype;     /* matrix type 1..16 */
     char name[128];
 } dchkbd_params_t;
 
 typedef struct {
-    int mmax;
-    int nmax;
-    int mnmax;
-    int lda;
-    int ldx;
-    int ldq;
-    int ldpt;
+    INT mmax;
+    INT nmax;
+    INT mnmax;
+    INT lda;
+    INT ldx;
+    INT ldq;
+    INT ldpt;
     f64* A;
     f64* BD;
     f64* BE;
@@ -171,8 +137,8 @@ typedef struct {
     f64* U;
     f64* VT;
     f64* work;
-    int lwork;
-    int* iwork;
+    INT lwork;
+    INT* iwork;
     uint64_t rng_state[4];
 } dchkbd_workspace_t;
 
@@ -192,26 +158,26 @@ static int group_setup(void** state)
     g_ws->mmax = 1;
     g_ws->nmax = 1;
     g_ws->mnmax = 1;
-    for (int i = 0; i < NSIZES; i++) {
+    for (INT i = 0; i < NSIZES; i++) {
         if (MVAL[i] > g_ws->mmax) g_ws->mmax = MVAL[i];
         if (NVAL[i] > g_ws->nmax) g_ws->nmax = NVAL[i];
-        int mn = (MVAL[i] < NVAL[i]) ? MVAL[i] : NVAL[i];
+        INT mn = (MVAL[i] < NVAL[i]) ? MVAL[i] : NVAL[i];
         if (mn > g_ws->mnmax) g_ws->mnmax = mn;
     }
 
-    int mmax  = g_ws->mmax;
-    int nmax  = g_ws->nmax;
-    int mnmax = g_ws->mnmax;
+    INT mmax  = g_ws->mmax;
+    INT nmax  = g_ws->nmax;
+    INT mnmax = g_ws->mnmax;
 
     g_ws->lda  = (mmax > 1) ? mmax : 1;
     g_ws->ldx  = (mmax > 1) ? mmax : 1;
     g_ws->ldq  = (mmax > 1) ? mmax : 1;
     g_ws->ldpt = (mnmax > 1) ? mnmax : 1;
 
-    int lda  = g_ws->lda;
-    int ldx  = g_ws->ldx;
-    int ldq  = g_ws->ldq;
-    int ldpt = g_ws->ldpt;
+    INT lda  = g_ws->lda;
+    INT ldx  = g_ws->ldx;
+    INT ldq  = g_ws->ldq;
+    INT ldpt = g_ws->ldpt;
 
     g_ws->A   = malloc((size_t)lda * nmax * sizeof(f64));
     g_ws->BD  = malloc((size_t)mnmax * sizeof(f64));
@@ -230,23 +196,23 @@ static int group_setup(void** state)
     g_ws->VT  = malloc((size_t)ldpt * mnmax * sizeof(f64));
 
     /* Workspace: from dchkbd.f lines 589-591, plus extra for DBDSVDX */
-    int minwrk = 3 * (mmax + nmax);
+    INT minwrk = 3 * (mmax + nmax);
     {
         /* Pick the formula from dchkbd.f exactly:
          * M*(M + MAX(M,N,NRHS) + 1) + N*MIN(N,M) */
-        int mx = mmax;
+        INT mx = mmax;
         if (nmax > mx) mx = nmax;
         if (NRHS > mx) mx = NRHS;
-        int alt = mmax * (mmax + mx + 1) + nmax * mnmax;
+        INT alt = mmax * (mmax + mx + 1) + nmax * mnmax;
         if (alt > minwrk) minwrk = alt;
     }
     /* Extra for DBDSVDX workspace: iwbz + 2*mnmax*(mnmax+1) + 14*mnmax */
-    int extra = 3 * mnmax + 2 * mnmax * (mnmax + 1) + 14 * mnmax;
+    INT extra = 3 * mnmax + 2 * mnmax * (mnmax + 1) + 14 * mnmax;
     if (extra > 0) minwrk += extra;
 
     g_ws->lwork = minwrk;
     g_ws->work  = malloc((size_t)g_ws->lwork * sizeof(f64));
-    g_ws->iwork = malloc((size_t)(12 * mnmax) * sizeof(int));
+    g_ws->iwork = malloc((size_t)(12 * mnmax) * sizeof(INT));
 
     if (!g_ws->A || !g_ws->BD || !g_ws->BE || !g_ws->S1 || !g_ws->S2 ||
         !g_ws->X || !g_ws->Y || !g_ws->Z || !g_ws->Q || !g_ws->PT ||
@@ -291,10 +257,10 @@ static int group_teardown(void** state)
  * Check that singular values are non-negative and in non-increasing order.
  * Returns 0.0 if valid, 1/ULP if invalid.
  */
-static f64 check_sv_order(const f64* S, int n, f64 ulpinv)
+static f64 check_sv_order(const f64* S, INT n, f64 ulpinv)
 {
     f64 res = 0.0;
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         if (S[i] < S[i + 1])
             res = ulpinv;
         if (S[i] < 0.0)
@@ -311,10 +277,10 @@ static f64 check_sv_order(const f64* S, int n, f64 ulpinv)
  * Compare two sets of singular values.
  * Returns max_j |S1(j) - S2(j)| / max(sqrt(UNFL)*max(S1(1),1), ULP*max(|S1(1)|,|S2(1)|))
  */
-static f64 compare_sv(const f64* S1, const f64* S2, int n, f64 ulp, f64 unfl)
+static f64 compare_sv(const f64* S1, const f64* S2, INT n, f64 ulp, f64 unfl)
 {
     f64 temp2 = 0.0;
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         f64 denom1 = sqrt(unfl);
         f64 s1max = (S1[0] > 1.0) ? S1[0] : 1.0;
         denom1 *= s1max;
@@ -335,22 +301,22 @@ static f64 compare_sv(const f64* S1, const f64* S2, int n, f64 ulp, f64 unfl)
 
 static void run_dchkbd_single(dchkbd_params_t* params)
 {
-    const int m = MVAL[params->jsize];
-    const int n = NVAL[params->jsize];
-    const int jtype = params->jtype;
-    const int jt = jtype - 1;
+    const INT m = MVAL[params->jsize];
+    const INT n = NVAL[params->jsize];
+    const INT jtype = params->jtype;
+    const INT jt = jtype - 1;
 
-    const int mnmin = (m < n) ? m : n;
-    int mxn = m;
+    const INT mnmin = (m < n) ? m : n;
+    INT mxn = m;
     if (n > mxn) mxn = n;
     if (mxn < 1) mxn = 1;
     const f64 amninv = 1.0 / (f64)mxn;
 
-    const int lda   = g_ws->lda;
-    const int ldx   = g_ws->ldx;
-    const int ldq   = g_ws->ldq;
-    const int ldpt  = g_ws->ldpt;
-    const int lwork = g_ws->lwork;
+    const INT lda   = g_ws->lda;
+    const INT ldx   = g_ws->ldx;
+    const INT ldq   = g_ws->ldq;
+    const INT ldpt  = g_ws->ldpt;
+    const INT lwork = g_ws->lwork;
 
     f64* A     = g_ws->A;
     f64* BD    = g_ws->BD;
@@ -365,7 +331,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     f64* U     = g_ws->U;
     f64* VT    = g_ws->VT;
     f64* work  = g_ws->work;
-    int* iwork = g_ws->iwork;
+    INT* iwork = g_ws->iwork;
     uint64_t* rng = g_ws->rng_state;
 
     const f64 unfl    = dlamch("S");
@@ -374,15 +340,15 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     const f64 ulpinv  = 1.0 / ulp;
     const f64 rtunfl  = sqrt(unfl);
     const f64 rtovfl  = sqrt(ovfl);
-    int log2ui        = (int)(log(ulpinv) / log(2.0));
+    INT log2ui        = (INT)(log(ulpinv) / log(2.0));
 
     f64 result[NTESTS];
-    for (int i = 0; i < NTESTS; i++)
+    for (INT i = 0; i < NTESTS; i++)
         result[i] = -1.0;
 
-    int iinfo = 0;
-    int bidiag = 0;
-    int ns1 = 0, ns2 = 0;
+    INT iinfo = 0;
+    INT bidiag = 0;
+    INT ns1 = 0, ns2 = 0;
     f64 anorm_sv = 0.0;
     char ctx[256];
     const char* uplo_str;
@@ -392,8 +358,8 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     /* dchkbd.f lines 686-797                                      */
     /* ----------------------------------------------------------- */
 
-    int itype = ktype[jt];
-    int imode = kmode[jt];
+    INT itype = ktype[jt];
+    INT imode = kmode[jt];
 
     f64 anorm;
     switch (kmagn[jt]) {
@@ -413,7 +379,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
     } else if (itype == 2) {
         /* Identity */
-        for (int jcol = 0; jcol < mnmin; jcol++)
+        for (INT jcol = 0; jcol < mnmin; jcol++)
             A[jcol + jcol * lda] = anorm;
 
     } else if (itype == 4) {
@@ -433,7 +399,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
     } else if (itype == 7) {
         /* Diagonal, random entries */
-        int idumma[1] = {0};
+        INT idumma[1] = {0};
         dlatmr(mnmin, mnmin, "S", "N", work, 6, 1.0, 1.0,
                "T", "N", work + mnmin, 1, 1.0,
                work + 2 * mnmin, 1, 1.0, "N", idumma, 0, 0,
@@ -441,7 +407,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
     } else if (itype == 8) {
         /* Symmetric, random entries */
-        int idumma[1] = {0};
+        INT idumma[1] = {0};
         dlatmr(mnmin, mnmin, "S", "S", work, 6, 1.0, 1.0,
                "T", "N", work + mnmin, 1, 1.0,
                work + m + mnmin, 1, 1.0, "N", idumma, m, n,
@@ -449,7 +415,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
     } else if (itype == 9) {
         /* Nonsymmetric, random entries */
-        int idumma[1] = {0};
+        INT idumma[1] = {0};
         dlatmr(m, n, "S", "N", work, 6, 1.0, 1.0,
                "T", "N", work + mnmin, 1, 1.0,
                work + m + mnmin, 1, 1.0, "N", idumma, m, n,
@@ -458,7 +424,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     } else if (itype == 10) {
         /* Bidiagonal, random entries */
         f64 temp1 = -2.0 * log(ulp);
-        for (int j = 0; j < mnmin; j++) {
+        for (INT j = 0; j < mnmin; j++) {
             BD[j] = exp(temp1 * rng_uniform_symmetric(rng));
             if (j < mnmin - 1)
                 BE[j] = exp(temp1 * rng_uniform_symmetric(rng));
@@ -477,14 +443,14 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     if (iinfo == 0) {
         /* Generate Right-Hand Side */
         if (bidiag) {
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             dlatmr(mnmin, NRHS, "S", "N", work, 6,
                    1.0, 1.0, "T", "N", work + mnmin, 1, 1.0,
                    work + 2 * mnmin, 1, 1.0, "N",
                    idumma, mnmin, NRHS, 0.0, 1.0, "NO", Y,
                    ldx, iwork, &iinfo, rng);
         } else {
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             dlatmr(m, NRHS, "S", "N", work, 6, 1.0,
                    1.0, "T", "N", work + m, 1, 1.0,
                    work + 2 * m, 1, 1.0, "N",
@@ -508,7 +474,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     /* dchkbd.f lines 831-902                                     */
     /* ----------------------------------------------------------- */
 
-    int mq = 0;
+    INT mq = 0;
 
     if (!bidiag) {
 
@@ -643,7 +609,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     /* Test 9:  Compare DBDSQR with and without singular vectors */
     {
         f64 temp2 = 0.0;
-        for (int j = 0; j < mnmin; j++) {
+        for (INT j = 0; j < mnmin; j++) {
             f64 d1 = sqrt(unfl) * ((S1[0] > 1.0) ? S1[0] : 1.0);
             f64 d2 = ulp * ((fabs(S1[j]) > fabs(S2[j])) ? fabs(S1[j]) : fabs(S2[j]));
             f64 denom = (d1 > d2) ? d1 : d2;
@@ -656,7 +622,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     /* Test 10: Sturm sequence test of singular values */
     {
         f64 temp1 = THRESH * (0.5 - ulp);
-        for (int j = 0; j <= log2ui; j++) {
+        for (INT j = 0; j <= log2ui; j++) {
             dsvdch(mnmin, BD, BE, S1, temp1, &iinfo);
             if (iinfo == 0)
                 break;
@@ -704,7 +670,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         dlaset("Full", mnmin, mnmin, 0.0, 1.0, VT, ldpt);
 
         f64 dum[1] = {0.0};
-        int idum[1] = {0};
+        INT idum[1] = {0};
         dbdsdc(uplo_str, "I", mnmin, S1, work, U, ldpt, VT, ldpt,
                dum, idum, work + mnmin, iwork, &iinfo);
 
@@ -728,7 +694,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
         f64 dum2[1] = {0.0};
         f64 dum3[1] = {0.0};
-        int idum2[1] = {0};
+        INT idum2[1] = {0};
         dbdsdc(uplo_str, "N", mnmin, S2, work, dum2, 1, dum3, 1,
                dum, idum2, work + mnmin, iwork, &iinfo);
 
@@ -769,18 +735,18 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     /* ----------------------------------------------------------- */
 
     if (jtype == 10 || jtype == 16) {
-        for (int j = 19; j < NTESTS; j++)
+        for (INT j = 19; j < NTESTS; j++)
             result[j] = 0.0;
         goto results;
     }
 
     {
-        int iwbs   = 0;
-        int iwbd   = iwbs + mnmin;
-        int iwbe   = iwbd + mnmin;
-        int iwbz   = iwbe + mnmin;
-        int iwwork = iwbz + 2 * mnmin * (mnmin + 1);
-        int mnmin2 = (mnmin * 2 > 1) ? mnmin * 2 : 1;
+        INT iwbs   = 0;
+        INT iwbd   = iwbs + mnmin;
+        INT iwbe   = iwbd + mnmin;
+        INT iwbz   = iwbe + mnmin;
+        INT iwwork = iwbz + 2 * mnmin * (mnmin + 1);
+        INT mnmin2 = (mnmin * 2 > 1) ? mnmin * 2 : 1;
 
         cblas_dcopy(mnmin, BD, 1, work + iwbd, 1);
         if (mnmin > 0)
@@ -807,8 +773,8 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         }
 
         {
-            int j = iwbz;
-            for (int i = 0; i < ns1; i++) {
+            INT j = iwbz;
+            for (INT i = 0; i < ns1; i++) {
                 cblas_dcopy(mnmin, work + j, 1, U + i * ldpt, 1);
                 j += mnmin;
                 cblas_dcopy(mnmin, work + j, 1, VT + i, ldpt);
@@ -877,15 +843,15 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         uint64_t iseed2[4];
         memcpy(iseed2, rng, 4 * sizeof(uint64_t));
 
-        int il, iu;
+        INT il, iu;
         if (mnmin <= 1) {
             il = 0;
             iu = mnmin - 1;
         } else {
-            il = (int)((mnmin - 1) * rng_uniform(iseed2));
-            iu = (int)((mnmin - 1) * rng_uniform(iseed2));
+            il = (INT)((mnmin - 1) * rng_uniform(iseed2));
+            iu = (INT)((mnmin - 1) * rng_uniform(iseed2));
             if (iu < il) {
-                int itemp = iu;
+                INT itemp = iu;
                 iu = il;
                 il = itemp;
             }
@@ -916,8 +882,8 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         }
 
         {
-            int j = iwbz;
-            for (int i = 0; i < ns1; i++) {
+            INT j = iwbz;
+            for (INT i = 0; i < ns1; i++) {
                 cblas_dcopy(mnmin, work + j, 1, U + i * ldpt, 1);
                 j += mnmin;
                 cblas_dcopy(mnmin, work + j, 1, VT + i, ldpt);
@@ -1045,8 +1011,8 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         }
 
         {
-            int j = iwbz;
-            for (int i = 0; i < ns1; i++) {
+            INT j = iwbz;
+            for (INT i = 0; i < ns1; i++) {
                 cblas_dcopy(mnmin, work + j, 1, U + i * ldpt, 1);
                 j += mnmin;
                 cblas_dcopy(mnmin, work + j, 1, VT + i, ldpt);
@@ -1102,7 +1068,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
 results:
     /* End of Loop -- Check for RESULT(j) >= THRESH */
-    for (int j = 0; j < NTESTS; j++) {
+    for (INT j = 0; j < NTESTS; j++) {
         if (result[j] >= THRESH) {
             snprintf(ctx, sizeof(ctx),
                      "dchkbd M=%d N=%d type=%d test(%d)=%.4g",
@@ -1133,13 +1099,13 @@ static void test_dchkbd(void** state)
 
 static dchkbd_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_ntests = 0;
+static INT g_ntests = 0;
 
 static void generate_test_table(void)
 {
     g_ntests = 0;
-    for (int js = 0; js < NSIZES; js++) {
-        for (int jt = 1; jt <= MAXTYP; jt++) {
+    for (INT js = 0; js < NSIZES; js++) {
+        for (INT jt = 1; jt <= MAXTYP; jt++) {
             dchkbd_params_t* p = &g_params[g_ntests];
             p->jsize = js;
             p->jtype = jt;

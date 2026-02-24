@@ -11,6 +11,9 @@ subdir('d')
 # Single precision tests
 subdir('s')
 
+# Complex double precision tests
+subdir('z')
+
 # Precision-independent tests
 test('rng_validation',
   executable('test_rng_validation', 'test_rng_validation.c',

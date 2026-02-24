@@ -11,15 +11,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
 
 /**
  * SLAROR pre- or post-multiplies an M by N matrix A by a random
@@ -66,16 +61,16 @@ extern void slaset(const char* uplo, const int m, const int n,
  *     RNG state array of 4 uint64_t elements, passed through from caller.
  */
 void slaror(const char* side, const char* init,
-            const int m, const int n,
-            f32* A, const int lda,
-            f32* X, int* info,
+            const INT m, const INT n,
+            f32* A, const INT lda,
+            f32* X, INT* info,
             uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TOOSML = 1.0e-20f;
 
-    int irow, itype, ixfrm, j, jcol, kbeg, nxfrm;
+    INT irow, itype, ixfrm, j, jcol, kbeg, nxfrm;
     f32 factor, xnorm, xnorms;
 
     *info = 0;

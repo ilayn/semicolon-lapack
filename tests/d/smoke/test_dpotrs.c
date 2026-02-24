@@ -16,21 +16,15 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* info);
-extern void dpotrs(const char* uplo, const int n, const int nrhs,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb, int* info);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb;
+    INT n, nrhs;
+    INT lda, ldb;
     f64* A;       /* Original matrix */
     f64* AF;      /* Factored matrix */
     f64* B;       /* RHS (overwritten with solution) */
@@ -44,7 +38,7 @@ typedef struct {
 
 static uint64_t g_seed = 5100;
 
-static int dpotrs_setup(void** state, int n, int nrhs)
+static int dpotrs_setup(void** state, INT n, INT nrhs)
 {
     dpotrs_fixture_t* fix = malloc(sizeof(dpotrs_fixture_t));
     assert_non_null(fix);
@@ -107,12 +101,12 @@ static int setup_20_nrhs5(void** state) { return dpotrs_setup(state, 20, 5); }
 /**
  * Core test logic: generate matrix, factorize, solve, verify.
  */
-static f64 run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dpotrs_test(dpotrs_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -124,8 +118,8 @@ static f64 run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Generate known solution X */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->X[i + j * fix->ldb] = 1.0 + (f64)i / fix->n;
         }
     }
@@ -160,7 +154,7 @@ static f64 run_dpotrs_test(dpotrs_fixture_t* fix, int imat, const char* uplo)
 static void test_dpotrs_wellcond_upper(void** state)
 {
     dpotrs_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dpotrs_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -170,7 +164,7 @@ static void test_dpotrs_wellcond_upper(void** state)
 static void test_dpotrs_wellcond_lower(void** state)
 {
     dpotrs_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dpotrs_test(fix, imat, "L");
         assert_residual_ok(resid);

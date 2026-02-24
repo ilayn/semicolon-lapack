@@ -20,25 +20,13 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void dgels(const char *trans,
-                  const int m, const int n, const int nrhs,
-                  f64 * restrict A, const int lda,
-                  f64 * restrict B, const int ldb,
-                  f64 * restrict work, const int lwork,
-                  int *info);
-
 /* Utility routines */
-extern f64 dlange(const char *norm, const int m, const int n,
-                     const f64 * restrict A, const int lda,
-                     f64 *work);
-extern f64 dlamch(const char *cmach);
-
 typedef struct {
-    int m, n, nrhs;
-    int lda, ldb;
+    INT m, n, nrhs;
+    INT lda, ldb;
     f64 *A;      /* original matrix */
     f64 *Acopy;  /* working copy for dgels */
     f64 *B;      /* RHS / solution */
@@ -46,13 +34,13 @@ typedef struct {
     f64 *work;
     f64 *d;
     f64 *genwork;
-    int lwork;
+    INT lwork;
     uint64_t seed;
 } ls_fixture_t;
 
 static uint64_t g_seed = 5001;
 
-static int ls_setup(void **state, int m, int n, int nrhs)
+static int ls_setup(void **state, INT m, INT n, INT nrhs)
 {
     ls_fixture_t *fix = malloc(sizeof(ls_fixture_t));
     assert_non_null(fix);
@@ -60,12 +48,12 @@ static int ls_setup(void **state, int m, int n, int nrhs)
     fix->m = m;
     fix->n = n;
     fix->nrhs = nrhs;
-    int maxmn = m > n ? m : n;
+    INT maxmn = m > n ? m : n;
     fix->lda = m;
     fix->ldb = maxmn;  /* ldb >= max(m,n) required by dgels */
     fix->seed = g_seed++;
 
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
     fix->lwork = maxmn * 64 + minmn;
 
     fix->A = calloc((size_t)fix->lda * n, sizeof(f64));
@@ -132,14 +120,14 @@ static int setup_10x10_3(void **state) { return ls_setup(state, 10, 10, 3); }
  *   4. Call dgels
  *   5. Verify ||X - X_true|| / (n * ||X_true|| * eps) < THRESH
  */
-static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
+static void run_dgels_overdetermined(ls_fixture_t *fix, INT imat)
 {
-    int info;
-    int m = fix->m, n = fix->n, nrhs = fix->nrhs;
-    int lda = fix->lda, ldb = fix->ldb;
+    INT info;
+    INT m = fix->m, n = fix->n, nrhs = fix->nrhs;
+    INT lda = fix->lda, ldb = fix->ldb;
     f64 eps = dlamch("E");
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
 
     /* Generate matrix A */
@@ -152,8 +140,8 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
 
     /* Generate random X_true (n x nrhs) */
     uint64_t s = fix->seed + 1000;
-    for (int j = 0; j < nrhs; j++)
-        for (int i = 0; i < n; i++)
+    for (INT j = 0; j < nrhs; j++)
+        for (INT i = 0; i < n; i++)
             fix->Xtrue[i + j * n] = prng_next(&s);
 
     /* Compute B = A * X_true (m x nrhs) */
@@ -163,7 +151,7 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
                 fix->Xtrue, n, 0.0, fix->B, ldb);
 
     /* Save A copy (dgels overwrites A) */
-    for (int j = 0; j < n; j++)
+    for (INT j = 0; j < n; j++)
         cblas_dcopy(m, &fix->A[j * lda], 1, &fix->Acopy[j * lda], 1);
 
     /* Call dgels */
@@ -174,8 +162,8 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
     /* Verify: ||X_computed - X_true|| / (n * ||X_true|| * eps)
      * X_computed is in B[0:n-1, 0:nrhs-1] */
     f64 err_norm = 0.0;
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             f64 diff = fix->B[i + j * ldb] - fix->Xtrue[i + j * n];
             err_norm += diff * diff;
         }
@@ -183,8 +171,8 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
     err_norm = sqrt(err_norm);
 
     f64 xtrue_norm = 0.0;
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             xtrue_norm += fix->Xtrue[i + j * n] * fix->Xtrue[i + j * n];
         }
     }
@@ -211,15 +199,15 @@ static void run_dgels_overdetermined(ls_fixture_t *fix, int imat)
  *   3. Call dgels
  *   4. Verify ||A*X - B|| / (max(m,n) * ||A|| * ||X|| * eps) < THRESH
  */
-static void run_dgels_underdetermined(ls_fixture_t *fix, int imat)
+static void run_dgels_underdetermined(ls_fixture_t *fix, INT imat)
 {
-    int info;
-    int m = fix->m, n = fix->n, nrhs = fix->nrhs;
-    int lda = fix->lda, ldb = fix->ldb;
-    int maxmn = m > n ? m : n;
+    INT info;
+    INT m = fix->m, n = fix->n, nrhs = fix->nrhs;
+    INT lda = fix->lda, ldb = fix->ldb;
+    INT maxmn = m > n ? m : n;
     f64 eps = dlamch("E");
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
 
     /* Generate matrix A */
@@ -233,15 +221,15 @@ static void run_dgels_underdetermined(ls_fixture_t *fix, int imat)
     /* Generate random B (m x nrhs) */
     uint64_t s = fix->seed + 2000;
     memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(f64));
-    for (int j = 0; j < nrhs; j++)
-        for (int i = 0; i < m; i++)
+    for (INT j = 0; j < nrhs; j++)
+        for (INT i = 0; i < m; i++)
             fix->B[i + j * ldb] = prng_next(&s);
 
     /* Save copies */
-    for (int j = 0; j < n; j++)
+    for (INT j = 0; j < n; j++)
         cblas_dcopy(m, &fix->A[j * lda], 1, &fix->Acopy[j * lda], 1);
     /* Save B in Xtrue (we'll use it as B_orig) */
-    for (int j = 0; j < nrhs; j++)
+    for (INT j = 0; j < nrhs; j++)
         cblas_dcopy(m, &fix->B[j * ldb], 1, &fix->Xtrue[j * maxmn], 1);
 
     /* Call dgels */
@@ -274,15 +262,15 @@ static void run_dgels_underdetermined(ls_fixture_t *fix, int imat)
  *   A^T * X = B is underdetermined (A^T is n x m, with m >= n).
  *   Generate random B (n x nrhs), solve, check A^T*X = B.
  */
-static void run_dgels_trans_mgen(ls_fixture_t *fix, int imat)
+static void run_dgels_trans_mgen(ls_fixture_t *fix, INT imat)
 {
-    int info;
-    int m = fix->m, n = fix->n, nrhs = fix->nrhs;
-    int lda = fix->lda, ldb = fix->ldb;
-    int maxmn = m > n ? m : n;
+    INT info;
+    INT m = fix->m, n = fix->n, nrhs = fix->nrhs;
+    INT lda = fix->lda, ldb = fix->ldb;
+    INT maxmn = m > n ? m : n;
     f64 eps = dlamch("E");
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
 
     /* Generate matrix A (m x n) */
@@ -298,15 +286,15 @@ static void run_dgels_trans_mgen(ls_fixture_t *fix, int imat)
      * B is stored in first n rows of B array */
     uint64_t s = fix->seed + 3000;
     memset(fix->B, 0, (size_t)ldb * nrhs * sizeof(f64));
-    for (int j = 0; j < nrhs; j++)
-        for (int i = 0; i < n; i++)
+    for (INT j = 0; j < nrhs; j++)
+        for (INT i = 0; i < n; i++)
             fix->B[i + j * ldb] = prng_next(&s);
 
     /* Save copies */
-    for (int j = 0; j < n; j++)
+    for (INT j = 0; j < n; j++)
         cblas_dcopy(m, &fix->A[j * lda], 1, &fix->Acopy[j * lda], 1);
     /* Save B_orig in Xtrue */
-    for (int j = 0; j < nrhs; j++)
+    for (INT j = 0; j < nrhs; j++)
         cblas_dcopy(n, &fix->B[j * ldb], 1, &fix->Xtrue[j * maxmn], 1);
 
     /* Call dgels with TRANS='T' */
@@ -338,7 +326,7 @@ static void run_dgels_trans_mgen(ls_fixture_t *fix, int imat)
 static void test_overdetermined_wellcond(void **state)
 {
     ls_fixture_t *fix = *state;
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_dgels_overdetermined(fix, imat);
     }
@@ -348,7 +336,7 @@ static void test_overdetermined_wellcond(void **state)
 static void test_overdetermined_illcond(void **state)
 {
     ls_fixture_t *fix = *state;
-    for (int imat = 8; imat <= 9; imat++) {
+    for (INT imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         run_dgels_overdetermined(fix, imat);
     }
@@ -358,7 +346,7 @@ static void test_overdetermined_illcond(void **state)
 static void test_overdetermined_scaled(void **state)
 {
     ls_fixture_t *fix = *state;
-    for (int imat = 10; imat <= 11; imat++) {
+    for (INT imat = 10; imat <= 11; imat++) {
         fix->seed = g_seed++;
         run_dgels_overdetermined(fix, imat);
     }
@@ -368,7 +356,7 @@ static void test_overdetermined_scaled(void **state)
 static void test_underdetermined(void **state)
 {
     ls_fixture_t *fix = *state;
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_dgels_underdetermined(fix, imat);
     }
@@ -378,7 +366,7 @@ static void test_underdetermined(void **state)
 static void test_trans(void **state)
 {
     ls_fixture_t *fix = *state;
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_dgels_trans_mgen(fix, imat);
     }
@@ -389,7 +377,7 @@ static void test_workspace_query(void **state)
 {
     ls_fixture_t *fix = *state;
     f64 wkopt;
-    int info;
+    INT info;
 
     dgels("N", fix->m, fix->n, fix->nrhs, fix->A, fix->lda,
           fix->B, fix->ldb, &wkopt, -1, &info);

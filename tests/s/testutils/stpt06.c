@@ -10,10 +10,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const f32* AP, f32* work);
-
 /**
  * STPT06 computes a test ratio comparing RCOND (the reciprocal
  * condition number of a triangular matrix A) and RCONDC, the estimate
@@ -35,7 +31,7 @@ extern f32 slantp(const char* norm, const char* uplo, const char* diag,
  *                        If one is zero: scaled version of the nonzero estimate.
  */
 void stpt06(const f32 rcond, const f32 rcondc,
-            const char* uplo, const char* diag, const int n,
+            const char* uplo, const char* diag, const INT n,
             const f32* AP, f32* work, f32* rat)
 {
     const f32 ZERO = 0.0f;

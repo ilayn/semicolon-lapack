@@ -4,18 +4,9 @@
  *        computes the residual.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64 * const restrict A, const int lda,
-                     f64 * const restrict work);
-extern void dlaswp(const int n, f64 * const restrict A, const int lda,
-                   const int k1, const int k2,
-                   const int * const restrict ipiv, const int incx);
 
 /**
  * DGET01 reconstructs a matrix A from its L*U factorization and
@@ -41,22 +32,22 @@ extern void dlaswp(const int n, f64 * const restrict A, const int lda,
  * @param[out]    resid   norm(L*U - A) / ( N * norm(A) * EPS )
  */
 void dget01(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const f64 * const restrict A,
-    const int lda,
+    const INT lda,
     f64 * const restrict AFAC,
-    const int ldafac,
-    const int * const restrict ipiv,
+    const INT ldafac,
+    const INT* const restrict ipiv,
     f64 * const restrict rwork,
     f64 *resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k;
+    INT i, j, k;
     f64 anorm, eps, t;
-    int minmn;
+    INT minmn;
 
     // Quick exit if m = 0 or n = 0
     if (m <= 0 || n <= 0) {

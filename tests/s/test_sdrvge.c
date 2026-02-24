@@ -6,14 +6,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
 #include <math.h>
 
 /* Test parameters - matching LAPACK dchkaa.f defaults */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NTYPES  11
 #define NTESTS  7
@@ -23,79 +23,16 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routines under test */
-extern void sgesv(const int n, const int nrhs, f32* A, const int lda,
-                  int* ipiv, f32* B, const int ldb, int* info);
-extern void sgesvx(const char* fact, const char* trans, const int n, const int nrhs,
-                   f32* A, const int lda, f32* AF, const int ldaf,
-                   int* ipiv, char* equed, f32* R, f32* C,
-                   f32* B, const int ldb, f32* X, const int ldx,
-                   f32* rcond, f32* ferr, f32* berr,
-                   f32* work, int* iwork, int* info);
-
 /* Supporting routines */
-extern void sgetrf(const int m, const int n, f32* A, const int lda,
-                   int* ipiv, int* info);
-extern void sgetri(const int n, f32* A, const int lda, const int* ipiv,
-                   f32* work, const int lwork, int* info);
-extern void sgeequ(const int m, const int n, const f32* A, const int lda,
-                   f32* R, f32* C, f32* rowcnd, f32* colcnd,
-                   f32* amax, int* info);
-extern void slaqge(const int m, const int n, f32* A, const int lda,
-                   const f32* R, const f32* C, const f32 rowcnd,
-                   const f32 colcnd, const f32 amax, char* equed);
-
 /* Verification routines */
-extern void sget01(const int m, const int n, const f32* A, const int lda,
-                   const f32* AFAC, const int ldafac, const int* ipiv,
-                   f32* rwork, f32* resid);
-extern void sget02(const char* trans, const int m, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* X, const int ldx,
-                   f32* B, const int ldb, f32* rwork, f32* resid);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-extern f32 sget06(const f32 rcond, const f32 rcondc);
-extern void sget07(const char* trans, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* B, const int ldb,
-                   const f32* X, const int ldx, const f32* XACT, const int ldxact,
-                   const f32* ferr, const int chkferr, const f32* berr,
-                   f32* reslts);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d,
-                   const int mode, const f32 cond, const f32 dmax,
-                   const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n,
-                   const int kl, const int ku, const int nrhs,
-                   const f32* A, const int lda, const f32* XACT, const int ldxact,
-                   f32* B, const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const f32* A, const int lda,
-                     f32* work);
-extern f32 slamch(const char* cmach);
-
 typedef struct {
-    int n;
-    int imat;
-    int ifact;      /* 0='F', 1='N', 2='E' */
-    int itran;      /* 0='N', 1='T', 2='C' */
-    int iequed;     /* 0='N', 1='R', 2='C', 3='B' */
+    INT n;
+    INT imat;
+    INT ifact;      /* 0='F', 1='N', 2='E' */
+    INT itran;      /* 0='N', 1='T', 2='C' */
+    INT iequed;     /* 0='N', 1='R', 2='C', 3='B' */
     char name[64];
 } ddrvge_params_t;
 
@@ -110,8 +47,8 @@ typedef struct {
     f32* S;
     f32* WORK;
     f32* RWORK;
-    int* IWORK;
-    int lwork;
+    INT* IWORK;
+    INT lwork;
 } ddrvge_workspace_t;
 
 static ddrvge_workspace_t* g_workspace = NULL;
@@ -122,8 +59,8 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(ddrvge_workspace_t));
     if (!g_workspace) return -1;
 
-    int nmax = NMAX;
-    int lwork = nmax * (nmax > 3 ? nmax : 3);
+    INT nmax = NMAX;
+    INT lwork = nmax * (nmax > 3 ? nmax : 3);
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
     g_workspace->lwork = lwork;
@@ -137,7 +74,7 @@ static int group_setup(void** state)
     g_workspace->S = calloc(2 * nmax, sizeof(f32));
     g_workspace->WORK = calloc(lwork, sizeof(f32));
     g_workspace->RWORK = calloc(2 * NRHS + nmax, sizeof(f32));
-    g_workspace->IWORK = calloc(2 * nmax, sizeof(int));
+    g_workspace->IWORK = calloc(2 * nmax, sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->ASAV ||
         !g_workspace->B || !g_workspace->BSAV || !g_workspace->X ||
@@ -173,18 +110,18 @@ static int group_teardown(void** state)
  * Compute condition number of matrix A by explicit inversion.
  * Returns rcond for the given norm ('1' or 'I').
  */
-static f32 compute_rcond(ddrvge_workspace_t* ws, int n, int lda, const char* norm)
+static f32 compute_rcond(ddrvge_workspace_t* ws, INT n, INT lda, const char* norm)
 {
     if (n == 0) return 1.0f;
 
-    int info;
+    INT info;
     f32 anrm = slange(norm, n, n, ws->AFAC, lda, ws->RWORK);
 
     sgetrf(n, n, ws->AFAC, lda, ws->IWORK, &info);
     if (info != 0) return 0.0f;
 
     slacpy("Full", n, n, ws->AFAC, lda, ws->A, lda);
-    int lwork_getri = NMAX * 3;
+    INT lwork_getri = NMAX * 3;
     sgetri(n, ws->A, lda, ws->IWORK, ws->WORK, lwork_getri, &info);
     if (info != 0) return 0.0f;
 
@@ -194,7 +131,7 @@ static f32 compute_rcond(ddrvge_workspace_t* ws, int n, int lda, const char* nor
     return (1.0f / anrm) / ainvnm;
 }
 
-static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
+static void run_ddrvge_single(INT n, INT imat, INT ifact, INT itran, INT iequed)
 {
     static const char* FACTS[] = {"F", "N", "E"};
     static const char* TRANSS[] = {"N", "T", "C"};
@@ -205,24 +142,24 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
     const char* trans = TRANSS[itran];
     char equed = EQUEDS[iequed][0];
 
-    int prefac = (fact[0] == 'F');
-    int nofact = (fact[0] == 'N');
-    int equil = (fact[0] == 'E');
+    INT prefac = (fact[0] == 'F');
+    INT nofact = (fact[0] == 'N');
+    INT equil = (fact[0] == 'E');
 
-    int lda = (n > 1) ? n : 1;
+    INT lda = (n > 1) ? n : 1;
     f32 result[NTESTS];
-    for (int k = 0; k < NTESTS; k++) result[k] = 0.0f;
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0f;
 
     /* Set up parameters with SLATB4 */
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
     slatb4("SGE", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     /* Generate test matrix with SLATMS */
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + n * 1000 + imat * 100);
-    int info;
+    INT info;
     slatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
            anorm, kl, ku, "N", ws->A, lda, ws->WORK, &info, rng_state);
     if (info != 0) {
@@ -231,16 +168,16 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
     }
 
     /* For types 5-7, zero one or more columns */
-    int izero = 0;
-    int zerot = (imat >= 5 && imat <= 7);
+    INT izero = 0;
+    INT zerot = (imat >= 5 && imat <= 7);
     if (zerot) {
         if (imat == 5) izero = 1;
         else if (imat == 6) izero = n;
         else izero = n / 2 + 1;
 
-        int ioff = (izero - 1) * lda;
+        INT ioff = (izero - 1) * lda;
         if (imat < 7) {
-            for (int i = 0; i < n; i++) ws->A[ioff + i] = 0.0f;
+            for (INT i = 0; i < n; i++) ws->A[ioff + i] = 0.0f;
         } else {
             slaset("Full", n, n - izero + 1, 0.0f, 0.0f, &ws->A[ioff], lda);
         }
@@ -356,7 +293,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
         sget01(n, n, ws->A, lda, ws->AFAC, lda, ws->IWORK,
                ws->RWORK, &result[0]);
 
-        int nt = 1;
+        INT nt = 1;
         if (izero == 0) {
             /* TEST 2: Compute residual of computed solution */
             slacpy("Full", n, NRHS, ws->B, lda, ws->WORK, lda);
@@ -368,7 +305,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
             nt = 3;
         }
 
-        for (int k = 0; k < nt; k++) {
+        for (INT k = 0; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGESV test %d failed: result=%e >= thresh=%e",
                          k + 1, (double)result[k], (double)THRESH);
@@ -430,7 +367,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
 
     /* TEST 1: Reconstruct matrix from factors (lines 576-586)
      * K1 determines which tests to check: 0 if test 1 ran, 1 if skipped (0-indexed) */
-    int k1;
+    INT k1;
     if (!prefac) {
         sget01(n, n, ws->A, lda, ws->AFAC, lda, ws->IWORK,
                &ws->RWORK[2 * NRHS], &result[0]);
@@ -439,7 +376,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
         k1 = 1;
     }
 
-    int trfcon;
+    INT trfcon;
     if (info == 0) {
         trfcon = 0;
 
@@ -474,7 +411,7 @@ static void run_ddrvge_single(int n, int imat, int ifact, int itran, int iequed)
 
     /* Check results (lines 633-692) */
     if (!trfcon) {
-        for (int k = k1; k < NTESTS; k++) {
+        for (INT k = k1; k < NTESTS; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGESVX FACT=%s TRANS=%s EQUED=%c test %d: result=%e >= thresh=%e",
                          fact, trans, equed, k + 1, (double)result[k], (double)THRESH);
@@ -507,7 +444,7 @@ static void test_ddrvge_case(void** state)
 
 static ddrvge_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
@@ -517,21 +454,21 @@ static void build_test_array(void)
 
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
-        int nimat = (n <= 0) ? 1 : NTYPES;
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        INT nimat = (n <= 0) ? 1 : NTYPES;
 
-        for (int imat = 1; imat <= nimat; imat++) {
-            int zerot = (imat >= 5 && imat <= 7);
+        for (INT imat = 1; imat <= nimat; imat++) {
+            INT zerot = (imat >= 5 && imat <= 7);
             if (zerot && n < imat - 4) continue;
 
-            for (int iequed = 0; iequed < 4; iequed++) {
-                int nfact = (iequed == 0) ? 3 : 1;
+            for (INT iequed = 0; iequed < 4; iequed++) {
+                INT nfact = (iequed == 0) ? 3 : 1;
 
-                for (int ifact = 0; ifact < nfact; ifact++) {
+                for (INT ifact = 0; ifact < nfact; ifact++) {
                     if (zerot && ifact == 0) continue;
 
-                    for (int itran = 0; itran < NTRAN; itran++) {
+                    for (INT itran = 0; itran < NTRAN; itran++) {
                         ddrvge_params_t* p = &g_params[g_num_tests];
                         p->n = n;
                         p->imat = imat;

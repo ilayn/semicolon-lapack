@@ -19,14 +19,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
 static const char UPLOS[] = {'U', 'L'};
 static const char* PACKS[] = {"C", "R"};  /* Column packed for U, Row packed for L */
 
@@ -40,69 +41,16 @@ static const char* PACKS[] = {"C", "R"};  /* Column packed for U, Row packed for
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dsptrf(const char* uplo, const int n, f64* AP, int* ipiv, int* info);
-extern void dsptri(const char* uplo, const int n, f64* AP, const int* ipiv,
-                   f64* work, int* info);
-extern void dsptrs(const char* uplo, const int n, const int nrhs,
-                   const f64* AP, const int* ipiv, f64* B, const int ldb, int* info);
-extern void dsprfs(const char* uplo, const int n, const int nrhs,
-                   const f64* AP, const f64* AFP, const int* ipiv,
-                   const f64* B, const int ldb,
-                   f64* X, const int ldx, f64* ferr, f64* berr,
-                   f64* work, int* iwork, int* info);
-extern void dspcon(const char* uplo, const int n, const f64* AP, const int* ipiv,
-                   const f64 anorm, f64* rcond,
-                   f64* work, int* iwork, int* info);
-
 /* Verification routines */
-extern void dspt01(const char* uplo, const int n, const f64* A,
-                   const f64* AFAC, const int* ipiv, f64* C, const int ldc,
-                   f64* rwork, f64* resid);
-extern void dppt02(const char* uplo, const int n, const int nrhs,
-                   const f64* A, const f64* X, const int ldx,
-                   f64* B, const int ldb, f64* rwork, f64* resid);
-extern void dppt03(const char* uplo, const int n, const f64* A,
-                   const f64* AINV, f64* work, const int ldwork,
-                   f64* rwork, f64* rcond, f64* resid);
-extern void dppt05(const char* uplo, const int n, const int nrhs,
-                   const f64* AP, const f64* B, const int ldb,
-                   const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact,
-                   const f64* ferr, const f64* berr, f64* reslts);
-extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact, const f64 rcond,
-                   f64* resid);
-extern f64 dget06(const f64 rcond, const f64 rcondc);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f64* A, const int lda,
-                   const f64* XACT, const int ldxact, f64* B,
-                   const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern f64 dlansp(const char* norm, const char* uplo, const int n,
-                     const f64* AP, f64* work);
-extern f64 dlamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;  /* 0='U', 1='L' */
+    INT n;
+    INT imat;
+    INT iuplo;  /* 0='U', 1='L' */
     char name[64];
 } dchksp_params_t;
 
@@ -122,7 +70,7 @@ typedef struct {
     f64* C;      /* Full format workspace for dspt01 */
     f64* FERR;   /* Forward error bounds */
     f64* BERR;   /* Backward error bounds */
-    int* IWORK;     /* Integer workspace (also serves as IPIV) */
+    INT* IWORK;     /* Integer workspace (also serves as IPIV) */
 } dchksp_workspace_t;
 
 static dchksp_workspace_t* g_workspace = NULL;
@@ -136,7 +84,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchksp_workspace_t));
     if (!g_workspace) return -1;
 
-    int npp = NMAX * (NMAX + 1) / 2;
+    INT npp = NMAX * (NMAX + 1) / 2;
 
     g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->AFAC = malloc(npp * sizeof(f64));
@@ -150,7 +98,7 @@ static int group_setup(void** state)
     g_workspace->C = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->FERR = malloc(NSMAX * sizeof(f64));
     g_workspace->BERR = malloc(NSMAX * sizeof(f64));
-    g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(2 * NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -193,7 +141,7 @@ static int group_teardown(void** state)
  * Run the full dchksp test battery for a single (n, uplo, imat) combination.
  * This is the core test logic, parameterized by the test case.
  */
-static void run_dchksp_single(int n, int iuplo, int imat)
+static void run_dchksp_single(INT n, INT iuplo, INT imat)
 {
     const f64 ZERO = 0.0;
     dchksp_workspace_t* ws = g_workspace;
@@ -202,15 +150,15 @@ static void run_dchksp_single(int n, int iuplo, int imat)
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
     const char* packit = PACKS[iuplo];
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info, izero;
-    int lda = (n > 1) ? n : 1;
-    int npp = n * (n + 1) / 2;
+    INT info, izero;
+    INT lda = (n > 1) ? n : 1;
+    INT npp = n * (n + 1) / 2;
     f64 rcondc, rcond;
-    int trfcon;
-    int k;
-    int* ipiv = ws->IWORK;  /* First n elements for pivot indices */
+    INT trfcon;
+    INT k;
+    INT* ipiv = ws->IWORK;  /* First n elements for pivot indices */
 
     f64 result[NTESTS];
     char ctx[128];
@@ -220,7 +168,7 @@ static void run_dchksp_single(int n, int iuplo, int imat)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat));
 
     /* Initialize results */
-    for (int i = 0; i < NTESTS; i++) {
+    for (INT i = 0; i < NTESTS; i++) {
         result[i] = ZERO;
     }
 
@@ -233,7 +181,7 @@ static void run_dchksp_single(int n, int iuplo, int imat)
     assert_int_equal(info, 0);
 
     /* For types 3-6, zero one or more rows and columns */
-    int zerot = (imat >= 3 && imat <= 6);
+    INT zerot = (imat >= 3 && imat <= 6);
     if (zerot) {
         if (imat == 3) {
             izero = 1;
@@ -245,46 +193,46 @@ static void run_dchksp_single(int n, int iuplo, int imat)
 
         if (imat < 6) {
             /* Set row and column izero to zero */
-            int ioff;
+            INT ioff;
             if (iuplo == 0) {
                 /* Upper packed */
                 ioff = (izero - 1) * izero / 2;
-                for (int i = 0; i < izero - 1; i++) {
+                for (INT i = 0; i < izero - 1; i++) {
                     ws->A[ioff + i] = ZERO;
                 }
                 ioff = ioff + izero - 1;
-                for (int i = izero - 1; i < n; i++) {
+                for (INT i = izero - 1; i < n; i++) {
                     ws->A[ioff] = ZERO;
                     ioff = ioff + i + 1;
                 }
             } else {
                 /* Lower packed */
                 ioff = izero - 1;
-                for (int i = 0; i < izero - 1; i++) {
+                for (INT i = 0; i < izero - 1; i++) {
                     ws->A[ioff] = ZERO;
                     ioff = ioff + n - i - 1;
                 }
                 ioff = ioff - (izero - 1);
-                for (int i = izero - 1; i < n; i++) {
+                for (INT i = izero - 1; i < n; i++) {
                     ws->A[ioff + i - (izero - 1)] = ZERO;
                 }
             }
         } else {
             /* imat == 6: Set the first izero rows and columns to zero (upper)
                or the last izero rows and columns to zero (lower) */
-            int ioff = 0;
+            INT ioff = 0;
             if (iuplo == 0) {
-                for (int j = 0; j < n; j++) {
-                    int i2 = (j + 1 < izero) ? j + 1 : izero;
-                    for (int i = 0; i < i2; i++) {
+                for (INT j = 0; j < n; j++) {
+                    INT i2 = (j + 1 < izero) ? j + 1 : izero;
+                    for (INT i = 0; i < i2; i++) {
                         ws->A[ioff + i] = ZERO;
                     }
                     ioff = ioff + j + 1;
                 }
             } else {
-                for (int j = 0; j < n; j++) {
-                    int i1 = (j >= izero - 1) ? j : izero - 1;
-                    for (int i = i1; i < n; i++) {
+                for (INT j = 0; j < n; j++) {
+                    INT i1 = (j >= izero - 1) ? j : izero - 1;
+                    for (INT i = i1; i < n; i++) {
                         ws->A[ioff + i - j] = ZERO;
                     }
                     ioff = ioff + n - j;
@@ -312,7 +260,7 @@ static void run_dchksp_single(int n, int iuplo, int imat)
         while (1) {
             if (ipiv[k] < 0) {
                 /* 2x2 block: kp = -ipiv[k] - 1 */
-                int kp = -ipiv[k] - 1;
+                INT kp = -ipiv[k] - 1;
                 if (kp != k) {
                     k = kp;
                     continue;
@@ -369,8 +317,8 @@ static void run_dchksp_single(int n, int iuplo, int imat)
     /*
      * TESTS 3-7: Solve tests
      */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
         /*
          * TEST 3: Solve and compute residual for A * X = B
@@ -455,7 +403,7 @@ static void test_dchksp_case(void** state)
 
 static dchksp_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -464,22 +412,22 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Skip types 3, 4, 5, or 6 if matrix size is too small */
-            int zerot = (imat >= 3 && imat <= 6);
+            INT zerot = (imat >= 3 && imat <= 6);
             if (zerot && n < imat - 2) {
                 continue;
             }
 
-            for (int iuplo = 0; iuplo < (int)NUPLO; iuplo++) {
+            for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
                 /* Store parameters */
                 dchksp_params_t* p = &g_params[g_num_tests];
                 p->n = n;

@@ -7,8 +7,8 @@
  */
 
 #include "semicolon_lapack_double.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 
 /**
@@ -29,14 +29,14 @@
  * @param[out]    resid The residual.
  */
 void dptt02(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* const restrict D,
     const f64* const restrict E,
     const f64* const restrict X,
-    const int ldx,
+    const INT ldx,
     f64* const restrict B,
-    const int ldb,
+    const INT ldb,
     f64* resid)
 {
     const f64 ONE = 1.0;
@@ -64,7 +64,7 @@ void dptt02(
     /* Compute the maximum over the number of right hand sides of
        norm(B - A*X) / ( norm(A) * norm(X) * EPS ). */
     *resid = ZERO;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         f64 bnorm = cblas_dasum(n, &B[j * ldb], 1);
         f64 xnorm = cblas_dasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {

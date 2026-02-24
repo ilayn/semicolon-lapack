@@ -17,39 +17,12 @@
 #include "verify.h"
 
 /* Routines under test */
-extern void sgttrf(const int n, f32 * const restrict DL,
-                   f32 * const restrict D, f32 * const restrict DU,
-                   f32 * const restrict DU2, int * const restrict ipiv,
-                   int *info);
-extern void sgtcon(const char *norm, const int n,
-                   const f32 * const restrict DL,
-                   const f32 * const restrict D,
-                   const f32 * const restrict DU,
-                   const f32 * const restrict DU2,
-                   const int * const restrict ipiv,
-                   const f32 anorm, f32 *rcond,
-                   f32 * const restrict work, int * const restrict iwork,
-                   int *info);
-extern void sgttrs(const char *trans, const int n, const int nrhs,
-                   const f32 * const restrict DL,
-                   const f32 * const restrict D,
-                   const f32 * const restrict DU,
-                   const f32 * const restrict DU2,
-                   const int * const restrict ipiv,
-                   f32 * const restrict B, const int ldb, int *info);
-
 /* Utilities */
-extern f32 slamch(const char *cmach);
-extern f32 slangt(const char *norm, const int n,
-                     const f32 * const restrict DL,
-                     const f32 * const restrict D,
-                     const f32 * const restrict DU);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n;
+    INT n;
     f32 *DL;      /* Original sub-diagonal */
     f32 *D;       /* Original diagonal */
     f32 *DU;      /* Original super-diagonal */
@@ -57,9 +30,9 @@ typedef struct {
     f32 *DF;      /* Factored diagonal */
     f32 *DUF;     /* Factored super-diagonal */
     f32 *DU2;     /* Second super-diagonal from factorization */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f32 *work;    /* Workspace for sgtcon */
-    int *iwork;      /* Integer workspace for sgtcon */
+    INT* iwork;      /* Integer workspace for sgtcon */
     f32 *AINV;    /* Workspace for explicit inverse computation */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
@@ -71,13 +44,13 @@ static uint64_t g_seed = 3141;
 /**
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
+static void generate_gt_matrix(INT n, INT imat, f32 *DL, f32 *D, f32 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int i;
+    INT i;
 
     if (n <= 0) return;
 
@@ -110,15 +83,15 @@ static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
  * For a tridiagonal matrix, we compute the inverse by solving
  * A * e_i = col_i for each column of the identity.
  */
-static f32 compute_true_rcond(int n, char norm_char,
+static f32 compute_true_rcond(INT n, char norm_char,
                                  const f32 *DLF, const f32 *DF,
                                  const f32 *DUF, const f32 *DU2,
-                                 const int *ipiv, f32 anorm,
+                                 const INT* ipiv, f32 anorm,
                                  f32 *AINV)
 {
-    int i, j, info;
+    INT i, j, info;
     f32 ainvnm = 0.0f;
-    int ldb = (n > 1) ? n : 1;
+    INT ldb = (n > 1) ? n : 1;
 
     /* Compute inverse by solving A * X = I */
     for (j = 0; j < n; j++) {
@@ -161,12 +134,12 @@ static f32 compute_true_rcond(int n, char norm_char,
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgtcon_setup(void **state, int n)
+static int dgtcon_setup(void **state, INT n)
 {
     dgtcon_fixture_t *fix = malloc(sizeof(dgtcon_fixture_t));
     assert_non_null(fix);
 
-    int m = (n > 1) ? n - 1 : 0;
+    INT m = (n > 1) ? n - 1 : 0;
 
     fix->n = n;
     fix->seed = g_seed++;
@@ -179,9 +152,9 @@ static int dgtcon_setup(void **state, int n)
     fix->DF = malloc(n * sizeof(f32));
     fix->DUF = malloc((m > 0 ? m : 1) * sizeof(f32));
     fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->work = malloc(2 * n * sizeof(f32));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
     fix->AINV = malloc(n * n * sizeof(f32));
 
     assert_non_null(fix->DL);
@@ -236,11 +209,11 @@ static int setup_n20(void **state) { return dgtcon_setup(state, 20); }
  * Returns the sget06 ratio for the given norm type.
  * Returns -1.0 if the true rcond is zero (degenerate case).
  */
-static f32 run_dgtcon_test(dgtcon_fixture_t *fix, int imat, const char* norm_char)
+static f32 run_dgtcon_test(dgtcon_fixture_t *fix, INT imat, const char* norm_char)
 {
-    int info;
-    int n = fix->n;
-    int m = (n > 1) ? n - 1 : 0;
+    INT info;
+    INT n = fix->n;
+    INT m = (n > 1) ? n - 1 : 0;
 
     /* Generate test matrix */
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
@@ -282,7 +255,7 @@ static void test_dgtcon_onenorm(void **state)
 {
     dgtcon_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f32 ratio = run_dgtcon_test(fix, imat, "1");
@@ -298,7 +271,7 @@ static void test_dgtcon_infnorm(void **state)
 {
     dgtcon_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f32 ratio = run_dgtcon_test(fix, imat, "I");

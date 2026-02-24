@@ -7,15 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /**
  * DGET10 compares two matrices A and B and computes the ratio
  *    RESULT = norm( A - B ) / ( norm(A) * M * EPS )
@@ -29,15 +22,15 @@ extern f64 dlange(const char* norm, const int m, const int n,
  * @param[out]    work    Workspace array, dimension (m).
  * @param[out]    result  The computed ratio.
  */
-void dget10(const int m, const int n,
-            const f64* const restrict A, const int lda,
-            const f64* const restrict B, const int ldb,
+void dget10(const INT m, const INT n,
+            const f64* const restrict A, const INT lda,
+            const f64* const restrict B, const INT ldb,
             f64* const restrict work, f64* result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int j;
+    INT j;
     f64 anorm, eps, unfl, wnorm;
 
     /* Quick return if possible */

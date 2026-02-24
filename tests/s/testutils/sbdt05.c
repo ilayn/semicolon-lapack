@@ -7,15 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /**
  * SBDT05 reconstructs a matrix A from its (partial) SVD:
  *    S = U' * A * V
@@ -38,18 +31,18 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace array, dimension at least (ns*ns + m*ns).
  * @param[out]    resid  The test ratio.
  */
-void sbdt05(const int m, const int n, const f32* const restrict A, const int lda,
-            const f32* const restrict S, const int ns,
-            const f32* const restrict U, const int ldu,
-            const f32* const restrict VT, const int ldvt,
+void sbdt05(const INT m, const INT n, const f32* const restrict A, const INT lda,
+            const f32* const restrict S, const INT ns,
+            const f32* const restrict U, const INT ldu,
+            const f32* const restrict VT, const INT ldvt,
             f32* const restrict work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 anorm, eps;
-    int minmn;
+    INT minmn;
 
     /* Quick return if possible */
     *resid = ZERO;
@@ -91,7 +84,7 @@ void sbdt05(const int m, const int n, const f32* const restrict A, const int lda
     j = 0;
     for (i = 0; i < ns; i++) {
         f32 colsum = ZERO;
-        for (int k = 0; k < ns; k++) {
+        for (INT k = 0; k < ns; k++) {
             colsum += fabsf(work[j + k]);
         }
         if (colsum > *resid) {

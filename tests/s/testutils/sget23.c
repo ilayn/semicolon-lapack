@@ -6,21 +6,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slapy2(const f32 x, const f32 y);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-                   const char* sense, const int n, f32* A, const int lda,
-                   f32* wr, f32* wi, f32* VL, const int ldvl,
-                   f32* VR, const int ldvr, int* ilo, int* ihi,
-                   f32* scale, f32* abnrm, f32* rconde, f32* rcondv,
-                   f32* work, const int lwork, int* iwork, int* info);
-
 /**
  * SGET23 checks the nonsymmetric eigenvalue problem driver SGEEVX.
  *
@@ -42,16 +29,16 @@ extern void sgeevx(const char* balanc, const char* jobvl, const char* jobvr,
  *   (10)     |RCONDV - RCDVIN| / cond(RCONDV)
  *   (11)     |RCONDE - RCDEIN| / cond(RCONDE)
  */
-void sget23(const int comp, const char* balanc, const int jtype,
-            const f32 thresh, const int n,
-            f32* A, const int lda, f32* H,
+void sget23(const INT comp, const char* balanc, const INT jtype,
+            const f32 thresh, const INT n,
+            f32* A, const INT lda, f32* H,
             f32* wr, f32* wi, f32* wr1, f32* wi1,
-            f32* VL, const int ldvl, f32* VR, const int ldvr,
-            f32* LRE, const int ldlre,
+            f32* VL, const INT ldvl, f32* VR, const INT ldvr,
+            f32* LRE, const INT ldlre,
             f32* rcondv, f32* rcndv1, const f32* rcdvin,
             f32* rconde, f32* rcnde1, const f32* rcdein,
             f32* scale, f32* scale1, f32* result,
-            f32* work, const int lwork, int* iwork, int* info)
+            f32* work, const INT lwork, INT* iwork, INT* info)
 {
     (void)jtype;
     const f32 ZERO = 0.0f;
@@ -59,9 +46,9 @@ void sget23(const int comp, const char* balanc, const int jtype,
     const f32 TWO = 2.0f;
     const f32 EPSIN = 5.9605e-8f;
 
-    int nobal, balok;
-    int i, j, jj, kmin;
-    int ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
+    INT nobal, balok;
+    INT i, j, jj, kmin;
+    INT ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
     f32 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
     f32 ulp, ulpinv, v, vimin, vmax, vmx, vrmin, vrmx, vtst;
     const char* sens[2] = {"N", "V"};

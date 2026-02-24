@@ -21,7 +21,7 @@
 
 #include "test_harness.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <string.h>
 
@@ -29,34 +29,19 @@
 #define THRESH 30.0
 
 /* Routine under test */
-extern void dgesvd(const char* jobu, const char* jobvt,
-                   const int m, const int n,
-                   f64* A, const int lda,
-                   f64* S,
-                   f64* U, const int ldu,
-                   f64* VT, const int ldvt,
-                   f64* work, const int lwork,
-                   int* info);
-
 /* Utilities */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int m, n;
+    INT m, n;
     f64* A;          /* original matrix (preserved) */
     f64* Acopy;      /* working copy (overwritten by dgesvd) */
     f64* S;          /* singular values */
     f64* U;          /* left singular vectors */
     f64* VT;         /* right singular vectors (transposed) */
     f64* work;       /* workspace */
-    int lwork;          /* workspace size */
+    INT lwork;          /* workspace size */
     f64* temp;       /* temporary workspace for verification */
     uint64_t rng_state[4];
 } dgesvd_fixture_t;
@@ -67,7 +52,7 @@ static uint64_t g_seed = 2024;
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgesvd_setup(void** state, int m, int n)
+static int dgesvd_setup(void** state, INT m, INT n)
 {
     dgesvd_fixture_t* fix = malloc(sizeof(dgesvd_fixture_t));
     assert_non_null(fix);
@@ -76,15 +61,15 @@ static int dgesvd_setup(void** state, int m, int n)
     fix->n = n;
     rng_seed(fix->rng_state, g_seed++);
 
-    int minmn = (m < n) ? m : n;
-    int maxmn = (m > n) ? m : n;
+    INT minmn = (m < n) ? m : n;
+    INT maxmn = (m > n) ? m : n;
 
     /* Query optimal workspace size */
     f64 work_query;
-    int info;
+    INT info;
     dgesvd("A", "A", m, n, NULL, m, NULL, NULL, m, NULL, n,
            &work_query, -1, &info);
-    fix->lwork = (int)work_query;
+    fix->lwork = (INT)work_query;
     if (fix->lwork < 1) fix->lwork = 5 * maxmn;
 
     /* Allocate arrays */
@@ -140,10 +125,10 @@ static int setup_30x50(void** state) { return dgesvd_setup(state, 30, 50); }
 /**
  * Helper: generate random m x n matrix
  */
-static void generate_random_matrix(f64* A, int m, int n, uint64_t state[static 4])
+static void generate_random_matrix(f64* A, INT m, INT n, uint64_t state[static 4])
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             A[i + j * m] = rng_uniform_symmetric(state);
         }
     }
@@ -152,14 +137,14 @@ static void generate_random_matrix(f64* A, int m, int n, uint64_t state[static 4
 /**
  * Helper: generate random matrix with specified singular values
  */
-static void generate_matrix_with_sv(f64* A, int m, int n, const f64* sv,
+static void generate_matrix_with_sv(f64* A, INT m, INT n, const f64* sv,
                                     uint64_t state[static 4])
 {
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
 
     /* Start with diagonal of singular values */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             if (i == j && i < minmn) {
                 A[i + j * m] = sv[i];
             } else {
@@ -173,50 +158,50 @@ static void generate_matrix_with_sv(f64* A, int m, int n, const f64* sv,
     f64* v = malloc(((m > n) ? m : n) * sizeof(f64));
 
     /* Left transformations */
-    for (int k = 0; k < minmn; k++) {
+    for (INT k = 0; k < minmn; k++) {
         /* Random Householder vector */
         f64 nrm = 0.0;
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             v[i] = rng_uniform_symmetric(state);
             nrm += v[i] * v[i];
         }
         nrm = sqrt(nrm);
         if (nrm > 0) {
-            for (int i = 0; i < m; i++) v[i] /= nrm;
+            for (INT i = 0; i < m; i++) v[i] /= nrm;
         }
 
         /* Apply H = I - 2*v*v' to A from left */
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             f64 dot = 0.0;
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 dot += v[i] * A[i + j * m];
             }
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 A[i + j * m] -= 2.0 * v[i] * dot;
             }
         }
     }
 
     /* Right transformations */
-    for (int k = 0; k < minmn; k++) {
+    for (INT k = 0; k < minmn; k++) {
         /* Random Householder vector */
         f64 nrm = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             v[j] = rng_uniform_symmetric(state);
             nrm += v[j] * v[j];
         }
         nrm = sqrt(nrm);
         if (nrm > 0) {
-            for (int j = 0; j < n; j++) v[j] /= nrm;
+            for (INT j = 0; j < n; j++) v[j] /= nrm;
         }
 
         /* Apply H = I - 2*v*v' to A from right */
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             f64 dot = 0.0;
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 dot += A[i + j * m] * v[j];
             }
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 A[i + j * m] -= 2.0 * dot * v[j];
             }
         }
@@ -228,12 +213,12 @@ static void generate_matrix_with_sv(f64* A, int m, int n, const f64* sv,
 /**
  * Helper: check singular values are non-negative and sorted descending
  */
-static int check_sv_sorted(const f64* S, int n)
+static INT check_sv_sorted(const f64* S, INT n)
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         if (S[i] < 0.0) return 0;  /* negative singular value */
     }
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         if (S[i] < S[i + 1]) return 0;  /* not descending */
     }
     return 1;
@@ -242,15 +227,15 @@ static int check_sv_sorted(const f64* S, int n)
 /**
  * Helper: compute ||A - U*diag(S)*VT|| / (||A||*max(m,n)*eps)
  */
-static f64 compute_svd_residual(const f64* A, int m, int n,
-                                   const f64* U, int ldu,
+static f64 compute_svd_residual(const f64* A, INT m, INT n,
+                                   const f64* U, INT ldu,
                                    const f64* S,
-                                   const f64* VT, int ldvt,
+                                   const f64* VT, INT ldvt,
                                    f64* temp)
 {
     f64 eps = dlamch("E");
-    int minmn = (m < n) ? m : n;
-    int maxmn = (m > n) ? m : n;
+    INT minmn = (m < n) ? m : n;
+    INT maxmn = (m > n) ? m : n;
 
     /* Compute ||A|| */
     f64 anrm = dlange("F", m, n, A, m, NULL);
@@ -259,8 +244,8 @@ static f64 compute_svd_residual(const f64* A, int m, int n,
     /* Compute U*diag(S)*VT into temp */
     /* First: temp2 = diag(S)*VT (scale rows of VT by S) */
     f64* temp2 = malloc(minmn * n * sizeof(f64));
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < minmn; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < minmn; i++) {
             temp2[i + j * minmn] = S[i] * VT[i + j * ldvt];
         }
     }
@@ -272,8 +257,8 @@ static f64 compute_svd_residual(const f64* A, int m, int n,
     free(temp2);
 
     /* Compute temp = A - temp */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             temp[i + j * m] -= A[i + j * m];
         }
     }
@@ -287,7 +272,7 @@ static f64 compute_svd_residual(const f64* A, int m, int n,
 /**
  * Helper: compute ||I - U'*U|| / (k*eps) where U is m x k
  */
-static f64 compute_orthogonality_UtU(const f64* U, int m, int k, f64* temp)
+static f64 compute_orthogonality_UtU(const f64* U, INT m, INT k, f64* temp)
 {
     f64 eps = dlamch("E");
 
@@ -296,7 +281,7 @@ static f64 compute_orthogonality_UtU(const f64* U, int m, int k, f64* temp)
                 k, k, m, 1.0, U, m, U, m, 0.0, temp, k);
 
     /* Compute ||I - U'*U|| */
-    for (int i = 0; i < k; i++) {
+    for (INT i = 0; i < k; i++) {
         temp[i + i * k] -= 1.0;
     }
 
@@ -307,7 +292,7 @@ static f64 compute_orthogonality_UtU(const f64* U, int m, int k, f64* temp)
 /**
  * Helper: compute ||I - VT*VT'|| / (k*eps) where VT is k x n with leading dim ldvt
  */
-static f64 compute_orthogonality_VTVTt(const f64* VT, int k, int n, int ldvt, f64* temp)
+static f64 compute_orthogonality_VTVTt(const f64* VT, INT k, INT n, INT ldvt, f64* temp)
 {
     f64 eps = dlamch("E");
 
@@ -316,7 +301,7 @@ static f64 compute_orthogonality_VTVTt(const f64* VT, int k, int n, int ldvt, f6
                 k, k, n, 1.0, VT, ldvt, VT, ldvt, 0.0, temp, k);
 
     /* Compute ||I - VT*VT'|| */
-    for (int i = 0; i < k; i++) {
+    for (INT i = 0; i < k; i++) {
         temp[i + i * k] -= 1.0;
     }
 
@@ -332,9 +317,9 @@ static f64 compute_orthogonality_VTVTt(const f64* VT, int k, int n, int ldvt, f6
 static void test_workspace_query(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
+    INT m = fix->m, n = fix->n;
     f64 work_query;
-    int info;
+    INT info;
 
     /* Query with jobu='A', jobvt='A' */
     dgesvd("A", "A", m, n, NULL, m, NULL, NULL, m, NULL, n,
@@ -361,9 +346,9 @@ static void test_workspace_query(void** state)
 static void test_zero_matrix(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     /* Zero matrix */
     memset(fix->A, 0, m * n * sizeof(f64));
@@ -374,7 +359,7 @@ static void test_zero_matrix(void** state)
     assert_info_success(info);
 
     /* All singular values should be zero */
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         assert_true(fabs(fix->S[i]) < 1e-14);
     }
 }
@@ -385,13 +370,13 @@ static void test_zero_matrix(void** state)
 static void test_identity_like(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     /* Identity-like: diag(1,1,...,1) */
     memset(fix->A, 0, m * n * sizeof(f64));
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         fix->A[i + i * m] = 1.0;
     }
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
@@ -401,7 +386,7 @@ static void test_identity_like(void** state)
     assert_info_success(info);
 
     /* All singular values should be 1 */
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         assert_true(fabs(fix->S[i] - 1.0) < THRESH * dlamch("E"));
     }
 
@@ -417,9 +402,9 @@ static void test_identity_like(void** state)
 static void test_random_wellcond(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     /* Generate random matrix */
     generate_random_matrix(fix->A, m, n, fix->rng_state);
@@ -452,15 +437,15 @@ static void test_random_wellcond(void** state)
 static void test_known_sv(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
     f64 eps = dlamch("E");
 
     /* Specify known singular values */
     f64* sv_known = malloc(minmn * sizeof(f64));
     assert_non_null(sv_known);
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         sv_known[i] = (f64)(minmn - i);  /* minmn, minmn-1, ..., 1 */
     }
 
@@ -473,7 +458,7 @@ static void test_known_sv(void** state)
     assert_info_success(info);
 
     /* Check computed singular values match expected */
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         f64 relerr = fabs(fix->S[i] - sv_known[i]) / sv_known[i];
         assert_true(relerr < THRESH * eps * minmn);
     }
@@ -492,18 +477,18 @@ static void test_known_sv(void** state)
 static void test_rank_deficient(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int rank = minmn / 2;  /* half rank */
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT rank = minmn / 2;  /* half rank */
     if (rank < 1) rank = 1;
-    int info;
+    INT info;
 
     /* Specify singular values with zeros */
     f64* sv_known = malloc(minmn * sizeof(f64));
-    for (int i = 0; i < rank; i++) {
+    for (INT i = 0; i < rank; i++) {
         sv_known[i] = (f64)(rank - i);
     }
-    for (int i = rank; i < minmn; i++) {
+    for (INT i = rank; i < minmn; i++) {
         sv_known[i] = 0.0;
     }
 
@@ -519,7 +504,7 @@ static void test_rank_deficient(void** state)
 
     /* Check that small singular values are indeed small */
     f64 tol = THRESH * dlamch("E") * fix->S[0] * minmn;
-    for (int i = rank; i < minmn; i++) {
+    for (INT i = rank; i < minmn; i++) {
         assert_true(fix->S[i] < tol);
     }
 
@@ -537,9 +522,9 @@ static void test_rank_deficient(void** state)
 static void test_economy_svd(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
@@ -564,9 +549,9 @@ static void test_economy_svd(void** state)
 static void test_sv_only(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     generate_random_matrix(fix->A, m, n, fix->rng_state);
     dlacpy("A", m, n, fix->A, m, fix->Acopy, m);
@@ -589,7 +574,7 @@ static void test_sv_only(void** state)
 
     /* Compare singular values */
     f64 eps = dlamch("E");
-    for (int i = 0; i < minmn; i++) {
+    for (INT i = 0; i < minmn; i++) {
         f64 diff = fabs(fix->S[i] - S2[i]);
         f64 denom = (S2[i] > 0) ? S2[i] : 1.0;
         assert_true(diff / denom < THRESH * eps);
@@ -604,9 +589,9 @@ static void test_sv_only(void** state)
 static void test_overwrite_U(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     /* This test only makes sense when m >= n */
     if (m < n) {
@@ -637,9 +622,9 @@ static void test_overwrite_U(void** state)
 static void test_overwrite_VT(void** state)
 {
     dgesvd_fixture_t* fix = *state;
-    int m = fix->m, n = fix->n;
-    int minmn = (m < n) ? m : n;
-    int info;
+    INT m = fix->m, n = fix->n;
+    INT minmn = (m < n) ? m : n;
+    INT info;
 
     /* This test only makes sense when m <= n */
     if (m > n) {

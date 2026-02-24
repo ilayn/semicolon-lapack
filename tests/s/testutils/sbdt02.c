@@ -7,15 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /**
  * SBDT02 tests the change of basis C = U' * B by computing the
  * residual
@@ -38,16 +31,16 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace array, dimension (m).
  * @param[out]    resid  The test ratio.
  */
-void sbdt02(const int m, const int n,
-            const f32* const restrict B, const int ldb,
-            const f32* const restrict C, const int ldc,
-            const f32* const restrict U, const int ldu,
+void sbdt02(const INT m, const INT n,
+            const f32* const restrict B, const INT ldb,
+            const f32* const restrict C, const INT ldc,
+            const f32* const restrict U, const INT ldu,
             f32* const restrict work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int j;
+    INT j;
     f32 bnorm, eps, realmn;
 
     /* Quick return if possible */

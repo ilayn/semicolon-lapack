@@ -6,8 +6,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_single.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -45,11 +45,11 @@
  * @param[in] BERR   The componentwise backward error. Dimension (nrhs).
  * @param[out] reslts Results array, dimension (2).
  */
-void sgbt05(const char* trans, int n, int kl, int ku, int nrhs,
-            const f32* AB, int ldab,
-            const f32* B, int ldb,
-            const f32* X, int ldx,
-            const f32* XACT, int ldxact,
+void sgbt05(const char* trans, INT n, INT kl, INT ku, INT nrhs,
+            const f32* AB, INT ldab,
+            const f32* B, INT ldb,
+            const f32* X, INT ldx,
+            const f32* XACT, INT ldxact,
             const f32* FERR,
             const f32* BERR,
             f32* reslts)
@@ -67,22 +67,22 @@ void sgbt05(const char* trans, int n, int kl, int ku, int nrhs,
     f32 eps = slamch("Epsilon");
     f32 unfl = slamch("Safe minimum");
     f32 ovfl = ONE / unfl;
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
-    int nz = (kl + ku + 2 < n + 1) ? kl + ku + 2 : n + 1;
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT nz = (kl + ku + 2 < n + 1) ? kl + ku + 2 : n + 1;
 
     /* Test 1: Compute the maximum of
        norm(X - XACT) / (norm(X) * FERR)
        over all the vectors X and XACT using the infinity-norm. */
     f32 errbnd = ZERO;
-    for (int j = 0; j < nrhs; j++) {
-        int imax = cblas_isamax(n, &X[j * ldx], 1);
+    for (INT j = 0; j < nrhs; j++) {
+        INT imax = cblas_isamax(n, &X[j * ldx], 1);
         f32 xnorm = fabsf(X[imax + j * ldx]);
         if (xnorm < unfl) {
             xnorm = unfl;
         }
 
         f32 diff = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 d = fabsf(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) {
                 diff = d;
@@ -112,20 +112,20 @@ void sgbt05(const char* trans, int n, int kl, int ku, int nrhs,
     /* Test 2: Compute the maximum of BERR / (NZ*EPS + (*)), where
        (*) = NZ*UNFL / (min_i (abs(op(A))*abs(X) + abs(b))_i ) */
     reslts[1] = ZERO;
-    for (int k = 0; k < nrhs; k++) {
+    for (INT k = 0; k < nrhs; k++) {
         f32 axbi = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 tmp = fabsf(B[i + k * ldb]);
             if (notran) {
-                int j_start = (i - kl > 0) ? i - kl : 0;
-                int j_end = (i + ku + 1 < n) ? i + ku + 1 : n;
-                for (int j = j_start; j < j_end; j++) {
+                INT j_start = (i - kl > 0) ? i - kl : 0;
+                INT j_end = (i + ku + 1 < n) ? i + ku + 1 : n;
+                for (INT j = j_start; j < j_end; j++) {
                     tmp += fabsf(AB[(ku + i - j) + j * ldab]) * fabsf(X[j + k * ldx]);
                 }
             } else {
-                int j_start = (i - ku > 0) ? i - ku : 0;
-                int j_end = (i + kl + 1 < n) ? i + kl + 1 : n;
-                for (int j = j_start; j < j_end; j++) {
+                INT j_start = (i - ku > 0) ? i - ku : 0;
+                INT j_end = (i + kl + 1 < n) ? i + kl + 1 : n;
+                for (INT j = j_start; j < j_end; j++) {
                     tmp += fabsf(AB[(ku + j - i) + i * ldab]) * fabsf(X[j + k * ldx]);
                 }
             }

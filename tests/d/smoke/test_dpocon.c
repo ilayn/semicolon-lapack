@@ -17,44 +17,27 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* info);
-extern void dpotri(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* info);
-extern void dpocon(const char* uplo, const int n,
-                   const f64* const restrict A, const int lda,
-                   const f64 anorm, f64* rcond,
-                   f64* const restrict work, int* const restrict iwork,
-                   int* info);
-
 /* Utilities */
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64* A;       /* Original matrix */
     f64* AFAC;    /* Factored matrix */
     f64* AINV;    /* Inverse for true condition number */
     f64* d;
     f64* work;
     f64* rwork;
-    int* iwork;
+    INT* iwork;
     uint64_t seed;
 } dpocon_fixture_t;
 
 static uint64_t g_seed = 5400;
 
-static int dpocon_setup(void** state, int n)
+static int dpocon_setup(void** state, INT n)
 {
     dpocon_fixture_t* fix = malloc(sizeof(dpocon_fixture_t));
     assert_non_null(fix);
@@ -69,7 +52,7 @@ static int dpocon_setup(void** state, int n)
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(3 * n * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AFAC);
@@ -106,12 +89,12 @@ static int setup_20(void** state) { return dpocon_setup(state, 20); }
 /**
  * Core test logic: generate matrix, compute true and estimated condition numbers.
  */
-static void run_dpocon_test(dpocon_fixture_t* fix, int imat, const char* uplo)
+static void run_dpocon_test(dpocon_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
-    int info;
+    INT info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
@@ -153,7 +136,7 @@ static void run_dpocon_test(dpocon_fixture_t* fix, int imat, const char* uplo)
 static void test_dpocon_wellcond_upper(void** state)
 {
     dpocon_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dpocon_test(fix, imat, "U");
     }
@@ -162,7 +145,7 @@ static void test_dpocon_wellcond_upper(void** state)
 static void test_dpocon_wellcond_lower(void** state)
 {
     dpocon_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dpocon_test(fix, imat, "L");
     }
@@ -171,7 +154,7 @@ static void test_dpocon_wellcond_lower(void** state)
 static void test_dpocon_illcond_upper(void** state)
 {
     dpocon_fixture_t* fix = *state;
-    for (int imat = 6; imat <= 7; imat++) {
+    for (INT imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
         run_dpocon_test(fix, imat, "U");
     }
@@ -180,7 +163,7 @@ static void test_dpocon_illcond_upper(void** state)
 static void test_dpocon_illcond_lower(void** state)
 {
     dpocon_fixture_t* fix = *state;
-    for (int imat = 6; imat <= 7; imat++) {
+    for (INT imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
         run_dpocon_test(fix, imat, "L");
     }

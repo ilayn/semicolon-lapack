@@ -5,7 +5,7 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -35,9 +35,9 @@
  * @param[out]    resid   The maximum over the number of right hand sides of
  *                        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
-void dpot06(const char* uplo, const int n, const int nrhs,
-            const f64* A, const int lda, const f64* X, const int ldx,
-            f64* B, const int ldb, f64* rwork, f64* resid)
+void dpot06(const char* uplo, const INT n, const INT nrhs,
+            const f64* A, const INT lda, const f64* X, const INT ldx,
+            f64* B, const INT ldb, f64* rwork, f64* resid)
 {
     (void)rwork;  /* unused in this implementation */
 
@@ -58,14 +58,14 @@ void dpot06(const char* uplo, const int n, const int nrhs,
     anorm = 0.0;
     if (uplo[0] == 'U' || uplo[0] == 'u') {
         /* Upper triangular stored */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 row_sum = 0.0;
             /* Elements in column j >= i are stored (upper triangle) */
-            for (int j = 0; j < i; j++) {
+            for (INT j = 0; j < i; j++) {
                 /* A[j,i] is in upper part but corresponds to A[i,j] */
                 row_sum += fabs(A[j + i * lda]);
             }
-            for (int j = i; j < n; j++) {
+            for (INT j = i; j < n; j++) {
                 /* A[i,j] is stored */
                 row_sum += fabs(A[i + j * lda]);
             }
@@ -73,14 +73,14 @@ void dpot06(const char* uplo, const int n, const int nrhs,
         }
     } else {
         /* Lower triangular stored */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 row_sum = 0.0;
             /* Elements in column j <= i are stored (lower triangle) */
-            for (int j = 0; j <= i; j++) {
+            for (INT j = 0; j <= i; j++) {
                 /* A[i,j] is stored */
                 row_sum += fabs(A[i + j * lda]);
             }
-            for (int j = i + 1; j < n; j++) {
+            for (INT j = i + 1; j < n; j++) {
                 /* A[j,i] is in lower part but corresponds to A[i,j] */
                 row_sum += fabs(A[j + i * lda]);
             }
@@ -104,9 +104,9 @@ void dpot06(const char* uplo, const int n, const int nrhs,
     /* Compute the maximum over the number of right hand sides of
        norm(B - A*X) / (norm(A) * norm(X) * eps) */
     *resid = 0.0;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         /* Compute infinity norm of column j of B */
-        int idx = cblas_idamax(n, &B[j * ldb], 1);
+        INT idx = cblas_idamax(n, &B[j * ldb], 1);
         bnorm = fabs(B[idx + j * ldb]);
 
         /* Compute infinity norm of column j of X */

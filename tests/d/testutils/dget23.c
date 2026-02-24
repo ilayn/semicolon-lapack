@@ -6,21 +6,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlapy2(const f64 x, const f64 y);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
-                   const char* sense, const int n, f64* A, const int lda,
-                   f64* wr, f64* wi, f64* VL, const int ldvl,
-                   f64* VR, const int ldvr, int* ilo, int* ihi,
-                   f64* scale, f64* abnrm, f64* rconde, f64* rcondv,
-                   f64* work, const int lwork, int* iwork, int* info);
-
 /**
  * DGET23 checks the nonsymmetric eigenvalue problem driver DGEEVX.
  *
@@ -42,16 +29,16 @@ extern void dgeevx(const char* balanc, const char* jobvl, const char* jobvr,
  *   (10)     |RCONDV - RCDVIN| / cond(RCONDV)
  *   (11)     |RCONDE - RCDEIN| / cond(RCONDE)
  */
-void dget23(const int comp, const char* balanc, const int jtype,
-            const f64 thresh, const int n,
-            f64* A, const int lda, f64* H,
+void dget23(const INT comp, const char* balanc, const INT jtype,
+            const f64 thresh, const INT n,
+            f64* A, const INT lda, f64* H,
             f64* wr, f64* wi, f64* wr1, f64* wi1,
-            f64* VL, const int ldvl, f64* VR, const int ldvr,
-            f64* LRE, const int ldlre,
+            f64* VL, const INT ldvl, f64* VR, const INT ldvr,
+            f64* LRE, const INT ldlre,
             f64* rcondv, f64* rcndv1, const f64* rcdvin,
             f64* rconde, f64* rcnde1, const f64* rcdein,
             f64* scale, f64* scale1, f64* result,
-            f64* work, const int lwork, int* iwork, int* info)
+            f64* work, const INT lwork, INT* iwork, INT* info)
 {
     (void)jtype;
     const f64 ZERO = 0.0;
@@ -59,9 +46,9 @@ void dget23(const int comp, const char* balanc, const int jtype,
     const f64 TWO = 2.0;
     const f64 EPSIN = 5.9605e-8;
 
-    int nobal, balok;
-    int i, j, jj, kmin;
-    int ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
+    INT nobal, balok;
+    INT i, j, jj, kmin;
+    INT ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
     f64 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
     f64 ulp, ulpinv, v, vimin, vmax, vmx, vrmin, vrmx, vtst;
     const char* sens[2] = {"N", "V"};

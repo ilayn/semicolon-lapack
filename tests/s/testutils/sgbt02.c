@@ -6,8 +6,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_single.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -40,10 +40,10 @@
  * @param[out] resid The maximum over NRHS of
  *                   norm(B - op(A)*X) / (norm(op(A)) * norm(X) * EPS).
  */
-void sgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
-            const f32* A, int lda,
-            const f32* X, int ldx,
-            f32* B, int ldb,
+void sgbt02(const char* trans, INT m, INT n, INT kl, INT ku, INT nrhs,
+            const f32* A, INT lda,
+            const f32* X, INT ldx,
+            f32* B, INT ldb,
             f32* rwork,
             f32* resid)
 {
@@ -59,14 +59,14 @@ void sgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
     /* Determine EPS and the norm of A. */
     f32 eps = slamch("Epsilon");
     f32 anorm = ZERO;
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
 
     if (notran) {
         /* Find norm1(A). */
-        int kd = ku;  /* Row index offset for diagonal */
-        for (int j = 0; j < n; j++) {
-            int i1 = (kd + 1 - j - 1 > 0) ? kd + 1 - j - 1 : 0;
-            int i2_excl = (kd + m - j < kl + kd + 1) ? kd + m - j : kl + kd + 1;
+        INT kd = ku;  /* Row index offset for diagonal */
+        for (INT j = 0; j < n; j++) {
+            INT i1 = (kd + 1 - j - 1 > 0) ? kd + 1 - j - 1 : 0;
+            INT i2_excl = (kd + m - j < kl + kd + 1) ? kd + m - j : kl + kd + 1;
             if (i2_excl > i1) {
                 f32 temp = cblas_sasum(i2_excl - i1, &A[i1 + j * lda], 1);
                 if (temp > anorm || isnan(temp)) {
@@ -76,16 +76,16 @@ void sgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
         }
     } else {
         /* Find normI(A). */
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             rwork[i] = ZERO;
         }
-        for (int j = 0; j < n; j++) {
-            int kd = ku - j;
-            for (int i = (j - ku > 0 ? j - ku : 0); i < (j + kl + 1 < m ? j + kl + 1 : m); i++) {
+        for (INT j = 0; j < n; j++) {
+            INT kd = ku - j;
+            for (INT i = (j - ku > 0 ? j - ku : 0); i < (j + kl + 1 < m ? j + kl + 1 : m); i++) {
                 rwork[i] += fabsf(A[(kd + i) + j * lda]);
             }
         }
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             f32 temp = rwork[i];
             if (temp > anorm || isnan(temp)) {
                 anorm = temp;
@@ -99,10 +99,10 @@ void sgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
         return;
     }
 
-    int n1 = notran ? m : n;
+    INT n1 = notran ? m : n;
 
     /* Compute B - op(A)*X */
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         cblas_sgbmv(CblasColMajor,
                    notran ? CblasNoTrans : CblasTrans,
                    m, n, kl, ku,
@@ -114,7 +114,7 @@ void sgbt02(const char* trans, int m, int n, int kl, int ku, int nrhs,
     /* Compute the maximum over the number of right hand sides of
        norm(B - op(A)*X) / (norm(op(A)) * norm(X) * EPS). */
     *resid = ZERO;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         f32 bnorm = cblas_sasum(n1, &B[j * ldb], 1);
         f32 xnorm = cblas_sasum(n1, &X[j * ldx], 1);
         if (xnorm <= ZERO) {

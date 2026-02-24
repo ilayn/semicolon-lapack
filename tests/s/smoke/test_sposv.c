@@ -15,19 +15,15 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void sposv(const char* uplo, const int n, const int nrhs,
-                  f32* const restrict A, const int lda,
-                  f32* const restrict B, const int ldb, int* info);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb;
+    INT n, nrhs;
+    INT lda, ldb;
     f32* A;       /* Original matrix */
     f32* AF;      /* Matrix for factorization (overwritten) */
     f32* B;       /* RHS (overwritten with solution) */
@@ -41,7 +37,7 @@ typedef struct {
 
 static uint64_t g_seed = 5200;
 
-static int dposv_setup(void** state, int n, int nrhs)
+static int dposv_setup(void** state, INT n, INT nrhs)
 {
     dposv_fixture_t* fix = malloc(sizeof(dposv_fixture_t));
     assert_non_null(fix);
@@ -104,12 +100,12 @@ static int setup_20_nrhs5(void** state) { return dposv_setup(state, 20, 5); }
 /**
  * Core test logic: generate matrix, call sposv, verify.
  */
-static f32 run_dposv_test(dposv_fixture_t* fix, int imat, const char* uplo)
+static f32 run_dposv_test(dposv_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
+    INT info;
 
     slatb4("SPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -121,8 +117,8 @@ static f32 run_dposv_test(dposv_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Generate known solution X */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->X[i + j * fix->ldb] = 1.0f + (f32)i / fix->n;
         }
     }
@@ -151,7 +147,7 @@ static f32 run_dposv_test(dposv_fixture_t* fix, int imat, const char* uplo)
 static void test_dposv_wellcond_upper(void** state)
 {
     dposv_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         f32 resid = run_dposv_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -161,7 +157,7 @@ static void test_dposv_wellcond_upper(void** state)
 static void test_dposv_wellcond_lower(void** state)
 {
     dposv_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         f32 resid = run_dposv_test(fix, imat, "L");
         assert_residual_ok(resid);
