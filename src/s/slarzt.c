@@ -49,7 +49,7 @@
  */
 void slarzt(const char* direct, const char* storev,
             const INT n, const INT k,
-            f32* restrict V, const INT ldv,
+            const f32* restrict V, const INT ldv,
             const f32* restrict tau,
             f32* restrict T, const INT ldt)
 {

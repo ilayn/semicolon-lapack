@@ -51,7 +51,7 @@
  */
 void sormr2(const char* side, const char* trans,
             const INT m, const INT n, const INT k,
-            f32* restrict A, const INT lda,
+            const f32* restrict A, const INT lda,
             const f32* restrict tau,
             f32* restrict C, const INT ldc,
             f32* restrict work,

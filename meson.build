@@ -158,6 +158,26 @@ if use_int64
   add_project_arguments('-DLAPACK_NAME(name)=' + symbol_mangling, language: 'c')
 endif
 
+# CBLAS gemmtr availability.
+# The BLAS standard name is cblas_dgemmtr (reference BLAS).  Some older
+# vendors only provide the legacy cblas_dgemmt name.  Our code uses gemmtr;
+# if the linked library only has the old name, alias it.
+if not cc.has_function('cblas_dgemmtr', dependencies: blas_dep)
+  if cc.has_function('cblas_dgemmt', dependencies: blas_dep)
+    message('BLAS provides cblas_dgemmt but not cblas_dgemmtr — adding aliases')
+    add_project_arguments(
+      '-Dcblas_sgemmtr=cblas_sgemmt',
+      '-Dcblas_dgemmtr=cblas_dgemmt',
+      '-Dcblas_cgemmtr=cblas_cgemmt',
+      '-Dcblas_zgemmtr=cblas_zgemmt',
+      language: 'c',
+    )
+  else
+    warning('BLAS provides neither cblas_dgemmtr nor cblas_dgemmt — ' +
+            'routines using gemmtr (dlasyf, slasyf, zlahef, clahef) will fail to link.')
+  endif
+endif
+
 # Common include directories
 inc_pub = include_directories('include')
 inc_src = include_directories('src/include')

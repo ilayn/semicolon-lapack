@@ -68,7 +68,7 @@
  */
 void dormrz(const char* side, const char* trans,
             const INT m, const INT n, const INT k, const INT l,
-            f64* restrict A, const INT lda,
+            const f64* restrict A, const INT lda,
             const f64* restrict tau,
             f64* restrict C, const INT ldc,
             f64* restrict work, const INT lwork,
