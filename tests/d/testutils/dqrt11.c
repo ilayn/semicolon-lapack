@@ -10,17 +10,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dorm2r(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f64* A, const int lda, const f64* tau,
-                   f64* C, const int ldc, f64* work, int* info);
-
 /**
  * DQRT11 computes the test ratio
  *
@@ -48,12 +37,12 @@ extern void dorm2r(const char* side, const char* trans,
  *
  * @return The test ratio || Q'*Q - I || / (eps * m).
  */
-f64 dqrt11(const int m, const int k, const f64* A, const int lda,
-              const f64* tau, f64* work, const int lwork)
+f64 dqrt11(const INT m, const INT k, const f64* A, const INT lda,
+              const f64* tau, f64* work, const INT lwork)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int info, j;
+    INT info, j;
     f64 rdummy[1];
 
     /* Quick return if possible */

@@ -16,36 +16,16 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void sposvx(const char* fact, const char* uplo, const int n, const int nrhs,
-                   f32* const restrict A, const int lda,
-                   f32* const restrict AF, const int ldaf,
-                   char* equed, f32* const restrict S,
-                   f32* const restrict B, const int ldb,
-                   f32* const restrict X, const int ldx,
-                   f32* rcond,
-                   f32* const restrict ferr, f32* const restrict berr,
-                   f32* const restrict work, int* const restrict iwork,
-                   int* info);
-
 /* Utilities */
-extern void spotrf(const char* uplo, const int n, f32* const restrict A,
-                   const int lda, int* info);
-extern void spotri(const char* uplo, const int n, f32* const restrict A,
-                   const int lda, int* info);
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb, ldx;
+    INT n, nrhs;
+    INT lda, ldb, ldx;
     f32* A;       /* Original matrix */
     f32* A_save;  /* Saved copy (sposvx modifies A when FACT='E') */
     f32* AF;      /* Factored matrix */
@@ -59,13 +39,13 @@ typedef struct {
     f32* d;
     f32* work;
     f32* rwork;
-    int* iwork;
+    INT* iwork;
     uint64_t seed;
 } dposvx_fixture_t;
 
 static uint64_t g_seed = 5700;
 
-static int dposvx_setup(void** state, int n, int nrhs)
+static int dposvx_setup(void** state, INT n, INT nrhs)
 {
     dposvx_fixture_t* fix = malloc(sizeof(dposvx_fixture_t));
     assert_non_null(fix);
@@ -90,7 +70,7 @@ static int dposvx_setup(void** state, int n, int nrhs)
     fix->d = malloc(n * sizeof(f32));
     fix->work = malloc(3 * n * sizeof(f32));
     fix->rwork = malloc(n * sizeof(f32));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_save);
@@ -144,12 +124,12 @@ static int setup_20_nrhs2(void** state) { return dposvx_setup(state, 20, 2); }
 /**
  * Core test logic: generate matrix, call sposvx with FACT='N', verify.
  */
-static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
+static void run_dposvx_test_N(dposvx_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm_param, cndnum;
-    int info;
+    INT info;
 
     slatb4("SPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
@@ -164,8 +144,8 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
     memcpy(fix->A_save, fix->A, fix->lda * fix->n * sizeof(f32));
 
     /* Generate exact solution */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->ldb] = 1.0f + (f32)i / fix->n;
         }
     }
@@ -215,7 +195,7 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
         f32* AINV = malloc(fix->lda * fix->n * sizeof(f32));
         assert_non_null(AINV);
         memcpy(AINV, fix->AF, fix->lda * fix->n * sizeof(f32));
-        int info2;
+        INT info2;
         spotri(uplo, fix->n, AINV, fix->lda, &info2);
         if (info2 == 0) {
             f32 anorm_1 = slansy("1", uplo, fix->n, fix->A_save, fix->lda, fix->rwork);
@@ -234,12 +214,12 @@ static void run_dposvx_test_N(dposvx_fixture_t* fix, int imat, const char* uplo)
 /**
  * Test with FACT='E' (equilibrate then factor).
  */
-static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
+static void run_dposvx_test_E(dposvx_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm_param, cndnum;
-    int info;
+    INT info;
 
     slatb4("SPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
@@ -254,8 +234,8 @@ static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
     memcpy(fix->A_save, fix->A, fix->lda * fix->n * sizeof(f32));
 
     /* Generate exact solution */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->ldb] = 1.0f + (f32)i / fix->n;
         }
     }
@@ -291,7 +271,7 @@ static void run_dposvx_test_E(dposvx_fixture_t* fix, int imat, const char* uplo)
 static void test_dposvx_N_wellcond_upper(void** state)
 {
     dposvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dposvx_test_N(fix, imat, "U");
     }
@@ -300,7 +280,7 @@ static void test_dposvx_N_wellcond_upper(void** state)
 static void test_dposvx_N_wellcond_lower(void** state)
 {
     dposvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dposvx_test_N(fix, imat, "L");
     }
@@ -309,7 +289,7 @@ static void test_dposvx_N_wellcond_lower(void** state)
 static void test_dposvx_N_illcond_upper(void** state)
 {
     dposvx_fixture_t* fix = *state;
-    for (int imat = 6; imat <= 7; imat++) {
+    for (INT imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
         run_dposvx_test_N(fix, imat, "U");
     }
@@ -318,7 +298,7 @@ static void test_dposvx_N_illcond_upper(void** state)
 static void test_dposvx_N_illcond_lower(void** state)
 {
     dposvx_fixture_t* fix = *state;
-    for (int imat = 6; imat <= 7; imat++) {
+    for (INT imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
         run_dposvx_test_N(fix, imat, "L");
     }
@@ -327,7 +307,7 @@ static void test_dposvx_N_illcond_lower(void** state)
 static void test_dposvx_E_upper(void** state)
 {
     dposvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dposvx_test_E(fix, imat, "U");
     }
@@ -336,7 +316,7 @@ static void test_dposvx_E_upper(void** state)
 static void test_dposvx_E_lower(void** state)
 {
     dposvx_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dposvx_test_E(fix, imat, "L");
     }

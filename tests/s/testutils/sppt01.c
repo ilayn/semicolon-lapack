@@ -5,14 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slansp(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict AP,
-                     f32* const restrict work);
-
 /**
  * SPPT01 reconstructs a symmetric positive definite packed matrix A
  * from its L*L' or U'*U factorization and computes the residual
@@ -44,13 +38,13 @@ extern f32 slansp(const char* norm, const char* uplo, const int n,
  *          If uplo = 'L', norm(L*L' - A) / ( N * norm(A) * EPS )
  *          If uplo = 'U', norm(U'*U - A) / ( N * norm(A) * EPS )
  */
-void sppt01(const char* uplo, const int n,
+void sppt01(const char* uplo, const INT n,
             const f32* const restrict A,
             f32* const restrict AFAC,
             f32* const restrict rwork,
             f32* resid)
 {
-    int i, k, kc, npp;
+    INT i, k, kc, npp;
     f32 anorm, eps, t;
 
     if (n <= 0) {

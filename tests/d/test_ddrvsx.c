@@ -40,7 +40,6 @@
 #include "verify.h"
 #include "test_rng.h"
 #include "dsx_testdata.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -51,30 +50,22 @@
 #define MAXTYP 21
 
 /* Test dimensions from ded.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* External function declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int n;
-    int jtype;    /* Matrix type (1-21 for random, 22 for precomputed) */
-    int iwk;      /* Workspace variant (1=minimal, 2=generous) */
-    int precomp_idx; /* Index into DSX_PRECOMPUTED (-1 for random) */
+    INT n;
+    INT jtype;    /* Matrix type (1-21 for random, 22 for precomputed) */
+    INT iwk;      /* Workspace variant (1=minimal, 2=generous) */
+    INT precomp_idx; /* Index into DSX_PRECOMPUTED (-1 for random) */
     char name[96];
 } ddrvsx_params_t;
 
 /* Workspace structure for all tests */
 typedef struct {
-    int nmax;
+    INT nmax;
 
     /* Matrices (all nmax x nmax) */
     f64* A;      /* Original matrix */
@@ -93,9 +84,9 @@ typedef struct {
 
     /* Work arrays */
     f64* work;
-    int* iwork;
-    int* bwork;
-    int lwork;
+    INT* iwork;
+    INT* bwork;
+    INT lwork;
 
     /* Test results */
     f64 result[17];
@@ -108,10 +99,10 @@ typedef struct {
 static ddrvsx_workspace_t* g_ws = NULL;
 
 /* Matrix type parameters (from ddrvsx.f DATA statements lines 519-524) */
-static const int KTYPE[MAXTYP]  = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-static const int KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-static const int KMODE[MAXTYP]  = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-static const int KCONDS[MAXTYP] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+static const INT KTYPE[MAXTYP]  = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+static const INT KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+static const INT KMODE[MAXTYP]  = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+static const INT KCONDS[MAXTYP] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
 
 /**
  * Group setup: allocate shared workspace.
@@ -129,8 +120,8 @@ static int group_setup(void** state)
         if (NVAL[i] > g_ws->nmax) g_ws->nmax = NVAL[i];
     }
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     /* Allocate matrices */
     g_ws->A   = malloc(n2 * sizeof(f64));
@@ -152,10 +143,10 @@ static int group_setup(void** state)
     g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
 
     /* IWORK dimension: N*N (dget24.c line 144: liwork = n*n) */
-    g_ws->iwork = malloc(n2 * sizeof(int));
+    g_ws->iwork = malloc(n2 * sizeof(INT));
 
     /* BWORK dimension: N */
-    g_ws->bwork = malloc(nmax * sizeof(int));
+    g_ws->bwork = malloc(nmax * sizeof(INT));
 
     if (!g_ws->A || !g_ws->H || !g_ws->HT || !g_ws->VS || !g_ws->VS1 ||
         !g_ws->wr || !g_ws->wi || !g_ws->wrt || !g_ws->wit ||
@@ -201,13 +192,13 @@ static int group_teardown(void** state)
  *
  * Based on ddrvsx.f lines 630-765.
  */
-static int generate_matrix(int n, int jtype, f64* A, int lda,
-                           f64* work, int* iwork, uint64_t state[static 4])
+static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
+                           f64* work, INT* iwork, uint64_t state[static 4])
 {
-    int itype = KTYPE[jtype - 1];
-    int imode = KMODE[jtype - 1];
+    INT itype = KTYPE[jtype - 1];
+    INT imode = KMODE[jtype - 1];
     f64 anorm, cond, conds;
-    int iinfo = 0;
+    INT iinfo = 0;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -230,12 +221,12 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
         iinfo = 0;
 
     } else if (itype == 2) {
-        for (int jcol = 0; jcol < n; jcol++) {
+        for (INT jcol = 0; jcol < n; jcol++) {
             A[jcol + jcol * lda] = anorm;
         }
 
     } else if (itype == 3) {
-        for (int jcol = 0; jcol < n; jcol++) {
+        for (INT jcol = 0; jcol < n; jcol++) {
             A[jcol + jcol * lda] = anorm;
             if (jcol > 0) {
                 A[jcol + (jcol - 1) * lda] = 1.0;
@@ -265,21 +256,21 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
                n, n, anorm, A, lda, work + 2 * n, &iinfo, state);
 
     } else if (itype == 7) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, 0, 0, 0.0, anorm, "NO",
                A, lda, iwork, &iinfo, state);
 
     } else if (itype == 8) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, n, 0.0, anorm, "NO",
                A, lda, iwork, &iinfo, state);
 
     } else if (itype == 9) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "N", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, n, 0.0, anorm, "NO",
@@ -293,7 +284,7 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
         }
 
     } else if (itype == 10) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "N", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, 0, 0.0, anorm, "NO",
@@ -313,13 +304,13 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
  */
 static void run_ddrvsx_random(ddrvsx_params_t* params)
 {
-    int n = params->n;
-    int jtype = params->jtype;
-    int iwk = params->iwk;
+    INT n = params->n;
+    INT jtype = params->jtype;
+    INT iwk = params->iwk;
 
     ddrvsx_workspace_t* ws = g_ws;
-    int lda = ws->nmax;
-    int ldvs = ws->nmax;
+    INT lda = ws->nmax;
+    INT ldvs = ws->nmax;
 
     f64* A = ws->A;
     f64* H = ws->H;
@@ -333,13 +324,13 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
     f64* wrtmp = ws->wrtmp;
     f64* witmp = ws->witmp;
     f64* work = ws->work;
-    int* iwork = ws->iwork;
-    int* bwork = ws->bwork;
+    INT* iwork = ws->iwork;
+    INT* bwork = ws->bwork;
     f64* result = ws->result;
 
     f64 ulpinv = 1.0 / dlamch("P");
 
-    for (int j = 0; j < 17; j++) {
+    for (INT j = 0; j < 17; j++) {
         result[j] = -1.0;
     }
 
@@ -348,7 +339,7 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
     }
 
     /* Generate matrix */
-    int iinfo = generate_matrix(n, jtype, A, lda, work, iwork, ws->rng_state);
+    INT iinfo = generate_matrix(n, jtype, A, lda, work, iwork, ws->rng_state);
     if (iinfo != 0) {
         result[0] = ulpinv;
         print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
@@ -358,7 +349,7 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
     }
 
     /* Determine workspace size (ddrvsx.f lines 778-784) */
-    int nnwork;
+    INT nnwork;
     if (iwk == 1) {
         nnwork = 3 * n;
     } else {
@@ -368,8 +359,8 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
     if (nnwork < 1) nnwork = 1;
 
     /* Call dget24 with COMP=0 (ddrvsx.f lines 786-790) */
-    int info = 0;
-    int any_fail = 0;
+    INT info = 0;
+    INT any_fail = 0;
 
     dget24(0, jtype, THRESH, n, A, lda, H, HT,
            wr, wi, wrt, wit, wrtmp, witmp,
@@ -379,7 +370,7 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
            result, work, nnwork, iwork, bwork, &info);
 
     /* Check for RESULT(j) > THRESH (ddrvsx.f lines 796-820) */
-    for (int j = 0; j < 15; j++) {
+    for (INT j = 0; j < 15; j++) {
         if (result[j] >= 0.0 && result[j] >= THRESH) {
             print_message("N=%d, IWK=%d, type %d, test(%d)=%g\n",
                           n, iwk, jtype, j + 1, result[j]);
@@ -397,11 +388,11 @@ static void run_ddrvsx_random(ddrvsx_params_t* params)
  */
 static void run_ddrvsx_precomp(ddrvsx_params_t* params)
 {
-    int idx = params->precomp_idx;
+    INT idx = params->precomp_idx;
 
     ddrvsx_workspace_t* ws = g_ws;
-    int lda = ws->nmax;
-    int ldvs = ws->nmax;
+    INT lda = ws->nmax;
+    INT ldvs = ws->nmax;
 
     f64* A = ws->A;
     f64* H = ws->H;
@@ -415,26 +406,26 @@ static void run_ddrvsx_precomp(ddrvsx_params_t* params)
     f64* wrtmp = ws->wrtmp;
     f64* witmp = ws->witmp;
     f64* work = ws->work;
-    int* iwork = ws->iwork;
-    int* bwork = ws->bwork;
+    INT* iwork = ws->iwork;
+    INT* bwork = ws->bwork;
     f64* result = ws->result;
 
     const dsx_precomputed_t* pc = &DSX_PRECOMPUTED[idx];
-    int n = pc->n;
+    INT n = pc->n;
 
-    for (int j = 0; j < 17; j++) {
+    for (INT j = 0; j < 17; j++) {
         result[j] = -1.0;
     }
 
     /* Copy precomputed matrix into workspace A with proper leading dimension */
     dlaset("F", lda, n, 0.0, 0.0, A, lda);
-    for (int col = 0; col < n; col++) {
-        for (int row = 0; row < n; row++) {
+    for (INT col = 0; col < n; col++) {
+        for (INT row = 0; row < n; row++) {
             A[row + col * lda] = pc->A[row + col * n];
         }
     }
 
-    int info = 0;
+    INT info = 0;
 
     /* Call dget24 with COMP=1 (ddrvsx.f lines 848-851) */
     dget24(1, 22, THRESH, n, A, lda, H, HT,
@@ -445,8 +436,8 @@ static void run_ddrvsx_precomp(ddrvsx_params_t* params)
            result, work, ws->lwork, iwork, bwork, &info);
 
     /* Check for RESULT(j) > THRESH (ddrvsx.f lines 855-879) */
-    int any_fail = 0;
-    for (int j = 0; j < 17; j++) {
+    INT any_fail = 0;
+    for (INT j = 0; j < 17; j++) {
         if (result[j] >= 0.0 && result[j] >= THRESH) {
             print_message("N=%d, input example=%d, test(%d)=%g\n",
                           n, idx + 1, j + 1, result[j]);
@@ -484,7 +475,7 @@ static void test_ddrvsx_precomp_case(void** state)
 
 static ddrvsx_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -495,10 +486,10 @@ static void build_test_array(void)
 
     /* Random tests: n x jtype x iwk */
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
+        INT n = NVAL[in];
 
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
-            for (int iwk = 1; iwk <= 2; iwk++) {
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+            for (INT iwk = 1; iwk <= 2; iwk++) {
                 ddrvsx_params_t* p = &g_params[g_num_tests];
                 p->n = n;
                 p->jtype = jtype;
@@ -519,7 +510,7 @@ static void build_test_array(void)
     }
 
     /* Precomputed tests */
-    for (int idx = 0; idx < DSX_NUM_PRECOMPUTED; idx++) {
+    for (INT idx = 0; idx < DSX_NUM_PRECOMPUTED; idx++) {
         ddrvsx_params_t* p = &g_params[g_num_tests];
         p->n = DSX_PRECOMPUTED[idx].n;
         p->jtype = 22;

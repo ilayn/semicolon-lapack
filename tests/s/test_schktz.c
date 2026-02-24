@@ -18,14 +18,13 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -35,42 +34,16 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NMAX    50
 
 /* Routines under test */
-extern void stzrzf(const int m, const int n, f32* A, const int lda,
-                   f32* tau, f32* work, const int lwork, int* info);
-extern void sgeqr2(const int m, const int n, f32* A, const int lda,
-                   f32* tau, f32* work, int* info);
-
 /* Verification routines */
-extern f32 sqrt12(const int m, const int n, const f32* A, const int lda,
-                     const f32* S, f32* work, const int lwork);
-extern f32 srzt01(const int m, const int n, const f32* A, const f32* AF,
-                     const int lda, const f32* tau, f32* work, const int lwork);
-extern f32 srzt02(const int m, const int n, const f32* AF, const int lda,
-                     const f32* tau, f32* work, const int lwork);
-
 /* Matrix generation */
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slaord(const char* job, const int n, f32* X, const int incx);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern f32 slamch(const char* cmach);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int imode;
+    INT m;
+    INT n;
+    INT imode;
     char name[64];
 } dchktz_params_t;
 
@@ -97,7 +70,7 @@ static int group_setup(void** state)
     if (!g_workspace) return -1;
 
     /* Workspace size: n*n + 4*m + n + m*n + 2*min(m,n) + 4*n */
-    int lwork = NMAX * NMAX * 2 + 10 * NMAX;
+    INT lwork = NMAX * NMAX * 2 + 10 * NMAX;
 
     g_workspace->A = malloc(NMAX * NMAX * sizeof(f32));
     g_workspace->COPYA = malloc(NMAX * NMAX * sizeof(f32));
@@ -139,16 +112,16 @@ static int group_teardown(void** state)
  *   1: one small singular value
  *   2: exponential distribution of singular values
  */
-static void run_dchktz_single(int m, int n, int imode)
+static void run_dchktz_single(INT m, INT n, INT imode)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     dchktz_workspace_t* ws = g_workspace;
 
-    int info;
-    int lda = (m > 1) ? m : 1;
-    int lwork = NMAX * NMAX * 2 + 10 * NMAX;
-    int mnmin = (m < n) ? m : n;
+    INT info;
+    INT lda = (m > 1) ? m : 1;
+    INT lwork = NMAX * NMAX * 2 + 10 * NMAX;
+    INT mnmin = (m < n) ? m : n;
     f32 eps = slamch("E");
     f32 result[NTESTS];
     char ctx[128];
@@ -158,16 +131,16 @@ static void run_dchktz_single(int m, int n, int imode)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imode));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
     /* Generate test matrix based on MODE */
-    int mode = imode;  /* 0, 1, or 2 */
+    INT mode = imode;  /* 0, 1, or 2 */
     if (mode == 0) {
         /* Zero matrix */
         slaset("F", m, n, ZERO, ZERO, ws->A, lda);
-        for (int i = 0; i < mnmin; i++) {
+        for (INT i = 0; i < mnmin; i++) {
             ws->S[i] = ZERO;
         }
     } else {
@@ -235,7 +208,7 @@ static void test_dchktz_case(void** state)
 
 static dchktz_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -244,18 +217,18 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
 
             /* STZRZF only applies when M <= N (underdetermined systems) */
             if (m > n) {
                 continue;
             }
 
-            for (int imode = 0; imode < NTYPES; imode++) {
+            for (INT imode = 0; imode < NTYPES; imode++) {
                 dchktz_params_t* p = &g_params[g_num_tests];
                 p->m = m;
                 p->n = n;

@@ -19,56 +19,14 @@
 #include "verify.h"
 
 /* Routine under test */
-extern void dgtsvx(const char *fact, const char *trans, const int n, const int nrhs,
-                   const f64 * const restrict DL,
-                   const f64 * const restrict D,
-                   const f64 * const restrict DU,
-                   f64 * const restrict DLF,
-                   f64 * const restrict DF,
-                   f64 * const restrict DUF,
-                   f64 * const restrict DU2,
-                   int * const restrict ipiv,
-                   const f64 * const restrict B, const int ldb,
-                   f64 * const restrict X, const int ldx,
-                   f64 *rcond,
-                   f64 * const restrict ferr, f64 * const restrict berr,
-                   f64 * const restrict work, int * const restrict iwork,
-                   int *info);
-
 /* For factored form testing */
-extern void dgttrf(const int n, f64 * const restrict DL,
-                   f64 * const restrict D, f64 * const restrict DU,
-                   f64 * const restrict DU2, int * const restrict ipiv,
-                   int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-extern f64 dlangt(const char *norm, const int n,
-                     const f64 * const restrict DL,
-                     const f64 * const restrict D,
-                     const f64 * const restrict DU);
-extern void dlagtm(const char *trans, const int n, const int nrhs,
-                   const f64 alpha,
-                   const f64 * const restrict DL,
-                   const f64 * const restrict D,
-                   const f64 * const restrict DU,
-                   const f64 * const restrict X, const int ldx,
-                   const f64 beta,
-                   f64 * const restrict B, const int ldb);
-extern void dgttrs(const char *trans, const int n, const int nrhs,
-                   const f64 * const restrict DL,
-                   const f64 * const restrict D,
-                   const f64 * const restrict DU,
-                   const f64 * const restrict DU2,
-                   const int * const restrict ipiv,
-                   f64 * const restrict B, const int ldb, int *info);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n, nrhs;
-    int ldb;
+    INT n, nrhs;
+    INT ldb;
     f64 *DL;      /* Original sub-diagonal */
     f64 *D;       /* Original diagonal */
     f64 *DU;      /* Original super-diagonal */
@@ -76,7 +34,7 @@ typedef struct {
     f64 *DF;      /* Factored diagonal */
     f64 *DUF;     /* Factored super-diagonal */
     f64 *DU2;     /* Second super-diagonal from factorization */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f64 *XACT;    /* Exact solution */
     f64 *X;       /* Computed solution */
     f64 *B;       /* Right-hand side */
@@ -84,7 +42,7 @@ typedef struct {
     f64 *ferr;    /* Forward error estimates */
     f64 *berr;    /* Backward error estimates */
     f64 *work;    /* Workspace */
-    int *iwork;      /* Integer workspace */
+    INT* iwork;      /* Integer workspace */
     f64 *AINV;    /* Workspace for explicit inverse computation */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
@@ -96,13 +54,13 @@ static uint64_t g_seed = 1618;
 /**
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
+static void generate_gt_matrix(INT n, INT imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int i;
+    INT i;
 
     if (n <= 0) return;
 
@@ -132,15 +90,15 @@ static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
 /**
  * Compute the actual reciprocal condition number by explicit inversion.
  */
-static f64 compute_true_rcond(int n, char norm_char,
+static f64 compute_true_rcond(INT n, char norm_char,
                                  const f64 *DLF, const f64 *DF,
                                  const f64 *DUF, const f64 *DU2,
-                                 const int *ipiv, f64 anorm,
+                                 const INT* ipiv, f64 anorm,
                                  f64 *AINV)
 {
-    int i, j, info;
+    INT i, j, info;
     f64 ainvnm = 0.0;
-    int ldb = (n > 1) ? n : 1;
+    INT ldb = (n > 1) ? n : 1;
 
     /* Compute inverse by solving A * X = I */
     for (j = 0; j < n; j++) {
@@ -178,13 +136,13 @@ static f64 compute_true_rcond(int n, char norm_char,
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgtsvx_setup(void **state, int n, int nrhs)
+static int dgtsvx_setup(void **state, INT n, INT nrhs)
 {
     dgtsvx_fixture_t *fix = malloc(sizeof(dgtsvx_fixture_t));
     assert_non_null(fix);
 
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = (n > 1) ? n : 1;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = (n > 1) ? n : 1;
 
     fix->n = n;
     fix->nrhs = nrhs;
@@ -199,7 +157,7 @@ static int dgtsvx_setup(void **state, int n, int nrhs)
     fix->DF = malloc(n * sizeof(f64));
     fix->DUF = malloc((m > 0 ? m : 1) * sizeof(f64));
     fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->XACT = malloc(ldb * nrhs * sizeof(f64));
     fix->X = malloc(ldb * nrhs * sizeof(f64));
     fix->B = malloc(ldb * nrhs * sizeof(f64));
@@ -207,7 +165,7 @@ static int dgtsvx_setup(void **state, int n, int nrhs)
     fix->ferr = malloc(nrhs * sizeof(f64));
     fix->berr = malloc(nrhs * sizeof(f64));
     fix->work = malloc(3 * n * sizeof(f64));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
     fix->AINV = malloc(n * n * sizeof(f64));
 
     assert_non_null(fix->DL);
@@ -289,23 +247,23 @@ typedef struct {
     f64 rcond_ratio;   /* dget06: condition number ratio */
     f64 ferr_resid;    /* dgtt05[0]: forward error bound */
     f64 berr_resid;    /* dgtt05[1]: backward error bound */
-    int singular;         /* 1 if matrix was singular */
+    INT singular;         /* 1 if matrix was singular */
 } dgtsvx_result_t;
 
 /**
  * Core test logic: generate matrix, call dgtsvx, verify all results.
  */
-static dgtsvx_result_t run_dgtsvx_test(dgtsvx_fixture_t *fix, int imat,
+static dgtsvx_result_t run_dgtsvx_test(dgtsvx_fixture_t *fix, INT imat,
                                         const char* trans, const char* fact)
 {
     dgtsvx_result_t result = {0.0, 0.0, 0.0, 0.0, 0};
-    int info;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = fix->ldb;
-    int ldx = ldb;
-    int i, j;
+    INT info;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = fix->ldb;
+    INT ldx = ldb;
+    INT i, j;
     f64 rcond;
 
     /* Generate test matrix */
@@ -361,7 +319,7 @@ static dgtsvx_result_t run_dgtsvx_test(dgtsvx_fixture_t *fix, int imat,
            fix->B_copy, ldb, &result.solve_resid);
 
     /* Test 2: Condition number estimate */
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
     f64 anorm = notran ? dlangt("1", n, fix->DL, fix->D, fix->DU)
                           : dlangt("I", n, fix->DL, fix->D, fix->DU);
     f64 rcondc = compute_true_rcond(n, notran ? '1' : 'I', fix->DLF, fix->DF,
@@ -390,7 +348,7 @@ static void test_dgtsvx_factN_notrans(void **state)
 {
     dgtsvx_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         dgtsvx_result_t r = run_dgtsvx_test(fix, imat, "N", "N");
@@ -410,7 +368,7 @@ static void test_dgtsvx_factN_trans(void **state)
 {
     dgtsvx_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         dgtsvx_result_t r = run_dgtsvx_test(fix, imat, "T", "N");
@@ -430,7 +388,7 @@ static void test_dgtsvx_factF_notrans(void **state)
 {
     dgtsvx_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         dgtsvx_result_t r = run_dgtsvx_test(fix, imat, "N", "F");
@@ -450,7 +408,7 @@ static void test_dgtsvx_factF_trans(void **state)
 {
     dgtsvx_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         dgtsvx_result_t r = run_dgtsvx_test(fix, imat, "T", "F");

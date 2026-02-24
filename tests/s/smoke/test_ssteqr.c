@@ -20,34 +20,20 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
-
 /* Routine under test */
-extern void ssteqr(const char* compz, const int n, f32* D, f32* E,
-                   f32* Z, const int ldz, f32* work, int* info);
-
 /* Verification routines */
-extern void sstt21(const int n, const int kband,
-                   const f32* AD, const f32* AE,
-                   const f32* SD, const f32* SE,
-                   const f32* U, const int ldu,
-                   f32* work, f32* result);
-extern void sstech(const int n, const f32* A, const f32* B,
-                   const f32* eig, const f32 tol, f32* work, int* info);
-
 /* Utilities */
-extern f32 slamch(const char* cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int n;
+    INT n;
     f32* AD;         /* original diagonal (preserved) */
     f32* AE;         /* original off-diagonal (preserved) */
     f32* D;          /* diagonal for ssteqr (overwritten) */
@@ -67,7 +53,7 @@ static uint64_t g_seed = 2024;
  * Setup fixture: allocate memory for given dimension.
  * Called before each test function.
  */
-static int dsteqr_setup(void** state, int n)
+static int dsteqr_setup(void** state, INT n)
 {
     dsteqr_fixture_t* fix = malloc(sizeof(dsteqr_fixture_t));
     assert_non_null(fix);
@@ -75,10 +61,10 @@ static int dsteqr_setup(void** state, int n)
     fix->n = n;
     fix->seed = g_seed++;
 
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
-    int work_steqr = (n > 2) ? 2 * (n - 1) : 1;
-    int work_stt21 = (n > 0) ? n * (n + 1) : 1;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
+    INT work_steqr = (n > 2) ? 2 * (n - 1) : 1;
+    INT work_stt21 = (n > 0) ? n * (n + 1) : 1;
 
     fix->AD = malloc(n_alloc * sizeof(f32));
     fix->AE = malloc(e_alloc * sizeof(f32));
@@ -140,10 +126,10 @@ static int setup_50(void** state) { return dsteqr_setup(state, 50); }
  * @param E     Off-diagonal array (length n-1)
  * @param seed  RNG seed (used for types 5-6)
  */
-static void generate_steqr_matrix(int n, int imat, f32* D, f32* E,
+static void generate_steqr_matrix(INT n, INT imat, f32* D, f32* E,
                                    uint64_t state[static 4])
 {
-    int i;
+    INT i;
 
     switch (imat) {
     case 1:
@@ -205,10 +191,10 @@ static void generate_steqr_matrix(int n, int imat, f32* D, f32* E,
 static void test_compz_I(void** state)
 {
     dsteqr_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
 
-    for (int imat = 1; imat <= 7; imat++) {
+    for (INT imat = 1; imat <= 7; imat++) {
         fix->seed = g_seed++;
 
         /* Generate test matrix */
@@ -243,19 +229,19 @@ static void test_compz_I(void** state)
 static void test_compz_N(void** state)
 {
     dsteqr_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
     f32 ulp = slamch("E");
 
     /* Allocate temporary arrays for the COMPZ='I' computation */
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
     f32* D_I = malloc(n_alloc * sizeof(f32));
     f32* E_I = malloc(e_alloc * sizeof(f32));
     assert_non_null(D_I);
     assert_non_null(E_I);
 
-    for (int imat = 1; imat <= 7; imat++) {
+    for (INT imat = 1; imat <= 7; imat++) {
         fix->seed = g_seed++;
 
         /* Generate test matrix */
@@ -283,13 +269,13 @@ static void test_compz_N(void** state)
         /* Compare eigenvalues: both should be sorted, so direct comparison.
          * Compute max|D_N[i] - D_I[i]| / (n * max|D_I| * ulp) */
         f32 max_eig = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 a = fabsf(D_I[i]);
             if (a > max_eig) max_eig = a;
         }
 
         f32 max_diff = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 d = fabsf(fix->D[i] - D_I[i]);
             if (d > max_diff) max_diff = d;
         }
@@ -312,15 +298,15 @@ static void test_compz_N(void** state)
 static void test_sturm(void** state)
 {
     dsteqr_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
 
     /* Allocate workspace for sstech: length n */
-    int n_alloc = (n > 0) ? n : 1;
+    INT n_alloc = (n > 0) ? n : 1;
     f32* stech_work = malloc(n_alloc * sizeof(f32));
     assert_non_null(stech_work);
 
-    for (int imat = 1; imat <= 7; imat++) {
+    for (INT imat = 1; imat <= 7; imat++) {
         fix->seed = g_seed++;
 
         /* Generate test matrix */

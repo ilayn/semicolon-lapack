@@ -6,33 +6,21 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slansp(const char* norm, const char* uplo, const int n,
-                     const f32* AP, f32* work);
-extern f32 slansb(const char* norm, const char* uplo, const int n,
-                     const int k, const f32* AB, const int ldab, f32* work);
-extern f32 slangb(const char* norm, const int n, const int kl, const int ku,
-                     const f32* AB, const int ldab, f32* work);
 
 /* Local helper: case-insensitive character comparison */
-static int lsame(char c1, char c2) {
+static INT lsame(char c1, char c2) {
     if (c1 == c2) return 1;
     if (c1 >= 'a' && c1 <= 'z') c1 = c1 - 'a' + 'A';
     if (c2 >= 'a' && c2 <= 'z') c2 = c2 - 'a' + 'A';
     return (c1 == c2);
 }
 
-static int min_int(int a, int b) { return (a < b) ? a : b; }
-static int max_int(int a, int b) { return (a > b) ? a : b; }
+static INT min_int(INT a, INT b) { return (a < b) ? a : b; }
+static INT max_int(INT a, INT b) { return (a > b) ? a : b; }
 static f32 max_dbl(f32 a, f32 b) { return (a > b) ? a : b; }
 
 /**
@@ -40,42 +28,42 @@ static f32 max_dbl(f32 a, f32 b) { return (a > b) ? a : b; }
  * LAPACK programs.
  */
 void slatmr(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const char* dist,
     const char* sym,
     f32* d,
-    const int mode,
+    const INT mode,
     const f32 cond,
     const f32 dmax,
     const char* rsign,
     const char* grade,
     f32* dl,
-    const int model,
+    const INT model,
     const f32 condl,
     f32* dr,
-    const int moder,
+    const INT moder,
     const f32 condr,
     const char* pivtng,
-    const int* ipivot,
-    const int kl,
-    const int ku,
+    const INT* ipivot,
+    const INT kl,
+    const INT ku,
     const f32 sparse,
     const f32 anorm,
     const char* pack,
     f32* A,
-    const int lda,
-    int* iwork,
-    int* info,
+    const INT lda,
+    INT* iwork,
+    INT* info,
     uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int badpvt, dzero, fulbnd;
-    int i, idist, igrade, iisub, ipack, ipvtng, irsign;
-    int isub, isym, j, jjsub, jsub, k, kll, kuu, mnmin;
-    int mnsub, mxsub, npvts;
+    INT badpvt, dzero, fulbnd;
+    INT i, idist, igrade, iisub, ipack, ipvtng, irsign;
+    INT isub, isym, j, jjsub, jsub, k, kll, kuu, mnmin;
+    INT mnsub, mxsub, npvts;
     f32 alpha, onorm, temp;
     f32 tempa[1];
 

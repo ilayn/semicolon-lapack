@@ -3,13 +3,9 @@
  * @brief SGET52 does an eigenvector check for the generalized eigenvalue problem.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
 
 /**
  * SGET52 does an eigenvector check for the generalized eigenvalue
@@ -49,10 +45,10 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work    Workspace, dimension (n*n + n).
  * @param[out]    result  Array of dimension (2). Test results.
  */
-void sget52(const int left, const int n,
-            const f32* A, const int lda,
-            const f32* B, const int ldb,
-            const f32* E, const int lde,
+void sget52(const INT left, const INT n,
+            const f32* A, const INT lda,
+            const f32* B, const INT ldb,
+            const f32* E, const INT lde,
             const f32* alphar, const f32* alphai, const f32* beta,
             f32* work, f32* result)
 {
@@ -85,8 +81,8 @@ void sget52(const int left, const int n,
     f32 alfmax = safmax / fmaxf(ONE, bnorm);
     f32 betmax = safmax / fmaxf(ONE, anorm);
 
-    int ilcplx = 0;
-    for (int jvec = 0; jvec < n; jvec++) {
+    INT ilcplx = 0;
+    for (INT jvec = 0; jvec < n; jvec++) {
         if (ilcplx) {
             ilcplx = 0;
         } else {
@@ -166,19 +162,19 @@ void sget52(const int left, const int n,
     /* Normalization of E */
     f32 enrmer = ZERO;
     ilcplx = 0;
-    for (int jvec = 0; jvec < n; jvec++) {
+    for (INT jvec = 0; jvec < n; jvec++) {
         if (ilcplx) {
             ilcplx = 0;
         } else {
             f32 temp1 = ZERO;
             if (alphai[jvec] == ZERO) {
-                for (int j = 0; j < n; j++) {
+                for (INT j = 0; j < n; j++) {
                     temp1 = fmaxf(temp1, fabsf(E[j + lde * jvec]));
                 }
                 enrmer = fmaxf(enrmer, fabsf(temp1 - ONE));
             } else {
                 ilcplx = 1;
-                for (int j = 0; j < n; j++) {
+                for (INT j = 0; j < n; j++) {
                     temp1 = fmaxf(temp1, fabsf(E[j + lde * jvec]) +
                                        fabsf(E[j + lde * (jvec + 1)]));
                 }

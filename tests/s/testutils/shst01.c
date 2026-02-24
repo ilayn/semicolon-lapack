@@ -3,16 +3,9 @@
  * @brief SHST01 tests the reduction of a general matrix A to upper Hessenberg form.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
 
 /**
  * SHST01 tests the reduction of a general matrix A to upper Hessenberg
@@ -43,16 +36,16 @@ extern void slacpy(const char* uplo, const int m, const int n,
  * @param[in] lwork   The length of work. lwork >= 2*n*n.
  * @param[out] result Array of 2 elements containing the test ratios.
  */
-void shst01(const int n, const int ilo, const int ihi,
-            const f32* A, const int lda,
-            const f32* H, const int ldh,
-            const f32* Q, const int ldq,
-            f32* work, const int lwork, f32* result)
+void shst01(const INT n, const INT ilo, const INT ihi,
+            const f32* A, const INT lda,
+            const f32* H, const INT ldh,
+            const f32* Q, const INT ldq,
+            f32* work, const INT lwork, f32* result)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
 
-    int ldwork;
+    INT ldwork;
     f32 anorm, eps, smlnum, unfl, wnorm;
 
     /* Silence unused parameter warnings */

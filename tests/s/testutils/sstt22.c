@@ -7,18 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /**
  * SSTT22 checks a set of M eigenvalues and eigenvectors,
  *
@@ -45,17 +35,17 @@ extern f32 slansy(const char* norm, const char* uplo, const int n,
  * @param[in]     ldwork  Leading dimension of work. ldwork >= max(1, m).
  * @param[out]    result  Array of dimension (2). The two test ratios.
  */
-void sstt22(const int n, const int m, const int kband,
+void sstt22(const INT n, const INT m, const INT kband,
             const f32* const restrict AD, const f32* const restrict AE,
             const f32* const restrict SD, const f32* const restrict SE,
-            const f32* const restrict U, const int ldu,
-            f32* const restrict work, const int ldwork,
+            const f32* const restrict U, const INT ldu,
+            f32* const restrict work, const INT ldwork,
             f32* restrict result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, k;
+    INT i, j, k;
     f32 anorm, aukj, ulp, unfl, wnorm;
 
     result[0] = ZERO;

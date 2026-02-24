@@ -18,37 +18,22 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void ssytrf(const char* uplo, const int n, f32* restrict A,
-                   const int lda, int* restrict ipiv, f32* restrict work,
-                   const int lwork, int* info);
-extern void ssytrs(const char* uplo, const int n, const int nrhs,
-                   const f32* const restrict A, const int lda,
-                   const int* const restrict ipiv,
-                   f32* const restrict B, const int ldb, int* info);
-
 /* Norm routines */
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* restrict A, const int lda,
-                     f32* restrict work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* restrict A, const int lda,
-                     f32* restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda;
+    INT n, nrhs;
+    INT lda;
     f32* A;       /* Original matrix */
     f32* AFAC;    /* Factored matrix */
     f32* B;       /* RHS (overwritten with solution) */
     f32* X;       /* Computed solution (copy of B after solve) */
     f32* XACT;    /* Known exact solution */
-    int* ipiv;       /* Pivot indices from ssytrf */
+    INT* ipiv;       /* Pivot indices from ssytrf */
     f32* d;       /* Singular values for slatms */
     f32* work;    /* Workspace for slatms and ssytrf */
     f32* rwork;   /* Workspace for norm computations */
@@ -57,7 +42,7 @@ typedef struct {
 
 static uint64_t g_seed = 7100;
 
-static int dsytrs_setup(void** state, int n, int nrhs)
+static int dsytrs_setup(void** state, INT n, INT nrhs)
 {
     dsytrs_fixture_t* fix = malloc(sizeof(dsytrs_fixture_t));
     assert_non_null(fix);
@@ -67,14 +52,14 @@ static int dsytrs_setup(void** state, int n, int nrhs)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    int lwork = n * 64;  /* NB=64 for SYTRF from lapack_tuning.h */
+    INT lwork = n * 64;  /* NB=64 for SYTRF from lapack_tuning.h */
 
     fix->A = malloc(fix->lda * n * sizeof(f32));
     fix->AFAC = malloc(fix->lda * n * sizeof(f32));
     fix->B = malloc(n * nrhs * sizeof(f32));
     fix->X = malloc(n * nrhs * sizeof(f32));
     fix->XACT = malloc(n * nrhs * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->d = malloc(n * sizeof(f32));
     fix->work = malloc((3 * n > lwork ? 3 * n : lwork) * sizeof(f32));
     fix->rwork = malloc(n * sizeof(f32));
@@ -127,16 +112,16 @@ static int setup_50_nrhs5(void** state) { return dsytrs_setup(state, 50, 5); }
  * Core test logic: generate symmetric matrix, factorize with ssytrf,
  * solve with ssytrs, verify residual.
  */
-static f32 run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
+static f32 run_dsytrs_test(dsytrs_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
-    int lda = fix->lda;
-    int lwork = n * 64;
+    INT info;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
+    INT lda = fix->lda;
+    INT lwork = n * 64;
 
     /* Get matrix parameters for symmetric indefinite */
     slatb4("SSY", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -150,8 +135,8 @@ static f32 run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
     assert_int_equal(info, 0);
 
     /* Generate known exact solution XACT */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             fix->XACT[i + j * n] = 1.0f + (f32)i / n;
         }
     }
@@ -216,7 +201,7 @@ static f32 run_dsytrs_test(dsytrs_fixture_t* fix, int imat, const char* uplo)
 static void test_dsytrs_wellcond_upper(void** state)
 {
     dsytrs_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         f32 resid = run_dsytrs_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -229,7 +214,7 @@ static void test_dsytrs_wellcond_upper(void** state)
 static void test_dsytrs_wellcond_lower(void** state)
 {
     dsytrs_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         f32 resid = run_dsytrs_test(fix, imat, "L");
         assert_residual_ok(resid);

@@ -14,36 +14,26 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 /* Routines under test */
-extern void dgetrf(const int m, const int n, f64 * const restrict A,
-                   const int lda, int * const restrict ipiv, int *info);
-extern void dgetri(const int n, f64 * const restrict A, const int lda,
-                   const int * const restrict ipiv, f64 * const restrict work,
-                   const int lwork, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64 *A;       /* Original matrix */
     f64 *AINV;    /* Inverse */
     f64 *d;       /* Singular values for dlatms */
     f64 *work;    /* Workspace */
     f64 *rwork;   /* Workspace for dget03 */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     uint64_t seed;
 } dgetri_fixture_t;
 
 static uint64_t g_seed = 3141;
 
-static int dgetri_setup(void **state, int n)
+static int dgetri_setup(void **state, INT n)
 {
     dgetri_fixture_t *fix = malloc(sizeof(dgetri_fixture_t));
     assert_non_null(fix);
@@ -52,14 +42,14 @@ static int dgetri_setup(void **state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    int lwork = n * n;
+    INT lwork = n * n;
 
     fix->A = malloc(fix->lda * n * sizeof(f64));
     fix->AINV = malloc(fix->lda * n * sizeof(f64));
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(lwork * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AINV);
@@ -96,13 +86,13 @@ static int setup_20(void **state) { return dgetri_setup(state, 20); }
 /**
  * Core test logic: generate matrix, factorize, invert, verify.
  */
-static f64 run_dgetri_test(dgetri_fixture_t *fix, int imat)
+static f64 run_dgetri_test(dgetri_fixture_t *fix, INT imat)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
-    int lwork = fix->n * fix->n;
+    INT info;
+    INT lwork = fix->n * fix->n;
 
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -139,7 +129,7 @@ static void test_dgetri_wellcond(void **state)
     dgetri_fixture_t *fix = *state;
     f64 resid;
 
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         resid = run_dgetri_test(fix, imat);
         assert_residual_ok(resid);
@@ -159,7 +149,7 @@ static void test_dgetri_illcond(void **state)
     }
 
     f64 resid;
-    for (int imat = 8; imat <= 9; imat++) {
+    for (INT imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         resid = run_dgetri_test(fix, imat);
         assert_residual_ok(resid);
@@ -179,7 +169,7 @@ static void test_dgetri_scaled(void **state)
     }
 
     f64 resid;
-    for (int imat = 10; imat <= 11; imat++) {
+    for (INT imat = 10; imat <= 11; imat++) {
         fix->seed = g_seed++;
         resid = run_dgetri_test(fix, imat);
         assert_residual_ok(resid);

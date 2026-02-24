@@ -16,31 +16,23 @@
 #define THRESH 2.0f
 #define NMAX   50
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
-extern f32 slamch(const char* cmach);
-extern f32 slansf(const char* norm, const char* transr, const char* uplo,
-                     const int n, const f32* A, f32* work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void strttf(const char* transr, const char* uplo, const int n,
-                   const f32* A, const int lda, f32* ARF, int* info);
-
 typedef struct {
-    int in;
-    int iit;
-    int iuplo;
-    int iform;
+    INT in;
+    INT iit;
+    INT iuplo;
+    INT iform;
     char name[80];
 } ddrvrf1_params_t;
 
-static void run_ddrvrf1_single(int n, int iit, int iuplo, int iform)
+static void run_ddrvrf1_single(INT n, INT iit, INT iuplo, INT iform)
 {
     if (n == 0) return;
 
-    int lda = NMAX;
-    int info;
+    INT lda = NMAX;
+    INT info;
     char ctx[128];
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988);
@@ -58,19 +50,19 @@ static void run_ddrvrf1_single(int n, int iit, int iuplo, int iform)
     f32 ARF[NMAX * (NMAX + 1) / 2];
     f32 WORK[NMAX];
 
-    for (int j = 0; j < n; j++)
-        for (int i = 0; i < n; i++)
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < n; i++)
             A[i + j * lda] = rng_uniform_symmetric_f32(rng_state);
 
     if (iit == 2) {
-        for (int j = 0; j < n; j++)
-            for (int i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
+            for (INT i = 0; i < n; i++)
                 A[i + j * lda] *= large_val;
     }
 
     if (iit == 3) {
-        for (int j = 0; j < n; j++)
-            for (int i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
+            for (INT i = 0; i < n; i++)
                 A[i + j * lda] *= small_val;
     }
 
@@ -86,7 +78,7 @@ static void run_ddrvrf1_single(int n, int iit, int iuplo, int iform)
 
     const char* norms[] = {"M", "1", "I", "F"};
 
-    for (int inorm = 0; inorm < 4; inorm++) {
+    for (INT inorm = 0; inorm < 4; inorm++) {
         f32 normarf = slansf(norms[inorm], cform, uplo, n, ARF, WORK);
         f32 norma = slansy(norms[inorm], uplo, n, A, lda, WORK);
 
@@ -117,18 +109,18 @@ static void test_ddrvrf1_case(void** state)
 
 static ddrvrf1_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
+    for (INT in = 0; in < (INT)NN; in++) {
         if (NVAL[in] == 0) continue;
 
-        for (int iit = 1; iit <= 3; iit++) {
-            for (int iuplo = 0; iuplo < 2; iuplo++) {
-                for (int iform = 0; iform < 2; iform++) {
+        for (INT iit = 1; iit <= 3; iit++) {
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                for (INT iform = 0; iform < 2; iform++) {
                     ddrvrf1_params_t* p = &g_params[g_num_tests];
                     p->in = in;
                     p->iit = iit;

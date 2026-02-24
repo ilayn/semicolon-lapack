@@ -20,51 +20,30 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void sstein(const int n, const f32* D, const f32* E,
-                   const int m, const f32* W,
-                   const int* iblock, const int* isplit,
-                   f32* Z, const int ldz,
-                   f32* work, int* iwork, int* ifail, int* info);
-
 /* Eigenvalue computation */
-extern void sstebz(const char* range, const char* order, const int n,
-                   const f32 vl, const f32 vu,
-                   const int il, const int iu, const f32 abstol,
-                   const f32* D, const f32* E,
-                   int* m, int* nsplit, f32* W,
-                   int* iblock, int* isplit,
-                   f32* work, int* iwork, int* info);
-
 /* Verification routine */
-extern void sstt21(const int n, const int kband,
-                   const f32* AD, const f32* AE,
-                   const f32* SD, const f32* SE,
-                   const f32* U, const int ldu,
-                   f32* work, f32* result);
-
 /* Utilities */
-extern f32 slamch(const char* cmach);
-
 /* ---------- Test fixture ---------- */
 
 typedef struct {
-    int n;
+    INT n;
     f32* D;       /* diagonal (n) */
     f32* E;       /* off-diagonal (n-1) */
     f32* W;       /* eigenvalues from sstebz (n) */
-    int* iblock;     /* block indices from sstebz (n) */
-    int* isplit;     /* split points from sstebz (n) */
+    INT* iblock;     /* block indices from sstebz (n) */
+    INT* isplit;     /* split points from sstebz (n) */
     f32* Z;       /* eigenvectors (n x n) */
     f32* work;    /* workspace: max(5*n for sstein, n*(n+1) for sstt21, 4*n for sstebz) */
-    int* iwork;      /* int workspace: max(n for sstein, 3*n for sstebz) */
-    int* ifail;      /* convergence info (n) */
+    INT* iwork;      /* INT workspace: max(n for sstein, 3*n for sstebz) */
+    INT* ifail;      /* convergence info (n) */
     f32* result;  /* sstt21 results (2) */
     uint64_t seed;
     uint64_t rng_state[4];
@@ -73,7 +52,7 @@ typedef struct {
 /* Global seed for test sequence reproducibility */
 static uint64_t g_seed = 4321;
 
-static int dstein_setup(void** state, int n)
+static int dstein_setup(void** state, INT n)
 {
     dstein_fixture_t* fix = malloc(sizeof(dstein_fixture_t));
     assert_non_null(fix);
@@ -84,19 +63,19 @@ static int dstein_setup(void** state, int n)
     fix->D = malloc(n * sizeof(f32));
     fix->E = malloc((n > 1 ? n - 1 : 1) * sizeof(f32));
     fix->W = malloc(n * sizeof(f32));
-    fix->iblock = malloc(n * sizeof(int));
-    fix->isplit = malloc(n * sizeof(int));
+    fix->iblock = malloc(n * sizeof(INT));
+    fix->isplit = malloc(n * sizeof(INT));
     fix->Z = calloc(n * n, sizeof(f32));
 
     /* Workspace: max(5*n, n*(n+1), 4*n) = n*(n+1) for n >= 5 */
-    int work_sz = n * (n + 1);
+    INT work_sz = n * (n + 1);
     if (work_sz < 5 * n) work_sz = 5 * n;
     if (work_sz < 4 * n) work_sz = 4 * n;
     fix->work = malloc(work_sz * sizeof(f32));
 
     /* Integer workspace: max(n, 3*n) = 3*n */
-    fix->iwork = malloc(3 * n * sizeof(int));
-    fix->ifail = malloc(n * sizeof(int));
+    fix->iwork = malloc(3 * n * sizeof(INT));
+    fix->ifail = malloc(n * sizeof(INT));
     fix->result = malloc(2 * sizeof(f32));
 
     assert_non_null(fix->D);
@@ -146,57 +125,57 @@ static int setup_50(void** state) { return dstein_setup(state, 50); }
  * Type 1: Identity tridiagonal (D=1, E=0).
  * All eigenvalues are 1; eigenvectors are trivial (any orthonormal basis).
  */
-static void gen_identity(int n, f32* D, f32* E)
+static void gen_identity(INT n, f32* D, f32* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 1.0f;
-    for (int i = 0; i < n - 1; i++) E[i] = 0.0f;
+    for (INT i = 0; i < n; i++) D[i] = 1.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 0.0f;
 }
 
 /**
  * Type 2: 1-2-1 Toeplitz (D=2, E=1).
  * Eigenvalues are 2 + 2*cos(k*pi/(n+1)) for k=1..n, well-separated.
  */
-static void gen_toeplitz_121(int n, f32* D, f32* E)
+static void gen_toeplitz_121(INT n, f32* D, f32* E)
 {
-    for (int i = 0; i < n; i++) D[i] = 2.0f;
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0f;
+    for (INT i = 0; i < n; i++) D[i] = 2.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0f;
 }
 
 /**
  * Type 3: Wilkinson matrix (D[i]=|i - n/2|, E[i]=1).
  * Has some clustered eigenvalues near zero for even n.
  */
-static void gen_wilkinson(int n, f32* D, f32* E)
+static void gen_wilkinson(INT n, f32* D, f32* E)
 {
-    int half = n / 2;
-    for (int i = 0; i < n; i++) {
+    INT half = n / 2;
+    for (INT i = 0; i < n; i++) {
         D[i] = (f32)(i >= half ? i - half : half - i);
     }
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0f;
 }
 
 /**
  * Type 4: Random symmetric tridiagonal.
  * D[i] uniform in [-1, 1], E[i] uniform in [-1, 1].
  */
-static void gen_random(int n, f32* D, f32* E, uint64_t state[static 4])
+static void gen_random(INT n, f32* D, f32* E, uint64_t state[static 4])
 {
-    for (int i = 0; i < n; i++) D[i] = rng_uniform_symmetric_f32(state);
-    for (int i = 0; i < n - 1; i++) E[i] = rng_uniform_symmetric_f32(state);
+    for (INT i = 0; i < n; i++) D[i] = rng_uniform_symmetric_f32(state);
+    for (INT i = 0; i < n - 1; i++) E[i] = rng_uniform_symmetric_f32(state);
 }
 
 /**
  * Type 5: Graded diagonal (D[i]=2^(-i), E[i]=1).
  * Wide dynamic range in diagonal entries.
  */
-static void gen_graded(int n, f32* D, f32* E)
+static void gen_graded(INT n, f32* D, f32* E)
 {
     f32 scale = 1.0f;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         D[i] = scale;
         scale *= 0.5f;
     }
-    for (int i = 0; i < n - 1; i++) E[i] = 1.0f;
+    for (INT i = 0; i < n - 1; i++) E[i] = 1.0f;
 }
 
 /* ---------- Core test logic ---------- */
@@ -206,11 +185,11 @@ static void gen_graded(int n, f32* D, f32* E)
  * Computes eigenvalues via sstebz, eigenvectors via sstein,
  * then verifies with sstt21.
  */
-static void run_dstein_test(dstein_fixture_t* fix, int imat)
+static void run_dstein_test(dstein_fixture_t* fix, INT imat)
 {
-    int n = fix->n;
-    int info;
-    int m, nsplit;
+    INT n = fix->n;
+    INT info;
+    INT m, nsplit;
     f32 abstol = 2.0f * slamch("S");
 
     /* Generate tridiagonal matrix */
@@ -234,7 +213,7 @@ static void run_dstein_test(dstein_fixture_t* fix, int imat)
 
     /* Clear Z and ifail */
     memset(fix->Z, 0, n * n * sizeof(f32));
-    memset(fix->ifail, 0, n * sizeof(int));
+    memset(fix->ifail, 0, n * sizeof(INT));
 
     /* Compute eigenvectors via inverse iteration */
     sstein(n, fix->D, fix->E, m, fix->W,
@@ -243,7 +222,7 @@ static void run_dstein_test(dstein_fixture_t* fix, int imat)
     assert_info_success(info);
 
     /* Check all ifail entries are zero (all eigenvectors converged) */
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         assert_int_equal(fix->ifail[i], 0);
     }
 
@@ -266,7 +245,7 @@ static void test_all_eigenvectors(void** state)
 {
     dstein_fixture_t* fix = *state;
 
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         run_dstein_test(fix, imat);
     }
@@ -281,9 +260,9 @@ static void test_all_eigenvectors(void** state)
 static void test_partial(void** state)
 {
     dstein_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m, nsplit;
+    INT n = fix->n;
+    INT info;
+    INT m, nsplit;
     f32 abstol = 2.0f * slamch("S");
     f32 ulp = slamch("P");
 
@@ -297,9 +276,9 @@ static void test_partial(void** state)
     /* Request eigenvalues il..iu (1-based in Fortran, but our sstebz uses
      * 0-based if the C port follows project convention; however the
      * specification states il, iu as in LAPACK convention) */
-    int il = 2;
-    int iu = n / 2 + 1;
-    int expected_m = iu - il + 1;
+    INT il = 2;
+    INT iu = n / 2 + 1;
+    INT expected_m = iu - il + 1;
 
     sstebz("I", "B", n, 0.0f, 0.0f, il, iu, abstol,
            fix->D, fix->E, &m, &nsplit, fix->W,
@@ -309,7 +288,7 @@ static void test_partial(void** state)
 
     /* Clear Z and ifail */
     memset(fix->Z, 0, n * n * sizeof(f32));
-    memset(fix->ifail, 0, n * sizeof(int));
+    memset(fix->ifail, 0, n * sizeof(INT));
 
     /* Compute eigenvectors for the subset */
     sstein(n, fix->D, fix->E, m, fix->W,
@@ -317,7 +296,7 @@ static void test_partial(void** state)
            fix->Z, n, fix->work, fix->iwork, fix->ifail, &info);
     assert_info_success(info);
 
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         assert_int_equal(fix->ifail[i], 0);
     }
 
@@ -325,7 +304,7 @@ static void test_partial(void** state)
     /* Compute residual: || T*z - lambda*z || / (||T|| * ||z|| * ulp) */
     f32* Tz = fix->work;  /* reuse workspace, needs n doubles */
     f32 anorm = fabsf(fix->D[0]);
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         f32 row_sum = fabsf(fix->D[i]) + fabsf(fix->E[i - 1]);
         if (i < n - 1) row_sum += fabsf(fix->E[i]);
         if (row_sum > anorm) anorm = row_sum;
@@ -337,13 +316,13 @@ static void test_partial(void** state)
         if (row0 > anorm) anorm = row0;
     }
 
-    for (int j = 0; j < m; j++) {
+    for (INT j = 0; j < m; j++) {
         f32* zj = fix->Z + j * n;  /* column j of Z (column-major) */
 
         /* Compute T*zj */
         Tz[0] = fix->D[0] * zj[0];
         if (n > 1) Tz[0] += fix->E[0] * zj[1];
-        for (int i = 1; i < n - 1; i++) {
+        for (INT i = 1; i < n - 1; i++) {
             Tz[i] = fix->E[i - 1] * zj[i - 1] + fix->D[i] * zj[i] + fix->E[i] * zj[i + 1];
         }
         if (n > 1) {
@@ -352,7 +331,7 @@ static void test_partial(void** state)
 
         /* Compute || T*z - lambda*z || */
         f32 resid_norm = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 diff = Tz[i] - fix->W[j] * zj[i];
             resid_norm += diff * diff;
         }
@@ -373,15 +352,15 @@ static void test_partial(void** state)
                 m, m, n, 1.0f, fix->Z, n, fix->Z, n, 0.0f, ZtZ, m);
 
     /* Subtract identity */
-    for (int j = 0; j < m; j++) {
+    for (INT j = 0; j < m; j++) {
         ZtZ[j + j * m] -= 1.0f;
     }
 
     /* 1-norm of (Z'Z - I) */
     f32 orth_norm = 0.0f;
-    for (int j = 0; j < m; j++) {
+    for (INT j = 0; j < m; j++) {
         f32 col_sum = 0.0f;
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             col_sum += fabsf(ZtZ[i + j * m]);
         }
         if (col_sum > orth_norm) orth_norm = col_sum;

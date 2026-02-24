@@ -6,15 +6,6 @@
 
 #include <math.h>
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlangt(const char* norm, const int n,
-                     const f64* const restrict DL,
-                     const f64* const restrict D,
-                     const f64* const restrict DU);
-
 /**
  * DGTT01 reconstructs a tridiagonal matrix A from its LU factorization
  * and computes the residual
@@ -35,7 +26,7 @@ extern f64 dlangt(const char* norm, const int n,
  * @param[out] resid  The scaled residual: norm(L*U - A) / (norm(A) * EPS).
  */
 void dgtt01(
-    const int n,
+    const INT n,
     const f64 * const restrict DL,
     const f64 * const restrict D,
     const f64 * const restrict DU,
@@ -43,15 +34,15 @@ void dgtt01(
     const f64 * const restrict DF,
     const f64 * const restrict DUF,
     const f64 * const restrict DU2,
-    const int * const restrict ipiv,
+    const INT* const restrict ipiv,
     f64 * const restrict work,
-    const int ldwork,
+    const INT ldwork,
     f64 *resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, ip, lastj;
+    INT i, j, ip, lastj;
     f64 anorm, eps, li;
     f64 wnorm;
 
@@ -131,7 +122,7 @@ void dgtt01(
     for (j = 0; j < n; j++) {
         f64 colsum = ZERO;
         /* Upper Hessenberg: nonzeros in column j are rows 0 to min(j+1, n-1) */
-        int imax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
+        INT imax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
         for (i = 0; i <= imax; i++) {
             colsum += fabs(work[i + j * ldwork]);
         }

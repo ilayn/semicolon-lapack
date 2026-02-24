@@ -6,12 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DTRT03 computes the residual for the solution to a scaled triangular
  * system of equations A*x = s*b or A'*x = s*b.
@@ -40,15 +38,15 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    resid   The maximum residual over all right hand sides.
  */
 void dtrt03(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs, const f64* A, const int lda,
+            const INT n, const INT nrhs, const f64* A, const INT lda,
             const f64 scale, const f64* cnorm, const f64 tscal,
-            const f64* X, const int ldx, const f64* B, const int ldb,
+            const f64* X, const INT ldx, const f64* B, const INT ldb,
             f64* work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int j, ix;
+    INT j, ix;
     f64 eps, smlnum, tnorm, xnorm, xscal, err;
 
     /* Quick exit if n = 0 or nrhs = 0 */

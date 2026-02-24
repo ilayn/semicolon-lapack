@@ -3,15 +3,9 @@
  * @brief SGET03 computes the residual for a general matrix times its inverse.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32 * const restrict A, const int lda,
-                     f32 * const restrict work);
 
 /**
  * SGET03 computes the residual for a general matrix times its inverse:
@@ -36,13 +30,13 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    resid   norm(I - AINV*A) / ( N * norm(A) * norm(AINV) * EPS )
  */
 void sget03(
-    const int n,
+    const INT n,
     const f32 * const restrict A,
-    const int lda,
+    const INT lda,
     const f32 * const restrict AINV,
-    const int ldainv,
+    const INT ldainv,
     f32 * const restrict work,
-    const int ldwork,
+    const INT ldwork,
     f32 * const restrict rwork,
     f32 *rcond,
     f32 *resid)
@@ -50,7 +44,7 @@ void sget03(
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i;
+    INT i;
     f32 ainvnm, anorm, eps;
 
     // Quick exit if n = 0

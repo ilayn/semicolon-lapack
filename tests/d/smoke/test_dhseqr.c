@@ -20,11 +20,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cblas.h>
-
 /* Test fixture */
 typedef struct {
-    int n;
+    INT n;
     f64* A;       /* Original matrix */
     f64* H;       /* Hessenberg matrix */
     f64* T1;      /* Schur form (with Z) */
@@ -41,25 +39,6 @@ typedef struct {
 } dhseqr_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-extern void dgehrd(const int n, const int ilo, const int ihi,
-                   f64* A, const int lda, f64* tau,
-                   f64* work, const int lwork, int* info);
-extern void dorghr(const int n, const int ilo, const int ihi,
-                   f64* A, const int lda, const f64* tau,
-                   f64* work, const int lwork, int* info);
-extern void dhseqr(const char* job, const char* compz, const int n,
-                   const int ilo, const int ihi, f64* H, const int ldh,
-                   f64* wr, f64* wi, f64* Z, const int ldz,
-                   f64* work, const int lwork, int* info);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
     dhseqr_fixture_t* fix = malloc(sizeof(dhseqr_fixture_t));
@@ -81,7 +60,7 @@ static int setup_N(void** state, int n) {
     fix->tau = malloc(n * sizeof(f64));
 
     /* Workspace: need at least 2*n*n for verification + lwork for routines */
-    int lwork = 6 * n * n + 2 * n;
+    INT lwork = 6 * n * n + 2 * n;
     fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->H || !fix->T1 || !fix->T2 || !fix->Z ||
@@ -127,15 +106,15 @@ static int setup_32(void** state) { return setup_N(state, 32); }
 /**
  * Generate upper Hessenberg test matrix.
  */
-static void generate_hessenberg_matrix(int n, f64* H, int ldh, f64 anorm,
+static void generate_hessenberg_matrix(INT n, f64* H, INT ldh, f64 anorm,
                                        uint64_t state[static 4])
 {
     /* Generate random Hessenberg matrix directly */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i <= j + 1 && i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i <= j + 1 && i < n; i++) {
             H[i + j * ldh] = anorm * rng_uniform_symmetric(state);
         }
-        for (int i = j + 2; i < n; i++) {
+        for (INT i = j + 2; i < n; i++) {
             H[i + j * ldh] = 0.0;
         }
     }
@@ -145,14 +124,14 @@ static void generate_hessenberg_matrix(int n, f64* H, int ldh, f64 anorm,
  * Compare two Schur forms T1 and T2.
  * Returns | T1 - T2 | / ( |T1| ulp )
  */
-static f64 compare_schur_forms(int n, const f64* T1, const f64* T2, int ldt, f64* work)
+static f64 compare_schur_forms(INT n, const f64* T1, const f64* T2, INT ldt, f64* work)
 {
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
 
     /* Compute T1 - T2 in work */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             work[i + j * n] = T1[i + j * ldt] - T2[i + j * ldt];
         }
     }
@@ -169,7 +148,7 @@ static f64 compare_schur_forms(int n, const f64* T1, const f64* T2, int ldt, f64
  * Compare two eigenvalue sets.
  * Returns max | W1 - W2 | / ( max(|W1|, |W2|) ulp )
  */
-static f64 compare_eigenvalues(int n, const f64* wr1, const f64* wi1,
+static f64 compare_eigenvalues(INT n, const f64* wr1, const f64* wi1,
                                   const f64* wr2, const f64* wi2)
 {
     f64 ulp = dlamch("P");
@@ -178,7 +157,7 @@ static f64 compare_eigenvalues(int n, const f64* wr1, const f64* wi1,
     f64 maxw = 0.0;
     f64 maxdiff = 0.0;
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         f64 w1 = fabs(wr1[j]) + fabs(wi1[j]);
         f64 w2 = fabs(wr2[j]) + fabs(wi2[j]);
         f64 diff = fabs(wr1[j] - wr2[j]) + fabs(wi1[j] - wi2[j]);
@@ -198,9 +177,9 @@ static f64 compare_eigenvalues(int n, const f64* wr1, const f64* wi1,
  */
 static void test_qr_schur(dhseqr_fixture_t* fix)
 {
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     const f64 ONE = 1.0;
@@ -216,9 +195,9 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
     dlaset("F", n, n, ZERO, ONE, fix->Z, lda);
 
     /* Compute Schur form with Schur vectors (0-based indexing) */
-    int ilo = 0;
-    int ihi = n - 1;
-    int lwork = 4 * n * n;
+    INT ilo = 0;
+    INT ihi = n - 1;
+    INT lwork = 4 * n * n;
 
     dhseqr("S", "I", n, ilo, ihi, fix->T1, lda, fix->wr1, fix->wi1,
            fix->Z, lda, fix->work, lwork, &info);
@@ -241,7 +220,7 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
 
     /* Test 3: | H - Z*T*Z' | / ( |H| n ulp ) */
     /* Test 4: | I - Z*Z' | / ( n ulp ) */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     dhst01(n, ilo, ihi, fix->H, lda, fix->T1, lda, fix->Z, lda,
            fix->work, lwork_verify, result);
 
@@ -288,9 +267,9 @@ static void test_schur_n32(void** state)
 static void test_eigenvalues_only(void** state)
 {
     dhseqr_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
 
     /* Generate Hessenberg matrix */
     generate_hessenberg_matrix(n, fix->H, lda, 1.0, fix->rng_state);
@@ -299,9 +278,9 @@ static void test_eigenvalues_only(void** state)
     dlacpy(" ", n, n, fix->H, lda, fix->T1, lda);
 
     /* Compute eigenvalues only (0-based indexing) */
-    int ilo = 0;
-    int ihi = n - 1;
-    int lwork = 4 * n * n;
+    INT ilo = 0;
+    INT ihi = n - 1;
+    INT lwork = 4 * n * n;
 
     dhseqr("E", "N", n, ilo, ihi, fix->T1, lda, fix->wr1, fix->wi1,
            NULL, lda, fix->work, lwork, &info);
@@ -311,7 +290,7 @@ static void test_eigenvalues_only(void** state)
     }
 
     /* The eigenvalues should be reasonable (not NaN or Inf) */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_true(isfinite(fix->wr1[j]));
         assert_true(isfinite(fix->wi1[j]));
     }
@@ -323,8 +302,8 @@ static void test_eigenvalues_only(void** state)
 static void test_workspace_query(void** state)
 {
     dhseqr_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
     f64 work_query;
 
     /* Query optimal workspace (0-based indexing) */
@@ -341,23 +320,23 @@ static void test_workspace_query(void** state)
 static void test_diagonal_matrix(void** state)
 {
     dhseqr_fixture_t* fix = *state;
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
 
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
     /* Create diagonal matrix */
     dlaset("F", n, n, ZERO, ZERO, fix->H, lda);
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         fix->H[j + j * lda] = (f64)(j + 1);
     }
 
     dlacpy(" ", n, n, fix->H, lda, fix->T1, lda);
     dlaset("F", n, n, ZERO, ONE, fix->Z, lda);
 
-    int lwork = 4 * n * n;
+    INT lwork = 4 * n * n;
     /* 0-based indexing: ilo=0, ihi=n-1 */
     dhseqr("S", "I", n, 0, n - 1, fix->T1, lda, fix->wr1, fix->wi1,
            fix->Z, lda, fix->work, lwork, &info);
@@ -368,14 +347,14 @@ static void test_diagonal_matrix(void** state)
     }
 
     /* Eigenvalues should be 1, 2, ..., n (real, no imaginary part) */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         assert_double_equal(fix->wi1[j], ZERO, 1e-10);
     }
 
     /* Z should still be close to identity for diagonal input */
     f64 resid = 0.0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             f64 expected = (i == j) ? ONE : ZERO;
             f64 err = fabs(fix->Z[i + j * lda] - expected);
             if (err > resid) resid = err;
@@ -407,7 +386,7 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_schur_n32, setup_32, teardown),
     };
 
-    int result = 0;
+    INT result = 0;
     result += cmocka_run_group_tests_name("dhseqr_n5", tests_n5, NULL, NULL);
     result += cmocka_run_group_tests_name("dhseqr_n10", tests_n10, NULL, NULL);
     result += cmocka_run_group_tests_name("dhseqr_n20", tests_n20, NULL, NULL);

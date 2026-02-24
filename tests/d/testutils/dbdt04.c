@@ -7,12 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DBDT04 reconstructs a bidiagonal matrix B from its (partial) SVD:
  *    S = U' * B * V
@@ -37,17 +33,17 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    work   Workspace array, dimension (2*n).
  * @param[out]    resid  The test ratio.
  */
-void dbdt04(const char* uplo, const int n,
+void dbdt04(const char* uplo, const INT n,
             const f64* const restrict D, const f64* const restrict E,
-            const f64* const restrict S, const int ns,
-            const f64* const restrict U, const int ldu,
-            const f64* const restrict VT, const int ldvt,
+            const f64* const restrict S, const INT ns,
+            const f64* const restrict U, const INT ldu,
+            const f64* const restrict VT, const INT ldvt,
             f64* const restrict work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, k;
+    INT i, j, k;
     f64 bnorm, eps;
 
     /* Quick return if possible. */

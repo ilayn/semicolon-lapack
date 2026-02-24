@@ -17,18 +17,14 @@
 #define THRESH 20.0f
 
 /* Routine under test */
-extern void slaswp(const int n, f32 * const restrict A, const int lda,
-                   const int k1, const int k2,
-                   const int * const restrict ipiv, const int incx);
-
 /**
  * Check if two matrices are equal (within tolerance)
  */
-static int matrices_equal(int m, int n, const f32 *A, int lda,
-                          const f32 *B, int ldb, f32 tol)
+static INT matrices_equal(INT m, INT n, const f32 *A, INT lda,
+                          const f32 *B, INT ldb, f32 tol)
 {
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             if (fabsf(A[i + j * lda] - B[i + j * ldb]) > tol) {
                 return 0;
             }
@@ -50,11 +46,11 @@ static void test_simple_swap(void **state)
         4, 5, 6,   /* Column 1 */
         7, 8, 9    /* Column 2 */
     };
-    int lda = 3;
-    int n = 3;
+    INT lda = 3;
+    INT n = 3;
 
     /* Pivot: row 0 swaps with row 2 */
-    int ipiv[1] = {2};
+    INT ipiv[1] = {2};
 
     /* Expected result after swap */
     f32 expected[9] = {
@@ -81,11 +77,11 @@ static void test_multiple_swaps(void **state)
         5, 6, 7, 8,   /* Column 1 */
         9, 10, 11, 12 /* Column 2 */
     };
-    int lda = 4;
-    int n = 3;
+    INT lda = 4;
+    INT n = 3;
 
     /* Pivots: row 0<->1, row 1<->3, row 2<->2 (no swap) */
-    int ipiv[3] = {1, 3, 2};
+    INT ipiv[3] = {1, 3, 2};
 
     /* Apply swaps from k1=0 to k2=2 */
     slaswp(n, A, lda, 0, 2, ipiv, 1);
@@ -115,11 +111,11 @@ static void test_reverse_order(void **state)
         5, 6, 7, 8,
         9, 10, 11, 12
     };
-    int lda = 4;
-    int n = 3;
+    INT lda = 4;
+    INT n = 3;
 
     /* Same pivots but applied in reverse order */
-    int ipiv[3] = {1, 3, 2};
+    INT ipiv[3] = {1, 3, 2};
 
     /* Apply swaps from k2=2 to k1=0 (reverse) */
     slaswp(n, A, lda, 0, 2, ipiv, -1);
@@ -153,11 +149,11 @@ static void test_identity_permutation(void **state)
     };
     f32 A_orig[9];
     memcpy(A_orig, A, 9 * sizeof(f32));
-    int lda = 3;
-    int n = 3;
+    INT lda = 3;
+    INT n = 3;
 
     /* Identity permutation: each row swaps with itself */
-    int ipiv[3] = {0, 1, 2};
+    INT ipiv[3] = {0, 1, 2};
 
     slaswp(n, A, lda, 0, 2, ipiv, 1);
 
@@ -174,7 +170,7 @@ static void test_incx_zero(void **state)
     f32 A[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     f32 A_orig[9];
     memcpy(A_orig, A, 9 * sizeof(f32));
-    int ipiv[3] = {2, 0, 1};
+    INT ipiv[3] = {2, 0, 1};
 
     slaswp(3, A, 3, 0, 2, ipiv, 0);
 
@@ -195,13 +191,13 @@ static void test_partial_range(void **state)
         9, 10, 11, 12,
         13, 14, 15, 16
     };
-    int lda = 4;
-    int n = 4;
+    INT lda = 4;
+    INT n = 4;
 
     /* Only swap rows 1 and 2, leaving rows 0 and 3 alone.
      * slaswp accesses ipiv[ix] where ix starts at k1=1, so we need
      * ipiv[1] and ipiv[2] to hold the swap targets. */
-    int ipiv[3] = {-1, 3, 1};  /* ipiv[1]=3: row 1<->3, ipiv[2]=1: row 2<->1 */
+    INT ipiv[3] = {-1, 3, 1};  /* ipiv[1]=3: row 1<->3, ipiv[2]=1: row 2<->1 */
 
     slaswp(n, A, lda, 1, 2, ipiv, 1);
 
@@ -234,28 +230,28 @@ static void test_large_matrix(void **state)
 {
     (void)state;
 
-    int m = 100;
-    int n = 64;  /* Force multiple blocks of 32 */
-    int lda = m;
+    INT m = 100;
+    INT n = 64;  /* Force multiple blocks of 32 */
+    INT lda = m;
 
     f32 *A = malloc(lda * n * sizeof(f32));
     f32 *A_copy = malloc(lda * n * sizeof(f32));
-    int *ipiv = malloc(m * sizeof(int));
+    INT* ipiv = malloc(m * sizeof(INT));
 
     assert_non_null(A);
     assert_non_null(A_copy);
     assert_non_null(ipiv);
 
     /* Initialize matrix with distinct values */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             A[i + j * lda] = (f32)(i * n + j + 1);
         }
     }
     memcpy(A_copy, A, lda * n * sizeof(f32));
 
     /* Create a cyclic permutation pattern */
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         ipiv[i] = (i + 1) % m;  /* Each row swaps with next row */
     }
 
@@ -282,11 +278,11 @@ static void test_lu_pivot_consistency(void **state)
     /* After LU factorization, we typically have ipiv where ipiv[i] >= i
      * This test simulates applying LU pivots to a right-hand side */
 
-    int n = 4;
+    INT n = 4;
     f32 B[4] = {1.0f, 2.0f, 3.0f, 4.0f};  /* RHS vector as 4x1 matrix */
 
     /* Typical LU pivot pattern: each pivot >= current row */
-    int ipiv[4] = {2, 1, 3, 3};  /* row 0<->2, row 1<->1, row 2<->3, row 3<->3 */
+    INT ipiv[4] = {2, 1, 3, 3};  /* row 0<->2, row 1<->1, row 2<->3, row 3<->3 */
 
     /* Apply forward permutation */
     slaswp(1, B, n, 0, n - 1, ipiv, 1);
@@ -297,7 +293,7 @@ static void test_lu_pivot_consistency(void **state)
      * After swap 3<->3: [3,2,4,1] (no change) */
     f32 expected[4] = {3.0f, 2.0f, 4.0f, 1.0f};
 
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         assert_true((double)fabsf(B[i] - expected[i]) <= 1e-14);
     }
 }
@@ -309,20 +305,20 @@ static void test_wide_matrix(void **state)
 {
     (void)state;
 
-    int m = 4;
-    int n = 100;  /* More than 3 blocks of 32 */
-    int lda = m;
+    INT m = 4;
+    INT n = 100;  /* More than 3 blocks of 32 */
+    INT lda = m;
 
     f32 *A = malloc(lda * n * sizeof(f32));
     f32 *expected = malloc(lda * n * sizeof(f32));
-    int ipiv[4] = {3, 2, 3, 3};
+    INT ipiv[4] = {3, 2, 3, 3};
 
     assert_non_null(A);
     assert_non_null(expected);
 
     /* Initialize */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
             A[i + j * lda] = (f32)(i + 1);  /* Each column is [1,2,3,4] */
         }
     }
@@ -333,7 +329,7 @@ static void test_wide_matrix(void **state)
      * After 1<->2: [4,3,2,1]
      * After 2<->3: [4,3,1,2]
      * After 3<->3: [4,3,1,2] */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         expected[0 + j * lda] = 4.0f;
         expected[1 + j * lda] = 3.0f;
         expected[2 + j * lda] = 1.0f;

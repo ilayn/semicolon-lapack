@@ -5,24 +5,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slangt(const char* norm, const int n,
-                     const f32* const restrict DL,
-                     const f32* const restrict D,
-                     const f32* const restrict DU);
-extern void slagtm(const char* trans, const int n, const int nrhs,
-                   const f32 alpha,
-                   const f32* const restrict DL,
-                   const f32* const restrict D,
-                   const f32* const restrict DU,
-                   const f32* const restrict X, const int ldx,
-                   const f32 beta,
-                   f32* const restrict B, const int ldb);
-
 /**
  * SGTT02 computes the residual for the solution to a tridiagonal
  * system of equations:
@@ -50,22 +34,22 @@ extern void slagtm(const char* trans, const int n, const int nrhs,
  */
 void sgtt02(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 * const restrict DL,
     const f32 * const restrict D,
     const f32 * const restrict DU,
     const f32 * const restrict X,
-    const int ldx,
+    const INT ldx,
     f32 * const restrict B,
-    const int ldb,
+    const INT ldb,
     f32 *resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 NEG_ONE = -1.0f;
 
-    int j;
+    INT j;
     f32 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if n = 0 or nrhs = 0 */

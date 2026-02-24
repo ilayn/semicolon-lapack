@@ -7,9 +7,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * SLATM4 generates basic square matrices, which may later be
  * multiplied by others in order to produce test matrices. It is
@@ -65,10 +62,10 @@ extern f32 slamch(const char* cmach);
  * @param[out] A      Array to be computed, dimension (lda, n).
  * @param[in] lda     Leading dimension of A. Must be at least 1 and at least n.
  */
-void slatm4(const int itype, const int n, const int nz1, const int nz2,
-            const int isign, const f32 amagn, const f32 rcond,
-            const f32 triang, const int idist,
-            f32* A, const int lda,
+void slatm4(const INT itype, const INT n, const INT nz1, const INT nz2,
+            const INT isign, const f32 amagn, const f32 rcond,
+            const f32 triang, const INT idist,
+            f32* A, const INT lda,
             uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
@@ -76,9 +73,9 @@ void slatm4(const int itype, const int n, const int nz1, const int nz2,
     const f32 TWO = 2.0f;
     const f32 HALF = 0.5f;
 
-    int i, ioff, isdb, isde, jc, jd, jr, k, kbeg, kend, klen;
+    INT i, ioff, isdb, isde, jc, jd, jr, k, kbeg, kend, klen;
     f32 alpha, cl, cr, safmin, sl, sr, sv1, sv2, temp;
-    int abstype;
+    INT abstype;
 
     if (n <= 0) return;
 
@@ -187,7 +184,7 @@ void slatm4(const int itype, const int n, const int nz1, const int nz2,
                 /* Randomly distributed D values on (RCOND, 1) */
                 alpha = logf(rcond);
                 for (jd = kbeg - 1; jd < kend; jd++) {
-                    A[jd + jd * lda] = exp(alpha * rng_uniform_f32(state));
+                    A[jd + jd * lda] = expf(alpha * rng_uniform_f32(state));
                 }
                 break;
 

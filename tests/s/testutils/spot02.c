@@ -3,15 +3,9 @@
  * @brief SPOT02 computes the residual for the solution of a symmetric system.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
 
 /**
  * SPOT02 computes the residual for the solution of a symmetric system
@@ -43,14 +37,14 @@ extern f32 slansy(const char* norm, const char* uplo, const int n,
  */
 void spot02(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* const restrict A,
-    const int lda,
+    const INT lda,
     const f32* const restrict X,
-    const int ldx,
+    const INT ldx,
     f32* const restrict B,
-    const int ldb,
+    const INT ldb,
     f32* const restrict rwork,
     f32* resid)
 {
@@ -80,7 +74,7 @@ void spot02(
     // Compute the maximum over the number of right hand sides of
     //   norm(B - A*X) / (norm(A) * norm(X) * EPS)
     *resid = ZERO;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         f32 bnorm = cblas_sasum(n, &B[j * ldb], 1);
         f32 xnorm = cblas_sasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {

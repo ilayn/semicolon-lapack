@@ -4,12 +4,9 @@
  *        symmetric positive definite systems.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
 
 /**
  * DPOT05 tests the error bounds from iterative refinement for the
@@ -54,16 +51,16 @@ extern f64 dlamch(const char* cmach);
  */
 void dpot05(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* const restrict A,
-    const int lda,
+    const INT lda,
     const f64* const restrict B,
-    const int ldb,
+    const INT ldb,
     const f64* const restrict X,
-    const int ldx,
+    const INT ldx,
     const f64* const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f64* const restrict ferr,
     const f64* const restrict berr,
     f64* const restrict reslts)
@@ -81,20 +78,20 @@ void dpot05(
     f64 eps = dlamch("E");
     f64 unfl = dlamch("S");
     f64 ovfl = ONE / unfl;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
 
     // Test 1: Compute the maximum of
     //   norm(X - XACT) / ( norm(X) * FERR )
     // over all the vectors X and XACT using the infinity-norm.
     f64 errbnd = ZERO;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         // Find infinity norm of X(:,j)
-        int imax = cblas_idamax(n, &X[j * ldx], 1);
+        INT imax = cblas_idamax(n, &X[j * ldx], 1);
         f64 xnorm = fabs(X[imax + j * ldx]);
         if (xnorm < unfl) xnorm = unfl;
 
         f64 diff = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 d = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (d > diff) diff = d;
         }
@@ -119,24 +116,24 @@ void dpot05(
 
     // Test 2: Compute the maximum of BERR / ( (n+1)*EPS + (*) ), where
     // (*) = (n+1)*UNFL / (min_i (abs(A)*abs(X) + abs(b))_i )
-    for (int k = 0; k < nrhs; k++) {
+    for (INT k = 0; k < nrhs; k++) {
         f64 axbi = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 tmp = fabs(B[i + k * ldb]);
             if (upper) {
                 // Upper: A(j,i) for j<=i stored as A(j,i), A(i,j) for j>i
-                for (int j = 0; j <= i; j++) {
+                for (INT j = 0; j <= i; j++) {
                     tmp += fabs(A[j + i * lda]) * fabs(X[j + k * ldx]);
                 }
-                for (int j = i + 1; j < n; j++) {
+                for (INT j = i + 1; j < n; j++) {
                     tmp += fabs(A[i + j * lda]) * fabs(X[j + k * ldx]);
                 }
             } else {
                 // Lower: A(i,j) for j<i stored as A(i,j), A(j,i) for j>=i
-                for (int j = 0; j < i; j++) {
+                for (INT j = 0; j < i; j++) {
                     tmp += fabs(A[i + j * lda]) * fabs(X[j + k * ldx]);
                 }
-                for (int j = i; j < n; j++) {
+                for (INT j = i; j < n; j++) {
                     tmp += fabs(A[j + i * lda]) * fabs(X[j + k * ldx]);
                 }
             }

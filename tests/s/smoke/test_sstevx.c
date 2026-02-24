@@ -21,46 +21,23 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void sstevx(const char* jobz, const char* range, const int n,
-                   f32* const restrict D, f32* const restrict E,
-                   const f32 vl, const f32 vu,
-                   const int il, const int iu, const f32 abstol,
-                   int* m, f32* const restrict W,
-                   f32* const restrict Z, const int ldz,
-                   f32* const restrict work, int* const restrict iwork,
-                   int* const restrict ifail, int* info);
-
 /* Reference routine for eigenvalue comparison */
-extern void sstev(const char* jobz, const int n,
-                  f32* const restrict D, f32* const restrict E,
-                  f32* const restrict Z, const int ldz,
-                  f32* const restrict work, int* info);
-
 /* Verification routines */
-extern void sstt21(const int n, const int kband,
-                   const f32* AD, const f32* AE,
-                   const f32* SD, const f32* SE,
-                   const f32* U, const int ldu,
-                   f32* work, f32* result);
-extern void sstech(const int n, const f32* A, const f32* B,
-                   const f32* eig, const f32 tol, f32* work, int* info);
-
 /* Utilities */
-extern f32 slamch(const char* cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int n;
+    INT n;
     f32* AD;         /* original diagonal (preserved) */
     f32* AE;         /* original off-diagonal (preserved) */
     f32* D;          /* diagonal for sstevx (overwritten) */
@@ -69,8 +46,8 @@ typedef struct {
     f32* W_ref;      /* reference eigenvalues from sstev */
     f32* Z;          /* eigenvectors (n x n) */
     f32* work;       /* workspace: max(5*n, n*(n+1)) for sstevx + sstt21 */
-    int* iwork;         /* int workspace (5*n) */
-    int* ifail;         /* convergence info (n) */
+    INT* iwork;         /* INT workspace (5*n) */
+    INT* ifail;         /* convergence info (n) */
     f32* result;     /* sstt21 results (2 elements) */
     uint64_t seed;
     uint64_t rng_state[4];
@@ -83,7 +60,7 @@ static uint64_t g_seed = 3000;
  * Setup fixture: allocate memory for given dimension.
  * Called before each test function.
  */
-static int dstevx_setup(void** state, int n)
+static int dstevx_setup(void** state, INT n)
 {
     dstevx_fixture_t* fix = malloc(sizeof(dstevx_fixture_t));
     assert_non_null(fix);
@@ -91,11 +68,11 @@ static int dstevx_setup(void** state, int n)
     fix->n = n;
     fix->seed = g_seed++;
 
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
-    int work_stevx = 5 * n_alloc;
-    int work_stt21 = n_alloc * (n_alloc + 1);
-    int work_total = (work_stevx > work_stt21) ? work_stevx : work_stt21;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
+    INT work_stevx = 5 * n_alloc;
+    INT work_stt21 = n_alloc * (n_alloc + 1);
+    INT work_total = (work_stevx > work_stt21) ? work_stevx : work_stt21;
 
     fix->AD = malloc(n_alloc * sizeof(f32));
     fix->AE = malloc(e_alloc * sizeof(f32));
@@ -105,8 +82,8 @@ static int dstevx_setup(void** state, int n)
     fix->W_ref = malloc(n_alloc * sizeof(f32));
     fix->Z = malloc(n_alloc * n_alloc * sizeof(f32));
     fix->work = malloc(work_total * sizeof(f32));
-    fix->iwork = malloc(5 * n_alloc * sizeof(int));
-    fix->ifail = malloc(n_alloc * sizeof(int));
+    fix->iwork = malloc(5 * n_alloc * sizeof(INT));
+    fix->ifail = malloc(n_alloc * sizeof(INT));
     fix->result = malloc(2 * sizeof(f32));
 
     assert_non_null(fix->AD);
@@ -165,10 +142,10 @@ static int setup_50(void** state) { return dstevx_setup(state, 50); }
  * @param E     Off-diagonal array (length n-1)
  * @param seed  RNG seed (used for type 4)
  */
-static void generate_stevx_matrix(int n, int imat, f32* D, f32* E,
+static void generate_stevx_matrix(INT n, INT imat, f32* D, f32* E,
                                    uint64_t state[static 4])
 {
-    int i;
+    INT i;
 
     switch (imat) {
     case 1:
@@ -219,11 +196,11 @@ static void generate_stevx_matrix(int n, int imat, f32* D, f32* E,
 static void test_range_all_V(void** state)
 {
     dstevx_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m;
+    INT n = fix->n;
+    INT info;
+    INT m;
 
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
 
         /* Generate test matrix */
@@ -245,7 +222,7 @@ static void test_range_all_V(void** state)
         assert_int_equal(m, n);
 
         /* Verify all ifail entries are zero */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             assert_int_equal(fix->ifail[i], 0);
         }
 
@@ -267,14 +244,14 @@ static void test_range_all_V(void** state)
 static void test_range_all_N(void** state)
 {
     dstevx_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m;
+    INT n = fix->n;
+    INT info;
+    INT m;
     f32 ulp = slamch("E");
 
     /* Allocate temporaries for sstev reference computation */
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
     f32* D_ref = malloc(n_alloc * sizeof(f32));
     f32* E_ref = malloc(e_alloc * sizeof(f32));
     f32* work_ref = malloc((2 * n_alloc) * sizeof(f32));
@@ -282,7 +259,7 @@ static void test_range_all_N(void** state)
     assert_non_null(E_ref);
     assert_non_null(work_ref);
 
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
 
         /* Generate test matrix */
@@ -314,13 +291,13 @@ static void test_range_all_N(void** state)
         /* Compare eigenvalues: both should be sorted ascending.
          * Compute max|W[i] - D_ref[i]| / (n * max|D_ref| * ulp) */
         f32 max_eig = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 a = fabsf(D_ref[i]);
             if (a > max_eig) max_eig = a;
         }
 
         f32 max_diff = 0.0f;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f32 d = fabsf(fix->W[i] - D_ref[i]);
             if (d > max_diff) max_diff = d;
         }
@@ -347,9 +324,9 @@ static void test_range_all_N(void** state)
 static void test_range_value(void** state)
 {
     dstevx_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m;
+    INT n = fix->n;
+    INT info;
+    INT m;
     f32 ulp = slamch("E");
     f32 safmin = slamch("S");
     f32 abstol = 2.0f * safmin;
@@ -369,8 +346,8 @@ static void test_range_value(void** state)
     }
 
     /* First, compute all eigenvalues with sstev to get reference */
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
     f32* D_tmp = malloc(n_alloc * sizeof(f32));
     f32* E_tmp = malloc(e_alloc * sizeof(f32));
     f32* work_tmp = malloc((2 * n_alloc) * sizeof(f32));
@@ -390,8 +367,8 @@ static void test_range_value(void** state)
     memcpy(fix->W_ref, D_tmp, n * sizeof(f32));
 
     /* Pick value range: middle subset */
-    int idx_lo = n / 4;       /* roughly 25% from bottom */
-    int idx_hi = 3 * n / 4;   /* roughly 75% from bottom */
+    INT idx_lo = n / 4;       /* roughly 25% from bottom */
+    INT idx_hi = 3 * n / 4;   /* roughly 75% from bottom */
     f32 vl = fix->W_ref[idx_lo];
     f32 vu = fix->W_ref[idx_hi];
 
@@ -409,7 +386,7 @@ static void test_range_value(void** state)
     assert_info_success(info);
 
     /* Verify each eigenvalue is in (vl, vu] */
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         assert_true(fix->W[i] > vl);
         assert_true(fix->W[i] <= vu);
     }
@@ -429,13 +406,13 @@ static void test_range_value(void** state)
 
         /* Compute |I - ZtZ| / (m * ulp) */
         /* Subtract identity */
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             ZtZ[i + i * m] -= 1.0f;
         }
 
         /* Find max absolute entry */
         f32 max_val = 0.0f;
-        for (int i = 0; i < m * m; i++) {
+        for (INT i = 0; i < m * m; i++) {
             f32 a = fabsf(ZtZ[i]);
             if (a > max_val) max_val = a;
         }
@@ -447,7 +424,7 @@ static void test_range_value(void** state)
     }
 
     /* Verify all ifail entries are zero */
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         assert_int_equal(fix->ifail[i], 0);
     }
 
@@ -467,9 +444,9 @@ static void test_range_value(void** state)
 static void test_range_index(void** state)
 {
     dstevx_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m;
+    INT n = fix->n;
+    INT info;
+    INT m;
     f32 ulp = slamch("E");
     f32 safmin = slamch("S");
     f32 abstol = 2.0f * safmin;
@@ -479,9 +456,9 @@ static void test_range_index(void** state)
     }
 
     /* Use il, iu as 0-based indices into the sorted eigenvalues */
-    int il = n / 4;           /* 0-based lower index */
-    int iu = 3 * n / 4 - 1;  /* 0-based upper index */
-    int m_expected = iu - il + 1;
+    INT il = n / 4;           /* 0-based lower index */
+    INT iu = 3 * n / 4 - 1;  /* 0-based upper index */
+    INT m_expected = iu - il + 1;
 
     /* Generate 1-2-1 Toeplitz matrix */
     rng_seed(fix->rng_state, fix->seed);
@@ -494,8 +471,8 @@ static void test_range_index(void** state)
     }
 
     /* Compute reference eigenvalues with sstev */
-    int n_alloc = (n > 0) ? n : 1;
-    int e_alloc = (n > 1) ? n - 1 : 1;
+    INT n_alloc = (n > 0) ? n : 1;
+    INT e_alloc = (n > 1) ? n - 1 : 1;
     f32* D_tmp = malloc(n_alloc * sizeof(f32));
     f32* E_tmp = malloc(e_alloc * sizeof(f32));
     f32* work_tmp = malloc((2 * n_alloc) * sizeof(f32));
@@ -530,13 +507,13 @@ static void test_range_index(void** state)
 
     /* Compare eigenvalues with reference (il..iu are 0-based) */
     f32 max_eig = 0.0f;
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         f32 a = fabsf(fix->W_ref[il + i]);
         if (a > max_eig) max_eig = a;
     }
 
     f32 max_diff = 0.0f;
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         f32 d = fabsf(fix->W[i] - fix->W_ref[il + i]);
         if (d > max_diff) max_diff = d;
     }
@@ -558,12 +535,12 @@ static void test_range_index(void** state)
                     0.0f, ZtZ, m);
 
         /* Subtract identity and compute max norm */
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             ZtZ[i + i * m] -= 1.0f;
         }
 
         f32 max_val = 0.0f;
-        for (int i = 0; i < m * m; i++) {
+        for (INT i = 0; i < m * m; i++) {
             f32 a = fabsf(ZtZ[i]);
             if (a > max_val) max_val = a;
         }
@@ -575,7 +552,7 @@ static void test_range_index(void** state)
     }
 
     /* Verify all ifail entries are zero */
-    for (int i = 0; i < m; i++) {
+    for (INT i = 0; i < m; i++) {
         assert_int_equal(fix->ifail[i], 0);
     }
 
@@ -592,16 +569,16 @@ static void test_range_index(void** state)
 static void test_sturm(void** state)
 {
     dstevx_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
-    int m;
+    INT n = fix->n;
+    INT info;
+    INT m;
 
     /* Allocate workspace for sstech: length n */
-    int n_alloc = (n > 0) ? n : 1;
+    INT n_alloc = (n > 0) ? n : 1;
     f32* stech_work = malloc(n_alloc * sizeof(f32));
     assert_non_null(stech_work);
 
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
 
         /* Generate test matrix */

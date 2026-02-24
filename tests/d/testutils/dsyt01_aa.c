@@ -7,20 +7,10 @@
  */
 
 #include <float.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* Forward declarations for LAPACK routines */
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-
 /**
  * DSYT01_AA reconstructs a symmetric indefinite matrix A from its
  * block L*D*L' or U*D*U' factorization and computes the residual
@@ -52,21 +42,21 @@ extern void dlacpy(const char* uplo, const int m, const int n,
  */
 void dsyt01_aa(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* const restrict A,
-    const int lda,
+    const INT lda,
     const f64* const restrict AFAC,
-    const int ldafac,
-    const int* const restrict ipiv,
+    const INT ldafac,
+    const INT* const restrict ipiv,
     f64* const restrict C,
-    const int ldc,
+    const INT ldc,
     f64* const restrict rwork,
     f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 anorm, eps;
 
     /* Quick exit if N = 0. */

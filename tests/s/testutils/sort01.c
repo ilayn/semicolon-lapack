@@ -3,17 +3,9 @@
  * @brief SORT01 checks that a matrix U is orthogonal.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
 
 /**
  * SORT01 checks that the matrix U is orthogonal by computing the ratio
@@ -48,15 +40,15 @@ extern void slaset(const char* uplo, const int m, const int n,
  *                    done even if lwork is 0.
  * @param[out] resid  The computed residual.
  */
-void sort01(const char* rowcol, const int m, const int n,
-            const f32* U, const int ldu,
-            f32* work, const int lwork, f32* resid)
+void sort01(const char* rowcol, const INT m, const INT n,
+            const f32* U, const INT ldu,
+            f32* work, const INT lwork, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     char transu;
-    int i, j, k, ldwork, mnmin;
+    INT i, j, k, ldwork, mnmin;
     f32 eps, tmp;
 
     *resid = ZERO;

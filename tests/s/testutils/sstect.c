@@ -7,8 +7,6 @@
 #include <math.h>
 #include "verify.h"
 
-extern f32 slamch(const char* cmach);
-
 /**
  * SSTECT counts the number NUM of eigenvalues of a tridiagonal
  * matrix T which are less than or equal to SHIFT. T has
@@ -24,14 +22,14 @@ extern f32 slamch(const char* cmach);
  * @param[in]     shift  The shift value.
  * @param[out]    num    The number of eigenvalues of T less than or equal to SHIFT.
  */
-void sstect(const int n, const f32* a, const f32* b,
-            const f32 shift, int* num)
+void sstect(const INT n, const f32* a, const f32* b,
+            const f32 shift, INT* num)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 THREE = 3.0f;
 
-    int i;
+    INT i;
     f32 m1, m2, mx, ovfl, sov, sshift, ssun, sun, tmp, tom, u, unfl;
 
     /* Get machine constants */

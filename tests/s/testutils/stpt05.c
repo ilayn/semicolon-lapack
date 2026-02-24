@@ -7,12 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * STPT05 tests the error bounds from iterative refinement for the
  * computed solution to a system of equations A*X = B, where A is a
@@ -42,17 +40,17 @@ extern f32 slamch(const char* cmach);
  * @param[out]    reslts  Array (2). The test results.
  */
 void stpt05(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs,
-            const f32* AP, const f32* B, const int ldb,
-            const f32* X, const int ldx,
-            const f32* XACT, const int ldxact,
+            const INT n, const INT nrhs,
+            const f32* AP, const f32* B, const INT ldb,
+            const f32* X, const INT ldx,
+            const f32* XACT, const INT ldxact,
             const f32* ferr, const f32* berr,
             f32* reslts)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int notran, unit, upper;
-    int i, ifu, imax, j, jc, k;
+    INT notran, unit, upper;
+    INT i, ifu, imax, j, jc, k;
     f32 axbi, diff, eps, errbnd, ovfl, tmp, unfl, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0 */

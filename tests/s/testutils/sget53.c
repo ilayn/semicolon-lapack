@@ -6,8 +6,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f32 slamch(const char* cmach);
-
 /**
  * SGET53 checks the generalized eigenvalues computed by SLAG2.
  *
@@ -43,9 +41,9 @@ extern f32 slamch(const char* cmach);
  *                        = 2: ulp*max( s*norm(A), |w|*norm(B) ) < safe_minimum
  *                        = 3: same as 2, but s and w could not be scaled.
  */
-void sget53(const f32* A, const int lda, const f32* B, const int ldb,
+void sget53(const f32* A, const INT lda, const f32* B, const INT ldb,
             const f32 scale, const f32 wr, const f32 wi,
-            f32* result, int* info)
+            f32* result, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

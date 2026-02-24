@@ -4,15 +4,8 @@
  *        constrained least square problem (LSE).
  */
 
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void sgglse(const int m, const int n, const int p,
-                   f32* A, const int lda, f32* B, const int ldb,
-                   f32* C, f32* D, f32* X,
-                   f32* work, const int lwork, int* info);
 
 /**
  * SLSETS tests SGGLSE - a subroutine for solving linear equality
@@ -40,26 +33,26 @@ extern void sgglse(const int m, const int n, const int p,
  *                        result[1] = norm( B*x - d )/ norm(B)*norm(X)*EPS
  */
 void slsets(
-    const int m,
-    const int p,
-    const int n,
+    const INT m,
+    const INT p,
+    const INT n,
     const f32* A,
     f32* AF,
-    const int lda,
+    const INT lda,
     const f32* B,
     f32* BF,
-    const int ldb,
+    const INT ldb,
     const f32* C,
     f32* CF,
     const f32* D,
     f32* DF,
     f32* X,
     f32* work,
-    const int lwork,
+    const INT lwork,
     f32* rwork,
     f32* result)
 {
-    int info;
+    INT info;
 
     /* Copy the matrices A and B to the arrays AF and BF,
        and the vectors C and D to the arrays CF and DF, */

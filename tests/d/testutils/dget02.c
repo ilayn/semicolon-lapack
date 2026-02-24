@@ -4,15 +4,9 @@
  *        equations.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64 * const restrict A, const int lda,
-                     f64 * const restrict work);
 
 /**
  * DGET02 computes the residual for a solution of a system of linear
@@ -50,24 +44,24 @@ extern f64 dlange(const char* norm, const int m, const int n,
  */
 void dget02(
     const char* trans,
-    const int m,
-    const int n,
-    const int nrhs,
+    const INT m,
+    const INT n,
+    const INT nrhs,
     const f64 * const restrict A,
-    const int lda,
+    const INT lda,
     const f64 * const restrict X,
-    const int ldx,
+    const INT ldx,
     f64 * const restrict B,
-    const int ldb,
+    const INT ldb,
     f64 * const restrict rwork,
     f64 *resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int j, n1, n2;
+    INT j, n1, n2;
     f64 anorm, bnorm, eps, xnorm;
-    int notran = (trans[0] == 'N' || trans[0] == 'n');
+    INT notran = (trans[0] == 'N' || trans[0] == 'n');
 
     // Quick exit if m = 0 or n = 0 or nrhs = 0
     if (m <= 0 || n <= 0 || nrhs == 0) {

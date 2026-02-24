@@ -25,14 +25,13 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -45,73 +44,15 @@ static const char TRANSS[] = {'N', 'T', 'C'};
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void dgttrf(const int n, f64* DL, f64* D, f64* DU,
-                   f64* DU2, int* ipiv, int* info);
-extern void dgttrs(const char* trans, const int n, const int nrhs,
-                   const f64* DL, const f64* D, const f64* DU,
-                   const f64* DU2, const int* ipiv,
-                   f64* B, const int ldb, int* info);
-extern void dgtrfs(const char* trans, const int n, const int nrhs,
-                   const f64* DL, const f64* D, const f64* DU,
-                   const f64* DLF, const f64* DF, const f64* DUF,
-                   const f64* DU2, const int* ipiv,
-                   const f64* B, const int ldb,
-                   f64* X, const int ldx,
-                   f64* ferr, f64* berr,
-                   f64* work, int* iwork, int* info);
-extern void dgtcon(const char* norm, const int n,
-                   const f64* DL, const f64* D, const f64* DU,
-                   const f64* DU2, const int* ipiv,
-                   const f64 anorm, f64* rcond,
-                   f64* work, int* iwork, int* info);
-
 /* Verification routines */
-extern void dgtt01(const int n, const f64* DL, const f64* D,
-                   const f64* DU, const f64* DLF, const f64* DF,
-                   const f64* DUF, const f64* DU2, const int* ipiv,
-                   f64* work, const int ldwork, f64* resid);
-extern void dgtt02(const char* trans, const int n, const int nrhs,
-                   const f64* DL, const f64* D, const f64* DU,
-                   const f64* X, const int ldx,
-                   f64* B, const int ldb, f64* resid);
-extern void dgtt05(const char* trans, const int n, const int nrhs,
-                   const f64* DL, const f64* D, const f64* DU,
-                   const f64* B, const int ldb,
-                   const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact,
-                   const f64* ferr, const f64* berr, f64* reslts);
-extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact, const f64 rcond,
-                   f64* resid);
-extern f64 dget06(const f64 rcond, const f64 rcondc);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern f64 dlangt(const char* norm, const int n,
-                     const f64* DL, const f64* D, const f64* DU);
-extern f64 dlamch(const char* cmach);
-extern void dlagtm(const char* trans, const int n, const int nrhs,
-                   const f64 alpha, const f64* DL, const f64* D,
-                   const f64* DU, const f64* X, const int ldx,
-                   const f64 beta, f64* B, const int ldb);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;
+    INT n;
+    INT imat;
     char name[64];
 } dchkgt_params_t;
 
@@ -133,8 +74,8 @@ typedef struct {
     f64* RWORK;  /* Real workspace for error bounds */
     f64* FERR;   /* Forward error bounds */
     f64* BERR;   /* Backward error bounds */
-    int* IPIV;      /* Pivot indices */
-    int* IWORK;     /* Integer workspace */
+    INT* IPIV;      /* Pivot indices */
+    INT* IWORK;     /* Integer workspace */
 } dchkgt_workspace_t;
 
 static dchkgt_workspace_t* g_workspace = NULL;
@@ -162,8 +103,8 @@ static int group_setup(void** state)
     g_workspace->RWORK = malloc(2 * NSMAX * sizeof(f64));
     g_workspace->FERR = malloc(NSMAX * sizeof(f64));
     g_workspace->BERR = malloc(NSMAX * sizeof(f64));
-    g_workspace->IPIV = malloc(NMAX * sizeof(int));
-    g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
+    g_workspace->IPIV = malloc(NMAX * sizeof(INT));
+    g_workspace->IWORK = malloc(2 * NMAX * sizeof(INT));
 
     if (!g_workspace->DL || !g_workspace->D || !g_workspace->DU ||
         !g_workspace->DLF || !g_workspace->DF || !g_workspace->DUF ||
@@ -212,16 +153,16 @@ static int group_teardown(void** state)
  * For types 1-6: Use dlatms with controlled singular values.
  * For types 7-12: Generate random tridiagonal directly.
  */
-static void generate_gt_matrix(int n, int imat, f64* DL, f64* D, f64* DU,
-                                uint64_t rng_state[static 4], int* izero)
+static void generate_gt_matrix(INT n, INT imat, f64* DL, f64* D, f64* DU,
+                                uint64_t rng_state[static 4], INT* izero)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int m = (n > 1) ? n - 1 : 0;
+    INT m = (n > 1) ? n - 1 : 0;
 
     if (n <= 0) {
         *izero = 0;
@@ -230,13 +171,13 @@ static void generate_gt_matrix(int n, int imat, f64* DL, f64* D, f64* DU,
 
     dlatb4("DGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    int zerot = (imat >= 8 && imat <= 10);
+    INT zerot = (imat >= 8 && imat <= 10);
     *izero = 0;
 
     if (imat >= 1 && imat <= 6) {
         /* Types 1-6: Use dlatms to generate matrix with controlled condition */
         /* Generate in band storage: 3 rows (sub, diag, super) */
-        int lda = 3;
+        INT lda = 3;
         f64* AB = calloc(lda * n, sizeof(f64));
         f64* d_sing = malloc(n * sizeof(f64));
         /* dlatms with pack='Z' needs: n*n (full matrix) + m+n (dlagge workspace) */
@@ -257,19 +198,19 @@ static void generate_gt_matrix(int n, int imat, f64* DL, f64* D, f64* DU,
         if (info == 0) {
             /* Extract tridiagonal from band storage */
             /* Band storage with 'Z': row 0 = super-diagonal, row 1 = diagonal, row 2 = sub-diagonal */
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 D[i] = AB[1 + i * lda];  /* Diagonal */
             }
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 DU[i] = AB[0 + (i + 1) * lda];  /* Super-diagonal */
                 DL[i] = AB[2 + i * lda];        /* Sub-diagonal */
             }
         } else {
             /* Fall back to simple generation */
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 D[i] = 2.0 * anorm;
             }
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 DL[i] = -anorm * 0.5;
                 DU[i] = -anorm * 0.5;
             }
@@ -282,25 +223,25 @@ static void generate_gt_matrix(int n, int imat, f64* DL, f64* D, f64* DU,
         /* Types 7-12: Random generation */
 
         /* Generate random elements from [-1, 1] */
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             DL[i] = rng_uniform_symmetric(rng_state);
         }
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             D[i] = rng_uniform_symmetric(rng_state);
         }
-        for (int i = 0; i < m; i++) {
+        for (INT i = 0; i < m; i++) {
             DU[i] = rng_uniform_symmetric(rng_state);
         }
 
         /* Scale if needed */
         if (anorm != ONE) {
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 DL[i] *= anorm;
             }
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 D[i] *= anorm;
             }
-            for (int i = 0; i < m; i++) {
+            for (INT i = 0; i < m; i++) {
                 DU[i] *= anorm;
             }
         }
@@ -324,7 +265,7 @@ static void generate_gt_matrix(int n, int imat, f64* DL, f64* D, f64* DU,
             } else {
                 /* Zero middle columns */
                 *izero = (n + 1) / 2;
-                for (int i = *izero - 1; i < n - 1; i++) {
+                for (INT i = *izero - 1; i < n - 1; i++) {
                     DL[i] = ZERO;
                     D[i] = ZERO;
                     DU[i] = ZERO;
@@ -339,16 +280,16 @@ static void generate_gt_matrix(int n, int imat, f64* DL, f64* D, f64* DU,
  * Run the full dchkgt test battery for a single (n, imat) combination.
  * This is the core test logic, parameterized by the test case.
  */
-static void run_dchkgt_single(int n, int imat)
+static void run_dchkgt_single(INT n, INT imat)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     dchkgt_workspace_t* ws = g_workspace;
 
-    int info, izero;
-    int m = (n > 1) ? n - 1 : 0;
-    int lda = (n > 1) ? n : 1;
-    int trfcon;
+    INT info, izero;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT lda = (n > 1) ? n : 1;
+    INT trfcon;
     f64 anorm, rcond, rcondc, rcondo, rcondi, ainvnm;
     f64 result[NTESTS];
     char ctx[128];  /* Context string for error messages */
@@ -358,7 +299,7 @@ static void run_dchkgt_single(int n, int imat)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -393,7 +334,7 @@ static void run_dchkgt_single(int n, int imat)
     /*
      * TEST 7: Condition number estimation (for both 'O' and 'I' norms)
      */
-    for (int itran = 0; itran < 2; itran++) {
+    for (INT itran = 0; itran < 2; itran++) {
         char norm = (itran == 0) ? 'O' : 'I';
         char norm_str[2] = {norm, '\0'};
         snprintf(ctx, sizeof(ctx), "n=%d imat=%d TEST 7 (condition norm=%c)", n, imat, norm);
@@ -403,8 +344,8 @@ static void run_dchkgt_single(int n, int imat)
         if (!trfcon) {
             /* Compute inverse norm by solving for each column of identity */
             ainvnm = ZERO;
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
+            for (INT i = 0; i < n; i++) {
+                for (INT j = 0; j < n; j++) {
                     ws->X[j] = ZERO;
                 }
                 ws->X[i] = ONE;
@@ -412,7 +353,7 @@ static void run_dchkgt_single(int n, int imat)
                 dgttrs(trans_str, n, 1, ws->DLF, ws->DF, ws->DUF, ws->DU2,
                        ws->IPIV, ws->X, lda, &info);
                 f64 sum = ZERO;
-                for (int j = 0; j < n; j++) {
+                for (INT j = 0; j < n; j++) {
                     sum += fabs(ws->X[j]);
                 }
                 if (sum > ainvnm) ainvnm = sum;
@@ -450,17 +391,17 @@ static void run_dchkgt_single(int n, int imat)
     /*
      * TESTS 2-6: Solve tests for each NRHS and TRANS
      */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
         /* Generate NRHS random solution vectors */
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 ws->XACT[i + j * lda] = rng_uniform_symmetric(rng_state);
             }
         }
 
-        for (int itran = 0; itran < (int)NTRAN; itran++) {
+        for (INT itran = 0; itran < (INT)NTRAN; itran++) {
             char trans = TRANSS[itran];
             char trans_str[2] = {trans, '\0'};
             rcondc = (itran == 0) ? rcondo : rcondi;
@@ -541,7 +482,7 @@ static void test_dchkgt_case(void** state)
 
 static dchkgt_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -550,15 +491,15 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Store parameters */
             dchkgt_params_t* p = &g_params[g_num_tests];
             p->n = n;

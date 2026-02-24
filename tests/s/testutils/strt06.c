@@ -9,11 +9,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const f32* A, const int lda,
-                     f32* work);
-
 /**
  * STRT06 computes a test ratio comparing RCOND (the reciprocal
  * condition number of a triangular matrix A) and RCONDC, the estimate
@@ -35,8 +30,8 @@ extern f32 slantr(const char* norm, const char* uplo, const char* diag,
  * @param[out]    rat     The test ratio.
  */
 void strt06(const f32 rcond, const f32 rcondc,
-            const char* uplo, const char* diag, const int n,
-            const f32* A, const int lda, f32* work, f32* rat)
+            const char* uplo, const char* diag, const INT n,
+            const f32* A, const INT lda, f32* work, f32* rat)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;

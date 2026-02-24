@@ -7,12 +7,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
 
 /**
  * DLARGE pre- and post-multiplies a real general n by n matrix A
@@ -41,13 +38,13 @@ extern void xerbla(const char* srname, const int info);
  *     On entry, the state of the random number generator.
  *     On exit, the state is updated.
  */
-void dlarge(const int n, f64* A, const int lda,
-            f64* work, int* info, uint64_t state[static 4])
+void dlarge(const INT n, f64* A, const INT lda,
+            f64* work, INT* info, uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i;
+    INT i;
     f64 tau, wa, wb, wn;
 
     *info = 0;

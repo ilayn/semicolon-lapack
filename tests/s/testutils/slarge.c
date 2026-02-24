@@ -7,12 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern void xerbla(const char* srname, const int info);
 
 /**
  * SLARGE pre- and post-multiplies a real general n by n matrix A
@@ -41,13 +39,13 @@ extern void xerbla(const char* srname, const int info);
  *     On entry, the state of the random number generator.
  *     On exit, the state is updated.
  */
-void slarge(const int n, f32* A, const int lda,
-            f32* work, int* info, uint64_t state[static 4])
+void slarge(const INT n, f32* A, const INT lda,
+            f32* work, INT* info, uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i;
+    INT i;
     f32 tau, wa, wb, wn;
 
     *info = 0;

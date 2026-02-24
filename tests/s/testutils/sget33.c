@@ -7,11 +7,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f32 slamch(const char* cmach);
-extern void slanv2(f32* a, f32* b, f32* c, f32* d,
-                   f32* rt1r, f32* rt1i, f32* rt2r, f32* rt2i,
-                   f32* cs, f32* sn);
-
 /**
  * SGET33 tests SLANV2, a routine for putting 2 by 2 blocks into
  * standard form.  In other words, it computes a two by two rotation
@@ -30,7 +25,7 @@ extern void slanv2(f32* a, f32* b, f32* c, f32* d,
  * @param[out]    ninfo   Number of examples returned with INFO != 0.
  * @param[out]    knt     Total number of examples tested.
  */
-void sget33(f32* rmax, int* lmax, int* ninfo, int* knt)
+void sget33(f32* rmax, INT* lmax, INT* ninfo, INT* knt)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE  = 1.0f;
@@ -58,14 +53,14 @@ void sget33(f32* rmax, int* lmax, int* ninfo, int* knt)
     f32 t[2][2], t1[2][2], t2[2][2], q[2][2];
     f32 cs, sn, wr1, wi1, wr2, wi2, res, sum, tnrm;
 
-    for (int i1 = 0; i1 < 4; i1++) {
-        for (int i2 = 0; i2 < 4; i2++) {
-            for (int i3 = 0; i3 < 4; i3++) {
-                for (int i4 = 0; i4 < 4; i4++) {
-                    for (int im1 = 0; im1 < 3; im1++) {
-                        for (int im2 = 0; im2 < 3; im2++) {
-                            for (int im3 = 0; im3 < 3; im3++) {
-                                for (int im4 = 0; im4 < 3; im4++) {
+    for (INT i1 = 0; i1 < 4; i1++) {
+        for (INT i2 = 0; i2 < 4; i2++) {
+            for (INT i3 = 0; i3 < 4; i3++) {
+                for (INT i4 = 0; i4 < 4; i4++) {
+                    for (INT im1 = 0; im1 < 3; im1++) {
+                        for (INT im2 = 0; im2 < 3; im2++) {
+                            for (INT im3 = 0; im3 < 3; im3++) {
+                                for (INT im4 = 0; im4 < 3; im4++) {
                                     t[0][0] = val[i1] * vm[im1];
                                     t[0][1] = val[i2] * vm[im2];
                                     t[1][0] = -val[i3] * vm[im3];
@@ -87,7 +82,7 @@ void sget33(f32* rmax, int* lmax, int* ninfo, int* knt)
                                            &t[1][0], &t[1][1],
                                            &wr1, &wi1, &wr2, &wi2,
                                            &cs, &sn);
-                                    for (int j1 = 0; j1 < 2; j1++) {
+                                    for (INT j1 = 0; j1 < 2; j1++) {
                                         res = q[j1][0] * cs + q[j1][1] * sn;
                                         q[j1][1] = -q[j1][0] * sn +
                                                     q[j1][1] * cs;
@@ -101,20 +96,20 @@ void sget33(f32* rmax, int* lmax, int* ninfo, int* knt)
                                                 q[1][0] * q[1][0] - ONE) / eps;
                                     res = res + fabsf(q[0][0] * q[1][0] +
                                                 q[0][1] * q[1][1]) / eps;
-                                    for (int j1 = 0; j1 < 2; j1++) {
-                                        for (int j2 = 0; j2 < 2; j2++) {
+                                    for (INT j1 = 0; j1 < 2; j1++) {
+                                        for (INT j2 = 0; j2 < 2; j2++) {
                                             t2[j1][j2] = ZERO;
-                                            for (int j3 = 0; j3 < 2; j3++) {
+                                            for (INT j3 = 0; j3 < 2; j3++) {
                                                 t2[j1][j2] = t2[j1][j2] +
                                                               t1[j1][j3] *
                                                               q[j3][j2];
                                             }
                                         }
                                     }
-                                    for (int j1 = 0; j1 < 2; j1++) {
-                                        for (int j2 = 0; j2 < 2; j2++) {
+                                    for (INT j1 = 0; j1 < 2; j1++) {
+                                        for (INT j2 = 0; j2 < 2; j2++) {
                                             sum = t[j1][j2];
-                                            for (int j3 = 0; j3 < 2; j3++) {
+                                            for (INT j3 = 0; j3 < 2; j3++) {
                                                 sum = sum - q[j3][j1] *
                                                             t2[j3][j2];
                                             }

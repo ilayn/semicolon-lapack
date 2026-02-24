@@ -22,18 +22,17 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include "semicolon_lapack_double.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values for least squares */
-static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
-static const int NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in */
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values for least squares */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in */
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -45,74 +44,15 @@ static const int NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from dtest.in 
 #define NMAX    50  /* Maximum matrix dimension */
 #define NSMAX   15  /* Max NRHS */
 
-/* Verification routines */
-extern void dqlt01(const int m, const int n, const f64* A, f64* AF,
-                   f64* Q, f64* L, const int lda, f64* tau,
-                   f64* work, const int lwork, f64* rwork,
-                   f64* result);
-extern void dqlt02(const int m, const int n, const int k,
-                   const f64* A, const f64* AF, f64* Q, f64* L,
-                   const int lda, const f64* tau,
-                   f64* work, const int lwork, f64* rwork,
-                   f64* result);
-extern void dqlt03(const int m, const int n, const int k,
-                   const f64* AF, f64* C, f64* CC, f64* Q,
-                   const int lda, const f64* tau,
-                   f64* work, const int lwork, f64* rwork,
-                   f64* result);
-extern void dget02(const char* trans, const int m, const int n, const int nrhs,
-                   const f64* A, const int lda, const f64* X,
-                   const int ldx, f64* B, const int ldb,
-                   f64* rwork, f64* resid);
-
-/* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f64* A, const int lda,
-                   const f64* XACT, const int ldxact, f64* B,
-                   const int ldb, int* info, uint64_t state[static 4]);
-
-/* DGEQLS - solve using QL factorization (not a standard LAPACK routine,
- * but used in LAPACK testing). We implement it inline here. */
-static void dgeqls(const int m, const int n, const int nrhs,
-                   f64* A, const int lda, const f64* tau,
-                   f64* B, const int ldb,
-                   f64* work, const int lwork, int* info)
-{
-    *info = 0;
-    if (m < 0) *info = -1;
-    else if (n < 0 || n > m) *info = -2;
-    else if (nrhs < 0) *info = -3;
-    else if (lda < m || lda < 1) *info = -5;
-    else if (ldb < m || ldb < 1) *info = -8;
-    if (*info != 0) return;
-
-    if (n == 0 || nrhs == 0) return;
-
-    /* B := Q' * B */
-    dormql("L", "T", m, nrhs, n, A, lda, tau, B, ldb, work, lwork, info);
-    if (*info != 0) return;
-
-    dtrtrs("L", "N", "N", n, nrhs, &A[(m - n) + 0 * lda], lda,
-           &B[(m - n) + 0 * ldb], ldb, info);
-}
 
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int imat;
-    int inb;    /* Index into NBVAL[] */
+    INT m;
+    INT n;
+    INT imat;
+    INT inb;    /* Index into NBVAL[] */
     char name[64];
 } dchkql_params_t;
 
@@ -133,7 +73,7 @@ typedef struct {
     f64* WORK;   /* General workspace */
     f64* RWORK;  /* Real workspace */
     f64* D;      /* Singular values for dlatms */
-    int* IWORK;     /* Integer workspace */
+    INT* IWORK;     /* Integer workspace */
 } dchkql_workspace_t;
 
 static dchkql_workspace_t* g_workspace = NULL;
@@ -147,7 +87,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchkql_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * NMAX;
+    INT lwork = NMAX * NMAX;
 
     g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->AF = malloc(NMAX * NMAX * sizeof(f64));
@@ -162,7 +102,7 @@ static int group_setup(void** state)
     g_workspace->WORK = malloc(lwork * sizeof(f64));
     g_workspace->RWORK = malloc(NMAX * sizeof(f64));
     g_workspace->D = malloc(NMAX * sizeof(f64));
-    g_workspace->IWORK = malloc(NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AF || !g_workspace->Q ||
         !g_workspace->L || !g_workspace->C || !g_workspace->CC ||
@@ -209,24 +149,24 @@ static int group_teardown(void** state)
  * Unlike dchkge/dchkpo/dchksy, ALL tests run for each NB value because
  * the QL factorization and Q operations are all affected by blocking.
  */
-static void run_dchkql_single(int m, int n, int imat, int inb)
+static void run_dchkql_single(INT m, INT n, INT imat, INT inb)
 {
     const f64 ZERO = 0.0;
     dchkql_workspace_t* ws = g_workspace;
 
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
-    int lda = NMAX;
-    int lwork = NMAX * NMAX;
-    int minmn = (m < n) ? m : n;
+    INT info;
+    INT lda = NMAX;
+    INT lwork = NMAX * NMAX;
+    INT minmn = (m < n) ? m : n;
     f64 result[NTESTS];
     char ctx[128];  /* Context string for error messages */
 
     /* Set block size and crossover point for this test via xlaenv */
-    int nb = NBVAL[inb];
-    int nx = NXVAL[inb];
+    INT nb = NBVAL[inb];
+    INT nx = NXVAL[inb];
     xlaenv(1, nb);
     xlaenv(3, nx);
 
@@ -235,7 +175,7 @@ static void run_dchkql_single(int m, int n, int imat, int inb)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));
 
     /* Initialize results */
-    for (int i = 0; i < NTESTS; i++) {
+    for (INT i = 0; i < NTESTS; i++) {
         result[i] = ZERO;
     }
 
@@ -248,13 +188,13 @@ static void run_dchkql_single(int m, int n, int imat, int inb)
     assert_int_equal(info, 0);
 
     /* Set K values to test: MINMN, 0, 1, MINMN/2 */
-    int kval[4];
+    INT kval[4];
     kval[0] = minmn;
     kval[1] = 0;
     kval[2] = 1;
     kval[3] = minmn / 2;
 
-    int nk;
+    INT nk;
     if (minmn == 0) {
         nk = 1;
     } else if (minmn == 1) {
@@ -265,8 +205,8 @@ static void run_dchkql_single(int m, int n, int imat, int inb)
         nk = 4;
     }
 
-    for (int ik = 0; ik < nk; ik++) {
-        int k = kval[ik];
+    for (INT ik = 0; ik < nk; ik++) {
+        INT k = kval[ik];
 
         if (ik == 0) {
             /*
@@ -320,7 +260,7 @@ static void run_dchkql_single(int m, int n, int imat, int inb)
              * Only test once per (M, N, IMAT) when INB == 1
              */
             if (k == n && m >= n && n > 0 && inb == 0) {
-                int nrhs = NSVAL[0];  /* Use first NRHS value */
+                INT nrhs = NSVAL[0];  /* Use first NRHS value */
 
                 snprintf(ctx, sizeof(ctx), "m=%d n=%d imat=%d k=%d nrhs=%d TEST 7 (DGEQLS)", m, n, imat, k, nrhs);
                 set_test_context(ctx);
@@ -368,7 +308,7 @@ static void test_dchkql_case(void** state)
 
 static dchkql_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -377,16 +317,16 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
 
-            for (int imat = 1; imat <= NTYPES; imat++) {
+            for (INT imat = 1; imat <= NTYPES; imat++) {
                 /* Loop over block sizes */
-                for (int inb = 0; inb < (int)NNB; inb++) {
-                    int nb = NBVAL[inb];
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    INT nb = NBVAL[inb];
 
                     /* Store parameters */
                     dchkql_params_t* p = &g_params[g_num_tests];

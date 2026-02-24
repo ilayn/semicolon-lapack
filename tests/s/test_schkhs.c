@@ -60,7 +60,7 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 #include <string.h>
 
@@ -68,68 +68,28 @@
 #define MAXTYP 21
 #define NTEST  16
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20, 50};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* External function declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void sgehrd(const int n, const int ilo, const int ihi,
-                   f32* A, const int lda, f32* tau, f32* work,
-                   const int lwork, int* info);
-extern void sorghr(const int n, const int ilo, const int ihi,
-                   f32* A, const int lda, const f32* tau, f32* work,
-                   const int lwork, int* info);
-extern void sormhr(const char* side, const char* trans, const int m,
-                   const int n, const int ilo, const int ihi,
-                   const f32* A, const int lda, const f32* tau,
-                   f32* C, const int ldc, f32* work, const int lwork,
-                   int* info);
-extern void shseqr(const char* job, const char* compz, const int n,
-                   const int ilo, const int ihi, f32* H, const int ldh,
-                   f32* wr, f32* wi, f32* Z, const int ldz,
-                   f32* work, const int lwork, int* info);
-extern void strevc(const char* side, const char* howmny, int* select,
-                   const int n, const f32* T, const int ldt,
-                   f32* VL, const int ldvl, f32* VR, const int ldvr,
-                   const int mm, int* m, f32* work, int* info);
-extern void strevc3(const char* side, const char* howmny, int* select,
-                    const int n, f32* T, const int ldt,
-                    f32* VL, const int ldvl, f32* VR, const int ldvr,
-                    const int mm, int* m, f32* work, const int lwork,
-                    int* info);
-extern void shsein(const char* side, const char* eigsrc, const char* initv,
-                   int* restrict select, const int n,
-                   const f32* restrict H, const int ldh,
-                   f32* restrict wr, const f32* restrict wi,
-                   f32* restrict VL, const int ldvl,
-                   f32* restrict VR, const int ldvr,
-                   const int mm, int* m, f32* restrict work,
-                   int* restrict ifaill, int* restrict ifailr, int* info);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-
 /* ===================================================================== */
 /* DATA arrays from dchkhs.f lines 481-486                               */
 /* ===================================================================== */
 
 /*                  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 */
-static const int ktype[MAXTYP] = {
+static const INT ktype[MAXTYP] = {
     1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9
 };
 
-static const int kmagn[MAXTYP] = {
+static const INT kmagn[MAXTYP] = {
     1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3
 };
 
-static const int kmode[MAXTYP] = {
+static const INT kmode[MAXTYP] = {
     0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1
 };
 
-static const int kconds[MAXTYP] = {
+static const INT kconds[MAXTYP] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0
 };
 
@@ -138,13 +98,13 @@ static const int kconds[MAXTYP] = {
 /* ===================================================================== */
 
 typedef struct {
-    int jsize;    /* index into NVAL[] */
-    int jtype;    /* matrix type 1..21 */
+    INT jsize;    /* index into NVAL[] */
+    INT jtype;    /* matrix type 1..21 */
     char name[96];
 } dchkhs_params_t;
 
 typedef struct {
-    int nmax;
+    INT nmax;
     f32* A;
     f32* H;
     f32* T1;
@@ -165,9 +125,9 @@ typedef struct {
     f32* wi3;
     f32* tau;
     f32* work;
-    int nwork;
-    int* iwork;
-    int* selectarr;
+    INT nwork;
+    INT* iwork;
+    INT* selectarr;
     uint64_t rng_state[4];
 } dchkhs_workspace_t;
 
@@ -190,8 +150,8 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     g_ws->A      = malloc(n2 * sizeof(f32));
     g_ws->H      = malloc(n2 * sizeof(f32));
@@ -218,8 +178,8 @@ static int group_setup(void** state)
     if (g_ws->nwork < 1) g_ws->nwork = 1;
     g_ws->work = malloc(g_ws->nwork * sizeof(f32));
 
-    g_ws->iwork     = malloc(2 * nmax * sizeof(int));
-    g_ws->selectarr = malloc(nmax * sizeof(int));
+    g_ws->iwork     = malloc(2 * nmax * sizeof(INT));
+    g_ws->selectarr = malloc(nmax * sizeof(INT));
 
     if (!g_ws->A || !g_ws->H || !g_ws->T1 || !g_ws->T2 ||
         !g_ws->U || !g_ws->Z || !g_ws->UZ || !g_ws->UU ||
@@ -273,15 +233,15 @@ static int group_teardown(void** state)
 
 static void run_dchkhs_single(dchkhs_params_t* params)
 {
-    const int n = NVAL[params->jsize];
-    const int jtype = params->jtype;
-    const int jt = jtype - 1;
+    const INT n = NVAL[params->jsize];
+    const INT jtype = params->jtype;
+    const INT jt = jtype - 1;
 
     if (n == 0) return;
 
-    const int lda = g_ws->nmax;
-    const int ldu = g_ws->nmax;
-    const int nwork = g_ws->nwork;
+    const INT lda = g_ws->nmax;
+    const INT ldu = g_ws->nmax;
+    const INT nwork = g_ws->nwork;
 
     f32* A      = g_ws->A;
     f32* H      = g_ws->H;
@@ -303,8 +263,8 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     f32* wi3    = g_ws->wi3;
     f32* tau    = g_ws->tau;
     f32* work   = g_ws->work;
-    int* iwork  = g_ws->iwork;
-    int* selectarr = g_ws->selectarr;
+    INT* iwork  = g_ws->iwork;
+    INT* selectarr = g_ws->selectarr;
 
     uint64_t* rng = g_ws->rng_state;
 
@@ -317,23 +277,23 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     const f32 rtulp = sqrtf(ulp);
     const f32 rtulpi = 1.0f / rtulp;
 
-    const int n1 = (n > 1) ? n : 1;
+    const INT n1 = (n > 1) ? n : 1;
     const f32 aninv = 1.0f / (f32)n1;
 
     f32 result[NTEST];
-    for (int i = 0; i < NTEST; i++)
+    for (INT i = 0; i < NTEST; i++)
         result[i] = 0.0f;
 
     char ctx[256];
-    int iinfo;
+    INT iinfo;
 
     /* ================================================================ */
     /* Generate test matrix A                                           */
     /* ================================================================ */
 
     if (jtype <= MAXTYP) {
-        int itype = ktype[jt];
-        int imode = kmode[jt];
+        INT itype = ktype[jt];
+        INT imode = kmode[jt];
 
         f32 anorm;
         switch (kmagn[jt]) {
@@ -352,12 +312,12 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
         } else if (itype == 2) {
             /* Identity */
-            for (int jcol = 0; jcol < n; jcol++)
+            for (INT jcol = 0; jcol < n; jcol++)
                 A[jcol + jcol * lda] = anorm;
 
         } else if (itype == 3) {
             /* Jordan Block */
-            for (int jcol = 0; jcol < n; jcol++) {
+            for (INT jcol = 0; jcol < n; jcol++) {
                 A[jcol + jcol * lda] = anorm;
                 if (jcol > 0)
                     A[jcol + (jcol - 1) * lda] = 1.0f;
@@ -390,7 +350,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
         } else if (itype == 7) {
             /* Diagonal, random eigenvalues */
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             slatmr(n, n, "S", "S", work, 6, 1.0f, 1.0f,
                    "T", "N", work + n, 1, 1.0f,
                    work + 2 * n, 1, 1.0f, "N", idumma, 0, 0,
@@ -398,7 +358,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
         } else if (itype == 8) {
             /* Symmetric, random eigenvalues */
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             slatmr(n, n, "S", "S", work, 6, 1.0f, 1.0f,
                    "T", "N", work + n, 1, 1.0f,
                    work + 2 * n, 1, 1.0f, "N", idumma, n, n,
@@ -406,7 +366,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
         } else if (itype == 9) {
             /* General, random eigenvalues */
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             slatmr(n, n, "S", "N", work, 6, 1.0f, 1.0f,
                    "T", "N", work + n, 1, 1.0f,
                    work + 2 * n, 1, 1.0f, "N", idumma, n, n,
@@ -414,7 +374,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
         } else if (itype == 10) {
             /* Triangular, random eigenvalues */
-            int idumma[1] = {0};
+            INT idumma[1] = {0};
             slatmr(n, n, "S", "N", work, 6, 1.0f, 1.0f,
                    "T", "N", work + n, 1, 1.0f,
                    work + 2 * n, 1, 1.0f, "N", idumma, n, 0,
@@ -451,9 +411,9 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     }
 
     /* Extract reflectors and zero sub-Hessenberg part */
-    for (int j = 0; j < n - 1; j++) {
+    for (INT j = 0; j < n - 1; j++) {
         UU[j + 1 + j * ldu] = 0.0f;
-        for (int i = j + 2; i < n; i++) {
+        for (INT i = j + 2; i < n; i++) {
             U[i + j * ldu] = H[i + j * lda];
             UU[i + j * ldu] = H[i + j * lda];
             H[i + j * lda] = 0.0f;
@@ -530,7 +490,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     {
         f32 temp1 = 0.0f;
         f32 temp2 = 0.0f;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             f32 w1mag = fabsf(wr1[j]) + fabsf(wi1[j]);
             f32 w2mag = fabsf(wr2[j]) + fabsf(wi2[j]);
             f32 wmax = (w1mag > w2mag) ? w1mag : w2mag;
@@ -552,11 +512,11 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     result[8] = ulpinv;
 
     /* Select last max(N/4,1) real, max(N/4,1) complex eigenvectors */
-    int nselc = 0;
-    int nselr = 0;
-    int nsel_max = (n / 4 > 1) ? n / 4 : 1;
+    INT nselc = 0;
+    INT nselr = 0;
+    INT nsel_max = (n / 4 > 1) ? n / 4 : 1;
     {
-        int j = n - 1;
+        INT j = n - 1;
         while (j >= 0) {
             if (wi1[j] == 0.0f) {
                 if (nselr < nsel_max) {
@@ -582,7 +542,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
     /* Right eigenvectors: "All" */
     f32 dumma[6];
-    int in;
+    INT in;
     strevc("R", "A", selectarr, n, T1, lda, dumma, ldu,
            evectr, ldu, n, &in, work, &iinfo);
     if (iinfo != 0) {
@@ -609,11 +569,11 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     }
 
     {
-        int k = 0;
-        int match = 1;
-        for (int j = 0; j < n && match; j++) {
+        INT k = 0;
+        INT match = 1;
+        for (INT j = 0; j < n && match; j++) {
             if (selectarr[j] && wi1[j] == 0.0f) {
-                for (int jj = 0; jj < n; jj++) {
+                for (INT jj = 0; jj < n; jj++) {
                     if (evectr[jj + j * ldu] != evectl[jj + k * ldu]) {
                         match = 0;
                         break;
@@ -621,7 +581,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
                 }
                 k++;
             } else if (selectarr[j] && wi1[j] != 0.0f) {
-                for (int jj = 0; jj < n; jj++) {
+                for (INT jj = 0; jj < n; jj++) {
                     if (evectr[jj + j * ldu] != evectl[jj + k * ldu] ||
                         evectr[jj + (j + 1) * ldu] != evectl[jj + (k + 1) * ldu]) {
                         match = 0;
@@ -662,11 +622,11 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     }
 
     {
-        int k = 0;
-        int match = 1;
-        for (int j = 0; j < n && match; j++) {
+        INT k = 0;
+        INT match = 1;
+        for (INT j = 0; j < n && match; j++) {
             if (selectarr[j] && wi1[j] == 0.0f) {
-                for (int jj = 0; jj < n; jj++) {
+                for (INT jj = 0; jj < n; jj++) {
                     if (evectl[jj + j * ldu] != evectr[jj + k * ldu]) {
                         match = 0;
                         break;
@@ -674,7 +634,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
                 }
                 k++;
             } else if (selectarr[j] && wi1[j] != 0.0f) {
-                for (int jj = 0; jj < n; jj++) {
+                for (INT jj = 0; jj < n; jj++) {
                     if (evectl[jj + j * ldu] != evectr[jj + k * ldu] ||
                         evectl[jj + (j + 1) * ldu] != evectr[jj + (k + 1) * ldu]) {
                         match = 0;
@@ -691,7 +651,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     /* ================================================================ */
 
     result[10] = ulpinv;
-    for (int j = 0; j < n; j++)
+    for (INT j = 0; j < n; j++)
         selectarr[j] = 1;
 
     shsein("R", "Q", "N", selectarr, n, H, lda,
@@ -715,7 +675,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
     /* Left eigenvectors of H via inverse iteration */
     result[11] = ulpinv;
-    for (int j = 0; j < n; j++)
+    for (INT j = 0; j < n; j++)
         selectarr[j] = 1;
 
     shsein("L", "Q", "N", selectarr, n, H, lda,
@@ -826,7 +786,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     /* Check results against threshold                                  */
     /* ================================================================ */
 
-    for (int jr = 0; jr < NTEST; jr++) {
+    for (INT jr = 0; jr < NTEST; jr++) {
         snprintf(ctx, sizeof(ctx), "dchkhs n=%d type=%d TEST %d",
                  n, jtype, jr + 1);
         set_test_context(ctx);
@@ -853,17 +813,17 @@ static void test_dchkhs_case(void** state)
 
 static dchkhs_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
+        INT n = NVAL[in];
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             dchkhs_params_t* p = &g_params[g_num_tests];
-            p->jsize = (int)in;
+            p->jsize = (INT)in;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
                      "dchkhs_n%d_type%d", n, jtype);

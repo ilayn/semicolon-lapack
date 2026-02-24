@@ -7,12 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DTBT03 computes the residual for the solution to a scaled triangular
  * system of equations A*x = s*b or A'*x = s*b when A is a
@@ -49,16 +47,16 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    resid   The maximum over NRHS of norm(op(A)*x - s*b) / (norm(op(A)) * norm(x) * EPS).
  */
 void dtbt03(const char* uplo, const char* trans, const char* diag,
-            const int n, const int kd, const int nrhs,
-            const f64* AB, const int ldab,
+            const INT n, const INT kd, const INT nrhs,
+            const f64* AB, const INT ldab,
             const f64 scale, const f64* cnorm, const f64 tscal,
-            const f64* X, const int ldx,
-            const f64* B, const int ldb,
+            const f64* X, const INT ldx,
+            const f64* B, const INT ldb,
             f64* work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int ix, j;
+    INT ix, j;
     f64 eps, err, smlnum, tnorm, xnorm, xscal;
 
     /* Quick exit if N = 0 */

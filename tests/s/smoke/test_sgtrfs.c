@@ -18,49 +18,13 @@
 #include "verify.h"
 
 /* Routines under test */
-extern void sgttrf(const int n, f32 * const restrict DL,
-                   f32 * const restrict D, f32 * const restrict DU,
-                   f32 * const restrict DU2, int * const restrict ipiv,
-                   int *info);
-extern void sgttrs(const char *trans, const int n, const int nrhs,
-                   const f32 * const restrict DL,
-                   const f32 * const restrict D,
-                   const f32 * const restrict DU,
-                   const f32 * const restrict DU2,
-                   const int * const restrict ipiv,
-                   f32 * const restrict B, const int ldb, int *info);
-extern void sgtrfs(const char *trans, const int n, const int nrhs,
-                   const f32 * const restrict DL,
-                   const f32 * const restrict D,
-                   const f32 * const restrict DU,
-                   const f32 * const restrict DLF,
-                   const f32 * const restrict DF,
-                   const f32 * const restrict DUF,
-                   const f32 * const restrict DU2,
-                   const int * const restrict ipiv,
-                   const f32 * const restrict B, const int ldb,
-                   f32 * const restrict X, const int ldx,
-                   f32 * const restrict ferr, f32 * const restrict berr,
-                   f32 * const restrict work, int * const restrict iwork,
-                   int *info);
-
 /* Utilities */
-extern f32 slamch(const char *cmach);
-extern void slagtm(const char *trans, const int n, const int nrhs,
-                   const f32 alpha,
-                   const f32 * const restrict DL,
-                   const f32 * const restrict D,
-                   const f32 * const restrict DU,
-                   const f32 * const restrict X, const int ldx,
-                   const f32 beta,
-                   f32 * const restrict B, const int ldb);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n, nrhs;
-    int ldb;
+    INT n, nrhs;
+    INT ldb;
     f32 *DL;      /* Original sub-diagonal */
     f32 *D;       /* Original diagonal */
     f32 *DU;      /* Original super-diagonal */
@@ -68,14 +32,14 @@ typedef struct {
     f32 *DF;      /* Factored diagonal */
     f32 *DUF;     /* Factored super-diagonal */
     f32 *DU2;     /* Second super-diagonal from factorization */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f32 *XACT;    /* Exact solution */
     f32 *X;       /* Computed/refined solution */
     f32 *B;       /* Right-hand side */
     f32 *ferr;    /* Forward error estimates */
     f32 *berr;    /* Backward error estimates */
     f32 *work;    /* Workspace for sgtrfs */
-    int *iwork;      /* Integer workspace for sgtrfs */
+    INT* iwork;      /* Integer workspace for sgtrfs */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
 } dgtrfs_fixture_t;
@@ -86,13 +50,13 @@ static uint64_t g_seed = 2718;
 /**
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
+static void generate_gt_matrix(INT n, INT imat, f32 *DL, f32 *D, f32 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int i;
+    INT i;
 
     if (n <= 0) return;
 
@@ -122,13 +86,13 @@ static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgtrfs_setup(void **state, int n, int nrhs)
+static int dgtrfs_setup(void **state, INT n, INT nrhs)
 {
     dgtrfs_fixture_t *fix = malloc(sizeof(dgtrfs_fixture_t));
     assert_non_null(fix);
 
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = (n > 1) ? n : 1;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = (n > 1) ? n : 1;
 
     fix->n = n;
     fix->nrhs = nrhs;
@@ -143,14 +107,14 @@ static int dgtrfs_setup(void **state, int n, int nrhs)
     fix->DF = malloc(n * sizeof(f32));
     fix->DUF = malloc((m > 0 ? m : 1) * sizeof(f32));
     fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->XACT = malloc(ldb * nrhs * sizeof(f32));
     fix->X = malloc(ldb * nrhs * sizeof(f32));
     fix->B = malloc(ldb * nrhs * sizeof(f32));
     fix->ferr = malloc(nrhs * sizeof(f32));
     fix->berr = malloc(nrhs * sizeof(f32));
     fix->work = malloc(3 * n * sizeof(f32));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->DL);
     assert_non_null(fix->D);
@@ -224,16 +188,16 @@ static int setup_n50_nrhs15(void **state) { return dgtrfs_setup(state, 50, 15); 
  * Writes reslts[0] (forward error) and reslts[1] (backward error).
  * Returns true on success, false if factorization was singular.
  */
-static int run_dgtrfs_test(dgtrfs_fixture_t *fix, int imat, const char* trans,
+static INT run_dgtrfs_test(dgtrfs_fixture_t *fix, INT imat, const char* trans,
                            f32 *reslts)
 {
-    int info;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = fix->ldb;
-    int ldx = ldb;
-    int i, j;
+    INT info;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = fix->ldb;
+    INT ldx = ldb;
+    INT i, j;
 
     /* Generate test matrix */
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
@@ -292,10 +256,10 @@ static void test_dgtrfs_notrans(void **state)
     dgtrfs_fixture_t *fix = *state;
     f32 reslts[2];
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        int ok = run_dgtrfs_test(fix, imat, "N", reslts);
+        INT ok = run_dgtrfs_test(fix, imat, "N", reslts);
         if (!ok) continue; /* singular - skip */
         assert_residual_ok(reslts[0]); /* forward error */
         assert_residual_ok(reslts[1]); /* backward error */
@@ -310,10 +274,10 @@ static void test_dgtrfs_trans(void **state)
     dgtrfs_fixture_t *fix = *state;
     f32 reslts[2];
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
-        int ok = run_dgtrfs_test(fix, imat, "T", reslts);
+        INT ok = run_dgtrfs_test(fix, imat, "T", reslts);
         if (!ok) continue; /* singular - skip */
         assert_residual_ok(reslts[0]); /* forward error */
         assert_residual_ok(reslts[1]); /* backward error */

@@ -22,10 +22,8 @@
 #include "verify.h"
 #include "test_rng.h"
 #include <string.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -36,25 +34,15 @@ static const char UPLOS[] = {'U', 'L'};
 #define NMAX    50
 
 /* Routines under test */
-extern void spotf2(const char* uplo, const int n, f32* A,
-                   const int lda, int* info);
-extern void spotrf2(const char* uplo, const int n, f32* A,
-                    const int lda, int* info);
-extern void spotrf(const char* uplo, const int n, f32* A,
-                   const int lda, int* info);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;   /* 0='U', 1='L' */
-    int iroutine; /* 0=spotf2, 1=spotrf2, 2=spotrf */
+    INT n;
+    INT imat;
+    INT iuplo;   /* 0='U', 1='L' */
+    INT iroutine; /* 0=spotf2, 1=spotrf2, 2=spotrf */
     char name[80];
 } dpotrf_params_t;
 
@@ -115,7 +103,7 @@ static int group_teardown(void** state)
 /**
  * Run the spotrf test for a single (n, uplo, imat, routine) combination.
  */
-static void run_dpotrf_single(int n, int iuplo, int imat, int iroutine)
+static void run_dpotrf_single(INT n, INT iuplo, INT imat, INT iroutine)
 {
     static const char* ROUTINE_NAMES[] = {"dpotf2", "dpotrf2", "dpotrf"};
     dpotrf_workspace_t* ws = g_workspace;
@@ -123,10 +111,10 @@ static void run_dpotrf_single(int n, int iuplo, int imat, int iroutine)
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
-    int lda = (n > 1) ? n : 1;
+    INT info;
+    INT lda = (n > 1) ? n : 1;
 
     /* Get matrix parameters for this type */
     slatb4("SPO", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -157,7 +145,7 @@ static void run_dpotrf_single(int n, int iuplo, int imat, int iroutine)
     (void)ROUTINE_NAMES;
 
     /* Types 3-5 are singular matrices where factorization should fail */
-    int zerot = (imat >= 3 && imat <= 5);
+    INT zerot = (imat >= 3 && imat <= 5);
     if (zerot) {
         /* info > 0 expected for singular matrices */
         assert_true(info >= 0);
@@ -196,7 +184,7 @@ static void test_dpotrf_case(void** state)
 
 static dpotrf_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -207,23 +195,23 @@ static void build_test_array(void)
 
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Skip types 3, 4, or 5 if matrix size is too small */
-            int zerot = (imat >= 3 && imat <= 5);
+            INT zerot = (imat >= 3 && imat <= 5);
             if (zerot && n < imat - 2) {
                 continue;
             }
 
-            for (int iuplo = 0; iuplo < (int)NUPLO; iuplo++) {
-                for (int iroutine = 0; iroutine < NROUTINE; iroutine++) {
+            for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+                for (INT iroutine = 0; iroutine < NROUTINE; iroutine++) {
                     /* Store parameters */
                     dpotrf_params_t* p = &g_params[g_num_tests];
                     p->n = n;

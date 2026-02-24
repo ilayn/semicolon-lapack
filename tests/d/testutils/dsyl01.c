@@ -3,30 +3,12 @@
  * @brief DSYL01 tests DTRSYL and DTRSYL3 routines for the Sylvester equation.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include "test_rng.h"
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                  const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dtrsyl(const char* trana, const char* tranb, const int isgn,
-                   const int m, const int n,
-                   const f64* A, const int lda,
-                   const f64* B, const int ldb,
-                   f64* C, const int ldc, f64* scale, int* info);
-extern void dtrsyl3(const char* trana, const char* tranb, const int isgn,
-                    const int m, const int n,
-                    const f64* A, const int lda,
-                    const f64* B, const int ldb,
-                    f64* C, const int ldc, f64* scale,
-                    int* iwork, const int liwork,
-                    f64* swork, const int ldswork, int* info);
 
 /**
  * DSYL01 tests DTRSYL and DTRSYL3, routines for solving the Sylvester matrix
@@ -57,7 +39,7 @@ extern void dtrsyl3(const char* trana, const char* tranb, const int isgn,
  *                        ninfo[1] = No. of times DTRSYL3 returns nonzero INFO
  * @param[out]    knt     Total number of examples tested.
  */
-void dsyl01(const f64 thresh, int* nfail, f64* rmax, int* ninfo, int* knt)
+void dsyl01(const f64 thresh, INT* nfail, f64* rmax, INT* ninfo, INT* knt)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -98,37 +80,37 @@ void dsyl01(const f64 thresh, int* nfail, f64* rmax, int* ninfo, int* knt)
     /* Stack arrays */
 
     f64 duml[MAXM], dumr[MAXN];
-    // int dmaxmn = MAXM > MAXN ? MAXM : MAXN;
+    // INT dmaxmn = MAXM > MAXN ? MAXM : MAXN;
     f64 d[245]; /* max(MAXM, MAXN) = 245 */
-    int liwork = MAXM + MAXN + 2;
-    int iwork[MAXM + MAXN + 2];
+    INT liwork = MAXM + MAXN + 2;
+    INT iwork[MAXM + MAXN + 2];
 
     uint64_t state[4];
     f64 scale, scale3;
-    int iinfo, info;
+    INT iinfo, info;
 
     /* Begin test loop */
 
-    for (int j = 0; j < 2; j++) {
-        for (int isgn = -1; isgn <= 1; isgn += 2) {
+    for (INT j = 0; j < 2; j++) {
+        for (INT isgn = -1; isgn <= 1; isgn += 2) {
             /* Reset seed (overwritten by LATMR) */
             rng_seed(state, 1);
-            for (int m = 32; m <= MAXM; m += 71) {
-                int kla = 0;
-                int kua = m - 1;
+            for (INT m = 32; m <= MAXM; m += 71) {
+                INT kla = 0;
+                INT kua = m - 1;
                 dlatmr(m, m, "S", "N", d,
                        6, ONE, ONE, "T", "N",
                        duml, 1, ONE, dumr, 1, ONE,
                        "N", iwork, kla, kua, ZERO,
                        ONE, "NO", A, MAXM, iwork, &iinfo,
                        state);
-                for (int i = 0; i < m; i++) {
+                for (INT i = 0; i < m; i++) {
                     A[i + (size_t)i * MAXM] *= vm[j];
                 }
                 f64 anrm = dlange("M", m, m, A, MAXM, NULL);
-                for (int n = 51; n <= MAXN; n += 47) {
-                    int klb = 0;
-                    int kub = n - 1;
+                for (INT n = 51; n <= MAXN; n += 47) {
+                    INT klb = 0;
+                    INT kub = n - 1;
                     dlatmr(n, n, "S", "N", d,
                            6, ONE, ONE, "T", "N",
                            duml, 1, ONE, dumr, 1, ONE,
@@ -143,10 +125,10 @@ void dsyl01(const f64 thresh, int* nfail, f64* rmax, int* ninfo, int* knt)
                            "N", iwork, m, n, ZERO, ONE,
                            "NO", C, MAXM, iwork, &iinfo,
                            state);
-                    for (int itrana = 0; itrana < 2; itrana++) {
+                    for (INT itrana = 0; itrana < 2; itrana++) {
                         const char* trana = (itrana == 0) ? "N" : "T";
                         CBLAS_TRANSPOSE trana_flag = (itrana == 0) ? CblasNoTrans : CblasTrans;
-                        for (int itranb = 0; itranb < 2; itranb++) {
+                        for (INT itranb = 0; itranb < 2; itranb++) {
                             const char* tranb = (itranb == 0) ? "N" : "T";
                             CBLAS_TRANSPOSE tranb_flag = (itranb == 0) ? CblasNoTrans : CblasTrans;
                             (*knt)++;

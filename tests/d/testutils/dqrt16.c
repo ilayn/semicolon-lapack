@@ -9,13 +9,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
 
 /**
  * DQRT16 computes the residual for a solution of a system of linear
@@ -66,18 +61,18 @@ extern f64 dlange(const char* norm, const int m, const int n,
  *     The maximum over the number of right hand sides of
  *     norm(B - A*X) / ( max(m, n) * norm(A) * norm(X) * EPS ).
  */
-void dqrt16(const char* trans, const int m, const int n, const int nrhs,
-            const f64* A, const int lda,
-            const f64* X, const int ldx,
-            f64* B, const int ldb,
+void dqrt16(const char* trans, const INT m, const INT n, const INT nrhs,
+            const f64* A, const INT lda,
+            const f64* X, const INT ldx,
+            f64* B, const INT ldb,
             f64* rwork, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int j, n1, n2;
+    INT j, n1, n2;
     f64 anorm, bnorm, eps, xnorm;
-    int tpsd;
+    INT tpsd;
 
     /* Quick exit if M = 0 or N = 0 or NRHS = 0 */
     if (m <= 0 || n <= 0 || nrhs == 0) {
@@ -117,7 +112,7 @@ void dqrt16(const char* trans, const int m, const int n, const int nrhs,
         } else if (anorm <= ZERO || xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            int maxmn = (m > n) ? m : n;
+            INT maxmn = (m > n) ? m : n;
             f64 temp = ((bnorm / anorm) / xnorm) / ((f64)maxmn * eps);
             if (temp > *resid) {
                 *resid = temp;

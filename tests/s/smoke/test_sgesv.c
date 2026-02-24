@@ -16,25 +16,16 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void sgesv(const int n, const int nrhs, f32 * const restrict A,
-                  const int lda, int * const restrict ipiv,
-                  f32 * const restrict B, const int ldb, int *info);
-
 /* Utilities */
-extern f32 slamch(const char *cmach);
-extern f32 slange(const char *norm, const int m, const int n,
-                     const f32 * const restrict A, const int lda,
-                     f32 * const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb;
+    INT n, nrhs;
+    INT lda, ldb;
     f32 *A;       /* Original matrix */
     f32 *A_copy;  /* Copy for sgesv (gets overwritten) */
     f32 *B;       /* Right-hand side (gets overwritten with solution) */
@@ -43,13 +34,13 @@ typedef struct {
     f32 *d;       /* Singular values for slatms */
     f32 *work;    /* Workspace */
     f32 *rwork;   /* Workspace for sget02 */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     uint64_t seed;
 } dgesv_fixture_t;
 
 static uint64_t g_seed = 1729;
 
-static int dgesv_setup(void **state, int n, int nrhs)
+static int dgesv_setup(void **state, INT n, INT nrhs)
 {
     dgesv_fixture_t *fix = malloc(sizeof(dgesv_fixture_t));
     assert_non_null(fix);
@@ -68,7 +59,7 @@ static int dgesv_setup(void **state, int n, int nrhs)
     fix->d = malloc(n * sizeof(f32));
     fix->work = malloc(3 * n * sizeof(f32));
     fix->rwork = malloc(n * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_copy);
@@ -121,12 +112,12 @@ static int setup_20_nrhs5(void **state) { return dgesv_setup(state, 20, 5); }
 static void test_dgesv_wellcond(void **state)
 {
     dgesv_fixture_t *fix = *state;
-    int info;
+    INT info;
 
     fix->seed = g_seed++;
 
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
 
     slatb4("SGE", 4, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -140,8 +131,8 @@ static void test_dgesv_wellcond(void **state)
     memcpy(fix->A_copy, fix->A, fix->lda * fix->n * sizeof(f32));
 
     /* Generate known exact solution */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->ldb] = 1.0f + (f32)i / fix->n + (f32)j / fix->nrhs;
         }
     }
@@ -188,11 +179,11 @@ static void test_dgesv_illcond(void **state)
         skip();
     }
 
-    int info;
+    INT info;
     fix->seed = g_seed++;
 
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
 
     slatb4("SGE", 8, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -204,8 +195,8 @@ static void test_dgesv_illcond(void **state)
     assert_int_equal(info, 0);
     memcpy(fix->A_copy, fix->A, fix->lda * fix->n * sizeof(f32));
 
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->XACT[i + j * fix->ldb] = 1.0f + (f32)i / fix->n + (f32)j / fix->nrhs;
         }
     }
@@ -239,8 +230,8 @@ static void test_dgesv_simple(void **state)
 
     f32 A[9] = {2, 4, 8, 1, 3, 7, 1, 3, 9};
     f32 b[3] = {4, 10, 24};
-    int ipiv[3];
-    int info;
+    INT ipiv[3];
+    INT info;
 
     sgesv(3, 1, A, 3, ipiv, b, 3, &info);
 
@@ -259,8 +250,8 @@ static void test_dgesv_singular(void **state)
 
     f32 A[9] = {1, 2, 3, 1, 2, 3, 1, 2, 3};
     f32 b[3] = {1, 2, 3};
-    int ipiv[3];
-    int info;
+    INT ipiv[3];
+    INT info;
 
     sgesv(3, 1, A, 3, ipiv, b, 3, &info);
 

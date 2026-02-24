@@ -4,16 +4,9 @@
  *        quasi upper triangular systems.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void slaqtr(const int ltran, const int lreal, const int n,
-                   const f32* T, const int ldt, const f32* B, const f32 w,
-                   f32* scale, f32* X, f32* work, int* info);
 
 /**
  * SGET39 tests SLAQTR, a routine for solving the real or
@@ -33,14 +26,14 @@ extern void slaqtr(const int ltran, const int lreal, const int n,
 #define LDT  10
 #define LDT2 20
 
-void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
+void sget39(f32* rmax, INT* lmax, INT* ninfo, INT* knt)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
     /* Hardcoded test matrix dimensions */
 
-    static const int idim[6] = { 4, 5, 5, 5, 5, 5 };
+    static const INT idim[6] = { 4, 5, 5, 5, 5, 5 };
 
     /* Hardcoded test matrix values.
        Fortran DATA: IVAL(i,j,ndim) with i=1..5, j=1..5, ndim=1..6
@@ -51,7 +44,7 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
     /* ival[ndim][i][j] = T(i,j) for test matrix ndim.
        Derived from Fortran DATA IVAL / ... / in column-major order. */
 
-    static const int ival[6][5][5] = {
+    static const INT ival[6][5][5] = {
         /* ndim=0 (n=4): 4x4 matrix, 5th row/col unused */
         {{ 3, 1, 3, 4, 0},
          { 0, 1, 2, 3, 0},
@@ -147,16 +140,16 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
 
     /* Begin test loop */
 
-    for (int ivm5 = 0; ivm5 < 3; ivm5++) {
-        for (int ivm4 = 0; ivm4 < 5; ivm4++) {
-            for (int ivm3 = 0; ivm3 < 5; ivm3++) {
-                for (int ivm2 = 0; ivm2 < 5; ivm2++) {
-                    for (int ivm1 = 0; ivm1 < 5; ivm1++) {
-                        for (int ndim = 0; ndim < 6; ndim++) {
+    for (INT ivm5 = 0; ivm5 < 3; ivm5++) {
+        for (INT ivm4 = 0; ivm4 < 5; ivm4++) {
+            for (INT ivm3 = 0; ivm3 < 5; ivm3++) {
+                for (INT ivm2 = 0; ivm2 < 5; ivm2++) {
+                    for (INT ivm1 = 0; ivm1 < 5; ivm1++) {
+                        for (INT ndim = 0; ndim < 6; ndim++) {
 
-                            int n = idim[ndim];
-                            for (int i = 0; i < n; i++) {
-                                for (int j = 0; j < n; j++) {
+                            INT n = idim[ndim];
+                            for (INT i = 0; i < n; i++) {
+                                for (INT j = 0; j < n; j++) {
                                     t[i + j * LDT] = (f32)ival[ndim][i][j] * vm1[ivm1];
                                     /* Fortran: IF(I.GE.J) T(I,J) = T(I,J)*VM5(IVM5) */
                                     if (i >= j)
@@ -166,20 +159,20 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
 
                             f32 w = ONE * vm2[ivm2];
 
-                            for (int i = 0; i < n; i++) {
+                            for (INT i = 0; i < n; i++) {
                                 b[i] = cosf((f32)(i + 1)) * vm3[ivm3];
                             }
 
-                            for (int i = 0; i < 2 * n; i++) {
+                            for (INT i = 0; i < 2 * n; i++) {
                                 d[i] = sinf((f32)(i + 1)) * vm4[ivm4];
                             }
 
                             f32 norm = slange("1", n, n, t, LDT, work);
-                            int k = cblas_isamax(n, b, 1);
+                            INT k = cblas_isamax(n, b, 1);
                             f32 normtb = norm + fabsf(b[k]) + fabsf(w);
 
                             f32 scale;
-                            int info;
+                            INT info;
                             f32 xnorm, resid, domin;
 
                             /* Test 1: T*x = scale*d (no transpose, real) */
@@ -249,7 +242,7 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
 
                             cblas_scopy(2 * n, d, 1, y, 1);
                             y[0] = cblas_sdot(n, b, 1, x + n, 1) + scale * y[0];
-                            for (int i = 1; i < n; i++) {
+                            for (INT i = 1; i < n; i++) {
                                 y[i] = w * x[i + n] + scale * y[i];
                             }
                             cblas_sgemv(CblasColMajor, CblasNoTrans,
@@ -257,7 +250,7 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
                                         x, 1, -ONE, y, 1);
 
                             y[n] = cblas_sdot(n, b, 1, x, 1) - scale * y[n];
-                            for (int i = 1; i < n; i++) {
+                            for (INT i = 1; i < n; i++) {
                                 y[i + n] = w * x[i] - scale * y[i + n];
                             }
                             cblas_sgemv(CblasColMajor, CblasNoTrans,
@@ -287,7 +280,7 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
 
                             cblas_scopy(2 * n, d, 1, y, 1);
                             y[0] = b[0] * x[n] - scale * y[0];
-                            for (int i = 1; i < n; i++) {
+                            for (INT i = 1; i < n; i++) {
                                 y[i] = b[i] * x[n] + w * x[i + n] - scale * y[i];
                             }
                             cblas_sgemv(CblasColMajor, CblasTrans,
@@ -295,7 +288,7 @@ void sget39(f32* rmax, int* lmax, int* ninfo, int* knt)
                                         x, 1, ONE, y, 1);
 
                             y[n] = b[0] * x[0] + scale * y[n];
-                            for (int i = 1; i < n; i++) {
+                            for (INT i = 1; i < n; i++) {
                                 y[i + n] = b[i] * x[0] + w * x[i] + scale * y[i + n];
                             }
                             cblas_sgemv(CblasColMajor, CblasTrans,

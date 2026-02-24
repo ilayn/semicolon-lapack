@@ -7,19 +7,10 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void sormqr(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f32* A, const int lda, const f32* tau,
-                   f32* C, const int ldc, f32* work, const int lwork,
-                   int* info);
-
 /**
  * SQPT01 tests the QR-factorization with pivoting of a matrix A. The
  * array AF contains the (possibly partial) QR-factorization of A, where
@@ -45,14 +36,14 @@ extern void sormqr(const char* side, const char* trans,
  *
  * @return ||A*P - Q*R|| / (||norm(A)|| * eps * max(M,N)).
  */
-f32 sqpt01(const int m, const int n, const int k,
-              const f32* A, const f32* AF, const int lda,
-              const f32* tau, const int* jpvt,
-              f32* work, const int lwork)
+f32 sqpt01(const INT m, const INT n, const INT k,
+              const f32* A, const f32* AF, const INT lda,
+              const f32* tau, const INT* jpvt,
+              f32* work, const INT lwork)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int i, j, info;
+    INT i, j, info;
     f32 norma;
     f32 rwork[1];
 
@@ -74,7 +65,7 @@ f32 sqpt01(const int m, const int n, const int k,
      * Also copy columns (k:n-1) from AF into work. */
     for (j = 0; j < k; j++) {
         /* Copy upper triangular part of column j */
-        int imax = (j + 1 < m) ? (j + 1) : m;
+        INT imax = (j + 1 < m) ? (j + 1) : m;
         for (i = 0; i < imax; i++) {
             work[j * m + i] = AF[j * lda + i];
         }

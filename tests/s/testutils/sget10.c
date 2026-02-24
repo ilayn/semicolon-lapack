@@ -7,15 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /**
  * SGET10 compares two matrices A and B and computes the ratio
  *    RESULT = norm( A - B ) / ( norm(A) * M * EPS )
@@ -29,15 +22,15 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work    Workspace array, dimension (m).
  * @param[out]    result  The computed ratio.
  */
-void sget10(const int m, const int n,
-            const f32* const restrict A, const int lda,
-            const f32* const restrict B, const int ldb,
+void sget10(const INT m, const INT n,
+            const f32* const restrict A, const INT lda,
+            const f32* const restrict B, const INT ldb,
             f32* const restrict work, f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int j;
+    INT j;
     f32 anorm, eps, unfl, wnorm;
 
     /* Quick return if possible */

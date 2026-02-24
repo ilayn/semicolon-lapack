@@ -8,15 +8,8 @@
 
 #include <math.h>
 #include <string.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-
 /**
  * SBDT01 reconstructs a general matrix A from its bidiagonal form
  *    A = Q * B * P'
@@ -45,17 +38,17 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace array, dimension (m+n).
  * @param[out]    resid  The test ratio.
  */
-void sbdt01(const int m, const int n, const int kd,
-            const f32* const restrict A, const int lda,
-            const f32* const restrict Q, const int ldq,
+void sbdt01(const INT m, const INT n, const INT kd,
+            const f32* const restrict A, const INT lda,
+            const f32* const restrict Q, const INT ldq,
             const f32* const restrict D, const f32* const restrict E,
-            const f32* const restrict PT, const int ldpt,
+            const f32* const restrict PT, const INT ldpt,
             f32* const restrict work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 anorm, eps;
 
     /* Quick return if possible */

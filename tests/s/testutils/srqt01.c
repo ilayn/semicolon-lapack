@@ -10,32 +10,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void sgerqf(const int m, const int n,
-                   f32* const restrict A, const int lda,
-                   f32* const restrict tau,
-                   f32* const restrict work, const int lwork, int* info);
-extern void sorgrq(const int m, const int n, const int k,
-                   f32* const restrict A, const int lda,
-                   const f32* const restrict tau,
-                   f32* const restrict work, const int lwork, int* info);
-
 /**
  * SRQT01 tests SGERQF, which computes the RQ factorization of an m-by-n
  * matrix A, and partially tests SORGRQ which forms the n-by-n
@@ -54,20 +30,20 @@ extern void sorgrq(const int m, const int n, const int k,
  * @param[out]    rwork   Workspace, dimension max(m,n).
  * @param[out]    result  Array of dimension 2.
  */
-void srqt01(const int m, const int n,
+void srqt01(const INT m, const INT n,
             const f32 * const restrict A,
             f32 * const restrict AF,
             f32 * const restrict Q,
             f32 * const restrict R,
-            const int lda,
+            const INT lda,
             f32 * const restrict tau,
-            f32 * const restrict work, const int lwork,
+            f32 * const restrict work, const INT lwork,
             f32 * const restrict rwork,
             f32 * restrict result)
 {
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
     f32 eps = slamch("E");
-    int info;
+    INT info;
 
     /* Copy A to AF */
     slacpy("F", m, n, A, lda, AF, lda);

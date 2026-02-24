@@ -20,15 +20,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const int NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -42,48 +41,17 @@ static const char UPLOS[] = {'U', 'L'};
 #define NSMAX   15  /* Max NRHS */
 
 /* Routines under test */
-extern void ssytrf_aa_2stage(const char* uplo, const int n, f32* A,
-                             const int lda, f32* TB, const int ltb,
-                             int* ipiv, int* ipiv2, f32* work,
-                             const int lwork, int* info);
-extern void ssytrs_aa_2stage(const char* uplo, const int n, const int nrhs,
-                             const f32* A, const int lda, f32* TB,
-                             const int ltb, const int* ipiv, const int* ipiv2,
-                             f32* B, const int ldb, int* info);
-
 /* Verification routines */
-extern void spot02(const char* uplo, const int n, const int nrhs,
-                   const f32* A, const int lda, const f32* X,
-                   const int ldx, f32* B, const int ldb,
-                   f32* rwork, f32* resid);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f32* A, const int lda,
-                   f32* X, const int ldx, f32* B,
-                   const int ldb, int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;  /* 0='U', 1='L' */
-    int inb;    /* Index into NBVAL[] */
+    INT n;
+    INT imat;
+    INT iuplo;  /* 0='U', 1='L' */
+    INT inb;    /* Index into NBVAL[] */
     char name[64];
 } dchksy_aa_2stage_params_t;
 
@@ -100,7 +68,7 @@ typedef struct {
     f32* WORK;   /* General workspace */
     f32* RWORK;  /* Real workspace */
     f32* D;      /* Singular values for slatms */
-    int* IWORK;     /* Integer workspace: ipiv(N) + ipiv2(N) */
+    INT* IWORK;     /* Integer workspace: ipiv(N) + ipiv2(N) */
 } dchksy_aa_2stage_workspace_t;
 
 static dchksy_aa_2stage_workspace_t* g_workspace = NULL;
@@ -117,8 +85,8 @@ static int group_setup(void** state)
     /* AINV used as TB with size MAX(1, (3*NB+1)*N).
      * Max NB=20, N=50 => (3*20+1)*50 = 3050
      * LWORK = MIN(MAX(1, N*NB), 3*NMAX*NMAX) => MIN(1000, 7500) = 1000 */
-    int ltb_max = (3 * 20 + 1) * NMAX;  /* (3*NBMAX+1)*NMAX */
-    int lwork = 3 * NMAX * NMAX;
+    INT ltb_max = (3 * 20 + 1) * NMAX;  /* (3*NBMAX+1)*NMAX */
+    INT lwork = 3 * NMAX * NMAX;
 
     g_workspace->A = malloc(NMAX * NMAX * sizeof(f32));
     g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f32));
@@ -129,7 +97,7 @@ static int group_setup(void** state)
     g_workspace->WORK = malloc(lwork * sizeof(f32));
     g_workspace->RWORK = malloc(NMAX * sizeof(f32));
     g_workspace->D = malloc(NMAX * sizeof(f32));
-    g_workspace->IWORK = malloc(2 * NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(2 * NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->AINV ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -172,7 +140,7 @@ static int group_teardown(void** state)
  *   - TEST 1 (factorization residual) is commented out (NT=0)
  *   - TEST 2 (solve) runs for all NB values, for each NRHS, when INFO==0
  */
-static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
+static void run_dchksy_aa_2stage_single(INT n, INT iuplo, INT imat, INT inb)
 {
     const f32 ZERO = 0.0f;
     dchksy_aa_2stage_workspace_t* ws = g_workspace;
@@ -180,12 +148,12 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info, izero;
-    int lda = (n > 1) ? n : 1;
-    int nb = NBVAL[inb];
-    int lwork, ltb;
+    INT info, izero;
+    INT lda = (n > 1) ? n : 1;
+    INT nb = NBVAL[inb];
+    INT lwork, ltb;
     f32 result[NTESTS];
     char ctx[128];
 
@@ -198,7 +166,7 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat));
 
     /* Initialize results */
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -214,7 +182,7 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
 
     /* For matrix types 3-6, zero one or more rows and columns of the matrix
      * to test that INFO is returned correctly. */
-    int zerot = (imat >= 3 && imat <= 6);
+    INT zerot = (imat >= 3 && imat <= 6);
     if (zerot) {
         if (imat == 3) {
             izero = 0;  /* Fortran IZERO=1 -> C 0-based */
@@ -228,24 +196,24 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
             /* Set row and column IZERO to zero */
             if (iuplo == 0) {
                 /* Upper */
-                int ioff = izero * lda;
-                for (int i = 0; i < izero; i++) {
+                INT ioff = izero * lda;
+                for (INT i = 0; i < izero; i++) {
                     ws->A[ioff + i] = ZERO;
                 }
                 ioff += izero;
-                for (int i = izero; i < n; i++) {
+                for (INT i = izero; i < n; i++) {
                     ws->A[ioff] = ZERO;
                     ioff += lda;
                 }
             } else {
                 /* Lower */
-                int ioff = izero;
-                for (int i = 0; i < izero; i++) {
+                INT ioff = izero;
+                for (INT i = 0; i < izero; i++) {
                     ws->A[ioff] = ZERO;
                     ioff += lda;
                 }
                 ioff -= izero;
-                for (int i = izero; i < n; i++) {
+                for (INT i = izero; i < n; i++) {
                     ws->A[ioff + i] = ZERO;
                 }
             }
@@ -253,10 +221,10 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
             /* Type 6 */
             if (iuplo == 0) {
                 /* Set the first IZERO+1 rows and columns to zero */
-                int ioff = 0;
-                for (int j = 0; j < n; j++) {
-                    int i2 = (j <= izero) ? j + 1 : izero + 1;
-                    for (int i = 0; i < i2; i++) {
+                INT ioff = 0;
+                for (INT j = 0; j < n; j++) {
+                    INT i2 = (j <= izero) ? j + 1 : izero + 1;
+                    for (INT i = 0; i < i2; i++) {
                         ws->A[ioff + i] = ZERO;
                     }
                     ioff += lda;
@@ -264,10 +232,10 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
                 izero = 0;  /* Fortran sets IZERO=1 (1-based), C uses 0 */
             } else {
                 /* Set the last rows and columns to zero */
-                int ioff = 0;
-                for (int j = 0; j < n; j++) {
-                    int i1 = (j >= izero) ? j : izero;
-                    for (int i = i1; i < n; i++) {
+                INT ioff = 0;
+                for (INT j = 0; j < n; j++) {
+                    INT i1 = (j >= izero) ? j : izero;
+                    for (INT i = i1; i < n; i++) {
                         ws->A[ioff + i] = ZERO;
                     }
                     ioff += lda;
@@ -298,7 +266,7 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
     /* Adjust the expected value of INFO to account for pivoting.
      * Unlike dchksy_aa.f where this is commented out, in
      * dchksy_aa_2stage.f the pivot tracing logic IS active. */
-    int k_expected;
+    INT k_expected;
     if (izero >= 0) {
         /* Trace through pivots to find effective position.
          * Fortran 1-based logic converted to 0-based:
@@ -306,8 +274,8 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
          *   IF (J.EQ.K) K = IWORK(J)  ->  k = iwork[j]
          *   ELSE IF (IWORK(J).EQ.K) K = J
          *   IF (J.LT.K) J = J+1, repeat */
-        int j = 0;
-        int k = izero;
+        INT j = 0;
+        INT k = izero;
         while (1) {
             if (j == k) {
                 k = ws->IWORK[j];
@@ -343,8 +311,8 @@ static void run_dchksy_aa_2stage_single(int n, int iuplo, int imat, int inb)
     }
 
     /* Do for each value of NRHS in NSVAL */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
         /*
          * TEST 2: Solve and compute residual for A * X = B using ssytrs_aa_2stage
@@ -402,7 +370,7 @@ static void test_dchksy_aa_2stage_case(void** state)
 
 static dchksy_aa_2stage_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -411,25 +379,25 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Skip types 3, 4, 5, or 6 if matrix size is too small */
-            int zerot = (imat >= 3 && imat <= 6);
+            INT zerot = (imat >= 3 && imat <= 6);
             if (zerot && n < imat - 2) {
                 continue;
             }
 
-            for (int iuplo = 0; iuplo < (int)NUPLO; iuplo++) {
+            for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
                 /* Loop over block sizes */
-                for (int inb = 0; inb < (int)NNB; inb++) {
-                    int nb = NBVAL[inb];
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    INT nb = NBVAL[inb];
 
                     /* Store parameters */
                     dchksy_aa_2stage_params_t* p = &g_params[g_num_tests];

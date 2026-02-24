@@ -5,14 +5,14 @@
  * Port of LAPACK TESTING/LIN/dlarhs.f
  */
 
-#include <cblas.h>
 #include <string.h>
 #include <math.h>
 #include "test_rng.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* Local helper for generating random vectors */
-static void dlarhs_dlarnv(const int idist, const int n, f64* x,
+static void dlarhs_dlarnv(const INT idist, const INT n, f64* x,
                           uint64_t state[static 4]);
 
 /**
@@ -45,17 +45,17 @@ static void dlarhs_dlarnv(const int idist, const int n, f64* x,
  * @param[out] info  = 0: success; < 0: -i means argument i is invalid.
  */
 void dlarhs(const char* path, const char* xtype, const char* uplo,
-            const char* trans, const int m, const int n, const int kl,
-            const int ku, const int nrhs, const f64* A, const int lda,
-            f64* X, const int ldx, f64* B, const int ldb,
-            int* info, uint64_t state[static 4])
+            const char* trans, const INT m, const INT n, const INT kl,
+            const INT ku, const INT nrhs, const f64* A, const INT lda,
+            f64* X, const INT ldx, f64* B, const INT ldb,
+            INT* info, uint64_t state[static 4])
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
 
-    int tran, notran, gen, sym, tri, qrs, band;
+    INT tran, notran, gen, sym, tri, qrs, band;
     char c2[3];
-    int j, mb, nx;
+    INT j, mb, nx;
 
     (void)uplo;  /* Not used for general matrices yet */
 
@@ -232,10 +232,10 @@ void dlarhs(const char* path, const char* xtype, const char* uplo,
  * @param[in] n      Length of vector.
  * @param[out] x     Output vector.
  */
-static void dlarhs_dlarnv(const int idist, const int n, f64* x,
+static void dlarhs_dlarnv(const INT idist, const INT n, f64* x,
                           uint64_t state[static 4])
 {
-    int i;
+    INT i;
 
     for (i = 0; i < n; i++) {
         if (idist == 1) {

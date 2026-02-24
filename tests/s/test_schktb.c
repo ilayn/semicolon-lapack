@@ -27,14 +27,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
@@ -46,79 +47,9 @@ static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
 #define NSMAX   15      /* Maximum NRHS */
 
 /* Routines under test */
-extern void stbtrs(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab,
-                   f32* B, const int ldb, int* info);
-extern void stbrfs(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab,
-                   const f32* B, const int ldb,
-                   const f32* X, const int ldx,
-                   f32* ferr, f32* berr,
-                   f32* work, int* iwork, int* info);
-extern void stbcon(const char* norm, const char* uplo, const char* diag,
-                   const int n, const int kd, const f32* AB, const int ldab,
-                   f32* rcond, f32* work, int* iwork, int* info);
-extern void slatbs(const char* uplo, const char* trans, const char* diag,
-                   const char* normin, const int n, const int kd,
-                   const f32* AB, const int ldab,
-                   f32* X, f32* scale, f32* cnorm, int* info);
-
 /* Verification routines */
-extern void stbt02(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab,
-                   const f32* X, const int ldx,
-                   const f32* B, const int ldb,
-                   f32* work, f32* resid);
-extern void stbt03(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab,
-                   const f32 scale, const f32* cnorm, const f32 tscal,
-                   const f32* X, const int ldx,
-                   const f32* B, const int ldb,
-                   f32* work, f32* resid);
-extern void stbt05(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int kd, const int nrhs,
-                   const f32* AB, const int ldab,
-                   const f32* B, const int ldb,
-                   const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact,
-                   const f32* ferr, const f32* berr,
-                   f32* reslts);
-extern void stbt06(const f32 rcond, const f32 rcondc,
-                   const char* uplo, const char* diag, const int n, const int kd,
-                   const f32* AB, const int ldab, f32* work, f32* rat);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond,
-                   f32* resid);
-
 /* Matrix generation */
-extern void slattb(const int imat, const char* uplo, const char* trans,
-                   char* diag, const int n, const int kd,
-                   f32* AB, const int ldab, f32* B, f32* work,
-                   int* info, uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f32* A, const int lda,
-                   f32* XACT, const int ldxact, f32* B, const int ldb,
-                   int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern f32 slamch(const char* cmach);
-extern f32 slantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int kd, const f32* AB, const int ldab,
-                     f32* work);
-extern f32 slantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const f32* A, const int lda,
-                     f32* work);
-
 /**
  * Workspace for test execution - shared across all tests via group setup.
  */
@@ -130,7 +61,7 @@ typedef struct {
     f32* XACT;   /* Exact solution: NMAX * NSMAX */
     f32* WORK;   /* General workspace: NMAX * max(3, NSMAX) */
     f32* RWORK;  /* Real workspace: max(NMAX, 2*NSMAX) */
-    int* IWORK;     /* Integer workspace: NMAX */
+    INT* IWORK;     /* Integer workspace: NMAX */
 } dchktb_workspace_t;
 
 static dchktb_workspace_t* g_workspace = NULL;
@@ -141,19 +72,19 @@ static dchktb_workspace_t* g_workspace = NULL;
 
 /* Test parameters for standard tests (IMAT 1-9) */
 typedef struct {
-    int n;
-    int kd;
-    int imat;
-    int iuplo;      /* 0='U', 1='L' */
+    INT n;
+    INT kd;
+    INT imat;
+    INT iuplo;      /* 0='U', 1='L' */
     char name[80];
 } standard_params_t;
 
 /* Test parameters for pathological tests (IMAT 10-17) */
 typedef struct {
-    int n;
-    int kd;
-    int imat;
-    int iuplo;      /* 0='U', 1='L' */
+    INT n;
+    INT kd;
+    INT imat;
+    INT iuplo;      /* 0='U', 1='L' */
     char name[80];
 } latbs_params_t;
 
@@ -165,7 +96,7 @@ typedef struct {
 static standard_params_t g_standard_params[MAX_STANDARD_TESTS];
 static latbs_params_t g_latbs_params[MAX_LATBS_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static const char* UPLOS[] = {"U", "L"};
 
@@ -178,8 +109,8 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchktb_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * (3 > NSMAX ? 3 : NSMAX);
-    int lrwork = (NMAX > 2 * NSMAX) ? NMAX : 2 * NSMAX;
+    INT lwork = NMAX * (3 > NSMAX ? 3 : NSMAX);
+    INT lrwork = (NMAX > 2 * NSMAX) ? NMAX : 2 * NSMAX;
 
     g_workspace->AB = malloc(((NMAX + 1) * NMAX + 1) * sizeof(f32));
     g_workspace->AINV = malloc(NMAX * NMAX * sizeof(f32));
@@ -188,7 +119,7 @@ static int group_setup(void** state)
     g_workspace->XACT = malloc(NMAX * NSMAX * sizeof(f32));
     g_workspace->WORK = malloc(lwork * sizeof(f32));
     g_workspace->RWORK = malloc(lrwork * sizeof(f32));
-    g_workspace->IWORK = malloc(NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->AB || !g_workspace->AINV ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -229,14 +160,14 @@ static void test_standard(void** state)
     standard_params_t* p = *state;
     dchktb_workspace_t* ws = g_workspace;
 
-    int n = p->n;
-    int kd = p->kd;
-    int imat = p->imat;
+    INT n = p->n;
+    INT kd = p->kd;
+    INT imat = p->imat;
     const char* uplo = UPLOS[p->iuplo];
 
     f32 result[NTESTS];
     char diag;
-    int info, lda, ldab;
+    INT info, lda, ldab;
     f32 rcondo, rcondi, rcond, rcondc, anorm, ainvnm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10 + kd);
@@ -246,7 +177,7 @@ static void test_standard(void** state)
     lda = (n > 1) ? n : 1;
     ldab = kd + 1;
 
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -255,7 +186,7 @@ static void test_standard(void** state)
            ws->XACT, ws->WORK, &info, rng_state);
     assert_info_success(info);
 
-    int idiag = (diag == 'N' || diag == 'n') ? 1 : 2;
+    INT idiag = (diag == 'N' || diag == 'n') ? 1 : 2;
     char diag_str[2] = {diag, '\0'};
 
     /*
@@ -264,14 +195,14 @@ static void test_standard(void** state)
      */
     slaset("F", n, n, ZERO, ONE, ws->AINV, lda);
     if (uplo[0] == 'U' || uplo[0] == 'u') {
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             cblas_stbsv(CblasColMajor, CblasUpper, CblasNoTrans,
                         (diag == 'N' || diag == 'n') ? CblasNonUnit : CblasUnit,
                         j + 1, kd, ws->AB, ldab,
                         &ws->AINV[j * lda], 1);
         }
     } else {
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             cblas_stbsv(CblasColMajor, CblasLower, CblasNoTrans,
                         (diag == 'N' || diag == 'n') ? CblasNonUnit : CblasUnit,
                         n - j, kd, &ws->AB[j * ldab], ldab,
@@ -298,13 +229,13 @@ static void test_standard(void** state)
     }
 
     /* Loop over NRHS values */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
         char xtype_str[2] = "N";
 
         /* Loop over TRANS = 'N', 'T', 'C' */
         const char* transs[] = {"N", "T", "C"};
-        for (int itran = 0; itran < 3; itran++) {
+        for (INT itran = 0; itran < 3; itran++) {
             const char* trans = transs[itran];
             if (itran == 0) {
                 rcondc = rcondo;
@@ -372,7 +303,7 @@ static void test_standard(void** state)
     /*
      * TEST 6: Get an estimate of RCOND = 1/CNDNUM.
      */
-    for (int itran = 0; itran < 2; itran++) {
+    for (INT itran = 0; itran < 2; itran++) {
         const char* norm;
         if (itran == 0) {
             norm = "O";
@@ -408,14 +339,14 @@ static void test_latbs(void** state)
     latbs_params_t* p = *state;
     dchktb_workspace_t* ws = g_workspace;
 
-    int n = p->n;
-    int kd = p->kd;
-    int imat = p->imat;
+    INT n = p->n;
+    INT kd = p->kd;
+    INT imat = p->imat;
     const char* uplo = UPLOS[p->iuplo];
 
     f32 result[NTESTS];
     char diag;
-    int info, lda, ldab;
+    INT info, lda, ldab;
     f32 scale;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10 + kd);
@@ -425,13 +356,13 @@ static void test_latbs(void** state)
     lda = (n > 1) ? n : 1;
     ldab = kd + 1;
 
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
     /* Loop over TRANS = 'N', 'T', 'C' */
     const char* transs[] = {"N", "T", "C"};
-    for (int itran = 0; itran < 3; itran++) {
+    for (INT itran = 0; itran < 3; itran++) {
         const char* trans = transs[itran];
 
         /* Generate triangular banded test matrix */
@@ -482,30 +413,30 @@ static void test_latbs(void** state)
  */
 static void build_test_array(void)
 {
-    int standard_idx = 0;
-    int latbs_idx = 0;
+    INT standard_idx = 0;
+    INT latbs_idx = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPE1;
-        int nimat2 = NTYPES;
+        INT nimat = NTYPE1;
+        INT nimat2 = NTYPES;
         if (n <= 0) {
             nimat = 1;
             nimat2 = NTYPE1 + 1;
         }
 
-        int nk = (n + 1 < 4) ? n + 1 : 4;
-        for (int ik = 0; ik < nk; ik++) {
-            int kd;
+        INT nk = (n + 1 < 4) ? n + 1 : 4;
+        for (INT ik = 0; ik < nk; ik++) {
+            INT kd;
             if (ik == 0)       kd = 0;
             else if (ik == 1)  kd = (n > 0) ? n : 0;
             else if (ik == 2)  kd = (3 * n - 1) / 4;
             else               kd = (n + 1) / 4;
 
             /* Standard tests: IMAT 1-NTYPE1 */
-            for (int imat = 1; imat <= nimat; imat++) {
-                for (int iuplo = 0; iuplo < 2; iuplo++) {
+            for (INT imat = 1; imat <= nimat; imat++) {
+                for (INT iuplo = 0; iuplo < 2; iuplo++) {
                     standard_params_t* p = &g_standard_params[standard_idx];
                     p->n = n;
                     p->kd = kd;
@@ -525,8 +456,8 @@ static void build_test_array(void)
             }
 
             /* Pathological tests (SLATBS): IMAT NTYPE1+1 to NTYPES */
-            for (int imat = NTYPE1 + 1; imat <= nimat2; imat++) {
-                for (int iuplo = 0; iuplo < 2; iuplo++) {
+            for (INT imat = NTYPE1 + 1; imat <= nimat2; imat++) {
+                for (INT iuplo = 0; iuplo < 2; iuplo++) {
                     latbs_params_t* p = &g_latbs_params[latbs_idx];
                     p->n = n;
                     p->kd = kd;

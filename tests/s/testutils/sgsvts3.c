@@ -4,31 +4,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
-                    const int m, const int n, const int p,
-                    int* k, int* l,
-                    f32* A, const int lda,
-                    f32* B, const int ldb,
-                    f32* alpha, f32* beta,
-                    f32* U, const int ldu,
-                    f32* V, const int ldv,
-                    f32* Q, const int ldq,
-                    f32* work, const int lwork,
-                    int* iwork, int* info);
 
 /**
  * SGSVTS3 tests SGGSVD3, which computes the GSVD of an M-by-N matrix A
@@ -66,24 +43,24 @@ extern void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
  *                        result[4] = norm(I - Q'*Q) / (n*ulp)
  *                        result[5] = 0 if alpha is in decreasing order, ulpinv otherwise
  */
-void sgsvts3(const int m, const int p, const int n,
-             const f32* A, f32* AF, const int lda,
-             const f32* B, f32* BF, const int ldb,
-             f32* U, const int ldu,
-             f32* V, const int ldv,
-             f32* Q, const int ldq,
+void sgsvts3(const INT m, const INT p, const INT n,
+             const f32* A, f32* AF, const INT lda,
+             const f32* B, f32* BF, const INT ldb,
+             f32* U, const INT ldu,
+             f32* V, const INT ldv,
+             f32* Q, const INT ldq,
              f32* alpha, f32* beta,
-             f32* R, const int ldr,
-             int* iwork,
-             f32* work, const int lwork,
+             f32* R, const INT ldr,
+             INT* iwork,
+             f32* work, const INT lwork,
              f32* rwork,
              f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, k, l, info;
-    int minval;
+    INT i, j, k, l, info;
+    INT minval;
     f32 anorm, bnorm, resid, temp, ulp, ulpinv, unfl;
 
     ulp = slamch("P");
@@ -140,7 +117,7 @@ void sgsvts3(const int m, const int p, const int n,
 
     resid = slange("1", m, n, AF, lda, rwork);
     if (anorm > ZERO) {
-        int maxmn = (m > n) ? m : n;
+        INT maxmn = (m > n) ? m : n;
         if (maxmn < 1) maxmn = 1;
         result[0] = ((resid / (f32)maxmn) / anorm) / ulp;
     } else {
@@ -161,7 +138,7 @@ void sgsvts3(const int m, const int p, const int n,
 
     resid = slange("1", p, n, BF, ldb, rwork);
     if (bnorm > ZERO) {
-        int maxpn = (p > n) ? p : n;
+        INT maxpn = (p > n) ? p : n;
         if (maxpn < 1) maxpn = 1;
         result[1] = ((resid / (f32)maxpn) / bnorm) / ulp;
     } else {

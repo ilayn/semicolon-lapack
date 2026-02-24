@@ -18,14 +18,12 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cblas.h>
-
 /* Maximum dimension for static workspace */
 #define NMAX 64
 
 /* Test fixture */
 typedef struct {
-    int n;
+    INT n;
     f64* A;       /* Original matrix */
     f64* H;       /* Hessenberg result */
     f64* Q;       /* Orthogonal matrix */
@@ -36,21 +34,6 @@ typedef struct {
 } dgehrd_fixture_t;
 
 /* Forward declarations from semicolon_lapack */
-extern void dgehrd(const int n, const int ilo, const int ihi,
-                   f64* A, const int lda, f64* tau,
-                   f64* work, const int lwork, int* info);
-extern void dorghr(const int n, const int ilo, const int ihi,
-                   f64* A, const int lda, const f64* tau,
-                   f64* work, const int lwork, int* info);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-
 /* Setup function parameterized by N */
 static int setup_N(void** state, int n) {
     dgehrd_fixture_t* fix = malloc(sizeof(dgehrd_fixture_t));
@@ -66,7 +49,7 @@ static int setup_N(void** state, int n) {
     fix->tau = malloc(n * sizeof(f64));
 
     /* Workspace: need at least 2*n*n for verification + lwork for routines */
-    int lwork = 4 * n * n + 2 * n;
+    INT lwork = 4 * n * n + 2 * n;
     fix->work = malloc(lwork * sizeof(f64));
 
     if (!fix->A || !fix->H || !fix->Q || !fix->tau || !fix->work) {
@@ -109,7 +92,7 @@ static int setup_32(void** state) { return setup_N(state, 32); }
  * @param lda    Leading dimension
  * @param anorm  Desired matrix norm
  */
-static void generate_test_matrix(int itype, int n, f64* A, int lda, f64 anorm,
+static void generate_test_matrix(INT itype, INT n, f64* A, INT lda, f64 anorm,
                                  uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
@@ -128,14 +111,14 @@ static void generate_test_matrix(int itype, int n, f64* A, int lda, f64 anorm,
 
         case 2:
             /* Identity matrix scaled by anorm */
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 A[j + j * lda] = anorm;
             }
             break;
 
         case 3:
             /* Jordan block */
-            for (int j = 0; j < n; j++) {
+            for (INT j = 0; j < n; j++) {
                 A[j + j * lda] = anorm;
                 if (j > 0) {
                     A[j + (j - 1) * lda] = ONE;
@@ -149,7 +132,7 @@ static void generate_test_matrix(int itype, int n, f64* A, int lda, f64 anorm,
             /* Diagonal matrix with specified eigenvalue distribution */
             /* For simplicity, use dlatm4 for eigenvalue test matrices */
             {
-                int mode = (itype == 4) ? 4 : (itype == 5) ? 3 : 1;
+                INT mode = (itype == 4) ? 4 : (itype == 5) ? 3 : 1;
                 dlatm4(mode, n, 0, 0, 1, anorm, ulp, ZERO, 2, A, lda, state);
             }
             break;
@@ -167,8 +150,8 @@ static void generate_test_matrix(int itype, int n, f64* A, int lda, f64 anorm,
         default:
             /* General random matrix for types 9-21 */
             /* Generate random entries */
-            for (int j = 0; j < n; j++) {
-                for (int i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
+                for (INT i = 0; i < n; i++) {
                     A[i + j * lda] = anorm * rng_uniform_symmetric(state);
                 }
             }
@@ -179,11 +162,11 @@ static void generate_test_matrix(int itype, int n, f64* A, int lda, f64 anorm,
 /**
  * Test Hessenberg reduction for a specific matrix type.
  */
-static void test_hessenberg_reduction(dgehrd_fixture_t* fix, int itype)
+static void test_hessenberg_reduction(dgehrd_fixture_t* fix, INT itype)
 {
-    int n = fix->n;
-    int lda = n;
-    int info;
+    INT n = fix->n;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     const f64 ONE = 1.0;
@@ -196,9 +179,9 @@ static void test_hessenberg_reduction(dgehrd_fixture_t* fix, int itype)
     dlacpy(" ", n, n, fix->A, lda, fix->H, lda);
 
     /* Perform Hessenberg reduction: H = Q' * A * Q */
-    int ilo = 0;      /* 0-based for semicolon-lapack */
-    int ihi = n - 1;
-    int lwork = n * n;  /* Generous workspace */
+    INT ilo = 0;      /* 0-based for semicolon-lapack */
+    INT ihi = n - 1;
+    INT lwork = n * n;  /* Generous workspace */
 
     dgehrd(n, ilo, ihi, fix->H, lda, fix->tau, fix->work, lwork, &info);
     assert_info_success(info);
@@ -208,8 +191,8 @@ static void test_hessenberg_reduction(dgehrd_fixture_t* fix, int itype)
     dlacpy(" ", n, n, fix->H, lda, fix->Q, lda);
 
     /* Zero out the lower triangular part of H (it contains Householder vectors) */
-    for (int j = 0; j < n - 1; j++) {
-        for (int i = j + 2; i < n; i++) {
+    for (INT j = 0; j < n - 1; j++) {
+        for (INT i = j + 2; i < n; i++) {
             fix->H[i + j * lda] = 0.0;
         }
     }
@@ -219,7 +202,7 @@ static void test_hessenberg_reduction(dgehrd_fixture_t* fix, int itype)
     assert_info_success(info);
 
     /* Test: | A - Q*H*Q' | / ( |A| n ulp ) and | I - Q*Q' | / ( n ulp ) */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     dhst01(n, ilo, ihi, fix->A, lda, fix->H, lda, fix->Q, lda,
            fix->work, lwork_verify, result);
 
@@ -281,8 +264,8 @@ static void test_random_general(void** state)
 static void test_workspace_query(void** state)
 {
     dgehrd_fixture_t* fix = *state;
-    int n = fix->n;
-    int info;
+    INT n = fix->n;
+    INT info;
     f64 work_query;
 
     /* Query optimal workspace */
@@ -316,21 +299,21 @@ static void test_workspace_query(void** state)
 static void test_partial_range(void** state)
 {
     dgehrd_fixture_t* fix = *state;
-    int n = fix->n;
+    INT n = fix->n;
     if (n < 4) {
         skip_test("n too small for partial range test");
         return;
     }
 
-    int lda = n;
-    int info;
+    INT lda = n;
+    INT info;
     f64 result[2];
 
     const f64 ZERO = 0.0;
 
     /* Reduce only the middle portion (0-based: from column 1 to n-2) */
-    int ilo = 1;
-    int ihi = n - 2;
+    INT ilo = 1;
+    INT ihi = n - 2;
 
     /* Generate a matrix that is already upper triangular outside [ilo, ihi].
      * This simulates what dgebal produces when eigenvalues are isolated at corners.
@@ -350,20 +333,20 @@ static void test_partial_range(void** state)
     fix->A[(n-1) + (n-1) * lda] = rng_uniform_symmetric(fix->rng_state) + 2.0;
 
     /* Upper part of row 0 (can be non-zero) */
-    for (int j = 1; j < n; j++) {
+    for (INT j = 1; j < n; j++) {
         fix->A[0 + j * lda] = rng_uniform_symmetric(fix->rng_state);
     }
 
     /* Active submatrix: rows/columns ilo:ihi */
-    for (int j = ilo; j <= ihi; j++) {
-        for (int i = ilo; i <= ihi; i++) {
+    for (INT j = ilo; j <= ihi; j++) {
+        for (INT i = ilo; i <= ihi; i++) {
             fix->A[i + j * lda] = rng_uniform_symmetric(fix->rng_state);
         }
     }
 
     /* Elements connecting active block to last row/column
      * Last column can have entries in rows ilo:ihi */
-    for (int i = ilo; i <= ihi; i++) {
+    for (INT i = ilo; i <= ihi; i++) {
         fix->A[i + (n - 1) * lda] = rng_uniform_symmetric(fix->rng_state);
     }
 
@@ -378,8 +361,8 @@ static void test_partial_range(void** state)
     dlacpy(" ", n, n, fix->H, lda, fix->Q, lda);
 
     /* Zero out the lower triangular part of H (Householder vectors storage) */
-    for (int j = 0; j < n - 1; j++) {
-        for (int i = j + 2; i < n; i++) {
+    for (INT j = 0; j < n - 1; j++) {
+        for (INT i = j + 2; i < n; i++) {
             fix->H[i + j * lda] = 0.0;
         }
     }
@@ -389,7 +372,7 @@ static void test_partial_range(void** state)
     assert_info_success(info);
 
     /* Verify using dhst01: | A - Q*H*Q' | / (|A| n ulp) and | I - Q*Q' | / (n ulp) */
-    int lwork_verify = 2 * n * n;
+    INT lwork_verify = 2 * n * n;
     dhst01(n, ilo, ihi, fix->A, lda, fix->H, lda, fix->Q, lda,
            fix->work, lwork_verify, result);
 
@@ -431,7 +414,7 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_partial_range, setup_32, teardown),
     };
 
-    int result = 0;
+    INT result = 0;
     result += cmocka_run_group_tests_name("dgehrd_n5", tests_n5, NULL, NULL);
     result += cmocka_run_group_tests_name("dgehrd_n10", tests_n10, NULL, NULL);
     result += cmocka_run_group_tests_name("dgehrd_n20", tests_n20, NULL, NULL);

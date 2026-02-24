@@ -25,12 +25,13 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include <string.h>
 #include <stdio.h>
 
-static const int MVAL[] = {5, 10, 16, 50};
-static const int NVAL[] = {2, 5, 10, 16};
-static const int NBVAL[] = {1, 2, 5, 10, 16, 32, 64};
+static const INT MVAL[] = {5, 10, 16, 50};
+static const INT NVAL[] = {2, 5, 10, 16};
+static const INT NBVAL[] = {1, 2, 5, 10, 16, 32, 64};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -38,26 +39,21 @@ static const int NBVAL[] = {1, 2, 5, 10, 16, 32, 64};
 #define NTESTS  6
 #define THRESH  30.0
 
-extern void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
-                        const int nb2, f64* restrict result);
-extern void dorhr_col02(const int m, const int n, const int mb1, const int nb1,
-                        const int nb2, f64* restrict result);
-
 typedef struct {
-    int m;
-    int n;
-    int mb1;
-    int nb1;
-    int nb2;
-    int variant;  /* 1 = dorhr_col01, 2 = dorhr_col02 */
+    INT m;
+    INT n;
+    INT mb1;
+    INT nb1;
+    INT nb2;
+    INT variant;  /* 1 = dorhr_col01, 2 = dorhr_col02 */
     char name[80];
 } dchkorhr_col_params_t;
 
-static void run_dchkorhr_col_single(int m, int n, int mb1, int nb1, int nb2, int variant)
+static void run_dchkorhr_col_single(INT m, INT n, INT mb1, INT nb1, INT nb2, INT variant)
 {
     f64 result[NTESTS];
     char ctx[128];
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
 
     if (minmn == 0 || m < n || mb1 <= n || nb1 <= 0 || nb2 <= 0) {
         return;
@@ -70,7 +66,7 @@ static void run_dchkorhr_col_single(int m, int n, int mb1, int nb1, int nb2, int
     }
 
     const char* vname = (variant == 1) ? "DORGTSQR+DORHR_COL" : "DORGTSQR_ROW+DORHR_COL";
-    for (int t = 0; t < NTESTS; t++) {
+    for (INT t = 0; t < NTESTS; t++) {
         snprintf(ctx, sizeof(ctx), "%s m=%d n=%d mb1=%d nb1=%d nb2=%d TEST %d",
                  vname, m, n, mb1, nb1, nb2, t + 1);
         set_test_context(ctx);
@@ -91,40 +87,40 @@ static void test_dchkorhr_col_case(void** state)
 
 static dchkorhr_col_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int variant = 1; variant <= 2; variant++) {
-        for (int im = 0; im < (int)NM; im++) {
-            int m = MVAL[im];
+    for (INT variant = 1; variant <= 2; variant++) {
+        for (INT im = 0; im < (INT)NM; im++) {
+            INT m = MVAL[im];
 
-            for (int in = 0; in < (int)NN; in++) {
-                int n = NVAL[in];
-                int minmn = (m < n) ? m : n;
+            for (INT in = 0; in < (INT)NN; in++) {
+                INT n = NVAL[in];
+                INT minmn = (m < n) ? m : n;
 
                 if (minmn == 0 || m < n) {
                     continue;
                 }
 
-                for (int imb1 = 0; imb1 < (int)NNB; imb1++) {
-                    int mb1 = NBVAL[imb1];
+                for (INT imb1 = 0; imb1 < (INT)NNB; imb1++) {
+                    INT mb1 = NBVAL[imb1];
 
                     if (mb1 <= n) {
                         continue;
                     }
 
-                    for (int inb1 = 0; inb1 < (int)NNB; inb1++) {
-                        int nb1 = NBVAL[inb1];
+                    for (INT inb1 = 0; inb1 < (INT)NNB; inb1++) {
+                        INT nb1 = NBVAL[inb1];
 
                         if (nb1 <= 0) {
                             continue;
                         }
 
-                        for (int inb2 = 0; inb2 < (int)NNB; inb2++) {
-                            int nb2 = NBVAL[inb2];
+                        for (INT inb2 = 0; inb2 < (INT)NNB; inb2++) {
+                            INT nb2 = NBVAL[inb2];
 
                             if (nb2 <= 0) {
                                 continue;

@@ -13,32 +13,30 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
-
 typedef struct {
-    int m, n;
-    int lda;
+    INT m, n;
+    INT lda;
     f32 *A, *AF, *Q, *R;
     f32 *tau, *work, *rwork;
     f32 *d, *genwork;
-    int lwork;
+    INT lwork;
     uint64_t seed;
 } rq_fixture_t;
 
 static uint64_t g_seed = 5001;
 
-static int rq_setup(void **state, int m, int n)
+static int rq_setup(void **state, INT m, INT n)
 {
     rq_fixture_t *fix = malloc(sizeof(rq_fixture_t));
     assert_non_null(fix);
 
     fix->m = m;
     fix->n = n;
-    int maxmn = m > n ? m : n;
+    INT maxmn = m > n ? m : n;
     fix->lda = maxmn;
     fix->seed = g_seed++;
 
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
     fix->lwork = maxmn * 64;
 
     fix->A = calloc(fix->lda * maxmn, sizeof(f32));
@@ -86,10 +84,10 @@ static int setup_20x10(void **state) { return rq_setup(state, 20, 10); }
 static int setup_5x10(void **state) { return rq_setup(state, 5, 10); }
 static int setup_10x20(void **state) { return rq_setup(state, 10, 20); }
 
-static void run_rqt01(rq_fixture_t *fix, int imat)
+static void run_rqt01(rq_fixture_t *fix, INT imat)
 {
     char type, dist;
-    int kl, ku, mode, info;
+    INT kl, ku, mode, info;
     f32 anorm, cndnum;
     f32 result[2];
 
@@ -111,7 +109,7 @@ static void run_rqt01(rq_fixture_t *fix, int imat)
 static void test_wellcond(void **state)
 {
     rq_fixture_t *fix = *state;
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_rqt01(fix, imat);
     }
@@ -121,7 +119,7 @@ static void test_illcond(void **state)
 {
     rq_fixture_t *fix = *state;
     if (fix->m < 3) { skip_test("requires m >= 3"); return; }
-    for (int imat = 8; imat <= 9; imat++) {
+    for (INT imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         run_rqt01(fix, imat);
     }
@@ -130,7 +128,7 @@ static void test_illcond(void **state)
 static void test_scaled(void **state)
 {
     rq_fixture_t *fix = *state;
-    for (int imat = 10; imat <= 11; imat++) {
+    for (INT imat = 10; imat <= 11; imat++) {
         fix->seed = g_seed++;
         run_rqt01(fix, imat);
     }

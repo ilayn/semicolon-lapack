@@ -13,13 +13,11 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DLATTP generates a triangular test matrix in packed storage.
  *
@@ -37,20 +35,20 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    work    Array (3*n). Workspace.
  * @param[out]    info    0 = successful exit, < 0 = illegal argument.
  */
-void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-            const int n, f64* A, f64* B, f64* work,
-            int* info, uint64_t state[static 4])
+void dlattp(const INT imat, const char* uplo, const char* trans, char* diag,
+            const INT n, f64* A, f64* B, f64* work,
+            INT* info, uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
     f64 unfl, ulp, smlnum, bignum;
-    int upper;
+    INT upper;
     char type, dist, packit;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int i, j, jc, jcnext, jcount, jj, jl, jr, jx, iy;
+    INT i, j, jc, jcnext, jcount, jj, jl, jr, jx, iy;
     f64 bnorm, bscal, tscal, texp, tleft;
     f64 plus1, plus2, star1, sfac, rexp;
     f64 x, y, z, c, s, ra, rb, stemp, t;
@@ -182,17 +180,17 @@ void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
             for (j = 1; j < n; j++) {
                 A[jc + 1] = y;
                 if (j > 1) {
-                    A[jc + j - 1] = work[j - 2];
+                    A[jc + j] = work[j - 2];
                 }
                 if (j > 2) {
-                    A[jc + j - 2] = work[n + j - 3];
+                    A[jc + j - 1] = work[n + j - 3];
                 }
-                jc += j;
+                jc += j + 1;
             }
-            jc -= n - 1;
+            jc -= n;
             A[jc + 1] = z;
             for (j = 1; j < n - 1; j++) {
-                A[jc + j] = y;
+                A[jc + j + 1] = y;
             }
         } else {
             /* Set the lower triangle of A with a unit triangular matrix

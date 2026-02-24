@@ -6,10 +6,9 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "semicolon_lapack_double.h"
-#include <cblas.h>
-
 /* xerbla declared in verify.h */
 
 /**
@@ -43,19 +42,19 @@ void dlavsy(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* const restrict A,
-    const int lda,
-    const int* const restrict ipiv,
+    const INT lda,
+    const INT* const restrict ipiv,
     f64* const restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f64 ONE = 1.0;
 
-    int nounit;
-    int j, k, kp;
+    INT nounit;
+    INT j, k, kp;
     f64 d11, d12, d21, d22, t1, t2;
 
     /* Test the input parameters. */

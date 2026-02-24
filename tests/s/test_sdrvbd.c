@@ -51,7 +51,7 @@ static const char* CJOBV = "NV";    /* 'N', 'V' for SGESVDX */
  * LAPACK tests: 0 0 0 1 1 1 2 2 3 3 3 10 10 16 16 30 30 40 40 (M values)
  *               0 1 3 0 1 2 0 1 0 1 3 10 16 10 16 30 40 30 40 (N values)
  */
-typedef struct { int m; int n; } dim_pair_t;
+typedef struct { INT m; INT n; } dim_pair_t;
 static const dim_pair_t DIM_PAIRS[] = {
     {0, 0}, {0, 1}, {0, 3},     /* M=0 cases */
     {1, 0}, {1, 1}, {1, 2},     /* M=1 cases */
@@ -65,61 +65,16 @@ static const dim_pair_t DIM_PAIRS[] = {
 #define NDIM_PAIRS (sizeof(DIM_PAIRS) / sizeof(DIM_PAIRS[0]))
 
 /* SVD driver declarations */
-extern void sgesvd(const char* jobu, const char* jobvt, const int m, const int n,
-                   f32* A, const int lda, f32* S,
-                   f32* U, const int ldu, f32* VT, const int ldvt,
-                   f32* work, const int lwork, int* info);
-
-extern void sgesdd(const char* jobz, const int m, const int n,
-                   f32* A, const int lda, f32* S,
-                   f32* U, const int ldu, f32* VT, const int ldvt,
-                   f32* work, const int lwork, int* iwork, int* info);
-
-extern void sgesvdx(const char* jobu, const char* jobvt, const char* range,
-                    const int m, const int n, f32* A, const int lda,
-                    const f32 vl, const f32 vu, const int il, const int iu,
-                    int* ns, f32* S, f32* U, const int ldu,
-                    f32* VT, const int ldvt, f32* work, const int lwork,
-                    int* iwork, int* info);
-
-extern void sgesvdq(const char* joba, const char* jobp, const char* jobr,
-                    const char* jobu, const char* jobv,
-                    const int m, const int n, f32* A, const int lda,
-                    f32* S, f32* U, const int ldu, f32* V, const int ldv,
-                    int* numrank, int* iwork, const int liwork,
-                    f32* work, const int lwork, f32* rwork, const int lrwork,
-                    int* info);
-
-extern void sgesvj(const char* joba, const char* jobu, const char* jobv,
-                   const int m, const int n, f32* A, const int lda,
-                   f32* SVA, const int mv, f32* V, const int ldv,
-                   f32* work, const int lwork, int* info);
-
-extern void sgejsv(const char* joba, const char* jobu, const char* jobv,
-                   const char* jobr, const char* jobt, const char* jobp,
-                   const int m, const int n, f32* A, const int lda,
-                   f32* SVA, f32* U, const int ldu, f32* V, const int ldv,
-                   f32* work, const int lwork, int* iwork, int* info);
-
 /* Utility routines */
-extern f32 slamch(const char* cmach);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-extern void slascl(const char* type, const int kl, const int ku,
-                   const f32 cfrom, const f32 cto, const int m, const int n,
-                   f32* A, const int lda, int* info);
-
 /* Matrix generation and verification routines from verify.h */
 
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int m;
-    int n;
-    int itype;
+    INT m;
+    INT n;
+    INT itype;
     char name[64];
 } ddrvbd_params_t;
 
@@ -128,7 +83,7 @@ typedef struct {
  * Allocated once at maximum dimensions, reused for all size combinations.
  */
 typedef struct {
-    int mmax, nmax, mnmax;
+    INT mmax, nmax, mnmax;
 
     /* Matrices */
     f32* A;      /* m x n working copy */
@@ -145,10 +100,10 @@ typedef struct {
     /* Work arrays */
     f32* work;   /* general workspace */
     f32* rwork;  /* real workspace for sgesvdq */
-    int* iwork;     /* integer workspace */
-    int lwork;      /* workspace size */
-    int liwork;     /* integer workspace size */
-    int lrwork;     /* real workspace size */
+    INT* iwork;     /* integer workspace */
+    INT lwork;      /* workspace size */
+    INT liwork;     /* integer workspace size */
+    INT lrwork;     /* real workspace size */
 
     /* Test results */
     f32 result[NRESULTS];
@@ -165,26 +120,26 @@ static ddrvbd_workspace_t* g_ws = NULL;
 /**
  * Compute maximum workspace needed for all SVD routines.
  */
-static int compute_lwork(int mmax, int nmax)
+static INT compute_lwork(INT mmax, INT nmax)
 {
-    int mnmax = (mmax < nmax) ? mmax : nmax;
-    int mxmax = (mmax > nmax) ? mmax : nmax;
+    INT mnmax = (mmax < nmax) ? mmax : nmax;
+    INT mxmax = (mmax > nmax) ? mmax : nmax;
 
     /* From ddrvbd.f:
      * LWORK = MAX(3*MN + MX, 5*MN - 4) + 2*MN^2
      * Plus extra for SGESVDQ
      */
-    int lwork1 = 3 * mnmax + mxmax;
-    int lwork2 = 5 * mnmax - 4;
-    int lwork = (lwork1 > lwork2) ? lwork1 : lwork2;
+    INT lwork1 = 3 * mnmax + mxmax;
+    INT lwork2 = 5 * mnmax - 4;
+    INT lwork = (lwork1 > lwork2) ? lwork1 : lwork2;
     lwork += 2 * mnmax * mnmax;
 
     /* Extra for SGESVDQ */
-    int lwork_q = 5 * mnmax * mnmax + 9 * mnmax + mxmax;
+    INT lwork_q = 5 * mnmax * mnmax + 9 * mnmax + mxmax;
     if (lwork_q > lwork) lwork = lwork_q;
 
     /* Extra for SGEJSV */
-    int lwork_j = 6 * mnmax * mnmax + 10 * mnmax + mxmax;
+    INT lwork_j = 6 * mnmax * mnmax + 10 * mnmax + mxmax;
     if (lwork_j > lwork) lwork = lwork_j;
 
     /* Extra safety margin */
@@ -197,12 +152,12 @@ static int compute_lwork(int mmax, int nmax)
  * Check that singular values are non-negative and decreasing.
  * Returns 0.0 if valid, 1/ULP if invalid.
  */
-static f32 check_sv_order(const f32* S, int n, f32 ulpinv)
+static f32 check_sv_order(const f32* S, INT n, f32 ulpinv)
 {
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         if (S[i] < 0.0f) return ulpinv;
     }
-    for (int i = 0; i < n - 1; i++) {
+    for (INT i = 0; i < n - 1; i++) {
         if (S[i] < S[i + 1]) return ulpinv;
     }
     return 0.0f;
@@ -218,14 +173,14 @@ static f32 check_sv_order(const f32* S, int n, f32 ulpinv)
  *   4: Same as 3, scaled near underflow
  *   5: Same as 3, scaled near overflow
  */
-static void generate_test_matrix(int itype, int m, int n, f32* A, int lda,
-                                 f32* S, f32* work, int* info,
+static void generate_test_matrix(INT itype, INT m, INT n, f32* A, INT lda,
+                                 f32* S, f32* work, INT* info,
                                  uint64_t state[static 4])
 {
     f32 ulp = slamch("P");
     f32 unfl = slamch("S");
     f32 ovfl = 1.0f / unfl;
-    int mnmin = (m < n) ? m : n;
+    INT mnmin = (m < n) ? m : n;
 
     *info = 0;
 
@@ -236,12 +191,12 @@ static void generate_test_matrix(int itype, int m, int n, f32* A, int lda,
     if (itype == 1) {
         /* Type 1: Zero matrix */
         slaset("F", m, n, 0.0f, 0.0f, A, lda);
-        for (int i = 0; i < mnmin; i++) S[i] = 0.0f;
+        for (INT i = 0; i < mnmin; i++) S[i] = 0.0f;
     }
     else if (itype == 2) {
         /* Type 2: Identity matrix */
         slaset("F", m, n, 0.0f, 1.0f, A, lda);
-        for (int i = 0; i < mnmin; i++) S[i] = 1.0f;
+        for (INT i = 0; i < mnmin; i++) S[i] = 1.0f;
     }
     else if (itype >= 3 && itype <= 5) {
         /* Types 3-5: Random matrix with controlled singular values */
@@ -272,7 +227,7 @@ static void generate_test_matrix(int itype, int m, int n, f32* A, int lda,
         /* Sort singular values in decreasing order for verification */
         /* slatms with mode=4 gives SV from 1 to 1/cond */
         /* We need to know what values to expect */
-        for (int i = 0; i < mnmin; i++) {
+        for (INT i = 0; i < mnmin; i++) {
             f32 t = (f32)i / (f32)(mnmin > 1 ? mnmin - 1 : 1);
             S[i] = anorm * (1.0f - t * (1.0f - 1.0f / cond));
         }
@@ -309,17 +264,17 @@ static void generate_test_matrix(int itype, int m, int n, f32* A, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesvd(int m, int n, const f32* ASAV, int lda,
-                        int lswork, ddrvbd_workspace_t* ws)
+static void test_dgesvd(INT m, INT n, const f32* ASAV, INT lda,
+                        INT lswork, ddrvbd_workspace_t* ws)
 {
-    int mnmin = (m < n) ? m : n;
+    INT mnmin = (m < n) ? m : n;
     f32 ulp = slamch("P");
     f32 ulpinv = 1.0f / ulp;
     f32 unfl = slamch("S");
-    int info;
+    INT info;
 
     /* Initialize results to 0 */
-    for (int i = 0; i < 7; i++) ws->result[i] = 0.0f;
+    for (INT i = 0; i < 7; i++) ws->result[i] = 0.0f;
 
     if (m == 0 || n == 0) return;
 
@@ -352,8 +307,8 @@ static void test_dgesvd(int m, int n, const f32* ASAV, int lda,
     ws->result[5] = 0.0f;  /* max |VT - VTpartial| */
     ws->result[6] = 0.0f;  /* max |S - Spartial| */
 
-    for (int iju = 0; iju <= 3; iju++) {
-        for (int ijvt = 0; ijvt <= 3; ijvt++) {
+    for (INT iju = 0; iju <= 3; iju++) {
+        for (INT ijvt = 0; ijvt <= 3; ijvt++) {
             /* Skip ('A','A') - tested above; skip ('O','O') - invalid */
             if ((iju == 3 && ijvt == 3) || (iju == 1 && ijvt == 1)) continue;
 
@@ -408,7 +363,7 @@ static void test_dgesvd(int m, int n, const f32* ASAV, int lda,
             /* Compare S */
             dif = 0.0f;
             f32 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
-            for (int i = 0; i < mnmin - 1; i++) {
+            for (INT i = 0; i < mnmin - 1; i++) {
                 if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
                 if (ws->SSAV[i] < 0.0f) dif = ulpinv;
                 f32 d = fabsf(ws->SSAV[i] - ws->S[i]) / div;
@@ -435,17 +390,17 @@ static void test_dgesvd(int m, int n, const f32* ASAV, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesdd(int m, int n, const f32* ASAV, int lda,
-                        int lswork, ddrvbd_workspace_t* ws)
+static void test_dgesdd(INT m, INT n, const f32* ASAV, INT lda,
+                        INT lswork, ddrvbd_workspace_t* ws)
 {
-    int mnmin = (m < n) ? m : n;
+    INT mnmin = (m < n) ? m : n;
     f32 ulp = slamch("P");
     f32 ulpinv = 1.0f / ulp;
     f32 unfl = slamch("S");
-    int info;
+    INT info;
 
     /* Initialize results to 0 */
-    for (int i = 7; i < 14; i++) ws->result[i] = 0.0f;
+    for (INT i = 7; i < 14; i++) ws->result[i] = 0.0f;
 
     if (m == 0 || n == 0) return;
 
@@ -478,7 +433,7 @@ static void test_dgesdd(int m, int n, const f32* ASAV, int lda,
     ws->result[12] = 0.0f;  /* max |VT - VTpartial| */
     ws->result[13] = 0.0f;  /* max |S - Spartial| */
 
-    for (int ijq = 0; ijq <= 2; ijq++) {
+    for (INT ijq = 0; ijq <= 2; ijq++) {
         char jobq[2] = {CJOB[ijq], '\0'};  /* 'N', 'O', 'S' */
 
         slacpy("F", m, n, ASAV, lda, ws->A, lda);
@@ -531,7 +486,7 @@ static void test_dgesdd(int m, int n, const f32* ASAV, int lda,
         /* Compare S */
         dif = 0.0f;
         f32 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
-        for (int i = 0; i < mnmin - 1; i++) {
+        for (INT i = 0; i < mnmin - 1; i++) {
             if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
             if (ws->SSAV[i] < 0.0f) dif = ulpinv;
             f32 d = fabsf(ws->SSAV[i] - ws->S[i]) / div;
@@ -555,19 +510,19 @@ static void test_dgesdd(int m, int n, const f32* ASAV, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesvj(int m, int n, const f32* ASAV, int lda,
+static void test_dgesvj(INT m, INT n, const f32* ASAV, INT lda,
                         ddrvbd_workspace_t* ws)
 {
     f32 ulpinv = 1.0f / slamch("P");
-    int info;
+    INT info;
 
     /* Initialize results to 0 */
-    for (int i = 14; i < 18; i++) ws->result[i] = 0.0f;
+    for (INT i = 14; i < 18; i++) ws->result[i] = 0.0f;
 
     /* SGESVJ only works for M >= N */
     if (m < n || m == 0 || n == 0) return;
 
-    int mnmin = n;  /* Since m >= n, mnmin = n */
+    INT mnmin = n;  /* Since m >= n, mnmin = n */
 
     slacpy("F", m, n, ASAV, lda, ws->USAV, m);
 
@@ -580,8 +535,8 @@ static void test_dgesvj(int m, int n, const f32* ASAV, int lda,
     }
 
     /* Transpose V to VTSAV: ws->A currently holds V (n x n), need V^T in VTSAV */
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    for (INT i = 0; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
             ws->VTSAV[i + j * n] = ws->A[j + i * n];
         }
     }
@@ -607,19 +562,19 @@ static void test_dgesvj(int m, int n, const f32* ASAV, int lda,
  * Only works for M >= N.
  * Returns V (not VT), so we need to transpose.
  */
-static void test_dgejsv(int m, int n, const f32* ASAV, int lda,
+static void test_dgejsv(INT m, INT n, const f32* ASAV, INT lda,
                         ddrvbd_workspace_t* ws)
 {
     f32 ulpinv = 1.0f / slamch("P");
-    int info;
+    INT info;
 
     /* Initialize results to 0 */
-    for (int i = 18; i < 22; i++) ws->result[i] = 0.0f;
+    for (INT i = 18; i < 22; i++) ws->result[i] = 0.0f;
 
     /* SGEJSV only works for M >= N */
     if (m < n || m == 0 || n == 0) return;
 
-    int mnmin = n;  /* Since m >= n, mnmin = n */
+    INT mnmin = n;  /* Since m >= n, mnmin = n */
 
     slacpy("F", m, n, ASAV, lda, ws->VTSAV, m);
 
@@ -632,8 +587,8 @@ static void test_dgejsv(int m, int n, const f32* ASAV, int lda,
     }
 
     /* SGEJSV returns V in A, transpose to VTSAV */
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    for (INT i = 0; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
             ws->VTSAV[i + j * n] = ws->A[j + i * n];
         }
     }
@@ -662,19 +617,19 @@ static void test_dgejsv(int m, int n, const f32* ASAV, int lda,
  * Tests 30-32: RANGE='I' (index range)
  * Tests 33-35: RANGE='V' (value range)
  */
-static void test_dgesvdx(int m, int n, const f32* ASAV, int lda,
+static void test_dgesvdx(INT m, INT n, const f32* ASAV, INT lda,
                          ddrvbd_workspace_t* ws)
 {
-    int mnmin = (m < n) ? m : n;
+    INT mnmin = (m < n) ? m : n;
     f32 ulp = slamch("P");
     f32 ulpinv = 1.0f / ulp;
     f32 unfl = slamch("S");
-    int info;
-    int ns;
-    int lwork = ws->lwork;
+    INT info;
+    INT ns;
+    INT lwork = ws->lwork;
 
     /* Initialize results to 0 */
-    for (int i = 22; i < 35; i++) ws->result[i] = 0.0f;
+    for (INT i = 22; i < 35; i++) ws->result[i] = 0.0f;
 
     if (m == 0 || n == 0) return;
 
@@ -709,8 +664,8 @@ static void test_dgesvdx(int m, int n, const f32* ASAV, int lda,
     ws->result[27] = 0.0f;  /* max |VT - VTpartial| */
     ws->result[28] = 0.0f;  /* max |S - Spartial| */
 
-    for (int iju = 0; iju <= 1; iju++) {
-        for (int ijvt = 0; ijvt <= 1; ijvt++) {
+    for (INT iju = 0; iju <= 1; iju++) {
+        for (INT ijvt = 0; ijvt <= 1; ijvt++) {
             /* Skip ('N','N') and ('V','V') - tested above */
             if ((iju == 0 && ijvt == 0) || (iju == 1 && ijvt == 1)) continue;
 
@@ -745,7 +700,7 @@ static void test_dgesvdx(int m, int n, const f32* ASAV, int lda,
             /* Compare S */
             dif = 0.0f;
             f32 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
-            for (int i = 0; i < mnmin - 1; i++) {
+            for (INT i = 0; i < mnmin - 1; i++) {
                 if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
                 if (ws->SSAV[i] < 0.0f) dif = ulpinv;
                 f32 d = fabsf(ws->SSAV[i] - ws->S[i]) / div;
@@ -757,14 +712,14 @@ static void test_dgesvdx(int m, int n, const f32* ASAV, int lda,
 
     /* === RANGE='I' (index range) === */
     if (mnmin > 1) {
-        int il = 1 + (int)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
-        int iu = 1 + (int)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
+        INT il = 1 + (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
+        INT iu = 1 + (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
         if (iu < il) {
-            int tmp = il;
+            INT tmp = il;
             il = iu;
             iu = tmp;
         }
-        int nsi = iu - il + 1;
+        INT nsi = iu - il + 1;
 
         slacpy("F", m, n, ASAV, lda, ws->A, lda);
 
@@ -791,7 +746,7 @@ static void test_dgesvdx(int m, int n, const f32* ASAV, int lda,
         f32 vl = ws->SSAV[mnmin - 1] - ulp * ws->SSAV[0];
         f32 vu = ws->SSAV[0] + ulp * ws->SSAV[0];
 
-        int mid = mnmin / 2;
+        INT mid = mnmin / 2;
         if (mid > 0 && mid < mnmin - 1) {
             vl = ws->SSAV[mid + 1] - ulp * ws->SSAV[0];
             vu = ws->SSAV[mid - 1] + ulp * ws->SSAV[0];
@@ -834,22 +789,22 @@ static void test_dgesvdx(int m, int n, const f32* ASAV, int lda,
  * @param lswork  Working workspace size (varies in IWS loop)
  * @param ws      Workspace structure
  */
-static void test_dgesvdq(int m, int n, const f32* ASAV, int lda,
-                         int lswork, ddrvbd_workspace_t* ws)
+static void test_dgesvdq(INT m, INT n, const f32* ASAV, INT lda,
+                         INT lswork, ddrvbd_workspace_t* ws)
 {
     (void)lswork;  /* SGESVDQ uses ws->lwork directly for now */
     f32 ulp = slamch("P");
     f32 ulpinv = 1.0f / ulp;
-    int info;
-    int numrank;
+    INT info;
+    INT numrank;
 
     /* Initialize results to 0 */
-    for (int i = 35; i < 39; i++) ws->result[i] = 0.0f;
+    for (INT i = 35; i < 39; i++) ws->result[i] = 0.0f;
 
     /* SGESVDQ only works for M >= N */
     if (m < n || m == 0 || n == 0) return;
 
-    int mnmin = n;
+    INT mnmin = n;
 
     slacpy("F", m, n, ASAV, lda, ws->A, lda);
 
@@ -885,7 +840,7 @@ static int group_setup(void** state)
     (void)state;
 
     /* Find maximum dimensions from the dimension pairs */
-    int mmax = 0, nmax = 0;
+    INT mmax = 0, nmax = 0;
     for (size_t i = 0; i < NDIM_PAIRS; i++) {
         if (DIM_PAIRS[i].m > mmax) mmax = DIM_PAIRS[i].m;
         if (DIM_PAIRS[i].n > nmax) nmax = DIM_PAIRS[i].n;
@@ -895,7 +850,7 @@ static int group_setup(void** state)
     if (mmax < 1) mmax = 1;
     if (nmax < 1) nmax = 1;
 
-    int mnmax = (mmax > nmax) ? mmax : nmax;
+    INT mnmax = (mmax > nmax) ? mmax : nmax;
 
     /* Allocate workspace structure */
     g_ws = malloc(sizeof(ddrvbd_workspace_t));
@@ -920,7 +875,7 @@ static int group_setup(void** state)
     g_ws->SSAV = malloc(2 * mnmax * sizeof(f32));
     g_ws->work = malloc(g_ws->lwork * sizeof(f32));
     g_ws->rwork = malloc(g_ws->lrwork * sizeof(f32));
-    g_ws->iwork = malloc(g_ws->liwork * sizeof(int));
+    g_ws->iwork = malloc(g_ws->liwork * sizeof(INT));
 
     if (!g_ws->A || !g_ws->ASAV || !g_ws->U || !g_ws->USAV ||
         !g_ws->VT || !g_ws->VTSAV || !g_ws->S || !g_ws->SSAV ||
@@ -964,9 +919,9 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 {
     ddrvbd_workspace_t* ws = g_ws;
     char context[256];
-    int m = p->m;
-    int n = p->n;
-    int itype = p->itype;
+    INT m = p->m;
+    INT n = p->n;
+    INT itype = p->itype;
 
     /* Skip degenerate cases */
     if (m == 0 || n == 0) return;
@@ -975,7 +930,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
     uint64_t seed = 2024 + m * 1000 + n * 100 + itype;
     rng_seed(ws->rng_state, seed);
 
-    int info;
+    INT info;
 
     /* Generate test matrix */
     generate_test_matrix(itype, m, n, ws->ASAV, m,
@@ -993,33 +948,33 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
      * IWS=1: minimal workspace
      * IWS=2,3: intermediate workspace sizes
      * IWS=4: full workspace */
-    for (int iws = 1; iws <= 4; iws++) {
-        int mnmin = (m < n) ? m : n;
-        int mxmax = (m > n) ? m : n;
+    for (INT iws = 1; iws <= 4; iws++) {
+        INT mnmin = (m < n) ? m : n;
+        INT mxmax = (m > n) ? m : n;
 
         /* Compute LSWORK for SGESVD (lines 576-581 in ddrvbd.f) */
-        int iwtmp_gesvd = 3 * mnmin + mxmax;
-        int tmp = 5 * mnmin;
+        INT iwtmp_gesvd = 3 * mnmin + mxmax;
+        INT tmp = 5 * mnmin;
         if (tmp > iwtmp_gesvd) iwtmp_gesvd = tmp;
 
-        int lswork_gesvd = iwtmp_gesvd + (iws - 1) * (ws->lwork - iwtmp_gesvd) / 3;
+        INT lswork_gesvd = iwtmp_gesvd + (iws - 1) * (ws->lwork - iwtmp_gesvd) / 3;
         if (lswork_gesvd > ws->lwork) lswork_gesvd = ws->lwork;
         if (lswork_gesvd < 1) lswork_gesvd = 1;
         if (iws == 4) lswork_gesvd = ws->lwork;
 
         /* Compute LSWORK for SGESDD (lines 690-695 in ddrvbd.f) */
-        int iwtmp_gesdd = 5 * mnmin * mnmin + 9 * mnmin + mxmax;
-        int lswork_gesdd = iwtmp_gesdd + (iws - 1) * (ws->lwork - iwtmp_gesdd) / 3;
+        INT iwtmp_gesdd = 5 * mnmin * mnmin + 9 * mnmin + mxmax;
+        INT lswork_gesdd = iwtmp_gesdd + (iws - 1) * (ws->lwork - iwtmp_gesdd) / 3;
         if (lswork_gesdd > ws->lwork) lswork_gesdd = ws->lwork;
         if (lswork_gesdd < 1) lswork_gesdd = 1;
         if (iws == 4) lswork_gesdd = ws->lwork;
 
         /* Initialize results to -1 */
-        for (int i = 0; i < NRESULTS; i++) ws->result[i] = -1.0f;
+        for (INT i = 0; i < NRESULTS; i++) ws->result[i] = -1.0f;
 
         /* SGESVD (tests 1-7) */
         test_dgesvd(m, n, ws->ASAV, m, lswork_gesvd, ws);
-        for (int i = 0; i < 7; i++) {
+        for (INT i = 0; i < 7; i++) {
             if (ws->result[i] < 0.0f) continue;  /* Test not run */
             if (ws->result[i] >= THRESH) {
                 snprintf(context, sizeof(context),
@@ -1032,7 +987,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 
         /* SGESDD (tests 8-14) */
         test_dgesdd(m, n, ws->ASAV, m, lswork_gesdd, ws);
-        for (int i = 7; i < 14; i++) {
+        for (INT i = 7; i < 14; i++) {
             if (ws->result[i] < 0.0f) continue;
             if (ws->result[i] >= THRESH) {
                 snprintf(context, sizeof(context),
@@ -1046,7 +1001,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
         /* SGESVJ (tests 15-18, M >= N only) */
         if (m >= n) {
             test_dgesvj(m, n, ws->ASAV, m, ws);
-            for (int i = 14; i < 18; i++) {
+            for (INT i = 14; i < 18; i++) {
                 if (ws->result[i] < 0.0f) continue;
                 if (ws->result[i] >= THRESH) {
                     snprintf(context, sizeof(context),
@@ -1061,7 +1016,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
         /* SGEJSV (tests 19-22, M >= N only) */
         if (m >= n) {
             test_dgejsv(m, n, ws->ASAV, m, ws);
-            for (int i = 18; i < 22; i++) {
+            for (INT i = 18; i < 22; i++) {
                 if (ws->result[i] < 0.0f) continue;
                 if (ws->result[i] >= THRESH) {
                     snprintf(context, sizeof(context),
@@ -1075,7 +1030,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 
         /* SGESVDX (tests 23-35) */
         test_dgesvdx(m, n, ws->ASAV, m, ws);
-        for (int i = 22; i < 35; i++) {
+        for (INT i = 22; i < 35; i++) {
             if (ws->result[i] < 0.0f) continue;
             if (ws->result[i] >= THRESH) {
                 snprintf(context, sizeof(context),
@@ -1089,7 +1044,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
         /* SGESVDQ (tests 36-39, M >= N only) */
         if (m >= n) {
             test_dgesvdq(m, n, ws->ASAV, m, lswork_gesdd, ws);
-            for (int i = 35; i < 39; i++) {
+            for (INT i = 35; i < 39; i++) {
                 if (ws->result[i] < 0.0f) continue;
                 if (ws->result[i] >= THRESH) {
                     snprintf(context, sizeof(context),
@@ -1124,7 +1079,7 @@ static void test_ddrvbd_case(void** state)
 
 static ddrvbd_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -1134,10 +1089,10 @@ static void build_test_array(void)
     g_num_tests = 0;
 
     for (size_t ipair = 0; ipair < NDIM_PAIRS; ipair++) {
-        int m = DIM_PAIRS[ipair].m;
-        int n = DIM_PAIRS[ipair].n;
+        INT m = DIM_PAIRS[ipair].m;
+        INT n = DIM_PAIRS[ipair].n;
 
-        for (int itype = 1; itype <= NTYPES; itype++) {
+        for (INT itype = 1; itype <= NTYPES; itype++) {
             /* Store parameters */
             ddrvbd_params_t* p = &g_params[g_num_tests];
             p->m = m;

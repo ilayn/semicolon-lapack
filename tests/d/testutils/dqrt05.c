@@ -5,41 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dtpqrt(const int m, const int n, const int l, const int nb,
-                   f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb,
-                   f64* const restrict T, const int ldt,
-                   f64* const restrict work, int* info);
-extern void dgemqrt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int nb,
-                    const f64* const restrict V, const int ldv,
-                    const f64* const restrict T, const int ldt,
-                    f64* const restrict C, const int ldc,
-                    f64* const restrict work, int* info);
-extern void dtpmqrt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int l, const int nb,
-                    const f64* const restrict V, const int ldv,
-                    const f64* const restrict T, const int ldt,
-                    f64* const restrict A, const int lda,
-                    f64* const restrict B, const int ldb,
-                    f64* const restrict work, int* info);
 /**
  * DQRT05 tests DTPQRT and DTPMQRT.
  *
@@ -56,16 +24,16 @@ extern void dtpmqrt(const char* side, const char* trans,
  *                     result[4] = | C Q - C Q |
  *                     result[5] = | C Q^H - C Q^H |
  */
-void dqrt05(const int m, const int n, const int l, const int nb, f64* restrict result)
+void dqrt05(const INT m, const INT n, const INT l, const INT nb, f64* restrict result)
 {
     f64 eps = dlamch("E");
-    int k = n;
-    int m2 = m + n;
-    int np1 = (m > 0) ? n : 0;
-    int lwork = m2 * m2 * nb;
-    int ldt = nb;
-    int info;
-    int j;
+    INT k = n;
+    INT m2 = m + n;
+    INT np1 = (m > 0) ? n : 0;
+    INT lwork = m2 * m2 * nb;
+    INT ldt = nb;
+    INT info;
+    INT j;
     f64 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
@@ -89,7 +57,7 @@ void dqrt05(const int m, const int n, const int l, const int nb, f64* restrict r
         dlarnv_rng(2, j + 1, &A[j * m2], rng_state);
     }
     if (m > 0) {
-        int ml = m - l;
+        INT ml = m - l;
         for (j = 0; j < n; j++) {
             if (ml > 0) {
                 dlarnv_rng(2, ml, &A[n + j * m2], rng_state);
@@ -97,9 +65,9 @@ void dqrt05(const int m, const int n, const int l, const int nb, f64* restrict r
         }
     }
     if (l > 0) {
-        int start_row = n + m - l;
+        INT start_row = n + m - l;
         for (j = 0; j < n; j++) {
-            int len = (j + 1 < l) ? (j + 1) : l;
+            INT len = (j + 1 < l) ? (j + 1) : l;
             dlarnv_rng(2, len, &A[start_row + j * m2], rng_state);
         }
     }

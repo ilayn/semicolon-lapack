@@ -5,33 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void sgelqt(const int m, const int n, const int mb,
-                   f32* const restrict A, const int lda,
-                   f32* const restrict T, const int ldt,
-                   f32* const restrict work, int* info);
-extern void sgemlqt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int mb,
-                    const f32* const restrict V, const int ldv,
-                    const f32* const restrict T, const int ldt,
-                    f32* const restrict C, const int ldc,
-                    f32* const restrict work, int* info);
 /**
  * SLQT04 tests SGELQT and SGEMLQT.
  *
@@ -46,15 +22,15 @@ extern void sgemlqt(const char* side, const char* trans,
  *                     result[4] = | C*Q - C*Q |
  *                     result[5] = | C*Q^H - C*Q^H |
  */
-void slqt04(const int m, const int n, const int nb, f32* restrict result)
+void slqt04(const INT m, const INT n, const INT nb, f32* restrict result)
 {
     f32 eps = slamch("E");
-    int k = m < n ? m : n;
-    int ll = m > n ? m : n;
-    int lwork = ll * ll * nb;
-    int ldt = nb;
-    int info;
-    int j;
+    INT k = m < n ? m : n;
+    INT ll = m > n ? m : n;
+    INT lwork = ll * ll * nb;
+    INT ldt = nb;
+    INT info;
+    INT j;
     f32 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);

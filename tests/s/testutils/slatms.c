@@ -9,47 +9,41 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include <string.h>
-#include <cblas.h>
 #include "test_rng.h"
 
-extern void xerbla(const char* srname, const int info);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slartg(const f32 f, const f32 g,
-                   f32* c, f32* s, f32* r);
 
 void slatms(
-    const int m,
-    const int n,
+    const INT m,
+    const INT n,
     const char* dist,
     const char* sym,
     f32* d,
-    const int mode,
+    const INT mode,
     const f32 cond,
     const f32 dmax,
-    const int kl,
-    const int ku,
+    const INT kl,
+    const INT ku,
     const char* pack,
     f32* A,
-    const int lda,
+    const INT lda,
     f32* work,
-    int* info,
+    INT* info,
     uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 TWOPI = 6.28318530717958647692528676655900576839f;
 
-    int givens;
-    int i, ic, icol = 0, idist, iendch, iinfo, il, ilda,
+    INT givens;
+    INT i, ic, icol = 0, idist, iendch, iinfo, il, ilda,
         ioffg, ioffst, ipack, ipackg, ir, ir1, ir2,
         irow = 0, irsign = 0, iskew, isym, isympk, j, jc, jch,
         jkl, jku, jr, k, llb, minlda, mnmin, mr, nc,
         uub;
-    int topdwn, ilextr, iltemp;
+    INT topdwn, ilextr, iltemp;
     f32 alpha, angle, c, dummy, extra, s, temp;
 
     *info = 0;

@@ -6,15 +6,6 @@
 
 #include <math.h>
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slangt(const char* norm, const int n,
-                     const f32* const restrict DL,
-                     const f32* const restrict D,
-                     const f32* const restrict DU);
-
 /**
  * SGTT01 reconstructs a tridiagonal matrix A from its LU factorization
  * and computes the residual
@@ -35,7 +26,7 @@ extern f32 slangt(const char* norm, const int n,
  * @param[out] resid  The scaled residual: norm(L*U - A) / (norm(A) * EPS).
  */
 void sgtt01(
-    const int n,
+    const INT n,
     const f32 * const restrict DL,
     const f32 * const restrict D,
     const f32 * const restrict DU,
@@ -43,15 +34,15 @@ void sgtt01(
     const f32 * const restrict DF,
     const f32 * const restrict DUF,
     const f32 * const restrict DU2,
-    const int * const restrict ipiv,
+    const INT* const restrict ipiv,
     f32 * const restrict work,
-    const int ldwork,
+    const INT ldwork,
     f32 *resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, ip, lastj;
+    INT i, j, ip, lastj;
     f32 anorm, eps, li;
     f32 wnorm;
 
@@ -131,7 +122,7 @@ void sgtt01(
     for (j = 0; j < n; j++) {
         f32 colsum = ZERO;
         /* Upper Hessenberg: nonzeros in column j are rows 0 to min(j+1, n-1) */
-        int imax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
+        INT imax = (j + 1 < n - 1) ? (j + 1) : (n - 1);
         for (i = 0; i <= imax; i++) {
             colsum += fabsf(work[i + j * ldwork]);
         }

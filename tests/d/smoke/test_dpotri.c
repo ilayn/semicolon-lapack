@@ -15,20 +15,13 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 /* Routines under test */
-extern void dpotrf(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* info);
-extern void dpotri(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* info);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64* A;       /* Original matrix */
     f64* AINV;    /* Inverse */
     f64* d;
@@ -39,7 +32,7 @@ typedef struct {
 
 static uint64_t g_seed = 5300;
 
-static int dpotri_setup(void** state, int n)
+static int dpotri_setup(void** state, INT n)
 {
     dpotri_fixture_t* fix = malloc(sizeof(dpotri_fixture_t));
     assert_non_null(fix);
@@ -85,12 +78,12 @@ static int setup_20(void** state) { return dpotri_setup(state, 20); }
 /**
  * Core test logic: generate matrix, factorize, invert, verify.
  */
-static f64 run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dpotri_test(dpotri_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
+    INT info;
 
     dlatb4("DPO", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -122,7 +115,7 @@ static f64 run_dpotri_test(dpotri_fixture_t* fix, int imat, const char* uplo)
 static void test_dpotri_wellcond_upper(void** state)
 {
     dpotri_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dpotri_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -132,7 +125,7 @@ static void test_dpotri_wellcond_upper(void** state)
 static void test_dpotri_wellcond_lower(void** state)
 {
     dpotri_fixture_t* fix = *state;
-    for (int imat = 1; imat <= 5; imat++) {
+    for (INT imat = 1; imat <= 5; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dpotri_test(fix, imat, "L");
         assert_residual_ok(resid);
@@ -142,7 +135,7 @@ static void test_dpotri_wellcond_lower(void** state)
 static void test_dpotri_illcond_upper(void** state)
 {
     dpotri_fixture_t* fix = *state;
-    for (int imat = 6; imat <= 7; imat++) {
+    for (INT imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dpotri_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -152,7 +145,7 @@ static void test_dpotri_illcond_upper(void** state)
 static void test_dpotri_illcond_lower(void** state)
 {
     dpotri_fixture_t* fix = *state;
-    for (int imat = 6; imat <= 7; imat++) {
+    for (INT imat = 6; imat <= 7; imat++) {
         fix->seed = g_seed++;
         f64 resid = run_dpotri_test(fix, imat, "L");
         assert_residual_ok(resid);

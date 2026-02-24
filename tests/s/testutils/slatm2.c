@@ -44,25 +44,25 @@
  * @return The (i,j) entry of the matrix.
  */
 f32 slatm2(
-    const int m,
-    const int n,
-    const int i,
-    const int j,
-    const int kl,
-    const int ku,
-    const int idist,
+    const INT m,
+    const INT n,
+    const INT i,
+    const INT j,
+    const INT kl,
+    const INT ku,
+    const INT idist,
     const f32* d,
-    const int igrade,
+    const INT igrade,
     const f32* dl,
     const f32* dr,
-    const int ipvtng,
-    const int* iwork,
+    const INT ipvtng,
+    const INT* iwork,
     const f32 sparse,
     uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
 
-    int isub, jsub;
+    INT isub, jsub;
     f32 temp;
 
     if (i < 1 || i > m || j < 1 || j > n) {

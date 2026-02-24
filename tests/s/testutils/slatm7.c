@@ -9,8 +9,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
 
 /**
  * SLATM7 computes the entries of D as specified by MODE
@@ -72,17 +70,17 @@ extern void xerbla(const char* srname, const int info);
  *    -4  => if MODE equals 6 or -6 and IDIST not in range 1 to 3
  *    -7  => if N negative
  */
-void slatm7(const int mode, const f32 cond, const int irsign,
-            const int idist, f32* d, const int n, const int rank,
-            int* info, uint64_t state[static 4])
+void slatm7(const INT mode, const f32 cond, const INT irsign,
+            const INT idist, f32* d, const INT n, const INT rank,
+            INT* info, uint64_t state[static 4])
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
     const f32 HALF = 0.5f;
 
     f32 alpha, temp;
-    int i;
-    int absmode;
+    INT i;
+    INT absmode;
 
     *info = 0;
 
@@ -168,7 +166,7 @@ void slatm7(const int mode, const f32 cond, const int irsign,
                 /* Randomly distributed D values on (1/cond, 1): */
                 alpha = logf(ONE / cond);
                 for (i = 0; i < n; i++) {
-                    d[i] = exp(alpha * rng_uniform_f32(state));
+                    d[i] = expf(alpha * rng_uniform_f32(state));
                 }
                 break;
 

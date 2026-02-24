@@ -7,19 +7,10 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dormqr(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f64* A, const int lda, const f64* tau,
-                   f64* C, const int ldc, f64* work, const int lwork,
-                   int* info);
-
 /**
  * DQPT01 tests the QR-factorization with pivoting of a matrix A. The
  * array AF contains the (possibly partial) QR-factorization of A, where
@@ -45,14 +36,14 @@ extern void dormqr(const char* side, const char* trans,
  *
  * @return ||A*P - Q*R|| / (||norm(A)|| * eps * max(M,N)).
  */
-f64 dqpt01(const int m, const int n, const int k,
-              const f64* A, const f64* AF, const int lda,
-              const f64* tau, const int* jpvt,
-              f64* work, const int lwork)
+f64 dqpt01(const INT m, const INT n, const INT k,
+              const f64* A, const f64* AF, const INT lda,
+              const f64* tau, const INT* jpvt,
+              f64* work, const INT lwork)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int i, j, info;
+    INT i, j, info;
     f64 norma;
     f64 rwork[1];
 
@@ -74,7 +65,7 @@ f64 dqpt01(const int m, const int n, const int k,
      * Also copy columns (k:n-1) from AF into work. */
     for (j = 0; j < k; j++) {
         /* Copy upper triangular part of column j */
-        int imax = (j + 1 < m) ? (j + 1) : m;
+        INT imax = (j + 1 < m) ? (j + 1) : m;
         for (i = 0; i < imax; i++) {
             work[j * m + i] = AF[j * lda + i];
         }

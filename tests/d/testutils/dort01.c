@@ -3,17 +3,9 @@
  * @brief DORT01 checks that a matrix U is orthogonal.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
 
 /**
  * DORT01 checks that the matrix U is orthogonal by computing the ratio
@@ -48,15 +40,15 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *                    done even if lwork is 0.
  * @param[out] resid  The computed residual.
  */
-void dort01(const char* rowcol, const int m, const int n,
-            const f64* U, const int ldu,
-            f64* work, const int lwork, f64* resid)
+void dort01(const char* rowcol, const INT m, const INT n,
+            const f64* U, const INT ldu,
+            f64* work, const INT lwork, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
     char transu;
-    int i, j, k, ldwork, mnmin;
+    INT i, j, k, ldwork, mnmin;
     f64 eps, tmp;
 
     *resid = ZERO;

@@ -4,12 +4,9 @@
  *        true solution to a system of linear equations.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
 
 /**
  * SGET04 computes the difference between a computed solution and the
@@ -38,18 +35,18 @@ extern f32 slamch(const char* cmach);
  *                        ( norm(X-XACT) * RCOND ) / ( norm(XACT) * EPS )
  */
 void sget04(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 * const restrict X,
-    const int ldx,
+    const INT ldx,
     const f32 * const restrict XACT,
-    const int ldxact,
+    const INT ldxact,
     const f32 rcond,
     f32 *resid)
 {
     const f32 ZERO = 0.0f;
 
-    int i, ix, j;
+    INT i, ix, j;
     f32 diffnm, eps, xnorm;
 
     // Quick exit if n = 0 or nrhs = 0

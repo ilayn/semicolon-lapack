@@ -17,7 +17,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -28,9 +27,9 @@
 #define NTYPES 8
 
 /* Dimension triplets from TESTING/glm.in */
-static const int MVAL[] = { 0,  5,  8, 15, 20, 40};
-static const int PVAL[] = { 9,  0, 15, 12, 15, 30};
-static const int NVAL[] = { 5,  5, 10, 25, 30, 40};
+static const INT MVAL[] = { 0,  5,  8, 15, 20, 40};
+static const INT PVAL[] = { 9,  0, 15, 12, 15, 30};
+static const INT NVAL[] = { 5,  5, 10, 25, 30, 40};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Maximum dimension */
@@ -40,12 +39,10 @@ static const int NVAL[] = { 5,  5, 10, 25, 30, 40};
 #define MAX_TESTS (NN * NTYPES)
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int ik;
-    int imat;
+    INT ik;
+    INT imat;
     char name[64];
 } dckglm_params_t;
 
@@ -72,9 +69,9 @@ static int group_setup(void** state)
     g_ws = malloc(sizeof(dckglm_workspace_t));
     if (!g_ws) return -1;
 
-    int lda = NMAX;
-    int ldb = NMAX;
-    int lwork = NMAX * NMAX;
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
 
     g_ws->A     = malloc(lda * NMAX * sizeof(f32));
     g_ws->AF    = malloc(lda * NMAX * sizeof(f32));
@@ -121,15 +118,15 @@ static int group_teardown(void** state)
 static void test_dckglm_case(void** state)
 {
     dckglm_params_t* params = *state;
-    int ik = params->ik;
-    int imat = params->imat;
+    INT ik = params->ik;
+    INT imat = params->imat;
 
-    int m = MVAL[ik];
-    int p = PVAL[ik];
-    int n = NVAL[ik];
-    int lda = NMAX;
-    int ldb = NMAX;
-    int lwork = NMAX * NMAX;
+    INT m = MVAL[ik];
+    INT p = PVAL[ik];
+    INT n = NVAL[ik];
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
 
     /* Skip invalid dimension triplets */
     if (m > n || n > m + p) {
@@ -138,9 +135,9 @@ static void test_dckglm_case(void** state)
 
     /* Set up parameters with SLATB9 */
     char type;
-    int kla, kua, klb, kub;
+    INT kla, kua, klb, kub;
     f32 anorm, bnorm, cndnma, cndnmb;
-    int modea, modeb;
+    INT modea, modeb;
     char dista, distb;
 
     slatb9("GLM", imat, m, p, n, &type, &kla, &kua, &klb, &kub,
@@ -152,7 +149,7 @@ static void test_dckglm_case(void** state)
     rng_seed(rng_state, 2024 + (uint64_t)ik * 100 + (uint64_t)imat);
 
     /* Generate test matrix A (N x M) */
-    int iinfo;
+    INT iinfo;
     char dista_str[2] = {dista, '\0'};
     char type_str[2] = {type, '\0'};
     slatms(n, m, dista_str, type_str, g_ws->rwork, modea, cndnma,
@@ -182,22 +179,22 @@ static void test_dckglm_case(void** state)
 /* Parameterized test arrays */
 static dckglm_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int ik = 0; ik < (int)NN; ik++) {
-        int m = MVAL[ik];
-        int p = PVAL[ik];
-        int n = NVAL[ik];
+    for (INT ik = 0; ik < (INT)NN; ik++) {
+        INT m = MVAL[ik];
+        INT p = PVAL[ik];
+        INT n = NVAL[ik];
 
         /* Skip invalid dimension triplets */
         if (m > n || n > m + p)
             continue;
 
-        for (int imat = 1; imat <= NTYPES; imat++) {
+        for (INT imat = 1; imat <= NTYPES; imat++) {
             dckglm_params_t* par = &g_params[g_num_tests];
             par->ik = ik;
             par->imat = imat;

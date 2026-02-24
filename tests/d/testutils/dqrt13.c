@@ -8,18 +8,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlascl(const char* type, const int kl, const int ku,
-                   const f64 cfrom, const f64 cto,
-                   const int m, const int n, f64* A, const int lda,
-                   int* info);
 
 /**
  * DQRT13 generates a full-rank matrix that may be scaled to have large
@@ -45,13 +36,13 @@ extern void dlascl(const char* type, const int kl, const int ku,
  * @param[out] norma
  *     The one-norm of A.
  */
-void dqrt13(const int scale, const int m, const int n,
-            f64* A, const int lda, f64* norma,
+void dqrt13(const INT scale, const INT m, const INT n,
+            f64* A, const INT lda, f64* norma,
             uint64_t state[static 4])
 {
     const f64 ONE = 1.0;
 
-    int info, j;
+    INT info, j;
     f64 bignum, smlnum;
     (void)(m < n);  /* minmn was computed but unused */
     f64 dummy[1];

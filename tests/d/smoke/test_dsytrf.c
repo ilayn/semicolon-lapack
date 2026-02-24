@@ -34,10 +34,8 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -47,21 +45,15 @@ static const char UPLOS[] = {'U', 'L'};
 #define NMAX    50  /* Maximum matrix dimension */
 
 /* Routines under test */
-extern void dsytf2(const char* uplo, const int n, f64* restrict A,
-                   const int lda, int* restrict ipiv, int* info);
-extern void dsytrf(const char* uplo, const int n, f64* restrict A,
-                   const int lda, int* restrict ipiv,
-                   f64* restrict work, const int lwork, int* info);
-
 
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;       /* Matrix type 1-10 */
-    int iuplo;      /* 0='U', 1='L' */
-    int routine;    /* 0=dsytf2 (unblocked), 1=dsytrf (blocked) */
+    INT n;
+    INT imat;       /* Matrix type 1-10 */
+    INT iuplo;      /* 0='U', 1='L' */
+    INT routine;    /* 0=dsytf2 (unblocked), 1=dsytrf (blocked) */
     char name[64];
 } dsytrf_params_t;
 
@@ -75,7 +67,7 @@ typedef struct {
     f64* WORK;   /* General workspace */
     f64* RWORK;  /* Real workspace for dsyt01 */
     f64* D;      /* Singular values for dlatms */
-    int* IPIV;      /* Pivot indices */
+    INT* IPIV;      /* Pivot indices */
 } dsytrf_workspace_t;
 
 static dsytrf_workspace_t* g_workspace = NULL;
@@ -89,7 +81,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dsytrf_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * 64;  /* Generous workspace for dsytrf */
+    INT lwork = NMAX * 64;  /* Generous workspace for dsytrf */
 
     g_workspace->A = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->AFAC = malloc(NMAX * NMAX * sizeof(f64));
@@ -97,7 +89,7 @@ static int group_setup(void** state)
     g_workspace->WORK = malloc(lwork * sizeof(f64));
     g_workspace->RWORK = malloc(NMAX * sizeof(f64));
     g_workspace->D = malloc(NMAX * sizeof(f64));
-    g_workspace->IPIV = malloc(NMAX * sizeof(int));
+    g_workspace->IPIV = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->C ||
         !g_workspace->WORK || !g_workspace->RWORK || !g_workspace->D ||
@@ -131,7 +123,7 @@ static int group_teardown(void** state)
 /**
  * Run the factorization test for a single (n, uplo, imat, routine) combination.
  */
-static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
+static void run_dsytrf_single(INT n, INT iuplo, INT imat, INT routine)
 {
     const f64 ZERO = 0.0;
     dsytrf_workspace_t* ws = g_workspace;
@@ -139,11 +131,11 @@ static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info, izero;
-    int lda = (n > 1) ? n : 1;
-    int lwork = NMAX * 64;
+    INT info, izero;
+    INT lda = (n > 1) ? n : 1;
+    INT lwork = NMAX * 64;
     f64 resid;
     char ctx[128];
 
@@ -159,7 +151,7 @@ static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
 
     /* For types 3-6, zero one or more rows and columns.
      * izero is 0-based index of the row/column to zero. */
-    int zerot = (imat >= 3 && imat <= 6);
+    INT zerot = (imat >= 3 && imat <= 6);
     if (zerot) {
         if (imat == 3) {
             izero = 0;  /* First row/column */
@@ -174,42 +166,42 @@ static void run_dsytrf_single(int n, int iuplo, int imat, int routine)
             if (iuplo == 0) {
                 /* Upper: zero column izero (rows 0 to izero-1) and
                  * row izero (columns izero to n-1) */
-                int ioff = izero * lda;
-                for (int i = 0; i < izero; i++) {
+                INT ioff = izero * lda;
+                for (INT i = 0; i < izero; i++) {
                     ws->A[ioff + i] = ZERO;
                 }
                 ioff += izero;
-                for (int i = izero; i < n; i++) {
+                for (INT i = izero; i < n; i++) {
                     ws->A[ioff] = ZERO;
                     ioff += lda;
                 }
             } else {
                 /* Lower: zero row izero (columns 0 to izero-1) and
                  * column izero (rows izero to n-1) */
-                int ioff = izero;
-                for (int i = 0; i < izero; i++) {
+                INT ioff = izero;
+                for (INT i = 0; i < izero; i++) {
                     ws->A[ioff] = ZERO;
                     ioff += lda;
                 }
                 ioff = izero * lda + izero;
-                for (int i = izero; i < n; i++) {
+                for (INT i = izero; i < n; i++) {
                     ws->A[ioff + i - izero] = ZERO;
                 }
             }
         } else {
             /* Type 6: zero first izero+1 rows and columns (upper) or last (lower) */
             if (iuplo == 0) {
-                int ioff = 0;
-                for (int j = 0; j <= izero; j++) {
-                    for (int i = 0; i <= j; i++) {
+                INT ioff = 0;
+                for (INT j = 0; j <= izero; j++) {
+                    for (INT i = 0; i <= j; i++) {
                         ws->A[ioff + i] = ZERO;
                     }
                     ioff += lda;
                 }
             } else {
-                int ioff = izero * lda + izero;
-                for (int j = izero; j < n; j++) {
-                    for (int i = j; i < n; i++) {
+                INT ioff = izero * lda + izero;
+                for (INT j = izero; j < n; j++) {
+                    for (INT i = j; i < n; i++) {
                         ws->A[ioff + i - j] = ZERO;
                     }
                     ioff += lda;
@@ -264,7 +256,7 @@ static void test_dsytrf_case(void** state)
 
 static dsytrf_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -273,24 +265,24 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Skip types 3, 4, 5, or 6 if matrix size is too small */
-            int zerot = (imat >= 3 && imat <= 6);
+            INT zerot = (imat >= 3 && imat <= 6);
             if (zerot && n < imat - 2) {
                 continue;
             }
 
-            for (int iuplo = 0; iuplo < (int)NUPLO; iuplo++) {
+            for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
                 /* Loop over routines: 0=dsytf2 (unblocked), 1=dsytrf (blocked) */
-                for (int routine = 0; routine <= 1; routine++) {
+                for (INT routine = 0; routine <= 1; routine++) {
                     /* Store parameters */
                     dsytrf_params_t* p = &g_params[g_num_tests];
                     p->n = n;

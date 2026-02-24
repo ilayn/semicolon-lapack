@@ -5,41 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dtplqt(const int m, const int n, const int l, const int mb,
-                   f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb,
-                   f64* const restrict T, const int ldt,
-                   f64* const restrict work, int* info);
-extern void dgemlqt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int mb,
-                    const f64* const restrict V, const int ldv,
-                    const f64* const restrict T, const int ldt,
-                    f64* const restrict C, const int ldc,
-                    f64* const restrict work, int* info);
-extern void dtpmlqt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int l, const int mb,
-                    const f64* const restrict V, const int ldv,
-                    const f64* const restrict T, const int ldt,
-                    f64* const restrict A, const int lda,
-                    f64* const restrict B, const int ldb,
-                    f64* const restrict work, int* info);
 /**
  * DLQT05 tests DTPLQT and DTPMLQT.
  *
@@ -55,17 +23,17 @@ extern void dtpmlqt(const char* side, const char* trans,
  *                     result[4] = | C*Q - C*Q |
  *                     result[5] = | C*Q^H - C*Q^H |
  */
-void dlqt05(const int m, const int n, const int l, const int nb,
+void dlqt05(const INT m, const INT n, const INT l, const INT nb,
             f64* restrict result)
 {
     f64 eps = dlamch("E");
-    int k = m;
-    int n2 = m + n;
-    int np1 = (n > 0) ? m + 1 : 1;
-    int lwork = n2 * n2 * nb;
-    int ldt = nb;
-    int info;
-    int j;
+    INT k = m;
+    INT n2 = m + n;
+    INT np1 = (n > 0) ? m + 1 : 1;
+    INT lwork = n2 * n2 * nb;
+    INT ldt = nb;
+    INT info;
+    INT j;
     f64 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
@@ -89,13 +57,13 @@ void dlqt05(const int m, const int n, const int l, const int nb,
     }
     if (n > 0) {
         for (j = 1; j <= n - l; j++) {
-            int col = m + j - 1;
+            INT col = m + j - 1;
             dlarnv_rng(2, m, &A[col * m], rng_state);
         }
     }
     if (l > 0) {
         for (j = 1; j <= l; j++) {
-            int col = n + m - l + j - 1;
+            INT col = n + m - l + j - 1;
             dlarnv_rng(2, m - j + 1, &A[(j - 1) + col * m], rng_state);
         }
     }

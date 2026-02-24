@@ -38,7 +38,7 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
-#include "semicolon_lapack/types.h"
+#include "semicolon_lapack/semicolon_lapack.h"
 
 /*
  * Test context tracking for better error messages.
@@ -80,7 +80,7 @@ static inline void clear_test_context(void) {
  * Requires THRESH to be defined in the test file.
  */
 #define assert_residual_ok(resid) \
-    _assert_residual_below(resid, THRESH, #resid, __FILE__, __LINE__)
+    _assert_residual_below((double)(resid), (double)(THRESH), #resid, __FILE__, __LINE__)
 
 /**
  * Assert that a normalized residual is below a custom threshold.
@@ -89,7 +89,7 @@ static inline void clear_test_context(void) {
  * @param thresh  Custom threshold
  */
 #define assert_residual_below(resid, thresh) \
-    _assert_residual_below(resid, thresh, #resid, __FILE__, __LINE__)
+    _assert_residual_below((double)(resid), (double)(thresh), #resid, __FILE__, __LINE__)
 
 /**
  * Internal implementation of residual assertion.
@@ -125,7 +125,7 @@ static inline void _assert_residual_below(
     _assert_info_success(info, #info, __FILE__, __LINE__)
 
 static inline void _assert_info_success(
-    int info,
+    INT info,
     const char *info_expr,
     const char *file,
     int line)
@@ -135,9 +135,9 @@ static inline void _assert_info_success(
             print_error("\n*** FAILED: %s\n", g_test_context);
         }
         if (info < 0) {
-            print_error("    %s = %d: illegal argument %d\n", info_expr, info, -info);
+            print_error("    %s = %lld: illegal argument %lld\n", info_expr, (long long)info, (long long)-info);
         } else {
-            print_error("    %s = %d: algorithm failure\n", info_expr, info);
+            print_error("    %s = %lld: algorithm failure\n", info_expr, (long long)info);
         }
         _fail(file, line);
     }
@@ -154,7 +154,7 @@ static inline void _assert_info_success(
     _assert_info_singular(info, #info, __FILE__, __LINE__)
 
 static inline void _assert_info_singular(
-    int info,
+    INT info,
     const char *info_expr,
     const char *file,
     int line)
@@ -163,7 +163,7 @@ static inline void _assert_info_singular(
         if (g_test_context) {
             print_error("\n*** FAILED: %s\n", g_test_context);
         }
-        print_error("    %s = %d: expected singular (info > 0)\n", info_expr, info);
+        print_error("    %s = %lld: expected singular (info > 0)\n", info_expr, (long long)info);
         _fail(file, line);
     }
 }

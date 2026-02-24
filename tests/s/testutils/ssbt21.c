@@ -6,16 +6,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f32 slamch(const char* cmach);
-extern f32 slansb(const char* norm, const char* uplo, const int n,
-                     const int k, const f32* AB, const int ldab, f32* work);
-extern f32 slansp(const char* norm, const char* uplo, const int n,
-                     const f32* AP, f32* work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
 
 /**
  * SSBT21 generally checks a decomposition of the form
@@ -42,18 +34,18 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace, dimension (n*n + n).
  * @param[out]    result Test ratios, dimension (2).
  */
-void ssbt21(const char* uplo, const int n, const int ka, const int ks,
-            const f32* A, const int lda,
+void ssbt21(const char* uplo, const INT n, const INT ka, const INT ks,
+            const f32* A, const INT lda,
             const f32* D, const f32* E,
-            const f32* U, const int ldu,
+            const f32* U, const INT ldu,
             f32* work, f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int lower;
+    INT lower;
     char cuplo;
-    int ika, j, jc, jr, lw;
+    INT ika, j, jc, jr, lw;
     f32 anorm, ulp, unfl, wnorm;
     CBLAS_UPLO cblas_uplo;
 
@@ -99,7 +91,7 @@ void ssbt21(const char* uplo, const int n, const int ka, const int ks,
     j = 0;
     for (jc = 0; jc < n; jc++) {
         if (lower) {
-            int nelem = ika + 1;
+            INT nelem = ika + 1;
             if (nelem > n - jc)
                 nelem = n - jc;
             for (jr = 0; jr < nelem; jr++) {
@@ -111,12 +103,12 @@ void ssbt21(const char* uplo, const int n, const int ka, const int ks,
                 j++;
             }
         } else {
-            int nzeros = (jc > ika) ? jc - ika : 0;
+            INT nzeros = (jc > ika) ? jc - ika : 0;
             for (jr = 0; jr < nzeros; jr++) {
                 work[j] = ZERO;
                 j++;
             }
-            int top = (ika < jc) ? ika : jc;
+            INT top = (ika < jc) ? ika : jc;
             for (jr = top; jr >= 0; jr--) {
                 work[j] = A[ika - jr + jc * lda];
                 j++;

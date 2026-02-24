@@ -323,7 +323,7 @@ void clasyf(
          * A11 := A11 - U12*D*U12**T = A11 - U12*W**T */
         if (k >= 0 && n - 1 - k > 0) {
             INT kw_after = nb - 1 - (n - 1 - k);
-            cblas_cgemmt(CblasColMajor, CblasUpper, CblasNoTrans, CblasTrans,
+            cblas_cgemmtr(CblasColMajor, CblasUpper, CblasNoTrans, CblasTrans,
                          k + 1, n - 1 - k,
                          &NEG_CONE, &A[0 + (k + 1) * lda], lda,
                          &W[0 + (kw_after + 1) * ldw], ldw,
@@ -576,7 +576,7 @@ void clasyf(
          *
          * A22 := A22 - L21*D*L21**T = A22 - L21*W**T */
         if (k < n && k > 0) {
-            cblas_cgemmt(CblasColMajor, CblasLower, CblasNoTrans, CblasTrans,
+            cblas_cgemmtr(CblasColMajor, CblasLower, CblasNoTrans, CblasTrans,
                          n - k, k,
                          &NEG_CONE, &A[k + 0 * lda], lda,
                          &W[k + 0 * ldw], ldw,

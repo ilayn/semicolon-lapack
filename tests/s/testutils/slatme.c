@@ -8,19 +8,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations for library functions */
-extern void xerbla(const char* srname, const int info);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slarfg(const int n, f32* alpha, f32* x, const int incx,
-                   f32* tau);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
 
 /**
  * SLATME generates random non-symmetric square matrices with
@@ -123,20 +114,20 @@ extern f32 slange(const char* norm, const int m, const int n,
  *     < 0: illegal argument
  *     > 0: error in called routine
  */
-void slatme(const int n, const char* dist, f32* D,
-            const int mode, const f32 cond, const f32 dmax,
+void slatme(const INT n, const char* dist, f32* D,
+            const INT mode, const f32 cond, const f32 dmax,
             const char* ei, const char* rsign, const char* upper,
-            const char* sim, f32* DS, const int modes, const f32 conds,
-            const int kl, const int ku, const f32 anorm,
-            f32* A, const int lda, f32* work, int* info,
+            const char* sim, f32* DS, const INT modes, const f32 conds,
+            const INT kl, const INT ku, const f32 anorm,
+            f32* A, const INT lda, f32* work, INT* info,
             uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 HALF = 0.5f;
 
-    int badei, bads, useei;
-    int i, ic, icols, idist, iinfo, ir, irows, irsign, isim, iupper, j, jc, jcr, jr;
+    INT badei, bads, useei;
+    INT i, ic, icols, idist, iinfo, ir, irows, irsign, isim, iupper, j, jc, jcr, jr;
     f32 alpha, tau, temp, xnorms;
 
     *info = 0;

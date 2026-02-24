@@ -7,8 +7,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_double.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -39,10 +39,10 @@
  * @param[out]    resid   The maximum over the number of right hand sides of
  *                        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
-void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
-            const f64* A, const int lda,
-            const f64* X, const int ldx,
-            f64* B, const int ldb,
+void dpbt02(const char* uplo, const INT n, const INT kd, const INT nrhs,
+            const f64* A, const INT lda,
+            const f64* X, const INT ldx,
+            f64* B, const INT ldb,
             f64* rwork, f64* resid)
 {
     const f64 ZERO = 0.0;
@@ -62,13 +62,13 @@ void dpbt02(const char* uplo, const int n, const int kd, const int nrhs,
 
     CBLAS_UPLO cblas_uplo = (uplo[0] == 'U' || uplo[0] == 'u') ? CblasUpper : CblasLower;
 
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         cblas_dsbmv(CblasColMajor, cblas_uplo, n, kd, -ONE, A, lda,
                     &X[j * ldx], 1, ONE, &B[j * ldb], 1);
     }
 
     *resid = ZERO;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         f64 bnorm = cblas_dasum(n, &B[j * ldb], 1);
         f64 xnorm = cblas_dasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {

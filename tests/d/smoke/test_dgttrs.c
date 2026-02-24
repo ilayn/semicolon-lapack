@@ -15,35 +15,13 @@
 #include "verify.h"
 
 /* Routines under test */
-extern void dgttrf(const int n, f64 * const restrict DL,
-                   f64 * const restrict D, f64 * const restrict DU,
-                   f64 * const restrict DU2, int * const restrict ipiv,
-                   int *info);
-extern void dgttrs(const char *trans, const int n, const int nrhs,
-                   const f64 * const restrict DL,
-                   const f64 * const restrict D,
-                   const f64 * const restrict DU,
-                   const f64 * const restrict DU2,
-                   const int * const restrict ipiv,
-                   f64 * const restrict B, const int ldb, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-extern void dlagtm(const char *trans, const int n, const int nrhs,
-                   const f64 alpha,
-                   const f64 * const restrict DL,
-                   const f64 * const restrict D,
-                   const f64 * const restrict DU,
-                   const f64 * const restrict X, const int ldx,
-                   const f64 beta,
-                   f64 * const restrict B, const int ldb);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n, nrhs;
-    int ldb;
+    INT n, nrhs;
+    INT ldb;
     f64 *DL;      /* Original sub-diagonal */
     f64 *D;       /* Original diagonal */
     f64 *DU;      /* Original super-diagonal */
@@ -51,7 +29,7 @@ typedef struct {
     f64 *DF;      /* Factored diagonal */
     f64 *DUF;     /* Factored super-diagonal */
     f64 *DU2;     /* Second super-diagonal from factorization */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f64 *XACT;    /* Exact solution */
     f64 *B;       /* Right-hand side / computed solution */
     f64 *B_copy;  /* Copy of RHS for verification */
@@ -65,13 +43,13 @@ static uint64_t g_seed = 3141;
 /**
  * Generate a diagonally dominant tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
+static void generate_gt_matrix(INT n, INT imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int i;
+    INT i;
 
     if (n <= 0) return;
 
@@ -101,13 +79,13 @@ static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgttrs_setup(void **state, int n, int nrhs)
+static int dgttrs_setup(void **state, INT n, INT nrhs)
 {
     dgttrs_fixture_t *fix = malloc(sizeof(dgttrs_fixture_t));
     assert_non_null(fix);
 
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = (n > 1) ? n : 1;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = (n > 1) ? n : 1;
 
     fix->n = n;
     fix->nrhs = nrhs;
@@ -122,7 +100,7 @@ static int dgttrs_setup(void **state, int n, int nrhs)
     fix->DF = malloc(n * sizeof(f64));
     fix->DUF = malloc((m > 0 ? m : 1) * sizeof(f64));
     fix->DU2 = malloc((n > 2 ? n - 2 : 1) * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
     fix->XACT = malloc(ldb * nrhs * sizeof(f64));
     fix->B = malloc(ldb * nrhs * sizeof(f64));
     fix->B_copy = malloc(ldb * nrhs * sizeof(f64));
@@ -190,14 +168,14 @@ static int setup_n50_nrhs15(void **state) { return dgttrs_setup(state, 50, 15); 
  * Core test logic: generate matrix, factorize, solve, verify.
  * Returns residual for the caller to assert on.
  */
-static f64 run_dgttrs_test(dgttrs_fixture_t *fix, int imat, const char* trans)
+static f64 run_dgttrs_test(dgttrs_fixture_t *fix, INT imat, const char* trans)
 {
-    int info;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = fix->ldb;
-    int i, j;
+    INT info;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = fix->ldb;
+    INT i, j;
 
     /* Generate test matrix */
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
@@ -248,7 +226,7 @@ static void test_dgttrs_notrans(void **state)
 {
     dgttrs_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f64 resid = run_dgttrs_test(fix, imat, "N");
@@ -263,7 +241,7 @@ static void test_dgttrs_trans(void **state)
 {
     dgttrs_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f64 resid = run_dgttrs_test(fix, imat, "T");

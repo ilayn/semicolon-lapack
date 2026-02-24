@@ -6,9 +6,6 @@
 #include <math.h>
 #include "verify.h"
 
-// Forward declaration
-extern f32 slamch(const char* cmach);
-
 /**
  * SGET06 computes a test ratio to compare two values for RCOND.
  *

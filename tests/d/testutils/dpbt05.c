@@ -8,8 +8,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
 #include "semicolon_lapack_double.h"
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -57,11 +57,11 @@
  *                        RESLTS(2) = BERR / ( NZ*EPS + (*) )
  *                        Dimension (2).
  */
-void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
-            const f64* AB, const int ldab,
-            const f64* B, const int ldb,
-            const f64* X, const int ldx,
-            const f64* XACT, const int ldxact,
+void dpbt05(const char* uplo, const INT n, const INT kd, const INT nrhs,
+            const f64* AB, const INT ldab,
+            const f64* B, const INT ldb,
+            const f64* X, const INT ldx,
+            const f64* XACT, const INT ldxact,
             const f64* ferr, const f64* berr,
             f64* reslts)
 {
@@ -77,19 +77,19 @@ void dpbt05(const char* uplo, const int n, const int kd, const int nrhs,
     f64 eps = dlamch("Epsilon");
     f64 unfl = dlamch("Safe minimum");
     f64 ovfl = ONE / unfl;
-    int upper = (uplo[0] == 'U' || uplo[0] == 'u');
-    int nz = 2 * ((kd > n - 1) ? kd : n - 1) + 1;
+    INT upper = (uplo[0] == 'U' || uplo[0] == 'u');
+    INT nz = 2 * ((kd > n - 1) ? kd : n - 1) + 1;
 
     f64 errbnd = ZERO;
-    for (int j = 0; j < nrhs; j++) {
-        int imax = cblas_idamax(n, &X[j * ldx], 1);
+    for (INT j = 0; j < nrhs; j++) {
+        INT imax = cblas_idamax(n, &X[j * ldx], 1);
         f64 xnorm = fabs(X[imax + j * ldx]);
         if (xnorm < unfl) {
             xnorm = unfl;
         }
 
         f64 diff = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 tmp = fabs(X[i + j * ldx] - XACT[i + j * ldxact]);
             if (tmp > diff) {
                 diff = tmp;
@@ -117,27 +117,27 @@ label20:
     }
     reslts[0] = errbnd;
 
-    for (int k = 0; k < nrhs; k++) {
+    for (INT k = 0; k < nrhs; k++) {
         f64 axbi = ZERO;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             f64 tmp = fabs(B[i + k * ldb]);
 
             if (upper) {
-                int j_start = (i - kd > 0) ? i - kd : 0;
-                for (int jj = j_start; jj <= i; jj++) {
+                INT j_start = (i - kd > 0) ? i - kd : 0;
+                for (INT jj = j_start; jj <= i; jj++) {
                     tmp += fabs(AB[kd - i + jj + i * ldab]) * fabs(X[jj + k * ldx]);
                 }
-                int j_end = (i + kd < n - 1) ? i + kd : n - 1;
-                for (int jj = i + 1; jj <= j_end; jj++) {
+                INT j_end = (i + kd < n - 1) ? i + kd : n - 1;
+                for (INT jj = i + 1; jj <= j_end; jj++) {
                     tmp += fabs(AB[kd + i - jj + jj * ldab]) * fabs(X[jj + k * ldx]);
                 }
             } else {
-                int j_start = (i - kd > 0) ? i - kd : 0;
-                for (int jj = j_start; jj < i; jj++) {
+                INT j_start = (i - kd > 0) ? i - kd : 0;
+                for (INT jj = j_start; jj < i; jj++) {
                     tmp += fabs(AB[i - jj + jj * ldab]) * fabs(X[jj + k * ldx]);
                 }
-                int j_end = (i + kd < n - 1) ? i + kd : n - 1;
-                for (int jj = i; jj <= j_end; jj++) {
+                INT j_end = (i + kd < n - 1) ? i + kd : n - 1;
+                for (INT jj = i; jj <= j_end; jj++) {
                     tmp += fabs(AB[jj - i + i * ldab]) * fabs(X[jj + k * ldx]);
                 }
             }

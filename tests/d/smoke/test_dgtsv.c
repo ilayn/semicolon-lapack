@@ -16,28 +16,13 @@
 #include "verify.h"
 
 /* Routine under test */
-extern void dgtsv(const int n, const int nrhs,
-                  f64 * const restrict DL, f64 * const restrict D,
-                  f64 * const restrict DU, f64 * const restrict B,
-                  const int ldb, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-extern void dlagtm(const char *trans, const int n, const int nrhs,
-                   const f64 alpha,
-                   const f64 * const restrict DL,
-                   const f64 * const restrict D,
-                   const f64 * const restrict DU,
-                   const f64 * const restrict X, const int ldx,
-                   const f64 beta,
-                   f64 * const restrict B, const int ldb);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n, nrhs;
-    int ldb;
+    INT n, nrhs;
+    INT ldb;
     f64 *DL;       /* Sub-diagonal (will be overwritten by dgtsv) */
     f64 *D;        /* Diagonal (will be overwritten by dgtsv) */
     f64 *DU;       /* Super-diagonal (will be overwritten by dgtsv) */
@@ -57,13 +42,13 @@ static uint64_t g_seed = 2718;
 /**
  * Generate a tridiagonal matrix for testing.
  */
-static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
+static void generate_gt_matrix(INT n, INT imat, f64 *DL, f64 *D, f64 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int i;
+    INT i;
 
     if (n <= 0) return;
 
@@ -84,7 +69,7 @@ static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
     } else if (imat == 9 && n > 0) {
         D[n - 1] = 0.0;
     } else if (imat == 10 && n > 2) {
-        int mid = n / 2;
+        INT mid = n / 2;
         D[mid] = 0.0;
     }
 
@@ -103,13 +88,13 @@ static void generate_gt_matrix(int n, int imat, f64 *DL, f64 *D, f64 *DU,
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgtsv_setup(void **state, int n, int nrhs)
+static int dgtsv_setup(void **state, INT n, INT nrhs)
 {
     dgtsv_fixture_t *fix = malloc(sizeof(dgtsv_fixture_t));
     assert_non_null(fix);
 
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = (n > 1) ? n : 1;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = (n > 1) ? n : 1;
 
     fix->n = n;
     fix->nrhs = nrhs;
@@ -187,14 +172,14 @@ static int setup_n50_nrhs15(void **state) { return dgtsv_setup(state, 50, 15); }
  * Returns residual for the caller to assert on.
  * Returns -1.0 if the matrix is singular (info > 0).
  */
-static f64 run_dgtsv_test(dgtsv_fixture_t *fix, int imat)
+static f64 run_dgtsv_test(dgtsv_fixture_t *fix, INT imat)
 {
-    int info;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
-    int m = (n > 1) ? n - 1 : 0;
-    int ldb = fix->ldb;
-    int i, j;
+    INT info;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT ldb = fix->ldb;
+    INT i, j;
 
     /* Generate test matrix */
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
@@ -249,7 +234,7 @@ static void test_dgtsv_wellcond(void **state)
 {
     dgtsv_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f64 resid = run_dgtsv_test(fix, imat);
@@ -270,8 +255,8 @@ static void test_dgtsv_random(void **state)
         skip();
     }
 
-    int random_types[] = {7, 11, 12};
-    for (int k = 0; k < 3; k++) {
+    INT random_types[] = {7, 11, 12};
+    for (INT k = 0; k < 3; k++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f64 resid = run_dgtsv_test(fix, random_types[k]);

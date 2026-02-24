@@ -17,7 +17,6 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -31,9 +30,9 @@
 #define NTESTS 6
 
 /* Dimension triplets from TESTING/gsv.in */
-static const int MVAL[] = { 0,  5,  9, 10, 20, 12, 12, 40 };
-static const int PVAL[] = { 4,  0, 12, 14, 10, 10, 20, 15 };
-static const int NVAL[] = { 3, 10, 15, 12,  8, 20,  8, 20 };
+static const INT MVAL[] = { 0,  5,  9, 10, 20, 12, 12, 40 };
+static const INT PVAL[] = { 4,  0, 12, 14, 10, 10, 20, 15 };
+static const INT NVAL[] = { 3, 10, 15, 12,  8, 20,  8, 20 };
 #define NM 8
 
 /* Maximum dimension */
@@ -43,12 +42,10 @@ static const int NVAL[] = { 3, 10, 15, 12,  8, 20,  8, 20 };
 #define MAX_TESTS (NM * NTYPES)
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /* Test parameters for a single test case */
 typedef struct {
-    int im;
-    int imat;
+    INT im;
+    INT imat;
     char name[80];
 } dckgsv_params_t;
 
@@ -66,7 +63,7 @@ typedef struct {
     f32* beta;
     f32* work;
     f32* rwork;
-    int* iwork;
+    INT* iwork;
 } dckgsv_workspace_t;
 
 static dckgsv_workspace_t* g_ws = NULL;
@@ -78,7 +75,7 @@ static int group_setup(void** state)
     g_ws = malloc(sizeof(dckgsv_workspace_t));
     if (!g_ws) return -1;
 
-    int lwork = NMAX * NMAX;
+    INT lwork = NMAX * NMAX;
 
     g_ws->A     = malloc(NMAX * NMAX * sizeof(f32));
     g_ws->AF    = malloc(NMAX * NMAX * sizeof(f32));
@@ -92,7 +89,7 @@ static int group_setup(void** state)
     g_ws->beta  = malloc(NMAX * sizeof(f32));
     g_ws->work  = malloc(lwork * sizeof(f32));
     g_ws->rwork = malloc(NMAX * sizeof(f32));
-    g_ws->iwork = malloc(NMAX * sizeof(int));
+    g_ws->iwork = malloc(NMAX * sizeof(INT));
 
     if (!g_ws->A || !g_ws->AF || !g_ws->B || !g_ws->BF ||
         !g_ws->U || !g_ws->V || !g_ws->Q || !g_ws->R ||
@@ -132,24 +129,24 @@ static int group_teardown(void** state)
 static void test_dckgsv_case(void** state)
 {
     dckgsv_params_t* params = *state;
-    int m = MVAL[params->im];
-    int p = PVAL[params->im];
-    int n = NVAL[params->im];
-    int imat = params->imat;
-    int lda = NMAX;
-    int ldb = NMAX;
-    int ldu = NMAX;
-    int ldv = NMAX;
-    int ldq = NMAX;
-    int ldr = NMAX;
-    int lwork = NMAX * NMAX;
+    INT m = MVAL[params->im];
+    INT p = PVAL[params->im];
+    INT n = NVAL[params->im];
+    INT imat = params->imat;
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT ldu = NMAX;
+    INT ldv = NMAX;
+    INT ldq = NMAX;
+    INT ldr = NMAX;
+    INT lwork = NMAX * NMAX;
 
     char type;
-    int kla, kua, klb, kub;
+    INT kla, kua, klb, kub;
     f32 anorm, bnorm, cndnma, cndnmb;
-    int modea, modeb;
+    INT modea, modeb;
     char dista, distb;
-    int iinfo;
+    INT iinfo;
     f32 result[NTESTS];
 
     /* Seed RNG for reproducibility */
@@ -181,7 +178,7 @@ static void test_dckgsv_case(void** state)
             g_ws->alpha, g_ws->beta, g_ws->R, ldr,
             g_ws->iwork, g_ws->work, lwork, g_ws->rwork, result);
 
-    for (int i = 0; i < NTESTS; i++) {
+    for (INT i = 0; i < NTESTS; i++) {
         if (result[i] >= THRESH) {
             print_message("  GSV: M=%d P=%d N=%d type=%d test=%d ratio=%g\n",
                           m, p, n, imat, i + 1, (double)result[i]);
@@ -193,14 +190,14 @@ static void test_dckgsv_case(void** state)
 /* Parameterized test arrays */
 static dckgsv_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < NM; im++) {
-        for (int imat = 1; imat <= NTYPES; imat++) {
+    for (INT im = 0; im < NM; im++) {
+        for (INT imat = 1; imat <= NTYPES; imat++) {
             dckgsv_params_t* par = &g_params[g_num_tests];
             par->im = im;
             par->imat = imat;

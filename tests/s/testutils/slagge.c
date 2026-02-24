@@ -8,12 +8,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
 
 /**
  * SLAGGE generates a real general m by n matrix A, by pre- and post-
@@ -56,23 +54,23 @@ extern void xerbla(const char* srname, const int info);
  *     RNG state array (xoshiro256+), already initialized by the caller.
  */
 void slagge(
-    const int m,
-    const int n,
-    const int kl,
-    const int ku,
+    const INT m,
+    const INT n,
+    const INT kl,
+    const INT ku,
     const f32* d,
     f32* A,
-    const int lda,
+    const INT lda,
     f32* work,
-    int* info,
+    INT* info,
     uint64_t state[static 4])
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j;
+    INT i, j;
     f32 tau, wa, wb, wn;
-    int minmn = (m < n) ? m : n;
+    INT minmn = (m < n) ? m : n;
 
     /* Test the input arguments */
     *info = 0;
@@ -111,7 +109,7 @@ void slagge(
     for (i = minmn - 1; i >= 0; i--) {
         if (i < m - 1) {
             /* Generate random reflection */
-            int len = m - i;
+            INT len = m - i;
             for (j = 0; j < len; j++) {
                 work[j] = rng_normal_f32(state);
             }
@@ -135,7 +133,7 @@ void slagge(
         }
         if (i < n - 1) {
             /* Generate random reflection */
-            int len = n - i;
+            INT len = n - i;
             for (j = 0; j < len; j++) {
                 work[j] = rng_normal_f32(state);
             }
@@ -160,13 +158,13 @@ void slagge(
     }
 
     /* Reduce number of subdiagonals to kl and number of superdiagonals to ku */
-    int maxiter = (m - 1 - kl > n - 1 - ku) ? m - 1 - kl : n - 1 - ku;
+    INT maxiter = (m - 1 - kl > n - 1 - ku) ? m - 1 - kl : n - 1 - ku;
     for (i = 0; i < maxiter; i++) {
         if (kl <= ku) {
             /* Annihilate subdiagonal elements first (necessary if kl = 0) */
             if (i < m - 1 - kl && i < n) {
                 /* Generate reflection to annihilate A(kl+i+1:m-1, i) */
-                int len = m - kl - i;
+                INT len = m - kl - i;
                 wn = cblas_snrm2(len, &A[kl + i + i * lda], 1);
                 wa = (A[kl + i + i * lda] >= 0.0f) ? wn : -wn;
                 if (wn == ZERO) {
@@ -192,7 +190,7 @@ void slagge(
 
             if (i < n - 1 - ku && i < m) {
                 /* Generate reflection to annihilate A(i, ku+i+1:n-1) */
-                int len = n - ku - i;
+                INT len = n - ku - i;
                 wn = cblas_snrm2(len, &A[i + (ku + i) * lda], lda);
                 wa = (A[i + (ku + i) * lda] >= 0.0f) ? wn : -wn;
                 if (wn == ZERO) {
@@ -219,7 +217,7 @@ void slagge(
             /* Annihilate superdiagonal elements first (necessary if ku = 0) */
             if (i < n - 1 - ku && i < m) {
                 /* Generate reflection to annihilate A(i, ku+i+1:n-1) */
-                int len = n - ku - i;
+                INT len = n - ku - i;
                 wn = cblas_snrm2(len, &A[i + (ku + i) * lda], lda);
                 wa = (A[i + (ku + i) * lda] >= 0.0f) ? wn : -wn;
                 if (wn == ZERO) {
@@ -245,7 +243,7 @@ void slagge(
 
             if (i < m - 1 - kl && i < n) {
                 /* Generate reflection to annihilate A(kl+i+1:m-1, i) */
-                int len = m - kl - i;
+                INT len = m - kl - i;
                 wn = cblas_snrm2(len, &A[kl + i + i * lda], 1);
                 wa = (A[kl + i + i * lda] >= 0.0f) ? wn : -wn;
                 if (wn == ZERO) {

@@ -4,38 +4,10 @@
  *        eigenvalues and/or right eigenvectors of a matrix.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
-
-extern f64  dlamch(const char* cmach);
-extern f64  dlange(const char* norm, const int m, const int n,
-                   const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dgehrd(const int n, const int ilo, const int ihi,
-                   f64* A, const int lda, f64* tau,
-                   f64* work, const int lwork, int* info);
-extern void dhseqr(const char* job, const char* compz, const int n,
-                   const int ilo, const int ihi,
-                   f64* H, const int ldh, f64* wr, f64* wi,
-                   f64* Z, const int ldz,
-                   f64* work, const int lwork, int* info);
-extern void dtrevc(const char* side, const char* howmny,
-                   int* select, const int n,
-                   const f64* T, const int ldt,
-                   f64* VL, const int ldvl,
-                   f64* VR, const int ldvr,
-                   const int mm, int* m, f64* work, int* info);
-extern void dtrsna(const char* job, const char* howmny,
-                   const int* select, const int n,
-                   const f64* T, const int ldt,
-                   const f64* VL, const int ldvl,
-                   const f64* VR, const int ldvr,
-                   f64* S, f64* sep, const int mm, int* m,
-                   f64* work, const int ldwork,
-                   int* iwork, int* info);
 
 #define LDT   20
 #define LWORK (2 * LDT * (10 + LDT))
@@ -553,34 +525,34 @@ static const f64 dget37_data[] = {
     3.0030, 0.0, 9.2696e-05, 2.6477e-06,
 };
 
-static const int dget37_n[] = {
+static const INT dget37_n[] = {
     1, 1, 2, 2, 2, 6, 4, 5, 5, 6,
     6, 6, 4, 6, 5, 10, 4, 6, 10, 4,
     6, 4, 3, 6, 6, 6, 6, 6, 12, 6,
     6, 6, 6, 8, 6, 4, 5, 6, 10,
 };
 
-static void rowmajor_to_colmajor(const f64* rows, f64* cm, int n, int ldcm)
+static void rowmajor_to_colmajor(const f64* rows, f64* cm, INT n, INT ldcm)
 {
     memset(cm, 0, (size_t)ldcm * n * sizeof(f64));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ldcm] = rows[i * n + j];
 }
 
-void dget37(f64 rmax[3], int lmax[3], int ninfo[3], int* knt)
+void dget37(f64 rmax[3], INT lmax[3], INT ninfo[3], INT* knt)
 {
     const f64 ZERO = 0.0;
     const f64 ONE  = 1.0;
     const f64 TWO  = 2.0;
     const f64 EPSIN = 5.9605e-8;
 
-    int    i, icmp, ifnd, info, iscl, j, kmin, m, n;
+    INT    i, icmp, ifnd, info, iscl, j, kmin, m, n;
     f64    bignum, eps, smlnum, tnrm, tol, tolin, v,
            vimin, vmax, vmul, vrmin;
 
-    int    select[LDT];
-    int    iwork[2 * LDT], lcmp[3];
+    INT    select[LDT];
+    INT    iwork[2 * LDT], lcmp[3];
     f64    dum[1], le[LDT * LDT], re[LDT * LDT],
            s[LDT], sep[LDT], sepin[LDT],
            septmp[LDT], sin_vals[LDT], stmp[LDT],
@@ -609,9 +581,9 @@ void dget37(f64 rmax[3], int lmax[3], int ninfo[3], int* knt)
     val[1] = ONE;
     val[2] = sqrt(bignum);
 
-    int data_offset = 0;
+    INT data_offset = 0;
 
-    for (int icase = 0; icase < NCASES37; icase++) {
+    for (INT icase = 0; icase < NCASES37; icase++) {
         n = dget37_n[icase];
 
         rowmajor_to_colmajor(&dget37_data[data_offset], tmp, n, LDT);

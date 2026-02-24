@@ -9,10 +9,10 @@
 #include <stdio.h>
 #include "verify.h"
 
-void chkxer(const char* srnamt, int infot, int* lerr, int* ok) {
+void chkxer(const char* srnamt, INT infot, INT* lerr, INT* ok) {
     if (!(*lerr)) {
-        fprintf(stderr, " *** Illegal value of parameter number %d not detected by %s ***\n",
-                infot, srnamt);
+        fprintf(stderr, " *** Illegal value of parameter number %lld not detected by %s ***\n",
+                (long long)infot, srnamt);
         *ok = 0;
     }
     *lerr = 0;

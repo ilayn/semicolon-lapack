@@ -7,38 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void   slaset(const char* uplo, const int m, const int n,
-                     const f32 alpha, const f32 beta,
-                     f32* const restrict A, const int lda);
-extern void   slacpy(const char* uplo, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict B, const int ldb);
-extern void   slarfy(const char* uplo, const int n, const f32* const restrict V,
-                     const int incv, const f32 tau,
-                     f32* const restrict C, const int ldc,
-                     f32* const restrict work);
-extern void   sorm2r(const char* side, const char* trans, const int m, const int n,
-                     const int k, const f32* const restrict A, const int lda,
-                     const f32* const restrict tau,
-                     f32* const restrict C, const int ldc,
-                     f32* const restrict work, int* info);
-extern void   sorm2l(const char* side, const char* trans, const int m, const int n,
-                     const int k, const f32* const restrict A, const int lda,
-                     const f32* const restrict tau,
-                     f32* const restrict C, const int ldc,
-                     f32* const restrict work, int* info);
-
 /**
  * SSYT21 generally checks a decomposition of the form
  *
@@ -80,11 +50,11 @@ extern void   sorm2l(const char* side, const char* trans, const int m, const int
  * @param[out]    work   Workspace array, dimension (2*n*n).
  * @param[out]    result Test ratios, dimension (2). result[1] only set if itype=1.
  */
-void ssyt21(const int itype, const char* uplo, const int n, const int kband,
-            const f32* const restrict A, const int lda,
+void ssyt21(const INT itype, const char* uplo, const INT n, const INT kband,
+            const f32* const restrict A, const INT lda,
             const f32* const restrict D, const f32* const restrict E,
-            const f32* const restrict U, const int ldu,
-            f32* restrict V, const int ldv,
+            const f32* const restrict U, const INT ldu,
+            f32* restrict V, const INT ldv,
             const f32* const restrict tau,
             f32* const restrict work, f32* restrict result)
 {
@@ -92,9 +62,9 @@ void ssyt21(const int itype, const char* uplo, const int n, const int kband,
     const f32 ONE = 1.0f;
     const f32 TEN = 10.0f;
 
-    int lower;
+    INT lower;
     char cuplo;
-    int j, jcol, jrow, iinfo;
+    INT j, jcol, jrow, iinfo;
     f32 anorm, ulp, unfl, wnorm, vsave;
 
     result[0] = ZERO;
@@ -171,7 +141,7 @@ void ssyt21(const int itype, const char* uplo, const int n, const int kband,
                 if (kband == 1) {
                     /* Set off-diagonal elements */
                     work[(n + 1) * j + 1] = (ONE - tau[j]) * E[j];
-                    for (int jr = j + 2; jr < n; jr++) {
+                    for (INT jr = j + 2; jr < n; jr++) {
                         work[j * n + jr] = -tau[j] * E[j] * V[jr + j * ldv];
                     }
                 }
@@ -189,7 +159,7 @@ void ssyt21(const int itype, const char* uplo, const int n, const int kband,
                 if (kband == 1) {
                     /* Set off-diagonal elements */
                     work[(n + 1) * (j + 1) - 1] = (ONE - tau[j]) * E[j];
-                    for (int jr = 0; jr < j; jr++) {
+                    for (INT jr = 0; jr < j; jr++) {
                         work[(j + 1) * n + jr] = -tau[j] * E[j] * V[jr + (j + 1) * ldv];
                     }
                 }

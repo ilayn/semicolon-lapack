@@ -10,32 +10,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dgerqf(const int m, const int n,
-                   f64* const restrict A, const int lda,
-                   f64* const restrict tau,
-                   f64* const restrict work, const int lwork, int* info);
-extern void dorgrq(const int m, const int n, const int k,
-                   f64* const restrict A, const int lda,
-                   const f64* const restrict tau,
-                   f64* const restrict work, const int lwork, int* info);
-
 /**
  * DRQT01 tests DGERQF, which computes the RQ factorization of an m-by-n
  * matrix A, and partially tests DORGRQ which forms the n-by-n
@@ -54,20 +30,20 @@ extern void dorgrq(const int m, const int n, const int k,
  * @param[out]    rwork   Workspace, dimension max(m,n).
  * @param[out]    result  Array of dimension 2.
  */
-void drqt01(const int m, const int n,
+void drqt01(const INT m, const INT n,
             const f64 * const restrict A,
             f64 * const restrict AF,
             f64 * const restrict Q,
             f64 * const restrict R,
-            const int lda,
+            const INT lda,
             f64 * const restrict tau,
-            f64 * const restrict work, const int lwork,
+            f64 * const restrict work, const INT lwork,
             f64 * const restrict rwork,
             f64 * restrict result)
 {
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
     f64 eps = dlamch("E");
-    int info;
+    INT info;
 
     /* Copy A to AF */
     dlacpy("F", m, n, A, lda, AF, lda);

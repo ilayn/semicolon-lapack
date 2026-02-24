@@ -3,15 +3,9 @@
  * @brief SGET54 checks a generalized decomposition of the form A = U*S*V' and B = U*T*V'.
  */
 
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
 
 /**
  * SGET54 checks a generalized decomposition of the form
@@ -47,12 +41,12 @@ extern void slacpy(const char* uplo, const int m, const int n,
  * @param[out]    result  The value RESULT. Limited to 1/ulp to avoid overflow.
  *                        Errors are flagged by RESULT=10/ulp.
  */
-void sget54(const int n, const f32* A, const int lda,
-            const f32* B, const int ldb,
-            const f32* S, const int lds,
-            const f32* T, const int ldt,
-            const f32* U, const int ldu,
-            const f32* V, const int ldv,
+void sget54(const INT n, const f32* A, const INT lda,
+            const f32* B, const INT ldb,
+            const f32* S, const INT lds,
+            const f32* T, const INT ldt,
+            const f32* U, const INT ldu,
+            const f32* V, const INT ldv,
             f32* work, f32* result)
 {
     const f32 ZERO = 0.0f;

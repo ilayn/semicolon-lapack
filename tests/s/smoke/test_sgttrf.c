@@ -25,20 +25,13 @@
 #include "verify.h"
 
 /* Routine under test */
-extern void sgttrf(const int n, f32 * const restrict DL,
-                   f32 * const restrict D, f32 * const restrict DU,
-                   f32 * const restrict DU2, int * const restrict ipiv,
-                   int *info);
-
 /* Utilities */
-extern f32 slamch(const char *cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  * CMocka passes this between setup -> test -> teardown.
  */
 typedef struct {
-    int n;
+    INT n;
     f32 *DL;      /* Original sub-diagonal */
     f32 *D;       /* Original diagonal */
     f32 *DU;      /* Original super-diagonal */
@@ -46,7 +39,7 @@ typedef struct {
     f32 *DF;      /* Factored diagonal */
     f32 *DUF;     /* Factored super-diagonal */
     f32 *DU2;     /* Second super-diagonal from factorization */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     f32 *work;    /* Workspace for sgtt01 */
     uint64_t seed;   /* RNG seed */
     uint64_t rng_state[4]; /* RNG state */
@@ -61,14 +54,14 @@ static uint64_t g_seed = 1988;
  * For types 1-6: Use slatms with controlled singular values.
  * For types 7-12: Generate random tridiagonal directly.
  */
-static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
+static void generate_gt_matrix(INT n, INT imat, f32 *DL, f32 *D, f32 *DU,
                                 uint64_t state[static 4])
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
-    int i;
+    INT info;
+    INT i;
 
     if (n <= 0) return;
 
@@ -77,7 +70,7 @@ static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
     if (imat >= 1 && imat <= 6) {
         /* Types 1-6: Use slatms to generate matrix with controlled condition */
         /* Generate in band storage: 3 rows (sub, diag, super) */
-        int lda = 3;
+        INT lda = 3;
         f32 *AB = calloc(lda * n, sizeof(f32));
         f32 *d_sing = malloc(n * sizeof(f32));
         f32 *work = malloc(3 * n * sizeof(f32));
@@ -134,7 +127,7 @@ static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
             D[n - 1] = 0.0f;
         } else if (imat == 10 && n > 2) {
             /* Zero middle n/2 diagonal elements */
-            int mid = n / 2;
+            INT mid = n / 2;
             for (i = mid / 2; i < mid / 2 + mid; i++) {
                 if (i < n) D[i] = 0.0f;
             }
@@ -157,7 +150,7 @@ static void generate_gt_matrix(int n, int imat, f32 *DL, f32 *D, f32 *DU,
  * Setup fixture: allocate memory for given dimension.
  * Called before each test function.
  */
-static int dgttrf_setup(void **state, int n)
+static int dgttrf_setup(void **state, INT n)
 {
     dgttrf_fixture_t *fix = malloc(sizeof(dgttrf_fixture_t));
     assert_non_null(fix);
@@ -166,10 +159,10 @@ static int dgttrf_setup(void **state, int n)
     fix->seed = g_seed++;
     rng_seed(fix->rng_state, fix->seed);
 
-    int m = (n > 1) ? n - 1 : 0;
-    int m_alloc = (m > 0) ? m : 1;        /* At least 1 for malloc */
-    int du2_size = (n > 2) ? n - 2 : 1;
-    int work_size = (n > 0) ? n * n : 1;  /* ldwork = n for sgtt01 */
+    INT m = (n > 1) ? n - 1 : 0;
+    INT m_alloc = (m > 0) ? m : 1;        /* At least 1 for malloc */
+    INT du2_size = (n > 2) ? n - 2 : 1;
+    INT work_size = (n > 0) ? n * n : 1;  /* ldwork = n for sgtt01 */
 
     fix->DL = malloc(m_alloc * sizeof(f32));
     fix->D = malloc((n > 0 ? n : 1) * sizeof(f32));
@@ -178,7 +171,7 @@ static int dgttrf_setup(void **state, int n)
     fix->DF = malloc((n > 0 ? n : 1) * sizeof(f32));
     fix->DUF = malloc(m_alloc * sizeof(f32));
     fix->DU2 = malloc(du2_size * sizeof(f32));
-    fix->ipiv = malloc((n > 0 ? n : 1) * sizeof(int));
+    fix->ipiv = malloc((n > 0 ? n : 1) * sizeof(INT));
     fix->work = malloc(work_size * sizeof(f32));
 
     assert_non_null(fix->DL);
@@ -230,11 +223,11 @@ static int setup_50(void **state) { return dgttrf_setup(state, 50); }
  * Core test logic: generate matrix, factorize, verify.
  * Returns residual for the caller to assert on.
  */
-static f32 run_dgttrf_test(dgttrf_fixture_t *fix, int imat)
+static f32 run_dgttrf_test(dgttrf_fixture_t *fix, INT imat)
 {
-    int info;
-    int n = fix->n;
-    int m = (n > 1) ? n - 1 : 0;
+    INT info;
+    INT n = fix->n;
+    INT m = (n > 1) ? n - 1 : 0;
 
     /* Generate test matrix */
     generate_gt_matrix(n, imat, fix->DL, fix->D, fix->DU, fix->rng_state);
@@ -270,7 +263,7 @@ static void test_dgttrf_structured(void **state)
         skip_test("n=0: nothing to verify for structured types");
     }
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f32 resid = run_dgttrf_test(fix, imat);
@@ -290,7 +283,7 @@ static void test_dgttrf_random(void **state)
         skip_test("random types require n >= 2");
     }
 
-    for (int imat = 7; imat <= 12; imat++) {
+    for (INT imat = 7; imat <= 12; imat++) {
         fix->seed = g_seed++;
         rng_seed(fix->rng_state, fix->seed);
         f32 resid = run_dgttrf_test(fix, imat);

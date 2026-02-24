@@ -7,15 +7,6 @@
 #include "verify.h"
 #include <math.h>
 
-extern f64 dlamch(const char* cmach);
-extern void dlasy2(const int ltranl, const int ltranr, const int isgn,
-                   const int n1, const int n2,
-                   const f64* TL, const int ldtl,
-                   const f64* TR, const int ldtr,
-                   const f64* B, const int ldb,
-                   f64* scale, f64* X, const int ldx,
-                   f64* xnorm, int* info);
-
 /**
  * DGET32 tests DLASY2, a routine for solving
  *
@@ -28,7 +19,7 @@ extern void dlasy2(const int ltranl, const int ltranr, const int isgn,
  * @param[out]    ninfo   Number of examples returned with INFO != 0.
  * @param[out]    knt     Total number of examples tested.
  */
-void dget32(f64* rmax, int* lmax, int* ninfo, int* knt)
+void dget32(f64* rmax, INT* lmax, INT* ninfo, INT* knt)
 {
     const f64 ZERO  = 0.0;
     const f64 ONE   = 1.0;
@@ -38,7 +29,7 @@ void dget32(f64* rmax, int* lmax, int* ninfo, int* knt)
 
     /* ITVAL(2,2,8) stored as itval[k][j][i] for C row-major access,
        but we index as itval[k][i][j] matching Fortran ITVAL(i,j,k) */
-    const int itval[8][2][2] = {
+    const INT itval[8][2][2] = {
         {{8, 2}, {4, 1}},
         {{4, 1}, {8, 2}},
         {{2, 8}, {1, 4}},
@@ -65,20 +56,20 @@ void dget32(f64* rmax, int* lmax, int* ninfo, int* knt)
 
     f64 tl[2 * 2], tr[2 * 2], b[2 * 2], x[2 * 2];
     f64 scale, xnorm, xnrm, tnrm, res, den, sgn, tmp;
-    int n1, n2, info;
+    INT n1, n2, info;
 
-    for (int itranl = 0; itranl <= 1; itranl++) {
-        for (int itranr = 0; itranr <= 1; itranr++) {
-            for (int isgn = -1; isgn <= 1; isgn += 2) {
+    for (INT itranl = 0; itranl <= 1; itranl++) {
+        for (INT itranr = 0; itranr <= 1; itranr++) {
+            for (INT isgn = -1; isgn <= 1; isgn += 2) {
                 sgn = (f64)isgn;
-                int ltranl = (itranl == 1);
-                int ltranr = (itranr == 1);
+                INT ltranl = (itranl == 1);
+                INT ltranr = (itranr == 1);
 
                 n1 = 1;
                 n2 = 1;
-                for (int itl = 0; itl < 3; itl++) {
-                    for (int itr = 0; itr < 3; itr++) {
-                        for (int ib = 0; ib < 3; ib++) {
+                for (INT itl = 0; itl < 3; itl++) {
+                    for (INT itr = 0; itr < 3; itr++) {
+                        for (INT ib = 0; ib < 3; ib++) {
                             tl[0] = val[itl];
                             tr[0] = val[itr];
                             b[0] = val[ib];
@@ -114,11 +105,11 @@ void dget32(f64* rmax, int* lmax, int* ninfo, int* knt)
 
                 n1 = 2;
                 n2 = 1;
-                for (int itl = 0; itl < 8; itl++) {
-                    for (int itlscl = 0; itlscl < 3; itlscl++) {
-                        for (int itr = 0; itr < 3; itr++) {
-                            for (int ib1 = 0; ib1 < 3; ib1++) {
-                                for (int ib2 = 0; ib2 < 3; ib2++) {
+                for (INT itl = 0; itl < 8; itl++) {
+                    for (INT itlscl = 0; itlscl < 3; itlscl++) {
+                        for (INT itr = 0; itr < 3; itr++) {
+                            for (INT ib1 = 0; ib1 < 3; ib1++) {
+                                for (INT ib2 = 0; ib2 < 3; ib2++) {
                                     b[0] = val[ib1];
                                     b[1] = -FOUR * val[ib2];
                                     tl[0]         = itval[itl][0][0] * val[itlscl];
@@ -169,11 +160,11 @@ void dget32(f64* rmax, int* lmax, int* ninfo, int* knt)
 
                 n1 = 1;
                 n2 = 2;
-                for (int itr = 0; itr < 8; itr++) {
-                    for (int itrscl = 0; itrscl < 3; itrscl++) {
-                        for (int itl = 0; itl < 3; itl++) {
-                            for (int ib1 = 0; ib1 < 3; ib1++) {
-                                for (int ib2 = 0; ib2 < 3; ib2++) {
+                for (INT itr = 0; itr < 8; itr++) {
+                    for (INT itrscl = 0; itrscl < 3; itrscl++) {
+                        for (INT itl = 0; itl < 3; itl++) {
+                            for (INT ib1 = 0; ib1 < 3; ib1++) {
+                                for (INT ib2 = 0; ib2 < 3; ib2++) {
                                     b[0] = val[ib1];
                                     b[0 + 1 * 2] = -TWO * val[ib2];
                                     tr[0]         = itval[itr][0][0] * val[itrscl];
@@ -226,13 +217,13 @@ void dget32(f64* rmax, int* lmax, int* ninfo, int* knt)
 
                 n1 = 2;
                 n2 = 2;
-                for (int itr = 0; itr < 8; itr++) {
-                    for (int itrscl = 0; itrscl < 3; itrscl++) {
-                        for (int itl = 0; itl < 8; itl++) {
-                            for (int itlscl = 0; itlscl < 3; itlscl++) {
-                                for (int ib1 = 0; ib1 < 3; ib1++) {
-                                    for (int ib2 = 0; ib2 < 3; ib2++) {
-                                        for (int ib3 = 0; ib3 < 3; ib3++) {
+                for (INT itr = 0; itr < 8; itr++) {
+                    for (INT itrscl = 0; itrscl < 3; itrscl++) {
+                        for (INT itl = 0; itl < 8; itl++) {
+                            for (INT itlscl = 0; itlscl < 3; itlscl++) {
+                                for (INT ib1 = 0; ib1 < 3; ib1++) {
+                                    for (INT ib2 = 0; ib2 < 3; ib2++) {
+                                        for (INT ib3 = 0; ib3 < 3; ib3++) {
                                             b[0]         = val[ib1];
                                             b[1]         = -FOUR * val[ib2];
                                             b[0 + 1 * 2] = -TWO * val[ib3];

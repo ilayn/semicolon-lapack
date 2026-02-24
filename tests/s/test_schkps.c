@@ -23,16 +23,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <cblas.h>
-
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NBVAL[] = {1, 3, 3, 3, 20};
-static const int RANKVAL[] = {30, 50, 90};  /* Percentage of full rank */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT RANKVAL[] = {30, 50, 90};  /* Percentage of full rank */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -44,42 +43,18 @@ static const char UPLOS[] = {'U', 'L'};
 #define NMAX    50  /* Maximum matrix dimension */
 
 /* Routine under test */
-extern void spstrf(const char* uplo, const int n, f32* A, const int lda,
-                   int* piv, int* rank, const f32 tol, f32* work,
-                   int* info);
-
 /* Verification routine */
-extern void spst01(const char* uplo, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict AFAC, const int ldafac,
-                   f32* const restrict PERM, const int ldperm,
-                   const int* const restrict piv,
-                   f32* const restrict rwork, f32* resid, const int rank);
-
 /* Matrix generation */
-extern void slatb5(const char* path, const int imat, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatmt(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode,
-                   const f32 cond, const f32 dmax, const int rank,
-                   const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;  /* 0='U', 1='L' */
-    int irank;  /* Index into RANKVAL[] */
-    int inb;    /* Index into NBVAL[] */
+    INT n;
+    INT imat;
+    INT iuplo;  /* 0='U', 1='L' */
+    INT irank;  /* Index into RANKVAL[] */
+    INT inb;    /* Index into NBVAL[] */
     char name[80];
 } dchkps_params_t;
 
@@ -93,7 +68,7 @@ typedef struct {
     f32* WORK;   /* General workspace (2*NMAX for spstrf, 3*NMAX total) */
     f32* RWORK;  /* Real workspace for slansy in spst01 */
     f32* D;      /* Singular values for slatmt */
-    int* PIV;       /* Pivot indices */
+    INT* PIV;       /* Pivot indices */
 } dchkps_workspace_t;
 
 static dchkps_workspace_t* g_workspace = NULL;
@@ -113,7 +88,7 @@ static int group_setup(void** state)
     g_workspace->WORK = malloc(3 * NMAX * sizeof(f32));
     g_workspace->RWORK = malloc(NMAX * sizeof(f32));
     g_workspace->D = malloc(NMAX * sizeof(f32));
-    g_workspace->PIV = malloc(NMAX * sizeof(int));
+    g_workspace->PIV = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AFAC || !g_workspace->PERM ||
         !g_workspace->WORK || !g_workspace->RWORK || !g_workspace->D ||
@@ -147,28 +122,28 @@ static int group_teardown(void** state)
 /**
  * Run the full dchkps test battery for a single (n, uplo, imat, irank, inb) combination.
  */
-static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
+static void run_dchkps_single(INT n, INT iuplo, INT imat, INT irank, INT inb)
 {
     dchkps_workspace_t* ws = g_workspace;
 
     char type, dist;
     char uplo = UPLOS[iuplo];
     char uplo_str[2] = {uplo, '\0'};
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
-    int lda = (n > 1) ? n : 1;
+    INT info;
+    INT lda = (n > 1) ? n : 1;
     f32 result;
     char ctx[128];
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(n * 1000 + iuplo * 100 + imat * 10 + irank));
 
     /* Set block size for this test via xlaenv */
-    int nb = NBVAL[inb];
+    INT nb = NBVAL[inb];
     xlaenv(1, nb);
 
     /* Compute expected rank from percentage */
-    int rank = (int)ceilf((n * (f32)RANKVAL[irank]) / 100.0f);
+    INT rank = (INT)ceilf((n * (f32)RANKVAL[irank]) / 100.0f);
     if (rank < 1 && n > 0) rank = 1;
     if (rank > n) rank = n;
 
@@ -198,7 +173,7 @@ static void run_dchkps_single(int n, int iuplo, int imat, int irank, int inb)
 
     /* Compute pivoted Cholesky factorization with default tolerance */
     f32 tol = -1.0f;
-    int comprank;
+    INT comprank;
     spstrf(uplo_str, n, ws->AFAC, lda, ws->PIV, &comprank, tol, ws->WORK, &info);
 
     /* Check error code from SPSTRF */
@@ -262,7 +237,7 @@ static void test_dchkps_case(void** state)
 
 static dchkps_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 /**
  * Build the test array with all parameter combinations.
@@ -271,29 +246,29 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        int nimat = NTYPES;
+        INT nimat = NTYPES;
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
-            for (int irank = 0; irank < (int)NRANK; irank++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
+            for (INT irank = 0; irank < (INT)NRANK; irank++) {
                 /* Only repeat test for different ranks if imat in 3-5 */
                 if ((imat < 3 || imat > 5) && irank > 0) {
                     continue;
                 }
 
-                int rank = (int)ceilf((n * (f32)RANKVAL[irank]) / 100.0f);
+                INT rank = (INT)ceilf((n * (f32)RANKVAL[irank]) / 100.0f);
                 if (rank < 1 && n > 0) rank = 1;
                 if (rank > n) rank = n;
 
-                for (int iuplo = 0; iuplo < (int)NUPLO; iuplo++) {
+                for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
                     /* Loop over block sizes */
-                    for (int inb = 0; inb < (int)NNB; inb++) {
-                        int nb = NBVAL[inb];
+                    for (INT inb = 0; inb < (INT)NNB; inb++) {
+                        INT nb = NBVAL[inb];
 
                         /* Store parameters */
                         dchkps_params_t* p = &g_params[g_num_tests];

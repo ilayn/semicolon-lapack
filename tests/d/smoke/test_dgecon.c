@@ -15,45 +15,28 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 /* Routines under test */
-extern void dgetrf(const int m, const int n, f64 * const restrict A,
-                   const int lda, int * const restrict ipiv, int *info);
-extern void dgecon(const char *norm, const int n, const f64 * const restrict A,
-                   const int lda, const f64 anorm, f64 *rcond,
-                   f64 * const restrict work, int * const restrict iwork,
-                   int *info);
-extern void dgetri(const int n, f64 * const restrict A, const int lda,
-                   const int * const restrict ipiv, f64 * const restrict work,
-                   const int lwork, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-extern f64 dlange(const char *norm, const int m, const int n,
-                     const f64 * const restrict A, const int lda,
-                     f64 * const restrict work);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64 *A;       /* Original matrix */
     f64 *AFAC;    /* Factored matrix */
     f64 *AINV;    /* Inverse */
     f64 *d;       /* Singular values for dlatms */
     f64 *work;    /* Workspace */
     f64 *rwork;   /* Workspace for dlange */
-    int *ipiv;       /* Pivot indices */
-    int *iwork;      /* Integer workspace for dgecon */
+    INT* ipiv;       /* Pivot indices */
+    INT* iwork;      /* Integer workspace for dgecon */
     uint64_t seed;
 } dgecon_fixture_t;
 
 static uint64_t g_seed = 2718;
 
-static int dgecon_setup(void **state, int n)
+static int dgecon_setup(void **state, INT n)
 {
     dgecon_fixture_t *fix = malloc(sizeof(dgecon_fixture_t));
     assert_non_null(fix);
@@ -63,7 +46,7 @@ static int dgecon_setup(void **state, int n)
     fix->seed = g_seed++;
 
     /* Workspace needs: dgetri needs n*n, dgecon needs 4*n, dlatms needs 3*n */
-    int lwork = (n * n > 4 * n) ? n * n : 4 * n;
+    INT lwork = (n * n > 4 * n) ? n * n : 4 * n;
 
     fix->A = malloc(fix->lda * n * sizeof(f64));
     fix->AFAC = malloc(fix->lda * n * sizeof(f64));
@@ -71,8 +54,8 @@ static int dgecon_setup(void **state, int n)
     fix->d = malloc(n * sizeof(f64));
     fix->work = malloc(lwork * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AFAC);
@@ -113,13 +96,13 @@ static int setup_20(void **state) { return dgecon_setup(state, 20); }
 /**
  * Core test logic: generate matrix, compute true and estimated condition numbers.
  */
-static void run_dgecon_test(dgecon_fixture_t *fix, int imat)
+static void run_dgecon_test(dgecon_fixture_t *fix, INT imat)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
-    int info;
-    int lwork = fix->n * fix->n;
+    INT info;
+    INT lwork = fix->n * fix->n;
 
     dlatb4("DGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
 
@@ -180,7 +163,7 @@ static void test_dgecon_wellcond(void **state)
 {
     dgecon_fixture_t *fix = *state;
 
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_dgecon_test(fix, imat);
     }
@@ -198,7 +181,7 @@ static void test_dgecon_illcond(void **state)
         skip();
     }
 
-    for (int imat = 8; imat <= 9; imat++) {
+    for (INT imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         run_dgecon_test(fix, imat);
     }

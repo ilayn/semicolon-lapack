@@ -8,11 +8,8 @@
 #include "verify.h"
 #include <string.h>
 
-// Forward declaration
-extern f64 dlamch(const char* cmach);
-
 // Static variables to cache machine-dependent values
-static int first = 1;
+static INT first = 1;
 static f64 eps, small, large, badc1, badc2;
 
 /**
@@ -34,14 +31,14 @@ static f64 eps, small, large, badc1, badc2;
  */
 void dlatb4(
     const char *path,
-    const int imat,
-    const int m,
-    const int n,
+    const INT imat,
+    const INT m,
+    const INT n,
     char *type,
-    int *kl,
-    int *ku,
+    INT* kl,
+    INT* ku,
     f64 *anorm,
-    int *mode,
+    INT* mode,
     f64 *cndnum,
     char *dist)
 {
@@ -391,7 +388,7 @@ void dlatb4(
         // xTB: Triangular banded matrix
         *type = 'N';
 
-        int mat = (imat < 0) ? -imat : imat;
+        INT mat = (imat < 0) ? -imat : imat;
 
         // Condition number
         if (mat == 2 || mat == 8) {
@@ -415,7 +412,7 @@ void dlatb4(
         // xTR, xTP: Triangular
         *type = 'N';
 
-        int mat = (imat < 0) ? -imat : imat;
+        INT mat = (imat < 0) ? -imat : imat;
 
         // Bandwidths
         if (mat == 1 || mat == 7) {

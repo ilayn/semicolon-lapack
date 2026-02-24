@@ -6,14 +6,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include <math.h>
 
 /* Test parameters - matching LAPACK dchkaa.f defaults */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NTYPES  12
 #define NTESTS  6
@@ -22,65 +23,15 @@ static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NRHS    2
 
 /* Routines under test */
-extern void sgtsv(const int n, const int nrhs, f32* DL, f32* D, f32* DU,
-                  f32* B, const int ldb, int* info);
-extern void sgtsvx(const char* fact, const char* trans, const int n, const int nrhs,
-                   const f32* DL, const f32* D, const f32* DU,
-                   f32* DLF, f32* DF, f32* DUF, f32* DU2,
-                   int* ipiv, const f32* B, const int ldb,
-                   f32* X, const int ldx, f32* rcond,
-                   f32* ferr, f32* berr, f32* work, int* iwork, int* info);
-
 /* Supporting routines */
-extern void sgttrf(const int n, f32* DL, f32* D, f32* DU, f32* DU2,
-                   int* ipiv, int* info);
-extern void sgttrs(const char* trans, const int n, const int nrhs,
-                   const f32* DL, const f32* D, const f32* DU,
-                   const f32* DU2, const int* ipiv, f32* B, const int ldb, int* info);
-extern void slagtm(const char* trans, const int n, const int nrhs,
-                   const f32 alpha, const f32* DL, const f32* D, const f32* DU,
-                   const f32* X, const int ldx, const f32 beta, f32* B, const int ldb);
-
 /* Verification routines */
-extern void sgtt01(const int n, const f32* DL, const f32* D, const f32* DU,
-                   const f32* DLF, const f32* DF, const f32* DUF, const f32* DU2,
-                   const int* ipiv, f32* work, const int ldwork, f32* resid);
-extern void sgtt02(const char* trans, const int n, const int nrhs,
-                   const f32* DL, const f32* D, const f32* DU,
-                   const f32* X, const int ldx, f32* B, const int ldb, f32* resid);
-extern void sgtt05(const char* trans, const int n, const int nrhs,
-                   const f32* DL, const f32* D, const f32* DU,
-                   const f32* B, const int ldb, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact,
-                   const f32* ferr, const f32* berr, f32* reslts);
-extern void sget04(const int n, const int nrhs, const f32* X, const int ldx,
-                   const f32* XACT, const int ldxact, const f32 rcond, f32* resid);
-extern f32 sget06(const f32 rcond, const f32 rcondc);
-extern f32 slangt(const char* norm, const int n, const f32* DL, const f32* D, const f32* DU);
-
 /* Matrix generation */
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d,
-                   const int mode, const f32 cond, const f32 dmax,
-                   const int kl, const int ku, const char* pack,
-                   f32* A, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-
 /* Utilities */
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta, f32* A, const int lda);
-extern f32 slamch(const char* cmach);
-
 typedef struct {
-    int n;
-    int imat;
-    int ifact;      /* 0='F', 1='N' */
-    int itran;      /* 0='N', 1='T', 2='C' */
+    INT n;
+    INT imat;
+    INT ifact;      /* 0='F', 1='N' */
+    INT itran;      /* 0='N', 1='T', 2='C' */
     char name[64];
 } ddrvgt_params_t;
 
@@ -92,7 +43,7 @@ typedef struct {
     f32* XACT;
     f32* WORK;
     f32* RWORK;
-    int* IWORK;
+    INT* IWORK;
 } ddrvgt_workspace_t;
 
 static ddrvgt_workspace_t* g_workspace = NULL;
@@ -103,10 +54,10 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(ddrvgt_workspace_t));
     if (!g_workspace) return -1;
 
-    int nmax = NMAX;
+    INT nmax = NMAX;
     /* WORK needs to be large enough for slatms which uses n*n for full matrix
      * plus additional workspace for slagge/slagsy (roughly 2*n more) */
-    int lwork = nmax * nmax + 4 * nmax;
+    INT lwork = nmax * nmax + 4 * nmax;
     if (lwork < nmax * NRHS) lwork = nmax * NRHS;
 
     g_workspace->A = calloc(3 * nmax, sizeof(f32));
@@ -116,7 +67,7 @@ static int group_setup(void** state)
     g_workspace->XACT = calloc(nmax * NRHS, sizeof(f32));
     g_workspace->WORK = calloc(lwork, sizeof(f32));
     g_workspace->RWORK = calloc(nmax > 2 * NRHS ? nmax : 2 * NRHS, sizeof(f32));
-    g_workspace->IWORK = calloc(2 * nmax, sizeof(int));
+    g_workspace->IWORK = calloc(2 * nmax, sizeof(INT));
 
     if (!g_workspace->A || !g_workspace->AF || !g_workspace->B ||
         !g_workspace->X || !g_workspace->XACT || !g_workspace->WORK ||
@@ -144,7 +95,7 @@ static int group_teardown(void** state)
     return 0;
 }
 
-static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
+static void run_ddrvgt_single(INT n, INT imat, INT ifact, INT itran)
 {
     static const char* FACTS[] = {"F", "N"};
     static const char* TRANSS[] = {"N", "T", "C"};
@@ -153,10 +104,10 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     const char* fact = FACTS[ifact];
     const char* trans = TRANSS[itran];
 
-    int m = (n > 1) ? n - 1 : 0;
-    int lda = (n > 1) ? n : 1;
+    INT m = (n > 1) ? n - 1 : 0;
+    INT lda = (n > 1) ? n : 1;
     f32 result[NTESTS];
-    for (int k = 0; k < NTESTS; k++) result[k] = 0.0f;
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0f;
 
     /* Pointers to tridiagonal components in A:
      * A[0..m-1] = DL (subdiagonal)
@@ -172,12 +123,12 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     f32* DUF = ws->AF + m + n;
     f32* DU2 = ws->AF + m + 2 * n;
 
-    int zerot = (imat >= 8 && imat <= 10);
-    int izero = 0;
+    INT zerot = (imat >= 8 && imat <= 10);
+    INT izero = 0;
 
     /* Set up parameters with SLATB4 */
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
     slatb4("SGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -194,13 +145,13 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     }
     uint64_t rng_state[4];
     rng_seed(rng_state, seed);
-    int info;
+    INT info;
 
     if (imat <= 6) {
         /* Types 1-6: generate matrices of known condition number.
          * Generate in band storage with LDA=3, using KOFF offset. */
-        int nmax1 = (1 > n) ? 1 : n;
-        int koff = (2 - ku > 3 - nmax1) ? 2 - ku : 3 - nmax1;
+        INT nmax1 = (1 > n) ? 1 : n;
+        INT koff = (2 - ku > 3 - nmax1) ? 2 - ku : 3 - nmax1;
         koff -= 1;  /* convert to 0-based */
 
         slatms(n, n, &dist, &type, ws->RWORK, mode, cndnum,
@@ -213,14 +164,14 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
 
         /* Extract tridiagonal from AF with stride 3.
          * AF[1 + 3*i] = diagonal, AF[3 + 3*i] = subdiag, AF[2 + 3*i] = superdiag */
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             D[i] = ws->AF[1 + 3 * i];
         }
         if (n > 1) {
-            for (int i = 0; i < n - 1; i++) {
+            for (INT i = 0; i < n - 1; i++) {
                 DL[i] = ws->AF[3 + 3 * i];
             }
-            for (int i = 0; i < n - 1; i++) {
+            for (INT i = 0; i < n - 1; i++) {
                 DU[i] = ws->AF[2 + 3 * i];
             }
         }
@@ -229,7 +180,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
 
         if (!zerot) {
             /* Generate matrix with elements from [-1,1] */
-            for (int i = 0; i < n + 2 * m; i++) {
+            for (INT i = 0; i < n + 2 * m; i++) {
                 ws->A[i] = 2.0f * rng_uniform_f32(rng_state) - 1.0f;
             }
             if (anorm != 1.0f) {
@@ -255,7 +206,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
             izero = (n + 1) / 2;
             /* Zero from column izero to n (1-indexed), i.e., indices izero-1 to n-1 (0-indexed).
              * For N=10, IZERO=5: zero columns 5-10 (1-indexed) = indices 4-9 (0-indexed). */
-            for (int i = izero - 1; i < n; i++) {
+            for (INT i = izero - 1; i < n; i++) {
                 if (i < n - 1) DU[i] = 0.0f;
                 D[i] = 0.0f;
                 if (i > 0) DL[i - 1] = 0.0f;
@@ -294,8 +245,8 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
 
         /* Compute inverse norm using SGTTRS */
         f32 ainvnm = 0.0f;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) ws->X[j] = 0.0f;
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) ws->X[j] = 0.0f;
             ws->X[i] = 1.0f;
             sgttrs("N", n, 1, DLF, DF, DUF, DU2, ws->IWORK, ws->X, lda, &info);
             f32 colsum = cblas_sasum(n, ws->X, 1);
@@ -310,8 +261,8 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
 
         /* Compute infinity-norm condition number */
         ainvnm = 0.0f;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) ws->X[j] = 0.0f;
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) ws->X[j] = 0.0f;
             ws->X[i] = 1.0f;
             sgttrs("T", n, 1, DLF, DF, DUF, DU2, ws->IWORK, ws->X, lda, &info);
             f32 colsum = cblas_sasum(n, ws->X, 1);
@@ -329,8 +280,8 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
 
     /* Generate NRHS random solution vectors */
     rng_seed(rng_state, seed + (uint64_t)itran);
-    for (int j = 0; j < NRHS; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < NRHS; j++) {
+        for (INT i = 0; i < n; i++) {
             ws->XACT[j * lda + i] = 2.0f * rng_uniform_f32(rng_state) - 1.0f;
         }
     }
@@ -355,7 +306,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
             return;
         }
 
-        int nt = 1;
+        INT nt = 1;
         if (izero == 0 && info == 0) {
             /* TEST 2: Check residual of computed solution */
             slacpy("Full", n, NRHS, ws->B, lda, ws->WORK, lda);
@@ -366,7 +317,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
             nt = 3;
         }
 
-        for (int k = 1; k < nt; k++) {
+        for (INT k = 1; k < nt; k++) {
             if (result[k] >= THRESH) {
                 fail_msg("SGTSV test %d failed: result=%e >= thresh=%e",
                          k + 1, (double)result[k], (double)THRESH);
@@ -377,7 +328,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     /* --- Test SGTSVX --- */
     if (ifact > 0) {
         /* Initialize AF to zero */
-        for (int i = 0; i < 3 * n - 2; i++) ws->AF[i] = 0.0f;
+        for (INT i = 0; i < 3 * n - 2; i++) ws->AF[i] = 0.0f;
     }
     slaset("Full", n, NRHS, 0.0f, 0.0f, ws->X, lda);
 
@@ -396,8 +347,8 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
         return;
     }
 
-    int k1;
-    int nt = 5;
+    INT k1;
+    INT nt = 5;
     if (ifact >= 1) {
         /* TEST 1: Reconstruct matrix from factors */
         sgtt01(n, DL, D, DU, DLF, DF, DUF, DU2, ws->IWORK,
@@ -425,7 +376,7 @@ static void run_ddrvgt_single(int n, int imat, int ifact, int itran)
     result[5] = sget06(rcond, rcondc);
 
     /* Check results */
-    for (int k = k1 - 1; k < nt; k++) {
+    for (INT k = k1 - 1; k < nt; k++) {
         if (result[k] >= THRESH) {
             fail_msg("SGTSVX FACT=%s TRANS=%s test %d: result=%e >= thresh=%e",
                      fact, trans, k + 1, (double)result[k], (double)THRESH);
@@ -447,7 +398,7 @@ static void test_ddrvgt_case(void** state)
 
 static ddrvgt_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
@@ -456,17 +407,17 @@ static void build_test_array(void)
 
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
-        int nimat = (n <= 0) ? 1 : NTYPES;
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        INT nimat = (n <= 0) ? 1 : NTYPES;
 
-        for (int imat = 1; imat <= nimat; imat++) {
-            int zerot = (imat >= 8 && imat <= 10);
+        for (INT imat = 1; imat <= nimat; imat++) {
+            INT zerot = (imat >= 8 && imat <= 10);
 
-            for (int ifact = 0; ifact < 2; ifact++) {
+            for (INT ifact = 0; ifact < 2; ifact++) {
                 if (zerot && ifact == 0) continue;
 
-                for (int itran = 0; itran < 3; itran++) {
+                for (INT itran = 0; itran < 3; itran++) {
                     ddrvgt_params_t* p = &g_params[g_num_tests];
                     p->n = n;
                     p->imat = imat;

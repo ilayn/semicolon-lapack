@@ -15,18 +15,18 @@ static void test_diagonal_matrix(void** state)
 {
     (void)state;
 
-    int n = 5;
-    int lda = n;
+    INT n = 5;
+    INT lda = n;
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 42ULL);
 
     /* Set known diagonal values */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         d[i] = (f64)(i + 1);
     }
 
@@ -36,13 +36,13 @@ static void test_diagonal_matrix(void** state)
     assert_info_success(info);
 
     /* Check diagonal elements */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         assert_double_equal(A[i + i * lda], d[i], 1e-14);
     }
 
     /* Check off-diagonal elements are zero */
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             if (i != j) {
                 assert_double_equal(A[i + j * lda], 0.0, 1e-14);
             }
@@ -59,13 +59,13 @@ static void test_nonsym_banded_givens(void** state)
 {
     (void)state;
 
-    int m = 10, n = 10;
-    int kl = 2, ku = 2;
-    int lda = m;
+    INT m = 10, n = 10;
+    INT kl = 2, ku = 2;
+    INT lda = m;
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 43ULL);
@@ -76,11 +76,11 @@ static void test_nonsym_banded_givens(void** state)
     assert_info_success(info);
 
     /* Check that elements outside bandwidth are zero */
-    int errors = 0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < m; i++) {
-            int lower_dist = i - j;  /* distance below diagonal */
-            int upper_dist = j - i;  /* distance above diagonal */
+    INT errors = 0;
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < m; i++) {
+            INT lower_dist = i - j;  /* distance below diagonal */
+            INT upper_dist = j - i;  /* distance above diagonal */
 
             if (lower_dist > kl || upper_dist > ku) {
                 if (fabs(A[i + j * lda]) > 1e-14) {
@@ -101,13 +101,13 @@ static void test_symmetric_givens(void** state)
 {
     (void)state;
 
-    int n = 8;
-    int k = 2;  /* bandwidth */
-    int lda = n;
+    INT n = 8;
+    INT k = 2;  /* bandwidth */
+    INT lda = n;
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 44ULL);
@@ -119,8 +119,8 @@ static void test_symmetric_givens(void** state)
 
     /* Check symmetry */
     f64 max_diff = 0.0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             f64 diff = fabs(A[i + j * lda] - A[j + i * lda]);
             if (diff > max_diff) max_diff = diff;
         }
@@ -128,9 +128,9 @@ static void test_symmetric_givens(void** state)
     assert_true(max_diff < 1e-10);
 
     /* Check bandwidth */
-    int errors = 0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    INT errors = 0;
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             if (abs(i - j) > k) {
                 if (fabs(A[i + j * lda]) > 1e-14) {
                     errors++;
@@ -150,19 +150,19 @@ static void test_band_storage_B(void** state)
 {
     (void)state;
 
-    int n = 6;
-    int k = 2;  /* bandwidth */
-    int lda = k + 1;  /* band storage: kl + 1 rows */
+    INT n = 6;
+    INT k = 2;  /* bandwidth */
+    INT lda = k + 1;  /* band storage: kl + 1 rows */
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 45ULL);
 
     /* Set known eigenvalues */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         d[i] = (f64)(n - i);
     }
 
@@ -174,8 +174,8 @@ static void test_band_storage_B(void** state)
     /* In band storage 'B', diagonal is in first row */
     /* A(i,j) stored at A(i-j+1, j) for j <= i <= min(n, j+kl) */
     /* Check diagonal exists */
-    int has_nonzero_diag = 0;
-    for (int j = 0; j < n; j++) {
+    INT has_nonzero_diag = 0;
+    for (INT j = 0; j < n; j++) {
         if (fabs(A[0 + j * lda]) > 1e-14) {
             has_nonzero_diag = 1;
             break;
@@ -193,19 +193,19 @@ static void test_band_storage_Q(void** state)
 {
     (void)state;
 
-    int n = 6;
-    int k = 2;  /* bandwidth */
-    int lda = k + 1;  /* band storage: ku + 1 rows */
+    INT n = 6;
+    INT k = 2;  /* bandwidth */
+    INT lda = k + 1;  /* band storage: ku + 1 rows */
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 46ULL);
 
     /* Set known eigenvalues */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         d[i] = (f64)(n - i);
     }
 
@@ -217,8 +217,8 @@ static void test_band_storage_Q(void** state)
     /* In band storage 'Q', diagonal is in last row (row ku) */
     /* A(i,j) stored at A(ku+i-j+1, j) for max(1,j-ku) <= i <= j */
     /* Check diagonal exists (should be in row k = ku) */
-    int has_nonzero_diag = 0;
-    for (int j = 0; j < n; j++) {
+    INT has_nonzero_diag = 0;
+    for (INT j = 0; j < n; j++) {
         if (fabs(A[k + j * lda]) > 1e-14) {
             has_nonzero_diag = 1;
             break;
@@ -236,13 +236,13 @@ static void test_band_storage_Z(void** state)
 {
     (void)state;
 
-    int n = 6;
-    int kl = 2, ku = 1;
-    int lda = kl + ku + 1;
+    INT n = 6;
+    INT kl = 2, ku = 1;
+    INT lda = kl + ku + 1;
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 47ULL);
@@ -255,8 +255,8 @@ static void test_band_storage_Z(void** state)
     /* In 'Z' format, diagonal is at row ku (0-indexed: row ku) */
     /* A(i,j) stored at A(ku+i-j, j) */
     /* Check diagonal exists */
-    int has_nonzero_diag = 0;
-    for (int j = 0; j < n; j++) {
+    INT has_nonzero_diag = 0;
+    for (INT j = 0; j < n; j++) {
         if (fabs(A[ku + j * lda]) > 1e-14) {
             has_nonzero_diag = 1;
             break;
@@ -274,13 +274,13 @@ static void test_householder_path(void** state)
 {
     (void)state;
 
-    int n = 10;
-    int kl = 8, ku = 8;  /* Large bandwidth triggers Householder */
-    int lda = n;
+    INT n = 10;
+    INT kl = 8, ku = 8;  /* Large bandwidth triggers Householder */
+    INT lda = n;
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 48ULL);
@@ -292,8 +292,8 @@ static void test_householder_path(void** state)
 
     /* Check matrix is not all zeros */
     f64 sum = 0.0;
-    for (int j = 0; j < n; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
             sum += fabs(A[i + j * lda]);
         }
     }
@@ -309,12 +309,12 @@ static void test_pack_C(void** state)
 {
     (void)state;
 
-    int n = 5;
-    int lda = n * (n + 1) / 2;  /* packed storage size */
+    INT n = 5;
+    INT lda = n * (n + 1) / 2;  /* packed storage size */
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 49ULL);
@@ -326,7 +326,7 @@ static void test_pack_C(void** state)
 
     /* Check not all zeros */
     f64 sum = 0.0;
-    for (int i = 0; i < n * (n + 1) / 2; i++) {
+    for (INT i = 0; i < n * (n + 1) / 2; i++) {
         sum += fabs(A[i]);
     }
     assert_true(sum > 0.0);
@@ -341,12 +341,12 @@ static void test_error_handling(void** state)
 {
     (void)state;
 
-    int n = 5;
-    int lda = n;
+    INT n = 5;
+    INT lda = n;
     f64* A = calloc(lda * n, sizeof(f64));
     f64* d = malloc(n * sizeof(f64));
     f64* work = malloc(3 * n * sizeof(f64));
-    int info;
+    INT info;
     uint64_t rng_state[4];
     rng_seed(rng_state, 50ULL);
 

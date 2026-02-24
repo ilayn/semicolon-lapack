@@ -17,22 +17,13 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 /* Routines under test */
-extern void dsytrf(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, int* const restrict ipiv,
-                   f64* const restrict work, const int lwork, int* info);
-extern void dsytri(const char* uplo, const int n, f64* const restrict A,
-                   const int lda, const int* const restrict ipiv,
-                   f64* const restrict work, int* info);
-
 /*
  * Test fixture
  */
 typedef struct {
-    int n;
-    int lda;
+    INT n;
+    INT lda;
     f64* A;         /* Original matrix */
     f64* AFAC;      /* Factored matrix (overwritten by dsytri) */
     f64* AINV;      /* Full symmetric inverse */
@@ -41,13 +32,13 @@ typedef struct {
     f64* work_ver;  /* Workspace for dget03 */
     f64* rwork;     /* Workspace for dget03 */
     f64* d;         /* Singular values for dlatms */
-    int* ipiv;         /* Pivot indices */
+    INT* ipiv;         /* Pivot indices */
     uint64_t seed;
 } dsytri_fixture_t;
 
 static uint64_t g_seed = 7300;
 
-static int dsytri_setup(void** state, int n)
+static int dsytri_setup(void** state, INT n)
 {
     dsytri_fixture_t* fix = malloc(sizeof(dsytri_fixture_t));
     assert_non_null(fix);
@@ -56,7 +47,7 @@ static int dsytri_setup(void** state, int n)
     fix->lda = n;
     fix->seed = g_seed++;
 
-    int lwork_fac = n * 64;
+    INT lwork_fac = n * 64;
 
     fix->A = malloc(fix->lda * n * sizeof(f64));
     fix->AFAC = malloc(fix->lda * n * sizeof(f64));
@@ -66,7 +57,7 @@ static int dsytri_setup(void** state, int n)
     fix->work_ver = malloc(fix->lda * n * sizeof(f64));
     fix->rwork = malloc(n * sizeof(f64));
     fix->d = malloc(n * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->AFAC);
@@ -112,15 +103,15 @@ static int setup_20(void** state) { return dsytri_setup(state, 20); }
  * @param uplo  "U" or "L"
  * @return      Normalized residual
  */
-static f64 run_dsytri_test(dsytri_fixture_t* fix, int imat, const char* uplo)
+static f64 run_dsytri_test(dsytri_fixture_t* fix, INT imat, const char* uplo)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int info;
-    int n = fix->n;
-    int lda = fix->lda;
-    int lwork_fac = n * 64;
+    INT info;
+    INT n = fix->n;
+    INT lda = fix->lda;
+    INT lwork_fac = n * 64;
 
     dlatb4("DSY", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
@@ -145,12 +136,12 @@ static f64 run_dsytri_test(dsytri_fixture_t* fix, int imat, const char* uplo)
     memcpy(fix->AINV, fix->AFAC, lda * n * sizeof(f64));
 
     if (uplo[0] == 'U') {
-        for (int j = 0; j < n; j++)
-            for (int i = j + 1; i < n; i++)
+        for (INT j = 0; j < n; j++)
+            for (INT i = j + 1; i < n; i++)
                 fix->AINV[i + j * lda] = fix->AINV[j + i * lda];
     } else {
-        for (int j = 0; j < n; j++)
-            for (int i = 0; i < j; i++)
+        for (INT j = 0; j < n; j++)
+            for (INT i = 0; i < j; i++)
                 fix->AINV[i + j * lda] = fix->AINV[j + i * lda];
     }
 
@@ -170,7 +161,7 @@ static void test_dsytri_upper(void** state)
     dsytri_fixture_t* fix = *state;
     f64 resid;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         resid = run_dsytri_test(fix, imat, "U");
         assert_residual_ok(resid);
@@ -185,7 +176,7 @@ static void test_dsytri_lower(void** state)
     dsytri_fixture_t* fix = *state;
     f64 resid;
 
-    for (int imat = 1; imat <= 6; imat++) {
+    for (INT imat = 1; imat <= 6; imat++) {
         fix->seed = g_seed++;
         resid = run_dsytri_test(fix, imat, "L");
         assert_residual_ok(resid);

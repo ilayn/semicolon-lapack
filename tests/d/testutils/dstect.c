@@ -7,8 +7,6 @@
 #include <math.h>
 #include "verify.h"
 
-extern f64 dlamch(const char* cmach);
-
 /**
  * DSTECT counts the number NUM of eigenvalues of a tridiagonal
  * matrix T which are less than or equal to SHIFT. T has
@@ -24,14 +22,14 @@ extern f64 dlamch(const char* cmach);
  * @param[in]     shift  The shift value.
  * @param[out]    num    The number of eigenvalues of T less than or equal to SHIFT.
  */
-void dstect(const int n, const f64* a, const f64* b,
-            const f64 shift, int* num)
+void dstect(const INT n, const f64* a, const f64* b,
+            const f64 shift, INT* num)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 THREE = 3.0;
 
-    int i;
+    INT i;
     f64 m1, m2, mx, ovfl, sov, sshift, ssun, sun, tmp, tom, u, unfl;
 
     /* Get machine constants */

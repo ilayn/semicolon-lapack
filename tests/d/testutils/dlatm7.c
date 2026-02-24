@@ -9,9 +9,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declaration */
-extern void xerbla(const char* srname, const int info);
-
 /**
  * DLATM7 computes the entries of D as specified by MODE
  * COND and IRSIGN. IDIST and ISEED determine the generation
@@ -72,17 +69,17 @@ extern void xerbla(const char* srname, const int info);
  *    -4  => if MODE equals 6 or -6 and IDIST not in range 1 to 3
  *    -7  => if N negative
  */
-void dlatm7(const int mode, const f64 cond, const int irsign,
-            const int idist, f64* d, const int n, const int rank,
-            int* info, uint64_t state[static 4])
+void dlatm7(const INT mode, const f64 cond, const INT irsign,
+            const INT idist, f64* d, const INT n, const INT rank,
+            INT* info, uint64_t state[static 4])
 {
     const f64 ONE = 1.0;
     const f64 ZERO = 0.0;
     const f64 HALF = 0.5;
 
     f64 alpha, temp;
-    int i;
-    int absmode;
+    INT i;
+    INT absmode;
 
     *info = 0;
 

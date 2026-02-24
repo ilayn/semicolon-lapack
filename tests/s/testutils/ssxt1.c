@@ -32,14 +32,14 @@
  *
  * @return The computed difference between eigenvalue sets.
  */
-f32 ssxt1(const int ijob,
-             const f32* const restrict D1, const int n1,
-             const f32* const restrict D2, const int n2,
+f32 ssxt1(const INT ijob,
+             const f32* const restrict D1, const INT n1,
+             const f32* const restrict D2, const INT n2,
              const f32 abstol, const f32 ulp, const f32 unfl)
 {
     const f32 ZERO = 0.0f;
     f32 temp1, temp2;
-    int i, j;
+    INT i, j;
 
     temp1 = ZERO;
 

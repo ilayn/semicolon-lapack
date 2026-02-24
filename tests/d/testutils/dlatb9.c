@@ -7,9 +7,7 @@
 #include <math.h>
 #include "verify.h"
 
-extern f64 dlamch(const char* cmach);
-
-static int first = 1;
+static INT first = 1;
 static f64 eps, small, large, badc1, badc2;
 
 /**
@@ -37,19 +35,19 @@ static f64 eps, small, large, badc1, badc2;
  */
 void dlatb9(
     const char* path,
-    const int imat,
-    const int m,
-    const int p,
-    const int n,
+    const INT imat,
+    const INT m,
+    const INT p,
+    const INT n,
     char* type,
-    int* kla,
-    int* kua,
-    int* klb,
-    int* kub,
+    INT* kla,
+    INT* kua,
+    INT* klb,
+    INT* kub,
     f64* anorm,
     f64* bnorm,
-    int* modea,
-    int* modeb,
+    INT* modea,
+    INT* modeb,
     f64* cndnma,
     f64* cndnmb,
     char* dista,

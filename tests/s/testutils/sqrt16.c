@@ -9,13 +9,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
 
 /**
  * SQRT16 computes the residual for a solution of a system of linear
@@ -66,18 +61,18 @@ extern f32 slange(const char* norm, const int m, const int n,
  *     The maximum over the number of right hand sides of
  *     norm(B - A*X) / ( max(m, n) * norm(A) * norm(X) * EPS ).
  */
-void sqrt16(const char* trans, const int m, const int n, const int nrhs,
-            const f32* A, const int lda,
-            const f32* X, const int ldx,
-            f32* B, const int ldb,
+void sqrt16(const char* trans, const INT m, const INT n, const INT nrhs,
+            const f32* A, const INT lda,
+            const f32* X, const INT ldx,
+            f32* B, const INT ldb,
             f32* rwork, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int j, n1, n2;
+    INT j, n1, n2;
     f32 anorm, bnorm, eps, xnorm;
-    int tpsd;
+    INT tpsd;
 
     /* Quick exit if M = 0 or N = 0 or NRHS = 0 */
     if (m <= 0 || n <= 0 || nrhs == 0) {
@@ -117,7 +112,7 @@ void sqrt16(const char* trans, const int m, const int n, const int nrhs,
         } else if (anorm <= ZERO || xnorm <= ZERO) {
             *resid = ONE / eps;
         } else {
-            int maxmn = (m > n) ? m : n;
+            INT maxmn = (m > n) ? m : n;
             f32 temp = ((bnorm / anorm) / xnorm) / ((f32)maxmn * eps);
             if (temp > *resid) {
                 *resid = temp;

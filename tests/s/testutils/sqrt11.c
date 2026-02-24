@@ -10,17 +10,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void sorm2r(const char* side, const char* trans,
-                   const int m, const int n, const int k,
-                   const f32* A, const int lda, const f32* tau,
-                   f32* C, const int ldc, f32* work, int* info);
-
 /**
  * SQRT11 computes the test ratio
  *
@@ -48,12 +37,12 @@ extern void sorm2r(const char* side, const char* trans,
  *
  * @return The test ratio || Q'*Q - I || / (eps * m).
  */
-f32 sqrt11(const int m, const int k, const f32* A, const int lda,
-              const f32* tau, f32* work, const int lwork)
+f32 sqrt11(const INT m, const INT k, const f32* A, const INT lda,
+              const f32* tau, f32* work, const INT lwork)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int info, j;
+    INT info, j;
     f32 rdummy[1];
 
     /* Quick return if possible */

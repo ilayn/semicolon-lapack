@@ -7,12 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * SBDT04 reconstructs a bidiagonal matrix B from its (partial) SVD:
  *    S = U' * B * V
@@ -37,17 +33,17 @@ extern f32 slamch(const char* cmach);
  * @param[out]    work   Workspace array, dimension (2*n).
  * @param[out]    resid  The test ratio.
  */
-void sbdt04(const char* uplo, const int n,
+void sbdt04(const char* uplo, const INT n,
             const f32* const restrict D, const f32* const restrict E,
-            const f32* const restrict S, const int ns,
-            const f32* const restrict U, const int ldu,
-            const f32* const restrict VT, const int ldvt,
+            const f32* const restrict S, const INT ns,
+            const f32* const restrict U, const INT ldu,
+            const f32* const restrict VT, const INT ldvt,
             f32* const restrict work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, k;
+    INT i, j, k;
     f32 bnorm, eps;
 
     /* Quick return if possible. */

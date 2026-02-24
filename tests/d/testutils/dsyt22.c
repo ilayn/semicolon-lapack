@@ -8,15 +8,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /**
  * DSYT22 generally checks a decomposition of the form
  *
@@ -50,18 +43,18 @@ extern f64 dlansy(const char* norm, const char* uplo, const int n,
  * @param[out]    work   Workspace array, dimension (2*n*n).
  * @param[out]    result Test ratios, dimension (2).
  */
-void dsyt22(const int itype, const char* uplo, const int n, const int m,
-            const int kband, const f64* const restrict A, const int lda,
+void dsyt22(const INT itype, const char* uplo, const INT n, const INT m,
+            const INT kband, const f64* const restrict A, const INT lda,
             const f64* const restrict D, const f64* const restrict E,
-            const f64* const restrict U, const int ldu,
-            const f64* const restrict V, const int ldv,
+            const f64* const restrict U, const INT ldu,
+            const f64* const restrict V, const INT ldv,
             const f64* const restrict tau,
             f64* const restrict work, f64* restrict result)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int j, jj, jj1, jj2, nn, nnp1;
+    INT j, jj, jj1, jj2, nn, nnp1;
     f64 anorm, ulp, unfl, wnorm;
 
     (void)V;    /* unused */

@@ -7,14 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const f64* AP, f64* work);
-
 /**
  * DTPT02 computes the residual for the computed solution to a
  * triangular system of linear equations op(A)*X = B, when the
@@ -37,14 +33,14 @@ extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
  * @param[out]    resid   The maximum over NRHS of norm(op(A)*X - B) / (norm(op(A)) * norm(X) * EPS).
  */
 void dtpt02(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs,
-            const f64* AP, const f64* X, const int ldx,
-            const f64* B, const int ldb,
+            const INT n, const INT nrhs,
+            const f64* AP, const f64* X, const INT ldx,
+            const f64* B, const INT ldb,
             f64* work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
-    int j;
+    INT j;
     f64 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0 */

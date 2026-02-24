@@ -3,15 +3,9 @@
  * @brief DPOT02 computes the residual for the solution of a symmetric system.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
 
 /**
  * DPOT02 computes the residual for the solution of a symmetric system
@@ -43,14 +37,14 @@ extern f64 dlansy(const char* norm, const char* uplo, const int n,
  */
 void dpot02(
     const char* uplo,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64* const restrict A,
-    const int lda,
+    const INT lda,
     const f64* const restrict X,
-    const int ldx,
+    const INT ldx,
     f64* const restrict B,
-    const int ldb,
+    const INT ldb,
     f64* const restrict rwork,
     f64* resid)
 {
@@ -80,7 +74,7 @@ void dpot02(
     // Compute the maximum over the number of right hand sides of
     //   norm(B - A*X) / (norm(A) * norm(X) * EPS)
     *resid = ZERO;
-    for (int j = 0; j < nrhs; j++) {
+    for (INT j = 0; j < nrhs; j++) {
         f64 bnorm = cblas_dasum(n, &B[j * ldb], 1);
         f64 xnorm = cblas_dasum(n, &X[j * ldx], 1);
         if (xnorm <= ZERO) {

@@ -3,18 +3,9 @@
  * @brief DPOT03 computes the residual for a symmetric matrix times its inverse.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
 
 /**
  * DPOT03 computes the residual for a symmetric matrix times its inverse:
@@ -44,13 +35,13 @@ extern f64 dlansy(const char* norm, const char* uplo, const int n,
  */
 void dpot03(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* const restrict A,
-    const int lda,
+    const INT lda,
     f64* const restrict AINV,
-    const int ldainv,
+    const INT ldainv,
     f64* const restrict work,
-    const int ldwork,
+    const INT ldwork,
     f64* const restrict rwork,
     f64* rcond,
     f64* resid)
@@ -78,14 +69,14 @@ void dpot03(
 
     // Expand AINV into a full matrix
     if (uplo[0] == 'U' || uplo[0] == 'u') {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i < j; i++) {
                 AINV[j + i * ldainv] = AINV[i + j * ldainv];
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = j + 1; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = j + 1; i < n; i++) {
                 AINV[j + i * ldainv] = AINV[i + j * ldainv];
             }
         }
@@ -97,7 +88,7 @@ void dpot03(
                 n, n, -ONE, A, lda, AINV, ldainv, ZERO, work, ldwork);
 
     // Add the identity matrix to work
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         work[i + i * ldwork] += ONE;
     }
 

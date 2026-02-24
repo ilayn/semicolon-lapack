@@ -6,10 +6,9 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
-void xerbla(const char* srname, const int info);
 
 /**
  * SLAVSP performs one of the matrix-vector operations
@@ -44,18 +43,18 @@ void slavsp(
     const char* uplo,
     const char* trans,
     const char* diag,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32* const restrict A,
-    const int* const restrict ipiv,
+    const INT* const restrict ipiv,
     f32* const restrict B,
-    const int ldb,
-    int* info)
+    const INT ldb,
+    INT* info)
 {
     const f32 ONE = 1.0f;
 
-    int nounit;
-    int j, k, kc, kcnext, kp;
+    INT nounit;
+    INT j, k, kc, kcnext, kp;
     f32 d11, d12, d21, d22, t1, t2;
 
     *info = 0;

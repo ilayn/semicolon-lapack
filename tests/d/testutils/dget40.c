@@ -5,50 +5,35 @@
  */
 
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
-
-extern f64 dlamch(const char* cmach);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dtgexc(const int wantq, const int wantz, const int n,
-                   f64* restrict A, const int lda,
-                   f64* restrict B, const int ldb,
-                   f64* restrict Q, const int ldq,
-                   f64* restrict Z, const int ldz,
-                   int* ifst, int* ilst,
-                   f64* restrict work, const int lwork, int* info);
 
 #define LDT 10
 #define LWORK (100 + 4*LDT + 16)
 
 /* Test case data structure */
 typedef struct {
-    int n;
-    int ifst;  /* 0-based */
-    int ilst;  /* 0-based */
+    INT n;
+    INT ifst;  /* 0-based */
+    INT ilst;  /* 0-based */
     f64 t[LDT * LDT]; /* column-major */
     f64 s[LDT * LDT]; /* column-major */
 } tgexc_case_t;
 
 /* Helper: set n×n identity matrix in column-major ldt-stride storage */
-static void set_identity(f64* A, int n, int ldt)
+static void set_identity(f64* A, INT n, INT ldt)
 {
     memset(A, 0, (size_t)ldt * n * sizeof(f64));
-    for (int i = 0; i < n; i++)
+    for (INT i = 0; i < n; i++)
         A[i + i * ldt] = 1.0;
 }
 
 /* Helper: copy row-major data to column-major storage */
-static void rowmajor_to_colmajor(const f64* rows, f64* cm, int n, int ldcm)
+static void rowmajor_to_colmajor(const f64* rows, f64* cm, INT n, INT ldcm)
 {
     memset(cm, 0, (size_t)ldcm * n * sizeof(f64));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ldcm] = rows[i * n + j];
 }
 
@@ -74,7 +59,7 @@ static void build_test_cases(tgexc_case_t* tc)
     };
 
     /* Cases 0-3: N=8, IFST=0, ILST=4 (Fortran 1→5) */
-    for (int k = 0; k < 4; k++) {
+    for (INT k = 0; k < 4; k++) {
         tc[k].n = 8;
         tc[k].ifst = 0;
         tc[k].ilst = 4;
@@ -98,7 +83,7 @@ static void build_test_cases(tgexc_case_t* tc)
     tc[3].t[3 + 2 * LDT] = 0.0;
 
     /* Cases 4-7: N=8, IFST=4, ILST=0 (Fortran 5→1). Same T as 0-3. */
-    for (int k = 0; k < 4; k++) {
+    for (INT k = 0; k < 4; k++) {
         tc[k + 4].n = 8;
         tc[k + 4].ifst = 4;
         tc[k + 4].ilst = 0;
@@ -156,7 +141,7 @@ static void build_test_cases(tgexc_case_t* tc)
  *                        ninfo[1] = DTGEXC with accumulation returned INFO nonzero
  * @param[out]    knt     Total number of examples tested.
  */
-void dget40(f64* rmax, int* lmax, int* ninfo, int* knt)
+void dget40(f64* rmax, INT* lmax, INT* ninfo, INT* knt)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
@@ -181,8 +166,8 @@ void dget40(f64* rmax, int* lmax, int* ninfo, int* knt)
     f64 work[LWORK];
     f64 result[4];
 
-    for (int ic = 0; ic < NCASES; ic++) {
-        int n = tc[ic].n;
+    for (INT ic = 0; ic < NCASES; ic++) {
+        INT n = tc[ic].n;
         (*knt)++;
 
         dlacpy("F", n, n, tc[ic].t, LDT, t, LDT);
@@ -192,21 +177,21 @@ void dget40(f64* rmax, int* lmax, int* ninfo, int* knt)
         dlacpy("F", n, n, tc[ic].s, LDT, s1, LDT);
         dlacpy("F", n, n, tc[ic].s, LDT, s2, LDT);
 
-        int ifst1 = tc[ic].ifst, ilst1 = tc[ic].ilst;
-        int ifst2 = tc[ic].ifst, ilst2 = tc[ic].ilst;
+        INT ifst1 = tc[ic].ifst, ilst1 = tc[ic].ilst;
+        INT ifst2 = tc[ic].ifst, ilst2 = tc[ic].ilst;
         f64 res = ZERO;
 
         /* Test without accumulating Q and Z */
 
         dlaset("Full", n, n, ZERO, ONE, q, LDT);
         dlaset("Full", n, n, ZERO, ONE, z, LDT);
-        int info1 = 0;
+        INT info1 = 0;
         dtgexc(0, 0, n, t1, LDT, s1, LDT, q, LDT,
                z, LDT, &ifst1, &ilst1, work, LWORK, &info1);
         if (info1 != 0)
             ninfo[0]++;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 if (i == j && q[i + j * LDT] != ONE)
                     res += ONE / eps;
                 if (i != j && q[i + j * LDT] != ZERO)
@@ -222,7 +207,7 @@ void dget40(f64* rmax, int* lmax, int* ninfo, int* knt)
 
         dlaset("Full", n, n, ZERO, ONE, q, LDT);
         dlaset("Full", n, n, ZERO, ONE, z, LDT);
-        int info2 = 0;
+        INT info2 = 0;
         dtgexc(1, 1, n, t2, LDT, s2, LDT, q, LDT,
                z, LDT, &ifst2, &ilst2, work, LWORK, &info2);
         if (info2 != 0)
@@ -230,8 +215,8 @@ void dget40(f64* rmax, int* lmax, int* ninfo, int* knt)
 
         /* Compare T1 with T2 and S1 with S2 */
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 if (t1[i + j * LDT] != t2[i + j * LDT])
                     res += ONE / eps;
                 if (s1[i + j * LDT] != s2[i + j * LDT])

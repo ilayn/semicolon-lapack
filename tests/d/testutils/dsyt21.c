@@ -7,38 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void   dlaset(const char* uplo, const int m, const int n,
-                     const f64 alpha, const f64 beta,
-                     f64* const restrict A, const int lda);
-extern void   dlacpy(const char* uplo, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict B, const int ldb);
-extern void   dlarfy(const char* uplo, const int n, const f64* const restrict V,
-                     const int incv, const f64 tau,
-                     f64* const restrict C, const int ldc,
-                     f64* const restrict work);
-extern void   dorm2r(const char* side, const char* trans, const int m, const int n,
-                     const int k, const f64* const restrict A, const int lda,
-                     const f64* const restrict tau,
-                     f64* const restrict C, const int ldc,
-                     f64* const restrict work, int* info);
-extern void   dorm2l(const char* side, const char* trans, const int m, const int n,
-                     const int k, const f64* const restrict A, const int lda,
-                     const f64* const restrict tau,
-                     f64* const restrict C, const int ldc,
-                     f64* const restrict work, int* info);
-
 /**
  * DSYT21 generally checks a decomposition of the form
  *
@@ -80,11 +50,11 @@ extern void   dorm2l(const char* side, const char* trans, const int m, const int
  * @param[out]    work   Workspace array, dimension (2*n*n).
  * @param[out]    result Test ratios, dimension (2). result[1] only set if itype=1.
  */
-void dsyt21(const int itype, const char* uplo, const int n, const int kband,
-            const f64* const restrict A, const int lda,
+void dsyt21(const INT itype, const char* uplo, const INT n, const INT kband,
+            const f64* const restrict A, const INT lda,
             const f64* const restrict D, const f64* const restrict E,
-            const f64* const restrict U, const int ldu,
-            f64* restrict V, const int ldv,
+            const f64* const restrict U, const INT ldu,
+            f64* restrict V, const INT ldv,
             const f64* const restrict tau,
             f64* const restrict work, f64* restrict result)
 {
@@ -92,9 +62,9 @@ void dsyt21(const int itype, const char* uplo, const int n, const int kband,
     const f64 ONE = 1.0;
     const f64 TEN = 10.0;
 
-    int lower;
+    INT lower;
     char cuplo;
-    int j, jcol, jrow, iinfo;
+    INT j, jcol, jrow, iinfo;
     f64 anorm, ulp, unfl, wnorm, vsave;
 
     result[0] = ZERO;
@@ -171,7 +141,7 @@ void dsyt21(const int itype, const char* uplo, const int n, const int kband,
                 if (kband == 1) {
                     /* Set off-diagonal elements */
                     work[(n + 1) * j + 1] = (ONE - tau[j]) * E[j];
-                    for (int jr = j + 2; jr < n; jr++) {
+                    for (INT jr = j + 2; jr < n; jr++) {
                         work[j * n + jr] = -tau[j] * E[j] * V[jr + j * ldv];
                     }
                 }
@@ -189,7 +159,7 @@ void dsyt21(const int itype, const char* uplo, const int n, const int kband,
                 if (kband == 1) {
                     /* Set off-diagonal elements */
                     work[(n + 1) * (j + 1) - 1] = (ONE - tau[j]) * E[j];
-                    for (int jr = 0; jr < j; jr++) {
+                    for (INT jr = 0; jr < j; jr++) {
                         work[(j + 1) * n + jr] = -tau[j] * E[j] * V[jr + (j + 1) * ldv];
                     }
                 }

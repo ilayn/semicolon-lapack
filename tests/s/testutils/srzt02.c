@@ -9,18 +9,6 @@
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void sormrz(const char* side, const char* trans,
-                   const int m, const int n, const int k, const int l,
-                   const f32* A, const int lda, const f32* tau,
-                   f32* C, const int ldc, f32* work, const int lwork,
-                   int* info);
-
 /**
  * SRZT02 returns
  *    || I - Q'*Q || / (M * eps)
@@ -37,12 +25,12 @@ extern void sormrz(const char* side, const char* trans,
  *
  * @return || I - Q'*Q || / (M * eps).
  */
-f32 srzt02(const int m, const int n, const f32* AF, const int lda,
-              const f32* tau, f32* work, const int lwork)
+f32 srzt02(const INT m, const INT n, const f32* AF, const INT lda,
+              const f32* tau, f32* work, const INT lwork)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int i, info;
+    INT i, info;
     f32 rwork[1];
 
     /* Quick return if possible */

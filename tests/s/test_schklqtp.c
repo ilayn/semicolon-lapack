@@ -22,12 +22,13 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include <string.h>
 #include <stdio.h>
 
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const int NBVAL[] = {1, 2, 3, 5, 10, 16};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
+static const INT NBVAL[] = {1, 2, 3, 5, 10, 16};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -35,18 +36,15 @@ static const int NBVAL[] = {1, 2, 3, 5, 10, 16};
 #define NTESTS  6
 #define THRESH  30.0f
 
-extern void slqt05(const int m, const int n, const int l, const int nb,
-                   f32* restrict result);
-
 typedef struct {
-    int m;
-    int n;
-    int l;
-    int nb;
+    INT m;
+    INT n;
+    INT l;
+    INT nb;
     char name[64];
 } dchklqtp_params_t;
 
-static void run_dchklqtp_single(int m, int n, int l, int nb)
+static void run_dchklqtp_single(INT m, INT n, INT l, INT nb)
 {
     f32 result[NTESTS];
     char ctx[128];
@@ -62,7 +60,7 @@ static void run_dchklqtp_single(int m, int n, int l, int nb)
 
     slqt05(m, n, l, nb, result);
 
-    for (int t = 0; t < NTESTS; t++) {
+    for (INT t = 0; t < NTESTS; t++) {
         snprintf(ctx, sizeof(ctx), "m=%d n=%d l=%d nb=%d TEST %d resid=%.3e", m, n, l, nb, t + 1, (double)result[t]);
         set_test_context(ctx);
         assert_residual_below(result[t], THRESH);
@@ -81,23 +79,23 @@ static void test_dchklqtp_case(void** state)
 
 static dchklqtp_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int im = 0; im < (int)NM; im++) {
-        int m = MVAL[im];
+    for (INT im = 0; im < (INT)NM; im++) {
+        INT m = MVAL[im];
 
-        for (int in = 0; in < (int)NN; in++) {
-            int n = NVAL[in];
-            int minmn = (m < n) ? m : n;
-            int step = (minmn > 0) ? minmn : 1;
+        for (INT in = 0; in < (INT)NN; in++) {
+            INT n = NVAL[in];
+            INT minmn = (m < n) ? m : n;
+            INT step = (minmn > 0) ? minmn : 1;
 
-            for (int l = 0; l <= minmn; l += step) {
-                for (int inb = 0; inb < (int)NNB; inb++) {
-                    int nb = NBVAL[inb];
+            for (INT l = 0; l <= minmn; l += step) {
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    INT nb = NBVAL[inb];
 
                     // Skip invalid parameter combinations
                     if (nb > m || nb <= 0 || m == 0 || (n > 0 && nb > n)) {

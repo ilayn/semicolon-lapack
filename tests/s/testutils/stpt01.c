@@ -7,14 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const f32* AP, f32* work);
-
 /**
  * STPT01 computes the residual for a triangular matrix A times its inverse
  * when A is stored in packed format:
@@ -31,15 +27,15 @@ extern f32 slantp(const char* norm, const char* uplo, const char* diag,
  * @param[out]    work    Array (n). Workspace.
  * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
  */
-void stpt01(const char* uplo, const char* diag, const int n,
+void stpt01(const char* uplo, const char* diag, const INT n,
             const f32* AP, f32* AINVP,
             f32* rcond, f32* work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int j, jc;
+    INT j, jc;
     f32 ainvnm, anorm, eps;
-    int unitd;
+    INT unitd;
 
     /* Quick exit if N = 0 */
     if (n <= 0) {

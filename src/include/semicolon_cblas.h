@@ -298,17 +298,17 @@ void cblas_zgemm(const enum CBLAS_ORDER order, const enum CBLAS_TRANSPOSE transa
                  const INT m, const INT n, const INT k, const void* alpha, const void* a, const INT lda,
                  const void* b, const INT ldb, const void* beta, void* c, const INT ldc);
 
-/* gemmt */
-void cblas_sgemmt(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
+/* gemmtr */
+void cblas_sgemmtr(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
                   const INT n, const INT k, const float alpha, const float* a, const INT lda,
                   const float* b, const INT ldb, const float beta, float* c, const INT ldc);
-void cblas_dgemmt(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
+void cblas_dgemmtr(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
                   const INT n, const INT k, const double alpha, const double* a, const INT lda,
                   const double* b, const INT ldb, const double beta, double* c, const INT ldc);
-void cblas_cgemmt(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
+void cblas_cgemmtr(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
                   const INT n, const INT k, const void* alpha, const void* a, const INT lda,
                   const void* b, const INT ldb, const void* beta, void* c, const INT ldc);
-void cblas_zgemmt(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
+void cblas_zgemmtr(const enum CBLAS_ORDER order, const enum CBLAS_UPLO uplo, const enum CBLAS_TRANSPOSE transa, const enum CBLAS_TRANSPOSE transb,
                   const INT n, const INT k, const void* alpha, const void* a, const INT lda,
                   const void* b, const INT ldb, const void* beta, void* c, const INT ldc);
 

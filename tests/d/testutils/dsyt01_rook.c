@@ -10,13 +10,6 @@
 #include "verify.h"
 
 /* Forward declarations for LAPACK routines not in verify.h */
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-
 /**
  * DSYT01_ROOK reconstructs a symmetric indefinite matrix A from its
  * block L*D*L' or U*D*U' factorization and computes the residual
@@ -48,21 +41,21 @@ extern void dlaset(const char* uplo, const int m, const int n,
  */
 void dsyt01_rook(
     const char* uplo,
-    const int n,
+    const INT n,
     const f64* const restrict A,
-    const int lda,
+    const INT lda,
     const f64* const restrict AFAC,
-    const int ldafac,
-    const int* const restrict ipiv,
+    const INT ldafac,
+    const INT* const restrict ipiv,
     f64* const restrict C,
-    const int ldc,
+    const INT ldc,
     f64* const restrict rwork,
     f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j, info;
+    INT i, j, info;
     f64 anorm, eps;
 
     /* Quick exit if N = 0. */

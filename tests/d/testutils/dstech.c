@@ -9,8 +9,6 @@
 #include "verify.h"
 
 /* Forward declaration */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DSTECH checks whether EIG[0],...,EIG[n-1] are accurate eigenvalues
  * of the tridiagonal matrix T with diagonal A and off-diagonal B.
@@ -28,10 +26,10 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    info 0 if all eigenvalues correct; >0 if interval
  *                     containing the info-th eigenvalue has wrong count.
  */
-void dstech(const int n, const f64* const restrict A,
+void dstech(const INT n, const f64* const restrict A,
             const f64* const restrict B,
             const f64* const restrict eig, const f64 tol,
-            f64* const restrict work, int* info)
+            f64* const restrict work, INT* info)
 {
     const f64 ZERO = 0.0;
 
@@ -54,19 +52,19 @@ void dstech(const int n, const f64* const restrict A,
 
     /* Compute maximum absolute eigenvalue */
     f64 mx = fabs(eig[0]);
-    for (int i = 1; i < n; i++) {
+    for (INT i = 1; i < n; i++) {
         mx = fmax(mx, fabs(eig[i]));
     }
     eps = fmax(eps * mx, unflep);
 
     /* Sort eigenvalues from eig into work (selection sort ascending) */
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         work[i] = eig[i];
     }
-    for (int i = 0; i < n - 1; i++) {
-        int isub = 0;
+    for (INT i = 0; i < n - 1; i++) {
+        INT isub = 0;
         f64 emin = work[0];
-        for (int j = 1; j < n - i; j++) {
+        for (INT j = 1; j < n - i; j++) {
             if (work[j] < emin) {
                 isub = j;
                 emin = work[j];
@@ -85,8 +83,8 @@ void dstech(const int n, const f64* const restrict A,
      * In the Fortran code, tpnt starts at 1 (top/right of interval)
      * and bpnt at 1 (bottom/left of interval).
      * After the selection sort above, work is in descending order. */
-    int tpnt = 0;
-    int bpnt = 0;
+    INT tpnt = 0;
+    INT bpnt = 0;
 
     /* Loop over all intervals */
     while (tpnt < n) {
@@ -103,10 +101,10 @@ void dstech(const int n, const f64* const restrict A,
         }
 
         /* Count eigenvalues in interval [lower, upper] */
-        int numl, numu;
+        INT numl, numu;
         dstect(n, A, B, lower, &numl);
         dstect(n, A, B, upper, &numu);
-        int count = numu - numl;
+        INT count = numu - numl;
         if (count != bpnt - tpnt + 1) {
             /* Wrong number of eigenvalues in interval */
             *info = tpnt + 1;  /* 1-based index */

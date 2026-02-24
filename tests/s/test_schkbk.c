@@ -14,29 +14,24 @@
 
 typedef float f32;
 
-extern f32 slamch(const char* cmach);
-extern void sgebak(const char* job, const char* side, const int n,
-                   const int ilo, const int ihi, const f32* scale,
-                   const int m, f32* V, const int ldv, int* info);
-
 #define LDE 20
 
 /* ---------- helpers ---------- */
 
-static void rowmajor_to_colmajor(const f32* rm, f32* cm, int nrow, int ncol, int ld)
+static void rowmajor_to_colmajor(const f32* rm, f32* cm, INT nrow, INT ncol, INT ld)
 {
     memset(cm, 0, (size_t)ld * ncol * sizeof(f32));
-    for (int i = 0; i < nrow; i++)
-        for (int j = 0; j < ncol; j++)
+    for (INT i = 0; i < nrow; i++)
+        for (INT j = 0; j < ncol; j++)
             cm[i + j * ld] = rm[i * ncol + j];
 }
 
 /* ---------- test case data from TESTING/dbak.in ---------- */
 
 typedef struct {
-    int n;
-    int ilo;
-    int ihi;
+    INT n;
+    INT ilo;
+    INT ihi;
     const f32* scale;
     const f32* e_rm;
     const f32* ein_rm;
@@ -191,16 +186,16 @@ static void test_dgebak(void** state)
     f32 safmin = slamch("S");
 
     f32 e[LDE * LDE], ein[LDE * LDE];
-    int info;
+    INT info;
     f32 rmax = 0.0f, vmax;
-    int ninfo = 0, knt = 0;
-    int lmax_info = 0, lmax_resid = 0;
+    INT ninfo = 0, knt = 0;
+    INT lmax_info = 0, lmax_resid = 0;
 
-    for (int tc = 0; tc < NCASES; tc++) {
+    for (INT tc = 0; tc < NCASES; tc++) {
         const dbak_case_t* c = &cases[tc];
-        int n = c->n;
-        int ilo = c->ilo;
-        int ihi = c->ihi;
+        INT n = c->n;
+        INT ilo = c->ilo;
+        INT ihi = c->ihi;
 
         rowmajor_to_colmajor(c->e_rm, e, n, n, LDE);
         rowmajor_to_colmajor(c->ein_rm, ein, n, n, LDE);
@@ -215,8 +210,8 @@ static void test_dgebak(void** state)
         }
 
         vmax = 0.0f;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 f32 x = fabsf(e[i + j * LDE] - ein[i + j * LDE]) / eps;
                 if (fabsf(e[i + j * LDE]) > safmin)
                     x = x / fabsf(e[i + j * LDE]);

@@ -8,22 +8,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlansp(const char* norm, const char* uplo, const int n,
-                     const f64* AP, f64* work);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dopmtr(const char* side, const char* uplo, const char* trans,
-                   const int m, const int n, const f64* AP, const f64* tau,
-                   f64* C, const int ldc, f64* work, int* info);
 
 /**
  * DSPT21 generally checks a decomposition of the form
@@ -62,9 +48,9 @@ extern void dopmtr(const char* side, const char* uplo, const char* trans,
  * @param[out]    work   Workspace, dimension (n*n + n).
  * @param[out]    result Test ratios, dimension (2). result[1] only set if itype=1.
  */
-void dspt21(const int itype, const char* uplo, const int n, const int kband,
+void dspt21(const INT itype, const char* uplo, const INT n, const INT kband,
             const f64* AP, const f64* D, const f64* E,
-            const f64* U, const int ldu,
+            const f64* U, const INT ldu,
             f64* VP, const f64* tau,
             f64* work, f64* result)
 {
@@ -73,9 +59,9 @@ void dspt21(const int itype, const char* uplo, const int n, const int kband,
     const f64 TEN = 10.0;
     const f64 HALF = 0.5;
 
-    int lower;
+    INT lower;
     char cuplo;
-    int iinfo, j, jp, jp1, jr, lap;
+    INT iinfo, j, jp, jp1, jr, lap;
     f64 anorm, temp, ulp, unfl, vsave, wnorm;
 
     /* 1) Constants */

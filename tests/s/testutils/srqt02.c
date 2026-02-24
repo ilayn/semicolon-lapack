@@ -14,28 +14,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-// Forward declarations
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void sorgrq(const int m, const int n, const int k,
-                   f32* const restrict A, const int lda,
-                   const f32* const restrict tau,
-                   f32* const restrict work, const int lwork, int* info);
-
 /**
  * @param[in]     m       Number of rows of Q to generate. m >= 0.
  * @param[in]     n       Number of columns of Q. n >= m >= 0.
@@ -51,14 +31,14 @@ extern void sorgrq(const int m, const int n, const int k,
  * @param[out]    rwork   Workspace, dimension m.
  * @param[out]    result  Array of dimension 2.
  */
-void srqt02(const int m, const int n, const int k,
+void srqt02(const INT m, const INT n, const INT k,
             const f32* const restrict A,
             const f32* const restrict AF,
             f32* const restrict Q,
             f32* const restrict R,
-            const int lda,
+            const INT lda,
             const f32* const restrict tau,
-            f32* const restrict work, const int lwork,
+            f32* const restrict work, const INT lwork,
             f32* const restrict rwork,
             f32* restrict result)
 {
@@ -70,8 +50,8 @@ void srqt02(const int m, const int n, const int k,
     }
 
     f32 eps = slamch("E");
-    int info;
-    int minmn = m < n ? m : n;
+    INT info;
+    INT minmn = m < n ? m : n;
 
     /* Copy the last k rows of the factorization to the array Q.
      * For RQ, reflectors for the last k rows are stored in AF(m-k:m-1, 0:n-1).

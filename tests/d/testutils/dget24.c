@@ -7,29 +7,14 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern f64 dlapy2(const f64 x, const f64 y);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-
 /* Forward declaration - defined in semicolon_lapack_double.h */
-typedef int (*dselect2_t_local)(const f64* wr, const f64* wi);
-extern void dgeesx(const char* jobvs, const char* sort, dselect2_t_local select,
-                   const char* sense, const int n, f64* A, const int lda,
-                   int* sdim, f64* wr, f64* wi, f64* VS, const int ldvs,
-                   f64* rconde, f64* rcondv, f64* work, const int lwork,
-                   int* iwork, const int liwork, int* bwork, int* info);
-
+typedef INT (*dselect2_t_local)(const f64* wr, const f64* wi);
 /* File-static globals for SSLCT COMMON block */
-static int g_selopt;
-static int g_seldim;
-static int g_selval[20];
+static INT g_selopt;
+static INT g_seldim;
+static INT g_selval[20];
 static f64 g_selwr[20];
 static f64 g_selwi[20];
 
@@ -39,16 +24,16 @@ static f64 g_selwi[20];
  * It is used by DGEESX to test whether the j-th eigenvalue is to be
  * reordered to the top left corner of the Schur form.
  */
-static int dslect(const f64* zr, const f64* zi)
+static INT dslect(const f64* zr, const f64* zi)
 {
-    int i;
+    INT i;
     f64 rmin, x;
 
     if (g_selopt == 0) {
         return (*zr < 0.0);
     } else {
         rmin = dlapy2(*zr - g_selwr[0], *zi - g_selwi[0]);
-        int val = g_selval[0];
+        INT val = g_selval[0];
         for (i = 1; i < g_seldim; i++) {
             x = dlapy2(*zr - g_selwr[i], *zi - g_selwi[i]);
             if (x <= rmin) {
@@ -87,28 +72,28 @@ static int dslect(const f64* zr, const f64* zi)
  *   (16)     |RCONDE - RCDEIN| / cond(RCONDE)
  *   (17)     |RCONDV - RCDVIN| / cond(RCONDV)
  */
-void dget24(const int comp, const int jtype, const f64 thresh,
-            const int n, f64* A, const int lda,
+void dget24(const INT comp, const INT jtype, const f64 thresh,
+            const INT n, f64* A, const INT lda,
             f64* H, f64* HT,
             f64* wr, f64* wi, f64* wrt, f64* wit,
             f64* wrtmp, f64* witmp,
-            f64* VS, const int ldvs, f64* VS1,
+            f64* VS, const INT ldvs, f64* VS1,
             const f64 rcdein, const f64 rcdvin,
-            const int nslct, const int* islct,
-            f64* result, f64* work, const int lwork,
-            int* iwork, int* bwork, int* info)
+            const INT nslct, const INT* islct,
+            f64* result, f64* work, const INT lwork,
+            INT* iwork, INT* bwork, INT* info)
 {
     (void)jtype;
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 EPSIN = 5.9605e-8;
 
-    int i, j, kmin, knteig, liwork, rsub, sdim, sdim1;
-    int iinfo, isort, itmp;
+    INT i, j, kmin, knteig, liwork, rsub, sdim, sdim1;
+    INT iinfo, isort, itmp;
     f64 anorm, eps, rcnde1, rcndv1, rconde, rcondv;
     f64 smlnum, tmp, tol, tolin, ulp, ulpinv, v;
     f64 vimin, vrmin, wnorm;
-    int ipnt[20];
+    INT ipnt[20];
 
     /* Check for errors */
     *info = 0;

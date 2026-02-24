@@ -7,17 +7,9 @@
 
 #include <math.h>
 #include <float.h>
-#include <cblas.h>
 #include <string.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
 
 /**
  * DGET22 does an eigenvector check.
@@ -62,8 +54,8 @@ extern void dlaset(const char* uplo, const int m, const int n,
  *                    result[1] = max | m-norm(E(j)) - 1 | / ( n ulp )
  */
 void dget22(const char* transa, const char* transe, const char* transw,
-            const int n, const f64* A, const int lda,
-            const f64* E, const int lde,
+            const INT n, const f64* A, const INT lda,
+            const f64* E, const INT lde,
             const f64* wr, const f64* wi,
             f64* work, f64* result)
 {
@@ -79,16 +71,16 @@ void dget22(const char* transa, const char* transe, const char* transw,
     f64 unfl = dlamch("S");
     f64 ulp = dlamch("P");
 
-    int itrnse = 0;
-    int ince = 1;
+    INT itrnse = 0;
+    INT ince = 1;
     char norma = 'O';
     char norme = 'O';
 
-    int transa_t = (transa[0] == 'T' || transa[0] == 't' ||
+    INT transa_t = (transa[0] == 'T' || transa[0] == 't' ||
                     transa[0] == 'C' || transa[0] == 'c');
-    int transe_t = (transe[0] == 'T' || transe[0] == 't' ||
+    INT transe_t = (transe[0] == 'T' || transe[0] == 't' ||
                     transe[0] == 'C' || transe[0] == 'c');
-    int transw_t = (transw[0] == 'T' || transw[0] == 't' ||
+    INT transw_t = (transw[0] == 'T' || transw[0] == 't' ||
                     transw[0] == 'C' || transw[0] == 'c');
 
     if (transa_t) {
@@ -106,15 +98,15 @@ void dget22(const char* transa, const char* transe, const char* transw,
 
     if (itrnse == 0) {
         /* Eigenvectors are column vectors */
-        int ipair = 0;
-        for (int jvec = 0; jvec < n; jvec++) {
+        INT ipair = 0;
+        for (INT jvec = 0; jvec < n; jvec++) {
             f64 temp1 = zero;
             if (ipair == 0 && jvec < n - 1 && wi[jvec] != zero)
                 ipair = 1;
 
             if (ipair == 1) {
                 /* Complex eigenvector */
-                for (int j = 0; j < n; j++) {
+                for (INT j = 0; j < n; j++) {
                     f64 val = fabs(E[j + jvec * lde]) + fabs(E[j + (jvec + 1) * lde]);
                     if (val > temp1) temp1 = val;
                 }
@@ -125,7 +117,7 @@ void dget22(const char* transa, const char* transe, const char* transw,
                 ipair = 0;
             } else {
                 /* Real eigenvector */
-                for (int j = 0; j < n; j++) {
+                for (INT j = 0; j < n; j++) {
                     f64 val = fabs(E[j + jvec * lde]);
                     if (val > temp1) temp1 = val;
                 }
@@ -136,13 +128,13 @@ void dget22(const char* transa, const char* transe, const char* transw,
         }
     } else {
         /* Eigenvectors are row vectors */
-        for (int jvec = 0; jvec < n; jvec++) {
+        for (INT jvec = 0; jvec < n; jvec++) {
             work[jvec] = zero;
         }
 
-        for (int j = 0; j < n; j++) {
-            int ipair = 0;
-            for (int jvec = 0; jvec < n; jvec++) {
+        for (INT j = 0; j < n; j++) {
+            INT ipair = 0;
+            for (INT jvec = 0; jvec < n; jvec++) {
                 if (ipair == 0 && jvec < n - 1 && wi[jvec] != zero)
                     ipair = 1;
 
@@ -160,7 +152,7 @@ void dget22(const char* transa, const char* transe, const char* transw,
             }
         }
 
-        for (int jvec = 0; jvec < n; jvec++) {
+        for (INT jvec = 0; jvec < n; jvec++) {
             if (work[jvec] < enrmin) enrmin = work[jvec];
             if (work[jvec] > enrmax) enrmax = work[jvec];
         }
@@ -182,11 +174,11 @@ void dget22(const char* transa, const char* transe, const char* transw,
      */
     dlaset("F", n, n, zero, zero, work, n);
 
-    int ipair = 0;
-    int ierow = 0;  /* 0-based: Fortran IEROW=1 -> C ierow=0 */
-    int iecol = 0;  /* 0-based: Fortran IECOL=1 -> C iecol=0 */
+    INT ipair = 0;
+    INT ierow = 0;  /* 0-based: Fortran IEROW=1 -> C ierow=0 */
+    INT iecol = 0;  /* 0-based: Fortran IECOL=1 -> C iecol=0 */
 
-    for (int jcol = 0; jcol < n; jcol++) {
+    for (INT jcol = 0; jcol < n; jcol++) {
         if (itrnse == 1) {
             ierow = jcol;
         } else {

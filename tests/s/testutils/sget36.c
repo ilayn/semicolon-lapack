@@ -8,32 +8,22 @@
 #include <math.h>
 #include <string.h>
 
-extern f32 slamch(const char* cmach);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void strexc(const char* compq, const int n, f32* T, const int ldt,
-                   f32* Q, const int ldq, int* ifst, int* ilst,
-                   f32* work, int* info);
-
 #define LDT 10
 #define LWORK (2 * LDT * LDT)
 #define NCASES 14
 
 typedef struct {
-    int n;
-    int ifst;  /* 0-based */
-    int ilst;  /* 0-based */
+    INT n;
+    INT ifst;  /* 0-based */
+    INT ilst;  /* 0-based */
     f32 mat[LDT * LDT]; /* column-major */
 } trexc_case_t;
 
-static void rowmajor_to_colmajor(const f32* rows, f32* cm, int n, int ldcm)
+static void rowmajor_to_colmajor(const f32* rows, f32* cm, INT n, INT ldcm)
 {
     memset(cm, 0, (size_t)ldcm * n * sizeof(f32));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ldcm] = rows[i * n + j];
 }
 
@@ -217,7 +207,7 @@ static void build_test_cases(trexc_case_t* tc)
     rowmajor_to_colmajor(&m13[0][0], tc[13].mat, 8, LDT);
 }
 
-void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
+void sget36(f32* rmax, INT* lmax, INT ninfo[3], INT* knt)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE  = 1.0f;
@@ -236,28 +226,28 @@ void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
     f32 t1[LDT * LDT], t2[LDT * LDT], tmp[LDT * LDT];
     f32 q[LDT * LDT], work[LWORK], result[2];
 
-    for (int ic = 0; ic < NCASES; ic++) {
-        int n = cases[ic].n;
-        int ifst = cases[ic].ifst;
-        int ilst = cases[ic].ilst;
+    for (INT ic = 0; ic < NCASES; ic++) {
+        INT n = cases[ic].n;
+        INT ifst = cases[ic].ifst;
+        INT ilst = cases[ic].ilst;
 
         (*knt)++;
         slacpy("F", n, n, cases[ic].mat, LDT, tmp, LDT);
         slacpy("F", n, n, tmp, LDT, t1, LDT);
         slacpy("F", n, n, tmp, LDT, t2, LDT);
-        int ifstsv = ifst;
-        int ilstsv = ilst;
-        int ifst1 = ifst;
-        int ilst1 = ilst;
-        int ifst2 = ifst;
-        int ilst2 = ilst;
+        INT ifstsv = ifst;
+        INT ilstsv = ilst;
+        INT ifst1 = ifst;
+        INT ilst1 = ilst;
+        INT ifst2 = ifst;
+        INT ilst2 = ilst;
         f32 res = ZERO;
-        int info1, info2;
+        INT info1, info2;
 
         slaset("Full", n, n, ZERO, ONE, q, LDT);
         strexc("N", n, t1, LDT, q, LDT, &ifst1, &ilst1, work, &info1);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 if (i == j && q[i + j * LDT] != ONE)
                     res = res + ONE / eps;
                 if (i != j && q[i + j * LDT] != ZERO)
@@ -268,8 +258,8 @@ void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
         slaset("Full", n, n, ZERO, ONE, q, LDT);
         strexc("V", n, t2, LDT, q, LDT, &ifst2, &ilst2, work, &info2);
 
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+        for (INT i = 0; i < n; i++)
+            for (INT j = 0; j < n; j++)
                 if (t1[i + j * LDT] != t2[i + j * LDT])
                     res = res + ONE / eps;
         if (ifst1 != ifst2)
@@ -282,11 +272,11 @@ void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
         if (info2 != 0) {
             ninfo[info2 - 1]++;
         } else {
-            int d1 = ifst2 - ifstsv;
+            INT d1 = ifst2 - ifstsv;
             if (d1 < 0) d1 = -d1;
             if (d1 > 1)
                 res = res + ONE / eps;
-            int d2 = ilst2 - ilstsv;
+            INT d2 = ilst2 - ilstsv;
             if (d2 < 0) d2 = -d2;
             if (d2 > 1)
                 res = res + ONE / eps;
@@ -296,7 +286,7 @@ void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
                result);
         res = res + result[0] + result[1];
 
-        int loc = 0;
+        INT loc = 0;
         while (loc < n - 1) {
             if (t2[(loc + 1) + loc * LDT] != ZERO) {
                 if (t2[loc + (loc + 1) * LDT] == ZERO ||
@@ -304,7 +294,7 @@ void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
                     copysignf(ONE, t2[loc + (loc + 1) * LDT]) ==
                     copysignf(ONE, t2[(loc + 1) + loc * LDT]))
                     res = res + ONE / eps;
-                for (int i = loc + 2; i < n; i++) {
+                for (INT i = loc + 2; i < n; i++) {
                     if (t2[i + loc * LDT] != ZERO)
                         res = res + ONE / res;
                     if (t2[i + (loc + 1) * LDT] != ZERO)
@@ -312,7 +302,7 @@ void sget36(f32* rmax, int* lmax, int ninfo[3], int* knt)
                 }
                 loc = loc + 2;
             } else {
-                for (int i = loc + 1; i < n; i++)
+                for (INT i = loc + 1; i < n; i++)
                     if (t2[i + loc * LDT] != ZERO)
                         res = res + ONE / res;
                 loc = loc + 1;

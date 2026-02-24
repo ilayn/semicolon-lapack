@@ -31,15 +31,14 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
-#include <cblas.h>
-
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const int NSVAL[] = {1, 2, 5, 10};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
+static const INT NSVAL[] = {1, 2, 5, 10};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
@@ -49,79 +48,34 @@ static const int NSVAL[] = {1, 2, 5, 10};
 #define NMAX    50
 #define MAXRHS  16
 
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slatms(const int m, const int n, const char* dist,
-                   const char* sym, f32* d, const int mode, const f32 cond,
-                   const f32 dmax, const int kl, const int ku, const char* pack,
-                   f32* a, const int lda, f32* work, int* info,
-                   uint64_t state[static 4]);
-extern void slarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f32* A, const int lda,
-                   f32* X, const int ldx, f32* B, const int ldb,
-                   int* info, uint64_t state[static 4]);
-extern void slatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f32* anorm, int* mode,
-                   f32* cndnum, char* dist);
-extern void spftrf(const char* transr, const char* uplo, const int n,
-                   f32* arf, int* info);
-extern void spftrs(const char* transr, const char* uplo, const int n,
-                   const int nrhs, const f32* arf, f32* b, const int ldb,
-                   int* info);
-extern void spftri(const char* transr, const char* uplo, const int n,
-                   f32* arf, int* info);
-extern void spotrf(const char* uplo, const int n, f32* a, const int lda,
-                   int* info);
-extern void spotri(const char* uplo, const int n, f32* a, const int lda,
-                   int* info);
-extern void strttf(const char* transr, const char* uplo, const int n,
-                   const f32* a, const int lda, f32* arf, int* info);
-extern void stfttr(const char* transr, const char* uplo, const int n,
-                   const f32* arf, f32* a, const int lda, int* info);
-void spot01(const char* uplo, int n, const f32* A, int lda,
-            f32* AFAC, int ldafac, f32* rwork, f32* resid);
-void spot02(const char* uplo, int n, int nrhs, const f32* A, int lda,
-            const f32* X, int ldx, f32* B, int ldb,
-            f32* rwork, f32* resid);
-void spot03(const char* uplo, int n, const f32* A, int lda,
-            const f32* AINV, int ldainv, f32* work, int ldwork,
-            f32* rwork, f32* rcond, f32* resid);
-void sget04(int n, int nrhs, const f32* X, int ldx,
-            const f32* XACT, int ldxact, f32 rcond, f32* resid);
 
 typedef struct {
-    int n;
-    int nrhs;
-    int imat;
-    int iuplo;
-    int iform;
+    INT n;
+    INT nrhs;
+    INT imat;
+    INT iuplo;
+    INT iform;
     char name[80];
 } dchkrfp_params_t;
 
-static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
+static void run_dchkrfp_single(INT n, INT nrhs, INT imat, INT iuplo, INT iform)
 {
     f32 result[NTESTS];
     char ctx[128];
-    int info;
-    int lda = (n > 1) ? n : 1;
-    int ldb = lda;
+    INT info;
+    INT lda = (n > 1) ? n : 1;
+    INT ldb = lda;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988);
     char uplo = (iuplo == 0) ? 'U' : 'L';
     char cform = (iform == 0) ? 'N' : 'T';
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
     f32 rcondc, ainvnm;
-    int rfp_size = (n * (n + 1)) / 2;
-    int k;
-    int zerot, izero;
+    INT rfp_size = (n * (n + 1)) / 2;
+    INT k;
+    INT zerot, izero;
 
     if (n == 0 && imat > 1) return;
     if (imat == 4 && n <= 1) return;
@@ -160,17 +114,17 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
         else izero = n / 2;
 
         if (uplo == 'U') {
-            for (int i = 0; i < izero; i++) {
+            for (INT i = 0; i < izero; i++) {
                 A[izero * lda + i] = 0.0f;
             }
-            for (int i = izero; i < n; i++) {
+            for (INT i = izero; i < n; i++) {
                 A[i * lda + izero] = 0.0f;
             }
         } else {
-            for (int i = 0; i < izero; i++) {
+            for (INT i = 0; i < izero; i++) {
                 A[i * lda + izero] = 0.0f;
             }
-            for (int i = izero; i < n; i++) {
+            for (INT i = izero; i < n; i++) {
                 A[izero * lda + i] = 0.0f;
             }
         }
@@ -246,14 +200,14 @@ static void run_dchkrfp_single(int n, int nrhs, int imat, int iuplo, int iform)
     slacpy(&uplo, n, n, temp, lda, AFAC, lda);
 
     if ((n % 2) == 0) {
-        for (int j = 0; j < n / 2; j++) {
-            for (int i = 0; i <= n; i++) {
+        for (INT j = 0; j < n / 2; j++) {
+            for (INT i = 0; i <= n; i++) {
                 ARFINV[j * (n + 1) + i] = ARF[j * (n + 1) + i];
             }
         }
     } else {
-        for (int j = 0; j < (n + 1) / 2; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < (n + 1) / 2; j++) {
+            for (INT i = 0; i < n; i++) {
                 ARFINV[j * n + i] = ARF[j * n + i];
             }
         }
@@ -304,26 +258,26 @@ static void test_dchkrfp_case(void** state)
 
 static dchkrfp_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        for (int ins = 0; ins < (int)NNS; ins++) {
-            int nrhs = NSVAL[ins];
+        for (INT ins = 0; ins < (INT)NNS; ins++) {
+            INT nrhs = NSVAL[ins];
 
-            for (int imat = 1; imat <= (int)NTYPES; imat++) {
+            for (INT imat = 1; imat <= (INT)NTYPES; imat++) {
 
                 if (n == 0 && imat > 1) continue;
                 if (imat == 4 && n <= 1) continue;
                 if (imat == 5 && n <= 2) continue;
 
-                for (int iuplo = 0; iuplo < 2; iuplo++) {
-                    for (int iform = 0; iform < 2; iform++) {
+                for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                    for (INT iform = 0; iform < 2; iform++) {
 
                         dchkrfp_params_t* p = &g_params[g_num_tests];
                         p->n = n;
@@ -344,7 +298,7 @@ static void build_test_array(void)
                         g_tests[g_num_tests].initial_state = p;
 
                         g_num_tests++;
-                        if (g_num_tests >= (int)MAX_TESTS) return;
+                        if (g_num_tests >= (INT)MAX_TESTS) return;
                     }
                 }
             }

@@ -3,15 +3,9 @@
  * @brief DGET03 computes the residual for a general matrix times its inverse.
  */
 
-#include <cblas.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64 * const restrict A, const int lda,
-                     f64 * const restrict work);
 
 /**
  * DGET03 computes the residual for a general matrix times its inverse:
@@ -36,13 +30,13 @@ extern f64 dlange(const char* norm, const int m, const int n,
  * @param[out]    resid   norm(I - AINV*A) / ( N * norm(A) * norm(AINV) * EPS )
  */
 void dget03(
-    const int n,
+    const INT n,
     const f64 * const restrict A,
-    const int lda,
+    const INT lda,
     const f64 * const restrict AINV,
-    const int ldainv,
+    const INT ldainv,
     f64 * const restrict work,
-    const int ldwork,
+    const INT ldwork,
     f64 * const restrict rwork,
     f64 *rcond,
     f64 *resid)
@@ -50,7 +44,7 @@ void dget03(
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i;
+    INT i;
     f64 ainvnm, anorm, eps;
 
     // Quick exit if n = 0

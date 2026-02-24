@@ -7,12 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * SORT03 compares two orthogonal matrices U and V to see if their
  * corresponding rows or columns span the same spaces. The rows are
@@ -48,17 +44,17 @@ extern f32 slamch(const char* cmach);
  * @param[out]    result The computed test ratio.
  * @param[out]    info   0 indicates successful exit, < 0 indicates illegal value.
  */
-void sort03(const char* rc, const int mu, const int mv, const int n,
-            const int k, const f32* const restrict U, const int ldu,
-            const f32* const restrict V, const int ldv,
-            f32* const restrict work, const int lwork,
-            f32* result, int* info)
+void sort03(const char* rc, const INT mu, const INT mv, const INT n,
+            const INT k, const f32* const restrict U, const INT ldu,
+            const f32* const restrict V, const INT ldv,
+            f32* const restrict work, const INT lwork,
+            f32* result, INT* info)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int irc;
-    int i, j, lmx;
+    INT irc;
+    INT i, j, lmx;
     f32 res1, res2, s, ulp;
 
     /* Check inputs */

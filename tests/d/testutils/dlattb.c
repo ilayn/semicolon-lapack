@@ -6,11 +6,9 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-
-extern f64 dlamch(const char* cmach);
 
 /**
  * DLATTB generates a triangular test matrix in 2-dimensional banded storage.
@@ -40,19 +38,19 @@ extern f64 dlamch(const char* cmach);
  *                        < 0: if info = -k, the k-th argument had an illegal value
  * @param[in,out] state   RNG state array of 4 uint64_t values.
  */
-void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
-            const int n, const int kd, f64* AB, const int ldab,
-            f64* B, f64* work, int* info, uint64_t state[static 4])
+void dlattb(const INT imat, const char* uplo, const char* trans, char* diag,
+            const INT n, const INT kd, f64* AB, const INT ldab,
+            f64* B, f64* work, INT* info, uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
-    int upper;
+    INT upper;
     char type, dist, packit;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int i, j, jcount, iy, lenj, ioff;
+    INT i, j, jcount, iy, lenj, ioff;
     f64 unfl, ulp, smlnum, bignum;
     f64 bnorm, bscal, tscal, texp, tleft, tnorm;
     f64 plus1, plus2, star1, sfac, rexp;
@@ -99,7 +97,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
     } else if (imat == 6) {
         if (upper) {
             for (j = 0; j < n; j++) {
-                for (i = (kd + 1 - j > 0 ? kd + 1 - j : 0); i < kd; i++) {
+                for (i = (kd - j > 0 ? kd - j : 0); i < kd; i++) {
                     AB[i + j * ldab] = ZERO;
                 }
                 AB[kd + j * ldab] = (f64)(j + 1);
@@ -118,7 +116,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
 
         if (upper) {
             for (j = 0; j < n; j++) {
-                for (i = (kd + 1 - j > 0 ? kd + 1 - j : 0); i < kd; i++) {
+                for (i = (kd - j > 0 ? kd - j : 0); i < kd; i++) {
                     AB[i + j * ldab] = ZERO;
                 }
                 AB[kd + j * ldab] = (f64)(j + 1);
@@ -294,7 +292,7 @@ void dlattb(const int imat, const char* uplo, const char* trans, char* diag,
         dlarnv_rng(2, n, B, state);
         if (upper) {
             for (j = 0; j < n; j++) {
-                for (i = (kd + 1 - j > 0 ? kd + 1 - j : 0); i < kd; i++) {
+                for (i = (kd - j > 0 ? kd - j : 0); i < kd; i++) {
                     AB[i + j * ldab] = ZERO;
                 }
                 if (j > 0 && kd > 0)

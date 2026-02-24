@@ -7,28 +7,10 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void slascl(const char* type, const int kl, const int ku,
-                   const f32 cfrom, const f32 cto,
-                   const int m, const int n, f32* A, const int lda,
-                   int* info);
-extern void sgebd2(const int m, const int n, f32* A, const int lda,
-                   f32* D, f32* E, f32* tauq, f32* taup,
-                   f32* work, int* info);
-extern void sbdsqr(const char* uplo, const int n, const int ncvt,
-                   const int nru, const int ncc, f32* D, f32* E,
-                   f32* VT, const int ldvt, f32* U, const int ldu,
-                   f32* C, const int ldc, f32* work, int* info);
-
 /**
  * SQRT12 computes the singular values of the upper trapezoid
  * of A(1:M,1:N) and returns the ratio
@@ -46,12 +28,12 @@ extern void sbdsqr(const char* uplo, const int n, const int ncvt,
  *
  * @return The test ratio || svd(R) - s || / (||s|| * eps * max(M,N)).
  */
-f32 sqrt12(const int m, const int n, const f32* A, const int lda,
-              const f32* S, f32* work, const int lwork)
+f32 sqrt12(const INT m, const INT n, const f32* A, const INT lda,
+              const f32* S, f32* work, const INT lwork)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int i, j, mn, info, iscl;
+    INT i, j, mn, info, iscl;
     f32 anrm, bignum, smlnum, nrmsvl;
     f32 dummy[1];
 
@@ -62,9 +44,9 @@ f32 sqrt12(const int m, const int n, const f32* A, const int lda,
     }
 
     /* Test for sufficient workspace */
-    int lwork_min1 = m * n + 4 * mn + ((m > n) ? m : n);
-    int lwork_min2 = m * n + 2 * mn + 4 * n;
-    int lwork_min = (lwork_min1 > lwork_min2) ? lwork_min1 : lwork_min2;
+    INT lwork_min1 = m * n + 4 * mn + ((m > n) ? m : n);
+    INT lwork_min2 = m * n + 2 * mn + 4 * n;
+    INT lwork_min = (lwork_min1 > lwork_min2) ? lwork_min1 : lwork_min2;
     if (lwork < lwork_min) {
         return ZERO;
     }
@@ -75,7 +57,7 @@ f32 sqrt12(const int m, const int n, const f32* A, const int lda,
     /* Copy upper triangle of A into work */
     slaset("F", m, n, ZERO, ZERO, work, m);
     for (j = 0; j < n; j++) {
-        int imax = (j + 1 < m) ? (j + 1) : m;
+        INT imax = (j + 1 < m) ? (j + 1) : m;
         for (i = 0; i < imax; i++) {
             work[j * m + i] = A[j * lda + i];
         }
@@ -113,7 +95,7 @@ f32 sqrt12(const int m, const int n, const f32* A, const int lda,
         /* Compute singular values from bidiagonal form */
         sbdsqr("U", mn, 0, 0, 0,
                &work[m * n], &work[m * n + mn],
-               dummy, mn, dummy, 1, dummy, mn,
+               NULL, mn, NULL, 1, NULL, mn,
                &work[m * n + 2 * mn], &info);
 
         if (iscl == 1) {

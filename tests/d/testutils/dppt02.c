@@ -5,14 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlansp(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict AP,
-                     f64* const restrict work);
-
 /**
  * DPPT02 computes the residual in the solution of a symmetric system
  * of linear equations  A*x = b  when packed storage is used for the
@@ -59,14 +53,14 @@ extern f64 dlansp(const char* norm, const char* uplo, const int n,
  *          The maximum over the number of right hand sides of
  *          norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
  */
-void dppt02(const char* uplo, const int n, const int nrhs,
+void dppt02(const char* uplo, const INT n, const INT nrhs,
             const f64* const restrict A,
-            const f64* const restrict X, const int ldx,
-            f64* const restrict B, const int ldb,
+            const f64* const restrict X, const INT ldx,
+            f64* const restrict B, const INT ldb,
             f64* const restrict rwork,
             f64* resid)
 {
-    int j;
+    INT j;
     f64 anorm, bnorm, eps, xnorm;
     CBLAS_UPLO cblas_uplo;
 

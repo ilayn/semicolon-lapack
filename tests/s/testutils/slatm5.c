@@ -4,7 +4,7 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /**
@@ -163,16 +163,16 @@
  *
  *  PRTYPE = 5 special case common and/or close eigs.
  */
-void slatm5(const int prtype, const int m, const int n,
-            f32* A, const int lda,
-            f32* B, const int ldb,
-            f32* C, const int ldc,
-            f32* D, const int ldd,
-            f32* E, const int lde,
-            f32* F, const int ldf,
-            f32* R, const int ldr,
-            f32* L, const int ldl,
-            const f32 alpha, int qblcka, int qblckb)
+void slatm5(const INT prtype, const INT m, const INT n,
+            f32* A, const INT lda,
+            f32* B, const INT ldb,
+            f32* C, const INT ldc,
+            f32* D, const INT ldd,
+            f32* E, const INT lde,
+            f32* F, const INT ldf,
+            f32* R, const INT ldr,
+            f32* L, const INT ldl,
+            const f32 alpha, INT qblcka, INT qblckb)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
@@ -180,7 +180,7 @@ void slatm5(const int prtype, const int m, const int n,
     const f32 HALF = 0.5f;
     const f32 TWO = 2.0f;
 
-    int i, j, k;
+    INT i, j, k;
     f32 imeps, reeps;
 
     if (prtype == 1) {
@@ -338,7 +338,7 @@ void slatm5(const int prtype, const int m, const int n,
         /* Now set the specific elements */
         for (i = 0; i < m; i++) {
             /* Using 1-based logic from Fortran: i_f = i + 1 */
-            int i_f = i + 1;
+            INT i_f = i + 1;
             if (i_f <= 4) {
                 A[i + i * lda] = ONE;
                 if (i_f > 2) {
@@ -379,7 +379,7 @@ void slatm5(const int prtype, const int m, const int n,
         }
 
         for (i = 0; i < n; i++) {
-            int i_f = i + 1;
+            INT i_f = i + 1;
             E[i + i * lde] = ONE;
             if (i_f <= 4) {
                 B[i + i * ldb] = -ONE;

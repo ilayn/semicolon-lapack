@@ -16,25 +16,16 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0f
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routines under test */
-extern void sgetrf(const int m, const int n, f32 * const restrict A,
-                   const int lda, int * const restrict ipiv, int *info);
-extern void sgetrs(const char *trans, const int n, const int nrhs,
-                   const f32 * const restrict A, const int lda,
-                   const int * const restrict ipiv, f32 * const restrict B,
-                   const int ldb, int *info);
-
 /* Utilities */
-extern f32 slamch(const char *cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n, nrhs;
-    int lda, ldb;
+    INT n, nrhs;
+    INT lda, ldb;
     f32 *A;       /* Original matrix */
     f32 *A_fact;  /* Factored matrix */
     f32 *B;       /* Right-hand side */
@@ -43,7 +34,7 @@ typedef struct {
     f32 *d;       /* Singular values for slatms */
     f32 *work;    /* Workspace for slatms */
     f32 *rwork;   /* Workspace for sget02 */
-    int *ipiv;       /* Pivot indices */
+    INT* ipiv;       /* Pivot indices */
     uint64_t seed;   /* RNG seed */
 } dgetrs_fixture_t;
 
@@ -53,7 +44,7 @@ static uint64_t g_seed = 2024;
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgetrs_setup(void **state, int n, int nrhs)
+static int dgetrs_setup(void **state, INT n, INT nrhs)
 {
     dgetrs_fixture_t *fix = malloc(sizeof(dgetrs_fixture_t));
     assert_non_null(fix);
@@ -72,7 +63,7 @@ static int dgetrs_setup(void **state, int n, int nrhs)
     fix->d = malloc(n * sizeof(f32));
     fix->work = malloc(3 * n * sizeof(f32));
     fix->rwork = malloc(n * sizeof(f32));
-    fix->ipiv = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_fact);
@@ -127,12 +118,12 @@ static int setup_20_nrhs5(void **state) { return dgetrs_setup(state, 20, 5); }
 /**
  * Core test logic: generate matrix, factorize, solve, verify.
  */
-static f32 run_dgetrs_test(dgetrs_fixture_t *fix, int imat, const char* trans)
+static f32 run_dgetrs_test(dgetrs_fixture_t *fix, INT imat, const char* trans)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f32 anorm, cndnum;
-    int info;
+    INT info;
 
     /* Get matrix parameters */
     slatb4("SGE", imat, fix->n, fix->n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
@@ -145,8 +136,8 @@ static f32 run_dgetrs_test(dgetrs_fixture_t *fix, int imat, const char* trans)
     assert_int_equal(info, 0);
 
     /* Generate known solution X */
-    for (int j = 0; j < fix->nrhs; j++) {
-        for (int i = 0; i < fix->n; i++) {
+    for (INT j = 0; j < fix->nrhs; j++) {
+        for (INT i = 0; i < fix->n; i++) {
             fix->X[i + j * fix->ldb] = 1.0f + (f32)i / fix->n;
         }
     }

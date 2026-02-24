@@ -7,15 +7,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slantb(const char* norm, const char* uplo, const char* diag,
-                     const int n, const int kd, const f32* AB, const int ldab,
-                     f32* work);
-
 /**
  * STBT02 computes the residual for the computed solution to a
  * triangular system of linear equations op(A)*X = B, when A is a
@@ -52,15 +47,15 @@ extern f32 slantb(const char* norm, const char* uplo, const char* diag,
  *                        norm(op(A)*x - b) / ( norm(op(A)) * norm(x) * EPS ).
  */
 void stbt02(const char* uplo, const char* trans, const char* diag,
-            const int n, const int kd, const int nrhs,
-            const f32* AB, const int ldab,
-            const f32* X, const int ldx,
-            const f32* B, const int ldb,
+            const INT n, const INT kd, const INT nrhs,
+            const f32* AB, const INT ldab,
+            const f32* X, const INT ldx,
+            const f32* B, const INT ldb,
             f32* work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int j;
+    INT j;
     f32 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if N = 0 or NRHS = 0 */

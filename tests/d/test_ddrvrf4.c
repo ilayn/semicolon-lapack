@@ -12,41 +12,30 @@
 
 #include "test_harness.h"
 #include "test_rng.h"
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 #define THRESH 5.0
 #define NMAX   50
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dtrttf(const char* transr, const char* uplo, const int n,
-                   const f64* A, const int lda, f64* ARF, int* info);
-extern void dtfttr(const char* transr, const char* uplo, const int n,
-                   const f64* ARF, f64* A, const int lda, int* info);
-extern void dsfrk(const char* transr, const char* uplo, const char* trans,
-                  const int n, const int k, const f64 alpha,
-                  const f64* A, const int lda, const f64 beta, f64* C);
-
 typedef struct {
-    int in;
-    int ik;
-    int iform;
-    int iuplo;
-    int itrans;
-    int ialpha;
+    INT in;
+    INT ik;
+    INT iform;
+    INT iuplo;
+    INT itrans;
+    INT ialpha;
     char name[80];
 } ddrvrf4_params_t;
 
-static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
-                                int itrans, int ialpha)
+static void run_ddrvrf4_single(INT n, INT k, INT iform, INT iuplo,
+                                INT itrans, INT ialpha)
 {
-    int lda = NMAX;
-    int ldc = NMAX;
-    int info;
+    INT lda = NMAX;
+    INT ldc = NMAX;
+    INT info;
     char ctx[128];
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988);
@@ -75,7 +64,7 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
     f64 CRF[NMAX * (NMAX + 1) / 2];
     f64 D_WORK_DLANGE[NMAX];
 
-    int rows_a, cols_a;
+    INT rows_a, cols_a;
     if (itrans == 0) {
         rows_a = n;
         cols_a = k;
@@ -84,14 +73,14 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
         cols_a = n;
     }
 
-    for (int j = 0; j < cols_a; j++)
-        for (int i = 0; i < rows_a; i++)
+    for (INT j = 0; j < cols_a; j++)
+        for (INT i = 0; i < rows_a; i++)
             A[i + j * lda] = rng_uniform_symmetric(rng_state);
 
     f64 norma = dlange("I", rows_a, cols_a, A, lda, D_WORK_DLANGE);
 
-    for (int j = 0; j < n; j++)
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < n; i++) {
             C1[i + j * ldc] = rng_uniform_symmetric(rng_state);
             C2[i + j * ldc] = C1[i + j * ldc];
         }
@@ -108,15 +97,15 @@ static void run_ddrvrf4_single(int n, int k, int iform, int iuplo,
 
     dtfttr(cform, uplo, n, CRF, C2, ldc, &info);
 
-    for (int j = 0; j < n; j++)
-        for (int i = 0; i < n; i++)
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < n; i++)
             C1[i + j * ldc] -= C2[i + j * ldc];
 
     f64 result = dlange("I", n, n, C1, ldc, D_WORK_DLANGE);
 
     f64 denom = fabs(alpha) * norma + fabs(beta);
     if (denom < 1.0) denom = 1.0;
-    int n_max = (n > 1) ? n : 1;
+    INT n_max = (n > 1) ? n : 1;
     result = result / denom / n_max / eps;
 
     snprintf(ctx, sizeof(ctx),
@@ -139,18 +128,18 @@ static void test_ddrvrf4_case(void** state)
 
 static ddrvrf4_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (int in = 0; in < (int)NN; in++) {
-        for (int ik = 0; ik < (int)NN; ik++) {
-            for (int iform = 0; iform < 2; iform++) {
-                for (int iuplo = 0; iuplo < 2; iuplo++) {
-                    for (int itrans = 0; itrans < 2; itrans++) {
-                        for (int ialpha = 1; ialpha <= 4; ialpha++) {
+    for (INT in = 0; in < (INT)NN; in++) {
+        for (INT ik = 0; ik < (INT)NN; ik++) {
+            for (INT iform = 0; iform < 2; iform++) {
+                for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                    for (INT itrans = 0; itrans < 2; itrans++) {
+                        for (INT ialpha = 1; ialpha <= 4; ialpha++) {
                             ddrvrf4_params_t* p = &g_params[g_num_tests];
                             p->in = in;
                             p->ik = ik;

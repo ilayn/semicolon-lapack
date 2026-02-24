@@ -9,20 +9,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* A, const int lda, f64* work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlascl(const char* type, const int kl, const int ku,
-                   const f64 cfrom, const f64 cto,
-                   const int m, const int n, f64* A, const int lda,
-                   int* info);
-extern void xerbla(const char* srname, const int info);
 
 /**
  * DQRT17 computes the ratio
@@ -95,21 +83,21 @@ extern void xerbla(const char* srname, const int info);
  * @return
  *     The computed ratio.
  */
-f64 dqrt17(const char* trans, const int iresid,
-              const int m, const int n, const int nrhs,
-              const f64* A, const int lda,
-              const f64* X, const int ldx,
-              const f64* B, const int ldb,
+f64 dqrt17(const char* trans, const INT iresid,
+              const INT m, const INT n, const INT nrhs,
+              const f64* A, const INT lda,
+              const f64* X, const INT ldx,
+              const f64* B, const INT ldb,
               f64* C,
-              f64* work, const int lwork)
+              f64* work, const INT lwork)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int info, iscl, ncols, nrows;
+    INT info, iscl, ncols, nrows;
     f64 err, norma, normb, normrs, smlnum;
     f64 rwork[1];
-    int tpsd;
+    INT tpsd;
 
     tpsd = (trans[0] == 'T' || trans[0] == 't');
 
@@ -176,7 +164,7 @@ f64 dqrt17(const char* trans, const int iresid,
         }
     }
 
-    int maxmnr = m;
+    INT maxmnr = m;
     if (n > maxmnr) maxmnr = n;
     if (nrhs > maxmnr) maxmnr = nrhs;
 

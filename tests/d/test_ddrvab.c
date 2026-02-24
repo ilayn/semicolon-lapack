@@ -14,12 +14,11 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
 /* Test parameters */
-static const int MVAL[] = {0, 1, 2, 3, 5, 10, 16};
-static const int NSVAL[] = {2};  /* NRHS values */
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 16};
+static const INT NSVAL[] = {2};  /* NRHS values */
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
@@ -29,47 +28,16 @@ static const int NSVAL[] = {2};  /* NRHS values */
 #define MAXRHS  16
 
 /* Routine under test */
-extern void dsgesv(const int n, const int nrhs, f64* A, const int lda,
-                   int* ipiv, const f64* B, const int ldb,
-                   f64* X, const int ldx, f64* work,
-                   float* swork, int* iter, int* info);
-
 /* Verification routine */
-extern void dget08(const char* trans, const int m, const int n, const int nrhs,
-                   const f64* A, const int lda, const f64* X, const int ldx,
-                   f64* B, const int ldb, f64* rwork, f64* resid);
-
 /* Matrix generation */
-extern void dlatb4(const char* path, const int imat, const int m, const int n,
-                   char* type, int* kl, int* ku, f64* anorm, int* mode,
-                   f64* cndnum, char* dist);
-
-extern void dlatms(const int m, const int n, const char* dist,
-                   const char* sym, f64* d, const int mode, const f64 cond,
-                   const f64 dmax, const int kl, const int ku, const char* pack,
-                   f64* A, const int lda, f64* work, int* info,
-                   uint64_t state[static 4]);
-
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f64* A, const int lda,
-                   f64* X, const int ldx, f64* B, const int ldb,
-                   int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* A, const int lda);
-
 /**
  * Test parameters for a single test case.
  */
 typedef struct {
-    int n;
-    int nrhs;
-    int imat;
+    INT n;
+    INT nrhs;
+    INT imat;
     char name[64];
 } ddrvab_params_t;
 
@@ -84,7 +52,7 @@ typedef struct {
     f64* WORK;       /* Double precision workspace */
     f64* RWORK;      /* Workspace for verification */
     float* SWORK;       /* Single precision workspace */
-    int* IWORK;         /* Integer workspace (pivot indices) */
+    INT* IWORK;         /* Integer workspace (pivot indices) */
 } ddrvab_workspace_t;
 
 static ddrvab_workspace_t* g_ws = NULL;
@@ -106,7 +74,7 @@ static int group_setup(void** state)
     g_ws->WORK = malloc(NMAX * MAXRHS * 2 * sizeof(f64));
     g_ws->RWORK = malloc(2 * NMAX * sizeof(f64));
     g_ws->SWORK = malloc(NMAX * (NMAX + MAXRHS) * sizeof(float));
-    g_ws->IWORK = malloc(NMAX * sizeof(int));
+    g_ws->IWORK = malloc(NMAX * sizeof(INT));
 
     if (!g_ws->A || !g_ws->AFAC || !g_ws->B || !g_ws->X ||
         !g_ws->WORK || !g_ws->RWORK || !g_ws->SWORK || !g_ws->IWORK) {
@@ -140,13 +108,13 @@ static int group_teardown(void** state)
 /**
  * Run a single test case.
  */
-static void run_test_single(int n, int nrhs, int imat)
+static void run_test_single(INT n, INT nrhs, INT imat)
 {
     char type, dist;
-    int kl, ku, mode, info, iter;
+    INT kl, ku, mode, info, iter;
     f64 anorm, cndnum;
-    int lda = (n > 1) ? n : 1;
-    int izero = 0;
+    INT lda = (n > 1) ? n : 1;
+    INT izero = 0;
 
     /* Seed based on test parameters (matches LAPACK ISEEDY = {2006, 2007, 2008, 2009}) */
     uint64_t rng_state[4];
@@ -167,7 +135,7 @@ static void run_test_single(int n, int nrhs, int imat)
     }
 
     /* For types 5-7, zero one or more columns to test singularity detection */
-    int zerot = (imat >= 5 && imat <= 7);
+    INT zerot = (imat >= 5 && imat <= 7);
     if (zerot) {
         if (imat == 5) {
             izero = 1;
@@ -177,9 +145,9 @@ static void run_test_single(int n, int nrhs, int imat)
             izero = n / 2 + 1;
         }
         /* Zero column izero (1-based) */
-        int ioff = (izero - 1) * lda;
+        INT ioff = (izero - 1) * lda;
         if (imat < 7) {
-            for (int i = 0; i < n; i++) {
+            for (INT i = 0; i < n; i++) {
                 g_ws->A[ioff + i] = 0.0;
             }
         } else {
@@ -259,23 +227,23 @@ static void test_dsgesv(void** state)
     (void)state;
 
     for (size_t im = 0; im < NM; im++) {
-        int n = MVAL[im];
-        int nimat = NTYPES;
+        INT n = MVAL[im];
+        INT nimat = NTYPES;
 
         /* For empty matrix, only test type 1 */
         if (n <= 0) {
             nimat = 1;
         }
 
-        for (int imat = 1; imat <= nimat; imat++) {
+        for (INT imat = 1; imat <= nimat; imat++) {
             /* Skip types 5, 6, 7 if matrix is too small */
-            int zerot = (imat >= 5 && imat <= 7);
+            INT zerot = (imat >= 5 && imat <= 7);
             if (zerot && n < imat - 4) {
                 continue;
             }
 
             for (size_t irhs = 0; irhs < NNS; irhs++) {
-                int nrhs = NSVAL[irhs];
+                INT nrhs = NSVAL[irhs];
                 run_test_single(n, nrhs, imat);
             }
         }

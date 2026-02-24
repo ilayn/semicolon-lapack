@@ -26,11 +26,9 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
-
 typedef struct {
-    int m, n;
-    int lda;
+    INT m, n;
+    INT lda;
     f64 *A;
     f64 *AF;
     f64 *Q;
@@ -40,24 +38,24 @@ typedef struct {
     f64 *rwork;
     f64 *d;
     f64 *genwork;
-    int lwork;
+    INT lwork;
     uint64_t seed;
 } qr_fixture_t;
 
 static uint64_t g_seed = 2001;
 
-static int qr_setup(void **state, int m, int n)
+static int qr_setup(void **state, INT m, INT n)
 {
     qr_fixture_t *fix = malloc(sizeof(qr_fixture_t));
     assert_non_null(fix);
 
     fix->m = m;
     fix->n = n;
-    int maxmn = m > n ? m : n;
+    INT maxmn = m > n ? m : n;
     fix->lda = maxmn;  /* lda >= max(m,n) for verification routines */
     fix->seed = g_seed++;
 
-    int minmn = m < n ? m : n;
+    INT minmn = m < n ? m : n;
     fix->lwork = maxmn * 64;  /* generous workspace */
 
     fix->A = calloc(fix->lda * maxmn, sizeof(f64));
@@ -112,10 +110,10 @@ static int setup_20x10(void **state) { return qr_setup(state, 20, 10); }
 static int setup_5x10(void **state) { return qr_setup(state, 5, 10); }
 static int setup_10x20(void **state) { return qr_setup(state, 10, 20); }
 
-static void run_qrt01(qr_fixture_t *fix, int imat)
+static void run_qrt01(qr_fixture_t *fix, INT imat)
 {
     char type, dist;
-    int kl, ku, mode, info;
+    INT kl, ku, mode, info;
     f64 anorm, cndnum;
     f64 result[2];
 
@@ -137,7 +135,7 @@ static void run_qrt01(qr_fixture_t *fix, int imat)
 static void test_wellcond(void **state)
 {
     qr_fixture_t *fix = *state;
-    for (int imat = 1; imat <= 4; imat++) {
+    for (INT imat = 1; imat <= 4; imat++) {
         fix->seed = g_seed++;
         run_qrt01(fix, imat);
     }
@@ -147,7 +145,7 @@ static void test_illcond(void **state)
 {
     qr_fixture_t *fix = *state;
     if (fix->m < 3) { skip_test("requires m >= 3"); return; }
-    for (int imat = 8; imat <= 9; imat++) {
+    for (INT imat = 8; imat <= 9; imat++) {
         fix->seed = g_seed++;
         run_qrt01(fix, imat);
     }
@@ -156,7 +154,7 @@ static void test_illcond(void **state)
 static void test_scaled(void **state)
 {
     qr_fixture_t *fix = *state;
-    for (int imat = 10; imat <= 11; imat++) {
+    for (INT imat = 10; imat <= 11; imat++) {
         fix->seed = g_seed++;
         run_qrt01(fix, imat);
     }

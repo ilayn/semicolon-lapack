@@ -10,17 +10,6 @@
 #include "verify.h"
 
 /* Forward declarations for LAPACK routines not in verify.h */
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void ssyconvf_rook(const char* uplo, const char* way, const int n,
-                          f32* const restrict A, const int lda,
-                          f32* const restrict E, int* const restrict ipiv,
-                          int* info);
-
 /**
  * SSYT01_3 reconstructs a symmetric indefinite matrix A from its
  * block L*D*L' or U*D*U' factorization computed by SSYTRF_RK
@@ -57,22 +46,22 @@ extern void ssyconvf_rook(const char* uplo, const char* way, const int n,
  */
 void ssyt01_3(
     const char* uplo,
-    const int n,
+    const INT n,
     const f32* const restrict A,
-    const int lda,
+    const INT lda,
     f32* const restrict AFAC,
-    const int ldafac,
+    const INT ldafac,
     f32* const restrict E,
-    int* const restrict ipiv,
+    INT* const restrict ipiv,
     f32* const restrict C,
-    const int ldc,
+    const INT ldc,
     f32* const restrict rwork,
     f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i, j, info;
+    INT i, j, info;
     f32 anorm, eps;
 
     /* Quick exit if N = 0. */

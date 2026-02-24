@@ -24,34 +24,18 @@
 
 /* Test threshold - see LAPACK dtest.in */
 #define THRESH 20.0
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Routine under test */
-extern void dgesvx(const char *fact, const char *trans, const int n, const int nrhs,
-                   f64 * const restrict A, const int lda,
-                   f64 * const restrict AF, const int ldaf,
-                   int * const restrict ipiv, char *equed,
-                   f64 * const restrict R, f64 * const restrict C,
-                   f64 * const restrict B, const int ldb,
-                   f64 * const restrict X, const int ldx,
-                   f64 *rcond, f64 * const restrict ferr,
-                   f64 * const restrict berr, f64 * const restrict work,
-                   int * const restrict iwork, int *info);
-
 /* For test_factored: pre-factor using dgetrf */
-extern void dgetrf(const int m, const int n, f64 * const restrict A,
-                   const int lda, int * const restrict ipiv, int *info);
-
 /* Utilities */
-extern f64 dlamch(const char *cmach);
-
 /*
  * Test fixture: holds all allocated memory for a single test case.
  */
 typedef struct {
-    int n;
-    int nrhs;
-    int lda, ldaf, ldb, ldx;
+    INT n;
+    INT nrhs;
+    INT lda, ldaf, ldb, ldx;
     f64 *A;        /* Original matrix */
     f64 *A_orig;   /* Pristine copy of A */
     f64 *AF;       /* Factored matrix */
@@ -67,8 +51,8 @@ typedef struct {
     f64 *ferr;     /* Forward error bounds */
     f64 *berr;     /* Backward error bounds */
     f64 *reslts;   /* Results from dget07 */
-    int *ipiv;        /* Pivot indices */
-    int *iwork;       /* Integer workspace for dgesvx */
+    INT* ipiv;        /* Pivot indices */
+    INT* iwork;       /* Integer workspace for dgesvx */
     uint64_t seed;    /* RNG seed */
 } dgesvx_fixture_t;
 
@@ -78,7 +62,7 @@ static uint64_t g_seed = 1729;
 /**
  * Setup fixture: allocate memory for given dimensions.
  */
-static int dgesvx_setup(void **state, int n, int nrhs)
+static int dgesvx_setup(void **state, INT n, INT nrhs)
 {
     dgesvx_fixture_t *fix = malloc(sizeof(dgesvx_fixture_t));
     assert_non_null(fix);
@@ -106,8 +90,8 @@ static int dgesvx_setup(void **state, int n, int nrhs)
     fix->ferr = malloc(nrhs * sizeof(f64));
     fix->berr = malloc(nrhs * sizeof(f64));
     fix->reslts = malloc(2 * sizeof(f64));
-    fix->ipiv = malloc(n * sizeof(int));
-    fix->iwork = malloc(n * sizeof(int));
+    fix->ipiv = malloc(n * sizeof(INT));
+    fix->iwork = malloc(n * sizeof(INT));
 
     assert_non_null(fix->A);
     assert_non_null(fix->A_orig);
@@ -187,15 +171,15 @@ static int setup_3_1_transpose(void **state) { return dgesvx_setup(state, 3, 1);
  * Populates resid_02, resid_04, reslts[0] (FERR), reslts[1] (BERR).
  * Returns 0 on success, nonzero if the matrix was singular (skip residual checks).
  */
-static int run_dgesvx_test(dgesvx_fixture_t *fix, int imat, const char* fact, const char* trans,
+static INT run_dgesvx_test(dgesvx_fixture_t *fix, INT imat, const char* fact, const char* trans,
                            f64 *resid_02, f64 *resid_04, f64 *reslts)
 {
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm_param, cndnum;
-    int info;
-    int n = fix->n;
-    int nrhs = fix->nrhs;
+    INT info;
+    INT n = fix->n;
+    INT nrhs = fix->nrhs;
 
     /* Get matrix parameters */
     dlatb4("DGE", imat, n, n, &type, &kl, &ku, &anorm_param, &mode, &cndnum, &dist);
@@ -209,8 +193,8 @@ static int run_dgesvx_test(dgesvx_fixture_t *fix, int imat, const char* fact, co
     memcpy(fix->A_orig, fix->A, fix->lda * n * sizeof(f64));
 
     /* Generate known exact solution XACT */
-    for (int j = 0; j < nrhs; j++) {
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < nrhs; j++) {
+        for (INT i = 0; i < n; i++) {
             fix->XACT[i + j * fix->ldx] = 1.0 + (f64)i / n + (f64)j / nrhs;
         }
     }
@@ -249,7 +233,7 @@ static int run_dgesvx_test(dgesvx_fixture_t *fix, int imat, const char* fact, co
     dget04(n, nrhs, fix->X, fix->ldx, fix->XACT, fix->ldx, rcond_use, resid_04);
 
     /* Test 3: Error bounds using dget07 */
-    int chkferr = (imat <= 4);
+    INT chkferr = (imat <= 4);
     dget07(trans, n, nrhs, fix->A_orig, fix->lda, fix->B_orig, fix->ldb,
            fix->X, fix->ldx, fix->XACT, fix->ldx,
            fix->ferr, chkferr, fix->berr, reslts);
@@ -264,9 +248,9 @@ static int run_dgesvx_test(dgesvx_fixture_t *fix, int imat, const char* fact, co
 static void test_dgesvx_simple(void **state)
 {
     dgesvx_fixture_t *fix = *state;
-    int n = 3;
-    int nrhs = 1;
-    int info;
+    INT n = 3;
+    INT nrhs = 1;
+    INT info;
     char equed;
     f64 rcond;
 
@@ -295,9 +279,9 @@ static void test_dgesvx_simple(void **state)
 static void test_dgesvx_equilibration(void **state)
 {
     dgesvx_fixture_t *fix = *state;
-    int n = 4;
-    int nrhs = 1;
-    int info;
+    INT n = 4;
+    INT nrhs = 1;
+    INT info;
     char equed;
     f64 rcond;
 
@@ -321,7 +305,7 @@ static void test_dgesvx_equilibration(void **state)
     assert_true(info == 0 || info == n + 1);
 
     f64 tol = 1e-8;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         assert_true(fabs(fix->X[i] - 1.0) < tol);
     }
 }
@@ -332,9 +316,9 @@ static void test_dgesvx_equilibration(void **state)
 static void test_dgesvx_factored(void **state)
 {
     dgesvx_fixture_t *fix = *state;
-    int n = 3;
-    int nrhs = 2;
-    int info;
+    INT n = 3;
+    INT nrhs = 2;
+    INT info;
     char equed = 'N';
     f64 rcond;
 
@@ -371,9 +355,9 @@ static void test_dgesvx_factored(void **state)
 static void test_dgesvx_singular(void **state)
 {
     dgesvx_fixture_t *fix = *state;
-    int n = 3;
-    int nrhs = 1;
-    int info;
+    INT n = 3;
+    INT nrhs = 1;
+    INT info;
     char equed;
     f64 rcond;
 
@@ -397,9 +381,9 @@ static void test_dgesvx_singular(void **state)
 static void test_dgesvx_transpose(void **state)
 {
     dgesvx_fixture_t *fix = *state;
-    int n = 3;
-    int nrhs = 1;
-    int info;
+    INT n = 3;
+    INT nrhs = 1;
+    INT info;
     char equed;
     f64 rcond;
 
@@ -433,7 +417,7 @@ static void test_dgesvx_fact_N_trans_N_type4(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 4, "N", "N", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 4, "N", "N", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -460,7 +444,7 @@ static void test_dgesvx_fact_N_trans_N_type8(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 8, "N", "N", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 8, "N", "N", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -481,7 +465,7 @@ static void test_dgesvx_fact_N_trans_T_type4(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 4, "N", "T", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 4, "N", "T", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -507,7 +491,7 @@ static void test_dgesvx_fact_N_trans_T_type8(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 8, "N", "T", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 8, "N", "T", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -527,7 +511,7 @@ static void test_dgesvx_fact_E_trans_N_type4(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 4, "E", "N", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 4, "E", "N", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -553,7 +537,7 @@ static void test_dgesvx_fact_E_trans_N_type8(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 8, "E", "N", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 8, "E", "N", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -573,7 +557,7 @@ static void test_dgesvx_fact_E_trans_T_type4(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 4, "E", "T", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 4, "E", "T", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }
@@ -599,7 +583,7 @@ static void test_dgesvx_fact_E_trans_T_type8(void **state)
     f64 reslts[2];
 
     fix->seed = g_seed++;
-    int rc = run_dgesvx_test(fix, 8, "E", "T", &resid_02, &resid_04, reslts);
+    INT rc = run_dgesvx_test(fix, 8, "E", "T", &resid_02, &resid_04, reslts);
     if (rc != 0) {
         skip_test("singular matrix");
     }

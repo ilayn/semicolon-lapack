@@ -30,16 +30,16 @@
  * @param[in]     ldb    Leading dimension of B. LDB >= max(N,1).
  */
 void slaptm(
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f32 alpha,
     const f32* const restrict D,
     const f32* const restrict E,
     const f32* const restrict X,
-    const int ldx,
+    const INT ldx,
     const f32 beta,
     f32* const restrict B,
-    const int ldb)
+    const INT ldb)
 {
     const f32 ONE = 1.0f;
     const f32 ZERO = 0.0f;
@@ -50,14 +50,14 @@ void slaptm(
 
     /* Multiply B by BETA if BETA != 1. */
     if (beta == ZERO) {
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 B[i + j * ldb] = ZERO;
             }
         }
     } else if (beta == -ONE) {
-        for (int j = 0; j < nrhs; j++) {
-            for (int i = 0; i < n; i++) {
+        for (INT j = 0; j < nrhs; j++) {
+            for (INT i = 0; i < n; i++) {
                 B[i + j * ldb] = -B[i + j * ldb];
             }
         }
@@ -65,7 +65,7 @@ void slaptm(
 
     if (alpha == ONE) {
         /* Compute B := B + A*X */
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             if (n == 1) {
                 B[j * ldb] = B[j * ldb] + D[0] * X[j * ldx];
             } else {
@@ -74,7 +74,7 @@ void slaptm(
                 B[n - 1 + j * ldb] = B[n - 1 + j * ldb] +
                                      E[n - 2] * X[n - 2 + j * ldx] +
                                      D[n - 1] * X[n - 1 + j * ldx];
-                for (int i = 1; i < n - 1; i++) {
+                for (INT i = 1; i < n - 1; i++) {
                     B[i + j * ldb] = B[i + j * ldb] +
                                     E[i - 1] * X[i - 1 + j * ldx] +
                                     D[i] * X[i + j * ldx] +
@@ -84,7 +84,7 @@ void slaptm(
         }
     } else if (alpha == -ONE) {
         /* Compute B := B - A*X */
-        for (int j = 0; j < nrhs; j++) {
+        for (INT j = 0; j < nrhs; j++) {
             if (n == 1) {
                 B[j * ldb] = B[j * ldb] - D[0] * X[j * ldx];
             } else {
@@ -93,7 +93,7 @@ void slaptm(
                 B[n - 1 + j * ldb] = B[n - 1 + j * ldb] -
                                      E[n - 2] * X[n - 2 + j * ldx] -
                                      D[n - 1] * X[n - 1 + j * ldx];
-                for (int i = 1; i < n - 1; i++) {
+                for (INT i = 1; i < n - 1; i++) {
                     B[i + j * ldb] = B[i + j * ldb] -
                                     E[i - 1] * X[i - 1 + j * ldx] -
                                     D[i] * X[i + j * ldx] -

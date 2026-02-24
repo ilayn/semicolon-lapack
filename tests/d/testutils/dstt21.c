@@ -6,21 +6,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void   dlaset(const char* uplo, const int m, const int n,
-                     const f64 alpha, const f64 beta,
-                     f64* const restrict A, const int lda);
-
 /**
  * DSTT21 checks a decomposition of the form
  *
@@ -44,10 +31,10 @@ extern void   dlaset(const char* uplo, const int m, const int n,
  * @param[out]    work   Double array (n*(n+1)). Workspace.
  * @param[out]    result Double array (2). The test ratios.
  */
-void dstt21(const int n, const int kband,
+void dstt21(const INT n, const INT kband,
             const f64* const restrict AD, const f64* const restrict AE,
             const f64* const restrict SD, const f64* const restrict SE,
-            const f64* const restrict U, const int ldu,
+            const f64* const restrict U, const INT ldu,
             f64* const restrict work, f64* restrict result)
 {
     const f64 ZERO = 0.0;
@@ -72,7 +59,7 @@ void dstt21(const int n, const int kband,
     /* Compute 1-norm of A as we fill it. */
     f64 anorm = ZERO;
     f64 temp1 = ZERO;
-    for (int j = 0; j < n - 1; j++) {
+    for (INT j = 0; j < n - 1; j++) {
         /* work[(n+1)*j] is the diagonal A[j,j] in column-major */
         work[(n + 1) * j] = AD[j];
         work[(n + 1) * j + 1] = AE[j];
@@ -86,7 +73,7 @@ void dstt21(const int n, const int kband,
 
     /* Subtract U * diag(SD) * U' from work (lower triangle).
      * DSYR: work -= SD[j] * U[:,j] * U[:,j]' */
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         cblas_dsyr(CblasColMajor, CblasLower, n, -SD[j],
                    &U[0 + j * ldu], 1, work, n);
     }
@@ -94,7 +81,7 @@ void dstt21(const int n, const int kband,
     /* If KBAND=1, subtract off-diagonal contribution:
      * DSYR2: work -= SE[j] * (U[:,j] * U[:,j+1]' + U[:,j+1] * U[:,j]') */
     if (n > 1 && kband == 1) {
-        for (int j = 0; j < n - 1; j++) {
+        for (INT j = 0; j < n - 1; j++) {
             cblas_dsyr2(CblasColMajor, CblasLower, n, -SE[j],
                         &U[0 + j * ldu], 1, &U[0 + (j + 1) * ldu], 1,
                         work, n);
@@ -124,7 +111,7 @@ void dstt21(const int n, const int kband,
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,
                 n, n, n, ONE, U, ldu, U, ldu, ZERO, work, n);
 
-    for (int j = 0; j < n; j++) {
+    for (INT j = 0; j < n; j++) {
         work[(n + 1) * j] -= ONE;
     }
 

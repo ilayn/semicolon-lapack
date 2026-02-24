@@ -9,134 +9,30 @@
 #include "test_harness.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
 #define THRESH 50.0
 #define MAXTYP 18
 
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Tridiagonal eigenvalue routines */
-extern void dstev(const char* jobz, const int n, f64* D, f64* E,
-                  f64* Z, const int ldz, f64* work, int* info);
-extern void dstevd(const char* jobz, const int n, f64* D, f64* E,
-                   f64* Z, const int ldz, f64* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-extern void dstevx(const char* jobz, const char* range, const int n,
-                   f64* D, f64* E, const f64 vl, const f64 vu,
-                   const int il, const int iu, const f64 abstol, int* m,
-                   f64* W, f64* Z, const int ldz, f64* work,
-                   int* iwork, int* ifail, int* info);
-extern void dstevr(const char* jobz, const char* range, const int n,
-                   f64* D, f64* E, const f64 vl, const f64 vu,
-                   const int il, const int iu, const f64 abstol, int* m,
-                   f64* W, f64* Z, const int ldz, int* isuppz,
-                   f64* work, const int lwork, int* iwork, const int liwork,
-                   int* info);
-
 /* Full symmetric eigenvalue routines */
-extern void dsyev(const char* jobz, const char* uplo, const int n,
-                  f64* A, const int lda, f64* W, f64* work,
-                  const int lwork, int* info);
-extern void dsyevd(const char* jobz, const char* uplo, const int n,
-                   f64* A, const int lda, f64* W, f64* work,
-                   const int lwork, int* iwork, const int liwork, int* info);
-extern void dsyevx(const char* jobz, const char* range, const char* uplo,
-                   const int n, f64* A, const int lda, const f64 vl,
-                   const f64 vu, const int il, const int iu,
-                   const f64 abstol, int* m, f64* W, f64* Z,
-                   const int ldz, f64* work, const int lwork, int* iwork,
-                   int* ifail, int* info);
-extern void dsyevr(const char* jobz, const char* range, const char* uplo,
-                   const int n, f64* A, const int lda, const f64 vl,
-                   const f64 vu, const int il, const int iu,
-                   const f64 abstol, int* m, f64* W, f64* Z,
-                   const int ldz, int* isuppz, f64* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-
 /* Packed symmetric eigenvalue routines */
-extern void dspev(const char* jobz, const char* uplo, const int n,
-                  f64* AP, f64* W, f64* Z, const int ldz,
-                  f64* work, int* info);
-extern void dspevd(const char* jobz, const char* uplo, const int n,
-                   f64* AP, f64* W, f64* Z, const int ldz,
-                   f64* work, const int lwork, int* iwork, const int liwork,
-                   int* info);
-extern void dspevx(const char* jobz, const char* range, const char* uplo,
-                   const int n, f64* AP, const f64 vl, const f64 vu,
-                   const int il, const int iu, const f64 abstol, int* m,
-                   f64* W, f64* Z, const int ldz, f64* work, int* iwork,
-                   int* ifail, int* info);
-
 /* Band symmetric eigenvalue routines */
-extern void dsbev(const char* jobz, const char* uplo, const int n,
-                  const int kd, f64* AB, const int ldab, f64* W,
-                  f64* Z, const int ldz, f64* work, int* info);
-extern void dsbevd(const char* jobz, const char* uplo, const int n,
-                   const int kd, f64* AB, const int ldab, f64* W,
-                   f64* Z, const int ldz, f64* work, const int lwork,
-                   int* iwork, const int liwork, int* info);
-extern void dsbevx(const char* jobz, const char* range, const char* uplo,
-                   const int n, const int kd, f64* AB, const int ldab,
-                   f64* Q, const int ldq, const f64 vl, const f64 vu,
-                   const int il, const int iu, const f64 abstol, int* m,
-                   f64* W, f64* Z, const int ldz, f64* work,
-                   int* iwork, int* ifail, int* info);
-
 /* 2-stage symmetric eigenvalue routines */
-extern void dsyev_2stage(const char* jobz, const char* uplo, const int n,
-                         f64* A, const int lda, f64* W, f64* work,
-                         const int lwork, int* info);
-extern void dsyevd_2stage(const char* jobz, const char* uplo, const int n,
-                          f64* A, const int lda, f64* W, f64* work,
-                          const int lwork, int* iwork, const int liwork, int* info);
-extern void dsyevx_2stage(const char* jobz, const char* range, const char* uplo,
-                          const int n, f64* A, const int lda, const f64 vl,
-                          const f64 vu, const int il, const int iu,
-                          const f64 abstol, int* m, f64* W, f64* Z,
-                          const int ldz, f64* work, const int lwork, int* iwork,
-                          int* ifail, int* info);
-extern void dsyevr_2stage(const char* jobz, const char* range, const char* uplo,
-                          const int n, f64* A, const int lda, const f64 vl,
-                          const f64 vu, const int il, const int iu,
-                          const f64 abstol, int* m, f64* W, f64* Z,
-                          const int ldz, int* isuppz, f64* work, const int lwork,
-                          int* iwork, const int liwork, int* info);
-
 /* 2-stage band symmetric eigenvalue routines */
-extern void dsbev_2stage(const char* jobz, const char* uplo, const int n,
-                         const int kd, f64* AB, const int ldab, f64* W,
-                         f64* Z, const int ldz, f64* work, const int lwork,
-                         int* info);
-extern void dsbevd_2stage(const char* jobz, const char* uplo, const int n,
-                          const int kd, f64* AB, const int ldab, f64* W,
-                          f64* Z, const int ldz, f64* work, const int lwork,
-                          int* iwork, const int liwork, int* info);
-extern void dsbevx_2stage(const char* jobz, const char* range, const char* uplo,
-                          const int n, const int kd, f64* AB, const int ldab,
-                          f64* Q, const int ldq, const f64 vl, const f64 vu,
-                          const int il, const int iu, const f64 abstol, int* m,
-                          f64* W, f64* Z, const int ldz, f64* work,
-                          const int lwork, int* iwork, int* ifail, int* info);
-
 /* Utility routines */
-extern f64 dlamch(const char* cmach);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta, f64* A, const int lda);
-
 typedef struct {
-    int n;
-    int jtype;
+    INT n;
+    INT jtype;
     char name[96];
 } ddrvst2stg_params_t;
 
 typedef struct {
-    int nmax;
+    INT nmax;
 
     f64* A;
     f64* U;
@@ -154,9 +50,9 @@ typedef struct {
     f64* TAU;
 
     f64* work;
-    int* iwork;
-    int lwork;
-    int liwork;
+    INT* iwork;
+    INT lwork;
+    INT liwork;
 
     f64 result[140];
 
@@ -167,9 +63,9 @@ typedef struct {
 
 static ddrvst2stg_workspace_t* g_ws = NULL;
 
-static const int KTYPE[MAXTYP]  = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9};
-static const int KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3};
-static const int KMODE[MAXTYP]  = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4};
+static const INT KTYPE[MAXTYP]  = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9};
+static const INT KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3};
+static const INT KMODE[MAXTYP]  = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4};
 
 static int group_setup(void** state)
 {
@@ -184,13 +80,13 @@ static int group_setup(void** state)
     }
     if (g_ws->nmax < 1) g_ws->nmax = 1;
 
-    int nmax = g_ws->nmax;
-    int n2 = nmax * nmax;
+    INT nmax = g_ws->nmax;
+    INT n2 = nmax * nmax;
 
     /* Workspace sizes from ddrvst.f lines 274-282, 596-609 */
-    int lgn = 0;
+    INT lgn = 0;
     if (nmax > 0) {
-        lgn = (int)(log((f64)nmax) / log(2.0));
+        lgn = (INT)(log((f64)nmax) / log(2.0));
         if ((1 << lgn) < nmax) lgn++;
         if ((1 << lgn) < nmax) lgn++;
     }
@@ -203,19 +99,19 @@ static int group_setup(void** state)
      * Query dsyevr_2stage (most demanding) to get the required size. */
     {
         f64 work_query;
-        int iwork_query;
-        int info_query;
+        INT iwork_query;
+        INT info_query;
         dsyevr_2stage("N", "A", "L", nmax, NULL, nmax, 0.0, 0.0, 0, 0,
                       0.0, NULL, NULL, NULL, nmax, NULL, &work_query, -1,
                       &iwork_query, -1, &info_query);
-        int lwork_2stage = (int)work_query;
+        INT lwork_2stage = (INT)work_query;
         if (lwork_2stage > g_ws->lwork)
             g_ws->lwork = lwork_2stage;
     }
 
     g_ws->A = malloc(n2 * sizeof(f64));
     /* U: band storage needs up to LDU = max(2*nmax-1, nmax) rows */
-    int ldu_band = (2 * nmax - 1) > nmax ? (2 * nmax - 1) : nmax;
+    INT ldu_band = (2 * nmax - 1) > nmax ? (2 * nmax - 1) : nmax;
     g_ws->U = malloc(ldu_band * nmax * sizeof(f64));
     g_ws->V = malloc(n2 * sizeof(f64));
     g_ws->Z = malloc(n2 * sizeof(f64));
@@ -231,7 +127,7 @@ static int group_setup(void** state)
     g_ws->TAU    = malloc(nmax * sizeof(f64));
 
     g_ws->work  = malloc(g_ws->lwork * sizeof(f64));
-    g_ws->iwork = malloc(g_ws->liwork * sizeof(int));
+    g_ws->iwork = malloc(g_ws->liwork * sizeof(INT));
 
     if (!g_ws->A || !g_ws->U || !g_ws->V || !g_ws->Z ||
         !g_ws->D1 || !g_ws->D2 || !g_ws->D3 || !g_ws->D4 ||
@@ -276,17 +172,17 @@ static int group_teardown(void** state)
  * Generate test matrix according to jtype.
  * Port of ddrvst.f lines 647-753.
  */
-static int generate_matrix(int n, int jtype, f64* A, int lda,
-                           f64* U, int ldu, f64* work, int* iwork,
+static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
+                           f64* U, INT ldu, f64* work, INT* iwork,
                            uint64_t state[static 4],
                            uint64_t state3[static 4],
-                           int* ihbw_out)
+                           INT* ihbw_out)
 {
     (void)ldu;
-    int itype = KTYPE[jtype - 1];
-    int imode = KMODE[jtype - 1];
+    INT itype = KTYPE[jtype - 1];
+    INT imode = KMODE[jtype - 1];
     f64 anorm, cond;
-    int iinfo = 0;
+    INT iinfo = 0;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -311,7 +207,7 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
         iinfo = 0;
 
     } else if (itype == 2) {
-        for (int jcol = 0; jcol < n; jcol++) {
+        for (INT jcol = 0; jcol < n; jcol++) {
             A[jcol + jcol * lda] = anorm;
         }
 
@@ -324,35 +220,35 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
                n, n, "N", A, lda, work + n, &iinfo, state);
 
     } else if (itype == 7) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, 0, 0, 0.0, anorm, "N",
                A, lda, iwork, &iinfo, state);
 
     } else if (itype == 8) {
-        int idumma[1] = {1};
+        INT idumma[1] = {1};
         dlatmr(n, n, "S", "S", work, 6, 1.0, 1.0, "T", "N",
                work + n, 1, 1.0, work + 2 * n, 1, 1.0,
                "N", idumma, n, n, 0.0, anorm, "N",
                A, lda, iwork, &iinfo, state);
 
     } else if (itype == 9) {
-        int ihbw = (int)((n - 1) * rng_uniform(state3));
+        INT ihbw = (INT)((n - 1) * rng_uniform(state3));
         if (ihbw_out) *ihbw_out = ihbw;
 
-        int ldu_band = 2 * ihbw + 1;
+        INT ldu_band = 2 * ihbw + 1;
         if (ldu_band < 1) ldu_band = 1;
         dlatms(n, n, "S", "S", work, imode, cond, anorm,
                ihbw, ihbw, "Z", U, ldu_band, work + n, &iinfo, state);
 
         dlaset("F", lda, n, 0.0, 0.0, A, lda);
-        for (int idiag = -ihbw; idiag <= ihbw; idiag++) {
-            int irow = ihbw - idiag;
-            int j1 = (idiag > 0) ? idiag : 0;
-            int j2 = (n + idiag < n) ? n + idiag : n;
-            for (int j = j1; j < j2; j++) {
-                int i = j - idiag;
+        for (INT idiag = -ihbw; idiag <= ihbw; idiag++) {
+            INT irow = ihbw - idiag;
+            INT j1 = (idiag > 0) ? idiag : 0;
+            INT j2 = (n + idiag < n) ? n + idiag : n;
+            for (INT j = j1; j < j2; j++) {
+                INT i = j - idiag;
                 A[i + j * lda] = U[irow + j * ldu_band];
             }
         }
@@ -368,7 +264,7 @@ static int generate_matrix(int n, int jtype, f64* A, int lda,
  * Port of ddrvst.f lines 1056-1076, 1282-1302, etc.
  * wa1 must contain sorted eigenvalues, il/iu are 0-based.
  */
-static void compute_vl_vu(int n, int il, int iu, const f64* wa1,
+static void compute_vl_vu(INT n, INT il, INT iu, const f64* wa1,
                           f64 temp3, f64 ulp, f64 rtunfl,
                           f64* vl_out, f64* vu_out)
 {
@@ -397,19 +293,19 @@ static void compute_vl_vu(int n, int il, int iu, const f64* wa1,
  * Pack upper or lower triangular part of A into packed storage in work.
  * Returns the next free index (indx) in work.
  */
-static int pack_triangular(int n, int iuplo, const f64* A, int lda, f64* work)
+static INT pack_triangular(INT n, INT iuplo, const f64* A, INT lda, f64* work)
 {
-    int indx = 0;
+    INT indx = 0;
     if (iuplo == 1) {
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = 0; i <= j; i++) {
                 work[indx] = A[i + j * lda];
                 indx++;
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            for (int i = j; i < n; i++) {
+        for (INT j = 0; j < n; j++) {
+            for (INT i = j; i < n; i++) {
                 work[indx] = A[i + j * lda];
                 indx++;
             }
@@ -421,20 +317,20 @@ static int pack_triangular(int n, int iuplo, const f64* A, int lda, f64* work)
 /*
  * Load band storage from dense matrix A.
  */
-static void load_band(int n, int kd, int iuplo, const f64* A, int lda,
-                      f64* V, int ldv)
+static void load_band(INT n, INT kd, INT iuplo, const f64* A, INT lda,
+                      f64* V, INT ldv)
 {
     if (iuplo == 1) {
-        for (int j = 0; j < n; j++) {
-            int imin = (j - kd > 0) ? j - kd : 0;
-            for (int i = imin; i <= j; i++) {
+        for (INT j = 0; j < n; j++) {
+            INT imin = (j - kd > 0) ? j - kd : 0;
+            for (INT i = imin; i <= j; i++) {
                 V[(kd + i - j) + j * ldv] = A[i + j * lda];
             }
         }
     } else {
-        for (int j = 0; j < n; j++) {
-            int imax = (j + kd < n - 1) ? j + kd : n - 1;
-            for (int i = j; i <= imax; i++) {
+        for (INT j = 0; j < n; j++) {
+            INT imax = (j + kd < n - 1) ? j + kd : n - 1;
+            for (INT i = j; i <= imax; i++) {
                 V[(i - j) + j * ldv] = A[i + j * lda];
             }
         }
@@ -447,13 +343,13 @@ static void load_band(int n, int kd, int iuplo, const f64* A, int lda,
  */
 static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
 {
-    int n = params->n;
-    int jtype = params->jtype;
+    INT n = params->n;
+    INT jtype = params->jtype;
 
     ddrvst2stg_workspace_t* ws = g_ws;
-    int nmax = ws->nmax;
-    int lda = nmax;
-    int ldu = nmax;
+    INT nmax = ws->nmax;
+    INT lda = nmax;
+    INT ldu = nmax;
 
     f64* A = ws->A;
     f64* U = ws->U;
@@ -469,7 +365,7 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
     f64* EVEIGS = ws->EVEIGS;
     f64* TAU = ws->TAU;
     f64* work = ws->work;
-    int* iwork = ws->iwork;
+    INT* iwork = ws->iwork;
 
     f64 ulp = dlamch("P");
     f64 unfl = dlamch("S");
@@ -477,17 +373,17 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
     f64 ulpinv = 1.0 / ulp;
     f64 rtunfl = sqrt(unfl);
 
-    int iinfo;
+    INT iinfo;
     f64 temp1, temp2, temp3 = 0.0;
-    int ntest;
-    int m, m2, m3;
+    INT ntest;
+    INT m, m2, m3;
     f64 vl = 0.0, vu = 0.0;
-    int indx;
+    INT indx;
 
     /* Per-N workspace sizes (ddrvst.f lines 596-609) */
-    int lgn = 0, lwedc, liwedc;
+    INT lgn = 0, lwedc, liwedc;
     if (n > 0) {
-        lgn = (int)(log((f64)n) / log(2.0));
+        lgn = (INT)(log((f64)n) / log(2.0));
         if ((1 << lgn) < n) lgn++;
         if ((1 << lgn) < n) lgn++;
         lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
@@ -500,28 +396,28 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
     f64 abstol = unfl + unfl;
 
     /* Initialize all results to zero */
-    for (int j = 0; j < 140; j++) {
+    for (INT j = 0; j < 140; j++) {
         ws->result[j] = 0.0;
     }
 
     if (n == 0) return;
 
     /* Compute IL, IU (0-based) — ddrvst.f lines 758-769 */
-    int il, iu;
+    INT il, iu;
     if (n <= 1) {
         il = 0;
         iu = n - 1;
     } else {
-        il = (int)((n - 1) * rng_uniform(ws->rng_state2));
-        iu = (int)((n - 1) * rng_uniform(ws->rng_state2));
+        il = (INT)((n - 1) * rng_uniform(ws->rng_state2));
+        iu = (INT)((n - 1) * rng_uniform(ws->rng_state2));
         if (il > iu) {
-            int itemp = il;
+            INT itemp = il;
             il = iu;
             iu = itemp;
         }
     }
 
-    int ihbw = 0;
+    INT ihbw = 0;
 
     /* Generate matrix — ddrvst.f lines 647-753 */
     if (jtype <= MAXTYP) {
@@ -539,9 +435,9 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
     /* 3) If matrix is tridiagonal, call DSTEV and DSTEVX — ddrvst.f line 773 */
     if (jtype <= 7) {
         ntest = 1;
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         /* DSTEV('V') — tests 1-2 */
@@ -555,14 +451,14 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
         }
 
         /* Do tests 1 and 2 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt21(n, 0, D3, D4, D1, D2, Z, ldu, work, ws->result);
 
         ntest = 3;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEV('N') — test 3 */
@@ -576,7 +472,7 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
         /* Do test 3 */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -584,11 +480,11 @@ static void run_ddrvst2stg_single(ddrvst2stg_params_t* params)
 
 L180:
         ntest = 4;
-        for (int i = 0; i < n; i++) {
+        for (INT i = 0; i < n; i++) {
             EVEIGS[i] = D3[i];
             D1[i] = A[i + i * lda];
         }
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         /* DSTEVX('V','A') — tests 4-5 */
@@ -607,14 +503,14 @@ L180:
             temp3 = 0.0;
 
         /* Do tests 4 and 5 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt21(n, 0, D3, D4, WA1, D2, Z, ldu, work, ws->result + 3);
 
         ntest = 6;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVX('N','A') — test 6 */
@@ -629,7 +525,7 @@ L180:
         /* Do test 6 — compare WA2 vs EVEIGS */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(WA2[j]), fabs(EVEIGS[j])));
             temp2 = fmax(temp2, fabs(WA2[j] - EVEIGS[j]));
         }
@@ -638,9 +534,9 @@ L180:
 L250:
         /* DSTEVR('V','A') — tests 7-8 (ddrvst.f line 915) */
         ntest = 7;
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         dstevr("V", "A", n, D1, D2, vl, vu, il, iu, abstol, &m,
@@ -659,14 +555,14 @@ L250:
             temp3 = 0.0;
 
         /* Do tests 7 and 8 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt21(n, 0, D3, D4, WA1, D2, Z, ldu, work, ws->result + 6);
 
         ntest = 9;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVR('N','A') — test 9 */
@@ -682,7 +578,7 @@ L250:
         /* Do test 9 — compare WA2 vs EVEIGS */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(WA2[j]), fabs(EVEIGS[j])));
             temp2 = fmax(temp2, fabs(WA2[j] - EVEIGS[j]));
         }
@@ -691,9 +587,9 @@ L250:
 L320:
         /* DSTEVX('V','I') — tests 10-11 (ddrvst.f line 990) */
         ntest = 10;
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         dstevx("V", "I", n, D1, D2, vl, vu, il, iu, abstol, &m2,
@@ -707,15 +603,15 @@ L320:
         }
 
         /* Do tests 10 and 11 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt22(n, m2, 0, D3, D4, WA2, D2, Z, ldu, work,
                m2 > 1 ? m2 : 1, ws->result + 9);
 
         ntest = 12;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVX('N','I') — test 12 */
@@ -738,9 +634,9 @@ L380:
         compute_vl_vu(n, il, iu, WA1, temp3, ulp, rtunfl, &vl, &vu);
 
         /* DSTEVX('V','V') — tests 13-14 (ddrvst.f line 1085) */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         dstevx("V", "V", n, D1, D2, vl, vu, il, iu, abstol, &m2,
@@ -761,15 +657,15 @@ L380:
         }
 
         /* Do tests 13 and 14 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt22(n, m2, 0, D3, D4, WA2, D2, Z, ldu, work,
                m2 > 1 ? m2 : 1, ws->result + 12);
 
         ntest = 15;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVX('N','V') — test 15 */
@@ -789,9 +685,9 @@ L380:
 L440:
         /* DSTEVD('V') — tests 16-17 (ddrvst.f line 1148) */
         ntest = 16;
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         dstevd("V", n, D1, D2, Z, ldu, work, lwedc, iwork, liwedc, &iinfo);
@@ -804,14 +700,14 @@ L440:
         }
 
         /* Do tests 16 and 17 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt21(n, 0, D3, D4, D1, D2, Z, ldu, work, ws->result + 15);
 
         ntest = 18;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVD('N') — test 18 */
@@ -825,7 +721,7 @@ L440:
         /* Do test 18 — compare D3 vs EVEIGS */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(EVEIGS[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(EVEIGS[j] - D3[j]));
         }
@@ -834,9 +730,9 @@ L440:
 L510:
         /* DSTEVR('V','I') — tests 19-20 (ddrvst.f line 1216) */
         ntest = 19;
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         dstevr("V", "I", n, D1, D2, vl, vu, il, iu, abstol, &m2,
@@ -851,15 +747,15 @@ L510:
         }
 
         /* Do tests 19 and 20 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt22(n, m2, 0, D3, D4, WA2, D2, Z, ldu, work,
                m2 > 1 ? m2 : 1, ws->result + 18);
 
         ntest = 21;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVR('N','I') — test 21 */
@@ -883,9 +779,9 @@ L570:
         compute_vl_vu(n, il, iu, WA1, temp3, ulp, rtunfl, &vl, &vu);
 
         /* DSTEVR('V','V') — tests 22-23 (ddrvst.f line 1311) */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D2[i] = A[(i + 1) + i * lda];
 
         dstevr("V", "V", n, D1, D2, vl, vu, il, iu, abstol, &m2,
@@ -907,15 +803,15 @@ L570:
         }
 
         /* Do tests 22 and 23 */
-        for (int i = 0; i < n; i++)
+        for (INT i = 0; i < n; i++)
             D3[i] = A[i + i * lda];
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
         dstt22(n, m2, 0, D3, D4, WA2, D2, Z, ldu, work,
                m2 > 1 ? m2 : 1, ws->result + 21);
 
         ntest = 24;
-        for (int i = 0; i < n - 1; i++)
+        for (INT i = 0; i < n - 1; i++)
             D4[i] = A[(i + 1) + i * lda];
 
         /* DSTEVR('N','V') — test 24 */
@@ -938,7 +834,7 @@ L630:
 
     } else {
         /* JTYPE > 7: set tridiagonal results to zero (ddrvst.f line 1378) */
-        for (int i = 0; i < 24; i++)
+        for (INT i = 0; i < 24; i++)
             ws->result[i] = 0.0;
         ntest = 24;
     }
@@ -947,7 +843,7 @@ L630:
      * Perform remaining tests storing upper or lower triangular
      * part of matrix. (ddrvst.f line 1387)
      */
-    for (int iuplo = 0; iuplo <= 1; iuplo++) {
+    for (INT iuplo = 0; iuplo <= 1; iuplo++) {
         const char* uplo = (iuplo == 0) ? "L" : "U";
 
         /* 4) Call DSYEV and DSYEVX (ddrvst.f line 1394) */
@@ -982,7 +878,7 @@ L630:
         /* Do test 27 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -1047,7 +943,7 @@ L660:
         /* Do test 30 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(WA1[j]), fabs(WA2[j])));
             temp2 = fmax(temp2, fabs(WA1[j] - WA2[j]));
         }
@@ -1173,7 +1069,7 @@ L700:
         /* Do test 39 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -1240,7 +1136,7 @@ L800:
         /* Do test 42 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(WA1[j]), fabs(WA2[j])));
             temp2 = fmax(temp2, fabs(WA1[j] - WA2[j]));
         }
@@ -1341,7 +1237,7 @@ L990:
 L1080:
         /* 6) Call DSBEV and DSBEVX (ddrvst.f line 2052) */
         ;
-        int kd;
+        INT kd;
         if (jtype <= 7) {
             kd = 1;
         } else if (jtype >= 8 && jtype <= 15) {
@@ -1383,7 +1279,7 @@ L1080:
         /* Do test 51 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -1424,7 +1320,7 @@ L1180:
         /* Do test 54 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(WA2[j]), fabs(WA3[j])));
             temp2 = fmax(temp2, fabs(WA2[j] - WA3[j]));
         }
@@ -1548,7 +1444,7 @@ L1460:
         /* Do test 63 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -1589,7 +1485,7 @@ L1480:
         /* Do test 66 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -1636,7 +1532,7 @@ L1580:
         /* Do test 69 (or +54) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(D1[j]), fabs(D3[j])));
             temp2 = fmax(temp2, fabs(D1[j] - D3[j]));
         }
@@ -1678,7 +1574,7 @@ L1680:
         /* Do test 72 (or ...) */
         temp1 = 0.0;
         temp2 = 0.0;
-        for (int j = 0; j < n; j++) {
+        for (INT j = 0; j < n; j++) {
             temp1 = fmax(temp1, fmax(fabs(WA1[j]), fabs(WA2[j])));
             temp2 = fmax(temp2, fabs(WA1[j] - WA2[j]));
         }
@@ -1774,7 +1670,7 @@ L1750:
     } /* end IUPLO loop */
 
     /* Check results against threshold */
-    for (int j = 0; j < ntest; j++) {
+    for (INT j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
             print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d\n",
                           j + 1, ws->result[j], THRESH, n, jtype);
@@ -1793,16 +1689,16 @@ static void test_ddrvst2stg_case(void** state)
 
 static ddrvst2stg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
     for (size_t in = 0; in < NNVAL; in++) {
-        int n = NVAL[in];
+        INT n = NVAL[in];
 
-        for (int jtype = 1; jtype <= MAXTYP; jtype++) {
+        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             ddrvst2stg_params_t* p = &g_params[g_num_tests];
             p->n = n;
             p->jtype = jtype;

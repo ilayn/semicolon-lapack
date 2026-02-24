@@ -7,9 +7,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DLATM4 generates basic square matrices, which may later be
  * multiplied by others in order to produce test matrices. It is
@@ -65,10 +62,10 @@ extern f64 dlamch(const char* cmach);
  * @param[out] A      Array to be computed, dimension (lda, n).
  * @param[in] lda     Leading dimension of A. Must be at least 1 and at least n.
  */
-void dlatm4(const int itype, const int n, const int nz1, const int nz2,
-            const int isign, const f64 amagn, const f64 rcond,
-            const f64 triang, const int idist,
-            f64* A, const int lda,
+void dlatm4(const INT itype, const INT n, const INT nz1, const INT nz2,
+            const INT isign, const f64 amagn, const f64 rcond,
+            const f64 triang, const INT idist,
+            f64* A, const INT lda,
             uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
@@ -76,9 +73,9 @@ void dlatm4(const int itype, const int n, const int nz1, const int nz2,
     const f64 TWO = 2.0;
     const f64 HALF = 0.5;
 
-    int i, ioff, isdb, isde, jc, jd, jr, k, kbeg, kend, klen;
+    INT i, ioff, isdb, isde, jc, jd, jr, k, kbeg, kend, klen;
     f64 alpha, cl, cr, safmin, sl, sr, sv1, sv2, temp;
-    int abstype;
+    INT abstype;
 
     if (n <= 0) return;
 

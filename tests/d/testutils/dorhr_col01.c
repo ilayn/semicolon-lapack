@@ -5,41 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dlatsqr(const int m, const int n, const int mb, const int nb,
-                    f64* const restrict A, const int lda,
-                    f64* const restrict T, const int ldt,
-                    f64* const restrict work, const int lwork, int* info);
-extern void dorgtsqr(const int m, const int n, const int mb, const int nb,
-                     f64* const restrict A, const int lda,
-                     const f64* const restrict T, const int ldt,
-                     f64* restrict work, const int lwork, int* info);
-extern void dorhr_col(const int m, const int n, const int nb,
-                      f64* const restrict A, const int lda,
-                      f64* restrict T, const int ldt,
-                      f64* restrict D, int* info);
-extern void dgemqrt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int nb,
-                    const f64* const restrict V, const int ldv,
-                    const f64* const restrict T, const int ldt,
-                    f64* const restrict C, const int ldc,
-                    f64* const restrict work, int* info);
 /**
  * DORHR_COL01 tests DORGTSQR and DORHR_COL using DLATSQR, DGEMQRT.
  *
@@ -50,15 +18,15 @@ extern void dgemqrt(const char* side, const char* trans,
  * @param[in]  nb2     Number of columns in column block (output).
  * @param[out] result  Results of each of the six tests.
  */
-void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
-                 const int nb2, f64* restrict result)
+void dorhr_col01(const INT m, const INT n, const INT mb1, const INT nb1,
+                 const INT nb2, f64* restrict result)
 {
     f64 eps = dlamch("E");
-    int k = m < n ? m : n;
-    int l = m > n ? m : n;
+    INT k = m < n ? m : n;
+    INT l = m > n ? m : n;
     if (l < 1) l = 1;
-    int info;
-    int j, i;
+    INT info;
+    INT j, i;
     f64 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
@@ -78,7 +46,7 @@ void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
     }
     dlacpy("F", m, n, A, m, AF, m);
 
-    int nrb;
+    INT nrb;
     if (mb1 - n > 0) {
         nrb = (m - n + mb1 - n - 1) / (mb1 - n);
         if (nrb < 1) nrb = 1;
@@ -90,16 +58,16 @@ void dorhr_col01(const int m, const int n, const int mb1, const int nb1,
     f64* T2 = malloc(nb2 * n * sizeof(f64));
     f64* DIAG = malloc(n * sizeof(f64));
 
-    int nb1_ub = nb1 < n ? nb1 : n;
-    int nb2_ub = nb2 < n ? nb2 : n;
+    INT nb1_ub = nb1 < n ? nb1 : n;
+    INT nb2_ub = nb2 < n ? nb2 : n;
 
     f64 workquery;
-    int lwork;
+    INT lwork;
 
     dlatsqr(m, n, mb1, nb1_ub, AF, m, T1, nb1, &workquery, -1, &info);
-    lwork = (int)workquery;
+    lwork = (INT)workquery;
     dorgtsqr(m, n, mb1, nb1, AF, m, T1, nb1, &workquery, -1, &info);
-    int lwork2 = (int)workquery;
+    INT lwork2 = (INT)workquery;
     if (lwork2 > lwork) lwork = lwork2;
     if (nb2_ub * n > lwork) lwork = nb2_ub * n;
     if (nb2_ub * m > lwork) lwork = nb2_ub * m;

@@ -28,14 +28,15 @@
  */
 
 #include "test_harness.h"
+#include "verify.h"
 #include "test_rng.h"
 #include <string.h>
 #include <stdio.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 
 /* Test parameters from dtest.in */
-static const int NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
@@ -48,68 +49,9 @@ static const int NSVAL[] = {1, 2, 15};  /* NRHS values */
 #define LAP_MAX ((NMAX * (NMAX + 1)) / 2)  /* Max packed storage size */
 
 /* Routines under test */
-extern void dtptri(const char* uplo, const char* diag, const int n,
-                   f64* AP, int* info);
-extern void dtptrs(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs, const f64* AP,
-                   f64* B, const int ldb, int* info);
-extern void dtpcon(const char* norm, const char* uplo, const char* diag,
-                   const int n, const f64* AP,
-                   f64* rcond, f64* work, int* iwork, int* info);
-extern void dtprfs(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs, const f64* AP,
-                   const f64* B, const int ldb, const f64* X, const int ldx,
-                   f64* ferr, f64* berr, f64* work, int* iwork, int* info);
-extern void dlatps(const char* uplo, const char* trans, const char* diag,
-                   const char* normin, const int n, const f64* AP,
-                   f64* X, f64* scale, f64* cnorm, int* info);
-
 /* Verification routines */
-extern void dtpt01(const char* uplo, const char* diag, const int n,
-                   const f64* AP, f64* AINVP,
-                   f64* rcond, f64* work, f64* resid);
-extern void dtpt02(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs,
-                   const f64* AP, const f64* X, const int ldx,
-                   const f64* B, const int ldb,
-                   f64* work, f64* resid);
-extern void dtpt03(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs,
-                   const f64* AP, const f64 scale, const f64* cnorm,
-                   const f64 tscal, const f64* X, const int ldx,
-                   const f64* B, const int ldb,
-                   f64* work, f64* resid);
-extern void dtpt05(const char* uplo, const char* trans, const char* diag,
-                   const int n, const int nrhs,
-                   const f64* AP, const f64* B, const int ldb,
-                   const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact,
-                   const f64* ferr, const f64* berr,
-                   f64* reslts);
-extern void dtpt06(const f64 rcond, const f64 rcondc,
-                   const char* uplo, const char* diag, const int n,
-                   const f64* AP, f64* work, f64* rat);
-
 /* Matrix generation */
-extern void dlattp(const int imat, const char* uplo, const char* trans, char* diag,
-                   const int n, f64* AP, f64* B, f64* work,
-                   int* info, uint64_t state[static 4]);
-extern void dlarhs(const char* path, const char* xtype, const char* uplo,
-                   const char* trans, const int m, const int n, const int kl,
-                   const int ku, const int nrhs, const f64* A, const int lda,
-                   f64* XACT, const int ldxact, f64* B, const int ldb,
-                   int* info, uint64_t state[static 4]);
-
 /* Utilities */
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* A, const int lda, f64* B, const int ldb);
-extern f64 dlamch(const char* cmach);
-extern f64 dlantp(const char* norm, const char* uplo, const char* diag,
-                     const int n, const f64* AP, f64* work);
-extern void dget04(const int n, const int nrhs, const f64* X, const int ldx,
-                   const f64* XACT, const int ldxact, const f64 rcond,
-                   f64* resid);
-
 /**
  * Workspace for test execution - shared across all tests via group setup.
  */
@@ -122,7 +64,7 @@ typedef struct {
     f64* WORK;   /* General workspace */
     f64* RWORK;  /* Real workspace */
     f64* CNORM;  /* Column norms (NMAX) */
-    int* IWORK;     /* Integer workspace */
+    INT* IWORK;     /* Integer workspace */
 } dchktp_workspace_t;
 
 static dchktp_workspace_t* g_workspace = NULL;
@@ -133,17 +75,17 @@ static dchktp_workspace_t* g_workspace = NULL;
 
 /* Test parameters for standard tests (IMAT 1-10) */
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;      /* 0='U', 1='L' */
+    INT n;
+    INT imat;
+    INT iuplo;      /* 0='U', 1='L' */
     char name[64];
 } standard_params_t;
 
 /* Test parameters for pathological tests (IMAT 11-18) */
 typedef struct {
-    int n;
-    int imat;
-    int iuplo;      /* 0='U', 1='L' */
+    INT n;
+    INT imat;
+    INT iuplo;      /* 0='U', 1='L' */
     char name[64];
 } latps_params_t;
 
@@ -155,7 +97,7 @@ typedef struct {
 static standard_params_t g_standard_params[MAX_STANDARD_TESTS];
 static latps_params_t g_latps_params[MAX_LATPS_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
-static int g_num_tests = 0;
+static INT g_num_tests = 0;
 
 static const char* UPLOS[] = {"U", "L"};
 
@@ -168,7 +110,7 @@ static int group_setup(void** state)
     g_workspace = malloc(sizeof(dchktp_workspace_t));
     if (!g_workspace) return -1;
 
-    int lwork = NMAX * (NSMAX > 3 ? NSMAX : 3);
+    INT lwork = NMAX * (NSMAX > 3 ? NSMAX : 3);
 
     g_workspace->AP = malloc(NMAX * NMAX * sizeof(f64));
     g_workspace->AINVP = malloc(NMAX * NMAX * sizeof(f64));
@@ -178,7 +120,7 @@ static int group_setup(void** state)
     g_workspace->WORK = malloc(lwork * sizeof(f64));
     g_workspace->RWORK = malloc((NMAX + 2 * NSMAX) * sizeof(f64));
     g_workspace->CNORM = malloc(NMAX * sizeof(f64));
-    g_workspace->IWORK = malloc(NMAX * sizeof(int));
+    g_workspace->IWORK = malloc(NMAX * sizeof(INT));
 
     if (!g_workspace->AP || !g_workspace->AINVP ||
         !g_workspace->B || !g_workspace->X || !g_workspace->XACT ||
@@ -221,13 +163,13 @@ static void test_standard(void** state)
     standard_params_t* p = *state;
     dchktp_workspace_t* ws = g_workspace;
 
-    int n = p->n;
-    int imat = p->imat;
+    INT n = p->n;
+    INT imat = p->imat;
     const char* uplo = UPLOS[p->iuplo];
 
     f64 result[NTESTS];
     char diag;
-    int info, lda, lap;
+    INT info, lda, lap;
     f64 rcondo, rcondi, rcond, rcondc, anorm, ainvnm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10);
@@ -237,7 +179,7 @@ static void test_standard(void** state)
     lda = (n > 1) ? n : 1;
     lap = (n * (n + 1)) / 2;
 
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
@@ -245,7 +187,7 @@ static void test_standard(void** state)
     dlattp(imat, uplo, "N", &diag, n, ws->AP, ws->XACT, ws->WORK, &info, rng_state);
     assert_info_success(info);
 
-    int idiag = (diag == 'N' || diag == 'n') ? 1 : 2;
+    INT idiag = (diag == 'N' || diag == 'n') ? 1 : 2;
 
     /* TEST 1: Form the inverse of A */
     if (n > 0) {
@@ -274,12 +216,12 @@ static void test_standard(void** state)
     }
 
     /* Loop over NRHS values */
-    for (int irhs = 0; irhs < (int)NNS; irhs++) {
-        int nrhs = NSVAL[irhs];
+    for (INT irhs = 0; irhs < (INT)NNS; irhs++) {
+        INT nrhs = NSVAL[irhs];
 
         /* Loop over TRANS = 'N', 'T', 'C' */
         const char* transs[] = {"N", "T", "C"};
-        for (int itran = 0; itran < 3; itran++) {
+        for (INT itran = 0; itran < 3; itran++) {
             const char* trans = transs[itran];
             if (itran == 0) {
                 rcondc = rcondo;
@@ -316,7 +258,7 @@ static void test_standard(void** state)
                    ws->RWORK, &ws->RWORK[nrhs], &result[4]);
 
             /* Check results */
-            for (int k = 1; k < 6; k++) {
+            for (INT k = 1; k < 6; k++) {
                 if (result[k] >= THRESH) {
                     print_message("TEST %d failed: n=%d, imat=%d, uplo=%s, trans=%s, nrhs=%d, resid=%.3e\n",
                                  k + 1, n, imat, uplo, trans, nrhs, result[k]);
@@ -327,7 +269,7 @@ static void test_standard(void** state)
     }
 
     /* TEST 7: Get estimate of RCOND = 1/CNDNUM */
-    for (int itran = 0; itran < 2; itran++) {
+    for (INT itran = 0; itran < 2; itran++) {
         const char* norm;
         if (itran == 0) {
             norm = "O";
@@ -358,13 +300,13 @@ static void test_latps(void** state)
     latps_params_t* p = *state;
     dchktp_workspace_t* ws = g_workspace;
 
-    int n = p->n;
-    int imat = p->imat;
+    INT n = p->n;
+    INT imat = p->imat;
     const char* uplo = UPLOS[p->iuplo];
 
     f64 result[NTESTS];
     char diag;
-    int info, lda;
+    INT info, lda;
     f64 scale;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988 + imat * 1000 + n * 100 + p->iuplo * 10);
@@ -373,13 +315,13 @@ static void test_latps(void** state)
 
     lda = (n > 1) ? n : 1;
 
-    for (int k = 0; k < NTESTS; k++) {
+    for (INT k = 0; k < NTESTS; k++) {
         result[k] = ZERO;
     }
 
     /* Loop over TRANS = 'N', 'T', 'C' */
     const char* transs[] = {"N", "T", "C"};
-    for (int itran = 0; itran < 3; itran++) {
+    for (INT itran = 0; itran < 3; itran++) {
         const char* trans = transs[itran];
 
         /* Generate triangular packed test matrix */
@@ -428,15 +370,15 @@ static void test_latps(void** state)
  */
 static void build_test_array(void)
 {
-    int standard_idx = 0;
-    int latps_idx = 0;
+    INT standard_idx = 0;
+    INT latps_idx = 0;
 
     /* Standard tests: N x IMAT(1-10) x UPLO(U,L) */
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        for (int imat = 1; imat <= NTYPE1; imat++) {
-            for (int iuplo = 0; iuplo < 2; iuplo++) {
+        for (INT imat = 1; imat <= NTYPE1; imat++) {
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
                 standard_params_t* p = &g_standard_params[standard_idx];
                 p->n = n;
                 p->imat = imat;
@@ -456,11 +398,11 @@ static void build_test_array(void)
     }
 
     /* Pathological tests (DLATPS): N x IMAT(11-18) x UPLO(U,L) */
-    for (int in = 0; in < (int)NN; in++) {
-        int n = NVAL[in];
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
 
-        for (int imat = NTYPE1 + 1; imat <= NTYPES; imat++) {
-            for (int iuplo = 0; iuplo < 2; iuplo++) {
+        for (INT imat = NTYPE1 + 1; imat <= NTYPES; imat++) {
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
                 latps_params_t* p = &g_latps_params[latps_idx];
                 p->n = n;
                 p->imat = imat;

@@ -5,41 +5,9 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
-#include <cblas.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* const restrict A, const int lda);
-extern void stpqrt(const int m, const int n, const int l, const int nb,
-                   f32* const restrict A, const int lda,
-                   f32* const restrict B, const int ldb,
-                   f32* const restrict T, const int ldt,
-                   f32* const restrict work, int* info);
-extern void sgemqrt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int nb,
-                    const f32* const restrict V, const int ldv,
-                    const f32* const restrict T, const int ldt,
-                    f32* const restrict C, const int ldc,
-                    f32* const restrict work, int* info);
-extern void stpmqrt(const char* side, const char* trans,
-                    const int m, const int n, const int k, const int l, const int nb,
-                    const f32* const restrict V, const int ldv,
-                    const f32* const restrict T, const int ldt,
-                    f32* const restrict A, const int lda,
-                    f32* const restrict B, const int ldb,
-                    f32* const restrict work, int* info);
 /**
  * SQRT05 tests STPQRT and STPMQRT.
  *
@@ -56,16 +24,16 @@ extern void stpmqrt(const char* side, const char* trans,
  *                     result[4] = | C Q - C Q |
  *                     result[5] = | C Q^H - C Q^H |
  */
-void sqrt05(const int m, const int n, const int l, const int nb, f32* restrict result)
+void sqrt05(const INT m, const INT n, const INT l, const INT nb, f32* restrict result)
 {
     f32 eps = slamch("E");
-    int k = n;
-    int m2 = m + n;
-    int np1 = (m > 0) ? n : 0;
-    int lwork = m2 * m2 * nb;
-    int ldt = nb;
-    int info;
-    int j;
+    INT k = n;
+    INT m2 = m + n;
+    INT np1 = (m > 0) ? n : 0;
+    INT lwork = m2 * m2 * nb;
+    INT ldt = nb;
+    INT info;
+    INT j;
     f32 anorm, resid, cnorm, dnorm;
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL);
@@ -89,7 +57,7 @@ void sqrt05(const int m, const int n, const int l, const int nb, f32* restrict r
         slarnv_rng(2, j + 1, &A[j * m2], rng_state);
     }
     if (m > 0) {
-        int ml = m - l;
+        INT ml = m - l;
         for (j = 0; j < n; j++) {
             if (ml > 0) {
                 slarnv_rng(2, ml, &A[n + j * m2], rng_state);
@@ -97,9 +65,9 @@ void sqrt05(const int m, const int n, const int l, const int nb, f32* restrict r
         }
     }
     if (l > 0) {
-        int start_row = n + m - l;
+        INT start_row = n + m - l;
         for (j = 0; j < n; j++) {
-            int len = (j + 1 < l) ? (j + 1) : l;
+            INT len = (j + 1 < l) ? (j + 1) : l;
             slarnv_rng(2, len, &A[start_row + j * m2], rng_state);
         }
     }

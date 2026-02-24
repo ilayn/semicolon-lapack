@@ -6,12 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-
 /**
  * STRT03 computes the residual for the solution to a scaled triangular
  * system of equations A*x = s*b or A'*x = s*b.
@@ -40,15 +38,15 @@ extern f32 slamch(const char* cmach);
  * @param[out]    resid   The maximum residual over all right hand sides.
  */
 void strt03(const char* uplo, const char* trans, const char* diag,
-            const int n, const int nrhs, const f32* A, const int lda,
+            const INT n, const INT nrhs, const f32* A, const INT lda,
             const f32 scale, const f32* cnorm, const f32 tscal,
-            const f32* X, const int ldx, const f32* B, const int ldb,
+            const f32* X, const INT ldx, const f32* B, const INT ldb,
             f32* work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int j, ix;
+    INT j, ix;
     f32 eps, smlnum, tnorm, xnorm, xscal, err;
 
     /* Quick exit if n = 0 or nrhs = 0 */

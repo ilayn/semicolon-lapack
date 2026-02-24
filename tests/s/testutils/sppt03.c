@@ -5,17 +5,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* const restrict A, const int lda,
-                     f32* const restrict work);
-extern f32 slansp(const char* norm, const char* uplo, const int n,
-                     const f32* const restrict AP,
-                     f32* const restrict work);
-
 /**
  * SPPT03 computes the residual for a symmetric packed matrix times its
  * inverse:
@@ -53,14 +44,14 @@ extern f32 slansp(const char* norm, const char* uplo, const int n,
  * @param[out] resid
  *          norm(I - A*AINV) / ( N * norm(A) * norm(AINV) * EPS )
  */
-void sppt03(const char* uplo, const int n,
+void sppt03(const char* uplo, const INT n,
             const f32* const restrict A,
             const f32* const restrict AINV,
-            f32* const restrict work, const int ldwork,
+            f32* const restrict work, const INT ldwork,
             f32* const restrict rwork,
             f32* rcond, f32* resid)
 {
-    int i, j, jj;
+    INT i, j, jj;
     f32 ainvnm, anorm, eps;
 
     if (n <= 0) {

@@ -5,14 +5,8 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-
-extern f32 slamch(const char* cmach);
-extern f32 slansy(const char* norm, const char* uplo, const int n,
-                     const f32* A, const int lda, f32* work);
-extern f32 slange(const char* norm, const int m, const int n,
-                     const f32* A, const int lda, f32* work);
 
 /**
  * SSGT01 checks a decomposition of the form
@@ -44,16 +38,16 @@ extern f32 slange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace, dimension (n*n).
  * @param[out]    result The test ratio.
  */
-void ssgt01(const int itype, const char* uplo, const int n, const int m,
-            const f32* A, const int lda,
-            const f32* B, const int ldb,
-            f32* Z, const int ldz,
+void ssgt01(const INT itype, const char* uplo, const INT n, const INT m,
+            const f32* A, const INT lda,
+            const f32* B, const INT ldb,
+            f32* Z, const INT ldz,
             const f32* D, f32* work, f32* result)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 
-    int i;
+    INT i;
     f32 anorm, ulp;
     CBLAS_UPLO cblas_uplo;
 
@@ -84,7 +78,7 @@ void ssgt01(const int itype, const char* uplo, const int n, const int m,
         cblas_ssymm(CblasColMajor, CblasLeft, cblas_uplo,
                     n, m, ONE, B, ldb, Z, ldz, -ONE, work, n);
 
-        result[0] = (slange("1", n, m, work, n, work) / anorm) /
+        result[0] = (slange("1", n, m, work, n, &work[n * m]) / anorm) /
                     (n * ulp);
 
     } else if (itype == 2) {

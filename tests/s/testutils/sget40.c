@@ -5,50 +5,35 @@
  */
 
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
-
-extern f32 slamch(const char* cmach);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-extern void slaset(const char* uplo, const int m, const int n,
-                   const f32 alpha, const f32 beta,
-                   f32* A, const int lda);
-extern void stgexc(const int wantq, const int wantz, const int n,
-                   f32* restrict A, const int lda,
-                   f32* restrict B, const int ldb,
-                   f32* restrict Q, const int ldq,
-                   f32* restrict Z, const int ldz,
-                   int* ifst, int* ilst,
-                   f32* restrict work, const int lwork, int* info);
 
 #define LDT 10
 #define LWORK (100 + 4*LDT + 16)
 
 /* Test case data structure */
 typedef struct {
-    int n;
-    int ifst;  /* 0-based */
-    int ilst;  /* 0-based */
+    INT n;
+    INT ifst;  /* 0-based */
+    INT ilst;  /* 0-based */
     f32 t[LDT * LDT]; /* column-major */
     f32 s[LDT * LDT]; /* column-major */
 } tgexc_case_t;
 
 /* Helper: set n×n identity matrix in column-major ldt-stride storage */
-static void set_identity(f32* A, int n, int ldt)
+static void set_identity(f32* A, INT n, INT ldt)
 {
     memset(A, 0, (size_t)ldt * n * sizeof(f32));
-    for (int i = 0; i < n; i++)
+    for (INT i = 0; i < n; i++)
         A[i + i * ldt] = 1.0f;
 }
 
 /* Helper: copy row-major data to column-major storage */
-static void rowmajor_to_colmajor(const f32* rows, f32* cm, int n, int ldcm)
+static void rowmajor_to_colmajor(const f32* rows, f32* cm, INT n, INT ldcm)
 {
     memset(cm, 0, (size_t)ldcm * n * sizeof(f32));
-    for (int i = 0; i < n; i++)
-        for (int j = 0; j < n; j++)
+    for (INT i = 0; i < n; i++)
+        for (INT j = 0; j < n; j++)
             cm[i + j * ldcm] = rows[i * n + j];
 }
 
@@ -74,7 +59,7 @@ static void build_test_cases(tgexc_case_t* tc)
     };
 
     /* Cases 0-3: N=8, IFST=0, ILST=4 (Fortran 1→5) */
-    for (int k = 0; k < 4; k++) {
+    for (INT k = 0; k < 4; k++) {
         tc[k].n = 8;
         tc[k].ifst = 0;
         tc[k].ilst = 4;
@@ -98,7 +83,7 @@ static void build_test_cases(tgexc_case_t* tc)
     tc[3].t[3 + 2 * LDT] = 0.0f;
 
     /* Cases 4-7: N=8, IFST=4, ILST=0 (Fortran 5→1). Same T as 0-3. */
-    for (int k = 0; k < 4; k++) {
+    for (INT k = 0; k < 4; k++) {
         tc[k + 4].n = 8;
         tc[k + 4].ifst = 4;
         tc[k + 4].ilst = 0;
@@ -156,7 +141,7 @@ static void build_test_cases(tgexc_case_t* tc)
  *                        ninfo[1] = STGEXC with accumulation returned INFO nonzero
  * @param[out]    knt     Total number of examples tested.
  */
-void sget40(f32* rmax, int* lmax, int* ninfo, int* knt)
+void sget40(f32* rmax, INT* lmax, INT* ninfo, INT* knt)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
@@ -181,8 +166,8 @@ void sget40(f32* rmax, int* lmax, int* ninfo, int* knt)
     f32 work[LWORK];
     f32 result[4];
 
-    for (int ic = 0; ic < NCASES; ic++) {
-        int n = tc[ic].n;
+    for (INT ic = 0; ic < NCASES; ic++) {
+        INT n = tc[ic].n;
         (*knt)++;
 
         slacpy("F", n, n, tc[ic].t, LDT, t, LDT);
@@ -192,21 +177,21 @@ void sget40(f32* rmax, int* lmax, int* ninfo, int* knt)
         slacpy("F", n, n, tc[ic].s, LDT, s1, LDT);
         slacpy("F", n, n, tc[ic].s, LDT, s2, LDT);
 
-        int ifst1 = tc[ic].ifst, ilst1 = tc[ic].ilst;
-        int ifst2 = tc[ic].ifst, ilst2 = tc[ic].ilst;
+        INT ifst1 = tc[ic].ifst, ilst1 = tc[ic].ilst;
+        INT ifst2 = tc[ic].ifst, ilst2 = tc[ic].ilst;
         f32 res = ZERO;
 
         /* Test without accumulating Q and Z */
 
         slaset("Full", n, n, ZERO, ONE, q, LDT);
         slaset("Full", n, n, ZERO, ONE, z, LDT);
-        int info1 = 0;
+        INT info1 = 0;
         stgexc(0, 0, n, t1, LDT, s1, LDT, q, LDT,
                z, LDT, &ifst1, &ilst1, work, LWORK, &info1);
         if (info1 != 0)
             ninfo[0]++;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 if (i == j && q[i + j * LDT] != ONE)
                     res += ONE / eps;
                 if (i != j && q[i + j * LDT] != ZERO)
@@ -222,7 +207,7 @@ void sget40(f32* rmax, int* lmax, int* ninfo, int* knt)
 
         slaset("Full", n, n, ZERO, ONE, q, LDT);
         slaset("Full", n, n, ZERO, ONE, z, LDT);
-        int info2 = 0;
+        INT info2 = 0;
         stgexc(1, 1, n, t2, LDT, s2, LDT, q, LDT,
                z, LDT, &ifst2, &ilst2, work, LWORK, &info2);
         if (info2 != 0)
@@ -230,8 +215,8 @@ void sget40(f32* rmax, int* lmax, int* ninfo, int* knt)
 
         /* Compare T1 with T2 and S1 with S2 */
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) {
                 if (t1[i + j * LDT] != t2[i + j * LDT])
                     res += ONE / eps;
                 if (s1[i + j * LDT] != s2[i + j * LDT])

@@ -7,15 +7,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-
 /**
  * DBDT05 reconstructs a matrix A from its (partial) SVD:
  *    S = U' * A * V
@@ -38,18 +31,18 @@ extern f64 dlange(const char* norm, const int m, const int n,
  * @param[out]    work   Workspace array, dimension at least (ns*ns + m*ns).
  * @param[out]    resid  The test ratio.
  */
-void dbdt05(const int m, const int n, const f64* const restrict A, const int lda,
-            const f64* const restrict S, const int ns,
-            const f64* const restrict U, const int ldu,
-            const f64* const restrict VT, const int ldvt,
+void dbdt05(const INT m, const INT n, const f64* const restrict A, const INT lda,
+            const f64* const restrict S, const INT ns,
+            const f64* const restrict U, const INT ldu,
+            const f64* const restrict VT, const INT ldvt,
             f64* const restrict work, f64* resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
 
-    int i, j;
+    INT i, j;
     f64 anorm, eps;
-    int minmn;
+    INT minmn;
 
     /* Quick return if possible */
     *resid = ZERO;
@@ -91,7 +84,7 @@ void dbdt05(const int m, const int n, const f64* const restrict A, const int lda
     j = 0;
     for (i = 0; i < ns; i++) {
         f64 colsum = ZERO;
-        for (int k = 0; k < ns; k++) {
+        for (INT k = 0; k < ns; k++) {
             colsum += fabs(work[j + k]);
         }
         if (colsum > *resid) {

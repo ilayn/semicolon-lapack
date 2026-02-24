@@ -14,28 +14,8 @@
 
 #include <stdlib.h>
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-// Forward declarations
-extern f64 dlamch(const char* cmach);
-extern f64 dlange(const char* norm, const int m, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern f64 dlansy(const char* norm, const char* uplo, const int n,
-                     const f64* const restrict A, const int lda,
-                     f64* const restrict work);
-extern void dlacpy(const char* uplo, const int m, const int n,
-                   const f64* const restrict A, const int lda,
-                   f64* const restrict B, const int ldb);
-extern void dlaset(const char* uplo, const int m, const int n,
-                   const f64 alpha, const f64 beta,
-                   f64* const restrict A, const int lda);
-extern void dorgrq(const int m, const int n, const int k,
-                   f64* const restrict A, const int lda,
-                   const f64* const restrict tau,
-                   f64* const restrict work, const int lwork, int* info);
-
 /**
  * @param[in]     m       Number of rows of Q to generate. m >= 0.
  * @param[in]     n       Number of columns of Q. n >= m >= 0.
@@ -51,14 +31,14 @@ extern void dorgrq(const int m, const int n, const int k,
  * @param[out]    rwork   Workspace, dimension m.
  * @param[out]    result  Array of dimension 2.
  */
-void drqt02(const int m, const int n, const int k,
+void drqt02(const INT m, const INT n, const INT k,
             const f64* const restrict A,
             const f64* const restrict AF,
             f64* const restrict Q,
             f64* const restrict R,
-            const int lda,
+            const INT lda,
             const f64* const restrict tau,
-            f64* const restrict work, const int lwork,
+            f64* const restrict work, const INT lwork,
             f64* const restrict rwork,
             f64* restrict result)
 {
@@ -70,8 +50,8 @@ void drqt02(const int m, const int n, const int k,
     }
 
     f64 eps = dlamch("E");
-    int info;
-    int minmn = m < n ? m : n;
+    INT info;
+    INT minmn = m < n ? m : n;
 
     /* Copy the last k rows of the factorization to the array Q.
      * For RQ, reflectors for the last k rows are stored in AF(m-k:m-1, 0:n-1).

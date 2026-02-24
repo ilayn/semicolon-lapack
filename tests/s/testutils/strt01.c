@@ -6,15 +6,10 @@
  */
 
 #include <math.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 
 /* External declarations */
-extern f32 slamch(const char* cmach);
-extern f32 slantr(const char* norm, const char* uplo, const char* diag,
-                     const int m, const int n, const f32* A, const int lda,
-                     f32* work);
-
 /**
  * STRT01 computes the residual for a triangular matrix A times its inverse:
  *    RESID = norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS),
@@ -32,14 +27,14 @@ extern f32 slantr(const char* norm, const char* uplo, const char* diag,
  * @param[out]    work    Array (n). Workspace.
  * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
  */
-void strt01(const char* uplo, const char* diag, const int n,
-            const f32* A, const int lda,
-            f32* AINV, const int ldainv,
+void strt01(const char* uplo, const char* diag, const INT n,
+            const f32* A, const INT lda,
+            f32* AINV, const INT ldainv,
             f32* rcond, f32* work, f32* resid)
 {
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
-    int j;
+    INT j;
     f32 ainvnm, anorm, eps;
 
     /* Quick exit if N = 0 */

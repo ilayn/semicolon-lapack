@@ -13,13 +13,11 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <cblas.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
 #include "test_rng.h"
 
 /* External declarations */
-extern f64 dlamch(const char* cmach);
-
 /**
  * DLATTR generates a triangular test matrix.
  *
@@ -36,20 +34,20 @@ extern f64 dlamch(const char* cmach);
  * @param[out]    info    0 = successful exit, < 0 = illegal argument.
  * @param[in,out] state   RNG state array of 4 uint64_t elements.
  */
-void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
-            const int n, f64* A, const int lda,
-            f64* B, f64* work, int* info, uint64_t state[static 4])
+void dlattr(const INT imat, const char* uplo, const char* trans, char* diag,
+            const INT n, f64* A, const INT lda,
+            f64* B, f64* work, INT* info, uint64_t state[static 4])
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 TWO = 2.0;
 
     f64 unfl, ulp, smlnum, bignum;
-    int upper;
+    INT upper;
     char type, dist;
-    int kl, ku, mode;
+    INT kl, ku, mode;
     f64 anorm, cndnum;
-    int i, j, jcount, iy;
+    INT i, j, jcount, iy;
     f64 bnorm, bscal, tscal, texp, tleft;
     f64 plus1, plus2, star1, sfac, rexp;
     f64 x, y, z, c, s, ra, rb;
@@ -515,8 +513,8 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
     if (trans[0] != 'N' && trans[0] != 'n') {
         if (upper) {
             for (j = 0; j < n / 2; j++) {
-                int len = n - 2 * j - 1;
-                for (int k = 0; k < len; k++) {
+                INT len = n - 2 * j - 1;
+                for (INT k = 0; k < len; k++) {
                     /* Swap A[j, j+k] (column j) with A[j+1+k, n-1-j-k] (row j+1+k, descending col) */
                     f64 temp = A[j * lda + (j + k)];
                     A[j * lda + (j + k)] = A[(n - 2 - j - k) * lda + (j + 1 + k)];
@@ -525,8 +523,8 @@ void dlattr(const int imat, const char* uplo, const char* trans, char* diag,
             }
         } else {
             for (j = 0; j < n / 2; j++) {
-                int len = n - 2 * j - 1;
-                for (int k = 0; k < len; k++) {
+                INT len = n - 2 * j - 1;
+                for (INT k = 0; k < len; k++) {
                     /* Swap A[j+k, j] (row j) with A[n-2-j-k, j+1+k] (descending row, column j+1+k) */
                     f64 temp = A[(j + k) * lda + j];
                     A[(j + k) * lda + j] = A[(j + 1 + k) * lda + (n - 2 - j - k)];

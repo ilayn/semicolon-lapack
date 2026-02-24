@@ -5,24 +5,8 @@
  */
 
 #include <math.h>
+#include "semicolon_cblas.h"
 #include "verify.h"
-#include <cblas.h>
-
-/* Forward declarations */
-extern f64 dlamch(const char* cmach);
-extern f64 dlangt(const char* norm, const int n,
-                     const f64* const restrict DL,
-                     const f64* const restrict D,
-                     const f64* const restrict DU);
-extern void dlagtm(const char* trans, const int n, const int nrhs,
-                   const f64 alpha,
-                   const f64* const restrict DL,
-                   const f64* const restrict D,
-                   const f64* const restrict DU,
-                   const f64* const restrict X, const int ldx,
-                   const f64 beta,
-                   f64* const restrict B, const int ldb);
-
 /**
  * DGTT02 computes the residual for the solution to a tridiagonal
  * system of equations:
@@ -50,22 +34,22 @@ extern void dlagtm(const char* trans, const int n, const int nrhs,
  */
 void dgtt02(
     const char* trans,
-    const int n,
-    const int nrhs,
+    const INT n,
+    const INT nrhs,
     const f64 * const restrict DL,
     const f64 * const restrict D,
     const f64 * const restrict DU,
     const f64 * const restrict X,
-    const int ldx,
+    const INT ldx,
     f64 * const restrict B,
-    const int ldb,
+    const INT ldb,
     f64 *resid)
 {
     const f64 ZERO = 0.0;
     const f64 ONE = 1.0;
     const f64 NEG_ONE = -1.0;
 
-    int j;
+    INT j;
     f64 anorm, bnorm, eps, xnorm;
 
     /* Quick exit if n = 0 or nrhs = 0 */

@@ -33,7 +33,6 @@
 
 #include "test_harness.h"
 #include "verify.h"
-#include <cblas.h>
 #include <math.h>
 #include <string.h>
 
@@ -42,25 +41,9 @@
 
 static const f32 WEIGHT[5] = {0.1f, 0.5f, 1.0f, 2.0f, 10.0f};
 
-extern void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
-                   const char* sense, const int n, f32* A, const int lda,
-                   f32* B, const int ldb, f32* alphar, f32* alphai,
-                   f32* beta, f32* VL, const int ldvl, f32* VR,
-                   const int ldvr, int* ilo, int* ihi,
-                   f32* lscale, f32* rscale,
-                   f32* abnrm, f32* bbnrm,
-                   f32* rconde, f32* rcondv,
-                   f32* work, const int lwork, int* iwork,
-                   int* bwork, int* info);
-extern f32 slamch(const char* cmach);
-extern f32 slange(const char* norm, const int m, const int n,
-                  const f32* A, const int lda, f32* work);
-extern void slacpy(const char* uplo, const int m, const int n,
-                   const f32* A, const int lda, f32* B, const int ldb);
-
 typedef struct {
-    int iptype;
-    int iwa, iwb, iwx, iwy;
+    INT iptype;
+    INT iwa, iwb, iwx, iwy;
     char name[96];
 } ddrgvx_params_t;
 
@@ -81,9 +64,9 @@ typedef struct {
     f32* DIF;
     f32* diftru;
     f32* work;
-    int* iwork;
-    int* bwork;
-    int lwork;
+    INT* iwork;
+    INT* bwork;
+    INT lwork;
 } ddrgvx_workspace_t;
 
 static ddrgvx_workspace_t* g_ws = NULL;
@@ -95,8 +78,8 @@ static int group_setup(void** state)
     g_ws = calloc(1, sizeof(ddrgvx_workspace_t));
     if (!g_ws) return -1;
 
-    const int n = NMAX;
-    const int n2 = n * n;
+    const INT n = NMAX;
+    const INT n2 = n * n;
 
     g_ws->A      = malloc(n2 * sizeof(f32));
     g_ws->B      = malloc(n2 * sizeof(f32));
@@ -116,8 +99,8 @@ static int group_setup(void** state)
 
     g_ws->lwork = 2 * n * n + 12 * n + 16;
     g_ws->work  = malloc(g_ws->lwork * sizeof(f32));
-    g_ws->iwork = malloc((n + 6) * sizeof(int));
-    g_ws->bwork = malloc(n * sizeof(int));
+    g_ws->iwork = malloc((n + 6) * sizeof(INT));
+    g_ws->bwork = malloc(n * sizeof(INT));
 
     if (!g_ws->A || !g_ws->B || !g_ws->AI || !g_ws->BI ||
         !g_ws->VL || !g_ws->VR || !g_ws->alphar || !g_ws->alphai ||
@@ -164,8 +147,8 @@ static void test_ddrgvx(void** state)
     (void)state;
     ddrgvx_params_t* params = (ddrgvx_params_t*)(*state);
 
-    const int n = NMAX;
-    const int lda = NMAX;
+    const INT n = NMAX;
+    const INT lda = NMAX;
     const f32 ulp = slamch("P");
     const f32 ulpinv = 1.0f / ulp;
     const f32 thrsh2 = 10.0f * THRESH;
@@ -181,7 +164,7 @@ static void test_ddrgvx(void** state)
     slacpy("F", n, n, g_ws->A, lda, g_ws->AI, lda);
     slacpy("F", n, n, g_ws->B, lda, g_ws->BI, lda);
 
-    int ilo, ihi, linfo;
+    INT ilo, ihi, linfo;
     f32 anorm, bnorm;
     sggevx("N", "V", "V", "B", n, g_ws->AI, lda, g_ws->BI, lda,
            g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->VL, lda,
@@ -201,7 +184,7 @@ static void test_ddrgvx(void** state)
     /* Compute norm(A, B) */
     slacpy("Full", n, n, g_ws->AI, lda, g_ws->work, n);
     slacpy("Full", n, n, g_ws->BI, lda, &g_ws->work[n * n], n);
-    f32 abnorm = slange("Fro", n, 2 * n, g_ws->work, n, g_ws->work);
+    f32 abnorm = slange("Fro", n, 2 * n, g_ws->work, n, NULL);
 
     /* Test (1): Left eigenvector residual via sget52 */
     f32 res52[2];
@@ -226,7 +209,7 @@ static void test_ddrgvx(void** state)
 
     /* Test (3): Eigenvalue condition numbers */
     result[2] = 0.0f;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         if (g_ws->S[i] == 0.0f) {
             if (g_ws->dtru[i] > abnorm * ulp)
                 result[2] = ulpinv;
@@ -263,8 +246,8 @@ static void test_ddrgvx(void** state)
     }
 
     /* Check results against thresholds */
-    int any_fail = 0;
-    for (int j = 0; j < 4; j++) {
+    INT any_fail = 0;
+    for (INT j = 0; j < 4; j++) {
         f32 thr = (j >= 3) ? thrsh2 : THRESH;
         if (result[j] >= thr) {
             print_message("type=%d iwa=%d iwb=%d iwx=%d iwy=%d test(%d)=%g >= %.1f\n",
@@ -286,8 +269,8 @@ static void test_ddrgvx(void** state)
 #define NREADIN_DIM 4
 
 typedef struct {
-    int n;
-    int idx;
+    INT n;
+    INT idx;
     char name[64];
 } ddrgvx_readin_params_t;
 
@@ -331,9 +314,9 @@ static void test_ddrgvx_readin(void** state)
     (void)state;
     ddrgvx_readin_params_t* params = (ddrgvx_readin_params_t*)(*state);
 
-    const int n = params->n;
-    const int lda = NMAX;
-    const int ci = params->idx;
+    const INT n = params->n;
+    const INT lda = NMAX;
+    const INT ci = params->idx;
     const f32 ulp = slamch("P");
     const f32 ulpinv = 1.0f / ulp;
     const f32 thrsh2 = 10.0f * THRESH;
@@ -341,8 +324,8 @@ static void test_ddrgvx_readin(void** state)
     f32 result[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
     /* Load precomputed matrices into workspace (lda may differ from n) */
-    for (int j = 0; j < n; j++)
-        for (int i = 0; i < n; i++) {
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < n; i++) {
             g_ws->A[i + j * lda] = readin_A[ci][i + j * n];
             g_ws->B[i + j * lda] = readin_B[ci][i + j * n];
         }
@@ -350,7 +333,7 @@ static void test_ddrgvx_readin(void** state)
     slacpy("F", n, n, g_ws->A, lda, g_ws->AI, lda);
     slacpy("F", n, n, g_ws->B, lda, g_ws->BI, lda);
 
-    int ilo, ihi, linfo;
+    INT ilo, ihi, linfo;
     f32 anorm, bnorm;
     sggevx("N", "V", "V", "B", n, g_ws->AI, lda, g_ws->BI, lda,
            g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->VL, lda,
@@ -369,7 +352,7 @@ static void test_ddrgvx_readin(void** state)
     /* Compute norm(A, B) */
     slacpy("Full", n, n, g_ws->AI, lda, g_ws->work, n);
     slacpy("Full", n, n, g_ws->BI, lda, &g_ws->work[n * n], n);
-    f32 abnorm = slange("Fro", n, 2 * n, g_ws->work, n, g_ws->work);
+    f32 abnorm = slange("Fro", n, 2 * n, g_ws->work, n, NULL);
 
     /* Test (1): Left eigenvector residual */
     f32 res52[2];
@@ -394,7 +377,7 @@ static void test_ddrgvx_readin(void** state)
 
     /* Test (3): Eigenvalue condition numbers */
     result[2] = 0.0f;
-    for (int i = 0; i < n; i++) {
+    for (INT i = 0; i < n; i++) {
         if (g_ws->S[i] == 0.0f) {
             if (readin_dtru[ci][i] > abnorm * ulp)
                 result[2] = ulpinv;
@@ -431,8 +414,8 @@ static void test_ddrgvx_readin(void** state)
     }
 
     /* Check all 4 results against thrsh2 (read-in uses looser threshold) */
-    int any_fail = 0;
-    for (int j = 0; j < 4; j++) {
+    INT any_fail = 0;
+    for (INT j = 0; j < 4; j++) {
         if (result[j] >= thrsh2) {
             print_message("read-in #%d test(%d)=%g >= %.1f\n",
                           ci + 1, j + 1, (double)result[j], (double)thrsh2);
@@ -448,14 +431,14 @@ int main(void)
     static ddrgvx_params_t all_params[2 * 5 * 5 * 5 * 5];
     static ddrgvx_readin_params_t readin_params[NREADIN];
     static struct CMUnitTest all_tests[2 * 5 * 5 * 5 * 5 + NREADIN];
-    int idx = 0;
+    INT idx = 0;
 
     /* Section 1: Built-in 5x5 tests via slatm6 (1250 cases) */
-    for (int iptype = 1; iptype <= 2; iptype++) {
-        for (int iwa = 0; iwa < 5; iwa++) {
-            for (int iwb = 0; iwb < 5; iwb++) {
-                for (int iwx = 0; iwx < 5; iwx++) {
-                    for (int iwy = 0; iwy < 5; iwy++) {
+    for (INT iptype = 1; iptype <= 2; iptype++) {
+        for (INT iwa = 0; iwa < 5; iwa++) {
+            for (INT iwb = 0; iwb < 5; iwb++) {
+                for (INT iwx = 0; iwx < 5; iwx++) {
+                    for (INT iwy = 0; iwy < 5; iwy++) {
                         ddrgvx_params_t* p = &all_params[idx];
                         p->iptype = iptype;
                         p->iwa = iwa;
@@ -479,7 +462,7 @@ int main(void)
     }
 
     /* Section 2: Read-in precomputed test matrices (2 cases from dgd.in) */
-    for (int ci = 0; ci < NREADIN; ci++) {
+    for (INT ci = 0; ci < NREADIN; ci++) {
         ddrgvx_readin_params_t* rp = &readin_params[ci];
         rp->n = NREADIN_DIM;
         rp->idx = ci;
