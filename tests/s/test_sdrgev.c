@@ -339,144 +339,181 @@ gen_ok:
 
     for (INT i = 0; i < 7; i++) result[i] = -1.0f;
 
-    /*
-     * Call SGGEV to compute eigenvalues and eigenvectors.
-     * First call: JOBVL='V', JOBVR='V' (full)
-     */
+    INT any_mismatch = 0;
+
     slacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
     slacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+    INT iinfo_vv = 0;
     sggev("V", "V", n, g_ws->S, lda, g_ws->T, lda,
           g_ws->alphar, g_ws->alphai, g_ws->beta,
           g_ws->Q, ldq, g_ws->Z, ldq,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
+          g_ws->work, g_ws->lwork, &iinfo_vv);
+    if (iinfo_vv != 0 && iinfo_vv != n + 1) {
         result[0] = ulpinv;
-        print_message("SGGEV1 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
+        print_message("SGGEV(V,V) returned INFO=%lld for N=%lld JTYPE=%lld\n",
+                      (long long)iinfo_vv, (long long)n, (long long)jtype);
         goto check_results;
     }
 
-    /*
-     * Do tests (1) and (2)
-     * Left eigenvector check
-     */
     sget52(1, n, g_ws->A, lda, g_ws->B, lda, g_ws->Q, ldq,
            g_ws->alphar, g_ws->alphai, g_ws->beta,
            g_ws->work, result);
     if (result[1] > THRESH) {
-        print_message("Left eigenvectors from SGGEV1 incorrectly "
-                      "normalized. Bits of error=%g, N=%d JTYPE=%d\n",
-                      (double)result[1], n, jtype);
+        print_message("Left eigenvectors from SGGEV(V,V) incorrectly "
+                      "normalized. Bits of error=%g, N=%lld JTYPE=%lld\n",
+                      (double)result[1], (long long)n, (long long)jtype);
     }
 
-    /*
-     * Do tests (3) and (4)
-     * Right eigenvector check
-     */
     sget52(0, n, g_ws->A, lda, g_ws->B, lda, g_ws->Z, ldq,
            g_ws->alphar, g_ws->alphai, g_ws->beta,
            g_ws->work, &result[2]);
     if (result[3] > THRESH) {
-        print_message("Right eigenvectors from SGGEV1 incorrectly "
-                      "normalized. Bits of error=%g, N=%d JTYPE=%d\n",
-                      (double)result[3], n, jtype);
+        print_message("Right eigenvectors from SGGEV(V,V) incorrectly "
+                      "normalized. Bits of error=%g, N=%lld JTYPE=%lld\n",
+                      (double)result[3], (long long)n, (long long)jtype);
     }
 
-    /*
-     * Do test (5)
-     * Compare eigenvalues from JOBVL='N', JOBVR='N' with full
-     */
     slacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
     slacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+    INT iinfo_nn = 0;
     sggev("N", "N", n, g_ws->S, lda, g_ws->T, lda,
           g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
           NULL, ldqe, g_ws->QE, ldqe,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
+          g_ws->work, g_ws->lwork, &iinfo_nn);
+    if (iinfo_nn != 0 && iinfo_nn != n + 1) {
         result[0] = ulpinv;
-        print_message("SGGEV2 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
+        print_message("SGGEV(N,N) returned INFO=%lld for N=%lld JTYPE=%lld\n",
+                      (long long)iinfo_nn, (long long)n, (long long)jtype);
         goto check_results;
     }
 
-    for (INT j = 0; j < n; j++) {
-        if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-            g_ws->alphai[j] != g_ws->alphi1[j] ||
-            g_ws->beta[j]   != g_ws->beta1[j]) {
+    {
+        INT nmismatch5 = 0;
+        for (INT j = 0; j < n; j++) {
+            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
+                g_ws->alphai[j] != g_ws->alphi1[j] ||
+                g_ws->beta[j]   != g_ws->beta1[j]) {
+                nmismatch5++;
+            }
+        }
+        if (nmismatch5 > 0) {
             result[4] = ulpinv;
-            print_message("  test(5) mismatch j=%lld: "
-                          "alphar=%.9e vs %.9e  "
-                          "alphai=%.9e vs %.9e  "
-                          "beta=%.9e vs %.9e\n",
-                          (long long)j,
-                          (double)g_ws->alphar[j], (double)g_ws->alphr1[j],
-                          (double)g_ws->alphai[j], (double)g_ws->alphi1[j],
-                          (double)g_ws->beta[j],   (double)g_ws->beta1[j]);
+            any_mismatch = 1;
+            print_message("\n=== sdrgev test(5) MISMATCH N=%lld JTYPE=%lld "
+                          "(%lld of %lld eigenvalues differ) ===\n",
+                          (long long)n, (long long)jtype,
+                          (long long)nmismatch5, (long long)n);
+            print_message("  SGGEV(V,V) info=%lld   SGGEV(N,N) info=%lld\n",
+                          (long long)iinfo_vv, (long long)iinfo_nn);
+            for (INT j = 0; j < n; j++) {
+                int ar_eq = (g_ws->alphar[j] == g_ws->alphr1[j]);
+                int ai_eq = (g_ws->alphai[j] == g_ws->alphi1[j]);
+                int b_eq  = (g_ws->beta[j]   == g_ws->beta1[j]);
+                print_message("  j=%2lld: %s\n", (long long)j,
+                              (ar_eq && ai_eq && b_eq) ? "MATCH" : "DIFF");
+                print_message("    alphar(V,V)=%+.9e  (N,N)=%+.9e  diff=%.3e  %s\n",
+                              (double)g_ws->alphar[j], (double)g_ws->alphr1[j],
+                              (double)fabsf(g_ws->alphar[j] - g_ws->alphr1[j]),
+                              ar_eq ? "" : "***");
+                print_message("    alphai(V,V)=%+.9e  (N,N)=%+.9e  diff=%.3e  %s\n",
+                              (double)g_ws->alphai[j], (double)g_ws->alphi1[j],
+                              (double)fabsf(g_ws->alphai[j] - g_ws->alphi1[j]),
+                              ai_eq ? "" : "***");
+                print_message("    beta  (V,V)=%+.9e  (N,N)=%+.9e  diff=%.3e  %s\n",
+                              (double)g_ws->beta[j], (double)g_ws->beta1[j],
+                              (double)fabsf(g_ws->beta[j] - g_ws->beta1[j]),
+                              b_eq ? "" : "***");
+            }
         }
     }
 
-    /*
-     * Do test (6): Compute eigenvalues and left eigenvectors,
-     * and test them
-     */
     slacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
     slacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+    INT iinfo_vn = 0;
     sggev("V", "N", n, g_ws->S, lda, g_ws->T, lda,
           g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
           g_ws->QE, ldqe, g_ws->Z, ldq,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
+          g_ws->work, g_ws->lwork, &iinfo_vn);
+    if (iinfo_vn != 0 && iinfo_vn != n + 1) {
         result[0] = ulpinv;
-        print_message("SGGEV3 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
+        print_message("SGGEV(V,N) returned INFO=%lld for N=%lld JTYPE=%lld\n",
+                      (long long)iinfo_vn, (long long)n, (long long)jtype);
         goto check_results;
     }
 
-    for (INT j = 0; j < n; j++) {
-        if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-            g_ws->alphai[j] != g_ws->alphi1[j] ||
-            g_ws->beta[j]   != g_ws->beta1[j]) {
-            result[5] = ulpinv;
-        }
-    }
-
-    for (INT j = 0; j < n; j++) {
-        for (INT jc = 0; jc < n; jc++) {
-            if (g_ws->Q[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
+    {
+        INT nmismatch6_eig = 0, nmismatch6_vec = 0;
+        for (INT j = 0; j < n; j++) {
+            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
+                g_ws->alphai[j] != g_ws->alphi1[j] ||
+                g_ws->beta[j]   != g_ws->beta1[j]) {
+                nmismatch6_eig++;
                 result[5] = ulpinv;
+            }
+        }
+        for (INT j = 0; j < n; j++) {
+            for (INT jc = 0; jc < n; jc++) {
+                if (g_ws->Q[j + jc * ldq] != g_ws->QE[j + jc * ldqe]) {
+                    nmismatch6_vec++;
+                    result[5] = ulpinv;
+                }
+            }
+        }
+        if (nmismatch6_eig > 0 || nmismatch6_vec > 0) {
+            any_mismatch = 1;
+            print_message("  test(6) SGGEV(V,N) info=%lld: "
+                          "%lld eigenvalue mismatches, %lld VL element mismatches\n",
+                          (long long)iinfo_vn,
+                          (long long)nmismatch6_eig, (long long)nmismatch6_vec);
         }
     }
 
-    /*
-     * Do test (7): Compute eigenvalues and right eigenvectors,
-     * and test them
-     */
     slacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
     slacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+    INT iinfo_nv = 0;
     sggev("N", "V", n, g_ws->S, lda, g_ws->T, lda,
           g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
           g_ws->Q, ldq, g_ws->QE, ldqe,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
+          g_ws->work, g_ws->lwork, &iinfo_nv);
+    if (iinfo_nv != 0 && iinfo_nv != n + 1) {
         result[0] = ulpinv;
-        print_message("SGGEV4 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
+        print_message("SGGEV(N,V) returned INFO=%lld for N=%lld JTYPE=%lld\n",
+                      (long long)iinfo_nv, (long long)n, (long long)jtype);
         goto check_results;
     }
 
-    for (INT j = 0; j < n; j++) {
-        if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-            g_ws->alphai[j] != g_ws->alphi1[j] ||
-            g_ws->beta[j]   != g_ws->beta1[j]) {
-            result[6] = ulpinv;
+    {
+        INT nmismatch7_eig = 0, nmismatch7_vec = 0;
+        for (INT j = 0; j < n; j++) {
+            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
+                g_ws->alphai[j] != g_ws->alphi1[j] ||
+                g_ws->beta[j]   != g_ws->beta1[j]) {
+                nmismatch7_eig++;
+                result[6] = ulpinv;
+            }
+        }
+        for (INT j = 0; j < n; j++) {
+            for (INT jc = 0; jc < n; jc++) {
+                if (g_ws->Z[j + jc * ldq] != g_ws->QE[j + jc * ldqe]) {
+                    nmismatch7_vec++;
+                    result[6] = ulpinv;
+                }
+            }
+        }
+        if (nmismatch7_eig > 0 || nmismatch7_vec > 0) {
+            any_mismatch = 1;
+            print_message("  test(7) SGGEV(N,V) info=%lld: "
+                          "%lld eigenvalue mismatches, %lld VR element mismatches\n",
+                          (long long)iinfo_nv,
+                          (long long)nmismatch7_eig, (long long)nmismatch7_vec);
         }
     }
 
-    for (INT j = 0; j < n; j++) {
-        for (INT jc = 0; jc < n; jc++) {
-            if (g_ws->Z[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
-                result[6] = ulpinv;
-        }
+    if (any_mismatch) {
+        print_message("  result[0..6] = %.3e  %.3e  %.3e  %.3e  %.3e  %.3e  %.3e\n",
+                      (double)result[0], (double)result[1], (double)result[2],
+                      (double)result[3], (double)result[4], (double)result[5],
+                      (double)result[6]);
     }
 
 check_results:
