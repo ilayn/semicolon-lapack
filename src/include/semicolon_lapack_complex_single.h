@@ -246,7 +246,6 @@ SEMICOLON_API void claed8(INT* K, const INT n, const INT qsiz, c64* Q, const INT
 SEMICOLON_API void claein(const INT rightv, const INT noinit, const INT n, const c64* restrict H, const INT ldh, const c64 w, c64* restrict V, c64* restrict B, const INT ldb, f32* restrict rwork, const f32 eps3, const f32 smlnum, INT* info);
 SEMICOLON_API void claesy(const c64 a, const c64 b, const c64 c, c64* rt1, c64* rt2, c64* evscal, c64* cs1, c64* sn1);
 SEMICOLON_API void claev2(const c64 a, const c64 b, const c64 c, f32* rt1, f32* rt2, f32* cs1, c64* sn1);
-SEMICOLON_API void clag2c(const INT m, const INT n, const c64* restrict A, const INT lda, float complex* restrict SA, const INT ldsa, INT* info);
 SEMICOLON_API void clag2z(const INT m, const INT n, const c64* restrict SA, const INT ldsa, c128* restrict A, const INT lda, INT* info);
 SEMICOLON_API void clags2(const INT upper, const f32 a1, const c64 a2, const f32 a3, const f32 b1, const c64 b2, const f32 b3, f32* csu, c64* snu, f32* csv, c64* snv, f32* csq, c64* snq);
 SEMICOLON_API void clagtm(const char* trans, const INT n, const INT nrhs, const f32 alpha, const c64* restrict DL, const c64* restrict D, const c64* restrict DU, const c64* restrict X, const INT ldx, const f32 beta, c64* restrict B, const INT ldb);
@@ -321,7 +320,6 @@ SEMICOLON_API void clasyf(const char* uplo, const INT n, const INT nb, INT* kb, 
 SEMICOLON_API void clasyf_aa(const char* uplo, const INT j1, const INT m, const INT nb, c64* restrict A, const INT lda, INT* restrict ipiv, c64* restrict H, const INT ldh, c64* restrict work);
 SEMICOLON_API void clasyf_rk(const char* uplo, const INT n, const INT nb, INT* kb, c64* restrict A, const INT lda, c64* restrict E, INT* restrict ipiv, c64* restrict W, const INT ldw, INT* info);
 SEMICOLON_API void clasyf_rook(const char* uplo, const INT n, const INT nb, INT* kb, c64* restrict A, const INT lda, INT* restrict ipiv, c64* restrict W, const INT ldw, INT* info);
-SEMICOLON_API void clat2c(const char* uplo, const INT n, const c64* restrict A, const INT lda, float complex* restrict SA, const INT ldsa, INT* info);
 SEMICOLON_API void clatbs(const char* uplo, const char* trans, const char* diag, const char* normin, const INT n, const INT kd, const c64* restrict AB, const INT ldab, c64* restrict X, f32* scale, f32* restrict cnorm, INT* info);
 SEMICOLON_API void clatdf(const INT ijob, const INT n, const c64* restrict Z, const INT ldz, c64* restrict rhs, f32* rdsum, f32* rdscal, const INT* restrict ipiv, const INT* restrict jpiv);
 SEMICOLON_API void clatps(const char* uplo, const char* trans, const char* diag, const char* normin, const INT n, const c64* restrict AP, c64* restrict X, f32* scale, f32* restrict cnorm, INT* info);

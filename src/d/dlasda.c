@@ -117,7 +117,7 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
         }
 
         for (j = 0; j < nl; j++) {
-            IWORK[idxqi + j] = j + 1;
+            IWORK[idxqi + j] = j;
         }
 
         if (i == nd && sqre == 0) {
@@ -158,7 +158,7 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
         }
 
         for (j = 0; j < nr; j++) {
-            IWORK[idxqi + j] = j + 1;
+            IWORK[idxqi + j] = j;
         }
     }
 

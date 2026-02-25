@@ -78,10 +78,10 @@ void slasd7(const INT icompq, const INT nl, const INT nr, const INT sqre,
     }
 
     for (i = 1; i < n; i++) {
-        DSIGMA[i] = D[IDXQ[i] - 1];
-        ZW[i] = Z[IDXQ[i] - 1];
-        VFW[i] = VF[IDXQ[i] - 1];
-        VLW[i] = VL[IDXQ[i] - 1];
+        DSIGMA[i] = D[IDXQ[i]];
+        ZW[i] = Z[IDXQ[i]];
+        VFW[i] = VF[IDXQ[i]];
+        VLW[i] = VL[IDXQ[i]];
     }
 
     slamrg(nl, nr, &DSIGMA[1], 1, 1, &IDX[1]);
@@ -138,14 +138,14 @@ L80:
                 (*givptr)++;
                 idxjp = IDXQ[IDX[jprev] + 1];
                 idxj = IDXQ[IDX[j] + 1];
-                if (idxjp <= nlp1) {
-                    idxjp = idxjp - 1;
+                if (idxjp <= nl) {
+                    idxjp--;
                 }
-                if (idxj <= nlp1) {
-                    idxj = idxj - 1;
+                if (idxj <= nl) {
+                    idxj--;
                 }
-                GIVCOL[*givptr - 1 + 1 * ldgcol] = idxjp - 1;
-                GIVCOL[*givptr - 1 + 0 * ldgcol] = idxj - 1;
+                GIVCOL[*givptr - 1 + 1 * ldgcol] = idxjp;
+                GIVCOL[*givptr - 1 + 0 * ldgcol] = idxj;
                 GIVNUM[*givptr - 1 + 1 * ldgnum] = *c;
                 GIVNUM[*givptr - 1 + 0 * ldgnum] = *s;
             }
@@ -180,10 +180,9 @@ L100:
         for (j = 1; j < n; j++) {
             jp = IDXP[j];
             PERM[j] = IDXQ[IDX[jp] + 1];
-            if (PERM[j] <= nlp1) {
-                PERM[j] = PERM[j] - 1;
+            if (PERM[j] <= nl) {
+                PERM[j]--;
             }
-            PERM[j] = PERM[j] - 1;
         }
     }
 

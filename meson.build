@@ -236,6 +236,11 @@ pkg.generate(libsemilapack,
   url: 'https://github.com/ilayn/semicolon-lapack',
 )
 
+# Fortran-ABI compatibility shim (optional, disabled by default)
+if get_option('fabi_shim')
+  subdir('src/fortran_shim')
+endif
+
 # Testing (optional, enabled by default)
 if get_option('tests')
   cmocka_dep = dependency('cmocka', required: true)
