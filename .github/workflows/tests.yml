@@ -81,10 +81,44 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas
+        run: meson setup builddir -Dblas=openblas --default-library=shared
 
       - name: Build
         run: ninja -C builddir
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
+
+      # --- MSVC consumer test: compile a C program with cl.exe against the
+      #     MinGW-built semilapack.dll to verify cross-compiler ABI. ---
+
+      - name: Collect DLLs for MSVC test
+        run: |
+          mkdir msvc_test
+          cp builddir/src/semilapack.dll msvc_test/
+          cp /$MSYSTEM/bin/libopenblas.dll msvc_test/
+          for dll in libgcc_s_seh-1.dll libgfortran-5.dll libgomp-1.dll libwinpthread-1.dll libquadmath-0.dll; do
+            [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
+          done
+          ls -la msvc_test/
+
+      - name: Generate MSVC import library
+        run: |
+          echo "LIBRARY semilapack.dll" > msvc_test/semilapack.def
+          echo "EXPORTS" >> msvc_test/semilapack.def
+          nm builddir/src/semilapack.dll.a 2>/dev/null \
+            | grep ' T ' | awk '{print $3}' \
+            >> msvc_test/semilapack.def
+
+      - name: Build and run MSVC consumer test
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd msvc_test
+          lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
+          cl.exe /std:c11 /O2 /W3 /nologo ^
+            /I "..\include" ^
+            ..\tests\ci\msvc_consumer_test.c ^
+            semilapack.lib ^
+            /Fe:consumer_test.exe
+          consumer_test.exe
