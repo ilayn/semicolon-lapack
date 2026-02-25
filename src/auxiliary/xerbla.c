@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include "semicolon_lapack_auxiliary.h"
 
-#if defined(__GNUC__) || defined(__clang__)
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(_WIN32)
 #define XERBLA_WEAK __attribute__((weak))
 #else
 #define XERBLA_WEAK

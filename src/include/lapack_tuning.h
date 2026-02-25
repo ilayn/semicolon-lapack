@@ -272,7 +272,7 @@ int lapack_get_gelq_nb(int m, int n)
  * GCC/Clang: __attribute__((weak))
  * MSVC: would need #pragma comment(linker, "/alternatename:...")
  */
-#if defined(__GNUC__) || defined(__clang__)
+#if (defined(__GNUC__) || defined(__clang__)) && !defined(_WIN32)
 #define LAPACK_WEAK __attribute__((weak))
 #else
 #define LAPACK_WEAK
