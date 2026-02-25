@@ -61,7 +61,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: UCRT64
-          update: false
+          update: true
           cache: true
           install: >-
             mingw-w64-ucrt-x86_64-gcc
@@ -71,6 +71,11 @@ jobs:
             mingw-w64-ucrt-x86_64-openblas
             mingw-w64-ucrt-x86_64-pkg-config
             git
+
+      - name: Print toolchain info
+        run: |
+          cc --version
+          pacman -Q mingw-w64-ucrt-x86_64-openblas
 
       - name: Install CMocka 2.0
         run: |
@@ -91,7 +96,7 @@ jobs:
         run: meson test -C builddir --print-errorlogs
 
       # --- MSVC consumer test: compile a C program with cl.exe against the
-      #     MinGW-built semilapack.dll to verify cross-compiler ABI. ---
+      #     MinGW-built semilapack.dll to verify cross-compiler ABI (GCC). ---
 
       - name: Collect DLLs for MSVC test
         run: |
@@ -99,6 +104,86 @@ jobs:
           cp builddir/src/semilapack.dll msvc_test/
           cp /$MSYSTEM/bin/libopenblas.dll msvc_test/
           for dll in libgcc_s_seh-1.dll libgfortran-5.dll libgomp-1.dll libwinpthread-1.dll libquadmath-0.dll; do
+            [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
+          done
+          ls -la msvc_test/
+
+      - name: Generate MSVC import library
+        run: |
+          echo "LIBRARY semilapack.dll" > msvc_test/semilapack.def
+          echo "EXPORTS" >> msvc_test/semilapack.def
+          nm builddir/src/semilapack.dll.a 2>/dev/null \
+            | grep ' T ' | awk '{print $3}' \
+            >> msvc_test/semilapack.def
+
+      - name: Build and run MSVC consumer test
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd msvc_test
+          lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
+          cl.exe /std:c11 /O2 /W3 /nologo ^
+            /I "..\include" ^
+            ..\tests\ci\msvc_consumer_test.c ^
+            semilapack.lib ^
+            /Fe:consumer_test.exe
+          consumer_test.exe
+
+  test-windows-clang:
+    name: Test Windows MSYS2 CLANG64
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: true
+          cache: true
+          install: >-
+            mingw-w64-clang-x86_64-clang
+            mingw-w64-clang-x86_64-meson
+            mingw-w64-clang-x86_64-ninja
+            mingw-w64-clang-x86_64-cmake
+            mingw-w64-clang-x86_64-openblas
+            mingw-w64-clang-x86_64-pkg-config
+            git
+
+      - name: Print toolchain info
+        run: |
+          cc --version
+          pacman -Q mingw-w64-clang-x86_64-openblas
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build -G Ninja \
+            -DCMAKE_INSTALL_PREFIX=$MSYSTEM_PREFIX \
+            -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          cmake --install cmocka/build
+
+      - name: Configure
+        run: meson setup builddir -Dblas=openblas --default-library=shared
+
+      - name: Build
+        run: ninja -C builddir
+
+      - name: Test
+        run: meson test -C builddir --print-errorlogs
+
+      # --- MSVC consumer test: compile a C program with cl.exe against the
+      #     Clang-built semilapack.dll to verify cross-compiler ABI. ---
+
+      - name: Collect DLLs for MSVC test
+        run: |
+          mkdir msvc_test
+          cp builddir/src/semilapack.dll msvc_test/
+          cp /$MSYSTEM/bin/libopenblas.dll msvc_test/
+          for dll in libc++.dll libunwind.dll; do
             [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
           done
           ls -la msvc_test/
