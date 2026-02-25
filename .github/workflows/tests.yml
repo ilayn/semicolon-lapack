@@ -70,6 +70,7 @@ jobs:
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-openblas
             mingw-w64-ucrt-x86_64-pkg-config
+            git
 
       - name: Install CMocka 2.0
         run: |
