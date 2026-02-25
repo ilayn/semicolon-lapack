@@ -429,6 +429,14 @@ gen_ok:
             g_ws->alphai[j] != g_ws->alphi1[j] ||
             g_ws->beta[j]   != g_ws->beta1[j]) {
             result[4] = ulpinv;
+            print_message("  test(5) mismatch j=%lld: "
+                          "alphar=%.17e vs %.17e  "
+                          "alphai=%.17e vs %.17e  "
+                          "beta=%.17e vs %.17e\n",
+                          (long long)j,
+                          g_ws->alphar[j], g_ws->alphr1[j],
+                          g_ws->alphai[j], g_ws->alphi1[j],
+                          g_ws->beta[j],   g_ws->beta1[j]);
         }
     }
 
@@ -497,17 +505,16 @@ gen_ok:
     }
 
 check_results:
-    ;
-    /* Check results against threshold */
-    INT any_fail = 0;
     for (INT jr = 0; jr < 7; jr++) {
-        if (result[jr] >= THRESH) {
-            print_message("N=%d JTYPE=%d test(%d)=%g\n",
-                          n, jtype, jr + 1, result[jr]);
-            any_fail = 1;
+        if (result[jr] >= 0.0) {
+            char ctx[128];
+            snprintf(ctx, sizeof(ctx), "ddrgev3 N=%lld JTYPE=%lld test(%lld)",
+                     (long long)n, (long long)jtype, (long long)(jr + 1));
+            set_test_context(ctx);
+            assert_residual_below(result[jr], THRESH);
         }
     }
-    assert_int_equal(any_fail, 0);
+    clear_test_context();
 }
 
 int main(void)

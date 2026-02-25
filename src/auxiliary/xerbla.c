@@ -10,7 +10,13 @@
 #define XERBLA_WEAK
 #endif
 
+xerbla_handler_t xerbla_override = NULL;
+
 XERBLA_WEAK void xerbla(const char *srname, INT info) {
+    if (xerbla_override) {
+        xerbla_override(srname, info);
+        return;
+    }
     fprintf(stderr, " ** On entry to %s parameter number %d had an illegal value\n",
             srname, info);
 }

@@ -3,8 +3,18 @@ name: Documentation
 on:
   push:
     branches: [main]
+    paths:
+      - 'doc/**'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'include/**'
   pull_request:
     branches: [main]
+    paths:
+      - 'doc/**'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'include/**'
   workflow_dispatch:
 
 permissions:
