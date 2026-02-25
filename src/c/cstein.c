@@ -151,18 +151,18 @@ void cstein(
      * j1 is the 0-based index of the first eigenvalue in the current block.
      */
     j1 = 0;
-    for (nblk = 1; nblk <= iblock[m - 1]; nblk++) {
+    for (nblk = 0; nblk <= iblock[m - 1]; nblk++) {
 
         /*
          * Find starting and ending indices of block nblk (0-based).
          * isplit stores 0-based endpoint indices.
          */
-        if (nblk == 1) {
+        if (nblk == 0) {
             b1 = 0;
         } else {
-            b1 = isplit[nblk - 2] + 1;
+            b1 = isplit[nblk - 1] + 1;
         }
-        bn = isplit[nblk - 1];
+        bn = isplit[nblk];
         blksiz = bn - b1 + 1;
 
         if (blksiz != 1) {

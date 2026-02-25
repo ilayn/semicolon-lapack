@@ -127,6 +127,7 @@ void sgebal(const char* job, const INT n, f32* A, const INT lda,
                     noconv = 1;
 
                     if (l == 0) {
+                        scale[0] = ONE;
                         *ilo = 0;
                         *ihi = 0;
                         return;

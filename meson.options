@@ -9,6 +9,9 @@ option('tests', type: 'boolean', value: true,
 option('benchmarks', type: 'boolean', value: false,
        description: 'Build benchmark executables for profiling')
 
+option('fabi_shim', type: 'boolean', value: false,
+       description: 'Build Fortran-ABI compatibility shim library (libsemilapack_fortran)')
+
 option('USE_INT64', type: 'boolean', value: false,
        description: 'Use 64-bit integers for LAPACK index parameters')
 

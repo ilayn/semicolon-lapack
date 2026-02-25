@@ -72,7 +72,7 @@ void dsyev(const char* jobz, const char* uplo, const INT n,
 
     if (*info == 0) {
         nb = lapack_get_nb("SYTRD");
-        lwkopt = (n > 1) ? (nb + 2) * n : 1;
+        lwkopt = (n > 1) ? (nb + 2) * n : 2;
         work[0] = (f64)lwkopt;
 
         if (lwork < (3 * n - 1 > 1 ? 3 * n - 1 : 1) && !lquery) {
