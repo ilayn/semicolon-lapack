@@ -48,3 +48,43 @@ jobs:
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
+
+  test-windows:
+    name: Test Windows MSYS2 UCRT64
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          cache: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-meson
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-openblas
+            mingw-w64-ucrt-x86_64-pkg-config
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build -G Ninja \
+            -DCMAKE_INSTALL_PREFIX=$MSYSTEM_PREFIX \
+            -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          cmake --install cmocka/build
+
+      - name: Configure
+        run: meson setup builddir -Dblas=openblas
+
+      - name: Build
+        run: ninja -C builddir
+
+      - name: Test
+        run: meson test -C builddir --print-errorlogs
