@@ -46,11 +46,28 @@ jobs:
           cmake --build cmocka/build
           cmake --install cmocka/build
 
+      - name: Print environment info
+        run: |
+          echo "=== CPU ==="
+          lscpu | grep -E 'Model name|CPU\(s\)|Thread|Architecture|Vendor'
+          echo ""
+          echo "=== Memory ==="
+          free -h | head -2
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+
       - name: Configure
         run: meson setup builddir -Dblas=openblas
 
       - name: Build
         run: ninja -C builddir
+
+      - name: Print OpenBLAS runtime info
+        run: |
+          OPENBLAS_VERBOSE=2 meson test -C builddir dgetrf -v 2>&1 | head -20
+        env:
+          OPENBLAS_NUM_THREADS: 1
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
@@ -80,9 +97,16 @@ jobs:
             mingw-w64-ucrt-x86_64-pkg-config
             git
 
-      - name: Print toolchain info
+      - name: Print environment info
         run: |
-          cc --version
+          echo "=== CPU ==="
+          cat /proc/cpuinfo | grep 'model name' | head -1
+          echo "Cores: $(nproc)"
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+          echo ""
+          echo "=== OpenBLAS ==="
           pacman -Q mingw-w64-ucrt-x86_64-openblas
 
       - name: Install CMocka 2.0
@@ -99,6 +123,12 @@ jobs:
 
       - name: Build
         run: ninja -C builddir
+
+      - name: Print OpenBLAS runtime info
+        run: |
+          OPENBLAS_VERBOSE=2 meson test -C builddir dgetrf -v 2>&1 | head -20
+        env:
+          OPENBLAS_NUM_THREADS: 1
 
       # FMA theory test: OpenBLAS DROT kernel may use FMA instructions for
       # longer vectors but scalar multiply-add for shorter ones.  dhgeqz with
@@ -197,9 +227,16 @@ jobs:
             mingw-w64-clang-x86_64-pkg-config
             git
 
-      - name: Print toolchain info
+      - name: Print environment info
         run: |
-          cc --version
+          echo "=== CPU ==="
+          cat /proc/cpuinfo | grep 'model name' | head -1
+          echo "Cores: $(nproc)"
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+          echo ""
+          echo "=== OpenBLAS ==="
           pacman -Q mingw-w64-clang-x86_64-openblas
 
       - name: Install CMocka 2.0
@@ -216,6 +253,12 @@ jobs:
 
       - name: Build
         run: ninja -C builddir
+
+      - name: Print OpenBLAS runtime info
+        run: |
+          OPENBLAS_VERBOSE=2 meson test -C builddir dgetrf -v 2>&1 | head -20
+        env:
+          OPENBLAS_NUM_THREADS: 1
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
