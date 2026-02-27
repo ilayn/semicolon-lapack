@@ -246,10 +246,15 @@ jobs:
         run: ninja -C builddir
 
 
+      - name: Print OpenBLAS kernel selection
+        run: |
+          OPENBLAS_VERBOSE=2 OPENBLAS_NUM_THREADS=1 builddir/tests/d/test_dgetrf.exe 2>&1 | head -5 || true
+
       - name: Test
         run: meson test -C builddir --print-errorlogs
         env:
           OPENBLAS_NUM_THREADS: 1
+          OPENBLAS_CORETYPE: Haswell
 
       # --- MSVC consumer test: compile a C program with cl.exe against the
       #     Clang-built DLL to verify cross-compiler ABI. ---
