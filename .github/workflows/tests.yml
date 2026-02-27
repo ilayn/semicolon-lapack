@@ -134,11 +134,12 @@ jobs:
       # Run failing eigenvalue tests individually with full output
       - name: Debug ddrgev/sdrgev test5 failures
         run: |
+          export PATH="$(pwd)/builddir/src:$PATH"
           echo "=== ddrgev ==="
-          builddir/tests/d/test_ddrgev.exe 2>&1 || true
+          builddir/tests/d/test_ddrgev.exe 2>&1; echo "exit: $?"
           echo ""
           echo "=== sdrgev ==="
-          builddir/tests/s/test_sdrgev.exe 2>&1 || true
+          builddir/tests/s/test_sdrgev.exe 2>&1; echo "exit: $?"
         continue-on-error: true
         env:
           OPENBLAS_NUM_THREADS: 1
@@ -261,6 +262,19 @@ jobs:
           cc -o openblas_info.exe tests/ci/openblas_info.c \
             $(pkg-config --cflags --libs openblas)
           ./openblas_info.exe
+
+      - name: Debug ddrgev/sdrgev test5 failures
+        run: |
+          export PATH="$(pwd)/builddir/src:$PATH"
+          echo "=== ddrgev ==="
+          builddir/tests/d/test_ddrgev.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== sdrgev ==="
+          builddir/tests/s/test_sdrgev.exe 2>&1; echo "exit: $?"
+        continue-on-error: true
+        env:
+          OPENBLAS_NUM_THREADS: 1
+          OPENBLAS_CORETYPE: Haswell
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
