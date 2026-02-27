@@ -120,7 +120,7 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared
+        run: meson setup builddir -Dblas=openblas --default-library=shared -Dc_args=-DDGGEV_DEBUG
 
       - name: Build
         run: ninja -C builddir

@@ -8,6 +8,9 @@
 #include "lapack_tuning.h"
 #include <math.h>
 #include "semicolon_cblas.h"
+#ifdef DGGEV_DEBUG
+#include <stdio.h>
+#endif
 
 /**
  * DGGEV computes for a pair of N-by-N real nonsymmetric matrices (A,B)
@@ -235,6 +238,11 @@ void dggev(const char* jobvl, const char* jobvr, const INT n,
        Schur forms and Schur vectors) */
     iwrk = itau;
     const char* chtemp = ilv ? "S" : "E";
+#ifdef DGGEV_DEBUG
+    fprintf(stderr, "DGGEV(%c,%c): n=%lld ilo=%lld ihi=%lld job=%s icols=%lld irows=%lld\n",
+            jobvl[0], jobvr[0], (long long)n, (long long)ilo,
+            (long long)ihi, chtemp, (long long)icols, (long long)irows);
+#endif
     dhgeqz(chtemp, jobvl, jobvr, n, ilo, ihi, A, lda, B, ldb,
            alphar, alphai, beta, VL, ldvl, VR, ldvr,
            &work[iwrk], lwork - iwrk, &ierr);

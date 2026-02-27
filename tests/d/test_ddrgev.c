@@ -406,11 +406,20 @@ static void test_ddrgev_case(void** state)
                 int ai_eq = (g_ws->alphai[j] == g_ws->alphi1[j]);
                 int b_eq  = (g_ws->beta[j]   == g_ws->beta1[j]);
                 if (!(ar_eq && ai_eq && b_eq)) {
-                    print_message("  j=%lld: alphar diff=%.3e  alphai diff=%.3e"
-                                  "  beta diff=%.3e\n", (long long)j,
-                                  fabs(g_ws->alphar[j] - g_ws->alphr1[j]),
-                                  fabs(g_ws->alphai[j] - g_ws->alphi1[j]),
-                                  fabs(g_ws->beta[j] - g_ws->beta1[j]));
+                    union { f64 d; uint64_t u; } vv_ar, nn_ar, vv_ai, nn_ai, vv_b, nn_b;
+                    vv_ar.d = g_ws->alphar[j]; nn_ar.d = g_ws->alphr1[j];
+                    vv_ai.d = g_ws->alphai[j]; nn_ai.d = g_ws->alphi1[j];
+                    vv_b.d  = g_ws->beta[j];   nn_b.d  = g_ws->beta1[j];
+                    print_message("  j=%lld:\n", (long long)j);
+                    print_message("    alphar: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                                  vv_ar.d, (unsigned long long)vv_ar.u,
+                                  nn_ar.d, (unsigned long long)nn_ar.u);
+                    print_message("    alphai: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                                  vv_ai.d, (unsigned long long)vv_ai.u,
+                                  nn_ai.d, (unsigned long long)nn_ai.u);
+                    print_message("    beta:   V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                                  vv_b.d, (unsigned long long)vv_b.u,
+                                  nn_b.d, (unsigned long long)nn_b.u);
                 }
             }
             assert_residual_below(ulpinv, THRESH);
