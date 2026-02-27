@@ -27,15 +27,13 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  get_commit_message:
+    name: Get commit message
+    uses: ./.github/workflows/commit_message.yml
+
   build:
-    if: >-
-      ${{
-        (github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip docs]'))
-        && (github.event_name != 'pull_request' || (
-          !contains(github.event.pull_request.title, '[skip docs]')
-          && !contains(github.event.pull_request.body, '[skip docs]')
-        ))
-      }}
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_docs == '1'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

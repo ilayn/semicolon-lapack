@@ -7,8 +7,14 @@ on:
     branches: [main]
 
 jobs:
+  get_commit_message:
+    name: Get commit message
+    uses: ./.github/workflows/commit_message.yml
+
   test-linux:
     name: Test Linux OpenBLAS
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -51,6 +57,8 @@ jobs:
 
   test-windows:
     name: Test Windows MSYS2 UCRT64
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: windows-latest
     defaults:
       run:
@@ -114,6 +122,10 @@ jobs:
       # --- MSVC consumer test: compile a C program with cl.exe against the
       #     MinGW-built DLL to verify cross-compiler ABI (GCC). ---
 
+      - name: Install to staging area
+        run: |
+          DESTDIR=$(pwd)/staging meson install -C builddir --no-rebuild
+
       - name: Detect DLL name
         id: dll_name
         run: |
@@ -124,7 +136,7 @@ jobs:
             echo "dll=semilapack" >> $GITHUB_OUTPUT
           fi
 
-      - name: Collect DLLs for MSVC test
+      - name: Collect DLLs and installed headers for MSVC test
         run: |
           DLL=${{ steps.dll_name.outputs.dll }}
           mkdir msvc_test
@@ -133,7 +145,10 @@ jobs:
           for dll in libgcc_s_seh-1.dll libgfortran-5.dll libgomp-1.dll libwinpthread-1.dll libquadmath-0.dll; do
             [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
           done
-          ls -la msvc_test/
+          # Copy installed headers (INT resolved, proper layout)
+          cp -r staging${MSYSTEM_PREFIX}/include msvc_test/include
+          echo "=== Installed headers ==="
+          ls -la msvc_test/include/semicolon_lapack/
 
       - name: Generate MSVC import library
         run: |
@@ -151,7 +166,7 @@ jobs:
           cd msvc_test
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
-            /I "..\include" ^
+            /I "include" ^
             ..\tests\ci\msvc_consumer_test.c ^
             semilapack.lib ^
             /Fe:consumer_test.exe
@@ -159,6 +174,8 @@ jobs:
 
   test-windows-clang:
     name: Test Windows MSYS2 CLANG64
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: windows-latest
     defaults:
       run:
@@ -206,6 +223,10 @@ jobs:
       # --- MSVC consumer test: compile a C program with cl.exe against the
       #     Clang-built DLL to verify cross-compiler ABI. ---
 
+      - name: Install to staging area
+        run: |
+          DESTDIR=$(pwd)/staging meson install -C builddir --no-rebuild
+
       - name: Detect DLL name
         id: dll_name
         run: |
@@ -215,7 +236,7 @@ jobs:
             echo "dll=semilapack" >> $GITHUB_OUTPUT
           fi
 
-      - name: Collect DLLs for MSVC test
+      - name: Collect DLLs and installed headers for MSVC test
         run: |
           DLL=${{ steps.dll_name.outputs.dll }}
           mkdir msvc_test
@@ -224,7 +245,10 @@ jobs:
           for dll in libc++.dll libunwind.dll; do
             [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
           done
-          ls -la msvc_test/
+          # Copy installed headers (INT resolved, proper layout)
+          cp -r staging${MSYSTEM_PREFIX}/include msvc_test/include
+          echo "=== Installed headers ==="
+          ls -la msvc_test/include/semicolon_lapack/
 
       - name: Generate MSVC import library
         run: |
@@ -242,7 +266,7 @@ jobs:
           cd msvc_test
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
-            /I "..\include" ^
+            /I "include" ^
             ..\tests\ci\msvc_consumer_test.c ^
             semilapack.lib ^
             /Fe:consumer_test.exe

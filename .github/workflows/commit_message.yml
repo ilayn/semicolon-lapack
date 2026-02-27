@@ -1,0 +1,49 @@
+# Adapted from SciPy's commit_message.yml workflow.
+# See: https://github.com/scipy/scipy/blob/main/.github/workflows/commit_message.yml
+name: Skip tag checker
+
+on:
+  workflow_call:
+    outputs:
+      run_docs:
+        description: "Whether to run docs (1=run, 0=skip)"
+        value: ${{ jobs.check_skip_tags.outputs.run_docs }}
+      run_tests:
+        description: "Whether to run tests (1=run, 0=skip)"
+        value: ${{ jobs.check_skip_tags.outputs.run_tests }}
+
+permissions:
+  contents: read
+
+jobs:
+  check_skip_tags:
+    name: Check for skip tags
+    runs-on: ubuntu-latest
+    outputs:
+      run_docs: ${{ steps.check.outputs.run_docs }}
+      run_tests: ${{ steps.check.outputs.run_tests }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Check for skip tags
+        id: check
+        run: |
+          set -xe
+          COMMIT_MSG=$(git log --no-merges -1)
+          RUN_DOCS="1"
+          RUN_TESTS="1"
+          if [[ "$COMMIT_MSG" == *"[skip docs]"* || "$COMMIT_MSG" == *"[tests only]"* ]]; then
+            RUN_DOCS="0"
+          fi
+          if [[ "$COMMIT_MSG" == *"[skip tests]"* || "$COMMIT_MSG" == *"[docs only]"* ]]; then
+            RUN_TESTS="0"
+          fi
+          if [[ "$COMMIT_MSG" == *"[skip ci]"* ]]; then
+            RUN_DOCS="0"
+            RUN_TESTS="0"
+          fi
+          echo "run_docs=$RUN_DOCS" >> $GITHUB_OUTPUT
+          echo "run_tests=$RUN_TESTS" >> $GITHUB_OUTPUT
