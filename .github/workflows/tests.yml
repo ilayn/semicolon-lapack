@@ -137,12 +137,12 @@ jobs:
       # (eigenvalues only) shrinks them after each deflation, producing
       # different cblas_drot counts.  If FMA vs non-FMA rounding is the cause,
       # forcing a pre-FMA architecture should eliminate the ULP differences.
-      - name: Test (Prescott — no FMA baseline)
+      - name: Test (Haswell)
         run: meson test -C builddir --print-errorlogs
         continue-on-error: true
         env:
           OPENBLAS_NUM_THREADS: 1
-          OPENBLAS_CORETYPE: Prescott
+          OPENBLAS_CORETYPE: Haswell
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
