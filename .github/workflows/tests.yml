@@ -120,7 +120,7 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared -Dc_args=-DDGGEV_DEBUG
+        run: meson setup builddir -Dblas=openblas --default-library=shared
 
       - name: Build
         run: ninja -C builddir
@@ -131,18 +131,17 @@ jobs:
             $(pkg-config --cflags --libs openblas)
           ./openblas_info.exe
 
-      # FMA theory test: OpenBLAS DROT kernel may use FMA instructions for
-      # longer vectors but scalar multiply-add for shorter ones.  dhgeqz with
-      # JOB='S' (eigenvectors) keeps full-matrix rotation bounds while JOB='E'
-      # (eigenvalues only) shrinks them after each deflation, producing
-      # different cblas_drot counts.  If FMA vs non-FMA rounding is the cause,
-      # forcing a pre-FMA architecture should eliminate the ULP differences.
-      - name: Test (Haswell)
-        run: meson test -C builddir --print-errorlogs
+      # Run failing eigenvalue tests individually with full output
+      - name: Debug ddrgev/sdrgev test5 failures
+        run: |
+          echo "=== ddrgev ==="
+          builddir/tests/d/test_ddrgev.exe 2>&1 || true
+          echo ""
+          echo "=== sdrgev ==="
+          builddir/tests/s/test_sdrgev.exe 2>&1 || true
         continue-on-error: true
         env:
           OPENBLAS_NUM_THREADS: 1
-          OPENBLAS_CORETYPE: Haswell
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
