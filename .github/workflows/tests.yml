@@ -248,6 +248,8 @@ jobs:
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
+        env:
+          OPENBLAS_NUM_THREADS: 1
 
       # --- MSVC consumer test: compile a C program with cl.exe against the
       #     Clang-built DLL to verify cross-compiler ABI. ---
