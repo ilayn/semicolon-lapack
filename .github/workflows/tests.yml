@@ -63,11 +63,6 @@ jobs:
       - name: Build
         run: ninja -C builddir
 
-      - name: Print OpenBLAS runtime info
-        run: |
-          OPENBLAS_VERBOSE=2 meson test -C builddir dgetrf -v 2>&1 | head -20
-        env:
-          OPENBLAS_NUM_THREADS: 1
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
@@ -124,11 +119,6 @@ jobs:
       - name: Build
         run: ninja -C builddir
 
-      - name: Print OpenBLAS runtime info
-        run: |
-          OPENBLAS_VERBOSE=2 meson test -C builddir dgetrf -v 2>&1 | head -20
-        env:
-          OPENBLAS_NUM_THREADS: 1
 
       # FMA theory test: OpenBLAS DROT kernel may use FMA instructions for
       # longer vectors but scalar multiply-add for shorter ones.  dhgeqz with
@@ -254,11 +244,6 @@ jobs:
       - name: Build
         run: ninja -C builddir
 
-      - name: Print OpenBLAS runtime info
-        run: |
-          OPENBLAS_VERBOSE=2 meson test -C builddir dgetrf -v 2>&1 | head -20
-        env:
-          OPENBLAS_NUM_THREADS: 1
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
