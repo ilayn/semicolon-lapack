@@ -248,7 +248,7 @@ SEMICOLON_API void zlaed8(INT* K, const INT n, const INT qsiz, c128* Q, const IN
 SEMICOLON_API void zlaein(const INT rightv, const INT noinit, const INT n, const c128* restrict H, const INT ldh, const c128 w, c128* restrict V, c128* restrict B, const INT ldb, f64* restrict rwork, const f64 eps3, const f64 smlnum, INT* info);
 SEMICOLON_API void zlaesy(const c128 a, const c128 b, const c128 c, c128* rt1, c128* rt2, c128* evscal, c128* cs1, c128* sn1);
 SEMICOLON_API void zlaev2(const c128 a, const c128 b, const c128 c, f64* rt1, f64* rt2, f64* cs1, c128* sn1);
-SEMICOLON_API void zlag2c(const INT m, const INT n, const c128* restrict A, const INT lda, float complex* restrict SA, const INT ldsa, INT* info);
+SEMICOLON_API void zlag2c(const INT m, const INT n, const c128* restrict A, const INT lda, c64* restrict SA, const INT ldsa, INT* info);
 SEMICOLON_API void zlags2(const INT upper, const f64 a1, const c128 a2, const f64 a3, const f64 b1, const c128 b2, const f64 b3, f64* csu, c128* snu, f64* csv, c128* snv, f64* csq, c128* snq);
 SEMICOLON_API void zlagtm(const char* trans, const INT n, const INT nrhs, const f64 alpha, const c128* restrict DL, const c128* restrict D, const c128* restrict DU, const c128* restrict X, const INT ldx, const f64 beta, c128* restrict B, const INT ldb);
 SEMICOLON_API void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre, const INT nrhs, c128* restrict B, const INT ldb, c128* restrict BX, const INT ldbx, const INT* restrict perm, const INT givptr, const INT* restrict givcol, const INT ldgcol, const f64* restrict givnum, const INT ldgnum, const f64* restrict poles, const f64* restrict difl, const f64* restrict difr, const f64* restrict Z, const INT k, const f64 c, const f64 s, f64* restrict rwork, INT* info);
@@ -322,7 +322,7 @@ SEMICOLON_API void zlasyf(const char* uplo, const INT n, const INT nb, INT* kb, 
 SEMICOLON_API void zlasyf_aa(const char* uplo, const INT j1, const INT m, const INT nb, c128* restrict A, const INT lda, INT* restrict ipiv, c128* restrict H, const INT ldh, c128* restrict work);
 SEMICOLON_API void zlasyf_rk(const char* uplo, const INT n, const INT nb, INT* kb, c128* restrict A, const INT lda, c128* restrict E, INT* restrict ipiv, c128* restrict W, const INT ldw, INT* info);
 SEMICOLON_API void zlasyf_rook(const char* uplo, const INT n, const INT nb, INT* kb, c128* restrict A, const INT lda, INT* restrict ipiv, c128* restrict W, const INT ldw, INT* info);
-SEMICOLON_API void zlat2c(const char* uplo, const INT n, const c128* restrict A, const INT lda, float complex* restrict SA, const INT ldsa, INT* info);
+SEMICOLON_API void zlat2c(const char* uplo, const INT n, const c128* restrict A, const INT lda, c64* restrict SA, const INT ldsa, INT* info);
 SEMICOLON_API void zlatbs(const char* uplo, const char* trans, const char* diag, const char* normin, const INT n, const INT kd, const c128* restrict AB, const INT ldab, c128* restrict X, f64* scale, f64* restrict cnorm, INT* info);
 SEMICOLON_API void zlatdf(const INT ijob, const INT n, const c128* restrict Z, const INT ldz, c128* restrict rhs, f64* rdsum, f64* rdscal, const INT* restrict ipiv, const INT* restrict jpiv);
 SEMICOLON_API void zlatps(const char* uplo, const char* trans, const char* diag, const char* normin, const INT n, const c128* restrict AP, c128* restrict X, f64* scale, f64* restrict cnorm, INT* info);
