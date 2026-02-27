@@ -90,6 +90,7 @@ jobs:
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-openblas
             mingw-w64-ucrt-x86_64-pkg-config
+            mingw-w64-ucrt-x86_64-tools
             git
 
       - name: Print environment info
@@ -174,11 +175,11 @@ jobs:
       - name: Generate MSVC import library
         run: |
           DLL=${{ steps.dll_name.outputs.dll }}
-          echo "LIBRARY ${DLL}.dll" > msvc_test/semilapack.def
-          echo "EXPORTS" >> msvc_test/semilapack.def
-          nm builddir/src/${DLL}.dll.a 2>/dev/null \
-            | grep ' T ' | awk '{print $3}' \
-            >> msvc_test/semilapack.def
+          gendef - builddir/src/${DLL}.dll > msvc_test/semilapack.def
+          echo "=== .def file: first 10 lines ==="
+          head -10 msvc_test/semilapack.def
+          NEXPORTS=$(grep -c '^ ' msvc_test/semilapack.def || true)
+          echo "=== Total exports: $NEXPORTS ==="
 
       - name: Build and run MSVC consumer test
         shell: cmd
@@ -215,6 +216,7 @@ jobs:
             mingw-w64-clang-x86_64-ninja
             mingw-w64-clang-x86_64-cmake
             mingw-w64-clang-x86_64-openblas
+            mingw-w64-clang-x86_64-tools
             mingw-w64-clang-x86_64-pkg-config
             git
 
@@ -248,7 +250,9 @@ jobs:
 
       - name: Print OpenBLAS kernel selection
         run: |
-          OPENBLAS_VERBOSE=2 OPENBLAS_NUM_THREADS=1 builddir/tests/d/test_dgetrf.exe 2>&1 | head -5 || true
+          EXE=$(find builddir/tests -name 'test_dgetrf.exe' -type f | head -1)
+          echo "Found: $EXE"
+          OPENBLAS_VERBOSE=2 OPENBLAS_NUM_THREADS=1 "$EXE" 2>&1 | head -5 || true
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
@@ -290,11 +294,11 @@ jobs:
       - name: Generate MSVC import library
         run: |
           DLL=${{ steps.dll_name.outputs.dll }}
-          echo "LIBRARY ${DLL}.dll" > msvc_test/semilapack.def
-          echo "EXPORTS" >> msvc_test/semilapack.def
-          nm builddir/src/${DLL}.dll.a 2>/dev/null \
-            | grep ' T ' | awk '{print $3}' \
-            >> msvc_test/semilapack.def
+          gendef - builddir/src/${DLL}.dll > msvc_test/semilapack.def
+          echo "=== .def file: first 10 lines ==="
+          head -10 msvc_test/semilapack.def
+          NEXPORTS=$(grep -c '^ ' msvc_test/semilapack.def || true)
+          echo "=== Total exports: $NEXPORTS ==="
 
       - name: Build and run MSVC consumer test
         shell: cmd
