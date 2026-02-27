@@ -166,7 +166,8 @@ jobs:
             [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
           done
           # Copy installed headers (INT resolved, proper layout)
-          cp -r staging${MSYSTEM_PREFIX}/include msvc_test/include
+          mkdir -p msvc_test/include
+          cp -r "$(find staging -type d -name semicolon_lapack)" msvc_test/include/
           echo "=== Installed headers ==="
           ls -la msvc_test/include/semicolon_lapack/
 
@@ -274,7 +275,8 @@ jobs:
             [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
           done
           # Copy installed headers (INT resolved, proper layout)
-          cp -r staging${MSYSTEM_PREFIX}/include msvc_test/include
+          mkdir -p msvc_test/include
+          cp -r "$(find staging -type d -name semicolon_lapack)" msvc_test/include/
           echo "=== Installed headers ==="
           ls -la msvc_test/include/semicolon_lapack/
 
