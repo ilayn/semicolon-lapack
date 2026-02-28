@@ -7,6 +7,20 @@
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
 
+#ifdef HGEQZ_SCALAR_ROT
+static inline void srot_local(const INT n, f32* x, const INT incx,
+                               f32* y, const INT incy, const f32 c, const f32 s)
+{
+    for (INT i = 0; i < n; i++) {
+        f32 xi = x[i * incx];
+        f32 yi = y[i * incy];
+        x[i * incx] = c * xi + s * yi;
+        y[i * incy] = c * yi - s * xi;
+    }
+}
+#define cblas_srot srot_local
+#endif
+
 /**
  * SHGEQZ computes the eigenvalues of a real matrix pair (H,T),
  * where H is an upper Hessenberg matrix and T is upper triangular,

@@ -195,6 +195,38 @@ jobs:
         env:
           OPENBLAS_NUM_THREADS: 1
 
+      # Experiment 3: replace cblas_drot/srot inside dhgeqz/shgeqz with
+      # explicit scalar loops.  If the V,V vs N,N divergence disappears,
+      # it confirms that OpenBLAS's pre-compiled drot kernel is the culprit
+      # (different SIMD boundary rounding for different element counts).
+      - name: "Exp 3: Configure with scalar rot in hgeqz"
+        run: meson setup builddir_scalarrot -Dblas=openblas --default-library=shared
+        env:
+          CFLAGS: -DHGEQZ_SCALAR_ROT -ffp-contract=off
+        continue-on-error: true
+
+      - name: "Exp 3: Build with scalar rot"
+        run: ninja -C builddir_scalarrot
+        continue-on-error: true
+
+      - name: "Exp 3: Test with scalar rot in hgeqz"
+        run: |
+          export PATH="$(pwd)/builddir_scalarrot/src:$PATH"
+          echo "=== ddrgev (scalar rot) ==="
+          builddir_scalarrot/tests/d/test_ddrgev.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== ddrgev3 (scalar rot) ==="
+          builddir_scalarrot/tests/d/test_ddrgev3.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== sdrgev (scalar rot) ==="
+          builddir_scalarrot/tests/s/test_sdrgev.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== sdrgev3 (scalar rot) ==="
+          builddir_scalarrot/tests/s/test_sdrgev3.exe 2>&1; echo "exit: $?"
+        continue-on-error: true
+        env:
+          OPENBLAS_NUM_THREADS: 1
+
       - name: Test
         run: meson test -C builddir --print-errorlogs
         continue-on-error: true

@@ -7,6 +7,20 @@
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
+#ifdef HGEQZ_SCALAR_ROT
+static inline void drot_local(const INT n, f64* x, const INT incx,
+                               f64* y, const INT incy, const f64 c, const f64 s)
+{
+    for (INT i = 0; i < n; i++) {
+        f64 xi = x[i * incx];
+        f64 yi = y[i * incy];
+        x[i * incx] = c * xi + s * yi;
+        y[i * incy] = c * yi - s * xi;
+    }
+}
+#define cblas_drot drot_local
+#endif
+
 /**
  * DHGEQZ computes the eigenvalues of a real matrix pair (H,T),
  * where H is an upper Hessenberg matrix and T is upper triangular,
