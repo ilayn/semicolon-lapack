@@ -127,7 +127,7 @@ jobs:
 
       - name: Print OpenBLAS runtime info
         run: |
-          cc -o openblas_info tests/ci/openblas_info.c \
+          ${CC:-cc} -o openblas_info tests/ci/openblas_info.c \
             $(pkg-config --cflags --libs openblas)
           ./openblas_info
 
