@@ -215,7 +215,7 @@ static INT generate_matrices(INT jsize, INT jtype)
     rmagn[3] = safmin * ulpinv * (f64)n1;
 
     uint64_t rng_state[4];
-    rng_seed(rng_state, (uint64_t)(jsize * 1000 + jtype));
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(jsize * 1000 + jtype));
 
     INT iinfo = 0;
 
