@@ -121,9 +121,19 @@ jobs:
 
       - name: Configure
         run: meson setup builddir -Dblas=openblas --default-library=shared
+        env:
+          CFLAGS: -DDGGEV_DEBUG
 
       - name: Build
         run: ninja -C builddir
+
+      - name: Check for FMA instructions in compiled library
+        run: |
+          echo "=== FMA instruction count in libsemilapack ==="
+          objdump -d builddir/src/libsemilapack*.dll 2>/dev/null | grep -ci 'vfma' || echo "0"
+          echo "=== Sample FMA context (first 30 lines) ==="
+          objdump -d builddir/src/libsemilapack*.dll 2>/dev/null | grep -B2 -A2 -i 'vfma' | head -30 || echo "none found"
+        continue-on-error: true
 
       - name: Print OpenBLAS runtime info
         run: |
@@ -131,15 +141,56 @@ jobs:
             $(pkg-config --cflags --libs openblas)
           ./openblas_info.exe
 
-      # Run failing eigenvalue tests individually with full output
-      - name: Debug ddrgev/sdrgev test5 failures
+      # Experiment 1: DGGEV_DEBUG output shows ilo/ihi and H,T hash
+      # for each dggev call.  If H_hash/T_hash match between V,V and
+      # N,N, the divergence is inside dhgeqz.  If they differ, it is
+      # in dgeqrf/dormqr/dgghrd (different dgeqrf icols).
+      - name: "Exp 1: DGGEV_DEBUG ilo/ihi + H,T hash"
         run: |
           export PATH="$(pwd)/builddir/src:$PATH"
           echo "=== ddrgev ==="
-          builddir/tests/d/test_ddrgev.exe 2>&1; echo "exit: $?"
+          builddir/tests/d/test_ddrgev.exe > /tmp/ddrgev.txt 2>&1 || true
+          echo "--- N,N calls with preceding V,V hashes (test5 only) ---"
+          grep -B2 'DGGEV(N' /tmp/ddrgev.txt | head -120
+          echo "--- Failures ---"
+          grep -iE '(FAIL|mismatch)' /tmp/ddrgev.txt | head -60
           echo ""
           echo "=== sdrgev ==="
-          builddir/tests/s/test_sdrgev.exe 2>&1; echo "exit: $?"
+          builddir/tests/s/test_sdrgev.exe > /tmp/sdrgev.txt 2>&1 || true
+          echo "--- N,N calls with preceding V,V hashes (test5 only) ---"
+          grep -B2 'SGGEV(N' /tmp/sdrgev.txt | head -120
+          echo "--- Failures ---"
+          grep -iE '(FAIL|mismatch)' /tmp/sdrgev.txt | head -60
+        continue-on-error: true
+        env:
+          OPENBLAS_NUM_THREADS: 1
+
+      # Experiment 2: rebuild without GCC auto-vectorization to check
+      # whether GCC's SIMD codegen causes the V,V vs N,N divergence.
+      - name: "Exp 2: Configure without auto-vectorization"
+        run: meson setup builddir_novec -Dblas=openblas --default-library=shared
+        env:
+          CFLAGS: -fno-tree-vectorize
+        continue-on-error: true
+
+      - name: "Exp 2: Build without auto-vectorization"
+        run: ninja -C builddir_novec
+        continue-on-error: true
+
+      - name: "Exp 2: Test without auto-vectorization"
+        run: |
+          export PATH="$(pwd)/builddir_novec/src:$PATH"
+          echo "=== ddrgev (no vectorization) ==="
+          builddir_novec/tests/d/test_ddrgev.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== ddrgev3 (no vectorization) ==="
+          builddir_novec/tests/d/test_ddrgev3.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== sdrgev (no vectorization) ==="
+          builddir_novec/tests/s/test_sdrgev.exe 2>&1; echo "exit: $?"
+          echo ""
+          echo "=== sdrgev3 (no vectorization) ==="
+          builddir_novec/tests/s/test_sdrgev3.exe 2>&1; echo "exit: $?"
         continue-on-error: true
         env:
           OPENBLAS_NUM_THREADS: 1
