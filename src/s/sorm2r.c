@@ -57,7 +57,7 @@ void sorm2r(const char* side, const char* trans,
             f32* restrict work,
             INT* info)
 {
-    INT i, mi, ni, ic, jc, nq;
+    INT i, mi = 0, ni = 0, ic, jc, nq;
     INT left, notran;
     INT i1, i2, i3;
 

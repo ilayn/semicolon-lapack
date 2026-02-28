@@ -57,7 +57,7 @@ void dorm2l(const char* side, const char* trans,
             f64* restrict work,
             INT* info)
 {
-    INT i, mi, ni, nq;
+    INT i, mi = 0, ni = 0, nq;
     INT left, notran;
     INT i1, i2, i3;
 

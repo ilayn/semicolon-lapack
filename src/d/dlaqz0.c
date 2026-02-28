@@ -411,7 +411,7 @@ void dlaqz0(
         shiftpos = istop - n_undeflated + 1;
 
         /* Shuffle shifts to put f64 shifts in front */
-        for (i = shiftpos; i <= shiftpos + n_undeflated - 2; i += 2) {
+        for (i = shiftpos; i <= shiftpos + n_undeflated - 1; i += 2) {
             if (alphai[i] != -alphai[i + 1]) {
                 swap = alphar[i];
                 alphar[i] = alphar[i + 1];

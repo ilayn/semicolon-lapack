@@ -61,7 +61,7 @@ void sormr3(const char* side, const char* trans,
             f32* restrict work,
             INT* info)
 {
-    INT mi, ni, nq;
+    INT mi = 0, ni = 0, nq;
     INT left, notran;
 
     /* Decode arguments */

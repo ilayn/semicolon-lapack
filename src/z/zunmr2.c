@@ -71,7 +71,7 @@ void zunmr2(const char* side, const char* trans,
             INT* info)
 {
     INT left, notran;
-    INT i, i1, i2, i3, mi, ni, nq;
+    INT i, i1, i2, i3, mi = 0, ni = 0, nq;
     c128 taui;
 
     *info = 0;

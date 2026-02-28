@@ -97,7 +97,7 @@ void zunmbr(const char* vect, const char* side, const char* trans,
             INT* info)
 {
     INT applyq, left, lquery, notran;
-    INT i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
+    INT i1, i2, iinfo, lwkopt, mi = 0, nb, ni = 0, nq, nw;
 
     *info = 0;
     applyq = (vect[0] == 'Q' || vect[0] == 'q');

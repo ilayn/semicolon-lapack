@@ -160,11 +160,9 @@ void dlaqz4(
         cblas_drot(ns + 1, &QC[0 + 0 * ldqc], 1, &QC[0 + 1 * ldqc], 1, c2, s2);
 
         /* Chase the shift down */
-        for (j = 0; j <= ns - 2 - i; j++) {
-            /* Fortran: DLAQZ2(.TRUE., .TRUE., J, 1, NS, IHI-ILO+1, A(ILO,ILO), ...) */
-            /* j is 0-based in C, maps to Fortran J which is 1-based */
-            /* In Fortran: J goes 1 to NS-1-I, in C: j goes 0 to NS-2-I */
-            /* The k parameter to dlaqz2 in Fortran is J (1-based), in C it's j (0-based) */
+        for (j = 0; j <= ns - 3 - i; j++) {
+            /* Fortran: DO J = 1, NS-1-I with 1-based I where I_f = i_c + 1 */
+            /* Loop count: NS-1-(i+1) = ns-2-i, so j goes 0 to ns-3-i */
             dlaqz2(1, 1, j, 0, ns - 1, ihi - ilo,
                    &A[ilo + ilo * lda], lda, &B[ilo + ilo * ldb], ldb,
                    ns + 1, 0, QC, ldqc, ns, 0, ZC, ldzc);

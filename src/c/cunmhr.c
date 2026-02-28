@@ -51,7 +51,7 @@ void cunmhr(const char* side, const char* trans,
             c64* work, const INT lwork, INT* info)
 {
     INT left, lquery;
-    INT i1, i2, mi, nb, nh, ni, nq, nw, lwkopt;
+    INT i1, i2, mi = 0, nb, nh, ni = 0, nq, nw, lwkopt;
 
     *info = 0;
     nh = ihi - ilo;
