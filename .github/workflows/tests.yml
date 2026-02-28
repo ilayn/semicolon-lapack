@@ -73,20 +73,39 @@ jobs:
         run: meson test -C builddir --print-errorlogs
 
   test-macos:
-    name: Test macOS Accelerate
+    name: Test macOS OpenBLAS
     needs: get_commit_message
     if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: macos-14
+    defaults:
+      run:
+        shell: bash -el {0}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: '3.12'
+          miniforge-version: latest
+          activate-environment: ci
+          environment-file: ''
 
-      - name: Install build tools
-        run: pip install meson ninja
+      - name: Install dependencies
+        run: >-
+          conda install -y
+          c-compiler
+          openblas
+          meson
+          ninja
+          cmake
+          pkg-config
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          cmake --install cmocka/build
 
       - name: Print environment info
         run: |
@@ -100,22 +119,17 @@ jobs:
           echo "=== Compiler ==="
           cc --version | head -1
 
-      - name: Install CMocka 2.0
-        run: |
-          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
-          cmake -S cmocka -B cmocka/build \
-            -DCMAKE_INSTALL_PREFIX=$(pwd)/cmocka-install \
-            -DBUILD_SHARED_LIBS=ON
-          cmake --build cmocka/build
-          cmake --install cmocka/build
-
       - name: Configure
-        run: |
-          export PKG_CONFIG_PATH=$(pwd)/cmocka-install/lib/pkgconfig
-          meson setup builddir -Dblas=accelerate
+        run: meson setup builddir -Dblas=openblas
 
       - name: Build
         run: ninja -C builddir
+
+      - name: Print OpenBLAS runtime info
+        run: |
+          cc -o openblas_info tests/ci/openblas_info.c \
+            $(pkg-config --cflags --libs openblas)
+          ./openblas_info
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
