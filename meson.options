@@ -1,7 +1,7 @@
 # Meson build options for semicolon-lapack
 
 option('blas', type: 'string', value: 'auto',
-       description: 'BLAS vendor: auto, openblas, blis, or a pkg-config package name')
+       description: 'BLAS vendor: auto, openblas, blis, accelerate (macOS), or a pkg-config package name')
 
 option('tests', type: 'boolean', value: true,
        description: 'Build and enable test suite')

@@ -72,6 +72,54 @@ jobs:
       - name: Test
         run: meson test -C builddir --print-errorlogs
 
+  test-macos:
+    name: Test macOS Accelerate
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tools
+        run: pip install meson ninja
+
+      - name: Print environment info
+        run: |
+          echo "=== CPU ==="
+          sysctl -n machdep.cpu.brand_string
+          echo "Cores: $(sysctl -n hw.ncpu)"
+          echo ""
+          echo "=== Memory ==="
+          echo "$(( $(sysctl -n hw.memsize) / 1073741824 )) GB"
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build \
+            -DCMAKE_INSTALL_PREFIX=$(pwd)/cmocka-install \
+            -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          cmake --install cmocka/build
+
+      - name: Configure
+        run: |
+          export PKG_CONFIG_PATH=$(pwd)/cmocka-install/lib/pkgconfig
+          meson setup builddir -Dblas=accelerate
+
+      - name: Build
+        run: ninja -C builddir
+
+      - name: Test
+        run: meson test -C builddir --print-errorlogs
+
   test-windows:
     name: Test Windows MSYS2 UCRT64
     needs: get_commit_message
