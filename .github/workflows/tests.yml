@@ -128,7 +128,8 @@ jobs:
       - name: Print OpenBLAS runtime info
         run: |
           ${CC:-cc} -o openblas_info tests/ci/openblas_info.c \
-            $(pkg-config --cflags --libs openblas)
+            $(pkg-config --cflags --libs openblas) \
+            -Wl,-rpath,$CONDA_PREFIX/lib
           ./openblas_info
 
       - name: Test
