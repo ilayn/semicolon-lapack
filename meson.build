@@ -9,6 +9,7 @@ project('semicolon-lapack', 'c',
     'c_std=c11',
     'warning_level=3',
     'buildtype=release',
+    'optimization=3',
   ]
 )
 
@@ -51,8 +52,8 @@ add_project_arguments(extra_warnings, language: 'c')
 # (e.g. with vs without eigenvector accumulation nearby) can produce different
 # bit-level results due to changed register pressure affecting fusion decisions.
 # Disable it: a scientific library must not have compiler-discretionary rounding.
-fp_contract = cc.get_supported_arguments(['-ffp-contract=off'])
-add_project_arguments(fp_contract, language: 'c')
+# fp_contract = cc.get_supported_arguments(['-ffp-contract=off'])
+# add_project_arguments(fp_contract, language: 'c')
 
 # Complex arithmetic: -fcx-limited-range drops NaN/Inf recovery from complex
 # mult and div, inlining 4 FP ops instead of calling __muldc3/__mulsc3.
