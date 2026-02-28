@@ -1366,7 +1366,7 @@ void zlaev2_(c128* a, c128* b, c128* c, f64* rt1, f64* rt2, f64* cs1, c128* sn1)
     zlaev2(*a, *b, *c, rt1, rt2, cs1, sn1);
 }
 
-void zlag2c_(INT* m, INT* n, c128* A, INT* lda, float complex* SA, INT* ldsa, INT* info) {
+void zlag2c_(INT* m, INT* n, c128* A, INT* lda, c64* SA, INT* ldsa, INT* info) {
     zlag2c(*m, *n, A, *lda, SA, *ldsa, info);
 }
 
@@ -1703,7 +1703,7 @@ void zlasyf_rook_(char* uplo, INT* n, INT* nb, INT* kb, c128* A, INT* lda, INT* 
     zlasyf_rook(uplo, *n, *nb, kb, A, *lda, ipiv, W, *ldw, info);
 }
 
-void zlat2c_(char* uplo, INT* n, c128* A, INT* lda, float complex* SA, INT* ldsa, INT* info) {
+void zlat2c_(char* uplo, INT* n, c128* A, INT* lda, c64* SA, INT* ldsa, INT* info) {
     zlat2c(uplo, *n, A, *lda, SA, *ldsa, info);
 }
 

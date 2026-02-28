@@ -63,7 +63,7 @@ static int dsteqr_setup(void** state, INT n)
 
     INT n_alloc = (n > 0) ? n : 1;
     INT e_alloc = (n > 1) ? n - 1 : 1;
-    INT work_steqr = (n > 2) ? 2 * (n - 1) : 1;
+    INT work_steqr = (n > 1) ? 2 * (n - 1) : 1;
     INT work_stt21 = (n > 0) ? n * (n + 1) : 1;
 
     fix->AD = malloc(n_alloc * sizeof(f32));

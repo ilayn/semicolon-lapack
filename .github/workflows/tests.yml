@@ -7,8 +7,14 @@ on:
     branches: [main]
 
 jobs:
+  get_commit_message:
+    name: Get commit message
+    uses: ./.github/workflows/commit_message.yml
+
   test-linux:
     name: Test Linux OpenBLAS
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -40,11 +46,259 @@ jobs:
           cmake --build cmocka/build
           cmake --install cmocka/build
 
+      - name: Print environment info
+        run: |
+          echo "=== CPU ==="
+          lscpu | grep -E 'Model name|CPU\(s\)|Thread|Architecture|Vendor'
+          echo ""
+          echo "=== Memory ==="
+          free -h | head -2
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+
       - name: Configure
         run: meson setup builddir -Dblas=openblas
 
       - name: Build
         run: ninja -C builddir
 
+      - name: Print OpenBLAS runtime info
+        run: |
+          cc -o openblas_info tests/ci/openblas_info.c \
+            $(pkg-config --cflags --libs openblas)
+          ./openblas_info
+
       - name: Test
         run: meson test -C builddir --print-errorlogs
+
+  test-windows:
+    name: Test Windows MSYS2 UCRT64
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          cache: true
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-meson
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-openblas
+            mingw-w64-ucrt-x86_64-pkg-config
+            mingw-w64-ucrt-x86_64-tools
+            git
+
+      - name: Print environment info
+        run: |
+          echo "=== CPU ==="
+          cat /proc/cpuinfo | grep 'model name' | head -1
+          echo "Cores: $(nproc)"
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+          echo ""
+          echo "=== OpenBLAS ==="
+          pacman -Q mingw-w64-ucrt-x86_64-openblas
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build -G Ninja \
+            -DCMAKE_INSTALL_PREFIX=$MSYSTEM_PREFIX \
+            -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          cmake --install cmocka/build
+
+      - name: Configure
+        run: meson setup builddir -Dblas=openblas --default-library=shared
+
+      - name: Build
+        run: ninja -C builddir
+
+      - name: Print OpenBLAS runtime info
+        run: |
+          cc -o openblas_info.exe tests/ci/openblas_info.c \
+            $(pkg-config --cflags --libs openblas)
+          ./openblas_info.exe
+
+      - name: Test
+        run: meson test -C builddir --print-errorlogs
+
+      # --- MSVC consumer test: compile a C program with cl.exe against the
+      #     MinGW-built DLL to verify cross-compiler ABI (GCC). ---
+
+      - name: Install to staging area
+        run: |
+          DESTDIR=$(pwd)/staging meson install -C builddir --no-rebuild
+
+      - name: Detect DLL name
+        id: dll_name
+        run: |
+          # Meson on MinGW may produce semilapack.dll or libsemilapack.dll
+          if [ -f builddir/src/libsemilapack.dll ]; then
+            echo "dll=libsemilapack" >> $GITHUB_OUTPUT
+          else
+            echo "dll=semilapack" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Collect DLLs and installed headers for MSVC test
+        run: |
+          DLL=${{ steps.dll_name.outputs.dll }}
+          mkdir msvc_test
+          cp builddir/src/${DLL}.dll msvc_test/
+          cp /$MSYSTEM/bin/libopenblas.dll msvc_test/
+          for dll in libgcc_s_seh-1.dll libgfortran-5.dll libgomp-1.dll libwinpthread-1.dll libquadmath-0.dll; do
+            [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
+          done
+          # Copy installed headers (INT resolved, proper layout)
+          mkdir -p msvc_test/include
+          cp -r "$(find staging -type d -name semicolon_lapack)" msvc_test/include/
+          echo "=== Installed headers ==="
+          ls -la msvc_test/include/semicolon_lapack/
+
+      - name: Generate MSVC import library
+        run: |
+          DLL=${{ steps.dll_name.outputs.dll }}
+          gendef - builddir/src/${DLL}.dll > msvc_test/semilapack.def
+          echo "=== .def file: first 10 lines ==="
+          head -10 msvc_test/semilapack.def
+          NEXPORTS=$(grep -c '^ ' msvc_test/semilapack.def || true)
+          echo "=== Total exports: $NEXPORTS ==="
+
+      - name: Build and run MSVC consumer test
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd msvc_test
+          lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
+          cl.exe /std:c11 /O2 /W3 /nologo ^
+            /I "include" ^
+            ..\tests\ci\msvc_consumer_test.c ^
+            semilapack.lib ^
+            /Fe:consumer_test.exe
+          consumer_test.exe
+
+  test-windows-clang:
+    name: Test Windows MSYS2 CLANG64
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: true
+          cache: true
+          install: >-
+            mingw-w64-clang-x86_64-clang
+            mingw-w64-clang-x86_64-meson
+            mingw-w64-clang-x86_64-ninja
+            mingw-w64-clang-x86_64-cmake
+            mingw-w64-clang-x86_64-openblas
+            mingw-w64-clang-x86_64-tools
+            mingw-w64-clang-x86_64-pkg-config
+            git
+
+      - name: Print environment info
+        run: |
+          echo "=== CPU ==="
+          cat /proc/cpuinfo | grep 'model name' | head -1
+          echo "Cores: $(nproc)"
+          echo ""
+          echo "=== Compiler ==="
+          cc --version | head -1
+          echo ""
+          echo "=== OpenBLAS ==="
+          pacman -Q mingw-w64-clang-x86_64-openblas
+
+      - name: Install CMocka 2.0
+        run: |
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka/build -G Ninja \
+            -DCMAKE_INSTALL_PREFIX=$MSYSTEM_PREFIX \
+            -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka/build
+          cmake --install cmocka/build
+
+      - name: Configure
+        run: meson setup builddir -Dblas=openblas --default-library=shared
+
+      - name: Build
+        run: ninja -C builddir
+
+      - name: Print OpenBLAS runtime info
+        run: |
+          cc -o openblas_info.exe tests/ci/openblas_info.c \
+            $(pkg-config --cflags --libs openblas)
+          ./openblas_info.exe
+
+      - name: Test
+        run: meson test -C builddir --print-errorlogs
+
+      # --- MSVC consumer test: compile a C program with cl.exe against the
+      #     Clang-built DLL to verify cross-compiler ABI. ---
+
+      - name: Install to staging area
+        run: |
+          DESTDIR=$(pwd)/staging meson install -C builddir --no-rebuild
+
+      - name: Detect DLL name
+        id: dll_name
+        run: |
+          if [ -f builddir/src/libsemilapack.dll ]; then
+            echo "dll=libsemilapack" >> $GITHUB_OUTPUT
+          else
+            echo "dll=semilapack" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Collect DLLs and installed headers for MSVC test
+        run: |
+          DLL=${{ steps.dll_name.outputs.dll }}
+          mkdir msvc_test
+          cp builddir/src/${DLL}.dll msvc_test/
+          cp /$MSYSTEM/bin/libopenblas.dll msvc_test/
+          for dll in libc++.dll libunwind.dll; do
+            [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
+          done
+          # Copy installed headers (INT resolved, proper layout)
+          mkdir -p msvc_test/include
+          cp -r "$(find staging -type d -name semicolon_lapack)" msvc_test/include/
+          echo "=== Installed headers ==="
+          ls -la msvc_test/include/semicolon_lapack/
+
+      - name: Generate MSVC import library
+        run: |
+          DLL=${{ steps.dll_name.outputs.dll }}
+          gendef - builddir/src/${DLL}.dll > msvc_test/semilapack.def
+          echo "=== .def file: first 10 lines ==="
+          head -10 msvc_test/semilapack.def
+          NEXPORTS=$(grep -c '^ ' msvc_test/semilapack.def || true)
+          echo "=== Total exports: $NEXPORTS ==="
+
+      - name: Build and run MSVC consumer test
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cd msvc_test
+          lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
+          cl.exe /std:c11 /O2 /W3 /nologo ^
+            /I "include" ^
+            ..\tests\ci\msvc_consumer_test.c ^
+            semilapack.lib ^
+            /Fe:consumer_test.exe
+          consumer_test.exe

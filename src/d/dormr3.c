@@ -61,7 +61,7 @@ void dormr3(const char* side, const char* trans,
             f64* restrict work,
             INT* info)
 {
-    INT mi, ni, nq;
+    INT mi = 0, ni = 0, nq;
     INT left, notran;
 
     /* Decode arguments */

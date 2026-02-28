@@ -54,15 +54,13 @@ static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16};
 #define NSIZES ((int)(sizeof(NVAL) / sizeof(NVAL[0])))
 #define NMAX 16   /* max(NVAL) */
 
-/* External declarations */
-/* Parameters for each test case */
 typedef struct {
-    INT jsize;   /* index into NVAL[] */
-    INT jtype;   /* matrix type 1..26 */
-    char name[64];
+    INT jsize;     /* index into NVAL[] */
+    INT jtype;     /* matrix type 1..26 */
+    INT test_num;  /* sub-test 1..7 */
+    char name[80];
 } ddrgev_params_t;
 
-/* Shared workspace */
 typedef struct {
     f64* A;
     f64* B;
@@ -193,42 +191,34 @@ static const INT ibsign[MAXTYP] = {
     0, 0, 0, 0, 0, 0
 };
 
-static void test_ddrgev(void** state)
+/**
+ * Generate test matrices A and B for given (jsize, jtype).
+ * Returns 0 on success, nonzero on failure.
+ */
+static INT generate_matrices(INT jsize, INT jtype)
 {
-    ddrgev_params_t* params = (ddrgev_params_t*)(*state);
-    const INT n = NVAL[params->jsize];
-    const INT jtype = params->jtype;  /* 1-based */
+    const INT n = NVAL[jsize];
     const INT lda = NMAX;
     const INT ldq = NMAX;
-    const INT ldqe = NMAX;
-
-    /* Quick return for n=0 */
-    if (n == 0) return;
+    const INT jt = jtype - 1;
 
     const f64 safmin = dlamch("S");
     const f64 ulp = dlamch("P");
     const f64 safmax = 1.0 / safmin;
     const f64 ulpinv = 1.0 / ulp;
-
-    /* RMAGN(0:3) */
     const INT n1 = (n > 1) ? n : 1;
+
     f64 rmagn[4];
     rmagn[0] = 0.0;
     rmagn[1] = 1.0;
     rmagn[2] = safmax * ulp / (f64)n1;
     rmagn[3] = safmin * ulpinv * (f64)n1;
 
-    /* RNG state (seeded from size and type for reproducibility) */
     uint64_t rng_state[4];
-    rng_seed(rng_state, (uint64_t)(params->jsize * 1000 + jtype));
-
-    f64 result[7];
-    for (INT i = 0; i < 7; i++) result[i] = -1.0;
+    rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(jsize * 1000 + jtype));
 
     INT iinfo = 0;
-    INT jt = jtype - 1;  /* 0-based index into DATA arrays */
 
-    /* Generate test matrices A and B */
     if (kclass[jt] < 3) {
 
         /* Generate A (w/o rotation) */
@@ -306,16 +296,16 @@ static void test_ddrgev(void** state)
             }
             dorm2r("L", "N", n, n, n - 1, g_ws->Q, ldq, g_ws->work,
                    g_ws->A, lda, &g_ws->work[2 * n], &iinfo);
-            if (iinfo != 0) goto gen_error;
+            if (iinfo != 0) return iinfo;
             dorm2r("R", "T", n, n, n - 1, g_ws->Z, ldq, &g_ws->work[n],
                    g_ws->A, lda, &g_ws->work[2 * n], &iinfo);
-            if (iinfo != 0) goto gen_error;
+            if (iinfo != 0) return iinfo;
             dorm2r("L", "N", n, n, n - 1, g_ws->Q, ldq, g_ws->work,
                    g_ws->B, lda, &g_ws->work[2 * n], &iinfo);
-            if (iinfo != 0) goto gen_error;
+            if (iinfo != 0) return iinfo;
             dorm2r("R", "T", n, n, n - 1, g_ws->Z, ldq, &g_ws->work[n],
                    g_ws->B, lda, &g_ws->work[2 * n], &iinfo);
-            if (iinfo != 0) goto gen_error;
+            if (iinfo != 0) return iinfo;
         }
     } else {
         /* Random matrices (class 3, type 26) */
@@ -328,187 +318,209 @@ static void test_ddrgev(void** state)
             }
         }
     }
+    return 0;
+}
 
-    goto gen_ok;
-gen_error:
-    print_message("Generator returned INFO=%d for N=%d JTYPE=%d\n",
-                  iinfo, n, jtype);
-    assert_int_equal(iinfo, 0);
-    return;
-gen_ok:
+static void test_ddrgev_case(void** state)
+{
+    ddrgev_params_t* params = (ddrgev_params_t*)(*state);
+    const INT n = NVAL[params->jsize];
+    const INT jtype = params->jtype;
+    const INT test_num = params->test_num;
+    const INT lda = NMAX;
+    const INT ldq = NMAX;
+    const INT ldqe = NMAX;
 
-    for (INT i = 0; i < 7; i++) result[i] = -1.0;
+    /* Quick return for n=0 */
+    if (n == 0) return;
 
-    /*
-     * Call DGGEV to compute eigenvalues and eigenvectors.
-     * First call: JOBVL='V', JOBVR='V' (full)
-     */
+    const f64 ulpinv = 1.0 / dlamch("P");
+
+    /* Generate test matrices */
+    INT iinfo = generate_matrices(params->jsize, jtype);
+    if (iinfo != 0) {
+        fail_msg("Generator returned INFO=%lld for N=%lld JTYPE=%lld",
+                 (long long)iinfo, (long long)n, (long long)jtype);
+        return;
+    }
+
+    /* V,V call - needed by all tests */
     dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
     dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+    INT iinfo_vv = 0;
     dggev("V", "V", n, g_ws->S, lda, g_ws->T, lda,
           g_ws->alphar, g_ws->alphai, g_ws->beta,
           g_ws->Q, ldq, g_ws->Z, ldq,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
-        result[0] = ulpinv;
-        print_message("DGGEV1 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
-        goto check_results;
+          g_ws->work, g_ws->lwork, &iinfo_vv);
+    if (iinfo_vv != 0 && iinfo_vv != n + 1) {
+        fail_msg("DGGEV(V,V) returned INFO=%lld for N=%lld JTYPE=%lld",
+                 (long long)iinfo_vv, (long long)n, (long long)jtype);
+        return;
     }
 
-    /*
-     * Do tests (1) and (2)
-     * Left eigenvector check
-     */
-    dget52(1, n, g_ws->A, lda, g_ws->B, lda, g_ws->Q, ldq,
-           g_ws->alphar, g_ws->alphai, g_ws->beta,
-           g_ws->work, result);
-    if (result[1] > THRESH) {
-        print_message("Left eigenvectors from DGGEV1 incorrectly "
-                      "normalized. Bits of error=%g, N=%d JTYPE=%d\n",
-                      result[1], n, jtype);
-    }
+    if (test_num <= 2) {
+        /* Tests 1-2: left eigenvector check */
+        f64 result[2];
+        dget52(1, n, g_ws->A, lda, g_ws->B, lda, g_ws->Q, ldq,
+               g_ws->alphar, g_ws->alphai, g_ws->beta,
+               g_ws->work, result);
+        assert_residual_below(result[test_num - 1], THRESH);
 
-    /*
-     * Do tests (3) and (4)
-     * Right eigenvector check
-     */
-    dget52(0, n, g_ws->A, lda, g_ws->B, lda, g_ws->Z, ldq,
-           g_ws->alphar, g_ws->alphai, g_ws->beta,
-           g_ws->work, &result[2]);
-    if (result[3] > THRESH) {
-        print_message("Right eigenvectors from DGGEV1 incorrectly "
-                      "normalized. Bits of error=%g, N=%d JTYPE=%d\n",
-                      result[3], n, jtype);
-    }
+    } else if (test_num <= 4) {
+        /* Tests 3-4: right eigenvector check */
+        f64 result[2];
+        dget52(0, n, g_ws->A, lda, g_ws->B, lda, g_ws->Z, ldq,
+               g_ws->alphar, g_ws->alphai, g_ws->beta,
+               g_ws->work, result);
+        assert_residual_below(result[test_num - 3], THRESH);
 
-    /*
-     * Do test (5)
-     * Compare eigenvalues from JOBVL='N', JOBVR='N' with full
-     */
-    dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
-    dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
-    dggev("N", "N", n, g_ws->S, lda, g_ws->T, lda,
-          g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
-          NULL, ldqe, g_ws->QE, ldqe,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
-        result[0] = ulpinv;
-        print_message("DGGEV2 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
-        goto check_results;
-    }
+    } else if (test_num == 5) {
+        /* Test 5: eigenvalue consistency V,V vs N,N */
+        dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
+        dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+        INT iinfo_nn = 0;
+        dggev("N", "N", n, g_ws->S, lda, g_ws->T, lda,
+              g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
+              NULL, ldqe, g_ws->QE, ldqe,
+              g_ws->work, g_ws->lwork, &iinfo_nn);
+        if (iinfo_nn != 0 && iinfo_nn != n + 1) {
+            fail_msg("DGGEV(N,N) returned INFO=%lld for N=%lld JTYPE=%lld",
+                     (long long)iinfo_nn, (long long)n, (long long)jtype);
+            return;
+        }
+        INT nmismatch = 0;
+        for (INT j = 0; j < n; j++) {
+            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
+                g_ws->alphai[j] != g_ws->alphi1[j] ||
+                g_ws->beta[j]   != g_ws->beta1[j]) {
+                nmismatch++;
+            }
+        }
+        if (nmismatch > 0) {
+            print_message("DGGEV(V,V) vs (N,N): %lld of %lld eigenvalues "
+                          "differ, info(V,V)=%lld info(N,N)=%lld\n",
+                          (long long)nmismatch, (long long)n,
+                          (long long)iinfo_vv, (long long)iinfo_nn);
+            for (INT j = 0; j < n; j++) {
+                int ar_eq = (g_ws->alphar[j] == g_ws->alphr1[j]);
+                int ai_eq = (g_ws->alphai[j] == g_ws->alphi1[j]);
+                int b_eq  = (g_ws->beta[j]   == g_ws->beta1[j]);
+                if (!(ar_eq && ai_eq && b_eq)) {
+                    union { f64 d; uint64_t u; } vv_ar, nn_ar, vv_ai, nn_ai, vv_b, nn_b;
+                    vv_ar.d = g_ws->alphar[j]; nn_ar.d = g_ws->alphr1[j];
+                    vv_ai.d = g_ws->alphai[j]; nn_ai.d = g_ws->alphi1[j];
+                    vv_b.d  = g_ws->beta[j];   nn_b.d  = g_ws->beta1[j];
+                    print_message("  j=%lld:\n", (long long)j);
+                    print_message("    alphar: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                                  vv_ar.d, (unsigned long long)vv_ar.u,
+                                  nn_ar.d, (unsigned long long)nn_ar.u);
+                    print_message("    alphai: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                                  vv_ai.d, (unsigned long long)vv_ai.u,
+                                  nn_ai.d, (unsigned long long)nn_ai.u);
+                    print_message("    beta:   V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                                  vv_b.d, (unsigned long long)vv_b.u,
+                                  nn_b.d, (unsigned long long)nn_b.u);
+                }
+            }
+            assert_residual_below(ulpinv, THRESH);
+        }
 
-    for (INT j = 0; j < n; j++) {
-        if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-            g_ws->alphai[j] != g_ws->alphi1[j] ||
-            g_ws->beta[j]   != g_ws->beta1[j]) {
-            result[4] = ulpinv;
+    } else if (test_num == 6) {
+        /* Test 6: left eigenvector consistency V,V vs V,N */
+        dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
+        dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+        INT iinfo_vn = 0;
+        dggev("V", "N", n, g_ws->S, lda, g_ws->T, lda,
+              g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
+              g_ws->QE, ldqe, g_ws->Z, ldq,
+              g_ws->work, g_ws->lwork, &iinfo_vn);
+        if (iinfo_vn != 0 && iinfo_vn != n + 1) {
+            fail_msg("DGGEV(V,N) returned INFO=%lld for N=%lld JTYPE=%lld",
+                     (long long)iinfo_vn, (long long)n, (long long)jtype);
+            return;
+        }
+        INT nmismatch_eig = 0, nmismatch_vec = 0;
+        for (INT j = 0; j < n; j++) {
+            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
+                g_ws->alphai[j] != g_ws->alphi1[j] ||
+                g_ws->beta[j]   != g_ws->beta1[j])
+                nmismatch_eig++;
+        }
+        for (INT j = 0; j < n; j++) {
+            for (INT jc = 0; jc < n; jc++) {
+                if (g_ws->Q[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
+                    nmismatch_vec++;
+            }
+        }
+        if (nmismatch_eig > 0 || nmismatch_vec > 0) {
+            print_message("DGGEV(V,V) vs (V,N): %lld eigenvalue mismatches, "
+                          "%lld VL element mismatches\n",
+                          (long long)nmismatch_eig, (long long)nmismatch_vec);
+            assert_residual_below(ulpinv, THRESH);
+        }
+
+    } else {
+        /* Test 7: right eigenvector consistency V,V vs N,V */
+        dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
+        dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
+        INT iinfo_nv = 0;
+        dggev("N", "V", n, g_ws->S, lda, g_ws->T, lda,
+              g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
+              g_ws->Q, ldq, g_ws->QE, ldqe,
+              g_ws->work, g_ws->lwork, &iinfo_nv);
+        if (iinfo_nv != 0 && iinfo_nv != n + 1) {
+            fail_msg("DGGEV(N,V) returned INFO=%lld for N=%lld JTYPE=%lld",
+                     (long long)iinfo_nv, (long long)n, (long long)jtype);
+            return;
+        }
+        INT nmismatch_eig = 0, nmismatch_vec = 0;
+        for (INT j = 0; j < n; j++) {
+            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
+                g_ws->alphai[j] != g_ws->alphi1[j] ||
+                g_ws->beta[j]   != g_ws->beta1[j])
+                nmismatch_eig++;
+        }
+        for (INT j = 0; j < n; j++) {
+            for (INT jc = 0; jc < n; jc++) {
+                if (g_ws->Z[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
+                    nmismatch_vec++;
+            }
+        }
+        if (nmismatch_eig > 0 || nmismatch_vec > 0) {
+            print_message("DGGEV(V,V) vs (N,V): %lld eigenvalue mismatches, "
+                          "%lld VR element mismatches\n",
+                          (long long)nmismatch_eig, (long long)nmismatch_vec);
+            assert_residual_below(ulpinv, THRESH);
         }
     }
-
-    /*
-     * Do test (6): Compute eigenvalues and left eigenvectors,
-     * and test them
-     */
-    dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
-    dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
-    dggev("V", "N", n, g_ws->S, lda, g_ws->T, lda,
-          g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
-          g_ws->QE, ldqe, g_ws->Z, ldq,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
-        result[0] = ulpinv;
-        print_message("DGGEV3 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
-        goto check_results;
-    }
-
-    for (INT j = 0; j < n; j++) {
-        if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-            g_ws->alphai[j] != g_ws->alphi1[j] ||
-            g_ws->beta[j]   != g_ws->beta1[j]) {
-            result[5] = ulpinv;
-        }
-    }
-
-    for (INT j = 0; j < n; j++) {
-        for (INT jc = 0; jc < n; jc++) {
-            if (g_ws->Q[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
-                result[5] = ulpinv;
-        }
-    }
-
-    /*
-     * Do test (7): Compute eigenvalues and right eigenvectors,
-     * and test them
-     */
-    dlacpy("Full", n, n, g_ws->A, lda, g_ws->S, lda);
-    dlacpy("Full", n, n, g_ws->B, lda, g_ws->T, lda);
-    dggev("N", "V", n, g_ws->S, lda, g_ws->T, lda,
-          g_ws->alphr1, g_ws->alphi1, g_ws->beta1,
-          g_ws->Q, ldq, g_ws->QE, ldqe,
-          g_ws->work, g_ws->lwork, &iinfo);
-    if (iinfo != 0 && iinfo != n + 1) {
-        result[0] = ulpinv;
-        print_message("DGGEV4 returned INFO=%d for N=%d JTYPE=%d\n",
-                      iinfo, n, jtype);
-        goto check_results;
-    }
-
-    for (INT j = 0; j < n; j++) {
-        if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-            g_ws->alphai[j] != g_ws->alphi1[j] ||
-            g_ws->beta[j]   != g_ws->beta1[j]) {
-            result[6] = ulpinv;
-        }
-    }
-
-    for (INT j = 0; j < n; j++) {
-        for (INT jc = 0; jc < n; jc++) {
-            if (g_ws->Z[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
-                result[6] = ulpinv;
-        }
-    }
-
-check_results:
-    ;
-    /* Check results against threshold */
-    INT any_fail = 0;
-    for (INT jr = 0; jr < 7; jr++) {
-        if (result[jr] >= THRESH) {
-            print_message("N=%d JTYPE=%d test(%d)=%g\n",
-                          n, jtype, jr + 1, result[jr]);
-            any_fail = 1;
-        }
-    }
-    assert_int_equal(any_fail, 0);
 }
 
 int main(void)
 {
-    /* Total: NSIZES * MAXTYP test cases (7 * 26 = 182) */
-    static ddrgev_params_t all_params[NSIZES * MAXTYP];
-    static struct CMUnitTest all_tests[NSIZES * MAXTYP];
+    static ddrgev_params_t all_params[NSIZES * MAXTYP * 7];
+    static struct CMUnitTest all_tests[NSIZES * MAXTYP * 7];
     INT idx = 0;
 
     for (INT js = 0; js < NSIZES; js++) {
         for (INT jt = 1; jt <= MAXTYP; jt++) {
-            ddrgev_params_t* p = &all_params[idx];
-            p->jsize = js;
-            p->jtype = jt;
-            snprintf(p->name, sizeof(p->name),
-                     "N=%d_type=%d", NVAL[js], jt);
+            for (INT tn = 1; tn <= 7; tn++) {
+                ddrgev_params_t* p = &all_params[idx];
+                p->jsize = js;
+                p->jtype = jt;
+                p->test_num = tn;
+                snprintf(p->name, sizeof(p->name),
+                         "N=%d_type=%d_test%d", NVAL[js], jt, tn);
 
-            all_tests[idx].name = p->name;
-            all_tests[idx].test_func = test_ddrgev;
-            all_tests[idx].setup_func = NULL;
-            all_tests[idx].teardown_func = NULL;
-            all_tests[idx].initial_state = p;
-            idx++;
+                all_tests[idx].name = p->name;
+                all_tests[idx].test_func = test_ddrgev_case;
+                all_tests[idx].setup_func = NULL;
+                all_tests[idx].teardown_func = NULL;
+                all_tests[idx].initial_state = p;
+                idx++;
+            }
         }
     }
 
-    return cmocka_run_group_tests_name("ddrgev", all_tests, group_setup,
-                                       group_teardown);
+    return _cmocka_run_group_tests("ddrgev", all_tests, idx,
+                                   group_setup, group_teardown);
 }

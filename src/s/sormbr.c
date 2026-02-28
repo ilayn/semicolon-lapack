@@ -80,7 +80,7 @@ void sormbr(const char* vect, const char* side, const char* trans,
 {
     INT applyq, left, lquery, notran;
     char transt;
-    INT i1, i2, iinfo, lwkopt, mi, nb, ni, nq, nw;
+    INT i1, i2, iinfo, lwkopt, mi = 0, nb, ni = 0, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

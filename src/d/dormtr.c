@@ -67,7 +67,7 @@ void dormtr(const char* side, const char* uplo, const char* trans,
             INT* info)
 {
     INT left, upper, lquery;
-    INT i1, i2, iinfo, lwkopt, mi, ni, nb, nq, nw;
+    INT i1, i2, iinfo, lwkopt, mi = 0, ni = 0, nb, nq, nw;
 
     /* Test the input arguments */
     *info = 0;

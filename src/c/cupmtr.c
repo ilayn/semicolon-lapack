@@ -61,7 +61,7 @@ void cupmtr(const char* side, const char* uplo, const char* trans,
             INT* info)
 {
     INT left, notran, upper, forwrd;
-    INT i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
+    INT i, i1, i2, i3, ic, ii, jc, mi = 0, ni = 0, nq;
     c64 taui;
 
     *info = 0;

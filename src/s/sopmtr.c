@@ -58,7 +58,7 @@ void sopmtr(const char* side, const char* uplo, const char* trans,
     const f32 ONE = 1.0f;
 
     INT forwrd, left, notran, upper;
-    INT i, i1, i2, i3, ic, ii, jc, mi, ni, nq;
+    INT i, i1, i2, i3, ic, ii, jc, mi = 0, ni = 0, nq;
     f32 aii;
 
     *info = 0;

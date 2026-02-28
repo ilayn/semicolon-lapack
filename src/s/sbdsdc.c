@@ -61,9 +61,9 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
             f32* restrict Q, INT* restrict IQ,
             f32* restrict work, INT* restrict IWORK, INT* info)
 {
-    INT difl, difr, givcol, givnum, givptr, i, ic, icompq, ierr;
-    INT ii, is, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
-    INT poles, qstart, smlszp, sqre, start, wstart, z;
+    INT difl = 0, difr = 0, givcol = 0, givnum = 0, givptr, i, ic = 0, icompq, ierr;
+    INT ii, is = 0, iu, iuplo, ivt, j, k, kk, mlvl, nm1, nsize, perm;
+    INT poles = 0, qstart, smlszp, sqre, start, wstart, z = 0;
     f32 cs, eps, orgnrm, p, r, sn;
 
     /* Test the input parameters */

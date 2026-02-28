@@ -68,7 +68,7 @@ void sormlq(const char* side, const char* trans,
 
     INT left, notran, lquery;
     INT i, ib, ic, jc, iinfo, iwt, ldwork, lwkopt;
-    INT mi, nb, nbmin, ni, nq, nw;
+    INT mi = 0, nb, nbmin, ni = 0, nq, nw;
     INT i1, i2, i3;
     char transt;
 
