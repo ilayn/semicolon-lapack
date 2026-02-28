@@ -29,8 +29,12 @@ cmake-build-*/
 .clang-tidy
 compile_commands.json
 
-# Claude Code
+# LLM stuff
 .claude/
+CLAUDE.md
+# Store LLM-generated markdown files here to avoid cluttering the repo
+.llm_md/
+
 
 # OS artifacts
 .DS_Store
