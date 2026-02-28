@@ -8,9 +8,6 @@
 #include "lapack_tuning.h"
 #include <math.h>
 #include "semicolon_cblas.h"
-#ifdef DGGEV_DEBUG
-#include <stdio.h>
-#endif
 
 /**
  * DGGEV computes for a pair of N-by-N real nonsymmetric matrices (A,B)
@@ -238,27 +235,6 @@ void dggev(const char* jobvl, const char* jobvr, const INT n,
        Schur forms and Schur vectors) */
     iwrk = itau;
     const char* chtemp = ilv ? "S" : "E";
-#ifdef DGGEV_DEBUG
-    fprintf(stderr, "DGGEV(%c,%c): n=%lld ilo=%lld ihi=%lld job=%s icols=%lld irows=%lld\n",
-            jobvl[0], jobvr[0], (long long)n, (long long)ilo,
-            (long long)ihi, chtemp, (long long)icols, (long long)irows);
-    {
-        /* XOR-rotate hash of active H,T block to verify bit-identity
-         * between V,V and N,N before dhgeqz */
-        unsigned long long h_xor = 0, t_xor = 0;
-        for (INT jj = ilo; jj <= ihi; jj++) {
-            for (INT ii = ilo; ii <= ihi; ii++) {
-                union { f64 d; unsigned long long u; } hv, tv;
-                hv.d = A[ii + jj * lda];
-                tv.d = B[ii + jj * ldb];
-                h_xor = ((h_xor << 1) | (h_xor >> 63)) ^ hv.u;
-                t_xor = ((t_xor << 1) | (t_xor >> 63)) ^ tv.u;
-            }
-        }
-        fprintf(stderr, "DGGEV(%c,%c): pre-dhgeqz H_hash=%016llx T_hash=%016llx\n",
-                jobvl[0], jobvr[0], h_xor, t_xor);
-    }
-#endif
     dhgeqz(chtemp, jobvl, jobvr, n, ilo, ihi, A, lda, B, ldb,
            alphar, alphai, beta, VL, ldvl, VR, ldvr,
            &work[iwrk], lwork - iwrk, &ierr);

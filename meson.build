@@ -9,7 +9,6 @@ project('semicolon-lapack', 'c',
     'c_std=c11',
     'warning_level=3',
     'buildtype=release',
-    'optimization=3',
   ]
 )
 
@@ -45,15 +44,6 @@ extra_warnings = cc.get_supported_arguments([
   '-Wduplicated-branches',
 ])
 add_project_arguments(extra_warnings, language: 'c')
-
-# FP contraction: GCC defaults to -ffp-contract=fast which fuses a*b+c into
-# FMA across statement boundaries at the compiler's discretion.  This violates
-# IEEE-754 reproducibility — the same arithmetic compiled in different contexts
-# (e.g. with vs without eigenvector accumulation nearby) can produce different
-# bit-level results due to changed register pressure affecting fusion decisions.
-# Disable it: a scientific library must not have compiler-discretionary rounding.
-# fp_contract = cc.get_supported_arguments(['-ffp-contract=off'])
-# add_project_arguments(fp_contract, language: 'c')
 
 # Complex arithmetic: -fcx-limited-range drops NaN/Inf recovery from complex
 # mult and div, inlining 4 FP ops instead of calling __muldc3/__mulsc3.

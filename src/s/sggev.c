@@ -8,9 +8,6 @@
 #include "lapack_tuning.h"
 #include <math.h>
 #include "semicolon_cblas.h"
-#ifdef DGGEV_DEBUG
-#include <stdio.h>
-#endif
 
 /**
  * SGGEV computes for a pair of N-by-N real nonsymmetric matrices (A,B)
@@ -238,25 +235,6 @@ void sggev(const char* jobvl, const char* jobvr, const INT n,
        Schur forms and Schur vectors) */
     iwrk = itau;
     const char* chtemp = ilv ? "S" : "E";
-#ifdef DGGEV_DEBUG
-    fprintf(stderr, "SGGEV(%c,%c): n=%lld ilo=%lld ihi=%lld job=%s icols=%lld irows=%lld\n",
-            jobvl[0], jobvr[0], (long long)n, (long long)ilo,
-            (long long)ihi, chtemp, (long long)icols, (long long)irows);
-    {
-        unsigned long long h_xor = 0, t_xor = 0;
-        for (INT jj = ilo; jj <= ihi; jj++) {
-            for (INT ii = ilo; ii <= ihi; ii++) {
-                union { f32 f; unsigned u; } hv, tv;
-                hv.f = A[ii + jj * lda];
-                tv.f = B[ii + jj * ldb];
-                h_xor = ((h_xor << 1) | (h_xor >> 63)) ^ hv.u;
-                t_xor = ((t_xor << 1) | (t_xor >> 63)) ^ tv.u;
-            }
-        }
-        fprintf(stderr, "SGGEV(%c,%c): pre-shgeqz H_hash=%016llx T_hash=%016llx\n",
-                jobvl[0], jobvr[0], h_xor, t_xor);
-    }
-#endif
     shgeqz(chtemp, jobvl, jobvr, n, ilo, ihi, A, lda, B, ldb,
            alphar, alphai, beta, VL, ldvl, VR, ldvr,
            &work[iwrk], lwork - iwrk, &ierr);
