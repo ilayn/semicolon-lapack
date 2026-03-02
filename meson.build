@@ -52,6 +52,11 @@ if cc.get_id() != 'intel-llvm' and cc.get_id() != 'intel-llvm-cl'
 endif
 add_project_arguments(extra_warnings, language: 'c')
 
+# Silence MSVC _CRT_SECURE_NO_WARNINGS (strncpy, sprintf deprecation warnings)
+if cc.get_id() == 'intel-llvm-cl' or cc.get_id() == 'msvc'
+  add_project_arguments('-D_CRT_SECURE_NO_WARNINGS', language: 'c')
+endif
+
 # Complex arithmetic: -fcx-limited-range drops NaN/Inf recovery from complex
 # mult and div, inlining 4 FP ops instead of calling __muldc3/__mulsc3.
 # This flag is part of the -fast-math family and reduces complex routine
