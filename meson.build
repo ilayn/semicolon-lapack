@@ -36,13 +36,20 @@ extra_warnings = cc.get_supported_arguments([
   '-Winline',
   '-Wdisabled-optimization',
   '-Wstack-protector',
-  '-Wlogical-op',
   '-Wnull-dereference',
-  '-Wjump-misses-init',
-  '-Walloc-zero',
-  '-Wduplicated-cond',
-  '-Wduplicated-branches',
 ])
+# GCC-only warnings: Intel icx (cc.get_id() == 'intel-llvm') accepts unknown
+# -W flags with a warning (not error), so get_supported_arguments() passes
+# them through.  Skip these flags for icx to avoid warning spam.
+if cc.get_id() != 'intel-llvm'
+  extra_warnings += cc.get_supported_arguments([
+    '-Wlogical-op',
+    '-Wjump-misses-init',
+    '-Walloc-zero',
+    '-Wduplicated-cond',
+    '-Wduplicated-branches',
+  ])
+endif
 add_project_arguments(extra_warnings, language: 'c')
 
 # Complex arithmetic: -fcx-limited-range drops NaN/Inf recovery from complex
