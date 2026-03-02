@@ -221,18 +221,12 @@ jobs:
           set CC=icx
           meson setup builddir -Dblas=mkl-dynamic-lp64-seq
 
-      # xilink does not generate import libraries for IL0 (non-IPO) targets.
-      # Build the DLL first, generate the import library, then build the rest.
       - name: Build
         shell: cmd /C call {0}
         run: |
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           set CC=icx
-          ninja -C builddir src/semilapack.dll
-          dumpbin /exports builddir\src\semilapack.dll > exports.txt
-          python -c "import re; lines=open('exports.txt').read(); names=re.findall(r'^\s+\d+\s+[0-9A-Fa-f]+\s+[0-9A-Fa-f]+\s+(\S+)', lines, re.M); f=open('builddir\\src\\semilapack.def','w'); f.write('EXPORTS\n'); [f.write(f'  {n}\n') for n in names]; print(f'{len(names)} exports')"
-          lib /def:builddir\src\semilapack.def /out:builddir\src\semilapack.lib /machine:x64 /nologo
           ninja -C builddir
 
       - name: Test
