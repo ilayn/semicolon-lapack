@@ -161,10 +161,20 @@ jobs:
             C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat
           key: oneapi-${{ env.WINDOWS_BASEKIT_URL }}-${{ env.WINDOWS_ONEAPI_COMPONENTS }}
 
+      # Adapted from SciPy's install_intel_oneAPI_windows.bat
+      # Ref: https://github.com/scipy/scipy/blob/main/tools/install_intel_oneAPI_windows.bat
+      # Original: https://github.com/oneapi-src/oneapi-ci (MIT, Intel Corporation)
       - name: Install oneAPI base toolkit
         if: steps.cache-oneapi.outputs.cache-hit != 'true'
         shell: cmd
-        run: tools\install_intel_oneAPI_windows.bat %WINDOWS_BASEKIT_URL% %WINDOWS_ONEAPI_COMPONENTS%
+        run: |
+          curl.exe --output %TEMP%\webimage.exe --url ${{ env.WINDOWS_BASEKIT_URL }} --retry 5 --retry-delay 5
+          start /b /wait %TEMP%\webimage.exe -s -x -f webimage_extracted
+          del %TEMP%\webimage.exe
+          webimage_extracted\bootstrapper.exe -s --action install --components=${{ env.WINDOWS_ONEAPI_COMPONENTS }} --eula=accept -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0 -p=NEED_VS2022_INTEGRATION=0
+          set installer_exit_code=%ERRORLEVEL%
+          rd /s/q "webimage_extracted"
+          exit /b %installer_exit_code%
 
       - name: Set up Miniforge
         uses: conda-incubator/setup-miniconda@v3
