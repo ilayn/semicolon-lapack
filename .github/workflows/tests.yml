@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [main]
 
+# Intel oneAPI installation adapted from SciPy's CI:
+# https://github.com/scipy/scipy/blob/main/.github/workflows/windows_intel_oneAPI.yml
+# Reference: https://github.com/oneapi-src/oneapi-ci
+env:
+  WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/IRC_NAS/1f18901e-877d-469d-a41a-a10f11b39336/intel-oneapi-base-toolkit-2025.3.0.372_offline.exe
+  WINDOWS_ONEAPI_COMPONENTS: intel.oneapi.win.cpp-dpcpp-common:intel.oneapi.win.mkl.devel
+
 jobs:
   get_commit_message:
     name: Get commit message
@@ -136,120 +143,88 @@ jobs:
         run: meson test -C builddir --print-errorlogs
 
   test-windows:
-    name: Test Windows MSYS2 UCRT64
+    name: Test Windows Intel oneAPI (icx + MKL)
     needs: get_commit_message
     if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: windows-latest
-    defaults:
-      run:
-        shell: msys2 {0}
     steps:
       - uses: actions/checkout@v4
 
-      - uses: msys2/setup-msys2@v2
+      - name: Cache oneAPI installation
+        id: cache-oneapi
+        uses: actions/cache@v4
         with:
-          msystem: UCRT64
-          update: true
-          cache: true
-          install: >-
-            mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-meson
-            mingw-w64-ucrt-x86_64-ninja
-            mingw-w64-ucrt-x86_64-cmake
-            mingw-w64-ucrt-x86_64-openblas
-            mingw-w64-ucrt-x86_64-pkg-config
-            mingw-w64-ucrt-x86_64-tools
-            git
+          path: |
+            C:\Program Files (x86)\Intel\oneAPI\compiler
+            C:\Program Files (x86)\Intel\oneAPI\mkl
+            C:\Program Files (x86)\Intel\oneAPI\setvars.bat
+            C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat
+          key: oneapi-${{ env.WINDOWS_BASEKIT_URL }}-${{ env.WINDOWS_ONEAPI_COMPONENTS }}
 
-      - name: Print environment info
-        run: |
-          echo "=== CPU ==="
-          cat /proc/cpuinfo | grep 'model name' | head -1
-          echo "Cores: $(nproc)"
-          echo ""
-          echo "=== Compiler ==="
-          cc --version | head -1
-          echo ""
-          echo "=== OpenBLAS ==="
-          pacman -Q mingw-w64-ucrt-x86_64-openblas
+      - name: Install oneAPI base toolkit
+        if: steps.cache-oneapi.outputs.cache-hit != 'true'
+        shell: cmd
+        run: tools\install_intel_oneAPI_windows.bat %WINDOWS_BASEKIT_URL% %WINDOWS_ONEAPI_COMPONENTS%
+
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: ci
+          environment-file: ''
+
+      - name: Install build tools
+        shell: bash -el {0}
+        run: >-
+          conda install -y
+          meson
+          ninja
+          cmake
+          pkg-config
 
       - name: Install CMocka 2.0
+        shell: cmd /C call {0}
         run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set CC=icx
           git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
-          cmake -S cmocka -B cmocka/build -G Ninja \
-            -DCMAKE_INSTALL_PREFIX=$MSYSTEM_PREFIX \
-            -DBUILD_SHARED_LIBS=ON
-          cmake --build cmocka/build
-          cmake --install cmocka/build
+          cmake -S cmocka -B cmocka\build -G Ninja -DCMAKE_C_COMPILER=icx -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%\Library -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka\build
+          cmake --install cmocka\build
+
+      - name: Print environment info
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          echo === Compiler ===
+          icx --version
+          echo.
+          echo === MKL ===
+          pkg-config --modversion mkl-dynamic-lp64-seq
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set CC=icx
+          meson setup builddir -Dblas=mkl-dynamic-lp64-seq
 
       - name: Build
-        run: ninja -C builddir
-
-      - name: Print OpenBLAS runtime info
+        shell: cmd /C call {0}
         run: |
-          cc -o openblas_info.exe tests/ci/openblas_info.c \
-            $(pkg-config --cflags --libs openblas)
-          ./openblas_info.exe
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set CC=icx
+          ninja -C builddir
 
       - name: Test
-        run: meson test -C builddir --print-errorlogs
-
-      # --- MSVC consumer test: compile a C program with cl.exe against the
-      #     MinGW-built DLL to verify cross-compiler ABI (GCC). ---
-
-      - name: Install to staging area
+        shell: cmd /C call {0}
         run: |
-          DESTDIR=$(pwd)/staging meson install -C builddir --no-rebuild
-
-      - name: Detect DLL name
-        id: dll_name
-        run: |
-          # Meson on MinGW may produce semilapack.dll or libsemilapack.dll
-          if [ -f builddir/src/libsemilapack.dll ]; then
-            echo "dll=libsemilapack" >> $GITHUB_OUTPUT
-          else
-            echo "dll=semilapack" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Collect DLLs and installed headers for MSVC test
-        run: |
-          DLL=${{ steps.dll_name.outputs.dll }}
-          mkdir msvc_test
-          cp builddir/src/${DLL}.dll msvc_test/
-          cp /$MSYSTEM/bin/libopenblas.dll msvc_test/
-          for dll in libgcc_s_seh-1.dll libgfortran-5.dll libgomp-1.dll libwinpthread-1.dll libquadmath-0.dll; do
-            [ -f /$MSYSTEM/bin/$dll ] && cp /$MSYSTEM/bin/$dll msvc_test/
-          done
-          # Copy installed headers (INT resolved, proper layout)
-          mkdir -p msvc_test/include
-          cp -r "$(find staging -type d -name semicolon_lapack)" msvc_test/include/
-          echo "=== Installed headers ==="
-          ls -la msvc_test/include/semicolon_lapack/
-
-      - name: Generate MSVC import library
-        run: |
-          DLL=${{ steps.dll_name.outputs.dll }}
-          gendef - builddir/src/${DLL}.dll > msvc_test/semilapack.def
-          echo "=== .def file: first 10 lines ==="
-          head -10 msvc_test/semilapack.def
-          NEXPORTS=$(grep -c '^ ' msvc_test/semilapack.def || true)
-          echo "=== Total exports: $NEXPORTS ==="
-
-      - name: Build and run MSVC consumer test
-        shell: cmd
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-          cd msvc_test
-          lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
-          cl.exe /std:c11 /O2 /W3 /nologo ^
-            /I "include" ^
-            ..\tests\ci\msvc_consumer_test.c ^
-            semilapack.lib ^
-            /Fe:consumer_test.exe
-          consumer_test.exe
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          meson test -C builddir --print-errorlogs
 
   test-windows-clang:
     name: Test Windows MSYS2 CLANG64
