@@ -219,7 +219,7 @@ jobs:
           call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           set CC=icx
-          meson setup builddir -Dblas=mkl-dynamic-lp64-seq --default-library=static
+          meson setup builddir -Dblas=mkl-dynamic-lp64-seq
 
       - name: Build
         shell: cmd /C call {0}
@@ -228,6 +228,8 @@ jobs:
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
           set CC=icx
           ninja -C builddir
+          echo === Library files ===
+          dir /b builddir\src\*.dll builddir\src\*.lib builddir\src\*.a builddir\src\*.exp 2>nul
 
       - name: Test
         shell: cmd /C call {0}

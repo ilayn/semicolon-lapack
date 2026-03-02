@@ -38,10 +38,10 @@ extra_warnings = cc.get_supported_arguments([
   '-Wstack-protector',
   '-Wnull-dereference',
 ])
-# GCC-only warnings: Intel icx (cc.get_id() == 'intel-llvm') accepts unknown
+# GCC-only warnings: Intel icx (intel-llvm / intel-llvm-cl) accepts unknown
 # -W flags with a warning (not error), so get_supported_arguments() passes
 # them through.  Skip these flags for icx to avoid warning spam.
-if cc.get_id() != 'intel-llvm'
+if cc.get_id() != 'intel-llvm' and cc.get_id() != 'intel-llvm-cl'
   extra_warnings += cc.get_supported_arguments([
     '-Wlogical-op',
     '-Wjump-misses-init',
