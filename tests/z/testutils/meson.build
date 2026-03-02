@@ -12,6 +12,9 @@ testutils_z_sources = files(
   '../../xerbla_test.c',
   '../../chkxer.c',
 
+  # Real-valued shared verification (from d-prefix, precision-independent)
+  '../../d/testutils/dget06.c',  # Condition number comparison
+
   # General matrix verification (zget*)
   'zget01.c',   # LU factorization: ||L*U - A|| / (N * ||A|| * eps)
   'zget02.c',   # Solution residual: ||B - A*X|| / (||A|| * ||X|| * eps)
@@ -41,6 +44,31 @@ testutils_z_sources = files(
   'zgtt02.c',   # Tridiagonal solve residual
   'zgtt05.c',   # Tridiagonal refinement
 
+  # Hermitian positive definite tridiagonal verification (zptt*)
+  'zptt01.c',   # Hermitian tridiagonal factorization: ||L*D*L' - A|| / (n * ||A|| * eps)
+  'zptt02.c',   # Hermitian tridiagonal solve residual: ||B - A*X|| / (||A|| * ||X|| * eps)
+  'zptt05.c',   # Hermitian tridiagonal refinement error bounds (FERR/BERR)
+
+  # Full triangular verification (ztrt*)
+  'ztrt01.c',   # Triangular factorization: ||A*AINV - I|| / (N * ||A|| * ||AINV|| * eps)
+  'ztrt02.c',   # Triangular solve residual: ||op(A)*X - B|| / (||op(A)|| * ||X|| * eps)
+  'ztrt03.c',   # Triangular scaled solve: ||s*b - op(A)*x|| / (||op(A)|| * ||x|| * eps)
+  'ztrt05.c',   # Triangular error bounds (FERR/BERR)
+  'ztrt06.c',   # Triangular condition number comparison
+
+  # Banded triangular verification (ztbt*)
+  'ztbt02.c',   # Band triangular solve residual: ||op(A)*X - B|| / (||op(A)|| * ||X|| * eps)
+  'ztbt03.c',   # Band triangular scaled solve: ||s*b - op(A)*x|| / (||op(A)|| * ||x|| * eps)
+  'ztbt05.c',   # Band triangular error bounds (FERR/BERR)
+  'ztbt06.c',   # Band triangular condition number comparison
+
+  # Packed triangular verification (ztpt*)
+  'ztpt01.c',   # Packed triangular factorization: ||A*AINV - I|| / (N * ||A|| * ||AINV|| * eps)
+  'ztpt02.c',   # Packed triangular solve residual: ||op(A)*X - B|| / (||op(A)|| * ||X|| * eps)
+  'ztpt03.c',   # Packed triangular scaled solve: ||s*b - op(A)*x|| / (||op(A)|| * ||x|| * eps)
+  'ztpt05.c',   # Packed triangular error bounds (FERR/BERR)
+  'ztpt06.c',   # Packed triangular condition number comparison
+
   # Hermitian indefinite verification (zhet*)
   'zlavhe.c',       # Multiply by Hermitian factors (helper for zhet01)
   'zlavhe_rook.c',  # Multiply by Hermitian Rook factors (helper for zhet01_rook)
@@ -54,6 +82,81 @@ testutils_z_sources = files(
   'zlavsy.c',       # Multiply by symmetric factors (helper for zsyt01)
   'zlavsy_rook.c',  # Multiply by symmetric Rook factors (helper for zsyt01_rook)
   'zlavsp.c',       # Multiply by symmetric packed factors (helper for zspt01)
+  'zsyt01.c',       # Symmetric factorization: ||L*D*L' - A|| / (N * ||A|| * eps)
+  'zsyt01_rook.c',  # Symmetric Rook factorization: ||L*D*L' - A|| / (N * ||A|| * eps)
+  'zsyt01_3.c',     # Symmetric RK/BK factorization: ||L*D*L' - A|| / (N * ||A|| * eps)
+  'zsyt01_aa.c',    # Symmetric Aasen factorization: ||L*D*L' - A|| / (N * ||A|| * eps)
+  'zspt01.c',       # Symmetric packed factorization: ||L*D*L' - A|| / (N * ||A|| * eps)
+  'zspt02.c',       # Symmetric packed solve residual: ||B - A*X|| / (||A|| * ||X|| * eps)
+  'zspt03.c',       # Symmetric packed inverse: ||I - A*AINV|| / (N * ||A|| * ||AINV|| * eps)
+  'zsyt02.c',       # Symmetric solve residual: ||B - A*X|| / (||A|| * ||X|| * eps)
+  'zsyt03.c',       # Symmetric inverse: ||I - A*AINV|| / (N * ||A|| * ||AINV|| * eps)
+
+  # Hermitian packed factorization verification
+  'zhpt01.c',       # Hermitian packed factorization: ||L*D*L' - A|| / (N * ||A|| * eps)
+
+  # Hermitian positive definite verification (zpot*)
+  'zpot01.c',       # Hermitian PD Cholesky: ||L*L' - A|| / (N * ||A|| * eps)
+  'zpot02.c',       # Hermitian PD solve residual: ||B - A*X|| / (||A|| * ||X|| * eps)
+  'zpot03.c',       # Hermitian PD inverse: ||I - A*AINV|| / (N * ||A|| * ||AINV|| * eps)
+  'zpot05.c',       # Hermitian PD error bounds (FERR/BERR)
+  'zpot06.c',       # Hermitian PD norm comparison
+
+  # Hermitian positive definite packed verification (zppt*)
+  'zppt01.c',       # Hermitian PD packed Cholesky: ||L*L' - A|| / (N * ||A|| * eps)
+  'zppt02.c',       # Hermitian PD packed solve residual: ||B - A*X|| / (||A|| * ||X|| * eps)
+  'zppt03.c',       # Hermitian PD packed inverse: ||I - A*AINV|| / (N * ||A|| * ||AINV|| * eps)
+  'zppt05.c',       # Hermitian PD packed error bounds: forward/backward error estimates
+
+  # Hermitian positive definite band verification (zpbt*)
+  'zpbt01.c',       # Hermitian PD band Cholesky: ||L*L' - A|| / (N * ||A|| * eps)
+  'zpbt02.c',       # Hermitian PD band solve residual: ||B - A*X|| / (||A|| * ||X|| * eps)
+  'zpbt05.c',       # Hermitian PD band error bounds (FERR/BERR)
+
+  # Hermitian positive semidefinite pivoted Cholesky verification (zpst*)
+  'zpst01.c',       # Hermitian PSD pivoted Cholesky: ||P*L*L'*P' - A|| / (N * ||A|| * eps)
+
+  # QR verification routines (zqrt*, zqpt*)
+  'zqrt01.c',       # QR factorization: ||Q'*Q - I|| and ||R - Q'*A|| / (M * ||A|| * eps)
+  'zqrt01p.c',      # QR factorization with non-negative R diagonal
+  'zqrt02.c',       # Partial Q generation: ||R - Q'*A|| / (M * ||A|| * eps)
+  'zqrt03.c',       # Q multiply test: ||Q*C - Q*C|| / (M * ||C|| * eps)
+  'zqrt04.c',       # Block QR (ZGEQRT/ZGEMQRT) test
+  'zqrt05.c',       # Block triangular QR (ZTPQRT/ZTPMQRT) test
+  'zqrt11.c',       # Orthogonality test: ||Q'*Q - I|| / (eps * M)
+  'zqrt12.c',       # SVD rank test: ||svd(R) - s|| / (||s|| * eps * max(M,N))
+  'zqrt13.c',       # Scale-balanced matrix generation
+  'zqrt14.c',       # Least-squares residual orthogonality
+  'zqrt15.c',       # Rank-deficient matrix generation
+  'zqrt16.c',       # Residual: ||B - A*X|| / (max(M,N) * ||A|| * ||X|| * eps)
+  'zqrt17.c',       # Least-squares residual norm
+  'zqpt01.c',       # Pivoted QR: ||A*P - Q*R|| / (||A|| * eps * max(M,N))
+
+  # QL verification routines (zqlt*)
+  'zqlt01.c',       # QL factorization: ||Q'*Q - I|| and ||L - Q'*A|| / (M * ||A|| * eps)
+  'zqlt02.c',       # QL partial Q generation
+  'zqlt03.c',       # QL Q multiply test
+
+  # LQ verification routines (zlqt*)
+  'zlqt01.c',       # LQ factorization: ||Q*Q' - I|| and ||L - A*Q'|| / (N * ||A|| * eps)
+  'zlqt02.c',       # LQ partial Q generation
+  'zlqt03.c',       # LQ Q multiply test
+  'zlqt04.c',       # Block LQ (ZGELQT/ZGEMLQT) test
+  'zlqt05.c',       # Block triangular LQ (ZTPLQT/ZTPMLQT) test
+
+  # RQ verification routines (zrqt*)
+  'zrqt01.c',       # RQ factorization: ||Q*Q' - I|| and ||R - A*Q'|| / (N * ||A|| * eps)
+  'zrqt02.c',       # RQ partial Q generation
+  'zrqt03.c',       # RQ Q multiply test
+
+  # RZ verification routines (zrzt*)
+  'zrzt01.c',       # RZ factorization residual: ||A - R*Z|| / (||A|| * eps * max(M,N))
+  'zrzt02.c',       # RZ Q orthogonality: ||I - Z*Z'|| / (N * eps)
+
+  # Special verification routines
+  'ztsqr01.c',      # Tall-skinny QR (ZGEQR/ZGEMQR/ZGELQ/ZGEMLQ) test
+  'zunhr_col01.c',  # Unitary Householder reconstruction (ZUNHR_COL) test
+  'zunhr_col02.c',  # Unitary Householder reconstruction (ZGETSQRHRT) test
 
   # Matrix generation (TESTING/MATGEN z-prefix)
   'zlarnv.c',       # Complex random number/vector generation (zlarnd_rng + zlarnv_rng)

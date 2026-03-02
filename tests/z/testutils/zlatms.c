@@ -365,7 +365,7 @@ void zlatms(
                 jkl = 0;
                 for (jku = 1; jku <= uub; jku++) {
 
-                    iendch = ((m < n + jkl) ? m : n + jkl) - 1;
+                    iendch = ((m < n + jkl) ? m : n + jkl) - 2;
                     for (jc = ((m + jku < n) ? m + jku : n) - 2; jc >= -jkl; jc--) {
                         extra = CZERO;
                         angle = TWOPI * rng_uniform(state);
@@ -419,7 +419,7 @@ void zlatms(
                 jku = uub;
                 for (jkl = 1; jkl <= llb; jkl++) {
 
-                    iendch = ((n < m + jku) ? n : m + jku) - 1;
+                    iendch = ((n < m + jku) ? n : m + jku) - 2;
                     for (jr = ((n + jkl < m) ? n + jkl : m) - 2; jr >= -jku; jr--) {
                         extra = CZERO;
                         angle = TWOPI * rng_uniform(state);
