@@ -2051,9 +2051,28 @@ libsemilapack = library('semilapack',
   install: true,
 )
 
-# Declare dependency for use by tests and other subprojects
+# Declare dependency for use by other subprojects and external consumers
 semilapack_dep = declare_dependency(
   link_with: libsemilapack,
+  include_directories: [inc_pub, inc_src],
+  dependencies: [blas_dep, m_dep],
+)
+
+# Static archive of library objects for test linking.
+# Vendor BLAS libraries (MKL, OpenBLAS) also export LAPACK symbols like dgetrf,
+# causing symbol clashes when tests link against our shared library + vendor BLAS.
+# By linking tests against a static archive instead, our symbols end up directly
+# in the test executable and take precedence over any vendor LAPACK symbols.
+# The linker's single-pass scan of the .a skips objects whose symbols are already
+# provided by the test overrides (xerbla_test, lapack_tuning_test via link_whole).
+libsemilapack_testing = static_library('semilapack_testing',
+  all_sources,
+  include_directories: [inc_pub, inc_src],
+  dependencies: [blas_dep, m_dep],
+)
+
+semilapack_test_dep = declare_dependency(
+  link_with: libsemilapack_testing,
   include_directories: [inc_pub, inc_src],
   dependencies: [blas_dep, m_dep],
 )

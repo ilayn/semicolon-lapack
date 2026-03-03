@@ -18,7 +18,7 @@ subdir('z')
 test('rng_validation',
   executable('test_rng_validation', 'test_rng_validation.c',
     include_directories: include_directories('.'),
-    dependencies: [semilapack_dep, cmocka_dep],
+    dependencies: [semilapack_test_dep, cmocka_dep],
   ),
   suite: 'rng',
   timeout: 120,

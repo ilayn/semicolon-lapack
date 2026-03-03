@@ -49,6 +49,12 @@ if cc.get_id() != 'intel-llvm' and cc.get_id() != 'intel-llvm-cl'
     '-Wduplicated-cond',
     '-Wduplicated-branches',
   ])
+else
+  # icx warns that complex division can't use extended-precision intermediates
+  # on the target. GCC/Clang do the same thing silently. Suppress the noise.
+  extra_warnings += cc.get_supported_arguments([
+    '-Wno-higher-precision-for-complex-division',
+  ])
 endif
 add_project_arguments(extra_warnings, language: 'c')
 

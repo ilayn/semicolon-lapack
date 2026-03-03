@@ -249,16 +249,16 @@ testutils_d_sources = files(
 libtestutils_d = static_library('testutils_d',
   testutils_d_sources,
   include_directories: include_directories('.', '../..'),
-  dependencies: [semilapack_dep],
+  dependencies: [semilapack_test_dep],
 )
 
 # Use link_whole to ensure lapack_tuning_test.o is always included.
-# This is necessary because the strong symbols from the test tuning
-# implementation must override the weak symbols in libsemilapack.
-# Without link_whole, the linker won't pull in lapack_tuning_test.o
-# since libsemilapack already provides (weak) definitions.
+# This forces all test utility symbols (including xerbla_test and
+# lapack_tuning_test overrides) into the executable. The linker then
+# scans the static semilapack_testing archive for remaining symbols,
+# skipping objects already provided by test overrides.
 verify_dep_d = declare_dependency(
   link_whole: libtestutils_d,
   include_directories: include_directories('.', '../..'),
-  dependencies: [semilapack_dep],
+  dependencies: [semilapack_test_dep],
 )

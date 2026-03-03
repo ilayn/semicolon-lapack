@@ -3,12 +3,10 @@
  * @brief Test version of xerbla with flag-setting for error exit tests.
  *
  * This provides a strong xerbla symbol that overrides the weak production
- * version in src/auxiliary/xerbla.c via ELF symbol interposition (Linux).
- *
- * On Windows, DLLs do not participate in symbol interposition, so the
- * DLL's internal xerbla is never overridden by this strong symbol.
- * Instead, we call xerbla_set_handler() to redirect the DLL's xerbla
- * to our test handler.
+ * version in src/auxiliary/xerbla.c. Tests link against a static archive
+ * (libsemilapack_testing.a) with link_whole for test utilities, so this
+ * strong definition is always pulled in first and the library's weak
+ * xerbla.o is skipped by the linker.
  *
  * Replaces the Fortran COMMON /INFOC/ and /SRNAMC/ mechanism.
  *
@@ -48,15 +46,4 @@ void xerbla(const char* srname, INT info) {
                 srname, xerbla_srnamt);
         xerbla_ok = 0;
     }
-}
-
-/*
- * On Windows DLLs, the strong xerbla above is never called by the library
- * (DLLs don't do ELF-style symbol interposition). Call xerbla_set_handler
- * so the DLL's xerbla delegates to our test handler.
- *
- * On Linux this is redundant (weak symbol override already works) but harmless.
- */
-static void __attribute__((constructor)) xerbla_test_init(void) {
-    xerbla_set_handler(xerbla);
 }

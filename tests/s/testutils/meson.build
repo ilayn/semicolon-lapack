@@ -236,11 +236,11 @@ testutils_s_sources = files(
 libtestutils_s = static_library('testutils_s',
   testutils_s_sources,
   include_directories: include_directories('.', '../..'),
-  dependencies: [semilapack_dep],
+  dependencies: [semilapack_test_dep],
 )
 
 verify_dep_s = declare_dependency(
   link_whole: libtestutils_s,
   include_directories: include_directories('.', '../..'),
-  dependencies: [semilapack_dep],
+  dependencies: [semilapack_test_dep],
 )

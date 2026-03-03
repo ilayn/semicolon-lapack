@@ -10,11 +10,7 @@
 #define XERBLA_WEAK
 #endif
 
-static xerbla_handler_t xerbla_override = NULL;
-
-void xerbla_set_handler(xerbla_handler_t handler) {
-    xerbla_override = handler;
-}
+xerbla_handler_t xerbla_override = NULL;
 
 XERBLA_WEAK void xerbla(const char *srname, INT info) {
     if (xerbla_override) {
