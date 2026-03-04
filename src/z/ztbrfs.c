@@ -124,13 +124,17 @@ void ztbrfs(
 
     CBLAS_UPLO cblas_uplo = upper ? CblasUpper : CblasLower;
     CBLAS_DIAG cblas_diag = nounit ? CblasNonUnit : CblasUnit;
+    CBLAS_TRANSPOSE cblas_trans;
+    if (notran) cblas_trans = CblasNoTrans;
+    else if (trans[0] == 'T' || trans[0] == 't') cblas_trans = CblasTrans;
+    else cblas_trans = CblasConjTrans;
     CBLAS_TRANSPOSE cblas_transn = (transn[0] == 'N') ? CblasNoTrans : CblasConjTrans;
     CBLAS_TRANSPOSE cblas_transt = (transt[0] == 'N') ? CblasNoTrans : CblasConjTrans;
 
     for (j = 0; j < nrhs; j++) {
 
         cblas_zcopy(n, &X[j * ldx], 1, work, 1);
-        cblas_ztbmv(CblasColMajor, cblas_uplo, cblas_transn, cblas_diag,
+        cblas_ztbmv(CblasColMajor, cblas_uplo, cblas_trans, cblas_diag,
                     n, kd, AB, ldab, work, 1);
         c128 neg_one = -ONE;
         cblas_zaxpy(n, &neg_one, &B[j * ldb], 1, work, 1);
