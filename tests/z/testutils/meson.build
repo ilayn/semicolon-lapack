@@ -238,6 +238,7 @@ testutils_z_sources = files(
 
   '../../d/testutils/dlatm1.c',  # Real diagonal gen (zlatms calls DLATM1, not ZLATM1)
   '../../d/testutils/dlatm7.c',  # Real diagonal gen with rank (zlatmt calls DLATM7)
+  '../../d/testutils/dlaord.c',  # Real sort (dlaord used by zchkq3/zchkqp3rk for singular values)
 )
 
 # Build complex double precision test utilities library with test tuning implementation.

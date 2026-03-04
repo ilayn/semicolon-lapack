@@ -1,0 +1,159 @@
+/**
+ * @file test_zdrvrf1.c
+ * @brief Test suite for ZLANHF (RFP Hermitian matrix norm).
+ *
+ * Port of LAPACK's TESTING/LIN/zdrvrf1.f to C using CMocka.
+ * Tests ZLANHF by comparing it against ZLANHE on the same matrix:
+ *   result = |ZLANHE(A) - ZLANHF(ARF)| / (ZLANHE(A) * eps)
+ *
+ * For each (N, scaling, UPLO, CFORM) combination, all four norms
+ * ('M', '1', 'I', 'F') are checked within a single test case.
+ */
+
+#include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
+
+#define THRESH 3.0
+#define NMAX   50
+
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+#define NN (sizeof(NVAL) / sizeof(NVAL[0]))
+
+typedef struct {
+    INT in;
+    INT iit;
+    INT iuplo;
+    INT iform;
+    char name[80];
+} zdrvrf1_params_t;
+
+static void run_zdrvrf1_single(INT n, INT iit, INT iuplo, INT iform)
+{
+    if (n == 0) return;
+
+    INT lda = NMAX;
+    INT info;
+    char ctx[128];
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 1988);
+
+    const char* uplo = (iuplo == 0) ? "U" : "L";
+    const char* cform = (iform == 0) ? "N" : "C";
+
+    f64 eps = dlamch("P");
+    f64 small_val = dlamch("S");
+    f64 large_val = 1.0 / small_val;
+    small_val = small_val * lda * lda;
+    large_val = large_val / lda / lda;
+
+    c128 A[NMAX * NMAX];
+    c128 ARF[NMAX * (NMAX + 1) / 2];
+    f64 WORK[NMAX];
+
+    for (INT j = 0; j < n; j++)
+        for (INT i = 0; i < n; i++)
+            A[i + j * lda] = zlarnd_rng(4, rng_state);
+
+    if (iit == 2) {
+        for (INT j = 0; j < n; j++)
+            for (INT i = 0; i < n; i++)
+                A[i + j * lda] *= large_val;
+    }
+
+    if (iit == 3) {
+        for (INT j = 0; j < n; j++)
+            for (INT i = 0; i < n; i++)
+                A[i + j * lda] *= small_val;
+    }
+
+    ztrttf(cform, uplo, n, A, lda, ARF, &info);
+
+    if (info != 0) {
+        snprintf(ctx, sizeof(ctx), "n=%d iit=%d uplo=%s form=%s ZTRTTF info=%d",
+                 n, iit, uplo, cform, info);
+        set_test_context(ctx);
+        assert_info_success(info);
+        return;
+    }
+
+    const char* norms[] = {"M", "1", "I", "F"};
+
+    for (INT inorm = 0; inorm < 4; inorm++) {
+        f64 normarf = zlanhf(norms[inorm], cform, uplo, n, ARF, WORK);
+        f64 norma = zlanhe(norms[inorm], uplo, n, A, lda, WORK);
+
+        f64 result;
+        if (norma == 0.0) {
+            result = normarf / eps;
+        } else {
+            result = (norma - normarf) / norma / eps;
+        }
+
+        snprintf(ctx, sizeof(ctx), "n=%d iit=%d uplo=%s form=%s norm=%s resid=%.6e",
+                 n, iit, uplo, cform, norms[inorm], result);
+        set_test_context(ctx);
+        assert_residual_below(result, THRESH);
+    }
+
+    clear_test_context();
+}
+
+static void test_zdrvrf1_case(void** state)
+{
+    zdrvrf1_params_t* p = *state;
+    run_zdrvrf1_single(NVAL[p->in], p->iit, p->iuplo, p->iform);
+}
+
+/* N=0 exits immediately so skip it: 6 N x 3 scalings x 2 uplo x 2 form = 72 */
+#define MAX_TESTS (NN * 3 * 2 * 2)
+
+static zdrvrf1_params_t g_params[MAX_TESTS];
+static struct CMUnitTest g_tests[MAX_TESTS];
+static INT g_num_tests = 0;
+
+static void build_test_array(void)
+{
+    g_num_tests = 0;
+
+    for (INT in = 0; in < (INT)NN; in++) {
+        if (NVAL[in] == 0) continue;
+
+        for (INT iit = 1; iit <= 3; iit++) {
+            for (INT iuplo = 0; iuplo < 2; iuplo++) {
+                for (INT iform = 0; iform < 2; iform++) {
+                    zdrvrf1_params_t* p = &g_params[g_num_tests];
+                    p->in = in;
+                    p->iit = iit;
+                    p->iuplo = iuplo;
+                    p->iform = iform;
+                    snprintf(p->name, sizeof(p->name),
+                             "zdrvrf1_n%d_scl%d_%c_%c",
+                             NVAL[in], iit,
+                             (iuplo == 0) ? 'U' : 'L',
+                             (iform == 0) ? 'N' : 'C');
+
+                    g_tests[g_num_tests].name = p->name;
+                    g_tests[g_num_tests].test_func = test_zdrvrf1_case;
+                    g_tests[g_num_tests].setup_func = NULL;
+                    g_tests[g_num_tests].teardown_func = NULL;
+                    g_tests[g_num_tests].initial_state = p;
+
+                    g_num_tests++;
+                }
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    build_test_array();
+
+    if (g_num_tests == 0) {
+        printf("No valid test cases generated\n");
+        return 0;
+    }
+
+    return _cmocka_run_group_tests("zdrvrf1", g_tests, g_num_tests, NULL, NULL);
+}

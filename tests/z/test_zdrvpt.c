@@ -1,0 +1,435 @@
+/**
+ * @file test_zdrvpt.c
+ * @brief ZDRVPT tests the driver routines ZPTSV and ZPTSVX.
+ *
+ * Port of LAPACK TESTING/LIN/zdrvpt.f to C with CMocka parameterization.
+ */
+
+#include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
+#include <string.h>
+#include <stdio.h>
+#include "semicolon_cblas.h"
+#include <math.h>
+
+/* Test parameters - matching LAPACK zchkaa.f defaults */
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+#define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
+#define NTYPES  12
+#define NTESTS  6
+#define THRESH  30.0
+#define NMAX    50
+#define NRHS    2
+
+typedef struct {
+    INT n;
+    INT imat;
+    INT ifact;      /* 0='F', 1='N' */
+    char name[64];
+} zdrvpt_params_t;
+
+typedef struct {
+    f64* D;      /* Diagonal (N), real */
+    f64* DF;     /* Factored diagonal (N), real */
+    c128* E;     /* Off-diagonal (N-1), complex */
+    c128* EF;    /* Factored off-diagonal (N-1), complex */
+    c128* B;
+    c128* X;
+    c128* XACT;
+    c128* WORK;
+    f64* RWORK;
+    c128* A;     /* Band storage for zlatms (2 x N), complex */
+} zdrvpt_workspace_t;
+
+static zdrvpt_workspace_t* g_workspace = NULL;
+
+static int group_setup(void** state)
+{
+    (void)state;
+    g_workspace = malloc(sizeof(zdrvpt_workspace_t));
+    if (!g_workspace) return -1;
+
+    INT nmax = NMAX;
+    INT lwork = nmax * nmax + 4 * nmax;
+    if (lwork < nmax * NRHS) lwork = nmax * NRHS;
+
+    g_workspace->D = calloc(2 * nmax, sizeof(f64));
+    g_workspace->E = calloc(2 * nmax, sizeof(c128));
+    g_workspace->DF = g_workspace->D + nmax;
+    g_workspace->EF = g_workspace->E + nmax;
+    g_workspace->B = calloc(nmax * NRHS, sizeof(c128));
+    g_workspace->X = calloc(nmax * NRHS, sizeof(c128));
+    g_workspace->XACT = calloc(nmax * NRHS, sizeof(c128));
+    g_workspace->WORK = calloc(lwork, sizeof(c128));
+    g_workspace->RWORK = calloc(nmax + 2 * NRHS, sizeof(f64));
+    g_workspace->A = calloc(2 * nmax, sizeof(c128));
+
+    if (!g_workspace->D || !g_workspace->E || !g_workspace->B ||
+        !g_workspace->X || !g_workspace->XACT || !g_workspace->WORK ||
+        !g_workspace->RWORK || !g_workspace->A) {
+        return -1;
+    }
+    return 0;
+}
+
+static int group_teardown(void** state)
+{
+    (void)state;
+    if (g_workspace) {
+        free(g_workspace->D);
+        free(g_workspace->E);
+        free(g_workspace->B);
+        free(g_workspace->X);
+        free(g_workspace->XACT);
+        free(g_workspace->WORK);
+        free(g_workspace->RWORK);
+        free(g_workspace->A);
+        free(g_workspace);
+        g_workspace = NULL;
+    }
+    return 0;
+}
+
+static void run_zdrvpt_single(INT n, INT imat, INT ifact)
+{
+    static const char* FACTS[] = {"F", "N"};
+
+    zdrvpt_workspace_t* ws = g_workspace;
+    const char* fact = FACTS[ifact];
+
+    INT lda = (n > 1) ? n : 1;
+    f64 result[NTESTS];
+    for (INT k = 0; k < NTESTS; k++) result[k] = 0.0;
+
+    /* Clear workspace to prevent stale data from previous tests */
+    memset(ws->D, 0, 2 * NMAX * sizeof(f64));
+    memset(ws->E, 0, 2 * NMAX * sizeof(c128));
+    memset(ws->A, 0, 2 * NMAX * sizeof(c128));
+
+    f64* D = ws->D;
+    c128* E = ws->E;
+    f64* DF = ws->DF;
+    c128* EF = ws->EF;
+
+    INT zerot = (imat >= 8 && imat <= 10);
+    INT izero = 0;
+
+    /* Set up parameters with ZLATB4 */
+    char type, dist;
+    INT kl, ku, mode;
+    f64 anorm, cndnum;
+    zlatb4("ZPT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
+
+    uint64_t seed;
+    if (imat <= 6) {
+        seed = 1988 + n * 1000 + imat * 100;
+    } else {
+        seed = 1988 + n * 1000 + 7 * 100;
+    }
+    uint64_t rng_state[4];
+    rng_seed(rng_state, seed);
+    INT info;
+
+    (void)type; (void)dist; (void)mode; (void)kl; (void)ku;
+
+    if (imat <= 6) {
+        /* Types 1-6: generate a Hermitian tridiagonal matrix of known condition
+         * number in lower triangular band storage. */
+        izero = 0;
+
+        char symtype[2] = {type, '\0'};
+        char disttype[2] = {dist, '\0'};
+
+        zlatms(n, n, disttype, symtype, ws->RWORK, mode, cndnum,
+               anorm, kl, ku, "B", ws->A, 2, ws->WORK, &info, rng_state);
+
+        if (info != 0) {
+            fail_msg("ZLATMS info=%d for imat=%d", info, imat);
+            return;
+        }
+
+        /* Copy the matrix from band storage to D and E.
+         * Band storage format for pack='B' with lda=2:
+         * A[0] = D[0], A[1] = E[0]
+         * A[2] = D[1], A[3] = E[1]
+         * ... */
+        INT ia = 0;
+        for (INT i = 0; i < n - 1; i++) {
+            D[i] = creal(ws->A[ia]);
+            E[i] = ws->A[ia + 1];
+            ia += 2;
+        }
+        if (n > 0) {
+            D[n - 1] = creal(ws->A[ia]);
+        }
+    } else {
+        /* Types 7-12: generate a diagonally dominant matrix with
+         * unknown condition number in the vectors D and E. */
+
+        if (!zerot) {
+            /* Let D and E have values from [-1,1] */
+            for (INT i = 0; i < n; i++) {
+                D[i] = 2.0 * rng_uniform(rng_state) - 1.0;
+            }
+            zlarnv_rng(2, n - 1, E, rng_state);
+
+            /* Make the tridiagonal matrix diagonally dominant */
+            if (n == 1) {
+                D[0] = fabs(D[0]);
+            } else {
+                D[0] = fabs(D[0]) + cabs(E[0]);
+                D[n - 1] = fabs(D[n - 1]) + cabs(E[n - 2]);
+                for (INT i = 1; i < n - 1; i++) {
+                    D[i] = fabs(D[i]) + cabs(E[i]) + cabs(E[i - 1]);
+                }
+            }
+
+            /* Scale D and E so the maximum element is ANORM */
+            INT ix = cblas_idamax(n, D, 1);
+            f64 dmax = D[ix];
+            cblas_dscal(n, anorm / dmax, D, 1);
+            if (n > 1) {
+                cblas_zdscal(n - 1, anorm / dmax, E, 1);
+            }
+        }
+
+        /* Zero out elements for singular matrix types 8-10 */
+        if (imat == 8) {
+            izero = 1;
+            D[0] = 0.0;
+            if (n > 1) E[0] = CMPLX(0.0, 0.0);
+        } else if (imat == 9) {
+            izero = n;
+            if (n > 1) E[n - 2] = CMPLX(0.0, 0.0);
+            D[n - 1] = 0.0;
+        } else if (imat == 10) {
+            izero = (n + 1) / 2;
+            if (izero > 1) {
+                E[izero - 2] = CMPLX(0.0, 0.0);
+            }
+            if (izero < n) {
+                E[izero - 1] = CMPLX(0.0, 0.0);
+            }
+            D[izero - 1] = 0.0;
+        } else {
+            izero = 0;
+        }
+    }
+
+    /* Skip FACT='F' for singular matrices */
+    if (zerot && ifact == 0) {
+        return;
+    }
+
+    /* Generate NRHS random solution vectors */
+    rng_seed(rng_state, seed + 42);
+    for (INT j = 0; j < NRHS; j++) {
+        zlarnv_rng(2, n, &ws->XACT[j * lda], rng_state);
+    }
+
+    /* Set the right hand side using ZLAPTM: B = A * XACT */
+    zlaptm("Lower", n, NRHS, 1.0, D, E, ws->XACT, lda, 0.0, ws->B, lda);
+
+    /*
+     * Compute condition number RCONDC for FACT='F'.
+     * For FACT='N', reuse the value computed for FACT='F'.
+     * Since tests are independent, we always compute it.
+     */
+    f64 rcondc = 0.0;
+
+    if (zerot) {
+        rcondc = 0.0;
+    } else if (n == 0) {
+        rcondc = 1.0 / cndnum;
+    } else {
+        /* Compute the 1-norm of A */
+        f64 anorm_1 = zlanht("1", n, D, E);
+
+        /* Copy D and E to DF and EF, then factor */
+        cblas_dcopy(n, D, 1, DF, 1);
+        if (n > 1) cblas_zcopy(n - 1, E, 1, EF, 1);
+
+        zpttrf(n, DF, EF, &info);
+
+        /* Use ZPTTRS to solve for one column at a time of inv(A),
+         * computing the maximum column sum as we go */
+        f64 ainvnm = 0.0;
+        for (INT i = 0; i < n; i++) {
+            for (INT j = 0; j < n; j++) ws->X[j] = CMPLX(0.0, 0.0);
+            ws->X[i] = CMPLX(1.0, 0.0);
+            zpttrs("Lower", n, 1, DF, EF, ws->X, lda, &info);
+            f64 colsum = cblas_dzasum(n, ws->X, 1);
+            if (colsum > ainvnm) ainvnm = colsum;
+        }
+
+        /* Compute the 1-norm condition number of A */
+        if (anorm_1 <= 0.0 || ainvnm <= 0.0) {
+            rcondc = 1.0;
+        } else {
+            rcondc = (1.0 / anorm_1) / ainvnm;
+        }
+    }
+
+    /* --- Test ZPTSV --- */
+    if (ifact == 1) {
+        cblas_dcopy(n, D, 1, DF, 1);
+        if (n > 1) cblas_zcopy(n - 1, E, 1, EF, 1);
+        zlacpy("Full", n, NRHS, ws->B, lda, ws->X, lda);
+
+        zptsv(n, NRHS, DF, EF, ws->X, lda, &info);
+
+        if (zerot) {
+            if (info <= 0) {
+                fail_msg("ZPTSV: expected INFO > 0 for singular matrix, got %d", info);
+                return;
+            }
+        } else if (info != izero) {
+            fail_msg("ZPTSV info=%d expected=%d", info, izero);
+            return;
+        }
+
+        INT nt = 0;
+        if (izero == 0 && info == 0) {
+            /* TEST 1: Check factorization norm(L*D*L' - A) / (n * norm(A) * eps) */
+            zptt01(n, D, E, DF, EF, ws->WORK, &result[0]);
+
+            /* TEST 2: Check residual of computed solution */
+            zlacpy("Full", n, NRHS, ws->B, lda, ws->WORK, lda);
+            zptt02("Lower", n, NRHS, D, E, ws->X, lda, ws->WORK, lda, &result[1]);
+
+            /* TEST 3: Check solution from generated exact solution */
+            zget04(n, NRHS, ws->X, lda, ws->XACT, lda, rcondc, &result[2]);
+            nt = 3;
+        }
+
+        for (INT k = 0; k < nt; k++) {
+            if (result[k] >= THRESH) {
+                fail_msg("ZPTSV test %d failed: result=%e >= thresh=%e",
+                         k + 1, result[k], THRESH);
+            }
+        }
+    }
+
+    /* --- Test ZPTSVX --- */
+    if (ifact == 0) {
+        /* FACT='F': Provide the factorization in DF and EF.
+         * Copy D/E to DF/EF and factor with ZPTTRF. */
+        cblas_dcopy(n, D, 1, DF, 1);
+        if (n > 1) cblas_zcopy(n - 1, E, 1, EF, 1);
+        zpttrf(n, DF, EF, &info);
+    } else {
+        /* FACT='N': Initialize DF and EF to zero */
+        for (INT i = 0; i < n; i++) DF[i] = 0.0;
+        for (INT i = 0; i < n - 1; i++) EF[i] = CMPLX(0.0, 0.0);
+    }
+    zlaset("Full", n, NRHS, CMPLX(0.0, 0.0), CMPLX(0.0, 0.0), ws->X, lda);
+
+    f64 rcond;
+    zptsvx(fact, n, NRHS, D, E, DF, EF, ws->B, lda, ws->X, lda, &rcond,
+           ws->RWORK, &ws->RWORK[NRHS], ws->WORK, &ws->RWORK[2 * NRHS], &info);
+
+    if (zerot) {
+        if (info <= 0) {
+            fail_msg("ZPTSVX: expected INFO > 0 for singular matrix, got %d", info);
+            return;
+        }
+    } else if (info != izero) {
+        fail_msg("ZPTSVX info=%d expected=%d", info, izero);
+        return;
+    }
+
+    INT k1;
+    if (izero == 0) {
+        if (ifact >= 1) {
+            /* TEST 1: Check factorization */
+            zptt01(n, D, E, DF, EF, ws->WORK, &result[0]);
+            k1 = 1;
+        } else {
+            k1 = 2;
+        }
+
+        /* TEST 2: Check residual of computed solution */
+        zlacpy("Full", n, NRHS, ws->B, lda, ws->WORK, lda);
+        zptt02("Lower", n, NRHS, D, E, ws->X, lda, ws->WORK, lda, &result[1]);
+
+        /* TEST 3: Check solution from generated exact solution */
+        zget04(n, NRHS, ws->X, lda, ws->XACT, lda, rcondc, &result[2]);
+
+        /* TEST 4-5: Check error bounds from iterative refinement */
+        zptt05(n, NRHS, D, E, ws->B, lda, ws->X, lda, ws->XACT, lda,
+               ws->RWORK, &ws->RWORK[NRHS], &result[3]);
+    } else {
+        k1 = 6;
+    }
+
+    /* TEST 6: Compare RCOND from ZPTSVX with computed value */
+    result[5] = dget06(rcond, rcondc);
+
+    /* Check results */
+    for (INT k = k1 - 1; k < 5; k++) {
+        if (result[k] >= THRESH) {
+            fail_msg("ZPTSVX FACT=%s test %d: result=%e >= thresh=%e",
+                     fact, k + 1, result[k], THRESH);
+        }
+    }
+    if (result[5] >= THRESH) {
+        fail_msg("ZPTSVX FACT=%s test 6: result=%e >= thresh=%e",
+                 fact, result[5], THRESH);
+    }
+}
+
+static void test_zdrvpt_case(void** state)
+{
+    zdrvpt_params_t* p = *state;
+    run_zdrvpt_single(p->n, p->imat, p->ifact);
+}
+
+#define MAX_TESTS 1000
+
+static zdrvpt_params_t g_params[MAX_TESTS];
+static struct CMUnitTest g_tests[MAX_TESTS];
+static INT g_num_tests = 0;
+
+static void build_test_array(void)
+{
+    static const char* FACTS[] = {"F", "N"};
+
+    g_num_tests = 0;
+
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        INT nimat = (n <= 0) ? 1 : NTYPES;
+
+        for (INT imat = 1; imat <= nimat; imat++) {
+            INT zerot = (imat >= 8 && imat <= 10);
+
+            for (INT ifact = 0; ifact < 2; ifact++) {
+                if (zerot && ifact == 0) continue;
+
+                zdrvpt_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->imat = imat;
+                p->ifact = ifact;
+                snprintf(p->name, sizeof(p->name),
+                         "n%d_t%d_%s",
+                         n, imat, FACTS[ifact]);
+
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_zdrvpt_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
+
+                g_num_tests++;
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    build_test_array();
+    return _cmocka_run_group_tests("zdrvpt", g_tests, g_num_tests,
+                                   group_setup, group_teardown);
+}

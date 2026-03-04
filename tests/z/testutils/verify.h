@@ -834,6 +834,9 @@ void zunhr_col01(const INT m, const INT n, const INT mb1, const INT nb1,
 void zunhr_col02(const INT m, const INT n, const INT mb1, const INT nb1,
                  const INT nb2, f64* restrict result);
 
+/* Real-valued sorting (d-prefix, used by zchkq3/zchkqp3rk for singular values) */
+void dlaord(const char* job, const INT n, f64* X, const INT incx);
+
 /* QL solve */
 void zgeqls(const INT m, const INT n, const INT nrhs,
             c128* A, const INT lda, const c128* tau,

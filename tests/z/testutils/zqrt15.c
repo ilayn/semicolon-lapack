@@ -12,8 +12,6 @@
 #include "verify.h"
 #include "test_rng.h"
 
-/* dlaord is a real utility from d-prefix testutils */
-void dlaord(const char* job, const INT n, f64* X, const INT incx);
 
 /**
  * ZQRT15 generates a matrix with full or deficient rank and of various norms.
