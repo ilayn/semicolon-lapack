@@ -21,10 +21,10 @@ Testing is ported from LAPACK's official test suite. Double and single precision
 
 | | double + single | complex (z/c) |
 |--|--------|-------|
-| LIN tests (xchk* + xdrv*) | 54 + 54 | 0 / 66 |
-| EIG tests (xchk* + xdrv*) | 33 + 33 | 0 / 33 |
-| Verification routines | 123 + 123 | 0 / 114 |
-| Matrix generators + helpers | 39 + 39 | 0 / 51 |
+| LIN tests (xchk* + xdrv*) | 54 + 54 | 66 / 66 |
+| EIG tests (xchk* + xdrv*) | 33 + 33 | 5 / 33 |
+| Verification routines | 123 + 123 | 114 / 114 |
+| Matrix generators + helpers | 39 + 39 | 48 / 51 |
 
 
 ## Disclosure

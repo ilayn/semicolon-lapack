@@ -180,7 +180,7 @@ void dlatrs(
             }
         } else {
             // A is unit triangular
-            grow = (ONE < ONE / (xbnd > smlnum ? xbnd : smlnum)) ? ONE / (xbnd > smlnum ? xbnd : smlnum) : ONE;
+            grow = (ONE < ONE / (xbnd > smlnum ? xbnd : smlnum)) ? ONE : ONE / (xbnd > smlnum ? xbnd : smlnum);
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
                 grow = grow * (ONE / (ONE + cnorm[j]));
@@ -216,7 +216,7 @@ void dlatrs(
                 grow = (grow < xbnd) ? grow : xbnd;
             }
         } else {
-            grow = (ONE < ONE / (xbnd > smlnum ? xbnd : smlnum)) ? ONE / (xbnd > smlnum ? xbnd : smlnum) : ONE;
+            grow = (ONE < ONE / (xbnd > smlnum ? xbnd : smlnum)) ? ONE : ONE / (xbnd > smlnum ? xbnd : smlnum);
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
                 xj = ONE + cnorm[j];

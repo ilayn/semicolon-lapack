@@ -12,6 +12,9 @@
 #include <stdint.h>
 #include "semicolon_lapack_complex_double.h"
 
+/* Real-valued shared verification routines (from d-prefix, precision-independent) */
+f64 dget06(const f64 rcond, const f64 rcondc);
+
 /* General (ZGE) verification routines */
 void zget01(const INT m, const INT n, const c128* const restrict A, const INT lda,
             c128* const restrict AFAC, const INT ldafac, const INT* const restrict ipiv,
@@ -110,6 +113,121 @@ void zgtt05(const char* trans, const INT n, const INT nrhs,
             const f64* BERR,
             f64* reslts);
 
+/* Hermitian positive definite tridiagonal (PT) verification routines */
+void zptt01(const INT n, const f64* D, const c128* E,
+            const f64* DF, const c128* EF,
+            c128* work, f64* resid);
+
+void zptt02(const char* uplo, const INT n, const INT nrhs,
+            const f64* D, const c128* E,
+            const c128* X, const INT ldx,
+            c128* B, const INT ldb,
+            f64* resid);
+
+void zptt05(const INT n, const INT nrhs,
+            const f64* D, const c128* E,
+            const c128* B, const INT ldb,
+            const c128* X, const INT ldx,
+            const c128* XACT, const INT ldxact,
+            const f64* FERR, const f64* BERR,
+            f64* reslts);
+
+/* Hermitian positive semidefinite pivoted Cholesky (PS) verification routines */
+void zpst01(const char* uplo, const INT n,
+            const c128* const restrict A, const INT lda,
+            c128* const restrict AFAC, const INT ldafac,
+            c128* const restrict PERM, const INT ldperm,
+            const INT* const restrict piv,
+            f64* const restrict rwork, f64* resid, const INT rank);
+
+/* Full triangular (TR) verification routines */
+void ztrt01(const char* uplo, const char* diag, const INT n,
+            const c128* A, const INT lda,
+            c128* AINV, const INT ldainv,
+            f64* rcond, f64* rwork, f64* resid);
+
+void ztrt02(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT nrhs,
+            const c128* A, const INT lda,
+            const c128* X, const INT ldx,
+            const c128* B, const INT ldb,
+            c128* work, f64* rwork, f64* resid);
+
+void ztrt03(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT nrhs, const c128* A, const INT lda,
+            const f64 scale, const f64* cnorm, const f64 tscal,
+            const c128* X, const INT ldx, const c128* B, const INT ldb,
+            c128* work, f64* resid);
+
+void ztrt05(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT nrhs, const c128* A, const INT lda,
+            const c128* B, const INT ldb, const c128* X, const INT ldx,
+            const c128* XACT, const INT ldxact,
+            const f64* ferr, const f64* berr, f64* reslts);
+
+void ztrt06(const f64 rcond, const f64 rcondc,
+            const char* uplo, const char* diag, const INT n,
+            const c128* A, const INT lda, f64* rwork, f64* rat);
+
+/* Banded triangular (TB) verification routines */
+void ztbt02(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT kd, const INT nrhs,
+            const c128* AB, const INT ldab,
+            const c128* X, const INT ldx,
+            const c128* B, const INT ldb,
+            c128* work, f64* rwork, f64* resid);
+
+void ztbt03(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT kd, const INT nrhs,
+            const c128* AB, const INT ldab,
+            const f64 scale, const f64* cnorm, const f64 tscal,
+            const c128* X, const INT ldx,
+            const c128* B, const INT ldb,
+            c128* work, f64* resid);
+
+void ztbt05(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT kd, const INT nrhs,
+            const c128* AB, const INT ldab,
+            const c128* B, const INT ldb,
+            const c128* X, const INT ldx,
+            const c128* XACT, const INT ldxact,
+            const f64* ferr, const f64* berr,
+            f64* reslts);
+
+void ztbt06(const f64 rcond, const f64 rcondc,
+            const char* uplo, const char* diag, const INT n, const INT kd,
+            const c128* AB, const INT ldab, f64* rwork, f64* rat);
+
+/* Packed triangular (TP) verification routines */
+void ztpt01(const char* uplo, const char* diag, const INT n,
+            const c128* AP, c128* AINVP,
+            f64* rcond, f64* rwork, f64* resid);
+
+void ztpt02(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT nrhs,
+            const c128* AP, const c128* X, const INT ldx,
+            const c128* B, const INT ldb,
+            c128* work, f64* rwork, f64* resid);
+
+void ztpt03(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT nrhs,
+            const c128* AP, const f64 scale, const f64* cnorm,
+            const f64 tscal, const c128* X, const INT ldx,
+            const c128* B, const INT ldb,
+            c128* work, f64* resid);
+
+void ztpt05(const char* uplo, const char* trans, const char* diag,
+            const INT n, const INT nrhs,
+            const c128* AP, const c128* B, const INT ldb,
+            const c128* X, const INT ldx,
+            const c128* XACT, const INT ldxact,
+            const f64* ferr, const f64* berr,
+            f64* reslts);
+
+void ztpt06(const f64 rcond, const f64 rcondc,
+            const char* uplo, const char* diag, const INT n,
+            const c128* AP, f64* rwork, f64* rat);
+
 /* Hermitian indefinite (HE) verification routines */
 void zhet01(const char* uplo, const INT n,
             const c128* const restrict A, const INT lda,
@@ -178,6 +296,60 @@ void zlavsp(const char* uplo, const char* trans, const char* diag,
             c128* B, const INT ldb,
             INT* info);
 
+/* Symmetric indefinite (SY) verification routines */
+void zsyt01(const char* uplo, const INT n,
+            const c128* const restrict A, const INT lda,
+            const c128* const restrict AFAC, const INT ldafac,
+            const INT* const restrict ipiv,
+            c128* const restrict C, const INT ldc,
+            f64* const restrict rwork, f64* resid);
+
+void zsyt01_rook(const char* uplo, const INT n,
+                 const c128* const restrict A, const INT lda,
+                 const c128* const restrict AFAC, const INT ldafac,
+                 const INT* const restrict ipiv,
+                 c128* const restrict C, const INT ldc,
+                 f64* const restrict rwork, f64* resid);
+
+void zsyt01_3(const char* uplo, const INT n,
+              const c128* const restrict A, const INT lda,
+              c128* const restrict AFAC, const INT ldafac,
+              c128* const restrict E,
+              INT* const restrict ipiv,
+              c128* const restrict C, const INT ldc,
+              f64* const restrict rwork, f64* resid);
+
+void zsyt01_aa(const char* uplo, const INT n,
+               const c128* const restrict A, const INT lda,
+               const c128* const restrict AFAC, const INT ldafac,
+               const INT* const restrict ipiv,
+               c128* const restrict C, const INT ldc,
+               f64* const restrict rwork, f64* resid);
+
+/* Symmetric packed factorization verification */
+void zspt01(const char* uplo, const INT n, const c128* A,
+            const c128* AFAC, const INT* ipiv, c128* C, const INT ldc,
+            f64* rwork, f64* resid);
+
+/* Symmetric packed solve residual */
+void zspt02(const char* uplo, const INT n, const INT nrhs,
+            const c128* A, const c128* X, const INT ldx,
+            c128* B, const INT ldb, f64* rwork, f64* resid);
+
+/* Symmetric packed inverse verification */
+void zspt03(const char* uplo, const INT n, const c128* A, const c128* AINV,
+            c128* work, const INT ldw, f64* rwork, f64* rcond, f64* resid);
+
+/* Symmetric full-storage solve residual */
+void zsyt02(const char* uplo, const INT n, const INT nrhs,
+            const c128* A, const INT lda, const c128* X, const INT ldx,
+            c128* B, const INT ldb, f64* rwork, f64* resid);
+
+/* Symmetric full-storage inverse verification */
+void zsyt03(const char* uplo, const INT n, const c128* A, const INT lda,
+            c128* AINV, const INT ldainv, c128* work, const INT ldwork,
+            f64* rwork, f64* rcond, f64* resid);
+
 /* Hermitian packed multiply helper */
 void zlavhp(const char* uplo, const char* trans, const char* diag,
             const INT n, const INT nrhs,
@@ -185,6 +357,92 @@ void zlavhp(const char* uplo, const char* trans, const char* diag,
             const INT* ipiv,
             c128* B, const INT ldb,
             INT* info);
+
+/* Hermitian packed factorization verification */
+void zhpt01(const char* uplo, const INT n, const c128* A,
+            const c128* AFAC, const INT* ipiv, c128* C, const INT ldc,
+            f64* rwork, f64* resid);
+
+/* Hermitian positive definite (PO) verification routines */
+void zpot01(const char* uplo, const INT n,
+            const c128* const restrict A, const INT lda,
+            c128* const restrict AFAC, const INT ldafac,
+            f64* const restrict rwork, f64* resid);
+
+void zpot02(const char* uplo, const INT n, const INT nrhs,
+            const c128* const restrict A, const INT lda,
+            const c128* const restrict X, const INT ldx,
+            c128* const restrict B, const INT ldb,
+            f64* const restrict rwork, f64* resid);
+
+void zpot03(const char* uplo, const INT n,
+            const c128* const restrict A, const INT lda,
+            c128* const restrict AINV, const INT ldainv,
+            c128* const restrict work, const INT ldwork,
+            f64* const restrict rwork, f64* rcond, f64* resid);
+
+void zpot05(const char* uplo, const INT n, const INT nrhs,
+            const c128* const restrict A, const INT lda,
+            const c128* const restrict B, const INT ldb,
+            const c128* const restrict X, const INT ldx,
+            const c128* const restrict XACT, const INT ldxact,
+            const f64* const restrict ferr, const f64* const restrict berr,
+            f64* const restrict reslts);
+
+void zpot06(const char* uplo, const INT n, const INT nrhs,
+            const c128* A, const INT lda, const c128* X, const INT ldx,
+            c128* B, const INT ldb, f64* rwork, f64* resid);
+
+/* Hermitian positive definite packed (PP) verification routines */
+void zppt01(const char* uplo, const INT n,
+            const c128* const restrict A,
+            c128* const restrict AFAC,
+            f64* const restrict rwork,
+            f64* resid);
+
+void zppt02(const char* uplo, const INT n, const INT nrhs,
+            const c128* const restrict A,
+            const c128* const restrict X, const INT ldx,
+            c128* const restrict B, const INT ldb,
+            f64* const restrict rwork,
+            f64* resid);
+
+void zppt03(const char* uplo, const INT n,
+            const c128* const restrict A,
+            const c128* const restrict AINV,
+            c128* const restrict work, const INT ldwork,
+            f64* const restrict rwork,
+            f64* rcond, f64* resid);
+
+/* Hermitian positive definite band (PB) verification routines */
+void zpbt01(const char* uplo, const INT n, const INT kd,
+            const c128* A, const INT lda,
+            c128* AFAC, const INT ldafac,
+            f64* rwork, f64* resid);
+
+void zpbt02(const char* uplo, const INT n, const INT kd, const INT nrhs,
+            const c128* A, const INT lda,
+            const c128* X, const INT ldx,
+            c128* B, const INT ldb,
+            f64* rwork, f64* resid);
+
+void zpbt05(const char* uplo, const INT n, const INT kd, const INT nrhs,
+            const c128* AB, const INT ldab,
+            const c128* B, const INT ldb,
+            const c128* X, const INT ldx,
+            const c128* XACT, const INT ldxact,
+            const f64* ferr, const f64* berr,
+            f64* reslts);
+
+/* Hermitian positive definite packed (PP) verification routines */
+void zppt05(const char* uplo, const INT n, const INT nrhs,
+            const c128* const restrict AP,
+            const c128* const restrict B, const INT ldb,
+            const c128* const restrict X, const INT ldx,
+            const c128* const restrict XACT, const INT ldxact,
+            const f64* const restrict FERR,
+            const f64* const restrict BERR,
+            f64* const restrict reslts);
 
 /* ================================================================
  * Matrix generation routines (TESTING/MATGEN z-prefix)
@@ -360,6 +618,224 @@ void zlattb(const INT imat, const char* uplo, const char* trans, char* diag,
 void zlattp(const INT imat, const char* uplo, const char* trans, char* diag,
             const INT n, c128* AP, c128* B, c128* work, f64* rwork,
             INT* info, uint64_t state[static 4]);
+
+/* QR verification routines */
+void zqrt01(const INT m, const INT n,
+            const c128* const restrict A,
+            c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict R,
+            const INT lda,
+            c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zqrt01p(const INT m, const INT n,
+             const c128* const restrict A,
+             c128* const restrict AF,
+             c128* const restrict Q,
+             c128* const restrict R,
+             const INT lda,
+             c128* const restrict tau,
+             c128* const restrict work, const INT lwork,
+             f64* const restrict rwork,
+             f64* restrict result);
+
+void zqrt02(const INT m, const INT n, const INT k,
+            const c128* const restrict A,
+            const c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict R,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zqrt03(const INT m, const INT n, const INT k,
+            const c128* const restrict AF,
+            c128* const restrict C,
+            c128* const restrict CC,
+            c128* const restrict Q,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zqrt04(const INT m, const INT n, const INT nb, f64* restrict result);
+
+void zqrt05(const INT m, const INT n, const INT l, const INT nb, f64* restrict result);
+
+f64 zqrt11(const INT m, const INT k, const c128* A, const INT lda,
+           const c128* tau, c128* work, const INT lwork);
+
+f64 zqrt12(const INT m, const INT n, const c128* A, const INT lda,
+           const f64* S, c128* work, const INT lwork,
+           f64* rwork);
+
+void zqrt13(const INT scale, const INT m, const INT n,
+            c128* A, const INT lda, f64* norma,
+            uint64_t state[static 4]);
+
+f64 zqrt14(const char* trans, const INT m, const INT n, const INT nrhs,
+           const c128* A, const INT lda, const c128* X, const INT ldx,
+           c128* work, const INT lwork);
+
+void zqrt15(const INT scale, const INT rksel,
+            const INT m, const INT n, const INT nrhs,
+            c128* A, const INT lda, c128* B, const INT ldb,
+            f64* S, INT* rank, f64* norma, f64* normb,
+            c128* work, const INT lwork,
+            uint64_t state[static 4]);
+
+void zqrt16(const char* trans, const INT m, const INT n, const INT nrhs,
+            const c128* A, const INT lda,
+            const c128* X, const INT ldx,
+            c128* B, const INT ldb,
+            f64* rwork, f64* resid);
+
+f64 zqrt17(const char* trans, const INT iresid,
+           const INT m, const INT n, const INT nrhs,
+           const c128* A, const INT lda,
+           const c128* X, const INT ldx,
+           const c128* B, const INT ldb,
+           c128* C,
+           c128* work, const INT lwork);
+
+f64 zqpt01(const INT m, const INT n, const INT k,
+           const c128* A, const c128* AF, const INT lda,
+           const c128* tau, const INT* jpvt,
+           c128* work, const INT lwork);
+
+/* QL verification routines */
+void zqlt01(const INT m, const INT n,
+            const c128* const restrict A,
+            c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict L,
+            const INT lda,
+            c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zqlt02(const INT m, const INT n, const INT k,
+            const c128* const restrict A,
+            const c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict L,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zqlt03(const INT m, const INT n, const INT k,
+            const c128* const restrict AF,
+            c128* const restrict C,
+            c128* const restrict CC,
+            c128* const restrict Q,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+/* LQ verification routines */
+void zlqt01(const INT m, const INT n,
+            const c128* const restrict A,
+            c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict L,
+            const INT lda,
+            c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zlqt02(const INT m, const INT n, const INT k,
+            const c128* const restrict A,
+            const c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict L,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zlqt03(const INT m, const INT n, const INT k,
+            c128* const restrict AF,
+            c128* const restrict C,
+            c128* const restrict CC,
+            c128* const restrict Q,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zlqt04(const INT m, const INT n, const INT nb, f64* restrict result);
+
+void zlqt05(const INT m, const INT n, const INT l, const INT nb,
+            f64* restrict result);
+
+/* RQ verification routines */
+void zrqt01(const INT m, const INT n,
+            const c128* const restrict A,
+            c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict R,
+            const INT lda,
+            c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zrqt02(const INT m, const INT n, const INT k,
+            const c128* const restrict A,
+            const c128* const restrict AF,
+            c128* const restrict Q,
+            c128* const restrict R,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+void zrqt03(const INT m, const INT n, const INT k,
+            c128* const restrict AF,
+            c128* const restrict C,
+            c128* const restrict CC,
+            c128* const restrict Q,
+            const INT lda,
+            const c128* const restrict tau,
+            c128* const restrict work, const INT lwork,
+            f64* const restrict rwork,
+            f64* restrict result);
+
+/* RZ verification routines */
+f64 zrzt01(const INT m, const INT n, const c128* A, c128* AF,
+           const INT lda, const c128* tau, c128* work, const INT lwork);
+
+f64 zrzt02(const INT m, const INT n, c128* AF, const INT lda,
+           const c128* tau, c128* work, const INT lwork);
+
+/* TSQR verification */
+void ztsqr01(const char* tssw, const INT m, const INT n, const INT mb,
+             const INT nb, f64* result);
+
+/* Unitary Householder reconstruction verification */
+void zunhr_col01(const INT m, const INT n, const INT mb1, const INT nb1,
+                 const INT nb2, f64* restrict result);
+
+void zunhr_col02(const INT m, const INT n, const INT mb1, const INT nb1,
+                 const INT nb2, f64* restrict result);
+
+/* Real-valued sorting (d-prefix, used by zchkq3/zchkqp3rk for singular values) */
+void dlaord(const char* job, const INT n, f64* X, const INT incx);
 
 /* QL solve */
 void zgeqls(const INT m, const INT n, const INT nrhs,

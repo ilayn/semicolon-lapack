@@ -233,7 +233,7 @@ void clatrs(
         } else {
             // A is unit triangular
             grow = (ONE < HALF / (xbnd > smlnum ? xbnd : smlnum))
-                 ? HALF / (xbnd > smlnum ? xbnd : smlnum) : ONE;
+                 ? ONE : HALF / (xbnd > smlnum ? xbnd : smlnum);
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
                 grow = grow * (ONE / (ONE + cnorm[j]));
@@ -271,7 +271,7 @@ void clatrs(
             }
         } else {
             grow = (ONE < HALF / (xbnd > smlnum ? xbnd : smlnum))
-                 ? HALF / (xbnd > smlnum ? xbnd : smlnum) : ONE;
+                 ? ONE : HALF / (xbnd > smlnum ? xbnd : smlnum);
             for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j += jinc) {
                 if (grow <= smlnum) break;
                 xj = ONE + cnorm[j];

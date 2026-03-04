@@ -165,22 +165,26 @@ static void generate_gt_matrix(INT n, INT imat, f64* DL, f64* D, f64* DU,
     INT m = (n > 1) ? n - 1 : 0;
 
     if (n <= 0) {
-        *izero = 0;
+        *izero = -1;
         return;
     }
 
     dlatb4("DGT", imat, n, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
     INT zerot = (imat >= 8 && imat <= 10);
-    *izero = 0;
+    *izero = -1;
 
     if (imat >= 1 && imat <= 6) {
-        /* Types 1-6: Use dlatms to generate matrix with controlled condition */
-        /* Generate in band storage: 3 rows (sub, diag, super) */
-        INT lda = 3;
-        f64* AB = calloc(lda * n, sizeof(f64));
+        INT lda_band = 3;
+        INT max1n = (1 > n) ? 1 : n;
+        INT koff_a = 2 - ku;
+        INT koff_b = 3 - max1n;
+        INT koff = ((koff_a > koff_b) ? koff_a : koff_b) - 1;
+        if (koff < 0) koff = 0;
+        INT ab_needed = koff + lda_band * n;
+        INT ab_size = (n * n > ab_needed) ? n * n : ab_needed;
+        f64* AB = calloc(ab_size, sizeof(f64));
         f64* d_sing = malloc(n * sizeof(f64));
-        /* dlatms with pack='Z' needs: n*n (full matrix) + m+n (dlagge workspace) */
         f64* work = malloc((n * n + 2 * n) * sizeof(f64));
 
         if (!AB || !d_sing || !work) {
@@ -190,20 +194,19 @@ static void generate_gt_matrix(INT n, INT imat, f64* DL, f64* D, f64* DU,
             return;
         }
 
-        /* Generate band matrix with KL=1, KU=1 */
         dlatms(n, n, &dist,
                &type, d_sing, mode, cndnum, anorm,
-               kl, ku, "Z", AB, lda, work, &info, rng_state);
+               kl, ku, "Z", AB + koff, lda_band, work, &info, rng_state);
 
         if (info == 0) {
             /* Extract tridiagonal from band storage */
             /* Band storage with 'Z': row 0 = super-diagonal, row 1 = diagonal, row 2 = sub-diagonal */
             for (INT i = 0; i < n; i++) {
-                D[i] = AB[1 + i * lda];  /* Diagonal */
+                D[i] = AB[1 + i * lda_band];
             }
             for (INT i = 0; i < m; i++) {
-                DU[i] = AB[0 + (i + 1) * lda];  /* Super-diagonal */
-                DL[i] = AB[2 + i * lda];        /* Sub-diagonal */
+                DU[i] = AB[0 + (i + 1) * lda_band];
+                DL[i] = AB[2 + i * lda_band];
             }
         } else {
             /* Fall back to simple generation */
@@ -249,28 +252,29 @@ static void generate_gt_matrix(INT n, INT imat, f64* DL, f64* D, f64* DU,
         /* For types 8-10, zero one column to create singular matrix */
         if (zerot) {
             if (imat == 8) {
-                /* Zero first column */
-                *izero = 1;
+                *izero = 0;
                 D[0] = ZERO;
                 if (n > 1) {
                     DL[0] = ZERO;
                 }
             } else if (imat == 9) {
-                /* Zero last column */
-                *izero = n;
+                *izero = n - 1;
                 D[n - 1] = ZERO;
                 if (n > 1) {
                     DU[n - 2] = ZERO;
                 }
             } else {
-                /* Zero middle columns */
-                *izero = (n + 1) / 2;
-                for (INT i = *izero - 1; i < n - 1; i++) {
-                    DL[i] = ZERO;
-                    D[i] = ZERO;
-                    DU[i] = ZERO;
+                *izero = (n - 1) / 2;
+                for (INT j = *izero; j < n; j++) {
+                    D[j] = ZERO;
                 }
-                D[n - 1] = ZERO;
+                for (INT j = *izero; j < n - 1; j++) {
+                    DL[j] = ZERO;
+                }
+                INT du_start = (*izero >= 1) ? *izero - 1 : 0;
+                for (INT j = du_start; j < n - 1; j++) {
+                    DU[j] = ZERO;
+                }
             }
         }
     }
@@ -320,8 +324,7 @@ static void run_dchkgt_single(INT n, INT imat)
     dgttrf(n, ws->DLF, ws->DF, ws->DUF, ws->DU2, ws->IPIV, &info);
 
     /* Check error code */
-    if (izero > 0) {
-        /* For singular matrices, info should be > 0 */
+    if (izero >= 0) {
         assert_true(info >= 0);
     }
     trfcon = (info != 0);

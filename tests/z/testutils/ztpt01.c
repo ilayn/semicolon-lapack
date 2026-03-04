@@ -1,0 +1,94 @@
+/**
+ * @file ztpt01.c
+ * @brief ZTPT01 computes the residual for a triangular matrix A times its inverse
+ *        when A is stored in packed format.
+ *
+ * Port of LAPACK TESTING/LIN/ztpt01.f to C.
+ */
+
+#include <math.h>
+#include "semicolon_cblas.h"
+#include "verify.h"
+
+/**
+ * ZTPT01 computes the residual for a triangular matrix A times its inverse
+ * when A is stored in packed format:
+ *    RESID = norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS),
+ * where EPS is the machine epsilon.
+ *
+ * @param[in]     uplo    = 'U': Upper triangular; = 'L': Lower triangular.
+ * @param[in]     diag    = 'N': Non-unit triangular; = 'U': Unit triangular.
+ * @param[in]     n       The order of the matrix A. n >= 0.
+ * @param[in]     AP      Array (n*(n+1)/2). The triangular matrix A in packed storage.
+ * @param[in,out] AINVP   Array (n*(n+1)/2). On entry, the inverse of A in packed storage.
+ *                        On exit, the contents are destroyed.
+ * @param[out]    rcond   The reciprocal condition number = 1/(norm(A) * norm(AINV)).
+ * @param[out]    rwork   Array (n). Workspace.
+ * @param[out]    resid   norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS).
+ */
+void ztpt01(const char* uplo, const char* diag, const INT n,
+            const c128* AP, c128* AINVP,
+            f64* rcond, f64* rwork, f64* resid)
+{
+    const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
+    INT j, jc;
+    f64 ainvnm, anorm, eps;
+    INT unitd;
+
+    /* Quick exit if N = 0 */
+    if (n <= 0) {
+        *rcond = ONE;
+        *resid = ZERO;
+        return;
+    }
+
+    /* Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0 */
+    eps = dlamch("E");
+    anorm = zlantp("1", uplo, diag, n, AP, rwork);
+    ainvnm = zlantp("1", uplo, diag, n, AINVP, rwork);
+
+    if (anorm <= ZERO || ainvnm <= ZERO) {
+        *rcond = ZERO;
+        *resid = ONE / eps;
+        return;
+    }
+    *rcond = (ONE / anorm) / ainvnm;
+
+    /* Compute A * AINV, overwriting AINV */
+    unitd = (diag[0] == 'U' || diag[0] == 'u');
+
+    if (uplo[0] == 'U' || uplo[0] == 'u') {
+        jc = 0;
+        for (j = 0; j < n; j++) {
+            if (unitd) {
+                AINVP[jc + j] = CMPLX(ONE, 0.0);
+            }
+
+            cblas_ztpmv(CblasColMajor, CblasUpper, CblasNoTrans,
+                       unitd ? CblasUnit : CblasNonUnit,
+                       j + 1, AP, &AINVP[jc], 1);
+
+            AINVP[jc + j] -= ONE;
+            jc += j + 1;
+        }
+    } else {
+        jc = 0;
+        for (j = 0; j < n; j++) {
+            if (unitd) {
+                AINVP[jc] = CMPLX(ONE, 0.0);
+            }
+
+            cblas_ztpmv(CblasColMajor, CblasLower, CblasNoTrans,
+                       unitd ? CblasUnit : CblasNonUnit,
+                       n - j, &AP[jc], &AINVP[jc], 1);
+
+            AINVP[jc] -= ONE;
+            jc += n - j;
+        }
+    }
+
+    /* Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS) */
+    *resid = zlantp("1", uplo, "N", n, AINVP, rwork);
+    *resid = ((*resid) * (*rcond) / (f64)n) / eps;
+}
