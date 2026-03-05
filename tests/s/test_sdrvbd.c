@@ -712,8 +712,8 @@ static void test_dgesvdx(INT m, INT n, const f32* ASAV, INT lda,
 
     /* === RANGE='I' (index range) === */
     if (mnmin > 1) {
-        INT il = 1 + (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
-        INT iu = 1 + (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
+        INT il = (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
+        INT iu = (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
         if (iu < il) {
             INT tmp = il;
             il = iu;

@@ -14,6 +14,11 @@ testutils_z_sources = files(
 
   # Real-valued shared verification (from d-prefix, precision-independent)
   '../../d/testutils/dget06.c',  # Condition number comparison
+  '../../d/testutils/dsvdct.c',  # Sturm sequence singular value count
+  '../../d/testutils/dsvdch.c',  # Sturm sequence singular value check
+  '../../d/testutils/dstect.c',  # Sturm sequence eigenvalue count (dstech dependency)
+  '../../d/testutils/dstech.c',  # Sturm sequence eigenvalue check
+  '../../d/testutils/dsxt1.c',   # Eigenvalue range comparison
 
   # General matrix verification (zget*)
   'zget01.c',   # LU factorization: ||L*U - A|| / (N * ||A|| * eps)
@@ -205,6 +210,8 @@ testutils_z_sources = files(
   'zgrqts.c',       # GRQ test helper (tests ZGGRQF)
   'zgsvts3.c',      # GSVD test helper (tests ZGGSVD3)
   'zlatm4.c',       # Eigenvalue test matrix generator
+  'zlctes.c',       # Eigenvalue selection: Re(alpha/beta) < 0
+  'zlctsx.c',       # Stateful eigenvalue selection for ZGGESX reordering
   'zsbmv.c',        # Complex symmetric band matrix-vector product
 
   # SVD verification
@@ -239,6 +246,7 @@ testutils_z_sources = files(
   '../../d/testutils/dlatm1.c',  # Real diagonal gen (zlatms calls DLATM1, not ZLATM1)
   '../../d/testutils/dlatm7.c',  # Real diagonal gen with rank (zlatmt calls DLATM7)
   '../../d/testutils/dlaord.c',  # Real sort (dlaord used by zchkq3/zchkqp3rk for singular values)
+  '../../d/testutils/dlatb9.c',  # EIG matrix type params (real-only, shared by zck* tests)
 )
 
 # Build complex double precision test utilities library with test tuning implementation.
