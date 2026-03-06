@@ -187,7 +187,7 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared
+        run: meson setup builddir -Dblas=openblas --default-library=shared -DSYMBOL_MANGLING='SC_##name'
 
       - name: Build
         run: ninja -C builddir
@@ -252,6 +252,7 @@ jobs:
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
             /I "include" ^
+            /DLAPACK_NAME(name)=SC_##name ^
             ..\tests\ci\msvc_consumer_test.c ^
             semilapack.lib ^
             /Fe:consumer_test.exe
@@ -305,7 +306,7 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared
+        run: meson setup builddir -Dblas=openblas --default-library=shared -DSYMBOL_MANGLING='SC_##name'
 
       - name: Build
         run: ninja -C builddir
@@ -369,6 +370,7 @@ jobs:
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
             /I "include" ^
+            /DLAPACK_NAME(name)=SC_##name ^
             ..\tests\ci\msvc_consumer_test.c ^
             semilapack.lib ^
             /Fe:consumer_test.exe

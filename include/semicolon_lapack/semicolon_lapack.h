@@ -24,9 +24,12 @@
     #ifndef LAPACK_NAME
         #define LAPACK_NAME(name) name##_64
     #endif
-    #include "lapack_name_map.h"
 #else
     #define INT i32
+#endif
+
+#ifdef LAPACK_NAME
+    #include "lapack_name_map.h"
 #endif
 #include "semicolon_lapack_auxiliary.h"
 #include "semicolon_lapack_double.h"
