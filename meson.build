@@ -154,7 +154,13 @@ endif
 
 if use_int64
   add_project_arguments('-DSEMICOLON_ILP64', language: 'c')
-  symbol_mangling = get_option('SYMBOL_MANGLING')
+endif
+
+symbol_mangling = get_option('SYMBOL_MANGLING')
+if symbol_mangling == '' and use_int64
+  symbol_mangling = 'name##_64'
+endif
+if symbol_mangling != ''
   add_project_arguments('-DLAPACK_NAME(name)=' + symbol_mangling, language: 'c')
 endif
 
@@ -188,6 +194,7 @@ subdir('src')
 # Install public headers — types.h is installed as-is (concrete typedefs, no macros)
 install_headers(
   'include/semicolon_lapack/types.h',
+  'src/include/lapack_name_map.h',
   subdir: 'semicolon_lapack',
 )
 
@@ -197,11 +204,10 @@ install_headers(
 python = find_program('python3')
 if use_int64
   gen_int_type = 'i64'
-  gen_naming = get_option('SYMBOL_MANGLING')
 else
   gen_int_type = 'i32'
-  gen_naming = ''
 endif
+gen_naming = symbol_mangling
 
 if use_int64
   gen_aggregator = 'semicolon_lapack_64.h'

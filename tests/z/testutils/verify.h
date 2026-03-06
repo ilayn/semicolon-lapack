@@ -14,6 +14,17 @@
 
 /* Real-valued shared verification routines (from d-prefix, precision-independent) */
 f64 dget06(const f64 rcond, const f64 rcondc);
+void dsvdct(const INT n, const f64* s, const f64* e, const f64 shift, INT* num);
+void dsvdch(const INT n, const f64* s, const f64* e,
+            const f64* svd, const f64 tol, INT* info);
+void dstect(const INT n, const f64* a, const f64* b,
+            const f64 shift, INT* num);
+void dstech(const INT n, const f64* const restrict A, const f64* const restrict B,
+            const f64* const restrict eig, const f64 tol,
+            f64* const restrict work, INT* info);
+f64 dsxt1(const INT ijob, const f64* const restrict D1, const INT n1,
+          const f64* const restrict D2, const INT n2,
+          const f64 abstol, const f64 ulp, const f64 unfl);
 
 /* General (ZGE) verification routines */
 void zget01(const INT m, const INT n, const c128* const restrict A, const INT lda,
@@ -59,6 +70,13 @@ void zget51(const INT itype, const INT n,
             const c128* U, const INT ldu,
             const c128* V, const INT ldv,
             c128* work, f64* rwork, f64* result);
+
+/* Eigenvalue selection function for generalized Schur tests */
+INT zlctes(const c128* z, const c128* d);
+
+/* Stateful eigenvalue selection function for ZGGESX reordering tests */
+void zlctsx_reset(INT m, INT n, INT mplusn);
+INT zlctsx(const c128* alpha, const c128* beta);
 
 /* Generalized Schur decomposition verify */
 void zget54(const INT n, const c128* A, const INT lda,
@@ -856,6 +874,12 @@ void zlsets(const INT m, const INT p, const INT n,
             c128* X,
             c128* work, const INT lwork,
             f64* rwork, f64* result);
+
+/* EIG matrix type parameters (real-only, shared from d-prefix) */
+void dlatb9(const char* path, const INT imat, const INT m, const INT p, const INT n,
+            char* type, INT* kla, INT* kua, INT* klb, INT* kub,
+            f64* anorm, f64* bnorm, INT* modea, INT* modeb,
+            f64* cndnma, f64* cndnmb, char* dista, char* distb);
 
 void zglmts(const INT n, const INT m, const INT p,
             const c128* A, c128* AF, const INT lda,

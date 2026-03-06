@@ -342,7 +342,7 @@ void zgbbrd(const char* vect, const INT m, const INT n, const INT ncc,
                     t = CONE;
                 }
                 if (wantpt) {
-                    cblas_zscal(n, &t, &PT[(i + 1) * ldpt], 1);
+                    cblas_zscal(n, &t, &PT[i + 1], ldpt);
                 }
                 t = AB[ku + (i + 1) * ldab] * conj(t);
             }

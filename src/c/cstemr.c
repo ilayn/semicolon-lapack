@@ -50,7 +50,7 @@ void cstemr(const char* jobz, const char* range, const INT n,
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
     const f32 FOUR = 4.0f;
-    const f32 MINRGP = 1.0e-3f;
+    const f32 MINRGP = 3.0e-3f;
 
     INT wantz, alleig, valeig, indeig, lquery, zquery, laeswap;
     INT i, ibegin, iend, ifirst, iil, iindbl, iindw;
@@ -322,7 +322,7 @@ void cstemr(const char* jobz, const char* range, const INT n,
             /* SLARRE computes the eigenvalues to less than full precision.
                CLARRV will refine the eigenvalue approximations, and we can
                need less accurate initial bisection in SLARRE. */
-            rtol1 = sqrtf(eps);
+            rtol1 = fmaxf(sqrtf(eps) * 5.0e-2f, FOUR * eps);
             rtol2 = fmaxf(sqrtf(eps) * 5.0e-3f, FOUR * eps);
         }
         slarre(range, n, &wl, &wu, iil, iiu, D, E,

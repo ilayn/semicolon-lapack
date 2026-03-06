@@ -70,7 +70,9 @@ jobs:
           ./openblas_info
 
       - name: Test
-        run: meson test -C builddir --print-errorlogs
+        run: meson test -C builddir
+        env:
+          OPENBLAS_NUM_THREADS: '1'
 
   test-macos:
     name: Test macOS OpenBLAS
@@ -133,7 +135,9 @@ jobs:
           ./openblas_info
 
       - name: Test
-        run: meson test -C builddir --print-errorlogs
+        run: meson test -C builddir
+        env:
+          OPENBLAS_NUM_THREADS: '1'
 
   test-windows:
     name: Test Windows MSYS2 UCRT64
@@ -183,7 +187,7 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared
+        run: meson setup builddir -Dblas=openblas --default-library=shared -DSYMBOL_MANGLING='SC_##name'
 
       - name: Build
         run: ninja -C builddir
@@ -195,7 +199,9 @@ jobs:
           ./openblas_info.exe
 
       - name: Test
-        run: meson test -C builddir --print-errorlogs
+        run: meson test -C builddir
+        env:
+          OPENBLAS_NUM_THREADS: '1'
 
       # --- MSVC consumer test: compile a C program with cl.exe against the
       #     MinGW-built DLL to verify cross-compiler ABI (GCC). ---
@@ -299,7 +305,7 @@ jobs:
           cmake --install cmocka/build
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas --default-library=shared
+        run: meson setup builddir -Dblas=openblas --default-library=shared -DSYMBOL_MANGLING='SC_##name'
 
       - name: Build
         run: ninja -C builddir
@@ -311,7 +317,9 @@ jobs:
           ./openblas_info.exe
 
       - name: Test
-        run: meson test -C builddir --print-errorlogs
+        run: meson test -C builddir
+        env:
+          OPENBLAS_NUM_THREADS: '1'
 
       # --- MSVC consumer test: compile a C program with cl.exe against the
       #     Clang-built DLL to verify cross-compiler ABI. ---

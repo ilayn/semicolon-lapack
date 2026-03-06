@@ -355,7 +355,7 @@ static void run_ddrves_single(ddrves_params_t* params)
     if (iinfo != 0) {
         /* Matrix generation failed */
         ws->result[rsub] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -385,7 +385,7 @@ static void run_ddrves_single(ddrves_params_t* params)
         ws->result[rsub] = ulpinv;
         if (iinfo > 0 && iinfo <= n) {
             /* QR algorithm failed */
-            print_message("SGEES failed with info=%d (QR failed)\n", iinfo);
+            fprintf(stderr, "SGEES failed with info=%d (QR failed)\n", iinfo);
         }
         return;
     }

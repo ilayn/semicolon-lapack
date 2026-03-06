@@ -5,11 +5,19 @@
  *
  * Compiled in CI with:
  *   cl.exe /std:c11 /O2 /W3 msvc_consumer_test.c semilapack.lib
+ *
+ * When the library is built with SYMBOL_MANGLING (e.g. SC_##name),
+ * define LAPACK_NAME before including the header so the name map
+ * rewrites zgetrf -> SC_zgetrf etc.  MSVC /D cannot define
+ * function-like macros, so we do it here instead.
  */
 
 #include <stdio.h>
 #include <math.h>
 
+#ifndef LAPACK_NAME
+#define LAPACK_NAME(name) SC_##name
+#endif
 #define SEMICOLON_USE_SHARED
 #include "semicolon_lapack/semicolon_lapack.h"
 

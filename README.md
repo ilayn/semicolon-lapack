@@ -17,14 +17,7 @@ All four precisions (double, single, complex, double-complex) are 99% translated
 > [!NOTE]
 > XBLAS extra-precision variants are out of scope.
 
-Testing is ported from LAPACK's official test suite. Double and single precision tests are fully ported (~680k parametrized test cases). Complex precision tests are being ported.
-
-| | double + single | complex (z/c) |
-|--|--------|-------|
-| LIN tests (xchk* + xdrv*) | 54 + 54 | 66 / 66 |
-| EIG tests (xchk* + xdrv*) | 33 + 33 | 5 / 33 |
-| Verification routines | 123 + 123 | 114 / 114 |
-| Matrix generators + helpers | 39 + 39 | 48 / 51 |
+Tests are ported from LAPACK's official test suite and fully ported (~450K parametrized test cases).
 
 
 ## Disclosure

@@ -80,7 +80,7 @@ static inline void clear_test_context(void) {
  * Requires THRESH to be defined in the test file.
  */
 #define assert_residual_ok(resid) \
-    _assert_residual_below((double)(resid), (double)(THRESH), #resid, __FILE__, __LINE__)
+    assert_residual_below(resid, THRESH)
 
 /**
  * Assert that a normalized residual is below a custom threshold.
@@ -89,27 +89,20 @@ static inline void clear_test_context(void) {
  * @param thresh  Custom threshold
  */
 #define assert_residual_below(resid, thresh) \
-    _assert_residual_below((double)(resid), (double)(thresh), #resid, __FILE__, __LINE__)
-
-/**
- * Internal implementation of residual assertion.
- * Do not call directly; use assert_residual_ok or assert_residual_below.
- */
-static inline void _assert_residual_below(
-    double resid,
-    double thresh,
-    const char *resid_expr,
-    const char *file,
-    int line)
-{
-    if (resid >= thresh) {
-        if (g_test_context) {
-            print_error("\n*** FAILED: %s\n", g_test_context);
-        }
-        print_error("    %s = %.6e >= threshold %.1f\n", resid_expr, resid, thresh);
-        _fail(file, line);
-    }
-}
+    do { \
+        double _resid = (double)(resid); \
+        double _thresh = (double)(thresh); \
+        if (_resid >= _thresh) { \
+            if (g_test_context) { \
+                fprintf(stderr, "\n*** FAILED: %s\n", g_test_context); \
+                fprintf(stderr, "    %s = %.6e >= threshold %.1f\n", #resid, _resid, _thresh); \
+            } else { \
+                fprintf(stderr, "    %s = %.6e >= threshold %.1f\n", #resid, _resid, _thresh); \
+            } \
+            fflush(stderr); \
+            fail_msg("%s = %.6e >= threshold %.1f", #resid, _resid, _thresh); \
+        } \
+    } while (0)
 
 /**
  * Assert that INFO return value indicates success.
@@ -122,26 +115,26 @@ static inline void _assert_residual_below(
  *   > 0  : Algorithm-specific failure (e.g., singular matrix)
  */
 #define assert_info_success(info) \
-    _assert_info_success(info, #info, __FILE__, __LINE__)
-
-static inline void _assert_info_success(
-    INT info,
-    const char *info_expr,
-    const char *file,
-    int line)
-{
-    if (info != 0) {
-        if (g_test_context) {
-            print_error("\n*** FAILED: %s\n", g_test_context);
-        }
-        if (info < 0) {
-            print_error("    %s = %lld: illegal argument %lld\n", info_expr, (long long)info, (long long)-info);
-        } else {
-            print_error("    %s = %lld: algorithm failure\n", info_expr, (long long)info);
-        }
-        _fail(file, line);
-    }
-}
+    do { \
+        INT _info = (info); \
+        if (_info != 0) { \
+            if (g_test_context) \
+                fprintf(stderr, "\n*** FAILED: %s\n", g_test_context); \
+            if (_info < 0) { \
+                fprintf(stderr, "    %s = %lld: illegal argument %lld\n", \
+                        #info, (long long)_info, (long long)-_info); \
+                fflush(stderr); \
+                fail_msg("%s = %lld: illegal argument %lld", \
+                         #info, (long long)_info, (long long)-_info); \
+            } else { \
+                fprintf(stderr, "    %s = %lld: algorithm failure\n", \
+                        #info, (long long)_info); \
+                fflush(stderr); \
+                fail_msg("%s = %lld: algorithm failure", \
+                         #info, (long long)_info); \
+            } \
+        } \
+    } while (0)
 
 /**
  * Assert that INFO indicates a singular matrix (expected for certain tests).
@@ -151,22 +144,18 @@ static inline void _assert_info_success(
  * For singular matrix test types (5-7 in dlatb4), INFO > 0 is expected.
  */
 #define assert_info_singular(info) \
-    _assert_info_singular(info, #info, __FILE__, __LINE__)
-
-static inline void _assert_info_singular(
-    INT info,
-    const char *info_expr,
-    const char *file,
-    int line)
-{
-    if (info <= 0) {
-        if (g_test_context) {
-            print_error("\n*** FAILED: %s\n", g_test_context);
-        }
-        print_error("    %s = %lld: expected singular (info > 0)\n", info_expr, (long long)info);
-        _fail(file, line);
-    }
-}
+    do { \
+        INT _info = (info); \
+        if (_info <= 0) { \
+            if (g_test_context) \
+                fprintf(stderr, "\n*** FAILED: %s\n", g_test_context); \
+            fprintf(stderr, "    %s = %lld: expected singular (info > 0)\n", \
+                    #info, (long long)_info); \
+            fflush(stderr); \
+            fail_msg("%s = %lld: expected singular (info > 0)", \
+                     #info, (long long)_info); \
+        } \
+    } while (0)
 
 /**
  * Skip test with a message.
@@ -174,7 +163,7 @@ static inline void _assert_info_singular(
  */
 #define skip_test(msg) \
     do { \
-        print_message("SKIP: %s\n", msg); \
+        fprintf(stderr, "SKIP: %s\n", msg); \
         skip(); \
     } while (0)
 

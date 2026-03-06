@@ -247,7 +247,7 @@ static void test_ddrgsx(void** state)
            g_ws->iwork, NMAX + 6, g_ws->bwork, &linfo);
 
     if (linfo != 0 && linfo != mplusn + 2) {
-        print_message("DGGESX returned INFO=%d for sense=%s type=%d m=%d n=%d\n",
+        fprintf(stderr, "DGGESX returned INFO=%d for sense=%s type=%d m=%d n=%d\n",
                       linfo, sense, prtype, m, n);
         result[0] = ulpinv;
         assert_residual_ok(result[0]);
@@ -390,7 +390,7 @@ static void test_ddrgsx(void** state)
     INT any_fail = 0;
     for (INT j = 0; j < 9; j++) {
         if (result[j] >= THRESH) {
-            print_message("sense=%s type=%d m=%d n=%d test(%d)=%g\n",
+            fprintf(stderr, "sense=%s type=%d m=%d n=%d test(%d)=%g\n",
                           sense, prtype, m, n, j + 1, result[j]);
             any_fail = 1;
         }
@@ -494,7 +494,7 @@ static void test_ddrgsx_readin(void** state)
            g_ws->iwork, NMAX + 6, g_ws->bwork, &linfo);
 
     if (linfo != 0 && linfo != mplusn + 2) {
-        print_message("DGGESX returned INFO=%d for read-in example #%d\n",
+        fprintf(stderr, "DGGESX returned INFO=%d for read-in example #%d\n",
                       linfo, ci + 1);
         result[0] = ulpinv;
         assert_residual_below(result[0], thrsh2);
@@ -572,7 +572,7 @@ static void test_ddrgsx_readin(void** state)
                        g_ws->beta[j], g_ws->alphar[j], g_ws->alphai[j],
                        &temp2, &iinfo);
                 if (iinfo >= 3) {
-                    print_message("DGET53 returned INFO=%d for eigenvalue %d "
+                    fprintf(stderr, "DGET53 returned INFO=%d for eigenvalue %d "
                                   "(read-in #%d)\n", iinfo, j + 1, ci + 1);
                 }
             } else {
@@ -631,7 +631,7 @@ static void test_ddrgsx_readin(void** state)
     INT any_fail = 0;
     for (INT j = 0; j < 10; j++) {
         if (result[j] >= THRESH) {
-            print_message("read-in #%d test(%d)=%g >= %.1f\n",
+            fprintf(stderr, "read-in #%d test(%d)=%g >= %.1f\n",
                           ci + 1, j + 1, result[j], THRESH);
             any_fail = 1;
         }

@@ -123,6 +123,7 @@ void zunbdb3(const INT m, const INT p, const INT q,
                         &X21[i + i * ldx21], ldx11, c, s);
         }
 
+        zlacgv(q - i, &X21[i + i * ldx21], ldx21);
         zlarfgp(q - i, &X21[i + i * ldx21], &X21[i + (i + 1) * ldx21],
                 ldx21, &tauq1[i]);
         s = creal(X21[i + i * ldx21]);

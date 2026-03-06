@@ -398,10 +398,10 @@ static void test_dggbak(void** state)
         }
     }
 
-    print_message("SGGBAK: %d cases, max residual = %.3e (case %d)\n",
+    fprintf(stderr, "SGGBAK: %d cases, max residual = %.3e (case %d)\n",
                   knt, (double)rmax, lmax[3]);
     if (ninfo > 0)
-        print_message("  INFO errors: %d (bal=%d, bakL=%d, bakR=%d)\n",
+        fprintf(stderr, "  INFO errors: %d (bal=%d, bakL=%d, bakR=%d)\n",
                       ninfo, lmax[0], lmax[1], lmax[2]);
 
     assert_true(ninfo == 0);

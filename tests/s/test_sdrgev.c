@@ -397,7 +397,7 @@ static void test_sdrgev_case(void** state)
             }
         }
         if (nmismatch > 0) {
-            print_message("SGGEV(V,V) vs (N,N): %lld of %lld eigenvalues "
+            fprintf(stderr, "SGGEV(V,V) vs (N,N): %lld of %lld eigenvalues "
                           "differ, info(V,V)=%lld info(N,N)=%lld\n",
                           (long long)nmismatch, (long long)n,
                           (long long)iinfo_vv, (long long)iinfo_nn);
@@ -406,7 +406,7 @@ static void test_sdrgev_case(void** state)
                 int ai_eq = (g_ws->alphai[j] == g_ws->alphi1[j]);
                 int b_eq  = (g_ws->beta[j]   == g_ws->beta1[j]);
                 if (!(ar_eq && ai_eq && b_eq)) {
-                    print_message("  j=%lld: alphar diff=%.3e  alphai diff=%.3e"
+                    fprintf(stderr, "  j=%lld: alphar diff=%.3e  alphai diff=%.3e"
                                   "  beta diff=%.3e\n", (long long)j,
                                   (double)fabsf(g_ws->alphar[j] - g_ws->alphr1[j]),
                                   (double)fabsf(g_ws->alphai[j] - g_ws->alphi1[j]),
@@ -444,7 +444,7 @@ static void test_sdrgev_case(void** state)
             }
         }
         if (nmismatch_eig > 0 || nmismatch_vec > 0) {
-            print_message("SGGEV(V,V) vs (V,N): %lld eigenvalue mismatches, "
+            fprintf(stderr, "SGGEV(V,V) vs (V,N): %lld eigenvalue mismatches, "
                           "%lld VL element mismatches\n",
                           (long long)nmismatch_eig, (long long)nmismatch_vec);
             assert_residual_below(ulpinv, THRESH);
@@ -478,7 +478,7 @@ static void test_sdrgev_case(void** state)
             }
         }
         if (nmismatch_eig > 0 || nmismatch_vec > 0) {
-            print_message("SGGEV(V,V) vs (N,V): %lld eigenvalue mismatches, "
+            fprintf(stderr, "SGGEV(V,V) vs (N,V): %lld eigenvalue mismatches, "
                           "%lld VR element mismatches\n",
                           (long long)nmismatch_eig, (long long)nmismatch_vec);
             assert_residual_below(ulpinv, THRESH);

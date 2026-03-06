@@ -13,9 +13,9 @@
  * @param[in]     uplo   'U' or 'L'
  * @param[in]     wantz  Indicates if eigenvectors are requested.
  * @param[in]     ttype  Internal type parameter.
- * @param[in]     st     Internal index parameter (0-based).
- * @param[in]     ed     Internal index parameter (0-based).
- * @param[in]     sweep  Internal index parameter (0-based).
+ * @param[in]     st     Internal index parameter (1-based from caller).
+ * @param[in]     ed     Internal index parameter (1-based from caller).
+ * @param[in]     sweep  Internal index parameter (1-based from caller).
  * @param[in]     n      The order of the matrix A.
  * @param[in]     nb     The size of the band.
  * @param[in]     ib     Internal block size parameter.
@@ -67,25 +67,25 @@ void chb2st_kernels(
      */
     if (upper) {
 
-        vpos   = (sweep % 2) * n + st;
-        taupos = (sweep % 2) * n + st;
+        vpos   = ((sweep - 1) % 2) * n + st - 1;
+        taupos = ((sweep - 1) % 2) * n + st - 1;
 
         if (ttype == 1) {
             lm = ed - st + 1;
 
             V[vpos] = ONE;
-            for (i = 1; i < lm; i++) {
-                V[vpos + i]                      = conjf(A[(ofdpos - i) + (st + i) * lda]);
-                A[(ofdpos - i) + (st + i) * lda] = ZERO;
+            for (i = 1; i <= lm - 1; i++) {
+                V[vpos + i]                              = conjf(A[(ofdpos - i) + (st - 1 + i) * lda]);
+                A[(ofdpos - i) + (st - 1 + i) * lda]     = ZERO;
             }
-            ctmp = conjf(A[ofdpos + st * lda]);
+            ctmp = conjf(A[ofdpos + (st - 1) * lda]);
             clarfg(lm, &ctmp, &V[vpos + 1], 1, &TAU[taupos]);
-            A[ofdpos + st * lda] = ctmp;
+            A[ofdpos + (st - 1) * lda] = ctmp;
 
             lm = ed - st + 1;
             clarfy(uplo, lm, &V[vpos], 1,
                    conjf(TAU[taupos]),
-                   &A[dpos + st * lda], lda - 1, WORK);
+                   &A[dpos + (st - 1) * lda], lda - 1, WORK);
         }
 
         if (ttype == 3) {
@@ -93,34 +93,34 @@ void chb2st_kernels(
             lm = ed - st + 1;
             clarfy(uplo, lm, &V[vpos], 1,
                    conjf(TAU[taupos]),
-                   &A[dpos + st * lda], lda - 1, WORK);
+                   &A[dpos + (st - 1) * lda], lda - 1, WORK);
         }
 
         if (ttype == 2) {
             j1 = ed + 1;
-            j2 = (ed + nb < n) ? ed + nb : n - 1;
+            j2 = (ed + nb < n) ? ed + nb : n;
             ln = ed - st + 1;
             lm = j2 - j1 + 1;
             if (lm > 0) {
                 clarfx("Left", ln, lm, &V[vpos],
                        conjf(TAU[taupos]),
-                       &A[(dpos - nb) + j1 * lda], lda - 1, WORK);
+                       &A[(dpos - nb) + (j1 - 1) * lda], lda - 1, WORK);
 
-                vpos   = (sweep % 2) * n + j1;
-                taupos = (sweep % 2) * n + j1;
+                vpos   = ((sweep - 1) % 2) * n + j1 - 1;
+                taupos = ((sweep - 1) % 2) * n + j1 - 1;
 
                 V[vpos] = ONE;
-                for (i = 1; i < lm; i++) {
-                    V[vpos + i]                           = conjf(A[(dpos - nb - i) + (j1 + i) * lda]);
-                    A[(dpos - nb - i) + (j1 + i) * lda]   = ZERO;
+                for (i = 1; i <= lm - 1; i++) {
+                    V[vpos + i]                               = conjf(A[(dpos - nb - i) + (j1 - 1 + i) * lda]);
+                    A[(dpos - nb - i) + (j1 - 1 + i) * lda]   = ZERO;
                 }
-                ctmp = conjf(A[(dpos - nb) + j1 * lda]);
+                ctmp = conjf(A[(dpos - nb) + (j1 - 1) * lda]);
                 clarfg(lm, &ctmp, &V[vpos + 1], 1, &TAU[taupos]);
-                A[(dpos - nb) + j1 * lda] = ctmp;
+                A[(dpos - nb) + (j1 - 1) * lda] = ctmp;
 
                 clarfx("Right", ln - 1, lm, &V[vpos],
                        TAU[taupos],
-                       &A[(dpos - nb + 1) + j1 * lda], lda - 1, WORK);
+                       &A[(dpos - nb + 1) + (j1 - 1) * lda], lda - 1, WORK);
             }
         }
 
@@ -129,25 +129,25 @@ void chb2st_kernels(
      */
     } else {
 
-        vpos   = (sweep % 2) * n + st;
-        taupos = (sweep % 2) * n + st;
+        vpos   = ((sweep - 1) % 2) * n + st - 1;
+        taupos = ((sweep - 1) % 2) * n + st - 1;
 
         if (ttype == 1) {
             lm = ed - st + 1;
 
             V[vpos] = ONE;
-            for (i = 1; i < lm; i++) {
-                V[vpos + i]                          = A[(ofdpos + i) + (st - 1) * lda];
-                A[(ofdpos + i) + (st - 1) * lda]     = ZERO;
+            for (i = 1; i <= lm - 1; i++) {
+                V[vpos + i]                          = A[(ofdpos + i) + (st - 2) * lda];
+                A[(ofdpos + i) + (st - 2) * lda]     = ZERO;
             }
-            clarfg(lm, &A[ofdpos + (st - 1) * lda], &V[vpos + 1], 1,
+            clarfg(lm, &A[ofdpos + (st - 2) * lda], &V[vpos + 1], 1,
                    &TAU[taupos]);
 
             lm = ed - st + 1;
 
             clarfy(uplo, lm, &V[vpos], 1,
                    conjf(TAU[taupos]),
-                   &A[dpos + st * lda], lda - 1, WORK);
+                   &A[dpos + (st - 1) * lda], lda - 1, WORK);
 
         }
 
@@ -156,35 +156,35 @@ void chb2st_kernels(
 
             clarfy(uplo, lm, &V[vpos], 1,
                    conjf(TAU[taupos]),
-                   &A[dpos + st * lda], lda - 1, WORK);
+                   &A[dpos + (st - 1) * lda], lda - 1, WORK);
 
         }
 
         if (ttype == 2) {
             j1 = ed + 1;
-            j2 = (ed + nb < n) ? ed + nb : n - 1;
+            j2 = (ed + nb < n) ? ed + nb : n;
             ln = ed - st + 1;
             lm = j2 - j1 + 1;
 
             if (lm > 0) {
                 clarfx("Right", lm, ln, &V[vpos],
-                       TAU[taupos], &A[(dpos + nb) + st * lda],
+                       TAU[taupos], &A[(dpos + nb) + (st - 1) * lda],
                        lda - 1, WORK);
 
-                vpos   = (sweep % 2) * n + j1;
-                taupos = (sweep % 2) * n + j1;
+                vpos   = ((sweep - 1) % 2) * n + j1 - 1;
+                taupos = ((sweep - 1) % 2) * n + j1 - 1;
 
                 V[vpos] = ONE;
-                for (i = 1; i < lm; i++) {
-                    V[vpos + i]                      = A[(dpos + nb + i) + st * lda];
-                    A[(dpos + nb + i) + st * lda]     = ZERO;
+                for (i = 1; i <= lm - 1; i++) {
+                    V[vpos + i]                      = A[(dpos + nb + i) + (st - 1) * lda];
+                    A[(dpos + nb + i) + (st - 1) * lda]     = ZERO;
                 }
-                clarfg(lm, &A[(dpos + nb) + st * lda], &V[vpos + 1], 1,
+                clarfg(lm, &A[(dpos + nb) + (st - 1) * lda], &V[vpos + 1], 1,
                        &TAU[taupos]);
 
                 clarfx("Left", lm, ln - 1, &V[vpos],
                        conjf(TAU[taupos]),
-                       &A[(dpos + nb - 1) + (st + 1) * lda], lda - 1, WORK);
+                       &A[(dpos + nb - 1) + st * lda], lda - 1, WORK);
 
             }
         }

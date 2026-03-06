@@ -222,10 +222,10 @@ static void test_zgebak(void** state)
         }
     }
 
-    print_message("ZGEBAK: %d cases, max residual = %.3e (case %d)\n",
+    fprintf(stderr, "ZGEBAK: %d cases, max residual = %.3e (case %d)\n",
                   knt, rmax, lmax_resid);
     if (ninfo > 0)
-        print_message("  INFO errors: %d (case %d)\n", ninfo, lmax_info);
+        fprintf(stderr, "  INFO errors: %d (case %d)\n", ninfo, lmax_info);
 
     assert_true(ninfo == 0);
     assert_residual_ok(rmax);

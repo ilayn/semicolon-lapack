@@ -319,7 +319,7 @@ L30:
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {
-            i = 0;
+            i = -1;
             tmp1 = W[j];
             for (jj = j + 1; jj < *m; jj++) {
                 if (W[jj] < tmp1) {
@@ -328,7 +328,7 @@ L30:
                 }
             }
 
-            if (i != 0) {
+            if (i >= 0) {
                 itmp1 = iwork[indibl + i];
                 W[i] = W[j];
                 iwork[indibl + i] = iwork[indibl + j];

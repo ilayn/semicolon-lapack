@@ -173,7 +173,7 @@ static void test_ddrgvx(void** state)
            g_ws->iwork, g_ws->bwork, &linfo);
 
     if (linfo != 0) {
-        print_message("SGGEVX returned INFO=%d for type=%d iwa=%d iwb=%d iwx=%d iwy=%d\n",
+        fprintf(stderr, "SGGEVX returned INFO=%d for type=%d iwa=%d iwb=%d iwx=%d iwy=%d\n",
                       linfo, params->iptype, params->iwa + 1,
                       params->iwb + 1, params->iwx + 1, params->iwy + 1);
         result[0] = ulpinv;
@@ -193,7 +193,7 @@ static void test_ddrgvx(void** state)
            g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->work, res52);
     result[0] = res52[0];
     if (res52[1] > THRESH) {
-        print_message("Left eigenvectors from SGGEVX incorrectly normalized: %.3g\n",
+        fprintf(stderr, "Left eigenvectors from SGGEVX incorrectly normalized: %.3g\n",
                       (double)res52[1]);
     }
 
@@ -203,7 +203,7 @@ static void test_ddrgvx(void** state)
            g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->work, res52);
     result[1] = res52[0];
     if (res52[1] > THRESH) {
-        print_message("Right eigenvectors from SGGEVX incorrectly normalized: %.3g\n",
+        fprintf(stderr, "Right eigenvectors from SGGEVX incorrectly normalized: %.3g\n",
                       (double)res52[1]);
     }
 
@@ -250,7 +250,7 @@ static void test_ddrgvx(void** state)
     for (INT j = 0; j < 4; j++) {
         f32 thr = (j >= 3) ? thrsh2 : THRESH;
         if (result[j] >= thr) {
-            print_message("type=%d iwa=%d iwb=%d iwx=%d iwy=%d test(%d)=%g >= %.1f\n",
+            fprintf(stderr, "type=%d iwa=%d iwb=%d iwx=%d iwy=%d test(%d)=%g >= %.1f\n",
                           params->iptype, params->iwa + 1, params->iwb + 1,
                           params->iwx + 1, params->iwy + 1, j + 1, (double)result[j], (double)thr);
             any_fail = 1;
@@ -342,7 +342,7 @@ static void test_ddrgvx_readin(void** state)
            g_ws->iwork, g_ws->bwork, &linfo);
 
     if (linfo != 0) {
-        print_message("SGGEVX returned INFO=%d for read-in example #%d\n",
+        fprintf(stderr, "SGGEVX returned INFO=%d for read-in example #%d\n",
                       linfo, ci + 1);
         result[0] = ulpinv;
         assert_residual_below(result[0], thrsh2);
@@ -361,7 +361,7 @@ static void test_ddrgvx_readin(void** state)
            g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->work, res52);
     result[0] = res52[0];
     if (res52[1] > THRESH) {
-        print_message("Left eigenvectors from SGGEVX incorrectly normalized: "
+        fprintf(stderr, "Left eigenvectors from SGGEVX incorrectly normalized: "
                       "%.3g (read-in #%d)\n", (double)res52[1], ci + 1);
     }
 
@@ -371,7 +371,7 @@ static void test_ddrgvx_readin(void** state)
            g_ws->alphar, g_ws->alphai, g_ws->beta, g_ws->work, res52);
     result[1] = res52[0];
     if (res52[1] > THRESH) {
-        print_message("Right eigenvectors from SGGEVX incorrectly normalized: "
+        fprintf(stderr, "Right eigenvectors from SGGEVX incorrectly normalized: "
                       "%.3g (read-in #%d)\n", (double)res52[1], ci + 1);
     }
 
@@ -417,7 +417,7 @@ static void test_ddrgvx_readin(void** state)
     INT any_fail = 0;
     for (INT j = 0; j < 4; j++) {
         if (result[j] >= thrsh2) {
-            print_message("read-in #%d test(%d)=%g >= %.1f\n",
+            fprintf(stderr, "read-in #%d test(%d)=%g >= %.1f\n",
                           ci + 1, j + 1, (double)result[j], (double)thrsh2);
             any_fail = 1;
         }

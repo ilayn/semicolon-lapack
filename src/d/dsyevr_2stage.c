@@ -252,7 +252,7 @@ label30:
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {
-            i = 0;
+            i = -1;
             tmp1 = W[j];
             for (jj = j + 1; jj < *m; jj++) {
                 if (W[jj] < tmp1) {
@@ -261,7 +261,7 @@ label30:
                 }
             }
 
-            if (i != 0) {
+            if (i >= 0) {
                 W[i] = W[j];
                 W[j] = tmp1;
                 cblas_dswap(n, &Z[0 + i * ldz], 1, &Z[0 + j * ldz], 1);

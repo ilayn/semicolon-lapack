@@ -273,9 +273,7 @@ static void test_partial(void** state)
     /* Use 1-2-1 Toeplitz for predictable, well-separated eigenvalues */
     gen_toeplitz_121(n, fix->D, fix->E);
 
-    /* Request eigenvalues il..iu (1-based in Fortran, but our sstebz uses
-     * 0-based if the C port follows project convention; however the
-     * specification states il, iu as in LAPACK convention) */
+    /* Request eigenvalues il..iu (0-based) */
     INT il = 2;
     INT iu = n / 2 + 1;
     INT expected_m = iu - il + 1;

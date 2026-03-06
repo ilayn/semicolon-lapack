@@ -358,7 +358,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
     iinfo = generate_A(n, jtype, A, lda, work, iwork, ws->rng_state,
                        &ka, &kb);
     if (iinfo != 0) {
-        print_message("  Generator returned info=%d for n=%d jtype=%d\n",
+        fprintf(stderr, "  Generator returned info=%d for n=%d jtype=%d\n",
                       iinfo, n, jtype);
         fail_msg("Matrix generator failed");
         return;
@@ -391,7 +391,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
             dlatms(n, n, "U", "P", work, 5, 10.0, 1.0,
                    kb, kb, uplo, B, lda, work + n, &iinfo, ws->rng_state);
             if (iinfo != 0) {
-                print_message("  B generator returned info=%d\n", iinfo);
+                fprintf(stderr, "  B generator returned info=%d\n", iinfo);
                 fail_msg("B matrix generator failed");
                 return;
             }
@@ -405,7 +405,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
             dsygv(ibtype, "V", uplo, n, Z, lda, BB, lda, D,
                   work, nwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSYGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSYGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSYGV returned negative info");
@@ -427,7 +427,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
             dsygvd(ibtype, "V", uplo, n, Z, lda, BB, lda, D,
                    work, nwork, iwork, liwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSYGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSYGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSYGVD returned negative info");
@@ -450,7 +450,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, nwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSYGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSYGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSYGVX returned negative info");
@@ -475,7 +475,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, nwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSYGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSYGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSYGVX returned negative info");
@@ -498,7 +498,7 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, nwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSYGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSYGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSYGVX returned negative info");
@@ -521,7 +521,7 @@ L100:
             dspgv(ibtype, "V", uplo, n, AP, BP, D, Z, lda,
                   work, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSPGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSPGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSPGV returned negative info");
@@ -543,7 +543,7 @@ L100:
             dspgvd(ibtype, "V", uplo, n, AP, BP, D, Z, lda,
                    work, nwork, iwork, liwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSPGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSPGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSPGVD returned negative info");
@@ -566,7 +566,7 @@ L100:
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSPGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSPGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSPGVX returned negative info");
@@ -591,7 +591,7 @@ L100:
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSPGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSPGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSPGVX returned negative info");
@@ -614,7 +614,7 @@ L100:
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  DSPGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  DSPGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("DSPGVX returned negative info");
@@ -644,7 +644,7 @@ L310:
                 dsbgv("V", uplo, n, ka, kb, AB, lda, BB, lda,
                       D, Z, lda, work, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  DSBGV(V,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  DSBGV(V,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("DSBGV returned negative info");
@@ -668,7 +668,7 @@ L310:
                 dsbgvd("V", uplo, n, ka, kb, AB, lda, BB, lda,
                        D, Z, lda, work, nwork, iwork, liwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  DSBGVD(V,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  DSBGVD(V,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("DSBGVD returned negative info");
@@ -694,7 +694,7 @@ L310:
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, iwork + n, iwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  DSBGVX(V,A,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  DSBGVX(V,A,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("DSBGVX returned negative info");
@@ -721,7 +721,7 @@ L310:
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, iwork + n, iwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  DSBGVX(V,V,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  DSBGVX(V,V,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("DSBGVX returned negative info");
@@ -746,7 +746,7 @@ L310:
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, iwork + n, iwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  DSBGVX(V,I,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  DSBGVX(V,I,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("DSBGVX returned negative info");
@@ -769,7 +769,7 @@ L620:
     /* Check results against threshold */
     for (INT j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
-            print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d ka=%d kb=%d\n",
+            fprintf(stderr, "  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d ka=%d kb=%d\n",
                           j + 1, ws->result[j], THRESH, n, jtype, ka, kb);
         }
         assert_residual_below(ws->result[j], THRESH);

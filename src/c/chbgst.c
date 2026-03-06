@@ -152,58 +152,58 @@ void chbgst(
             /*
              * Form inv(S(i))**H * A * inv(S(i))
              */
-            bii = crealf(BB[kb + i * ldbb]);
-            AB[ka + i * ldab] = CMPLXF(crealf(AB[ka + i * ldab]) / bii / bii, 0.0f);
+            bii = crealf(BB[kb + (i - 1) * ldbb]);
+            AB[ka + (i - 1) * ldab] = CMPLXF(crealf(AB[ka + (i - 1) * ldab]) / bii / bii, 0.0f);
             for (j = i + 1; j <= i1; j++) {
-                AB[i - j + ka + j * ldab] = AB[i - j + ka + j * ldab] / bii;
+                AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
             INT jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i - 1; j++) {
-                AB[j - i + ka + i * ldab] = AB[j - i + ka + i * ldab] / bii;
+                AB[j - i + ka + (i - 1) * ldab] = AB[j - i + ka + (i - 1) * ldab] / bii;
             }
             for (k = i - kbt; k <= i - 1; k++) {
                 for (j = i - kbt; j <= k; j++) {
-                    AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
-                        - BB[j - i + kb + i * ldbb] * conjf(AB[k - i + ka + i * ldab])
-                        - conjf(BB[k - i + kb + i * ldbb]) * AB[j - i + ka + i * ldab]
-                        + crealf(AB[ka + i * ldab]) * BB[j - i + kb + i * ldbb]
-                          * conjf(BB[k - i + kb + i * ldbb]);
+                    AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
+                        - BB[j - i + kb + (i - 1) * ldbb] * conjf(AB[k - i + ka + (i - 1) * ldab])
+                        - conjf(BB[k - i + kb + (i - 1) * ldbb]) * AB[j - i + ka + (i - 1) * ldab]
+                        + crealf(AB[ka + (i - 1) * ldab]) * BB[j - i + kb + (i - 1) * ldbb]
+                          * conjf(BB[k - i + kb + (i - 1) * ldbb]);
                 }
                 jmax = (1 > i - ka) ? 1 : (i - ka);
                 for (j = jmax; j <= i - kbt - 1; j++) {
-                    AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
-                        - conjf(BB[k - i + kb + i * ldbb]) * AB[j - i + ka + i * ldab];
+                    AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
+                        - conjf(BB[k - i + kb + (i - 1) * ldbb]) * AB[j - i + ka + (i - 1) * ldab];
                 }
             }
             for (j = i; j <= i1; j++) {
                 INT kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
-                    AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
-                        - BB[k - i + kb + i * ldbb] * AB[i - j + ka + j * ldab];
+                    AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
+                        - BB[k - i + kb + (i - 1) * ldbb] * AB[i - j + ka + (j - 1) * ldab];
                 }
             }
 
             if (wantx) {
-                cblas_csscal(n - m, ONE / bii, &X[m + i * ldx], 1);
+                cblas_csscal(n - m, ONE / bii, &X[m + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_cgerc(CblasColMajor, n - m, kbt, &NEG_CONE, &X[m + i * ldx], 1,
-                                &BB[kb - kbt + i * ldbb], 1, &X[m + (i - kbt) * ldx], ldx);
+                    cblas_cgerc(CblasColMajor, n - m, kbt, &NEG_CONE, &X[m + (i - 1) * ldx], 1,
+                                &BB[kb - kbt + (i - 1) * ldbb], 1, &X[m + (i - kbt - 1) * ldx], ldx);
             }
 
-            ra1 = AB[i - i1 + ka + i1 * ldab];
+            ra1 = AB[i - i1 + ka + (i1 - 1) * ldab];
         }
 
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 if (i - k + ka < n && i - k > 1) {
-                    clartg(AB[k + (i - k + ka) * ldab], ra1,
+                    clartg(AB[k + (i - k + ka - 1) * ldab], ra1,
                            &rwork[i - k + ka - m - 1], &work[i - k + ka - m - 1], &ra);
 
-                    t = -BB[kb - k + i * ldbb] * ra1;
+                    t = -BB[kb - k + (i - 1) * ldbb] * ra1;
                     work[i - k - 1] = rwork[i - k + ka - m - 1] * t
-                        - conjf(work[i - k + ka - m - 1]) * AB[0 + (i - k + ka) * ldab];
-                    AB[0 + (i - k + ka) * ldab] = work[i - k + ka - m - 1] * t
-                        + rwork[i - k + ka - m - 1] * AB[0 + (i - k + ka) * ldab];
+                        - conjf(work[i - k + ka - m - 1]) * AB[0 + (i - k + ka - 1) * ldab];
+                    AB[0 + (i - k + ka - 1) * ldab] = work[i - k + ka - m - 1] * t
+                        + rwork[i - k + ka - m - 1] * AB[0 + (i - k + ka - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -217,22 +217,22 @@ void chbgst(
             }
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j += ka1) {
-                work[j - m - 1] = work[j - m - 1] * AB[0 + (j + 1) * ldab];
-                AB[0 + (j + 1) * ldab] = rwork[j - m - 1] * AB[0 + (j + 1) * ldab];
+                work[j - m - 1] = work[j - m - 1] * AB[0 + j * ldab];
+                AB[0 + j * ldab] = rwork[j - m - 1] * AB[0 + j * ldab];
             }
 
             if (nrt > 0)
-                clargv(nrt, &AB[0 + j2t * ldab], inca, &work[j2t - m - 1], ka1,
+                clargv(nrt, &AB[0 + (j2t - 1) * ldab], inca, &work[j2t - m - 1], ka1,
                        &rwork[j2t - m - 1], ka1);
             if (nr > 0) {
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[ka1 - l - 1 + j2 * ldab], inca,
-                           &AB[ka - l - 1 + (j2 + 1) * ldab], inca,
+                    clartv(nr, &AB[ka1 - l - 1 + (j2 - 1) * ldab], inca,
+                           &AB[ka - l - 1 + j2 * ldab], inca,
                            &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
                 }
 
-                clar2v(nr, &AB[ka + j2 * ldab], &AB[ka + (j2 + 1) * ldab],
-                       &AB[ka - 1 + (j2 + 1) * ldab], inca,
+                clar2v(nr, &AB[ka + (j2 - 1) * ldab], &AB[ka + j2 * ldab],
+                       &AB[ka - 1 + j2 * ldab], inca,
                        &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
 
                 clacgv(nr, &work[j2 - m - 1], ka1);
@@ -241,14 +241,14 @@ void chbgst(
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + (j2 + ka1 - l) * ldab], inca,
-                           &AB[l + (j2 + ka1 - l) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j2 + ka1 - l - 1) * ldab], inca,
+                           &AB[l + (j2 + ka1 - l - 1) * ldab], inca,
                            &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j2; j <= j1; j += ka1) {
-                    crot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    crot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + j * ldx], 1,
                          rwork[j - m - 1], conjf(work[j - m - 1]));
                 }
             }
@@ -256,7 +256,7 @@ void chbgst(
 
         if (update) {
             if (i2 <= n && kbt > 0) {
-                work[i - kbt - 1] = -BB[kb - kbt + i * ldbb] * ra1;
+                work[i - kbt - 1] = -BB[kb - kbt + (i - 1) * ldbb] * ra1;
             }
         }
 
@@ -270,8 +270,8 @@ void chbgst(
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + ka + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + (j2 - l + 1) * ldab], inca,
-                           &AB[l + (j2 - l + 1) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j2 - l) * ldab], inca,
+                           &AB[l + (j2 - l) * ldab], inca,
                            &rwork[j2 - ka - 1], &work[j2 - ka - 1], ka1);
             }
             nr = (n - j2 + ka) / ka1;
@@ -281,8 +281,8 @@ void chbgst(
                 rwork[j - 1] = rwork[j - ka - 1];
             }
             for (j = j2; j <= j1; j += ka1) {
-                work[j - 1] = work[j - 1] * AB[0 + (j + 1) * ldab];
-                AB[0 + (j + 1) * ldab] = rwork[j - 1] * AB[0 + (j + 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[0 + j * ldab];
+                AB[0 + j * ldab] = rwork[j - 1] * AB[0 + j * ldab];
             }
             if (update) {
                 if (i - k < n - ka && k <= kbt)
@@ -295,16 +295,16 @@ void chbgst(
             nr = (n - j2 + ka) / ka1;
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
-                clargv(nr, &AB[0 + j2 * ldab], inca, &work[j2 - 1], ka1, &rwork[j2 - 1], ka1);
+                clargv(nr, &AB[0 + (j2 - 1) * ldab], inca, &work[j2 - 1], ka1, &rwork[j2 - 1], ka1);
 
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[ka1 - l - 1 + j2 * ldab], inca,
-                           &AB[ka - l - 1 + (j2 + 1) * ldab], inca,
+                    clartv(nr, &AB[ka1 - l - 1 + (j2 - 1) * ldab], inca,
+                           &AB[ka - l - 1 + j2 * ldab], inca,
                            &rwork[j2 - 1], &work[j2 - 1], ka1);
                 }
 
-                clar2v(nr, &AB[ka + j2 * ldab], &AB[ka + (j2 + 1) * ldab],
-                       &AB[ka - 1 + (j2 + 1) * ldab], inca,
+                clar2v(nr, &AB[ka + (j2 - 1) * ldab], &AB[ka + j2 * ldab],
+                       &AB[ka - 1 + j2 * ldab], inca,
                        &rwork[j2 - 1], &work[j2 - 1], ka1);
 
                 clacgv(nr, &work[j2 - 1], ka1);
@@ -313,14 +313,14 @@ void chbgst(
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + (j2 + ka1 - l) * ldab], inca,
-                           &AB[l + (j2 + ka1 - l) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j2 + ka1 - l - 1) * ldab], inca,
+                           &AB[l + (j2 + ka1 - l - 1) * ldab], inca,
                            &rwork[j2 - 1], &work[j2 - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j2; j <= j1; j += ka1) {
-                    crot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    crot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + j * ldx], 1,
                          rwork[j - 1], conjf(work[j - 1]));
                 }
             }
@@ -332,8 +332,8 @@ void chbgst(
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + (j2 + ka1 - l) * ldab], inca,
-                           &AB[l + (j2 + ka1 - l) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j2 + ka1 - l - 1) * ldab], inca,
+                           &AB[l + (j2 + ka1 - l - 1) * ldab], inca,
                            &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
             }
         }
@@ -353,58 +353,58 @@ void chbgst(
             /*
              * Form inv(S(i))**H * A * inv(S(i))
              */
-            bii = crealf(BB[0 + i * ldbb]);
-            AB[0 + i * ldab] = CMPLXF(crealf(AB[0 + i * ldab]) / bii / bii, 0.0f);
+            bii = crealf(BB[0 + (i - 1) * ldbb]);
+            AB[0 + (i - 1) * ldab] = CMPLXF(crealf(AB[0 + (i - 1) * ldab]) / bii / bii, 0.0f);
             for (j = i + 1; j <= i1; j++) {
-                AB[j - i + i * ldab] = AB[j - i + i * ldab] / bii;
+                AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
             INT jmax = (1 > i - ka) ? 1 : (i - ka);
             for (j = jmax; j <= i - 1; j++) {
-                AB[i - j + j * ldab] = AB[i - j + j * ldab] / bii;
+                AB[i - j + (j - 1) * ldab] = AB[i - j + (j - 1) * ldab] / bii;
             }
             for (k = i - kbt; k <= i - 1; k++) {
                 for (j = i - kbt; j <= k; j++) {
-                    AB[k - j + j * ldab] = AB[k - j + j * ldab]
-                        - BB[i - j + j * ldbb] * conjf(AB[i - k + k * ldab])
-                        - conjf(BB[i - k + k * ldbb]) * AB[i - j + j * ldab]
-                        + crealf(AB[0 + i * ldab]) * BB[i - j + j * ldbb]
-                          * conjf(BB[i - k + k * ldbb]);
+                    AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
+                        - BB[i - j + (j - 1) * ldbb] * conjf(AB[i - k + (k - 1) * ldab])
+                        - conjf(BB[i - k + (k - 1) * ldbb]) * AB[i - j + (j - 1) * ldab]
+                        + crealf(AB[0 + (i - 1) * ldab]) * BB[i - j + (j - 1) * ldbb]
+                          * conjf(BB[i - k + (k - 1) * ldbb]);
                 }
                 jmax = (1 > i - ka) ? 1 : (i - ka);
                 for (j = jmax; j <= i - kbt - 1; j++) {
-                    AB[k - j + j * ldab] = AB[k - j + j * ldab]
-                        - conjf(BB[i - k + k * ldbb]) * AB[i - j + j * ldab];
+                    AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
+                        - conjf(BB[i - k + (k - 1) * ldbb]) * AB[i - j + (j - 1) * ldab];
                 }
             }
             for (j = i; j <= i1; j++) {
                 INT kmax = (j - ka > i - kbt) ? (j - ka) : (i - kbt);
                 for (k = kmax; k <= i - 1; k++) {
-                    AB[j - k + k * ldab] = AB[j - k + k * ldab]
-                        - BB[i - k + k * ldbb] * AB[j - i + i * ldab];
+                    AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
+                        - BB[i - k + (k - 1) * ldbb] * AB[j - i + (i - 1) * ldab];
                 }
             }
 
             if (wantx) {
-                cblas_csscal(n - m, ONE / bii, &X[m + i * ldx], 1);
+                cblas_csscal(n - m, ONE / bii, &X[m + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_cgeru(CblasColMajor, n - m, kbt, &NEG_CONE, &X[m + i * ldx], 1,
-                                &BB[kbt + (i - kbt) * ldbb], ldbb - 1, &X[m + (i - kbt) * ldx], ldx);
+                    cblas_cgeru(CblasColMajor, n - m, kbt, &NEG_CONE, &X[m + (i - 1) * ldx], 1,
+                                &BB[kbt + (i - kbt - 1) * ldbb], ldbb - 1, &X[m + (i - kbt - 1) * ldx], ldx);
             }
 
-            ra1 = AB[i1 - i + i * ldab];
+            ra1 = AB[i1 - i + (i - 1) * ldab];
         }
 
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 if (i - k + ka < n && i - k > 1) {
-                    clartg(AB[ka1 - k - 1 + i * ldab], ra1,
+                    clartg(AB[ka1 - k - 1 + (i - 1) * ldab], ra1,
                            &rwork[i - k + ka - m - 1], &work[i - k + ka - m - 1], &ra);
 
-                    t = -BB[k + (i - k) * ldbb] * ra1;
+                    t = -BB[k + (i - k - 1) * ldbb] * ra1;
                     work[i - k - 1] = rwork[i - k + ka - m - 1] * t
-                        - conjf(work[i - k + ka - m - 1]) * AB[ka + (i - k) * ldab];
-                    AB[ka + (i - k) * ldab] = work[i - k + ka - m - 1] * t
-                        + rwork[i - k + ka - m - 1] * AB[ka + (i - k) * ldab];
+                        - conjf(work[i - k + ka - m - 1]) * AB[ka + (i - k - 1) * ldab];
+                    AB[ka + (i - k - 1) * ldab] = work[i - k + ka - m - 1] * t
+                        + rwork[i - k + ka - m - 1] * AB[ka + (i - k - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -418,22 +418,22 @@ void chbgst(
             }
             nrt = (n - j2t + ka) / ka1;
             for (j = j2t; j <= j1; j += ka1) {
-                work[j - m - 1] = work[j - m - 1] * AB[ka + (j - ka + 1) * ldab];
-                AB[ka + (j - ka + 1) * ldab] = rwork[j - m - 1] * AB[ka + (j - ka + 1) * ldab];
+                work[j - m - 1] = work[j - m - 1] * AB[ka + (j - ka) * ldab];
+                AB[ka + (j - ka) * ldab] = rwork[j - m - 1] * AB[ka + (j - ka) * ldab];
             }
 
             if (nrt > 0)
-                clargv(nrt, &AB[ka + (j2t - ka) * ldab], inca, &work[j2t - m - 1], ka1,
+                clargv(nrt, &AB[ka + (j2t - ka - 1) * ldab], inca, &work[j2t - m - 1], ka1,
                        &rwork[j2t - m - 1], ka1);
             if (nr > 0) {
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[l + (j2 - l) * ldab], inca,
-                           &AB[l + 1 + (j2 - l) * ldab], inca,
+                    clartv(nr, &AB[l + (j2 - l - 1) * ldab], inca,
+                           &AB[l + 1 + (j2 - l - 1) * ldab], inca,
                            &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
                 }
 
-                clar2v(nr, &AB[0 + j2 * ldab], &AB[0 + (j2 + 1) * ldab],
-                       &AB[1 + j2 * ldab], inca,
+                clar2v(nr, &AB[0 + (j2 - 1) * ldab], &AB[0 + j2 * ldab],
+                       &AB[1 + (j2 - 1) * ldab], inca,
                        &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
 
                 clacgv(nr, &work[j2 - m - 1], ka1);
@@ -442,14 +442,14 @@ void chbgst(
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + j2 * ldab], inca,
-                           &AB[ka - l + (j2 + 1) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j2 - 1) * ldab], inca,
+                           &AB[ka - l + j2 * ldab], inca,
                            &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j2; j <= j1; j += ka1) {
-                    crot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    crot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + j * ldx], 1,
                          rwork[j - m - 1], work[j - m - 1]);
                 }
             }
@@ -457,7 +457,7 @@ void chbgst(
 
         if (update) {
             if (i2 <= n && kbt > 0) {
-                work[i - kbt - 1] = -BB[kbt + (i - kbt) * ldbb] * ra1;
+                work[i - kbt - 1] = -BB[kbt + (i - kbt - 1) * ldbb] * ra1;
             }
         }
 
@@ -471,8 +471,8 @@ void chbgst(
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + ka + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + (j2 - ka) * ldab], inca,
-                           &AB[ka - l + (j2 - ka + 1) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j2 - ka - 1) * ldab], inca,
+                           &AB[ka - l + (j2 - ka) * ldab], inca,
                            &rwork[j2 - ka - 1], &work[j2 - ka - 1], ka1);
             }
             nr = (n - j2 + ka) / ka1;
@@ -482,8 +482,8 @@ void chbgst(
                 rwork[j - 1] = rwork[j - ka - 1];
             }
             for (j = j2; j <= j1; j += ka1) {
-                work[j - 1] = work[j - 1] * AB[ka + (j - ka + 1) * ldab];
-                AB[ka + (j - ka + 1) * ldab] = rwork[j - 1] * AB[ka + (j - ka + 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[ka + (j - ka) * ldab];
+                AB[ka + (j - ka) * ldab] = rwork[j - 1] * AB[ka + (j - ka) * ldab];
             }
             if (update) {
                 if (i - k < n - ka && k <= kbt)
@@ -496,16 +496,16 @@ void chbgst(
             nr = (n - j2 + ka) / ka1;
             j1 = j2 + (nr - 1) * ka1;
             if (nr > 0) {
-                clargv(nr, &AB[ka + (j2 - ka) * ldab], inca, &work[j2 - 1], ka1, &rwork[j2 - 1], ka1);
+                clargv(nr, &AB[ka + (j2 - ka - 1) * ldab], inca, &work[j2 - 1], ka1, &rwork[j2 - 1], ka1);
 
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[l + (j2 - l) * ldab], inca,
-                           &AB[l + 1 + (j2 - l) * ldab], inca,
+                    clartv(nr, &AB[l + (j2 - l - 1) * ldab], inca,
+                           &AB[l + 1 + (j2 - l - 1) * ldab], inca,
                            &rwork[j2 - 1], &work[j2 - 1], ka1);
                 }
 
-                clar2v(nr, &AB[0 + j2 * ldab], &AB[0 + (j2 + 1) * ldab],
-                       &AB[1 + j2 * ldab], inca,
+                clar2v(nr, &AB[0 + (j2 - 1) * ldab], &AB[0 + j2 * ldab],
+                       &AB[1 + (j2 - 1) * ldab], inca,
                        &rwork[j2 - 1], &work[j2 - 1], ka1);
 
                 clacgv(nr, &work[j2 - 1], ka1);
@@ -514,14 +514,14 @@ void chbgst(
             for (l = ka - 1; l >= kb - k + 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + j2 * ldab], inca,
-                           &AB[ka - l + (j2 + 1) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j2 - 1) * ldab], inca,
+                           &AB[ka - l + j2 * ldab], inca,
                            &rwork[j2 - 1], &work[j2 - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j2; j <= j1; j += ka1) {
-                    crot(n - m, &X[m + j * ldx], 1, &X[m + (j + 1) * ldx], 1,
+                    crot(n - m, &X[m + (j - 1) * ldx], 1, &X[m + j * ldx], 1,
                          rwork[j - 1], work[j - 1]);
                 }
             }
@@ -533,8 +533,8 @@ void chbgst(
             for (l = kb - k; l >= 1; l--) {
                 nrt = (n - j2 + l) / ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + j2 * ldab], inca,
-                           &AB[ka - l + (j2 + 1) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j2 - 1) * ldab], inca,
+                           &AB[ka - l + j2 * ldab], inca,
                            &rwork[j2 - m - 1], &work[j2 - m - 1], ka1);
             }
         }
@@ -590,58 +590,58 @@ void chbgst(
             /*
              * Form inv(S(i))**H * A * inv(S(i))
              */
-            bii = crealf(BB[kb + i * ldbb]);
-            AB[ka + i * ldab] = CMPLXF(crealf(AB[ka + i * ldab]) / bii / bii, 0.0f);
+            bii = crealf(BB[kb + (i - 1) * ldbb]);
+            AB[ka + (i - 1) * ldab] = CMPLXF(crealf(AB[ka + (i - 1) * ldab]) / bii / bii, 0.0f);
             for (j = i1; j <= i - 1; j++) {
-                AB[j - i + ka + i * ldab] = AB[j - i + ka + i * ldab] / bii;
+                AB[j - i + ka + (i - 1) * ldab] = AB[j - i + ka + (i - 1) * ldab] / bii;
             }
             INT jmin = (n < i + ka) ? n : (i + ka);
             for (j = i + 1; j <= jmin; j++) {
-                AB[i - j + ka + j * ldab] = AB[i - j + ka + j * ldab] / bii;
+                AB[i - j + ka + (j - 1) * ldab] = AB[i - j + ka + (j - 1) * ldab] / bii;
             }
             for (k = i + 1; k <= i + kbt; k++) {
                 for (j = k; j <= i + kbt; j++) {
-                    AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
-                        - BB[i - j + kb + j * ldbb] * conjf(AB[i - k + ka + k * ldab])
-                        - conjf(BB[i - k + kb + k * ldbb]) * AB[i - j + ka + j * ldab]
-                        + crealf(AB[ka + i * ldab]) * BB[i - j + kb + j * ldbb]
-                          * conjf(BB[i - k + kb + k * ldbb]);
+                    AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
+                        - BB[i - j + kb + (j - 1) * ldbb] * conjf(AB[i - k + ka + (k - 1) * ldab])
+                        - conjf(BB[i - k + kb + (k - 1) * ldbb]) * AB[i - j + ka + (j - 1) * ldab]
+                        + crealf(AB[ka + (i - 1) * ldab]) * BB[i - j + kb + (j - 1) * ldbb]
+                          * conjf(BB[i - k + kb + (k - 1) * ldbb]);
                 }
                 jmin = (n < i + ka) ? n : (i + ka);
                 for (j = i + kbt + 1; j <= jmin; j++) {
-                    AB[k - j + ka + j * ldab] = AB[k - j + ka + j * ldab]
-                        - conjf(BB[i - k + kb + k * ldbb]) * AB[i - j + ka + j * ldab];
+                    AB[k - j + ka + (j - 1) * ldab] = AB[k - j + ka + (j - 1) * ldab]
+                        - conjf(BB[i - k + kb + (k - 1) * ldbb]) * AB[i - j + ka + (j - 1) * ldab];
                 }
             }
             for (j = i1; j <= i; j++) {
                 INT kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
-                    AB[j - k + ka + k * ldab] = AB[j - k + ka + k * ldab]
-                        - BB[i - k + kb + k * ldbb] * AB[j - i + ka + i * ldab];
+                    AB[j - k + ka + (k - 1) * ldab] = AB[j - k + ka + (k - 1) * ldab]
+                        - BB[i - k + kb + (k - 1) * ldbb] * AB[j - i + ka + (i - 1) * ldab];
                 }
             }
 
             if (wantx) {
-                cblas_csscal(nx, ONE / bii, &X[0 + i * ldx], 1);
+                cblas_csscal(nx, ONE / bii, &X[0 + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_cgeru(CblasColMajor, nx, kbt, &NEG_CONE, &X[0 + i * ldx], 1,
-                                &BB[kb - 1 + (i + 1) * ldbb], ldbb - 1, &X[0 + (i + 1) * ldx], ldx);
+                    cblas_cgeru(CblasColMajor, nx, kbt, &NEG_CONE, &X[0 + (i - 1) * ldx], 1,
+                                &BB[kb - 1 + i * ldbb], ldbb - 1, &X[0 + i * ldx], ldx);
             }
 
-            ra1 = AB[i1 - i + ka + i * ldab];
+            ra1 = AB[i1 - i + ka + (i - 1) * ldab];
         }
 
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 if (i + k - ka1 > 0 && i + k < m) {
-                    clartg(AB[k + i * ldab], ra1,
+                    clartg(AB[k + (i - 1) * ldab], ra1,
                            &rwork[i + k - ka - 1], &work[i + k - ka - 1], &ra);
 
-                    t = -BB[kb - k + (i + k) * ldbb] * ra1;
+                    t = -BB[kb - k + (i + k - 1) * ldbb] * ra1;
                     work[m - kb + i + k - 1] = rwork[i + k - ka - 1] * t
-                        - conjf(work[i + k - ka - 1]) * AB[0 + (i + k) * ldab];
-                    AB[0 + (i + k) * ldab] = work[i + k - ka - 1] * t
-                        + rwork[i + k - ka - 1] * AB[0 + (i + k) * ldab];
+                        - conjf(work[i + k - ka - 1]) * AB[0 + (i + k - 1) * ldab];
+                    AB[0 + (i + k - 1) * ldab] = work[i + k - ka - 1] * t
+                        + rwork[i + k - ka - 1] * AB[0 + (i + k - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -655,22 +655,22 @@ void chbgst(
             }
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j += ka1) {
-                work[j - 1] = work[j - 1] * AB[0 + (j + ka - 1) * ldab];
-                AB[0 + (j + ka - 1) * ldab] = rwork[j - 1] * AB[0 + (j + ka - 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[0 + (j + ka - 2) * ldab];
+                AB[0 + (j + ka - 2) * ldab] = rwork[j - 1] * AB[0 + (j + ka - 2) * ldab];
             }
 
             if (nrt > 0)
-                clargv(nrt, &AB[0 + (j1 + ka) * ldab], inca, &work[j1 - 1], ka1,
+                clargv(nrt, &AB[0 + (j1 + ka - 1) * ldab], inca, &work[j1 - 1], ka1,
                        &rwork[j1 - 1], ka1);
             if (nr > 0) {
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[ka1 - l - 1 + (j1 + l) * ldab], inca,
-                           &AB[ka - l - 1 + (j1 + l) * ldab], inca,
+                    clartv(nr, &AB[ka1 - l - 1 + (j1 + l - 1) * ldab], inca,
+                           &AB[ka - l - 1 + (j1 + l - 1) * ldab], inca,
                            &rwork[j1 - 1], &work[j1 - 1], ka1);
                 }
 
-                clar2v(nr, &AB[ka + j1 * ldab], &AB[ka + (j1 - 1) * ldab],
-                       &AB[ka - 1 + j1 * ldab], inca,
+                clar2v(nr, &AB[ka + (j1 - 1) * ldab], &AB[ka + (j1 - 2) * ldab],
+                       &AB[ka - 1 + (j1 - 1) * ldab], inca,
                        &rwork[j1 - 1], &work[j1 - 1], ka1);
 
                 clacgv(nr, &work[j1 - 1], ka1);
@@ -680,14 +680,14 @@ void chbgst(
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + j1t * ldab], inca,
-                           &AB[l + (j1t - 1) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j1t - 1) * ldab], inca,
+                           &AB[l + (j1t - 2) * ldab], inca,
                            &rwork[j1t - 1], &work[j1t - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j1; j <= j2; j += ka1) {
-                    crot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    crot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 2) * ldx], 1,
                          rwork[j - 1], work[j - 1]);
                 }
             }
@@ -695,7 +695,7 @@ void chbgst(
 
         if (update) {
             if (i2 > 0 && kbt > 0) {
-                work[m - kb + i + kbt - 1] = -BB[kb - kbt + (i + kbt) * ldbb] * ra1;
+                work[m - kb + i + kbt - 1] = -BB[kb - kbt + (i + kbt - 1) * ldbb] * ra1;
             }
         }
 
@@ -710,8 +710,8 @@ void chbgst(
                 nrt = (j2 + ka + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + (j1t + ka) * ldab], inca,
-                           &AB[l + (j1t + ka - 1) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j1t + ka - 1) * ldab], inca,
+                           &AB[l + (j1t + ka - 2) * ldab], inca,
                            &rwork[m - kb + j1t + ka - 1], &work[m - kb + j1t + ka - 1], ka1);
             }
             nr = (j2 + ka - 1) / ka1;
@@ -721,8 +721,8 @@ void chbgst(
                 rwork[m - kb + j - 1] = rwork[m - kb + j + ka - 1];
             }
             for (j = j1; j <= j2; j += ka1) {
-                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[0 + (j + ka - 1) * ldab];
-                AB[0 + (j + ka - 1) * ldab] = rwork[m - kb + j - 1] * AB[0 + (j + ka - 1) * ldab];
+                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[0 + (j + ka - 2) * ldab];
+                AB[0 + (j + ka - 2) * ldab] = rwork[m - kb + j - 1] * AB[0 + (j + ka - 2) * ldab];
             }
             if (update) {
                 if (i + k > ka1 && k <= kbt)
@@ -735,17 +735,17 @@ void chbgst(
             nr = (j2 + ka - 1) / ka1;
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
-                clargv(nr, &AB[0 + (j1 + ka) * ldab], inca, &work[m - kb + j1 - 1], ka1,
+                clargv(nr, &AB[0 + (j1 + ka - 1) * ldab], inca, &work[m - kb + j1 - 1], ka1,
                        &rwork[m - kb + j1 - 1], ka1);
 
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[ka1 - l - 1 + (j1 + l) * ldab], inca,
-                           &AB[ka - l - 1 + (j1 + l) * ldab], inca,
+                    clartv(nr, &AB[ka1 - l - 1 + (j1 + l - 1) * ldab], inca,
+                           &AB[ka - l - 1 + (j1 + l - 1) * ldab], inca,
                            &rwork[m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
                 }
 
-                clar2v(nr, &AB[ka + j1 * ldab], &AB[ka + (j1 - 1) * ldab],
-                       &AB[ka - 1 + j1 * ldab], inca,
+                clar2v(nr, &AB[ka + (j1 - 1) * ldab], &AB[ka + (j1 - 2) * ldab],
+                       &AB[ka - 1 + (j1 - 1) * ldab], inca,
                        &rwork[m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
 
                 clacgv(nr, &work[m - kb + j1 - 1], ka1);
@@ -755,14 +755,14 @@ void chbgst(
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + j1t * ldab], inca,
-                           &AB[l + (j1t - 1) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j1t - 1) * ldab], inca,
+                           &AB[l + (j1t - 2) * ldab], inca,
                            &rwork[m - kb + j1t - 1], &work[m - kb + j1t - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j1; j <= j2; j += ka1) {
-                    crot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    crot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 2) * ldx], 1,
                          rwork[m - kb + j - 1], work[m - kb + j - 1]);
                 }
             }
@@ -775,8 +775,8 @@ void chbgst(
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[l - 1 + j1t * ldab], inca,
-                           &AB[l + (j1t - 1) * ldab], inca,
+                    clartv(nrt, &AB[l - 1 + (j1t - 1) * ldab], inca,
+                           &AB[l + (j1t - 2) * ldab], inca,
                            &rwork[j1t - 1], &work[j1t - 1], ka1);
             }
         }
@@ -797,58 +797,58 @@ void chbgst(
             /*
              * Form inv(S(i))**H * A * inv(S(i))
              */
-            bii = crealf(BB[0 + i * ldbb]);
-            AB[0 + i * ldab] = CMPLXF(crealf(AB[0 + i * ldab]) / bii / bii, 0.0f);
+            bii = crealf(BB[0 + (i - 1) * ldbb]);
+            AB[0 + (i - 1) * ldab] = CMPLXF(crealf(AB[0 + (i - 1) * ldab]) / bii / bii, 0.0f);
             for (j = i1; j <= i - 1; j++) {
-                AB[i - j + j * ldab] = AB[i - j + j * ldab] / bii;
+                AB[i - j + (j - 1) * ldab] = AB[i - j + (j - 1) * ldab] / bii;
             }
             INT jmin = (n < i + ka) ? n : (i + ka);
             for (j = i + 1; j <= jmin; j++) {
-                AB[j - i + i * ldab] = AB[j - i + i * ldab] / bii;
+                AB[j - i + (i - 1) * ldab] = AB[j - i + (i - 1) * ldab] / bii;
             }
             for (k = i + 1; k <= i + kbt; k++) {
                 for (j = k; j <= i + kbt; j++) {
-                    AB[j - k + k * ldab] = AB[j - k + k * ldab]
-                        - BB[j - i + i * ldbb] * conjf(AB[k - i + i * ldab])
-                        - conjf(BB[k - i + i * ldbb]) * AB[j - i + i * ldab]
-                        + crealf(AB[0 + i * ldab]) * BB[j - i + i * ldbb]
-                          * conjf(BB[k - i + i * ldbb]);
+                    AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
+                        - BB[j - i + (i - 1) * ldbb] * conjf(AB[k - i + (i - 1) * ldab])
+                        - conjf(BB[k - i + (i - 1) * ldbb]) * AB[j - i + (i - 1) * ldab]
+                        + crealf(AB[0 + (i - 1) * ldab]) * BB[j - i + (i - 1) * ldbb]
+                          * conjf(BB[k - i + (i - 1) * ldbb]);
                 }
                 jmin = (n < i + ka) ? n : (i + ka);
                 for (j = i + kbt + 1; j <= jmin; j++) {
-                    AB[j - k + k * ldab] = AB[j - k + k * ldab]
-                        - conjf(BB[k - i + i * ldbb]) * AB[j - i + i * ldab];
+                    AB[j - k + (k - 1) * ldab] = AB[j - k + (k - 1) * ldab]
+                        - conjf(BB[k - i + (i - 1) * ldbb]) * AB[j - i + (i - 1) * ldab];
                 }
             }
             for (j = i1; j <= i; j++) {
                 INT kmin = (j + ka < i + kbt) ? (j + ka) : (i + kbt);
                 for (k = i + 1; k <= kmin; k++) {
-                    AB[k - j + j * ldab] = AB[k - j + j * ldab]
-                        - BB[k - i + i * ldbb] * AB[i - j + j * ldab];
+                    AB[k - j + (j - 1) * ldab] = AB[k - j + (j - 1) * ldab]
+                        - BB[k - i + (i - 1) * ldbb] * AB[i - j + (j - 1) * ldab];
                 }
             }
 
             if (wantx) {
-                cblas_csscal(nx, ONE / bii, &X[0 + i * ldx], 1);
+                cblas_csscal(nx, ONE / bii, &X[0 + (i - 1) * ldx], 1);
                 if (kbt > 0)
-                    cblas_cgerc(CblasColMajor, nx, kbt, &NEG_CONE, &X[0 + i * ldx], 1,
-                                &BB[1 + i * ldbb], 1, &X[0 + (i + 1) * ldx], ldx);
+                    cblas_cgerc(CblasColMajor, nx, kbt, &NEG_CONE, &X[0 + (i - 1) * ldx], 1,
+                                &BB[1 + (i - 1) * ldbb], 1, &X[0 + i * ldx], ldx);
             }
 
-            ra1 = AB[i - i1 + i1 * ldab];
+            ra1 = AB[i - i1 + (i1 - 1) * ldab];
         }
 
         for (k = 1; k <= kb - 1; k++) {
             if (update) {
                 if (i + k - ka1 > 0 && i + k < m) {
-                    clartg(AB[ka1 - k - 1 + (i + k - ka) * ldab], ra1,
+                    clartg(AB[ka1 - k - 1 + (i + k - ka - 1) * ldab], ra1,
                            &rwork[i + k - ka - 1], &work[i + k - ka - 1], &ra);
 
-                    t = -BB[k + i * ldbb] * ra1;
+                    t = -BB[k + (i - 1) * ldbb] * ra1;
                     work[m - kb + i + k - 1] = rwork[i + k - ka - 1] * t
-                        - conjf(work[i + k - ka - 1]) * AB[ka + (i + k - ka) * ldab];
-                    AB[ka + (i + k - ka) * ldab] = work[i + k - ka - 1] * t
-                        + rwork[i + k - ka - 1] * AB[ka + (i + k - ka) * ldab];
+                        - conjf(work[i + k - ka - 1]) * AB[ka + (i + k - ka - 1) * ldab];
+                    AB[ka + (i + k - ka - 1) * ldab] = work[i + k - ka - 1] * t
+                        + rwork[i + k - ka - 1] * AB[ka + (i + k - ka - 1) * ldab];
                     ra1 = ra;
                 }
             }
@@ -862,22 +862,22 @@ void chbgst(
             }
             nrt = (j2t + ka - 1) / ka1;
             for (j = j1; j <= j2t; j += ka1) {
-                work[j - 1] = work[j - 1] * AB[ka + (j - 1) * ldab];
-                AB[ka + (j - 1) * ldab] = rwork[j - 1] * AB[ka + (j - 1) * ldab];
+                work[j - 1] = work[j - 1] * AB[ka + (j - 2) * ldab];
+                AB[ka + (j - 2) * ldab] = rwork[j - 1] * AB[ka + (j - 2) * ldab];
             }
 
             if (nrt > 0)
-                clargv(nrt, &AB[ka + j1 * ldab], inca, &work[j1 - 1], ka1,
+                clargv(nrt, &AB[ka + (j1 - 1) * ldab], inca, &work[j1 - 1], ka1,
                        &rwork[j1 - 1], ka1);
             if (nr > 0) {
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[l + j1 * ldab], inca,
-                           &AB[l + 1 + (j1 - 1) * ldab], inca,
+                    clartv(nr, &AB[l + (j1 - 1) * ldab], inca,
+                           &AB[l + 1 + (j1 - 2) * ldab], inca,
                            &rwork[j1 - 1], &work[j1 - 1], ka1);
                 }
 
-                clar2v(nr, &AB[0 + j1 * ldab], &AB[0 + (j1 - 1) * ldab],
-                       &AB[1 + (j1 - 1) * ldab], inca,
+                clar2v(nr, &AB[0 + (j1 - 1) * ldab], &AB[0 + (j1 - 2) * ldab],
+                       &AB[1 + (j1 - 2) * ldab], inca,
                        &rwork[j1 - 1], &work[j1 - 1], ka1);
 
                 clacgv(nr, &work[j1 - 1], ka1);
@@ -887,14 +887,14 @@ void chbgst(
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + (j1t - ka1 + l) * ldab], inca,
-                           &AB[ka - l + (j1t - ka1 + l) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j1t - ka1 + l - 1) * ldab], inca,
+                           &AB[ka - l + (j1t - ka1 + l - 1) * ldab], inca,
                            &rwork[j1t - 1], &work[j1t - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j1; j <= j2; j += ka1) {
-                    crot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    crot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 2) * ldx], 1,
                          rwork[j - 1], conjf(work[j - 1]));
                 }
             }
@@ -902,7 +902,7 @@ void chbgst(
 
         if (update) {
             if (i2 > 0 && kbt > 0) {
-                work[m - kb + i + kbt - 1] = -BB[kbt + i * ldbb] * ra1;
+                work[m - kb + i + kbt - 1] = -BB[kbt + (i - 1) * ldbb] * ra1;
             }
         }
 
@@ -917,8 +917,8 @@ void chbgst(
                 nrt = (j2 + ka + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + (j1t + l - 1) * ldab], inca,
-                           &AB[ka - l + (j1t + l - 1) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j1t + l - 2) * ldab], inca,
+                           &AB[ka - l + (j1t + l - 2) * ldab], inca,
                            &rwork[m - kb + j1t + ka - 1], &work[m - kb + j1t + ka - 1], ka1);
             }
             nr = (j2 + ka - 1) / ka1;
@@ -928,8 +928,8 @@ void chbgst(
                 rwork[m - kb + j - 1] = rwork[m - kb + j + ka - 1];
             }
             for (j = j1; j <= j2; j += ka1) {
-                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[ka + (j - 1) * ldab];
-                AB[ka + (j - 1) * ldab] = rwork[m - kb + j - 1] * AB[ka + (j - 1) * ldab];
+                work[m - kb + j - 1] = work[m - kb + j - 1] * AB[ka + (j - 2) * ldab];
+                AB[ka + (j - 2) * ldab] = rwork[m - kb + j - 1] * AB[ka + (j - 2) * ldab];
             }
             if (update) {
                 if (i + k > ka1 && k <= kbt)
@@ -942,17 +942,17 @@ void chbgst(
             nr = (j2 + ka - 1) / ka1;
             j1 = j2 - (nr - 1) * ka1;
             if (nr > 0) {
-                clargv(nr, &AB[ka + j1 * ldab], inca, &work[m - kb + j1 - 1], ka1,
+                clargv(nr, &AB[ka + (j1 - 1) * ldab], inca, &work[m - kb + j1 - 1], ka1,
                        &rwork[m - kb + j1 - 1], ka1);
 
                 for (l = 1; l <= ka - 1; l++) {
-                    clartv(nr, &AB[l + j1 * ldab], inca,
-                           &AB[l + 1 + (j1 - 1) * ldab], inca,
+                    clartv(nr, &AB[l + (j1 - 1) * ldab], inca,
+                           &AB[l + 1 + (j1 - 2) * ldab], inca,
                            &rwork[m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
                 }
 
-                clar2v(nr, &AB[0 + j1 * ldab], &AB[0 + (j1 - 1) * ldab],
-                       &AB[1 + (j1 - 1) * ldab], inca,
+                clar2v(nr, &AB[0 + (j1 - 1) * ldab], &AB[0 + (j1 - 2) * ldab],
+                       &AB[1 + (j1 - 2) * ldab], inca,
                        &rwork[m - kb + j1 - 1], &work[m - kb + j1 - 1], ka1);
 
                 clacgv(nr, &work[m - kb + j1 - 1], ka1);
@@ -962,14 +962,14 @@ void chbgst(
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + (j1t - ka1 + l) * ldab], inca,
-                           &AB[ka - l + (j1t - ka1 + l) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j1t - ka1 + l - 1) * ldab], inca,
+                           &AB[ka - l + (j1t - ka1 + l - 1) * ldab], inca,
                            &rwork[m - kb + j1t - 1], &work[m - kb + j1t - 1], ka1);
             }
 
             if (wantx) {
                 for (j = j1; j <= j2; j += ka1) {
-                    crot(nx, &X[0 + j * ldx], 1, &X[0 + (j - 1) * ldx], 1,
+                    crot(nx, &X[0 + (j - 1) * ldx], 1, &X[0 + (j - 2) * ldx], 1,
                          rwork[m - kb + j - 1], conjf(work[m - kb + j - 1]));
                 }
             }
@@ -982,8 +982,8 @@ void chbgst(
                 nrt = (j2 + l - 1) / ka1;
                 j1t = j2 - (nrt - 1) * ka1;
                 if (nrt > 0)
-                    clartv(nrt, &AB[ka1 - l + (j1t - ka1 + l) * ldab], inca,
-                           &AB[ka - l + (j1t - ka1 + l) * ldab], inca,
+                    clartv(nrt, &AB[ka1 - l + (j1t - ka1 + l - 1) * ldab], inca,
+                           &AB[ka - l + (j1t - ka1 + l - 1) * ldab], inca,
                            &rwork[j1t - 1], &work[j1t - 1], ka1);
             }
         }

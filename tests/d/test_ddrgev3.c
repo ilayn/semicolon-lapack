@@ -422,7 +422,7 @@ static void test_ddrgev3_case(void** state)
             }
         }
         if (nmismatch > 0) {
-            print_message("DGGEV3(V,V) vs (N,N): %lld of %lld eigenvalues "
+            fprintf(stderr, "DGGEV3(V,V) vs (N,N): %lld of %lld eigenvalues "
                           "differ, info(V,V)=%lld info(N,N)=%lld\n",
                           (long long)nmismatch, (long long)n,
                           (long long)iinfo_vv, (long long)iinfo_nn);
@@ -435,14 +435,14 @@ static void test_ddrgev3_case(void** state)
                     vv_ar.d = g_ws->alphar[j]; nn_ar.d = g_ws->alphr1[j];
                     vv_ai.d = g_ws->alphai[j]; nn_ai.d = g_ws->alphi1[j];
                     vv_b.d  = g_ws->beta[j];   nn_b.d  = g_ws->beta1[j];
-                    print_message("  j=%lld:\n", (long long)j);
-                    print_message("    alphar: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                    fprintf(stderr, "  j=%lld:\n", (long long)j);
+                    fprintf(stderr, "    alphar: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
                                   vv_ar.d, (unsigned long long)vv_ar.u,
                                   nn_ar.d, (unsigned long long)nn_ar.u);
-                    print_message("    alphai: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                    fprintf(stderr, "    alphai: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
                                   vv_ai.d, (unsigned long long)vv_ai.u,
                                   nn_ai.d, (unsigned long long)nn_ai.u);
-                    print_message("    beta:   V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
+                    fprintf(stderr, "    beta:   V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
                                   vv_b.d, (unsigned long long)vv_b.u,
                                   nn_b.d, (unsigned long long)nn_b.u);
                 }
@@ -478,7 +478,7 @@ static void test_ddrgev3_case(void** state)
             }
         }
         if (nmismatch_eig > 0 || nmismatch_vec > 0) {
-            print_message("DGGEV3(V,V) vs (V,N): %lld eigenvalue mismatches, "
+            fprintf(stderr, "DGGEV3(V,V) vs (V,N): %lld eigenvalue mismatches, "
                           "%lld VL element mismatches\n",
                           (long long)nmismatch_eig, (long long)nmismatch_vec);
             assert_residual_below(ulpinv, THRESH);
@@ -512,7 +512,7 @@ static void test_ddrgev3_case(void** state)
             }
         }
         if (nmismatch_eig > 0 || nmismatch_vec > 0) {
-            print_message("DGGEV3(V,V) vs (N,V): %lld eigenvalue mismatches, "
+            fprintf(stderr, "DGGEV3(V,V) vs (N,V): %lld eigenvalue mismatches, "
                           "%lld VR element mismatches\n",
                           (long long)nmismatch_eig, (long long)nmismatch_vec);
             assert_residual_below(ulpinv, THRESH);

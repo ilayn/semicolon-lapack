@@ -1,0 +1,160 @@
+/**
+ * @file cqrt14.c
+ * @brief CQRT14 checks whether X is in the row space of A or A'.
+ *
+ * Faithful port of LAPACK TESTING/LIN/cqrt14.f
+ *
+ * It does so by scaling both X and A such that their norms are in the range
+ * [sqrt(eps), 1/sqrt(eps)], then computing a QR factorization of [A,X]
+ * (if TRANS = 'C') or an LQ factorization of [A',X]' (if TRANS = 'N'),
+ * and returning the norm of the trailing triangle, scaled by
+ * MAX(M,N,NRHS)*eps.
+ */
+
+#include <math.h>
+#include "verify.h"
+
+/**
+ * CQRT14 checks whether X is in the row space of A or A'.
+ *
+ * @param[in] trans
+ *     = 'N': No transpose, check for X in the row space of A
+ *     = 'C': Conjugate transpose, check for X in the row space of A'.
+ *
+ * @param[in] m
+ *     The number of rows of the matrix A.
+ *
+ * @param[in] n
+ *     The number of columns of the matrix A.
+ *
+ * @param[in] nrhs
+ *     The number of right hand sides, i.e., the number of columns of X.
+ *
+ * @param[in] A
+ *     The M-by-N matrix A.
+ *
+ * @param[in] lda
+ *     The leading dimension of the array A.
+ *
+ * @param[in] X
+ *     If TRANS = 'N', the N-by-NRHS matrix X.
+ *     IF TRANS = 'C', the M-by-NRHS matrix X.
+ *
+ * @param[in] ldx
+ *     The leading dimension of the array X.
+ *
+ * @param[out] work
+ *     Workspace array.
+ *     If TRANS = 'N', LWORK >= (M+NRHS)*(N+2);
+ *     if TRANS = 'C', LWORK >= (N+NRHS)*(M+2).
+ *
+ * @param[in] lwork
+ *     Length of workspace array.
+ *
+ * @return
+ *     The computed residual: norm of trailing triangle / (max(M,N,NRHS) * eps)
+ */
+f32 cqrt14(const char* trans, const INT m, const INT n, const INT nrhs,
+              const c64* A, const INT lda, const c64* X, const INT ldx,
+              c64* work, const INT lwork)
+{
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+
+    INT tpsd;
+    INT i, info, j, ldwork;
+    f32 anrm, err, xnrm;
+    f32 rwork[1];
+
+    if (trans[0] == 'N' || trans[0] == 'n') {
+        ldwork = m + nrhs;
+        tpsd = 0;
+        if (lwork < (m + nrhs) * (n + 2)) {
+            xerbla("CQRT14", 10);
+            return ZERO;
+        } else if (n <= 0 || nrhs <= 0) {
+            return ZERO;
+        }
+    } else if (trans[0] == 'C' || trans[0] == 'c') {
+        ldwork = m;
+        tpsd = 1;
+        if (lwork < (n + nrhs) * (m + 2)) {
+            xerbla("CQRT14", 10);
+            return ZERO;
+        } else if (m <= 0 || nrhs <= 0) {
+            return ZERO;
+        }
+    } else {
+        xerbla("CQRT14", 1);
+        return ZERO;
+    }
+
+    /* Copy and scale A */
+    clacpy("A", m, n, A, lda, work, ldwork);
+    anrm = clange("M", m, n, work, ldwork, rwork);
+    if (anrm != ZERO) {
+        clascl("G", 0, 0, anrm, ONE, m, n, work, ldwork, &info);
+    }
+
+    /* Copy X or X' into the right place and scale it */
+    if (tpsd) {
+        /* Copy X into columns n:n+nrhs-1 of work */
+        clacpy("A", m, nrhs, X, ldx, &work[n * ldwork], ldwork);
+        xnrm = clange("M", m, nrhs, &work[n * ldwork], ldwork, rwork);
+        if (xnrm != ZERO) {
+            clascl("G", 0, 0, xnrm, ONE, m, nrhs, &work[n * ldwork],
+                   ldwork, &info);
+        }
+
+        /* Compute QR factorization of [A, X] */
+        INT minmn = (m < n + nrhs) ? m : n + nrhs;
+        cgeqr2(m, n + nrhs, work, ldwork,
+               &work[ldwork * (n + nrhs)],
+               &work[ldwork * (n + nrhs) + minmn],
+               &info);
+
+        /* Compute largest entry in upper triangle of work(n:m-1, n:n+nrhs-1) */
+        err = ZERO;
+        for (j = n; j < n + nrhs; j++) {
+            INT iend = (m < j + 1) ? m : j + 1;
+            for (i = n; i < iend; i++) {
+                f32 val = cabsf(work[i + j * ldwork]);
+                if (val > err) err = val;
+            }
+        }
+    } else {
+        /* Copy conj(X') into rows m:m+nrhs-1 of work */
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < nrhs; j++) {
+                work[m + j + i * ldwork] = conjf(X[i + j * ldx]);
+            }
+        }
+
+        xnrm = clange("M", nrhs, n, &work[m], ldwork, rwork);
+        if (xnrm != ZERO) {
+            clascl("G", 0, 0, xnrm, ONE, nrhs, n, &work[m], ldwork, &info);
+        }
+
+        /* Compute LQ factorization of work */
+        cgelq2(ldwork, n, work, ldwork,
+               &work[ldwork * n],
+               &work[ldwork * (n + 1)],
+               &info);
+
+        /* Compute largest entry in lower triangle of work(m:m+nrhs-1, m:n-1) */
+        err = ZERO;
+        for (j = m; j < n; j++) {
+            for (i = j; i < ldwork; i++) {
+                f32 val = cabsf(work[i + j * ldwork]);
+                if (val > err) err = val;
+            }
+        }
+    }
+
+    /* Compute the result */
+    INT maxmnr = m;
+    if (n > maxmnr) maxmnr = n;
+    if (nrhs > maxmnr) maxmnr = nrhs;
+
+    return err / ((f32)maxmnr * slamch("E"));
+}
