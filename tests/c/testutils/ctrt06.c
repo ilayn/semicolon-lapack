@@ -1,0 +1,67 @@
+/**
+ * @file ctrt06.c
+ * @brief CTRT06 computes a test ratio comparing RCOND and RCONDC for triangular matrices.
+ *
+ * Port of LAPACK TESTING/LIN/ctrt06.f to C.
+ */
+
+#include <math.h>
+#include "verify.h"
+
+/* External declarations */
+/**
+ * CTRT06 computes a test ratio comparing RCOND (the reciprocal
+ * condition number of a triangular matrix A) and RCONDC, the estimate
+ * computed by CTRCON. Information about the triangular matrix A is
+ * used if one estimate is zero and the other is non-zero to decide if
+ * underflow in the estimate is justified.
+ *
+ * @param[in]     rcond   The estimate of the reciprocal condition number
+ *                        obtained by forming the explicit inverse and computing
+ *                        RCOND = 1/( norm(A) * norm(inv(A)) ).
+ * @param[in]     rcondc  The estimate of the reciprocal condition number
+ *                        computed by CTRCON.
+ * @param[in]     uplo    'U' for upper triangular, 'L' for lower triangular.
+ * @param[in]     diag    'N' for non-unit triangular, 'U' for unit triangular.
+ * @param[in]     n       The order of the matrix A. n >= 0.
+ * @param[in]     A       Array (lda, n). The triangular matrix A.
+ * @param[in]     lda     The leading dimension of A. lda >= max(1,n).
+ * @param[out]    rwork   Array (n). Workspace.
+ * @param[out]    rat     The test ratio.
+ */
+void ctrt06(const f32 rcond, const f32 rcondc,
+            const char* uplo, const char* diag, const INT n,
+            const c64* A, const INT lda, f32* rwork, f32* rat)
+{
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+
+    f32 eps, smlnum, bignum, anorm, rmax, rmin;
+
+    eps = slamch("E");
+    rmax = fmaxf(rcond, rcondc);
+    rmin = fminf(rcond, rcondc);
+
+    /* Do the easy cases first. */
+    if (rmin < ZERO) {
+        /* Invalid value for RCOND or RCONDC, return 1/EPS. */
+        *rat = ONE / eps;
+    } else if (rmin > ZERO) {
+        /* Both estimates are positive, return RMAX/RMIN - 1. */
+        *rat = rmax / rmin - ONE;
+    } else if (rmax == ZERO) {
+        /* Both estimates zero. */
+        *rat = ZERO;
+    } else {
+        /* One estimate is zero, the other is non-zero. If the matrix is
+           ill-conditioned, return the nonzero estimate multiplied by
+           1/EPS; if the matrix is badly scaled, return the nonzero
+           estimate multiplied by BIGNUM/TMAX, where TMAX is the maximum
+           element in absolute value in A. */
+        smlnum = slamch("S");
+        bignum = ONE / smlnum;
+        anorm = clantr("M", uplo, diag, n, n, A, lda, rwork);
+
+        *rat = rmax * fminf(bignum / fmaxf(ONE, anorm), ONE / eps);
+    }
+}

@@ -5,6 +5,8 @@
 # lives at this level. Each precision gets its own subdirectory with
 # test drivers, verification utilities, and smoke tests.
 
+test_env = environment({'OPENBLAS_NUM_THREADS': '1'})
+
 # Double precision tests
 subdir('d')
 
@@ -13,6 +15,9 @@ subdir('s')
 
 # Complex double precision tests
 subdir('z')
+
+# Complex single precision tests
+subdir('c')
 
 # Precision-independent tests
 test('rng_validation',
@@ -23,4 +28,5 @@ test('rng_validation',
   suite: 'rng',
   timeout: 120,
   is_parallel: true,
+  env: test_env,
 )

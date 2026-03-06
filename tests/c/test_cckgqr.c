@@ -1,0 +1,264 @@
+/**
+ * @file test_cckgqr.c
+ * @brief GQR/GRQ test driver - port of LAPACK TESTING/EIG/zckgqr.f
+ *
+ * Tests CGGQRF and CGGRQF - the generalized QR and RQ factorizations:
+ *   CGGQRF: A = Q*R, B = Q*T*Z  (N-by-M matrix A, N-by-P matrix B)
+ *   CGGRQF: A = R*Q, B = Z*T*Q  (M-by-N matrix A, P-by-N matrix B)
+ *
+ * Each (im, ip, in, imat) combination is registered as a separate CMocka test.
+ * For each combination, both CGGRQF (via cgrqts) and CGGQRF (via cgqrts) are tested.
+ *
+ * Matrix types (8 total, from slatb9):
+ *   Type 1: A diagonal, B upper/lower triangular
+ *   Type 2: A upper/lower triangular, B upper triangular/diagonal
+ *   Type 3: A lower triangular, B upper triangular
+ *   Types 4-8: A general dense, B general dense
+ */
+
+#include "test_harness.h"
+#include "verify.h"
+#include "test_rng.h"
+#include <math.h>
+#include <string.h>
+
+#define THRESH 20.0f
+
+#define NTYPES 8
+
+#define NTESTS 4
+
+/* Dimension triplets from TESTING/gqr.in */
+static const INT MVAL[] = { 0,  3, 10 };
+static const INT PVAL[] = { 0,  5, 20 };
+static const INT NVAL[] = { 0,  3, 30 };
+#define NM (sizeof(MVAL) / sizeof(MVAL[0]))
+#define NP (sizeof(PVAL) / sizeof(PVAL[0]))
+#define NN (sizeof(NVAL) / sizeof(NVAL[0]))
+
+#define NMAX 30
+
+#define MAX_TESTS (NM * NP * NN * NTYPES)
+
+typedef struct {
+    INT im;
+    INT ip;
+    INT in;
+    INT imat;
+    char name[80];
+} zckgqr_params_t;
+
+typedef struct {
+    c64* A;
+    c64* AF;
+    c64* AQ;
+    c64* AR;
+    c64* taua;
+    c64* B;
+    c64* BF;
+    c64* BZ;
+    c64* BT;
+    c64* BWK;
+    c64* taub;
+    c64* work;
+    f32* rwork;
+} zckgqr_workspace_t;
+
+static zckgqr_workspace_t* g_ws = NULL;
+
+static int group_setup(void** state)
+{
+    (void)state;
+
+    g_ws = malloc(sizeof(zckgqr_workspace_t));
+    if (!g_ws) return -1;
+
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
+
+    g_ws->A     = malloc(lda * NMAX * sizeof(c64));
+    g_ws->AF    = malloc(lda * NMAX * sizeof(c64));
+    g_ws->AQ    = malloc(lda * NMAX * sizeof(c64));
+    g_ws->AR    = malloc(lda * NMAX * sizeof(c64));
+    g_ws->taua  = malloc(NMAX * sizeof(c64));
+    g_ws->B     = malloc(ldb * NMAX * sizeof(c64));
+    g_ws->BF    = malloc(ldb * NMAX * sizeof(c64));
+    g_ws->BZ    = malloc(ldb * NMAX * sizeof(c64));
+    g_ws->BT    = malloc(ldb * NMAX * sizeof(c64));
+    g_ws->BWK   = malloc(ldb * NMAX * sizeof(c64));
+    g_ws->taub  = malloc(NMAX * sizeof(c64));
+    g_ws->work  = malloc(lwork * sizeof(c64));
+    g_ws->rwork = malloc(NMAX * sizeof(f32));
+
+    if (!g_ws->A || !g_ws->AF || !g_ws->AQ || !g_ws->AR ||
+        !g_ws->taua || !g_ws->B || !g_ws->BF || !g_ws->BZ ||
+        !g_ws->BT || !g_ws->BWK || !g_ws->taub ||
+        !g_ws->work || !g_ws->rwork) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static int group_teardown(void** state)
+{
+    (void)state;
+
+    if (g_ws) {
+        free(g_ws->A);
+        free(g_ws->AF);
+        free(g_ws->AQ);
+        free(g_ws->AR);
+        free(g_ws->taua);
+        free(g_ws->B);
+        free(g_ws->BF);
+        free(g_ws->BZ);
+        free(g_ws->BT);
+        free(g_ws->BWK);
+        free(g_ws->taub);
+        free(g_ws->work);
+        free(g_ws->rwork);
+        free(g_ws);
+        g_ws = NULL;
+    }
+
+    return 0;
+}
+
+static void test_zckgqr_case(void** state)
+{
+    zckgqr_params_t* params = *state;
+    INT m = MVAL[params->im];
+    INT p = PVAL[params->ip];
+    INT n = NVAL[params->in];
+    INT imat = params->imat;
+    INT lda = NMAX;
+    INT ldb = NMAX;
+    INT lwork = NMAX * NMAX;
+
+    char type;
+    INT kla, kua, klb, kub;
+    f32 anorm, bnorm, cndnma, cndnmb;
+    INT modea, modeb;
+    char dista, distb;
+    INT iinfo;
+    f32 result[NTESTS];
+
+    uint64_t rng_state[4];
+    rng_seed(rng_state, 2024 + (uint64_t)params->im * 1000 +
+             (uint64_t)params->ip * 100 + (uint64_t)params->in * 10 +
+             (uint64_t)imat);
+
+    /* ============================================================
+     * Test CGGRQF
+     * A: M-by-N, B: P-by-N
+     * ============================================================ */
+
+    slatb9("GRQ", imat, m, p, n, &type, &kla, &kua, &klb, &kub,
+           &anorm, &bnorm, &modea, &modeb, &cndnma, &cndnmb,
+           &dista, &distb);
+
+    char dista_str[2] = {dista, '\0'};
+    char type_str[2] = {type, '\0'};
+    clatms(m, n, dista_str, type_str, g_ws->rwork, modea, cndnma,
+           anorm, kla, kua, "N", g_ws->A, lda, g_ws->work, &iinfo,
+           rng_state);
+    assert_int_equal(iinfo, 0);
+
+    char distb_str[2] = {distb, '\0'};
+    clatms(p, n, distb_str, type_str, g_ws->rwork, modeb, cndnmb,
+           bnorm, klb, kub, "N", g_ws->B, ldb, g_ws->work, &iinfo,
+           rng_state);
+    assert_int_equal(iinfo, 0);
+
+    cgrqts(m, p, n, g_ws->A, g_ws->AF, g_ws->AQ, g_ws->AR, lda,
+           g_ws->taua, g_ws->B, g_ws->BF, g_ws->BZ, g_ws->BT,
+           g_ws->BWK, ldb, g_ws->taub, g_ws->work, lwork,
+           g_ws->rwork, result);
+
+    for (INT i = 0; i < NTESTS; i++) {
+        if (result[i] >= THRESH) {
+            print_message("  GRQ: M=%d P=%d N=%d type=%d test=%d ratio=%g\n",
+                          m, p, n, imat, i + 1, (double)result[i]);
+        }
+        assert_residual_below(result[i], THRESH);
+    }
+
+    /* ============================================================
+     * Test CGGQRF
+     * A: N-by-M, B: N-by-P
+     * ============================================================ */
+
+    slatb9("GQR", imat, m, p, n, &type, &kla, &kua, &klb, &kub,
+           &anorm, &bnorm, &modea, &modeb, &cndnma, &cndnmb,
+           &dista, &distb);
+
+    dista_str[0] = dista;
+    type_str[0] = type;
+    clatms(n, m, dista_str, type_str, g_ws->rwork, modea, cndnma,
+           anorm, kla, kua, "N", g_ws->A, lda, g_ws->work, &iinfo,
+           rng_state);
+    assert_int_equal(iinfo, 0);
+
+    distb_str[0] = distb;
+    clatms(n, p, distb_str, type_str, g_ws->rwork, modea, cndnma,
+           bnorm, klb, kub, "N", g_ws->B, ldb, g_ws->work, &iinfo,
+           rng_state);
+    assert_int_equal(iinfo, 0);
+
+    cgqrts(n, m, p, g_ws->A, g_ws->AF, g_ws->AQ, g_ws->AR, lda,
+           g_ws->taua, g_ws->B, g_ws->BF, g_ws->BZ, g_ws->BT,
+           g_ws->BWK, ldb, g_ws->taub, g_ws->work, lwork,
+           g_ws->rwork, result);
+
+    for (INT i = 0; i < NTESTS; i++) {
+        if (result[i] >= THRESH) {
+            print_message("  GQR: N=%d M=%d P=%d type=%d test=%d ratio=%g\n",
+                          n, m, p, imat, i + 1, (double)result[i]);
+        }
+        assert_residual_below(result[i], THRESH);
+    }
+}
+
+static zckgqr_params_t g_params[MAX_TESTS];
+static struct CMUnitTest g_tests[MAX_TESTS];
+static INT g_num_tests = 0;
+
+static void build_test_array(void)
+{
+    g_num_tests = 0;
+
+    for (INT im = 0; im < (INT)NM; im++) {
+        for (INT ip = 0; ip < (INT)NP; ip++) {
+            for (INT in = 0; in < (INT)NN; in++) {
+                for (INT imat = 1; imat <= NTYPES; imat++) {
+                    zckgqr_params_t* par = &g_params[g_num_tests];
+                    par->im = im;
+                    par->ip = ip;
+                    par->in = in;
+                    par->imat = imat;
+                    snprintf(par->name, sizeof(par->name),
+                             "GQR_m%d_p%d_n%d_type%d",
+                             MVAL[im], PVAL[ip], NVAL[in], imat);
+
+                    g_tests[g_num_tests].name = par->name;
+                    g_tests[g_num_tests].test_func = test_zckgqr_case;
+                    g_tests[g_num_tests].setup_func = NULL;
+                    g_tests[g_num_tests].teardown_func = NULL;
+                    g_tests[g_num_tests].initial_state = par;
+
+                    g_num_tests++;
+                }
+            }
+        }
+    }
+}
+
+int main(void)
+{
+    build_test_array();
+
+    return _cmocka_run_group_tests("zckgqr", g_tests, g_num_tests,
+                                   group_setup, group_teardown);
+}
