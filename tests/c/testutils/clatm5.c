@@ -145,7 +145,7 @@ void clatm5(const INT prtype, const INT m, const INT n,
             }
             for (k = 0; k < m - 1; k += qblcka) {
                 A[(k + 1) + (k + 1) * lda] = A[k + k * lda];
-                A[(k + 1) + k * lda] = -csin(A[k + (k + 1) * lda]);
+                A[(k + 1) + k * lda] = -csinf(A[k + (k + 1) * lda]);
             }
 
             if (qblckb <= 1) {
@@ -153,7 +153,7 @@ void clatm5(const INT prtype, const INT m, const INT n,
             }
             for (k = 0; k < n - 1; k += qblckb) {
                 B[(k + 1) + (k + 1) * ldb] = B[k + k * ldb];
-                B[(k + 1) + k * ldb] = -csin(B[k + (k + 1) * ldb]);
+                B[(k + 1) + k * ldb] = -csinf(B[k + (k + 1) * ldb]);
             }
         }
 

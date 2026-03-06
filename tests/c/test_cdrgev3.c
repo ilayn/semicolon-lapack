@@ -218,16 +218,6 @@ static int group_teardown(void** state)
     }
     return 0;
 }
-
-/* ===================================================================== */
-/* ABS1 statement function: |Re(x)| + |Im(x)|                           */
-/* ===================================================================== */
-
-static inline f32 abs1(c64 x)
-{
-    return fabsf(crealf(x)) + fabsf(cimagf(x));
-}
-
 /* ===================================================================== */
 /* Matrix generation - port of zdrgev3.f lines 583-719                   */
 /* Identical to zdrgev.f / zdrges.f matrix generation (same 26 types).   */
