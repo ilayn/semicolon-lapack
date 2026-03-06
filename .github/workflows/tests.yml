@@ -252,7 +252,6 @@ jobs:
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
             /I "include" ^
-            /DLAPACK_NAME(name)=SC_##name ^
             ..\tests\ci\msvc_consumer_test.c ^
             semilapack.lib ^
             /Fe:consumer_test.exe
@@ -370,7 +369,6 @@ jobs:
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
             /I "include" ^
-            /DLAPACK_NAME(name)=SC_##name ^
             ..\tests\ci\msvc_consumer_test.c ^
             semilapack.lib ^
             /Fe:consumer_test.exe
