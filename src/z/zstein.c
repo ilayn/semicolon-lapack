@@ -5,7 +5,6 @@
  */
 
 #include <math.h>
-#include <stdint.h>
 #include <complex.h>
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
@@ -92,7 +91,7 @@ void zstein(
 
     INT b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, jr, nblk, nrmchk;
     f64 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm = 0.0, ztr;
-    uint64_t seed;
+    INT iseed[4];
 
     /* Workspace offsets: each segment has n elements */
     const INT indrv1 = 0;
@@ -142,8 +141,11 @@ void zstein(
     /* Get machine constant: eps = eps*base (precision) */
     eps = dlamch("P");
 
-    /* Initialize seed for LCG random number generator. */
-    seed = 1ULL;
+    /* Initialize seed for random number generator DLARNV. */
+    iseed[0] = 1;
+    iseed[1] = 1;
+    iseed[2] = 1;
+    iseed[3] = 1;
 
     /*
      * Compute eigenvectors of matrix blocks.
@@ -213,14 +215,8 @@ void zstein(
             its = 0;
             nrmchk = 0;
 
-            /*
-             * Get random starting vector using LCG.
-             * Generates values in approximately [-1, 1].
-             */
-            for (i = 0; i < blksiz; i++) {
-                seed = seed * 6364136223846793005ULL + 1442695040888963407ULL;
-                work[indrv1 + i] = (f64)((int64_t)(seed >> 33)) / (f64)(1LL << 31);
-            }
+            /* Get random starting vector. */
+            dlarnv(2, iseed, blksiz, &work[indrv1]);
 
             /*
              * Copy the matrix T so it won't be destroyed in factorization.
