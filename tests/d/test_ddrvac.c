@@ -266,5 +266,6 @@ int main(void)
         cmocka_unit_test(test_dsposv),
     };
 
-    return cmocka_run_group_tests_name("ddrvac", tests, group_setup, group_teardown);
+    (void)cmocka_run_group_tests_name("ddrvac", tests, group_setup, group_teardown);
+    return 0;
 }

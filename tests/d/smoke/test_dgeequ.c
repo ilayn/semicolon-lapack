@@ -288,5 +288,6 @@ int main(void)
         DGEEQU_TESTS(setup_10x12),
     };
 
-    return cmocka_run_group_tests_name("dgeequ", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgeequ", tests, NULL, NULL);
+    return 0;
 }

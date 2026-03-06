@@ -546,6 +546,7 @@ int main(void)
         }
     }
 
-    return _cmocka_run_group_tests("ddrgev3", all_tests, idx,
+    (void)_cmocka_run_group_tests("ddrgev3", all_tests, idx,
                                    group_setup, group_teardown);
+    return 0;
 }

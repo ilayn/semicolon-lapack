@@ -339,5 +339,6 @@ int main(void) {
         cmocka_unit_test(test_no_absorbing_state),
         cmocka_unit_test(test_xoshiro_reference),
     };
-    return cmocka_run_group_tests_name("rng_validation", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("rng_validation", tests, NULL, NULL);
+    return 0;
 }

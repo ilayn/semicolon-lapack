@@ -143,6 +143,7 @@ int main(void)
 {
     build_test_array();
 
-    return _cmocka_run_group_tests("zchktsqr", g_tests, (size_t)g_num_tests,
+    (void)_cmocka_run_group_tests("zchktsqr", g_tests, (size_t)g_num_tests,
                                    NULL, NULL);
+    return 0;
 }

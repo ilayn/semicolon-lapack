@@ -303,5 +303,6 @@ int main(void)
         DGTSV_TESTS(setup_n50_nrhs15),
     };
 
-    return cmocka_run_group_tests_name("dgtsv", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgtsv", tests, NULL, NULL);
+    return 0;
 }

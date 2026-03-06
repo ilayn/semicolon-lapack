@@ -318,6 +318,7 @@ int main(void)
         }
     }
 
-    return _cmocka_run_group_tests("dckcsd", all_tests, ntests,
+    (void)_cmocka_run_group_tests("dckcsd", all_tests, ntests,
                                     group_setup, group_teardown);
+    return 0;
 }

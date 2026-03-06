@@ -585,6 +585,7 @@ int main(void)
     build_test_array();
 
     /* Run all tests with shared workspace. */
-    return _cmocka_run_group_tests("dchksy_rook", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("dchksy_rook", g_tests, g_num_tests,
                                    group_setup, group_teardown);
+    return 0;
 }

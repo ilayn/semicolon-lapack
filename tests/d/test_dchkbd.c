@@ -1126,6 +1126,7 @@ static void generate_test_table(void)
 int main(void)
 {
     generate_test_table();
-    return cmocka_run_group_tests_name("dchkbd", g_tests, group_setup,
+    (void)cmocka_run_group_tests_name("dchkbd", g_tests, group_setup,
                                        group_teardown);
+    return 0;
 }

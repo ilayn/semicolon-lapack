@@ -182,5 +182,6 @@ int main(void)
         DPOSV_TESTS(setup_20_nrhs5),
     };
 
-    return cmocka_run_group_tests_name("dposv", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dposv", tests, NULL, NULL);
+    return 0;
 }

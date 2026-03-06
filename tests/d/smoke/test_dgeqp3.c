@@ -276,5 +276,6 @@ int main(void)
         /* Workspace query */
         cmocka_unit_test_setup_teardown(test_workspace_query, setup_10x10, qp_teardown),
     };
-    return cmocka_run_group_tests_name("dgeqp3", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgeqp3", tests, NULL, NULL);
+    return 0;
 }

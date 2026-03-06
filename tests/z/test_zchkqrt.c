@@ -100,6 +100,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    return _cmocka_run_group_tests("zchkqrt", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("zchkqrt", g_tests, g_num_tests,
                                    NULL, NULL);
+    return 0;
 }

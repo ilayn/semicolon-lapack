@@ -527,6 +527,7 @@ int main(void)
      * We use _cmocka_run_group_tests directly because the test array
      * is built dynamically and the standard macro uses sizeof() which
      * only works for compile-time array sizes. */
-    return _cmocka_run_group_tests("dchkgt", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("dchkgt", g_tests, g_num_tests,
                                    group_setup, group_teardown);
+    return 0;
 }

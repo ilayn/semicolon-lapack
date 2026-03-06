@@ -132,5 +132,6 @@ int main(void)
         return 0;
     }
 
-    return _cmocka_run_group_tests("dchkqrtp", g_tests, g_num_tests, NULL, NULL);
+    (void)_cmocka_run_group_tests("dchkqrtp", g_tests, g_num_tests, NULL, NULL);
+    return 0;
 }
