@@ -123,6 +123,7 @@ foreach name, info : lapack_tests_z
     suite: info[1],
     timeout: 300,
     is_parallel: true,
+    protocol: 'tap',
     env: test_env,
   )
 endforeach

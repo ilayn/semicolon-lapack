@@ -5,7 +5,7 @@
 # lives at this level. Each precision gets its own subdirectory with
 # test drivers, verification utilities, and smoke tests.
 
-test_env = environment({'OPENBLAS_NUM_THREADS': '1'})
+test_env = environment({'OPENBLAS_NUM_THREADS': '1', 'CMOCKA_MESSAGE_OUTPUT': 'TAP'})
 
 # Double precision tests
 subdir('d')
@@ -28,5 +28,6 @@ test('rng_validation',
   suite: 'rng',
   timeout: 120,
   is_parallel: true,
+  protocol: 'tap',
   env: test_env,
 )

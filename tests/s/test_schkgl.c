@@ -385,7 +385,7 @@ static void test_dggbal(void** state)
         if (ilo != iloin || ihi != ihiin) {
             ninfo++;
             lmax_idx = knt;
-            print_message("Case %d: ilo/ihi mismatch: got (%d,%d) expected (%d,%d)\n",
+            fprintf(stderr, "Case %d: ilo/ihi mismatch: got (%d,%d) expected (%d,%d)\n",
                           tc, ilo, ihi, iloin, ihiin);
         }
 
@@ -416,10 +416,10 @@ static void test_dggbal(void** state)
         }
     }
 
-    print_message("SGGBAL: %d cases, max residual = %.3e (case %d)\n",
+    fprintf(stderr, "SGGBAL: %d cases, max residual = %.3e (case %d)\n",
                   knt, (double)rmax, lmax_resid);
     if (ninfo > 0)
-        print_message("  INFO/index errors: %d (info case %d, idx case %d)\n",
+        fprintf(stderr, "  INFO/index errors: %d (info case %d, idx case %d)\n",
                       ninfo, lmax_info, lmax_idx);
 
     assert_true(ninfo == 0);

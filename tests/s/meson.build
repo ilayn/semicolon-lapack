@@ -112,6 +112,7 @@ foreach name, info : lapack_tests_s
     suite: suite,
     timeout: 120,
     is_parallel: true,
+    protocol: 'tap',
     env: test_env,
   )
 endforeach
