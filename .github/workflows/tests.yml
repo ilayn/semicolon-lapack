@@ -70,7 +70,7 @@ jobs:
           ./openblas_info
 
       - name: Test
-        run: meson test -C builddir
+        run: meson test -C builddir --print-errorlogs
         env:
           OPENBLAS_NUM_THREADS: '1'
 
@@ -135,7 +135,7 @@ jobs:
           ./openblas_info
 
       - name: Test
-        run: meson test -C builddir
+        run: meson test -C builddir --print-errorlogs
         env:
           OPENBLAS_NUM_THREADS: '1'
 
@@ -199,7 +199,7 @@ jobs:
           ./openblas_info.exe
 
       - name: Test
-        run: meson test -C builddir
+        run: meson test -C builddir --print-errorlogs
         env:
           OPENBLAS_NUM_THREADS: '1'
 
@@ -317,7 +317,7 @@ jobs:
           ./openblas_info.exe
 
       - name: Test
-        run: meson test -C builddir
+        run: meson test -C builddir --print-errorlogs
         env:
           OPENBLAS_NUM_THREADS: '1'
 
