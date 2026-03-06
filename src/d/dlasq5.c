@@ -28,7 +28,7 @@
  * @param[in]     eps    This is the value of epsilon used.
  */
 void dlasq5(const INT i0, const INT n0, f64* restrict Z,
-            const INT pp, f64 tau, f64 sigma,
+            const INT pp, f64* tau, f64 sigma,
             f64* dmin, f64* dmin1, f64* dmin2,
             f64* dn, f64* dnm1, f64* dnm2,
             const INT ieee, const f64 eps)
@@ -40,15 +40,15 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
         return;
     }
 
-    dthresh = eps * (sigma + tau);
-    if (tau < dthresh * 0.5) {
-        tau = 0.0;
+    dthresh = eps * (sigma + *tau);
+    if (*tau < dthresh * 0.5) {
+        *tau = 0.0;
     }
 
-    if (tau != 0.0) {
+    if (*tau != 0.0) {
         j4 = 4 * i0 + pp;
         emin = Z[j4 + 4];
-        d = Z[j4] - tau;
+        d = Z[j4] - *tau;
         *dmin = d;
         *dmin1 = -Z[j4];
 
@@ -58,7 +58,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
                     Z[j4 - 2] = d + Z[j4 - 1];
                     temp = Z[j4 + 1] / Z[j4 - 2];
-                    d = d * temp - tau;
+                    d = d * temp - *tau;
                     *dmin = fmin(*dmin, d);
                     Z[j4] = Z[j4 - 1] * temp;
                     emin = fmin(Z[j4], emin);
@@ -67,7 +67,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
                     Z[j4 - 3] = d + Z[j4];
                     temp = Z[j4 + 2] / Z[j4 - 3];
-                    d = d * temp - tau;
+                    d = d * temp - *tau;
                     *dmin = fmin(*dmin, d);
                     Z[j4 - 1] = Z[j4] * temp;
                     emin = fmin(Z[j4 - 1], emin);
@@ -81,7 +81,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
             j4p2 = j4 + 2 * pp - 1;
             Z[j4 - 2] = *dnm2 + Z[j4p2];
             Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-            *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
+            *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - *tau;
             *dmin = fmin(*dmin, *dnm1);
 
             *dmin1 = *dmin;
@@ -89,7 +89,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
             j4p2 = j4 + 2 * pp - 1;
             Z[j4 - 2] = *dnm1 + Z[j4p2];
             Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-            *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
+            *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - *tau;
             *dmin = fmin(*dmin, *dn);
 
         } else {
@@ -101,7 +101,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                         return;
                     } else {
                         Z[j4] = Z[j4 + 1] * (Z[j4 - 1] / Z[j4 - 2]);
-                        d = Z[j4 + 1] * (d / Z[j4 - 2]) - tau;
+                        d = Z[j4 + 1] * (d / Z[j4 - 2]) - *tau;
                     }
                     *dmin = fmin(*dmin, d);
                     emin = fmin(emin, Z[j4]);
@@ -113,7 +113,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                         return;
                     } else {
                         Z[j4 - 1] = Z[j4 + 2] * (Z[j4] / Z[j4 - 3]);
-                        d = Z[j4 + 2] * (d / Z[j4 - 3]) - tau;
+                        d = Z[j4 + 2] * (d / Z[j4 - 3]) - *tau;
                     }
                     *dmin = fmin(*dmin, d);
                     emin = fmin(emin, Z[j4 - 1]);
@@ -130,7 +130,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 return;
             } else {
                 Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-                *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
+                *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - *tau;
             }
             *dmin = fmin(*dmin, *dnm1);
 
@@ -142,7 +142,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 return;
             } else {
                 Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-                *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
+                *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - *tau;
             }
             *dmin = fmin(*dmin, *dn);
         }
@@ -150,7 +150,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
         /* This is the version that sets d's to zero if they are small enough */
         j4 = 4 * i0 + pp;
         emin = Z[j4 + 4];
-        d = Z[j4] - tau;
+        d = Z[j4] - *tau;
         *dmin = d;
         *dmin1 = -Z[j4];
 
@@ -160,7 +160,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
                     Z[j4 - 2] = d + Z[j4 - 1];
                     temp = Z[j4 + 1] / Z[j4 - 2];
-                    d = d * temp - tau;
+                    d = d * temp - *tau;
                     if (d < dthresh) { d = 0.0; }
                     *dmin = fmin(*dmin, d);
                     Z[j4] = Z[j4 - 1] * temp;
@@ -170,7 +170,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 for (j4 = 4 * i0 + 3; j4 <= 4 * n0 - 9; j4 += 4) {
                     Z[j4 - 3] = d + Z[j4];
                     temp = Z[j4 + 2] / Z[j4 - 3];
-                    d = d * temp - tau;
+                    d = d * temp - *tau;
                     if (d < dthresh) { d = 0.0; }
                     *dmin = fmin(*dmin, d);
                     Z[j4 - 1] = Z[j4] * temp;
@@ -185,7 +185,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
             j4p2 = j4 + 2 * pp - 1;
             Z[j4 - 2] = *dnm2 + Z[j4p2];
             Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-            *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
+            *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - *tau;
             *dmin = fmin(*dmin, *dnm1);
 
             *dmin1 = *dmin;
@@ -193,7 +193,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
             j4p2 = j4 + 2 * pp - 1;
             Z[j4 - 2] = *dnm1 + Z[j4p2];
             Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-            *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
+            *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - *tau;
             *dmin = fmin(*dmin, *dn);
 
         } else {
@@ -205,7 +205,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                         return;
                     } else {
                         Z[j4] = Z[j4 + 1] * (Z[j4 - 1] / Z[j4 - 2]);
-                        d = Z[j4 + 1] * (d / Z[j4 - 2]) - tau;
+                        d = Z[j4 + 1] * (d / Z[j4 - 2]) - *tau;
                     }
                     if (d < dthresh) { d = 0.0; }
                     *dmin = fmin(*dmin, d);
@@ -218,7 +218,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                         return;
                     } else {
                         Z[j4 - 1] = Z[j4 + 2] * (Z[j4] / Z[j4 - 3]);
-                        d = Z[j4 + 2] * (d / Z[j4 - 3]) - tau;
+                        d = Z[j4 + 2] * (d / Z[j4 - 3]) - *tau;
                     }
                     if (d < dthresh) { d = 0.0; }
                     *dmin = fmin(*dmin, d);
@@ -236,7 +236,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 return;
             } else {
                 Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-                *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - tau;
+                *dnm1 = Z[j4p2 + 2] * (*dnm2 / Z[j4 - 2]) - *tau;
             }
             *dmin = fmin(*dmin, *dnm1);
 
@@ -248,7 +248,7 @@ void dlasq5(const INT i0, const INT n0, f64* restrict Z,
                 return;
             } else {
                 Z[j4] = Z[j4p2 + 2] * (Z[j4p2] / Z[j4 - 2]);
-                *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - tau;
+                *dn = Z[j4p2 + 2] * (*dnm1 / Z[j4 - 2]) - *tau;
             }
             *dmin = fmin(*dmin, *dn);
         }

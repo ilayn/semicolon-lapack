@@ -171,9 +171,11 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
 
     /*
      * Check whether the machine is IEEE conformable.
-     * In this project, we assume IEEE=1 (all modern platforms are IEEE 754).
+     *
+     * [11/15/2008] The case IEEE=.TRUE. has a problem in single precision with
+     * some the test matrices of type 16. The double precision code is fine.
      */
-    ieee = 1;
+    ieee = 0;
 
     /*
      * Rearrange data for locality: Z=(q1,qq1,e1,ee1,q2,qq2,e2,ee2,...).

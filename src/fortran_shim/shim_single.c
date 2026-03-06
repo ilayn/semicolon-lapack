@@ -1245,7 +1245,7 @@ void slasq4_(INT* i0, INT* n0, f32* Z, INT* pp, INT* n0in, f32* dmin, f32* dmin1
 }
 
 void slasq5_(INT* i0, INT* n0, f32* Z, INT* pp, f32* tau, f32* sigma, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2, INT* ieee, f32* eps) {
-    slasq5(*i0, *n0, Z, *pp, *tau, *sigma, dmin, dmin1, dmin2, dn, dnm1, dnm2, *ieee, *eps);
+    slasq5(*i0, *n0, Z, *pp, tau, *sigma, dmin, dmin1, dmin2, dn, dnm1, dnm2, *ieee, *eps);
 }
 
 void slasq6_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2) {

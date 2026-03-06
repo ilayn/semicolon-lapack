@@ -1245,7 +1245,7 @@ void dlasq4_(INT* i0, INT* n0, f64* Z, INT* pp, INT* n0in, f64* dmin, f64* dmin1
 }
 
 void dlasq5_(INT* i0, INT* n0, f64* Z, INT* pp, f64* tau, f64* sigma, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dnm1, f64* dnm2, INT* ieee, f64* eps) {
-    dlasq5(*i0, *n0, Z, *pp, *tau, *sigma, dmin, dmin1, dmin2, dn, dnm1, dnm2, *ieee, *eps);
+    dlasq5(*i0, *n0, Z, *pp, tau, *sigma, dmin, dmin1, dmin2, dn, dnm1, dnm2, *ieee, *eps);
 }
 
 void dlasq6_(INT* i0, INT* n0, f64* Z, INT* pp, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dnm1, f64* dnm2) {

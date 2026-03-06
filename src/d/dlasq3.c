@@ -172,7 +172,7 @@ compute_shift:
         /* Call dqds until DMIN > 0 (Fortran label 70). */
         for (;;) {
 
-            dlasq5(i0, *n0, Z, *pp, *tau, *sigma, dmin, dmin1, dmin2,
+            dlasq5(i0, *n0, Z, *pp, tau, *sigma, dmin, dmin1, dmin2,
                     dn, dn1, dn2, ieee, eps);
 
             *ndiv = *ndiv + (*n0 - i0 + 2);
