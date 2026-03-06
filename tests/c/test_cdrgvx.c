@@ -196,7 +196,7 @@ static void test_builtin(void** state)
                        ws->bwork, &linfo);
 
                 if (linfo != 0) {
-                    print_message("CGGEVX returned INFO=%d, type=%d, "
+                    fprintf(stderr, "CGGEVX returned INFO=%d, type=%d, "
                                   "iwa=%d, iwb=%d, iwx=%d, iwy=%d\n",
                                   linfo, iptype, iwa, iwb, iwx, iwy);
                     continue;
@@ -266,7 +266,7 @@ static void test_builtin(void** state)
                 for (INT j = 0; j < 4; j++) {
                     f32 thr = (j >= 3) ? thrsh2 : THRESH;
                     if (result[j] >= thr) {
-                        print_message("  ZDRGVX builtin: type=%d, iwa=%d, "
+                        fprintf(stderr, "  ZDRGVX builtin: type=%d, iwa=%d, "
                                       "iwb=%d, iwx=%d, iwy=%d, "
                                       "test %d = %.6e\n",
                                       iptype, iwa, iwb, iwx, iwy,
@@ -330,7 +330,7 @@ static void test_precomputed(void** state)
            ws->bwork, &linfo);
 
     if (linfo != 0) {
-        print_message("CGGEVX returned INFO=%d for precomputed #%d\n",
+        fprintf(stderr, "CGGEVX returned INFO=%d for precomputed #%d\n",
                        linfo, idx);
         assert_info_success(linfo);
         return;
@@ -399,7 +399,7 @@ static void test_precomputed(void** state)
 
     for (INT j = 0; j < 4; j++) {
         if (result[j] >= thrsh2) {
-            print_message("  ZDRGVX precomputed #%d: test %d = %.6e\n",
+            fprintf(stderr, "  ZDRGVX precomputed #%d: test %d = %.6e\n",
                           idx, j + 1, (double)result[j]);
         }
         assert_residual_below(result[j], thrsh2);

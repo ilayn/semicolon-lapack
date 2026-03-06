@@ -202,7 +202,7 @@ static void test_standard(void** state)
                &rcondo, ws->RWORK, &result[0]);
 
         if (result[0] >= THRESH) {
-            print_message("TEST 1 failed: n=%d, imat=%d, uplo=%s, diag=%c, resid=%.3e\n",
+            fprintf(stderr, "TEST 1 failed: n=%d, imat=%d, uplo=%s, diag=%c, resid=%.3e\n",
                          n, imat, uplo, diag, result[0]);
         }
         assert_residual_ok(result[0]);
@@ -253,7 +253,7 @@ static void test_standard(void** state)
             /* Check results */
             for (INT k = 1; k < 6; k++) {
                 if (result[k] >= THRESH) {
-                    print_message("TEST %d failed: n=%d, imat=%d, uplo=%s, trans=%s, nrhs=%d, resid=%.3e\n",
+                    fprintf(stderr, "TEST %d failed: n=%d, imat=%d, uplo=%s, trans=%s, nrhs=%d, resid=%.3e\n",
                                  k + 1, n, imat, uplo, trans, nrhs, result[k]);
                 }
                 assert_residual_ok(result[k]);
@@ -277,7 +277,7 @@ static void test_standard(void** state)
         ztpt06(rcond, rcondc, uplo, &diag, n, ws->AP, ws->RWORK, &result[6]);
 
         if (result[6] >= THRESH) {
-            print_message("TEST 7 failed: n=%d, imat=%d, uplo=%s, diag=%c, norm=%s, resid=%.3e\n",
+            fprintf(stderr, "TEST 7 failed: n=%d, imat=%d, uplo=%s, diag=%c, norm=%s, resid=%.3e\n",
                          n, imat, uplo, diag, norm, result[6]);
         }
         assert_residual_ok(result[6]);
@@ -325,7 +325,7 @@ static void test_latps(void** state)
         zlatps(uplo, trans, &diag, "N", n, ws->AP, ws->B, &scale, ws->CNORM, &info);
 
         if (info != 0) {
-            print_message("ZLATPS returned INFO=%d for n=%d, imat=%d, uplo=%s, trans=%s\n",
+            fprintf(stderr, "ZLATPS returned INFO=%d for n=%d, imat=%d, uplo=%s, trans=%s\n",
                          info, n, imat, uplo, trans);
         }
 
@@ -333,7 +333,7 @@ static void test_latps(void** state)
                ws->B, lda, ws->XACT, lda, ws->WORK, &result[7]);
 
         if (result[7] >= THRESH) {
-            print_message("TEST 8 failed: n=%d, imat=%d, uplo=%s, trans=%s, normin=N, resid=%.3e\n",
+            fprintf(stderr, "TEST 8 failed: n=%d, imat=%d, uplo=%s, trans=%s, normin=N, resid=%.3e\n",
                          n, imat, uplo, trans, result[7]);
         }
         assert_residual_ok(result[7]);
@@ -343,7 +343,7 @@ static void test_latps(void** state)
         zlatps(uplo, trans, &diag, "Y", n, ws->AP, &ws->B[n], &scale, ws->CNORM, &info);
 
         if (info != 0) {
-            print_message("ZLATPS returned INFO=%d for n=%d, imat=%d, uplo=%s, trans=%s, normin=Y\n",
+            fprintf(stderr, "ZLATPS returned INFO=%d for n=%d, imat=%d, uplo=%s, trans=%s, normin=Y\n",
                          info, n, imat, uplo, trans);
         }
 
@@ -351,7 +351,7 @@ static void test_latps(void** state)
                &ws->B[n], lda, ws->XACT, lda, ws->WORK, &result[8]);
 
         if (result[8] >= THRESH) {
-            print_message("TEST 9 failed: n=%d, imat=%d, uplo=%s, trans=%s, normin=Y, resid=%.3e\n",
+            fprintf(stderr, "TEST 9 failed: n=%d, imat=%d, uplo=%s, trans=%s, normin=Y, resid=%.3e\n",
                          n, imat, uplo, trans, result[8]);
         }
         assert_residual_ok(result[8]);

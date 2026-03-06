@@ -331,7 +331,7 @@ static void test_ddrges3(void** state)
 
     goto gen_ok;
 gen_error:
-    print_message("Generator returned INFO=%d for N=%d JTYPE=%d\n",
+    fprintf(stderr, "Generator returned INFO=%d for N=%d JTYPE=%d\n",
                   iinfo, n, jtype);
     assert_int_equal(iinfo, 0);
     return;
@@ -362,7 +362,7 @@ gen_ok:
                g_ws->work, g_ws->lwork, g_ws->bwork, &iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[rsub + isort] = ulpinv;
-            print_message("DGGES3 returned INFO=%d for N=%d JTYPE=%d SORT=%s\n",
+            fprintf(stderr, "DGGES3 returned INFO=%d for N=%d JTYPE=%d SORT=%s\n",
                           iinfo, n, jtype, sort);
             goto check_results;
         }
@@ -441,7 +441,7 @@ gen_ok:
                            g_ws->beta[j], g_ws->alphar[j],
                            g_ws->alphai[j], &temp2, &ierr);
                     if (ierr >= 3) {
-                        print_message("DGET53 returned INFO=%d for eigenvalue "
+                        fprintf(stderr, "DGET53 returned INFO=%d for eigenvalue "
                                       "%d, N=%d JTYPE=%d\n",
                                       ierr, j + 1, n, jtype);
                     }
@@ -451,7 +451,7 @@ gen_ok:
             }
             temp1 = fmax(temp1, temp2);
             if (ilabad) {
-                print_message("S not in Schur form at eigenvalue %d, "
+                fprintf(stderr, "S not in Schur form at eigenvalue %d, "
                               "N=%d JTYPE=%d\n", j + 1, n, jtype);
             }
         }
@@ -497,7 +497,7 @@ check_results:
     INT any_fail = 0;
     for (INT jr = 0; jr < 13; jr++) {
         if (result[jr] >= THRESH) {
-            print_message("N=%d JTYPE=%d test(%d)=%g\n",
+            fprintf(stderr, "N=%d JTYPE=%d test(%d)=%g\n",
                           n, jtype, jr + 1, result[jr]);
             any_fail = 1;
         }

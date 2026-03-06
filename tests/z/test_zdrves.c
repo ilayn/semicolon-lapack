@@ -325,7 +325,7 @@ static void run_zdrves_single(zdrves_params_t* params)
                                 ws->iwork, ws->rng_state);
     if (iinfo != 0) {
         ws->result[rsub] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -350,7 +350,7 @@ static void run_zdrves_single(zdrves_params_t* params)
     if (iinfo != 0) {
         ws->result[rsub] = ulpinv;
         if (iinfo > 0 && iinfo <= n) {
-            print_message("ZGEES failed with info=%d (QR failed)\n", iinfo);
+            fprintf(stderr, "ZGEES failed with info=%d (QR failed)\n", iinfo);
         }
         return;
     }

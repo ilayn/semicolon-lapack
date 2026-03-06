@@ -338,7 +338,7 @@ static void run_zdrvsx_random(zdrvsx_params_t* params)
                                 iwork_dummy, ws->rng_state);
     if (iinfo != 0) {
         result[0] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -369,7 +369,7 @@ static void run_zdrvsx_random(zdrvsx_params_t* params)
     /* Check for RESULT(j) > THRESH (zdrvsx.f lines 796-820) */
     for (INT j = 0; j < 15; j++) {
         if (result[j] >= 0.0f && result[j] >= THRESH) {
-            print_message("N=%d, IWK=%d, type %d, test(%d)=%g\n",
+            fprintf(stderr, "N=%d, IWK=%d, type %d, test(%d)=%g\n",
                           n, iwk, jtype, j + 1, (double)result[j]);
             any_fail = 1;
         }
@@ -434,7 +434,7 @@ static void run_zdrvsx_precomp(zdrvsx_params_t* params)
     INT any_fail = 0;
     for (INT j = 0; j < 17; j++) {
         if (result[j] >= 0.0f && result[j] >= THRESH) {
-            print_message("N=%d, input example=%d, test(%d)=%g\n",
+            fprintf(stderr, "N=%d, input example=%d, test(%d)=%g\n",
                           n, idx + 1, j + 1, (double)result[j]);
             any_fail = 1;
         }

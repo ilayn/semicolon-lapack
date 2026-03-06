@@ -383,7 +383,7 @@ static void run_ddrvvx_random(ddrvvx_params_t* params)
     INT iinfo = generate_matrix(n, jtype, A, lda, work, iwork, ws->rng_state);
     if (iinfo != 0) {
         result[0] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -414,7 +414,7 @@ static void run_ddrvvx_random(ddrvvx_params_t* params)
         /* Check for RESULT(j) > THRESH (ddrvvx.f lines 867-893) */
         for (INT j = 0; j < 9; j++) {
             if (result[j] >= 0.0 && result[j] >= THRESH) {
-                print_message("BALANC='%s', N=%d, IWK=%d, type %d, test(%d)=%g\n",
+                fprintf(stderr, "BALANC='%s', N=%d, IWK=%d, type %d, test(%d)=%g\n",
                               BAL[ibal], n, iwk, jtype, j + 1, result[j]);
                 any_fail = 1;
             }
@@ -498,7 +498,7 @@ static void run_ddrvvx_precomp(ddrvvx_params_t* params)
     INT any_fail = 0;
     for (INT j = 0; j < 11; j++) {
         if (result[j] >= 0.0 && result[j] >= THRESH) {
-            print_message("N=%d, input example=%d, test(%d)=%g\n",
+            fprintf(stderr, "N=%d, input example=%d, test(%d)=%g\n",
                           n, idx + 1, j + 1, result[j]);
             any_fail = 1;
         }

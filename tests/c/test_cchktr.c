@@ -211,7 +211,7 @@ static void test_standard(void** state)
                    &rcondo, ws->RWORK, &result[0]);
 
             if (result[0] >= THRESH) {
-                print_message("TEST 1 failed: n=%d, imat=%d, uplo=%s, diag=%c, nb=%d, resid=%.3e\n",
+                fprintf(stderr, "TEST 1 failed: n=%d, imat=%d, uplo=%s, diag=%c, nb=%d, resid=%.3e\n",
                              n, imat, uplo, diag, NBVAL[inb], (double)result[0]);
             }
             assert_residual_ok(result[0]);
@@ -265,7 +265,7 @@ static void test_standard(void** state)
                 /* Check results */
                 for (INT k = 1; k < 6; k++) {
                     if (result[k] >= THRESH) {
-                        print_message("TEST %d failed: n=%d, imat=%d, uplo=%s, trans=%s, nrhs=%d, resid=%.3e\n",
+                        fprintf(stderr, "TEST %d failed: n=%d, imat=%d, uplo=%s, trans=%s, nrhs=%d, resid=%.3e\n",
                                      k + 1, n, imat, uplo, trans, nrhs, (double)result[k]);
                     }
                     assert_residual_ok(result[k]);
@@ -288,13 +288,13 @@ static void test_standard(void** state)
                 ctrcon(norm, uplo, &diag, n, ws->A, lda, &rcond,
                        ws->WORK, ws->RWORK, &info);
                 if (info != 0) {
-                    print_message("CTRCON failed: info=%d\n", info);
+                    fprintf(stderr, "CTRCON failed: info=%d\n", info);
                 }
 
                 ctrt06(rcond, rcondc, uplo, &diag, n, ws->A, lda, ws->RWORK, &result[6]);
 
                 if (result[6] >= THRESH) {
-                    print_message("TEST 7 failed: n=%d, imat=%d, uplo=%s, norm=%s, resid=%.3e\n",
+                    fprintf(stderr, "TEST 7 failed: n=%d, imat=%d, uplo=%s, norm=%s, resid=%.3e\n",
                                  n, imat, uplo, norm, (double)result[6]);
                 }
                 assert_residual_ok(result[6]);
@@ -344,7 +344,7 @@ static void test_latrs(void** state)
         /* Generate triangular test matrix */
         clattr(imat, uplo, trans, &diag, n, ws->A, lda, ws->X, ws->WORK, ws->RWORK, &info, rng_state);
         if (info != 0) {
-            print_message("CLATTR failed: info=%d, imat=%d\n", info, imat);
+            fprintf(stderr, "CLATTR failed: info=%d, imat=%d\n", info, imat);
         }
 
         /* TEST 8: Solve op(A)*x = b with NORMIN='N' */
@@ -353,7 +353,7 @@ static void test_latrs(void** state)
         clatrs(uplo, trans, &diag, &normin, n, ws->A, lda, ws->B, &scale,
                ws->CNORM, &info);
         if (info != 0) {
-            print_message("CLATRS failed: info=%d, imat=%d, uplo=%s, trans=%s\n",
+            fprintf(stderr, "CLATRS failed: info=%d, imat=%d, uplo=%s, trans=%s\n",
                          info, imat, uplo, trans);
         }
 
@@ -366,7 +366,7 @@ static void test_latrs(void** state)
         clatrs(uplo, trans, &diag, &normin, n, ws->A, lda, &ws->B[n], &scale,
                ws->CNORM, &info);
         if (info != 0) {
-            print_message("CLATRS (NORMIN=Y) failed: info=%d\n", info);
+            fprintf(stderr, "CLATRS (NORMIN=Y) failed: info=%d\n", info);
         }
 
         ctrt03(uplo, trans, &diag, n, 1, ws->A, lda, scale,
@@ -382,7 +382,7 @@ static void test_latrs(void** state)
         clatrs3(uplo, trans, &diag, &normin, n, 2, ws->A, lda,
                 ws->B, ldb, scale3, ws->CNORM, ws->RWORK, lwork_latrs3, &info);
         if (info != 0) {
-            print_message("CLATRS3 failed: info=%d, imat=%d, uplo=%s, trans=%s\n",
+            fprintf(stderr, "CLATRS3 failed: info=%d, imat=%d, uplo=%s, trans=%s\n",
                          info, imat, uplo, trans);
         }
 
@@ -400,15 +400,15 @@ static void test_latrs(void** state)
 
         /* Check results */
         if (result[7] >= THRESH) {
-            print_message("TEST 8 failed: n=%d, imat=%d, uplo=%s, trans=%s, resid=%.3e\n",
+            fprintf(stderr, "TEST 8 failed: n=%d, imat=%d, uplo=%s, trans=%s, resid=%.3e\n",
                          n, imat, uplo, trans, (double)result[7]);
         }
         if (result[8] >= THRESH) {
-            print_message("TEST 9 failed: n=%d, imat=%d, uplo=%s, trans=%s, resid=%.3e\n",
+            fprintf(stderr, "TEST 9 failed: n=%d, imat=%d, uplo=%s, trans=%s, resid=%.3e\n",
                          n, imat, uplo, trans, (double)result[8]);
         }
         if (result[9] >= THRESH) {
-            print_message("TEST 10 failed: n=%d, imat=%d, uplo=%s, trans=%s, resid=%.3e\n",
+            fprintf(stderr, "TEST 10 failed: n=%d, imat=%d, uplo=%s, trans=%s, resid=%.3e\n",
                          n, imat, uplo, trans, (double)result[9]);
         }
         assert_residual_ok(result[7]);

@@ -317,7 +317,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     if (iinfo != 0) {
         /* Matrix generation failed */
         ws->result[0] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -340,7 +340,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     if (iinfo != 0) {
         ws->result[0] = ulpinv;
-        print_message("DGEEV(V,V) failed with info=%d\n", iinfo);
+        fprintf(stderr, "DGEEV(V,V) failed with info=%d\n", iinfo);
         assert_info_success(iinfo);
         return;
     }
@@ -439,7 +439,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     if (iinfo != 0) {
         ws->result[4] = ulpinv;
-        print_message("DGEEV(N,N) failed with info=%d\n", iinfo);
+        fprintf(stderr, "DGEEV(N,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5: W(full) = W(partial) */
         ws->result[4] = 0.0;
@@ -458,7 +458,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     if (iinfo != 0) {
         ws->result[5] = ulpinv;
-        print_message("DGEEV(N,V) failed with info=%d\n", iinfo);
+        fprintf(stderr, "DGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
         for (INT j = 0; j < n; j++) {
@@ -486,7 +486,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     if (iinfo != 0) {
         ws->result[6] = ulpinv;
-        print_message("DGEEV(V,N) failed with info=%d\n", iinfo);
+        fprintf(stderr, "DGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
         for (INT j = 0; j < n; j++) {

@@ -381,7 +381,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
     iinfo = generate_A(n, jtype, A, lda, work, rwork, iwork, ws->rng_state,
                        &ka, &kb);
     if (iinfo != 0) {
-        print_message("  Generator returned info=%d for n=%d jtype=%d\n",
+        fprintf(stderr, "  Generator returned info=%d for n=%d jtype=%d\n",
                       iinfo, n, jtype);
         fail_msg("Matrix generator failed");
         return;
@@ -412,7 +412,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
             clatms(n, n, "U", "P", rwork, 5, 10.0f, 1.0f,
                    kb, kb, uplo, B, lda, work + n, &iinfo, ws->rng_state);
             if (iinfo != 0) {
-                print_message("  B generator returned info=%d\n", iinfo);
+                fprintf(stderr, "  B generator returned info=%d\n", iinfo);
                 fail_msg("B matrix generator failed");
                 return;
             }
@@ -426,7 +426,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
             chegv(ibtype, "V", uplo, n, Z, lda, BB, lda, D,
                   work, nwork, rwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHEGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHEGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHEGV returned negative info");
@@ -448,7 +448,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
             chegv_2stage(ibtype, "N", uplo, n, Z, lda, BB, lda, D2,
                          work, nwork, rwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHEGV_2STAGE(N,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHEGV_2STAGE(N,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHEGV_2STAGE returned negative info");
@@ -479,7 +479,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
             chegvd(ibtype, "V", uplo, n, Z, lda, BB, lda, D,
                    work, nwork, rwork, lrwork, iwork, liwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHEGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHEGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHEGVD returned negative info");
@@ -502,7 +502,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, nwork, rwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHEGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHEGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHEGVX returned negative info");
@@ -527,7 +527,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, nwork, rwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHEGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHEGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHEGVX returned negative info");
@@ -550,7 +550,7 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, nwork, rwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHEGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHEGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHEGVX returned negative info");
@@ -573,7 +573,7 @@ L100:
             chpgv(ibtype, "V", uplo, n, AP, BP, D, Z, lda,
                   work, rwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHPGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHPGV(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHPGV returned negative info");
@@ -595,7 +595,7 @@ L100:
             chpgvd(ibtype, "V", uplo, n, AP, BP, D, Z, lda,
                    work, nwork, rwork, lrwork, iwork, liwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHPGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHPGVD(V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHPGVD returned negative info");
@@ -618,7 +618,7 @@ L100:
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, rwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHPGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHPGVX(V,A,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHPGVX returned negative info");
@@ -643,7 +643,7 @@ L100:
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, rwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHPGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHPGVX(V,V,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHPGVX returned negative info");
@@ -666,7 +666,7 @@ L100:
                    vl, vu, il, iu, abstol, &m, D, Z, lda,
                    work, rwork, iwork + n, iwork, &iinfo);
             if (iinfo != 0) {
-                print_message("  CHPGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
+                fprintf(stderr, "  CHPGVX(V,I,%s) info=%d n=%d jtype=%d ibtype=%d\n",
                               uplo, iinfo, n, jtype, ibtype);
                 if (iinfo < 0) {
                     fail_msg("CHPGVX returned negative info");
@@ -695,7 +695,7 @@ L310:
                 chbgv("V", uplo, n, ka, kb, AB, lda, BB, lda,
                       D, Z, lda, work, rwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  CHBGV(V,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  CHBGV(V,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("CHBGV returned negative info");
@@ -719,7 +719,7 @@ L310:
                 chbgvd("V", uplo, n, ka, kb, AB, lda, BB, lda,
                        D, Z, lda, work, nwork, rwork, lrwork, iwork, liwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  CHBGVD(V,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  CHBGVD(V,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("CHBGVD returned negative info");
@@ -745,7 +745,7 @@ L310:
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, rwork, iwork + n, iwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  CHBGVX(V,A,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  CHBGVX(V,A,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("CHBGVX returned negative info");
@@ -772,7 +772,7 @@ L310:
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, rwork, iwork + n, iwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  CHBGVX(V,V,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  CHBGVX(V,V,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("CHBGVX returned negative info");
@@ -797,7 +797,7 @@ L310:
                        BP, ldq, vl, vu, il, iu, abstol, &m, D, Z, lda,
                        work, rwork, iwork + n, iwork, &iinfo);
                 if (iinfo != 0) {
-                    print_message("  CHBGVX(V,I,%s) info=%d n=%d jtype=%d\n",
+                    fprintf(stderr, "  CHBGVX(V,I,%s) info=%d n=%d jtype=%d\n",
                                   uplo, iinfo, n, jtype);
                     if (iinfo < 0) {
                         fail_msg("CHBGVX returned negative info");
@@ -819,7 +819,7 @@ L620:
 
     for (INT j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
-            print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d ka=%d kb=%d\n",
+            fprintf(stderr, "  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d ka=%d kb=%d\n",
                           j + 1, (double)ws->result[j], (double)THRESH, n, jtype, ka, kb);
         }
         assert_residual_below(ws->result[j], THRESH);

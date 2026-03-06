@@ -940,7 +940,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
         snprintf(context, sizeof(context),
                  "Matrix generation failed: m=%d n=%d type=%d info=%d",
                  m, n, itype, info);
-        print_message("SKIP: %s\n", context);
+        fprintf(stderr, "SKIP: %s\n", context);
         return;
     }
 

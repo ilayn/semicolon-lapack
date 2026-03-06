@@ -163,7 +163,7 @@ static inline void clear_test_context(void) {
  */
 #define skip_test(msg) \
     do { \
-        print_message("SKIP: %s\n", msg); \
+        fprintf(stderr, "SKIP: %s\n", msg); \
         skip(); \
     } while (0)
 

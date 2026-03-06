@@ -433,7 +433,7 @@ static void test_dchkst2stg_case(void** state)
     /* Generate matrix */
     iinfo = generate_matrix(n, jtype, A, lda, work, iwork, ws->rng_state);
     if (iinfo != 0) {
-        print_message("Matrix generation failed for n=%d jtype=%d iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for n=%d jtype=%d iinfo=%d\n",
                       n, jtype, iinfo);
         assert_info_success(iinfo);
         return;
@@ -448,7 +448,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 1;
     ssytrd("U", n, V, ldu, SD, SE, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("SSYTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSYTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[0] = ulpinv;
         goto L280;
     }
@@ -458,7 +458,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 2;
     sorgtr("U", n, U, ldu, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("SORGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SORGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[1] = ulpinv;
         goto L280;
     }
@@ -481,7 +481,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 3;
     ssteqr("N", n, D1, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         if (iinfo < 0) {
             ws->result[2] = ulpinv;
             return;
@@ -504,7 +504,7 @@ static void test_dchkst2stg_case(void** state)
 
     ssteqr("N", n, D2, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         if (iinfo < 0) {
             ws->result[2] = ulpinv;
             return;
@@ -524,7 +524,7 @@ static void test_dchkst2stg_case(void** state)
 
     ssteqr("N", n, D3, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         if (iinfo < 0) {
             ws->result[3] = ulpinv;
             return;
@@ -557,7 +557,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 5;
     ssptrd("U", n, VP, SD, SE, TAU, &iinfo);
     if (iinfo != 0) {
-        print_message("SSPTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSPTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[4] = ulpinv;
         goto L280;
     }
@@ -565,7 +565,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 6;
     sopgtr("U", n, VP, TAU, U, ldu, work, &iinfo);
     if (iinfo != 0) {
-        print_message("SOPGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SOPGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[5] = ulpinv;
         goto L280;
     }
@@ -593,7 +593,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 7;
     ssptrd("L", n, VP, SD, SE, TAU, &iinfo);
     if (iinfo != 0) {
-        print_message("SSPTRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSPTRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[6] = ulpinv;
         goto L280;
     }
@@ -601,7 +601,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 8;
     sopgtr("L", n, VP, TAU, U, ldu, work, &iinfo);
     if (iinfo != 0) {
-        print_message("SOPGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SOPGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[7] = ulpinv;
         goto L280;
     }
@@ -621,7 +621,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 9;
     ssteqr("V", n, D1, work, Z, ldu, work + n, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[8] = ulpinv;
         goto L280;
     }
@@ -639,7 +639,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 11;
     ssteqr("N", n, D2, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[10] = ulpinv;
         goto L280;
     }
@@ -654,7 +654,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 12;
     ssterf(n, D3, work, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTERF failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTERF failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[11] = ulpinv;
         goto L280;
     }
@@ -692,7 +692,7 @@ static void test_dchkst2stg_case(void** state)
         ntest = 14;
         spteqr("V", n, D4, work, Z, ldu, work + n, &iinfo);
         if (iinfo != 0) {
-            print_message("SPTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "SPTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[13] = ulpinv;
             goto L280;
         }
@@ -707,7 +707,7 @@ static void test_dchkst2stg_case(void** state)
         ntest = 16;
         spteqr("N", n, D5, work, Z, ldu, work + n, &iinfo);
         if (iinfo != 0) {
-            print_message("SPTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "SPTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[15] = ulpinv;
             goto L280;
         }
@@ -741,7 +741,7 @@ static void test_dchkst2stg_case(void** state)
         sstebz("A", "E", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
                WR, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEBZ(A,rel) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "SSTEBZ(A,rel) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[16] = ulpinv;
             goto L280;
@@ -770,7 +770,7 @@ static void test_dchkst2stg_case(void** state)
     sstebz("A", "E", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
            WA1, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEBZ(A) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEBZ(A) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[17] = ulpinv;
         goto L280;
     }
@@ -796,7 +796,7 @@ static void test_dchkst2stg_case(void** state)
     sstebz("I", "E", n, vl, vu, il, iu, abstol, SD, SE, &m2, &nsplit,
            WA2, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEBZ(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEBZ(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[18] = ulpinv;
         goto L280;
     }
@@ -825,7 +825,7 @@ static void test_dchkst2stg_case(void** state)
     sstebz("V", "E", n, vl, vu, il, iu, abstol, SD, SE, &m3, &nsplit,
            WA3, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEBZ(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEBZ(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[18] = ulpinv;
         goto L280;
     }
@@ -853,7 +853,7 @@ static void test_dchkst2stg_case(void** state)
     sstebz("A", "B", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
            WA1, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEBZ(A,B) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "SSTEBZ(A,B) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[19] = ulpinv;
         ws->result[20] = ulpinv;
@@ -863,7 +863,7 @@ static void test_dchkst2stg_case(void** state)
     sstein(n, SD, SE, m, WA1, ws->IBLOCK, ws->ISPLIT, Z, ldu,
            work, iwork, ws->IFAIL, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEIN failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEIN failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[19] = ulpinv;
         ws->result[20] = ulpinv;
         goto L280;
@@ -884,7 +884,7 @@ static void test_dchkst2stg_case(void** state)
     sstedc("I", n, D1, work, Z, ldu, work + n, lwedc - n,
            iwork, liwedc, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEDC(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEDC(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[21] = ulpinv;
         goto L280;
     }
@@ -904,7 +904,7 @@ static void test_dchkst2stg_case(void** state)
     sstedc("V", n, D1, work, Z, ldu, work + n, lwedc - n,
            iwork, liwedc, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEDC(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEDC(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[23] = ulpinv;
         goto L280;
     }
@@ -924,7 +924,7 @@ static void test_dchkst2stg_case(void** state)
     sstedc("N", n, D2, work, Z, ldu, work + n, lwedc - n,
            iwork, liwedc, &iinfo);
     if (iinfo != 0) {
-        print_message("SSTEDC(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "SSTEDC(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[25] = ulpinv;
         goto L280;
     }
@@ -963,7 +963,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("SSTEMR(V,I) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "SSTEMR(V,I) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[28] = ulpinv;
             goto L280;
@@ -984,7 +984,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("SSTEMR(N,I) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "SSTEMR(N,I) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[30] = ulpinv;
             goto L280;
@@ -1028,7 +1028,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("SSTEMR(V,V) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "SSTEMR(V,V) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[31] = ulpinv;
             goto L280;
@@ -1049,7 +1049,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("SSTEMR(N,V) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "SSTEMR(N,V) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[33] = ulpinv;
             goto L280;
@@ -1081,7 +1081,7 @@ static void test_dchkst2stg_case(void** state)
                iwork, ws->liwork, &iinfo);
     }
     if (iinfo != 0) {
-        print_message("SSTEMR(V,A) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "SSTEMR(V,A) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[34] = ulpinv;
         goto L280;
@@ -1102,7 +1102,7 @@ static void test_dchkst2stg_case(void** state)
                iwork, ws->liwork, &iinfo);
     }
     if (iinfo != 0) {
-        print_message("SSTEMR(N,A) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "SSTEMR(N,A) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[36] = ulpinv;
         goto L280;

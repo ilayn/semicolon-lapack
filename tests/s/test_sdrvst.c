@@ -407,7 +407,7 @@ static void run_ddrvst_single(ddrvst_params_t* params)
         iinfo = generate_matrix(n, jtype, A, lda, U, ldu, work, iwork,
                                 ws->rng_state, ws->rng_state3, &ihbw);
         if (iinfo != 0) {
-            print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+            fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                           jtype, n, iinfo);
             ws->result[0] = ulpinv;
             assert_info_success(iinfo);
@@ -426,7 +426,7 @@ static void run_ddrvst_single(ddrvst_params_t* params)
         /* SSTEV('V') — tests 1-2 */
         sstev("V", n, D1, D2, Z, ldu, work, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEV(V) returned info=%d, n=%d, jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "SSTEV(V) returned info=%d, n=%d, jtype=%d\n", iinfo, n, jtype);
             ws->result[0] = ulpinv;
             ws->result[1] = ulpinv;
             ws->result[2] = ulpinv;
@@ -447,7 +447,7 @@ static void run_ddrvst_single(ddrvst_params_t* params)
         /* SSTEV('N') — test 3 */
         sstev("N", n, D3, D4, Z, ldu, work, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEV(N) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEV(N) returned info=%d\n", iinfo);
             ws->result[2] = ulpinv;
             goto L180;
         }
@@ -474,7 +474,7 @@ L180:
         sstevx("V", "A", n, D1, D2, vl, vu, il, iu, abstol, &m,
                WA1, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVX(V,A) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVX(V,A) returned info=%d\n", iinfo);
             ws->result[3] = ulpinv;
             ws->result[4] = ulpinv;
             ws->result[5] = ulpinv;
@@ -500,7 +500,7 @@ L180:
         sstevx("N", "A", n, D3, D4, vl, vu, il, iu, abstol, &m2,
                WA2, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVX(N,A) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVX(N,A) returned info=%d\n", iinfo);
             ws->result[5] = ulpinv;
             goto L250;
         }
@@ -526,7 +526,7 @@ L250:
                WA1, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVR(V,A) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVR(V,A) returned info=%d\n", iinfo);
             ws->result[6] = ulpinv;
             ws->result[7] = ulpinv;
             ws->result[8] = ulpinv;
@@ -553,7 +553,7 @@ L250:
                WA2, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVR(N,A) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVR(N,A) returned info=%d\n", iinfo);
             ws->result[8] = ulpinv;
             goto L320;
         }
@@ -578,7 +578,7 @@ L320:
         sstevx("V", "I", n, D1, D2, vl, vu, il, iu, abstol, &m2,
                WA2, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVX(V,I) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVX(V,I) returned info=%d\n", iinfo);
             ws->result[9] = ulpinv;
             ws->result[10] = ulpinv;
             ws->result[11] = ulpinv;
@@ -601,7 +601,7 @@ L320:
         sstevx("N", "I", n, D3, D4, vl, vu, il, iu, abstol, &m3,
                WA3, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVX(N,I) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVX(N,I) returned info=%d\n", iinfo);
             ws->result[11] = ulpinv;
             goto L380;
         }
@@ -625,7 +625,7 @@ L380:
         sstevx("V", "V", n, D1, D2, vl, vu, il, iu, abstol, &m2,
                WA2, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVX(V,V) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVX(V,V) returned info=%d\n", iinfo);
             ws->result[12] = ulpinv;
             ws->result[13] = ulpinv;
             ws->result[14] = ulpinv;
@@ -655,7 +655,7 @@ L380:
         sstevx("N", "V", n, D3, D4, vl, vu, il, iu, abstol, &m3,
                WA3, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVX(N,V) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVX(N,V) returned info=%d\n", iinfo);
             ws->result[14] = ulpinv;
             goto L440;
         }
@@ -675,7 +675,7 @@ L440:
 
         sstevd("V", n, D1, D2, Z, ldu, work, lwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVD(V) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVD(V) returned info=%d\n", iinfo);
             ws->result[15] = ulpinv;
             ws->result[16] = ulpinv;
             ws->result[17] = ulpinv;
@@ -696,7 +696,7 @@ L440:
         /* SSTEVD('N') — test 18 */
         sstevd("N", n, D3, D4, Z, ldu, work, lwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVD(N) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVD(N) returned info=%d\n", iinfo);
             ws->result[17] = ulpinv;
             goto L510;
         }
@@ -722,7 +722,7 @@ L510:
                WA2, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVR(V,I) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVR(V,I) returned info=%d\n", iinfo);
             ws->result[18] = ulpinv;
             ws->result[19] = ulpinv;
             ws->result[20] = ulpinv;
@@ -746,7 +746,7 @@ L510:
                WA3, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVR(N,I) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVR(N,I) returned info=%d\n", iinfo);
             ws->result[20] = ulpinv;
             goto L570;
         }
@@ -771,7 +771,7 @@ L570:
                WA2, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVR(V,V) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVR(V,V) returned info=%d\n", iinfo);
             ws->result[21] = ulpinv;
             ws->result[22] = ulpinv;
             ws->result[23] = ulpinv;
@@ -802,7 +802,7 @@ L570:
                WA3, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSTEVR(N,V) returned info=%d\n", iinfo);
+            fprintf(stderr, "SSTEVR(N,V) returned info=%d\n", iinfo);
             ws->result[23] = ulpinv;
             goto L630;
         }
@@ -836,7 +836,7 @@ L630:
         /* SSYEV('V', UPLO) */
         ssyev("V", uplo, n, A, ldu, D1, work, ws->lwork, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEV(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEV(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -853,7 +853,7 @@ L630:
         /* SSYEV('N', UPLO) */
         ssyev("N", uplo, n, A, ldu, D3, work, ws->lwork, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEV(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEV(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L660;
         }
@@ -900,7 +900,7 @@ L660:
                WA1, Z, ldu, work, ws->lwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -918,7 +918,7 @@ L660:
                WA2, Z, ldu, work, ws->lwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L680;
         }
@@ -940,7 +940,7 @@ L680:
                WA2, Z, ldu, work, ws->lwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -959,7 +959,7 @@ L680:
                WA3, Z, ldu, work, ws->lwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L690;
         }
@@ -977,7 +977,7 @@ L690:
                WA2, Z, ldu, work, ws->lwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -996,7 +996,7 @@ L690:
                WA3, Z, ldu, work, ws->lwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L700;
         }
@@ -1026,7 +1026,7 @@ L700:
         /* SSPEV('V', UPLO) */
         sspev("V", uplo, n, work, D1, Z, ldu, V, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEV(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEV(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1044,7 +1044,7 @@ L700:
         /* SSPEV('N', UPLO) */
         sspev("N", uplo, n, work, D3, Z, ldu, V, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEV(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEV(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L800;
         }
@@ -1091,7 +1091,7 @@ L800:
         sspevx("V", "A", uplo, n, work, vl, vu, il, iu, abstol, &m,
                WA1, Z, ldu, V, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1111,7 +1111,7 @@ L800:
         sspevx("N", "A", uplo, n, work, vl, vu, il, iu, abstol, &m2,
                WA2, Z, ldu, V, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L900;
         }
@@ -1133,7 +1133,7 @@ L900:
         sspevx("V", "I", uplo, n, work, vl, vu, il, iu, abstol, &m2,
                WA2, Z, ldu, V, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1152,7 +1152,7 @@ L900:
         sspevx("N", "I", uplo, n, work, vl, vu, il, iu, abstol, &m3,
                WA3, Z, ldu, V, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L990;
         }
@@ -1179,7 +1179,7 @@ L990:
         sspevx("V", "V", uplo, n, work, vl, vu, il, iu, abstol, &m2,
                WA2, Z, ldu, V, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1198,7 +1198,7 @@ L990:
         sspevx("N", "V", uplo, n, work, vl, vu, il, iu, abstol, &m3,
                WA3, Z, ldu, V, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1080;
         }
@@ -1236,7 +1236,7 @@ L1080:
         /* SSBEV('V', UPLO) */
         ssbev("V", uplo, n, kd, V, ldu, D1, Z, ldu, work, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEV(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEV(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1254,7 +1254,7 @@ L1080:
         /* SSBEV('N', UPLO) */
         ssbev("N", uplo, n, kd, V, ldu, D3, Z, ldu, work, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEV(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEV(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1180;
         }
@@ -1276,7 +1276,7 @@ L1180:
         ssbevx("V", "A", uplo, n, kd, V, ldu, U, ldu, vl, vu, il, iu,
                abstol, &m, WA2, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1295,7 +1295,7 @@ L1180:
         ssbevx("N", "A", uplo, n, kd, V, ldu, U, ldu, vl, vu, il, iu,
                abstol, &m3, WA3, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1280;
         }
@@ -1317,7 +1317,7 @@ L1280:
         ssbevx("V", "I", uplo, n, kd, V, ldu, U, ldu, vl, vu, il, iu,
                abstol, &m2, WA2, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1336,7 +1336,7 @@ L1280:
         ssbevx("N", "I", uplo, n, kd, V, ldu, U, ldu, vl, vu, il, iu,
                abstol, &m3, WA3, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1370;
         }
@@ -1358,7 +1358,7 @@ L1370:
         ssbevx("V", "V", uplo, n, kd, V, ldu, U, ldu, vl, vu, il, iu,
                abstol, &m2, WA2, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1377,7 +1377,7 @@ L1370:
         ssbevx("N", "V", uplo, n, kd, V, ldu, U, ldu, vl, vu, il, iu,
                abstol, &m3, WA3, Z, ldu, work, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1460;
         }
@@ -1403,7 +1403,7 @@ L1460:
         ntest = ntest + 1;
         ssyevd("V", uplo, n, A, ldu, D1, work, lwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVD(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVD(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1419,7 +1419,7 @@ L1460:
         ntest = ntest + 2;
         ssyevd("N", uplo, n, A, ldu, D3, work, lwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVD(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVD(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1480;
         }
@@ -1443,7 +1443,7 @@ L1480:
         sspevd("V", uplo, n, work, D1, Z, ldu,
                work + indx, lwedc - indx, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVD(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVD(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1460,7 +1460,7 @@ L1480:
         sspevd("N", uplo, n, work, D3, Z, ldu,
                work + indx, lwedc - indx, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSPEVD(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSPEVD(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1580;
         }
@@ -1490,7 +1490,7 @@ L1580:
         ssbevd("V", uplo, n, kd, V, ldu, D1, Z, ldu, work, lwedc,
                iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVD(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVD(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1507,7 +1507,7 @@ L1580:
         ssbevd("N", uplo, n, kd, V, ldu, D3, Z, ldu, work, lwedc,
                iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("SSBEVD(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSBEVD(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1680;
         }
@@ -1531,7 +1531,7 @@ L1680:
                WA1, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVR(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVR(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1549,7 +1549,7 @@ L1680:
                WA2, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVR(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVR(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1700;
         }
@@ -1571,7 +1571,7 @@ L1700:
                WA2, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVR(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVR(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1590,7 +1590,7 @@ L1700:
                WA3, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVR(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVR(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1710;
         }
@@ -1608,7 +1608,7 @@ L1710:
                WA2, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVR(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVR(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1627,7 +1627,7 @@ L1710:
                WA3, Z, ldu, iwork, work, ws->lwork,
                iwork + 2 * n, ws->liwork - 2 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("SSYEVR(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "SSYEVR(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1750;
         }
@@ -1655,7 +1655,7 @@ L1750:
     /* Check results against threshold */
     for (INT j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
-            print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d\n",
+            fprintf(stderr, "  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d\n",
                           j + 1, (double)ws->result[j], (double)THRESH, n, jtype);
         }
         assert_residual_below(ws->result[j], THRESH);

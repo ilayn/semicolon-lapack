@@ -388,7 +388,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
                                   work, ws->rng_state);
     if (iinfo != 0) {
         ws->result[0] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -404,7 +404,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
           ldq, Z, ldq, work, lwork, rwork, &iinfo);
     if (iinfo != 0 && iinfo != n + 1) {
         ws->result[0] = ulpinv;
-        print_message("ZGGEV1 returned info=%d (n=%d, jtype=%d)\n",
+        fprintf(stderr, "ZGGEV1 returned info=%d (n=%d, jtype=%d)\n",
                       iinfo, n, jtype);
         goto done;
     }
@@ -413,7 +413,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
     zget52(1, n, A, lda, B, lda, Q, ldq, alpha, beta,
            work, rwork, &ws->result[0]);
     if (ws->result[1] > THRESH) {
-        print_message("Left eigenvectors from ZGGEV1 incorrectly normalized. "
+        fprintf(stderr, "Left eigenvectors from ZGGEV1 incorrectly normalized. "
                       "Bits of error=%g, n=%d, jtype=%d\n",
                       ws->result[1], n, jtype);
     }
@@ -422,7 +422,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
     zget52(0, n, A, lda, B, lda, Z, ldq, alpha, beta,
            work, rwork, &ws->result[2]);
     if (ws->result[3] > THRESH) {
-        print_message("Right eigenvectors from ZGGEV1 incorrectly normalized. "
+        fprintf(stderr, "Right eigenvectors from ZGGEV1 incorrectly normalized. "
                       "Bits of error=%g, n=%d, jtype=%d\n",
                       ws->result[3], n, jtype);
     }
@@ -434,7 +434,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
           ldq, Z, ldq, work, lwork, rwork, &iinfo);
     if (iinfo != 0 && iinfo != n + 1) {
         ws->result[0] = ulpinv;
-        print_message("ZGGEV2 returned info=%d (n=%d, jtype=%d)\n",
+        fprintf(stderr, "ZGGEV2 returned info=%d (n=%d, jtype=%d)\n",
                       iinfo, n, jtype);
         goto done;
     }
@@ -451,7 +451,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
           ldqe, Z, ldq, work, lwork, rwork, &iinfo);
     if (iinfo != 0 && iinfo != n + 1) {
         ws->result[0] = ulpinv;
-        print_message("ZGGEV3 returned info=%d (n=%d, jtype=%d)\n",
+        fprintf(stderr, "ZGGEV3 returned info=%d (n=%d, jtype=%d)\n",
                       iinfo, n, jtype);
         goto done;
     }
@@ -475,7 +475,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
           ldq, QE, ldqe, work, lwork, rwork, &iinfo);
     if (iinfo != 0 && iinfo != n + 1) {
         ws->result[0] = ulpinv;
-        print_message("ZGGEV4 returned info=%d (n=%d, jtype=%d)\n",
+        fprintf(stderr, "ZGGEV4 returned info=%d (n=%d, jtype=%d)\n",
                       iinfo, n, jtype);
         goto done;
     }

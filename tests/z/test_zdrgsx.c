@@ -238,7 +238,7 @@ static void test_builtin(void** state)
 
     if (linfo != 0 && linfo != mplusn + 2) {
         ws->result[0] = ulpinv;
-        print_message("ZGGESX returned INFO=%d, MPLUSN=%d, PRTYPE=%d\n",
+        fprintf(stderr, "ZGGESX returned INFO=%d, MPLUSN=%d, PRTYPE=%d\n",
                        linfo, mplusn, prtype);
         goto check_results;
     }
@@ -328,7 +328,7 @@ static void test_builtin(void** state)
 check_results:
     for (INT j = 0; j < 9; j++) {
         if (ws->result[j] >= THRESH) {
-            print_message("  ZDRGSX builtin: MPLUSN=%d, PRTYPE=%d, IFUNC=%d, M=%d, "
+            fprintf(stderr, "  ZDRGSX builtin: MPLUSN=%d, PRTYPE=%d, IFUNC=%d, M=%d, "
                           "test %d = %.6e\n",
                           mplusn, prtype, ifunc, m, j + 1, ws->result[j]);
         }
@@ -393,7 +393,7 @@ static void test_precomputed(void** state)
 
     if (linfo != 0 && linfo != mplusn + 2) {
         ws->result[0] = ulpinv;
-        print_message("ZGGESX returned INFO=%d for precomputed #%d\n", linfo, idx);
+        fprintf(stderr, "ZGGESX returned INFO=%d for precomputed #%d\n", linfo, idx);
         goto check_results;
     }
 
@@ -476,7 +476,7 @@ static void test_precomputed(void** state)
 check_results:
     for (INT j = 0; j < 10; j++) {
         if (ws->result[j] >= THRESH) {
-            print_message("  ZDRGSX precomputed #%d: test %d = %.6e\n",
+            fprintf(stderr, "  ZDRGSX precomputed #%d: test %d = %.6e\n",
                           idx, j + 1, ws->result[j]);
         }
         assert_residual_below(ws->result[j], THRESH);

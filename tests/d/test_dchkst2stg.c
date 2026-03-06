@@ -433,7 +433,7 @@ static void test_dchkst2stg_case(void** state)
     /* Generate matrix */
     iinfo = generate_matrix(n, jtype, A, lda, work, iwork, ws->rng_state);
     if (iinfo != 0) {
-        print_message("Matrix generation failed for n=%d jtype=%d iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for n=%d jtype=%d iinfo=%d\n",
                       n, jtype, iinfo);
         assert_info_success(iinfo);
         return;
@@ -448,7 +448,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 1;
     dsytrd("U", n, V, ldu, SD, SE, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSYTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSYTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[0] = ulpinv;
         goto L280;
     }
@@ -458,7 +458,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 2;
     dorgtr("U", n, U, ldu, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DORGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DORGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[1] = ulpinv;
         goto L280;
     }
@@ -481,7 +481,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 3;
     dsteqr("N", n, D1, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         if (iinfo < 0) {
             ws->result[2] = ulpinv;
             return;
@@ -504,7 +504,7 @@ static void test_dchkst2stg_case(void** state)
 
     dsteqr("N", n, D2, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         if (iinfo < 0) {
             ws->result[2] = ulpinv;
             return;
@@ -524,7 +524,7 @@ static void test_dchkst2stg_case(void** state)
 
     dsteqr("N", n, D3, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         if (iinfo < 0) {
             ws->result[3] = ulpinv;
             return;
@@ -557,7 +557,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 5;
     dsptrd("U", n, VP, SD, SE, TAU, &iinfo);
     if (iinfo != 0) {
-        print_message("DSPTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSPTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[4] = ulpinv;
         goto L280;
     }
@@ -565,7 +565,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 6;
     dopgtr("U", n, VP, TAU, U, ldu, work, &iinfo);
     if (iinfo != 0) {
-        print_message("DOPGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DOPGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[5] = ulpinv;
         goto L280;
     }
@@ -593,7 +593,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 7;
     dsptrd("L", n, VP, SD, SE, TAU, &iinfo);
     if (iinfo != 0) {
-        print_message("DSPTRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSPTRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[6] = ulpinv;
         goto L280;
     }
@@ -601,7 +601,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 8;
     dopgtr("L", n, VP, TAU, U, ldu, work, &iinfo);
     if (iinfo != 0) {
-        print_message("DOPGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DOPGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[7] = ulpinv;
         goto L280;
     }
@@ -621,7 +621,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 9;
     dsteqr("V", n, D1, work, Z, ldu, work + n, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[8] = ulpinv;
         goto L280;
     }
@@ -639,7 +639,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 11;
     dsteqr("N", n, D2, work, NULL, ldu, NULL, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[10] = ulpinv;
         goto L280;
     }
@@ -654,7 +654,7 @@ static void test_dchkst2stg_case(void** state)
     ntest = 12;
     dsterf(n, D3, work, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTERF failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTERF failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[11] = ulpinv;
         goto L280;
     }
@@ -692,7 +692,7 @@ static void test_dchkst2stg_case(void** state)
         ntest = 14;
         dpteqr("V", n, D4, work, Z, ldu, work + n, &iinfo);
         if (iinfo != 0) {
-            print_message("DPTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "DPTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[13] = ulpinv;
             goto L280;
         }
@@ -707,7 +707,7 @@ static void test_dchkst2stg_case(void** state)
         ntest = 16;
         dpteqr("N", n, D5, work, Z, ldu, work + n, &iinfo);
         if (iinfo != 0) {
-            print_message("DPTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "DPTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[15] = ulpinv;
             goto L280;
         }
@@ -741,7 +741,7 @@ static void test_dchkst2stg_case(void** state)
         dstebz("A", "E", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
                WR, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
         if (iinfo != 0) {
-            print_message("DSTEBZ(A,rel) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "DSTEBZ(A,rel) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[16] = ulpinv;
             goto L280;
@@ -770,7 +770,7 @@ static void test_dchkst2stg_case(void** state)
     dstebz("A", "E", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
            WA1, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(A) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEBZ(A) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[17] = ulpinv;
         goto L280;
     }
@@ -796,7 +796,7 @@ static void test_dchkst2stg_case(void** state)
     dstebz("I", "E", n, vl, vu, il, iu, abstol, SD, SE, &m2, &nsplit,
            WA2, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEBZ(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[18] = ulpinv;
         goto L280;
     }
@@ -825,7 +825,7 @@ static void test_dchkst2stg_case(void** state)
     dstebz("V", "E", n, vl, vu, il, iu, abstol, SD, SE, &m3, &nsplit,
            WA3, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEBZ(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[18] = ulpinv;
         goto L280;
     }
@@ -853,7 +853,7 @@ static void test_dchkst2stg_case(void** state)
     dstebz("A", "B", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
            WA1, ws->IBLOCK, ws->ISPLIT, work, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(A,B) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "DSTEBZ(A,B) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[19] = ulpinv;
         ws->result[20] = ulpinv;
@@ -863,7 +863,7 @@ static void test_dchkst2stg_case(void** state)
     dstein(n, SD, SE, m, WA1, ws->IBLOCK, ws->ISPLIT, Z, ldu,
            work, iwork, ws->IFAIL, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEIN failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEIN failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[19] = ulpinv;
         ws->result[20] = ulpinv;
         goto L280;
@@ -884,7 +884,7 @@ static void test_dchkst2stg_case(void** state)
     dstedc("I", n, D1, work, Z, ldu, work + n, lwedc - n,
            iwork, liwedc, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEDC(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEDC(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[21] = ulpinv;
         goto L280;
     }
@@ -904,7 +904,7 @@ static void test_dchkst2stg_case(void** state)
     dstedc("V", n, D1, work, Z, ldu, work + n, lwedc - n,
            iwork, liwedc, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEDC(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEDC(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[23] = ulpinv;
         goto L280;
     }
@@ -924,7 +924,7 @@ static void test_dchkst2stg_case(void** state)
     dstedc("N", n, D2, work, Z, ldu, work + n, lwedc - n,
            iwork, liwedc, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEDC(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEDC(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[25] = ulpinv;
         goto L280;
     }
@@ -963,7 +963,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("DSTEMR(V,I) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "DSTEMR(V,I) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[28] = ulpinv;
             goto L280;
@@ -984,7 +984,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("DSTEMR(N,I) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "DSTEMR(N,I) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[30] = ulpinv;
             goto L280;
@@ -1028,7 +1028,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("DSTEMR(V,V) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "DSTEMR(V,V) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[31] = ulpinv;
             goto L280;
@@ -1049,7 +1049,7 @@ static void test_dchkst2stg_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("DSTEMR(N,V) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "DSTEMR(N,V) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[33] = ulpinv;
             goto L280;
@@ -1081,7 +1081,7 @@ static void test_dchkst2stg_case(void** state)
                iwork, ws->liwork, &iinfo);
     }
     if (iinfo != 0) {
-        print_message("DSTEMR(V,A) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "DSTEMR(V,A) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[34] = ulpinv;
         goto L280;
@@ -1102,7 +1102,7 @@ static void test_dchkst2stg_case(void** state)
                iwork, ws->liwork, &iinfo);
     }
     if (iinfo != 0) {
-        print_message("DSTEMR(N,A) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "DSTEMR(N,A) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[36] = ulpinv;
         goto L280;

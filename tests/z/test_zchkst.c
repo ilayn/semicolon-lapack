@@ -417,7 +417,7 @@ static void test_zchkst_case(void** state)
     iinfo = generate_matrix(n, jtype, A, lda, work, rwork, iwork,
                             ws->rng_state);
     if (iinfo != 0) {
-        print_message("Matrix generation failed for n=%d jtype=%d iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for n=%d jtype=%d iinfo=%d\n",
                       n, jtype, iinfo);
         assert_info_success(iinfo);
         return;
@@ -432,7 +432,7 @@ static void test_zchkst_case(void** state)
     ntest = 1;
     zhetrd("U", n, V, ldu, SD, SE, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("ZHETRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZHETRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[0] = ulpinv;
         goto L280;
     }
@@ -442,7 +442,7 @@ static void test_zchkst_case(void** state)
     ntest = 2;
     zungtr("U", n, U, ldu, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("ZUNGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZUNGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[1] = ulpinv;
         goto L280;
     }
@@ -461,7 +461,7 @@ static void test_zchkst_case(void** state)
     ntest = 3;
     zhetrd("L", n, V, ldu, SD, SE, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("ZHETRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZHETRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[2] = ulpinv;
         goto L280;
     }
@@ -471,7 +471,7 @@ static void test_zchkst_case(void** state)
     ntest = 4;
     zungtr("L", n, U, ldu, TAU, work, lwork, &iinfo);
     if (iinfo != 0) {
-        print_message("ZUNGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZUNGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[3] = ulpinv;
         goto L280;
     }
@@ -501,7 +501,7 @@ static void test_zchkst_case(void** state)
     ntest = 5;
     zhptrd("U", n, VP, SD, SE, TAU, &iinfo);
     if (iinfo != 0) {
-        print_message("ZHPTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZHPTRD(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[4] = ulpinv;
         goto L280;
     }
@@ -509,7 +509,7 @@ static void test_zchkst_case(void** state)
     ntest = 6;
     zupgtr("U", n, VP, TAU, U, ldu, work, &iinfo);
     if (iinfo != 0) {
-        print_message("ZUPGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZUPGTR(U) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[5] = ulpinv;
         goto L280;
     }
@@ -539,7 +539,7 @@ static void test_zchkst_case(void** state)
     ntest = 7;
     zhptrd("L", n, VP, SD, SE, TAU, &iinfo);
     if (iinfo != 0) {
-        print_message("ZHPTRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZHPTRD(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[6] = ulpinv;
         goto L280;
     }
@@ -547,7 +547,7 @@ static void test_zchkst_case(void** state)
     ntest = 8;
     zupgtr("L", n, VP, TAU, U, ldu, work, &iinfo);
     if (iinfo != 0) {
-        print_message("ZUPGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZUPGTR(L) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[7] = ulpinv;
         goto L280;
     }
@@ -569,7 +569,7 @@ static void test_zchkst_case(void** state)
     ntest = 9;
     zsteqr("V", n, D1, rwork, Z, ldu, rwork + n, &iinfo);
     if (iinfo != 0) {
-        print_message("ZSTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZSTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[8] = ulpinv;
         goto L280;
     }
@@ -587,7 +587,7 @@ static void test_zchkst_case(void** state)
     ntest = 11;
     zsteqr("N", n, D2, rwork, work, ldu, rwork + n, &iinfo);
     if (iinfo != 0) {
-        print_message("ZSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZSTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[10] = ulpinv;
         goto L280;
     }
@@ -602,7 +602,7 @@ static void test_zchkst_case(void** state)
     ntest = 12;
     dsterf(n, D3, rwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTERF failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTERF failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[11] = ulpinv;
         goto L280;
     }
@@ -639,7 +639,7 @@ static void test_zchkst_case(void** state)
         ntest = 14;
         zpteqr("V", n, D4, rwork, Z, ldu, rwork + n, &iinfo);
         if (iinfo != 0) {
-            print_message("ZPTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "ZPTEQR(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[13] = ulpinv;
             goto L280;
         }
@@ -653,7 +653,7 @@ static void test_zchkst_case(void** state)
         ntest = 16;
         zpteqr("N", n, D5, rwork, Z, ldu, rwork + n, &iinfo);
         if (iinfo != 0) {
-            print_message("ZPTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "ZPTEQR(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[15] = ulpinv;
             goto L280;
         }
@@ -687,7 +687,7 @@ static void test_zchkst_case(void** state)
         dstebz("A", "E", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
                WR, ws->IBLOCK, ws->ISPLIT, rwork, iwork, &iinfo);
         if (iinfo != 0) {
-            print_message("DSTEBZ(A,rel) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "DSTEBZ(A,rel) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[16] = ulpinv;
             goto L280;
@@ -716,7 +716,7 @@ static void test_zchkst_case(void** state)
     dstebz("A", "E", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
            WA1, ws->IBLOCK, ws->ISPLIT, rwork, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(A) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEBZ(A) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[17] = ulpinv;
         goto L280;
     }
@@ -742,7 +742,7 @@ static void test_zchkst_case(void** state)
     dstebz("I", "E", n, vl, vu, il, iu, abstol, SD, SE, &m2, &nsplit,
            WA2, ws->IBLOCK, ws->ISPLIT, rwork, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEBZ(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[18] = ulpinv;
         goto L280;
     }
@@ -771,7 +771,7 @@ static void test_zchkst_case(void** state)
     dstebz("V", "E", n, vl, vu, il, iu, abstol, SD, SE, &m3, &nsplit,
            WA3, ws->IBLOCK, ws->ISPLIT, rwork, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "DSTEBZ(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[18] = ulpinv;
         goto L280;
     }
@@ -799,7 +799,7 @@ static void test_zchkst_case(void** state)
     dstebz("A", "B", n, vl, vu, il, iu, abstol, SD, SE, &m, &nsplit,
            WA1, ws->IBLOCK, ws->ISPLIT, rwork, iwork, &iinfo);
     if (iinfo != 0) {
-        print_message("DSTEBZ(A,B) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "DSTEBZ(A,B) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[19] = ulpinv;
         ws->result[20] = ulpinv;
@@ -809,7 +809,7 @@ static void test_zchkst_case(void** state)
     zstein(n, SD, SE, m, WA1, ws->IBLOCK, ws->ISPLIT, Z, ldu,
            rwork, iwork, ws->IFAIL, &iinfo);
     if (iinfo != 0) {
-        print_message("ZSTEIN failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+        fprintf(stderr, "ZSTEIN failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
         ws->result[19] = ulpinv;
         ws->result[20] = ulpinv;
         goto L280;
@@ -834,7 +834,7 @@ static void test_zchkst_case(void** state)
         zstedc("I", n, D1, rwork + inde, Z, ldu, work, lwedc,
                rwork + indrwk, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("ZSTEDC(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "ZSTEDC(I) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[21] = ulpinv;
             goto L280;
         }
@@ -859,7 +859,7 @@ static void test_zchkst_case(void** state)
         zstedc("V", n, D1, rwork + inde, Z, ldu, work, lwedc,
                rwork + indrwk, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("ZSTEDC(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "ZSTEDC(V) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[23] = ulpinv;
             goto L280;
         }
@@ -884,7 +884,7 @@ static void test_zchkst_case(void** state)
         zstedc("N", n, D2, rwork + inde, Z, ldu, work, lwedc,
                rwork + indrwk, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("ZSTEDC(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
+            fprintf(stderr, "ZSTEDC(N) failed: info=%d n=%d jtype=%d\n", iinfo, n, jtype);
             ws->result[25] = ulpinv;
             goto L280;
         }
@@ -924,7 +924,7 @@ static void test_zchkst_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("ZSTEMR(V,I) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "ZSTEMR(V,I) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[28] = ulpinv;
             goto L280;
@@ -946,7 +946,7 @@ static void test_zchkst_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("ZSTEMR(N,I) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "ZSTEMR(N,I) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[30] = ulpinv;
             goto L280;
@@ -989,7 +989,7 @@ static void test_zchkst_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("ZSTEMR(V,V) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "ZSTEMR(V,V) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[31] = ulpinv;
             goto L280;
@@ -1011,7 +1011,7 @@ static void test_zchkst_case(void** state)
                    iwork, ws->liwork, &iinfo);
         }
         if (iinfo != 0) {
-            print_message("ZSTEMR(N,V) failed: info=%d n=%d jtype=%d\n",
+            fprintf(stderr, "ZSTEMR(N,V) failed: info=%d n=%d jtype=%d\n",
                           iinfo, n, jtype);
             ws->result[33] = ulpinv;
             goto L280;
@@ -1043,7 +1043,7 @@ static void test_zchkst_case(void** state)
                iwork, ws->liwork, &iinfo);
     }
     if (iinfo != 0) {
-        print_message("ZSTEMR(V,A) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "ZSTEMR(V,A) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[34] = ulpinv;
         goto L280;
@@ -1065,7 +1065,7 @@ static void test_zchkst_case(void** state)
                iwork, ws->liwork, &iinfo);
     }
     if (iinfo != 0) {
-        print_message("ZSTEMR(N,A) failed: info=%d n=%d jtype=%d\n",
+        fprintf(stderr, "ZSTEMR(N,A) failed: info=%d n=%d jtype=%d\n",
                       iinfo, n, jtype);
         ws->result[36] = ulpinv;
         goto L280;

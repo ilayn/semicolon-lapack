@@ -376,7 +376,7 @@ static void run_zdrges_single(zdrges_params_t* params)
                                   work, ws->rng_state);
     if (iinfo != 0) {
         ws->result[0] = ulpinv;
-        print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+        fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                       jtype, n, iinfo);
         assert_info_success(iinfo);
         return;
@@ -411,7 +411,7 @@ static void run_zdrges_single(zdrges_params_t* params)
 
         if (iinfo != 0 && iinfo != n + 2) {
             ws->result[rsub + isort] = ulpinv;
-            print_message("CGGES failed with info=%d (n=%d, jtype=%d, isort=%d)\n",
+            fprintf(stderr, "CGGES failed with info=%d (n=%d, jtype=%d, isort=%d)\n",
                           iinfo, n, jtype, isort);
             continue;
         }

@@ -355,7 +355,7 @@ static void run_zdrvst_single(zdrvst_params_t* params)
         iinfo = generate_matrix(n, jtype, A, lda, U, ldu, work, rwork, iwork,
                                 ws->rng_state, ws->rng_state3, &ihbw);
         if (iinfo != 0) {
-            print_message("Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
+            fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                           jtype, n, iinfo);
             ws->result[0] = ulpinv;
             assert_info_success(iinfo);
@@ -375,7 +375,7 @@ static void run_zdrvst_single(zdrvst_params_t* params)
         cheevd("V", uplo, n, A, ldu, D1, work, lwedc,
                rwork, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVD(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVD(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -391,7 +391,7 @@ static void run_zdrvst_single(zdrvst_params_t* params)
         cheevd("N", uplo, n, A, ldu, D3, work, lwedc,
                rwork, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVD(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVD(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L130;
         }
@@ -436,7 +436,7 @@ L130:
                abstol, &m, WA1, Z, ldu, work, ws->lwork, rwork,
                iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -453,7 +453,7 @@ L130:
                abstol, &m2, WA2, Z, ldu, work, ws->lwork, rwork,
                iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L150;
         }
@@ -476,7 +476,7 @@ L150:
                abstol, &m2, WA2, Z, ldu, work, ws->lwork, rwork,
                iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -494,7 +494,7 @@ L150:
                abstol, &m3, WA3, Z, ldu, work, ws->lwork, rwork,
                iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L160;
         }
@@ -517,7 +517,7 @@ L160:
                abstol, &m2, WA2, Z, ldu, work, ws->lwork, rwork,
                iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -535,7 +535,7 @@ L160:
                abstol, &m3, WA3, Z, ldu, work, ws->lwork, rwork,
                iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L170;
         }
@@ -565,7 +565,7 @@ L170:
                work + indwrk, lwedc, rwork, lrwedc, iwork,
                liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVD(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVD(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -583,7 +583,7 @@ L170:
                work + indwrk, lwedc, rwork, lrwedc, iwork,
                liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVD(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVD(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L270;
         }
@@ -629,7 +629,7 @@ L270:
                abstol, &m, WA1, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -647,7 +647,7 @@ L270:
                abstol, &m2, WA2, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L370;
         }
@@ -669,7 +669,7 @@ L370:
                abstol, &m2, WA2, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -687,7 +687,7 @@ L370:
                abstol, &m3, WA3, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L460;
         }
@@ -709,7 +709,7 @@ L460:
                abstol, &m2, WA2, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -727,7 +727,7 @@ L460:
                abstol, &m3, WA3, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L550;
         }
@@ -763,7 +763,7 @@ L550:
         chbevd("V", uplo, n, kd, V, ldu, D1, Z, ldu, work,
                lwedc, rwork, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVD(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVD(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -779,7 +779,7 @@ L550:
         chbevd("N", uplo, n, kd, V, ldu, D3, Z, ldu, work,
                lwedc, rwork, lrwedc, iwork, liwedc, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVD(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVD(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L650;
         }
@@ -801,7 +801,7 @@ L650:
                vu, il, iu, abstol, &m, WA1, Z, ldu, work,
                rwork, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVX(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -819,7 +819,7 @@ L650:
                vu, il, iu, abstol, &m2, WA2, Z, ldu, work,
                rwork, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVX(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L750;
         }
@@ -841,7 +841,7 @@ L750:
                vu, il, iu, abstol, &m2, WA2, Z, ldu, work,
                rwork, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVX(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -859,7 +859,7 @@ L750:
                vu, il, iu, abstol, &m3, WA3, Z, ldu, work,
                rwork, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVX(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L840;
         }
@@ -881,7 +881,7 @@ L840:
                vu, il, iu, abstol, &m2, WA2, Z, ldu, work,
                rwork, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVX(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -899,7 +899,7 @@ L840:
                vu, il, iu, abstol, &m3, WA3, Z, ldu, work,
                rwork, iwork, iwork + 5 * n, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEVX(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L930;
         }
@@ -924,7 +924,7 @@ L930:
         ntest = ntest + 1;
         cheev("V", uplo, n, A, ldu, D1, work, ws->lwork, rwork, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEV(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEV(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -939,7 +939,7 @@ L930:
         ntest = ntest + 2;
         cheev("N", uplo, n, A, ldu, D3, work, ws->lwork, rwork, &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEV(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEV(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L950;
         }
@@ -963,7 +963,7 @@ L950:
         chpev("V", uplo, n, work, D1, Z, ldu,
               work + indwrk, rwork, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEV(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEV(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -980,7 +980,7 @@ L950:
         chpev("N", uplo, n, work, D3, Z, ldu,
               work + indwrk, rwork, &iinfo);
         if (iinfo != 0) {
-            print_message("CHPEV(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHPEV(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1050;
         }
@@ -1010,7 +1010,7 @@ L1050:
         chbev("V", uplo, n, kd, V, ldu, D1, Z, ldu, work,
               rwork, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEV(V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEV(V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1026,7 +1026,7 @@ L1050:
         chbev("N", uplo, n, kd, V, ldu, D3, Z, ldu, work,
               rwork, &iinfo);
         if (iinfo != 0) {
-            print_message("CHBEV(N,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHBEV(N,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1140;
         }
@@ -1048,7 +1048,7 @@ L1140:
                rwork, ws->lrwork, iwork + 2 * n, ws->liwork - 2 * n,
                &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVR(V,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVR(V,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1066,7 +1066,7 @@ L1140:
                rwork, ws->lrwork, iwork + 2 * n, ws->liwork - 2 * n,
                &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVR(N,A,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVR(N,A,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1170;
         }
@@ -1087,7 +1087,7 @@ L1170:
                rwork, ws->lrwork, iwork + 2 * n, ws->liwork - 2 * n,
                &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVR(V,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVR(V,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1106,7 +1106,7 @@ L1170:
                rwork, ws->lrwork, iwork + 2 * n, ws->liwork - 2 * n,
                &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVR(N,I,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVR(N,I,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1180;
         }
@@ -1123,7 +1123,7 @@ L1180:
                rwork, ws->lrwork, iwork + 2 * n, ws->liwork - 2 * n,
                &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVR(V,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVR(V,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             ws->result[ntest] = ulpinv;
             ws->result[ntest + 1] = ulpinv;
@@ -1142,7 +1142,7 @@ L1180:
                rwork, ws->lrwork, iwork + 2 * n, ws->liwork - 2 * n,
                &iinfo);
         if (iinfo != 0) {
-            print_message("CHEEVR(N,V,%s) returned info=%d\n", uplo, iinfo);
+            fprintf(stderr, "CHEEVR(N,V,%s) returned info=%d\n", uplo, iinfo);
             ws->result[ntest - 1] = ulpinv;
             goto L1190;
         }
@@ -1168,7 +1168,7 @@ L1190:
 
     for (INT j = 0; j < ntest; j++) {
         if (ws->result[j] >= THRESH) {
-            print_message("  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d\n",
+            fprintf(stderr, "  Test %d: ratio = %.6e (THRESH=%.1f) n=%d jtype=%d\n",
                           j + 1, (double)ws->result[j], (double)THRESH, n, jtype);
         }
         assert_residual_below(ws->result[j], THRESH);
