@@ -100,5 +100,6 @@ foreach name, info : smoke_tests_d
     suite: suite,
     timeout: 120,
     is_parallel: true,
+    env: test_env,
   )
 endforeach

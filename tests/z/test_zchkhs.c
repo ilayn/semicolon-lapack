@@ -603,7 +603,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
 
     zhsein("R", "Q", "N", selectarr, n, H, lda,
            W3, cdumma, ldu, evectx, ldu, n1, &in,
-           work, rwork, iwork, iwork, &iinfo);
+           work, rwork, iwork, iwork + lda, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
                  "zchkhs n=%d type=%d: ZHSEIN(R) info=%d", n, jtype, iinfo);
@@ -627,7 +627,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
 
     zhsein("L", "Q", "N", selectarr, n, H, lda,
            W3, evecty, ldu, cdumma, ldu, n1, &in,
-           work, rwork, iwork, iwork, &iinfo);
+           work, rwork, iwork, iwork + lda, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
                  "zchkhs n=%d type=%d: ZHSEIN(L) info=%d", n, jtype, iinfo);

@@ -120,6 +120,7 @@ foreach name, info : lapack_tests_d
     suite: suite,
     timeout: 120,
     is_parallel: true,
+    env: test_env,
   )
 endforeach
 
