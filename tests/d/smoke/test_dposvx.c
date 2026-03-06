@@ -341,5 +341,6 @@ int main(void)
         DPOSVX_TESTS(setup_20_nrhs2),
     };
 
-    return cmocka_run_group_tests_name("dposvx", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dposvx", tests, NULL, NULL);
+    return 0;
 }

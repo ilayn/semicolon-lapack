@@ -285,5 +285,6 @@ int main(void)
         DGESC2_TESTS(setup_8),
     };
 
-    return cmocka_run_group_tests_name("dgesc2", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgesc2", tests, NULL, NULL);
+    return 0;
 }

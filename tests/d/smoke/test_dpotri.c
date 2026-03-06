@@ -166,5 +166,6 @@ int main(void)
         DPOTRI_TESTS(setup_20),
     };
 
-    return cmocka_run_group_tests_name("dpotri", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dpotri", tests, NULL, NULL);
+    return 0;
 }

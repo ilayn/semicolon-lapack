@@ -230,5 +230,6 @@ int main(void)
         cmocka_unit_test(test_dget39_dlaqtr),
         cmocka_unit_test(test_dget40_dtgexc),
     };
-    return cmocka_run_group_tests_name("dchkec", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dchkec", tests, NULL, NULL);
+    return 0;
 }

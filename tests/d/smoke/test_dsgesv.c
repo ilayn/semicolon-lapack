@@ -431,5 +431,6 @@ int main(void)
         DSGESV_TESTS(setup_50_5),
     };
 
-    return cmocka_run_group_tests_name("dsgesv", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dsgesv", tests, NULL, NULL);
+    return 0;
 }

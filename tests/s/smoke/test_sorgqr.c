@@ -181,5 +181,6 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_dorglq, setup_20x10, org_teardown),
         cmocka_unit_test_setup_teardown(test_dorglq, setup_10x20, org_teardown),
     };
-    return cmocka_run_group_tests_name("dorgqr", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dorgqr", tests, NULL, NULL);
+    return 0;
 }

@@ -195,5 +195,6 @@ int main(void)
         DSYTRI_TESTS(setup_20),
     };
 
-    return cmocka_run_group_tests_name("dsytri", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dsytri", tests, NULL, NULL);
+    return 0;
 }

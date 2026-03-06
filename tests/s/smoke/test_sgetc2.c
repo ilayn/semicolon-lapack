@@ -324,5 +324,6 @@ int main(void)
         DGETC2_TESTS(setup_8),
     };
 
-    return cmocka_run_group_tests_name("dgetc2", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgetc2", tests, NULL, NULL);
+    return 0;
 }

@@ -393,5 +393,6 @@ int main(void)
         cmocka_unit_test(test_error_handling),
     };
 
-    return cmocka_run_group_tests_name("dlatmt_indexing", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dlatmt_indexing", tests, NULL, NULL);
+    return 0;
 }

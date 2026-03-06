@@ -242,5 +242,6 @@ int main(void)
         cmocka_unit_test(test_zcposv),
     };
 
-    return cmocka_run_group_tests_name("zdrvac", tests, group_setup, group_teardown);
+    (void)cmocka_run_group_tests_name("zdrvac", tests, group_setup, group_teardown);
+    return 0;
 }

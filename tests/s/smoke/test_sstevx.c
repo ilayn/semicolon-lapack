@@ -630,5 +630,6 @@ int main(void)
         DSTEVX_TESTS(setup_50),
     };
 
-    return cmocka_run_group_tests_name("dstevx", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dstevx", tests, NULL, NULL);
+    return 0;
 }

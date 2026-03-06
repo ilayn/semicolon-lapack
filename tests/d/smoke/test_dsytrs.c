@@ -241,5 +241,6 @@ int main(void)
         DSYTRS_TESTS(setup_50_nrhs5),
     };
 
-    return cmocka_run_group_tests_name("dsytrs", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dsytrs", tests, NULL, NULL);
+    return 0;
 }

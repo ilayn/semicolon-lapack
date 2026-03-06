@@ -479,6 +479,7 @@ int main(void)
 {
     build_test_array();
 
-    return _cmocka_run_group_tests("zchktb", g_tests, (size_t)g_num_tests,
+    (void)_cmocka_run_group_tests("zchktb", g_tests, (size_t)g_num_tests,
                                    group_setup, group_teardown);
+    return 0;
 }

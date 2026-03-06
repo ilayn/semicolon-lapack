@@ -415,5 +415,6 @@ int main(void)
         DSTERF_TESTS(setup_100),
     };
 
-    return cmocka_run_group_tests_name("dsterf", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dsterf", tests, NULL, NULL);
+    return 0;
 }

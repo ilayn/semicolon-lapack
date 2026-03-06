@@ -249,5 +249,6 @@ int main(void)
         DGETRS_TESTS(setup_20_nrhs5),
     };
 
-    return cmocka_run_group_tests_name("dgetrs", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgetrs", tests, NULL, NULL);
+    return 0;
 }

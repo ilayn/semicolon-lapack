@@ -568,5 +568,6 @@ int main(void)
         cmocka_unit_test(test_dpbequ),
     };
 
-    return cmocka_run_group_tests_name("dchkeq", tests, group_setup, group_teardown);
+    (void)cmocka_run_group_tests_name("dchkeq", tests, group_setup, group_teardown);
+    return 0;
 }

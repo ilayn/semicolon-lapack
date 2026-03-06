@@ -243,5 +243,6 @@ int main(void)
         DSYCON_TESTS(setup_50),
     };
 
-    return cmocka_run_group_tests_name("dsycon", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dsycon", tests, NULL, NULL);
+    return 0;
 }

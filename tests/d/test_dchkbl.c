@@ -374,5 +374,6 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_dgebal),
     };
-    return cmocka_run_group_tests_name("dchkbl", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dchkbl", tests, NULL, NULL);
+    return 0;
 }

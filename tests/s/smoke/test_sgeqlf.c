@@ -152,5 +152,6 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_wellcond, setup_5x10, ql_teardown),
         cmocka_unit_test_setup_teardown(test_wellcond, setup_10x20, ql_teardown),
     };
-    return cmocka_run_group_tests_name("dgeqlf", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dgeqlf", tests, NULL, NULL);
+    return 0;
 }

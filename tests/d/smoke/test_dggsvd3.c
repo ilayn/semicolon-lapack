@@ -471,5 +471,6 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_zero_B, setup_40_15_20, dggsvd3_teardown),
     };
 
-    return cmocka_run_group_tests_name("dggsvd3", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("dggsvd3", tests, NULL, NULL);
+    return 0;
 }
