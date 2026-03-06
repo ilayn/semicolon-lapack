@@ -194,6 +194,7 @@ subdir('src')
 # Install public headers — types.h is installed as-is (concrete typedefs, no macros)
 install_headers(
   'include/semicolon_lapack/types.h',
+  'src/include/lapack_name_map.h',
   subdir: 'semicolon_lapack',
 )
 

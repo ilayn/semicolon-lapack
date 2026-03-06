@@ -111,7 +111,7 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
 
     # Aggregator filename: semicolon_lapack_64.h for ILP64, semicolon_lapack.h for LP64
-    aggregator_name = "semicolon_lapack_64.h" if args.naming else "semicolon_lapack.h"
+    aggregator_name = "semicolon_lapack_64.h" if args.int_type == "i64" else "semicolon_lapack.h"
 
     # Extract all function names for renaming
     func_names = extract_function_names(args.input_dir)
