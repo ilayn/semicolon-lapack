@@ -77,7 +77,7 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
 
   test-macos:
-    name: Test macOS OpenBLAS
+    name: Test macOS MKL
     needs: get_commit_message
     if: >-
       needs.get_commit_message.outputs.run_tests == '1' &&
@@ -100,7 +100,7 @@ jobs:
         run: >-
           conda install -y
           c-compiler
-          openblas
+          mkl-devel
           meson
           ninja
           cmake
@@ -124,34 +124,20 @@ jobs:
           echo ""
           echo "=== Compiler ==="
           cc --version | head -1
+          echo ""
+          echo "=== MKL ==="
+          conda list mkl
 
       - name: Configure
-        run: meson setup builddir -Dblas=openblas
+        run: meson setup builddir -Dblas=mkl-dynamic-lp64-seq
 
       - name: Build
         run: ninja -C builddir
 
-      - name: Print OpenBLAS runtime info
-        run: |
-          ${CC:-cc} -o openblas_info tests/ci/openblas_info.c \
-            $(pkg-config --cflags --libs openblas) \
-            -Wl,-rpath,$CONDA_PREFIX/lib
-          ./openblas_info
-
-      - name: Debug zhpevx (ARM64 investigation)
-        run: |
-          ${CC:-cc} -O2 -g tests/ci/zhpevx_debug.c \
-            -I src/include -I include \
-            $(pkg-config --cflags --libs openblas) \
-            -Lbuilddir/src -lsemilapack \
-            -lm -Wl,-rpath,$CONDA_PREFIX/lib -Wl,-rpath,$(pwd)/builddir/src \
-            -o zhpevx_debug
-          ./zhpevx_debug
-
       - name: Test
         run: meson test -C builddir --print-errorlogs
         env:
-          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
 
   test-windows:
     name: Test Windows MSYS2 UCRT64
