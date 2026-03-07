@@ -11,6 +11,15 @@ on:
       run_tests:
         description: "Whether to run tests (1=run, 0=skip)"
         value: ${{ jobs.check_skip_tags.outputs.run_tests }}
+      run_linux:
+        description: "Whether to run Linux tests (1=run, 0=skip)"
+        value: ${{ jobs.check_skip_tags.outputs.run_linux }}
+      run_macos:
+        description: "Whether to run macOS tests (1=run, 0=skip)"
+        value: ${{ jobs.check_skip_tags.outputs.run_macos }}
+      run_windows:
+        description: "Whether to run Windows tests (1=run, 0=skip)"
+        value: ${{ jobs.check_skip_tags.outputs.run_windows }}
 
 permissions:
   contents: read
@@ -22,6 +31,9 @@ jobs:
     outputs:
       run_docs: ${{ steps.check.outputs.run_docs }}
       run_tests: ${{ steps.check.outputs.run_tests }}
+      run_linux: ${{ steps.check.outputs.run_linux }}
+      run_macos: ${{ steps.check.outputs.run_macos }}
+      run_windows: ${{ steps.check.outputs.run_windows }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +47,9 @@ jobs:
           COMMIT_MSG=$(git log --no-merges -1)
           RUN_DOCS="1"
           RUN_TESTS="1"
+          RUN_LINUX="1"
+          RUN_MACOS="1"
+          RUN_WINDOWS="1"
           if [[ "$COMMIT_MSG" == *"[skip docs]"* || "$COMMIT_MSG" == *"[tests only]"* ]]; then
             RUN_DOCS="0"
           fi
@@ -45,5 +60,22 @@ jobs:
             RUN_DOCS="0"
             RUN_TESTS="0"
           fi
+          if [[ "$COMMIT_MSG" == *"[macos only]"* ]]; then
+            RUN_LINUX="0"
+            RUN_WINDOWS="0"
+          fi
+          if [[ "$COMMIT_MSG" == *"[linux only]"* ]]; then
+            RUN_MACOS="0"
+            RUN_WINDOWS="0"
+          fi
+          if [[ "$COMMIT_MSG" == *"[skip macos]"* ]]; then
+            RUN_MACOS="0"
+          fi
+          if [[ "$COMMIT_MSG" == *"[skip windows]"* ]]; then
+            RUN_WINDOWS="0"
+          fi
           echo "run_docs=$RUN_DOCS" >> $GITHUB_OUTPUT
           echo "run_tests=$RUN_TESTS" >> $GITHUB_OUTPUT
+          echo "run_linux=$RUN_LINUX" >> $GITHUB_OUTPUT
+          echo "run_macos=$RUN_MACOS" >> $GITHUB_OUTPUT
+          echo "run_windows=$RUN_WINDOWS" >> $GITHUB_OUTPUT

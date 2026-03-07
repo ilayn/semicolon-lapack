@@ -14,7 +14,9 @@ jobs:
   test-linux:
     name: Test Linux OpenBLAS
     needs: get_commit_message
-    if: needs.get_commit_message.outputs.run_tests == '1'
+    if: >-
+      needs.get_commit_message.outputs.run_tests == '1' &&
+      needs.get_commit_message.outputs.run_linux == '1'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -77,7 +79,9 @@ jobs:
   test-macos:
     name: Test macOS OpenBLAS
     needs: get_commit_message
-    if: needs.get_commit_message.outputs.run_tests == '1'
+    if: >-
+      needs.get_commit_message.outputs.run_tests == '1' &&
+      needs.get_commit_message.outputs.run_macos == '1'
     runs-on: macos-14
     defaults:
       run:
@@ -134,6 +138,16 @@ jobs:
             -Wl,-rpath,$CONDA_PREFIX/lib
           ./openblas_info
 
+      - name: Debug zhpevx (ARM64 investigation)
+        run: |
+          ${CC:-cc} -O2 -g tests/ci/zhpevx_debug.c \
+            -I src/include -I include \
+            $(pkg-config --cflags --libs openblas) \
+            -Lbuilddir/src -lsemilapack \
+            -lm -Wl,-rpath,$CONDA_PREFIX/lib -Wl,-rpath,$(pwd)/builddir/src \
+            -o zhpevx_debug
+          ./zhpevx_debug
+
       - name: Test
         run: meson test -C builddir --print-errorlogs
         env:
@@ -142,7 +156,9 @@ jobs:
   test-windows:
     name: Test Windows MSYS2 UCRT64
     needs: get_commit_message
-    if: needs.get_commit_message.outputs.run_tests == '1'
+    if: >-
+      needs.get_commit_message.outputs.run_tests == '1' &&
+      needs.get_commit_message.outputs.run_windows == '1'
     runs-on: windows-latest
     defaults:
       run:
@@ -260,7 +276,9 @@ jobs:
   test-windows-clang:
     name: Test Windows MSYS2 CLANG64
     needs: get_commit_message
-    if: needs.get_commit_message.outputs.run_tests == '1'
+    if: >-
+      needs.get_commit_message.outputs.run_tests == '1' &&
+      needs.get_commit_message.outputs.run_windows == '1'
     runs-on: windows-latest
     defaults:
       run:
