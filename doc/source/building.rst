@@ -133,6 +133,10 @@ All options are passed to ``meson setup`` with the ``-D`` prefix:
      - boolean
      - ``true``
      - Build the test suite (requires CMocka >= 2.0)
+   * - ``fabi_shim``
+     - boolean
+     - ``false``
+     - Build Fortran-ABI shim library. See :doc:`testing-scipy-numpy`.
    * - ``benchmarks``
      - boolean
      - ``false``
