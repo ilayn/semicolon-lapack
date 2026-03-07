@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [main]
 
+# Intel oneAPI installation adapted from SciPy's CI:
+# https://github.com/scipy/scipy/blob/main/.github/workflows/windows_intel_oneAPI.yml
+# Reference: https://github.com/oneapi-src/oneapi-ci
+env:
+  WINDOWS_BASEKIT_URL: https://registrationcenter-download.intel.com/akdlm/IRC_NAS/1f18901e-877d-469d-a41a-a10f11b39336/intel-oneapi-base-toolkit-2025.3.0.372_offline.exe
+  WINDOWS_ONEAPI_COMPONENTS: intel.oneapi.win.cpp-dpcpp-common:intel.oneapi.win.mkl.devel
+
 jobs:
   get_commit_message:
     name: Get commit message
@@ -73,6 +80,99 @@ jobs:
         run: meson test -C builddir --print-errorlogs
         env:
           OPENBLAS_NUM_THREADS: '1'
+
+  test-windows-oneapi:
+    name: Test Windows Intel oneAPI (icx + MKL)
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache oneAPI installation
+        id: cache-oneapi
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\Program Files (x86)\Intel\oneAPI\compiler
+            C:\Program Files (x86)\Intel\oneAPI\mkl
+            C:\Program Files (x86)\Intel\oneAPI\setvars.bat
+            C:\Program Files (x86)\Intel\oneAPI\setvars-vcvarsall.bat
+          key: oneapi-${{ env.WINDOWS_BASEKIT_URL }}-${{ env.WINDOWS_ONEAPI_COMPONENTS }}
+
+      - name: Install oneAPI base toolkit
+        if: steps.cache-oneapi.outputs.cache-hit != 'true'
+        shell: cmd
+        run: |
+          curl.exe --output %TEMP%\webimage.exe --url ${{ env.WINDOWS_BASEKIT_URL }} --retry 5 --retry-delay 5
+          start /b /wait %TEMP%\webimage.exe -s -x -f webimage_extracted
+          del %TEMP%\webimage.exe
+          webimage_extracted\bootstrapper.exe -s --action install --components=${{ env.WINDOWS_ONEAPI_COMPONENTS }} --eula=accept -p=NEED_VS2017_INTEGRATION=0 -p=NEED_VS2019_INTEGRATION=0 -p=NEED_VS2022_INTEGRATION=0
+          set installer_exit_code=%ERRORLEVEL%
+          rd /s/q "webimage_extracted"
+          exit /b %installer_exit_code%
+
+      - name: Set up Miniforge
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          miniforge-version: latest
+          activate-environment: ci
+          environment-file: ''
+
+      - name: Install build tools
+        shell: bash -el {0}
+        run: >-
+          conda install -y
+          meson
+          ninja
+          cmake
+          pkg-config
+
+      - name: Install CMocka 2.0
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set CC=icx
+          git clone --depth 1 --branch cmocka-2.0.0 https://gitlab.com/cmocka/cmocka.git
+          cmake -S cmocka -B cmocka\build -G Ninja -DCMAKE_C_COMPILER=icx -DCMAKE_INSTALL_PREFIX=%CONDA_PREFIX%\Library -DBUILD_SHARED_LIBS=ON
+          cmake --build cmocka\build
+          cmake --install cmocka\build
+
+      - name: Print environment info
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          echo === Compiler ===
+          icx --version
+          echo.
+          echo === MKL ===
+          pkg-config --modversion mkl-dynamic-lp64-seq
+
+      - name: Configure
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set CC=icx
+          meson setup builddir -Dblas=mkl-dynamic-lp64-seq --default-library=shared -DSYMBOL_MANGLING=SC_##name
+
+      - name: Build
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          set CC=icx
+          ninja -C builddir
+
+      - name: Test
+        shell: cmd /C call {0}
+        run: |
+          call "C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          meson test -C builddir --print-errorlogs
+        env:
+          MKL_NUM_THREADS: '1'
 
   test-windows:
     name: Test Windows MSYS2 UCRT64
