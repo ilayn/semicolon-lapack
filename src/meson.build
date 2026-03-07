@@ -2036,18 +2036,11 @@ c_sources = files(
 
 all_sources = common_sources + auxiliary_sources + d_sources + s_sources + z_sources + c_sources
 
-# On MSVC-like compilers, symbols are not exported by default.
-# Define SEMICOLON_BUILD_SHARED so SEMICOLON_API expands to __declspec(dllexport).
-lib_c_args = []
-if get_option('default_library') != 'static'
-  lib_c_args += ['-DSEMICOLON_BUILD_SHARED']
-endif
-
+# Build as library (static by default; use --default-library=shared for .so)
 libsemilapack = library('semilapack',
   all_sources,
   include_directories: [inc_pub, inc_src],
   dependencies: [blas_dep, m_dep],
-  c_args: lib_c_args,
   install: true,
 )
 
