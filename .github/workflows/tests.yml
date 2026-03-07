@@ -77,7 +77,7 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
 
   test-macos:
-    name: Test macOS MKL
+    name: Test macOS Accelerate
     needs: get_commit_message
     if: >-
       needs.get_commit_message.outputs.run_tests == '1' &&
@@ -100,7 +100,7 @@ jobs:
         run: >-
           conda install -y
           c-compiler
-          mkl-devel
+          "libblas=*=*accelerate"
           meson
           ninja
           cmake
@@ -125,19 +125,17 @@ jobs:
           echo "=== Compiler ==="
           cc --version | head -1
           echo ""
-          echo "=== MKL ==="
-          conda list mkl
+          echo "=== BLAS ==="
+          conda list libblas
 
       - name: Configure
-        run: meson setup builddir -Dblas=mkl-dynamic-lp64-seq
+        run: meson setup builddir -Dblas=accelerate
 
       - name: Build
         run: ninja -C builddir
 
       - name: Test
         run: meson test -C builddir --print-errorlogs
-        env:
-          MKL_NUM_THREADS: '1'
 
   test-windows:
     name: Test Windows MSYS2 UCRT64

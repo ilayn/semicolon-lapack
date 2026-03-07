@@ -93,6 +93,8 @@ elif blas_vendor == 'openblas'
   endif
 elif blas_vendor == 'blis'
   blas_dep = dependency('blis', required: true)
+elif blas_vendor == 'accelerate'
+  blas_dep = dependency('appleframeworks', modules: ['Accelerate'], required: true)
 else
   # Treat as a direct pkg-config package name
   blas_dep = dependency(blas_vendor, required: true)
