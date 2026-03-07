@@ -861,7 +861,12 @@ void chegvd_(INT* itype, char* jobz, char* uplo, INT* n, c64* A, INT* lda, c64* 
 }
 
 void chegvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, c64* A, INT* lda, c64* B, INT* ldb, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, c64* Z, INT* ldz, c64* work, INT* lwork, f32* rwork, INT* iwork, INT* ifail, INT* info) {
-    chegvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, *il, *iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
+    INT _il = *il - 1;
+    INT _iu = *iu - 1;
+    chegvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
+    if (*lwork != -1) {
+        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    }
 }
 
 void cherfs_(char* uplo, INT* n, INT* nrhs, c64* A, INT* lda, c64* AF, INT* ldaf, INT* ipiv, c64* B, INT* ldb, c64* X, INT* ldx, f32* ferr, f32* berr, c64* work, f32* rwork, INT* info) {
@@ -958,10 +963,12 @@ void chetf2_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, INT* info) {
 
 void chetf2_rk_(char* uplo, INT* n, c64* A, INT* lda, c64* E, INT* ipiv, INT* info) {
     chetf2_rk(uplo, *n, A, *lda, E, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void chetf2_rook_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, INT* info) {
     chetf2_rook(uplo, *n, A, *lda, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void chetrf_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, c64* work, INT* lwork, INT* info) {
@@ -1386,7 +1393,11 @@ void clahr2_(INT* n, INT* k, INT* nb, c64* A, INT* lda, c64* tau, c64* T, INT* l
 }
 
 void clahqr_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c64* H, INT* ldh, c64* W, INT* iloz, INT* ihiz, c64* Z, INT* ldz, INT* info) {
-    clahqr(*wantt, *wantz, *n, *ilo, *ihi, H, *ldh, W, *iloz, *ihiz, Z, *ldz, info);
+    INT _ilo = *ilo - 1;
+    INT _ihi = *ihi - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    clahqr(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, _iloz, _ihiz, Z, *ldz, info);
 }
 
 void claic1_(INT* job, INT* j, c64* x, f32* sest, c64* w, c64* gamma_, f32* sestpr, c64* s, c64* c) {
@@ -1440,10 +1451,12 @@ void claqp2_(INT* m, INT* n, INT* offset, c64* A, INT* lda, INT* jpvt, c64* tau,
 
 void claqp2rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* kmax, f32* abstol, f32* reltol, INT* kp1, f32* maxc2nrm, c64* A, INT* lda, INT* K, f32* maxc2nrmk, f32* relmaxc2nrmk, INT* jpiv, c64* tau, f32* vn1, f32* vn2, c64* work, INT* info) {
     claqp2rk(*m, *n, *nrhs, *ioffset, *kmax, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, K, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, work, info);
+    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
 }
 
 void claqp3rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* nb, f32* abstol, f32* reltol, INT* kp1, f32* maxc2nrm, c64* A, INT* lda, INT* done, INT* KB, f32* maxc2nrmk, f32* relmaxc2nrmk, INT* jpiv, c64* tau, f32* vn1, f32* vn2, c64* auxv, c64* F, INT* ldf, INT* iwork, INT* info) {
     claqp3rk(*m, *n, *nrhs, *ioffset, nb, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, done, KB, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, auxv, F, *ldf, iwork, info);
+    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
 }
 
 void claqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, c64* A, INT* lda, INT* jpvt, c64* tau, f32* vn1, f32* vn2, c64* auxv, c64* F, INT* ldf) {
@@ -1454,7 +1467,9 @@ void claqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, c64* A, INT* lda, IN
 void claqr0_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c64* H, INT* ldh, c64* W, INT* iloz, INT* ihiz, c64* Z, INT* ldz, c64* work, INT* lwork, INT* info) {
     INT _ilo = *ilo - 1;
     INT _ihi = *ihi - 1;
-    claqr0(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, *iloz, *ihiz, Z, *ldz, work, *lwork, info);
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    claqr0(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, _iloz, _ihiz, Z, *ldz, work, *lwork, info);
 }
 
 void claqr1_(INT* n, c64* H, INT* ldh, c64* s1, c64* s2, c64* v) {
@@ -1462,21 +1477,35 @@ void claqr1_(INT* n, c64* H, INT* ldh, c64* s1, c64* s2, c64* v) {
 }
 
 void claqr2_(INT* wantt, INT* wantz, INT* n, INT* ktop, INT* kbot, INT* nw, c64* H, INT* ldh, INT* iloz, INT* ihiz, c64* Z, INT* ldz, INT* ns, INT* nd, c64* SH, c64* V, INT* ldv, INT* nh, c64* T, INT* ldt, INT* nv, c64* WV, INT* ldwv, c64* work, INT* lwork) {
-    claqr2(*wantt, *wantz, *n, *ktop, *kbot, *nw, H, *ldh, *iloz, *ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    claqr2(*wantt, *wantz, *n, _ktop, _kbot, *nw, H, *ldh, _iloz, _ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
 }
 
 void claqr3_(INT* wantt, INT* wantz, INT* n, INT* ktop, INT* kbot, INT* nw, c64* H, INT* ldh, INT* iloz, INT* ihiz, c64* Z, INT* ldz, INT* ns, INT* nd, c64* SH, c64* V, INT* ldv, INT* nh, c64* T, INT* ldt, INT* nv, c64* WV, INT* ldwv, c64* work, INT* lwork) {
-    claqr3(*wantt, *wantz, *n, *ktop, *kbot, *nw, H, *ldh, *iloz, *ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    claqr3(*wantt, *wantz, *n, _ktop, _kbot, *nw, H, *ldh, _iloz, _ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
 }
 
 void claqr4_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c64* H, INT* ldh, c64* W, INT* iloz, INT* ihiz, c64* Z, INT* ldz, c64* work, INT* lwork, INT* info) {
     INT _ilo = *ilo - 1;
     INT _ihi = *ihi - 1;
-    claqr4(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, *iloz, *ihiz, Z, *ldz, work, *lwork, info);
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    claqr4(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, _iloz, _ihiz, Z, *ldz, work, *lwork, info);
 }
 
 void claqr5_(INT* wantt, INT* wantz, INT* kacc22, INT* n, INT* ktop, INT* kbot, INT* nshfts, c64* S, c64* H, INT* ldh, INT* iloz, INT* ihiz, c64* Z, INT* ldz, c64* V, INT* ldv, c64* U, INT* ldu, INT* nv, c64* WV, INT* ldwv, INT* nh, c64* WH, INT* ldwh) {
-    claqr5(*wantt, *wantz, *kacc22, *n, *ktop, *kbot, *nshfts, S, H, *ldh, *iloz, *ihiz, Z, *ldz, V, *ldv, U, *ldu, *nv, WV, *ldwv, *nh, WH, *ldwh);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    claqr5(*wantt, *wantz, *kacc22, *n, _ktop, _kbot, *nshfts, S, H, *ldh, _iloz, _ihiz, Z, *ldz, V, *ldv, U, *ldu, *nv, WV, *ldwv, *nh, WH, *ldwh);
 }
 
 void claqsb_(char* uplo, INT* n, INT* kd, c64* AB, INT* ldab, f32* S, f32* scond, f32* amax, char* equed) {
@@ -1498,11 +1527,17 @@ void claqz0_(char* wants, char* wantq, char* wantz, INT* n, INT* ilo, INT* ihi, 
 }
 
 void claqz1_(INT* ilq, INT* ilz, INT* k, INT* istartm, INT* istopm, INT* ihi, c64* A, INT* lda, c64* B, INT* ldb, INT* nq, INT* qstart, c64* Q, INT* ldq, INT* nz, INT* zstart, c64* Z, INT* ldz) {
-    claqz1(*ilq, *ilz, *k, *istartm, *istopm, *ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
+    INT _k = *k - 1;
+    INT _istartm = *istartm - 1;
+    INT _istopm = *istopm - 1;
+    INT _ihi = *ihi - 1;
+    claqz1(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
 }
 
 void claqz2_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nw, c64* A, INT* lda, c64* B, INT* ldb, c64* Q, INT* ldq, c64* Z, INT* ldz, INT* ns, INT* nd, c64* alpha, c64* beta, c64* QC, INT* ldqc, c64* ZC, INT* ldzc, c64* work, INT* lwork, f32* rwork, INT* rec, INT* info) {
-    claqz2(*ilschur, *ilq, *ilz, *n, *ilo, *ihi, *nw, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, ns, nd, alpha, beta, QC, *ldqc, ZC, *ldzc, work, *lwork, rwork, *rec, info);
+    INT _ilo = *ilo - 1;
+    INT _ihi = *ihi - 1;
+    claqz2(*ilschur, *ilq, *ilz, *n, _ilo, _ihi, *nw, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, ns, nd, alpha, beta, QC, *ldqc, ZC, *ldzc, work, *lwork, rwork, *rec, info);
 }
 
 void claqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nshifts, INT* nblock_desired, c64* alpha, c64* beta, c64* A, INT* lda, c64* B, INT* ldb, c64* Q, INT* ldq, c64* Z, INT* ldz, c64* QC, INT* ldqc, c64* ZC, INT* ldzc, c64* work, INT* lwork, INT* info) {
@@ -1512,7 +1547,10 @@ void claqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* 
 }
 
 void clar1v_(INT* n, INT* b1, INT* bn, f32* lambda, f32* D, f32* L, f32* LD, f32* LLD, f32* pivmin, f32* gaptol, c64* Z, INT* wantnc, INT* negcnt, f32* ztz, f32* mingma, INT* r, INT* isuppz, f32* nrminv, f32* resid, f32* rqcorr, f32* work) {
-    clar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, r, isuppz, nrminv, resid, rqcorr, work);
+    INT _r = *r - 1;
+    clar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
+    *r = _r + 1;
+    if (isuppz) { INT _sz = 2; for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
 }
 
 void clar2v_(INT* n, c64* X, c64* Y, c64* Z, INT* incx, f32* C, c64* S, INT* incc) {
@@ -2198,10 +2236,12 @@ void csytf2_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, INT* info) {
 
 void csytf2_rk_(char* uplo, INT* n, c64* A, INT* lda, c64* E, INT* ipiv, INT* info) {
     csytf2_rk(uplo, *n, A, *lda, E, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void csytf2_rook_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, INT* info) {
     csytf2_rook(uplo, *n, A, *lda, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void csytrf_(char* uplo, INT* n, c64* A, INT* lda, INT* ipiv, c64* work, INT* lwork, INT* info) {

@@ -847,7 +847,11 @@ void dlagv2_(f64* A, INT* lda, f64* B, INT* ldb, f64* alphar, f64* alphai, f64* 
 }
 
 void dlahqr_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, f64* H, INT* ldh, f64* wr, f64* wi, INT* iloz, INT* ihiz, f64* Z, INT* ldz, INT* info) {
-    dlahqr(*wantt, *wantz, *n, *ilo, *ihi, H, *ldh, wr, wi, *iloz, *ihiz, Z, *ldz, info);
+    INT _ilo = *ilo - 1;
+    INT _ihi = *ihi - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    dlahqr(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, wr, wi, _iloz, _ihiz, Z, *ldz, info);
 }
 
 void dlahr2_(INT* n, INT* k, INT* nb, f64* A, INT* lda, f64* tau, f64* T, INT* ldt, f64* Y, INT* ldy) {
@@ -925,10 +929,12 @@ void dlaqp2_(INT* m, INT* n, INT* offset, f64* A, INT* lda, INT* jpvt, f64* tau,
 
 void dlaqp2rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* kmax, f64* abstol, f64* reltol, INT* kp1, f64* maxc2nrm, f64* A, INT* lda, INT* K, f64* maxc2nrmk, f64* relmaxc2nrmk, INT* jpiv, f64* tau, f64* vn1, f64* vn2, f64* work, INT* info) {
     dlaqp2rk(*m, *n, *nrhs, *ioffset, *kmax, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, K, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, work, info);
+    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
 }
 
 void dlaqp3rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* nb, f64* abstol, f64* reltol, INT* kp1, f64* maxc2nrm, f64* A, INT* lda, INT* done, INT* KB, f64* maxc2nrmk, f64* relmaxc2nrmk, INT* jpiv, f64* tau, f64* vn1, f64* vn2, f64* auxv, f64* F, INT* ldf, INT* iwork, INT* info) {
     dlaqp3rk(*m, *n, *nrhs, *ioffset, nb, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, done, KB, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, auxv, F, *ldf, iwork, info);
+    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
 }
 
 void dlaqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, f64* A, INT* lda, INT* jpvt, f64* tau, f64* vn1, f64* vn2, f64* auxv, f64* F, INT* ldf) {
@@ -939,7 +945,9 @@ void dlaqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, f64* A, INT* lda, IN
 void dlaqr0_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, f64* H, INT* ldh, f64* wr, f64* wi, INT* iloz, INT* ihiz, f64* Z, INT* ldz, f64* work, INT* lwork, INT* info) {
     INT _ilo = *ilo - 1;
     INT _ihi = *ihi - 1;
-    dlaqr0(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, wr, wi, *iloz, *ihiz, Z, *ldz, work, *lwork, info);
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    dlaqr0(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, wr, wi, _iloz, _ihiz, Z, *ldz, work, *lwork, info);
 }
 
 void dlaqr1_(INT* n, f64* H, INT* ldh, f64* sr1, f64* si1, f64* sr2, f64* si2, f64* v) {
@@ -947,21 +955,35 @@ void dlaqr1_(INT* n, f64* H, INT* ldh, f64* sr1, f64* si1, f64* sr2, f64* si2, f
 }
 
 void dlaqr2_(INT* wantt, INT* wantz, INT* n, INT* ktop, INT* kbot, INT* nw, f64* H, INT* ldh, INT* iloz, INT* ihiz, f64* Z, INT* ldz, INT* ns, INT* nd, f64* sr, f64* si, f64* V, INT* ldv, INT* nh, f64* T, INT* ldt, INT* nv, f64* WV, INT* ldwv, f64* work, INT* lwork) {
-    dlaqr2(*wantt, *wantz, *n, *ktop, *kbot, *nw, H, *ldh, *iloz, *ihiz, Z, *ldz, ns, nd, sr, si, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    dlaqr2(*wantt, *wantz, *n, _ktop, _kbot, *nw, H, *ldh, _iloz, _ihiz, Z, *ldz, ns, nd, sr, si, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
 }
 
 void dlaqr3_(INT* wantt, INT* wantz, INT* n, INT* ktop, INT* kbot, INT* nw, f64* H, INT* ldh, INT* iloz, INT* ihiz, f64* Z, INT* ldz, INT* ns, INT* nd, f64* sr, f64* si, f64* V, INT* ldv, INT* nh, f64* T, INT* ldt, INT* nv, f64* WV, INT* ldwv, f64* work, INT* lwork) {
-    dlaqr3(*wantt, *wantz, *n, *ktop, *kbot, *nw, H, *ldh, *iloz, *ihiz, Z, *ldz, ns, nd, sr, si, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    dlaqr3(*wantt, *wantz, *n, _ktop, _kbot, *nw, H, *ldh, _iloz, _ihiz, Z, *ldz, ns, nd, sr, si, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
 }
 
 void dlaqr4_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, f64* H, INT* ldh, f64* wr, f64* wi, INT* iloz, INT* ihiz, f64* Z, INT* ldz, f64* work, INT* lwork, INT* info) {
     INT _ilo = *ilo - 1;
     INT _ihi = *ihi - 1;
-    dlaqr4(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, wr, wi, *iloz, *ihiz, Z, *ldz, work, *lwork, info);
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    dlaqr4(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, wr, wi, _iloz, _ihiz, Z, *ldz, work, *lwork, info);
 }
 
 void dlaqr5_(INT* wantt, INT* wantz, INT* kacc22, INT* n, INT* ktop, INT* kbot, INT* nshfts, f64* sr, f64* si, f64* H, INT* ldh, INT* iloz, INT* ihiz, f64* Z, INT* ldz, f64* V, INT* ldv, f64* U, INT* ldu, INT* nv, f64* WV, INT* ldwv, INT* nh, f64* WH, INT* ldwh) {
-    dlaqr5(*wantt, *wantz, *kacc22, *n, *ktop, *kbot, *nshfts, sr, si, H, *ldh, *iloz, *ihiz, Z, *ldz, V, *ldv, U, *ldu, *nv, WV, *ldwv, *nh, WH, *ldwh);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    dlaqr5(*wantt, *wantz, *kacc22, *n, _ktop, _kbot, *nshfts, sr, si, H, *ldh, _iloz, _ihiz, Z, *ldz, V, *ldv, U, *ldu, *nv, WV, *ldwv, *nh, WH, *ldwh);
 }
 
 void dlaqsb_(char* uplo, INT* n, INT* kd, f64* AB, INT* ldab, f64* S, f64* scond, f64* amax, char* equed) {
@@ -991,7 +1013,11 @@ void dlaqz1_(f64* A, INT* lda, f64* B, INT* ldb, f64* sr1, f64* sr2, f64* si, f6
 }
 
 void dlaqz2_(INT* ilq, INT* ilz, INT* k, INT* istartm, INT* istopm, INT* ihi, f64* A, INT* lda, f64* B, INT* ldb, INT* nq, INT* qstart, f64* Q, INT* ldq, INT* nz, INT* zstart, f64* Z, INT* ldz) {
-    dlaqz2(*ilq, *ilz, *k, *istartm, *istopm, *ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
+    INT _k = *k - 1;
+    INT _istartm = *istartm - 1;
+    INT _istopm = *istopm - 1;
+    INT _ihi = *ihi - 1;
+    dlaqz2(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
 }
 
 void dlaqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nw, f64* A, INT* lda, f64* B, INT* ldb, f64* Q, INT* ldq, f64* Z, INT* ldz, INT* ns, INT* nd, f64* alphar, f64* alphai, f64* beta, f64* QC, INT* ldqc, f64* ZC, INT* ldzc, f64* work, INT* lwork, INT* rec, INT* info) {
@@ -1007,7 +1033,10 @@ void dlaqz4_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* 
 }
 
 void dlar1v_(INT* n, INT* b1, INT* bn, f64* lambda, f64* D, f64* L, f64* LD, f64* LLD, f64* pivmin, f64* gaptol, f64* Z, INT* wantnc, INT* negcnt, f64* ztz, f64* mingma, INT* r, INT* isuppz, f64* nrminv, f64* resid, f64* rqcorr, f64* work) {
-    dlar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, r, isuppz, nrminv, resid, rqcorr, work);
+    INT _r = *r - 1;
+    dlar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
+    *r = _r + 1;
+    if (isuppz) { INT _sz = 2; for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
 }
 
 void dlar2v_(INT* n, f64* X, f64* Y, f64* Z, INT* incx, f64* C, f64* S, INT* incc) {
@@ -1064,6 +1093,7 @@ void dlarnv_(INT* idist, INT* iseed, INT* n, f64* X) {
 
 void dlarra_(INT* n, f64* D, f64* E, f64* E2, f64* spltol, f64* tnrm, INT* nsplit, INT* isplit, INT* info) {
     dlarra(*n, D, E, E2, *spltol, *tnrm, nsplit, isplit, info);
+    if (isplit) { INT _sz = *nsplit; for (INT _i = 0; _i < _sz; _i++) isplit[_i]++; }
 }
 
 void dlarrb_(INT* n, f64* D, f64* lld, INT* ifirst, INT* ilast, f64* rtol1, f64* rtol2, INT* offset, f64* W, f64* wgap, f64* werr, f64* work, INT* iwork, f64* pivmin, f64* spdiam, INT* twist, INT* info) {
@@ -2171,10 +2201,12 @@ void dsytd2_(char* uplo, INT* n, f64* A, INT* lda, f64* D, f64* E, f64* tau, INT
 
 void dsytf2_rk_(char* uplo, INT* n, f64* A, INT* lda, f64* E, INT* ipiv, INT* info) {
     dsytf2_rk(uplo, *n, A, *lda, E, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void dsytf2_rook_(char* uplo, INT* n, f64* A, INT* lda, INT* ipiv, INT* info) {
     dsytf2_rook(uplo, *n, A, *lda, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void dsytf2_(char* uplo, INT* n, f64* A, INT* lda, INT* ipiv, INT* info) {

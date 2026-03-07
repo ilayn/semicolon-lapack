@@ -45,6 +45,7 @@ Contents
    installing
    dense-details
    conventions
+   testing-scipy-numpy
 
 .. toctree::
    :maxdepth: 2
