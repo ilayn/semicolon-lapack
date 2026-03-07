@@ -625,6 +625,12 @@ L270:
         }
 
         /* ZHPEVX('V','A') — zdrvst.f line 1044 */
+
+        /* DEBUG: save packed matrix before zhpevx destroys it */
+        INT npack_dbg = n * (n + 1) / 2;
+        c128 AP_save_dbg[256];
+        if (n <= 20) memcpy(AP_save_dbg, work, npack_dbg * sizeof(c128));
+
         zhpevx("V", "A", uplo, n, work, vl, vu, il, iu,
                abstol, &m, WA1, Z, ldu, V, rwork, iwork,
                iwork + 5 * n, &iinfo);
@@ -638,6 +644,31 @@ L270:
 
         zhet21(1, uplo, n, 0, A, ldu, WA1, D2, Z, ldu, V,
                ldu, TAU, work, rwork, ws->result + ntest - 1);
+
+        /* DEBUG: dump data for failing case */
+        if (ws->result[ntest - 1] > THRESH && n <= 20) {
+            fprintf(stderr, "DEBUG DUMP: n=%d jtype=%d uplo=%s ntest=%d resid=%.15e\n",
+                    n, jtype, uplo, ntest, ws->result[ntest - 1]);
+            fprintf(stderr, "  abstol=%.15e vl=%.15e vu=%.15e il=%d iu=%d m=%d\n",
+                    abstol, vl, vu, il, iu, m);
+            fprintf(stderr, "  AP_packed[%d]:\n", npack_dbg);
+            for (INT kk = 0; kk < npack_dbg; kk++)
+                fprintf(stderr, "    AP[%d] = (%.17e, %.17e)\n",
+                        kk, creal(AP_save_dbg[kk]), cimag(AP_save_dbg[kk]));
+            fprintf(stderr, "  eigenvalues W[%d]:\n", m);
+            for (INT kk = 0; kk < m; kk++)
+                fprintf(stderr, "    W[%d] = %.17e\n", kk, WA1[kk]);
+            fprintf(stderr, "  eigenvectors Z (%dx%d):\n", n, m);
+            for (INT ii = 0; ii < n; ii++)
+                for (INT jj = 0; jj < m; jj++)
+                    fprintf(stderr, "    Z[%d,%d] = (%.17e, %.17e)\n",
+                            ii, jj, creal(Z[ii + jj * ldu]), cimag(Z[ii + jj * ldu]));
+            fprintf(stderr, "  original A (%dx%d):\n", n, n);
+            for (INT ii = 0; ii < n; ii++)
+                for (INT jj = 0; jj < n; jj++)
+                    fprintf(stderr, "    A[%d,%d] = (%.17e, %.17e)\n",
+                            ii, jj, creal(A[ii + jj * ldu]), cimag(A[ii + jj * ldu]));
+        }
 
         ntest = ntest + 2;
 
