@@ -106,6 +106,7 @@ INDEX_RULES = {
     'syconvf_rook': [('in_pivot', 'ipiv', '*n')],
 
     # --- Symmetric RK (bounded Bunch-Kaufman) ---
+    'sytf2_rk':   [('out_pivot', 'ipiv', '*n')],
     'sytrf_rk':   [('out_pivot', 'ipiv', '*n')],
     'sytrs_3':    [('in_pivot',  'ipiv', '*n')],
     'sytri_3':    [('in_pivot',  'ipiv', '*n')],
@@ -114,6 +115,7 @@ INDEX_RULES = {
     'sysv_rk':    [('out_pivot', 'ipiv', '*n')],
 
     # --- Symmetric Rook ---
+    'sytf2_rook': [('out_pivot', 'ipiv', '*n')],
     'sytrf_rook': [('out_pivot', 'ipiv', '*n')],
     'sytrs_rook': [('in_pivot',  'ipiv', '*n')],
     'sytri_rook': [('in_pivot',  'ipiv', '*n')],
@@ -143,6 +145,7 @@ INDEX_RULES = {
     'hesvx':      [('io_pivot',  'ipiv', '*n', 'fact', 'F')],
     'herfs':      [('in_pivot',  'ipiv', '*n')],
 
+    'hetf2_rk':   [('out_pivot', 'ipiv', '*n')],
     'hetrf_rk':   [('out_pivot', 'ipiv', '*n')],
     'hetrs_3':    [('in_pivot',  'ipiv', '*n')],
     'hetri_3':    [('in_pivot',  'ipiv', '*n')],
@@ -150,6 +153,7 @@ INDEX_RULES = {
     'hecon_3':    [('in_pivot',  'ipiv', '*n')],
     'hesv_rk':    [('out_pivot', 'ipiv', '*n')],
 
+    'hetf2_rook': [('out_pivot', 'ipiv', '*n')],
     'hetrf_rook': [('out_pivot', 'ipiv', '*n')],
     'hetrs_rook': [('in_pivot',  'ipiv', '*n')],
     'hetri_rook': [('in_pivot',  'ipiv', '*n')],
@@ -198,6 +202,8 @@ INDEX_RULES = {
     'gelsy':   [('in_pivot',  'jpvt', '*n')],
     'laqp2':   [('out_pivot', 'jpvt', '*n')],
     'laqps':   [('out_pivot', 'jpvt', '*n')],
+    'laqp2rk': [('out_pivot', 'jpiv', '*n')],
+    'laqp3rk': [('out_pivot', 'jpiv', '*n')],
 
     # --- latdf ---
     'latdf':  [('in_pivot', 'ipiv', '*n')],
@@ -223,11 +229,33 @@ INDEX_RULES = {
     'gghrd':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
     'gghd3':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
     'hgeqz':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
-    'laqr0':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
-    'laqr4':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
+    'lahqr':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi'),
+               ('in_scalar_idx',  'iloz'), ('in_scalar_idx', 'ihiz')],
+    'laqr0':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi'),
+               ('in_scalar_idx',  'iloz'), ('in_scalar_idx', 'ihiz')],
+    'laqr2':  [('in_scalar_idx',  'ktop'), ('in_scalar_idx', 'kbot'),
+               ('in_scalar_idx',  'iloz'), ('in_scalar_idx', 'ihiz')],
+    'laqr3':  [('in_scalar_idx',  'ktop'), ('in_scalar_idx', 'kbot'),
+               ('in_scalar_idx',  'iloz'), ('in_scalar_idx', 'ihiz')],
+    'laqr4':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi'),
+               ('in_scalar_idx',  'iloz'), ('in_scalar_idx', 'ihiz')],
+    'laqr5':  [('in_scalar_idx',  'ktop'), ('in_scalar_idx', 'kbot'),
+               ('in_scalar_idx',  'iloz'), ('in_scalar_idx', 'ihiz')],
     'laqz0':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
     'laqz3':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
     'laqz4':  [('in_scalar_idx',  'ilo'), ('in_scalar_idx',  'ihi')],
+
+    # laqz1/laqz2: real and complex have different signatures, use full-name overrides
+    'dlaqz2': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+    'slaqz2': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+    'zlaqz2': [('in_scalar_idx', 'ilo'), ('in_scalar_idx', 'ihi')],
+    'claqz2': [('in_scalar_idx', 'ilo'), ('in_scalar_idx', 'ihi')],
+    'zlaqz1': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
+    'claqz1': [('in_scalar_idx', 'k'), ('in_scalar_idx', 'istartm'),
+               ('in_scalar_idx', 'istopm'), ('in_scalar_idx', 'ihi')],
 
     'geevx':  [('out_scalar_idx', 'ilo'), ('out_scalar_idx', 'ihi')],
     'ggevx':  [('out_scalar_idx', 'ilo'), ('out_scalar_idx', 'ihi')],
@@ -291,6 +319,8 @@ INDEX_RULES = {
                ('out_idx_arr', 'ifail', '*m')],
     'hbgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('out_idx_arr', 'ifail', '*m')],
+    'hegvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
+               ('out_idx_arr', 'ifail', '*m')],
     'spgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('out_idx_arr', 'ifail', '*m')],
     'hpgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
@@ -312,6 +342,11 @@ INDEX_RULES = {
                ('in_idx_arr', 'iblock', '*m'),
                ('in_idx_arr', 'indexw', '*m'),
                ('out_idx_arr', 'isuppz', '2 * (*m)')],
+
+    # --- Internal eigenvalue helpers ---
+    'lar1v':  [('io_scalar_idx', 'r'),
+               ('out_idx_arr', 'isuppz', '2')],
+    'larra':  [('out_idx_arr', 'isplit', '*nsplit')],
 
     # --- Eigenvector failure arrays ---
     'hsein':  [('out_idx_arr', 'ifaill', '*mm'),

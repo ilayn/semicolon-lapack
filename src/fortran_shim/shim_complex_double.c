@@ -870,7 +870,12 @@ void zhegvd_(INT* itype, char* jobz, char* uplo, INT* n, c128* A, INT* lda, c128
 }
 
 void zhegvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, c128* A, INT* lda, c128* B, INT* ldb, f64* vl, f64* vu, INT* il, INT* iu, f64* abstol, INT* m, f64* W, c128* Z, INT* ldz, c128* work, INT* lwork, f64* rwork, INT* iwork, INT* ifail, INT* info) {
-    zhegvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, *il, *iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
+    INT _il = *il - 1;
+    INT _iu = *iu - 1;
+    zhegvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
+    if (*lwork != -1) {
+        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    }
 }
 
 void zherfs_(char* uplo, INT* n, INT* nrhs, c128* A, INT* lda, c128* AF, INT* ldaf, INT* ipiv, c128* B, INT* ldb, c128* X, INT* ldx, f64* ferr, f64* berr, c128* work, f64* rwork, INT* info) {
@@ -967,10 +972,12 @@ void zhetf2_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, INT* info) {
 
 void zhetf2_rk_(char* uplo, INT* n, c128* A, INT* lda, c128* E, INT* ipiv, INT* info) {
     zhetf2_rk(uplo, *n, A, *lda, E, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void zhetf2_rook_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, INT* info) {
     zhetf2_rook(uplo, *n, A, *lda, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void zhetrf_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, c128* work, INT* lwork, INT* info) {
@@ -1395,7 +1402,11 @@ void zlahr2_(INT* n, INT* k, INT* nb, c128* A, INT* lda, c128* tau, c128* T, INT
 }
 
 void zlahqr_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c128* H, INT* ldh, c128* W, INT* iloz, INT* ihiz, c128* Z, INT* ldz, INT* info) {
-    zlahqr(*wantt, *wantz, *n, *ilo, *ihi, H, *ldh, W, *iloz, *ihiz, Z, *ldz, info);
+    INT _ilo = *ilo - 1;
+    INT _ihi = *ihi - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    zlahqr(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, _iloz, _ihiz, Z, *ldz, info);
 }
 
 void zlaic1_(INT* job, INT* j, c128* x, f64* sest, c128* w, c128* gamma_, f64* sestpr, c128* s, c128* c) {
@@ -1449,10 +1460,12 @@ void zlaqp2_(INT* m, INT* n, INT* offset, c128* A, INT* lda, INT* jpvt, c128* ta
 
 void zlaqp2rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* kmax, f64* abstol, f64* reltol, INT* kp1, f64* maxc2nrm, c128* A, INT* lda, INT* K, f64* maxc2nrmk, f64* relmaxc2nrmk, INT* jpiv, c128* tau, f64* vn1, f64* vn2, c128* work, INT* info) {
     zlaqp2rk(*m, *n, *nrhs, *ioffset, *kmax, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, K, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, work, info);
+    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
 }
 
 void zlaqp3rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* nb, f64* abstol, f64* reltol, INT* kp1, f64* maxc2nrm, c128* A, INT* lda, INT* done, INT* KB, f64* maxc2nrmk, f64* relmaxc2nrmk, INT* jpiv, c128* tau, f64* vn1, f64* vn2, c128* auxv, c128* F, INT* ldf, INT* iwork, INT* info) {
     zlaqp3rk(*m, *n, *nrhs, *ioffset, nb, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, done, KB, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, auxv, F, *ldf, iwork, info);
+    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
 }
 
 void zlaqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, c128* A, INT* lda, INT* jpvt, c128* tau, f64* vn1, f64* vn2, c128* auxv, c128* F, INT* ldf) {
@@ -1463,7 +1476,9 @@ void zlaqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, c128* A, INT* lda, I
 void zlaqr0_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c128* H, INT* ldh, c128* W, INT* iloz, INT* ihiz, c128* Z, INT* ldz, c128* work, INT* lwork, INT* info) {
     INT _ilo = *ilo - 1;
     INT _ihi = *ihi - 1;
-    zlaqr0(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, *iloz, *ihiz, Z, *ldz, work, *lwork, info);
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    zlaqr0(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, _iloz, _ihiz, Z, *ldz, work, *lwork, info);
 }
 
 void zlaqr1_(INT* n, c128* H, INT* ldh, c128* s1, c128* s2, c128* v) {
@@ -1471,21 +1486,35 @@ void zlaqr1_(INT* n, c128* H, INT* ldh, c128* s1, c128* s2, c128* v) {
 }
 
 void zlaqr2_(INT* wantt, INT* wantz, INT* n, INT* ktop, INT* kbot, INT* nw, c128* H, INT* ldh, INT* iloz, INT* ihiz, c128* Z, INT* ldz, INT* ns, INT* nd, c128* SH, c128* V, INT* ldv, INT* nh, c128* T, INT* ldt, INT* nv, c128* WV, INT* ldwv, c128* work, INT* lwork) {
-    zlaqr2(*wantt, *wantz, *n, *ktop, *kbot, *nw, H, *ldh, *iloz, *ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    zlaqr2(*wantt, *wantz, *n, _ktop, _kbot, *nw, H, *ldh, _iloz, _ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
 }
 
 void zlaqr3_(INT* wantt, INT* wantz, INT* n, INT* ktop, INT* kbot, INT* nw, c128* H, INT* ldh, INT* iloz, INT* ihiz, c128* Z, INT* ldz, INT* ns, INT* nd, c128* SH, c128* V, INT* ldv, INT* nh, c128* T, INT* ldt, INT* nv, c128* WV, INT* ldwv, c128* work, INT* lwork) {
-    zlaqr3(*wantt, *wantz, *n, *ktop, *kbot, *nw, H, *ldh, *iloz, *ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    zlaqr3(*wantt, *wantz, *n, _ktop, _kbot, *nw, H, *ldh, _iloz, _ihiz, Z, *ldz, ns, nd, SH, V, *ldv, *nh, T, *ldt, *nv, WV, *ldwv, work, *lwork);
 }
 
 void zlaqr4_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, c128* H, INT* ldh, c128* W, INT* iloz, INT* ihiz, c128* Z, INT* ldz, c128* work, INT* lwork, INT* info) {
     INT _ilo = *ilo - 1;
     INT _ihi = *ihi - 1;
-    zlaqr4(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, *iloz, *ihiz, Z, *ldz, work, *lwork, info);
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    zlaqr4(*wantt, *wantz, *n, _ilo, _ihi, H, *ldh, W, _iloz, _ihiz, Z, *ldz, work, *lwork, info);
 }
 
 void zlaqr5_(INT* wantt, INT* wantz, INT* kacc22, INT* n, INT* ktop, INT* kbot, INT* nshfts, c128* S, c128* H, INT* ldh, INT* iloz, INT* ihiz, c128* Z, INT* ldz, c128* V, INT* ldv, c128* U, INT* ldu, INT* nv, c128* WV, INT* ldwv, INT* nh, c128* WH, INT* ldwh) {
-    zlaqr5(*wantt, *wantz, *kacc22, *n, *ktop, *kbot, *nshfts, S, H, *ldh, *iloz, *ihiz, Z, *ldz, V, *ldv, U, *ldu, *nv, WV, *ldwv, *nh, WH, *ldwh);
+    INT _ktop = *ktop - 1;
+    INT _kbot = *kbot - 1;
+    INT _iloz = *iloz - 1;
+    INT _ihiz = *ihiz - 1;
+    zlaqr5(*wantt, *wantz, *kacc22, *n, _ktop, _kbot, *nshfts, S, H, *ldh, _iloz, _ihiz, Z, *ldz, V, *ldv, U, *ldu, *nv, WV, *ldwv, *nh, WH, *ldwh);
 }
 
 void zlaqsb_(char* uplo, INT* n, INT* kd, c128* AB, INT* ldab, f64* S, f64* scond, f64* amax, char* equed) {
@@ -1507,11 +1536,17 @@ void zlaqz0_(char* wants, char* wantq, char* wantz, INT* n, INT* ilo, INT* ihi, 
 }
 
 void zlaqz1_(INT* ilq, INT* ilz, INT* k, INT* istartm, INT* istopm, INT* ihi, c128* A, INT* lda, c128* B, INT* ldb, INT* nq, INT* qstart, c128* Q, INT* ldq, INT* nz, INT* zstart, c128* Z, INT* ldz) {
-    zlaqz1(*ilq, *ilz, *k, *istartm, *istopm, *ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
+    INT _k = *k - 1;
+    INT _istartm = *istartm - 1;
+    INT _istopm = *istopm - 1;
+    INT _ihi = *ihi - 1;
+    zlaqz1(*ilq, *ilz, _k, _istartm, _istopm, _ihi, A, *lda, B, *ldb, *nq, *qstart, Q, *ldq, *nz, *zstart, Z, *ldz);
 }
 
 void zlaqz2_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nw, c128* A, INT* lda, c128* B, INT* ldb, c128* Q, INT* ldq, c128* Z, INT* ldz, INT* ns, INT* nd, c128* alpha, c128* beta, c128* QC, INT* ldqc, c128* ZC, INT* ldzc, c128* work, INT* lwork, f64* rwork, INT* rec, INT* info) {
-    zlaqz2(*ilschur, *ilq, *ilz, *n, *ilo, *ihi, *nw, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, ns, nd, alpha, beta, QC, *ldqc, ZC, *ldzc, work, *lwork, rwork, *rec, info);
+    INT _ilo = *ilo - 1;
+    INT _ihi = *ihi - 1;
+    zlaqz2(*ilschur, *ilq, *ilz, *n, _ilo, _ihi, *nw, A, *lda, B, *ldb, Q, *ldq, Z, *ldz, ns, nd, alpha, beta, QC, *ldqc, ZC, *ldzc, work, *lwork, rwork, *rec, info);
 }
 
 void zlaqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* nshifts, INT* nblock_desired, c128* alpha, c128* beta, c128* A, INT* lda, c128* B, INT* ldb, c128* Q, INT* ldq, c128* Z, INT* ldz, c128* QC, INT* ldqc, c128* ZC, INT* ldzc, c128* work, INT* lwork, INT* info) {
@@ -1521,7 +1556,10 @@ void zlaqz3_(INT* ilschur, INT* ilq, INT* ilz, INT* n, INT* ilo, INT* ihi, INT* 
 }
 
 void zlar1v_(INT* n, INT* b1, INT* bn, f64* lambda, f64* D, f64* L, f64* LD, f64* LLD, f64* pivmin, f64* gaptol, c128* Z, INT* wantnc, INT* negcnt, f64* ztz, f64* mingma, INT* r, INT* isuppz, f64* nrminv, f64* resid, f64* rqcorr, f64* work) {
-    zlar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, r, isuppz, nrminv, resid, rqcorr, work);
+    INT _r = *r - 1;
+    zlar1v(*n, *b1, *bn, *lambda, D, L, LD, LLD, *pivmin, *gaptol, Z, *wantnc, negcnt, ztz, mingma, &_r, isuppz, nrminv, resid, rqcorr, work);
+    *r = _r + 1;
+    if (isuppz) { INT _sz = 2; for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
 }
 
 void zlar2v_(INT* n, c128* X, c128* Y, c128* Z, INT* incx, f64* C, c128* S, INT* incc) {
@@ -2211,10 +2249,12 @@ void zsytf2_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, INT* info) {
 
 void zsytf2_rk_(char* uplo, INT* n, c128* A, INT* lda, c128* E, INT* ipiv, INT* info) {
     zsytf2_rk(uplo, *n, A, *lda, E, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void zsytf2_rook_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, INT* info) {
     zsytf2_rook(uplo, *n, A, *lda, ipiv, info);
+    if (ipiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (ipiv[_i] >= 0) ipiv[_i]++; } }
 }
 
 void zsytrf_(char* uplo, INT* n, c128* A, INT* lda, INT* ipiv, c128* work, INT* lwork, INT* info) {
