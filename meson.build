@@ -36,14 +36,32 @@ extra_warnings = cc.get_supported_arguments([
   '-Winline',
   '-Wdisabled-optimization',
   '-Wstack-protector',
-  '-Wlogical-op',
   '-Wnull-dereference',
-  '-Wjump-misses-init',
-  '-Walloc-zero',
-  '-Wduplicated-cond',
-  '-Wduplicated-branches',
 ])
+# GCC-only warnings: Intel icx (intel-llvm / intel-llvm-cl) accepts unknown
+# -W flags with a warning (not error), so get_supported_arguments() passes
+# them through.  Skip these flags for icx to avoid warning spam.
+if cc.get_id() != 'intel-llvm' and cc.get_id() != 'intel-llvm-cl'
+  extra_warnings += cc.get_supported_arguments([
+    '-Wlogical-op',
+    '-Wjump-misses-init',
+    '-Walloc-zero',
+    '-Wduplicated-cond',
+    '-Wduplicated-branches',
+  ])
+else
+  # icx warns that complex division can't use extended-precision intermediates
+  # on the target. GCC/Clang do the same thing silently. Suppress the noise.
+  extra_warnings += cc.get_supported_arguments([
+    '-Wno-higher-precision-for-complex-division',
+  ])
+endif
 add_project_arguments(extra_warnings, language: 'c')
+
+# Silence MSVC _CRT_SECURE_NO_WARNINGS (strncpy, sprintf deprecation warnings)
+if cc.get_id() == 'intel-llvm-cl' or cc.get_id() == 'msvc'
+  add_project_arguments('-D_CRT_SECURE_NO_WARNINGS', language: 'c')
+endif
 
 # Complex arithmetic: -fcx-limited-range drops NaN/Inf recovery from complex
 # mult and div, inlining 4 FP ops instead of calling __muldc3/__mulsc3.

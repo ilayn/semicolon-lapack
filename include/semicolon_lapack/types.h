@@ -8,7 +8,7 @@ typedef int64_t         i64;
 typedef float           f32;
 typedef double          f64;
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(__INTEL_LLVM_COMPILER)
     #include <complex.h>
     typedef _Fcomplex       c64;
     typedef _Dcomplex       c128;
