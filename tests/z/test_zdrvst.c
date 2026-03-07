@@ -645,10 +645,12 @@ L270:
         zhet21(1, uplo, n, 0, A, ldu, WA1, D2, Z, ldu, V,
                ldu, TAU, work, rwork, ws->result + ntest - 1);
 
-        /* DEBUG: dump data for failing case */
-        if (ws->result[ntest - 1] > THRESH && n <= 20) {
-            fprintf(stderr, "DEBUG DUMP: n=%d jtype=%d uplo=%s ntest=%d resid=%.15e\n",
-                    n, jtype, uplo, ntest, ws->result[ntest - 1]);
+        /* DEBUG: always dump for n=3 jtype=10 */
+        if (n == 3 && jtype == 10) {
+            fprintf(stderr, "DEBUG DUMP: n=%d jtype=%d uplo=%s iuplo=%d ntest=%d\n",
+                    n, jtype, uplo, iuplo, ntest);
+            fprintf(stderr, "  result[ntest-1]=%.15e result[ntest]=%.15e\n",
+                    ws->result[ntest - 1], ws->result[ntest]);
             fprintf(stderr, "  abstol=%.15e vl=%.15e vu=%.15e il=%d iu=%d m=%d\n",
                     abstol, vl, vu, il, iu, m);
             fprintf(stderr, "  AP_packed[%d]:\n", npack_dbg);
