@@ -2,6 +2,10 @@
  * @file zsbmv.c
  * @brief ZSBMV performs the matrix-vector operation y := alpha*A*x + beta*y,
  *        where A is a complex symmetric band matrix.
+ *
+ * ZSBMV is not part of the standard BLAS but is used by LAPACK's test suite.
+ * OpenBLAS provides its own version as a BLAS extension, which causes symbol
+ * clashes when linking: https://github.com/Reference-LAPACK/lapack/issues/265
  */
 
 #include "verify.h"
