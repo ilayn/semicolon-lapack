@@ -45,7 +45,7 @@ void slacpy(
         }
     } else if (uplo[0] == 'L' || uplo[0] == 'l') {
         // Copy lower triangular part
-        for (j = 0; j < n; j++) {
+        for (j = 0; j < (m < n ? m : n); j++) {
             for (i = j; i < m; i++) {
                 B[i + j * ldb] = A[i + j * lda];
             }

@@ -79,7 +79,7 @@ f64 zlantr(
                     }
                 }
             } else {
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < minmn; j++) {
                     for (i = j + 1; i < m; i++) {
                         temp = cabs(A[i + j * lda]);
                         if (value < temp || isnan(temp)) {
@@ -101,7 +101,7 @@ f64 zlantr(
                     }
                 }
             } else {
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < minmn; j++) {
                     for (i = j; i < m; i++) {
                         temp = cabs(A[i + j * lda]);
                         if (value < temp || isnan(temp)) {
@@ -133,7 +133,7 @@ f64 zlantr(
                 }
             }
         } else {
-            for (j = 0; j < n; j++) {
+            for (j = 0; j < minmn; j++) {
                 if (udiag) {
                     sum = ONE;
                     for (i = j + 1; i < m; i++) {
@@ -183,7 +183,7 @@ f64 zlantr(
                 for (i = n; i < m; i++) {
                     work[i] = ZERO;
                 }
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < minmn; j++) {
                     for (i = j + 1; i < m; i++) {
                         work[i] += cabs(A[i + j * lda]);
                     }
@@ -192,7 +192,7 @@ f64 zlantr(
                 for (i = 0; i < m; i++) {
                     work[i] = ZERO;
                 }
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < minmn; j++) {
                     for (i = j; i < m; i++) {
                         work[i] += cabs(A[i + j * lda]);
                     }
@@ -233,7 +233,7 @@ f64 zlantr(
             if (udiag) {
                 scale = ONE;
                 sum = (f64)minmn;  /* count of unit diagonal elements */
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < minmn; j++) {
                     INT col_len = m - j - 1;
                     if (col_len > 0) {
                         INT start_idx = (j + 1 < m) ? j + 1 : m;
@@ -243,7 +243,7 @@ f64 zlantr(
             } else {
                 scale = ZERO;
                 sum = ONE;
-                for (j = 0; j < n; j++) {
+                for (j = 0; j < minmn; j++) {
                     INT col_len = m - j;
                     if (col_len > 0) {
                         zlassq(col_len, &A[j + j * lda], 1, &scale, &sum);
