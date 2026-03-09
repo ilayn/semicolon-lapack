@@ -43,9 +43,9 @@ Contents
 
    building
    installing
-   dense-details
    conventions
    testing-scipy-numpy
+   contributing
 
 .. toctree::
    :maxdepth: 2

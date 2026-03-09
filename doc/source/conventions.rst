@@ -127,3 +127,61 @@ denotes. These error codes are left **1-indexed** because ``0`` encodes success.
 - ``info = 0``: Successful exit
 - ``info < 0``: The ``(-info)``-th argument had an illegal value
 - ``info > 0``: Algorithm-specific error (e.g., singular matrix)
+
+
+Differences from Fortran LAPACK
+-------------------------------
+
+1. **0-based indexing**: All input and output variables, pointers etc. are 0-indexed, e.g.,
+   indices in ``ipiv`` are 0-based, not 1-based.
+
+2. **Simplified ``ilaenv``**: Block sizes are determined from static lookup
+   tables rather than the full ``ilaenv`` dispatch mechanism.
+
+3. **Character parameters**: LAPACK's ``CHARACTER*1`` parameters are
+   ``const char*`` pointers, not ``char`` by value. Call sites typically use
+   string literals:
+
+   .. code-block:: c
+
+      dgetrs("N", n, nrhs, A, lda, ipiv, B, ldb, &info);
+
+   Internally, only the first character is inspected (via ``param[0]``), so
+   the pointer need not be a null-terminated string — any ``const char*``
+   pointing to at least one character is valid.
+
+4. **Column-major storage**: Matrix storage remains column-major, matching
+   Fortran LAPACK and the CBLAS interfaces. Changing this is a major algorithmic
+   rewrite which is a different type of monster.
+
+5. **``const`` and ``restrict`` qualifiers**: Function signatures use ``const``
+   for read-only parameters and ``restrict`` to express non-aliasing guarantees.
+   These are enforced by Fortran's language rules but violations are silent.
+   Making them explicit in C documents the contract, enables compiler
+   optimizations that rely on non-aliasing, and allows compilers to warn
+   when aliased pointers are passed to ``restrict``-qualified parameters.
+
+6. **Pass scalars by value**: One of the more tedious aspects of calling
+   LAPACK from C is that the Fortran ABI requires every argument to be
+   passed by reference — including simple scalars like matrix dimensions
+   and leading dimensions. This forces C callers into one of two
+   unpleasant patterns:
+
+   .. code-block:: c
+
+      // Temporary variables just to take addresses
+      int n = 100, nrhs = 1, lda = 100, ldb = 100, info;
+      dgetrs_("N", &n, &nrhs, A, &lda, ipiv, B, &ldb, &info);
+
+      // Or compound literals, which hurt readability
+      dgetrs_("N", &(int){100}, &(int){1}, A, &(int){100}, ipiv, B, &(int){100}, &(int){0});
+
+   Since we control the API, we pass scalars by value wherever possible:
+
+   .. code-block:: c
+
+      // Clean(er), natural C calling convention
+      dgetrs("N", 100, 1, A, 100, ipiv, B, 100, &info);
+
+   Output parameters like ``info`` remain pointers since the callee
+   must write back through them.

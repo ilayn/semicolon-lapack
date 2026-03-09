@@ -5,7 +5,7 @@ Building
 Requirements
 ------------
 
-- A C11 compiler (GCC, Clang, or llvm-mingw)
+- A C11 compiler (GCC, Clang, or llvm-mingw; MSVC is not supported due to incomplete ``complex.h``)
 - Meson >= 1.1.0
 - A CBLAS implementation (OpenBLAS, BLIS, MKL, or any library that provides ``cblas.h``)
 
@@ -17,8 +17,27 @@ Basic Build
    meson setup builddir
    ninja -C builddir
 
-By default, Meson auto-detects the BLAS library via pkg-config, trying OpenBLAS
-first and then a bunch of standard options.
+Running Tests
+-------------
+
+.. code-block:: bash
+
+   # Run all tests
+   meson test -C builddir
+
+   # Run tests by suite
+   meson test -C builddir --suite lu         # LU factorization family
+   meson test -C builddir --suite tridiag    # Tridiagonal systems
+   meson test -C builddir --suite solve      # Iterative refinement / expert drivers
+
+   # Run a single test
+   meson test -C builddir dgetrf
+
+   # Verbose output
+   meson test -C builddir -v
+
+   # With valgrind
+   meson test -C builddir --wrapper='valgrind --leak-check=full'
 
 
 Selecting a BLAS Vendor
