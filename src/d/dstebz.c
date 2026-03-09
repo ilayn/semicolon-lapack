@@ -426,7 +426,7 @@ void dstebz(const char* range, const char* order, const INT n,
             }
 
             if (irange > 1) {
-                if (gu < wl) {
+                if (gu <= wl) {
                     nwl = nwl + in;
                     nwu = nwu + in;
                     continue;  /* GO TO 70 */
