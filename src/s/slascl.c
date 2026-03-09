@@ -172,7 +172,7 @@ void slascl(const char* type, const INT kl, const INT ku,
 
         } else if (itype == 1) {
             /* Lower triangular matrix */
-            for (j = 0; j < n; j++) {
+            for (j = 0; j < (m < n ? m : n); j++) {
                 for (i = j; i < m; i++) {
                     A[i + j * lda] *= mul;
                 }
