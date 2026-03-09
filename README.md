@@ -37,69 +37,24 @@ There are also intentional, human-made modifications. For example, the LU factor
 
 ## Dependencies
 
-**Build**
-- C11 compiler with `complex.h` support (hence no MSVC, unfortunately)
-- Meson >= 1.1.0
-- A CBLAS implementation (OpenBLAS, MKL, ...)
+A C11 compiler, [Meson](https://mesonbuild.com) >= 1.1.0, and a CBLAS implementation (OpenBLAS, MKL, ...). Tests require [CMocka](https://cmocka.org) >= 2.0. See the [building guide](doc/source/building.rst) for full details including BLAS vendor selection and ILP64 options.
 
-**Test**
-- CMocka >= 2.0
-
-**Docs**
-- Doxygen
-- Python with Sphinx and Breathe packages, to convert doxygen Javadoc comments to Sphinx format
-- PyData Sphinx Theme
-
-## Testing Suite
-
-### Framework
-
-Tests use [CMocka 2.0+](https://cmocka.org/) testing framework with custom assertion macros for LAPACK-style normalized residual checks.
-
-### Building and Running Tests
+## Building
 
 ```bash
-# Configure and build
-meson setup somebuilddir
-ninja -C somebuilddir
-
-# Run all tests
-meson test -C somebuilddir
-
-# Run by suite
-meson test -C somebuilddir --suite lu         # LU factorization tests
-meson test -C somebuilddir --suite tridiag    # Tridiagonal tests
-meson test -C somebuilddir --suite solve      # Solve/refinement tests
-...
-
-# Run a single test
-meson test -C somebuilddir dgetrf
-
-# Verbose output
-meson test -C somebuilddir -v
-
-# With valgrind
-meson test -C somebuilddir --wrapper='valgrind --leak-check=full'
+meson setup builddir
+ninja -C builddir
+meson test -C builddir
 ```
 
-### Documentation
-
-Install Python dependencies (use pip, conda, uv, or whichever package manager you prefer):
+## Documentation
 
 ```bash
 pip install -r doc/requirements.txt
+cd doc && make html
 ```
 
-Build HTML docs (runs Doxygen first, then Sphinx, takes a while) and preview locally:
-
-```bash
-cd doc
-make html  # Creates build/html folder
-cd build/html
-python -m http.server 8080  # start a local server
-```
-
-Then open http://localhost:8080 (or any port of your choice).
+See the [contributing guide](doc/source/contributing.rst) for details on the Doxygen + Sphinx pipeline.
 
 
 ## License
