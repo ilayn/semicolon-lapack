@@ -109,6 +109,16 @@ INT izmax1_(INT* n, c128* ZX, INT* incx) {
     return _ret;
 }
 
+INT ilazlc_(INT* m, INT* n, c128* A, INT* lda) {
+    INT _ret = ilazlc(*m, *n, A, *lda);
+    return _ret;
+}
+
+INT ilazlr_(INT* m, INT* n, c128* A, INT* lda) {
+    INT _ret = ilazlr(*m, *n, A, *lda);
+    return _ret;
+}
+
 void zbbcsd_(char* jobu1, char* jobu2, char* jobv1t, char* jobv2t, char* trans, INT* m, INT* p, INT* q, f64* theta, f64* phi, c128* U1, INT* ldu1, c128* U2, INT* ldu2, c128* V1T, INT* ldv1t, c128* V2T, INT* ldv2t, f64* B11D, f64* B11E, f64* B12D, f64* B12E, f64* B21D, f64* B21E, f64* B22D, f64* B22E, f64* rwork, INT* lrwork, INT* info) {
     zbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, *m, *p, *q, theta, phi, U1, *ldu1, U2, *ldu2, V1T, *ldv1t, V2T, *ldv2t, B11D, B11E, B12D, B12E, B21D, B21E, B22D, B22E, rwork, *lrwork, info);
 }

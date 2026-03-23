@@ -67,8 +67,8 @@ void spbtrf(
     if (n == 0)
         return;
 
-    // Default block size from ilaenv is 64, but limited to NBMAX=32
-    nb = 64;
+    // Block size from tuning table
+    nb = lapack_get_nb("PBTRF");
     if (nb > NBMAX)
         nb = NBMAX;
 

@@ -87,7 +87,7 @@ void cstedc(const char* compz, const INT n,
     f32 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'CSTEDC', ...) - hardcoded per project convention */
-    const INT SMLSIZ = 25;
+    const INT SMLSIZ = LAPACK_SMLSIZ;
 
     /*
      * Test the input parameters.

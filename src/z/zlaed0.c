@@ -55,7 +55,7 @@ void zlaed0(const INT qsiz, const INT n,
     const f64 TWO = 2.0;
 
     /* SMLSIZ from ILAENV(9, ...) */
-    const INT SMLSIZ = 25;
+    const INT SMLSIZ = LAPACK_SMLSIZ;
 
     INT curlvl, curprb, curr, i, igivcl, igivnm,
         igivpt, indxq, iperm, iprmpt, iq, iqptr, iwrem,

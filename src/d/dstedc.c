@@ -85,7 +85,7 @@ void dstedc(const char* compz, const INT n,
     f64 eps, orgnrm, p, tiny;
 
     /* SMLSIZ from ILAENV(9, 'DSTEDC', ...) - hardcoded per project convention */
-    const INT SMLSIZ = 25;
+    const INT SMLSIZ = LAPACK_SMLSIZ;
 
     /*
      * Test the input parameters.

@@ -143,7 +143,7 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
         maxwrk = 1;
         if (minmn > 0) {
             /* Get block size from tuning parameters */
-            INT nb = lapack_get_nb("dgebrd");
+            INT nb = lapack_get_nb("GEBRD");
             if (nb < 1) nb = 32;
 
             if (m >= n) {

@@ -50,6 +50,8 @@ SEMICOLON_API f32  clantb(const char* norm, const char* uplo, const char* diag, 
 SEMICOLON_API f32  clantp(const char* norm, const char* uplo, const char* diag, const INT n, const c64* restrict AP, f32* restrict work);
 SEMICOLON_API f32  clantr(const char* norm, const char* uplo, const char* diag, const INT m, const INT n, const c64* restrict A, const INT lda, f32* restrict work);
 SEMICOLON_API INT  icmax1(const INT n, const c64* restrict ZX, const INT incx);
+SEMICOLON_API INT  ilaclc(const INT m, const INT n, const c64* restrict A, const INT lda);
+SEMICOLON_API INT  ilaclr(const INT m, const INT n, const c64* restrict A, const INT lda);
 SEMICOLON_API void cbbcsd(const char* jobu1, const char* jobu2, const char* jobv1t, const char* jobv2t, const char* trans, const INT m, const INT p, const INT q, f32* restrict theta, f32* restrict phi, c64* restrict U1, const INT ldu1, c64* restrict U2, const INT ldu2, c64* restrict V1T, const INT ldv1t, c64* restrict V2T, const INT ldv2t, f32* restrict B11D, f32* restrict B11E, f32* restrict B12D, f32* restrict B12E, f32* restrict B21D, f32* restrict B21E, f32* restrict B22D, f32* restrict B22E, f32* restrict rwork, const INT lrwork, INT* info);
 SEMICOLON_API void cbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru, const INT ncc, f32* restrict D, f32* restrict E, c64* restrict VT, const INT ldvt, c64* restrict U, const INT ldu, c64* restrict C, const INT ldc, f32* restrict rwork, INT* info);
 SEMICOLON_API void cdrscl(const INT n, const f32 sa, c64* restrict sx, const INT incx);

@@ -84,7 +84,7 @@ void dlaorhr_col_getrfnp(
     if (minmn == 0)
         return;
 
-    nb = 32;
+    nb = lapack_get_nb("LAORH");
 
     if (nb <= 1 || nb >= minmn) {
 

@@ -1072,6 +1072,8 @@ s_sources = files(
 z_sources = files(
   'z/dzsum1.c',
   'z/izmax1.c',
+  'z/ilazlc.c',
+  'z/ilazlr.c',
   'z/zbbcsd.c',
   'z/zbdsqr.c',
   'z/zcgesv.c',
@@ -1556,6 +1558,8 @@ z_sources = files(
 c_sources = files(
   'c/scsum1.c',
   'c/icmax1.c',
+  'c/ilaclc.c',
+  'c/ilaclr.c',
   'c/cbbcsd.c',
   'c/cbdsqr.c',
   'c/cdrscl.c',

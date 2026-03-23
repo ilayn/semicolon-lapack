@@ -96,18 +96,7 @@ void strsyl3(const char* trana, const char* tranb, const INT isgn,
     INT max_mn = (m > n) ? m : n;
     if (max_mn < 1) max_mn = 1;
 
-    /* Use the same block size for all matrices.
-     * From ilaenv.f lines 477-485: for STRSYL (real precision),
-     * NB = MIN(MAX(48, INT(MIN(N1,N2)*16/100)), 240)
-     * with a minimum of 8 from line 250.
-     */
-    {
-        INT min_mn_local = (m < n) ? m : n;
-        INT nb_calc = (min_mn_local * 16) / 100;
-        if (nb_calc < 48) nb_calc = 48;
-        if (nb_calc > 240) nb_calc = 240;
-        nb = (nb_calc > 8) ? nb_calc : 8;
-    }
+    nb = lapack_get_trsyl_nb(m, n, 0);
 
     /* Compute number of blocks in A and B */
     nba = (m + nb - 1) / nb;

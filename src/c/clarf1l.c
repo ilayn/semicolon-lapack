@@ -8,61 +8,6 @@
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
 
-/** @cond */
-static INT ilaclc(
-    const INT m,
-    const INT n,
-    const c64* restrict A,
-    const INT lda)
-{
-    const c64 zero = CMPLXF(0.0f, 0.0f);
-    INT i, j;
-
-    if (n == 0) {
-        return 0;
-    } else if (A[0 + (n - 1) * lda] != zero || A[(m - 1) + (n - 1) * lda] != zero) {
-        return n;
-    } else {
-        for (j = n - 1; j >= 0; j--) {
-            for (i = 0; i < m; i++) {
-                if (A[i + j * lda] != zero) {
-                    return j + 1;
-                }
-            }
-        }
-        return 0;
-    }
-}
-
-static INT ilaclr(
-    const INT m,
-    const INT n,
-    const c64* restrict A,
-    const INT lda)
-{
-    const c64 zero = CMPLXF(0.0f, 0.0f);
-    INT i, j, result;
-
-    if (m == 0) {
-        return 0;
-    } else if (A[(m - 1) + 0 * lda] != zero || A[(m - 1) + (n - 1) * lda] != zero) {
-        return m;
-    } else {
-        result = 0;
-        for (j = 0; j < n; j++) {
-            i = m - 1;
-            while (i >= 0 && A[i + j * lda] == zero) {
-                i--;
-            }
-            if (i + 1 > result) {
-                result = i + 1;
-            }
-        }
-        return result;
-    }
-}
-/** @endcond */
-
 /**
  * CLARF1L applies a complex elementary reflector H to a complex m by n matrix
  * C, from either the left or the right. H is represented in the form
