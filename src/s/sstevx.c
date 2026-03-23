@@ -195,13 +195,21 @@ void sstevx(const char* jobz, const char* range, const INT n,
         order_str = "E";
     }
 
+    INT iinfo;
     INT nsplit;
     sstebz(range, order_str, n, vll, vuu, il, iu, abstol, D, E,
-           m, &nsplit, W, iwork, &iwork[n], &work[0], &iwork[2 * n], info);
+           m, &nsplit, W, iwork, &iwork[n], &work[0], &iwork[2 * n], &iinfo);
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto rescale;
+    }
 
     if (wantz) {
         sstein(n, D, E, *m, W, iwork, &iwork[n],
-               Z, ldz, &work[0], &iwork[2 * n], ifail, info);
+               Z, ldz, &work[0], &iwork[2 * n], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
     }
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */

@@ -67,7 +67,7 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
     INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo;
     INT indtau, indwkn, indwrk, iscale, itmp1, j, jj, llwork;
     INT llwrkn, lwkmin, lwkopt, nb, nsplit;
-    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll = 0.0, vuu = 0.0;
+    f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma = 0.0, smlnum, tmp1, vll = 0.0, vuu = 0.0;
 
     /* Test the input parameters */
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
@@ -254,12 +254,19 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
     dstebz(range, order, n, vll, vuu, il, iu, abstll,
            &work[indd], &work[inde], m, &nsplit, W,
            &iwork[indibl], &iwork[indisp], &work[indwrk],
-           &iwork[indiwo], info);
+           &iwork[indiwo], &iinfo);
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L40;
+    }
 
     if (wantz) {
         dstein(n, &work[indd], &work[inde], *m, W,
                &iwork[indibl], &iwork[indisp], Z, ldz,
-               &work[indwrk], &iwork[indiwo], ifail, info);
+               &work[indwrk], &iwork[indiwo], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         /* Apply orthogonal matrix used in reduction to tridiagonal
          * form to eigenvectors returned by DSTEIN. */
