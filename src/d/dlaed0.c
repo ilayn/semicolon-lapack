@@ -72,7 +72,7 @@ void dlaed0(const INT icompq, const INT qsiz, const INT n,
             f64* work, INT* iwork, INT* info)
 {
     /* SMLSIZ from ILAENV(9, 'DLAED0', ...) - hardcoded per project plan */
-    const INT SMLSIZ = 25;
+    const INT SMLSIZ = LAPACK_SMLSIZ;
 
     INT curlvl, curprb, curr, i, igivcl = 0, igivnm = 0,
         igivpt = 0, indxq, iperm = 0, iprmpt = 0, iq = 0, iqptr = 0, iwrem = 0,

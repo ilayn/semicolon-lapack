@@ -89,7 +89,7 @@ void clatrs3(
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 #define NRHSMIN 2
-#define NBRHS 32
+#define NBRHS 32  /* ISPEC=1 for LATRS per ilaenv.f line 496 */
 #define NBMIN 8
 #define NBMAX 64
 

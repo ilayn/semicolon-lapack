@@ -146,7 +146,7 @@ void cgesvdx(const char* jobu, const char* jobvt, const char* range,
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
-            INT nb = lapack_get_nb("dgebrd");
+            INT nb = lapack_get_nb("GEBRD");
             if (nb < 1) nb = 32;
 
             if (m >= n) {

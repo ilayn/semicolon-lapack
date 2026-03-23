@@ -11,7 +11,7 @@
 #include "semicolon_cblas.h"
 
 /* SMLSIZ from ilaenv ISPEC=9: maximum size of subproblems at bottom of D&C tree */
-#define SMLSIZ 25
+#define SMLSIZ LAPACK_SMLSIZ
 
 /**
  * CGELSD computes the minimum-norm solution to a complex linear least

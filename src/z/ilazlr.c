@@ -1,0 +1,53 @@
+/**
+ * @file ilazlr.c
+ * @brief ILAZLR scans a matrix for its last non-zero row.
+ */
+
+#include "semicolon_lapack_complex_double.h"
+
+/**
+ * ILAZLR scans A for its last non-zero row.
+ *
+ * @param[in] m
+ *          The number of rows of the matrix A.
+ *
+ * @param[in] n
+ *          The number of columns of the matrix A.
+ *
+ * @param[in] A
+ *          Complex double precision array, dimension (lda, n).
+ *          The m by n matrix A.
+ *
+ * @param[in] lda
+ *          The leading dimension of the array A. lda >= max(1, m).
+ *
+ * @return The row count up to and including the last non-zero row,
+ *         or 0 if the matrix is empty or all zero.
+ */
+INT ilazlr(
+    const INT m,
+    const INT n,
+    const c128* restrict A,
+    const INT lda)
+{
+    const c128 zero = CMPLX(0.0, 0.0);
+    INT i, j, result;
+
+    if (m == 0) {
+        return 0;
+    } else if (A[(m - 1) + 0 * lda] != zero || A[(m - 1) + (n - 1) * lda] != zero) {
+        return m;
+    } else {
+        result = 0;
+        for (j = 0; j < n; j++) {
+            i = m - 1;
+            while (i >= 0 && A[i + j * lda] == zero) {
+                i--;
+            }
+            if (i + 1 > result) {
+                result = i + 1;
+            }
+        }
+        return result;
+    }
+}

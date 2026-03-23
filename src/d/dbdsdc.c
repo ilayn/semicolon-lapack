@@ -15,7 +15,7 @@ static const f64 TWO = 2.0;
 
 /* SMLSIZ: maximum size of subproblems at bottom of DC tree.
  * From ilaenv.f ISPEC=9, the default is 25. */
-static const INT SMLSIZ = 25;
+static const INT SMLSIZ = LAPACK_SMLSIZ;
 
 /**
  * DBDSDC computes the singular value decomposition (SVD) of a real

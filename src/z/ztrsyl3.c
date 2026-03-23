@@ -86,18 +86,7 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
     notrna = (trana[0] == 'N' || trana[0] == 'n');
     notrnb = (tranb[0] == 'N' || tranb[0] == 'n');
 
-    /* Use the same block size for all matrices.
-     * From ilaenv.f lines 477-485: for ZTRSYL (complex precision),
-     * NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)), 80)
-     * with a minimum of 8 from ztrsyl3.f line 221.
-     */
-    {
-        INT min_mn_local = (m < n) ? m : n;
-        INT nb_calc = (min_mn_local * 8) / 100;
-        if (nb_calc < 24) nb_calc = 24;
-        if (nb_calc > 80) nb_calc = 80;
-        nb = (nb_calc > 8) ? nb_calc : 8;
-    }
+    nb = lapack_get_trsyl_nb(m, n, 1);
 
     /* Compute number of blocks in A and B */
     nba = (m + nb - 1) / nb;

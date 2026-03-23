@@ -5,6 +5,7 @@
 #include "semicolon_lapack/semicolon_lapack.h"
 #include "semicolon_lapack/types.h"
 #include "semicolon_lapack_auxiliary.h"
+#include "lapack_tuning.h"
 
 /* Eigenvalue selection callback types for Schur decomposition drivers */
 /* Returns nonzero if eigenvalue wr + i*wi should be selected.

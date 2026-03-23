@@ -50,6 +50,8 @@ SEMICOLON_API f64  zlantb(const char* norm, const char* uplo, const char* diag, 
 SEMICOLON_API f64  zlantp(const char* norm, const char* uplo, const char* diag, const INT n, const c128* restrict AP, f64* restrict work);
 SEMICOLON_API f64  zlantr(const char* norm, const char* uplo, const char* diag, const INT m, const INT n, const c128* restrict A, const INT lda, f64* restrict work);
 SEMICOLON_API INT  izmax1(const INT n, const c128* restrict ZX, const INT incx);
+SEMICOLON_API INT  ilazlc(const INT m, const INT n, const c128* restrict A, const INT lda);
+SEMICOLON_API INT  ilazlr(const INT m, const INT n, const c128* restrict A, const INT lda);
 SEMICOLON_API void zbbcsd(const char* jobu1, const char* jobu2, const char* jobv1t, const char* jobv2t, const char* trans, const INT m, const INT p, const INT q, f64* restrict theta, f64* restrict phi, c128* restrict U1, const INT ldu1, c128* restrict U2, const INT ldu2, c128* restrict V1T, const INT ldv1t, c128* restrict V2T, const INT ldv2t, f64* restrict B11D, f64* restrict B11E, f64* restrict B12D, f64* restrict B12E, f64* restrict B21D, f64* restrict B21E, f64* restrict B22D, f64* restrict B22E, f64* restrict rwork, const INT lrwork, INT* info);
 SEMICOLON_API void zbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru, const INT ncc, f64* restrict D, f64* restrict E, c128* restrict VT, const INT ldvt, c128* restrict U, const INT ldu, c128* restrict C, const INT ldc, f64* restrict rwork, INT* info);
 SEMICOLON_API void zcgesv(const INT n, const INT nrhs, c128* restrict A, const INT lda, INT* restrict ipiv, const c128* restrict B, const INT ldb, c128* restrict X, const INT ldx, c128* restrict work, c64* restrict swork, f64* restrict rwork, INT* iter, INT* info);

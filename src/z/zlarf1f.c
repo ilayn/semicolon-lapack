@@ -8,61 +8,6 @@
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
 
-/** @cond */
-static INT ilazlc(
-    const INT m,
-    const INT n,
-    const c128* restrict A,
-    const INT lda)
-{
-    const c128 zero = CMPLX(0.0, 0.0);
-    INT i, j;
-
-    if (n == 0) {
-        return 0;
-    } else if (A[0 + (n - 1) * lda] != zero || A[(m - 1) + (n - 1) * lda] != zero) {
-        return n;
-    } else {
-        for (j = n - 1; j >= 0; j--) {
-            for (i = 0; i < m; i++) {
-                if (A[i + j * lda] != zero) {
-                    return j + 1;
-                }
-            }
-        }
-        return 0;
-    }
-}
-
-static INT ilazlr(
-    const INT m,
-    const INT n,
-    const c128* restrict A,
-    const INT lda)
-{
-    const c128 zero = CMPLX(0.0, 0.0);
-    INT i, j, result;
-
-    if (m == 0) {
-        return 0;
-    } else if (A[(m - 1) + 0 * lda] != zero || A[(m - 1) + (n - 1) * lda] != zero) {
-        return m;
-    } else {
-        result = 0;
-        for (j = 0; j < n; j++) {
-            i = m - 1;
-            while (i >= 0 && A[i + j * lda] == zero) {
-                i--;
-            }
-            if (i + 1 > result) {
-                result = i + 1;
-            }
-        }
-        return result;
-    }
-}
-/** @endcond */
-
 /**
  * ZLARF1F applies a complex elementary reflector H to a complex m by n matrix
  * C, from either the left or the right. H is represented in the form

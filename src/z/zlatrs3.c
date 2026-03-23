@@ -89,7 +89,7 @@ void zlatrs3(
     const c128 CONE = CMPLX(1.0, 0.0);
     const c128 NEG_CONE = CMPLX(-1.0, 0.0);
 #define NRHSMIN 2
-#define NBRHS 32
+#define NBRHS 32  /* ISPEC=1 for LATRS per ilaenv.f line 496 */
 #define NBMIN 8
 #define NBMAX 64
 

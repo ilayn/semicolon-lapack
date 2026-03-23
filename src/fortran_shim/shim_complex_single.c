@@ -109,6 +109,16 @@ INT icmax1_(INT* n, c64* ZX, INT* incx) {
     return _ret;
 }
 
+INT ilaclc_(INT* m, INT* n, c64* A, INT* lda) {
+    INT _ret = ilaclc(*m, *n, A, *lda);
+    return _ret;
+}
+
+INT ilaclr_(INT* m, INT* n, c64* A, INT* lda) {
+    INT _ret = ilaclr(*m, *n, A, *lda);
+    return _ret;
+}
+
 void cbbcsd_(char* jobu1, char* jobu2, char* jobv1t, char* jobv2t, char* trans, INT* m, INT* p, INT* q, f32* theta, f32* phi, c64* U1, INT* ldu1, c64* U2, INT* ldu2, c64* V1T, INT* ldv1t, c64* V2T, INT* ldv2t, f32* B11D, f32* B11E, f32* B12D, f32* B12E, f32* B21D, f32* B21E, f32* B22D, f32* B22E, f32* rwork, INT* lrwork, INT* info) {
     cbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, *m, *p, *q, theta, phi, U1, *ldu1, U2, *ldu2, V1T, *ldv1t, V2T, *ldv2t, B11D, B11E, B12D, B12E, B21D, B21E, B22D, B22E, rwork, *lrwork, info);
 }

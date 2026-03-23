@@ -28,16 +28,32 @@
  * mirroring LAPACK's TESTING/LIN/ilaenv.f vs SRC/ilaenv.f approach.
  *
  * Supported ISPEC values (matching LAPACK's ILAENV):
- *   ISPEC=1: NB      - Block size
- *   ISPEC=2: NBMIN   - Minimum block size for blocking to be used
- *   ISPEC=3: NX      - Crossover point (use unblocked if N < NX)
- *   ISPEC=6: MNTHR   - SVD crossover point = mnthr_mult * min(M,N)
+ *   ISPEC=1:  NB      - Block size
+ *   ISPEC=2:  NBMIN   - Minimum block size for blocking to be used
+ *   ISPEC=3:  NX      - Crossover point (use unblocked if N < NX)
+ *   ISPEC=4:  6       - Number of shifts for xHSEQR (DEPRECATED, handled by IPARMQ)
+ *   ISPEC=5:  2       - Minimum column dimension (not used)
+ *   ISPEC=6:  MNTHR   - SVD crossover point = mnthr_mult * min(M,N)
+ *   ISPEC=7:  1       - Number of processors (not used)
+ *   ISPEC=8:  50      - Crossover point for multishift QR (DEPRECATED, handled by IPARMQ)
+ *   ISPEC=9:  SMLSIZ  - Max size of D&C subproblems (LAPACK_SMLSIZ below)
+ *   ISPEC=10: 1       - IEEE NaN arithmetic can be trusted (assumed yes)
+ *   ISPEC=11: 1       - IEEE infinity arithmetic can be trusted (assumed yes)
+ *   ISPEC=12..17:      Handled by iparmq()
+ *   ISPEC=17..21:      Handled by iparam2stage()
  */
 
 #ifndef LAPACK_TUNING_H
 #define LAPACK_TUNING_H
 
 #include <stddef.h>  /* for NULL */
+
+/*
+ * ISPEC=9: Maximum size of the subproblems at the bottom of the
+ * divide-and-conquer computation tree (used by xGELSD, xGESDD, xLAED0,
+ * xSTEDC, xBDSDC).  From ilaenv.f line 718.
+ */
+#define LAPACK_SMLSIZ 25
 
 typedef struct {
     const char* routine;  /* Routine name (uppercase, without precision prefix) */
@@ -70,6 +86,16 @@ int lapack_get_geqr_nb(int m, int n);
 int lapack_get_gelq_mb(int m, int n);
 int lapack_get_gelq_nb(int m, int n);
 
+/*
+ * TRSYL block size (ISPEC=1 for xTRSYL)
+ *
+ * Unlike other routines, TRSYL uses a dynamic block size that depends on the
+ * problem dimensions and precision.  From ilaenv.f lines 477-485:
+ *   Real:    NB = MIN(MAX(48, INT(MIN(N1,N2)*16/100)), 240)
+ *   Complex: NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)),  80)
+ */
+int lapack_get_trsyl_nb(int n1, int n2, int is_complex);
+
 #ifdef LAPACK_TUNING_TEST
 /*
  * Test-only functions (equivalent to LAPACK's XLAENV)
@@ -99,8 +125,7 @@ void xlaenv_reset(void);
 static const lapack_tuning_t lapack_tuning_table[] = {
     /* Routine    NB  NBMIN  NX  MNTHR_MULT */
     {"GETRF",     64,    2,   0,  0.0},
-    {"GBTRF",     64,    2,   0,  0.0},
-    {"GETRS",     64,    2,   0,  0.0},
+    {"GBTRF",     32,    2,   0,  0.0},  /* NB=32 per ilaenv.f line 438 */
     {"GETRI",     64,    2,   0,  0.0},
     {"GEQRF",     32,    2, 128,  0.0},
     {"GEQLF",     32,    2, 128,  0.0},
@@ -116,14 +141,15 @@ static const lapack_tuning_t lapack_tuning_table[] = {
     {"ORMRQ",     32,    2, 128,  0.0},
     {"POTRF",     64,    2,   0,  0.0},
     {"LAUUM",     64,    2,   0,  0.0},
-    {"SYTRF",     64,    2,   0,  0.0},
+    {"SYTRF",     64,    8,   0,  0.0},  /* NBMIN=8 per ilaenv.f line 560 */
     {"SYGST",     64,    2,   0,  0.0},  /* Generalized eigenproblem reduction */
-    {"HETRF",     64,    2,   0,  0.0},
+    {"HEGST",     64,    2,   0,  0.0},  /* Complex variant of SYGST */
+    {"HETRF",     64,    8,   0,  0.0},  /* NBMIN=8 per ilaenv.f line 560 */
     {"TRTRI",     64,    2,   0,  0.0},
     {"SYTRI2",    64,    2,   0,  0.0},
     {"GEBRD",     32,    2, 128,  0.0},
-    {"SYTRD",     32,    2,   0,  0.0},
-    {"HETRD",     32,    2,   0,  0.0},
+    {"SYTRD",     32,    2,  32,  0.0},  /* NX=32 per ilaenv.f line 641 */
+    {"HETRD",     32,    2,  32,  0.0},  /* NX=32 per ilaenv.f line 645 */
     {"GEHRD",     32,    2, 128,  0.0},
     {"GGHRD",     32,    2, 128,  0.0},  /* GG routines */
     {"GGHD3",     32,    2, 128,  0.0},  /* Blocked variant */
@@ -132,6 +158,31 @@ static const lapack_tuning_t lapack_tuning_table[] = {
     {"GESVD",     32,    2,   0,  1.6},  /* SVD crossover: mnthr = 1.6 * min(m,n) */
     {"GESDD",     32,    2,   0,  1.6},  /* SVD crossover: mnthr = 1.6 * min(m,n) */
     {"GELSS",     32,    2,   0,  1.6},  /* SVD crossover: mnthr = 1.6 * min(m,n) */
+    {"ORGHR",     32,    2, 128,  0.0},  /* Real orthogonal Hessenberg generate */
+    {"ORGTR",     32,    2, 128,  0.0},  /* Real orthogonal tridiag generate */
+    {"ORGBR",     32,    2, 128,  0.0},  /* Real orthogonal bidiag generate */
+    {"ORMBR",     32,    2,   0,  0.0},  /* Real orthogonal bidiag multiply */
+    {"ORMHR",     32,    2,   0,  0.0},  /* Real orthogonal Hessenberg multiply */
+    {"ORMTR",     32,    2,   0,  0.0},  /* Real orthogonal tridiag multiply */
+    {"UNGQR",     32,    2, 128,  0.0},  /* Complex unitary QR generate */
+    {"UNGLQ",     32,    2, 128,  0.0},  /* Complex unitary LQ generate */
+    {"UNGQL",     32,    2, 128,  0.0},  /* Complex unitary QL generate */
+    {"UNGRQ",     32,    2, 128,  0.0},  /* Complex unitary RQ generate */
+    {"UNGHR",     32,    2, 128,  0.0},  /* Complex unitary Hessenberg generate */
+    {"UNGTR",     32,    2, 128,  0.0},  /* Complex unitary tridiag generate */
+    {"UNGBR",     32,    2, 128,  0.0},  /* Complex unitary bidiag generate */
+    {"UNMQR",     32,    2,   0,  0.0},  /* Complex unitary QR multiply */
+    {"UNMLQ",     32,    2,   0,  0.0},  /* Complex unitary LQ multiply */
+    {"UNMQL",     32,    2,   0,  0.0},  /* Complex unitary QL multiply */
+    {"UNMRQ",     32,    2,   0,  0.0},  /* Complex unitary RQ multiply */
+    {"UNMBR",     32,    2,   0,  0.0},  /* Complex unitary bidiag multiply */
+    {"UNMHR",     32,    2,   0,  0.0},  /* Complex unitary Hessenberg multiply */
+    {"UNMTR",     32,    2,   0,  0.0},  /* Complex unitary tridiag multiply */
+    {"LAORH",     32,    2,   0,  0.0},  /* LAORHR_GETRFNP, ilaenv.f line 275 */
+    {"PBTRF",     32,    2,   0,  0.0},  /* Packed band Cholesky, ilaenv.f line 454 */
+    {"LATRS",     32,    2,   0,  0.0},  /* Block triangular solve, ilaenv.f line 496 */
+    {"STEBZ",      1,    2,   0,  0.0},  /* Bisection eigenvalue, ilaenv.f line 503 */
+    {"GEQP3",     32,    2, 128,  0.0},  /* QR with column pivoting (QP3RK), ilaenv.f line 358 */
     {NULL,         1,    2,   0,  0.0}   /* Sentinel / default */
 };
 
@@ -261,6 +312,27 @@ int lapack_get_gelq_nb(int m, int n)
     return 32768 / n;
 }
 
+int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
+{
+    if (iparms[0] > 0) {
+        return iparms[0];
+    }
+    int min_mn = (n1 < n2) ? n1 : n2;
+    if (is_complex) {
+        /* ilaenv.f line 483: NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)), 80) */
+        int nb = (min_mn * 8) / 100;
+        if (nb < 24) nb = 24;
+        if (nb > 80) nb = 80;
+        return nb;
+    } else {
+        /* ilaenv.f line 480: NB = MIN(MAX(48, INT(MIN(N1,N2)*16/100)), 240) */
+        int nb = (min_mn * 16) / 100;
+        if (nb < 48) nb = 48;
+        if (nb > 240) nb = 240;
+        return nb;
+    }
+}
+
 #else
 /*
  * Production version: direct table lookup, no override mechanism
@@ -330,6 +402,24 @@ LAPACK_WEAK int lapack_get_gelq_nb(int m, int n)
         return m;
     }
     return 32768 / n;
+}
+
+LAPACK_WEAK int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
+{
+    int min_mn = (n1 < n2) ? n1 : n2;
+    if (is_complex) {
+        /* ilaenv.f line 483: NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)), 80) */
+        int nb = (min_mn * 8) / 100;
+        if (nb < 24) nb = 24;
+        if (nb > 80) nb = 80;
+        return nb;
+    } else {
+        /* ilaenv.f line 480: NB = MIN(MAX(48, INT(MIN(N1,N2)*16/100)), 240) */
+        int nb = (min_mn * 16) / 100;
+        if (nb < 48) nb = 48;
+        if (nb > 240) nb = 240;
+        return nb;
+    }
 }
 
 #undef LAPACK_WEAK
