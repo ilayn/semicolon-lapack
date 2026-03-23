@@ -232,11 +232,18 @@ void ssbevx(
     indiwo = indisp + n;
     sstebz(range, &order, n, vll, vuu, il, iu, abstll, &work[indd], &work[inde],
            m, &nsplit, W, &iwork[indibl], &iwork[indisp], &work[indwrk],
-           &iwork[indiwo], info);
+           &iwork[indiwo], &iinfo);
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L30;
+    }
 
     if (wantz) {
         sstein(n, &work[indd], &work[inde], *m, W, &iwork[indibl], &iwork[indisp],
-               Z, ldz, &work[indwrk], &iwork[indiwo], ifail, info);
+               Z, ldz, &work[indwrk], &iwork[indiwo], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         // Apply orthogonal matrix used in reduction to tridiagonal
         // form to eigenvectors returned by SSTEIN.

@@ -244,12 +244,19 @@ void chpevx(const char* jobz, const char* range, const char* uplo,
     sstebz(range, order, n, vll, vuu, il, iu, abstll,
            &rwork[indd], &rwork[inde], m, &nsplit, W,
            &iwork[0], &iwork[indisp], &rwork[indrwk],
-           &iwork[indiwk], info);
+           &iwork[indiwk], &iinfo);
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L20;
+    }
 
     if (wantz) {
         cstein(n, &rwork[indd], &rwork[inde], *m, W,
                &iwork[0], &iwork[indisp], Z, ldz,
-               &rwork[indrwk], &iwork[indiwk], ifail, info);
+               &rwork[indrwk], &iwork[indiwk], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         /* Apply unitary matrix used in reduction to tridiagonal
          * form to eigenvectors returned by CSTEIN. */

@@ -75,7 +75,7 @@ void dsbevx_2stage(
     INT indisp, indiwo, indwrk, iscale, itmp1, j, jj;
     INT llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    f64 sigma, smlnum, tmp1, vll, vuu;
+    f64 sigma = 0.0, smlnum, tmp1, vll, vuu;
 
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
     alleig = (range[0] == 'A' || range[0] == 'a');
@@ -260,13 +260,20 @@ void dsbevx_2stage(
         dstebz(range_str, order_str, n, vll, vuu, il, iu, abstll,
                &work[indd], &work[inde], m, &nsplit, W,
                &iwork[indibl], &iwork[indisp], &work[indwrk],
-               &iwork[indiwo], info);
+               &iwork[indiwo], &iinfo);
+    }
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L30;
     }
 
     if (wantz) {
         dstein(n, &work[indd], &work[inde], *m, W,
                &iwork[indibl], &iwork[indisp], Z, ldz,
-               &work[indwrk], &iwork[indiwo], ifail, info);
+               &work[indwrk], &iwork[indiwo], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         for (j = 0; j < *m; j++) {
             cblas_dcopy(n, &Z[j * ldz], 1, work, 1);

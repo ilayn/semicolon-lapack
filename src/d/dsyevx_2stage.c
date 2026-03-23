@@ -68,7 +68,7 @@ void dsyevx_2stage(
     INT itmp1, j, jj, llwork, llwrkn;
     INT nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin;
-    f64 sigma, smlnum, tmp1, vll, vuu;
+    f64 sigma = 0.0, smlnum, tmp1, vll, vuu;
 
     lower = (uplo[0] == 'L' || uplo[0] == 'l');
     wantz = (jobz[0] == 'V' || jobz[0] == 'v');
@@ -248,12 +248,19 @@ void dsyevx_2stage(
     dstebz(range, wantz ? "B" : "E", n, vll, vuu, il, iu, abstll,
            &work[indd], &work[inde], m, &nsplit, W,
            &iwork[indibl], &iwork[indisp], &work[indwrk],
-           &iwork[indiwo], info);
+           &iwork[indiwo], &iinfo);
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L40;
+    }
 
     if (wantz) {
         dstein(n, &work[indd], &work[inde], *m, W,
                &iwork[indibl], &iwork[indisp], Z, ldz,
-               &work[indwrk], &iwork[indiwo], ifail, info);
+               &work[indwrk], &iwork[indiwo], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         indwkn = inde;
         llwrkn = lwork - indwkn;

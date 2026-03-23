@@ -224,13 +224,20 @@ void dspevx(const char* jobz, const char* range, const char* uplo,
         dstebz(range, order_str, n, vll, vuu, il, iu, abstll,
                &work[indd], &work[inde], m, &nsplit, W,
                &iwork[0], &iwork[indisp], &work[indwrk],
-               &iwork[indiwo], info);
+               &iwork[indiwo], &iinfo);
+    }
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L20;
     }
 
     if (wantz) {
         dstein(n, &work[indd], &work[inde], *m, W,
                &iwork[0], &iwork[indisp], Z, ldz,
-               &work[indwrk], &iwork[indiwo], ifail, info);
+               &work[indwrk], &iwork[indiwo], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         {
             const char* side = "L";

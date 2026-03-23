@@ -204,12 +204,19 @@ void dsbgvx(
     indiwo = indisp + n;
     dstebz(range, &order, n, vl, vu, il, iu, abstol,
            &work[indd], &work[inde], m, &nsplit, W,
-           &iwork[0], &iwork[indisp], &work[indwrk], &iwork[indiwo], info);
+           &iwork[0], &iwork[indisp], &work[indwrk], &iwork[indiwo], &iinfo);
+    if (iinfo != 0) {
+        *info = 2 * n + iinfo;
+        if (iinfo != 1)
+            goto L30;
+    }
 
     if (wantz) {
         dstein(n, &work[indd], &work[inde], *m, W,
                &iwork[0], &iwork[indisp], Z, ldz,
-               &work[indwrk], &iwork[indiwo], ifail, info);
+               &work[indwrk], &iwork[indiwo], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         // Apply transformation matrix used in reduction to tridiagonal form
         for (j = 0; j < *m; j++) {

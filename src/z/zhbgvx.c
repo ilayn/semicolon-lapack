@@ -208,12 +208,19 @@ void zhbgvx(
     dstebz(range, &order, n, vl, vu, il, iu, abstol,
            &rwork[indd], &rwork[inde], m, &nsplit, W,
            &iwork[0], &iwork[indisp], &rwork[indrwk],
-           &iwork[indiwk], info);
+           &iwork[indiwk], &iinfo);
+    if (iinfo != 0) {
+        *info = 2 * n + iinfo;
+        if (iinfo != 1)
+            goto L30;
+    }
 
     if (wantz) {
         zstein(n, &rwork[indd], &rwork[inde], *m, W,
                &iwork[0], &iwork[indisp], Z, ldz,
-               &rwork[indrwk], &iwork[indiwk], ifail, info);
+               &rwork[indrwk], &iwork[indiwk], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         for (j = 0; j < *m; j++) {
             cblas_zcopy(n, &Z[j * ldz], 1, work, 1);

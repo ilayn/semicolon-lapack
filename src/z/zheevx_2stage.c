@@ -247,12 +247,19 @@ void zheevx_2stage(
     dstebz(range, wantz ? "B" : "E", n, vll, vuu, il, iu, abstll,
            &rwork[indd], &rwork[inde], m, &nsplit, W,
            &iwork[indibl], &iwork[indisp], &rwork[indrwk],
-           &iwork[indiwk], info);
+           &iwork[indiwk], &iinfo);
+    if (iinfo != 0) {
+        *info = n + iinfo;
+        if (iinfo != 1)
+            goto L40;
+    }
 
     if (wantz) {
         zstein(n, &rwork[indd], &rwork[inde], *m, W,
                &iwork[indibl], &iwork[indisp], Z, ldz,
-               &rwork[indrwk], &iwork[indiwk], ifail, info);
+               &rwork[indrwk], &iwork[indiwk], ifail, &iinfo);
+        if (iinfo != 0 && *info == 0)
+            *info = iinfo;
 
         zunmtr("L", uplo, "N", n, *m, A, lda, &work[indtau],
                Z, ldz, &work[indwrk], llwork, &iinfo);
