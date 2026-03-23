@@ -213,6 +213,7 @@ subdir('src')
 install_headers(
   'include/semicolon_lapack/types.h',
   'src/include/lapack_name_map.h',
+  'src/include/lapack_tuning.h',
   subdir: 'semicolon_lapack',
 )
 
