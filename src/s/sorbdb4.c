@@ -140,7 +140,7 @@ void sorbdb4(
         lworkmin = lworkopt;
         work[0] = (f32)lworkopt;
         if (lwork < lworkmin && !lquery) {
-            *info = -14;
+            *info = -15;
         }
     }
     if (*info != 0) {

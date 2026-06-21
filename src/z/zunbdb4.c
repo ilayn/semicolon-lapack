@@ -115,7 +115,7 @@ void zunbdb4(const INT m, const INT p, const INT q,
         lworkmin = lworkopt;
         work[0] = CMPLX((f64)lworkopt, 0.0);
         if (lwork < lworkmin && !lquery) {
-            *info = -14;
+            *info = -15;
         }
     }
     if (*info != 0) {

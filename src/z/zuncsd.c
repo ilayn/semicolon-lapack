@@ -314,9 +314,9 @@ void zuncsd(
         work[0] = CMPLX((f64)(lworkopt > lworkmin ? lworkopt : lworkmin), 0.0);
 
         if (lwork < lworkmin && !(lquery || lrquery)) {
-            *info = -22;
+            *info = -28;
         } else if (lrwork < lrworkmin && !(lquery || lrquery)) {
-            *info = -24;
+            *info = -30;
         } else {
             lorgqrwork = lwork - iorgqr + 1;
             lorglqwork = lwork - iorglq + 1;

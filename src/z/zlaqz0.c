@@ -218,7 +218,7 @@ void zlaqz0(
         work[0] = CMPLX((f64)lworkreq, 0.0);
         return;
     } else if (lwork < lworkreq) {
-        *info = -19;
+        *info = -18;
     }
     if (*info != 0) {
         xerbla("ZLAQZ0", -(*info));
