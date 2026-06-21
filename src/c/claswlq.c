@@ -77,7 +77,7 @@ void claswlq(const INT m, const INT n, const INT mb, const INT nb,
         *info = -2;
     } else if (mb < 1 || (mb > m && m > 0)) {
         *info = -3;
-    } else if (nb < 0) {
+    } else if (nb <= 0) {
         *info = -4;
     } else if (lda < (m > 1 ? m : 1)) {
         *info = -6;
