@@ -74,7 +74,6 @@ void zunmrq(const char* side, const char* trans,
 {
     const INT nbmax = 64;
     const INT ldt = nbmax + 1;
-    const INT tsize = ldt * nbmax;
 
     INT left, notran, lquery;
     char transt;
@@ -118,7 +117,7 @@ void zunmrq(const char* side, const char* trans,
             lwkopt = 1;
         } else {
             nb = nbmax < lapack_get_nb("ORMRQ") ? nbmax : lapack_get_nb("ORMRQ");
-            lwkopt = nw * nb + tsize;
+            lwkopt = nw * nb + ldt * nb;
         }
         work[0] = CMPLX((f64)lwkopt, 0.0);
     }
@@ -139,7 +138,7 @@ void zunmrq(const char* side, const char* trans,
     ldwork = nw;
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
-            nb = (lwork - tsize) / ldwork;
+            nb = lwork / (ldwork + ldt);
             nbmin = lapack_get_nbmin("ORMRQ") > 2 ? lapack_get_nbmin("ORMRQ") : 2;
         }
     }

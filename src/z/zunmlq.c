@@ -62,7 +62,6 @@ void zunmlq(const char* side, const char* trans,
 {
     const INT NBMAX = 64;
     const INT LDT = NBMAX + 1;
-    const INT TSIZE = LDT * NBMAX;
 
     INT left, notran, lquery;
     INT i, ib, ic, jc, iinfo, iwt, ldwork, lwkopt;
@@ -110,7 +109,7 @@ void zunmlq(const char* side, const char* trans,
         if (nb > NBMAX) {
             nb = NBMAX;
         }
-        lwkopt = nw * nb + TSIZE;
+        lwkopt = nw * nb + LDT * nb;
         work[0] = CMPLX((f64)lwkopt, 0.0);
     }
 
@@ -131,7 +130,7 @@ void zunmlq(const char* side, const char* trans,
     ldwork = nw;
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
-            nb = (lwork - TSIZE) / ldwork;
+            nb = lwork / (ldwork + LDT);
             nbmin = lapack_get_nbmin("ORMLQ");
         }
     }

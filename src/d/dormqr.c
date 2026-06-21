@@ -64,10 +64,9 @@ void dormqr(const char* side, const char* trans,
             INT* info)
 {
     /* NBMAX is the maximum block size; LDT is the leading dimension of
-     * the T array stored in WORK; TSIZE is the size of the T array. */
+     * the T array stored in WORK. */
     const INT NBMAX = 64;
     const INT LDT = NBMAX + 1;
-    const INT TSIZE = LDT * NBMAX;
 
     INT left, notran, lquery;
     INT i, ib, ic, jc, iinfo, iwt, ldwork, lwkopt;
@@ -114,7 +113,7 @@ void dormqr(const char* side, const char* trans,
         if (nb > NBMAX) {
             nb = NBMAX;
         }
-        lwkopt = nw * nb + TSIZE;
+        lwkopt = nw * nb + LDT * nb;
         work[0] = (f64)lwkopt;
     }
 
@@ -135,7 +134,7 @@ void dormqr(const char* side, const char* trans,
     ldwork = nw;
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
-            nb = (lwork - TSIZE) / ldwork;
+            nb = lwork / (ldwork + LDT);
             nbmin = lapack_get_nbmin("ORMQR");
         }
     }
