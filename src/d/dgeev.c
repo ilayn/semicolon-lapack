@@ -302,7 +302,7 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
 
     /* Undo scaling if necessary */
 L50:
-    if (scalea) {
+    if (scalea && *info >= 0) {
         dlascl("G", 0, 0, cscale, anrm, n - *info, 1, &wr[*info],
                (n - *info) > 1 ? (n - *info) : 1, &ierr);
         dlascl("G", 0, 0, cscale, anrm, n - *info, 1, &wi[*info],

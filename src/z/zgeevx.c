@@ -383,7 +383,7 @@ void zgeevx(const char* balanc, const char* jobvl, const char* jobvr,
 
     /* Undo scaling if necessary */
 L50:
-    if (scalea) {
+    if (scalea && *info >= 0) {
         zlascl("G", 0, 0, cscale, anrm, n - *info, 1, &W[*info],
                (n - *info) > 1 ? (n - *info) : 1, &ierr);
         if (*info == 0) {
