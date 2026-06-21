@@ -505,12 +505,11 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     /* Undo scaling if necessary */
-    if (iscl == 1) {
+    if (iscl == 1 && *ns > 0) {
         if (anrm > bignum) {
-            dlascl("G", 0, 0, bignum, anrm, minmn, 1, S, minmn, &ierr);
-        }
-        if (anrm < smlnum) {
-            dlascl("G", 0, 0, smlnum, anrm, minmn, 1, S, minmn, &ierr);
+            dlascl("G", 0, 0, bignum, anrm, *ns, 1, S, minmn, &ierr);
+        } else if (anrm < smlnum) {
+            dlascl("G", 0, 0, smlnum, anrm, *ns, 1, S, minmn, &ierr);
         }
     }
 

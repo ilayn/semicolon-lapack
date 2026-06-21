@@ -43,7 +43,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
     c128 ctemp;
     f64 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
     f64 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
-    f64 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
+    f64 sconda, sfmin, small, temp1, uscal1, uscal2, xsc, tbig;
     INT ierr, n1, nr, numrank, p, q, warning;
     INT almort, defr, errest, goscal, jracc, kill, lquery, lsvec;
     INT l2aber, l2kill, l2pert, l2rank, l2tran;
@@ -545,7 +545,9 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
             return;
         }
         aaqq = sqrt(aaqq);
-        if ((aapp < (big / aaqq)) && noscal) {
+        tbig = big;
+        if (aaqq > ONE) tbig = big / aaqq;
+        if ((aapp < tbig) && noscal) {
             SVA[p] = aapp * aaqq;
         } else {
             noscal = 0;
@@ -609,7 +611,10 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
         if (rsvec) {
             V[0] = CONE;
         }
-        if (SVA[0] < (big * scalem)) {
+        tbig = big;
+        if (scalem == ZERO) scalem = ONE;
+        if (scalem < ONE) tbig = big * scalem;
+        if (SVA[0] < tbig) {
             SVA[0] = SVA[0] / scalem;
             scalem = ONE;
         }

@@ -223,7 +223,7 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     INT rotok, noscale, goscale;
     c128 aapq, ompq;
     f64 aapp, aapp0, aapq1, aaqq, apoaq, aqoap;
-    f64 big, bigtheta, cs, sn, t, temp1, theta, thsign;
+    f64 big, bigtheta, cs, sn, t, temp1, theta, thsign, tbig;
     f64 ctol, epsln, mxaapq, mxsinj, rootbig, rooteps;
     f64 rootsfmin, sfmin, skl, small, tol, roottol;
 
@@ -260,8 +260,6 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
         *info = -9;
     } else if ((rsvec && ldv < n) || (applv && ldv < mv)) {
         *info = -11;
-    } else if (uctol && rwork[0] <= ONE) {
-        *info = -12;
     } else if (lwork < lwmin && !lquery) {
         *info = -13;
     } else if (lrwork < lrwmin && !lquery) {
@@ -282,7 +280,12 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
     if (minmn == 0) return;
 
     if (uctol) {
-        ctol = rwork[0];
+        if (rwork[0] <= ONE) {
+            *info = -12;
+            return;
+        } else {
+            ctol = rwork[0];
+        }
     } else {
         if (lsvec || rsvec || applv) {
             ctol = sqrt((f64)m);
@@ -332,7 +335,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                 return;
             }
             aaqq = sqrt(aaqq);
-            if (aapp < (big / aaqq) && noscale) {
+            tbig = big;
+            if (aaqq > ONE) tbig = big / aaqq;
+            if (aapp < tbig && noscale) {
                 SVA[p] = aapp * aaqq;
             } else {
                 noscale = 0;
@@ -356,7 +361,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                 return;
             }
             aaqq = sqrt(aaqq);
-            if (aapp < (big / aaqq) && noscale) {
+            tbig = big;
+            if (aaqq > ONE) tbig = big / aaqq;
+            if (aapp < tbig && noscale) {
                 SVA[p] = aapp * aaqq;
             } else {
                 noscale = 0;
@@ -380,7 +387,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
                 return;
             }
             aaqq = sqrt(aaqq);
-            if (aapp < (big / aaqq) && noscale) {
+            tbig = big;
+            if (aaqq > ONE) tbig = big / aaqq;
+            if (aapp < tbig && noscale) {
                 SVA[p] = aapp * aaqq;
             } else {
                 noscale = 0;
@@ -977,7 +986,9 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
 
     if (lsvec || uctol) {
         for (p = 0; p < n4; p++) {
-            zlascl("G", 0, 0, SVA[p], ONE, m, 1, &A[p * lda], m, &ierr);
+            temp1 = ONE;
+            if (SVA[p] > ZERO) temp1 = SVA[p];
+            zlascl("G", 0, 0, temp1, ONE, m, 1, &A[p * lda], m, &ierr);
         }
     }
 
@@ -988,8 +999,13 @@ void zgesvj(const char* joba, const char* jobu, const char* jobv,
         }
     }
 
-    if (((skl > ONE) && (SVA[0] < (big / skl)))
-        || ((skl < ONE) && (SVA[((n2 > 1) ? n2 : 1) - 1] > (sfmin / skl)))) {
+    noscale = 0;
+    if (skl > ONE) {
+        if (SVA[0] < (big / skl)) noscale = 1;
+    } else if (skl < ONE) {
+        if (SVA[((n2 > 1) ? n2 : 1) - 1] > (sfmin / skl)) noscale = 1;
+    }
+    if (noscale) {
         for (p = 0; p < n; p++) {
             SVA[p] = skl * SVA[p];
         }

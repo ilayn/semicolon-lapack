@@ -504,12 +504,11 @@ void sgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     /* Undo scaling if necessary */
-    if (iscl == 1) {
+    if (iscl == 1 && *ns > 0) {
         if (anrm > bignum) {
-            slascl("G", 0, 0, bignum, anrm, minmn, 1, S, minmn, &ierr);
-        }
-        if (anrm < smlnum) {
-            slascl("G", 0, 0, smlnum, anrm, minmn, 1, S, minmn, &ierr);
+            slascl("G", 0, 0, bignum, anrm, *ns, 1, S, minmn, &ierr);
+        } else if (anrm < smlnum) {
+            slascl("G", 0, 0, smlnum, anrm, *ns, 1, S, minmn, &ierr);
         }
     }
 

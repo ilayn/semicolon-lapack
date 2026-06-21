@@ -364,7 +364,7 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
     /* Local variables */
     f32 aapp, aaqq, aatmax, aatmin, big, big1, cond_ok;
     f32 condr1, condr2, entra, entrat, epsln, maxprj, scalem;
-    f32 sconda, sfmin, small, temp1, uscal1, uscal2, xsc;
+    f32 sconda, sfmin, small, temp1, uscal1, uscal2, xsc, tbig;
     INT ierr, n1, nr, numrank, p, q, warning;
     INT almort, defr, errest, goscal, jracc, kill, lsvec;
     INT l2aber, l2kill, l2pert, l2rank, l2tran;
@@ -501,7 +501,9 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
             return;
         }
         aaqq = sqrtf(aaqq);
-        if (aapp < (big / aaqq) && noscal) {
+        tbig = big;
+        if (aaqq > ONE) tbig = big / aaqq;
+        if (aapp < tbig && noscal) {
             SVA[p] = aapp * aaqq;
         } else {
             noscal = 0;
@@ -567,7 +569,10 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
         if (rsvec) {
             V[0] = ONE;
         }
-        if (SVA[0] < big * scalem) {
+        tbig = big;
+        if (scalem == ZERO) scalem = ONE;
+        if (scalem < ONE) tbig = big * scalem;
+        if (SVA[0] < tbig) {
             SVA[0] = SVA[0] / scalem;
             scalem = ONE;
         }
