@@ -1420,7 +1420,7 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                 zlaset("U", nr - 1, nr - 1, CZERO, CZERO, &U[1 * ldu], ldu);
             }
 
-            zgesvj("L", "U", "V", nr, nr, U, ldu, SVA,
+            zgesvj("G", "U", "V", nr, nr, U, ldu, SVA,
                    n, V, ldv, &cwork[2 * n + n * nr], lwork - 2 * n - n * nr,
                    rwork, lrwork, info);
             scalem = rwork[0];
