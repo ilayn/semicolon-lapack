@@ -139,8 +139,9 @@ void cbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru,
     if (!rotate) {
         slasq1(n, D, E, rwork, info);
 
-        /* If INFO equals 2, dqds didn't finish, try to finish */
-        if (*info != 2) return;
+        /* If the dqds algorithm failed, try to finish with
+           the standard QR algorithm */
+        if (*info == 0) return;
         *info = 0;
     }
 
