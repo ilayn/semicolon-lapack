@@ -115,7 +115,7 @@ void cunbdb4(const INT m, const INT p, const INT q,
         lworkmin = lworkopt;
         work[0] = CMPLXF((f32)lworkopt, 0.0f);
         if (lwork < lworkmin && !lquery) {
-            *info = -14;
+            *info = -15;
         }
     }
     if (*info != 0) {

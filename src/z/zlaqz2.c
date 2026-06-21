@@ -94,7 +94,7 @@ void zlaqz2(const INT ilschur, const INT ilq, const INT ilz,
         work[0] = CMPLX((f64)lworkreq, 0.0);
         return;
     } else if (lwork < lworkreq) {
-        *info = -26;
+        *info = -25;
     }
 
     if (*info != 0) {

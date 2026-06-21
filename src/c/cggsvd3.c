@@ -96,7 +96,7 @@ void cggsvd3(const char* jobu, const char* jobv, const char* jobq,
     } else if (ldq < 1 || (wantq && ldq < n)) {
         *info = -20;
     } else if (lwork < 1 && !lquery) {
-        *info = -24;
+        *info = -22;
     }
 
     if (*info == 0) {

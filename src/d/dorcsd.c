@@ -294,7 +294,7 @@ void dorcsd(
         work[0] = (f64)(lworkopt > lworkmin ? lworkopt : lworkmin);
 
         if (lwork < lworkmin && !lquery) {
-            *info = -22;
+            *info = -28;
         } else {
             lorgqrwork = lwork - iorgqr + 1;
             lorglqwork = lwork - iorglq + 1;
