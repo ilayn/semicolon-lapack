@@ -308,7 +308,7 @@ backoff:
         } else {
             /* None of the representations investigated satisfied our
              * criteria. Take the best one we found. */
-            if ((smlgrowth < fail) || nofail) {
+            if ((smlgrowth < fail * spdiam) || nofail) {
                 lsigma = bestshift;
                 rsigma = bestshift;
                 forcer = 1;
