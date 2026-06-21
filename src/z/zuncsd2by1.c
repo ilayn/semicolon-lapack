@@ -329,6 +329,36 @@ void zuncsd2by1(
     lorgqr = lwork - iorgqr + 1;
     lorglq = lwork - iorglq + 1;
 
+    if (r == 0) {
+
+        /* R = 0: C and S are empty. Handle the trivial CSD directly. */
+
+        if (q == 0) {
+            if (wantu1 && p > 0)
+                zlaset("A", p, p, zero_c, one, U1, ldu1);
+            if (wantu2 && m - p > 0)
+                zlaset("A", m - p, m - p, zero_c, one, U2, ldu2);
+            return;
+        }
+
+        if (p == 0 && m == q) {
+            if (wantu2)
+                zlacpy("A", m - p, q, X21, ldx21, U2, ldu2);
+            if (wantv1t)
+                zlaset("A", q, q, zero_c, one, V1T, ldv1t);
+            return;
+        }
+
+        if (p == m && m == q) {
+            if (wantu1)
+                zlacpy("A", p, q, X11, ldx11, U1, ldu1);
+            if (wantv1t)
+                zlaset("A", q, q, zero_c, one, V1T, ldv1t);
+            return;
+        }
+
+    }
+
     if (r == q) {
 
         zunbdb1(m, p, q, X11, ldx11, X21, ldx21, theta,

@@ -315,6 +315,36 @@ void dorcsd2by1(
     lorgqr = lwork - iorgqr + 1;
     lorglq = lwork - iorglq + 1;
 
+    if (r == 0) {
+
+        /* R = 0: C and S are empty. Handle the trivial CSD directly. */
+
+        if (q == 0) {
+            if (wantu1 && p > 0)
+                dlaset("A", p, p, zero, one, U1, ldu1);
+            if (wantu2 && m - p > 0)
+                dlaset("A", m - p, m - p, zero, one, U2, ldu2);
+            return;
+        }
+
+        if (p == 0 && m == q) {
+            if (wantu2)
+                dlacpy("A", m - p, q, X21, ldx21, U2, ldu2);
+            if (wantv1t)
+                dlaset("A", q, q, zero, one, V1T, ldv1t);
+            return;
+        }
+
+        if (p == m && m == q) {
+            if (wantu1)
+                dlacpy("A", p, q, X11, ldx11, U1, ldu1);
+            if (wantv1t)
+                dlaset("A", q, q, zero, one, V1T, ldv1t);
+            return;
+        }
+
+    }
+
     if (r == q) {
 
         dorbdb1(m, p, q, X11, ldx11, X21, ldx21, theta,
