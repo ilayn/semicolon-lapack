@@ -120,7 +120,7 @@ void zunbdb3(const INT m, const INT p, const INT q,
 
         if (i > 0) {
             cblas_zdrot(q - i, &X11[(i - 1) + i * ldx11], ldx11,
-                        &X21[i + i * ldx21], ldx11, c, s);
+                        &X21[i + i * ldx21], ldx21, c, s);
         }
 
         zlacgv(q - i, &X21[i + i * ldx21], ldx21);
