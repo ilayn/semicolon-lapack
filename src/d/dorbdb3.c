@@ -142,7 +142,7 @@ void dorbdb3(
 
         if (i > 0) {
             cblas_drot(q - i, &X11[(i - 1) + i * ldx11], ldx11,
-                       &X21[i + i * ldx21], ldx11, c, s);
+                       &X21[i + i * ldx21], ldx21, c, s);
         }
 
         dlarfgp(q - i, &X21[i + i * ldx21], &X21[i + (i + 1) * ldx21], ldx21, &tauq1[i]);
