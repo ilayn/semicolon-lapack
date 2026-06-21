@@ -65,7 +65,6 @@ void sormql(const char* side, const char* trans,
 {
     const INT NBMAX = 64;
     const INT LDT = NBMAX + 1;
-    const INT TSIZE = LDT * NBMAX;
 
     INT left, notran, lquery;
     INT i, ib, iinfo, iwt, ldwork, lwkopt;
@@ -115,7 +114,7 @@ void sormql(const char* side, const char* trans,
             if (nb > NBMAX) {
                 nb = NBMAX;
             }
-            lwkopt = nw * nb + TSIZE;
+            lwkopt = nw * nb + LDT * nb;
         }
         work[0] = (f32)lwkopt;
     }
@@ -140,7 +139,7 @@ void sormql(const char* side, const char* trans,
     ldwork = nw;
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
-            nb = (lwork - TSIZE) / ldwork;
+            nb = lwork / (ldwork + LDT);
             nbmin = lapack_get_nbmin("ORMQL");
         }
     }
