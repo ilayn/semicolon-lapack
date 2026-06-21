@@ -292,7 +292,7 @@ void cgeev(const char* jobvl, const char* jobvr, const INT n,
 
     /* Undo scaling if necessary */
 L50:
-    if (scalea) {
+    if (scalea && *info >= 0) {
         clascl("G", 0, 0, cscale, anrm, n - *info, 1, &W[*info],
                (n - *info) > 1 ? (n - *info) : 1, &ierr);
         if (*info > 0) {
