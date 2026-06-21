@@ -204,7 +204,7 @@ void dlaqz0(
         *info = -19;
     }
     if (*info != 0) {
-        xerbla("DLAQZ0", *info);
+        xerbla("DLAQZ0", -(*info));
         return;
     }
 

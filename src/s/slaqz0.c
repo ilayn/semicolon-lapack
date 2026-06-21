@@ -204,7 +204,7 @@ void slaqz0(
         *info = -19;
     }
     if (*info != 0) {
-        xerbla("SLAQZ0", *info);
+        xerbla("SLAQZ0", -(*info));
         return;
     }
 
