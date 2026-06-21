@@ -141,9 +141,12 @@ void zppt05(const char* uplo, const INT n, const INT nrhs,
                     tmp = tmp + cabs1(AP[jc]) * cabs1(X[j + k * ldx]);
                     jc = jc + n - j - 1;
                 }
-                tmp = tmp + fabs(creal(AP[jc])) * cabs1(X[i + k * ldx]);
-                for (j = i + 1; j < n; j++) {
-                    tmp = tmp + cabs1(AP[jc + j - i]) * cabs1(X[j + k * ldx]);
+                for (j = i; j < n; j++) {
+                    if (j == i) {
+                        tmp = tmp + fabs(creal(AP[jc])) * cabs1(X[j + k * ldx]);
+                    } else {
+                        tmp = tmp + cabs1(AP[jc + j - i]) * cabs1(X[j + k * ldx]);
+                    }
                 }
             }
             if (i == 0) {

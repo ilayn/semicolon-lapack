@@ -141,9 +141,12 @@ void cppt05(const char* uplo, const INT n, const INT nrhs,
                     tmp = tmp + cabs1f(AP[jc]) * cabs1f(X[j + k * ldx]);
                     jc = jc + n - j - 1;
                 }
-                tmp = tmp + fabsf(crealf(AP[jc])) * cabs1f(X[i + k * ldx]);
-                for (j = i + 1; j < n; j++) {
-                    tmp = tmp + cabs1f(AP[jc + j - i]) * cabs1f(X[j + k * ldx]);
+                for (j = i; j < n; j++) {
+                    if (j == i) {
+                        tmp = tmp + fabsf(crealf(AP[jc])) * cabs1f(X[j + k * ldx]);
+                    } else {
+                        tmp = tmp + cabs1f(AP[jc + j - i]) * cabs1f(X[j + k * ldx]);
+                    }
                 }
             }
             if (i == 0) {
