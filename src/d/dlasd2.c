@@ -128,7 +128,7 @@ void dlasd2(const INT nl, const INT nr, const INT sqre, INT* k,
 
     eps = dlamch("Epsilon");
     tol = fabs(alpha) > fabs(beta) ? fabs(alpha) : fabs(beta);
-    tol = 8.0 * eps * (fabs(D[n - 1]) > tol ? fabs(D[n - 1]) : tol);
+    tol = 8.0 * 8.0 * eps * (fabs(D[n - 1]) > tol ? fabs(D[n - 1]) : tol);
 
     *k = 1;
     k2 = n;

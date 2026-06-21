@@ -128,7 +128,7 @@ void slasd2(const INT nl, const INT nr, const INT sqre, INT* k,
 
     eps = slamch("Epsilon");
     tol = fabsf(alpha) > fabsf(beta) ? fabsf(alpha) : fabsf(beta);
-    tol = 8.0f * eps * (fabsf(D[n - 1]) > tol ? fabsf(D[n - 1]) : tol);
+    tol = 8.0f * 8.0f * eps * (fabsf(D[n - 1]) > tol ? fabsf(D[n - 1]) : tol);
 
     *k = 1;
     k2 = n;
