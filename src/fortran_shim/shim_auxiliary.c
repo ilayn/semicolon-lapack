@@ -8,6 +8,13 @@
 #include <stdlib.h>
 #include "semicolon_lapack_auxiliary.h"
 
+/* Prototypes for the Fortran-ABI wrappers defined below. */
+void xerbla_(char* srname, INT* info);
+INT ieeeck_(INT* ispec, float* zero, float* one);
+INT ilaenv2stage_(INT* ispec, char* name, char* opts, INT* n1, INT* n2, INT* n3, INT* n4);
+void ilaver_(INT* major, INT* minor, INT* patch);
+INT iparam2stage_(INT* ispec, char* name, char* opts, INT* ni, INT* nbi, INT* ibi, INT* nxi);
+INT iparmq_(INT* ispec, char* name, char* opts, INT* n, INT* ilo, INT* ihi, INT* lwork);
 
 void xerbla_(char* srname, INT* info) {
     xerbla(srname, *info);
