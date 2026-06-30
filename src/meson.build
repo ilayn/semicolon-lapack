@@ -11,6 +11,7 @@ auxiliary_sources = files(
   'auxiliary/xerbla.c',
   'auxiliary/ieeeck.c',
   'auxiliary/ilaenv2stage.c',
+  'auxiliary/ilaver.c',
   'auxiliary/iparam2stage.c',
 )
 

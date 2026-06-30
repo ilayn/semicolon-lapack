@@ -23,6 +23,10 @@ INT ilaenv2stage_(INT* ispec, char* name, char* opts, INT* n1, INT* n2, INT* n3,
     return _ret;
 }
 
+void ilaver_(INT* major, INT* minor, INT* patch) {
+    ilaver(major, minor, patch);
+}
+
 INT iparam2stage_(INT* ispec, char* name, char* opts, INT* ni, INT* nbi, INT* ibi, INT* nxi) {
     INT _ret = iparam2stage(*ispec, name, opts, *ni, *nbi, *ibi, *nxi);
     return _ret;
