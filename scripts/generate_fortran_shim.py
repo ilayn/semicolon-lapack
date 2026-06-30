@@ -490,9 +490,12 @@ def generate_wrapper(func_name, return_type, params, rules):
     ret_clean = return_type.replace('const', '').replace('restrict', '').strip()
     ret_clean = ' '.join(ret_clean.split())
 
+    # Prototype for the prototypes block (satisfies -Wmissing-prototypes).
+    proto = f'{ret_clean} {func_name}_({shim_params_str});'
+
     # --- io_pivot branch case ---
     if io_pivot_rules:
-        return _generate_io_pivot_wrapper(
+        return proto, _generate_io_pivot_wrapper(
             func_name, ret_clean, param_info, io_pivot_rules, rules, shim_params_str)
 
     # --- Standard wrapper ---
@@ -531,9 +534,9 @@ def generate_wrapper(func_name, return_type, params, rules):
                 f'    if ({job_p}[0] == \'B\' || {job_p}[0] == \'b\' || '
                 f'{job_p}[0] == \'P\' || {job_p}[0] == \'p\') {{')
             pre_lines.append(
-                f'        for (INT _i = 0; _i < *{ilo_p} - 1; _i++) {pname}[_i] -= 1.0;')
+                f'        for (INT _i = 0; _i < *{ilo_p} - 1; _i++) {pname}[_i] -= 1;')
             pre_lines.append(
-                f'        for (INT _i = *{ihi_p}; _i < *{n_p}; _i++) {pname}[_i] -= 1.0;')
+                f'        for (INT _i = *{ihi_p}; _i < *{n_p}; _i++) {pname}[_i] -= 1;')
             pre_lines.append(f'    }}')
 
     # Array conversions: guarded if routine has lwork
@@ -650,9 +653,9 @@ def generate_wrapper(func_name, return_type, params, rules):
             ihi_p = r[3]
             n_p = r[4]
             post_scalar_lines.append(
-                f'    for (INT _i = 0; _i < *{ilo_p} - 1; _i++) {pname}[_i] += 1.0;')
+                f'    for (INT _i = 0; _i < *{ilo_p} - 1; _i++) {pname}[_i] += 1;')
             post_scalar_lines.append(
-                f'    for (INT _i = *{ihi_p}; _i < *{n_p}; _i++) {pname}[_i] += 1.0;')
+                f'    for (INT _i = *{ihi_p}; _i < *{n_p}; _i++) {pname}[_i] += 1;')
 
         elif action == 'gebak_scale':
             # Restore scale permutation indices to 1-based after call.
@@ -665,9 +668,9 @@ def generate_wrapper(func_name, return_type, params, rules):
                 f'    if ({job_p}[0] == \'B\' || {job_p}[0] == \'b\' || '
                 f'{job_p}[0] == \'P\' || {job_p}[0] == \'p\') {{')
             post_scalar_lines.append(
-                f'        for (INT _i = 0; _i < *{ilo_p} - 1; _i++) {pname}[_i] += 1.0;')
+                f'        for (INT _i = 0; _i < *{ilo_p} - 1; _i++) {pname}[_i] += 1;')
             post_scalar_lines.append(
-                f'        for (INT _i = *{ihi_p}; _i < *{n_p}; _i++) {pname}[_i] += 1.0;')
+                f'        for (INT _i = *{ihi_p}; _i < *{n_p}; _i++) {pname}[_i] += 1;')
             post_scalar_lines.append(f'    }}')
 
     # Scalar post-call conversions are always safe
@@ -697,7 +700,7 @@ def generate_wrapper(func_name, return_type, params, rules):
         lines.append('    return _ret;')
 
     lines.append('}')
-    return lines
+    return proto, lines
 
 
 def _generate_io_pivot_wrapper(func_name, ret_clean, param_info, io_rules,
@@ -828,6 +831,9 @@ def generate_shim_file(input_dir, precision, output_path):
     n_indexed = 0
     n_skipped = 0
 
+    protos = []
+    def_lines = []
+
     for ret_type, func_name, params in decls:
         if func_name in SKIP_FUNCTIONS:
             n_skipped += 1
@@ -839,14 +845,22 @@ def generate_shim_file(input_dir, precision, output_path):
             base = get_base_name(func_name, prefix_char) if prefix_char else func_name
             rules = INDEX_RULES.get(base, [])
 
-        wrapper_lines = generate_wrapper(func_name, ret_type, params, rules)
-        lines.append('')
-        lines.extend(wrapper_lines)
+        proto, wrapper_lines = generate_wrapper(func_name, ret_type, params, rules)
+        protos.append(proto)
+        def_lines.append('')
+        def_lines.extend(wrapper_lines)
 
         if rules:
             n_indexed += 1
         else:
             n_simple += 1
+
+    # Prototypes block — every wrapper has external linkage and is declared
+    # here so each definition has a prototype in scope (-Wmissing-prototypes).
+    lines.append('/* Prototypes for the Fortran-ABI wrappers defined below. */')
+    lines.extend(protos)
+
+    lines.extend(def_lines)
 
     # Write output
     output = Path(output_path)
