@@ -12,7 +12,7 @@ In practice, this means a full BLAS/LAPACK stack that needs only a C compiler. F
 
 ## Current Status
 
-All four precisions (double, single, complex, double-complex) are 99% translated (DMD and a few auxiliary routines are missing).
+All four precisions (double, single, complex, double-complex) are 100% translated.
 
 > [!NOTE]
 > XBLAS extra-precision variants are out of scope.

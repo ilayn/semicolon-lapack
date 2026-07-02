@@ -29,11 +29,6 @@ Key Features
 - 0-based indexing throughout both input and output parameters.
 - Static struct lookup for optimal block sizes, replacing ``ilaenv`` calls.
 
-.. note::
-
-   This project is under active development. Currently, we are exploring what is
-   possible both in terms of code and documentation.
-
 Contents
 --------
 
