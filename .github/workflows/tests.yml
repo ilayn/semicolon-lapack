@@ -241,7 +241,13 @@ jobs:
       - name: Build and run MSVC consumer test
         shell: cmd
         run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+          for /f "usebackq delims=" %%i in (`"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -products * -property installationPath`) do set "VSINSTALL=%%i"
+          if not defined VSINSTALL (
+            echo Could not locate a Visual Studio installation via vswhere.
+            exit /b 1
+          )
+          echo Using Visual Studio at: %VSINSTALL%
+          call "%VSINSTALL%\VC\Auxiliary\Build\vcvarsall.bat" x64
           cd msvc_test
           lib /def:semilapack.def /out:semilapack.lib /machine:x64 /nologo
           cl.exe /std:c11 /O2 /W3 /nologo ^
