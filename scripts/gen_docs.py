@@ -75,7 +75,7 @@ SPECIAL_SOURCES = {
 
 # Pages with no precision prefix (precision-independent utilities).
 # Shown as bare doxygenfile directives, no tabs.
-PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "iparam2stage", "iparmq"}
+PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "ilaver", "iparam2stage", "iparmq"}
 
 # ---------------------------------------------------------------------------
 # Hierarchy definition
@@ -309,6 +309,9 @@ HIERARCHY = {
             "tgsy2", "tgsyl",
             "lagv2", "orm22", "unm22",
         ]),
+        "dmd": ("Dynamic Mode Decomposition", [
+            "gedmd", "gedmdq",
+        ]),
     }),
     "eigenvalues-symmetric": ("Symmetric / Hermitian Eigenvalues", {
         "dense-drivers": ("Dense Matrix Drivers", [
@@ -453,7 +456,7 @@ HIERARCHY = {
         ]),
     }),
     "auxiliary": ("Auxiliary Parameters", [
-        "xerbla", "ieeeck", "ilaenv2stage", "iparam2stage", "labad",
+        "xerbla", "ieeeck", "ilaenv2stage", "ilaver", "iparam2stage", "labad",
     ]),
 }
 
