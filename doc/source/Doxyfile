@@ -29,6 +29,7 @@ ENABLE_PREPROCESSING   = YES
 MACRO_EXPANSION        = YES
 EXPAND_ONLY_PREDEF     = YES
 PREDEFINED             = SEMICOLON_API= \
+                         XERBLA_WEAK= \
                          INT=INT
 
 #---------------------------------------------------------------------------
