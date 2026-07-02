@@ -53,6 +53,8 @@ void zgebrd_(INT* m, INT* n, c128* A, INT* lda, f64* D, f64* E, c128* tauq, c128
 void zgecon_(char* norm, INT* n, c128* A, INT* lda, f64* anorm, f64* rcond, c128* work, f64* rwork, INT* info);
 void zgeequ_(INT* m, INT* n, c128* A, INT* lda, f64* R, f64* C, f64* rowcnd, f64* colcnd, f64* amax, INT* info);
 void zgeequb_(INT* m, INT* n, c128* A, INT* lda, f64* R, f64* C, f64* rowcnd, f64* colcnd, f64* amax, INT* info);
+void zgedmd_(char* jobs, char* jobz, char* jobr, char* jobf, INT* whtsvd, INT* m, INT* n, c128* X, INT* ldx, c128* Y, INT* ldy, INT* nrnk, f64* tol, INT* k, c128* eigs, c128* Z, INT* ldz, f64* res, c128* B, INT* ldb, c128* W, INT* ldw, c128* S, INT* lds, c128* zwork, INT* lzwork, f64* rwork, INT* lrwork, INT* iwork, INT* liwork, INT* info);
+void zgedmdq_(char* jobs, char* jobz, char* jobr, char* jobq, char* jobt, char* jobf, INT* whtsvd, INT* m, INT* n, c128* F, INT* ldf, c128* X, INT* ldx, c128* Y, INT* ldy, INT* nrnk, f64* tol, INT* k, c128* eigs, c128* Z, INT* ldz, f64* res, c128* B, INT* ldb, c128* V, INT* ldv, c128* S, INT* lds, c128* zwork, INT* lzwork, f64* work, INT* lwork, INT* iwork, INT* liwork, INT* info);
 void zgees_(char* jobvs, char* sort, zselect1_t select, INT* n, c128* A, INT* lda, INT* sdim, c128* W, c128* VS, INT* ldvs, c128* work, INT* lwork, f64* rwork, INT* bwork, INT* info);
 void zgeesx_(char* jobvs, char* sort, zselect1_t select, char* sense, INT* n, c128* A, INT* lda, INT* sdim, c128* W, c128* VS, INT* ldvs, f64* rconde, f64* rcondv, c128* work, INT* lwork, f64* rwork, INT* bwork, INT* info);
 void zgeev_(char* jobvl, char* jobvr, INT* n, c128* A, INT* lda, c128* W, c128* VL, INT* ldvl, c128* VR, INT* ldvr, c128* work, INT* lwork, f64* rwork, INT* info);
@@ -740,6 +742,14 @@ void zgeequ_(INT* m, INT* n, c128* A, INT* lda, f64* R, f64* C, f64* rowcnd, f64
 
 void zgeequb_(INT* m, INT* n, c128* A, INT* lda, f64* R, f64* C, f64* rowcnd, f64* colcnd, f64* amax, INT* info) {
     zgeequb(*m, *n, A, *lda, R, C, rowcnd, colcnd, amax, info);
+}
+
+void zgedmd_(char* jobs, char* jobz, char* jobr, char* jobf, INT* whtsvd, INT* m, INT* n, c128* X, INT* ldx, c128* Y, INT* ldy, INT* nrnk, f64* tol, INT* k, c128* eigs, c128* Z, INT* ldz, f64* res, c128* B, INT* ldb, c128* W, INT* ldw, c128* S, INT* lds, c128* zwork, INT* lzwork, f64* rwork, INT* lrwork, INT* iwork, INT* liwork, INT* info) {
+    zgedmd(jobs, jobz, jobr, jobf, *whtsvd, *m, *n, X, *ldx, Y, *ldy, *nrnk, *tol, k, eigs, Z, *ldz, res, B, *ldb, W, *ldw, S, *lds, zwork, *lzwork, rwork, *lrwork, iwork, *liwork, info);
+}
+
+void zgedmdq_(char* jobs, char* jobz, char* jobr, char* jobq, char* jobt, char* jobf, INT* whtsvd, INT* m, INT* n, c128* F, INT* ldf, c128* X, INT* ldx, c128* Y, INT* ldy, INT* nrnk, f64* tol, INT* k, c128* eigs, c128* Z, INT* ldz, f64* res, c128* B, INT* ldb, c128* V, INT* ldv, c128* S, INT* lds, c128* zwork, INT* lzwork, f64* work, INT* lwork, INT* iwork, INT* liwork, INT* info) {
+    zgedmdq(jobs, jobz, jobr, jobq, jobt, jobf, *whtsvd, *m, *n, F, *ldf, X, *ldx, Y, *ldy, *nrnk, *tol, k, eigs, Z, *ldz, res, B, *ldb, V, *ldv, S, *lds, zwork, *lzwork, work, *lwork, iwork, *liwork, info);
 }
 
 void zgees_(char* jobvs, char* sort, zselect1_t select, INT* n, c128* A, INT* lda, INT* sdim, c128* W, c128* VS, INT* ldvs, c128* work, INT* lwork, f64* rwork, INT* bwork, INT* info) {

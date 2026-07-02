@@ -54,6 +54,8 @@ void sgebrd_(INT* m, INT* n, f32* A, INT* lda, f32* D, f32* E, f32* tauq, f32* t
 void sgecon_(char* norm, INT* n, f32* A, INT* lda, f32* anorm, f32* rcond, f32* work, INT* iwork, INT* info);
 void sgeequ_(INT* m, INT* n, f32* A, INT* lda, f32* R, f32* C, f32* rowcnd, f32* colcnd, f32* amax, INT* info);
 void sgeequb_(INT* m, INT* n, f32* A, INT* lda, f32* R, f32* C, f32* rowcnd, f32* colcnd, f32* amax, INT* info);
+void sgedmd_(char* jobs, char* jobz, char* jobr, char* jobf, INT* whtsvd, INT* m, INT* n, f32* X, INT* ldx, f32* Y, INT* ldy, INT* nrnk, f32* tol, INT* k, f32* reig, f32* imeig, f32* Z, INT* ldz, f32* res, f32* B, INT* ldb, f32* W, INT* ldw, f32* S, INT* lds, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* info);
+void sgedmdq_(char* jobs, char* jobz, char* jobr, char* jobq, char* jobt, char* jobf, INT* whtsvd, INT* m, INT* n, f32* F, INT* ldf, f32* X, INT* ldx, f32* Y, INT* ldy, INT* nrnk, f32* tol, INT* k, f32* reig, f32* imeig, f32* Z, INT* ldz, f32* res, f32* B, INT* ldb, f32* V, INT* ldv, f32* S, INT* lds, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* info);
 void sgees_(char* jobvs, char* sort, sselect2_t select, INT* n, f32* A, INT* lda, INT* sdim, f32* wr, f32* wi, f32* VS, INT* ldvs, f32* work, INT* lwork, INT* bwork, INT* info);
 void sgeesx_(char* jobvs, char* sort, sselect2_t select, char* sense, INT* n, f32* A, INT* lda, INT* sdim, f32* wr, f32* wi, f32* VS, INT* ldvs, f32* rconde, f32* rcondv, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* bwork, INT* info);
 void sgeev_(char* jobvl, char* jobvr, INT* n, f32* A, INT* lda, f32* wr, f32* wi, f32* VL, INT* ldvl, f32* VR, INT* ldvr, f32* work, INT* lwork, INT* info);
@@ -744,6 +746,14 @@ void sgeequ_(INT* m, INT* n, f32* A, INT* lda, f32* R, f32* C, f32* rowcnd, f32*
 
 void sgeequb_(INT* m, INT* n, f32* A, INT* lda, f32* R, f32* C, f32* rowcnd, f32* colcnd, f32* amax, INT* info) {
     sgeequb(*m, *n, A, *lda, R, C, rowcnd, colcnd, amax, info);
+}
+
+void sgedmd_(char* jobs, char* jobz, char* jobr, char* jobf, INT* whtsvd, INT* m, INT* n, f32* X, INT* ldx, f32* Y, INT* ldy, INT* nrnk, f32* tol, INT* k, f32* reig, f32* imeig, f32* Z, INT* ldz, f32* res, f32* B, INT* ldb, f32* W, INT* ldw, f32* S, INT* lds, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* info) {
+    sgedmd(jobs, jobz, jobr, jobf, *whtsvd, *m, *n, X, *ldx, Y, *ldy, *nrnk, *tol, k, reig, imeig, Z, *ldz, res, B, *ldb, W, *ldw, S, *lds, work, *lwork, iwork, *liwork, info);
+}
+
+void sgedmdq_(char* jobs, char* jobz, char* jobr, char* jobq, char* jobt, char* jobf, INT* whtsvd, INT* m, INT* n, f32* F, INT* ldf, f32* X, INT* ldx, f32* Y, INT* ldy, INT* nrnk, f32* tol, INT* k, f32* reig, f32* imeig, f32* Z, INT* ldz, f32* res, f32* B, INT* ldb, f32* V, INT* ldv, f32* S, INT* lds, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* info) {
+    sgedmdq(jobs, jobz, jobr, jobq, jobt, jobf, *whtsvd, *m, *n, F, *ldf, X, *ldx, Y, *ldy, *nrnk, *tol, k, reig, imeig, Z, *ldz, res, B, *ldb, V, *ldv, S, *lds, work, *lwork, iwork, *liwork, info);
 }
 
 void sgees_(char* jobvs, char* sort, sselect2_t select, INT* n, f32* A, INT* lda, INT* sdim, f32* wr, f32* wi, f32* VS, INT* ldvs, f32* work, INT* lwork, INT* bwork, INT* info) {
