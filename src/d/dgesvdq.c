@@ -87,28 +87,58 @@ void dgesvdq(const char* joba, const char* jobp, const char* jobr,
     lwsvd = (5 * n > 1) ? 5 * n : 1;
 
     if (!lsvec && !rsvec) {
-        if (conda) {
-            minwrk = n + lwqp3;
-            if (minwrk < lwcon) minwrk = lwcon;
-            if (minwrk < lwsvd) minwrk = lwsvd;
-        } else {
-            minwrk = n + lwqp3;
-            if (minwrk < lwsvd) minwrk = lwsvd;
-        }
+        /* only the singular values are requested */
+        minwrk = n + lwqp3;
+        if (conda && minwrk < lwcon) minwrk = lwcon;
+        if (minwrk < lwsvd) minwrk = lwsvd;
     } else if (lsvec && !rsvec) {
-        minwrk = n + lwqp3;
-        if (minwrk < lwsvd) minwrk = lwsvd;
-        if (minwrk < lworq) minwrk = lworq;
-        if (conda && minwrk < lwcon) minwrk = lwcon;
+        /* singular values and the left singular vectors are requested */
+        INT t = lwqp3;
+        if (t < lwsvd) t = lwsvd;
+        if (t < lworq) t = lworq;
+        if (conda && t < lwcon) t = lwcon;
+        minwrk = n + t;
     } else if (rsvec && !lsvec) {
-        minwrk = n + lwqp3;
-        if (minwrk < lwsvd) minwrk = lwsvd;
-        if (conda && minwrk < lwcon) minwrk = lwcon;
+        /* singular values and the right singular vectors are requested */
+        INT t = lwqp3;
+        if (t < lwsvd) t = lwsvd;
+        if (conda && t < lwcon) t = lwcon;
+        minwrk = n + t;
     } else {
-        minwrk = n + lwqp3;
-        if (minwrk < lwsvd) minwrk = lwsvd;
-        if (minwrk < lworq) minwrk = lworq;
-        if (conda && minwrk < lwcon) minwrk = lwcon;
+        /* full SVD is requested */
+        INT t = lwqp3;
+        if (t < lwsvd) t = lwsvd;
+        if (t < lworq) t = lworq;
+        if (conda && t < lwcon) t = lwcon;
+        minwrk = n + t;
+        if (wntva) {
+            const INT half = n / 2;
+            INT lwsvd2 = 5 * half;
+            if (lwsvd2 < 1) lwsvd2 = 1;
+            INT minwrk2;
+            if (rtrans) {
+                /* minimal workspace for N x N/2 DGEQRF */
+                INT lwqrf = (half > 1) ? half : 1;
+                INT lworq2 = (n > 1) ? n : 1;
+                minwrk2 = lwqp3;
+                if (minwrk2 < half + lwqrf) minwrk2 = half + lwqrf;
+                if (minwrk2 < half + lwsvd2) minwrk2 = half + lwsvd2;
+                if (minwrk2 < half + lworq2) minwrk2 = half + lworq2;
+                if (minwrk2 < lworq) minwrk2 = lworq;
+            } else {
+                /* minimal workspace for N/2 x N DGELQF */
+                INT lwlqf = (half > 1) ? half : 1;
+                INT lworlq = (n > 1) ? n : 1;
+                minwrk2 = lwqp3;
+                if (minwrk2 < half + lwlqf) minwrk2 = half + lwlqf;
+                if (minwrk2 < half + lwsvd2) minwrk2 = half + lwsvd2;
+                if (minwrk2 < half + lworlq) minwrk2 = half + lworlq;
+                if (minwrk2 < lworq) minwrk2 = lworq;
+            }
+            if (conda && minwrk2 < lwcon) minwrk2 = lwcon;
+            minwrk2 = n + minwrk2;
+            if (minwrk < minwrk2) minwrk = minwrk2;
+        }
     }
     if (minwrk < 2) minwrk = 2;
     optwrk = minwrk;
