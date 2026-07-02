@@ -88,6 +88,7 @@ lapack_tests_c = {
   'cckgqr': ['test_cckgqr.c', 'eigen'],
   'cchkbb': ['test_cchkbb.c', 'eigen'],
   'cchkbd': ['test_cchkbd.c', 'eigen'],
+  'cchkdmd': ['test_cchkdmd.c', 'eigen'],
   'cchkhb': ['test_cchkhb.c', 'eigen'],
   'cchkhb2stg': ['test_cchkhb2stg.c', 'eigen'],
   'cchkhs': ['test_cchkhs.c', 'eigen'],
