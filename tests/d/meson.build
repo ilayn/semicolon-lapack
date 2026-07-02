@@ -59,6 +59,7 @@ lapack_tests_d = {
   'dchksb': ['test_dchksb.c', 'eigen'],      # Symmetric band tridiagonal reduction (DSBTRD)
   'dchksb2stg': ['test_dchksb2stg.c', 'eigen'], # Symmetric band 2-stage reduction (DSYTRD_SB2ST)
   'dchkbd': ['test_dchkbd.c', 'svd'],        # Bidiagonal SVD (DGEBRD/DBDSQR/DBDSDC/DBDSVDX)
+  'dchkdmd': ['test_dchkdmd.c', 'eigen'],    # Dynamic Mode Decomposition (DGEDMD/DGEDMDQ)
   'dckcsd': ['test_dckcsd.c', 'eigen'],      # CS decomposition (DORCSD/DORCSD2BY1)
 
   # Expert driver tests (ddrv*.f ports)

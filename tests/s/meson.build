@@ -51,6 +51,7 @@ lapack_tests_s = {
   'schkgg': ['test_schkgg.c', 'eigen'],
   'schkhs': ['test_schkhs.c', 'eigen'],
   'schkbb': ['test_schkbb.c', 'eigen'],
+  'schkdmd': ['test_schkdmd.c', 'eigen'],
   'schksb': ['test_schksb.c', 'eigen'],
   'schksb2stg': ['test_schksb2stg.c', 'eigen'],
   'schkbd': ['test_schkbd.c', 'svd'],

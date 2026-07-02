@@ -90,6 +90,7 @@ lapack_tests_z = {
   'zckgqr': ['test_zckgqr.c', 'eigen'],
   'zchkbb': ['test_zchkbb.c', 'eigen'],
   'zchkbd': ['test_zchkbd.c', 'eigen'],
+  'zchkdmd': ['test_zchkdmd.c', 'eigen'],
   'zchkhb': ['test_zchkhb.c', 'eigen'],
   'zchkhb2stg': ['test_zchkhb2stg.c', 'eigen'],
   'zchkhs': ['test_zchkhs.c', 'eigen'],
