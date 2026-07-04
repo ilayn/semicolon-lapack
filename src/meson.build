@@ -9,8 +9,13 @@ common_sources = files(
 # Precision-independent auxiliary routines
 auxiliary_sources = files(
   'auxiliary/xerbla.c',
+  'auxiliary/chla_transtype.c',
   'auxiliary/ieeeck.c',
+  'auxiliary/iladiag.c',
   'auxiliary/ilaenv2stage.c',
+  'auxiliary/ilaprec.c',
+  'auxiliary/ilatrans.c',
+  'auxiliary/ilauplo.c',
   'auxiliary/ilaver.c',
   'auxiliary/iparam2stage.c',
 )

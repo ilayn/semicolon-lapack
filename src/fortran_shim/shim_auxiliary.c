@@ -10,8 +10,13 @@
 
 /* Prototypes for the Fortran-ABI wrappers defined below. */
 void xerbla_(char* srname, INT* info);
+char chla_transtype_(INT* trans);
 INT ieeeck_(INT* ispec, float* zero, float* one);
+INT iladiag_(char* diag);
 INT ilaenv2stage_(INT* ispec, char* name, char* opts, INT* n1, INT* n2, INT* n3, INT* n4);
+INT ilaprec_(char* prec);
+INT ilatrans_(char* trans);
+INT ilauplo_(char* uplo);
 void ilaver_(INT* major, INT* minor, INT* patch);
 INT iparam2stage_(INT* ispec, char* name, char* opts, INT* ni, INT* nbi, INT* ibi, INT* nxi);
 INT iparmq_(INT* ispec, char* name, char* opts, INT* n, INT* ilo, INT* ihi, INT* lwork);
@@ -20,13 +25,38 @@ void xerbla_(char* srname, INT* info) {
     xerbla(srname, *info);
 }
 
+char chla_transtype_(INT* trans) {
+    char _ret = chla_transtype(*trans);
+    return _ret;
+}
+
 INT ieeeck_(INT* ispec, float* zero, float* one) {
     INT _ret = ieeeck(*ispec, *zero, *one);
     return _ret;
 }
 
+INT iladiag_(char* diag) {
+    INT _ret = iladiag(diag);
+    return _ret;
+}
+
 INT ilaenv2stage_(INT* ispec, char* name, char* opts, INT* n1, INT* n2, INT* n3, INT* n4) {
     INT _ret = ilaenv2stage(*ispec, name, opts, *n1, *n2, *n3, *n4);
+    return _ret;
+}
+
+INT ilaprec_(char* prec) {
+    INT _ret = ilaprec(prec);
+    return _ret;
+}
+
+INT ilatrans_(char* trans) {
+    INT _ret = ilatrans(trans);
+    return _ret;
+}
+
+INT ilauplo_(char* uplo) {
+    INT _ret = ilauplo(uplo);
     return _ret;
 }
 

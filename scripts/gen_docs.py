@@ -76,7 +76,8 @@ SPECIAL_SOURCES = {
 
 # Pages with no precision prefix (precision-independent utilities).
 # Shown as bare doxygenfile directives, no tabs.
-PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "ilaver", "iparam2stage", "iparmq"}
+PRECISION_INDEPENDENT = {"xerbla", "ieeeck", "ilaenv2stage", "ilaver", "iparam2stage", "iparmq",
+                         "chla_transtype", "iladiag", "ilaprec", "ilatrans", "ilauplo"}
 
 # ---------------------------------------------------------------------------
 # Hierarchy definition
@@ -458,6 +459,7 @@ HIERARCHY = {
     }),
     "auxiliary": ("Auxiliary Parameters", [
         "xerbla", "ieeeck", "ilaenv2stage", "ilaver", "iparam2stage", "labad",
+        "chla_transtype", "iladiag", "ilaprec", "ilatrans", "ilauplo",
     ]),
 }
 

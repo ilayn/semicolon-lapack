@@ -44,3 +44,24 @@ placed here.
    accomodate for it. The main reason is to avoid VLAs or malloc/free calls
    inside this function.
 
+--------------------------------------------------------------------------------
+
+4. CHLA_TRANSTYPE Fortran-ABI shim uses a register char return instead of the
+   Fortran character-return convention.
+   Files affected: src/fortran_shim/shim_auxiliary.c (chla_transtype_ wrapper)
+
+   CHLA_TRANSTYPE is the only CHARACTER*1-returning function in LAPACK but Fortran
+   does not return CHARACTER result; it uses a hidden result-buffer + length
+
+       void chla_transtype_(char* ret_val, ftnlen ret_val_len, int* trans)
+
+   where the result byte is written into ret_val and trans is the third
+   argument. (Confirmed from OpenBLAS's f2c source and by disassembling MKL's
+   libmkl_rt dispatcher, which forwards three arguments: ptr, int32, ptr.)
+
+   Instead, we expose the C register-return form:
+
+       char chla_transtype_(int* trans)
+
+   This is intentional. We do not implement the hidden-argument Fortran
+   character-return ABI.
