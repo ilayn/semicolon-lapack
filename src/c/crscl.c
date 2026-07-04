@@ -47,7 +47,7 @@ void crscl(
     absi = fabsf(ai);
 
     if (ai == ZERO) {
-        cdrscl(n, ar, x, incx);
+        csrscl(n, ar, x, incx);
 
     } else if (ar == ZERO) {
         if (absi > safmax) {

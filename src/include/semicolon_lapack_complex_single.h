@@ -54,7 +54,6 @@ SEMICOLON_API INT  ilaclc(const INT m, const INT n, const c64* restrict A, const
 SEMICOLON_API INT  ilaclr(const INT m, const INT n, const c64* restrict A, const INT lda);
 SEMICOLON_API void cbbcsd(const char* jobu1, const char* jobu2, const char* jobv1t, const char* jobv2t, const char* trans, const INT m, const INT p, const INT q, f32* restrict theta, f32* restrict phi, c64* restrict U1, const INT ldu1, c64* restrict U2, const INT ldu2, c64* restrict V1T, const INT ldv1t, c64* restrict V2T, const INT ldv2t, f32* restrict B11D, f32* restrict B11E, f32* restrict B12D, f32* restrict B12E, f32* restrict B21D, f32* restrict B21E, f32* restrict B22D, f32* restrict B22E, f32* restrict rwork, const INT lrwork, INT* info);
 SEMICOLON_API void cbdsqr(const char* uplo, const INT n, const INT ncvt, const INT nru, const INT ncc, f32* restrict D, f32* restrict E, c64* restrict VT, const INT ldvt, c64* restrict U, const INT ldu, c64* restrict C, const INT ldc, f32* restrict rwork, INT* info);
-SEMICOLON_API void cdrscl(const INT n, const f32 sa, c64* restrict sx, const INT incx);
 SEMICOLON_API void cgbcon(const char* norm, const INT n, const INT kl, const INT ku, const c64* restrict AB, const INT ldab, const INT* restrict ipiv, const f32 anorm, f32* rcond, c64* restrict work, f32* restrict rwork, INT* info);
 SEMICOLON_API void cgbequ(const INT m, const INT n, const INT kl, const INT ku, const c64* restrict AB, const INT ldab, f32* restrict R, f32* restrict C, f32* rowcnd, f32* colcnd, f32* amax, INT* info);
 SEMICOLON_API void cgbequb(const INT m, const INT n, const INT kl, const INT ku, const c64* restrict AB, const INT ldab, f32* restrict R, f32* restrict C, f32* rowcnd, f32* colcnd, f32* amax, INT* info);
@@ -388,6 +387,7 @@ SEMICOLON_API void cspsvx(const char* fact, const char* uplo, const INT n, const
 SEMICOLON_API void csptrf(const char* uplo, const INT n, c64* restrict AP, INT* restrict ipiv, INT* info);
 SEMICOLON_API void csptri(const char* uplo, const INT n, c64* restrict AP, const INT* restrict ipiv, c64* restrict work, INT* info);
 SEMICOLON_API void csptrs(const char* uplo, const INT n, const INT nrhs, const c64* restrict AP, const INT* restrict ipiv, c64* restrict B, const INT ldb, INT* info);
+SEMICOLON_API void csrscl(const INT n, const f32 sa, c64* restrict sx, const INT incx);
 SEMICOLON_API void cstedc(const char* compz, const INT n, f32* D, f32* E, c64* Z, const INT ldz, c64* work, const INT lwork, f32* rwork, const INT lrwork, INT* iwork, const INT liwork, INT* info);
 SEMICOLON_API void cstegr(const char* jobz, const char* range, const INT n, f32* restrict D, f32* restrict E, const f32 vl, const f32 vu, const INT il, const INT iu, const f32 abstol, INT* m, f32* restrict W, c64* restrict Z, const INT ldz, INT* restrict isuppz, f32* restrict work, const INT lwork, INT* restrict iwork, const INT liwork, INT* info);
 SEMICOLON_API void cstein(const INT n, const f32* restrict D, const f32* restrict E, const INT m, const f32* restrict W, const INT* restrict iblock, const INT* restrict isplit, c64* restrict Z, const INT ldz, f32* restrict work, INT* restrict iwork, INT* restrict ifail, INT* info);

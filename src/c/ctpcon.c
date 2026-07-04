@@ -111,7 +111,7 @@ void ctpcon(
                     xnorm = fabsf(crealf(work[ix])) + fabsf(cimagf(work[ix]));
                     if (scale < xnorm * smlnum || scale == ZERO)
                         return;
-                    cdrscl(n, scale, work, 1);
+                    csrscl(n, scale, work, 1);
                 }
             }
         } while (kase != 0);

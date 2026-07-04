@@ -172,7 +172,7 @@ void cgbcon(
             if (scale < (fabsf(crealf(work[ix])) + fabsf(cimagf(work[ix]))) * smlnum || scale == ZERO) {
                 return;
             }
-            cdrscl(n, scale, work, 1);
+            csrscl(n, scale, work, 1);
         }
     }
 

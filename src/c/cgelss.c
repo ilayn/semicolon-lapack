@@ -319,7 +319,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
         *rank = 0;
         for (i = 0; i < n; i++) {
             if (S[i] > thr) {
-                cdrscl(nrhs, S[i], &B[i], ldb);
+                csrscl(nrhs, S[i], &B[i], ldb);
                 (*rank)++;
             } else {
                 claset("F", 1, nrhs, CZERO, CZERO, &B[i], ldb);
@@ -400,7 +400,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
         *rank = 0;
         for (i = 0; i < m; i++) {
             if (S[i] > thr) {
-                cdrscl(nrhs, S[i], &B[i], ldb);
+                csrscl(nrhs, S[i], &B[i], ldb);
                 (*rank)++;
             } else {
                 claset("F", 1, nrhs, CZERO, CZERO, &B[i], ldb);
@@ -473,7 +473,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
         *rank = 0;
         for (i = 0; i < m; i++) {
             if (S[i] > thr) {
-                cdrscl(nrhs, S[i], &B[i], ldb);
+                csrscl(nrhs, S[i], &B[i], ldb);
                 (*rank)++;
             } else {
                 claset("F", 1, nrhs, CZERO, CZERO, &B[i], ldb);

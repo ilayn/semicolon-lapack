@@ -1,6 +1,6 @@
 /**
- * @file cdrscl.c
- * @brief CDRSCL multiplies a vector by the reciprocal of a real scalar.
+ * @file csrscl.c
+ * @brief CSRSCL multiplies a vector by the reciprocal of a real scalar.
  */
 
 #include <math.h>
@@ -10,19 +10,19 @@
 #include "semicolon_lapack_complex_single.h"
 
 /**
- * CDRSCL multiplies an n-element complex vector x by the real scalar 1/a.
+ * CSRSCL multiplies an n-element complex vector x by the real scalar 1/a.
  * This is done without overflow or underflow as long as the final
  * result x/a does not overflow or underflow.
  *
  * @param[in]     n     The number of components of the vector x.
  * @param[in]     sa    The scalar a which is used to divide each component of x.
  *                      sa must be >= 0, or the subroutine will divide by zero.
- * @param[in,out] sx    Complex*16 array, dimension (1+(n-1)*abs(incx)).
+ * @param[in,out] sx    complex array, dimension (1+(n-1)*abs(incx)).
  *                      The n-element vector x.
  * @param[in]     incx  The increment between successive values of the vector sx.
  *                      incx > 0.
  */
-void cdrscl(
+void csrscl(
     const INT n,
     const f32 sa,
     c64* restrict sx,

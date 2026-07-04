@@ -71,6 +71,7 @@ SPECIAL_SOURCES = {
     "max1":        {"z": ["izmax1"], "c": ["icmax1"]},
     "lag2c":       {"z": ["zlag2c"]},
     "lat2c":       {"z": ["zlat2c"]},
+    "drscl":       {"c": ["csrscl"], "z": ["zdrscl"]},
 }
 
 # Pages with no precision prefix (precision-independent utilities).

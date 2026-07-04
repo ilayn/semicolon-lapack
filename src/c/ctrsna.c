@@ -204,7 +204,7 @@ void ctrsna(const char* job, const char* howmny, const INT* select,
                     xnorm = cabs1f(work[ix]);
                     if (scale < xnorm * smlnum || scale == ZERO)
                         goto L40;
-                    cdrscl(n, scale, work, 1);
+                    csrscl(n, scale, work, 1);
                 }
             }
 

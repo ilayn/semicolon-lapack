@@ -107,7 +107,7 @@ void cpbcon(
                 ix = cblas_icamax(n, work, 1);
                 if (scale < cabs1f(work[ix]) * smlnum || scale == ZERO)
                     return;
-                cdrscl(n, scale, work, 1);
+                csrscl(n, scale, work, 1);
             }
         }
     } while (kase != 0);

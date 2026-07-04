@@ -5,7 +5,6 @@
 
 #define cbbcsd LAPACK_NAME(cbbcsd)
 #define cbdsqr LAPACK_NAME(cbdsqr)
-#define cdrscl LAPACK_NAME(cdrscl)
 #define cgbbrd LAPACK_NAME(cgbbrd)
 #define cgbcon LAPACK_NAME(cgbcon)
 #define cgbequ LAPACK_NAME(cgbequ)
@@ -355,6 +354,7 @@
 #define csptrf LAPACK_NAME(csptrf)
 #define csptri LAPACK_NAME(csptri)
 #define csptrs LAPACK_NAME(csptrs)
+#define csrscl LAPACK_NAME(csrscl)
 #define cstedc LAPACK_NAME(cstedc)
 #define cstegr LAPACK_NAME(cstegr)
 #define cstein LAPACK_NAME(cstein)

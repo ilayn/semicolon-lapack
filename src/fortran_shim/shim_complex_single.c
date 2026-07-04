@@ -33,7 +33,6 @@ INT ilaclc_(INT* m, INT* n, c64* A, INT* lda);
 INT ilaclr_(INT* m, INT* n, c64* A, INT* lda);
 void cbbcsd_(char* jobu1, char* jobu2, char* jobv1t, char* jobv2t, char* trans, INT* m, INT* p, INT* q, f32* theta, f32* phi, c64* U1, INT* ldu1, c64* U2, INT* ldu2, c64* V1T, INT* ldv1t, c64* V2T, INT* ldv2t, f32* B11D, f32* B11E, f32* B12D, f32* B12E, f32* B21D, f32* B21E, f32* B22D, f32* B22E, f32* rwork, INT* lrwork, INT* info);
 void cbdsqr_(char* uplo, INT* n, INT* ncvt, INT* nru, INT* ncc, f32* D, f32* E, c64* VT, INT* ldvt, c64* U, INT* ldu, c64* C, INT* ldc, f32* rwork, INT* info);
-void cdrscl_(INT* n, f32* sa, c64* sx, INT* incx);
 void cgbcon_(char* norm, INT* n, INT* kl, INT* ku, c64* AB, INT* ldab, INT* ipiv, f32* anorm, f32* rcond, c64* work, f32* rwork, INT* info);
 void cgbequ_(INT* m, INT* n, INT* kl, INT* ku, c64* AB, INT* ldab, f32* R, f32* C, f32* rowcnd, f32* colcnd, f32* amax, INT* info);
 void cgbequb_(INT* m, INT* n, INT* kl, INT* ku, c64* AB, INT* ldab, f32* R, f32* C, f32* rowcnd, f32* colcnd, f32* amax, INT* info);
@@ -367,6 +366,7 @@ void cspsvx_(char* fact, char* uplo, INT* n, INT* nrhs, c64* AP, c64* AFP, INT* 
 void csptrf_(char* uplo, INT* n, c64* AP, INT* ipiv, INT* info);
 void csptri_(char* uplo, INT* n, c64* AP, INT* ipiv, c64* work, INT* info);
 void csptrs_(char* uplo, INT* n, INT* nrhs, c64* AP, INT* ipiv, c64* B, INT* ldb, INT* info);
+void csrscl_(INT* n, f32* sa, c64* sx, INT* incx);
 void cstedc_(char* compz, INT* n, f32* D, f32* E, c64* Z, INT* ldz, c64* work, INT* lwork, f32* rwork, INT* lrwork, INT* iwork, INT* liwork, INT* info);
 void cstegr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, c64* Z, INT* ldz, INT* isuppz, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* info);
 void cstein_(INT* n, f32* D, f32* E, INT* m, f32* W, INT* iblock, INT* isplit, c64* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info);
@@ -608,10 +608,6 @@ void cbbcsd_(char* jobu1, char* jobu2, char* jobv1t, char* jobv2t, char* trans, 
 
 void cbdsqr_(char* uplo, INT* n, INT* ncvt, INT* nru, INT* ncc, f32* D, f32* E, c64* VT, INT* ldvt, c64* U, INT* ldu, c64* C, INT* ldc, f32* rwork, INT* info) {
     cbdsqr(uplo, *n, *ncvt, *nru, *ncc, D, E, VT, *ldvt, U, *ldu, C, *ldc, rwork, info);
-}
-
-void cdrscl_(INT* n, f32* sa, c64* sx, INT* incx) {
-    cdrscl(*n, *sa, sx, *incx);
 }
 
 void cgbcon_(char* norm, INT* n, INT* kl, INT* ku, c64* AB, INT* ldab, INT* ipiv, f32* anorm, f32* rcond, c64* work, f32* rwork, INT* info) {
@@ -2538,6 +2534,10 @@ void csptrs_(char* uplo, INT* n, INT* nrhs, c64* AP, INT* ipiv, c64* B, INT* ldb
     }
     csptrs(uplo, *n, *nrhs, AP, _ipiv0, B, *ldb, info);
     free(_ipiv0);
+}
+
+void csrscl_(INT* n, f32* sa, c64* sx, INT* incx) {
+    csrscl(*n, *sa, sx, *incx);
 }
 
 void cstedc_(char* compz, INT* n, f32* D, f32* E, c64* Z, INT* ldz, c64* work, INT* lwork, f32* rwork, INT* lrwork, INT* iwork, INT* liwork, INT* info) {

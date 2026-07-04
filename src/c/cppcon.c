@@ -104,7 +104,7 @@ void cppcon(
             if (scale < cabs1f(work[ix]) * smlnum || scale == ZERO) {
                 return;
             }
-            cdrscl(n, scale, work, 1);
+            csrscl(n, scale, work, 1);
         }
     }
 

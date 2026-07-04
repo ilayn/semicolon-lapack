@@ -126,7 +126,7 @@ void ctrcon(const char* norm, const char* uplo, const char* diag,
                 if (scale < xnorm * smlnum || scale == ZERO) {
                     return;
                 }
-                cdrscl(n, scale, work, 1);
+                csrscl(n, scale, work, 1);
             }
         }
 
