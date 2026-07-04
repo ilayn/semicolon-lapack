@@ -2393,7 +2393,7 @@ void sstegr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
     INT _iu = *iu - 1;
     sstegr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, isuppz, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 
@@ -2421,7 +2421,7 @@ void sstemr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
     INT _iu = *iu - 1;
     sstemr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, m, W, Z, *ldz, *nzc, isuppz, tryrac, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 
@@ -2446,7 +2446,7 @@ void sstevr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
     INT _iu = *iu - 1;
     sstevr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, isuppz, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v') && (*range == 'A' || *range == 'a'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 

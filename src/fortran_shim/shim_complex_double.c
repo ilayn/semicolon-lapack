@@ -2565,7 +2565,7 @@ void zstegr_(char* jobz, char* range, INT* n, f64* D, f64* E, f64* vl, f64* vu, 
     INT _iu = *iu - 1;
     zstegr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, isuppz, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 
@@ -2593,7 +2593,7 @@ void zstemr_(char* jobz, char* range, INT* n, f64* D, f64* E, f64* vl, f64* vu, 
     INT _iu = *iu - 1;
     zstemr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, m, W, Z, *ldz, *nzc, isuppz, tryrac, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 

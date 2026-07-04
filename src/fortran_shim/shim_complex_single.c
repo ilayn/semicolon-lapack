@@ -2549,7 +2549,7 @@ void cstegr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
     INT _iu = *iu - 1;
     cstegr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, isuppz, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 
@@ -2577,7 +2577,7 @@ void cstemr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
     INT _iu = *iu - 1;
     cstemr(jobz, range, *n, D, E, *vl, *vu, _il, _iu, m, W, Z, *ldz, *nzc, isuppz, tryrac, work, *lwork, iwork, *liwork, info);
     if (*lwork != -1) {
-        if (isuppz) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
+        if (isuppz && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = 2 * (*m); for (INT _i = 0; _i < _sz; _i++) isuppz[_i]++; }
     }
 }
 
