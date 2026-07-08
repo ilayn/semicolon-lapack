@@ -22,7 +22,7 @@
  * @param[out]    dmin   Minimum value of d.
  * @param[out]    sigma  Sum of shifts used in current segment.
  * @param[in,out] desig  Lower order part of SIGMA.
- * @param[in]     qmax   Maximum value of q.
+ * @param[in,out] qmax   Maximum value of q.
  * @param[in,out] nfail  Increment NFAIL by 1 each time the shift was too big.
  * @param[in,out] iter   Increment ITER by 1 for each iteration.
  * @param[in,out] ndiv   Increment NDIV by 1 for each division.
@@ -38,7 +38,7 @@
  * @param[in,out] tau    This is the shift.
  */
 void dlasq3(const INT i0, INT* n0, f64* restrict Z,
-            INT* pp, f64* dmin, f64* sigma, f64* desig,
+            INT* pp, f64* dmin, f64* sigma, f64* desig, f64* qmax,
             INT* nfail, INT* iter, INT* ndiv,
             const INT ieee, INT* ttype, f64* dmin1, f64* dmin2,
             f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau)
@@ -161,6 +161,8 @@ compute_shift:
                 Z[4 * (*n0) - *pp + 3] = fmin(fmin(Z[4 * (*n0) - *pp + 3],
                                                      Z[4 * i0 - *pp + 3]),
                                                 Z[4 * i0 - *pp + 7]);
+                *qmax = fmax(fmax(*qmax, Z[4 * i0 + *pp]),
+                             Z[4 * i0 + *pp + 4]);
                 *dmin = -ZERO;
             }
         }

@@ -251,7 +251,7 @@ void dlasdt_(INT* n, INT* lvl, INT* nd, INT* inode, INT* ndiml, INT* ndimr, INT*
 void dlaset_(char* uplo, INT* m, INT* n, f64* alpha, f64* beta, f64* A, INT* lda);
 void dlasq1_(INT* n, f64* D, f64* E, f64* work, INT* info);
 void dlasq2_(INT* n, f64* Z, INT* info);
-void dlasq3_(INT* i0, INT* n0, f64* Z, INT* pp, f64* dmin, f64* sigma, f64* desig, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau);
+void dlasq3_(INT* i0, INT* n0, f64* Z, INT* pp, f64* dmin, f64* sigma, f64* desig, f64* qmax, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau);
 void dlasq4_(INT* i0, INT* n0, f64* Z, INT* pp, INT* n0in, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* tau, INT* ttype, f64* g);
 void dlasq5_(INT* i0, INT* n0, f64* Z, INT* pp, f64* tau, f64* sigma, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dnm1, f64* dnm2, INT* ieee, f64* eps);
 void dlasq6_(INT* i0, INT* n0, f64* Z, INT* pp, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dnm1, f64* dnm2);
@@ -1762,8 +1762,8 @@ void dlasq2_(INT* n, f64* Z, INT* info) {
     dlasq2(*n, Z, info);
 }
 
-void dlasq3_(INT* i0, INT* n0, f64* Z, INT* pp, f64* dmin, f64* sigma, f64* desig, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau) {
-    dlasq3(*i0, n0, Z, pp, dmin, sigma, desig, nfail, iter, ndiv, *ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
+void dlasq3_(INT* i0, INT* n0, f64* Z, INT* pp, f64* dmin, f64* sigma, f64* desig, f64* qmax, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* g, f64* tau) {
+    dlasq3(*i0, n0, Z, pp, dmin, sigma, desig, qmax, nfail, iter, ndiv, *ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
 }
 
 void dlasq4_(INT* i0, INT* n0, f64* Z, INT* pp, INT* n0in, f64* dmin, f64* dmin1, f64* dmin2, f64* dn, f64* dn1, f64* dn2, f64* tau, INT* ttype, f64* g) {

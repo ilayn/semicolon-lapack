@@ -251,7 +251,7 @@ void slasdt_(INT* n, INT* lvl, INT* nd, INT* inode, INT* ndiml, INT* ndimr, INT*
 void slaset_(char* uplo, INT* m, INT* n, f32* alpha, f32* beta, f32* A, INT* lda);
 void slasq1_(INT* n, f32* D, f32* E, f32* work, INT* info);
 void slasq2_(INT* n, f32* Z, INT* info);
-void slasq3_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* sigma, f32* desig, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau);
+void slasq3_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* sigma, f32* desig, f32* qmax, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau);
 void slasq4_(INT* i0, INT* n0, f32* Z, INT* pp, INT* n0in, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* tau, INT* ttype, f32* g);
 void slasq5_(INT* i0, INT* n0, f32* Z, INT* pp, f32* tau, f32* sigma, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2, INT* ieee, f32* eps);
 void slasq6_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dnm1, f32* dnm2);
@@ -1759,8 +1759,8 @@ void slasq2_(INT* n, f32* Z, INT* info) {
     slasq2(*n, Z, info);
 }
 
-void slasq3_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* sigma, f32* desig, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau) {
-    slasq3(*i0, n0, Z, pp, dmin, sigma, desig, nfail, iter, ndiv, *ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
+void slasq3_(INT* i0, INT* n0, f32* Z, INT* pp, f32* dmin, f32* sigma, f32* desig, f32* qmax, INT* nfail, INT* iter, INT* ndiv, INT* ieee, INT* ttype, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* g, f32* tau) {
+    slasq3(*i0, n0, Z, pp, dmin, sigma, desig, qmax, nfail, iter, ndiv, *ieee, ttype, dmin1, dmin2, dn, dn1, dn2, g, tau);
 }
 
 void slasq4_(INT* i0, INT* n0, f32* Z, INT* pp, INT* n0in, f32* dmin, f32* dmin1, f32* dmin2, f32* dn, f32* dn1, f32* dn2, f32* tau, INT* ttype, f32* g) {

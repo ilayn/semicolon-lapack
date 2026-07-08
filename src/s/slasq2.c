@@ -369,7 +369,7 @@ L100:
             }
 
             /* While submatrix unfinished take a good dqds step. */
-            slasq3(i0, &n0, Z, &pp, &dmin, &sigma, &desig, &nfail,
+            slasq3(i0, &n0, Z, &pp, &dmin, &sigma, &desig, &qmax, &nfail,
                    &iter, &ndiv, ieee, &ttype, &dmin1, &dmin2, &dn, &dn1,
                    &dn2, &g, &tau);
 
