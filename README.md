@@ -15,20 +15,14 @@ In practice, this means a full BLAS/LAPACK stack that needs only a C compiler. F
 All four precisions (double, single, complex, double-complex) are 100% translated.
 
 > [!NOTE]
-> XBLAS extra-precision variants are out of scope.
+> XBLAS extra-precision variants are out of scope however some helper functions from XBLAS suite are added.
 
 Tests are ported from LAPACK's official test suite and fully ported (~450K parametrized test cases).
 
 
 ## Disclosure
 
-This work is heavily assisted by a paid LLM subscription with personal financing. While there is a lot of manual labor involved in porting the critical routines, a significant portion of the codebase was produced predominantly by the LLM, in particular:
-
-- some of the C code for the double precision routines,
-- porting the test code and Meson/CMocka conversion,
-- S, C, and Z precision generation from D routines (via script),
-- `.rst` file generation script,
-- generating C-style docstrings from the original Fortran comments.
+This work is heavily assisted by a paid LLM subscription with personal financing to reduce the translation effort. While, still, there is a lot of manual labor went into porting the critical routines, a significant portion of the codebase was produced predominantly by the LLM.
 
 This creates an obvious ethical concern and we acknowledge and share it, hence the disclosure. A lot of care has gone into ensuring the resulting C code is a mechanical translation with no algorithmic changes. If you notice something that looks like a breach of copyright, please let us know. That should not happen.
 

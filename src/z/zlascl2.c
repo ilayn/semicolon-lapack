@@ -8,7 +8,7 @@
 
 /**
  * ZLASCL2 performs a diagonal scaling on a matrix:
- *   x <-- D * x
+ *   X becomes D * X
  * where the DOUBLE PRECISION diagonal matrix D is stored as a vector.
  *
  * Eventually to be replaced by BLAS_zge_diag_scale in the new BLAS

@@ -26,6 +26,8 @@ f32 slantr_(char* norm, char* uplo, char* diag, INT* m, INT* n, f32* A, INT* lda
 f32 slapy2_(f32* x, f32* y);
 f32 slapy3_(f32* x, f32* y, f32* z);
 f32 slarmm_(f32* anorm, f32* bnorm, f32* cnorm);
+f32 sla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f32* AB, INT* ldab, f32* AFB, INT* ldafb);
+f32 sla_gerpvgrw_(INT* n, INT* ncols, f32* A, INT* lda, f32* AF, INT* ldaf);
 INT sisnan_(f32* din);
 INT slaisnan_(f32* din1, f32* din2);
 INT slaneg_(INT* n, f32* D, f32* lld, f32* sigma, f32* pivmin, INT* r);
@@ -137,6 +139,9 @@ void shgeqz_(char* job, char* compq, char* compz, INT* n, INT* ilo, INT* ihi, f3
 void shsein_(char* side, char* eigsrc, char* initv, INT* select, INT* n, f32* H, INT* ldh, f32* wr, f32* wi, f32* VL, INT* ldvl, f32* VR, INT* ldvr, INT* mm, INT* m, f32* work, INT* ifaill, INT* ifailr, INT* info);
 void shseqr_(char* job, char* compz, INT* n, INT* ilo, INT* ihi, f32* H, INT* ldh, f32* wr, f32* wi, f32* Z, INT* ldz, f32* work, INT* lwork, INT* info);
 void slabad_(f32* small, f32* large);
+void sla_gbamv_(INT* trans, INT* m, INT* n, INT* kl, INT* ku, f32* alpha, f32* AB, INT* ldab, f32* X, INT* incx, f32* beta, f32* Y, INT* incy);
+void sla_geamv_(INT* trans, INT* m, INT* n, f32* alpha, f32* A, INT* lda, f32* X, INT* incx, f32* beta, f32* Y, INT* incy);
+void sla_lin_berr_(INT* n, INT* nz, INT* nrhs, f32* RES, f32* AYB, f32* BERR);
 void slabrd_(INT* m, INT* n, INT* nb, f32* A, INT* lda, f32* D, f32* E, f32* tauq, f32* taup, f32* X, INT* ldx, f32* Y, INT* ldy);
 void slacn2_(INT* n, f32* V, f32* X, INT* isgn, f32* est, INT* kase, INT* isave);
 void slacon_(INT* n, f32* V, f32* X, INT* ISGN, f32* est, INT* kase);
@@ -216,6 +221,7 @@ void slarfx_(char* side, INT* m, INT* n, f32* v, f32* tau, f32* C, INT* ldc, f32
 void slarfy_(char* uplo, INT* n, f32* V, INT* incv, f32* tau, f32* C, INT* ldc, f32* work);
 void slargv_(INT* n, f32* X, INT* incx, f32* Y, INT* incy, f32* C, INT* incc);
 void slarnv_(INT* idist, INT* iseed, INT* n, f32* X);
+void slarscl2_(INT* m, INT* n, f32* D, f32* X, INT* ldx);
 void slarra_(INT* n, f32* D, f32* E, f32* E2, f32* spltol, f32* tnrm, INT* nsplit, INT* isplit, INT* info);
 void slarrb_(INT* n, f32* D, f32* lld, INT* ifirst, INT* ilast, f32* rtol1, f32* rtol2, INT* offset, f32* W, f32* wgap, f32* werr, f32* work, INT* iwork, f32* pivmin, f32* spdiam, INT* twist, INT* info);
 void slarrc_(char* jobt, INT* n, f32* vl, f32* vu, f32* D, f32* E, f32* pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info);
@@ -236,6 +242,7 @@ void slarzb_(char* side, char* trans, char* direct, char* storev, INT* m, INT* n
 void slarzt_(char* direct, char* storev, INT* n, INT* k, f32* V, INT* ldv, f32* tau, f32* T, INT* ldt);
 void slas2_(f32* f, f32* g, f32* h, f32* ssmin, f32* ssmax);
 void slascl_(char* type, INT* kl, INT* ku, f32* cfrom, f32* cto, INT* m, INT* n, f32* A, INT* lda, INT* info);
+void slascl2_(INT* m, INT* n, f32* D, f32* X, INT* ldx);
 void slasd0_(INT* n, INT* sqre, f32* D, f32* E, f32* U, INT* ldu, f32* VT, INT* ldvt, INT* smlsiz, INT* IWORK, f32* work, INT* info);
 void slasd1_(INT* nl, INT* nr, INT* sqre, f32* D, f32* alpha, f32* beta, f32* U, INT* ldu, f32* VT, INT* ldvt, INT* IDXQ, INT* IWORK, f32* work, INT* info);
 void slasd2_(INT* nl, INT* nr, INT* sqre, INT* k, f32* D, f32* Z, f32* alpha, f32* beta, f32* U, INT* ldu, f32* VT, INT* ldvt, f32* DSIGMA, f32* U2, INT* ldu2, f32* VT2, INT* ldvt2, INT* IDXP, INT* IDX, INT* IDXC, INT* IDXQ, INT* COLTYP, INT* info);
@@ -576,6 +583,16 @@ f32 slapy3_(f32* x, f32* y, f32* z) {
 
 f32 slarmm_(f32* anorm, f32* bnorm, f32* cnorm) {
     f32 _ret = slarmm(*anorm, *bnorm, *cnorm);
+    return _ret;
+}
+
+f32 sla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f32* AB, INT* ldab, f32* AFB, INT* ldafb) {
+    f32 _ret = sla_gbrpvgrw(*n, *kl, *ku, *ncols, AB, *ldab, AFB, *ldafb);
+    return _ret;
+}
+
+f32 sla_gerpvgrw_(INT* n, INT* ncols, f32* A, INT* lda, f32* AF, INT* ldaf) {
+    f32 _ret = sla_gerpvgrw(*n, *ncols, A, *lda, AF, *ldaf);
     return _ret;
 }
 
@@ -1227,6 +1244,18 @@ void slabad_(f32* small, f32* large) {
     slabad(small, large);
 }
 
+void sla_gbamv_(INT* trans, INT* m, INT* n, INT* kl, INT* ku, f32* alpha, f32* AB, INT* ldab, f32* X, INT* incx, f32* beta, f32* Y, INT* incy) {
+    sla_gbamv(*trans, *m, *n, *kl, *ku, *alpha, AB, *ldab, X, *incx, *beta, Y, *incy);
+}
+
+void sla_geamv_(INT* trans, INT* m, INT* n, f32* alpha, f32* A, INT* lda, f32* X, INT* incx, f32* beta, f32* Y, INT* incy) {
+    sla_geamv(*trans, *m, *n, *alpha, A, *lda, X, *incx, *beta, Y, *incy);
+}
+
+void sla_lin_berr_(INT* n, INT* nz, INT* nrhs, f32* RES, f32* AYB, f32* BERR) {
+    sla_lin_berr(*n, *nz, *nrhs, RES, AYB, BERR);
+}
+
 void slabrd_(INT* m, INT* n, INT* nb, f32* A, INT* lda, f32* D, f32* E, f32* tauq, f32* taup, f32* X, INT* ldx, f32* Y, INT* ldy) {
     slabrd(*m, *n, *nb, A, *lda, D, E, tauq, taup, X, *ldx, Y, *ldy);
 }
@@ -1584,6 +1613,10 @@ void slarnv_(INT* idist, INT* iseed, INT* n, f32* X) {
     slarnv(*idist, iseed, *n, X);
 }
 
+void slarscl2_(INT* m, INT* n, f32* D, f32* X, INT* ldx) {
+    slarscl2(*m, *n, D, X, *ldx);
+}
+
 void slarra_(INT* n, f32* D, f32* E, f32* E2, f32* spltol, f32* tnrm, INT* nsplit, INT* isplit, INT* info) {
     slarra(*n, D, E, E2, *spltol, *tnrm, nsplit, isplit, info);
     if (isplit) { INT _sz = *nsplit; for (INT _i = 0; _i < _sz; _i++) isplit[_i]++; }
@@ -1695,6 +1728,10 @@ void slas2_(f32* f, f32* g, f32* h, f32* ssmin, f32* ssmax) {
 
 void slascl_(char* type, INT* kl, INT* ku, f32* cfrom, f32* cto, INT* m, INT* n, f32* A, INT* lda, INT* info) {
     slascl(type, *kl, *ku, *cfrom, *cto, *m, *n, A, *lda, info);
+}
+
+void slascl2_(INT* m, INT* n, f32* D, f32* X, INT* ldx) {
+    slascl2(*m, *n, D, X, *ldx);
 }
 
 void slasd0_(INT* n, INT* sqre, f32* D, f32* E, f32* U, INT* ldu, f32* VT, INT* ldvt, INT* smlsiz, INT* IWORK, f32* work, INT* info) {

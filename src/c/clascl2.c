@@ -8,17 +8,17 @@
 
 /**
  * CLASCL2 performs a diagonal scaling on a matrix:
- *   x <-- D * x
- * where the DOUBLE PRECISION diagonal matrix D is stored as a vector.
+ *   X becomes D * X
+ * where the diagonal matrix D is stored as a vector.
  *
- * Eventually to be replaced by BLAS_zge_diag_scale in the new BLAS
+ * Eventually to be replaced by BLAS_cge_diag_scale in the new BLAS
  * standard.
  *
  * @param[in]     m     The number of rows of D and X. m >= 0.
  * @param[in]     n     The number of columns of X. n >= 0.
  * @param[in]     D     Single precision array, length m.
  *                      Diagonal matrix D, stored as a vector of length m.
- * @param[in,out] X     Complex*16 array, dimension (ldx, n).
+ * @param[in,out] X     Complex array, dimension (ldx, n).
  *                      On entry, the matrix X to be scaled by D.
  *                      On exit, the scaled matrix.
  * @param[in]     ldx   The leading dimension of the matrix X. ldx >= m.
