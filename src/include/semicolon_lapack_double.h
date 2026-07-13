@@ -32,6 +32,8 @@ SEMICOLON_API f64  dlantr(const char* norm, const char* uplo, const char* diag, 
 SEMICOLON_API f64  dlapy2(const f64 x, const f64 y);
 SEMICOLON_API f64  dlapy3(const f64 x, const f64 y, const f64 z);
 SEMICOLON_API f64  dlarmm(const f64 anorm, const f64 bnorm, const f64 cnorm);
+SEMICOLON_API f64  dla_gbrpvgrw(const INT n, const INT kl, const INT ku, const INT ncols, const f64* restrict AB, const INT ldab, const f64* restrict AFB, const INT ldafb);
+SEMICOLON_API f64  dla_gerpvgrw(const INT n, const INT ncols, const f64* restrict A, const INT lda, const f64* restrict AF, const INT ldaf);
 SEMICOLON_API INT  disnan(const f64 din);
 SEMICOLON_API INT  dlaisnan(const f64 din1, const f64 din2);
 SEMICOLON_API INT  dlaneg(const INT n, const f64* D, const f64* lld, const f64 sigma, const f64 pivmin, const INT r);
@@ -142,6 +144,9 @@ SEMICOLON_API void dhgeqz(const char* job, const char* compq, const char* compz,
 SEMICOLON_API void dhsein(const char* side, const char* eigsrc, const char* initv, INT* restrict select, const INT n, const f64* restrict H, const INT ldh, f64* restrict wr, const f64* restrict wi, f64* restrict VL, const INT ldvl, f64* restrict VR, const INT ldvr, const INT mm, INT* m, f64* restrict work, INT* restrict ifaill, INT* restrict ifailr, INT* info);
 SEMICOLON_API void dhseqr(const char* job, const char* compz, const INT n, const INT ilo, const INT ihi, f64* H, const INT ldh, f64* wr, f64* wi, f64* Z, const INT ldz, f64* work, const INT lwork, INT* info);
 SEMICOLON_API void dlabad(f64* small, f64* large);
+SEMICOLON_API void dla_gbamv(const INT trans, const INT m, const INT n, const INT kl, const INT ku, const f64 alpha, const f64* restrict AB, const INT ldab, const f64* restrict X, const INT incx, const f64 beta, f64* restrict Y, const INT incy);
+SEMICOLON_API void dla_geamv(const INT trans, const INT m, const INT n, const f64 alpha, const f64* restrict A, const INT lda, const f64* restrict X, const INT incx, const f64 beta, f64* restrict Y, const INT incy);
+SEMICOLON_API void dla_lin_berr(const INT n, const INT nz, const INT nrhs, const f64* restrict RES, const f64* restrict AYB, f64* restrict BERR);
 SEMICOLON_API void dlabrd(const INT m, const INT n, const INT nb, f64* restrict A, const INT lda, f64* restrict D, f64* restrict E, f64* restrict tauq, f64* restrict taup, f64* restrict X, const INT ldx, f64* restrict Y, const INT ldy);
 SEMICOLON_API void dlacn2(const INT n, f64* restrict V, f64* restrict X, INT* restrict isgn, f64* est, INT* kase, INT* restrict isave);
 SEMICOLON_API void dlacon(const INT n, f64* restrict V, f64* restrict X, INT* restrict ISGN, f64* est, INT* kase);
@@ -222,6 +227,7 @@ SEMICOLON_API void dlarfx(const char* side, const INT m, const INT n, const f64*
 SEMICOLON_API void dlarfy(const char* uplo, const INT n, const f64* restrict V, const INT incv, const f64 tau, f64* restrict C, const INT ldc, f64* restrict work);
 SEMICOLON_API void dlargv(const INT n, f64* restrict X, const INT incx, f64* restrict Y, const INT incy, f64* restrict C, const INT incc);
 SEMICOLON_API void dlarnv(const INT idist, INT* restrict iseed, const INT n, f64* restrict X);
+SEMICOLON_API void dlarscl2(const INT m, const INT n, const f64* restrict D, f64* restrict X, const INT ldx);
 SEMICOLON_API void dlarra(const INT n, const f64* restrict D, f64* restrict E, f64* restrict E2, const f64 spltol, const f64 tnrm, INT* nsplit, INT* restrict isplit, INT* info);
 SEMICOLON_API void dlarrb(const INT n, const f64* D, const f64* lld, const INT ifirst, const INT ilast, const f64 rtol1, const f64 rtol2, const INT offset, f64* W, f64* wgap, f64* werr, f64* work, INT* iwork, const f64 pivmin, const f64 spdiam, const INT twist, INT* info);
 SEMICOLON_API void dlarrc(const char* jobt, const INT n, const f64 vl, const f64 vu, const f64* restrict D, const f64* restrict E, const f64 pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info);
@@ -242,6 +248,7 @@ SEMICOLON_API void dlarzb(const char* side, const char* trans, const char* direc
 SEMICOLON_API void dlarzt(const char* direct, const char* storev, const INT n, const INT k, const f64* restrict V, const INT ldv, const f64* restrict tau, f64* restrict T, const INT ldt);
 SEMICOLON_API void dlas2(const f64 f, const f64 g, const f64 h, f64* ssmin, f64* ssmax);
 SEMICOLON_API void dlascl(const char* type, const INT kl, const INT ku, const f64 cfrom, const f64 cto, const INT m, const INT n, f64* restrict A, const INT lda, INT* info);
+SEMICOLON_API void dlascl2(const INT m, const INT n, const f64* restrict D, f64* restrict X, const INT ldx);
 SEMICOLON_API void dlasd0(const INT n, const INT sqre, f64* restrict D, f64* restrict E, f64* restrict U, const INT ldu, f64* restrict VT, const INT ldvt, const INT smlsiz, INT* restrict IWORK, f64* restrict work, INT* info);
 SEMICOLON_API void dlasd1(const INT nl, const INT nr, const INT sqre, f64* restrict D, f64* alpha, f64* beta, f64* restrict U, const INT ldu, f64* restrict VT, const INT ldvt, INT* restrict IDXQ, INT* restrict IWORK, f64* restrict work, INT* info);
 SEMICOLON_API void dlasd2(const INT nl, const INT nr, const INT sqre, INT* k, f64* restrict D, f64* restrict Z, const f64 alpha, const f64 beta, f64* restrict U, const INT ldu, f64* restrict VT, const INT ldvt, f64* restrict DSIGMA, f64* restrict U2, const INT ldu2, f64* restrict VT2, const INT ldvt2, INT* restrict IDXP, INT* restrict IDX, INT* restrict IDXC, INT* restrict IDXQ, INT* restrict COLTYP, INT* info);

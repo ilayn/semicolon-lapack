@@ -32,6 +32,8 @@ SEMICOLON_API f32  slantr(const char* norm, const char* uplo, const char* diag, 
 SEMICOLON_API f32  slapy2(const f32 x, const f32 y);
 SEMICOLON_API f32  slapy3(const f32 x, const f32 y, const f32 z);
 SEMICOLON_API f32  slarmm(const f32 anorm, const f32 bnorm, const f32 cnorm);
+SEMICOLON_API f32  sla_gbrpvgrw(const INT n, const INT kl, const INT ku, const INT ncols, const f32* restrict AB, const INT ldab, const f32* restrict AFB, const INT ldafb);
+SEMICOLON_API f32  sla_gerpvgrw(const INT n, const INT ncols, const f32* restrict A, const INT lda, const f32* restrict AF, const INT ldaf);
 SEMICOLON_API INT  sisnan(const f32 din);
 SEMICOLON_API INT  slaisnan(const f32 din1, const f32 din2);
 SEMICOLON_API INT  slaneg(const INT n, const f32* D, const f32* lld, const f32 sigma, const f32 pivmin, const INT r);
@@ -143,6 +145,9 @@ SEMICOLON_API void shgeqz(const char* job, const char* compq, const char* compz,
 SEMICOLON_API void shsein(const char* side, const char* eigsrc, const char* initv, INT* restrict select, const INT n, const f32* restrict H, const INT ldh, f32* restrict wr, const f32* restrict wi, f32* restrict VL, const INT ldvl, f32* restrict VR, const INT ldvr, const INT mm, INT* m, f32* restrict work, INT* restrict ifaill, INT* restrict ifailr, INT* info);
 SEMICOLON_API void shseqr(const char* job, const char* compz, const INT n, const INT ilo, const INT ihi, f32* H, const INT ldh, f32* wr, f32* wi, f32* Z, const INT ldz, f32* work, const INT lwork, INT* info);
 SEMICOLON_API void slabad(f32* small, f32* large);
+SEMICOLON_API void sla_gbamv(const INT trans, const INT m, const INT n, const INT kl, const INT ku, const f32 alpha, const f32* restrict AB, const INT ldab, const f32* restrict X, const INT incx, const f32 beta, f32* restrict Y, const INT incy);
+SEMICOLON_API void sla_geamv(const INT trans, const INT m, const INT n, const f32 alpha, const f32* restrict A, const INT lda, const f32* restrict X, const INT incx, const f32 beta, f32* restrict Y, const INT incy);
+SEMICOLON_API void sla_lin_berr(const INT n, const INT nz, const INT nrhs, const f32* restrict RES, const f32* restrict AYB, f32* restrict BERR);
 SEMICOLON_API void slabrd(const INT m, const INT n, const INT nb, f32* restrict A, const INT lda, f32* restrict D, f32* restrict E, f32* restrict tauq, f32* restrict taup, f32* restrict X, const INT ldx, f32* restrict Y, const INT ldy);
 SEMICOLON_API void slacn2(const INT n, f32* restrict V, f32* restrict X, INT* restrict isgn, f32* est, INT* kase, INT* restrict isave);
 SEMICOLON_API void slacon(const INT n, f32* restrict V, f32* restrict X, INT* restrict ISGN, f32* est, INT* kase);
@@ -222,6 +227,7 @@ SEMICOLON_API void slarfx(const char* side, const INT m, const INT n, const f32*
 SEMICOLON_API void slarfy(const char* uplo, const INT n, const f32* restrict V, const INT incv, const f32 tau, f32* restrict C, const INT ldc, f32* restrict work);
 SEMICOLON_API void slargv(const INT n, f32* restrict X, const INT incx, f32* restrict Y, const INT incy, f32* restrict C, const INT incc);
 SEMICOLON_API void slarnv(const INT idist, INT* restrict iseed, const INT n, f32* restrict X);
+SEMICOLON_API void slarscl2(const INT m, const INT n, const f32* restrict D, f32* restrict X, const INT ldx);
 SEMICOLON_API void slarra(const INT n, const f32* restrict D, f32* restrict E, f32* restrict E2, const f32 spltol, const f32 tnrm, INT* nsplit, INT* restrict isplit, INT* info);
 SEMICOLON_API void slarrb(const INT n, const f32* D, const f32* lld, const INT ifirst, const INT ilast, const f32 rtol1, const f32 rtol2, const INT offset, f32* W, f32* wgap, f32* werr, f32* work, INT* iwork, const f32 pivmin, const f32 spdiam, const INT twist, INT* info);
 SEMICOLON_API void slarrc(const char* jobt, const INT n, const f32 vl, const f32 vu, const f32* restrict D, const f32* restrict E, const f32 pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info);
@@ -242,6 +248,7 @@ SEMICOLON_API void slarzb(const char* side, const char* trans, const char* direc
 SEMICOLON_API void slarzt(const char* direct, const char* storev, const INT n, const INT k, const f32* restrict V, const INT ldv, const f32* restrict tau, f32* restrict T, const INT ldt);
 SEMICOLON_API void slas2(const f32 f, const f32 g, const f32 h, f32* ssmin, f32* ssmax);
 SEMICOLON_API void slascl(const char* type, const INT kl, const INT ku, const f32 cfrom, const f32 cto, const INT m, const INT n, f32* restrict A, const INT lda, INT* info);
+SEMICOLON_API void slascl2(const INT m, const INT n, const f32* restrict D, f32* restrict X, const INT ldx);
 SEMICOLON_API void slasd0(const INT n, const INT sqre, f32* restrict D, f32* restrict E, f32* restrict U, const INT ldu, f32* restrict VT, const INT ldvt, const INT smlsiz, INT* restrict IWORK, f32* restrict work, INT* info);
 SEMICOLON_API void slasd1(const INT nl, const INT nr, const INT sqre, f32* restrict D, f32* alpha, f32* beta, f32* restrict U, const INT ldu, f32* restrict VT, const INT ldvt, INT* restrict IDXQ, INT* restrict IWORK, f32* restrict work, INT* info);
 SEMICOLON_API void slasd2(const INT nl, const INT nr, const INT sqre, INT* k, f32* restrict D, f32* restrict Z, const f32 alpha, const f32 beta, f32* restrict U, const INT ldu, f32* restrict VT, const INT ldvt, f32* restrict DSIGMA, f32* restrict U2, const INT ldu2, f32* restrict VT2, const INT ldvt2, INT* restrict IDXP, INT* restrict IDX, INT* restrict IDXC, INT* restrict IDXQ, INT* restrict COLTYP, INT* info);

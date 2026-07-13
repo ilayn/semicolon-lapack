@@ -26,6 +26,8 @@ f64 dlantr_(char* norm, char* uplo, char* diag, INT* m, INT* n, f64* A, INT* lda
 f64 dlapy2_(f64* x, f64* y);
 f64 dlapy3_(f64* x, f64* y, f64* z);
 f64 dlarmm_(f64* anorm, f64* bnorm, f64* cnorm);
+f64 dla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f64* AB, INT* ldab, f64* AFB, INT* ldafb);
+f64 dla_gerpvgrw_(INT* n, INT* ncols, f64* A, INT* lda, f64* AF, INT* ldaf);
 INT disnan_(f64* din);
 INT dlaisnan_(f64* din1, f64* din2);
 INT dlaneg_(INT* n, f64* D, f64* lld, f64* sigma, f64* pivmin, INT* r);
@@ -136,6 +138,9 @@ void dhgeqz_(char* job, char* compq, char* compz, INT* n, INT* ilo, INT* ihi, f6
 void dhsein_(char* side, char* eigsrc, char* initv, INT* select, INT* n, f64* H, INT* ldh, f64* wr, f64* wi, f64* VL, INT* ldvl, f64* VR, INT* ldvr, INT* mm, INT* m, f64* work, INT* ifaill, INT* ifailr, INT* info);
 void dhseqr_(char* job, char* compz, INT* n, INT* ilo, INT* ihi, f64* H, INT* ldh, f64* wr, f64* wi, f64* Z, INT* ldz, f64* work, INT* lwork, INT* info);
 void dlabad_(f64* small, f64* large);
+void dla_gbamv_(INT* trans, INT* m, INT* n, INT* kl, INT* ku, f64* alpha, f64* AB, INT* ldab, f64* X, INT* incx, f64* beta, f64* Y, INT* incy);
+void dla_geamv_(INT* trans, INT* m, INT* n, f64* alpha, f64* A, INT* lda, f64* X, INT* incx, f64* beta, f64* Y, INT* incy);
+void dla_lin_berr_(INT* n, INT* nz, INT* nrhs, f64* RES, f64* AYB, f64* BERR);
 void dlabrd_(INT* m, INT* n, INT* nb, f64* A, INT* lda, f64* D, f64* E, f64* tauq, f64* taup, f64* X, INT* ldx, f64* Y, INT* ldy);
 void dlacn2_(INT* n, f64* V, f64* X, INT* isgn, f64* est, INT* kase, INT* isave);
 void dlacon_(INT* n, f64* V, f64* X, INT* ISGN, f64* est, INT* kase);
@@ -216,6 +221,7 @@ void dlarfx_(char* side, INT* m, INT* n, f64* v, f64* tau, f64* C, INT* ldc, f64
 void dlarfy_(char* uplo, INT* n, f64* V, INT* incv, f64* tau, f64* C, INT* ldc, f64* work);
 void dlargv_(INT* n, f64* X, INT* incx, f64* Y, INT* incy, f64* C, INT* incc);
 void dlarnv_(INT* idist, INT* iseed, INT* n, f64* X);
+void dlarscl2_(INT* m, INT* n, f64* D, f64* X, INT* ldx);
 void dlarra_(INT* n, f64* D, f64* E, f64* E2, f64* spltol, f64* tnrm, INT* nsplit, INT* isplit, INT* info);
 void dlarrb_(INT* n, f64* D, f64* lld, INT* ifirst, INT* ilast, f64* rtol1, f64* rtol2, INT* offset, f64* W, f64* wgap, f64* werr, f64* work, INT* iwork, f64* pivmin, f64* spdiam, INT* twist, INT* info);
 void dlarrc_(char* jobt, INT* n, f64* vl, f64* vu, f64* D, f64* E, f64* pivmin, INT* eigcnt, INT* lcnt, INT* rcnt, INT* info);
@@ -236,6 +242,7 @@ void dlarzb_(char* side, char* trans, char* direct, char* storev, INT* m, INT* n
 void dlarzt_(char* direct, char* storev, INT* n, INT* k, f64* V, INT* ldv, f64* tau, f64* T, INT* ldt);
 void dlas2_(f64* f, f64* g, f64* h, f64* ssmin, f64* ssmax);
 void dlascl_(char* type, INT* kl, INT* ku, f64* cfrom, f64* cto, INT* m, INT* n, f64* A, INT* lda, INT* info);
+void dlascl2_(INT* m, INT* n, f64* D, f64* X, INT* ldx);
 void dlasd0_(INT* n, INT* sqre, f64* D, f64* E, f64* U, INT* ldu, f64* VT, INT* ldvt, INT* smlsiz, INT* IWORK, f64* work, INT* info);
 void dlasd1_(INT* nl, INT* nr, INT* sqre, f64* D, f64* alpha, f64* beta, f64* U, INT* ldu, f64* VT, INT* ldvt, INT* IDXQ, INT* IWORK, f64* work, INT* info);
 void dlasd2_(INT* nl, INT* nr, INT* sqre, INT* k, f64* D, f64* Z, f64* alpha, f64* beta, f64* U, INT* ldu, f64* VT, INT* ldvt, f64* DSIGMA, f64* U2, INT* ldu2, f64* VT2, INT* ldvt2, INT* IDXP, INT* IDX, INT* IDXC, INT* IDXQ, INT* COLTYP, INT* info);
@@ -579,6 +586,16 @@ f64 dlapy3_(f64* x, f64* y, f64* z) {
 
 f64 dlarmm_(f64* anorm, f64* bnorm, f64* cnorm) {
     f64 _ret = dlarmm(*anorm, *bnorm, *cnorm);
+    return _ret;
+}
+
+f64 dla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f64* AB, INT* ldab, f64* AFB, INT* ldafb) {
+    f64 _ret = dla_gbrpvgrw(*n, *kl, *ku, *ncols, AB, *ldab, AFB, *ldafb);
+    return _ret;
+}
+
+f64 dla_gerpvgrw_(INT* n, INT* ncols, f64* A, INT* lda, f64* AF, INT* ldaf) {
+    f64 _ret = dla_gerpvgrw(*n, *ncols, A, *lda, AF, *ldaf);
     return _ret;
 }
 
@@ -1226,6 +1243,18 @@ void dlabad_(f64* small, f64* large) {
     dlabad(small, large);
 }
 
+void dla_gbamv_(INT* trans, INT* m, INT* n, INT* kl, INT* ku, f64* alpha, f64* AB, INT* ldab, f64* X, INT* incx, f64* beta, f64* Y, INT* incy) {
+    dla_gbamv(*trans, *m, *n, *kl, *ku, *alpha, AB, *ldab, X, *incx, *beta, Y, *incy);
+}
+
+void dla_geamv_(INT* trans, INT* m, INT* n, f64* alpha, f64* A, INT* lda, f64* X, INT* incx, f64* beta, f64* Y, INT* incy) {
+    dla_geamv(*trans, *m, *n, *alpha, A, *lda, X, *incx, *beta, Y, *incy);
+}
+
+void dla_lin_berr_(INT* n, INT* nz, INT* nrhs, f64* RES, f64* AYB, f64* BERR) {
+    dla_lin_berr(*n, *nz, *nrhs, RES, AYB, BERR);
+}
+
 void dlabrd_(INT* m, INT* n, INT* nb, f64* A, INT* lda, f64* D, f64* E, f64* tauq, f64* taup, f64* X, INT* ldx, f64* Y, INT* ldy) {
     dlabrd(*m, *n, *nb, A, *lda, D, E, tauq, taup, X, *ldx, Y, *ldy);
 }
@@ -1587,6 +1616,10 @@ void dlarnv_(INT* idist, INT* iseed, INT* n, f64* X) {
     dlarnv(*idist, iseed, *n, X);
 }
 
+void dlarscl2_(INT* m, INT* n, f64* D, f64* X, INT* ldx) {
+    dlarscl2(*m, *n, D, X, *ldx);
+}
+
 void dlarra_(INT* n, f64* D, f64* E, f64* E2, f64* spltol, f64* tnrm, INT* nsplit, INT* isplit, INT* info) {
     dlarra(*n, D, E, E2, *spltol, *tnrm, nsplit, isplit, info);
     if (isplit) { INT _sz = *nsplit; for (INT _i = 0; _i < _sz; _i++) isplit[_i]++; }
@@ -1698,6 +1731,10 @@ void dlas2_(f64* f, f64* g, f64* h, f64* ssmin, f64* ssmax) {
 
 void dlascl_(char* type, INT* kl, INT* ku, f64* cfrom, f64* cto, INT* m, INT* n, f64* A, INT* lda, INT* info) {
     dlascl(type, *kl, *ku, *cfrom, *cto, *m, *n, A, *lda, info);
+}
+
+void dlascl2_(INT* m, INT* n, f64* D, f64* X, INT* ldx) {
+    dlascl2(*m, *n, D, X, *ldx);
 }
 
 void dlasd0_(INT* n, INT* sqre, f64* D, f64* E, f64* U, INT* ldu, f64* VT, INT* ldvt, INT* smlsiz, INT* IWORK, f64* work, INT* info) {

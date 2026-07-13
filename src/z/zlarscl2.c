@@ -8,7 +8,7 @@
 
 /**
  * ZLARSCL2 performs a reciprocal diagonal scaling on a matrix:
- *   x <-- inv(D) * x
+ *   X becomes inv(D) * X
  * where the DOUBLE PRECISION diagonal matrix D is stored as a vector.
  *
  * Eventually to be replaced by BLAS_zge_diag_scale in the new BLAS
