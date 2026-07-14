@@ -1,0 +1,12 @@
+{# Overrides pydata's sidebar-nav-bs.html: emit an empty placeholder instead of
+   calling generate_toctree_html on every page. The section navigation tree is a
+   single shared asset (_static/semicolon_nav_data.js) assembled client-side by
+   _static/semicolon-nav.js, which marks the active page and opens its branch. #}
+<nav class="bd-docs-nav bd-links"
+     aria-label="{{ _('Section Navigation') }}"
+     id="semicolon-nav"
+     data-root="{{ pathto('', 1) }}"
+     data-current="{{ pagename }}">
+  <p class="bd-links__title" role="heading" aria-level="1">{{ _("Section Navigation") }}</p>
+  <div class="bd-toc-item navbar-nav" id="semicolon-nav-tree"></div>
+</nav>

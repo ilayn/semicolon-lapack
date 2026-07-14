@@ -71,7 +71,7 @@ html_theme = 'pydata_sphinx_theme'
 html_title = f"{project} v{version}"
 html_static_path = ['_static']
 html_css_files = ['custom.css']
-html_js_files = ['tab-deeplink.js']
+html_js_files = ['tab-deeplink.js', 'semicolon_nav_data.js', 'semicolon-nav.js']
 
 html_theme_options = {
     "show_nav_level": 2,
