@@ -9,7 +9,7 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
-/*
+/**
  * ZGESVD computes the singular value decomposition (SVD) of a complex
  * M-by-N matrix A, optionally computing the left and/or right singular
  * vectors. The SVD is written
