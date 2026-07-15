@@ -9,7 +9,7 @@
 #include "semicolon_cblas.h"
 #include <math.h>
 
-/*
+/**
  * SGESVD computes the singular value decomposition (SVD) of a real
  * M-by-N matrix A, optionally computing the left and/or right singular
  * vectors. The SVD is written
@@ -38,25 +38,25 @@
  *                       JOBVT and JOBU cannot both be 'O'.
  * @param[in]     m      The number of rows of the input matrix A. m >= 0.
  * @param[in]     n      The number of columns of the input matrix A. n >= 0.
- * @param[in,out] A      Double precision array, dimension (lda, n).
+ * @param[in,out] A      Single precision array, dimension (lda, n).
  *                       On entry, the M-by-N matrix A.
  *                       On exit, contents depend on jobu and jobvt.
  * @param[in]     lda    The leading dimension of the array A. lda >= max(1,m).
- * @param[out]    S      Double precision array, dimension (min(m,n)).
+ * @param[out]    S      Single precision array, dimension (min(m,n)).
  *                       The singular values of A, sorted so that S[i] >= S[i+1].
- * @param[out]    U      Double precision array, dimension (ldu, ucol).
+ * @param[out]    U      Single precision array, dimension (ldu, ucol).
  *                       If jobu = 'A', U contains the M-by-M orthogonal matrix U;
  *                       if jobu = 'S', U contains the first min(m,n) columns of U;
  *                       if jobu = 'N' or 'O', U is not referenced.
  * @param[in]     ldu    The leading dimension of the array U. ldu >= 1; if
  *                       jobu = 'S' or 'A', ldu >= m.
- * @param[out]    VT     Double precision array, dimension (ldvt, n).
+ * @param[out]    VT     Single precision array, dimension (ldvt, n).
  *                       If jobvt = 'A', VT contains the N-by-N orthogonal matrix V**T;
  *                       if jobvt = 'S', VT contains the first min(m,n) rows of V**T;
  *                       if jobvt = 'N' or 'O', VT is not referenced.
  * @param[in]     ldvt   The leading dimension of the array VT. ldvt >= 1; if
  *                       jobvt = 'A', ldvt >= n; if jobvt = 'S', ldvt >= min(m,n).
- * @param[out]    work   Double precision array, dimension (max(1,lwork)).
+ * @param[out]    work   Single precision array, dimension (max(1,lwork)).
  *                       On exit, if info = 0, work[0] returns the optimal lwork.
  * @param[in]     lwork  The dimension of the array work.
  *                       If lwork = -1, a workspace query is assumed.

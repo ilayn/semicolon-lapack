@@ -9,7 +9,7 @@
 #include "semicolon_cblas.h"
 #include <math.h>
 
-/*
+/**
  * DGESVD computes the singular value decomposition (SVD) of a real
  * M-by-N matrix A, optionally computing the left and/or right singular
  * vectors. The SVD is written
