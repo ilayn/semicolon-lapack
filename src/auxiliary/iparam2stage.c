@@ -7,6 +7,72 @@
 #include "lapack_tuning.h"
 #include <string.h>
 
+/**
+ * This program sets problem and machine dependent parameters
+ * useful for xHETRD_2STAGE, xHETRD_HE2HB, xHETRD_HB2ST,
+ * xGEBRD_2STAGE, xGEBRD_GE2GB, xGEBRD_GB2BD
+ * and related subroutines for eigenvalue problems.
+ *
+ * It is called whenever ILAENV is called with `17<=ispec<=21`.
+ * It is called whenever ILAENV2STAGE is called with `1<=ispec<=5`
+ * with a direct conversion `ispec+16`.
+ *
+ * @param[in] ispec `ispec` specifies which tunable parameter IPARAM2STAGE should
+ *                  return.
+ *                  `ispec=17`: the optimal blocksize nb for the reduction to BAND.
+ *                  `ispec=18`: the optimal blocksize ib for the eigenvectors
+ *                  singular vectors update routine.
+ *                  `ispec=19`: The length of the array that store the Housholder
+ *                  representation for the second stage Band to Tridiagonal or
+ *                  Bidiagonal.
+ *                  `ispec=20`: The workspace needed for the routine in input.
+ *                  `ispec=21`: For future release.
+ * @param[in] name  Name of the calling subroutine.
+ * @param[in] opts  The character options to the subroutine `name`, concatenated
+ *                  into a single character string. For example, `uplo='U'`,
+ *                  `trans='T'`, and `diag='N'` for a triangular routine would
+ *                  be specified as `opts="UTN"`.
+ * @param[in] ni    The size of the matrix.
+ * @param[in] nbi   Used in the reduction, (e.g., the size of the band), needed to
+ *                  compute workspace and LHOUS2.
+ * @param[in] ibi   Represents the IB of the reduction, needed to compute workspace
+ *                  and LHOUS2.
+ * @param[in] nxi   Needed in the future release.
+ *
+ * @return The value of the tunable parameter selected by `ispec`, or `-1` if
+ *         `ispec` is out of range or the precision prefix of `name` is not one
+ *         of `'S'`, `'D'`, `'C'`, `'Z'`.
+ *
+ * @par Further Details:
+ * @rst
+ * Implemented by Azzam Haidar.
+ *
+ * All detail are available on technical report, SC11, SC13 papers.
+ *
+ * Azzam Haidar, Hatem Ltaief, and Jack Dongarra.
+ * Parallel reduction to condensed forms for symmetric eigenvalue problems
+ * using aggregated fine-grained and memory-aware kernels. In Proceedings
+ * of 2011 International Conference for High Performance Computing,
+ * Networking, Storage and Analysis (SC '11), New York, NY, USA,
+ * Article 8 , 11 pages.
+ * https://doi.org/10.1145/2063384.2063394
+ *
+ * A. Haidar, J. Kurzak, P. Luszczek, 2013.
+ * An improved parallel singular value algorithm and its implementation
+ * for multicore hardware, In Proceedings of 2013 International Conference
+ * for High Performance Computing, Networking, Storage and Analysis (SC '13).
+ * Denver, Colorado, USA, 2013.
+ * Article 90, 12 pages.
+ * https://doi.org/10.1145/2503210.2503292
+ *
+ * A. Haidar, R. Solca, S. Tomov, T. Schulthess and J. Dongarra.
+ * A novel hybrid CPU-GPU generalized eigensolver for electronic structure
+ * calculations based on fine-grained memory aware tasks.
+ * International Journal of High Performance Computing Applications.
+ * Volume 28 Issue 2, Pages 196-209, May 2014.
+ * https://doi.org/10.1177/1094342013502097
+ * @endrst
+ */
 INT iparam2stage(const INT ispec, const char* name, const char* opts,
                  const INT ni, const INT nbi, const INT ibi, const INT nxi)
 {

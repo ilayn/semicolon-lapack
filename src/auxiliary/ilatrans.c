@@ -10,9 +10,14 @@
  * transposition operation to the relevant BLAST-specified integer
  * constant.
  *
- * ILATRANS returns an INTEGER.  If ILATRANS < 0, then the input is not
- * a character indicating a transposition operator.  Otherwise ILATRANS
- * returns the constant value corresponding to TRANS.
+ * @param[in] trans `trans='N'`: no transpose.
+ *                  `trans='T'`: transpose.
+ *                  `trans='C'`: conjugate transpose.
+ *
+ * @return An integer. If the returned value `<0`, then the input is not a
+ *         character indicating a transposition operator. Otherwise the constant
+ *         value corresponding to `trans` is returned:
+ *         `111` (BLAS_NO_TRANS), `112` (BLAS_TRANS), `113` (BLAS_CONJ_TRANS).
  */
 INT ilatrans(const char* trans)
 {

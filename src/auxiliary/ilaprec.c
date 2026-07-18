@@ -10,9 +10,16 @@
  * intermediate precision to the relevant BLAST-specified integer
  * constant.
  *
- * ILAPREC returns an INTEGER.  If ILAPREC < 0, then the input is not a
- * character indicating a supported intermediate precision.  Otherwise
- * ILAPREC returns the constant value corresponding to PREC.
+ * @param[in] prec `prec='S'`: single precision.
+ *                 `prec='D'`: double precision.
+ *                 `prec='I'`: indigenous precision.
+ *                 `prec='X'` or `prec='E'`: extra precision.
+ *
+ * @return An integer. If the returned value `<0`, then the input is not a
+ *         character indicating a supported intermediate precision. Otherwise the
+ *         constant value corresponding to `prec` is returned:
+ *         `211` (BLAS_PREC_SINGLE), `212` (BLAS_PREC_DOUBLE),
+ *         `213` (BLAS_PREC_INDIGENOUS), `214` (BLAS_PREC_EXTRA).
  */
 INT ilaprec(const char* prec)
 {

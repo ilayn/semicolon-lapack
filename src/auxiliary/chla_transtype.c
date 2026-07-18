@@ -9,10 +9,15 @@
  * This subroutine translates from a BLAST-specified integer constant to
  * the character string specifying a transposition operation.
  *
- * CHLA_TRANSTYPE returns an CHARACTER*1.  If CHLA_TRANSTYPE is 'X',
- * then input is not an integer indicating a transposition operator.
- * Otherwise CHLA_TRANSTYPE returns the constant value corresponding to
- * TRANS.
+ * @param[in] trans The BLAST-specified integer constant identifying the
+ *                  transposition operation.
+ *
+ * @return A character. If the returned value is `'X'`, then the input is not an
+ *         integer indicating a transposition operator. Otherwise the constant
+ *         value corresponding to `trans` is returned:
+ *         `'N'` for `trans=111` (BLAS_NO_TRANS),
+ *         `'T'` for `trans=112` (BLAS_TRANS),
+ *         `'C'` for `trans=113` (BLAS_CONJ_TRANS).
  */
 char chla_transtype(const INT trans)
 {

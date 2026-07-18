@@ -10,9 +10,13 @@
  * upper- or lower-triangular matrix to the relevant BLAST-specified
  * integer constant.
  *
- * ILAUPLO returns an INTEGER.  If ILAUPLO < 0, then the input is not
- * a character indicating an upper- or lower-triangular matrix.
- * Otherwise ILAUPLO returns the constant value corresponding to UPLO.
+ * @param[in] uplo `uplo='U'`: upper triangular.
+ *                 `uplo='L'`: lower triangular.
+ *
+ * @return An integer. If the returned value `<0`, then the input is not a
+ *         character indicating an upper- or lower-triangular matrix. Otherwise
+ *         the constant value corresponding to `uplo` is returned:
+ *         `121` (BLAS_UPPER) for `uplo='U'`, `122` (BLAS_LOWER) for `uplo='L'`.
  */
 INT ilauplo(const char* uplo)
 {
