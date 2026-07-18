@@ -74,7 +74,7 @@ html_css_files = ['custom.css']
 html_js_files = ['tab-deeplink.js', 'semicolon_nav_data.js', 'semicolon-nav.js']
 
 html_theme_options = {
-    "show_nav_level": 2,
+    "show_nav_level": 1,
     "navigation_depth": 4,
     "collapse_navigation": False,
     "search_bar_text": "Search functions...",
