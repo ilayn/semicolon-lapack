@@ -25,89 +25,104 @@ static inline f64 dlamc3(f64 a, f64 b)
  *
  * For the left singular vector matrix, three types of orthogonal
  * matrices are involved:
+ * @rst
+ * .. code-block:: text
  *
- * (1L) Givens rotations: the number of such rotations is GIVPTR; the
- *      pairs of columns/rows they were applied to are stored in GIVCOL;
- *      and the C- and S-values of these rotations are stored in GIVNUM.
+ *     (1L) Givens rotations: the number of such rotations is GIVPTR; the
+ *          pairs of columns/rows they were applied to are stored in GIVCOL;
+ *          and the C- and S-values of these rotations are stored in GIVNUM.
  *
- * (2L) Permutation. The (NL+1)-st row of B is to be moved to the first
- *      row, and for J=2:N, PERM(J)-th row of B is to be moved to the
- *      J-th row.
+ *     (2L) Permutation. The (NL+1)-st row of B is to be moved to the first
+ *          row, and for J=2:N, PERM(J)-th row of B is to be moved to the
+ *          J-th row.
  *
- * (3L) The left singular vector matrix of the remaining matrix.
- *
+ *     (3L) The left singular vector matrix of the remaining matrix.
+ * @endrst
  * For the right singular vector matrix, four types of orthogonal
  * matrices are involved:
+ * @rst
+ * .. code-block:: text
  *
- * (1R) The right singular vector matrix of the remaining matrix.
+ *     (1R) The right singular vector matrix of the remaining matrix.
  *
- * (2R) If SQRE = 1, one extra Givens rotation to generate the right
- *      null space.
+ *     (2R) If SQRE = 1, one extra Givens rotation to generate the right
+ *          null space.
  *
- * (3R) The inverse transformation of (2L).
+ *     (3R) The inverse transformation of (2L).
  *
- * (4R) The inverse transformation of (1L).
+ *     (4R) The inverse transformation of (1L).
+ * @endrst
  *
- * @param[in]     icompq  Specifies whether singular vectors are to be computed
- *                        in factored form:
- *                        = 0: Left singular vector matrix.
- *                        = 1: Right singular vector matrix.
- * @param[in]     nl      The row dimension of the upper block. nl >= 1.
- * @param[in]     nr      The row dimension of the lower block. nr >= 1.
- * @param[in]     sqre    = 0: the lower block is an NR-by-NR square matrix.
- *                        = 1: the lower block is an NR-by-(NR+1) rectangular matrix.
- *                        The bidiagonal matrix has row dimension N = NL + NR + 1,
- *                        and column dimension M = N + SQRE.
- * @param[in]     nrhs    The number of columns of B and BX. nrhs must be at least 1.
- * @param[in,out] B       Complex array, dimension (ldb, nrhs).
- *                        On input, B contains the right hand sides of the least
- *                        squares problem in rows 1 through M. On output, B contains
- *                        the solution X in rows 1 through N.
- * @param[in]     ldb     The leading dimension of B. ldb must be at least
- *                        max(1, max(M, N)).
- * @param[out]    BX      Complex array, dimension (ldbx, nrhs).
- * @param[in]     ldbx    The leading dimension of BX.
- * @param[in]     perm    Integer array, dimension (N).
+ * @param[in]     icompq  Specifies whether singular vectors are to be computed in
+ *                        factored form:
+ *                        `icompq=0`: Left singular vector matrix.
+ *                        `icompq=1`: Right singular vector matrix.
+ * @param[in]     nl      The row dimension of the upper block. `nl>=1`.
+ * @param[in]     nr      The row dimension of the lower block. `nr>=1`.
+ * @param[in]     sqre    `sqre=0`: the lower block is an `nr`-by-`nr` square matrix.
+ *                        `sqre=1`: the lower block is an `nr`-by-`(nr+1)` rectangular
+ *                        matrix.
+ *                        The bidiagonal matrix has row dimension `n = nl+nr+1`, and
+ *                        column dimension `m = n+sqre`.
+ * @param[in]     nrhs    The number of columns of `B` and `BX`. `nrhs` must be at
+ *                        least 1.
+ * @param[in,out] B       Complex array of dimension (`ldb`, `nrhs`).
+ *                        On input, `B` contains the right hand sides of the least
+ *                        squares problem in rows `0` through `m-1`. On output, `B`
+ *                        contains the solution X in rows `0` through `n-1`.
+ * @param[in]     ldb     The leading dimension of `B`. `ldb` must be at least
+ *                        `max(1,max(m,n))`.
+ * @param[out]    BX      Complex array of dimension (`ldbx`, `nrhs`).
+ * @param[in]     ldbx    The leading dimension of `BX`.
+ * @param[in]     perm    Integer array of dimension (`n`).
  *                        The permutations (from deflation and sorting) applied
  *                        to the two blocks.
  * @param[in]     givptr  The number of Givens rotations which took place in this
  *                        subproblem.
- * @param[in]     givcol  Integer array, dimension (ldgcol, 2).
+ * @param[in]     givcol  Integer array of dimension (`ldgcol`, 2).
  *                        Each pair of numbers indicates a pair of rows/columns
  *                        involved in a Givens rotation.
- * @param[in]     ldgcol  The leading dimension of GIVCOL, must be at least N.
- * @param[in]     givnum  Double array, dimension (ldgnum, 2).
+ * @param[in]     ldgcol  The leading dimension of `givcol`, must be at least `n`.
+ * @param[in]     givnum  Real array of dimension (`ldgnum`, 2).
  *                        Each number indicates the C or S value used in the
  *                        corresponding Givens rotation.
- * @param[in]     ldgnum  The leading dimension of arrays DIFR, POLES and
- *                        GIVNUM, must be at least K.
- * @param[in]     poles   Double array, dimension (ldgnum, 2).
- *                        On entry, POLES(1:K, 1) contains the new singular
- *                        values obtained from solving the secular equation, and
- *                        POLES(1:K, 2) is an array containing the poles in the
- *                        secular equation.
- * @param[in]     difl    Double array, dimension (K).
- *                        On entry, DIFL(I) is the distance between I-th updated
- *                        (undeflated) singular value and the I-th (undeflated) old
+ * @param[in]     ldgnum  The leading dimension of arrays `difr`, `poles` and
+ *                        `givnum`, must be at least `k`.
+ * @param[in]     poles   Real array of dimension (`ldgnum`, 2).
+ *                        On entry, `poles[0:k-1,0]` is an array containing the old
+ *                        singular values which will be used to form the secular
+ *                        equation in ZLASD4;
+ *                        `poles[0:k-1,1]` is an array containing the new singular
+ *                        values obtained from solving the secular equation.
+ * @param[in]     difl    Real array of dimension (`k`).
+ *                        On entry, `difl[i]` is the distance between i-th updated
+ *                        (undeflated) singular value and the i-th (undeflated) old
  *                        singular value.
- * @param[in]     difr    Double array, dimension (ldgnum, 2).
- *                        On entry, DIFR(I, 1) contains the distances between I-th
- *                        updated (undeflated) singular value and the I+1-th
- *                        (undeflated) old singular value. And DIFR(I, 2) is the
- *                        normalizing factor for the I-th right singular vector.
- * @param[in]     Z       Double array, dimension (K).
+ * @param[in]     difr    Real array of dimension (`ldgnum`, 2).
+ *                        On entry, `difr[i,0]` contains the distances between i-th
+ *                        updated (undeflated) singular value and the (i+1)-th
+ *                        (undeflated) old singular value. And `difr[i,1]` is the
+ *                        normalizing factor for the i-th right singular vector.
+ * @param[in]     Z       Real array of dimension (`k`).
  *                        Contain the components of the deflation-adjusted updating
  *                        row vector.
  * @param[in]     k       Contains the dimension of the non-deflated matrix,
- *                        This is the order of the related secular equation.
- *                        1 <= K <= N.
- * @param[in]     c       C contains garbage if SQRE = 0 and the C-value of a Givens
- *                        rotation related to the right null space if SQRE = 1.
- * @param[in]     s       S contains garbage if SQRE = 0 and the S-value of a Givens
- *                        rotation related to the right null space if SQRE = 1.
- * @param[out]    rwork   Double array, dimension (K*(1+NRHS) + 2*NRHS).
- * @param[out]    info    = 0: successful exit.
- *                        < 0: if info = -i, the i-th argument had an illegal value.
+ *                        This is the order of the related secular equation. `1<=k<=n`.
+ * @param[in]     c       `c` contains garbage if `sqre=0` and the C-value of a Givens
+ *                        rotation related to the right null space if `sqre=1`.
+ * @param[in]     s       `s` contains garbage if `sqre=0` and the S-value of a Givens
+ *                        rotation related to the right null space if `sqre=1`.
+ * @param[out]    rwork   Real array of dimension (`k*(1+nrhs) + 2*nrhs`).
+ * @param[out]    info    `info=0`: successful exit.
+ *                        `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                        value.
+ *
+ * @par Contributors:
+ * @rst
+ * | Ming Gu and Ren-Cang Li, Computer Science Division, University of
+ *   California at Berkeley, USA
+ * | Osni Marques, LBNL/NERSC, USA
+ * @endrst
  */
 void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
             const INT nrhs, c128* restrict B, const INT ldb,
@@ -161,17 +176,17 @@ void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
 
         /* Step (1L): apply back the Givens rotations performed. */
 
-        for (i = 1; i <= givptr; i++) {
-            cblas_zdrot(nrhs, &B[givcol[i - 1 + 1 * ldgcol]], ldb,
-                        &B[givcol[i - 1 + 0 * ldgcol]], ldb,
-                        givnum[i - 1 + 1 * ldgnum], givnum[i - 1 + 0 * ldgnum]);
+        for (i = 0; i < givptr; i++) {
+            cblas_zdrot(nrhs, &B[givcol[i + 1 * ldgcol]], ldb,
+                        &B[givcol[i + 0 * ldgcol]], ldb,
+                        givnum[i + 1 * ldgnum], givnum[i + 0 * ldgnum]);
         }
 
         /* Step (2L): permute rows of B. */
 
         cblas_zcopy(nrhs, &B[nlp1 - 1], ldb, &BX[0], ldbx);
-        for (i = 2; i <= n; i++) {
-            cblas_zcopy(nrhs, &B[perm[i - 1]], ldb, &BX[i - 1], ldbx);
+        for (i = 1; i < n; i++) {
+            cblas_zcopy(nrhs, &B[perm[i]], ldb, &BX[i], ldbx);
         }
 
         /* Step (3L): apply the inverse of the left singular vector
@@ -183,36 +198,36 @@ void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                 cblas_zdscal(nrhs, -1.0, B, ldb);
             }
         } else {
-            for (j = 1; j <= k; j++) {
-                diflj = difl[j - 1];
-                dj = poles[j - 1 + 0 * ldgnum];
-                dsigj = -poles[j - 1 + 1 * ldgnum];
-                if (j < k) {
-                    difrj = -difr[j - 1 + 0 * ldgnum];
-                    dsigjp = -poles[j + 1 * ldgnum];
+            for (j = 0; j < k; j++) {
+                diflj = difl[j];
+                dj = poles[j + 0 * ldgnum];
+                dsigj = -poles[j + 1 * ldgnum];
+                if (j < k - 1) {
+                    difrj = -difr[j + 0 * ldgnum];
+                    dsigjp = -poles[j + 1 + 1 * ldgnum];
                 }
-                if (Z[j - 1] == 0.0 || poles[j - 1 + 1 * ldgnum] == 0.0) {
-                    rwork[j - 1] = 0.0;
+                if (Z[j] == 0.0 || poles[j + 1 * ldgnum] == 0.0) {
+                    rwork[j] = 0.0;
                 } else {
-                    rwork[j - 1] = -poles[j - 1 + 1 * ldgnum] * Z[j - 1] / diflj /
-                                   (poles[j - 1 + 1 * ldgnum] + dj);
+                    rwork[j] = -poles[j + 1 * ldgnum] * Z[j] / diflj /
+                                   (poles[j + 1 * ldgnum] + dj);
                 }
-                for (i = 1; i <= j - 1; i++) {
-                    if (Z[i - 1] == 0.0 || poles[i - 1 + 1 * ldgnum] == 0.0) {
-                        rwork[i - 1] = 0.0;
+                for (i = 0; i < j; i++) {
+                    if (Z[i] == 0.0 || poles[i + 1 * ldgnum] == 0.0) {
+                        rwork[i] = 0.0;
                     } else {
-                        rwork[i - 1] = poles[i - 1 + 1 * ldgnum] * Z[i - 1] /
-                                       (dlamc3(poles[i - 1 + 1 * ldgnum], dsigj) - diflj) /
-                                       (poles[i - 1 + 1 * ldgnum] + dj);
+                        rwork[i] = poles[i + 1 * ldgnum] * Z[i] /
+                                       (dlamc3(poles[i + 1 * ldgnum], dsigj) - diflj) /
+                                       (poles[i + 1 * ldgnum] + dj);
                     }
                 }
-                for (i = j + 1; i <= k; i++) {
-                    if (Z[i - 1] == 0.0 || poles[i - 1 + 1 * ldgnum] == 0.0) {
-                        rwork[i - 1] = 0.0;
+                for (i = j + 1; i < k; i++) {
+                    if (Z[i] == 0.0 || poles[i + 1 * ldgnum] == 0.0) {
+                        rwork[i] = 0.0;
                     } else {
-                        rwork[i - 1] = poles[i - 1 + 1 * ldgnum] * Z[i - 1] /
-                                       (dlamc3(poles[i - 1 + 1 * ldgnum], dsigjp) + difrj) /
-                                       (poles[i - 1 + 1 * ldgnum] + dj);
+                        rwork[i] = poles[i + 1 * ldgnum] * Z[i] /
+                                       (dlamc3(poles[i + 1 * ldgnum], dsigjp) + difrj) /
+                                       (poles[i + 1 * ldgnum] + dj);
                     }
                 }
                 rwork[0] = -1.0;
@@ -222,28 +237,28 @@ void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                  * is performed in two steps (real and imaginary parts). */
 
                 i = k + nrhs * 2;
-                for (jcol = 1; jcol <= nrhs; jcol++) {
-                    for (jrow = 1; jrow <= k; jrow++) {
-                        rwork[i] = creal(BX[(jrow - 1) + (jcol - 1) * ldbx]);
+                for (jcol = 0; jcol < nrhs; jcol++) {
+                    for (jrow = 0; jrow < k; jrow++) {
+                        rwork[i] = creal(BX[jrow + jcol * ldbx]);
                         i++;
                     }
                 }
                 cblas_dgemv(CblasColMajor, CblasTrans, k, nrhs, 1.0,
                             &rwork[k + nrhs * 2], k, rwork, 1, 0.0, &rwork[k], 1);
                 i = k + nrhs * 2;
-                for (jcol = 1; jcol <= nrhs; jcol++) {
-                    for (jrow = 1; jrow <= k; jrow++) {
-                        rwork[i] = cimag(BX[(jrow - 1) + (jcol - 1) * ldbx]);
+                for (jcol = 0; jcol < nrhs; jcol++) {
+                    for (jrow = 0; jrow < k; jrow++) {
+                        rwork[i] = cimag(BX[jrow + jcol * ldbx]);
                         i++;
                     }
                 }
                 cblas_dgemv(CblasColMajor, CblasTrans, k, nrhs, 1.0,
                             &rwork[k + nrhs * 2], k, rwork, 1, 0.0, &rwork[k + nrhs], 1);
-                for (jcol = 1; jcol <= nrhs; jcol++) {
-                    B[(j - 1) + (jcol - 1) * ldb] = CMPLX(rwork[k + jcol - 1],
-                                                           rwork[k + nrhs + jcol - 1]);
+                for (jcol = 0; jcol < nrhs; jcol++) {
+                    B[j + jcol * ldb] = CMPLX(rwork[k + jcol],
+                                                           rwork[k + nrhs + jcol]);
                 }
-                zlascl("G", 0, 0, temp, 1.0, 1, nrhs, &B[j - 1], ldb, info);
+                zlascl("G", 0, 0, temp, 1.0, 1, nrhs, &B[j], ldb, info);
             }
         }
 
@@ -259,30 +274,30 @@ void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
         if (k == 1) {
             cblas_zcopy(nrhs, B, ldb, BX, ldbx);
         } else {
-            for (j = 1; j <= k; j++) {
-                dsigj = poles[j - 1 + 1 * ldgnum];
-                if (Z[j - 1] == 0.0) {
-                    rwork[j - 1] = 0.0;
+            for (j = 0; j < k; j++) {
+                dsigj = poles[j + 1 * ldgnum];
+                if (Z[j] == 0.0) {
+                    rwork[j] = 0.0;
                 } else {
-                    rwork[j - 1] = -Z[j - 1] / difl[j - 1] /
-                                   (dsigj + poles[j - 1 + 0 * ldgnum]) / difr[j - 1 + 1 * ldgnum];
+                    rwork[j] = -Z[j] / difl[j] /
+                                   (dsigj + poles[j + 0 * ldgnum]) / difr[j + 1 * ldgnum];
                 }
-                for (i = 1; i <= j - 1; i++) {
-                    if (Z[j - 1] == 0.0) {
-                        rwork[i - 1] = 0.0;
+                for (i = 0; i < j; i++) {
+                    if (Z[j] == 0.0) {
+                        rwork[i] = 0.0;
                     } else {
-                        rwork[i - 1] = Z[j - 1] /
-                                       (dlamc3(dsigj, -poles[i + 1 * ldgnum]) - difr[i - 1 + 0 * ldgnum]) /
-                                       (dsigj + poles[i - 1 + 0 * ldgnum]) / difr[i - 1 + 1 * ldgnum];
+                        rwork[i] = Z[j] /
+                                       (dlamc3(dsigj, -poles[i + 1 + 1 * ldgnum]) - difr[i + 0 * ldgnum]) /
+                                       (dsigj + poles[i + 0 * ldgnum]) / difr[i + 1 * ldgnum];
                     }
                 }
-                for (i = j + 1; i <= k; i++) {
-                    if (Z[j - 1] == 0.0) {
-                        rwork[i - 1] = 0.0;
+                for (i = j + 1; i < k; i++) {
+                    if (Z[j] == 0.0) {
+                        rwork[i] = 0.0;
                     } else {
-                        rwork[i - 1] = Z[j - 1] /
-                                       (dlamc3(dsigj, -poles[i - 1 + 1 * ldgnum]) - difl[i - 1]) /
-                                       (dsigj + poles[i - 1 + 0 * ldgnum]) / difr[i - 1 + 1 * ldgnum];
+                        rwork[i] = Z[j] /
+                                       (dlamc3(dsigj, -poles[i + 1 * ldgnum]) - difl[i]) /
+                                       (dsigj + poles[i + 0 * ldgnum]) / difr[i + 1 * ldgnum];
                     }
                 }
 
@@ -290,26 +305,26 @@ void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                  * is performed in two steps (real and imaginary parts). */
 
                 i = k + nrhs * 2;
-                for (jcol = 1; jcol <= nrhs; jcol++) {
-                    for (jrow = 1; jrow <= k; jrow++) {
-                        rwork[i] = creal(B[(jrow - 1) + (jcol - 1) * ldb]);
+                for (jcol = 0; jcol < nrhs; jcol++) {
+                    for (jrow = 0; jrow < k; jrow++) {
+                        rwork[i] = creal(B[jrow + jcol * ldb]);
                         i++;
                     }
                 }
                 cblas_dgemv(CblasColMajor, CblasTrans, k, nrhs, 1.0,
                             &rwork[k + nrhs * 2], k, rwork, 1, 0.0, &rwork[k], 1);
                 i = k + nrhs * 2;
-                for (jcol = 1; jcol <= nrhs; jcol++) {
-                    for (jrow = 1; jrow <= k; jrow++) {
-                        rwork[i] = cimag(B[(jrow - 1) + (jcol - 1) * ldb]);
+                for (jcol = 0; jcol < nrhs; jcol++) {
+                    for (jrow = 0; jrow < k; jrow++) {
+                        rwork[i] = cimag(B[jrow + jcol * ldb]);
                         i++;
                     }
                 }
                 cblas_dgemv(CblasColMajor, CblasTrans, k, nrhs, 1.0,
                             &rwork[k + nrhs * 2], k, rwork, 1, 0.0, &rwork[k + nrhs], 1);
-                for (jcol = 1; jcol <= nrhs; jcol++) {
-                    BX[(j - 1) + (jcol - 1) * ldbx] = CMPLX(rwork[k + jcol - 1],
-                                                              rwork[k + nrhs + jcol - 1]);
+                for (jcol = 0; jcol < nrhs; jcol++) {
+                    BX[j + jcol * ldbx] = CMPLX(rwork[k + jcol],
+                                                              rwork[k + nrhs + jcol]);
                 }
             }
         }
@@ -331,16 +346,16 @@ void zlals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
         if (sqre == 1) {
             cblas_zcopy(nrhs, &BX[m - 1], ldbx, &B[m - 1], ldb);
         }
-        for (i = 2; i <= n; i++) {
-            cblas_zcopy(nrhs, &BX[i - 1], ldbx, &B[perm[i - 1]], ldb);
+        for (i = 1; i < n; i++) {
+            cblas_zcopy(nrhs, &BX[i], ldbx, &B[perm[i]], ldb);
         }
 
         /* Step (4R): apply back the Givens rotations performed. */
 
-        for (i = givptr; i >= 1; i--) {
-            cblas_zdrot(nrhs, &B[givcol[i - 1 + 1 * ldgcol]], ldb,
-                        &B[givcol[i - 1 + 0 * ldgcol]], ldb,
-                        givnum[i - 1 + 1 * ldgnum], -givnum[i - 1 + 0 * ldgnum]);
+        for (i = givptr - 1; i >= 0; i--) {
+            cblas_zdrot(nrhs, &B[givcol[i + 1 * ldgcol]], ldb,
+                        &B[givcol[i + 0 * ldgcol]], ldb,
+                        givnum[i + 1 * ldgnum], -givnum[i + 0 * ldgnum]);
         }
     }
 }

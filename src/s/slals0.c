@@ -16,6 +16,113 @@ static inline f32 dlamc3(f32 a, f32 b)
 }
 /** @endcond */
 
+/**
+ * SLALS0 applies back the multiplying factors of either the left or the
+ * right singular vector matrix of a diagonal matrix appended by a row
+ * to the right hand side matrix B in solving the least squares problem
+ * using the divide-and-conquer SVD approach.
+ *
+ * For the left singular vector matrix, three types of orthogonal
+ * matrices are involved:
+ * @rst
+ * .. code-block:: text
+ *
+ *     (1L) Givens rotations: the number of such rotations is GIVPTR; the
+ *          pairs of columns/rows they were applied to are stored in GIVCOL;
+ *          and the C- and S-values of these rotations are stored in GIVNUM.
+ *
+ *     (2L) Permutation. The (NL+1)-st row of B is to be moved to the first
+ *          row, and for J=2:N, PERM(J)-th row of B is to be moved to the
+ *          J-th row.
+ *
+ *     (3L) The left singular vector matrix of the remaining matrix.
+ * @endrst
+ * For the right singular vector matrix, four types of orthogonal
+ * matrices are involved:
+ * @rst
+ * .. code-block:: text
+ *
+ *     (1R) The right singular vector matrix of the remaining matrix.
+ *
+ *     (2R) If SQRE = 1, one extra Givens rotation to generate the right
+ *          null space.
+ *
+ *     (3R) The inverse transformation of (2L).
+ *
+ *     (4R) The inverse transformation of (1L).
+ * @endrst
+ *
+ * @param[in]     icompq  Specifies whether singular vectors are to be computed in
+ *                        factored form:
+ *                        `icompq=0`: Left singular vector matrix.
+ *                        `icompq=1`: Right singular vector matrix.
+ * @param[in]     nl      The row dimension of the upper block. `nl>=1`.
+ * @param[in]     nr      The row dimension of the lower block. `nr>=1`.
+ * @param[in]     sqre    `sqre=0`: the lower block is an `nr`-by-`nr` square matrix.
+ *                        `sqre=1`: the lower block is an `nr`-by-`(nr+1)` rectangular
+ *                        matrix.
+ *                        The bidiagonal matrix has row dimension `n = nl+nr+1`, and
+ *                        column dimension `m = n+sqre`.
+ * @param[in]     nrhs    The number of columns of `B` and `BX`. `nrhs` must be at
+ *                        least 1.
+ * @param[in,out] B       Real array of dimension (`ldb`, `nrhs`).
+ *                        On input, `B` contains the right hand sides of the least
+ *                        squares problem in rows `0` through `m-1`. On output, `B`
+ *                        contains the solution X in rows `0` through `n-1`.
+ * @param[in]     ldb     The leading dimension of `B`. `ldb` must be at least
+ *                        `max(1,max(m,n))`.
+ * @param[out]    BX      Real array of dimension (`ldbx`, `nrhs`).
+ * @param[in]     ldbx    The leading dimension of `BX`.
+ * @param[in]     perm    Integer array of dimension (`n`).
+ *                        The permutations (from deflation and sorting) applied
+ *                        to the two blocks.
+ * @param[in]     givptr  The number of Givens rotations which took place in this
+ *                        subproblem.
+ * @param[in]     givcol  Integer array of dimension (`ldgcol`, 2).
+ *                        Each pair of numbers indicates a pair of rows/columns
+ *                        involved in a Givens rotation.
+ * @param[in]     ldgcol  The leading dimension of `givcol`, must be at least `n`.
+ * @param[in]     givnum  Real array of dimension (`ldgnum`, 2).
+ *                        Each number indicates the C or S value used in the
+ *                        corresponding Givens rotation.
+ * @param[in]     ldgnum  The leading dimension of arrays `difr`, `poles` and
+ *                        `givnum`, must be at least `k`.
+ * @param[in]     poles   Real array of dimension (`ldgnum`, 2).
+ *                        On entry, `poles[0:k-1,0]` is an array containing the old
+ *                        singular values which will be used to form the secular
+ *                        equation in SLASD4;
+ *                        `poles[0:k-1,1]` is an array containing the new singular
+ *                        values obtained from solving the secular equation.
+ * @param[in]     difl    Real array of dimension (`k`).
+ *                        On entry, `difl[i]` is the distance between i-th updated
+ *                        (undeflated) singular value and the i-th (undeflated) old
+ *                        singular value.
+ * @param[in]     difr    Real array of dimension (`ldgnum`, 2).
+ *                        On entry, `difr[i,0]` contains the distances between i-th
+ *                        updated (undeflated) singular value and the (i+1)-th
+ *                        (undeflated) old singular value. And `difr[i,1]` is the
+ *                        normalizing factor for the i-th right singular vector.
+ * @param[in]     Z       Real array of dimension (`k`).
+ *                        Contain the components of the deflation-adjusted updating
+ *                        row vector.
+ * @param[in]     k       Contains the dimension of the non-deflated matrix,
+ *                        This is the order of the related secular equation. `1<=k<=n`.
+ * @param[in]     c       `c` contains garbage if `sqre=0` and the C-value of a Givens
+ *                        rotation related to the right null space if `sqre=1`.
+ * @param[in]     s       `s` contains garbage if `sqre=0` and the S-value of a Givens
+ *                        rotation related to the right null space if `sqre=1`.
+ * @param[out]    work    Real array of dimension (`k`).
+ * @param[out]    info    `info=0`: successful exit.
+ *                        `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                        value.
+ *
+ * @par Contributors:
+ * @rst
+ * | Ming Gu and Ren-Cang Li, Computer Science Division, University of
+ *   California at Berkeley, USA
+ * | Osni Marques, LBNL/NERSC, USA
+ * @endrst
+ */
 void slals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
             const INT nrhs, f32* restrict B, const INT ldb,
             f32* restrict BX, const INT ldbx,
@@ -65,15 +172,15 @@ void slals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
     nlp1 = nl + 1;
 
     if (icompq == 0) {
-        for (i = 1; i <= givptr; i++) {
-            cblas_srot(nrhs, &B[givcol[i - 1 + 1 * ldgcol]], ldb,
-                       &B[givcol[i - 1 + 0 * ldgcol]], ldb,
-                       givnum[i - 1 + 1 * ldgnum], givnum[i - 1 + 0 * ldgnum]);
+        for (i = 0; i < givptr; i++) {
+            cblas_srot(nrhs, &B[givcol[i + 1 * ldgcol]], ldb,
+                       &B[givcol[i + 0 * ldgcol]], ldb,
+                       givnum[i + 1 * ldgnum], givnum[i + 0 * ldgnum]);
         }
 
         cblas_scopy(nrhs, &B[nlp1 - 1], ldb, &BX[0], ldbx);
-        for (i = 2; i <= n; i++) {
-            cblas_scopy(nrhs, &B[perm[i - 1]], ldb, &BX[i - 1], ldbx);
+        for (i = 1; i < n; i++) {
+            cblas_scopy(nrhs, &B[perm[i]], ldb, &BX[i], ldbx);
         }
 
         if (k == 1) {
@@ -82,43 +189,43 @@ void slals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
                 cblas_sscal(nrhs, -1.0f, B, ldb);
             }
         } else {
-            for (j = 1; j <= k; j++) {
-                diflj = difl[j - 1];
-                dj = poles[j - 1 + 0 * ldgnum];
-                dsigj = -poles[j - 1 + 1 * ldgnum];
-                if (j < k) {
-                    difrj = -difr[j - 1 + 0 * ldgnum];
-                    dsigjp = -poles[j + 1 * ldgnum];
+            for (j = 0; j < k; j++) {
+                diflj = difl[j];
+                dj = poles[j + 0 * ldgnum];
+                dsigj = -poles[j + 1 * ldgnum];
+                if (j < k - 1) {
+                    difrj = -difr[j + 0 * ldgnum];
+                    dsigjp = -poles[j + 1 + 1 * ldgnum];
                 }
-                if (Z[j - 1] == 0.0f || poles[j - 1 + 1 * ldgnum] == 0.0f) {
-                    work[j - 1] = 0.0f;
+                if (Z[j] == 0.0f || poles[j + 1 * ldgnum] == 0.0f) {
+                    work[j] = 0.0f;
                 } else {
-                    work[j - 1] = -poles[j - 1 + 1 * ldgnum] * Z[j - 1] / diflj /
-                                  (poles[j - 1 + 1 * ldgnum] + dj);
+                    work[j] = -poles[j + 1 * ldgnum] * Z[j] / diflj /
+                                  (poles[j + 1 * ldgnum] + dj);
                 }
-                for (i = 1; i <= j - 1; i++) {
-                    if (Z[i - 1] == 0.0f || poles[i - 1 + 1 * ldgnum] == 0.0f) {
-                        work[i - 1] = 0.0f;
+                for (i = 0; i < j; i++) {
+                    if (Z[i] == 0.0f || poles[i + 1 * ldgnum] == 0.0f) {
+                        work[i] = 0.0f;
                     } else {
-                        work[i - 1] = poles[i - 1 + 1 * ldgnum] * Z[i - 1] /
-                                      (dlamc3(poles[i - 1 + 1 * ldgnum], dsigj) - diflj) /
-                                      (poles[i - 1 + 1 * ldgnum] + dj);
+                        work[i] = poles[i + 1 * ldgnum] * Z[i] /
+                                      (dlamc3(poles[i + 1 * ldgnum], dsigj) - diflj) /
+                                      (poles[i + 1 * ldgnum] + dj);
                     }
                 }
-                for (i = j + 1; i <= k; i++) {
-                    if (Z[i - 1] == 0.0f || poles[i - 1 + 1 * ldgnum] == 0.0f) {
-                        work[i - 1] = 0.0f;
+                for (i = j + 1; i < k; i++) {
+                    if (Z[i] == 0.0f || poles[i + 1 * ldgnum] == 0.0f) {
+                        work[i] = 0.0f;
                     } else {
-                        work[i - 1] = poles[i - 1 + 1 * ldgnum] * Z[i - 1] /
-                                      (dlamc3(poles[i - 1 + 1 * ldgnum], dsigjp) + difrj) /
-                                      (poles[i - 1 + 1 * ldgnum] + dj);
+                        work[i] = poles[i + 1 * ldgnum] * Z[i] /
+                                      (dlamc3(poles[i + 1 * ldgnum], dsigjp) + difrj) /
+                                      (poles[i + 1 * ldgnum] + dj);
                     }
                 }
                 work[0] = -1.0f;
                 temp = cblas_snrm2(k, work, 1);
                 cblas_sgemv(CblasColMajor, CblasTrans, k, nrhs, 1.0f, BX, ldbx,
-                            work, 1, 0.0f, &B[j - 1], ldb);
-                slascl("G", 0, 0, temp, 1.0f, 1, nrhs, &B[j - 1], ldb, info);
+                            work, 1, 0.0f, &B[j], ldb);
+                slascl("G", 0, 0, temp, 1.0f, 1, nrhs, &B[j], ldb, info);
             }
         }
 
@@ -129,34 +236,34 @@ void slals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
         if (k == 1) {
             cblas_scopy(nrhs, B, ldb, BX, ldbx);
         } else {
-            for (j = 1; j <= k; j++) {
-                dsigj = poles[j - 1 + 1 * ldgnum];
-                if (Z[j - 1] == 0.0f) {
-                    work[j - 1] = 0.0f;
+            for (j = 0; j < k; j++) {
+                dsigj = poles[j + 1 * ldgnum];
+                if (Z[j] == 0.0f) {
+                    work[j] = 0.0f;
                 } else {
-                    work[j - 1] = -Z[j - 1] / difl[j - 1] /
-                                  (dsigj + poles[j - 1 + 0 * ldgnum]) / difr[j - 1 + 1 * ldgnum];
+                    work[j] = -Z[j] / difl[j] /
+                                  (dsigj + poles[j + 0 * ldgnum]) / difr[j + 1 * ldgnum];
                 }
-                for (i = 1; i <= j - 1; i++) {
-                    if (Z[j - 1] == 0.0f) {
-                        work[i - 1] = 0.0f;
+                for (i = 0; i < j; i++) {
+                    if (Z[j] == 0.0f) {
+                        work[i] = 0.0f;
                     } else {
-                        work[i - 1] = Z[j - 1] /
-                                      (dlamc3(dsigj, -poles[i + 1 * ldgnum]) - difr[i - 1 + 0 * ldgnum]) /
-                                      (dsigj + poles[i - 1 + 0 * ldgnum]) / difr[i - 1 + 1 * ldgnum];
+                        work[i] = Z[j] /
+                                      (dlamc3(dsigj, -poles[i + 1 + 1 * ldgnum]) - difr[i + 0 * ldgnum]) /
+                                      (dsigj + poles[i + 0 * ldgnum]) / difr[i + 1 * ldgnum];
                     }
                 }
-                for (i = j + 1; i <= k; i++) {
-                    if (Z[j - 1] == 0.0f) {
-                        work[i - 1] = 0.0f;
+                for (i = j + 1; i < k; i++) {
+                    if (Z[j] == 0.0f) {
+                        work[i] = 0.0f;
                     } else {
-                        work[i - 1] = Z[j - 1] /
-                                      (dlamc3(dsigj, -poles[i - 1 + 1 * ldgnum]) - difl[i - 1]) /
-                                      (dsigj + poles[i - 1 + 0 * ldgnum]) / difr[i - 1 + 1 * ldgnum];
+                        work[i] = Z[j] /
+                                      (dlamc3(dsigj, -poles[i + 1 * ldgnum]) - difl[i]) /
+                                      (dsigj + poles[i + 0 * ldgnum]) / difr[i + 1 * ldgnum];
                     }
                 }
                 cblas_sgemv(CblasColMajor, CblasTrans, k, nrhs, 1.0f, B, ldb,
-                            work, 1, 0.0f, &BX[j - 1], ldbx);
+                            work, 1, 0.0f, &BX[j], ldbx);
             }
         }
 
@@ -172,14 +279,14 @@ void slals0(const INT icompq, const INT nl, const INT nr, const INT sqre,
         if (sqre == 1) {
             cblas_scopy(nrhs, &BX[m - 1], ldbx, &B[m - 1], ldb);
         }
-        for (i = 2; i <= n; i++) {
-            cblas_scopy(nrhs, &BX[i - 1], ldbx, &B[perm[i - 1]], ldb);
+        for (i = 1; i < n; i++) {
+            cblas_scopy(nrhs, &BX[i], ldbx, &B[perm[i]], ldb);
         }
 
-        for (i = givptr; i >= 1; i--) {
-            cblas_srot(nrhs, &B[givcol[i - 1 + 1 * ldgcol]], ldb,
-                       &B[givcol[i - 1 + 0 * ldgcol]], ldb,
-                       givnum[i - 1 + 1 * ldgnum], -givnum[i - 1 + 0 * ldgnum]);
+        for (i = givptr - 1; i >= 0; i--) {
+            cblas_srot(nrhs, &B[givcol[i + 1 * ldgcol]], ldb,
+                       &B[givcol[i + 0 * ldgcol]], ldb,
+                       givnum[i + 1 * ldgnum], -givnum[i + 0 * ldgnum]);
         }
     }
 }
