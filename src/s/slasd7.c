@@ -8,6 +8,97 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
+/**
+ * SLASD7 merges the two sets of singular values together into a single
+ * sorted set. Then it tries to deflate the size of the problem. There
+ * are two ways in which deflation can occur: when two or more singular
+ * values are close together or if there is a tiny entry in the `Z`
+ * vector. For each such occurrence the order of the related
+ * secular equation problem is reduced by one.
+ *
+ * SLASD7 is called from SLASD6.
+ *
+ * @param[in]     icompq  Specifies whether singular vectors are to be computed
+ *                        in compact form, as follows:
+ *                        `icompq=0`: Compute singular values only.
+ *                        `icompq=1`: Compute singular vectors of upper bidiagonal
+ *                        matrix in compact form.
+ * @param[in]     nl      The row dimension of the upper block. `nl>=1`.
+ * @param[in]     nr      The row dimension of the lower block. `nr>=1`.
+ * @param[in]     sqre    `sqre=0`: the lower block is an `nr`-by-`nr` square matrix.
+ *                        `sqre=1`: the lower block is an `nr`-by-`(nr+1)` rectangular
+ *                        matrix.
+ *                        The bidiagonal matrix has `n = nl+nr+1` rows and
+ *                        `m = n+sqre >= n` columns.
+ * @param[out]    k       Contains the dimension of the non-deflated matrix, this is
+ *                        the order of the related secular equation. `1<=k<=n`.
+ * @param[in,out] D       Array of dimension (`n`). On entry `D` contains the singular
+ *                        values of the two submatrices to be combined. On exit `D`
+ *                        contains the trailing (`n-k`) updated singular values (those
+ *                        which were deflated) sorted into decreasing order.
+ * @param[out]    Z       Array of dimension (`m`). On exit `Z` contains the updating
+ *                        row vector in the secular equation.
+ * @param[out]    ZW      Array of dimension (`m`). Workspace for `Z`.
+ * @param[in,out] VF      Array of dimension (`m`). On entry, `VF[0:nl]` contains the
+ *                        first components of all right singular vectors of the upper
+ *                        block; and `VF[nl+1:m-1]` contains the first components of all
+ *                        right singular vectors of the lower block. On exit, `VF`
+ *                        contains the first components of all right singular vectors of
+ *                        the bidiagonal matrix.
+ * @param[out]    VFW     Array of dimension (`m`). Workspace for `VF`.
+ * @param[in,out] VL      Array of dimension (`m`). On entry, `VL[0:nl]` contains the
+ *                        last components of all right singular vectors of the upper
+ *                        block; and `VL[nl+1:m-1]` contains the last components of all
+ *                        right singular vectors of the lower block. On exit, `VL`
+ *                        contains the last components of all right singular vectors of
+ *                        the bidiagonal matrix.
+ * @param[out]    VLW     Array of dimension (`m`). Workspace for `VL`.
+ * @param[in]     alpha   Contains the diagonal element associated with the added row.
+ * @param[in]     beta    Contains the off-diagonal element associated with the added
+ *                        row.
+ * @param[out]    DSIGMA  Array of dimension (`n`). Contains a copy of the diagonal
+ *                        elements (`k-1` singular values and one zero) in the secular
+ *                        equation.
+ * @param[out]    IDX     Integer array of dimension (`n`). This will contain the
+ *                        permutation used to sort the contents of `D` into ascending
+ *                        order.
+ * @param[out]    IDXP    Integer array of dimension (`n`). This will contain the
+ *                        permutation used to place deflated values of `D` at the end of
+ *                        the array. On output `IDXP[1:k-1]` points to the nondeflated
+ *                        D-values and `IDXP[k:n-1]` points to the deflated singular
+ *                        values.
+ * @param[in]     IDXQ    Integer array of dimension (`n`). This contains the permutation
+ *                        which separately sorts the two sub-problems in `D` into
+ *                        ascending order. Note that entries in the first half of this
+ *                        permutation must first be moved one position backward; and
+ *                        entries in the second half must first have `nl+1` added to
+ *                        their values.
+ * @param[out]    PERM    Integer array of dimension (`n`). The permutations (from
+ *                        deflation and sorting) to be applied to each singular block.
+ *                        Not referenced if `icompq=0`.
+ * @param[out]    givptr  The number of Givens rotations which took place in this
+ *                        subproblem. Not referenced if `icompq=0`.
+ * @param[out]    GIVCOL  Integer array of dimension (`ldgcol`, 2). Each pair of numbers
+ *                        indicates a pair of columns to take place in a Givens rotation.
+ *                        Not referenced if `icompq=0`.
+ * @param[in]     ldgcol  The leading dimension of `GIVCOL`, must be at least `n`.
+ * @param[out]    GIVNUM  Array of dimension (`ldgnum`, 2). Each number indicates the C
+ *                        or S value to be used in the corresponding Givens rotation.
+ *                        Not referenced if `icompq=0`.
+ * @param[in]     ldgnum  The leading dimension of `GIVNUM`, must be at least `n`.
+ * @param[out]    c       `c` contains garbage if `sqre=0` and the C-value of a Givens
+ *                        rotation related to the right null space if `sqre=1`.
+ * @param[out]    s       `s` contains garbage if `sqre=0` and the S-value of a Givens
+ *                        rotation related to the right null space if `sqre=1`.
+ * @param[out]    info    `info=0`: successful exit.
+ *                        `info<0`: if `info=-i`, the i-th argument had an illegal value.
+ *
+ * @par Contributors:
+ * @rst
+ * Ming Gu and Huan Ren, Computer Science Division, University of
+ * California at Berkeley, USA
+ * @endrst
+ */
 void slasd7(const INT icompq, const INT nl, const INT nr, const INT sqre,
             INT* k, f32* restrict D, f32* restrict Z,
             f32* restrict ZW, f32* restrict VF,
