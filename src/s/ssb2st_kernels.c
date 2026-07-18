@@ -5,6 +5,58 @@
 
 #include "semicolon_lapack_single.h"
 
+/**
+ * SSB2ST_KERNELS is an internal routine used by the SSYTRD_SB2ST subroutine.
+ *
+ * @param[in]     uplo  Specifies whether the upper or lower triangle is stored.
+ * @param[in]     wantz Indicates if eigenvalues only are requested, or both
+ *                      eigenvalues and eigenvectors.
+ * @param[in]     ttype Internal parameter.
+ * @param[in]     st    Internal parameter for indices.
+ * @param[in]     ed    Internal parameter for indices.
+ * @param[in]     sweep Internal parameter for indices.
+ * @param[in]     n     The order of the matrix `A`.
+ * @param[in]     nb    The size of the band.
+ * @param[in]     ib    Internal parameter.
+ * @param[in,out] A     A pointer to the matrix A.
+ * @param[in]     lda   The leading dimension of the matrix `A`.
+ * @param[out]    V     Array of dimension `2*n` if eigenvalues only are requested or
+ *                      to be queried for vectors.
+ * @param[out]    tau   Array of dimension (`2*n`). The scalar factors of the
+ *                      Householder reflectors are stored in this array.
+ * @param[in]     ldvt  Internal parameter.
+ * @param[out]    work  Workspace of size `nb`.
+ *
+ * @par Further Details:
+ * @rst
+ * Implemented by Azzam Haidar.
+ *
+ * All details are available on technical report, SC11, SC13 papers.
+ *
+ * Azzam Haidar, Hatem Ltaief, and Jack Dongarra.
+ * Parallel reduction to condensed forms for symmetric eigenvalue problems
+ * using aggregated fine-grained and memory-aware kernels. In Proceedings
+ * of 2011 International Conference for High Performance Computing,
+ * Networking, Storage and Analysis (SC '11), New York, NY, USA,
+ * Article 8 , 11 pages.
+ * https://doi.org/10.1145/2063384.2063394
+ *
+ * A. Haidar, J. Kurzak, P. Luszczek, 2013.
+ * An improved parallel singular value algorithm and its implementation
+ * for multicore hardware, In Proceedings of 2013 International Conference
+ * for High Performance Computing, Networking, Storage and Analysis (SC '13).
+ * Denver, Colorado, USA, 2013.
+ * Article 90, 12 pages.
+ * https://doi.org/10.1145/2503210.2503292
+ *
+ * A. Haidar, R. Solca, S. Tomov, T. Schulthess and J. Dongarra.
+ * A novel hybrid CPU-GPU generalized eigensolver for electronic structure
+ * calculations based on fine-grained memory aware tasks.
+ * International Journal of High Performance Computing Applications.
+ * Volume 28 Issue 2, Pages 196-209, May 2014.
+ * https://doi.org/10.1177/1094342013502097
+ * @endrst
+ */
 void ssb2st_kernels(const char* uplo, const INT wantz, const INT ttype,
                     const INT st, const INT ed, const INT sweep,
                     const INT n, const INT nb, const INT ib,

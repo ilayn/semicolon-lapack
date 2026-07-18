@@ -7,6 +7,103 @@
 #include "semicolon_cblas.h"
 #include <math.h>
 
+/**
+ * SSYEVD_2STAGE computes all eigenvalues and, optionally, eigenvectors of a
+ * real symmetric matrix `A` using the 2stage technique for the reduction to
+ * tridiagonal. If eigenvectors are desired, it uses a divide and conquer
+ * algorithm.
+ *
+ * @param[in]     jobz   `'N'`: Compute eigenvalues only;
+ *                       `'V'`: Compute eigenvalues and eigenvectors.
+ *                              Not available in this release.
+ * @param[in]     uplo   `'U'`: Upper triangle of `A` is stored;
+ *                       `'L'`: Lower triangle of `A` is stored.
+ * @param[in]     n      The order of the matrix `A`. `n>=0`.
+ * @param[in,out] A      On entry, the symmetric matrix `A`. If `uplo='U'`, the
+ *                       leading `n`-by-`n` upper triangular part of `A` contains the
+ *                       upper triangular part of the matrix `A`. If `uplo='L'`,
+ *                       the leading `n`-by-`n` lower triangular part of `A` contains
+ *                       the lower triangular part of the matrix `A`.
+ *                       On exit, if `jobz='V'`, then if `info=0`, `A` contains the
+ *                       orthonormal eigenvectors of the matrix `A`.
+ *                       If `jobz='N'`, then on exit the lower triangle (if `uplo='L'`)
+ *                       or the upper triangle (if `uplo='U'`) of `A`, including the
+ *                       diagonal, is destroyed.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[out]    W      Array of dimension (`n`). If `info=0`, the eigenvalues in
+ *                       ascending order.
+ * @param[out]    work   Array of dimension (`lwork`). On exit, if `info=0`, `work[0]`
+ *                       returns the optimal `lwork`.
+ * @param[in]     lwork  The dimension of the array `work`.
+ *                       If `n<=1`, `lwork` must be at least 1.
+ *                       If `jobz='N'` and `n>1`, `lwork` must be queried.
+ *                       @rst
+ *                       .. code-block:: text
+ *
+ *                           lwork = MAX(1, dimension) where
+ *                           dimension = max(stage1,stage2) + (kd+1)*n + 2*n+1
+ *                                     = n*kd + n*max(kd+1,FACTOPTNB)
+ *                                       + max(2*kd*kd, kd*NTHREADS)
+ *                                       + (kd+1)*n + 2*n+1
+ *                       @endrst
+ *                       where `kd` is the blocking size of the reduction,
+ *                       FACTOPTNB is the blocking used by the QR or LQ
+ *                       algorithm, usually FACTOPTNB=128 is a good choice,
+ *                       NTHREADS is the number of threads used when openMP
+ *                       compilation is enabled, otherwise =1.
+ *                       If `jobz='V'` and `n>1`, `lwork` must be at least `1 + 6*n + 2*n**2`.
+ *                       If `lwork=-1`, then a workspace query is assumed; the routine
+ *                       only calculates the optimal sizes of the `work` and `iwork`
+ *                       arrays, returns these values as the first entries of the `work`
+ *                       and `iwork` arrays.
+ * @param[out]    iwork  Integer array, dimension (`max(1,liwork)`). On exit, if
+ *                       `info=0`, `iwork[0]` returns the optimal `liwork`.
+ * @param[in]     liwork The dimension of the array `iwork`.
+ *                       If `n<=1`, `liwork` must be at least 1.
+ *                       If `jobz='N'` and `n>1`, `liwork` must be at least 1.
+ *                       If `jobz='V'` and `n>1`, `liwork` must be at least `3 + 5*n`.
+ *                       If `liwork=-1`, then a workspace query is assumed; the routine
+ *                       only calculates the optimal sizes of the `work` and `iwork`
+ *                       arrays, returns these values as the first entries of the `work`
+ *                       and `iwork` arrays.
+ * @param[out]    info   `info=0`: successful exit
+ *                       `info<0`: if `info=-i`, the i-th argument had an illegal value
+ *                       `info>0`: if `info=i` and `jobz='N'`, then the algorithm failed
+ *                                 to converge; i off-diagonal elements of an intermediate
+ *                                 tridiagonal form did not converge to zero;
+ *                                 if `info=i` and `jobz='V'`, then the algorithm failed
+ *                                 to compute an eigenvalue while working on the submatrix
+ *                                 lying in rows and columns `info/(n+1)` through
+ *                                 `mod(info,n+1)`.
+ *
+ * @par Further Details:
+ * @rst
+ * All details about the 2stage techniques are available in:
+ *
+ * Azzam Haidar, Hatem Ltaief, and Jack Dongarra.
+ * Parallel reduction to condensed forms for symmetric eigenvalue problems
+ * using aggregated fine-grained and memory-aware kernels. In Proceedings
+ * of 2011 International Conference for High Performance Computing,
+ * Networking, Storage and Analysis (SC '11), New York, NY, USA,
+ * Article 8 , 11 pages.
+ * https://doi.org/10.1145/2063384.2063394
+ *
+ * A. Haidar, J. Kurzak, P. Luszczek, 2013.
+ * An improved parallel singular value algorithm and its implementation
+ * for multicore hardware, In Proceedings of 2013 International Conference
+ * for High Performance Computing, Networking, Storage and Analysis (SC '13).
+ * Denver, Colorado, USA, 2013.
+ * Article 90, 12 pages.
+ * https://doi.org/10.1145/2503210.2503292
+ *
+ * A. Haidar, R. Solca, S. Tomov, T. Schulthess and J. Dongarra.
+ * A novel hybrid CPU-GPU generalized eigensolver for electronic structure
+ * calculations based on fine-grained memory aware tasks.
+ * International Journal of High Performance Computing Applications.
+ * Volume 28 Issue 2, Pages 196-209, May 2014.
+ * https://doi.org/10.1177/1094342013502097
+ * @endrst
+ */
 void ssyevd_2stage(const char* jobz, const char* uplo, const INT n,
                    f32* A, const INT lda,
                    f32* W,
