@@ -8,6 +8,105 @@
 #include "semicolon_lapack_double.h"
 #include "semicolon_cblas.h"
 
+/**
+ * Using a divide and conquer approach, DLASDA computes the singular
+ * value decomposition (SVD) of a real upper bidiagonal `n`-by-`m` matrix
+ * B with diagonal `D` and offdiagonal `E`, where `m = n + sqre`. The
+ * algorithm computes the singular values in the SVD `B = U * S * VT`.
+ * The orthogonal matrices U and VT are optionally computed in
+ * compact form.
+ *
+ * A related subroutine, DLASD0, computes the singular values and
+ * the singular vectors in explicit form.
+ *
+ * @param[in]     icompq Specifies whether singular vectors are to be computed
+ *                       in compact form, as follows
+ *                       `icompq=0`: Compute singular values only.
+ *                       `icompq=1`: Compute singular vectors of upper bidiagonal
+ *                       matrix in compact form.
+ * @param[in]     smlsiz The maximum size of the subproblems at the bottom of the
+ *                       computation tree.
+ * @param[in]     n      The row dimension of the upper bidiagonal matrix. This is
+ *                       also the dimension of the main diagonal array `D`.
+ * @param[in]     sqre   Specifies the column dimension of the bidiagonal matrix.
+ *                       `sqre=0`: The bidiagonal matrix has column dimension `m=n`;
+ *                       `sqre=1`: The bidiagonal matrix has column dimension `m=n+1`.
+ * @param[in,out] D      Array of dimension (`n`). On entry `D` contains the main
+ *                       diagonal of the bidiagonal matrix. On exit `D`, if `info=0`,
+ *                       contains its singular values.
+ * @param[in]     E      Array of dimension (`m-1`). Contains the subdiagonal entries
+ *                       of the bidiagonal matrix. On exit, `E` has been destroyed.
+ * @param[out]    U      Array of dimension (`ldu`, `smlsiz`) if `icompq=1`, and not
+ *                       referenced if `icompq=0`. If `icompq=1`, on exit, `U` contains
+ *                       the left singular vector matrices of all subproblems at the
+ *                       bottom level.
+ * @param[in]     ldu    `ldu>=n`. The leading dimension of arrays `U`, `VT`, `DIFL`,
+ *                       `DIFR`, `POLES`, `GIVNUM`, and `Z`.
+ * @param[out]    VT     Array of dimension (`ldu`, `smlsiz+1`) if `icompq=1`, and not
+ *                       referenced if `icompq=0`. If `icompq=1`, on exit, `VT**T`
+ *                       contains the right singular vector matrices of all subproblems
+ *                       at the bottom level.
+ * @param[out]    K      Integer array of dimension (`n`) if `icompq=1` and dimension 1
+ *                       if `icompq=0`. If `icompq=1`, on exit, `K[i]` is the dimension
+ *                       of the i-th secular equation on the computation tree.
+ * @param[out]    DIFL   Array of dimension (`ldu`, `nlvl`), where
+ *                       `nlvl = floor(log_2(n/smlsiz))`.
+ * @param[out]    DIFR   Array of dimension (`ldu`, `2*nlvl`) if `icompq=1` and
+ *                       dimension (`n`) if `icompq=0`.
+ *                       If `icompq=1`, on exit, `DIFL[0:n-1, i]` and
+ *                       `DIFR[0:n-1, 2*i]` record distances between singular values
+ *                       on the i-th level and singular values on the (i-1)-th level, and
+ *                       `DIFR[0:n-1, 2*i+1]` contains the normalizing factors for
+ *                       the right singular vector matrix. See DLASD8 for details.
+ * @param[out]    Z      Array of dimension (`ldu`, `nlvl`) if `icompq=1` and
+ *                       dimension (`n`) if `icompq=0`.
+ *                       The first `K` elements of `Z[0, i]` contain the components of
+ *                       the deflation-adjusted updating row vector for subproblems
+ *                       on the i-th level.
+ * @param[out]    POLES  Array of dimension (`ldu`, `2*nlvl`) if `icompq=1`, and not
+ *                       referenced if `icompq=0`. If `icompq=1`, on exit,
+ *                       `POLES[0, 2*i]` and `POLES[0, 2*i+1]` contain the new and old
+ *                       singular values involved in the secular equations on the i-th
+ *                       level.
+ * @param[out]    GIVPTR Integer array of dimension (`n`) if `icompq=1`, and not
+ *                       referenced if `icompq=0`. If `icompq=1`, on exit, `GIVPTR[i]`
+ *                       records the number of Givens rotations performed on the i-th
+ *                       problem on the computation tree.
+ * @param[out]    GIVCOL Integer array of dimension (`ldgcol`, `2*nlvl`) if `icompq=1`,
+ *                       and not referenced if `icompq=0`. If `icompq=1`, on exit, for
+ *                       each i, `GIVCOL[0, 2*i]` and `GIVCOL[0, 2*i+1]` record the
+ *                       locations of Givens rotations performed on the i-th level on the
+ *                       computation tree.
+ * @param[in]     ldgcol `ldgcol>=n`. The leading dimension of arrays `GIVCOL` and `PERM`.
+ * @param[out]    PERM   Integer array of dimension (`ldgcol`, `nlvl`) if `icompq=1`, and
+ *                       not referenced if `icompq=0`. If `icompq=1`, on exit,
+ *                       `PERM[0, i]` records permutations done on the i-th level of the
+ *                       computation tree.
+ * @param[out]    GIVNUM Array of dimension (`ldu`, `2*nlvl`) if `icompq=1`, and not
+ *                       referenced if `icompq=0`. If `icompq=1`, on exit, for each i,
+ *                       `GIVNUM[0, 2*i]` and `GIVNUM[0, 2*i+1]` record the C- and S-
+ *                       values of Givens rotations performed on the i-th level on
+ *                       the computation tree.
+ * @param[out]    C      Array of dimension (`n`) if `icompq=1`, and dimension 1 if
+ *                       `icompq=0`. If `icompq=1` and the i-th subproblem is not square,
+ *                       on exit, `C[i]` contains the C-value of a Givens rotation
+ *                       related to the right null space of the i-th subproblem.
+ * @param[out]    S      Array of dimension (`n`) if `icompq=1`, and dimension 1 if
+ *                       `icompq=0`. If `icompq=1` and the i-th subproblem is not square,
+ *                       on exit, `S[i]` contains the S-value of a Givens rotation
+ *                       related to the right null space of the i-th subproblem.
+ * @param[out]    work   Array of dimension (`6*n + (smlsiz+1)*(smlsiz+1)`).
+ * @param[out]    IWORK  Integer array of dimension (`7*n`).
+ * @param[out]    info   `info=0`: successful exit.
+ *                       `info<0`: if `info=-i`, the i-th argument had an illegal value.
+ *                       `info>0`: if `info=1`, a singular value did not converge.
+ *
+ * @par Contributors:
+ * @rst
+ * Ming Gu and Huan Ren, Computer Science Division, University of
+ * California at Berkeley, USA
+ * @endrst
+ */
 void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
             f64* restrict D, f64* restrict E,
             f64* restrict U, const INT ldu,
@@ -20,7 +119,7 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
             f64* restrict C, f64* restrict S,
             f64* restrict work, INT* restrict IWORK, INT* info)
 {
-    INT i, i1, ic, idxq, idxqi, im1, inode, itemp, iwk;
+    INT i, ic, idxq, idxqi, inode, itemp, iwk;
     INT j, lf, ll, lvl, lvl2, m, ncc, nd, ndb1, ndiml, ndimr;
     INT nl, nlf, nlp1, nlvl, nr, nrf, nrp1, nru;
     INT nwork1, nwork2, smlszp, sqrei, vf, vfi, vl, vli;
@@ -76,12 +175,11 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
 
     ndb1 = (nd + 1) / 2;
 
-    for (i = ndb1; i <= nd; i++) {
-        i1 = i - 1;
-        ic = IWORK[inode + i1];
-        nl = IWORK[ndiml + i1];
+    for (i = ndb1 - 1; i < nd; i++) {
+        ic = IWORK[inode + i];
+        nl = IWORK[ndiml + i];
         nlp1 = nl + 1;
-        nr = IWORK[ndimr + i1];
+        nr = IWORK[ndimr + i];
         nlf = ic - nl;
         nrf = ic + 1;
         idxqi = idxq + nlf;
@@ -120,7 +218,7 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
             IWORK[idxqi + j] = j;
         }
 
-        if (i == nd && sqre == 0) {
+        if (i == nd - 1 && sqre == 0) {
             sqrei = 0;
         } else {
             sqrei = 1;
@@ -162,24 +260,23 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
         }
     }
 
-    j = 1 << nlvl;
+    j = (1 << nlvl) - 1;
 
-    for (lvl = nlvl; lvl >= 1; lvl--) {
-        lvl2 = lvl * 2 - 1;
+    for (lvl = nlvl - 1; lvl >= 0; lvl--) {
+        lvl2 = lvl * 2;
 
-        if (lvl == 1) {
-            lf = 1;
-            ll = 1;
+        if (lvl == 0) {
+            lf = 0;
+            ll = 0;
         } else {
-            lf = 1 << (lvl - 1);
-            ll = 2 * lf - 1;
+            lf = (1 << lvl) - 1;
+            ll = 2 * lf;
         }
 
         for (i = lf; i <= ll; i++) {
-            im1 = i - 1;
-            ic = IWORK[inode + im1];
-            nl = IWORK[ndiml + im1];
-            nr = IWORK[ndimr + im1];
+            ic = IWORK[inode + i];
+            nl = IWORK[ndiml + i];
+            nr = IWORK[ndimr + i];
             nlf = ic - nl;
             if (i == ll) {
                 sqrei = sqre;
@@ -204,15 +301,15 @@ void dlasda(const INT icompq, const INT smlsiz, const INT n, const INT sqre,
                 dlasd6(icompq, nl, nr, sqrei, &D[nlf],
                        &work[vfi], &work[vli], &alpha, &beta,
                        &IWORK[idxqi],
-                       &PERM[nlf + (lvl - 1) * ldgcol],
-                       &GIVPTR[j - 1],
-                       &GIVCOL[nlf + (lvl2 - 1) * ldgcol], ldgcol,
-                       &GIVNUM[nlf + (lvl2 - 1) * ldu], ldu,
-                       &POLES[nlf + (lvl2 - 1) * ldu],
-                       &DIFL[nlf + (lvl - 1) * ldu],
-                       &DIFR[nlf + (lvl2 - 1) * ldu],
-                       &Z[nlf + (lvl - 1) * ldu],
-                       &K[j - 1], &C[j - 1], &S[j - 1],
+                       &PERM[nlf + lvl * ldgcol],
+                       &GIVPTR[j],
+                       &GIVCOL[nlf + lvl2 * ldgcol], ldgcol,
+                       &GIVNUM[nlf + lvl2 * ldu], ldu,
+                       &POLES[nlf + lvl2 * ldu],
+                       &DIFL[nlf + lvl * ldu],
+                       &DIFR[nlf + lvl2 * ldu],
+                       &Z[nlf + lvl * ldu],
+                       &K[j], &C[j], &S[j],
                        &work[nwork1], &IWORK[iwk], info);
             }
             if (*info != 0) {
