@@ -25,6 +25,48 @@ static inline f32 dlamc3(f32 a, f32 b)
  * right singular vectors of the original bidiagonal matrix.
  *
  * SLASD8 is called from SLASD6.
+ *
+ * @param[in]     icompq Specifies whether singular vectors are to be computed in
+ *                       factored form in the calling routine:
+ *                       `icompq=0`: Compute singular values only.
+ *                       `icompq=1`: Compute singular vectors in factored form as well.
+ * @param[in]     k      The number of terms in the rational function to be solved
+ *                       by SLASD4. `k>=1`.
+ * @param[out]    D      Array of dimension (`k`). On output, `D` contains the updated
+ *                       singular values.
+ * @param[in,out] Z      Array of dimension (`k`). On entry, the first `k` elements of
+ *                       this array contain the components of the deflation-adjusted
+ *                       updating row vector. On exit, `Z` is updated.
+ * @param[in,out] VF     Array of dimension (`k`). On entry, `VF` contains information
+ *                       passed through SBEDE8. On exit, `VF` contains the first `k`
+ *                       components of the first components of all right singular
+ *                       vectors of the bidiagonal matrix.
+ * @param[in,out] VL     Array of dimension (`k`). On entry, `VL` contains information
+ *                       passed through SBEDE8. On exit, `VL` contains the first `k`
+ *                       components of the last components of all right singular
+ *                       vectors of the bidiagonal matrix.
+ * @param[out]    DIFL   Array of dimension (`k`). On exit,
+ *                       `DIFL[i] = D[i] - DSIGMA[i]`.
+ * @param[out]    DIFR   Array of dimension (`lddifr`, 2) if `icompq=1` and dimension
+ *                       (`k`) if `icompq=0`. On exit,
+ *                       `DIFR[i,0] = D[i] - DSIGMA[i+1]`, `DIFR[k-1,0]` is not
+ *                       defined and will not be referenced.
+ *                       If `icompq=1`, `DIFR[0:k-1,1]` is an array containing the
+ *                       normalizing factors for the right singular vector matrix.
+ * @param[in]     lddifr The leading dimension of `DIFR`, must be at least `k`.
+ * @param[in]     DSIGMA Array of dimension (`k`). On entry, the first `k` elements of
+ *                       this array contain the old roots of the deflated updating
+ *                       problem. These are the poles of the secular equation.
+ * @param[out]    work   Array of dimension (`3*k`).
+ * @param[out]    info   `info=0`: successful exit.
+ *                       `info<0`: if `info=-i`, the i-th argument had an illegal value.
+ *                       `info>0`: if `info=1`, a singular value did not converge.
+ *
+ * @par Contributors:
+ * @rst
+ * Ming Gu and Huan Ren, Computer Science Division, University of
+ * California at Berkeley, USA
+ * @endrst
  */
 void slasd8(const INT icompq, const INT k,
             f32* restrict D, f32* restrict Z,
