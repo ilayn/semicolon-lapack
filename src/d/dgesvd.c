@@ -11,59 +11,79 @@
 
 /**
  * DGESVD computes the singular value decomposition (SVD) of a real
- * M-by-N matrix A, optionally computing the left and/or right singular
+ * `m`-by-`n` matrix `A`, optionally computing the left and/or right singular
  * vectors. The SVD is written
+ * @rst
+ * .. code-block:: text
  *
- *      A = U * SIGMA * transpose(V)
+ *     A = U * SIGMA * transpose(V)
+ * @endrst
+ * where SIGMA is an `m`-by-`n` matrix which is zero except for its
+ * `min(m,n)` diagonal elements, U is an `m`-by-`m` orthogonal matrix, and
+ * V is an `n`-by-`n` orthogonal matrix. The diagonal elements of SIGMA
+ * are the singular values of `A`; they are real and non-negative, and
+ * are returned in descending order. The first `min(m,n)` columns of
+ * U and V are the left and right singular vectors of `A`.
  *
- * where SIGMA is an M-by-N matrix which is zero except for its
- * min(m,n) diagonal elements, U is an M-by-M orthogonal matrix, and
- * V is an N-by-N orthogonal matrix. The diagonal elements of SIGMA
- * are the singular values of A; they are real and non-negative, and
- * are returned in descending order. The first min(m,n) columns of
- * U and V are the left and right singular vectors of A.
+ * Note that the routine returns `V**T`, not V.
  *
- * Note that the routine returns V**T, not V.
+ * @param[in]     jobu   Specifies options for computing all or part of `U`:
+ *                       `'A'`: all `m` columns of `U` are returned in array `U`;
+ *                       `'S'`: the first `min(m,n)` columns of `U` are returned in `U`;
+ *                       `'O'`: the first `min(m,n)` columns of `U` are overwritten on `A`;
+ *                       `'N'`: no columns of `U` are computed.
+ * @param[in]     jobvt  Specifies options for computing all or part of `V**T`:
+ *                       `'A'`: all `n` rows of `V**T` are returned in array `VT`;
+ *                       `'S'`: the first `min(m,n)` rows of `V**T` are returned in `VT`;
+ *                       `'O'`: the first `min(m,n)` rows of `V**T` are overwritten on `A`;
+ *                       `'N'`: no rows of `V**T` are computed.
+ *                       `jobvt` and `jobu` cannot both be `'O'`.
+ * @param[in]     m      The number of rows of the input matrix `A`. `m>=0`.
+ * @param[in]     n      The number of columns of the input matrix `A`. `n>=0`.
+ * @param[in,out] A      Double precision array, dimension (`lda`, `n`).
+ *                       On entry, the `m`-by-`n` matrix `A`.
+ *                       On exit, contents depend on `jobu` and `jobvt`.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,m)`.
+ * @param[out]    S      Double precision array, dimension (`min(m,n)`).
+ *                       The singular values of `A`, sorted so that `S[i]>=S[i+1]`.
+ * @param[out]    U      Double precision array, dimension (`ldu`, ucol).
+ *                       If `jobu='A'`, `U` contains the `m`-by-`m` orthogonal matrix `U`;
+ *                       if `jobu='S'`, `U` contains the first `min(m,n)` columns of `U`;
+ *                       if `jobu='N'` or `'O'`, `U` is not referenced.
+ * @param[in]     ldu    The leading dimension of the array `U`. `ldu>=1`; if
+ *                       `jobu='S'` or `'A'`, `ldu>=m`.
+ * @param[out]    VT     Double precision array, dimension (`ldvt`, `n`).
+ *                       If `jobvt='A'`, `VT` contains the `n`-by-`n` orthogonal matrix `V**T`;
+ *                       if `jobvt='S'`, `VT` contains the first `min(m,n)` rows of `V**T`;
+ *                       if `jobvt='N'` or `'O'`, `VT` is not referenced.
+ * @param[in]     ldvt   The leading dimension of the array `VT`. `ldvt>=1`; if
+ *                       `jobvt='A'`, `ldvt>=n`; if `jobvt='S'`, `ldvt>=min(m,n)`.
+ * @param[out]    work   Double precision array, dimension (`max(1,lwork)`).
+ *                       On exit, if `info=0`, `work[0]` returns the optimal `lwork`;
+ *                       if `info>0`, `work[1:min(m,n)-1]` contains the unconverged
+ *                       superdiagonal elements of an upper bidiagonal matrix B whose
+ *                       diagonal is in `S` (not necessarily sorted). B satisfies
+ *                       `A = U * B * VT`, so it has the same singular values as `A`,
+ *                       and singular vectors related by `U` and `VT`.
+ * @param[in]     lwork  The dimension of the array `work`.
+ *                       @rst
+ *                       ``lwork >= max(1, 5*min(m,n))`` for the paths (see comments inside code):
  *
- * @param[in]     jobu   Specifies options for computing all or part of U:
- *                       = 'A': all M columns of U are returned in array U;
- *                       = 'S': the first min(m,n) columns of U are returned in U;
- *                       = 'O': the first min(m,n) columns of U are overwritten on A;
- *                       = 'N': no columns of U are computed.
- * @param[in]     jobvt  Specifies options for computing all or part of V**T:
- *                       = 'A': all N rows of V**T are returned in array VT;
- *                       = 'S': the first min(m,n) rows of V**T are returned in VT;
- *                       = 'O': the first min(m,n) rows of V**T are overwritten on A;
- *                       = 'N': no rows of V**T are computed.
- *                       JOBVT and JOBU cannot both be 'O'.
- * @param[in]     m      The number of rows of the input matrix A. m >= 0.
- * @param[in]     n      The number of columns of the input matrix A. n >= 0.
- * @param[in,out] A      Double precision array, dimension (lda, n).
- *                       On entry, the M-by-N matrix A.
- *                       On exit, contents depend on jobu and jobvt.
- * @param[in]     lda    The leading dimension of the array A. lda >= max(1,m).
- * @param[out]    S      Double precision array, dimension (min(m,n)).
- *                       The singular values of A, sorted so that S[i] >= S[i+1].
- * @param[out]    U      Double precision array, dimension (ldu, ucol).
- *                       If jobu = 'A', U contains the M-by-M orthogonal matrix U;
- *                       if jobu = 'S', U contains the first min(m,n) columns of U;
- *                       if jobu = 'N' or 'O', U is not referenced.
- * @param[in]     ldu    The leading dimension of the array U. ldu >= 1; if
- *                       jobu = 'S' or 'A', ldu >= m.
- * @param[out]    VT     Double precision array, dimension (ldvt, n).
- *                       If jobvt = 'A', VT contains the N-by-N orthogonal matrix V**T;
- *                       if jobvt = 'S', VT contains the first min(m,n) rows of V**T;
- *                       if jobvt = 'N' or 'O', VT is not referenced.
- * @param[in]     ldvt   The leading dimension of the array VT. ldvt >= 1; if
- *                       jobvt = 'A', ldvt >= n; if jobvt = 'S', ldvt >= min(m,n).
- * @param[out]    work   Double precision array, dimension (max(1,lwork)).
- *                       On exit, if info = 0, work[0] returns the optimal lwork.
- * @param[in]     lwork  The dimension of the array work.
- *                       If lwork = -1, a workspace query is assumed.
- * @param[out]    info
- *                         - = 0: successful exit.
- *                         - < 0: if info = -i, the i-th argument had an illegal value.
- *                         - > 0: if DBDSQR did not converge.
+ *                       - PATH 1  (m much larger than n, ``jobu='N'``)
+ *                       - PATH 1t (n much larger than m, ``jobvt='N'``)
+ *
+ *                       ``lwork >= max(1, 3*min(m,n) + max(m,n), 5*min(m,n))`` for the other paths.
+ *                       @endrst
+ *                       For good performance, `lwork` should generally be larger.
+ *                       If `lwork=-1`, a workspace query is assumed; the routine
+ *                       only calculates the optimal size of the `work` array, returns
+ *                       this value as the first entry of the `work` array.
+ * @param[out]    info   `info=0`: successful exit.
+ *                       `info<0`: if `info=-i`, the i-th argument had an illegal value.
+ *                       `info>0`: if DBDSQR did not converge, `info` specifies how many
+ *                                 superdiagonals of an intermediate bidiagonal form B
+ *                                 did not converge to zero. See the description of `work`
+ *                                 above for details.
  */
 void dgesvd(const char* jobu, const char* jobvt,
             const INT m, const INT n,
