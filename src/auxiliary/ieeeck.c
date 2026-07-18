@@ -9,25 +9,17 @@
  * IEEECK is called from the ILAENV to verify that Infinity and
  * possibly NaN arithmetic is safe (i.e. will not trap).
  *
- * @param[in] ispec
- *          Specifies whether to test just for infinity arithmetic
- *          or whether to test for infinity and NaN arithmetic.
- *          = 0: Verify infinity arithmetic only.
- *          = 1: Verify infinity and NaN arithmetic.
+ * @param[in] ispec Specifies whether to test just for infinity arithmetic
+ *                  or whether to test for infinity and NaN arithmetic.
+ *                  `ispec=0`: Verify infinity arithmetic only.
+ *                  `ispec=1`: Verify infinity and NaN arithmetic.
+ * @param[in] zero  Must contain the value 0.0. This is passed to prevent the
+ *                  compiler from optimizing away this code.
+ * @param[in] one   Must contain the value 1.0. This is passed to prevent the
+ *                  compiler from optimizing away this code.
  *
- * @param[in] zero
- *          Must contain the value 0.0
- *          This is passed to prevent the compiler from optimizing
- *          away this code.
- *
- * @param[in] one
- *          Must contain the value 1.0
- *          This is passed to prevent the compiler from optimizing
- *          away this code.
- *
- * @return
- *          = 0: Arithmetic failed to produce the correct answers
- *          = 1: Arithmetic produced the correct answers
+ * @return `0`: Arithmetic failed to produce the correct answers.
+ *         `1`: Arithmetic produced the correct answers.
  */
 INT ieeeck(const INT ispec, const float zero, const float one)
 {

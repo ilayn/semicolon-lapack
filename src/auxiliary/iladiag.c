@@ -10,9 +10,14 @@
  * matrix has unit diagonal or not to the relevant BLAST-specified
  * integer constant.
  *
- * ILADIAG returns an INTEGER.  If ILADIAG < 0, then the input is not a
- * character indicating a unit or non-unit diagonal.  Otherwise ILADIAG
- * returns the constant value corresponding to DIAG.
+ * @param[in] diag `diag='N'`: the matrix has a non-unit diagonal.
+ *                 `diag='U'`: the matrix has a unit diagonal.
+ *
+ * @return An integer. If the returned value `<0`, then the input is not a
+ *         character indicating a unit or non-unit diagonal. Otherwise the
+ *         constant value corresponding to `diag` is returned:
+ *         `131` (BLAS_NON_UNIT_DIAG) for `diag='N'`,
+ *         `132` (BLAS_UNIT_DIAG) for `diag='U'`.
  */
 INT iladiag(const char* diag)
 {
