@@ -11,63 +11,72 @@
 
 /**
  * ZGESVD computes the singular value decomposition (SVD) of a complex
- * M-by-N matrix A, optionally computing the left and/or right singular
+ * `m`-by-`n` matrix `A`, optionally computing the left and/or right singular
  * vectors. The SVD is written
+ * @rst
+ * .. code-block:: text
  *
- *      A = U * SIGMA * conjugate-transpose(V)
+ *     A = U * SIGMA * conjugate-transpose(V)
+ * @endrst
+ * where SIGMA is an `m`-by-`n` matrix which is zero except for its
+ * `min(m,n)` diagonal elements, U is an `m`-by-`m` unitary matrix, and
+ * V is an `n`-by-`n` unitary matrix. The diagonal elements of SIGMA
+ * are the singular values of `A`; they are real and non-negative, and
+ * are returned in descending order. The first `min(m,n)` columns of
+ * U and V are the left and right singular vectors of `A`.
  *
- * where SIGMA is an M-by-N matrix which is zero except for its
- * min(m,n) diagonal elements, U is an M-by-M unitary matrix, and
- * V is an N-by-N unitary matrix. The diagonal elements of SIGMA
- * are the singular values of A; they are real and non-negative, and
- * are returned in descending order. The first min(m,n) columns of
- * U and V are the left and right singular vectors of A.
+ * Note that the routine returns `V**H`, not V.
  *
- * Note that the routine returns V**H, not V.
- *
- * @param[in]     jobu   Specifies options for computing all or part of U:
- *                       = 'A': all M columns of U are returned in array U;
- *                       = 'S': the first min(m,n) columns of U are returned in U;
- *                       = 'O': the first min(m,n) columns of U are overwritten on A;
- *                       = 'N': no columns of U are computed.
- * @param[in]     jobvt  Specifies options for computing all or part of V**H:
- *                       = 'A': all N rows of V**H are returned in array VT;
- *                       = 'S': the first min(m,n) rows of V**H are returned in VT;
- *                       = 'O': the first min(m,n) rows of V**H are overwritten on A;
- *                       = 'N': no rows of V**H are computed.
- *                       JOBVT and JOBU cannot both be 'O'.
- * @param[in]     m      The number of rows of the input matrix A. m >= 0.
- * @param[in]     n      The number of columns of the input matrix A. n >= 0.
- * @param[in,out] A      Complex*16 array, dimension (lda, n).
- *                       On entry, the M-by-N matrix A.
- *                       On exit, contents depend on jobu and jobvt.
- * @param[in]     lda    The leading dimension of the array A. lda >= max(1,m).
- * @param[out]    S      Double precision array, dimension (min(m,n)).
- *                       The singular values of A, sorted so that S[i] >= S[i+1].
- * @param[out]    U      Complex*16 array, dimension (ldu, ucol).
- *                       If jobu = 'A', U contains the M-by-M unitary matrix U;
- *                       if jobu = 'S', U contains the first min(m,n) columns of U;
- *                       if jobu = 'N' or 'O', U is not referenced.
- * @param[in]     ldu    The leading dimension of the array U. ldu >= 1; if
- *                       jobu = 'S' or 'A', ldu >= m.
- * @param[out]    VT     Complex*16 array, dimension (ldvt, n).
- *                       If jobvt = 'A', VT contains the N-by-N unitary matrix V**H;
- *                       if jobvt = 'S', VT contains the first min(m,n) rows of V**H;
- *                       if jobvt = 'N' or 'O', VT is not referenced.
- * @param[in]     ldvt   The leading dimension of the array VT. ldvt >= 1; if
- *                       jobvt = 'A', ldvt >= n; if jobvt = 'S', ldvt >= min(m,n).
- * @param[out]    work   Complex*16 array, dimension (max(1,lwork)).
- *                       On exit, if info = 0, work[0] returns the optimal lwork.
- * @param[in]     lwork  The dimension of the array work.
- *                       If lwork = -1, a workspace query is assumed.
- * @param[out]    rwork  Double precision array, dimension (5*min(m,n)).
- *                       On exit, if info > 0, rwork[0:min(m,n)-2] contains the
+ * @param[in]     jobu   Specifies options for computing all or part of `U`:
+ *                       `'A'`: all `m` columns of `U` are returned in array `U`;
+ *                       `'S'`: the first `min(m,n)` columns of `U` are returned in `U`;
+ *                       `'O'`: the first `min(m,n)` columns of `U` are overwritten on `A`;
+ *                       `'N'`: no columns of `U` are computed.
+ * @param[in]     jobvt  Specifies options for computing all or part of `V**H`:
+ *                       `'A'`: all `n` rows of `V**H` are returned in array `VT`;
+ *                       `'S'`: the first `min(m,n)` rows of `V**H` are returned in `VT`;
+ *                       `'O'`: the first `min(m,n)` rows of `V**H` are overwritten on `A`;
+ *                       `'N'`: no rows of `V**H` are computed.
+ *                       `jobvt` and `jobu` cannot both be `'O'`.
+ * @param[in]     m      The number of rows of the input matrix `A`. `m>=0`.
+ * @param[in]     n      The number of columns of the input matrix `A`. `n>=0`.
+ * @param[in,out] A      Complex*16 array, dimension (`lda`, `n`).
+ *                       On entry, the `m`-by-`n` matrix `A`.
+ *                       On exit, contents depend on `jobu` and `jobvt`.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,m)`.
+ * @param[out]    S      Double precision array, dimension (`min(m,n)`).
+ *                       The singular values of `A`, sorted so that `S[i]>=S[i+1]`.
+ * @param[out]    U      Complex*16 array, dimension (`ldu`, ucol).
+ *                       If `jobu='A'`, `U` contains the `m`-by-`m` unitary matrix `U`;
+ *                       if `jobu='S'`, `U` contains the first `min(m,n)` columns of `U`;
+ *                       if `jobu='N'` or `'O'`, `U` is not referenced.
+ * @param[in]     ldu    The leading dimension of the array `U`. `ldu>=1`; if
+ *                       `jobu='S'` or `'A'`, `ldu>=m`.
+ * @param[out]    VT     Complex*16 array, dimension (`ldvt`, `n`).
+ *                       If `jobvt='A'`, `VT` contains the `n`-by-`n` unitary matrix `V**H`;
+ *                       if `jobvt='S'`, `VT` contains the first `min(m,n)` rows of `V**H`;
+ *                       if `jobvt='N'` or `'O'`, `VT` is not referenced.
+ * @param[in]     ldvt   The leading dimension of the array `VT`. `ldvt>=1`; if
+ *                       `jobvt='A'`, `ldvt>=n`; if `jobvt='S'`, `ldvt>=min(m,n)`.
+ * @param[out]    work   Complex*16 array, dimension (`max(1,lwork)`).
+ *                       On exit, if `info=0`, `work[0]` returns the optimal `lwork`.
+ * @param[in]     lwork  The dimension of the array `work`. `lwork>=max(1,2*min(m,n)+max(m,n))`.
+ *                       For good performance, `lwork` should generally be larger.
+ *                       If `lwork=-1`, a workspace query is assumed; the routine
+ *                       only calculates the optimal size of the `work` array, returns
+ *                       this value as the first entry of the `work` array.
+ * @param[out]    rwork  Double precision array, dimension (5*`min(m,n)`).
+ *                       On exit, if `info>0`, `rwork[0:min(m,n)-2]` contains the
  *                       unconverged superdiagonal elements of an upper bidiagonal
- *                       matrix B whose diagonal is in S.
- * @param[out]    info
- *                         - = 0: successful exit.
- *                         - < 0: if info = -i, the i-th argument had an illegal value.
- *                         - > 0: if ZBDSQR did not converge.
+ *                       matrix B whose diagonal is in `S` (not necessarily sorted).
+ *                       B satisfies `A = U * B * VT`, so it has the same singular
+ *                       values as `A`, and singular vectors related by `U` and `VT`.
+ * @param[out]    info   `info=0`: successful exit.
+ *                       `info<0`: if `info=-i`, the i-th argument had an illegal value.
+ *                       `info>0`: if ZBDSQR did not converge, `info` specifies how many
+ *                                 superdiagonals of an intermediate bidiagonal form B
+ *                                 did not converge to zero. See the description of `rwork`
+ *                                 above for details.
  */
 void zgesvd(const char* jobu, const char* jobvt,
             const INT m, const INT n,
