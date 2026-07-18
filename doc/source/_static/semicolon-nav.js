@@ -66,9 +66,9 @@
         details.appendChild(ul);
         li.appendChild(details);
 
-        // Top-level families are open by default (matches show_nav_level: 2);
-        // deeper branches open only along the current page's path.
-        if (level === 1 || onPath) {
+        // Branches open only along the current page's path; unrelated
+        // families start collapsed.
+        if (onPath) {
           details.setAttribute("open", "");
         }
 
