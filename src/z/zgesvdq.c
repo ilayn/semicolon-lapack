@@ -23,6 +23,259 @@ static const c128 CONE = CMPLX(1.0, 0.0);
  * where SIGMA is an N-by-N diagonal matrix, U is an M-by-N orthonormal
  * matrix, and V is an N-by-N unitary matrix.
  */
+/**
+ * ZGESVDQ computes the singular value decomposition (SVD) of a complex
+ * `m`-by-`n` matrix `A`, where `m>=n`. The SVD of `A` is written as
+ * @rst
+ * .. code-block:: text
+ *
+ *                                    [++]   [xx]   [x0]   [xx]
+ *              A = U * SIGMA * V^*,  [++] = [xx] * [ox] * [xx]
+ *                                    [++]   [xx]
+ * @endrst
+ * where SIGMA is an `n`-by-`n` diagonal matrix, U is an `m`-by-`n` orthonormal
+ * matrix, and V is an `n`-by-`n` unitary matrix. The diagonal elements
+ * of SIGMA are the singular values of `A`. The columns of U and V are the
+ * left and the right singular vectors of `A`, respectively.
+ *
+ * @param[in]     joba  Specifies the level of accuracy in the computed SVD.
+ *                      `joba='A'`: The requested accuracy corresponds to having the
+ *                      backward error bounded by `|| delta A ||_F <= f(m,n)*EPS*|| A ||_F`,
+ *                      where `EPS = zlamch("Epsilon")`. This authorises ZGESVDQ to
+ *                      truncate the computed triangular factor in a rank revealing
+ *                      QR factorization whenever the truncated part is below the
+ *                      threshold of the order of `EPS * ||A||_F`. This is aggressive
+ *                      truncation level.
+ *                      `joba='M'`: Similarly as with `'A'`, but the truncation is more
+ *                      gentle: it is allowed only when there is a drop on the diagonal
+ *                      of the triangular factor in the QR factorization. This is medium
+ *                      truncation level.
+ *                      `joba='H'`: High accuracy requested. No numerical rank
+ *                      determination based on the rank revealing QR factorization is
+ *                      attempted.
+ *                      `joba='E'`: Same as `'H'`, and in addition the condition number
+ *                      of column scaled `A` is estimated and returned in `rwork[0]`.
+ *                      `N^(-1/4)*rwork[0] <= ||pinv(A_scaled)||_2 <= N^(1/4)*rwork[0]`.
+ * @param[in]     jobp  `jobp='P'`: The rows of `A` are ordered in decreasing order with
+ *                      respect to `||A(i,:)||_\infty`. This enhances numerical accuracy
+ *                      at the cost of extra data movement. Recommended for numerical
+ *                      robustness.
+ *                      `jobp='N'`: No row pivoting.
+ * @param[in]     jobr  `jobr='T'`: After the initial pivoted QR factorization, ZGESVD is
+ *                      applied to the transposed `R**H` of the computed triangular factor
+ *                      R. This involves some extra data movement (matrix transpositions).
+ *                      Useful for experiments, research and development.
+ *                      `jobr='N'`: The triangular factor R is given as input to ZGESVD.
+ *                      This may be preferred as it involves less data movement.
+ * @param[in]     jobu  `jobu='A'`: All `m` left singular vectors are computed and returned
+ *                      in the matrix `U`. See the description of `U`.
+ *                      `jobu='S'` or `jobu='U'`: `n = min(m,n)` left singular vectors are
+ *                      computed and returned in the matrix `U`. See the description of `U`.
+ *                      `jobu='R'`: Numerical rank `numrank` is determined and only
+ *                      `numrank` left singular vectors are computed and returned in the
+ *                      matrix `U`.
+ *                      `jobu='F'`: The `n` left singular vectors are returned in factored
+ *                      form as the product of the Q factor from the initial QR
+ *                      factorization and the `n` left singular vectors of `(R**H, 0)**H`.
+ *                      If row pivoting is used, then the necessary information on the row
+ *                      pivoting is stored in `iwork[n:n+m-2]`.
+ *                      `jobu='N'`: The left singular vectors are not computed.
+ * @param[in]     jobv  `jobv='A'` or `jobv='V'`: All `n` right singular vectors are
+ *                      computed and returned in the matrix `V`.
+ *                      `jobv='R'`: Numerical rank `numrank` is determined and only
+ *                      `numrank` right singular vectors are computed and returned in the
+ *                      matrix `V`. This option is allowed only if `jobu='R'` or `jobu='N'`;
+ *                      otherwise it is illegal.
+ *                      `jobv='N'`: The right singular vectors are not computed.
+ * @param[in]     m     The number of rows of the input matrix `A`. `m>=0`.
+ * @param[in]     n     The number of columns of the input matrix `A`. `m>=n>=0`.
+ * @param[in,out] A     Array of dimensions `lda` x `n`. On entry, the input matrix `A`.
+ *                      On exit, if `jobu!='N'` or `jobv!='N'`, the lower triangle of `A`
+ *                      contains the Householder vectors as stored by ZGEQP3. If
+ *                      `jobu='F'`, these Householder vectors together with `cwork[0:n-1]`
+ *                      can be used to restore the Q factors from the initial pivoted QR
+ *                      factorization of `A`. See the description of `U`.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,m)`.
+ * @param[out]    S     Array of dimension `n`. The singular values of `A`, ordered so
+ *                      that `S[i]>=S[i+1]`.
+ * @param[out]    U     Array of dimension `ldu` x `m` if `jobu='A'`; see the description
+ *                      of `ldu`. In this case, on exit, `U` contains the `m` left singular
+ *                      vectors.
+ *                      `ldu` x `n` if `jobu='S'`, `'U'`, `'R'`; see the description of
+ *                      `ldu`. In this case, `U` contains the leading `n` or the leading
+ *                      `numrank` left singular vectors.
+ *                      `ldu` x `n` if `jobu='F'`; see the description of `ldu`. In this
+ *                      case `U` contains `n` x `n` unitary matrix that can be used to
+ *                      form the left singular vectors.
+ *                      If `jobu='N'`, `U` is not referenced.
+ * @param[in]     ldu   The leading dimension of the array `U`.
+ *                      If `jobu='A'`, `'S'`, `'U'`, `'R'`, `ldu>=max(1,m)`.
+ *                      If `jobu='F'`, `ldu>=max(1,n)`.
+ *                      Otherwise, `ldu>=1`.
+ * @param[out]    V     Array of dimension `ldv` x `n` if `jobv='A'`, `'V'`, `'R'` or if
+ *                      `joba='E'`.
+ *                      If `jobv='A'` or `'V'`, `V` contains the `n`-by-`n` unitary
+ *                      matrix `V**H`;
+ *                      If `jobv='R'`, `V` contains the first `numrank` rows of `V**H`
+ *                      (the right singular vectors, stored rowwise, of the `numrank`
+ *                      largest singular values).
+ *                      If `jobv='N'` and `joba='E'`, `V` is used as a workspace.
+ *                      If `jobv='N'` and `joba!='E'`, `V` is not referenced.
+ * @param[in]     ldv   The leading dimension of the array `V`.
+ *                      If `jobv='A'`, `'V'`, `'R'`, or `joba='E'`, `ldv>=max(1,n)`.
+ *                      Otherwise, `ldv>=1`.
+ * @param[out]    numrank `numrank` is the numerical rank first determined after the rank
+ *                      revealing QR factorization, following the strategy specified by the
+ *                      value of `joba`. If `jobv='R'` and `jobu='R'`, only `numrank`
+ *                      leading singular values and vectors are then requested in the call
+ *                      of ZGESVD. The final value of `numrank` might be further reduced if
+ *                      some singular values are computed as zeros.
+ * @param[out]    iwork Integer array of dimension (`max(1,liwork)`).
+ *                      On exit, `iwork[0:n-1]` contains column pivoting permutation of the
+ *                      rank revealing QR factorization.
+ *                      If `jobp='P'`, `iwork[n:n+m-2]` contains the indices of the sequence
+ *                      of row swaps used in row pivoting. These can be used to restore the
+ *                      left singular vectors in the case `jobu='F'`.
+ *                      If `liwork`, `lcwork`, or `lrwork = -1`, then on exit, if `info=0`,
+ *                      `iwork[0]` returns the minimal `liwork`.
+ * @param[in]     liwork The dimension of the array `iwork`.
+ *                      `liwork >= n+m-1`, if `jobp='P'` and `joba!='E'`;
+ *                      `liwork >= n`, if `jobp='N'` and `joba!='E'`;
+ *                      `liwork >= n+m-1+n`, if `jobp='P'` and `joba='E'`;
+ *                      `liwork >= n+n`, if `jobp='N'` and `joba='E'`.
+ *                      If `liwork=-1`, then a workspace query is assumed; the routine
+ *                      only calculates and returns the optimal and minimal sizes
+ *                      for the `cwork`, `iwork`, and `rwork` arrays, and no error
+ *                      message related to `lcwork` is issued by XERBLA.
+ * @param[out]    cwork Array of dimension (`max(2,lcwork)`), used as a workspace.
+ *                      On exit, if, on entry, `lcwork!=-1`, `cwork[0:n-1]` contains
+ *                      parameters needed to recover the Q factor from the QR factorization
+ *                      computed by ZGEQP3.
+ *                      If `liwork`, `lcwork`, or `lrwork = -1`, then on exit, if `info=0`,
+ *                      `cwork[0]` returns the optimal `lcwork`, and
+ *                      `cwork[1]` returns the minimal `lcwork`.
+ * @param[in,out] lcwork The dimension of the array `cwork`. It is determined as follows:
+ *                       @rst
+ *                       .. code-block:: text
+ *
+ *                           Let  LWQP3 = N+1,  LWCON = 2*N, and let
+ *                           LWUNQ = { MAX( N, 1 ),  if JOBU = 'R', 'S', or 'U'
+ *                                   { MAX( M, 1 ),  if JOBU = 'A'
+ *                           LWSVD = MAX( 3*N, 1 )
+ *                           LWLQF = MAX( N/2, 1 ), LWSVD2 = MAX( 3*(N/2), 1 ), LWUNLQ = MAX( N, 1 ),
+ *                           LWQRF = MAX( N/2, 1 ), LWUNQ2 = MAX( N, 1 )
+ *                           Then the minimal value of LCWORK is:
+ *                           = MAX( N + LWQP3, LWSVD )        if only the singular values are needed;
+ *                           = MAX( N + LWQP3, LWCON, LWSVD ) if only the singular values are needed,
+ *                                                    and a scaled condition estimate requested;
+ *
+ *                           = N + MAX( LWQP3, LWSVD, LWUNQ ) if the singular values and the left
+ *                                                    singular vectors are requested;
+ *                           = N + MAX( LWQP3, LWCON, LWSVD, LWUNQ ) if the singular values and the left
+ *                                                    singular vectors are requested, and also
+ *                                                    a scaled condition estimate requested;
+ *
+ *                           = N + MAX( LWQP3, LWSVD )        if the singular values and the right
+ *                                                    singular vectors are requested;
+ *                           = N + MAX( LWQP3, LWCON, LWSVD ) if the singular values and the right
+ *                                                    singular vectors are requested, and also
+ *                                                    a scaled condition estimate requested;
+ *
+ *                           = N + MAX( LWQP3, LWSVD, LWUNQ ) if the full SVD is requested with JOBV = 'R';
+ *                                                    independent of JOBR;
+ *                           = N + MAX( LWQP3, LWCON, LWSVD, LWUNQ ) if the full SVD is requested,
+ *                                                    JOBV = 'R' and, also a scaled condition
+ *                                                    estimate requested; independent of JOBR;
+ *                           = MAX( N + MAX( LWQP3, LWSVD, LWUNQ ),
+ *                          N + MAX( LWQP3, N/2+LWLQF, N/2+LWSVD2, N/2+LWUNLQ, LWUNQ) ) if the
+ *                                          full SVD is requested with JOBV = 'A' or 'V', and
+ *                                          JOBR ='N'
+ *                           = MAX( N + MAX( LWQP3, LWCON, LWSVD, LWUNQ ),
+ *                          N + MAX( LWQP3, LWCON, N/2+LWLQF, N/2+LWSVD2, N/2+LWUNLQ, LWUNQ ) )
+ *                                          if the full SVD is requested with JOBV = 'A' or 'V', and
+ *                                          JOBR ='N', and also a scaled condition number estimate
+ *                                          requested.
+ *                           = MAX( N + MAX( LWQP3, LWSVD, LWUNQ ),
+ *                          N + MAX( LWQP3, N/2+LWQRF, N/2+LWSVD2, N/2+LWUNQ2, LWUNQ ) ) if the
+ *                                          full SVD is requested with JOBV = 'A', 'V', and JOBR ='T'
+ *                           = MAX( N + MAX( LWQP3, LWCON, LWSVD, LWUNQ ),
+ *                          N + MAX( LWQP3, LWCON, N/2+LWQRF, N/2+LWSVD2, N/2+LWUNQ2, LWUNQ ) )
+ *                                          if the full SVD is requested with JOBV = 'A', 'V' and
+ *                                          JOBR ='T', and also a scaled condition number estimate
+ *                                          requested.
+ *                       @endrst
+ *                       Finally, `lcwork` must be at least two: `lcwork = max(2,lcwork)`.
+ *                       If `lcwork=-1`, then a workspace query is assumed; the routine
+ *                       only calculates and returns the optimal and minimal sizes
+ *                       for the `cwork`, `iwork`, and `rwork` arrays, and no error
+ *                       message related to `lcwork` is issued by XERBLA.
+ * @param[out]    rwork Array of dimension (`max(1,lrwork)`). On exit,
+ *                      1. If `joba='E'`, `rwork[0]` contains an estimate of the condition
+ *                      number of column scaled `A`. If `A = C * D` where D is diagonal and C
+ *                      has unit columns in the Euclidean norm, then, assuming full column
+ *                      rank, `N^(-1/4) * rwork[0] <= ||pinv(C)||_2 <= N^(1/4) * rwork[0]`.
+ *                      Otherwise, `rwork[0] = -1`.
+ *                      2. `rwork[1]` contains the number of singular values computed as
+ *                      exact zeros in ZGESVD applied to the upper triangular or trapezoidal
+ *                      R (from the initial QR factorization). In case of early exit (no call
+ *                      to ZGESVD, such as in the case of zero matrix) `rwork[1] = -1`.
+ *                      If `liwork`, `lcwork`, or `lrwork = -1`, then on exit, if `info=0`,
+ *                      `rwork[0]` returns the minimal `lrwork`.
+ * @param[in]     lrwork The dimension of the array `rwork`.
+ *                      If `jobp='P'`, then `lrwork >= max(2,m)`.
+ *                      Otherwise, `lrwork >= 2`.
+ *                      If `lrwork=-1`, then a workspace query is assumed; the routine
+ *                      only calculates and returns the optimal and minimal sizes
+ *                      for the `cwork`, `iwork`, and `rwork` arrays, and no error
+ *                      message related to `lcwork` is issued by XERBLA.
+ * @param[out]    info  `info=0`: successful exit.
+ *                      `info<0`: if `info=-i`, the i-th argument had an illegal value.
+ *                      `info>0`: if ZBDSQR did not converge, `info` specifies how many
+ *                      superdiagonals of an intermediate bidiagonal form B (computed in
+ *                      ZGESVD) did not converge to zero.
+ *
+ * @par Further Details:
+ * @rst
+ * 1. The data movement (matrix transpose) is coded using simple nested
+ * DO-loops because BLAS and LAPACK do not provide corresponding subroutines.
+ * Those DO-loops are easily identified in this source code - by the CONTINUE
+ * statements labeled with 11**. In an optimized version of this code, the
+ * nested DO loops should be replaced with calls to an optimized subroutine.
+ *
+ * 2. This code scales A by 1/SQRT(M) if the largest ABS(A(i,j)) could cause
+ * column norm overflow. This is the minimal precaution and it is left to the
+ * SVD routine (ZGESVD) to do its own preemptive scaling if potential over-
+ * or underflows are detected. To avoid repeated scanning of the array A,
+ * an optimal implementation would do all necessary scaling before calling
+ * ZGESVD and the scaling in ZGESVD can be switched off.
+ *
+ * 3. Other comments related to code optimization are given in comments in the
+ * code, enclosed in [[double brackets]].
+ * @endrst
+ *
+ * @par Bugs, examples and comments:
+ * @rst
+ * Please report all bugs and send interesting examples and/or comments to
+ * drmac@math.hr. Thank you.
+ * @endrst
+ *
+ * @par References:
+ * @rst
+ * [1] Zlatko Drmac, Algorithm 977: A QR-Preconditioned QR SVD Method for
+ * Computing the SVD with High Accuracy. ACM Trans. Math. Softw.
+ * 44(1): 11:1-11:30 (2017)
+ *
+ * SIGMA library, xGESVDQ section updated February 2016.
+ * Developed and coded by Zlatko Drmac, Department of Mathematics
+ * University of Zagreb, Croatia, drmac@math.hr
+ * @endrst
+ *
+ * @par Contributors:
+ * @rst
+ * Developed and coded by Zlatko Drmac, Department of Mathematics
+ * University of Zagreb, Croatia, drmac@math.hr
+ * @endrst
+ */
 void zgesvdq(const char* joba, const char* jobp, const char* jobr,
              const char* jobu, const char* jobv,
              const INT m, const INT n, c128* restrict A, const INT lda,
