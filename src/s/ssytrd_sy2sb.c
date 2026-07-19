@@ -56,8 +56,9 @@
  *                      FACTOPTNB is the blocking used by the QR or LQ algorithm,
  *                      usually FACTOPTNB=128 is a good choice otherwise putting
  *                      `lwork=-1` will provide the size of `work`.
- * @param[out]    info  `info=0`: successful exit
- *                      `info<0`: if `info=-i`, the i-th argument had an illegal value
+ * @param[out]    info
+ *                      - `info=0`: successful exit
+ *                      - `info<0`: if `info=-i`, the i-th argument had an illegal value
  *
  * @par Further Details:
  * @rst

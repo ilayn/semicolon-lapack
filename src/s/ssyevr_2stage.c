@@ -156,28 +156,29 @@
  *                       Implemented only for `range='A'` or `range='I'` and `iu-il=n-1`.
  * @param[out]    work   Array of dimension (`max(1,lwork)`). On exit, if `info=0`,
  *                       `work[0]` returns the optimal `lwork`.
- * @param[in]     lwork  The dimension of the array `work`.
+ * @param[in]     lwork  The dimension of the array `work`. `lwork>=1`, when `n<=1`;
+ *                       otherwise:
+ *                       If `jobz='N'` and `n>1`, `lwork` must be queried.
  *                       @rst
  *                       .. code-block:: text
  *
- *                           If N <= 1,               LWORK must be at least 1.
- *                           If JOBZ = 'N' and N > 1, LWORK must be queried.
- *                                                    LWORK = MAX(1, 26*N, dimension) where
- *                                                    dimension = max(stage1,stage2) + (KD+1)*N + 5*N
- *                                                              = N*KD + N*max(KD+1,FACTOPTNB)
- *                                                                + max(2*KD*KD, KD*NTHREADS)
- *                                                                + (KD+1)*N + 5*N
- *                                                    where KD is the blocking size of the reduction,
- *                                                    FACTOPTNB is the blocking used by the QR or LQ
- *                                                    algorithm, usually FACTOPTNB=128 is a good choice
- *                                                    NTHREADS is the number of threads used when
- *                                                    openMP compilation is enabled, otherwise =1.
- *                           If JOBZ = 'V' and N > 1, LWORK must be queried. Not yet available
+ *                           lwork = MAX(1, 26*n, dimension) where
+ *                           dimension = max(stage1,stage2) + (kd+1)*n + 5*n
+ *                                     = n*kd + n*max(kd+1,FACTOPTNB)
+ *                                       + max(2*kd*kd, kd*NTHREADS)
+ *                                       + (kd+1)*n + 5*n
  *                       @endrst
+ *                       where `kd` is the blocking size of the reduction,
+ *                       FACTOPTNB is the blocking used by the QR or LQ
+ *                       algorithm, usually FACTOPTNB=128 is a good choice,
+ *                       NTHREADS is the number of threads used when openMP
+ *                       compilation is enabled, otherwise =1.
+ *                       If `jobz='V'` and `n>1`, `lwork` must be queried. Not yet
+ *                       available.
  *                       If `lwork=-1`, then a workspace query is assumed; the routine
  *                       only calculates the optimal size of the `work` array, returns
  *                       this value as the first entry of the `work` array, and no error
- *                       message related to `lwork` is issued by XERBLA.
+ *                       message related to `lwork` is issued.
  * @param[out]    iwork  Integer array of dimension (`max(1,liwork)`). On exit, if
  *                       `info=0`, `iwork[0]` returns the optimal `liwork`.
  * @param[in]     liwork The dimension of the array `iwork`.
@@ -185,10 +186,11 @@
  *                       If `liwork=-1`, then a workspace query is assumed; the
  *                       routine only calculates the optimal size of the `iwork` array,
  *                       returns this value as the first entry of the `iwork` array, and
- *                       no error message related to `liwork` is issued by XERBLA.
- * @param[out]    info   `info=0`: successful exit
- *                       `info<0`: if `info=-i`, the i-th argument had an illegal value
- *                       `info>0`: Internal error
+ *                       no error message related to `liwork` is issued.
+ * @param[out]    info
+ *                       - `info=0`: successful exit
+ *                       - `info<0`: if `info=-i`, the i-th argument had an illegal value
+ *                       - `info>0`: Internal error
  *
  * @par Contributors:
  * @rst
