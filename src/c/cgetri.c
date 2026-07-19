@@ -12,28 +12,30 @@
  * CGETRI computes the inverse of a matrix using the LU factorization
  * computed by CGETRF.
  *
- * This method inverts U and then computes inv(A) by solving the system
- * inv(A)*L = inv(U) for inv(A).
+ * This method inverts U and then computes `inv(A)` by solving the system
+ * `inv(A)*L = inv(U)` for `inv(A)`.
  *
- * @param[in]     n     The order of the matrix A (n >= 0).
- * @param[in,out] A     On entry, the factors L and U from the factorization
+ * @param[in]     n     The order of the matrix `A`. `n>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the factors L and U from the factorization
  *                      A = P*L*U as computed by cgetrf.
- *                      On exit, if info = 0, the inverse of the original matrix A.
- *                      Array of dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A (lda >= max(1,n)).
- * @param[in]     ipiv  The pivot indices from cgetrf; row i was interchanged
- *                      with row ipiv[i]. Array of dimension n, 0-based.
- * @param[out]    work  Workspace array of dimension (max(1,lwork)).
- *                      On exit, if info=0, then work[0] returns the optimal lwork.
- * @param[in]     lwork The dimension of the array work (lwork >= max(1,n)).
- *                      For optimal performance lwork >= n*nb.
- *                      If lwork = -1, a workspace query is assumed.
+ *                      On exit, if `info=0`, the inverse of the original matrix `A`.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      The pivot indices from cgetrf; row i was interchanged
+ *                      with row `ipiv[i]`.
+ * @param[out]    work  Workspace array of dimension (`max(1,lwork)`).
+ *                      On exit, if `info=0`, then `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The dimension of the array `work`. `lwork>=max(1,n)`.
+ *                      For optimal performance `lwork>=n*nb`.
+ *                      If `lwork=-1`, a workspace query is assumed.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, U(i-1,i-1) is exactly zero; the matrix is
- *                           singular and its inverse could not be computed.
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, U(i,i) is exactly zero; the matrix
+ *                            is singular and its inverse could not be computed.
  */
 void cgetri(
     const INT n,
