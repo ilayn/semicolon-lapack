@@ -8,29 +8,31 @@
 #include "semicolon_lapack_double.h"
 
 /**
- * DLAQGE equilibrates a general M by N matrix A using the row and
- * column scaling factors in the vectors R and C.
+ * DLAQGE equilibrates a general `m` by `n` matrix `A` using the row and
+ * column scaling factors in the vectors `R` and `C`.
  *
- * @param[in]     m       The number of rows of the matrix A. m >= 0.
- * @param[in]     n       The number of columns of the matrix A. n >= 0.
- * @param[in,out] A       On entry, the M by N matrix A.
- *                        On exit, the equilibrated matrix. See equed for the
+ * @param[in]     m       The number of rows of the matrix `A`. `m>=0`.
+ * @param[in]     n       The number of columns of the matrix `A`. `n>=0`.
+ * @param[in,out] A       Array of dimension (`lda`, `n`).
+ *                        On entry, the `m` by `n` matrix `A`.
+ *                        On exit, the equilibrated matrix. See `equed` for the
  *                        form of the equilibrated matrix.
- *                        Array of dimension (lda, n).
- * @param[in]     lda     The leading dimension of the array A. lda >= max(m, 1).
- * @param[in]     R       The row scale factors for A. Array of dimension (m).
- * @param[in]     C       The column scale factors for A. Array of dimension (n).
+ * @param[in]     lda     The leading dimension of the array `A`. `lda>=max(m,1)`.
+ * @param[in]     R       Array of dimension (`m`).
+ *                        The row scale factors for `A`.
+ * @param[in]     C       Array of dimension (`n`).
+ *                        The column scale factors for `A`.
  * @param[in]     rowcnd  Ratio of the smallest R(i) to the largest R(i).
  * @param[in]     colcnd  Ratio of the smallest C(i) to the largest C(i).
  * @param[in]     amax    Absolute value of largest matrix entry.
  * @param[out]    equed   Specifies the form of equilibration that was done:
- *                        = 'N': No equilibration
- *                        = 'R': Row equilibration, i.e., A has been premultiplied
- *                               by diag(R).
- *                        = 'C': Column equilibration, i.e., A has been postmultiplied
- *                               by diag(C).
- *                        = 'B': Both row and column equilibration, i.e., A has been
- *                               replaced by diag(R) * A * diag(C).
+ *                        - `'N'`: No equilibration
+ *                        - `'R'`: Row equilibration, i.e., `A` has been
+ *                          premultiplied by diag(R).
+ *                        - `'C'`: Column equilibration, i.e., `A` has been
+ *                          postmultiplied by diag(C).
+ *                        - `'B'`: Both row and column equilibration, i.e., `A` has
+ *                          been replaced by diag(R) * A * diag(C).
  */
 void dlaqge(
     const INT m,
