@@ -6,39 +6,47 @@
 
 /**
  * SGESV computes the solution to a real system of linear equations
- *    A * X = B,
- * where A is an N-by-N matrix and X and B are N-by-NRHS matrices.
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B
+ * @endrst
+ * where `A` is an `n`-by-`n` matrix and X and `B` are `n`-by-`nrhs` matrices.
  *
  * The LU decomposition with partial pivoting and row interchanges is
- * used to factor A as
- *    A = P * L * U,
+ * used to factor `A` as
+ * @rst
+ * .. code-block:: text
+ *
+ *     A = P * L * U
+ * @endrst
  * where P is a permutation matrix, L is unit lower triangular, and U is
- * upper triangular. The factored form of A is then used to solve the
+ * upper triangular. The factored form of `A` is then used to solve the
  * system of equations A * X = B.
  *
  * @param[in]     n     The number of linear equations, i.e., the order of the
- *                      matrix A (n >= 0).
+ *                      matrix `A`. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number of
- *                      columns of the matrix B (nrhs >= 0).
- * @param[in,out] A     On entry, the N-by-N coefficient matrix A.
+ *                      columns of the matrix `B`. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the `n`-by-`n` coefficient matrix `A`.
  *                      On exit, the factors L and U from the factorization
  *                      A = P*L*U; the unit diagonal elements of L are not stored.
- *                      Array of dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A (lda >= max(1,n)).
- * @param[out]    ipiv  The pivot indices that define the permutation matrix P;
- *                      row i of the matrix was interchanged with row ipiv[i].
- *                      Array of dimension n, 0-based.
- * @param[in,out] B     On entry, the N-by-NRHS matrix of right hand side matrix B.
- *                      On exit, if info = 0, the N-by-NRHS solution matrix X.
- *                      Array of dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of the array B (ldb >= max(1,n)).
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      The pivot indices that define the permutation matrix P;
+ *                      row i of the matrix was interchanged with row `ipiv[i]`.
+ * @param[in,out] B     Array of dimension (`ldb`, `nrhs`).
+ *                      On entry, the `n`-by-`nrhs` right hand side matrix `B`.
+ *                      On exit, if `info=0`, the `n`-by-`nrhs` solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
- *                           has been completed, but the factor U is exactly
- *                           singular, so the solution could not be computed.
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, U(i,i) is exactly zero. The
+ *                            factorization has been completed, but the factor U is
+ *                            exactly singular, so the solution could not be computed.
  */
 void sgesv(
     const INT n,
