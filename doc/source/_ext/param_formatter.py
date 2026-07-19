@@ -117,7 +117,20 @@ def format_params(app, doctree, docname):
                 heading += nodes.strong(text='Parameters')
                 param_list += heading
 
+                # Sphinx merges @param and @return into a single field_list.
+                # Only the Parameters field becomes the styled grid; any other
+                # field (Returns, Return values, ...) is kept in a plain
+                # field_list so it is not lost with the replaced node.
+                other_fields = []
                 for field in fl.traverse(nodes.field):
+                    name = ''
+                    for fn in field.traverse(nodes.field_name):
+                        name = fn.astext()
+                        break
+                    if name != 'Parameters':
+                        other_fields.append(field.deepcopy())
+                        continue
+
                     for fb in field.traverse(nodes.field_body):
                         # Only process direct child bullet lists, not nested ones
                         for child in fb.children:
@@ -129,7 +142,11 @@ def format_params(app, doctree, docname):
                                     if entry:
                                         param_list += entry
 
-                fl.replace_self(param_list)
+                replacement = [param_list]
+                if other_fields:
+                    replacement.append(nodes.field_list('', *other_fields))
+
+                fl.replace_self(replacement)
 
 
 def setup(app: Sphinx):
