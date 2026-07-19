@@ -11,28 +11,30 @@
 
 /**
  * CGESC2 solves a system of linear equations
+ * @rst
+ * .. code-block:: text
  *
- *           A * X = scale * RHS
- *
- * with a general N-by-N matrix A using the LU factorization with
+ *     A * X = scale * RHS
+ * @endrst
+ * with a general `n`-by-`n` matrix `A` using the LU factorization with
  * complete pivoting computed by CGETC2.
  *
- * @param[in]     n     The number of columns of the matrix A.
- * @param[in]     A     Complex*16 array, dimension (lda, n).
+ * @param[in]     n     The number of columns of the matrix `A`.
+ * @param[in]     A     Complex array, dimension (`lda`, `n`).
  *                      On entry, the LU part of the factorization of the n-by-n
- *                      matrix A computed by CGETC2: A = P * L * U * Q
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[in,out] rhs   Complex*16 array, dimension n.
+ *                      matrix `A` computed by CGETC2: A = P * L * U * Q
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in,out] rhs   Complex array, dimension `n`.
  *                      On entry, the right hand side vector b.
  *                      On exit, the solution vector X.
- * @param[in]     ipiv  The pivot indices; for 0 <= i < n, row i of the
- *                      matrix has been interchanged with row ipiv[i].
- *                      Array of dimension n, 0-based.
- * @param[in]     jpiv  The pivot indices; for 0 <= j < n, column j of the
- *                      matrix has been interchanged with column jpiv[j].
- *                      Array of dimension n, 0-based.
- * @param[out]    scale On exit, SCALE contains the scale factor. SCALE is chosen
- *                      0 <= SCALE <= 1 to prevent overflow in the solution.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      The pivot indices; for `0<=i<n`, row i of the
+ *                      matrix has been interchanged with row `ipiv[i]`.
+ * @param[in]     jpiv  Array of dimension `n`.
+ *                      The pivot indices; for `0<=j<n`, column j of the
+ *                      matrix has been interchanged with column `jpiv[j]`.
+ * @param[out]    scale On exit, `scale` contains the scale factor. `scale` is chosen
+ *                      `0<=scale<=1` to prevent overflow in the solution.
  */
 void cgesc2(
     const INT n,
