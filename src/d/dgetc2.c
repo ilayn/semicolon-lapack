@@ -9,32 +9,36 @@
 
 /**
  * DGETC2 computes an LU factorization with complete pivoting of the
- * n-by-n matrix A. The factorization has the form A = P * L * U * Q,
+ * `n`-by-`n` matrix `A`. The factorization has the form
+ * @rst
+ * .. code-block:: text
+ *
+ *     A = P * L * U * Q
+ * @endrst
  * where P and Q are permutation matrices, L is lower triangular with
  * unit diagonal elements and U is upper triangular.
  *
  * This is the Level 2 BLAS algorithm.
  *
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     On entry, the n-by-n matrix A to be factored.
+ * @param[in]     n     The order of the matrix `A`. `n>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the `n`-by-`n` matrix `A` to be factored.
  *                      On exit, the factors L and U from the factorization
  *                      A = P*L*U*Q; the unit diagonal elements of L are not stored.
- *                      If U(k, k) appears to be less than SMIN, U(k, k) is given the
- *                      value of SMIN, i.e., giving a nonsingular perturbed system.
- *                      Array of dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1,n).
- * @param[out]    ipiv  The pivot indices; for 0 <= i < n, row i of the
- *                      matrix has been interchanged with row ipiv[i].
- *                      Array of dimension n, 0-based.
- * @param[out]    jpiv  The pivot indices; for 0 <= j < n, column j of the
- *                      matrix has been interchanged with column jpiv[j].
- *                      Array of dimension n, 0-based.
+ *                      If U(k,k) appears to be less than `smin`, U(k,k) is given the
+ *                      value of `smin`, i.e., giving a nonsingular perturbed system.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      The pivot indices; for `0<=i<n`, row i of the
+ *                      matrix has been interchanged with row `ipiv[i]`.
+ * @param[out]    jpiv  Array of dimension `n`.
+ *                      The pivot indices; for `0<=j<n`, column j of the
+ *                      matrix has been interchanged with column `jpiv[j]`.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - > 0: if info = k, U(k-1, k-1) is likely to produce overflow if
- *                           we try to solve for x in Ax = b. So U is perturbed to
- *                           avoid the overflow.
+ *                          - `info=0`: successful exit
+ *                          - `info>0`: if `info=k`, U(k,k) is likely to produce
+ *                            overflow if we try to solve for x in Ax = b. So U is
+ *                            perturbed to avoid the overflow.
  */
 void dgetc2(
     const INT n,
