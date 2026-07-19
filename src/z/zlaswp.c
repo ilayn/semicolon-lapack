@@ -9,24 +9,25 @@
 /**
  * Performs a series of row interchanges on a general rectangular matrix.
  *
- * Interchanges row i with row ipiv[k1 + (i - k1) * |incx|] for each of
- * rows k1 through k2 of A.
+ * Interchanges row i with row `ipiv[k1 + (i - k1) * |incx|]` for each of
+ * rows `k1` through `k2` of `A`.
  *
- * @param[in]     n     The number of columns of the matrix A.
- * @param[in,out] A     On entry, the M-by-N matrix to which the row
+ * @param[in]     n     The number of columns of the matrix `A`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the `m`-by-`n` matrix to which the row
  *                      interchanges will be applied.
  *                      On exit, the permuted matrix.
- * @param[in]     lda   The leading dimension of the array A (lda >= max(1,m)).
- * @param[in]     k1    The first row of A to which a row interchange will be
- *                      applied (0-based).
- * @param[in]     k2    The last row of A to which a row interchange will be
- *                      applied (0-based, k2 >= k1).
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,m)`.
+ * @param[in]     k1    The first row of `A` to which a row interchange will be
+ *                      applied.
+ * @param[in]     k2    The last row of `A` to which a row interchange will be
+ *                      applied. `k2>=k1`.
  * @param[in]     ipiv  The vector of pivot indices. Row i is interchanged with
- *                      row ipiv[k1 + (i - k1) * |incx|]. Indices are 0-based.
- * @param[in]     incx  The increment between successive values of ipiv.
- *                      If incx > 0, pivots are applied from k1 to k2.
- *                      If incx < 0, pivots are applied from k2 to k1.
- *                      If incx = 0, returns immediately.
+ *                      row `ipiv[k1 + (i - k1) * |incx|]`.
+ * @param[in]     incx  The increment between successive values of `ipiv`.
+ *                      If `incx>0`, pivots are applied from `k1` to `k2`.
+ *                      If `incx<0`, pivots are applied from `k2` to `k1`.
+ *                      If `incx=0`, returns immediately.
  *
  * @rst
  * .. note::
@@ -34,8 +35,6 @@
  *    This function is typically called after :c:func:`zgetrf` or
  *    :c:func:`zgetrf2` to apply the same row permutations to other matrices
  *    (e.g., the right-hand side matrix B when solving Ax = B).
- *
- *    The implementation processes columns in blocks of 32 for cache efficiency.
  * @endrst
  */
 void zlaswp(
