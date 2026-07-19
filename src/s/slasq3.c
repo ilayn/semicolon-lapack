@@ -21,19 +21,11 @@
  *                        not be performed.
  * @param[out]    dmin   Minimum value of d.
  * @param[out]    sigma  Sum of shifts used in current segment.
-<<<<<<< HEAD
- * @param[in,out] desig  Lower order part of SIGMA.
- * @param[in,out] qmax   Maximum value of q.
- * @param[in,out] nfail  Increment NFAIL by 1 each time the shift was too big.
- * @param[in,out] iter   Increment ITER by 1 for each iteration.
- * @param[in,out] ndiv   Increment NDIV by 1 for each division.
-=======
  * @param[in,out] desig  Lower order part of `sigma`.
  * @param[in,out] qmax   Maximum value of q.
  * @param[in,out] nfail  Increment `nfail` by 1 each time the shift was too big.
  * @param[in,out] iter   Increment `iter` by 1 for each iteration.
  * @param[in,out] ndiv   Increment `ndiv` by 1 for each division.
->>>>>>> dfff4758 (DOC: Overhaul lasq2/lasq3 docs)
  * @param[in]     ieee   Flag for IEEE or non IEEE arithmetic (passed to SLASQ5).
  * @param[in,out] ttype  Shift type.
  * @param[in,out] dmin1  Minimum value of d, excluding `d[n0]`.
