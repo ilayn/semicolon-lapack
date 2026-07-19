@@ -9,9 +9,9 @@
 /**
  * DISNAN returns nonzero if its argument is NaN, and zero otherwise.
  *
- * @param[in] din  Input to test for NaN.
+ * @param[in] din Input to test for NaN.
  *
- * @return Nonzero if din is NaN, zero otherwise.
+ * @return Nonzero if `din` is NaN, zero otherwise.
  */
 INT disnan(const f64 din)
 {

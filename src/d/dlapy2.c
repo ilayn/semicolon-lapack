@@ -9,14 +9,13 @@
 #include "semicolon_lapack_double.h"
 
 /**
- * DLAPY2 returns sqrt(x**2 + y**2), taking care not to cause unnecessary
+ * DLAPY2 returns `sqrt(x**2 + y**2)`, taking care not to cause unnecessary
  * overflow and unnecessary underflow.
  *
- * @param[in] x  Double precision scalar.
- * @param[in] y  Double precision scalar.
- *             x and y specify the values x and y.
+ * @param[in] x Double precision scalar. Specifies the value x.
+ * @param[in] y Double precision scalar. Specifies the value y.
  *
- * @return sqrt(x**2 + y**2) computed safely.
+ * @return `sqrt(x**2 + y**2)` computed safely.
  */
 f64 dlapy2(const f64 x, const f64 y)
 {

@@ -7,25 +7,28 @@
 
 /**
  * SLARMM returns a factor s in (0, 1] such that the linear updates
+ * @rst
+ * .. code-block:: text
  *
- *    (s * C) - A * (s * B)  and  (s * C) - (s * A) * B
- *
- * cannot overflow, where A, B, and C are matrices of conforming
- * dimensions.
+ *     (s * C) - A * (s * B)  and  (s * C) - (s * A) * B
+ * @endrst
+ * cannot overflow, where A, B, and C are matrices of conforming dimensions.
  *
  * This is an auxiliary routine so there is no argument checking.
  *
- * Reference:
- *   C. C. Kjelgaard Mikkelsen and L. Karlsson, Blocked Algorithms for
- *   Robust Solution of Triangular Linear Systems. In: International
- *   Conference on Parallel Processing and Applied Mathematics, pages
- *   68--78. Springer, 2017.
- *
- * @param[in] anorm   The infinity norm of A. anorm >= 0.
- * @param[in] bnorm   The infinity norm of B. bnorm >= 0.
- * @param[in] cnorm   The infinity norm of C. cnorm >= 0.
+ * @param[in] anorm The infinity norm of A. `anorm>=0`.
+ * @param[in] bnorm The infinity norm of B. `bnorm>=0`.
+ * @param[in] cnorm The infinity norm of C. `cnorm>=0`.
  *
  * @return Scale factor s in (0, 1].
+ *
+ * @par Further Details:
+ * @rst
+ * C. C. Kjelgaard Mikkelsen and L. Karlsson, Blocked Algorithms for
+ * Robust Solution of Triangular Linear Systems. In: International
+ * Conference on Parallel Processing and Applied Mathematics, pages
+ * 68--78. Springer, 2017. https://doi.org/10.1007/978-3-319-78024-5_7
+ * @endrst
  */
 f32 slarmm(const f32 anorm, const f32 bnorm, const f32 cnorm)
 {

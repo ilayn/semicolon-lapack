@@ -8,18 +8,24 @@
 
 /**
  * DLADIV1 is a helper routine for DLADIV, performing complex division
- * when |D| <= |C| using the Baudin-Smith algorithm.
+ * when `|d| <= |c|` using the Baudin-Smith algorithm.
  *
- * This function computes the real and imaginary parts of (A + i*B)/(C + i*D)
- * when |D| <= |C|. It is part of the robust complex division algorithm
- * described in "A Robust Complex Division in Scilab" by Baudin and Smith.
+ * This function computes the real and imaginary parts of `(a + i*b)/(c + i*d)`
+ * when `|d| <= |c|`.
  *
- * @param[in]  a  Double precision scalar, real part of numerator.
- * @param[in]  b  Double precision scalar, imaginary part of numerator.
- * @param[in]  c  Double precision scalar, real part of denominator.
- * @param[in]  d  Double precision scalar, imaginary part of denominator.
- * @param[out] p  Pointer to f64, receives real part of result.
- * @param[out] q  Pointer to f64, receives imaginary part of result.
+ * @param[in]  a Double precision scalar, real part of the numerator.
+ * @param[in]  b Double precision scalar, imaginary part of the numerator.
+ * @param[in]  c Double precision scalar, real part of the denominator.
+ * @param[in]  d Double precision scalar, imaginary part of the denominator.
+ * @param[out] p Receives the real part of the result.
+ * @param[out] q Receives the imaginary part of the result.
+ *
+ * @par Further Details:
+ * @rst
+ * The algorithm is due to Michael Baudin and Robert L. Smith
+ * and can be found in the paper "A Robust Complex Division in Scilab".
+ * https://doi.org/10.48550/arXiv.1210.4539
+ * @endrst
  */
 void dladiv1(const f64 a, const f64 b, const f64 c, const f64 d,
              f64* p, f64* q)

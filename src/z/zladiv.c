@@ -8,15 +8,13 @@
 #include <complex.h>
 
 /**
- * ZLADIV := X / Y, where X and Y are complex.  The computation of X / Y
- * will not overflow on an intermediary step unless the results
- * overflows.
+ * ZLADIV := X / Y, where X and Y are complex. The computation of X / Y
+ * will not overflow on an intermediary step unless the results overflows.
  *
- * @param[in] X     Double complex scalar.
- * @param[in] Y     Double complex scalar.
- *                   The complex scalars X and Y.
+ * @param[in] X Double complex scalar. The complex scalar X.
+ * @param[in] Y Double complex scalar. The complex scalar Y.
  *
- * @return The complex quotient X / Y.
+ * @return The complex quotient `X / Y`.
  */
 c128 zladiv(const c128 X, const c128 Y)
 {

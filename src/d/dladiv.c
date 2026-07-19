@@ -9,22 +9,27 @@
 
 /**
  * DLADIV performs complex division in real arithmetic
+ * @rst
+ * .. code-block:: text
  *
- *                      a + i*b
- *           p + i*q = ---------
- *                      c + i*d
+ *                  a + i*b
+ *       p + i*q = ---------
+ *                  c + i*d
+ * @endrst
  *
+ * @param[in]  a Double precision scalar. The scalar a in the above expression.
+ * @param[in]  b Double precision scalar. The scalar b in the above expression.
+ * @param[in]  c Double precision scalar. The scalar c in the above expression.
+ * @param[in]  d Double precision scalar. The scalar d in the above expression.
+ * @param[out] p Receives the real part of the result.
+ * @param[out] q Receives the imaginary part of the result.
+ *
+ * @par Further Details:
+ * @rst
  * The algorithm is due to Michael Baudin and Robert L. Smith
- * and can be found in the paper
- * "A Robust Complex Division in Scilab"
- *
- * @param[in]  a  Double precision scalar.
- * @param[in]  b  Double precision scalar.
- * @param[in]  c  Double precision scalar.
- * @param[in]  d  Double precision scalar.
- *                The scalars a, b, c, and d in the above expression.
- * @param[out] p  Pointer to f64, receives real part of result.
- * @param[out] q  Pointer to f64, receives imaginary part of result.
+ * and can be found in the paper "A Robust Complex Division in Scilab".
+ * https://doi.org/10.48550/arXiv.1210.4539
+ * @endrst
  */
 void dladiv(const f64 a, const f64 b, const f64 c, const f64 d,
             f64* p, f64* q)
