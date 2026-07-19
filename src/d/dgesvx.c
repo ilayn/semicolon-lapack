@@ -49,11 +49,13 @@
  *    ``diag(C)`` (if ``trans='N'``) or ``diag(R)`` (if ``trans='T'`` or ``'C'``).
  * @endrst
  *
- * @param[in]     fact    - `'F'`: `AF` and `ipiv` contain the factored form of `A`.
+ * @param[in]     fact
+ *                        - `'F'`: `AF` and `ipiv` contain the factored form of `A`.
  *                        - `'N'`: The matrix `A` will be copied to `AF` and factored.
  *                        - `'E'`: The matrix `A` will be equilibrated if necessary,
  *                          then copied to `AF` and factored.
- * @param[in]     trans   - `'N'`: A * X = B (No transpose)
+ * @param[in]     trans
+ *                        - `'N'`: A * X = B (No transpose)
  *                        - `'T'`: A**T * X = B (Transpose)
  *                        - `'C'`: A**H * X = B (Conjugate transpose = Transpose)
  * @param[in]     n       The number of linear equations (order of `A`). `n>=0`.
