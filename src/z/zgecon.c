@@ -11,37 +11,42 @@
 
 /**
  * ZGECON estimates the reciprocal of the condition number of a general
- * complex matrix A, in either the 1-norm or the infinity-norm, using
+ * complex matrix `A`, in either the 1-norm or the infinity-norm, using
  * the LU factorization computed by ZGETRF.
  *
- * An estimate is obtained for norm(inv(A)), and the reciprocal of the
+ * An estimate is obtained for `norm(inv(A))`, and the reciprocal of the
  * condition number is computed as
- *    RCOND = 1 / ( norm(A) * norm(inv(A)) ).
+ * @rst
+ * .. code-block:: text
+ *
+ *     rcond = 1 / ( norm(A) * norm(inv(A)) )
+ * @endrst
  *
  * @param[in]     norm  Specifies whether the 1-norm condition number or the
  *                      infinity-norm condition number is required:
  *                      - '1' or 'O': 1-norm
  *                      - 'I': Infinity-norm
- * @param[in]     n     The order of the matrix A (n >= 0).
- * @param[in]     A     The factors L and U from the factorization A = P*L*U
- *                      as computed by zgetrf. Complex array of dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A (lda >= max(1,n)).
- * @param[in]     anorm If norm = '1' or "O", the 1-norm of the original matrix A.
- *                      If norm = "I", the infinity-norm of the original matrix A.
- * @param[out]    rcond The reciprocal of the condition number of the matrix A,
- *                      computed as RCOND = 1/(norm(A) * norm(inv(A))).
- * @param[out]    work  Complex workspace array of dimension (2*n).
- * @param[out]    rwork Real workspace array of dimension (2*n).
+ * @param[in]     n     The order of the matrix `A`. `n>=0`.
+ * @param[in]     A     Complex array of dimension (`lda`, `n`).
+ *                      The factors L and U from the factorization A = P*L*U
+ *                      as computed by zgetrf.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in]     anorm If `norm='1'` or `'O'`, the 1-norm of the original matrix `A`.
+ *                      If `norm='I'`, the infinity-norm of the original matrix `A`.
+ * @param[out]    rcond The reciprocal of the condition number of the matrix `A`,
+ *                      computed as `rcond = 1/(norm(A) * norm(inv(A)))`.
+ * @param[out]    work  Complex workspace array of dimension (`2*n`).
+ * @param[out]    rwork Real workspace array of dimension (`2*n`).
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value.
- *                           NaNs are illegal values for anorm, and they propagate
- *                           to the output parameter rcond.
- *                           Infinity is illegal for anorm, and it propagates to the
- *                           output parameter rcond as 0.
- *                           - = 1: if rcond = NaN, or rcond = Inf, or the computed norm
- *                           of the inverse of A is 0. In the latter, rcond = 0.
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value. NaNs are illegal values for `anorm`, and they
+ *                            propagate to the output parameter `rcond`. Infinity is
+ *                            illegal for `anorm`, and it propagates to the output
+ *                            parameter `rcond` as 0.
+ *                          - `info=1`: if `rcond` = NaN, or `rcond` = Inf, or the
+ *                            computed norm of the inverse of `A` is 0. In the latter,
+ *                            `rcond` = 0.
  */
 void zgecon(
     const char* norm,
