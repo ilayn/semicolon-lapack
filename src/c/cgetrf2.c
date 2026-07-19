@@ -20,35 +20,39 @@
 #define RECURSION_THRESHOLD 16
 
 /**
- * Computes an LU factorization of a general M-by-N matrix A using partial
+ * Computes an LU factorization of a general `m`-by-`n` matrix `A` using partial
  * pivoting with row interchanges (recursive algorithm).
  *
- * The factorization has the form:
+ * The factorization has the form
+ * @rst
+ * .. code-block:: text
  *
  *     A = P * L * U
- *
+ * @endrst
  * where P is a permutation matrix, L is lower triangular with unit diagonal
  * elements, and U is upper triangular.
  *
  * This is a recursive version that achieves better cache utilization than the
  * iterative unblocked algorithm for medium-sized matrices. For small panels
- * (n <= RECURSION_THRESHOLD), it falls back to the unblocked cgetf2.
+ * (`n<=RECURSION_THRESHOLD`), it falls back to the unblocked cgetf2.
  *
- * @param[in]     m     The number of rows of the matrix A (m >= 0).
- * @param[in]     n     The number of columns of the matrix A (n >= 0).
- * @param[in,out] A     On entry, the M-by-N matrix to be factored.
+ * @param[in]     m     The number of rows of the matrix `A`. `m>=0`.
+ * @param[in]     n     The number of columns of the matrix `A`. `n>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the `m`-by-`n` matrix to be factored.
  *                      On exit, the factors L and U from the factorization;
  *                      the unit diagonal elements of L are not stored.
- * @param[in]     lda   The leading dimension of the array A (lda >= max(1,m)).
- * @param[out]    ipiv  The pivot indices; row i was interchanged with row
- *                      ipiv[i]. Array of dimension min(m,n), 0-based.
- *
- * @param[out]   info
- *                           Exit status.
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
- *                           has been completed, but U is exactly singular.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,m)`.
+ * @param[out]    ipiv  Array of dimension `min(m,n)`.
+ *                      The pivot indices; row i was interchanged with row
+ *                      `ipiv[i]`.
+ * @param[out]    info
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, U(i,i) is exactly zero. The
+ *                            factorization has been completed, but U is exactly
+ *                            singular.
  */
 void cgetrf2(
     const INT m,
