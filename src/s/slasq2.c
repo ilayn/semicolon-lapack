@@ -9,37 +9,51 @@
 
 /**
  * SLASQ2 computes all the eigenvalues of the symmetric positive
- * definite tridiagonal matrix associated with the qd array Z to high
+ * definite tridiagonal matrix associated with the qd array `Z` to high
  * relative accuracy are computed to high relative accuracy, in the
  * absence of denormalization, underflow and overflow.
  *
- * To see the relation of Z to the tridiagonal matrix, let L be a
- * unit lower bidiagonal matrix with subdiagonals Z(2,4,6,..) and
+ * To see the relation of `Z` to the tridiagonal matrix, let L be a
+ * unit lower bidiagonal matrix with subdiagonals `Z[1,3,5,..]` and
  * let U be an upper bidiagonal matrix with 1's above and diagonal
- * Z(1,3,5,..). The tridiagonal is L*U or, if you prefer, the
+ * `Z[0,2,4,..]`. The tridiagonal is L*U or, if you prefer, the
  * symmetric tridiagonal to which it is similar.
  *
- * @param[in]     n     The number of rows and columns in the matrix. n >= 0.
- * @param[in,out] Z     Double precision array, dimension (4*n).
- *                      On entry Z holds the qd array. On exit, entries 1 to n
- *                      hold the eigenvalues in decreasing order, Z(2*n+1) holds
- *                      the trace, and Z(2*n+2) holds the sum of the eigenvalues.
- *                      If n > 2, then Z(2*n+3) holds the iteration count,
- *                      Z(2*n+4) holds NDIVS/NIN^2, and Z(2*n+5) holds the
- *                      percentage of shifts that failed.
+ * Note : SLASQ2 defines a logical variable, `ieee`, which is true
+ * on machines which follow ieee-754 floating-point standard in their
+ * handling of infinities and NaNs, and false otherwise. This variable
+ * is passed to SLASQ3.
+ *
+ * @param[in]     n     The number of rows and columns in the matrix. `n>=0`.
+ * @param[in,out] Z     Single precision array, dimension (4*n).
+ *                      On entry `Z` holds the qd array. On exit, entries `0` to
+ *                      `n-1` hold the eigenvalues in decreasing order, `Z[2*n]`
+ *                      holds the trace, and `Z[2*n+1]` holds the sum of the
+ *                      eigenvalues. If `n>2`, then `Z[2*n+2]` holds the iteration
+ *                      count, `Z[2*n+3]` holds NDIVS/NIN^2, and `Z[2*n+4]` holds
+ *                      the percentage of shifts that failed.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if the i-th argument is a scalar and had an illegal
- *                           value, then info = -i, if the i-th argument is an
- *                           array and the j-entry had an illegal value, then
- *                           info = -(i*100+j)
- *                         - > 0: the algorithm failed
- *                         - = 1, a split was marked by a positive value in E
- *                         - = 2, current block of Z not diagonalized after 100*N
- *                           iterations (in inner while loop). On exit Z holds
- *                           a qd array with the same eigenvalues as the given Z.
- *                         - = 3, termination criterion of outer while loop not met
- *                           (program created more than N unreduced blocks)
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if the i-th argument is a scalar and had an
+ *                           illegal value, then `info=-i`, if the i-th argument is
+ *                           an array and the j-entry had an illegal value, then
+ *                           `info=-(i*100+j)`
+ *                         - `info>0`: the algorithm failed
+ *                         - `info=1`, a split was marked by a positive value in E
+ *                         - `info=2`, current block of `Z` not diagonalized after
+ *                           `100*n` iterations (in inner while loop). On exit `Z`
+ *                           holds a qd array with the same eigenvalues as the
+ *                           given `Z`.
+ *                         - `info=3`, termination criterion of outer while loop
+ *                           not met (program created more than `n` unreduced
+ *                           blocks)
+ *
+ * @par Further Details:
+ * @rst
+ * Local Variables: ``i0:n0`` defines a current unreduced segment of ``Z``.
+ * The shifts are accumulated in ``sigma``. Iteration count is in ``iter``.
+ * Ping-pong is controlled by ``pp`` (alternates between 0 and 1).
+ * @endrst
  */
 void slasq2(const INT n, f32* restrict Z, INT* info)
 {

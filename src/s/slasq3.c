@@ -7,33 +7,41 @@
 
 
 /**
- * SLASQ3 checks for deflation, computes a shift (TAU) and calls dqds.
+ * SLASQ3 checks for deflation, computes a shift (`tau`) and calls dqds.
  * In case of failure it changes shifts, and tries again until output
  * is positive.
  *
- * @param[in]     i0     First index (0-based).
- * @param[in,out] n0     Last index (0-based).
- * @param[in,out] Z      Double precision array, dimension (4*N).
- *                        Z holds the qd array.
- * @param[in,out] pp     PP=0 for ping, PP=1 for pong.
- *                        PP=2 indicates that flipping was applied to the Z array
- *                        and that the initial tests for deflation should not be
- *                        performed.
+ * @param[in]     i0     First index.
+ * @param[in,out] n0     Last index.
+ * @param[in,out] Z      Single precision array, dimension (4*n0).
+ *                        `Z` holds the qd array.
+ * @param[in,out] pp     `pp=0` for ping, `pp=1` for pong.
+ *                        `pp=2` indicates that flipping was applied to the `Z`
+ *                        array and that the initial tests for deflation should
+ *                        not be performed.
  * @param[out]    dmin   Minimum value of d.
  * @param[out]    sigma  Sum of shifts used in current segment.
+<<<<<<< HEAD
  * @param[in,out] desig  Lower order part of SIGMA.
  * @param[in,out] qmax   Maximum value of q.
  * @param[in,out] nfail  Increment NFAIL by 1 each time the shift was too big.
  * @param[in,out] iter   Increment ITER by 1 for each iteration.
  * @param[in,out] ndiv   Increment NDIV by 1 for each division.
+=======
+ * @param[in,out] desig  Lower order part of `sigma`.
+ * @param[in,out] qmax   Maximum value of q.
+ * @param[in,out] nfail  Increment `nfail` by 1 each time the shift was too big.
+ * @param[in,out] iter   Increment `iter` by 1 for each iteration.
+ * @param[in,out] ndiv   Increment `ndiv` by 1 for each division.
+>>>>>>> dfff4758 (DOC: Overhaul lasq2/lasq3 docs)
  * @param[in]     ieee   Flag for IEEE or non IEEE arithmetic (passed to SLASQ5).
  * @param[in,out] ttype  Shift type.
- * @param[in,out] dmin1  Minimum value of d, excluding D(N0).
- * @param[in,out] dmin2  Minimum value of d, excluding D(N0) and D(N0-1).
- * @param[in,out] dn     d(N0).
- * @param[in,out] dn1    d(N0-1).
- * @param[in,out] dn2    d(N0-2).
- * @param[in,out] g      G is passed as an argument in order to save its
+ * @param[in,out] dmin1  Minimum value of d, excluding `d[n0]`.
+ * @param[in,out] dmin2  Minimum value of d, excluding `d[n0]` and `d[n0-1]`.
+ * @param[in,out] dn     `d[n0]`.
+ * @param[in,out] dn1    `d[n0-1]`.
+ * @param[in,out] dn2    `d[n0-2]`.
+ * @param[in,out] g      `g` is passed as an argument in order to save its
  *                        value between calls to SLASQ3.
  * @param[in,out] tau    This is the shift.
  */
