@@ -10,42 +10,45 @@
 
 /**
  * ZGEEQU computes row and column scalings intended to equilibrate an
- * M-by-N matrix A and reduce its condition number. R returns the row
- * scale factors and C the column scale factors, chosen to try to make
+ * `m`-by-`n` matrix `A` and reduce its condition number. `R` returns the row
+ * scale factors and `C` the column scale factors, chosen to try to make
  * the largest element in each row and column of the matrix B with
- * elements B(i,j)=R(i)*A(i,j)*C(j) have absolute value 1.
+ * elements `B(i,j)=R(i)*A(i,j)*C(j)` have absolute value 1.
  *
- * R(i) and C(j) are restricted to be between SMLNUM = smallest safe
+ * `R(i)` and `C(j)` are restricted to be between SMLNUM = smallest safe
  * number and BIGNUM = largest safe number. Use of these scaling
- * factors is not guaranteed to reduce the condition number of A but
+ * factors is not guaranteed to reduce the condition number of `A` but
  * works well in practice.
  *
- * @param[in]     m       The number of rows of the matrix A (m >= 0).
- * @param[in]     n       The number of columns of the matrix A (n >= 0).
- * @param[in]     A       The M-by-N matrix whose equilibration factors are
- *                        to be computed. Array of dimension (lda, n).
- * @param[in]     lda     The leading dimension of the array A (lda >= max(1,m)).
- * @param[out]    R       If info = 0 or info > m, R contains the row scale factors
- *                        for A. Array of dimension m.
- * @param[out]    C       If info = 0, C contains the column scale factors for A.
- *                        Array of dimension n.
- * @param[out]    rowcnd  If info = 0 or info > m, rowcnd contains the ratio of the
- *                        smallest R(i) to the largest R(i). If rowcnd >= 0.1 and
- *                        amax is neither too large nor too small, it is not worth
- *                        scaling by R.
- * @param[out]    colcnd  If info = 0, colcnd contains the ratio of the smallest
- *                        C(j) to the largest C(j). If colcnd >= 0.1, it is not
- *                        worth scaling by C.
- * @param[out]    amax    Absolute value of largest matrix element. If amax is very
+ * @param[in]     m       The number of rows of the matrix `A`. `m>=0`.
+ * @param[in]     n       The number of columns of the matrix `A`. `n>=0`.
+ * @param[in]     A       Array of dimension (`lda`, `n`).
+ *                        The `m`-by-`n` matrix whose equilibration factors are
+ *                        to be computed.
+ * @param[in]     lda     The leading dimension of the array `A`. `lda>=max(1,m)`.
+ * @param[out]    R       Array of dimension `m`.
+ *                        If `info=0` or `info>m`, `R` contains the row scale
+ *                        factors for `A`.
+ * @param[out]    C       Array of dimension `n`.
+ *                        If `info=0`, `C` contains the column scale factors for `A`.
+ * @param[out]    rowcnd  If `info=0` or `info>m`, `rowcnd` contains the ratio of the
+ *                        smallest R(i) to the largest R(i). If `rowcnd>=0.1` and
+ *                        `amax` is neither too large nor too small, it is not worth
+ *                        scaling by `R`.
+ * @param[out]    colcnd  If `info=0`, `colcnd` contains the ratio of the smallest
+ *                        C(j) to the largest C(j). If `colcnd>=0.1`, it is not
+ *                        worth scaling by `C`.
+ * @param[out]    amax    Absolute value of largest matrix element. If `amax` is very
  *                        close to overflow or very close to underflow, the matrix
  *                        should be scaled.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, and i is
- *                         - <= m: the i-th row of A is exactly zero (1-based)
- *                         - > m: the (i-m)-th column of A is exactly zero (1-based)
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, and i is
+ *                            - `i<=m`: the i-th row of `A` is exactly zero (1-based)
+ *                            - `i>m`: the (i-m)-th column of `A` is exactly zero
+ *                              (1-based)
  */
 void zgeequ(
     const INT m,
