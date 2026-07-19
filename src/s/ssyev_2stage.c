@@ -33,7 +33,7 @@
  *                      ascending order.
  * @param[out]    work  On exit, if `info=0`, `work[0]` returns the optimal `lwork`.
  * @param[in]     lwork The length of the array `work`. `lwork>=1`, when `n<=1`;
- *                      otherwise
+ *                      otherwise:
  *                      If `jobz='N'` and `n>1`, `lwork` must be queried.
  *                      @rst
  *                      .. code-block:: text
@@ -49,16 +49,17 @@
  *                      algorithm, usually FACTOPTNB=128 is a good choice,
  *                      NTHREADS is the number of threads used when openMP
  *                      compilation is enabled, otherwise =1.
- *                      If `jobz='V'` and `n>1`, `lwork` must be queried. Not yet available
+ *                      If `jobz='V'` and `n>1`, `lwork` must be queried. Not yet available.
  *                      If `lwork=-1`, then a workspace query is assumed; the routine
  *                      only calculates the optimal size of the `work` array, returns
  *                      this value as the first entry of the `work` array, and no error
  *                      message related to `lwork` is issued.
- * @param[out]    info  `info=0`: successful exit
- *                      `info<0`: if `info=-i`, the i-th argument had an illegal value
- *                      `info>0`: if `info=i`, the algorithm failed to converge; i
- *                                off-diagonal elements of an intermediate tridiagonal
- *                                form did not converge to zero.
+ * @param[out]    info
+ *                      - `info=0`: successful exit
+ *                      - `info<0`: if `info=-i`, the i-th argument had an illegal value
+ *                      - `info>0`: if `info=i`, the algorithm failed to converge; i
+ *                        off-diagonal elements of an intermediate tridiagonal
+ *                        form did not converge to zero.
  *
  * @par Further Details:
  * @rst

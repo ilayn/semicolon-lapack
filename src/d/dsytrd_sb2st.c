@@ -63,13 +63,15 @@
  *                       If `lwork=-1`, or `lhous=-1`, then a workspace query is assumed;
  *                       the routine only calculates the optimal size of the `work` array,
  *                       returns this value as the first entry of the `work` array.
- *                       `lwork = max(1, dimension)` where `dimension = (2*kd+1)*n + kd*NTHREADS`,
+ *                       `lwork = max(1, dimension)` where
+ *                       `dimension = (2*kd+1)*n + kd*NTHREADS`,
  *                       where `kd` is the blocking size of the reduction, FACTOPTNB is the
  *                       blocking used by the QR or LQ algorithm, usually FACTOPTNB=128 is a
  *                       good choice, NTHREADS is the number of threads used when openMP
  *                       compilation is enabled, otherwise =1.
- * @param[out]    info   `info=0`: successful exit
- *                       `info<0`: if `info=-i`, the i-th argument had an illegal value
+ * @param[out]    info
+ *                       - `info=0`: successful exit
+ *                       - `info<0`: if `info=-i`, the i-th argument had an illegal value
  *
  * @par Further Details:
  * @rst

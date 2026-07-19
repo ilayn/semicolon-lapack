@@ -73,8 +73,9 @@
  *                       algorithm, usually FACTOPTNB=128 is a good choice,
  *                       NTHREADS is the number of threads used when openMP
  *                       compilation is enabled, otherwise =1.
- * @param[out]    info   `info=0`: successful exit
- *                       `info<0`: if `info=-i`, the i-th argument had an illegal value
+ * @param[out]    info
+ *                       - `info=0`: successful exit
+ *                       - `info<0`: if `info=-i`, the i-th argument had an illegal value
  *
  * @par Further Details:
  * @rst

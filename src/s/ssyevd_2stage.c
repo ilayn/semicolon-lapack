@@ -66,15 +66,16 @@
  *                       only calculates the optimal sizes of the `work` and `iwork`
  *                       arrays, returns these values as the first entries of the `work`
  *                       and `iwork` arrays.
- * @param[out]    info   `info=0`: successful exit
- *                       `info<0`: if `info=-i`, the i-th argument had an illegal value
- *                       `info>0`: if `info=i` and `jobz='N'`, then the algorithm failed
- *                                 to converge; i off-diagonal elements of an intermediate
- *                                 tridiagonal form did not converge to zero;
- *                                 if `info=i` and `jobz='V'`, then the algorithm failed
- *                                 to compute an eigenvalue while working on the submatrix
- *                                 lying in rows and columns `info/(n+1)` through
- *                                 `mod(info,n+1)`.
+ * @param[out]    info
+ *                       - `info=0`: successful exit
+ *                       - `info<0`: if `info=-i`, the i-th argument had an illegal value
+ *                       - `info>0`: if `info=i` and `jobz='N'`, then the algorithm failed
+ *                         to converge; i off-diagonal elements of an intermediate
+ *                         tridiagonal form did not converge to zero;
+ *                         if `info=i` and `jobz='V'`, then the algorithm failed
+ *                         to compute an eigenvalue while working on the submatrix
+ *                         lying in rows and columns `info/(n+1)` through
+ *                         `mod(info,n+1)`.
  *
  * @par Further Details:
  * @rst
