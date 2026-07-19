@@ -9,30 +9,36 @@
 
 /**
  * ZGETRS solves a system of linear equations
- *    A * X = B,  A**T * X = B,  or  A**H * X = B
- * with a general N-by-N matrix A using the LU factorization computed
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B,  A**T * X = B,  or  A**H * X = B
+ * @endrst
+ * with a general `n`-by-`n` matrix `A` using the LU factorization computed
  * by ZGETRF.
  *
  * @param[in]     trans Specifies the form of the system of equations:
  *                      - 'N': A * X = B (No transpose)
  *                      - 'T': A**T * X = B (Transpose)
  *                      - 'C': A**H * X = B (Conjugate transpose)
- * @param[in]     n     The order of the matrix A (n >= 0).
+ * @param[in]     n     The order of the matrix `A`. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number of
- *                      columns of the matrix B (nrhs >= 0).
- * @param[in]     A     The factors L and U from the factorization A = P*L*U
- *                      as computed by zgetrf. Array of dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A (lda >= max(1,n)).
- * @param[in]     ipiv  The pivot indices from zgetrf; row i was interchanged
- *                      with row ipiv[i]. Array of dimension n, 0-based.
- * @param[in,out] B     On entry, the right hand side matrix B.
+ *                      columns of the matrix `B`. `nrhs>=0`.
+ * @param[in]     A     Array of dimension (`lda`, `n`).
+ *                      The factors L and U from the factorization A = P*L*U
+ *                      as computed by zgetrf.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      The pivot indices from zgetrf; row i was interchanged
+ *                      with row `ipiv[i]`.
+ * @param[in,out] B     Array of dimension (`ldb`, `nrhs`).
+ *                      On entry, the right hand side matrix `B`.
  *                      On exit, the solution matrix X.
- *                      Array of dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of the array B (ldb >= max(1,n)).
+ * @param[in]     ldb   The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
  */
 void zgetrs(
     const char* trans,
