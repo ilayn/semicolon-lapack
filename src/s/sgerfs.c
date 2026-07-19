@@ -17,30 +17,36 @@
  *                       - 'N': A * X = B (No transpose)
  *                       - 'T': A**T * X = B (Transpose)
  *                       - 'C': A**H * X = B (Conjugate transpose = Transpose)
- * @param[in]     n      The order of the matrix A (n >= 0).
- * @param[in]     nrhs   The number of right hand sides (nrhs >= 0).
- * @param[in]     A      The original N-by-N matrix A. Array of dimension (lda, n).
- * @param[in]     lda    The leading dimension of the array A (lda >= max(1,n)).
- * @param[in]     AF     The factors L and U from the factorization A = P*L*U
- *                       as computed by sgetrf. Array of dimension (ldaf, n).
- * @param[in]     ldaf   The leading dimension of the array AF (ldaf >= max(1,n)).
- * @param[in]     ipiv   The pivot indices from sgetrf. Array of dimension n.
- * @param[in]     B      The right hand side matrix B. Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of the array B (ldb >= max(1,n)).
- * @param[in,out] X      On entry, the solution matrix X, as computed by sgetrs.
+ * @param[in]     n      The order of the matrix `A`. `n>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in]     A      Array of dimension (`lda`, `n`).
+ *                       The original `n`-by-`n` matrix `A`.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in]     AF     Array of dimension (`ldaf`, `n`).
+ *                       The factors L and U from the factorization A = P*L*U
+ *                       as computed by sgetrf.
+ * @param[in]     ldaf   The leading dimension of the array `AF`. `ldaf>=max(1,n)`.
+ * @param[in]     ipiv   Array of dimension `n`.
+ *                       The pivot indices from sgetrf.
+ * @param[in]     B      Array of dimension (`ldb`, `nrhs`).
+ *                       The right hand side matrix `B`.
+ * @param[in]     ldb    The leading dimension of the array `B`. `ldb>=max(1,n)`.
+ * @param[in,out] X      Array of dimension (`ldx`, `nrhs`).
+ *                       On entry, the solution matrix X, as computed by sgetrs.
  *                       On exit, the improved solution matrix X.
- *                       Array of dimension (ldx, nrhs).
- * @param[in]     ldx    The leading dimension of the array X (ldx >= max(1,n)).
- * @param[out]    ferr   The estimated forward error bound for each solution vector
- *                       X(j). Array of dimension nrhs.
- * @param[out]    berr   The componentwise relative backward error of each solution
- *                       vector X(j). Array of dimension nrhs.
- * @param[out]    work   Workspace array of dimension (3*n).
- * @param[out]    iwork  Integer workspace array of dimension (n).
+ * @param[in]     ldx    The leading dimension of the array `X`. `ldx>=max(1,n)`.
+ * @param[out]    ferr   Array of dimension `nrhs`.
+ *                       The estimated forward error bound for each solution vector
+ *                       X(j).
+ * @param[out]    berr   Array of dimension `nrhs`.
+ *                       The componentwise relative backward error of each solution
+ *                       vector X(j).
+ * @param[out]    work   Workspace array of dimension (`3*n`).
+ * @param[out]    iwork  Integer workspace array of dimension (`n`).
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
  */
 void sgerfs(
     const char* trans,
