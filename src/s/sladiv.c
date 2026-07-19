@@ -9,22 +9,27 @@
 
 /**
  * SLADIV performs complex division in real arithmetic
+ * @rst
+ * .. code-block:: text
  *
- *                      a + i*b
- *           p + i*q = ---------
- *                      c + i*d
+ *                  a + i*b
+ *       p + i*q = ---------
+ *                  c + i*d
+ * @endrst
  *
+ * @param[in]  a Single precision scalar. The scalar a in the above expression.
+ * @param[in]  b Single precision scalar. The scalar b in the above expression.
+ * @param[in]  c Single precision scalar. The scalar c in the above expression.
+ * @param[in]  d Single precision scalar. The scalar d in the above expression.
+ * @param[out] p Receives the real part of the result.
+ * @param[out] q Receives the imaginary part of the result.
+ *
+ * @par Further Details:
+ * @rst
  * The algorithm is due to Michael Baudin and Robert L. Smith
- * and can be found in the paper
- * "A Robust Complex Division in Scilab"
- *
- * @param[in]  a  Single precision scalar.
- * @param[in]  b  Single precision scalar.
- * @param[in]  c  Single precision scalar.
- * @param[in]  d  Single precision scalar.
- *                The scalars a, b, c, and d in the above expression.
- * @param[out] p  Pointer to single, receives real part of result.
- * @param[out] q  Pointer to single, receives imaginary part of result.
+ * and can be found in the paper "A Robust Complex Division in Scilab".
+ * https://doi.org/10.48550/arXiv.1210.4539
+ * @endrst
  */
 void sladiv(const f32 a, const f32 b, const f32 c, const f32 d,
             f32* p, f32* q)

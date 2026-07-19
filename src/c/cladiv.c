@@ -8,15 +8,13 @@
 #include <complex.h>
 
 /**
- * CLADIV := X / Y, where X and Y are complex.  The computation of X / Y
- * will not overflow on an intermediary step unless the results
- * overflows.
+ * CLADIV := X / Y, where X and Y are complex. The computation of X / Y
+ * will not overflow on an intermediary step unless the results overflows.
  *
- * @param[in] X     Single complex scalar.
- * @param[in] Y     Single complex scalar.
- *                   The complex scalars X and Y.
+ * @param[in] X Single complex scalar. The complex scalar X.
+ * @param[in] Y Single complex scalar. The complex scalar Y.
  *
- * @return The complex quotient X / Y.
+ * @return The complex quotient `X / Y`.
  */
 c64 cladiv(const c64 X, const c64 Y)
 {

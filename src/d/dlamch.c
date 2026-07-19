@@ -1,6 +1,6 @@
 /**
  * @file dlamch.c
- * @brief DLAMCH determines f64 precision machine parameters.
+ * @brief DLAMCH determines double precision machine parameters.
  */
 
 #include <float.h>
@@ -8,19 +8,21 @@
 #include "semicolon_lapack_double.h"
 
 /**
- * DLAMCH determines f64 precision machine parameters.
+ * DLAMCH determines double precision machine parameters.
  *
- * @param[in] cmach  Specifies the value to be returned by dlamch:
- *                   = 'E' or 'e':  dlamch := eps (relative machine precision)
- *                   = 'S' or 's':  dlamch := sfmin (safe minimum, 1/sfmin doesn't overflow)
- *                   = 'B' or 'b':  dlamch := base (base of the machine)
- *                   = 'P' or 'p':  dlamch := eps*base
- *                   = 'N' or 'n':  dlamch := t (number of digits in mantissa)
- *                   = 'R' or 'r':  dlamch := rnd (1.0 if rounding, 0.0 otherwise)
- *                   = 'M' or 'm':  dlamch := emin (minimum exponent)
- *                   = 'U' or 'u':  dlamch := rmin (underflow threshold)
- *                   = 'L' or 'l':  dlamch := emax (largest exponent)
- *                   = 'O' or 'o':  dlamch := rmax (overflow threshold)
+ * @param[in] cmach Specifies the value to be returned by dlamch:
+ *                  `cmach='E'`: eps (relative machine precision).
+ *                  `cmach='S'`: sfmin (safe minimum, such that `1/sfmin` does not
+ *                  overflow).
+ *                  `cmach='B'`: base (base of the machine).
+ *                  `cmach='P'`: eps*base.
+ *                  `cmach='N'`: t (number of digits in the mantissa).
+ *                  `cmach='R'`: rnd (1.0 when rounding occurs in addition, 0.0
+ *                  otherwise).
+ *                  `cmach='M'`: emin (minimum exponent before underflow).
+ *                  `cmach='U'`: rmin (underflow threshold).
+ *                  `cmach='L'`: emax (largest exponent before overflow).
+ *                  `cmach='O'`: rmax (overflow threshold).
  *
  * @return The requested machine parameter.
  */

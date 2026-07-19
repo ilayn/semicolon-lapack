@@ -10,17 +10,19 @@
 /**
  * SLAMCH determines single precision machine parameters.
  *
- * @param[in] cmach  Specifies the value to be returned by slamch:
- *                   = 'E' or 'e':  slamch := eps (relative machine precision)
- *                   = 'S' or 's':  slamch := sfmin (safe minimum, 1/sfmin doesn't overflow)
- *                   = 'B' or 'b':  slamch := base (base of the machine)
- *                   = 'P' or 'p':  slamch := eps*base
- *                   = 'N' or 'n':  slamch := t (number of digits in mantissa)
- *                   = 'R' or 'r':  slamch := rnd (1.0 if rounding, 0.0 otherwise)
- *                   = 'M' or 'm':  slamch := emin (minimum exponent)
- *                   = 'U' or 'u':  slamch := rmin (underflow threshold)
- *                   = 'L' or 'l':  slamch := emax (largest exponent)
- *                   = 'O' or 'o':  slamch := rmax (overflow threshold)
+ * @param[in] cmach Specifies the value to be returned by slamch:
+ *                  `cmach='E'`: eps (relative machine precision).
+ *                  `cmach='S'`: sfmin (safe minimum, such that `1/sfmin` does not
+ *                  overflow).
+ *                  `cmach='B'`: base (base of the machine).
+ *                  `cmach='P'`: eps*base.
+ *                  `cmach='N'`: t (number of digits in the mantissa).
+ *                  `cmach='R'`: rnd (1.0 when rounding occurs in addition, 0.0
+ *                  otherwise).
+ *                  `cmach='M'`: emin (minimum exponent before underflow).
+ *                  `cmach='U'`: rmin (underflow threshold).
+ *                  `cmach='L'`: emax (largest exponent before overflow).
+ *                  `cmach='O'`: rmax (overflow threshold).
  *
  * @return The requested machine parameter.
  */

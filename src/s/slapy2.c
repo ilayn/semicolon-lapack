@@ -9,14 +9,13 @@
 #include "semicolon_lapack_single.h"
 
 /**
- * SLAPY2 returns sqrt(x**2 + y**2), taking care not to cause unnecessary
+ * SLAPY2 returns `sqrt(x**2 + y**2)`, taking care not to cause unnecessary
  * overflow and unnecessary underflow.
  *
- * @param[in] x  Double precision scalar.
- * @param[in] y  Double precision scalar.
- *             x and y specify the values x and y.
+ * @param[in] x Single precision scalar. Specifies the value x.
+ * @param[in] y Single precision scalar. Specifies the value y.
  *
- * @return sqrt(x**2 + y**2) computed safely.
+ * @return `sqrt(x**2 + y**2)` computed safely.
  */
 f32 slapy2(const f32 x, const f32 y)
 {
