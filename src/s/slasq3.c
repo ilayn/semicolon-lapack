@@ -162,7 +162,7 @@ compute_shift:
                                                      Z[4 * i0 - *pp + 3]),
                                                 Z[4 * i0 - *pp + 7]);
                 *qmax = fmaxf(fmaxf(*qmax, Z[4 * i0 + *pp]),
-                              Z[4 * i0 + *pp + 4]);
+                                           Z[4 * i0 + *pp + 4]);
                 *dmin = -ZERO;
             }
         }
