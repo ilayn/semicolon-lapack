@@ -8,34 +8,36 @@
 #include "semicolon_lapack_double.h"
 
 /**
- * DLAQGB equilibrates a general M by N band matrix A with KL subdiagonals
- * and KU superdiagonals using the row and column scaling factors in the
- * vectors R and C.
+ * DLAQGB equilibrates a general `m` by `n` band matrix A with `kl` subdiagonals
+ * and `ku` superdiagonals using the row and column scaling factors in the
+ * vectors `R` and `C`.
  *
- * @param[in]     m       The number of rows of the matrix A. m >= 0.
- * @param[in]     n       The number of columns of the matrix A. n >= 0.
- * @param[in]     kl      The number of subdiagonals within the band of A. kl >= 0.
- * @param[in]     ku      The number of superdiagonals within the band of A. ku >= 0.
- * @param[in,out] AB      On entry, the matrix A in band storage, in rows 0 to kl+ku.
+ * @param[in]     m       The number of rows of the matrix A. `m>=0`.
+ * @param[in]     n       The number of columns of the matrix A. `n>=0`.
+ * @param[in]     kl      The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku      The number of superdiagonals within the band of A. `ku>=0`.
+ * @param[in,out] AB      Array of dimension (`ldab`, `n`).
+ *                        On entry, the matrix A in band storage, in rows 0 to `kl+ku`.
  *                        The j-th column of A is stored in the j-th column of
- *                        the array AB as follows:
- *                        AB[ku+i-j + j*ldab] = A(i,j) for max(0,j-ku) <= i <= min(m-1,j+kl).
+ *                        the array `AB` as follows:
+ *                        `AB[ku+i-j + j*ldab] = A(i,j)` for `max(0,j-ku)<=i<=min(m-1,j+kl)`.
  *                        On exit, the equilibrated matrix in the same storage format.
- *                        Array of dimension (ldab, n).
- * @param[in]     ldab    The leading dimension of the array AB. ldab >= kl+ku+1.
- * @param[in]     R       The row scale factors for A. Array of dimension (m).
- * @param[in]     C       The column scale factors for A. Array of dimension (n).
+ * @param[in]     ldab    The leading dimension of the array `AB`. `ldab>=kl+ku+1`.
+ * @param[in]     R       Array of dimension (`m`).
+ *                        The row scale factors for A.
+ * @param[in]     C       Array of dimension (`n`).
+ *                        The column scale factors for A.
  * @param[in]     rowcnd  Ratio of the smallest R(i) to the largest R(i).
  * @param[in]     colcnd  Ratio of the smallest C(i) to the largest C(i).
  * @param[in]     amax    Absolute value of largest matrix entry.
  * @param[out]    equed   Specifies the form of equilibration that was done:
- *                        = 'N': No equilibration
- *                        = 'R': Row equilibration, i.e., A has been premultiplied
- *                               by diag(R).
- *                        = 'C': Column equilibration, i.e., A has been postmultiplied
- *                               by diag(C).
- *                        = 'B': Both row and column equilibration, i.e., A has been
- *                               replaced by diag(R) * A * diag(C).
+ *                        - `'N'`: No equilibration
+ *                        - `'R'`: Row equilibration, i.e., A has been premultiplied
+ *                          by diag(R).
+ *                        - `'C'`: Column equilibration, i.e., A has been postmultiplied
+ *                          by diag(C).
+ *                        - `'B'`: Both row and column equilibration, i.e., A has been
+ *                          replaced by diag(R) * A * diag(C).
  */
 void dlaqgb(
     const INT m,
