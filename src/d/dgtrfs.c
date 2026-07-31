@@ -14,37 +14,45 @@
  * error bounds and backward error estimates for the solution.
  *
  * @param[in]     trans Specifies the form of the system of equations:
- *                      = 'N': A * X = B     (No transpose)
- *                      = 'T': A**T * X = B  (Transpose)
- *                      = 'C': A**H * X = B  (Conjugate transpose = Transpose)
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
- * @param[in]     DL    The (n-1) subdiagonal elements of A. Array of dimension (n-1).
- * @param[in]     D     The diagonal elements of A. Array of dimension (n).
- * @param[in]     DU    The (n-1) superdiagonal elements of A. Array of dimension (n-1).
- * @param[in]     DLF   The (n-1) multipliers that define the matrix L from the
- *                      LU factorization of A. Array of dimension (n-1).
- * @param[in]     DF    The n diagonal elements of U. Array of dimension (n).
- * @param[in]     DUF   The (n-1) elements of the first superdiagonal of U.
- *                      Array of dimension (n-1).
- * @param[in]     DU2   The (n-2) elements of the second superdiagonal of U.
- *                      Array of dimension (n-2).
- * @param[in]     ipiv  The pivot indices. Array of dimension (n).
- * @param[in]     B     The right hand side matrix B. Array of dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of B. ldb >= max(1, n).
- * @param[in,out] X     On entry, the solution matrix X, as computed by DGTTRS.
+ *                      - `'N'`: A * X = B (No transpose)
+ *                      - `'T'`: A**T * X = B (Transpose)
+ *                      - `'C'`: A**H * X = B (Conjugate transpose = Transpose)
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides. `nrhs>=0`.
+ * @param[in]     DL    Array of dimension (`n-1`).
+ *                      The (n-1) subdiagonal elements of A.
+ * @param[in]     D     Array of dimension (`n`).
+ *                      The diagonal elements of A.
+ * @param[in]     DU    Array of dimension (`n-1`).
+ *                      The (n-1) superdiagonal elements of A.
+ * @param[in]     DLF   Array of dimension (`n-1`).
+ *                      The (n-1) multipliers that define the matrix L from the
+ *                      LU factorization of A.
+ * @param[in]     DF    Array of dimension (`n`).
+ *                      The n diagonal elements of U.
+ * @param[in]     DUF   Array of dimension (`n-1`).
+ *                      The (n-1) elements of the first superdiagonal of U.
+ * @param[in]     DU2   Array of dimension (`n-2`).
+ *                      The (n-2) elements of the second superdiagonal of U.
+ * @param[in]     ipiv  Array of dimension (`n`).
+ *                      The pivot indices.
+ * @param[in]     B     Array of dimension (`ldb`, `nrhs`).
+ *                      The right hand side matrix `B`.
+ * @param[in]     ldb   The leading dimension of `B`. `ldb>=max(1,n)`.
+ * @param[in,out] X     Array of dimension (`ldx`, `nrhs`).
+ *                      On entry, the solution matrix X, as computed by DGTTRS.
  *                      On exit, the improved solution matrix X.
- *                      Array of dimension (ldx, nrhs).
- * @param[in]     ldx   The leading dimension of X. ldx >= max(1, n).
- * @param[out]    ferr  The estimated forward error bound for each solution vector.
- *                      Array of dimension (nrhs).
- * @param[out]    berr  The componentwise relative backward error of each solution.
- *                      Array of dimension (nrhs).
- * @param[out]    work  Workspace array of dimension (3*n).
- * @param[out]    iwork Integer workspace array of dimension (n).
+ * @param[in]     ldx   The leading dimension of `X`. `ldx>=max(1,n)`.
+ * @param[out]    ferr  Array of dimension (`nrhs`).
+ *                      The estimated forward error bound for each solution vector.
+ * @param[out]    berr  Array of dimension (`nrhs`).
+ *                      The componentwise relative backward error of each solution.
+ * @param[out]    work  Workspace array of dimension (`3*n`).
+ * @param[out]    iwork Integer workspace array of dimension (`n`).
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void dgtrfs(
     const char* trans,
