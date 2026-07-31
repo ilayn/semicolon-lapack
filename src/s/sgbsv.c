@@ -6,47 +6,73 @@
 
 /**
  * SGBSV computes the solution to a real system of linear equations
- *    A * X = B,
- * where A is a band matrix of order N with KL subdiagonals and KU
- * superdiagonals, and X and B are N-by-NRHS matrices.
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B
+ * @endrst
+ * where A is a band matrix of order `n` with `kl` subdiagonals and `ku`
+ * superdiagonals, and X and `B` are `n`-by-`nrhs` matrices.
  *
  * The LU decomposition with partial pivoting and row interchanges is
  * used to factor A as A = L * U, where L is a product of permutation
- * and unit lower triangular matrices with KL subdiagonals, and U is
- * upper triangular with KL+KU superdiagonals. The factored form of A
+ * and unit lower triangular matrices with `kl` subdiagonals, and U is
+ * upper triangular with `kl+ku` superdiagonals. The factored form of A
  * is then used to solve the system of equations A * X = B.
  *
  * @param[in]     n       The number of linear equations, i.e., the order of the
- *                        matrix A (n >= 0).
- * @param[in]     kl      The number of subdiagonals within the band of A (kl >= 0).
- * @param[in]     ku      The number of superdiagonals within the band of A (ku >= 0).
+ *                        matrix A. `n>=0`.
+ * @param[in]     kl      The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku      The number of superdiagonals within the band of A. `ku>=0`.
  * @param[in]     nrhs    The number of right hand sides, i.e., the number of
- *                        columns of the matrix B (nrhs >= 0).
- * @param[in,out] AB      On entry, the matrix A in band storage, in rows kl to
- *                        2*kl+ku; rows 0 to kl-1 of the array need not be set.
+ *                        columns of the matrix `B`. `nrhs>=0`.
+ * @param[in,out] AB      Array of dimension (`ldab`, `n`).
+ *                        On entry, the matrix A in band storage, in rows `kl` to
+ *                        `2*kl+ku`; rows 0 to `kl-1` of the array need not be set.
  *                        The j-th column of A is stored in the j-th column of
- *                        the array AB as follows:
- *                        AB[kl+ku+i-j + j*ldab] = A(i,j) for max(0,j-ku)<=i<=min(n-1,j+kl).
+ *                        the array `AB` as follows:
+ *                        `AB[kl+ku+i-j + j*ldab] = A(i,j)` for `max(0,j-ku)<=i<=min(n-1,j+kl)`.
  *                        On exit, details of the factorization: U is stored as an
- *                        upper triangular band matrix with kl+ku superdiagonals in
- *                        rows 0 to kl+ku, and the multipliers used during the
- *                        factorization are stored in rows kl+ku+1 to 2*kl+ku.
- *                        Array of dimension (ldab, n).
- * @param[in]     ldab    The leading dimension of the array AB (ldab >= 2*kl+ku+1).
- * @param[out]    ipiv    The pivot indices that define the permutation matrix P;
- *                        row i of the matrix was interchanged with row ipiv[i].
- *                        Array of dimension n, 0-based.
- * @param[in,out] B       On entry, the N-by-NRHS right hand side matrix B.
- *                        On exit, if info = 0, the N-by-NRHS solution matrix X.
- *                        Array of dimension (ldb, nrhs).
- * @param[in]     ldb     The leading dimension of the array B (ldb >= max(1,n)).
+ *                        upper triangular band matrix with `kl+ku` superdiagonals in
+ *                        rows 0 to `kl+ku`, and the multipliers used during the
+ *                        factorization are stored in rows `kl+ku+1` to `2*kl+ku`.
+ *                        See below for further details.
+ * @param[in]     ldab    The leading dimension of the array `AB`. `ldab>=2*kl+ku+1`.
+ * @param[out]    ipiv    Array of dimension `n`.
+ *                        The pivot indices that define the permutation matrix P;
+ *                        row i of the matrix was interchanged with row `ipiv[i]`.
+ * @param[in,out] B       Array of dimension (`ldb`, `nrhs`).
+ *                        On entry, the `n`-by-`nrhs` right hand side matrix `B`.
+ *                        On exit, if `info=0`, the `n`-by-`nrhs` solution matrix X.
+ * @param[in]     ldb     The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
- *                           has been completed, but the factor U is exactly
- *                           singular, and the solution has not been computed.
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, U(i,i) is exactly zero. The
+ *                            factorization has been completed, but the factor U is
+ *                            exactly singular, and the solution has not been computed.
+ *
+ * @par Further Details:
+ * @rst
+ * The band storage scheme is illustrated by the following example, when
+ * m = n = 6, kl = 2, ku = 1:
+ *
+ * .. code-block:: text
+ *
+ *     On entry:                       On exit:
+ *
+ *         *    *    *    +    +    +       *    *    *   u03  u14  u25
+ *         *    *    +    +    +    +       *    *   u02  u13  u24  u35
+ *         *   a01  a12  a23  a34  a45      *   u01  u12  u23  u34  u45
+ *        a00  a11  a22  a33  a44  a55     u00  u11  u22  u33  u44  u55
+ *        a10  a21  a32  a43  a54   *      m10  m21  m32  m43  m54   *
+ *        a20  a31  a42  a53   *    *      m20  m31  m42  m53   *    *
+ *
+ * Array elements marked * are not used by the routine; elements marked
+ * + need not be set on entry, but are required by the routine to store
+ * elements of U because of fill-in resulting from the row interchanges.
+ * @endrst
  */
 void sgbsv(
     const INT n,
