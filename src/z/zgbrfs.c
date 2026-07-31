@@ -15,40 +15,44 @@
  * error bounds and backward error estimates for the solution.
  *
  * @param[in]     trans   Specifies the form of the system of equations:
- *                        - 'N': A * X = B (No transpose)
- *                        - 'T': A**T * X = B (Transpose)
- *                        - 'C': A**H * X = B (Conjugate transpose)
- * @param[in]     n       The order of the matrix A (n >= 0).
- * @param[in]     kl      The number of subdiagonals within the band of A (kl >= 0).
- * @param[in]     ku      The number of superdiagonals within the band of A (ku >= 0).
- * @param[in]     nrhs    The number of right hand sides (nrhs >= 0).
- * @param[in]     AB      The original band matrix A, stored in rows 0 to kl+ku.
- *                        The j-th column of A is stored in the j-th column of AB:
- *                        AB[ku+i-j + j*ldab] = A(i,j) for max(0,j-ku)<=i<=min(n-1,j+kl).
- *                        Array of dimension (ldab, n).
- * @param[in]     ldab    The leading dimension of AB (ldab >= kl+ku+1).
- * @param[in]     AFB     The LU factorization of A, as computed by zgbtrf.
- *                        U is stored in rows 0 to kl+ku, and the multipliers
- *                        are stored in rows kl+ku+1 to 2*kl+ku.
- *                        Array of dimension (ldafb, n).
- * @param[in]     ldafb   The leading dimension of AFB (ldafb >= 2*kl+ku+1).
- * @param[in]     ipiv    The pivot indices from zgbtrf. Array of dimension n.
- * @param[in]     B       The right hand side matrix B. Array of dimension (ldb, nrhs).
- * @param[in]     ldb     The leading dimension of B (ldb >= max(1,n)).
- * @param[in,out] X       On entry, the solution matrix X, as computed by zgbtrs.
+ *                        - `'N'`: A * X = B (No transpose)
+ *                        - `'T'`: A**T * X = B (Transpose)
+ *                        - `'C'`: A**H * X = B (Conjugate transpose)
+ * @param[in]     n       The order of the matrix A. `n>=0`.
+ * @param[in]     kl      The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku      The number of superdiagonals within the band of A. `ku>=0`.
+ * @param[in]     nrhs    The number of right hand sides. `nrhs>=0`.
+ * @param[in]     AB      Array of dimension (`ldab`, `n`).
+ *                        The original band matrix A, stored in rows 0 to `kl+ku`.
+ *                        The j-th column of A is stored in the j-th column of `AB`:
+ *                        `AB[ku+i-j + j*ldab] = A(i,j)` for `max(0,j-ku)<=i<=min(n-1,j+kl)`.
+ * @param[in]     ldab    The leading dimension of `AB`. `ldab>=kl+ku+1`.
+ * @param[in]     AFB     Array of dimension (`ldafb`, `n`).
+ *                        The LU factorization of A, as computed by ZGBTRF.
+ *                        U is stored in rows 0 to `kl+ku`, and the multipliers
+ *                        are stored in rows `kl+ku+1` to `2*kl+ku`.
+ * @param[in]     ldafb   The leading dimension of `AFB`. `ldafb>=2*kl+ku+1`.
+ * @param[in]     ipiv    Array of dimension `n`.
+ *                        The pivot indices from ZGBTRF.
+ * @param[in]     B       Array of dimension (`ldb`, `nrhs`).
+ *                        The right hand side matrix `B`.
+ * @param[in]     ldb     The leading dimension of `B`. `ldb>=max(1,n)`.
+ * @param[in,out] X       Array of dimension (`ldx`, `nrhs`).
+ *                        On entry, the solution matrix X, as computed by ZGBTRS.
  *                        On exit, the improved solution matrix X.
- *                        Array of dimension (ldx, nrhs).
- * @param[in]     ldx     The leading dimension of X (ldx >= max(1,n)).
- * @param[out]    ferr    The estimated forward error bound for each solution vector
- *                        X(j). Array of dimension nrhs.
- * @param[out]    berr    The componentwise relative backward error of each solution
- *                        vector X(j). Array of dimension nrhs.
- * @param[out]    work    Complex workspace array of dimension (2*n).
- * @param[out]    rwork   Real workspace array of dimension (n).
+ * @param[in]     ldx     The leading dimension of `X`. `ldx>=max(1,n)`.
+ * @param[out]    ferr    Array of dimension `nrhs`.
+ *                        The estimated forward error bound for each solution vector
+ *                        X(j).
+ * @param[out]    berr    Array of dimension `nrhs`.
+ *                        The componentwise relative backward error of each solution
+ *                        vector X(j).
+ * @param[out]    work    Complex workspace array of dimension (`2*n`).
+ * @param[out]    rwork   Real workspace array of dimension (`n`).
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
  */
 void zgbrfs(
     const char* trans,
