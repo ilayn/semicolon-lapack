@@ -8,33 +8,40 @@
 
 /**
  * SGTTS2 solves one of the systems of equations
- *    A*X = B  or  A**T*X = B,
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B  or  A**T * X = B
+ * @endrst
  * with a tridiagonal matrix A using the LU factorization computed
  * by SGTTRF.
  *
  * @param[in] itrans  Specifies the form of the system of equations.
- *                    = 0: A * X = B  (No transpose)
- *                    = 1: A**T * X = B  (Transpose)
- *                    = 2: A**T * X = B  (Conjugate transpose = Transpose)
- * @param[in] n       The order of the matrix A. n >= 0.
+ *                    - `0`: A * X = B (No transpose)
+ *                    - `1`: A**T * X = B (Transpose)
+ *                    - `2`: A**T * X = B (Conjugate transpose = Transpose)
+ * @param[in] n       The order of the matrix A. `n>=0`.
  * @param[in] nrhs    The number of right hand sides, i.e., the number of columns
- *                    of the matrix B. nrhs >= 0.
- * @param[in] DL      The (n-1) multipliers that define the matrix L from the
- *                    LU factorization of A. Array of dimension (n-1).
- * @param[in] D       The n diagonal elements of the upper triangular matrix U from
- *                    the LU factorization of A. Array of dimension (n).
- * @param[in] DU      The (n-1) elements of the first super-diagonal of U.
- *                    Array of dimension (n-1).
- * @param[in] DU2     The (n-2) elements of the second super-diagonal of U.
- *                    Array of dimension (n-2).
- * @param[in] ipiv    The pivot indices; for 0 <= i < n, row i of the matrix was
- *                    interchanged with row ipiv[i]. ipiv[i] will always be either
- *                    i or i+1; ipiv[i] = i indicates a row interchange was not
- *                    required. Array of dimension (n).
- * @param[in,out] B   On entry, the matrix of right hand side vectors B.
- *                    On exit, B is overwritten by the solution vectors X.
- *                    Array of dimension (ldb, nrhs).
- * @param[in] ldb     The leading dimension of the array B. ldb >= max(1, n).
+ *                    of the matrix `B`. `nrhs>=0`.
+ * @param[in] DL      Array of dimension (`n-1`).
+ *                    The (n-1) multipliers that define the matrix L from the
+ *                    LU factorization of A.
+ * @param[in] D       Array of dimension (`n`).
+ *                    The n diagonal elements of the upper triangular matrix U from
+ *                    the LU factorization of A.
+ * @param[in] DU      Array of dimension (`n-1`).
+ *                    The (n-1) elements of the first super-diagonal of U.
+ * @param[in] DU2     Array of dimension (`n-2`).
+ *                    The (n-2) elements of the second super-diagonal of U.
+ * @param[in] ipiv    Array of dimension (`n`).
+ *                    The pivot indices; for `0<=i<n`, row i of the matrix was
+ *                    interchanged with row `ipiv[i]`. `ipiv[i]` will always be either
+ *                    i or i+1; `ipiv[i]=i` indicates a row interchange was not
+ *                    required.
+ * @param[in,out] B   Array of dimension (`ldb`, `nrhs`).
+ *                    On entry, the matrix of right hand side vectors `B`.
+ *                    On exit, `B` is overwritten by the solution vectors X.
+ * @param[in] ldb     The leading dimension of the array `B`. `ldb>=max(1,n)`.
  */
 void sgtts2(
     const INT itrans,
