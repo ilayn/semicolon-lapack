@@ -12,34 +12,39 @@
  * using elimination with partial pivoting and row interchanges.
  *
  * The factorization has the form
- *    A = L * U
+ * @rst
+ * .. code-block:: text
+ *
+ *     A = L * U
+ * @endrst
  * where L is a product of permutation and unit lower bidiagonal
  * matrices and U is upper triangular with nonzeros in only the main
  * diagonal and first two superdiagonals.
  *
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] DL    On entry, the (n-1) sub-diagonal elements of A.
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] DL    Array of dimension (`n-1`).
+ *                      On entry, the (n-1) sub-diagonal elements of A.
  *                      On exit, the (n-1) multipliers that define the matrix L
  *                      from the LU factorization of A.
- *                      Array of dimension (n-1).
- * @param[in,out] D     On entry, the diagonal elements of A.
+ * @param[in,out] D     Array of dimension (`n`).
+ *                      On entry, the diagonal elements of A.
  *                      On exit, the n diagonal elements of the upper triangular
  *                      matrix U from the LU factorization of A.
- *                      Array of dimension (n).
- * @param[in,out] DU    On entry, the (n-1) super-diagonal elements of A.
+ * @param[in,out] DU    Array of dimension (`n-1`).
+ *                      On entry, the (n-1) super-diagonal elements of A.
  *                      On exit, the (n-1) elements of the first super-diagonal of U.
- *                      Array of dimension (n-1).
- * @param[out]    DU2   On exit, the (n-2) elements of the second super-diagonal of U.
- *                      Array of dimension (n-2).
- * @param[out]    ipiv  The pivot indices; for 0 <= i < n, row i of the matrix was
- *                      interchanged with row ipiv[i]. ipiv[i] will always be either
- *                      i or i+1; ipiv[i] = i indicates a row interchange was not
+ * @param[out]    DU2   Array of dimension (`n-2`).
+ *                      On exit, the (n-2) elements of the second super-diagonal of U.
+ * @param[out]    ipiv  Array of dimension (`n`).
+ *                      The pivot indices; for `0<=i<n`, row i of the matrix was
+ *                      interchanged with row `ipiv[i]`. `ipiv[i]` will always be either
+ *                      i or i+1; `ipiv[i]=i` indicates a row interchange was not
  *                      required.
- *                      Array of dimension (n).
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0: if info = k, U(k-1,k-1) is exactly zero (0-based).
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, U(k,k) is exactly zero.
  *                           The factorization has been completed, but the factor U
  *                           is exactly singular, and division by zero will occur
  *                           if it is used to solve a system of equations.
