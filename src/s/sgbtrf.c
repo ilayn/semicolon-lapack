@@ -23,33 +23,54 @@
  * trapezoidal if m > n), and U is upper triangular (upper trapezoidal
  * if m < n).
  *
- * @param[in]     m     The number of rows of the matrix A. m >= 0.
- * @param[in]     n     The number of columns of the matrix A. n >= 0.
- * @param[in]     kl    The number of subdiagonals within the band of A. kl >= 0.
- * @param[in]     ku    The number of superdiagonals within the band of A. ku >= 0.
- * @param[in,out] AB    Double precision array, dimension (ldab, n).
- *                      On entry, the matrix A in band storage, in rows kl to
- *                      2*kl+ku; rows 0 to kl-1 of the array need not be set.
+ * @param[in]     m     The number of rows of the matrix A. `m>=0`.
+ * @param[in]     n     The number of columns of the matrix A. `n>=0`.
+ * @param[in]     kl    The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku    The number of superdiagonals within the band of A. `ku>=0`.
+ * @param[in,out] AB    Array of dimension (`ldab`, `n`).
+ *                      On entry, the matrix A in band storage, in rows `kl` to
+ *                      `2*kl+ku`; rows 0 to `kl-1` of the array need not be set.
  *                      The j-th column of A is stored in the j-th column of
- *                      the array AB as follows:
- *                      AB[kl+ku+i-j + j*ldab] = A(i,j) for max(0,j-ku) <= i <= min(m-1,j+kl).
- *
+ *                      the array `AB` as follows:
+ *                      `AB[kl+ku+i-j + j*ldab] = A(i,j)` for `max(0,j-ku)<=i<=min(m-1,j+kl)`.
  *                      On exit, details of the factorization: U is stored as an
- *                      upper triangular band matrix with kl+ku superdiagonals in
- *                      rows 0 to kl+ku, and the multipliers used during the
- *                      factorization are stored in rows kl+ku+1 to 2*kl+ku.
- * @param[in]     ldab  The leading dimension of the array AB. ldab >= 2*kl+ku+1.
- * @param[out]    ipiv  Integer array, dimension (min(m,n)).
- *                      The pivot indices; for 0 <= i < min(m,n), row i of the
- *                      matrix was interchanged with row ipiv[i]. 0-based indexing.
+ *                      upper triangular band matrix with `kl+ku` superdiagonals in
+ *                      rows 0 to `kl+ku`, and the multipliers used during the
+ *                      factorization are stored in rows `kl+ku+1` to `2*kl+ku`.
+ *                      See below for further details.
+ * @param[in]     ldab  The leading dimension of the array `AB`. `ldab>=2*kl+ku+1`.
+ * @param[out]    ipiv  Array of dimension `min(m,n)`.
+ *                      The pivot indices; for `0<=i<min(m,n)`, row i of the
+ *                      matrix was interchanged with row `ipiv[i]`.
  * @param[out]    info
- *                           Exit status:
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, U(i-1,i-1) is exactly zero. The factorization
- *                           has been completed, but the factor U is exactly
- *                           singular, and division by zero will occur if it is used
- *                           to solve a system of equations.
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, U(i,i) is exactly zero. The
+ *                            factorization has been completed, but the factor U is
+ *                            exactly singular, and division by zero will occur if it
+ *                            is used to solve a system of equations.
+ *
+ * @par Further Details:
+ * @rst
+ * The band storage scheme is illustrated by the following example, when
+ * m = n = 6, kl = 2, ku = 1:
+ *
+ * .. code-block:: text
+ *
+ *     On entry:                       On exit:
+ *
+ *         *    *    *    +    +    +       *    *    *   u03  u14  u25
+ *         *    *    +    +    +    +       *    *   u02  u13  u24  u35
+ *         *   a01  a12  a23  a34  a45      *   u01  u12  u23  u34  u45
+ *        a00  a11  a22  a33  a44  a55     u00  u11  u22  u33  u44  u55
+ *        a10  a21  a32  a43  a54   *      m10  m21  m32  m43  m54   *
+ *        a20  a31  a42  a53   *    *      m20  m31  m42  m53   *    *
+ *
+ * Array elements marked * are not used by the routine; elements marked
+ * + need not be set on entry, but are required by the routine to store
+ * elements of U because of fill-in resulting from the row interchanges.
+ * @endrst
  */
 void sgbtrf(
     const INT m,
