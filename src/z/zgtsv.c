@@ -10,38 +10,41 @@
 
 /**
  * ZGTSV solves the equation
+ * @rst
+ * .. code-block:: text
  *
- *    A*X = B,
- *
- * where A is an n by n tridiagonal matrix, by Gaussian elimination with
+ *     A * X = B
+ * @endrst
+ * where A is an `n` by `n` tridiagonal matrix, by Gaussian elimination with
  * partial pivoting.
  *
  * Note that the equation A**T*X = B may be solved by interchanging the
- * order of the arguments DU and DL.
+ * order of the arguments `DU` and `DL`.
  *
- * @param[in]     n     The order of the matrix A. n >= 0.
+ * @param[in]     n     The order of the matrix A. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number of columns
- *                      of the matrix B. nrhs >= 0.
- * @param[in,out] DL    On entry, the (n-1) sub-diagonal elements of A.
- *                      On exit, DL is overwritten by the (n-2) elements of the
+ *                      of the matrix `B`. `nrhs>=0`.
+ * @param[in,out] DL    Array of dimension (`n-1`).
+ *                      On entry, the (n-1) sub-diagonal elements of A.
+ *                      On exit, `DL` is overwritten by the (n-2) elements of the
  *                      second super-diagonal of the upper triangular matrix U from
- *                      the LU factorization of A, in DL[0], ..., DL[n-3].
- *                      Array of dimension (n-1).
- * @param[in,out] D     On entry, the diagonal elements of A.
- *                      On exit, D is overwritten by the n diagonal elements of U.
- *                      Array of dimension (n).
- * @param[in,out] DU    On entry, the (n-1) super-diagonal elements of A.
- *                      On exit, DU is overwritten by the (n-1) elements of the first
+ *                      the LU factorization of A, in `DL[0]`, ..., `DL[n-3]`.
+ * @param[in,out] D     Array of dimension (`n`).
+ *                      On entry, the diagonal elements of A.
+ *                      On exit, `D` is overwritten by the n diagonal elements of U.
+ * @param[in,out] DU    Array of dimension (`n-1`).
+ *                      On entry, the (n-1) super-diagonal elements of A.
+ *                      On exit, `DU` is overwritten by the (n-1) elements of the first
  *                      super-diagonal of U.
- *                      Array of dimension (n-1).
- * @param[in,out] B     On entry, the N by NRHS matrix of right hand side matrix B.
- *                      On exit, if info = 0, the N by NRHS solution matrix X.
- *                      Array of dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1, n).
+ * @param[in,out] B     Array of dimension (`ldb`, `nrhs`).
+ *                      On entry, the `n` by `nrhs` matrix of right hand side matrix `B`.
+ *                      On exit, if `info=0`, the `n` by `nrhs` solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, U(i-1,i-1) is exactly zero (0-based), and the
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, U(i,i) is exactly zero, and the
  *                           solution has not been computed. The factorization has not
  *                           been completed unless i = n.
  */
