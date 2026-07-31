@@ -15,33 +15,39 @@
  *
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as
- *    RCOND = 1 / ( norm(A) * norm(inv(A)) ).
+ * @rst
+ * .. code-block:: text
+ *
+ *     rcond = 1 / ( norm(A) * norm(inv(A)) )
+ * @endrst
  *
  * @param[in]     norm    Specifies whether the 1-norm condition number or the
  *                        infinity-norm condition number is required:
- *                        - '1' or 'O': 1-norm
- *                        - 'I': Infinity-norm
- * @param[in]     n       The order of the matrix A (n >= 0).
- * @param[in]     kl      The number of subdiagonals within the band of A (kl >= 0).
- * @param[in]     ku      The number of superdiagonals within the band of A (ku >= 0).
- * @param[in]     AB      The LU factorization of the band matrix A, as computed
- *                        by sgbtrf. U is stored as an upper triangular band matrix
- *                        with kl+ku superdiagonals in rows 0 to kl+ku, and the
+ *                        - `'1'` or `'O'`: 1-norm
+ *                        - `'I'`: Infinity-norm
+ * @param[in]     n       The order of the matrix A. `n>=0`.
+ * @param[in]     kl      The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku      The number of superdiagonals within the band of A. `ku>=0`.
+ * @param[in]     AB      Array of dimension (`ldab`, `n`).
+ *                        The LU factorization of the band matrix A, as computed
+ *                        by SGBTRF. U is stored as an upper triangular band matrix
+ *                        with `kl+ku` superdiagonals in rows 0 to `kl+ku`, and the
  *                        multipliers used during the factorization are stored in
- *                        rows kl+ku+1 to 2*kl+ku. Array of dimension (ldab, n).
- * @param[in]     ldab    The leading dimension of the array AB (ldab >= 2*kl+ku+1).
- * @param[in]     ipiv    The pivot indices; for 0 <= i < n, row i of the matrix
- *                        was interchanged with row ipiv[i]. Array of dimension n.
- * @param[in]     anorm   If norm = '1' or "O", the 1-norm of the original matrix A.
- *                        If norm = "I", the infinity-norm of the original matrix A.
+ *                        rows `kl+ku+1` to `2*kl+ku`.
+ * @param[in]     ldab    The leading dimension of the array `AB`. `ldab>=2*kl+ku+1`.
+ * @param[in]     ipiv    Array of dimension `n`.
+ *                        The pivot indices; for `0<=i<n`, row i of the matrix
+ *                        was interchanged with row `ipiv[i]`.
+ * @param[in]     anorm   If `norm='1'` or `'O'`, the 1-norm of the original matrix A.
+ *                        If `norm='I'`, the infinity-norm of the original matrix A.
  * @param[out]    rcond   The reciprocal of the condition number of the matrix A,
- *                        computed as RCOND = 1/(norm(A) * norm(inv(A))).
- * @param[out]    work    Workspace array of dimension (3*n).
- * @param[out]    iwork   Integer workspace array of dimension (n).
+ *                        computed as `rcond = 1/(norm(A) * norm(inv(A)))`.
+ * @param[out]    work    Workspace array of dimension (`3*n`).
+ * @param[out]    iwork   Integer workspace array of dimension (`n`).
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
  */
 void sgbcon(
     const char* norm,
