@@ -10,37 +10,41 @@
 
 /**
  * CGBTRS solves a system of linear equations
- *    A * X = B,  A**T * X = B,  or  A**H * X = B
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B,  A**T * X = B,  or  A**H * X = B
+ * @endrst
  * with a general band matrix A using the LU factorization computed
  * by CGBTRF.
  *
  * @param[in]     trans   Specifies the form of the system of equations:
- *                        = 'N': A * X = B     (No transpose)
- *                        = 'T': A**T * X = B  (Transpose)
- *                        = 'C': A**H * X = B  (Conjugate transpose)
- * @param[in]     n       The order of the matrix A. n >= 0.
- * @param[in]     kl      The number of subdiagonals within the band of A. kl >= 0.
- * @param[in]     ku      The number of superdiagonals within the band of A. ku >= 0.
+ *                        - `'N'`: A * X = B (No transpose)
+ *                        - `'T'`: A**T * X = B (Transpose)
+ *                        - `'C'`: A**H * X = B (Conjugate transpose)
+ * @param[in]     n       The order of the matrix A. `n>=0`.
+ * @param[in]     kl      The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku      The number of superdiagonals within the band of A. `ku>=0`.
  * @param[in]     nrhs    The number of right hand sides, i.e., the number of
- *                        columns of the matrix B. nrhs >= 0.
- * @param[in]     AB      Complex*16 array, dimension (ldab, n).
+ *                        columns of the matrix `B`. `nrhs>=0`.
+ * @param[in]     AB      Array of dimension (`ldab`, `n`).
  *                        Details of the LU factorization of the band matrix A,
  *                        as computed by CGBTRF. U is stored as an upper triangular
- *                        band matrix with kl+ku superdiagonals in rows 0 to kl+ku,
+ *                        band matrix with `kl+ku` superdiagonals in rows 0 to `kl+ku`,
  *                        and the multipliers used during the factorization are
- *                        stored in rows kl+ku+1 to 2*kl+ku.
- * @param[in]     ldab    The leading dimension of the array AB. ldab >= 2*kl+ku+1.
- * @param[in]     ipiv    Integer array, dimension (n).
- *                        The pivot indices; for 0 <= i < n, row i of the matrix
- *                        was interchanged with row ipiv[i]. 0-based indexing.
- * @param[in,out] B       Complex*16 array, dimension (ldb, nrhs).
- *                        On entry, the right hand side matrix B.
+ *                        stored in rows `kl+ku+1` to `2*kl+ku`.
+ * @param[in]     ldab    The leading dimension of the array `AB`. `ldab>=2*kl+ku+1`.
+ * @param[in]     ipiv    Array of dimension (`n`).
+ *                        The pivot indices; for `0<=i<n`, row i of the matrix
+ *                        was interchanged with row `ipiv[i]`.
+ * @param[in,out] B       Array of dimension (`ldb`, `nrhs`).
+ *                        On entry, the right hand side matrix `B`.
  *                        On exit, the solution matrix X.
- * @param[in]     ldb     The leading dimension of the array B. ldb >= max(1,n).
+ * @param[in]     ldb     The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                           Exit status:
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
  */
 void cgbtrs(
     const char* trans,
