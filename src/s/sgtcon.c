@@ -11,34 +11,42 @@
  * SGTTRF.
  *
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
- * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
+ * condition number is computed as
+ * @rst
+ * .. code-block:: text
+ *
+ *     rcond = 1 / (anorm * norm(inv(A)))
+ * @endrst
  *
  * @param[in]  norm   Specifies whether the 1-norm condition number or the
  *                    infinity-norm condition number is required:
- *                    = '1' or 'O': 1-norm
- *                    = 'I': Infinity-norm
- * @param[in]  n      The order of the matrix A. n >= 0.
- * @param[in]  DL     The (n-1) multipliers that define the matrix L from the
+ *                    - `'1'` or `'O'`: 1-norm
+ *                    - `'I'`: Infinity-norm
+ * @param[in]  n      The order of the matrix A. `n>=0`.
+ * @param[in]  DL     Array of dimension (`n-1`).
+ *                    The (n-1) multipliers that define the matrix L from the
  *                    LU factorization of A as computed by SGTTRF.
- *                    Array of dimension (n-1).
- * @param[in]  D      The n diagonal elements of the upper triangular matrix U
- *                    from the LU factorization of A. Array of dimension (n).
- * @param[in]  DU     The (n-1) elements of the first superdiagonal of U.
- *                    Array of dimension (n-1).
- * @param[in]  DU2    The (n-2) elements of the second superdiagonal of U.
- *                    Array of dimension (n-2).
- * @param[in]  ipiv   The pivot indices; for 0 <= i < n, row i of the matrix was
- *                    interchanged with row ipiv[i]. Array of dimension (n).
- * @param[in]  anorm  If norm = '1' or "O", the 1-norm of the original matrix A.
- *                    If norm = "I", the infinity-norm of the original matrix A.
+ * @param[in]  D      Array of dimension (`n`).
+ *                    The n diagonal elements of the upper triangular matrix U
+ *                    from the LU factorization of A.
+ * @param[in]  DU     Array of dimension (`n-1`).
+ *                    The (n-1) elements of the first superdiagonal of U.
+ * @param[in]  DU2    Array of dimension (`n-2`).
+ *                    The (n-2) elements of the second superdiagonal of U.
+ * @param[in]  ipiv   Array of dimension (`n`).
+ *                    The pivot indices; for `0<=i<n`, row i of the matrix was
+ *                    interchanged with row `ipiv[i]`.
+ * @param[in]  anorm  If `norm='1'` or `'O'`, the 1-norm of the original matrix A.
+ *                    If `norm='I'`, the infinity-norm of the original matrix A.
  * @param[out] rcond  The reciprocal of the condition number of the matrix A,
- *                    computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is an
+ *                    computed as `rcond = 1/(anorm * ainvnm)`, where ainvnm is an
  *                    estimate of the 1-norm of inv(A) computed in this routine.
- * @param[out] work   Workspace array of dimension (2*n).
- * @param[out] iwork  Integer workspace array of dimension (n).
+ * @param[out] work   Workspace array of dimension (`2*n`).
+ * @param[out] iwork  Integer workspace array of dimension (`n`).
  * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void sgtcon(
     const char* norm,
