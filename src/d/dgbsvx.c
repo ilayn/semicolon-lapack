@@ -12,57 +12,117 @@
 
 /**
  * DGBSVX uses the LU factorization to compute the solution to a real
- * system of linear equations A * X = B, A**T * X = B, or A**H * X = B,
- * where A is a band matrix of order N with KL subdiagonals and KU
- * superdiagonals, and X and B are N-by-NRHS matrices.
+ * system of linear equations
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B,  A**T * X = B,  or  A**H * X = B
+ * @endrst
+ * where A is a band matrix of order `n` with `kl` subdiagonals and `ku`
+ * superdiagonals, and X and `B` are `n`-by-`nrhs` matrices.
  *
  * Error bounds on the solution and a condition estimate are also provided.
  *
- * @param[in]     fact    'F': AFB and IPIV contain the factored form of A.
- *                        'N': The matrix A will be copied to AFB and factored.
- *                        'E': The matrix A will be equilibrated if necessary,
- *                             then copied to AFB and factored.
- * @param[in]     trans   'N': A * X = B (No transpose)
- *                        'T': A**T * X = B (Transpose)
- *                        'C': A**H * X = B (Conjugate transpose = Transpose)
- * @param[in]     n       The number of linear equations (order of A). n >= 0.
- * @param[in]     kl      The number of subdiagonals within the band of A. kl >= 0.
- * @param[in]     ku      The number of superdiagonals within the band of A. ku >= 0.
- * @param[in]     nrhs    The number of right hand sides. nrhs >= 0.
- * @param[in,out] AB      On entry, the matrix A in band storage, in rows 0 to kl+ku.
- *                        On exit, if equilibration was done, A is scaled.
- *                        Array of dimension (ldab, n).
- * @param[in]     ldab    The leading dimension of AB. ldab >= kl+ku+1.
- * @param[in,out] AFB     On entry (if fact='F'), contains the LU factors.
+ * @rst
+ * The following steps are performed by this subroutine:
+ *
+ * 1. If ``fact='E'``, real scaling factors are computed to equilibrate
+ *    the system::
+ *
+ *        trans = 'N':  diag(R)*A*diag(C)     *inv(diag(C))*X = diag(R)*B
+ *        trans = 'T': (diag(R)*A*diag(C))**T *inv(diag(R))*X = diag(C)*B
+ *        trans = 'C': (diag(R)*A*diag(C))**H *inv(diag(R))*X = diag(C)*B
+ *
+ *    Whether or not the system will be equilibrated depends on the
+ *    scaling of the matrix A, but if equilibration is used, A is
+ *    overwritten by diag(R)*A*diag(C) and B by diag(R)*B (if ``trans='N'``)
+ *    or diag(C)*B (if ``trans='T'`` or ``'C'``).
+ *
+ * 2. If ``fact='N'`` or ``'E'``, the LU decomposition is used to factor
+ *    the matrix A (after equilibration if ``fact='E'``) as::
+ *
+ *        A = L * U
+ *
+ *    where L is a product of permutation and unit lower triangular
+ *    matrices with kl subdiagonals, and U is upper triangular with
+ *    kl+ku superdiagonals.
+ *
+ * 3. If some ``U(i,i)=0``, so that U is exactly singular, then the routine
+ *    returns with ``info=i``. Otherwise, the factored form of A is used
+ *    to estimate the condition number of the matrix A. If the reciprocal
+ *    of the condition number is less than machine precision, ``info=n+1``
+ *    is returned as a warning, but the routine still goes on to solve for
+ *    X and compute error bounds as described below.
+ *
+ * 4. The system of equations is solved for X using the factored form of A.
+ *
+ * 5. Iterative refinement is applied to improve the computed solution
+ *    matrix and calculate error bounds and backward error estimates for it.
+ *
+ * 6. If equilibration was used, the matrix X is premultiplied by
+ *    ``diag(C)`` (if ``trans='N'``) or ``diag(R)`` (if ``trans='T'`` or
+ *    ``'C'``) so that it solves the original system before equilibration.
+ * @endrst
+ *
+ * @param[in]     fact
+ *                        - `'F'`: `AFB` and `ipiv` contain the factored form of A.
+ *                        - `'N'`: The matrix A will be copied to `AFB` and factored.
+ *                        - `'E'`: The matrix A will be equilibrated if necessary,
+ *                          then copied to `AFB` and factored.
+ * @param[in]     trans
+ *                        - `'N'`: A * X = B (No transpose)
+ *                        - `'T'`: A**T * X = B (Transpose)
+ *                        - `'C'`: A**H * X = B (Conjugate transpose = Transpose)
+ * @param[in]     n       The number of linear equations (order of A). `n>=0`.
+ * @param[in]     kl      The number of subdiagonals within the band of A. `kl>=0`.
+ * @param[in]     ku      The number of superdiagonals within the band of A. `ku>=0`.
+ * @param[in]     nrhs    The number of right hand sides. `nrhs>=0`.
+ * @param[in,out] AB      Array of dimension (`ldab`, `n`).
+ *                        On entry, the matrix A in band storage, in rows 0 to
+ *                        `kl+ku`. The j-th column of A is stored in the j-th column
+ *                        of the array `AB` as follows:
+ *                        `AB[ku+i-j + j*ldab] = A(i,j)` for `max(0,j-ku)<=i<=min(n-1,j+kl)`.
+ *                        On exit, if `equed != 'N'`, A is scaled.
+ * @param[in]     ldab    The leading dimension of `AB`. `ldab>=kl+ku+1`.
+ * @param[in,out] AFB     Array of dimension (`ldafb`, `n`).
+ *                        On entry (if `fact='F'`), contains the LU factors.
  *                        On exit, contains the factors L and U.
- *                        Array of dimension (ldafb, n).
- * @param[in]     ldafb   The leading dimension of AFB. ldafb >= 2*kl+ku+1.
- * @param[in,out] ipiv    Pivot indices from factorization. Array of dimension (n).
- * @param[in,out] equed   On entry (if fact='F'), specifies equilibration done.
+ * @param[in]     ldafb   The leading dimension of `AFB`. `ldafb>=2*kl+ku+1`.
+ * @param[in,out] ipiv    Array of dimension (`n`).
+ *                        Pivot indices from factorization.
+ * @param[in,out] equed   On entry (if `fact='F'`), specifies equilibration done.
  *                        On exit, specifies the form of equilibration:
- *                        'N': No equilibration
- *                        'R': Row equilibration (A := diag(R) * A)
- *                        'C': Column equilibration (A := A * diag(C))
- *                        'B': Both (A := diag(R) * A * diag(C))
- * @param[in,out] R       Row scale factors. Array of dimension (n).
- * @param[in,out] C       Column scale factors. Array of dimension (n).
- * @param[in,out] B       On entry, the N-by-NRHS right hand side matrix B.
- *                        On exit, if equilibration was done, B is scaled.
- *                        Array of dimension (ldb, nrhs).
- * @param[in]     ldb     The leading dimension of B. ldb >= max(1, n).
- * @param[out]    X       The N-by-NRHS solution matrix X. Array of dimension (ldx, nrhs).
- * @param[in]     ldx     The leading dimension of X. ldx >= max(1, n).
+ *                        - `'N'`: No equilibration
+ *                        - `'R'`: Row equilibration (A := diag(R) * A)
+ *                        - `'C'`: Column equilibration (A := A * diag(C))
+ *                        - `'B'`: Both (A := diag(R) * A * diag(C))
+ * @param[in,out] R       Array of dimension (`n`).
+ *                        Row scale factors.
+ * @param[in,out] C       Array of dimension (`n`).
+ *                        Column scale factors.
+ * @param[in,out] B       Array of dimension (`ldb`, `nrhs`).
+ *                        On entry, the `n`-by-`nrhs` right hand side matrix `B`.
+ *                        On exit, if equilibration was done, `B` is scaled.
+ * @param[in]     ldb     The leading dimension of `B`. `ldb>=max(1,n)`.
+ * @param[out]    X       Array of dimension (`ldx`, `nrhs`).
+ *                        The `n`-by-`nrhs` solution matrix X.
+ * @param[in]     ldx     The leading dimension of `X`. `ldx>=max(1,n)`.
  * @param[out]    rcond   Reciprocal condition number estimate.
- * @param[out]    ferr    Forward error bound for each solution vector. Array of dimension (nrhs).
- * @param[out]    berr    Backward error for each solution vector. Array of dimension (nrhs).
- * @param[out]    work    Workspace array of dimension (3*n).
- *                        On exit, work[0] contains the reciprocal pivot growth factor.
- * @param[out]    iwork   Integer workspace array of dimension (n).
+ * @param[out]    ferr    Array of dimension (`nrhs`).
+ *                        Forward error bound for each solution vector.
+ * @param[out]    berr    Array of dimension (`nrhs`).
+ *                        Backward error for each solution vector.
+ * @param[out]    work    Workspace array of dimension (`3*n`).
+ *                        On exit, `work[0]` contains the reciprocal pivot growth
+ *                        factor.
+ * @param[out]    iwork   Integer workspace array of dimension (`n`).
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, U(i,i) is exactly zero (1-based).
- *                           if info = n+1, U is nonsingular but RCOND < machine precision.
+ *                          - `info=0`: successful exit
+ *                          - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                            value
+ *                          - `info>0`: if `info=i`, U(i,i) is exactly zero (1-based).
+ *                            If `info=n+1`, U is nonsingular but `rcond` < machine
+ *                            precision.
  */
 void dgbsvx(
     const char* fact,
