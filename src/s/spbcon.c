@@ -15,20 +15,36 @@
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in]     uplo   = 'U': Upper triangular factor stored in AB
- *                        = 'L': Lower triangular factor stored in AB
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     kd     The number of super-diagonals (if uplo='U') or
- *                       sub-diagonals (if uplo='L'). kd >= 0.
- * @param[in]     AB     The triangular factor from SPBTRF. Array of dimension (ldab, n).
- * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[in]     anorm  The 1-norm of the original matrix A.
- * @param[out]    rcond  The reciprocal condition number.
- * @param[out]    work   Workspace array of dimension (3*n).
- * @param[out]    iwork  Integer workspace array of dimension (n).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular factor stored in AB
+ *                       - `'L'`: Lower triangular factor stored in AB
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     kd     The number of superdiagonals of the matrix A if
+ *                       `uplo='U'`, or the number of subdiagonals if
+ *                       `uplo='L'`. `kd>=0`.
+ * @param[in]     AB     Array of dimension (`ldab`, `n`).
+ *                       The triangular factor U or L from the Cholesky
+ *                       factorization A = U**T*U or A = L*L**T of the band
+ *                       matrix A, stored in the first `kd+1` rows of the
+ *                       array. The j-th column of U or L is stored in the
+ *                       j-th column of the array AB as follows:
+ *                       if `uplo='U'`, `AB[kd+i-j + j*ldab] = U(i,j)` for
+ *                       `max(0,j-kd)<=i<=j`;
+ *                       if `uplo='L'`, `AB[i-j + j*ldab] = L(i,j)` for
+ *                       `j<=i<=min(n-1,j+kd)`.
+ * @param[in]     ldab   The leading dimension of the array `AB`. `ldab>=kd+1`.
+ * @param[in]     anorm  The 1-norm (or infinity-norm) of the symmetric band
+ *                       matrix A.
+ * @param[out]    rcond  The reciprocal of the condition number of the matrix A,
+ *                       computed as `rcond=1/(anorm*ainvnm)`, where `ainvnm` is
+ *                       an estimate of the 1-norm of inv(A) computed in this
+ *                       routine.
+ * @param[out]    work   Array of dimension `3*n`.
+ * @param[out]    iwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void spbcon(
     const char* uplo,
