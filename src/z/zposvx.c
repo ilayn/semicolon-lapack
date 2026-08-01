@@ -12,48 +12,134 @@
 /**
  * ZPOSVX uses the Cholesky factorization A = U**H*U or A = L*L**H to
  * compute the solution to a complex system of linear equations
- *    A * X = B,
- * where A is an N-by-N Hermitian positive definite matrix and X and B
- * are N-by-NRHS matrices.
+ * @rst
+ * .. code-block:: text
  *
- * Error bounds on the solution and a condition estimate are also
- * provided.
+ *     A * X = B
+ * @endrst
+ * where A is an `n`-by-`n` Hermitian positive definite matrix and X and `B`
+ * are `n`-by-`nrhs` matrices.
  *
- * @param[in]     fact   Specifies whether the factored form of the matrix A is
- *                       supplied on entry, and if not, whether to equilibrate.
- *                       = 'F': AF contains the factored form of A; S, equed
- *                              specify equilibration done previously.
- *                       = 'N': The matrix A will be factored without equilibration.
- *                       = 'E': The matrix A will be equilibrated then factored.
- * @param[in]     uplo   = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n      The number of linear equations. n >= 0.
- * @param[in]     nrhs   The number of right hand sides. nrhs >= 0.
- * @param[in,out] A      The Hermitian matrix A, or equilibrated form.
- *                       Array of dimension (lda, n).
- * @param[in]     lda    The leading dimension of A. lda >= max(1, n).
- * @param[in,out] AF     The triangular factor U or L. Array of dimension (ldaf, n).
- * @param[in]     ldaf   The leading dimension of AF. ldaf >= max(1, n).
- * @param[in,out] equed  On entry if fact = 'F', specifies whether A has been
- *                       equilibrated ('N' or 'Y'). On exit, set to 'Y' if
- *                       equilibration was done.
- * @param[in,out] S      Scale factors. Array of dimension (n).
- * @param[in,out] B      Right hand side matrix B (scaled if equed = 'Y').
- *                       Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of B. ldb >= max(1, n).
- * @param[out]    X      Solution matrix X. Array of dimension (ldx, nrhs).
- * @param[in]     ldx    The leading dimension of X. ldx >= max(1, n).
- * @param[out]    rcond  Reciprocal condition number estimate.
- * @param[out]    ferr   Forward error bound. Array of dimension (nrhs).
- * @param[out]    berr   Backward error. Array of dimension (nrhs).
- * @param[out]    work   Workspace, dimension (2*n).
- * @param[out]    rwork  Real workspace, dimension (n).
+ * Error bounds on the solution and a condition estimate are also provided.
+ *
+ * @rst
+ * The following steps are performed:
+ *
+ * 1. If ``fact='E'``, real scaling factors are computed to equilibrate
+ *    the system::
+ *
+ *        diag(S)*A*diag(S) * inv(diag(S))*X = diag(S)*B
+ *
+ *    Whether or not the system will be equilibrated depends on the
+ *    scaling of the matrix ``A``, but if equilibration is used, ``A`` is
+ *    overwritten by ``diag(S)*A*diag(S)`` and ``B`` by ``diag(S)*B``.
+ *
+ * 2. If ``fact='N'`` or ``'E'``, the Cholesky decomposition is used to
+ *    factor the matrix ``A`` (after equilibration if ``fact='E'``) as::
+ *
+ *        A = U**H * U,  if uplo = 'U', or
+ *        A = L * L**H,  if uplo = 'L',
+ *
+ *    where U is an upper triangular matrix and L is a lower triangular
+ *    matrix.
+ *
+ * 3. If the leading principal minor of order i is not positive, then the
+ *    routine returns with ``info=i``. Otherwise, the factored form of ``A``
+ *    is used to estimate the condition number of the matrix ``A``. If the
+ *    reciprocal of the condition number is less than machine precision,
+ *    ``info=n+1`` is returned as a warning, but the routine still goes on
+ *    to solve for X and compute error bounds as described below.
+ *
+ * 4. The system of equations is solved for X using the factored form of ``A``.
+ *
+ * 5. Iterative refinement is applied to improve the computed solution
+ *    matrix and calculate error bounds and backward error estimates for it.
+ *
+ * 6. If equilibration was used, the matrix X is premultiplied by
+ *    ``diag(S)`` so that it solves the original system before equilibration.
+ * @endrst
+ *
+ * @param[in]     fact
+ *                       - `'F'`: `AF` contains the factored form of `A`. If
+ *                         `equed='Y'`, `A` has been equilibrated with
+ *                         scaling factors given by `S`; `A` and `AF` will
+ *                         not be modified.
+ *                       - `'N'`: The matrix `A` will be copied to `AF` and
+ *                         factored.
+ *                       - `'E'`: The matrix `A` will be equilibrated if
+ *                         necessary, then copied to `AF` and factored.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The number of linear equations. `n>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in,out] A      Array of dimension (`lda`, `n`).
+ *                       On entry, the Hermitian matrix A, except if `fact='F'`
+ *                       and `equed='Y'`, then A must contain the equilibrated
+ *                       matrix diag(S)*A*diag(S). A is not modified if
+ *                       `fact='F'` or `'N'`, or if `fact='E'` and `equed='N'`
+ *                       on exit.
+ *                       On exit, if `fact='E'` and `equed='Y'`, A is
+ *                       overwritten by diag(S)*A*diag(S).
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in,out] AF     Array of dimension (`ldaf`, `n`).
+ *                       If `fact='F'`, an input argument containing the
+ *                       triangular factor U or L from the Cholesky
+ *                       factorization, in the same storage format as A.
+ *                       If `fact='N'` or `'E'`, an output argument returning
+ *                       the triangular factor of the (possibly equilibrated)
+ *                       matrix A.
+ * @param[in]     ldaf   The leading dimension of the array `AF`. `ldaf>=max(1,n)`.
+ * @param[in,out] equed
+ *                       - `'N'`: No equilibration (always true if `fact='N'`)
+ *                       - `'Y'`: Equilibration was done, i.e., A has been
+ *                         replaced by diag(S) * A * diag(S)
+ *
+ *                       `equed` is an input argument if `fact='F'`; otherwise
+ *                       it is an output argument.
+ * @param[in,out] S      Array of dimension (`n`).
+ *                       The scale factors for A; not accessed if `equed='N'`.
+ *                       `S` is an input argument if `fact='F'`; otherwise it
+ *                       is an output argument. If `fact='F'` and `equed='Y'`,
+ *                       each element of `S` must be positive.
+ * @param[in,out] B      Array of dimension (`ldb`, `nrhs`).
+ *                       On entry, the `n`-by-`nrhs` right hand side matrix `B`.
+ *                       On exit, if `equed='N'`, B is not modified; if
+ *                       `equed='Y'`, B is overwritten by diag(S) * B.
+ * @param[in]     ldb    The leading dimension of the array `B`. `ldb>=max(1,n)`.
+ * @param[out]    X      Array of dimension (`ldx`, `nrhs`).
+ *                       If `info=0` or `info=n+1`, the `n`-by-`nrhs` solution
+ *                       matrix X to the original system of equations. Note
+ *                       that if `equed='Y'`, A and B are modified on exit,
+ *                       and the solution to the equilibrated system is
+ *                       inv(diag(S))*X.
+ * @param[in]     ldx    The leading dimension of the array `X`. `ldx>=max(1,n)`.
+ * @param[out]    rcond  The estimate of the reciprocal condition number of
+ *                       the matrix A after equilibration (if done).
+ * @param[out]    ferr   Array of dimension (`nrhs`).
+ *                       The estimated forward error bound for each solution
+ *                       vector.
+ * @param[out]    berr   Array of dimension (`nrhs`).
+ *                       The componentwise relative backward error of each
+ *                       solution vector.
+ * @param[out]    work   Complex array of dimension `2*n`.
+ * @param[out]    rwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0, <= n: the leading principal minor of order info is not
- *                           positive; rcond = 0 is returned.
- *                         - = n+1: the matrix is singular to working precision.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an
+ *                           illegal value
+ *                         - `info>0`: if `info=k`, and `k<=n`, the leading
+ *                           principal minor of order k of A is not positive,
+ *                           so the factorization could not be completed, and
+ *                           the solution has not been computed. `rcond=0` is
+ *                           returned.
+ *                         - `info=n+1`: U is nonsingular, but `rcond` is less
+ *                           than machine precision, meaning that the matrix
+ *                           is singular to working precision. Nevertheless,
+ *                           the solution and error bounds are computed
+ *                           because there are a number of situations where
+ *                           the computed solution can be more accurate than
+ *                           the value of rcond would suggest.
  */
 void zposvx(
     const char* fact,
