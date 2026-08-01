@@ -17,21 +17,26 @@
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     A      The triangular factor U or L from the Cholesky
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     A      Array of dimension (`lda`, `n`).
+ *                       The triangular factor U or L from the Cholesky
  *                       factorization A = U**T*U or A = L*L**T, as computed
- *                       by dpotrf. Array of dimension (lda, n).
- * @param[in]     lda    The leading dimension of the array A. lda >= max(1, n).
+ *                       by `dpotrf`.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,n)`.
  * @param[in]     anorm  The 1-norm (or infinity-norm) of the symmetric matrix A.
  * @param[out]    rcond  The reciprocal of the condition number of the matrix A,
- *                       computed as RCOND = 1/(ANORM * AINVNM).
- * @param[out]    work   Double precision array, dimension (3*n).
- * @param[out]    iwork  Integer array, dimension (n).
+ *                       computed as `rcond=1/(anorm*ainvnm)`, where `ainvnm` is
+ *                       an estimate of the 1-norm of inv(A) computed in this
+ *                       routine.
+ * @param[out]    work   Array of dimension `3*n`.
+ * @param[out]    iwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
  */
 void dpocon(
     const char* uplo,
