@@ -14,27 +14,37 @@
  * positive definite matrix A.
  *
  * The factorization has the form
- *    A = U**H * U,  if UPLO = 'U', or
- *    A = L  * L**H, if UPLO = 'L',
+ * @rst
+ * .. code-block:: text
+ *
+ *     A = U**H * U,  if uplo = 'U', or
+ *     A = L  * L**H, if uplo = 'L',
+ * @endrst
  * where U is an upper triangular matrix and L is lower triangular.
  *
  * This is the block version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in]     uplo  Specifies whether the upper or lower triangular part of
- *                      the Hermitian matrix A is stored.
- *                      = 'U': Upper triangle of A is stored
- *                      = 'L': Lower triangle of A is stored
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Complex*16 array, dimension (lda, n).
- *                      On entry, the Hermitian matrix A.
- *                      On exit, if info = 0, the factor U or L from the
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the Hermitian matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A contains the
+ *                      upper triangular part of the matrix A, and the strictly
+ *                      lower triangular part of A is not referenced. If `uplo='L'`,
+ *                      the leading `n`-by-`n` lower triangular part of A contains
+ *                      the lower triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, if `info=0`, the factor U or L from the
  *                      Cholesky factorization A = U**H*U or A = L*L**H.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0: if info = k, the leading principal minor of order k
- *                           is not positive, and the factorization could not be
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, the leading principal minor of order
+ *                           k is not positive, and the factorization could not be
  *                           completed.
  */
 void cpotrf(
