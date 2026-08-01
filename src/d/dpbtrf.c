@@ -14,23 +14,73 @@
  * positive definite band matrix A.
  *
  * The factorization has the form
- *    A = U**T * U,  if UPLO = 'U', or
- *    A = L * L**T,  if UPLO = 'L',
+ * @rst
+ * .. code-block:: text
+ *
+ *     A = U**T * U,  if uplo = 'U', or
+ *     A = L * L**T,  if uplo = 'L',
+ * @endrst
  * where U is an upper triangular matrix and L is lower triangular.
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     kd     The number of super-diagonals (if uplo='U') or
- *                       sub-diagonals (if uplo='L'). kd >= 0.
- * @param[in,out] AB     The banded matrix A. Array of dimension (ldab, n).
- *                       On exit, the factor U or L.
- * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     kd     The number of superdiagonals of the matrix A if
+ *                       `uplo='U'`, or the number of subdiagonals if
+ *                       `uplo='L'`. `kd>=0`.
+ * @param[in,out] AB     Array of dimension (`ldab`, `n`).
+ *                       On entry, the upper or lower triangle of the symmetric
+ *                       band matrix A, stored in the first `kd+1` rows of the
+ *                       array. The j-th column of A is stored in the j-th
+ *                       column of the array AB as follows:
+ *                       if `uplo='U'`, `AB[kd+i-j + j*ldab] = A(i,j)` for
+ *                       `max(0,j-kd)<=i<=j`;
+ *                       if `uplo='L'`, `AB[i-j + j*ldab] = A(i,j)` for
+ *                       `j<=i<=min(n-1,j+kd)`.
+ *                       On exit, if `info=0`, the triangular factor U or L
+ *                       from the Cholesky factorization A = U**T*U or
+ *                       A = L*L**T of the band matrix A, in the same storage
+ *                       format as A.
+ * @param[in]     ldab   The leading dimension of the array `AB`. `ldab>=kd+1`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = k, the leading minor of order k is not
- *                           positive definite.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the leading principal minor of order
+ *                           i is not positive, and the factorization could not be
+ *                           completed.
+ *
+ * @par Further Details:
+ * @rst
+ * The band storage scheme is illustrated by the following example, when
+ * ``n=6``, ``kd=2``, and ``uplo='U'``:
+ *
+ * .. code-block:: text
+ *
+ *     On entry:                       On exit:
+ *
+ *          *    *   a02  a13  a24  a35      *    *   u02  u13  u24  u35
+ *          *   a01  a12  a23  a34  a45      *   u01  u12  u23  u34  u45
+ *         a00  a11  a22  a33  a44  a55     u00  u11  u22  u33  u44  u55
+ *
+ * Similarly, if ``uplo='L'`` the format of A is as follows:
+ *
+ * .. code-block:: text
+ *
+ *     On entry:                       On exit:
+ *
+ *         a00  a11  a22  a33  a44  a55     l00  l11  l22  l33  l44  l55
+ *         a10  a21  a32  a43  a54   *      l10  l21  l32  l43  l54   *
+ *         a20  a31  a42  a53   *    *      l20  l31  l42  l53   *    *
+ *
+ * Array elements marked * are not used by the routine.
+ * @endrst
+ *
+ * @par Contributors:
+ * @rst
+ * Peter Mayes and Giuseppe Radicati, IBM ECSEC, Rome, March 23, 1989
+ * @endrst
  */
 void dpbtrf(
     const char* uplo,
