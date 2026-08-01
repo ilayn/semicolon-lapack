@@ -11,23 +11,24 @@
  * positive definite matrix A using the Cholesky factorization
  * A = U**T*U or A = L*L**T computed by SPOTRF.
  *
- * @param[in]     uplo  Specifies whether the factor stored in A is upper or
- *                      lower triangular.
- *                      = 'U': Upper triangle of A is stored
- *                      = 'L': Lower triangle of A is stored
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
- * @param[in]     A     The triangular factor U or L from the Cholesky
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides. `nrhs>=0`.
+ * @param[in]     A     Array of dimension (`lda`, `n`).
+ *                      The triangular factor U or L from the Cholesky
  *                      factorization A = U**T*U or A = L*L**T, as computed
- *                      by spotrf. Array of dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[in,out] B     On entry, the right hand side matrix B.
+ *                      by `spotrf`.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in,out] B     Array of dimension (`ldb`, `nrhs`).
+ *                      On entry, the right hand side matrix `B`.
  *                      On exit, the solution matrix X.
- *                      Array of dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1, n).
+ * @param[in]     ldb   The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
  */
 void spotrs(
     const char* uplo,
