@@ -18,21 +18,26 @@
  * Error bounds on the solution and a condition estimate are also
  * provided.
  *
+ * @rst
  * The following steps are performed:
  *
- * 1. If FACT = 'N', the diagonal pivoting method is used to factor A.
+ * 1. If ``fact='N'``, the diagonal pivoting method is used to factor A.
  *    The form of the factorization is
- *       A = U * D * U**T,  if UPLO = 'U', or
- *       A = L * D * L**T,  if UPLO = 'L',
+ *
+ *    .. code-block:: text
+ *
+ *        A = U * D * U**T,  if uplo = 'U', or
+ *        A = L * D * L**T,  if uplo = 'L',
+ *
  *    where U (or L) is a product of permutation and unit upper (lower)
  *    triangular matrices, and D is symmetric and block diagonal with
  *    1-by-1 and 2-by-2 diagonal blocks.
  *
  * 2. If some D(i,i)=0, so that D is exactly singular, then the routine
- *    returns with INFO = i. Otherwise, the factored form of A is used
- *    to estimate the condition number of the matrix A.  If the
+ *    returns with ``info=i``. Otherwise, the factored form of A is used
+ *    to estimate the condition number of the matrix A. If the
  *    reciprocal of the condition number is less than machine precision,
- *    INFO = N+1 is returned as a warning, but the routine still goes on
+ *    ``info=n+1`` is returned as a warning, but the routine still goes on
  *    to solve for X and compute error bounds as described below.
  *
  * 3. The system of equations is solved for X using the factored form
@@ -41,52 +46,89 @@
  * 4. Iterative refinement is applied to improve the computed solution
  *    matrix and calculate error bounds and backward error estimates
  *    for it.
+ * @endrst
  *
- * @param[in]     fact  Specifies whether the factored form of A has been
- *                      supplied on entry.
- *                      = 'F': On entry, AF and IPIV contain the factored form.
- *                      = 'N': The matrix A will be copied to AF and factored.
- * @param[in]     uplo  = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n     The number of linear equations. n >= 0.
- * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
- * @param[in]     A     The symmetric matrix A.
- *                      Double precision array, dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[in,out] AF    If fact = 'F', contains the factored form from DSYTRF.
- *                      If fact = 'N', on exit contains the factored form.
- *                      Double precision array, dimension (ldaf, n).
- * @param[in]     ldaf  The leading dimension of the array AF. ldaf >= max(1, n).
- * @param[in,out] ipiv  If fact = 'F', contains the pivot indices from DSYTRF.
- *                      If fact = 'N', on exit contains the pivot indices.
- *                      Integer array, dimension (n).
- * @param[in]     B     The right hand side matrix B.
- *                      Double precision array, dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1, n).
- * @param[out]    X     The solution matrix X.
- *                      Double precision array, dimension (ldx, nrhs).
- * @param[in]     ldx   The leading dimension of the array X. ldx >= max(1, n).
- * @param[out]    rcond The reciprocal condition number estimate of A.
- * @param[out]    ferr  Forward error bound for each solution vector.
- *                      Double precision array, dimension (nrhs).
- * @param[out]    berr  Backward error for each solution vector.
- *                      Double precision array, dimension (nrhs).
- * @param[out]    work  Double precision array, dimension (max(1, lwork)).
- *                      On exit, if info = 0, work[0] returns the optimal lwork.
- * @param[in]     lwork The length of work. lwork >= max(1, 3*n), and for best
- *                      performance lwork >= max(1, 3*n, n*nb).
- *                      If lwork = -1, a workspace query is assumed.
- * @param[out]    iwork Integer array, dimension (n).
+ * @param[in]     fact
+ *                       - `'F'`: On entry, AF and IPIV contain the factored
+ *                         form of A. AF and IPIV will not be modified.
+ *                       - `'N'`: The matrix A will be copied to AF and
+ *                         factored.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The number of linear equations, i.e., the order of
+ *                      the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides. `nrhs>=0`.
+ * @param[in]     A     Array of dimension `(lda,n)`.
+ *                      The symmetric matrix A.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in,out] AF    Array of dimension `(ldaf,n)`.
+ *                      If `fact='F'`, then AF is an input argument and on
+ *                      entry contains the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L from the
+ *                      factorization A = U*D*U**T or A = L*D*L**T as computed
+ *                      by `dsytrf`.
+ *                      If `fact='N'`, then AF is an output argument and on
+ *                      exit returns the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L.
+ * @param[in]     ldaf  The leading dimension of the array AF. `ldaf>=max(1,n)`.
+ * @param[in,out] ipiv  Array of dimension `n`. Pivot indices (0-based).
+ *                      If `fact='F'`, then ipiv is an input argument and on
+ *                      entry contains details of the interchanges and the
+ *                      block structure of D, as determined by `dsytrf`.
+ *                      If `ipiv[k]>=0`, then rows and columns `k` and
+ *                      `ipiv[k]` were interchanged and `D(k,k)` is a 1-by-1
+ *                      diagonal block. If `uplo='U'` and
+ *                      `ipiv[k]=ipiv[k-1]<0`, then rows and columns `k-1`
+ *                      and `-ipiv[k]-1` were interchanged and
+ *                      `D(k-1:k,k-1:k)` is a 2-by-2 diagonal block. If
+ *                      `uplo='L'` and `ipiv[k]=ipiv[k+1]<0`, then rows and
+ *                      columns `k+1` and `-ipiv[k]-1` were interchanged and
+ *                      `D(k:k+1,k:k+1)` is a 2-by-2 diagonal block.
+ *                      If `fact='N'`, then ipiv is an output argument and on
+ *                      exit contains details of the interchanges and the
+ *                      block structure of D, as determined by `dsytrf`.
+ * @param[in]     B     Array of dimension `(ldb,nrhs)`.
+ *                       The n-by-nrhs right hand side matrix B.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    X     Array of dimension `(ldx,nrhs)`.
+ *                      If `info=0` or `info=n+1`, the n-by-nrhs solution
+ *                      matrix X.
+ * @param[in]     ldx   The leading dimension of the array X. `ldx>=max(1,n)`.
+ * @param[out]    rcond The estimate of the reciprocal condition number of
+ *                      the matrix A. If `rcond` is less than the machine
+ *                      precision (in particular, if `rcond=0`), the matrix
+ *                      is singular to working precision. This condition is
+ *                      indicated by a return code of `info>0`.
+ * @param[out]    ferr  Array of dimension `nrhs`.
+ *                      The estimated forward error bound for each solution
+ *                      vector X(j).
+ * @param[out]    berr  Array of dimension `nrhs`.
+ *                      The componentwise relative backward error of each
+ *                      solution vector X(j).
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal `lwork`.
+ * @param[in]     lwork The length of `work`. `lwork>=max(1,3*n)`, and for
+ *                      best performance, when `fact='N'`,
+ *                      `lwork>=max(1,3*n,n*nb)`, where `nb` is the optimal
+ *                      block size for `dsytrf`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    iwork Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, and i is
- *                         - <= N: D(i,i) is exactly zero. The factorization has
- *                           been completed but D is exactly singular, so
- *                           the solution and error bounds could not be
- *                           computed. RCOND = 0 is returned.
- *                         - = N+1: D is nonsingular, but RCOND is less than
- *                           machine precision, meaning that the matrix
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, and `i<=n`, `D(i,i)` is exactly
+ *                           zero. The factorization has been completed but D
+ *                           is exactly singular, so the solution and error
+ *                           bounds could not be computed. `rcond=0` is
+ *                           returned.
+ *                         - `info=n+1`: D is nonsingular, but `rcond` is less
+ *                           than machine precision, meaning that the matrix
  *                           is singular to working precision.
  */
 void dsysvx(
