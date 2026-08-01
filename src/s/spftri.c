@@ -11,26 +11,114 @@
  * matrix A using the Cholesky factorization A = U**T*U or A = L*L**T
  * computed by SPFTRF.
  *
- * @param[in] transr
- *          = 'N':  The Normal TRANSR of RFP A is stored;
- *          = 'T':  The Transpose TRANSR of RFP A is stored.
+ * @param[in]     transr
+ *                       - `'N'`: The Normal TRANSR of RFP A is stored
+ *                       - `'T'`: The Transpose TRANSR of RFP A is stored
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in,out] A      Array of dimension `n*(n+1)/2`.
+ *                       On entry, the Cholesky factor in RFP format.
+ *                       On exit, the inverse of the original matrix.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the (i,i) element of the factor is
+ *                           zero
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
+ * @par Further Details:
+ * @rst
+ * We first consider Rectangular Full Packed (RFP) Format when ``n`` is
+ * even. We give an example where ``n=6``.
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ * .. code-block:: text
  *
- * @param[in,out] A
- *          Double precision array, dimension (n*(n+1)/2).
- *          On entry, the Cholesky factor in RFP format.
- *          On exit, the inverse of the original matrix.
+ *      AP is Upper             AP is Lower
  *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the (i,i) element of the factor is zero
+ *   00 01 02 03 04 05       00
+ *      11 12 13 14 15       10 11
+ *         22 23 24 25       20 21 22
+ *            33 34 35       30 31 32 33
+ *               44 45       40 41 42 43 44
+ *                  55       50 51 52 53 54 55
+ *
+ * Let ``transr='N'``. RFP holds AP as follows:
+ * For ``uplo='U'`` the upper trapezoid A(0:5,0:2) consists of the last
+ * three columns of AP upper. The lower triangle A(4:6,0:2) consists of
+ * the transpose of the first three columns of AP upper.
+ * For ``uplo='L'`` the lower trapezoid A(1:6,0:2) consists of the first
+ * three columns of AP lower. The upper triangle A(0:2,0:2) consists of
+ * the transpose of the last three columns of AP lower.
+ * This covers the case n even and ``transr='N'``.
+ *
+ * .. code-block:: text
+ *
+ *          RFP A                   RFP A
+ *
+ *         03 04 05                33 43 53
+ *         13 14 15                00 44 54
+ *         23 24 25                10 11 55
+ *         33 34 35                20 21 22
+ *         00 44 45                30 31 32
+ *         01 11 55                40 41 42
+ *         02 12 22                50 51 52
+ *
+ * Now let ``transr='T'``. RFP A in both `uplo` cases is just the
+ * transpose of RFP A above. One therefore gets:
+ *
+ * .. code-block:: text
+ *
+ *            RFP A                   RFP A
+ *
+ *      03 13 23 33 00 01 02    33 00 10 20 30 40 50
+ *      04 14 24 34 44 11 12    43 44 11 21 31 41 51
+ *      05 15 25 35 45 55 22    53 54 55 22 32 42 52
+ *
+ * We then consider Rectangular Full Packed (RFP) Format when ``n`` is
+ * odd. We give an example where ``n=5``.
+ *
+ * .. code-block:: text
+ *
+ *     AP is Upper                 AP is Lower
+ *
+ *   00 01 02 03 04              00
+ *      11 12 13 14              10 11
+ *         22 23 24              20 21 22
+ *            33 34              30 31 32 33
+ *               44              40 41 42 43 44
+ *
+ * Let ``transr='N'``. RFP holds AP as follows:
+ * For ``uplo='U'`` the upper trapezoid A(0:4,0:2) consists of the last
+ * three columns of AP upper. The lower triangle A(3:4,0:1) consists of
+ * the transpose of the first two columns of AP upper.
+ * For ``uplo='L'`` the lower trapezoid A(0:4,0:2) consists of the first
+ * three columns of AP lower. The upper triangle A(0:1,1:2) consists of
+ * the transpose of the last two columns of AP lower.
+ * This covers the case n odd and ``transr='N'``.
+ *
+ * .. code-block:: text
+ *
+ *          RFP A                   RFP A
+ *
+ *         02 03 04                00 33 43
+ *         12 13 14                10 11 44
+ *         22 23 24                20 21 22
+ *         00 33 34                30 31 32
+ *         01 11 44                40 41 42
+ *
+ * Now let ``transr='T'``. RFP A in both `uplo` cases is just the
+ * transpose of RFP A above. One therefore gets:
+ *
+ * .. code-block:: text
+ *
+ *            RFP A                   RFP A
+ *
+ *      02 12 22 00 01             00 10 20 30 40 50
+ *      03 13 23 33 11             33 11 21 31 41 51
+ *      04 14 24 34 44             43 44 22 32 42 52
+ * @endrst
  */
 void spftri(
     const char* transr,
