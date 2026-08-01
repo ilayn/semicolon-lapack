@@ -15,31 +15,46 @@
  * and provides error bounds and backward error estimates for the
  * solution.
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     nrhs   The number of right hand sides. nrhs >= 0.
- * @param[in]     A      The symmetric matrix A. Array of dimension (lda, n).
- * @param[in]     lda    The leading dimension of A. lda >= max(1, n).
- * @param[in]     AF     The triangular factor U or L from the Cholesky
- *                       factorization A = U**T*U or A = L*L**T.
- *                       Array of dimension (ldaf, n).
- * @param[in]     ldaf   The leading dimension of AF. ldaf >= max(1, n).
- * @param[in]     B      The right hand side matrix B. Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of B. ldb >= max(1, n).
- * @param[in,out] X      On entry, the solution matrix X.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in]     A      Array of dimension (`lda`, `n`).
+ *                       The symmetric matrix A. If `uplo='U'`, the leading
+ *                       `n`-by-`n` upper triangular part of A contains the
+ *                       upper triangular part of the matrix A, and the strictly
+ *                       lower triangular part of A is not referenced. If
+ *                       `uplo='L'`, the leading `n`-by-`n` lower triangular
+ *                       part of A contains the lower triangular part of the
+ *                       matrix A, and the strictly upper triangular part of A
+ *                       is not referenced.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in]     AF     Array of dimension (`ldaf`, `n`).
+ *                       The triangular factor U or L from the Cholesky
+ *                       factorization A = U**T*U or A = L*L**T, as computed
+ *                       by `dpotrf`.
+ * @param[in]     ldaf   The leading dimension of the array `AF`. `ldaf>=max(1,n)`.
+ * @param[in]     B      Array of dimension (`ldb`, `nrhs`).
+ *                       The right hand side matrix `B`.
+ * @param[in]     ldb    The leading dimension of the array `B`. `ldb>=max(1,n)`.
+ * @param[in,out] X      Array of dimension (`ldx`, `nrhs`).
+ *                       On entry, the solution matrix X, as computed by
+ *                       `dpotrs`.
  *                       On exit, the improved solution matrix X.
- *                       Array of dimension (ldx, nrhs).
- * @param[in]     ldx    The leading dimension of X. ldx >= max(1, n).
- * @param[out]    ferr   The estimated forward error bound for each solution
- *                       vector. Array of dimension (nrhs).
- * @param[out]    berr   The componentwise relative backward error.
- *                       Array of dimension (nrhs).
- * @param[out]    work   Workspace array of dimension (3*n).
- * @param[out]    iwork  Integer workspace array of dimension (n).
+ * @param[in]     ldx    The leading dimension of the array `X`. `ldx>=max(1,n)`.
+ * @param[out]    ferr   Array of dimension (`nrhs`).
+ *                       The estimated forward error bound for each solution
+ *                       vector.
+ * @param[out]    berr   Array of dimension (`nrhs`).
+ *                       The componentwise relative backward error of each
+ *                       solution vector.
+ * @param[out]    work   Array of dimension `3*n`.
+ * @param[out]    iwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
  */
 void dporfs(
     const char* uplo,
