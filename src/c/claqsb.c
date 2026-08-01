@@ -12,19 +12,32 @@
  * CLAQSB equilibrates a symmetric band matrix A using the scaling
  * factors in the vector S.
  *
- * @param[in]     uplo   = 'U': Upper triangular
- *                        = 'L': Lower triangular
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     kd     The number of super-diagonals (if uplo='U') or
- *                       sub-diagonals (if uplo='L'). kd >= 0.
- * @param[in,out] AB     The banded matrix A. On exit, the scaled matrix if EQUED='Y'.
- *                       Array of dimension (ldab, n).
- * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[in]     S      The scale factors for A. Array of dimension (n).
- * @param[in]     scond  Ratio of smallest to largest S(i).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular
+ *                       - `'L'`: Lower triangular
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     kd     The number of superdiagonals of the matrix A if
+ *                       `uplo='U'`, or the number of subdiagonals if
+ *                       `uplo='L'`. `kd>=0`.
+ * @param[in,out] AB     Array of dimension (`ldab`, `n`).
+ *                       On entry, the upper or lower triangle of the symmetric
+ *                       band matrix A, stored in the first `kd+1` rows of the
+ *                       array. The j-th column of A is stored in the j-th
+ *                       column of the array AB as follows:
+ *                       if `uplo='U'`, `AB[kd+i-j + j*ldab] = A(i,j)` for
+ *                       `max(0,j-kd)<=i<=j`;
+ *                       if `uplo='L'`, `AB[i-j + j*ldab] = A(i,j)` for
+ *                       `j<=i<=min(n-1,j+kd)`.
+ *                       On exit, the scaled matrix if `equed='Y'`.
+ * @param[in]     ldab   The leading dimension of the array `AB`. `ldab>=kd+1`.
+ * @param[in]     S      Array of dimension `n`.
+ *                       The scale factors for A.
+ * @param[in]     scond  Ratio of the smallest S(i) to the largest S(i).
  * @param[in]     amax   Absolute value of largest matrix entry.
- * @param[out]    equed  = 'N': No equilibration
- *                       = 'Y': Equilibration was done
+ * @param[out]    equed
+ *                       - `'N'`: No equilibration
+ *                       - `'Y'`: Equilibration was done, i.e., A has been
+ *                         replaced by diag(S) * A * diag(S)
  */
 void claqsb(
     const char* uplo,
