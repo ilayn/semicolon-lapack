@@ -10,21 +10,23 @@
  * CLAQSP equilibrates a symmetric matrix A using the scaling factors
  * in the vector S.
  *
- * @param[in]     uplo   = 'U': Upper triangular part of A is stored
- *                        = 'L': Lower triangular part of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in,out] AP     On entry, the upper or lower triangle of the symmetric
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular part of A is stored
+ *                       - `'L'`: Lower triangular part of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in,out] AP     Array of dimension `n*(n+1)/2`.
+ *                       On entry, the upper or lower triangle of the symmetric
  *                       matrix A, packed columnwise in a linear array.
  *                       On exit, the equilibrated matrix: diag(S) * A * diag(S),
  *                       in the same storage format as A.
- *                       Array of dimension (n*(n+1)/2).
- * @param[in]     S      The scale factors for A. Array of dimension (n).
+ * @param[in]     S      Array of dimension `n`.
+ *                       The scale factors for A.
  * @param[in]     scond  Ratio of the smallest S(i) to the largest S(i).
  * @param[in]     amax   Absolute value of largest matrix entry.
- * @param[out]    equed  Specifies whether or not equilibration was done:
- *                       = 'N': No equilibration
- *                       = 'Y': Equilibration was done, i.e., A has been replaced
- *                              by diag(S) * A * diag(S).
+ * @param[out]    equed
+ *                       - `'N'`: No equilibration
+ *                       - `'Y'`: Equilibration was done, i.e., A has been replaced
+ *                         by diag(S) * A * diag(S)
  */
 void claqsp(
     const char* uplo,
