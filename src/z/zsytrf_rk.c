@@ -13,9 +13,11 @@
 /**
  * ZSYTRF_RK computes the factorization of a complex symmetric matrix A
  * using the bounded Bunch-Kaufman (rook) diagonal pivoting method:
+ * @rst
+ * .. code-block:: text
  *
- *    A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
- *
+ *     A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
+ * @endrst
  * where U (or L) is unit upper (or lower) triangular matrix,
  * U**T (or L**T) is the transpose of U (or L), P is a permutation
  * matrix, P**T is the transpose of P, and D is symmetric and block
@@ -23,51 +25,75 @@
  *
  * This is the blocked version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in] uplo
- *          Specifies whether the upper or lower triangular part of the
- *          symmetric matrix A is stored:
- *          = 'U':  Upper triangular
- *          = 'L':  Lower triangular
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular
+ *                       - `'L'`: Lower triangular
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
+ *                      On entry, the symmetric matrix A.
+ *                      On exit, contains:
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *                      - Only diagonal elements of the symmetric block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D are stored on exit in array `E`), and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    E     Complex array of dimension `n`.
+ *                      On exit, contains the superdiagonal (or subdiagonal)
+ *                      elements of the symmetric block diagonal matrix D
+ *                      with 1-by-1 or 2-by-2 diagonal blocks, where
+ *                      if `uplo='U'`: `E[i]=D(i-1,i)`, `i=1:n-1`, `E[0]` is
+ *                      set to 0; if `uplo='L'`: `E[i]=D(i+1,i)`, `i=0:n-2`,
+ *                      `E[n-1]` is set to 0.
+ *                      For a 1-by-1 diagonal block `D(k)`, the element `E[k]`
+ *                      is set to 0 in both `uplo='U'` and `uplo='L'` cases.
+ * @param[out]    ipiv  Array of dimension `n`. Pivot indices (0-based).
+ *                      If `uplo='U'`:
  *
- * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the symmetric matrix A.
- *          On exit, contains:
- *            a) ONLY diagonal elements of the symmetric block diagonal
- *               matrix D on the diagonal of A, i.e. D(k,k) = A(k,k);
- *               (superdiagonal (or subdiagonal) elements of D
- *                are stored on exit in array E), and
- *            b) If UPLO = 'U': factor U in the superdiagonal part of A.
- *               If UPLO = 'L': factor L in the subdiagonal part of A.
+ *                      - If `ipiv[k]>=0`, then rows and columns `k` and
+ *                        `ipiv[k]` were interchanged and `D(k,k)` is a
+ *                        1-by-1 diagonal block.
+ *                      - If `ipiv[k]<0` and `ipiv[k-1]<0`, then rows and
+ *                        columns `k` and `-ipiv[k]-1` were interchanged and
+ *                        rows and columns `k-1` and `-ipiv[k-1]-1` were
+ *                        interchanged, `D(k-1:k,k-1:k)` is a 2-by-2
+ *                        diagonal block.
  *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
+ *                      If `uplo='L'`:
  *
- * @param[out] E
- *          Double complex array, dimension (n).
- *          On exit, contains the superdiagonal (or subdiagonal)
- *          elements of the symmetric block diagonal matrix D.
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          IPIV describes the permutation matrix P in the factorization.
- *
- * @param[out] work
- *          Double complex array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work. lwork >= 1. For best performance
- *          lwork >= n*nb, where nb is the block size.
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the matrix A is singular.
+ *                      - If `ipiv[k]>=0`, then rows and columns `k` and
+ *                        `ipiv[k]` were interchanged and `D(k,k)` is a
+ *                        1-by-1 diagonal block.
+ *                      - If `ipiv[k]<0` and `ipiv[k+1]<0`, then rows and
+ *                        columns `k` and `-ipiv[k]-1` were interchanged and
+ *                        rows and columns `k+1` and `-ipiv[k+1]-1` were
+ *                        interchanged, `D(k:k+1,k:k+1)` is a 2-by-2
+ *                        diagonal block.
+ * @param[out]    work  Complex array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal `lwork`.
+ * @param[in]     lwork The length of `work`. `lwork>=1`. For best performance
+ *                      `lwork>=n*nb`, where `nb` is the block size returned by ILAENV.
+ *                      If `lwork=-1`, then a workspace query is assumed; the routine
+ *                      only calculates the optimal size of the `work` array, returns
+ *                      this value as the first entry of the `work` array, and no
+ *                      error message related to `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, the matrix A is singular, because
+ *                           column k of the triangular part of A (upper or lower,
+ *                           per `uplo`) contains all zeros. `D(k,k)` is exactly
+ *                           zero, and superdiagonal (or subdiagonal) elements of
+ *                           column k of U (or L) are all zeros. The factorization
+ *                           has been completed, but the block diagonal matrix D is
+ *                           exactly singular, and division by zero will occur if it
+ *                           is used to solve a system of equations. `info` only
+ *                           stores the first occurrence of a singularity; the
+ *                           factorization always completes.
  */
 void zsytrf_rk(
     const char* uplo,
