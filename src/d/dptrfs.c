@@ -15,35 +15,36 @@
  * and tridiagonal, and provides error bounds and backward error
  * estimates for the solution.
  *
- * @param[in]     n     The order of the matrix A. n >= 0.
+ * @param[in]     n     The order of the matrix A. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number
- *                      of columns of the matrix B. nrhs >= 0.
- * @param[in]     D     Double precision array, dimension (n).
+ *                      of columns of the matrix B. `nrhs>=0`.
+ * @param[in]     D     Array of dimension `n`.
  *                      The n diagonal elements of the tridiagonal matrix A.
- * @param[in]     E     Double precision array, dimension (n-1).
+ * @param[in]     E     Array of dimension `n-1`.
  *                      The (n-1) subdiagonal elements of the tridiagonal matrix A.
- * @param[in]     DF    Double precision array, dimension (n).
+ * @param[in]     DF    Array of dimension `n`.
  *                      The n diagonal elements of the diagonal matrix D from
- *                      the factorization computed by DPTTRF.
- * @param[in]     EF    Double precision array, dimension (n-1).
+ *                      the factorization computed by `dpttrf`.
+ * @param[in]     EF    Array of dimension `n-1`.
  *                      The (n-1) subdiagonal elements of the unit bidiagonal
- *                      factor L from the factorization computed by DPTTRF.
- * @param[in]     B     Double precision array, dimension (ldb, nrhs).
+ *                      factor L from the factorization computed by `dpttrf`.
+ * @param[in]     B     Array of dimension `(ldb,nrhs)`.
  *                      The right hand side matrix B.
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
- * @param[in,out] X     Double precision array, dimension (ldx, nrhs).
- *                      On entry, the solution matrix X, as computed by DPTTRS.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[in,out] X     Array of dimension `(ldx,nrhs)`.
+ *                      On entry, the solution matrix X, as computed by `dpttrs`.
  *                      On exit, the improved solution matrix X.
- * @param[in]     ldx   The leading dimension of the array X. ldx >= max(1,n).
- * @param[out]    ferr  Double precision array, dimension (nrhs).
+ * @param[in]     ldx   The leading dimension of the array X. `ldx>=max(1,n)`.
+ * @param[out]    ferr  Array of dimension `nrhs`.
  *                      The forward error bound for each solution vector X(j).
- * @param[out]    berr  Double precision array, dimension (nrhs).
+ * @param[out]    berr  Array of dimension `nrhs`.
  *                      The componentwise relative backward error of each
  *                      solution vector X(j).
- * @param[out]    work  Double precision array, dimension (2*n).
+ * @param[out]    work  Array of dimension `2*n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void dptrfs(
     const INT n,
