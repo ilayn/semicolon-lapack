@@ -13,35 +13,47 @@
  * positive definite matrix A using the recursive algorithm.
  *
  * The factorization has the form
- *    A = U**T * U,  if UPLO = 'U', or
- *    A = L  * L**T, if UPLO = 'L',
+ * @rst
+ * .. code-block:: text
+ *
+ *     A = U**T * U,  if uplo = 'U', or
+ *     A = L  * L**T, if uplo = 'L',
+ * @endrst
  * where U is an upper triangular matrix and L is lower triangular.
  *
  * This is the recursive version of the algorithm. It divides
  * the matrix into four submatrices:
+ * @rst
+ * .. code-block:: text
  *
  *        [  A11 | A12  ]  where A11 is n1 by n1 and A22 is n2 by n2
  *    A = [ -----|----- ]  with n1 = n/2
  *        [  A21 | A22  ]       n2 = n-n1
- *
+ * @endrst
  * The subroutine calls itself to factor A11. Update and scale A21
  * or A12, update A22 then calls itself to factor A22.
  *
- * @param[in]     uplo  Specifies whether the upper or lower triangular part of
- *                      the symmetric matrix A is stored.
- *                      = 'U': Upper triangle of A is stored
- *                      = 'L': Lower triangle of A is stored
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Double precision array, dimension (lda, n).
- *                      On entry, the symmetric matrix A.
- *                      On exit, if info = 0, the factor U or L from the
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the symmetric matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A contains the
+ *                      upper triangular part of the matrix A, and the strictly
+ *                      lower triangular part of A is not referenced. If `uplo='L'`,
+ *                      the leading `n`-by-`n` lower triangular part of A contains
+ *                      the lower triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, if `info=0`, the factor U or L from the
  *                      Cholesky factorization A = U**T*U or A = L*L**T.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0: if info = k, the leading principal minor of order k
- *                           is not positive, and the factorization could not be
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, the leading principal minor of order
+ *                           k is not positive, and the factorization could not be
  *                           completed.
  */
 void spotrf2(
