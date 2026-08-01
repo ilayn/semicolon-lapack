@@ -16,28 +16,32 @@
  * the smallest possible condition number over all possible diagonal
  * scalings.
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored;
- *                        = 'L': Lower triangle of A is stored.
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     AP     The upper or lower triangle of the symmetric matrix A,
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     AP     Array of dimension `n*(n+1)/2`.
+ *                       The upper or lower triangle of the symmetric matrix A,
  *                       packed columnwise in a linear array. The j-th column
  *                       of A is stored in the array AP as follows:
- *                       if uplo = 'U', AP[i + j*(j+1)/2] = A(i,j) for 0<=i<=j;
- *                       if uplo = 'L', AP[i + j*(2*n-j-1)/2] = A(i,j) for j<=i<n.
- *                       Array of dimension (n*(n+1)/2).
- * @param[out]    S      If info = 0, S contains the scale factors for A.
- *                       Array of dimension (n).
- * @param[out]    scond  If info = 0, S contains the ratio of the smallest S(i)
- *                       to the largest S(i). If scond >= 0.1 and amax is
+ *                       if `uplo='U'`, `AP[i + j*(j+1)/2] = A(i,j)` for `0<=i<=j`;
+ *                       if `uplo='L'`, `AP[i + j*(2*n-j-1)/2] = A(i,j)` for
+ *                       `j<=i<=n-1`.
+ * @param[out]    S      Array of dimension `n`.
+ *                       If `info=0`, S contains the scale factors for A.
+ * @param[out]    scond  If `info=0`, S contains the ratio of the smallest S(i)
+ *                       to the largest S(i). If `scond>=0.1` and `amax` is
  *                       neither too large nor too small, it is not worth
  *                       scaling by S.
- * @param[out]    amax   Absolute value of largest matrix element. If amax is
+ * @param[out]    amax   Absolute value of largest matrix element. If `amax` is
  *                       very close to overflow or very close to underflow, the
  *                       matrix should be scaled.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the i-th diagonal element is
+ *                           nonpositive.
  */
 void sppequ(
     const char* uplo,
