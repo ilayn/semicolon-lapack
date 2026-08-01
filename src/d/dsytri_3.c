@@ -20,47 +20,63 @@
  * DSYTRI_3X that actually computes the inverse. This is the blocked
  * version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are
- *          stored as an upper or lower triangular matrix.
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, diagonal of the block diagonal matrix D
+ *                      and factors U or L as computed by `dsytrf_rk` or
+ *                      `dsytrf_bk`:
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *                      - Only diagonal elements of the symmetric block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D should be provided on entry in
+ *                        array `E`), and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
  *
- * @param[in,out] A
- *          Double precision array, dimension (lda, n).
- *          On entry, diagonal of the block diagonal matrix D and
- *          factors U or L as computed by DSYTRF_RK and DSYTRF_BK.
- *          On exit, if info = 0, the symmetric inverse of the original
- *          matrix.
+ *                      On exit, if `info=0`, the symmetric inverse of the
+ *                      original matrix.
+ *                      If `uplo='U'`: the upper triangular part of the
+ *                      inverse is formed and the part of A below the
+ *                      diagonal is not referenced;
+ *                      If `uplo='L'`: the lower triangular part of the
+ *                      inverse is formed and the part of A above the
+ *                      diagonal is not referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     E     Array of dimension `n`.
+ *                      On entry, contains the superdiagonal (or
+ *                      subdiagonal) elements of the symmetric block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` not referenced; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` not referenced.
  *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] E
- *          Double precision array, dimension (n).
- *          Contains the superdiagonal (or subdiagonal) elements of the
- *          symmetric block diagonal matrix D.
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D.
- *
- * @param[out] work
- *          Double precision array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work.
- *          If n = 0, lwork >= 1, else lwork >= (n+nb+1)*(nb+3).
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                      For a 1-by-1 diagonal block `D(k)`, the element
+ *                      `E[k]` is not referenced in both `uplo='U'` or
+ *                      `uplo='L'` cases.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `dsytrf_rk` or `dsytrf_bk`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The length of `work`.
+ *                      If `n=0`, `lwork>=1`, else `lwork>=(n+nb+1)*(nb+3)`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void dsytri_3(
     const char* uplo,
