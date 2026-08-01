@@ -12,20 +12,26 @@
  * matrix A using the Cholesky factorization A = U**H*U or A = L*L**H
  * computed by CPPTRF.
  *
- * @param[in]     uplo   = 'U': Upper triangular factor is stored in AP;
- *                        = 'L': Lower triangular factor is stored in AP.
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in,out] AP     On entry, the triangular factor U or L from the Cholesky
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular factor is stored in AP
+ *                       - `'L'`: Lower triangular factor is stored in AP
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in,out] AP     Array of dimension `n*(n+1)/2`.
+ *                       On entry, the triangular factor U or L from the Cholesky
  *                       factorization A = U**H*U or A = L*L**H, packed columnwise
- *                       as a linear array.
+ *                       as a linear array. The j-th column of U or L is stored
+ *                       in the array AP as follows:
+ *                       if `uplo='U'`, `AP[i + j*(j+1)/2] = U(i,j)` for `0<=i<=j`;
+ *                       if `uplo='L'`, `AP[i + j*(2*n-j-1)/2] = L(i,j)` for
+ *                       `j<=i<=n-1`.
  *                       On exit, the upper or lower triangle of the (Hermitian)
  *                       inverse of A, overwriting the input factor U or L.
- *                       Array of dimension (n*(n+1)/2).
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the (i,i) element of the factor U or L is
- *                           zero, and the inverse could not be computed.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the (i,i) element of the factor U or L
+ *                           is zero, and the inverse could not be computed.
  */
 void cpptri(
     const char* uplo,
