@@ -12,15 +12,26 @@
 
 /**
  * DSPOSV computes the solution to a real system of linear equations
- *    A * X = B,
- * where A is an N-by-N symmetric positive definite matrix and X and B
- * are N-by-NRHS matrices.
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B
+ * @endrst
+ * where A is an `n`-by-`n` symmetric positive definite matrix and X and `B`
+ * are `n`-by-`nrhs` matrices.
  *
  * DSPOSV first attempts to factorize the matrix in SINGLE PRECISION
  * and use this factorization within an iterative refinement procedure
  * to produce a solution with DOUBLE PRECISION normwise backward error
- * quality. If the approach fails the method switches to a DOUBLE PRECISION
- * factorization and solve.
+ * quality (see below). If the approach fails the method switches to a
+ * DOUBLE PRECISION factorization and solve.
+ *
+ * The iterative refinement is not going to be a winning strategy if
+ * the ratio SINGLE PRECISION performance over DOUBLE PRECISION
+ * performance is too small. A reasonable strategy should take the
+ * number of right-hand sides and the size of the matrix into account.
+ * This might be done with a call to ILAENV in the future. Up to now, we
+ * always try iterative refinement.
  *
  * The iterative refinement process is stopped if
  *     ITER > ITERMAX
@@ -35,40 +46,39 @@
  *     o EPS is the machine epsilon returned by DLAMCH('Epsilon')
  * The value ITERMAX and BWDMAX are fixed to 30 and 1.0D+00 respectively.
  *
- * @param[in]     uplo  Specifies whether the upper or lower triangular part
- *                      of the symmetric matrix A is stored.
- *                      = 'U': Upper triangle of A is stored
- *                      = 'L': Lower triangle of A is stored
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
  * @param[in]     n     The number of linear equations, i.e., the order of
- *                      the matrix A. n >= 0.
+ *                      the matrix A. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number of
- *                      columns of the matrix B. nrhs >= 0.
- * @param[in,out] A     Double precision array, dimension (lda, n).
- *                      On entry, the symmetric matrix A. If UPLO = 'U', the
- *                      leading N-by-N upper triangular part of A contains the
- *                      upper triangular part of the matrix A. If UPLO = 'L',
- *                      the leading N-by-N lower triangular part of A contains
+ *                      columns of the matrix `B`. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension (`lda`, `n`).
+ *                      On entry, the symmetric matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A contains the
+ *                      upper triangular part of the matrix A. If `uplo='L'`,
+ *                      the leading `n`-by-`n` lower triangular part of A contains
  *                      the lower triangular part of the matrix A.
  *                      On exit, if iterative refinement has been successfully
- *                      used (info = 0 and iter >= 0) then A is unchanged.
- *                      If f64 precision factorization has been used
- *                      (info = 0 and iter < 0) then the array A contains
+ *                      used (`info=0` and `iter>=0`) then A is unchanged.
+ *                      If double precision factorization has been used
+ *                      (`info=0` and `iter<0`) then the array A contains
  *                      the factor U or L from the Cholesky factorization
  *                      A = U**T*U or A = L*L**T.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[in]     B     Double precision array, dimension (ldb, nrhs).
- *                      The N-by-NRHS right hand side matrix B.
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1, n).
- * @param[out]    X     Double precision array, dimension (ldx, nrhs).
- *                      If info = 0, the N-by-NRHS solution matrix X.
- * @param[in]     ldx   The leading dimension of the array X. ldx >= max(1, n).
- * @param[out]    work  Double precision array, dimension (n, nrhs).
- *                      This array is used to hold the residual vectors.
- * @param[out]    swork Single precision array, dimension (n*(n+nrhs)).
- *                      This array is used to use the single precision matrix
- *                      and the right-hand sides or solutions in single precision.
+ * @param[in]     lda   The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[in]     B     Array of dimension (`ldb`, `nrhs`).
+ *                      The `n`-by-`nrhs` right hand side matrix `B`.
+ * @param[in]     ldb   The leading dimension of the array `B`. `ldb>=max(1,n)`.
+ * @param[out]    X     Array of dimension (`ldx`, `nrhs`).
+ *                      If `info=0`, the `n`-by-`nrhs` solution matrix X.
+ * @param[in]     ldx   The leading dimension of the array `X`. `ldx>=max(1,n)`.
+ * @param[out]    work  Double precision workspace for residual vectors.
+ *                      Array of dimension (`n`, `nrhs`).
+ * @param[out]    swork Single precision workspace for the matrix and the
+ *                      right-hand sides or solutions in single precision.
+ *                      Array of dimension `n*(n+nrhs)`.
  * @param[out]    iter  Iteration count:
- *                      - < 0: iterative refinement has failed, f64 precision
+ *                      - `iter<0`: iterative refinement has failed, double precision
  *                        factorization has been performed
  *                        - -1 : the routine fell back to full precision for
  *                          implementation- or machine-specific reasons
@@ -77,14 +87,14 @@
  *                        - -3 : failure of SPOTRF
  *                        - -31: stop the iterative refinement after the 30th
  *                          iterations
- *                      - > 0: iterative refinement has been successfully used.
+ *                      - `iter>0`: iterative refinement has been successfully used.
  *                        Returns the number of iterations
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, the leading principal minor of order i
- *                           of (DOUBLE PRECISION) A is not positive, so the
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the leading principal minor of order
+ *                           i of (DOUBLE PRECISION) A is not positive, so the
  *                           factorization could not be completed, and the
  *                           solution has not been computed.
  */
