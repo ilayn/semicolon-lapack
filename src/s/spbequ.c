@@ -11,22 +11,43 @@
  * symmetric positive definite band matrix A and reduce its condition
  * number (with respect to the two-norm). S contains the scale factors,
  * S(i) = 1/sqrt(A(i,i)), chosen so that the scaled matrix B with
- * elements B(i,j) = S(i)*A(i,j)*S(j) has ones on the diagonal.
+ * elements B(i,j) = S(i)*A(i,j)*S(j) has ones on the diagonal. This
+ * choice of S puts the condition number of B within a factor N of the
+ * smallest possible condition number over all possible diagonal
+ * scalings.
  *
- * @param[in]     uplo   = 'U': Upper triangular of A is stored
- *                        = 'L': Lower triangular of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     kd     The number of super-diagonals (if uplo='U') or
- *                       sub-diagonals (if uplo='L'). kd >= 0.
- * @param[in]     AB     The banded matrix A. Array of dimension (ldab, n).
- * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[out]    S      The scale factors for A. Array of dimension (n).
- * @param[out]    scond  Ratio of smallest to largest S(i).
- * @param[out]    amax   Absolute value of largest matrix element.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular of A is stored
+ *                       - `'L'`: Lower triangular of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     kd     The number of superdiagonals of the matrix A if
+ *                       `uplo='U'`, or the number of subdiagonals if
+ *                       `uplo='L'`. `kd>=0`.
+ * @param[in]     AB     Array of dimension (`ldab`, `n`).
+ *                       The upper or lower triangle of the symmetric band
+ *                       matrix A, stored in the first `kd+1` rows of the
+ *                       array. The j-th column of A is stored in the j-th
+ *                       column of the array AB as follows:
+ *                       if `uplo='U'`, `AB[kd+i-j + j*ldab] = A(i,j)` for
+ *                       `max(0,j-kd)<=i<=j`;
+ *                       if `uplo='L'`, `AB[i-j + j*ldab] = A(i,j)` for
+ *                       `j<=i<=min(n-1,j+kd)`.
+ * @param[in]     ldab   The leading dimension of the array `AB`. `ldab>=kd+1`.
+ * @param[out]    S      Array of dimension `n`.
+ *                       If `info=0`, `S` contains the scale factors for A.
+ * @param[out]    scond  If `info=0`, `S` contains the ratio of the smallest S(i)
+ *                       to the largest S(i). If `scond>=0.1` and `amax` is
+ *                       neither too large nor too small, it is not worth
+ *                       scaling by `S`.
+ * @param[out]    amax   Absolute value of largest matrix element. If `amax` is
+ *                       very close to overflow or very close to underflow, the
+ *                       matrix should be scaled.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the i-th diagonal element is
+ *                           nonpositive.
  */
 void spbequ(
     const char* uplo,
