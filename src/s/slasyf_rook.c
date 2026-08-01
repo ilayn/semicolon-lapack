@@ -10,42 +10,77 @@
 /**
  * SLASYF_ROOK computes a partial factorization of a real symmetric
  * matrix A using the bounded Bunch-Kaufman ("rook") diagonal
- * pivoting method.
+ * pivoting method. The partial factorization has the form:
  *
- * @param[in] uplo
- *          = 'U':  Upper triangular
- *          = 'L':  Lower triangular
+ * A  =  ( I  U12 ) ( A11  0  ) (  I       0    )  if UPLO = 'U', or:
+ *       ( 0  U22 ) (  0   D  ) ( U12**T U22**T )
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ * A  =  ( L11  0 ) (  D   0  ) ( L11**T L21**T )  if UPLO = 'L'
+ *       ( L21  I ) (  0  A22 ) (  0       I    )
  *
- * @param[in] nb
- *          The maximum number of columns to factor. nb >= 2.
+ * where the order of D is at most NB. The actual order is returned in
+ * the argument KB, and is either NB or NB-1, or N if N <= NB.
  *
- * @param[out] kb
- *          The number of columns actually factored.
+ * SLASYF_ROOK is an auxiliary routine called by SSYTRF_ROOK. It uses
+ * blocked code (calling Level 3 BLAS) to update the submatrix A11
+ * (if UPLO = 'U') or A22 (if UPLO = 'L').
  *
- * @param[in,out] A
- *          Double precision array, dimension (lda, n).
- *          On entry, the symmetric matrix A.
- *          On exit, details of the partial factorization.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular
+ *                      - `'L'`: Lower triangular
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nb    The maximum number of columns of the matrix A that
+ *                      should be factored. `nb` should be at least 2 to
+ *                      allow for 2-by-2 pivot blocks.
+ * @param[out]    kb    The number of columns of A that were actually
+ *                      factored. `kb` is either `nb-1` or `nb`, or `n` if
+ *                      `n<=nb`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the symmetric matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, A contains details of the partial
+ *                      factorization.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D.
  *
- * @param[in] lda
- *          The leading dimension of A. lda >= max(1, n).
+ *                      If `uplo='U'`: Only the last `kb` elements of `ipiv`
+ *                      are set.
  *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and block structure.
+ *                      - If `ipiv[k]>=0`, then rows and columns `k` and
+ *                        `ipiv[k]` were interchanged and `D(k,k)` is a
+ *                        1-by-1 diagonal block.
+ *                      - If `ipiv[k]<0` and `ipiv[k-1]<0`, then rows and
+ *                        columns `k` and `-ipiv[k]-1` were interchanged and
+ *                        rows and columns `k-1` and `-ipiv[k-1]-1` were
+ *                        interchanged, `D(k-1:k,k-1:k)` is a 2-by-2
+ *                        diagonal block.
  *
- * @param[out] W
- *          Double precision array, dimension (ldw, nb).
+ *                      If `uplo='L'`: Only the first `kb` elements of
+ *                      `ipiv` are set.
  *
- * @param[in] ldw
- *          The leading dimension of W. ldw >= max(1, n).
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - > 0: if info = k, D(k,k) is exactly zero.
+ *                      - If `ipiv[k]>=0`, then rows and columns `k` and
+ *                        `ipiv[k]` were interchanged and `D(k,k)` is a
+ *                        1-by-1 diagonal block.
+ *                      - If `ipiv[k]<0` and `ipiv[k+1]<0`, then rows and
+ *                        columns `k` and `-ipiv[k]-1` were interchanged and
+ *                        rows and columns `k+1` and `-ipiv[k+1]-1` were
+ *                        interchanged, `D(k:k+1,k:k+1)` is a 2-by-2
+ *                        diagonal block.
+ * @param[out]    W     Array of dimension `(ldw,nb)`.
+ * @param[in]     ldw   The leading dimension of the array W. `ldw>=max(1,n)`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info>0`: if `info=k`, `D(k,k)` is exactly zero.
+ *                           The factorization has been completed, but the
+ *                           block diagonal matrix D is exactly singular.
  */
 void slasyf_rook(
     const char* uplo,
