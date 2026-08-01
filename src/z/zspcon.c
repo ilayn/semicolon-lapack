@@ -14,20 +14,24 @@
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in]     uplo   = 'U': Upper triangular, form is A = U*D*U**T
- *                        = 'L': Lower triangular, form is A = L*D*L**T
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     AP     The block diagonal matrix D and the multipliers used to
- *                       obtain the factor U or L as computed by ZSPTRF, stored as a
- *                       packed triangular matrix. Array of dimension (n*(n+1)/2).
- * @param[in]     ipiv   Details of the interchanges and the block structure of D
- *                       as determined by ZSPTRF. Array of dimension (n).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                       - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     AP     Complex array of dimension `n*(n+1)/2`.
+ *                       The block diagonal matrix D and the multipliers used to
+ *                       obtain the factor U or L as computed by `zsptrf`, stored as a
+ *                       packed triangular matrix.
+ * @param[in]     ipiv   Array of dimension `n`.
+ *                       Details of the interchanges and the block structure of D
+ *                       as determined by `zsptrf`.
  * @param[in]     anorm  The 1-norm of the original matrix A.
  * @param[out]    rcond  The reciprocal of the condition number of the matrix A.
- * @param[out]    work   Workspace array of dimension (2*n).
+ * @param[out]    work   Complex workspace array of dimension `2*n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void zspcon(
     const char* uplo,
