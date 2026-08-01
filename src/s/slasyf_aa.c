@@ -21,42 +21,32 @@
  * (J-1)-th row, or column, of A (without the unit diagonals), while
  * the diagonal and subdiagonal of A are overwritten by those of T.
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
- *
- * @param[in] j1
- *          The location of the first row, or column, of the panel
- *          within the submatrix of A, passed to this routine, e.g.,
- *          when called by SSYTRF_AA, for the first panel, J1 is 1,
- *          while for the remaining panels, J1 is 2.
- *
- * @param[in] m
- *          The dimension of the submatrix. M >= 0.
- *
- * @param[in] nb
- *          The dimension of the panel to be factorized.
- *
- * @param[in,out] A
- *          Double precision array, dimension (lda, m) for
- *          the first panel, while dimension (lda, m+1) for the
- *          remaining panels.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, m).
- *
- * @param[out] ipiv
- *          Integer array, dimension (m).
- *          Details of the row and column interchanges.
- *
- * @param[in,out] H
- *          Double precision workspace, dimension (ldh, nb).
- *
- * @param[in] ldh
- *          The leading dimension of the workspace H. ldh >= max(1, m).
- *
- * @param[out] work
- *          Double precision workspace, dimension (m).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     j1    The location of the first row, or column, of the
+ *                      panel within the submatrix of A, passed to this
+ *                      routine, e.g., when called by `ssytrf_aa`, for the
+ *                      first panel, `j1` is 1, while for the remaining
+ *                      panels, `j1` is 2.
+ * @param[in]     m     The dimension of the submatrix. `m>=0`.
+ * @param[in]     nb    The dimension of the panel to be factorized.
+ * @param[in,out] A     Array of dimension `(lda,m)` for the first panel,
+ *                      while dimension `(lda,m+1)` for the remaining
+ *                      panels.
+ *                      On entry, A contains the last row, or column, of
+ *                      the previous panel, and the trailing submatrix of A
+ *                      to be factorized, except for the first panel, only
+ *                      the panel is passed.
+ *                      On exit, the leading panel is factorized.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,m)`.
+ * @param[out]    ipiv  Array of dimension `m`.
+ *                      Details of the row and column interchanges, the row
+ *                      and column `k` were interchanged with the row and
+ *                      column `ipiv[k]`.
+ * @param[in,out] H     Workspace of dimension `(ldh,nb)`.
+ * @param[in]     ldh   The leading dimension of the workspace H. `ldh>=max(1,m)`.
+ * @param[out]    work  Workspace of dimension `m`.
  */
 void slasyf_aa(
     const char* uplo,
