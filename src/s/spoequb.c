@@ -9,49 +9,40 @@
 /**
  * SPOEQUB computes row and column scalings intended to equilibrate a
  * symmetric positive definite matrix A and reduce its condition number
- * (with respect to the two-norm).  S contains the scale factors,
+ * (with respect to the two-norm). S contains the scale factors,
  * S(i) = 1/sqrt(A(i,i)), chosen so that the scaled matrix B with
- * elements B(i,j) = S(i)*A(i,j)*S(j) has ones on the diagonal.  This
+ * elements B(i,j) = S(i)*A(i,j)*S(j) has ones on the diagonal. This
  * choice of S puts the condition number of B within a factor N of the
  * smallest possible condition number over all possible diagonal
  * scalings.
  *
  * This routine differs from SPOEQU by restricting the scaling factors
- * to a power of the radix.  Barring over- and underflow, scaling by
- * these factors introduces no additional rounding errors.  However, the
+ * to a power of the radix. Barring over- and underflow, scaling by
+ * these factors introduces no additional rounding errors. However, the
  * scaled diagonal entries are no longer approximately 1 but lie
  * between sqrt(radix) and 1/sqrt(radix).
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in] A
- *          Double precision array, dimension (lda, n).
- *          The N-by-N symmetric positive definite matrix whose scaling
- *          factors are to be computed. Only the diagonal elements of A
- *          are referenced.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] S
- *          Double precision array, dimension (n).
- *          If info = 0, S contains the scale factors for A.
- *
- * @param[out] scond
- *          If info = 0, S contains the ratio of the smallest S(i) to
- *          the largest S(i). If scond >= 0.1 and amax is neither too
- *          large nor too small, it is not worth scaling by S.
- *
- * @param[out] amax
- *          Absolute value of largest matrix element. If amax is very
- *          close to overflow or very close to underflow, the matrix
- *          should be scaled.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     A      Array of dimension (`lda`, `n`).
+ *                       The `n`-by-`n` symmetric positive definite matrix whose
+ *                       scaling factors are to be computed. Only the diagonal
+ *                       elements of A are referenced.
+ * @param[in]     lda    The leading dimension of the array `A`. `lda>=max(1,n)`.
+ * @param[out]    S      Array of dimension `n`.
+ *                       If `info=0`, `S` contains the scale factors for A.
+ * @param[out]    scond  If `info=0`, `S` contains the ratio of the smallest S(i)
+ *                       to the largest S(i). If `scond>=0.1` and `amax` is
+ *                       neither too large nor too small, it is not worth
+ *                       scaling by `S`.
+ * @param[out]    amax   Absolute value of largest matrix element. If `amax` is
+ *                       very close to overflow or very close to underflow, the
+ *                       matrix should be scaled.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the i-th diagonal element is
+ *                           nonpositive.
  */
 void spoequb(
     const INT n,
