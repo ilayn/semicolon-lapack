@@ -11,40 +11,28 @@
  * Get Non-diag elements of D (returned in workspace) and
  * apply or reverse permutation done in TRF.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are stored
- *          as an upper or lower triangular matrix.
- *          = 'U':  Upper triangular, form is A = U*D*U**T;
- *          = 'L':  Lower triangular, form is A = L*D*L**T.
- *
- * @param[in] way
- *          = 'C': Convert
- *          = 'R': Revert
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in,out] A
- *          Single complex array, dimension (lda, n).
- *          The block diagonal matrix D and the multipliers used to
- *          obtain the factor U or L as computed by CSYTRF.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D
- *          as determined by CSYTRF.
- *
- * @param[out] E
- *          Single complex array, dimension (n).
- *          E stores the supdiagonal/subdiagonal of the symmetric 1-by-1
- *          or 2-by-2 block diagonal matrix D in LDLT.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     way
+ *                      - `'C'`: Convert
+ *                      - `'R'`: Revert
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
+ *                      The block diagonal matrix D and the multipliers used
+ *                      to obtain the factor U or L as computed by `csytrf`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `csytrf`.
+ * @param[out]    E     Complex array of dimension `n`.
+ *                      E stores the supdiagonal/subdiagonal of the
+ *                      symmetric 1-by-1 or 2-by-2 block diagonal matrix D
+ *                      in LDLT.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void csyconv(
     const char* uplo,
