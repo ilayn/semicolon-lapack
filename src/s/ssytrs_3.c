@@ -11,7 +11,7 @@
 /**
  * SSYTRS_3 solves a system of linear equations A * X = B with a real
  * symmetric matrix A using the factorization computed
- * by SSYTRF_RK or DSYTRF_BK:
+ * by SSYTRF_RK or SSYTRF_BK:
  *
  *    A = P*U*D*(U**T)*(P**T) or A = P*L*D*(L**T)*(P**T),
  *
@@ -22,46 +22,47 @@
  *
  * This algorithm is using Level 3 BLAS.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are
- *          stored as an upper or lower triangular matrix:
- *          = 'U':  Upper triangular, form is A = P*U*D*(U**T)*(P**T);
- *          = 'L':  Lower triangular, form is A = P*L*D*(L**T)*(P**T).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = P*U*D*(U**T)*(P**T)
+ *                      - `'L'`: Lower triangular, form is A = P*L*D*(L**T)*(P**T)
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in]     A     Array of dimension `(lda,n)`.
+ *                      Diagonal of the block diagonal matrix D and factors
+ *                      U or L as computed by `ssytrf_rk` or `ssytrf_bk`:
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *                      - Only diagonal elements of the symmetric block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D should be provided on entry in
+ *                        array `E`), and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     E     Array of dimension `n`.
+ *                      On entry, contains the superdiagonal (or
+ *                      subdiagonal) elements of the symmetric block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` not referenced; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` not referenced.
  *
- * @param[in] nrhs
- *          The number of right hand sides. nrhs >= 0.
- *
- * @param[in] A
- *          Double precision array, dimension (lda, n).
- *          Diagonal of the block diagonal matrix D and factors U or L
- *          as computed by SSYTRF_RK and DSYTRF_BK.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] E
- *          Double precision array, dimension (n).
- *          Contains the superdiagonal (or subdiagonal) elements of the
- *          symmetric block diagonal matrix D.
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D.
- *
- * @param[in,out] B
- *          Double precision array, dimension (ldb, nrhs).
- *          On entry, the right hand side matrix B.
- *          On exit, the solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                      For a 1-by-1 diagonal block `D(k)`, the element
+ *                      `E[k]` is not referenced in both `uplo='U'` or
+ *                      `uplo='L'` cases.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `ssytrf_rk` or `ssytrf_bk`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the right hand side matrix B.
+ *                      On exit, the solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void ssytrs_3(
     const char* uplo,
