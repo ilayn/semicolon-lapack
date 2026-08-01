@@ -26,58 +26,119 @@
  * blocked code (calling Level 3 BLAS) to update the submatrix
  * A11 (if UPLO = 'U') or A22 (if UPLO = 'L').
  *
- * @param[in] uplo
- *          Specifies whether the upper or lower triangular part of the
- *          symmetric matrix A is stored:
- *          = 'U':  Upper triangular
- *          = 'L':  Lower triangular
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular
+ *                      - `'L'`: Lower triangular
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nb    The maximum number of columns of the matrix A that
+ *                      should be factored. `nb` should be at least 2 to
+ *                      allow for 2-by-2 pivot blocks.
+ * @param[out]    kb    The number of columns of A that were actually
+ *                      factored. `kb` is either `nb-1` or `nb`, or `n` if
+ *                      `n<=nb`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
+ *                      On entry, the symmetric matrix A.
+ *                      If `uplo='U'`: the leading `n`-by-`n` upper
+ *                      triangular part of A contains the upper triangular
+ *                      part of the matrix A, and the strictly lower
+ *                      triangular part of A is not referenced.
+ *                      If `uplo='L'`: the leading `n`-by-`n` lower
+ *                      triangular part of A contains the lower triangular
+ *                      part of the matrix A, and the strictly upper
+ *                      triangular part of A is not referenced.
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *                      On exit, contains:
  *
- * @param[in] nb
- *          The maximum number of columns of the matrix A that should be
- *          factored. nb should be at least 2 to allow for 2-by-2 pivot
- *          blocks.
+ *                      - Only diagonal elements of the symmetric block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D are stored on exit in array `E`),
+ *                        and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    E     Complex array of dimension `n`.
+ *                      On exit, contains the superdiagonal (or
+ *                      subdiagonal) elements of the symmetric block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` is set to 0; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` is set to 0.
  *
- * @param[out] kb
- *          The number of columns of A that were actually factored.
- *          kb is either nb-1 or nb, or n if n <= nb.
+ *                      For a 1-by-1 diagonal block `D(k)`, the element
+ *                      `E[k]` is set to 0 in both `uplo='U'` or `uplo='L'`
+ *                      cases.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      `ipiv` describes the permutation matrix P in the
+ *                      factorization of matrix A as follows. The absolute
+ *                      value of `ipiv[k]` (recovered as `-ipiv[k]-1` when
+ *                      `ipiv[k]<0`, or `ipiv[k]` itself when `ipiv[k]>=0`)
+ *                      represents the index of the row and column that
+ *                      were interchanged with the k-th row and column. The
+ *                      value of `uplo` describes the order in which the
+ *                      interchanges were applied. Also, the sign of
+ *                      `ipiv[k]` represents the block structure of the
+ *                      symmetric block diagonal matrix D with 1-by-1 or
+ *                      2-by-2 diagonal blocks which correspond to 1 or 2
+ *                      interchanges at each factorization step.
  *
- * @param[in,out] A
- *          Complex*16 array, dimension (lda, n).
- *          On entry, the symmetric matrix A.
- *          On exit, contains:
- *            a) ONLY diagonal elements of the symmetric block diagonal
- *               matrix D on the diagonal of A, i.e. D(k,k) = A(k,k);
- *               (superdiagonal (or subdiagonal) elements of D
- *                are stored on exit in array E), and
- *            b) If UPLO = 'U': factor U in the superdiagonal part of A.
- *               If UPLO = 'L': factor L in the subdiagonal part of A.
+ *                      If `uplo='U'` (in factorization order, `k`
+ *                      decreases from `n-1` to `0`):
  *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
+ *                      - A single non-negative entry `ipiv[k]>=0` means:
+ *                        `D(k,k)` is a 1-by-1 diagonal block. If
+ *                        `ipiv[k]!=k`, rows and columns `k` and `ipiv[k]`
+ *                        were interchanged in the submatrix
+ *                        `A(0:n-1,n-kb:n-1)`; if `ipiv[k]=k`, no
+ *                        interchange occurred.
+ *                      - A pair of consecutive negative entries
+ *                        `ipiv[k]<0` and `ipiv[k-1]<0` means:
+ *                        `D(k-1:k,k-1:k)` is a 2-by-2 diagonal block.
+ *                        (Negative entries in `ipiv` appear only in
+ *                        pairs.)
+ *                        1) If `-ipiv[k]-1!=k`, rows and columns `k` and
+ *                           `-ipiv[k]-1` were interchanged in the matrix
+ *                           `A(0:n-1,n-kb:n-1)`; if `-ipiv[k]-1=k`, no
+ *                           interchange occurred.
+ *                        2) If `-ipiv[k-1]-1!=k-1`, rows and columns `k-1`
+ *                           and `-ipiv[k-1]-1` were interchanged in the
+ *                           submatrix `A(0:n-1,n-kb:n-1)`; if
+ *                           `-ipiv[k-1]-1=k-1`, no interchange occurred.
+ *                      - In both cases, the recovered partner index is
+ *                        always `<=k`.
  *
- * @param[out] E
- *          Complex*16 array, dimension (n).
- *          On exit, contains the superdiagonal (or subdiagonal)
- *          elements of the symmetric block diagonal matrix D
- *          with 1-by-1 or 2-by-2 diagonal blocks.
+ *                      If `uplo='L'` (in factorization order, `k`
+ *                      increases from `0` to `n-1`):
  *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          IPIV describes the permutation matrix P in the factorization.
- *
- * @param[out] W
- *          Complex*16 array, dimension (ldw, nb).
- *
- * @param[in] ldw
- *          The leading dimension of the array W. ldw >= max(1, n).
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: If info = -k, the k-th argument had an illegal value
- *                         - > 0: If info = k, the matrix A is singular.
+ *                      - A single non-negative entry `ipiv[k]>=0` means:
+ *                        `D(k,k)` is a 1-by-1 diagonal block. If
+ *                        `ipiv[k]!=k`, rows and columns `k` and `ipiv[k]`
+ *                        were interchanged in the submatrix
+ *                        `A(0:n-1,0:kb-1)`; if `ipiv[k]=k`, no interchange
+ *                        occurred.
+ *                      - A pair of consecutive negative entries
+ *                        `ipiv[k]<0` and `ipiv[k+1]<0` means:
+ *                        `D(k:k+1,k:k+1)` is a 2-by-2 diagonal block.
+ *                        (Negative entries in `ipiv` appear only in
+ *                        pairs.)
+ *                        1) If `-ipiv[k]-1!=k`, rows and columns `k` and
+ *                           `-ipiv[k]-1` were interchanged in the
+ *                           submatrix `A(0:n-1,0:kb-1)`; if `-ipiv[k]-1=k`,
+ *                           no interchange occurred.
+ *                        2) If `-ipiv[k+1]-1!=k+1`, rows and columns `k+1`
+ *                           and `-ipiv[k+1]-1` were interchanged in the
+ *                           submatrix `A(0:n-1,0:kb-1)`; if
+ *                           `-ipiv[k+1]-1=k+1`, no interchange occurred.
+ *                      - In both cases, the recovered partner index is
+ *                        always `>=k`.
+ * @param[out]    W     Complex array of dimension `(ldw,nb)`.
+ * @param[in]     ldw   The leading dimension of the array W. `ldw>=max(1,n)`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, the matrix A is singular.
  */
 void clasyf_rk(
     const char* uplo,
