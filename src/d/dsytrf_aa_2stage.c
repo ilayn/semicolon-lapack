@@ -20,48 +20,54 @@
  *
  * This is the blocked version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in,out] A
- *          Double precision array, dimension (lda, n).
- *          On entry, the symmetric matrix A.
- *          On exit, L is stored below (or above) the subdiagonal blocks.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] TB
- *          Double precision array, dimension (max(1, ltb)).
- *          On exit, details of the LU factorization of the band matrix.
- *
- * @param[in] ltb
- *          The size of the array TB. ltb >= max(1, 4*n).
- *          If ltb = -1, then a workspace query is assumed.
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          On exit, details of the interchanges.
- *
- * @param[out] ipiv2
- *          Integer array, dimension (n).
- *          On exit, details of the interchanges in T.
- *
- * @param[out] work
- *          Double precision workspace of size (max(1, lwork)).
- *
- * @param[in] lwork
- *          The size of work. lwork >= max(1, n).
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0:  successful exit
- *                         - < 0:  if info = -i, the i-th argument had an illegal value.
- *                         - > 0:  if info = i, band LU factorization failed on i-th column
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the symmetric matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, L is stored below (or above) the
+ *                      subdiagonal blocks, when `uplo='L'` (or `'U'`).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    TB    Array of dimension `max(1,ltb)`.
+ *                      On exit, details of the LU factorization of the band
+ *                      matrix.
+ * @param[in]     ltb   The size of the array TB. `ltb>=max(1,4*n)`,
+ *                      internally used to select `nb` such that
+ *                      `ltb>=(3*nb+1)*n`.
+ *                      If `ltb=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of `ltb`,
+ *                      returns this value as the first entry of TB, and no
+ *                      error message related to `ltb` is issued.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      On exit, it contains the details of the
+ *                      interchanges, i.e., the row and column `k` of A were
+ *                      interchanged with the row and column `ipiv[k]`.
+ * @param[out]    ipiv2 Array of dimension `n`.
+ *                      On exit, it contains the details of the
+ *                      interchanges, i.e., the row and column `k` of T were
+ *                      interchanged with the row and column `ipiv2[k]`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ * @param[in]     lwork The size of `work`. `lwork>=max(1,n)`, internally
+ *                      used to select `nb` such that `lwork>=n*nb`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an
+ *                           illegal value
+ *                         - `info>0`: if `info=i`, band LU factorization
+ *                           failed on the i-th column
  */
 void dsytrf_aa_2stage(
     const char* uplo,
