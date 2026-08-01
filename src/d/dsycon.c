@@ -14,26 +14,28 @@
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in]     uplo   Specifies whether the details of the factorization
- *                       are stored as an upper or lower triangular matrix.
- *                       = 'U': Upper triangular, form is A = U*D*U**T
- *                       = 'L': Lower triangular, form is A = L*D*L**T
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     A      The block diagonal matrix D and the multipliers used
- *                       to obtain the factor U or L as computed by DSYTRF.
- *                       Double precision array, dimension (lda, n).
- * @param[in]     lda    The leading dimension of the array A. lda >= max(1, n).
- * @param[in]     ipiv   Details of the interchanges and the block structure
- *                       of D as determined by DSYTRF. Integer array, dimension (n).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                       - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     A      Array of dimension `(lda,n)`.
+ *                       The block diagonal matrix D and the multipliers used
+ *                       to obtain the factor U or L as computed by `dsytrf`.
+ * @param[in]     lda    The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv   Array of dimension `n`.
+ *                       Details of the interchanges and the block structure
+ *                       of D as determined by `dsytrf`.
  * @param[in]     anorm  The 1-norm of the original matrix A.
  * @param[out]    rcond  The reciprocal of the condition number of the matrix A,
- *                       computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is
- *                       an estimate of the 1-norm of inv(A) computed in this routine.
- * @param[out]    work   Double precision array, dimension (2*n).
- * @param[out]    iwork  Integer array, dimension (n).
+ *                       computed as `rcond=1/(anorm*ainvnm)`, where `ainvnm` is
+ *                       an estimate of the 1-norm of `inv(A)` computed in this
+ *                       routine.
+ * @param[out]    work   Array of dimension `2*n`.
+ * @param[out]    iwork  Integer array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void dsycon(
     const char* uplo,
