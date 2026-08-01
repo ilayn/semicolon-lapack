@@ -15,15 +15,15 @@
  * A is factored as A = L*D*L**H, and the factored form of A is then
  * used to solve the system of equations.
  *
- * @param[in]     n     The order of the matrix A. n >= 0.
+ * @param[in]     n     The order of the matrix A. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number
- *                      of columns of the matrix B. nrhs >= 0.
- * @param[in,out] D     Single precision array, dimension (n).
+ *                      of columns of the matrix B. `nrhs>=0`.
+ * @param[in,out] D     Array of dimension `n`.
  *                      On entry, the n diagonal elements of the tridiagonal
  *                      matrix A.
  *                      On exit, the n diagonal elements of the diagonal
  *                      matrix D from the factorization A = L*D*L**H.
- * @param[in,out] E     Single complex array, dimension (n-1).
+ * @param[in,out] E     Complex array of dimension `n-1`.
  *                      On entry, the (n-1) subdiagonal elements of the
  *                      tridiagonal matrix A.
  *                      On exit, the (n-1) subdiagonal elements of the unit
@@ -31,17 +31,18 @@
  *                      of A. (E can also be regarded as the superdiagonal
  *                      of the unit bidiagonal factor U from the U**H*D*U
  *                      factorization of A.)
- * @param[in,out] B     Single complex array, dimension (ldb, nrhs).
- *                      On entry, the N-by-NRHS right hand side matrix B.
- *                      On exit, if info = 0, the N-by-NRHS solution matrix X.
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
+ * @param[in,out] B     Complex array of dimension `(ldb,nrhs)`.
+ *                      On entry, the n-by-nrhs right hand side matrix B.
+ *                      On exit, if `info=0`, the n-by-nrhs solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the leading principal minor of order i
- *                           is not positive, and the solution has not been
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the leading principal minor of order
+ *                           i is not positive, and the solution has not been
  *                           computed. The factorization has not been completed
- *                           unless i = n.
+ *                           unless `i=n`.
  */
 void cptsv(
     const INT n,
