@@ -11,21 +11,33 @@
  * positive definite band matrix A using the Cholesky factorization
  * A = U**T*U or A = L*L**T computed by DPBTRF.
  *
- * @param[in]     uplo   = 'U': Upper triangular factor stored in AB
- *                        = 'L': Lower triangular factor stored in AB
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     kd     The number of super-diagonals (if uplo='U') or
- *                       sub-diagonals (if uplo='L'). kd >= 0.
- * @param[in]     nrhs   The number of right hand sides. nrhs >= 0.
- * @param[in]     AB     The triangular factor from DPBTRF. Array of dimension (ldab, n).
- * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[in,out] B      On entry, the right hand side matrix B.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular factor stored in AB
+ *                       - `'L'`: Lower triangular factor stored in AB
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     kd     The number of superdiagonals of the matrix A if
+ *                       `uplo='U'`, or the number of subdiagonals if
+ *                       `uplo='L'`. `kd>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in]     AB     Array of dimension (`ldab`, `n`).
+ *                       The triangular factor U or L from the Cholesky
+ *                       factorization A = U**T*U or A = L*L**T of the band
+ *                       matrix A, stored in the first `kd+1` rows of the
+ *                       array. The j-th column of U or L is stored in the
+ *                       j-th column of the array AB as follows:
+ *                       if `uplo='U'`, `AB[kd+i-j + j*ldab] = U(i,j)` for
+ *                       `max(0,j-kd)<=i<=j`;
+ *                       if `uplo='L'`, `AB[i-j + j*ldab] = L(i,j)` for
+ *                       `j<=i<=min(n-1,j+kd)`.
+ * @param[in]     ldab   The leading dimension of the array `AB`. `ldab>=kd+1`.
+ * @param[in,out] B      Array of dimension (`ldb`, `nrhs`).
+ *                       On entry, the right hand side matrix `B`.
  *                       On exit, the solution matrix X.
- *                       Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of B. ldb >= max(1,n).
+ * @param[in]     ldb    The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void dpbtrs(
     const char* uplo,
