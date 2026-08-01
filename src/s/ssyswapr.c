@@ -10,33 +10,23 @@
  * SSYSWAPR applies an elementary permutation on the rows and the columns of
  * a symmetric matrix.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are stored
- *          as an upper or lower triangular matrix.
- *          = 'U':  Upper triangular, form is A = U*D*U**T;
- *          = 'L':  Lower triangular, form is A = L*D*L**T.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in,out] A
- *          Double precision array, dimension (lda, n).
- *          On entry, the N-by-N matrix A. On exit, the permuted matrix
- *          where the rows i1 and i2 and columns i1 and i2 are interchanged.
- *          If UPLO = 'U', the interchanges are applied to the upper
- *          triangular part and the strictly lower triangular part of A is
- *          not referenced; if UPLO = 'L', the interchanges are applied to
- *          the lower triangular part and the part of A above the diagonal
- *          is not referenced.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] i1
- *          Index of the first row to swap (0-based).
- *
- * @param[in] i2
- *          Index of the second row to swap (0-based).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,*)`.
+ *                      On entry, the `n`-by-`n` matrix A. On exit, the
+ *                      permuted matrix where the rows `i1` and `i2` and
+ *                      columns `i1` and `i2` are interchanged.
+ *                      If `uplo='U'`, the interchanges are applied to the
+ *                      upper triangular part and the strictly lower
+ *                      triangular part of A is not referenced; if
+ *                      `uplo='L'`, the interchanges are applied to the
+ *                      lower triangular part and the part of A above the
+ *                      diagonal is not referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     i1    Index of the first row to swap (0-based).
+ * @param[in]     i2    Index of the second row to swap (0-based).
  */
 void ssyswapr(
     const char* uplo,
