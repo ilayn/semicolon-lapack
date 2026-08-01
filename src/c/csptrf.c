@@ -12,42 +12,89 @@
 /**
  * CSPTRF computes the factorization of a complex symmetric matrix A stored
  * in packed format using the Bunch-Kaufman diagonal pivoting method:
+ * @rst
+ * .. code-block:: text
  *
- *    A = U*D*U**T  or  A = L*D*L**T
- *
+ *     A = U*D*U**T  or  A = L*D*L**T
+ * @endrst
  * where U (or L) is a product of permutation and unit upper (lower)
  * triangular matrices, and D is symmetric and block diagonal with
  * 1-by-1 and 2-by-2 diagonal blocks.
  *
- * @param[in]     uplo   Specifies whether the upper or lower triangular part
- *                       of the symmetric matrix A is stored:
- *                       - = 'U': Upper triangle of A is stored
- *                       - = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in,out] AP     On entry, the upper or lower triangle of the symmetric
- *                       matrix A, packed columnwise in a linear array of
- *                       dimension n*(n+1)/2.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in,out] AP     Complex array of dimension `n*(n+1)/2`.
+ *                       On entry, the upper or lower triangle of the symmetric
+ *                       matrix A, packed columnwise in a linear array. The j-th
+ *                       column of A is stored in the array AP as follows:
+ *                       if `uplo='U'`, `AP[i + j*(j+1)/2] = A(i,j)` for `0<=i<=j`;
+ *                       if `uplo='L'`, `AP[i + j*(2*n-j-1)/2] = A(i,j)` for
+ *                       `j<=i<=n-1`.
  *                       On exit, the block diagonal matrix D and the multipliers
  *                       used to obtain the factor U or L, stored as a packed
- *                       triangular matrix.
- * @param[out]    ipiv   Details of the interchanges and the block structure of D.
- *                       Array of dimension n, 0-based indexing.
- *                       - If ipiv[k] >= 0, then rows and columns k and ipiv[k]
- *                         were interchanged and D(k,k) is a 1-by-1 diagonal block.
- *                       - If uplo = 'U' and ipiv[k] = ipiv[k-1] < 0, then rows and
- *                         columns k-1 and -ipiv[k]-1 were interchanged and
- *                         D(k-1:k,k-1:k) is a 2-by-2 diagonal block.
- *                       - If uplo = 'L' and ipiv[k] = ipiv[k+1] < 0, then rows and
- *                         columns k+1 and -ipiv[k]-1 were interchanged and
- *                         D(k:k+1,k:k+1) is a 2-by-2 diagonal block.
+ *                       triangular matrix overwriting A (see below for further
+ *                       details).
+ * @param[out]    ipiv   Array of dimension `n`. Pivot indices (0-based).
+ *                       If `ipiv[k]>=0`, then rows and columns `k` and `ipiv[k]`
+ *                       were interchanged and `D(k,k)` is a 1-by-1 diagonal block.
+ *                       If `uplo='U'` and `ipiv[k]=ipiv[k-1]<0`, then rows and
+ *                       columns `k-1` and `-ipiv[k]-1` were interchanged and
+ *                       `D(k-1:k,k-1:k)` is a 2-by-2 diagonal block. If `uplo='L'`
+ *                       and `ipiv[k]=ipiv[k+1]<0`, then rows and columns `k+1`
+ *                       and `-ipiv[k]-1` were interchanged and `D(k:k+1,k:k+1)`
+ *                       is a 2-by-2 diagonal block.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, D(i,i) is exactly zero. The factorization
- *                           has been completed, but the block diagonal matrix D is
- *                           exactly singular, and division by zero will occur if
- *                           it is used to solve a system of equations.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)` is exactly zero. The
+ *                           factorization has been completed, but the block
+ *                           diagonal matrix D is exactly singular, and division by
+ *                           zero will occur if it is used to solve a system of
+ *                           equations.
+ *
+ * @par Further Details:
+ * @rst
+ * If ``uplo='U'``, then A = U*D*U**T, where
+ * U = P(n-1)*U(n-1)* ... *P(k)*U(k)* ..., i.e., U is a product of terms
+ * P(k)*U(k), where k decreases from n-1 to 0 in steps of 1 or 2, and D
+ * is a block diagonal matrix with 1-by-1 and 2-by-2 diagonal blocks
+ * D(k). P(k) is a permutation matrix as defined by ``ipiv[k]``, and
+ * U(k) is a unit upper triangular matrix, such that if the diagonal
+ * block D(k) is of order s (s = 1 or 2), then
+ *
+ * .. code-block:: text
+ *
+ *              (   I    v    0   )   k-s+1
+ *      U(k) =  (   0    I    0   )   s
+ *              (   0    0    I   )   n-1-k
+ *                 k-s+1  s   n-1-k
+ *
+ * If s = 1, D(k) overwrites A(k,k), and v overwrites A(0:k-1,k).
+ * If s = 2, the upper triangle of D(k) overwrites A(k-1,k-1), A(k-1,k),
+ * and A(k,k), and v overwrites A(0:k-2,k-1:k).
+ *
+ * If ``uplo='L'``, then A = L*D*L**T, where
+ * L = P(0)*L(0)* ... *P(k)*L(k)* ..., i.e., L is a product of terms
+ * P(k)*L(k), where k increases from 0 to n-1 in steps of 1 or 2, and D
+ * is a block diagonal matrix with 1-by-1 and 2-by-2 diagonal blocks
+ * D(k). P(k) is a permutation matrix as defined by ``ipiv[k]``, and
+ * L(k) is a unit lower triangular matrix, such that if the diagonal
+ * block D(k) is of order s (s = 1 or 2), then
+ *
+ * .. code-block:: text
+ *
+ *              (   I    0     0   )  k
+ *      L(k) =  (   0    I     0   )  s
+ *              (   0    v     I   )  n-k-s
+ *                 k     s   n-k-s
+ *
+ * If s = 1, D(k) overwrites A(k,k), and v overwrites A(k+1:n-1,k).
+ * If s = 2, the lower triangle of D(k) overwrites A(k,k), A(k+1,k),
+ * and A(k+1,k+1), and v overwrites A(k+2:n-1,k:k+1).
+ * @endrst
  */
 void csptrf(
     const char* uplo,
