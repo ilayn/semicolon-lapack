@@ -14,25 +14,30 @@
  * packed storage using the factorization A = U*D*U**T or A = L*D*L**T
  * computed by ZSPTRF.
  *
- * @param[in]     uplo   Specifies whether the details of the factorization are
- *                       stored as an upper or lower triangular matrix:
- *                       - = 'U': Upper triangular, form is A = U*D*U**T
- *                       - = 'L': Lower triangular, form is A = L*D*L**T
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in,out] AP     On entry, the block diagonal matrix D and the multipliers
- *                       used to obtain the factor U or L as computed by ZSPTRF,
- *                       stored as a packed triangular matrix of dimension n*(n+1)/2.
- *                       On exit, if info = 0, the (symmetric) inverse of the
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                       - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in,out] AP     Complex array of dimension `n*(n+1)/2`.
+ *                       On entry, the block diagonal matrix D and the multipliers
+ *                       used to obtain the factor U or L as computed by `zsptrf`,
+ *                       stored as a packed triangular matrix.
+ *                       On exit, if `info=0`, the (symmetric) inverse of the
  *                       original matrix, stored as a packed triangular matrix.
- * @param[in]     ipiv   Details of the interchanges and the block structure of D
- *                       as determined by ZSPTRF. Array of dimension n.
- * @param[out]    work   Workspace array of dimension n.
+ *                       The j-th column of `inv(A)` is stored in the array AP as
+ *                       follows: if `uplo='U'`, `AP[i + j*(j+1)/2] = inv(A)(i,j)`
+ *                       for `0<=i<=j`; if `uplo='L'`,
+ *                       `AP[i + j*(2*n-j-1)/2] = inv(A)(i,j)` for `j<=i<=n-1`.
+ * @param[in]     ipiv   Array of dimension `n`.
+ *                       Details of the interchanges and the block structure of D
+ *                       as determined by `zsptrf`.
+ * @param[out]    work   Complex workspace array of dimension `n`.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
- *                           - > 0: if info = i, D(i,i) = 0; the matrix is singular and
- *                           its inverse could not be computed.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void zsptri(
     const char* uplo,
