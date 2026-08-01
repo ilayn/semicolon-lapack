@@ -12,34 +12,94 @@
  * ZSYTRF computes the factorization of a complex symmetric matrix A using
  * the Bunch-Kaufman diagonal pivoting method. The form of the
  * factorization is
+ * @rst
+ * .. code-block:: text
  *
- *    A = U*D*U**T  or  A = L*D*L**T
- *
+ *     A = U*D*U**T  or  A = L*D*L**T
+ * @endrst
  * where U (or L) is a product of permutation and unit upper (lower)
  * triangular matrices, and D is symmetric and block diagonal with
  * 1-by-1 and 2-by-2 diagonal blocks.
  *
  * This is the blocked version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in]     uplo  = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Double complex array, dimension (lda, n).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
  *                      On entry, the symmetric matrix A.
  *                      On exit, the block diagonal matrix D and the
- *                      multipliers used to obtain the factor U or L.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[out]    ipiv  Integer array, dimension (n).
- *                      Details of the interchanges and the block structure of D.
- * @param[out]    work  Double complex array, dimension (max(1, lwork)).
- *                      On exit, if info = 0, work[0] returns the optimal lwork.
- * @param[in]     lwork The length of work. lwork >= 1. For best performance
- *                      lwork >= n*nb, where nb is the block size.
- *                      If lwork = -1, a workspace query is assumed.
+ *                      multipliers used to obtain the factor U or L
+ *                      (see below for further details).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`. Pivot indices (0-based).
+ *                      If `ipiv[k]>=0`: rows/columns `k` and `ipiv[k]` were
+ *                      interchanged, `D(k,k)` is a 1-by-1 block.
+ *                      If `ipiv[k]<0` (upper): rows/columns `k-1` and
+ *                      `-ipiv[k]-1` were interchanged, `D(k-1:k,k-1:k)`
+ *                      is a 2-by-2 block, and `ipiv[k-1]=ipiv[k]`.
+ *                      If `ipiv[k]<0` (lower): rows/columns `k+1` and
+ *                      `-ipiv[k]-1` were interchanged, `D(k:k+1,k:k+1)`
+ *                      is a 2-by-2 block, and `ipiv[k+1]=ipiv[k]`.
+ * @param[out]    work  Complex array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal `lwork`.
+ * @param[in]     lwork The length of `work`. `lwork>=1`. For best performance
+ *                      `lwork>=n*nb`, where `nb` is the block size returned by ILAENV.
+ *                      If `lwork=-1`, then a workspace query is assumed; the routine
+ *                      only calculates the optimal size of the `work` array, returns
+ *                      this value as the first entry of the `work` array, and no
+ *                      error message related to `lwork` is issued.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) is exactly zero.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)` is exactly zero. The
+ *                           factorization has been completed, but the block
+ *                           diagonal matrix D is exactly singular, and division by
+ *                           zero will occur if it is used to solve a system of
+ *                           equations.
+ *
+ * @par Further Details:
+ * @rst
+ * If ``uplo='U'``, then A = U*D*U**T, where
+ * U = P(n-1)*U(n-1)* ... *P(k)*U(k)* ..., i.e., U is a product of terms
+ * P(k)*U(k), where k decreases from n-1 to 0 in steps of 1 or 2, and D
+ * is a block diagonal matrix with 1-by-1 and 2-by-2 diagonal blocks
+ * D(k). P(k) is a permutation matrix as defined by ``ipiv[k]``, and
+ * U(k) is a unit upper triangular matrix, such that if the diagonal
+ * block D(k) is of order s (s = 1 or 2), then
+ *
+ * .. code-block:: text
+ *
+ *              (   I    v    0   )   k-s+1
+ *      U(k) =  (   0    I    0   )   s
+ *              (   0    0    I   )   n-1-k
+ *                 k-s+1  s   n-1-k
+ *
+ * If s = 1, D(k) overwrites A(k,k), and v overwrites A(0:k-1,k).
+ * If s = 2, the upper triangle of D(k) overwrites A(k-1,k-1), A(k-1,k),
+ * and A(k,k), and v overwrites A(0:k-2,k-1:k).
+ *
+ * If ``uplo='L'``, then A = L*D*L**T, where
+ * L = P(0)*L(0)* ... *P(k)*L(k)* ..., i.e., L is a product of terms
+ * P(k)*L(k), where k increases from 0 to n-1 in steps of 1 or 2, and D
+ * is a block diagonal matrix with 1-by-1 and 2-by-2 diagonal blocks
+ * D(k). P(k) is a permutation matrix as defined by ``ipiv[k]``, and
+ * L(k) is a unit lower triangular matrix, such that if the diagonal
+ * block D(k) is of order s (s = 1 or 2), then
+ *
+ * .. code-block:: text
+ *
+ *              (   I    0     0   )  k
+ *      L(k) =  (   0    I     0   )  s
+ *              (   0    v     I   )  n-k-s
+ *                 k     s   n-k-s
+ *
+ * If s = 1, D(k) overwrites A(k,k), and v overwrites A(k+1:n-1,k).
+ * If s = 2, the lower triangle of D(k) overwrites A(k,k), A(k+1,k),
+ * and A(k+1,k+1), and v overwrites A(k+2:n-1,k:k+1).
+ * @endrst
  */
 void zsytrf(
     const char* uplo,
