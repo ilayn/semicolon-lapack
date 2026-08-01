@@ -15,38 +15,44 @@
  * pivoting of a complex Hermitian positive semidefinite matrix A.
  *
  * The factorization has the form
- *    P**T * A * P = U**H * U ,  if UPLO = 'U',
- *    P**T * A * P = L  * L**H,  if UPLO = 'L',
+ * @rst
+ * .. code-block:: text
+ *
+ *     P**T * A * P = U**H * U ,  if uplo = 'U',
+ *     P**T * A * P = L  * L**H,  if uplo = 'L',
+ * @endrst
  * where U is an upper triangular matrix and L is lower triangular, and
  * P is stored as vector PIV.
  *
  * This algorithm does not attempt to check that A is positive
  * semidefinite. This version of the algorithm calls level 3 BLAS.
  *
- * @param[in]     uplo  Specifies whether the upper or lower triangular part
- *                      of the Hermitian matrix A is stored.
- *                      = 'U': Upper triangular
- *                      = 'L': Lower triangular
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Complex*16 array, dimension (lda, n).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular part of A is stored
+ *                       - `'L'`: Lower triangular part of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
  *                      On entry, the Hermitian matrix A.
- *                      On exit, if info = 0, the factor U or L from the
+ *                      On exit, if `info=0`, the factor U or L from the
  *                      Cholesky factorization.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1,n).
- * @param[out]    piv   Integer array, dimension (n).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    piv   Array of dimension `n`.
  *                      PIV is such that the nonzero entries are P(PIV(k), k) = 1.
  *                      0-based indexing.
  * @param[out]    rank  The rank of A given by the number of steps the algorithm
  *                      completed.
- * @param[in]     tol   User defined tolerance. If tol < 0, then n*eps*max(A(k,k))
+ * @param[in]     tol   User defined tolerance. If `tol<0`, then `n*eps*max(A(k,k))`
  *                      will be used. The algorithm terminates at the (k-1)st step
- *                      if the pivot <= tol.
- * @param[out]    work  Single precision array, dimension (2*n). Work space.
+ *                      if the pivot `<=tol`.
+ * @param[out]    work  Array of dimension `2*n`.
+ *                      Work space.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0: the matrix A is either rank deficient with computed rank
- *                           as returned in rank, or is not positive semidefinite.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: the matrix A is either rank deficient with
+ *                           computed rank as returned in `rank`, or is not positive
+ *                           semidefinite.
  */
 void cpstrf(
     const char* uplo,
