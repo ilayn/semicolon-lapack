@@ -13,23 +13,27 @@
  * symmetric matrix A using the factorization A = U*D*U**T or
  * A = L*D*L**T computed by CSYTRF.
  *
- * @param[in]     uplo  = 'U': Upper triangular, A = U*D*U**T
- *                        = 'L': Lower triangular, A = L*D*L**T
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
- * @param[in]     A     Single complex array, dimension (lda, n).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in]     A     Complex array of dimension `(lda,n)`.
  *                      The block diagonal matrix D and the multipliers used
- *                      to obtain the factor U or L as computed by CSYTRF.
- * @param[in]     lda   The leading dimension of A. lda >= max(1, n).
- * @param[in]     ipiv  Integer array, dimension (n). The pivot indices
- *                      from CSYTRF.
- * @param[in,out] B     Single complex array, dimension (ldb, nrhs).
+ *                      to obtain the factor U or L as computed by `csytrf`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `csytrf`.
+ * @param[in,out] B     Complex array of dimension `(ldb,nrhs)`.
  *                      On entry, the right hand side matrix B.
  *                      On exit, the solution matrix X.
- * @param[in]     ldb   The leading dimension of B. ldb >= max(1, n).
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void csytrs(
     const char* uplo,
