@@ -12,26 +12,33 @@
  * A using the factorization A = U*D*U**T or A = L*D*L**T computed by
  * SSYTRF.
  *
- * @param[in]     uplo  Specifies whether the details of the factorization
- *                      are stored as an upper or lower triangular matrix.
- *                      = 'U': Upper triangular, form is A = U*D*U**T;
- *                      = 'L': Lower triangular, form is A = L*D*L**T.
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Double precision array, dimension (lda, n).
- *                      On entry, the block diagonal matrix D and the multipliers
- *                      used to obtain the factor U or L as computed by SSYTRF.
- *                      On exit, if info = 0, the (symmetric) inverse of the
- *                      original matrix.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1,n).
- * @param[in]     ipiv  Integer array, dimension (n).
- *                      Details of the interchanges and the block structure of D
- *                      as determined by SSYTRF.
- * @param[out]    work  Double precision array, dimension (n+nb+1, nb+3).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L as
+ *                      computed by `ssytrf`.
+ *                      On exit, if `info=0`, the (symmetric) inverse of the
+ *                      original matrix. If `uplo='U'`, the upper triangular
+ *                      part of the inverse is formed and the part of A
+ *                      below the diagonal is not referenced; if `uplo='L'`
+ *                      the lower triangular part of the inverse is formed
+ *                      and the part of A above the diagonal is not
+ *                      referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `ssytrf`.
+ * @param[out]    work  Array of dimension `(n+nb+1,nb+3)`.
  * @param[in]     nb    Block size.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void ssytri2x(
     const char* uplo,
