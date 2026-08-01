@@ -14,32 +14,36 @@
  * and packed, and provides error bounds and backward error estimates
  * for the solution.
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored;
- *                        = 'L': Lower triangle of A is stored.
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     nrhs   The number of right hand sides. nrhs >= 0.
- * @param[in]     AP     The upper or lower triangle of the Hermitian matrix A,
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in]     AP     Array of dimension `n*(n+1)/2`.
+ *                       The upper or lower triangle of the Hermitian matrix A,
  *                       packed columnwise in a linear array.
- *                       Array of dimension (n*(n+1)/2).
- * @param[in]     AFP    The triangular factor U or L from the Cholesky
+ * @param[in]     AFP    Array of dimension `n*(n+1)/2`.
+ *                       The triangular factor U or L from the Cholesky
  *                       factorization A = U**H*U or A = L*L**H, as computed
- *                       by CPPTRF, packed columnwise.
- *                       Array of dimension (n*(n+1)/2).
- * @param[in]     B      The right hand side matrix B. Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of the array B. ldb >= max(1,n).
- * @param[in,out] X      On entry, the solution matrix X, as computed by CPPTRS.
+ *                       by `cpptrf`, packed columnwise.
+ * @param[in]     B      Array of dimension `(ldb,nrhs)`.
+ *                       The right hand side matrix B.
+ * @param[in]     ldb    The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[in,out] X      Array of dimension `(ldx,nrhs)`.
+ *                       On entry, the solution matrix X, as computed by `cpptrs`.
  *                       On exit, the improved solution matrix X.
- *                       Array of dimension (ldx, nrhs).
- * @param[in]     ldx    The leading dimension of the array X. ldx >= max(1,n).
- * @param[out]    ferr   The estimated forward error bound for each solution vector X(j).
- *                       Array of dimension (nrhs).
- * @param[out]    berr   The componentwise relative backward error of each solution
- *                       vector X(j). Array of dimension (nrhs).
- * @param[out]    work   Complex workspace array of dimension (2*n).
- * @param[out]    rwork  Single precision workspace array of dimension (n).
+ * @param[in]     ldx    The leading dimension of the array X. `ldx>=max(1,n)`.
+ * @param[out]    ferr   Array of dimension `nrhs`.
+ *                       The estimated forward error bound for each solution vector X(j).
+ * @param[out]    berr   Array of dimension `nrhs`.
+ *                       The componentwise relative backward error of each solution
+ *                       vector X(j).
+ * @param[out]    work   Complex array of dimension `2*n`.
+ * @param[out]    rwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void cpprfs(
     const char* uplo,
