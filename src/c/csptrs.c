@@ -13,25 +13,27 @@
  * matrix A stored in packed format using the factorization A = U*D*U**T or
  * A = L*D*L**T computed by CSPTRF.
  *
- * @param[in]     uplo   Specifies whether the details of the factorization are
- *                       stored as an upper or lower triangular matrix:
- *                       - = 'U': Upper triangular, form is A = U*D*U**T
- *                       - = 'L': Lower triangular, form is A = L*D*L**T
- * @param[in]     n      The order of the matrix A. n >= 0.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                       - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n      The order of the matrix A. `n>=0`.
  * @param[in]     nrhs   The number of right hand sides, i.e., the number of
- *                       columns of the matrix B. nrhs >= 0.
- * @param[in]     AP     The block diagonal matrix D and the multipliers used
- *                       to obtain the factor U or L as computed by CSPTRF,
- *                       stored as a packed triangular matrix of dimension n*(n+1)/2.
- * @param[in]     ipiv   Details of the interchanges and the block structure of D
- *                       as determined by CSPTRF. Array of dimension n.
- * @param[in,out] B      On entry, the right hand side matrix B of dimension (ldb, nrhs).
+ *                       columns of the matrix B. `nrhs>=0`.
+ * @param[in]     AP     Complex array of dimension `n*(n+1)/2`.
+ *                       The block diagonal matrix D and the multipliers used
+ *                       to obtain the factor U or L as computed by `csptrf`,
+ *                       stored as a packed triangular matrix.
+ * @param[in]     ipiv   Array of dimension `n`.
+ *                       Details of the interchanges and the block structure of D
+ *                       as determined by `csptrf`.
+ * @param[in,out] B      Complex array of dimension `(ldb,nrhs)`.
+ *                       On entry, the right hand side matrix B.
  *                       On exit, the solution matrix X.
- * @param[in]     ldb    The leading dimension of the array B. ldb >= max(1,n).
+ * @param[in]     ldb    The leading dimension of the array B. `ldb>=max(1,n)`.
  * @param[out]    info
- *                           Exit status:
- *                           - = 0: successful exit
- *                           - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void csptrs(
     const char* uplo,
