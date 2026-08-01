@@ -7,34 +7,87 @@
 
 /**
  * DPBSV computes the solution to a real system of linear equations
- *    A * X = B,
- * where A is an N-by-N symmetric positive definite band matrix and X
- * and B are N-by-NRHS matrices.
+ * @rst
+ * .. code-block:: text
+ *
+ *     A * X = B
+ * @endrst
+ * where A is an `n`-by-`n` symmetric positive definite band matrix and X
+ * and `B` are `n`-by-`nrhs` matrices.
  *
  * The Cholesky decomposition is used to factor A as
- *    A = U**T * U,  if UPLO = 'U', or
- *    A = L * L**T,  if UPLO = 'L',
- * where U is an upper triangular band matrix, and L is a lower
- * triangular band matrix.
+ * @rst
+ * .. code-block:: text
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     kd     The number of super-diagonals (if uplo='U') or
- *                       sub-diagonals (if uplo='L'). kd >= 0.
- * @param[in]     nrhs   The number of right hand sides. nrhs >= 0.
- * @param[in,out] AB     On entry, the banded matrix A. On exit, the factor U or L.
- *                       Array of dimension (ldab, n).
- * @param[in]     ldab   The leading dimension of AB. ldab >= kd+1.
- * @param[in,out] B      On entry, the right hand side matrix B.
- *                       On exit, the solution matrix X.
- *                       Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of B. ldb >= max(1,n).
+ *     A = U**T * U,  if uplo = 'U', or
+ *     A = L * L**T,  if uplo = 'L',
+ * @endrst
+ * where U is an upper triangular band matrix, and L is a lower
+ * triangular band matrix, with the same number of superdiagonals or
+ * subdiagonals as A. The factored form of A is then used to solve the
+ * system of equations A * X = B.
+ *
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The number of linear equations, i.e., the order of
+ *                       the matrix A. `n>=0`.
+ * @param[in]     kd     The number of superdiagonals of the matrix A if
+ *                       `uplo='U'`, or the number of subdiagonals if
+ *                       `uplo='L'`. `kd>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in,out] AB     Array of dimension (`ldab`, `n`).
+ *                       On entry, the upper or lower triangle of the symmetric
+ *                       band matrix A, stored in the first `kd+1` rows of the
+ *                       array. The j-th column of A is stored in the j-th
+ *                       column of the array AB as follows:
+ *                       if `uplo='U'`, `AB[kd+i-j + j*ldab] = A(i,j)` for
+ *                       `max(0,j-kd)<=i<=j`;
+ *                       if `uplo='L'`, `AB[i-j + j*ldab] = A(i,j)` for
+ *                       `j<=i<=min(n-1,j+kd)`.
+ *                       See below for further details.
+ *                       On exit, if `info=0`, the triangular factor U or L
+ *                       from the Cholesky factorization A = U**T*U or
+ *                       A = L*L**T of the band matrix A, in the same storage
+ *                       format as A.
+ * @param[in]     ldab   The leading dimension of the array `AB`. `ldab>=kd+1`.
+ * @param[in,out] B      Array of dimension (`ldb`, `nrhs`).
+ *                       On entry, the `n`-by-`nrhs` right hand side matrix `B`.
+ *                       On exit, if `info=0`, the `n`-by-`nrhs` solution matrix X.
+ * @param[in]     ldb    The leading dimension of the array `B`. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the leading minor of order i is not
- *                           positive definite.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the leading principal minor of order
+ *                           i of A is not positive, so the factorization could not
+ *                           be completed, and the solution has not been computed.
+ *
+ * @par Further Details:
+ * @rst
+ * The band storage scheme is illustrated by the following example, when
+ * ``n=6``, ``kd=2``, and ``uplo='U'``:
+ *
+ * .. code-block:: text
+ *
+ *     On entry:                       On exit:
+ *
+ *          *    *   a02  a13  a24  a35      *    *   u02  u13  u24  u35
+ *          *   a01  a12  a23  a34  a45      *   u01  u12  u23  u34  u45
+ *         a00  a11  a22  a33  a44  a55     u00  u11  u22  u33  u44  u55
+ *
+ * Similarly, if ``uplo='L'`` the format of A is as follows:
+ *
+ * .. code-block:: text
+ *
+ *     On entry:                       On exit:
+ *
+ *         a00  a11  a22  a33  a44  a55     l00  l11  l22  l33  l44  l55
+ *         a10  a21  a32  a43  a54   *      l10  l21  l32  l43  l54   *
+ *         a20  a31  a42  a53   *    *      l20  l31  l42  l53   *    *
+ *
+ * Array elements marked * are not used by the routine.
+ * @endrst
  */
 void dpbsv(
     const char* uplo,
