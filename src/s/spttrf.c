@@ -11,12 +11,12 @@
  * positive definite tridiagonal matrix A.  The factorization may also
  * be regarded as having the form A = U**T*D*U.
  *
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] D     Double precision array, dimension (n).
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] D     Array of dimension `n`.
  *                      On entry, the n diagonal elements of the tridiagonal matrix A.
  *                      On exit, the n diagonal elements of the diagonal matrix D
  *                      from the L*D*L**T factorization of A.
- * @param[in,out] E     Double precision array, dimension (n-1).
+ * @param[in,out] E     Array of dimension `n-1`.
  *                      On entry, the (n-1) subdiagonal elements of the tridiagonal
  *                      matrix A.
  *                      On exit, the (n-1) subdiagonal elements of the unit bidiagonal
@@ -24,12 +24,13 @@
  *                      E can also be regarded as the superdiagonal of the unit
  *                      bidiagonal factor U from the U**T*D*U factorization of A.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0: if info = k, the leading principal minor of order k
- *                           is not positive; if k < n, the factorization could not
- *                           be completed, while if k = n, the factorization was
- *                           completed, but D(n-1) <= 0 (0-based).
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, the leading principal minor of
+ *                           order k is not positive; if `k<n`, the factorization
+ *                           could not be completed, while if `k=n`, the
+ *                           factorization was completed, but `D(n-1)<=0` (0-based).
  */
 void spttrf(
     const INT n,
