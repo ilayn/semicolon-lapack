@@ -16,84 +16,88 @@
  *
  * The bounded Bunch-Kaufman ("rook") diagonal pivoting method is used
  * to factor A as
- *    A = U * D * U**H,  if UPLO = 'U', or
- *    A = L * D * L**H,  if UPLO = 'L',
+ *    A = U * D * U**H,  if uplo = 'U', or
+ *    A = L * D * L**H,  if uplo = 'L',
  * where U (or L) is a product of permutation and unit upper (lower)
  * triangular matrices, and D is Hermitian and block diagonal with
  * 1-by-1 and 2-by-2 diagonal blocks.
  *
- * ZHETRF_ROOK is called to compute the factorization of a complex
+ * `zhetrf_rook` is called to compute the factorization of a complex
  * Hermitian matrix A using the bounded Bunch-Kaufman ("rook") diagonal
  * pivoting method.
  *
  * The factored form of A is then used to solve the system
- * of equations A * X = B by calling ZHETRS_ROOK (uses BLAS 2).
+ * of equations A * X = B by calling `zhetrs_rook` (uses BLAS 2).
  *
- * @param[in] uplo
- *          = 'U': Upper triangle of A is stored;
- *          = 'L': Lower triangle of A is stored.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The number of linear equations, i.e., the order of
+ *                      the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the Hermitian matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, if `info=0`, the block diagonal matrix D and
+ *                      the multipliers used to obtain the factor U or L from
+ *                      the factorization A = U*D*U**H or A = L*D*L**H as
+ *                      computed by `zhetrf_rook`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`. Pivot indices (0-based).
+ *                      If `uplo='U'`:
  *
- * @param[in] n
- *          The number of linear equations, i.e., the order of the
- *          matrix A. n >= 0.
+ *                      - If `ipiv[k]>=0`, then rows and columns `k` and
+ *                        `ipiv[k]` were interchanged and `D(k,k)` is a
+ *                        1-by-1 diagonal block.
+ *                      - If `ipiv[k]<0` and `ipiv[k-1]<0`, then rows and
+ *                        columns `k` and `-ipiv[k]-1` were interchanged and
+ *                        rows and columns `k-1` and `-ipiv[k-1]-1` were
+ *                        interchanged, `D(k-1:k,k-1:k)` is a 2-by-2
+ *                        diagonal block.
  *
- * @param[in] nrhs
- *          The number of right hand sides, i.e., the number of columns
- *          of the matrix B. nrhs >= 0.
+ *                      If `uplo='L'`:
  *
- * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the Hermitian matrix A. If uplo = 'U', the leading
- *          N-by-N upper triangular part of A contains the upper
- *          triangular part of the matrix A, and the strictly lower
- *          triangular part of A is not referenced. If uplo = 'L', the
- *          leading N-by-N lower triangular part of A contains the lower
- *          triangular part of the matrix A, and the strictly upper
- *          triangular part of A is not referenced.
- *
- *          On exit, if info = 0, the block diagonal matrix D and the
- *          multipliers used to obtain the factor U or L from the
- *          factorization A = U*D*U**H or A = L*D*L**H as computed by
- *          ZHETRF_ROOK.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D,
- *          as determined by ZHETRF_ROOK.
- *
- * @param[in,out] B
- *          Double complex array, dimension (ldb, nrhs).
- *          On entry, the N-by-NRHS right hand side matrix B.
- *          On exit, if info = 0, the N-by-NRHS solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] work
- *          Double complex array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work. lwork >= 1, and for best performance
- *          lwork >= max(1, n*NB), where NB is the optimal blocksize for
- *          ZHETRF_ROOK.
- *          for lwork < n, TRS will be done with Level BLAS 2
- *          for lwork >= n, TRS will be done with Level BLAS 3
- *
- *          If lwork = -1, then a workspace query is assumed; the routine
- *          only calculates the optimal size of the work array, returns
- *          this value as the first entry of the work array, and no error
- *          message related to lwork is issued by xerbla.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) is exactly zero. The factorization
- *                           has been completed, but the block diagonal matrix D is
- *                           exactly singular, so the solution could not be computed.
+ *                      - If `ipiv[k]>=0`, then rows and columns `k` and
+ *                        `ipiv[k]` were interchanged and `D(k,k)` is a
+ *                        1-by-1 diagonal block.
+ *                      - If `ipiv[k]<0` and `ipiv[k+1]<0`, then rows and
+ *                        columns `k` and `-ipiv[k]-1` were interchanged and
+ *                        rows and columns `k+1` and `-ipiv[k+1]-1` were
+ *                        interchanged, `D(k:k+1,k:k+1)` is a 2-by-2
+ *                        diagonal block.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the `n`-by-`nrhs` right hand side matrix B.
+ *                      On exit, if `info=0`, the `n`-by-`nrhs` solution
+ *                      matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The length of `work`. `lwork>=1`, and for best
+ *                      performance `lwork>=n*nb`, where `nb` is the optimal
+ *                      block size for `zhetrf_rook`.
+ *                      For `lwork<n`, TRS will be done with Level BLAS 2.
+ *                      For `lwork>=n`, TRS will be done with Level BLAS 3.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)` is exactly zero. The
+ *                           factorization has been completed, but the block
+ *                           diagonal matrix D is exactly singular, so the
+ *                           solution could not be computed.
  */
 void zhesv_rook(
     const char* uplo,
