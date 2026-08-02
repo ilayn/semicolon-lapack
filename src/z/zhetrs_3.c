@@ -12,70 +12,57 @@
  * ZHETRS_3 solves a system of linear equations A * X = B with a complex
  * Hermitian matrix A using the factorization computed
  * by ZHETRF_RK or ZHETRF_BK:
+ * @rst
+ * .. code-block:: text
  *
- *    A = P*U*D*(U**H)*(P**T) or A = P*L*D*(L**H)*(P**T),
- *
+ *     A = P*U*D*(U**H)*(P**T) or A = P*L*D*(L**H)*(P**T),
+ * @endrst
  * where U (or L) is unit upper (or lower) triangular matrix,
- * U**H (or L**H) is the conjugate of U (or L), P is a permutation
- * matrix, P**T is the transpose of P, and D is Hermitian and block
- * diagonal with 1-by-1 and 2-by-2 diagonal blocks.
+ * U**H (or L**H) is the conjugate transpose of U (or L), P is a
+ * permutation matrix, P**T is the transpose of P, and D is Hermitian
+ * and block diagonal with 1-by-1 and 2-by-2 diagonal blocks.
  *
  * This algorithm is using Level 3 BLAS.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are
- *          stored as an upper or lower triangular matrix:
- *          = 'U':  Upper triangular, form is A = P*U*D*(U**H)*(P**T);
- *          = 'L':  Lower triangular, form is A = P*L*D*(L**H)*(P**T).
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in] nrhs
- *          The number of right hand sides. nrhs >= 0.
- *
- * @param[in] A
- *          Complex*16 array, dimension (lda, n).
- *          Diagonal of the block diagonal matrix D and factors U or L
- *          as computed by ZHETRF_RK and ZHETRF_BK:
- *            a) ONLY diagonal elements of the Hermitian block diagonal
- *               matrix D on the diagonal of A, i.e. D(k,k) = A(k,k);
- *               (superdiagonal (or subdiagonal) elements of D
- *                should be provided on entry in array E), and
- *            b) If UPLO = 'U': factor U in the superdiagonal part of A.
- *               If UPLO = 'L': factor L in the subdiagonal part of A.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] E
- *          Complex*16 array, dimension (n).
- *          On entry, contains the superdiagonal (or subdiagonal)
- *          elements of the Hermitian block diagonal matrix D
- *          with 1-by-1 or 2-by-2 diagonal blocks, where
- *          If UPLO = 'U': E(i) = D(i-1,i), i=2:N, E(1) not referenced;
- *          If UPLO = 'L': E(i) = D(i+1,i), i=1:N-1, E(N) not referenced.
- *
- *          NOTE: For 1-by-1 diagonal block D(k), where
- *          1 <= k <= N, the element E(k) is not referenced in both
- *          UPLO = 'U' or UPLO = 'L' cases.
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D
- *          as determined by ZHETRF_RK or ZHETRF_BK.
- *
- * @param[in,out] B
- *          Complex*16 array, dimension (ldb, nrhs).
- *          On entry, the right hand side matrix B.
- *          On exit, the solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = P*U*D*(U**H)*(P**T)
+ *                      - `'L'`: Lower triangular, form is A = P*L*D*(L**H)*(P**T)
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in]     A     Array of dimension `(lda,n)`.
+ *                      Diagonal of the block diagonal matrix D and factors
+ *                      U or L as computed by `zhetrf_rk` or `zhetrf_bk`:
+ *                      - Only diagonal elements of the Hermitian block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D should be provided on entry in
+ *                        array `E`), and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     E     Array of dimension `n`.
+ *                      On entry, contains the superdiagonal (or
+ *                      subdiagonal) elements of the Hermitian block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` not referenced; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` not referenced.
+ *                      For a 1-by-1 diagonal block `D(k)`, the element
+ *                      `E[k]` is not referenced in both `uplo='U'` or
+ *                      `uplo='L'` cases.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `zhetrf_rk` or `zhetrf_bk`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the right hand side matrix B.
+ *                      On exit, the solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void zhetrs_3(
     const char* uplo,
