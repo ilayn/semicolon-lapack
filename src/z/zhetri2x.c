@@ -9,30 +9,32 @@
 #include "semicolon_lapack_complex_double.h"
 
 /**
- * ZHETRI2X computes the inverse of a complex hermitian indefinite matrix
+ * ZHETRI2X computes the inverse of a complex Hermitian indefinite matrix
  * A using the factorization A = U*D*U**H or A = L*D*L**H computed by
  * ZHETRF.
  *
- * @param[in]     uplo  Specifies whether the details of the factorization
- *                      are stored as an upper or lower triangular matrix.
- *                      = 'U': Upper triangular, form is A = U*D*U**H;
- *                      = 'L': Lower triangular, form is A = L*D*L**H.
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Double complex array, dimension (lda, n).
- *                      On entry, the block diagonal matrix D and the multipliers
- *                      used to obtain the factor U or L as computed by ZHETRF.
- *                      On exit, if info = 0, the (symmetric) inverse of the
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**H
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**H
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L as
+ *                      computed by `zhetrf`.
+ *                      On exit, if `info=0`, the (symmetric) inverse of the
  *                      original matrix.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1,n).
- * @param[in]     ipiv  Integer array, dimension (n).
- *                      Details of the interchanges and the block structure of D
- *                      as determined by ZHETRF.
- * @param[out]    work  Double complex array, dimension (n+nb+1, nb+3).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `zhetrf`.
+ * @param[out]    work  Array of dimension `(n+nb+1,nb+3)`.
  * @param[in]     nb    Block size.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void zhetri2x(
     const char* uplo,
