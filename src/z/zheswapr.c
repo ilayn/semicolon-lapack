@@ -9,37 +9,19 @@
 
 /**
  * ZHESWAPR applies an elementary permutation on the rows and the columns of
- * a hermitian matrix.
+ * a Hermitian matrix.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are stored
- *          as an upper or lower triangular matrix.
- *          = 'U':  Upper triangular, form is A = U*D*U**T;
- *          = 'L':  Lower triangular, form is A = L*D*L**T.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the NB diagonal matrix D and the multipliers
- *          used to obtain the factor U or L as computed by CSYTRF.
- *
- *          On exit, if INFO = 0, the (symmetric) inverse of the original
- *          matrix.  If UPLO = 'U', the upper triangular part of the
- *          inverse is formed and the part of A below the diagonal is not
- *          referenced; if UPLO = 'L' the lower triangular part of the
- *          inverse is formed and the part of A above the diagonal is
- *          not referenced.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] i1
- *          Index of the first row to swap (0-based).
- *
- * @param[in] i2
- *          Index of the second row to swap (0-based).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular part of A is stored
+ *                      - `'L'`: Lower triangular part of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Double complex array of dimension `(lda,n)`.
+ *                      On entry, the Hermitian matrix A. On exit, rows
+ *                      `i1` and `i2` and columns `i1` and `i2` are
+ *                      interchanged. The unused triangle is not referenced.
+ * @param[in]     lda   The leading dimension of A. `lda>=max(1,n)`.
+ * @param[in]     i1    The 0-based index of the first row and column.
+ * @param[in]     i2    The 0-based index of the second row and column.
  */
 void zheswapr(
     const char* uplo,

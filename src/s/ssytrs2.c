@@ -13,30 +13,31 @@
  * symmetric matrix A using the factorization A = U*D*U**T or
  * A = L*D*L**T computed by SSYTRF and converted by SSYCONV.
  *
- * @param[in]     uplo  Specifies whether the details of the factorization
- *                      are stored as an upper or lower triangular matrix.
- *                      = 'U': Upper triangular, form is A = U*D*U**T;
- *                      = 'L': Lower triangular, form is A = L*D*L**T.
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
- * @param[in,out] A     Double precision array, dimension (lda, n).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
  *                      The block diagonal matrix D and the multipliers used
- *                      to obtain the factor U or L as computed by SSYTRF.
+ *                      to obtain the factor U or L as computed by `ssytrf`.
  *                      Note that A is input/output. At the start of the
  *                      subroutine, we permute A in a "better" form and then
  *                      permute A back to its original form at the end.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1,n).
- * @param[in]     ipiv  Integer array, dimension (n).
- *                      Details of the interchanges and the block structure of D
- *                      as determined by SSYTRF.
- * @param[in,out] B     Double precision array, dimension (ldb, nrhs).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `ssytrf`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
  *                      On entry, the right hand side matrix B.
  *                      On exit, the solution matrix X.
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
- * @param[out]    work  Double precision array, dimension (n).
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    work  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void ssytrs2(
     const char* uplo,

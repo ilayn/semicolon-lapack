@@ -13,55 +13,69 @@
  *     A = P*U*D*(U**H)*(P**T) or A = P*L*D*(L**H)*(P**T),
  *
  * where U (or L) is unit upper (or lower) triangular matrix,
- * U**H (or L**H) is the conjugate of U (or L), P is a permutation
- * matrix, P**T is the transpose of P, and D is Hermitian and block
- * diagonal with 1-by-1 and 2-by-2 diagonal blocks.
+ * U**H (or L**H) is the conjugate transpose of U (or L), P is a
+ * permutation matrix, P**T is the transpose of P, and D is Hermitian
+ * and block diagonal with 1-by-1 and 2-by-2 diagonal blocks.
  *
  * ZHETRI_3 sets the leading dimension of the workspace before calling
  * ZHETRI_3X that actually computes the inverse. This is the blocked
  * version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are
- *          stored as an upper or lower triangular matrix.
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, diagonal of the block diagonal matrix D
+ *                      and factors U or L as computed by `zhetrf_rk` or
+ *                      `zhetrf_bk`:
+ *                      - Only diagonal elements of the Hermitian block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D should be provided on entry in
+ *                        array `E`), and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in,out] A
- *          Complex*16 array, dimension (lda, n).
- *          On entry, diagonal of the block diagonal matrix D and
- *          factors U or L as computed by ZHETRF_RK and ZHETRF_BK.
- *          On exit, if info = 0, the Hermitian inverse of the original
- *          matrix.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] E
- *          Complex*16 array, dimension (n).
- *          Contains the superdiagonal (or subdiagonal) elements of the
- *          Hermitian block diagonal matrix D.
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D.
- *
- * @param[out] work
- *          Complex*16 array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work.
- *          If n = 0, lwork >= 1, else lwork >= (n+nb+1)*(nb+3).
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                      On exit, if `info=0`, the Hermitian inverse of the
+ *                      original matrix.
+ *                      If `uplo='U'`: the upper triangular part of the
+ *                      inverse is formed and the part of A below the
+ *                      diagonal is not referenced;
+ *                      If `uplo='L'`: the lower triangular part of the
+ *                      inverse is formed and the part of A above the
+ *                      diagonal is not referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     E     Array of dimension `n`.
+ *                      On entry, contains the superdiagonal (or
+ *                      subdiagonal) elements of the Hermitian block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` not referenced; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` not referenced.
+ *                      For a 1-by-1 diagonal block `D(k)`, the element
+ *                      `E[k]` is not referenced in both `uplo='U'` or
+ *                      `uplo='L'` cases.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `zhetrf_rk` or `zhetrf_bk`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The length of `work`.
+ *                      If `n=0`, `lwork>=1`, else `lwork>=(n+nb+1)*(nb+3)`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void zhetri_3(
     const char* uplo,

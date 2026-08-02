@@ -12,12 +12,15 @@
  * CLAHEF_RK computes a partial factorization of a complex Hermitian
  * matrix A using the bounded Bunch-Kaufman (rook) diagonal
  * pivoting method. The partial factorization has the form:
+ * @rst
+ * .. code-block:: text
  *
- * A  =  ( I  U12 ) ( A11  0  ) (  I       0    )  if UPLO = 'U', or:
- *       ( 0  U22 ) (  0   D  ) ( U12**H U22**H )
+ *     A  =  ( I  U12 ) ( A11  0  ) (  I       0    )  if UPLO = 'U', or:
+ *           ( 0  U22 ) (  0   D  ) ( U12**H U22**H )
  *
- * A  =  ( L11  0 ) (  D   0  ) ( L11**H L21**H )  if UPLO = 'L',
- *       ( L21  I ) (  0  A22 ) (  0       I    )
+ *     A  =  ( L11  0 ) (  D   0  ) ( L11**H L21**H )  if UPLO = 'L',
+ *           ( L21  I ) (  0  A22 ) (  0       I    )
+ * @endrst
  *
  * where the order of D is at most NB. The actual order is returned in
  * the argument KB, and is either NB or NB-1, or N if N <= NB.
@@ -26,58 +29,71 @@
  * blocked code (calling Level 3 BLAS) to update the submatrix
  * A11 (if UPLO = 'U') or A22 (if UPLO = 'L').
  *
- * @param[in] uplo
- *          Specifies whether the upper or lower triangular part of the
- *          Hermitian matrix A is stored:
- *          = 'U':  Upper triangular
- *          = 'L':  Lower triangular
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular
+ *                      - `'L'`: Lower triangular
  *
  * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *          The order of the matrix A. `n>=0`.
  *
  * @param[in] nb
  *          The maximum number of columns of the matrix A that should be
- *          factored. nb should be at least 2 to allow for 2-by-2 pivot
+ *          factored. `nb` should be at least 2 to allow for 2-by-2 pivot
  *          blocks.
  *
  * @param[out] kb
  *          The number of columns of A that were actually factored.
- *          kb is either nb-1 or nb, or n if n <= nb.
+ *          `kb` is either `nb-1` or `nb`, or `n` if `n<=nb`.
  *
  * @param[in,out] A
- *          Single complex array, dimension (lda, n).
- *          On entry, the Hermitian matrix A.
+ *          Single complex array of dimension `(lda,n)`.
+ *          On entry, the Hermitian matrix A. If `uplo='U'`, the leading
+ *          n-by-n upper triangular part contains the upper triangular
+ *          part of A and the strictly lower triangular part is not
+ *          referenced. If `uplo='L'`, the leading n-by-n lower triangular
+ *          part contains the lower triangular part of A and the strictly
+ *          upper triangular part is not referenced.
  *          On exit, contains:
- *            a) ONLY diagonal elements of the Hermitian block diagonal
- *               matrix D on the diagonal of A, i.e. D(k,k) = A(k,k);
+ *            a) Only diagonal elements of the Hermitian block diagonal
+ *               matrix D on the diagonal of A, i.e. `D(k,k)=A(k,k)`;
  *               (superdiagonal (or subdiagonal) elements of D
  *                are stored on exit in array E), and
- *            b) If UPLO = 'U': factor U in the superdiagonal part of A.
- *               If UPLO = 'L': factor L in the subdiagonal part of A.
+ *            b) If `uplo='U'`: factor U in the superdiagonal part of A.
+ *               If `uplo='L'`: factor L in the subdiagonal part of A.
  *
  * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
+ *          The leading dimension of A. `lda>=max(1,n)`.
  *
  * @param[out] E
- *          Single complex array, dimension (n).
+ *          Single complex array of dimension `n`.
  *          On exit, contains the superdiagonal (or subdiagonal)
  *          elements of the Hermitian block diagonal matrix D
- *          with 1-by-1 or 2-by-2 diagonal blocks.
+ *          with 1-by-1 or 2-by-2 diagonal blocks. If `uplo='U'`, `E[i]`
+ *          is `D(i-1,i)` for `1<=i<n` and `E[0]` is zero. If `uplo='L'`,
+ *          `E[i]` is `D(i+1,i)` for `0<=i<n-1` and `E[n-1]` is zero.
+ *          `E[k]` is zero for a 1-by-1 block `D(k)`.
  *
  * @param[out] ipiv
- *          Integer array, dimension (n).
- *          IPIV describes the permutation matrix P in the factorization.
+ *          Integer array of dimension `n`.
+ *          Describes the permutation matrix P and the block structure of D.
+ *          A non-negative `ipiv[k]` denotes a 1-by-1 block; a pair of
+ *          consecutive negative values denotes a 2-by-2 block. For a
+ *          negative entry, the exchanged 0-based index is `-ipiv[k]-1`.
+ *          For `uplo='U'`, factorization proceeds from `n-1` to `0` and the
+ *          recovered index is at most k. For `uplo='L'`, factorization
+ *          proceeds from 0 to n-1 and the recovered index is at least k.
  *
  * @param[out] W
- *          Single complex array, dimension (ldw, nb).
+ *          Single complex array of dimension `(ldw,nb)`.
  *
  * @param[in] ldw
- *          The leading dimension of the array W. ldw >= max(1, n).
+ *          The leading dimension of W. `ldw>=max(1,n)`.
  *
  * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: If info = -k, the k-th argument had an illegal value
- *                         - > 0: If info = k, the matrix A is singular.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal value
+ *                         - `info>0`: if `info=k`, the matrix A is singular because
+ *                           the corresponding diagonal block is zero.
  */
 void clahef_rk(
     const char* uplo,

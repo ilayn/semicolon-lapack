@@ -14,42 +14,28 @@
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are stored
- *          as an upper or lower triangular matrix.
- *          = 'U':  Upper triangular, form is A = U*D*U**T;
- *          = 'L':  Lower triangular, form is A = L*D*L**T.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in] A
- *          Complex*16 array, dimension (lda, n).
- *          The block diagonal matrix D and the multipliers used to
- *          obtain the factor U or L as computed by ZSYTRF_ROOK.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D
- *          as determined by ZSYTRF_ROOK.
- *
- * @param[in] anorm
- *          The 1-norm of the original matrix A.
- *
- * @param[out] rcond
- *          The reciprocal of the condition number of the matrix A,
- *          computed as rcond = 1/(anorm * ainvnm), where ainvnm is an
- *          estimate of the 1-norm of inv(A) computed in this routine.
- *
- * @param[out] work
- *          Complex*16 array, dimension (2*n).
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     A     Complex array of dimension `(lda,n)`.
+ *                      The block diagonal matrix D and the multipliers used
+ *                      to obtain the factor U or L as computed by
+ *                      `zsytrf_rook`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `zsytrf_rook`.
+ * @param[in]     anorm The 1-norm of the original matrix A.
+ * @param[out]    rcond The reciprocal of the condition number of the matrix
+ *                      A, computed as `rcond=1/(anorm*ainvnm)`, where
+ *                      `ainvnm` is an estimate of the 1-norm of `inv(A)`
+ *                      computed in this routine.
+ * @param[out]    work  Complex array of dimension `2*n`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void zsycon_rook(
     const char* uplo,

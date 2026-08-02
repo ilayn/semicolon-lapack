@@ -1,6 +1,6 @@
 /**
  * @file zlahef_aa.c
- * @brief ZLAHEF_AA factorizes a panel of a complex hermitian matrix A using Aasen's algorithm.
+ * @brief ZLAHEF_AA factorizes a panel of a complex Hermitian matrix A using Aasen's algorithm.
  */
 
 #include <complex.h>
@@ -9,7 +9,7 @@
 #include "semicolon_lapack_complex_double.h"
 
 /**
- * ZLAHEF_AA factorizes a panel of a complex hermitian matrix A using
+ * ZLAHEF_AA factorizes a panel of a complex Hermitian matrix A using
  * the Aasen's algorithm. The panel consists of a set of NB rows of A
  * when UPLO is U, or a set of NB columns when UPLO is L.
  *
@@ -22,42 +22,47 @@
  * (J-1)-th row, or column, of A (without the unit diagonals), while
  * the diagonal and subdiagonal of A are overwritten by those of T.
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
  *
- * @param[in] j1
+ * @param[in]     j1
  *          The location of the first row, or column, of the panel
  *          within the submatrix of A, passed to this routine, e.g.,
- *          when called by ZHETRF_AA, for the first panel, J1 is 1,
- *          while for the remaining panels, J1 is 2.
+ *          when called by `zhetrf_aa`, for the first panel, `j1` is 1,
+ *          while for the remaining panels, `j1` is 2.
  *
- * @param[in] m
- *          The dimension of the submatrix. M >= 0.
+ * @param[in]     m
+ *          The dimension of the submatrix. `m>=0`.
  *
- * @param[in] nb
+ * @param[in]     nb
  *          The dimension of the panel to be factorized.
  *
  * @param[in,out] A
- *          Double complex array, dimension (lda, m) for
- *          the first panel, while dimension (lda, m+1) for the
+ *          Double complex array of dimension `(lda,m)` for
+ *          the first panel, while dimension `(lda,m+1)` for the
  *          remaining panels.
+ *          On entry, A contains the last row or column of the previous
+ *          panel and the trailing submatrix to be factorized; for the
+ *          first panel, only the panel is passed. On exit, the leading
+ *          panel is factorized.
  *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, m).
+ * @param[in]     lda
+ *          The leading dimension of A. `lda>=max(1,m)`.
  *
- * @param[out] ipiv
- *          Integer array, dimension (m).
- *          Details of the row and column interchanges.
+ * @param[out]    ipiv
+ *          Integer array of dimension `m`.
+ *          Details of the row and column interchanges: row and column k
+ *          were interchanged with row and column ipiv[k].
  *
  * @param[in,out] H
- *          Double complex workspace, dimension (ldh, nb).
+ *          Double complex workspace of dimension `(ldh,nb)`.
  *
- * @param[in] ldh
- *          The leading dimension of the workspace H. ldh >= max(1, m).
+ * @param[in]     ldh
+ *          The leading dimension of H. `ldh>=max(1,m)`.
  *
- * @param[out] work
- *          Double complex workspace, dimension (m).
+ * @param[out]    work
+ *          Double complex workspace of dimension `m`.
  */
 void zlahef_aa(
     const char* uplo,

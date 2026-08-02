@@ -14,44 +14,88 @@ static const f32 ALPHA_BK = 0.6403882032022076f;
 /**
  * SSYTF2 computes the factorization of a real symmetric matrix A using
  * the Bunch-Kaufman diagonal pivoting method:
+ * @rst
+ * .. code-block:: text
  *
- *    A = U*D*U**T  or  A = L*D*L**T
- *
+ *     A = U*D*U**T  or  A = L*D*L**T
+ * @endrst
  * where U (or L) is a product of permutation and unit upper (lower)
  * triangular matrices, U**T is the transpose of U, and D is symmetric and
  * block diagonal with 1-by-1 and 2-by-2 diagonal blocks.
  *
  * This is the unblocked version of the algorithm, calling Level 2 BLAS.
  *
- * @param[in]     uplo  'U': Upper triangular factorization (A = U*D*U**T)
- *                      'L': Lower triangular factorization (A = L*D*L**T)
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Double precision array, dimension (lda, n).
- *                      On entry, the symmetric matrix A. If uplo = "U", the
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular factorization (A = U*D*U**T)
+ *                       - `'L'`: Lower triangular factorization (A = L*D*L**T)
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the symmetric matrix A. If `uplo='U'`, the
  *                      leading n-by-n upper triangular part contains the upper
- *                      triangular part of A. If uplo = "L", the leading n-by-n
+ *                      triangular part of A. If `uplo='L'`, the leading n-by-n
  *                      lower triangular part contains the lower triangular part.
  *                      On exit, the block diagonal matrix D and the multipliers
- *                      used to obtain the factor U or L.
- * @param[in]     lda   The leading dimension of A. lda >= max(1, n).
- * @param[out]    ipiv  Integer array, dimension (n). Pivot indices (0-based).
- *                      If ipiv[k] >= 0: rows/columns k and ipiv[k] were
- *                          interchanged, D(k,k) is a 1-by-1 block.
- *                      If ipiv[k] < 0 (upper): rows/columns k-1 and
- *                          -ipiv[k]-1 were interchanged,
- *                          D(k-1:k,k-1:k) is a 2-by-2 block,
- *                          and ipiv[k-1] = ipiv[k].
- *                      If ipiv[k] < 0 (lower): rows/columns k+1 and
- *                          -ipiv[k]-1 were interchanged,
- *                          D(k:k+1,k:k+1) is a 2-by-2 block,
- *                          and ipiv[k+1] = ipiv[k].
+ *                      used to obtain the factor U or L (see below for further
+ *                      details).
+ * @param[in]     lda   The leading dimension of A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`. Pivot indices (0-based).
+ *                      If `ipiv[k]>=0`: rows/columns `k` and `ipiv[k]` were
+ *                      interchanged, `D(k,k)` is a 1-by-1 block.
+ *                      If `ipiv[k]<0` (upper): rows/columns `k-1` and
+ *                      `-ipiv[k]-1` were interchanged, `D(k-1:k,k-1:k)`
+ *                      is a 2-by-2 block, and `ipiv[k-1]=ipiv[k]`.
+ *                      If `ipiv[k]<0` (lower): rows/columns `k+1` and
+ *                      `-ipiv[k]-1` were interchanged, `D(k:k+1,k:k+1)`
+ *                      is a 2-by-2 block, and `ipiv[k+1]=ipiv[k]`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = k, D(k,k) is exactly zero. The
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=k`, `D(k,k)` is exactly zero. The
  *                           factorization has been completed, but D is exactly
  *                           singular, and division by zero will occur if it is
  *                           used to solve a system of equations.
+ *
+ * @par Further Details:
+ * @rst
+ * If ``uplo='U'``, then A = U*D*U**T, where
+ * U = P(n-1)*U(n-1)* ... *P(k)*U(k)* ..., i.e., U is a product of terms
+ * P(k)*U(k), where k decreases from n-1 to 0 in steps of 1 or 2, and D
+ * is a block diagonal matrix with 1-by-1 and 2-by-2 diagonal blocks
+ * D(k). P(k) is a permutation matrix as defined by ``ipiv[k]``, and
+ * U(k) is a unit upper triangular matrix, such that if the diagonal
+ * block D(k) is of order s (s = 1 or 2), then
+ *
+ * .. code-block:: text
+ *
+ *              (   I    v    0   )   k-s+1
+ *      U(k) =  (   0    I    0   )   s
+ *              (   0    0    I   )   n-1-k
+ *                 k-s+1  s   n-1-k
+ *
+ * If s = 1, D(k) overwrites A(k,k), and v overwrites A(0:k-1,k).
+ * If s = 2, the upper triangle of D(k) overwrites A(k-1,k-1), A(k-1,k),
+ * and A(k,k), and v overwrites A(0:k-2,k-1:k).
+ *
+ * If ``uplo='L'``, then A = L*D*L**T, where
+ * L = P(0)*L(0)* ... *P(k)*L(k)* ..., i.e., L is a product of terms
+ * P(k)*L(k), where k increases from 0 to n-1 in steps of 1 or 2, and D
+ * is a block diagonal matrix with 1-by-1 and 2-by-2 diagonal blocks
+ * D(k). P(k) is a permutation matrix as defined by ``ipiv[k]``, and
+ * L(k) is a unit lower triangular matrix, such that if the diagonal
+ * block D(k) is of order s (s = 1 or 2), then
+ *
+ * .. code-block:: text
+ *
+ *              (   I    0     0   )  k
+ *      L(k) =  (   0    I     0   )  s
+ *              (   0    v     I   )  n-k-s
+ *                 k     s   n-k-s
+ *
+ * If s = 1, D(k) overwrites A(k,k), and v overwrites A(k+1:n-1,k).
+ * If s = 2, the lower triangle of D(k) overwrites A(k,k), A(k+1,k),
+ * and A(k+1,k+1), and v overwrites A(k+2:n-1,k:k+1).
+ * @endrst
  */
 void ssytf2(
     const char* uplo,

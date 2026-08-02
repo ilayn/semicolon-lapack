@@ -11,31 +11,36 @@
  * CLAQHE equilibrates a Hermitian matrix A using the scaling factors
  * in the vector S.
  *
- * @param[in]     uplo   Specifies whether the upper or lower triangular part
- *                       of the Hermitian matrix A is stored.
- *                       = 'U': Upper triangular
- *                       = 'L': Lower triangular
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in,out] A      Complex*16 array, dimension (lda, n).
- *                       On entry, the Hermitian matrix A. If UPLO = 'U', the
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangular
+ *                       - `'L'`: Lower triangular
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in,out] A      Single complex array of dimension `(lda,n)`.
+ *                       On entry, the Hermitian matrix A. If `uplo='U'`, the
  *                       leading n by n upper triangular part of A contains the
  *                       upper triangular part of the matrix A, and the strictly
  *                       lower triangular part of A is not referenced. If
- *                       UPLO = 'L', the leading n by n lower triangular part of
+ *                       `uplo='L'`, the leading n by n lower triangular part of
  *                       A contains the lower triangular part of the matrix A,
  *                       and the strictly upper triangular part of A is not
  *                       referenced.
- *                       On exit, if equed = 'Y', the equilibrated matrix:
+ *                       On exit, if `equed='Y'`, the equilibrated matrix:
  *                       diag(S) * A * diag(S).
- * @param[in]     lda    The leading dimension of the array A. lda >= max(n,1).
- * @param[in]     S      Single precision array, dimension (n).
+ * @param[in]     lda    The leading dimension of A. `lda>=max(n,1)`.
+ * @param[in]     S      Single precision array of dimension `n`.
  *                       The scale factors for A.
  * @param[in]     scond  Ratio of the smallest S(i) to the largest S(i).
  * @param[in]     amax   Absolute value of largest matrix entry.
- * @param[out]    equed  Specifies whether or not equilibration was done.
- *                       = 'N': No equilibration.
- *                       = 'Y': Equilibration was done, i.e., A has been replaced
+ * @param[out]    equed
+ *                       - `'N'`: No equilibration
+ *                       - `'Y'`: Equilibration was done, i.e., A has been replaced
  *                              by diag(S) * A * diag(S).
+ *
+ * @par Internal Parameters:
+ * `THRESH` decides whether to scale based on the ratio of the scaling
+ * factors: scaling is performed when `scond<THRESH`. `LARGE` and `SMALL`
+ * decide whether to scale based on the absolute size of the largest
+ * matrix element: scaling is performed when `amax>LARGE` or `amax<SMALL`.
  */
 void claqhe(
     const char* uplo,

@@ -14,28 +14,39 @@
  * CSYTRF. CSYTRI2 sets the LEADING DIMENSION of the workspace
  * before calling CSYTRI2X that actually computes the inverse.
  *
- * @param[in]     uplo  Specifies whether the details of the factorization
- *                      are stored as an upper or lower triangular matrix.
- *                      = 'U': Upper triangular, form is A = U*D*U**T;
- *                      = 'L': Lower triangular, form is A = L*D*L**T.
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Single complex array, dimension (lda, n).
- *                      On entry, the block diagonal matrix D and the multipliers
- *                      used to obtain the factor U or L as computed by CSYTRF.
- *                      On exit, if info = 0, the (symmetric) inverse of the
- *                      original matrix.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1,n).
- * @param[in]     ipiv  Integer array, dimension (n).
- *                      Details of the interchanges and the block structure of D
- *                      as determined by CSYTRF.
- * @param[out]    work  Single complex array, dimension (max(1, lwork)).
- * @param[in]     lwork The dimension of the array work.
- *                      If n = 0, lwork >= 1, else lwork >= (n+nb+1)*(nb+3).
- *                      If lwork = -1, then a workspace query is assumed.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
+ *                      On entry, the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L as
+ *                      computed by `csytrf`.
+ *                      On exit, if `info=0`, the (symmetric) inverse of the
+ *                      original matrix. If `uplo='U'`, the upper triangular
+ *                      part of the inverse is formed and the part of A
+ *                      below the diagonal is not referenced; if `uplo='L'`
+ *                      the lower triangular part of the inverse is formed
+ *                      and the part of A above the diagonal is not
+ *                      referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `csytrf`.
+ * @param[out]    work  Complex array of dimension `max(1,lwork)`.
+ * @param[in]     lwork The dimension of the array `work`.
+ *                      If `n=0`, `lwork>=1`, else `lwork>=(n+nb+1)*(nb+3)`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine calculates the optimal size of the `work`
+ *                      array, returns this value as the first entry of the
+ *                      `work` array, and no error message related to
+ *                      `lwork` is issued.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void csytri2(
     const char* uplo,

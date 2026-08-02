@@ -17,21 +17,29 @@
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in]     uplo   = 'U': Upper triangle of A is stored;
- *                        = 'L': Lower triangle of A is stored.
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     AP     The triangular factor U or L from the Cholesky
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     AP     Array of dimension `n*(n+1)/2`.
+ *                       The triangular factor U or L from the Cholesky
  *                       factorization A = U**H*U or A = L*L**H, packed
- *                       columnwise in a linear array.
- *                       Array of dimension (n*(n+1)/2).
+ *                       columnwise in a linear array. The j-th column of
+ *                       U or L is stored in the array AP as follows:
+ *                       if `uplo='U'`, `AP[i + j*(j+1)/2] = U(i,j)` for `0<=i<=j`;
+ *                       if `uplo='L'`, `AP[i + j*(2*n-j-1)/2] = L(i,j)` for
+ *                       `j<=i<=n-1`.
  * @param[in]     anorm  The 1-norm (or infinity-norm) of the Hermitian matrix A.
  * @param[out]    rcond  The reciprocal of the condition number of the matrix A,
- *                       computed as RCOND = 1/(ANORM * AINVNM).
- * @param[out]    work   Complex workspace array of dimension (2*n).
- * @param[out]    rwork  Single precision workspace array of dimension (n).
+ *                       computed as `rcond=1/(anorm*ainvnm)`, where `ainvnm` is
+ *                       an estimate of the 1-norm of inv(A) computed in this
+ *                       routine.
+ * @param[out]    work   Complex array of dimension `2*n`.
+ * @param[out]    rwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void cppcon(
     const char* uplo,

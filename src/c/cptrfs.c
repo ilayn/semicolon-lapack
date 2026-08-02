@@ -16,43 +16,42 @@
  * and tridiagonal, and provides error bounds and backward error
  * estimates for the solution.
  *
- * @param[in]     uplo  Specifies whether the superdiagonal or the subdiagonal
- *                      of the tridiagonal matrix A is stored and the form of
- *                      the factorization:
- *                      = 'U':  E is the superdiagonal of A, and A = U**H*D*U;
- *                      = 'L':  E is the subdiagonal of A, and A = L*D*L**H.
- * @param[in]     n     The order of the matrix A. n >= 0.
+ * @param[in]     uplo
+ *                       - `'U'`: E is the superdiagonal of A, and A = U**H*D*U
+ *                       - `'L'`: E is the subdiagonal of A, and A = L*D*L**H
+ * @param[in]     n     The order of the matrix A. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number
- *                      of columns of the matrix B. nrhs >= 0.
- * @param[in]     D     Single precision array, dimension (n).
+ *                      of columns of the matrix B. `nrhs>=0`.
+ * @param[in]     D     Array of dimension `n`.
  *                      The n real diagonal elements of the tridiagonal matrix A.
- * @param[in]     E     Single complex array, dimension (n-1).
+ * @param[in]     E     Complex array of dimension `n-1`.
  *                      The (n-1) off-diagonal elements of the tridiagonal
- *                      matrix A (see UPLO).
- * @param[in]     DF    Single precision array, dimension (n).
+ *                      matrix A (see `uplo`).
+ * @param[in]     DF    Array of dimension `n`.
  *                      The n diagonal elements of the diagonal matrix D from
- *                      the factorization computed by CPTTRF.
- * @param[in]     EF    Single complex array, dimension (n-1).
+ *                      the factorization computed by `cpttrf`.
+ * @param[in]     EF    Complex array of dimension `n-1`.
  *                      The (n-1) off-diagonal elements of the unit bidiagonal
- *                      factor U or L from the factorization computed by CPTTRF
- *                      (see UPLO).
- * @param[in]     B     Single complex array, dimension (ldb, nrhs).
+ *                      factor U or L from the factorization computed by `cpttrf`
+ *                      (see `uplo`).
+ * @param[in]     B     Complex array of dimension `(ldb,nrhs)`.
  *                      The right hand side matrix B.
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
- * @param[in,out] X     Single complex array, dimension (ldx, nrhs).
- *                      On entry, the solution matrix X, as computed by CPTTRS.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[in,out] X     Complex array of dimension `(ldx,nrhs)`.
+ *                      On entry, the solution matrix X, as computed by `cpttrs`.
  *                      On exit, the improved solution matrix X.
- * @param[in]     ldx   The leading dimension of the array X. ldx >= max(1,n).
- * @param[out]    ferr  Single precision array, dimension (nrhs).
+ * @param[in]     ldx   The leading dimension of the array X. `ldx>=max(1,n)`.
+ * @param[out]    ferr  Array of dimension `nrhs`.
  *                      The forward error bound for each solution vector X(j).
- * @param[out]    berr  Single precision array, dimension (nrhs).
+ * @param[out]    berr  Array of dimension `nrhs`.
  *                      The componentwise relative backward error of each
  *                      solution vector X(j).
- * @param[out]    work  Single complex array, dimension (n).
- * @param[out]    rwork Single precision array, dimension (n).
+ * @param[out]    work  Complex array of dimension `n`.
+ * @param[out]    rwork Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void cptrfs(
     const char* uplo,

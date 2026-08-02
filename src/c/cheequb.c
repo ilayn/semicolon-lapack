@@ -13,32 +13,39 @@
  * Hermitian matrix A (with respect to the Euclidean norm) and reduce
  * its condition number. The scale factors S are computed by the BIN
  * algorithm (see references) so that the scaled matrix B with elements
- * B(i,j) = S(i)*A(i,j)*S(j) has a condition number within a factor N of
+ * `B(i,j)=S(i)*A(i,j)*S(j)` has a condition number within a factor N of
  * the smallest possible condition number over all possible diagonal
  * scalings.
  *
- * @param[in]     uplo   Specifies whether the upper or lower triangular part
- *                       of the Hermitian matrix A is stored.
- *                       = 'U': Upper triangle of A is stored
- *                       = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     A      Complex*16 array, dimension (lda, n).
- *                       The N-by-N Hermitian matrix whose scaling factors
- *                       are to be computed.
- * @param[in]     lda    The leading dimension of the array A. lda >= max(1,n).
- * @param[out]    S      Single precision array, dimension (n).
- *                       If info = 0, S contains the scale factors for A.
- * @param[out]    scond  If info = 0, S contains the ratio of the smallest S(i)
- *                       to the largest S(i). If scond >= 0.1 and amax is neither
- *                       too large nor too small, it is not worth scaling by S.
- * @param[out]    amax   Largest absolute value of any matrix element. If amax is
- *                       very close to overflow or very close to underflow, the
- *                       matrix should be scaled.
- * @param[out]    work   Complex*16 array, dimension (2*n).
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The order of the matrix A. `n>=0`.
+ * @param[in]     A      Array of dimension `(lda,n)`.
+ *                       The `n`-by-`n` Hermitian matrix whose scaling
+ *                       factors are to be computed.
+ * @param[in]     lda    The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    S      Array of dimension `n`.
+ *                       If `info=0`, S contains the scale factors for A.
+ * @param[out]    scond  If `info=0`, S contains the ratio of the smallest
+ *                       `S(i)` to the largest `S(i)`. If `scond>=0.1` and
+ *                       `amax` is neither too large nor too small, it is not
+ *                       worth scaling by S.
+ * @param[out]    amax   Largest absolute value of any matrix element. If
+ *                       `amax` is very close to overflow or very close to
+ *                       underflow, the matrix should be scaled.
+ * @param[out]    work   Array of dimension `2*n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, the i-th diagonal element is nonpositive.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, the i-th diagonal element is
+ *                           nonpositive.
+ *
+ * @par References:
+ * Livne, O.E. and Golub, G.H., "Scaling by Binormalization",
+ * Numerical Algorithms, vol. 35, no. 1, pp. 97-120, January 2004.
+ * https://doi.org/10.1023/B:NUMA.0000016606.32820.69
  */
 void cheequb(
     const char* uplo,

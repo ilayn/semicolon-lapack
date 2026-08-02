@@ -19,22 +19,30 @@
  * the condition number is computed as
  *              RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in]  n      The order of the matrix A. n >= 0.
- * @param[in]  D      Single precision array, dimension (n).
+ * @param[in]  n      The order of the matrix A. `n>=0`.
+ * @param[in]  D      Array of dimension `n`.
  *                    The n diagonal elements of the diagonal matrix D
- *                    from the factorization of A, as computed by CPTTRF.
- * @param[in]  E      Complex*16 array, dimension (n-1).
+ *                    from the factorization of A, as computed by `cpttrf`.
+ * @param[in]  E      Complex array of dimension `n-1`.
  *                    The (n-1) off-diagonal elements of the unit bidiagonal
  *                    factor U or L from the factorization of A, as computed
- *                    by CPTTRF.
+ *                    by `cpttrf`.
  * @param[in]  anorm  The 1-norm of the original matrix A.
  * @param[out] rcond  The reciprocal of the condition number of the matrix A,
- *                    computed as RCOND = 1/(ANORM * AINVNM), where AINVNM is
+ *                    computed as `rcond=1/(anorm*ainvnm)`, where `ainvnm` is
  *                    the 1-norm of inv(A) computed in this routine.
- * @param[out] rwork  Single precision array, dimension (n).
+ * @param[out] rwork  Array of dimension `n`.
  * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *
+ * @par Further Details:
+ * @rst
+ * The method used is described in Nicholas J. Higham, "Efficient
+ * Algorithms for Computing the Condition Number of a Tridiagonal
+ * Matrix", SIAM J. Sci. Stat. Comput., Vol. 7, No. 1, January 1986.
+ * @endrst
  */
 void cptcon(
     const INT n,

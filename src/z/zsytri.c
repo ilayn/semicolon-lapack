@@ -14,20 +14,32 @@
  * A using the factorization A = U*D*U**T or A = L*D*L**T computed by
  * ZSYTRF.
  *
- * @param[in]     uplo  = 'U': Upper triangular, A = U*D*U**T
- *                        = 'L': Lower triangular, A = L*D*L**T
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Double complex array, dimension (lda, n).
- *                      On entry, the factored matrix from ZSYTRF.
- *                      On exit, the symmetric inverse of the original matrix.
- * @param[in]     lda   The leading dimension of A. lda >= max(1, n).
- * @param[in]     ipiv  Integer array, dimension (n). The pivot indices
- *                      from ZSYTRF.
- * @param[out]    work  Double complex array, dimension (2*n).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**T
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**T
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Complex array of dimension `(lda,n)`.
+ *                      On entry, the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L as
+ *                      computed by `zsytrf`.
+ *                      On exit, if `info=0`, the (symmetric) inverse of the
+ *                      original matrix. If `uplo='U'`, the upper triangular
+ *                      part of the inverse is formed and the part of A
+ *                      below the diagonal is not referenced; if `uplo='L'`
+ *                      the lower triangular part of the inverse is formed
+ *                      and the part of A above the diagonal is not
+ *                      referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `zsytrf`.
+ * @param[out]    work  Complex array of dimension `2*n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void zsytri(
     const char* uplo,

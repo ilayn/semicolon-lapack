@@ -15,33 +15,133 @@
  * Error bounds on the solution and a condition estimate are also
  * provided.
  *
- * @param[in]     fact   = 'F': AFP and IPIV contain the factored form of A
- *                        = 'N': The matrix A will be copied to AFP and factored
- * @param[in]     uplo   = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n      The order of the matrix A. n >= 0.
- * @param[in]     nrhs   The number of right hand sides. nrhs >= 0.
- * @param[in]     AP     The original packed symmetric matrix A. Array of dimension (n*(n+1)/2).
- * @param[in,out] AFP    If fact = 'F', contains the factored form from SSPTRF.
- *                       If fact = 'N', on exit contains the factored form.
- *                       Array of dimension (n*(n+1)/2).
- * @param[in,out] ipiv   If fact = 'F', contains the pivot indices from SSPTRF.
- *                       If fact = 'N', on exit contains the pivot indices.
- *                       Array of dimension (n).
- * @param[in]     B      The right hand side matrix B. Array of dimension (ldb, nrhs).
- * @param[in]     ldb    The leading dimension of B. ldb >= max(1,n).
- * @param[out]    X      The solution matrix X. Array of dimension (ldx, nrhs).
- * @param[in]     ldx    The leading dimension of X. ldx >= max(1,n).
- * @param[out]    rcond  The reciprocal condition number of A.
- * @param[out]    ferr   The forward error bound for each solution vector. Array of dimension (nrhs).
- * @param[out]    berr   The backward error for each solution vector. Array of dimension (nrhs).
- * @param[out]    work   Workspace array of dimension (3*n).
- * @param[out]    iwork  Integer workspace array of dimension (n).
+ * @rst
+ * The following steps are performed:
+ *
+ * 1. If ``fact='N'``, the diagonal pivoting method is used to factor A as
+ *
+ *    .. code-block:: text
+ *
+ *        A = U * D * U**T,  if uplo = 'U', or
+ *        A = L * D * L**T,  if uplo = 'L',
+ *
+ *    where U (or L) is a product of permutation and unit upper (lower)
+ *    triangular matrices and D is symmetric and block diagonal with
+ *    1-by-1 and 2-by-2 diagonal blocks.
+ *
+ * 2. If some D(i,i)=0, so that D is exactly singular, then the routine
+ *    returns with ``info=i``. Otherwise, the factored form of A is used
+ *    to estimate the condition number of the matrix A. If the
+ *    reciprocal of the condition number is less than machine precision,
+ *    ``info=n+1`` is returned as a warning, but the routine still goes on
+ *    to solve for X and compute error bounds as described below.
+ *
+ * 3. The system of equations is solved for X using the factored form
+ *    of A.
+ *
+ * 4. Iterative refinement is applied to improve the computed solution
+ *    matrix and calculate error bounds and backward error estimates
+ *    for it.
+ * @endrst
+ *
+ * @param[in]     fact
+ *                       - `'F'`: On entry, AFP and IPIV contain the factored
+ *                         form of A. AP, AFP and IPIV will not be modified.
+ *                       - `'N'`: The matrix A will be copied to AFP and
+ *                         factored.
+ * @param[in]     uplo
+ *                       - `'U'`: Upper triangle of A is stored
+ *                       - `'L'`: Lower triangle of A is stored
+ * @param[in]     n      The number of linear equations, i.e., the order of
+ *                       the matrix A. `n>=0`.
+ * @param[in]     nrhs   The number of right hand sides. `nrhs>=0`.
+ * @param[in]     AP     Array of dimension `n*(n+1)/2`.
+ *                       The upper or lower triangle of the symmetric matrix
+ *                       A, packed columnwise in a linear array. The j-th
+ *                       column of A is stored in the array AP as follows:
+ *                       if `uplo='U'`, `AP[i + j*(j+1)/2] = A(i,j)` for
+ *                       `0<=i<=j`; if `uplo='L'`,
+ *                       `AP[i + j*(2*n-j-1)/2] = A(i,j)` for `j<=i<=n-1`.
+ *                       See below for further details.
+ * @param[in,out] AFP    Array of dimension `n*(n+1)/2`.
+ *                       If `fact='F'`, then AFP is an input argument and on
+ *                       entry contains the block diagonal matrix D and the
+ *                       multipliers used to obtain the factor U or L from the
+ *                       factorization A = U*D*U**T or A = L*D*L**T as
+ *                       computed by `ssptrf`, stored as a packed triangular
+ *                       matrix in the same storage format as A.
+ *                       If `fact='N'`, then AFP is an output argument and on
+ *                       exit contains the block diagonal matrix D and the
+ *                       multipliers used to obtain the factor U or L.
+ * @param[in,out] ipiv   Array of dimension `n`. Pivot indices (0-based).
+ *                       If `fact='F'`, then ipiv is an input argument and on
+ *                       entry contains details of the interchanges and the
+ *                       block structure of D, as determined by `ssptrf`.
+ *                       If `ipiv[k]>=0`, then rows and columns `k` and
+ *                       `ipiv[k]` were interchanged and `D(k,k)` is a 1-by-1
+ *                       diagonal block. If `uplo='U'` and
+ *                       `ipiv[k]=ipiv[k-1]<0`, then rows and columns `k-1`
+ *                       and `-ipiv[k]-1` were interchanged and
+ *                       `D(k-1:k,k-1:k)` is a 2-by-2 diagonal block. If
+ *                       `uplo='L'` and `ipiv[k]=ipiv[k+1]<0`, then rows and
+ *                       columns `k+1` and `-ipiv[k]-1` were interchanged and
+ *                       `D(k:k+1,k:k+1)` is a 2-by-2 diagonal block.
+ *                       If `fact='N'`, then ipiv is an output argument and on
+ *                       exit contains details of the interchanges and the
+ *                       block structure of D, as determined by `ssptrf`.
+ * @param[in]     B      Array of dimension `(ldb,nrhs)`.
+ *                       The n-by-nrhs right hand side matrix B.
+ * @param[in]     ldb    The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    X      Array of dimension `(ldx,nrhs)`.
+ *                       If `info=0` or `info=n+1`, the n-by-nrhs solution
+ *                       matrix X.
+ * @param[in]     ldx    The leading dimension of the array X. `ldx>=max(1,n)`.
+ * @param[out]    rcond  The estimate of the reciprocal condition number of
+ *                       the matrix A. If `rcond` is less than the machine
+ *                       precision (in particular, if `rcond=0`), the matrix
+ *                       is singular to working precision. This condition is
+ *                       indicated by a return code of `info>0`.
+ * @param[out]    ferr   Array of dimension `nrhs`.
+ *                       The estimated forward error bound for each solution
+ *                       vector X(j).
+ * @param[out]    berr   Array of dimension `nrhs`.
+ *                       The componentwise relative backward error of each
+ *                       solution vector X(j).
+ * @param[out]    work   Array of dimension `3*n`.
+ * @param[out]    iwork  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) is exactly zero, or
- *                           if info = n+1, the matrix is singular to working precision
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, and `i<=n`, `D(i,i)` is exactly
+ *                           zero. The factorization has been completed but D
+ *                           is exactly singular, so the solution and error
+ *                           bounds could not be computed. `rcond=0` is
+ *                           returned.
+ *                         - `info=n+1`: D is nonsingular, but `rcond` is less
+ *                           than machine precision, meaning that the matrix
+ *                           is singular to working precision.
+ *
+ * @par Further Details:
+ * @rst
+ * The packed storage scheme is illustrated by the following example
+ * when ``n=4``, ``uplo='U'``:
+ *
+ * Two-dimensional storage of the symmetric matrix A:
+ *
+ * .. code-block:: text
+ *
+ *     a00 a01 a02 a03
+ *         a11 a12 a13
+ *             a22 a23     (aij = aji)
+ *                 a33
+ *
+ * Packed storage of the upper triangle of A:
+ *
+ * .. code-block:: text
+ *
+ *     AP = [ a00, a01, a11, a02, a12, a22, a03, a13, a23, a33 ]
+ * @endrst
  */
 void sspsvx(
     const char* fact,

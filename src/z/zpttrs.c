@@ -15,30 +15,29 @@
  * bidiagonal matrix whose superdiagonal (subdiagonal) is specified in
  * the vector E, and X and B are N by NRHS matrices.
  *
- * @param[in]     uplo  Specifies the form of the factorization and whether the
- *                      vector E is the superdiagonal of the upper bidiagonal factor
- *                      U or the subdiagonal of the lower bidiagonal factor L.
- *                      = 'U':  A = U**H *D*U, E is the superdiagonal of U
- *                      = 'L':  A = L*D*L**H, E is the subdiagonal of L
- * @param[in]     n     The order of the tridiagonal matrix A. n >= 0.
+ * @param[in]     uplo
+ *                       - `'U'`: A = U**H *D*U, E is the superdiagonal of U
+ *                       - `'L'`: A = L*D*L**H, E is the subdiagonal of L
+ * @param[in]     n     The order of the tridiagonal matrix A. `n>=0`.
  * @param[in]     nrhs  The number of right hand sides, i.e., the number of
- *                      columns of the matrix B. nrhs >= 0.
- * @param[in]     D     Double precision array, dimension (n).
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in]     D     Array of dimension `n`.
  *                      The n diagonal elements of the diagonal matrix D from the
  *                      factorization A = U**H *D*U or A = L*D*L**H.
- * @param[in]     E     Complex*16 array, dimension (n-1).
- *                      If UPLO = 'U', the (n-1) superdiagonal elements of the unit
+ * @param[in]     E     Complex array of dimension `n-1`.
+ *                      If `uplo='U'`, the (n-1) superdiagonal elements of the unit
  *                      bidiagonal factor U from the factorization A = U**H*D*U.
- *                      If UPLO = 'L', the (n-1) subdiagonal elements of the unit
+ *                      If `uplo='L'`, the (n-1) subdiagonal elements of the unit
  *                      bidiagonal factor L from the factorization A = L*D*L**H.
- * @param[in,out] B     Complex*16 array, dimension (ldb, nrhs).
+ * @param[in,out] B     Complex array of dimension `(ldb,nrhs)`.
  *                      On entry, the right hand side vectors B for the system of
  *                      linear equations.
  *                      On exit, the solution vectors, X.
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1,n).
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an illegal
+ *                           value
  */
 void zpttrs(
     const char* uplo,

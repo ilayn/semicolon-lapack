@@ -9,50 +9,56 @@
 #include "lapack_tuning.h"
 
 /**
- * ZHETRF_AA computes the factorization of a complex hermitian matrix A
+ * ZHETRF_AA computes the factorization of a complex Hermitian matrix A
  * using the Aasen's algorithm. The form of the factorization is
+ * @rst
+ * .. code-block:: text
  *
- *    A = U**H*T*U  or  A = L*T*L**H
- *
+ *     A = U**H*T*U  or  A = L*T*L**H
+ * @endrst
  * where U (or L) is a product of permutation and unit upper (lower)
- * triangular matrices, and T is a hermitian tridiagonal matrix.
+ * triangular matrices, and T is a Hermitian tridiagonal matrix.
  *
  * This is the blocked version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the hermitian matrix A.
- *          On exit, the tridiagonal matrix is stored in the diagonals
- *          and the subdiagonals of A just below (or above) the diagonals,
- *          and L is stored below (or above) the subdiagonals.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          On exit, it contains the details of the interchanges.
- *
- * @param[out] work
- *          Double complex array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work.
- *          lwork >= 1, if n <= 1, and lwork >= 2*n, otherwise.
- *          For optimum performance lwork >= n*(1+nb).
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0:  successful exit
- *                         - < 0:  if info = -i, the i-th argument had an illegal value.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the Hermitian matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, the tridiagonal matrix is stored in the
+ *                      diagonals and the subdiagonals of A just below (or
+ *                      above) the diagonals, and L is stored below (or
+ *                      above) the subdiagonals, when `uplo='L'` (or `'U'`).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      On exit, it contains the details of the
+ *                      interchanges, i.e., the row and column `k` of A were
+ *                      interchanged with the row and column `ipiv[k]`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The length of `work`.
+ *                      `lwork>=1`, if `n<=1`, and `lwork>=2*n`, otherwise.
+ *                      For optimum performance `lwork>=n*(1+nb)`, where
+ *                      `nb` is the optimal block size, returned by ILAENV.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an
+ *                           illegal value
  */
 void zhetrf_aa(
     const char* uplo,

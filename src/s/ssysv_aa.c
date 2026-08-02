@@ -18,51 +18,55 @@
  * triangular matrices, and T is symmetric tridiagonal. The factored
  * form of A is then used to solve the system of equations A * X = B.
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
- *
- * @param[in] n
- *          The number of linear equations, i.e., the order of the
- *          matrix A. n >= 0.
- *
- * @param[in] nrhs
- *          The number of right hand sides, i.e., the number of columns
- *          of the matrix B. nrhs >= 0.
- *
- * @param[in,out] A
- *          Double precision array, dimension (lda, n).
- *          On entry, the symmetric matrix A.
- *          On exit, if info = 0, the tridiagonal matrix T and the
- *          multipliers used to obtain the factor U or L.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          On exit, it contains the details of the interchanges.
- *
- * @param[in,out] B
- *          Double precision array, dimension (ldb, nrhs).
- *          On entry, the N-by-NRHS right hand side matrix B.
- *          On exit, if info = 0, the N-by-NRHS solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] work
- *          Double precision array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work. lwork >= max(1, 2*n, 3*n-2).
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) is exactly zero.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The number of linear equations, i.e., the order of
+ *                      the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the symmetric matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, if `info=0`, the tridiagonal matrix T and
+ *                      the multipliers used to obtain the factor U or L
+ *                      from the factorization A = U**T*T*U or A = L*T*L**T
+ *                      as computed by `ssytrf_aa`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      On exit, it contains the details of the
+ *                      interchanges, i.e., the row and column `k` of A were
+ *                      interchanged with the row and column `ipiv[k]`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the `n`-by-`nrhs` right hand side matrix B.
+ *                      On exit, if `info=0`, the `n`-by-`nrhs` solution
+ *                      matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The length of `work`. `lwork>=max(1,2*n,3*n-2)`, and
+ *                      for the best performance, `lwork>=n*nb`, where `nb`
+ *                      is the optimal block size for `ssytrf_aa`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an
+ *                           illegal value
+ *                         - `info>0`: if `info=i`, `D(i,i)` is exactly zero.
+ *                           The factorization has been completed, but the
+ *                           block diagonal matrix D is exactly singular, so
+ *                           the solution could not be computed.
  */
 void ssysv_aa(
     const char* uplo,

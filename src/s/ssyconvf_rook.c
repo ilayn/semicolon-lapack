@@ -1,6 +1,6 @@
 /**
  * @file ssyconvf_rook.c
- * @brief SSYCONVF_ROOK converts between factorization formats used in SSYTRF_ROOK and SSYTRF_RK/DSYTRF_BK.
+ * @brief SSYCONVF_ROOK converts between factorization formats used in SSYTRF_ROOK and SSYTRF_RK/SSYTRF_BK.
  */
 
 #include "semicolon_cblas.h"
@@ -10,46 +10,114 @@
  * If parameter WAY = 'C':
  * SSYCONVF_ROOK converts the factorization output format used in
  * SSYTRF_ROOK provided on entry in parameter A into the factorization
- * output format used in SSYTRF_RK (or DSYTRF_BK) that is stored
+ * output format used in SSYTRF_RK (or SSYTRF_BK) that is stored
  * on exit in parameters A and E. IPIV format for SSYTRF_ROOK and
- * SSYTRF_RK (or DSYTRF_BK) is the same and is not converted.
+ * SSYTRF_RK (or SSYTRF_BK) is the same and is not converted.
  *
  * If parameter WAY = 'R':
  * SSYCONVF_ROOK performs the conversion in reverse direction, i.e.
  * converts the factorization output format used in SSYTRF_RK
- * (or DSYTRF_BK) provided on entry in parameters A and E into
+ * (or SSYTRF_BK) provided on entry in parameters A and E into
  * the factorization output format used in SSYTRF_ROOK that is stored
  * on exit in parameter A. IPIV format for SSYTRF_ROOK and
- * SSYTRF_RK (or DSYTRF_BK) is the same and is not converted.
+ * SSYTRF_RK (or SSYTRF_BK) is the same and is not converted.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are
- *          stored as an upper or lower triangular matrix A.
- *          = 'U':  Upper triangular
- *          = 'L':  Lower triangular
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular
+ *                      - `'L'`: Lower triangular
+ * @param[in]     way
+ *                      - `'C'`: Convert
+ *                      - `'R'`: Revert
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
  *
- * @param[in] way
- *          = 'C': Convert
- *          = 'R': Revert
+ *                      1) If `way='C'`:
  *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *                      On entry, contains factorization details in format
+ *                      used in `ssytrf_rook`:
  *
- * @param[in,out] A
- *          Double precision array, dimension (lda, n).
+ *                      - all elements of the symmetric block diagonal
+ *                        matrix D on the diagonal of A and on
+ *                        superdiagonal (or subdiagonal) of A, and
+ *                      - If `uplo='U'`: multipliers used to obtain factor
+ *                        U in the superdiagonal part of A. If `uplo='L'`:
+ *                        multipliers used to obtain factor L in the
+ *                        superdiagonal part of A.
  *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
+ *                      On exit, contains factorization details in format
+ *                      used in `ssytrf_rk` or `ssytrf_bk`:
  *
- * @param[in,out] E
- *          Double precision array, dimension (n).
+ *                      - Only diagonal elements of the symmetric block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D are stored on exit in array `E`),
+ *                        and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
  *
- * @param[in] ipiv
- *          Integer array, dimension (n).
+ *                      2) If `way='R'`:
  *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                      On entry, contains factorization details in format
+ *                      used in `ssytrf_rk` or `ssytrf_bk`:
+ *
+ *                      - Only diagonal elements of the symmetric block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D are stored on exit in array `E`),
+ *                        and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
+ *
+ *                      On exit, contains factorization details in format
+ *                      used in `ssytrf_rook`:
+ *
+ *                      - all elements of the symmetric block diagonal
+ *                        matrix D on the diagonal of A and on
+ *                        superdiagonal (or subdiagonal) of A, and
+ *                      - If `uplo='U'`: multipliers used to obtain factor
+ *                        U in the superdiagonal part of A. If `uplo='L'`:
+ *                        multipliers used to obtain factor L in the
+ *                        superdiagonal part of A.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in,out] E     Array of dimension `n`.
+ *
+ *                      1) If `way='C'`:
+ *
+ *                      On entry, just a workspace.
+ *
+ *                      On exit, contains the superdiagonal (or
+ *                      subdiagonal) elements of the symmetric block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` is set to 0; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` is set to 0.
+ *
+ *                      2) If `way='R'`:
+ *
+ *                      On entry, contains the superdiagonal (or
+ *                      subdiagonal) elements of the symmetric block
+ *                      diagonal matrix D with 1-by-1 or 2-by-2 diagonal
+ *                      blocks, where if `uplo='U'`: `E[i]=D(i-1,i)`,
+ *                      `i=1:n-1`, `E[0]` not referenced; if `uplo='L'`:
+ *                      `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` not referenced.
+ *
+ *                      On exit, is not changed.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      On entry, details of the interchanges and the block
+ *                      structure of D as determined:
+ *
+ *                      1) by `ssytrf_rook`, if `way='C'`;
+ *                      2) by `ssytrf_rk` (or `ssytrf_bk`), if `way='R'`.
+ *
+ *                      The ipiv format is the same for all these routines.
+ *
+ *                      On exit, is not changed.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void ssyconvf_rook(
     const char* uplo,
