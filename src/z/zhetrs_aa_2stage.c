@@ -9,55 +9,35 @@
 
 /**
  * ZHETRS_AA_2STAGE solves a system of linear equations A*X = B with a
- * hermitian matrix A using the factorization A = U**H*T*U or
+ * Hermitian matrix A using the factorization A = U**H*T*U or
  * A = L*T*L**H computed by ZHETRF_AA_2STAGE.
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are stored
- *          as an upper or lower triangular matrix.
- *          = 'U':  Upper triangular, form is A = U**H*T*U;
- *          = 'L':  Lower triangular, form is A = L*T*L**H.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in] nrhs
- *          The number of right hand sides, i.e., the number of columns
- *          of the matrix B. nrhs >= 0.
- *
- * @param[in] A
- *          Double complex array, dimension (lda, n).
- *          Details of factors computed by ZHETRF_AA_2STAGE.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] TB
- *          Double complex array, dimension (ltb).
- *          Details of factors computed by ZHETRF_AA_2STAGE.
- *
- * @param[in] ltb
- *          The size of the array TB. ltb >= 4*n.
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges as computed by ZHETRF_AA_2STAGE.
- *
- * @param[in] ipiv2
- *          Integer array, dimension (n).
- *          Details of the interchanges as computed by ZHETRF_AA_2STAGE.
- *
- * @param[in,out] B
- *          Double complex array, dimension (ldb, nrhs).
- *          On entry, the right hand side matrix B.
- *          On exit, the solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] info
- *                         - = 0:  successful exit
- *                         - < 0:  if info = -i, the i-th argument had an illegal value
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U**H*T*U
+ *                      - `'L'`: Lower triangular, form is A = L*T*L**H
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in]     A     Array of dimension `(lda,n)`.
+ *                      Details of factors computed by `zhetrf_aa_2stage`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     TB    Array of dimension `ltb`.
+ *                      Details of factors computed by `zhetrf_aa_2stage`.
+ * @param[in]     ltb   The size of the array TB. `ltb>=4*n`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges as computed by
+ *                      `zhetrf_aa_2stage`.
+ * @param[in]     ipiv2 Array of dimension `n`.
+ *                      Details of the interchanges as computed by
+ *                      `zhetrf_aa_2stage`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the right hand side matrix B.
+ *                      On exit, the solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
  */
 void zhetrs_aa_2stage(
     const char* uplo,
