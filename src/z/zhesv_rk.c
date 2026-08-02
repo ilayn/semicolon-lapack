@@ -13,69 +13,87 @@
  *
  * The bounded Bunch-Kaufman (rook) diagonal pivoting method is used
  * to factor A as
- *    A = P*U*D*(U**H)*(P**T),  if UPLO = 'U', or
- *    A = P*L*D*(L**H)*(P**T),  if UPLO = 'L',
+ *    A = P*U*D*(U**H)*(P**T),  if uplo = 'U', or
+ *    A = P*L*D*(L**H)*(P**T),  if uplo = 'L',
  * where U (or L) is unit upper (or lower) triangular matrix,
- * U**H (or L**H) is the conjugate of U (or L), P is a permutation
- * matrix, P**T is the transpose of P, and D is Hermitian and block
- * diagonal with 1-by-1 and 2-by-2 diagonal blocks.
+ * U**H (or L**H) is the conjugate transpose of U (or L), P is a
+ * permutation matrix, P**T is the transpose of P, and D is Hermitian
+ * and block diagonal with 1-by-1 and 2-by-2 diagonal blocks.
  *
- * ZHETRF_RK is called to compute the factorization of a complex
- * Hermitian matrix.  The factored form of A is then used to solve
- * the system of equations A * X = B by calling BLAS3 routine ZHETRS_3.
+ * `zhetrf_rk` is called to compute the factorization of a complex
+ * Hermitian matrix. The factored form of A is then used to solve
+ * the system of equations A * X = B by calling BLAS3 routine `zhetrs_3`.
  *
- * @param[in] uplo
- *          Specifies whether the upper or lower triangular part of the
- *          Hermitian matrix A is stored:
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The number of linear equations, i.e., the order of
+ *                      the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the Hermitian matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, if `info=0`, diagonal of the block diagonal
+ *                      matrix D and factors U or L as computed by
+ *                      `zhetrf_rk`:
  *
- * @param[in] n
- *          The number of linear equations, i.e., the order of the
- *          matrix A. n >= 0.
+ *                      - Only diagonal elements of the Hermitian block
+ *                        diagonal matrix D on the diagonal of A, i.e.
+ *                        `D(k,k)=A(k,k)`; (superdiagonal (or subdiagonal)
+ *                        elements of D are stored on exit in array `E`), and
+ *                      - If `uplo='U'`: factor U in the superdiagonal part
+ *                        of A. If `uplo='L'`: factor L in the subdiagonal
+ *                        part of A.
  *
- * @param[in] nrhs
- *          The number of right hand sides, i.e., the number of columns
- *          of the matrix B. nrhs >= 0.
- *
- * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the Hermitian matrix A.
- *          On exit, if info = 0, diagonal of the block diagonal
- *          matrix D and factors U or L as computed by ZHETRF_RK.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] E
- *          Double complex array, dimension (n).
- *          On exit, contains the superdiagonal (or subdiagonal)
- *          elements of the Hermitian block diagonal matrix D.
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D.
- *
- * @param[in,out] B
- *          Double complex array, dimension (ldb, nrhs).
- *          On entry, the N-by-NRHS right hand side matrix B.
- *          On exit, if info = 0, the N-by-NRHS solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] work
- *          Double complex array, dimension (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The length of work. lwork >= 1.
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -k, the k-th argument had an illegal value
- *                         - > 0: if info = k, the matrix A is singular.
+ *                      For more info see the description of `zhetrf_rk`.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    E     Array of dimension `n`.
+ *                      On exit, contains the output computed by the
+ *                      factorization routine `zhetrf_rk`, i.e. the
+ *                      superdiagonal (or subdiagonal) elements of the
+ *                      Hermitian block diagonal matrix D with 1-by-1 or
+ *                      2-by-2 diagonal blocks, where if `uplo='U'`:
+ *                      `E[i]=D(i-1,i)`, `i=1:n-1`, `E[0]` is set to 0; if
+ *                      `uplo='L'`: `E[i]=D(i+1,i)`, `i=0:n-2`, `E[n-1]` is
+ *                      set to 0.
+ *                      For a 1-by-1 diagonal block `D(k)`, the element
+ *                      `E[k]` is set to 0 in both `uplo='U'` or `uplo='L'`
+ *                      cases.
+ *                      For more info see the description of `zhetrf_rk`.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D, as determined by `zhetrf_rk`.
+ *                      For more info see the description of `zhetrf_rk`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the `n`-by-`nrhs` right hand side matrix B.
+ *                      On exit, if `info=0`, the `n`-by-`nrhs` solution
+ *                      matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      Work array used in the factorization stage.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The length of `work`. `lwork>=1`. For best
+ *                      performance of the factorization stage
+ *                      `lwork>=n*nb`, where `nb` is the optimal block size
+ *                      for `zhetrf_rk`.
+ *                      If `lwork=-1`, then a workspace query is assumed;
+ *                      the routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-k`, the k-th argument had an
+ *                           illegal value
+ *                         - `info>0`: if `info=k`, the matrix A is singular.
  */
 void zhesv_rk(
     const char* uplo,
