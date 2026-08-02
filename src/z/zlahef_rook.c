@@ -12,12 +12,15 @@
  * ZLAHEF_ROOK computes a partial factorization of a complex Hermitian
  * matrix A using the bounded Bunch-Kaufman ("rook") diagonal pivoting
  * method. The partial factorization has the form:
+ * @rst
+ * .. code-block:: text
  *
- * A  =  ( I  U12 ) ( A11  0  ) (  I      0     )  if UPLO = 'U', or:
- *       ( 0  U22 ) (  0   D  ) ( U12**H U22**H )
+ *     A  =  ( I  U12 ) ( A11  0  ) (  I      0     )  if UPLO = 'U', or:
+ *           ( 0  U22 ) (  0   D  ) ( U12**H U22**H )
  *
- * A  =  ( L11  0 ) (  D   0  ) ( L11**H L21**H )  if UPLO = 'L'
- *       ( L21  I ) (  0  A22 ) (  0      I     )
+ *     A  =  ( L11  0 ) (  D   0  ) ( L11**H L21**H )  if UPLO = 'L'
+ *           ( L21  I ) (  0  A22 ) (  0      I     )
+ * @endrst
  *
  * where the order of D is at most NB. The actual order is returned in
  * the argument KB, and is either NB or NB-1, or N if N <= NB.
@@ -27,45 +30,55 @@
  * blocked code (calling Level 3 BLAS) to update the submatrix
  * A11 (if UPLO = 'U') or A22 (if UPLO = 'L').
  *
- * @param[in] uplo
- *          Specifies whether the upper or lower triangular part of the
- *          Hermitian matrix A is stored:
- *          = 'U':  Upper triangular
- *          = 'L':  Lower triangular
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular
+ *                      - `'L'`: Lower triangular
  *
  * @param[in] n
- *          The order of the matrix A. n >= 0.
+ *          The order of the matrix A. `n>=0`.
  *
  * @param[in] nb
  *          The maximum number of columns of the matrix A that should be
- *          factored. nb should be at least 2 to allow for 2-by-2 pivot
+ *          factored. `nb` should be at least 2 to allow for 2-by-2 pivot
  *          blocks.
  *
  * @param[out] kb
  *          The number of columns of A that were actually factored.
- *          kb is either nb-1 or nb, or n if n <= nb.
+ *          `kb` is either `nb-1` or `nb`, or `n` if `n<=nb`.
  *
  * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the Hermitian matrix A.
- *          On exit, details of the partial factorization.
+ *          Double complex array of dimension `(lda,n)`.
+ *          On entry, the Hermitian matrix A. If `uplo='U'`, the leading
+ *          n-by-n upper triangular part contains the upper triangular
+ *          part of A and the strictly lower triangular part is not
+ *          referenced. If `uplo='L'`, the leading n-by-n lower triangular
+ *          part contains the lower triangular part of A and the strictly
+ *          upper triangular part is not referenced. On exit, A contains
+ *          details of the partial factorization.
  *
  * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
+ *          The leading dimension of A. `lda>=max(1,n)`.
  *
  * @param[out] ipiv
- *          Integer array, dimension (n).
+ *          Integer array of dimension `n`.
  *          Details of the interchanges and the block structure of D.
+ *          If `uplo='U'`, only the last `kb` elements are set. A positive
+ *          entry denotes a 1-by-1 diagonal block. Two consecutive negative
+ *          entries denote a 2-by-2 block and identify the two interchanges.
+ *          If `uplo='L'`, only the first `kb` elements are set, with the
+ *          corresponding positive and consecutive-negative conventions.
  *
  * @param[out] W
- *          Double complex array, dimension (ldw, nb).
+ *          Double complex array of dimension `(ldw,nb)`.
  *
  * @param[in] ldw
- *          The leading dimension of the array W. ldw >= max(1, n).
+ *          The leading dimension of W. `ldw>=max(1,n)`.
  *
  * @param[out] info
- *                         - = 0: successful exit
- *                         - > 0: if info = k, D(k,k) is exactly zero.
+ *                         - `info=0`: successful exit
+ *                         - `info>0`: if `info=k`, `D(k,k)` is exactly zero. The
+ *                           factorization has been completed, but D is exactly
+ *                           singular.
  */
 void zlahef_rook(
     const char* uplo,
