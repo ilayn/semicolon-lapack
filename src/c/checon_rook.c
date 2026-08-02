@@ -9,47 +9,31 @@
 /**
  * CHECON_ROOK estimates the reciprocal of the condition number (in the
  * 1-norm) of a complex Hermitian matrix A using the factorization
- * A = U*D*U**H or A = L*D*L**H computed by CHETRF_ROOK.
+ * A = U*D*U**H or A = L*D*L**H computed by `chetrf_rook`.
  *
  * An estimate is obtained for norm(inv(A)), and the reciprocal of the
  * condition number is computed as RCOND = 1 / (ANORM * norm(inv(A))).
  *
- * @param[in] uplo
- *          Specifies whether the details of the factorization are stored
- *          as an upper or lower triangular matrix.
- *          = 'U':  Upper triangular, form is A = U*D*U**H;
- *          = 'L':  Lower triangular, form is A = L*D*L**H.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in] A
- *          Complex*16 array, dimension (lda, n).
- *          The block diagonal matrix D and the multipliers used to
- *          obtain the factor U or L as computed by CHETRF_ROOK.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[in] ipiv
- *          Integer array, dimension (n).
- *          Details of the interchanges and the block structure of D
- *          as determined by CHETRF_ROOK.
- *
- * @param[in] anorm
- *          The 1-norm of the original matrix A.
- *
- * @param[out] rcond
- *          The reciprocal of the condition number of the matrix A,
- *          computed as rcond = 1/(anorm * ainvnm), where ainvnm is an
- *          estimate of the 1-norm of inv(A) computed in this routine.
- *
- * @param[out] work
- *          Complex*16 array, dimension (2*n).
- *
- * @param[out] info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**H
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**H
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     A     Single complex array of dimension `(lda,n)`.
+ *                      The block diagonal matrix D and the multipliers used
+ *                      to obtain U or L, as computed by `chetrf_rook`.
+ * @param[in]     lda   The leading dimension of A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Integer array of dimension `n`. Details of the
+ *                      interchanges and block structure of D determined by
+ *                      `chetrf_rook`.
+ * @param[in]     anorm The 1-norm of the original matrix A.
+ * @param[out]    rcond The reciprocal condition number, computed as
+ *                      `rcond=1/(anorm*ainvnm)`, where `ainvnm` estimates
+ *                      the 1-norm of `inv(A)`.
+ * @param[out]    work  Single complex workspace of dimension `2*n`.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an
+ *                           illegal value
  */
 void checon_rook(
     const char* uplo,
