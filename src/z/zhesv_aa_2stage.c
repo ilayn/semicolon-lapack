@@ -14,8 +14,8 @@
  * matrices.
  *
  * Aasen's 2-stage algorithm is used to factor A as
- *    A = U**H * T * U,  if UPLO = 'U', or
- *    A = L * T * L**H,  if UPLO = 'L',
+ *    A = U**H * T * U,  if uplo = 'U', or
+ *    A = L * T * L**H,  if uplo = 'L',
  * where U (or L) is a product of permutation and unit upper (lower)
  * triangular matrices, and T is Hermitian and band. The matrix T is
  * then LU-factored with partial pivoting. The factored form of A
@@ -23,61 +23,62 @@
  *
  * This is the blocked version of the algorithm, calling Level 3 BLAS.
  *
- * @param[in] uplo
- *          = 'U':  Upper triangle of A is stored;
- *          = 'L':  Lower triangle of A is stored.
- *
- * @param[in] n
- *          The order of the matrix A. n >= 0.
- *
- * @param[in] nrhs
- *          The number of right hand sides, i.e., the number of columns
- *          of the matrix B. nrhs >= 0.
- *
- * @param[in,out] A
- *          Double complex array, dimension (lda, n).
- *          On entry, the hermitian matrix A.
- *          On exit, L is stored below (or above) the subdiagonal blocks.
- *
- * @param[in] lda
- *          The leading dimension of the array A. lda >= max(1, n).
- *
- * @param[out] TB
- *          Double complex array, dimension (max(1, ltb)).
- *          On exit, details of the LU factorization of the band matrix.
- *
- * @param[in] ltb
- *          The size of the array TB. ltb >= max(1, 4*n).
- *          If ltb = -1, then a workspace query is assumed.
- *
- * @param[out] ipiv
- *          Integer array, dimension (n).
- *          On exit, details of the interchanges.
- *
- * @param[out] ipiv2
- *          Integer array, dimension (n).
- *          On exit, details of the interchanges in T.
- *
- * @param[in,out] B
- *          Double complex array, dimension (ldb, nrhs).
- *          On entry, the right hand side matrix B.
- *          On exit, the solution matrix X.
- *
- * @param[in] ldb
- *          The leading dimension of the array B. ldb >= max(1, n).
- *
- * @param[out] work
- *          Double complex workspace of size (max(1, lwork)).
- *          On exit, if info = 0, work[0] returns the optimal lwork.
- *
- * @param[in] lwork
- *          The size of work. lwork >= max(1, n).
- *          If lwork = -1, then a workspace query is assumed.
- *
- * @param[out] info
- *                         - = 0:  successful exit
- *                         - < 0:  if info = -i, the i-th argument had an illegal value.
- *                         - > 0:  if info = i, band LU factorization failed on i-th column
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides, i.e., the number of
+ *                      columns of the matrix B. `nrhs>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the Hermitian matrix A. If `uplo='U'`, the
+ *                      leading `n`-by-`n` upper triangular part of A
+ *                      contains the upper triangular part of the matrix A,
+ *                      and the strictly lower triangular part of A is not
+ *                      referenced. If `uplo='L'`, the leading `n`-by-`n`
+ *                      lower triangular part of A contains the lower
+ *                      triangular part of the matrix A, and the strictly
+ *                      upper triangular part of A is not referenced.
+ *                      On exit, L is stored below (or above) the
+ *                      subdiagonal blocks, when `uplo='L'` (or `'U'`).
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[out]    TB    Array of dimension `max(1,ltb)`.
+ *                      On exit, details of the LU factorization of the band
+ *                      matrix.
+ * @param[in]     ltb   The size of the array TB. `ltb>=max(1,4*n)`,
+ *                      internally used to select `nb` such that
+ *                      `ltb>=(3*nb+1)*n`.
+ *                      If `ltb=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of `ltb`,
+ *                      returns this value as the first entry of TB, and no
+ *                      error message related to `ltb` is issued.
+ * @param[out]    ipiv  Array of dimension `n`.
+ *                      On exit, it contains the details of the
+ *                      interchanges, i.e., the row and column `k` of A were
+ *                      interchanged with the row and column `ipiv[k]`.
+ * @param[out]    ipiv2 Array of dimension `n`.
+ *                      On exit, it contains the details of the
+ *                      interchanges, i.e., the row and column `k` of T were
+ *                      interchanged with the row and column `ipiv[k]`.
+ * @param[in,out] B     Array of dimension `(ldb,nrhs)`.
+ *                      On entry, the right hand side matrix B.
+ *                      On exit, the solution matrix X.
+ * @param[in]     ldb   The leading dimension of the array B. `ldb>=max(1,n)`.
+ * @param[out]    work  Array of dimension `max(1,lwork)`.
+ *                      On exit, if `info=0`, `work[0]` returns the optimal
+ *                      `lwork`.
+ * @param[in]     lwork The size of `work`. `lwork>=max(1,n)`, internally
+ *                      used to select `nb` such that `lwork>=n*nb`.
+ *                      If `lwork=-1`, then a workspace query is assumed; the
+ *                      routine only calculates the optimal size of the
+ *                      `work` array, returns this value as the first entry
+ *                      of the `work` array, and no error message related to
+ *                      `lwork` is issued.
+ * @param[out]    info
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an
+ *                           illegal value
+ *                         - `info>0`: if `info=i`, band LU factorization
+ *                           failed on the i-th column
  */
 void zhesv_aa_2stage(
     const char* uplo,
