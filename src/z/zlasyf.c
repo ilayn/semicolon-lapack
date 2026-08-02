@@ -17,12 +17,15 @@ static const f64 ALPHA_BK = 0.6403882032022076;
  * ZLASYF computes a partial factorization of a complex symmetric matrix A
  * using the Bunch-Kaufman diagonal pivoting method. The partial
  * factorization has the form:
+ * @rst
+ * .. code-block:: text
  *
- *    A = ( I  U12 ) ( A11  0  ) (  I       0    )  if UPLO = 'U', or:
- *        ( 0  U22 ) (  0   D  ) ( U12**T U22**T )
+ *     A = ( I  U12 ) ( A11  0  ) (  I       0    )  if UPLO = 'U', or:
+ *         ( 0  U22 ) (  0   D  ) ( U12**T U22**T )
  *
- *    A = ( L11  0 ) (  D   0  ) ( L11**T L21**T )  if UPLO = 'L'
- *        ( L21  I ) (  0  A22 ) (  0       I    )
+ *     A = ( L11  0 ) (  D   0  ) ( L11**T L21**T )  if UPLO = 'L'
+ *         ( L21  I ) (  0  A22 ) (  0       I    )
+ * @endrst
  *
  * where the order of D is at most NB. The actual order is returned in
  * the argument KB, and is either NB or NB-1, or N if N <= NB.
