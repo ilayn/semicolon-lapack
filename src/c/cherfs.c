@@ -16,41 +16,50 @@
  * equations when the coefficient matrix is Hermitian indefinite, and
  * provides error bounds and backward error estimates for the solution.
  *
- * @param[in]     uplo  = 'U': Upper triangle of A is stored
- *                        = 'L': Lower triangle of A is stored
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in]     nrhs  The number of right hand sides. nrhs >= 0.
- * @param[in]     A     The Hermitian matrix A. If uplo = 'U', the leading
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangle of A is stored
+ *                      - `'L'`: Lower triangle of A is stored
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in]     nrhs  The number of right hand sides. `nrhs>=0`.
+ * @param[in]     A     Single complex array of dimension `(lda,n)`.
+ *                      The Hermitian matrix A. If `uplo='U'`, the leading
  *                      N-by-N upper triangular part contains the upper
- *                      triangular part of A. If uplo = 'L', the leading
- *                      N-by-N lower triangular part contains the lower
- *                      triangular part of A.
- *                      Complex array, dimension (lda, n).
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[in]     AF    The factored form of the matrix A. AF contains
+ *                      triangular part of A and the strictly lower
+ *                      triangular part is not referenced. If `uplo='L'`,
+ *                      the leading N-by-N lower triangular part contains
+ *                      the lower triangular part of A and the strictly
+ *                      upper triangular part is not referenced.
+ * @param[in]     lda   The leading dimension of A. `lda>=max(1,n)`.
+ * @param[in]     AF    Single complex array of dimension `(ldaf,n)`.
+ *                      The factored form of A. AF contains
  *                      the block diagonal matrix D and the multipliers used
  *                      to obtain the factor U or L from the factorization
- *                      A = U*D*U**H or A = L*D*L**H as computed by CHETRF.
- *                      Complex array, dimension (ldaf, n).
- * @param[in]     ldaf  The leading dimension of the array AF. ldaf >= max(1, n).
- * @param[in]     ipiv  Details of the interchanges and the block structure of D
- *                      as determined by CHETRF. Integer array, dimension (n).
- * @param[in]     B     The right hand side matrix B.
- *                      Complex array, dimension (ldb, nrhs).
- * @param[in]     ldb   The leading dimension of the array B. ldb >= max(1, n).
- * @param[in,out] X     On entry, the solution matrix X, as computed by CHETRS.
+ *                      A = U*D*U**H or A = L*D*L**H as computed by `chetrf`.
+ * @param[in]     ldaf  The leading dimension of AF. `ldaf>=max(1,n)`.
+ * @param[in]     ipiv  Integer array of dimension `n`. Details of the
+ *                      interchanges and block structure of D from `chetrf`.
+ * @param[in]     B     Single complex array of dimension `(ldb,nrhs)`.
+ *                      The right hand side matrix B.
+ * @param[in]     ldb   The leading dimension of B. `ldb>=max(1,n)`.
+ * @param[in,out] X     Single complex array of dimension `(ldx,nrhs)`.
+ *                      On entry, the solution matrix X, as computed by `chetrs`.
  *                      On exit, the improved solution matrix X.
- *                      Complex array, dimension (ldx, nrhs).
- * @param[in]     ldx   The leading dimension of the array X. ldx >= max(1, n).
- * @param[out]    ferr  The estimated forward error bound for each solution
- *                      vector X(j). Real array, dimension (nrhs).
- * @param[out]    berr  The componentwise relative backward error of each
- *                      solution vector X(j). Real array, dimension (nrhs).
- * @param[out]    work  Complex workspace array, dimension (2*n).
- * @param[out]    rwork Real workspace array, dimension (n).
+ * @param[in]     ldx   The leading dimension of X. `ldx>=max(1,n)`.
+ * @param[out]    ferr  Real array of dimension `nrhs`. The estimated forward
+ *                      error bound for each solution vector X(j). If XTRUE
+ *                      is the true solution corresponding to X(j), `ferr[j]`
+ *                      estimates the largest element of X(j)-XTRUE divided
+ *                      by the largest element of X(j).
+ * @param[out]    berr  Real array of dimension `nrhs`. The componentwise
+ *                      relative backward error of each solution vector X(j),
+ *                      i.e., the smallest relative change in an element of
+ *                      A or B that makes X(j) an exact solution.
+ * @param[out]    work  Single complex workspace array of dimension `2*n`.
+ * @param[out]    rwork Real workspace array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an
+ *                           illegal value
  */
 void cherfs(
     const char* uplo,
