@@ -16,12 +16,15 @@ static const f32 ALPHA_BK = 0.6403882032022076f;
  * CLAHEF computes a partial factorization of a complex Hermitian
  * matrix A using the Bunch-Kaufman diagonal pivoting method. The
  * partial factorization has the form:
+ * @rst
+ * .. code-block:: text
  *
- *    A = ( I  U12 ) ( A11  0  ) (  I      0     )  if UPLO = 'U', or:
- *        ( 0  U22 ) (  0   D  ) ( U12**H U22**H )
+ *     A  =  ( I  U12 ) ( A11  0  ) (  I      0     )  if UPLO = 'U', or:
+ *           ( 0  U22 ) (  0   D  ) ( U12**H U22**H )
  *
- *    A = ( L11  0 ) (  D   0  ) ( L11**H L21**H )  if UPLO = 'L'
- *        ( L21  I ) (  0  A22 ) (  0      I     )
+ *     A  =  ( L11  0 ) (  D   0  ) ( L11**H L21**H )  if UPLO = 'L'
+ *           ( L21  I ) (  0  A22 ) (  0      I     )
+ * @endrst
  *
  * where the order of D is at most NB. The actual order is returned in
  * the argument KB, and is either NB or NB-1, or N if N <= NB.
@@ -31,43 +34,42 @@ static const f32 ALPHA_BK = 0.6403882032022076f;
  * (calling Level 3 BLAS) to update the submatrix A11 (if UPLO = 'U') or
  * A22 (if UPLO = 'L').
  *
- * @param[in]     uplo  Specifies whether the upper or lower triangular part
- *                      of the Hermitian matrix A is stored:
- *                      = 'U': Upper triangular
- *                      = 'L': Lower triangular
- * @param[in]     n     The order of the matrix A. n >= 0.
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular
+ *                      - `'L'`: Lower triangular
+ * @param[in]     n     The order of the matrix A. `n>=0`.
  * @param[in]     nb    The maximum number of columns of the matrix A that
- *                      should be factored. nb should be at least 2 to allow
+ *                      should be factored. `nb` should be at least 2 to allow
  *                      for 2-by-2 pivot blocks.
  * @param[out]    kb    The number of columns of A that were actually factored.
- *                      kb is either nb-1 or nb, or n if n <= nb.
- * @param[in,out] A     Complex array, dimension (lda, n).
- *                      On entry, the Hermitian matrix A. If uplo = 'U', the
+ *                      `kb` is either `nb-1` or `nb`, or `n` if `n<=nb`.
+ * @param[in,out] A     Single complex array of dimension `(lda,n)`.
+ *                      On entry, the Hermitian matrix A. If `uplo='U'`, the
  *                      leading n-by-n upper triangular part contains the upper
- *                      triangular part. If uplo = 'L', the leading n-by-n lower
+ *                      triangular part. If `uplo='L'`, the leading n-by-n lower
  *                      triangular part contains the lower triangular part.
  *                      On exit, A contains details of the partial factorization.
- * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
- * @param[out]    ipiv  Integer array, dimension (n). Details of the
+ * @param[in]     lda   The leading dimension of A. `lda>=max(1,n)`.
+ * @param[out]    ipiv  Integer array of dimension `n`. Details of the
  *                      interchanges and the block structure of D.
- *                      If uplo = 'U': Only the last kb elements of ipiv are set.
+ *                      If `uplo='U'`: only the last `kb` elements of `ipiv` are set.
  *                        If ipiv[k] >= 0, rows and columns k and ipiv[k] were
  *                        interchanged, D(k,k) is a 1-by-1 diagonal block.
  *                        If ipiv[k] < 0, rows and columns k-1 and -(ipiv[k]+1)
  *                        were interchanged, D(k-1:k,k-1:k) is a 2-by-2 block,
  *                        and ipiv[k-1] = ipiv[k].
- *                      If uplo = 'L': Only the first kb elements of ipiv are set.
+ *                      If `uplo='L'`: only the first `kb` elements of `ipiv` are set.
  *                        If ipiv[k] >= 0, rows and columns k and ipiv[k] were
  *                        interchanged, D(k,k) is a 1-by-1 diagonal block.
  *                        If ipiv[k] < 0, rows and columns k+1 and -(ipiv[k]+1)
  *                        were interchanged, D(k:k+1,k:k+1) is a 2-by-2 block,
  *                        and ipiv[k+1] = ipiv[k].
- * @param[out]    W     Complex array, dimension (ldw, nb).
+ * @param[out]    W     Single complex array of dimension `(ldw,nb)`.
  *                      Workspace for storing updated columns during factorization.
- * @param[in]     ldw   The leading dimension of the array W. ldw >= max(1, n).
+ * @param[in]     ldw   The leading dimension of W. `ldw>=max(1,n)`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - > 0: if info = k+1, D(k,k) is exactly zero. The
+ *                         - `info=0`: successful exit
+ *                         - `info>0`: if `info=k+1`, `D(k,k)` is exactly zero. The
  *                           factorization has been completed, but the block
  *                           diagonal matrix D is exactly singular.
  */
