@@ -14,20 +14,32 @@
  * A using the factorization A = U*D*U**H or A = L*D*L**H computed by
  * CHETRF_ROOK.
  *
- * @param[in]     uplo  = 'U': Upper triangular, A = U*D*U**H
- *                        = 'L': Lower triangular, A = L*D*L**H
- * @param[in]     n     The order of the matrix A. n >= 0.
- * @param[in,out] A     Complex*16 array, dimension (lda, n).
- *                      On entry, the factored matrix from CHETRF_ROOK.
- *                      On exit, the (Hermitian) inverse of the original matrix.
- * @param[in]     lda   The leading dimension of A. lda >= max(1, n).
- * @param[in]     ipiv  Integer array, dimension (n). The pivot indices
- *                      from CHETRF_ROOK.
- * @param[out]    work  Complex*16 array, dimension (n).
+ * @param[in]     uplo
+ *                      - `'U'`: Upper triangular, form is A = U*D*U**H
+ *                      - `'L'`: Lower triangular, form is A = L*D*L**H
+ * @param[in]     n     The order of the matrix A. `n>=0`.
+ * @param[in,out] A     Array of dimension `(lda,n)`.
+ *                      On entry, the block diagonal matrix D and the
+ *                      multipliers used to obtain the factor U or L as
+ *                      computed by `chetrf_rook`.
+ *                      On exit, if `info=0`, the (Hermitian) inverse of the
+ *                      original matrix. If `uplo='U'`, the upper triangular
+ *                      part of the inverse is formed and the part of A
+ *                      below the diagonal is not referenced; if `uplo='L'`
+ *                      the lower triangular part of the inverse is formed
+ *                      and the part of A above the diagonal is not
+ *                      referenced.
+ * @param[in]     lda   The leading dimension of the array A. `lda>=max(1,n)`.
+ * @param[in]     ipiv  Array of dimension `n`.
+ *                      Details of the interchanges and the block structure
+ *                      of D as determined by `chetrf_rook`.
+ * @param[out]    work  Array of dimension `n`.
  * @param[out]    info
- *                         - = 0: successful exit
- *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, D(i,i) = 0; the matrix is singular.
+ *                         - `info=0`: successful exit
+ *                         - `info<0`: if `info=-i`, the i-th argument had an illegal
+ *                           value
+ *                         - `info>0`: if `info=i`, `D(i,i)=0`; the matrix is singular
+ *                           and its inverse could not be computed.
  */
 void chetri_rook(
     const char* uplo,
