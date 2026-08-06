@@ -258,10 +258,14 @@ jobs:
           consumer_test.exe
 
   test-emscripten:
-    name: Test WebAssembly BLIS
+    name: Test WebAssembly BLIS (Emscripten ${{ matrix.emscripten-version }})
     needs: get_commit_message
     if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        emscripten-version: ['5.0.3', '6.0.5']
     defaults:
       run:
         shell: bash -el {0}
@@ -288,7 +292,7 @@ jobs:
       - name: Set up Emscripten
         uses: emscripten-core/setup-emsdk@v16
         with:
-          version: 5.0.3
+          version: ${{ matrix.emscripten-version }}
 
       - name: Print environment info
         run: |
