@@ -1209,7 +1209,7 @@ void chbevx_(char* jobz, char* range, char* uplo, INT* n, INT* kd, c64* AB, INT*
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     chbevx(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, rwork, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void chbevx_2stage_(char* jobz, char* range, char* uplo, INT* n, INT* kd, c64* AB, INT* ldab, c64* Q, INT* ldq, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, c64* Z, INT* ldz, c64* work, INT* lwork, f32* rwork, INT* iwork, INT* ifail, INT* info) {
@@ -1217,7 +1217,7 @@ void chbevx_2stage_(char* jobz, char* range, char* uplo, INT* n, INT* kd, c64* A
     INT _iu = *iu - 1;
     chbevx_2stage(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -1237,7 +1237,7 @@ void chbgvx_(char* jobz, char* range, char* uplo, INT* n, INT* ka, INT* kb, c64*
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     chbgvx(jobz, range, uplo, *n, *ka, *kb, AB, *ldab, BB, *ldbb, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, rwork, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void chbtrd_(char* vect, char* uplo, INT* n, INT* kd, c64* AB, INT* ldab, f32* D, f32* E, c64* Q, INT* ldq, c64* work, INT* info) {
@@ -1324,7 +1324,7 @@ void cheevx_(char* jobz, char* range, char* uplo, INT* n, c64* A, INT* lda, f32*
     INT _iu = *iu - 1;
     cheevx(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -1333,7 +1333,7 @@ void cheevx_2stage_(char* jobz, char* range, char* uplo, INT* n, c64* A, INT* ld
     INT _iu = *iu - 1;
     cheevx_2stage(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -1362,7 +1362,7 @@ void chegvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, c64* A, IN
     INT _iu = *iu - 1;
     chegvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, rwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -1696,7 +1696,7 @@ void chpevx_(char* jobz, char* range, char* uplo, INT* n, c64* AP, f32* vl, f32*
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     chpevx(jobz, range, uplo, *n, AP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, rwork, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void chpgst_(INT* itype, char* uplo, INT* n, c64* AP, c64* BP, INT* info) {
@@ -1715,7 +1715,7 @@ void chpgvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, c64* AP, c
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     chpgvx(*itype, jobz, range, uplo, *n, AP, BP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, rwork, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void chprfs_(char* uplo, INT* n, INT* nrhs, c64* AP, c64* AFP, INT* ipiv, c64* B, INT* ldb, c64* X, INT* ldx, f32* ferr, f32* berr, c64* work, f32* rwork, INT* info) {
@@ -1783,8 +1783,8 @@ void chptrs_(char* uplo, INT* n, INT* nrhs, c64* AP, INT* ipiv, c64* B, INT* ldb
 
 void chsein_(char* side, char* eigsrc, char* initv, INT* select, INT* n, c64* H, INT* ldh, c64* W, c64* VL, INT* ldvl, c64* VR, INT* ldvr, INT* mm, INT* m, c64* work, f32* rwork, INT* ifaill, INT* ifailr, INT* info) {
     chsein(side, eigsrc, initv, select, *n, H, *ldh, W, VL, *ldvl, VR, *ldvr, *mm, m, work, rwork, ifaill, ifailr, info);
-    if (ifaill) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifaill[_i]++; }
-    if (ifailr) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifailr[_i]++; }
+    if (ifaill && ((*side == 'L' || *side == 'l' || *side == 'B' || *side == 'b'))) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifaill[_i]++; }
+    if (ifailr && ((*side == 'R' || *side == 'r' || *side == 'B' || *side == 'b'))) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifailr[_i]++; }
 }
 
 void chseqr_(char* job, char* compz, INT* n, INT* ilo, INT* ihi, c64* H, INT* ldh, c64* W, c64* Z, INT* ldz, c64* work, INT* lwork, INT* info) {
