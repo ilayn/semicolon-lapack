@@ -1230,8 +1230,8 @@ void shgeqz_(char* job, char* compq, char* compz, INT* n, INT* ilo, INT* ihi, f3
 
 void shsein_(char* side, char* eigsrc, char* initv, INT* select, INT* n, f32* H, INT* ldh, f32* wr, f32* wi, f32* VL, INT* ldvl, f32* VR, INT* ldvr, INT* mm, INT* m, f32* work, INT* ifaill, INT* ifailr, INT* info) {
     shsein(side, eigsrc, initv, select, *n, H, *ldh, wr, wi, VL, *ldvl, VR, *ldvr, *mm, m, work, ifaill, ifailr, info);
-    if (ifaill) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifaill[_i]++; }
-    if (ifailr) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifailr[_i]++; }
+    if (ifaill && ((*side == 'L' || *side == 'l' || *side == 'B' || *side == 'b'))) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifaill[_i]++; }
+    if (ifailr && ((*side == 'R' || *side == 'r' || *side == 'B' || *side == 'b'))) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifailr[_i]++; }
 }
 
 void shseqr_(char* job, char* compz, INT* n, INT* ilo, INT* ihi, f32* H, INT* ldh, f32* wr, f32* wi, f32* Z, INT* ldz, f32* work, INT* lwork, INT* info) {
@@ -2267,7 +2267,7 @@ void ssbevx_2stage_(char* jobz, char* range, char* uplo, INT* n, INT* kd, f32* A
     INT _iu = *iu - 1;
     ssbevx_2stage(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -2275,7 +2275,7 @@ void ssbevx_(char* jobz, char* range, char* uplo, INT* n, INT* kd, f32* AB, INT*
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     ssbevx(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void ssbgst_(char* vect, char* uplo, INT* n, INT* ka, INT* kb, f32* AB, INT* ldab, f32* BB, INT* ldbb, f32* X, INT* ldx, f32* work, INT* info) {
@@ -2294,7 +2294,7 @@ void ssbgvx_(char* jobz, char* range, char* uplo, INT* n, INT* ka, INT* kb, f32*
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     ssbgvx(jobz, range, uplo, *n, *ka, *kb, AB, *ldab, BB, *ldbb, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void ssbtrd_(char* vect, char* uplo, INT* n, INT* kd, f32* AB, INT* ldab, f32* D, f32* E, f32* Q, INT* ldq, f32* work, INT* info) {
@@ -2328,7 +2328,7 @@ void sspevx_(char* jobz, char* range, char* uplo, INT* n, f32* AP, f32* vl, f32*
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     sspevx(jobz, range, uplo, *n, AP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void sspgst_(INT* itype, char* uplo, INT* n, f32* AP, f32* BP, INT* info) {
@@ -2347,7 +2347,7 @@ void sspgvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, f32* AP, f
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     sspgvx(*itype, jobz, range, uplo, *n, AP, BP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void ssprfs_(char* uplo, INT* n, INT* nrhs, f32* AP, f32* AFP, INT* ipiv, f32* B, INT* ldb, f32* X, INT* ldx, f32* ferr, f32* berr, f32* work, INT* iwork, INT* info) {
@@ -2491,7 +2491,7 @@ void sstevx_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
     INT _il = *il - 1;
     INT _iu = *iu - 1;
     sstevx(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
 }
 
 void ssycon_3_(char* uplo, INT* n, f32* A, INT* lda, f32* E, INT* ipiv, f32* anorm, f32* rcond, f32* work, INT* iwork, INT* info) {
@@ -2603,7 +2603,7 @@ void ssyevx_2stage_(char* jobz, char* range, char* uplo, INT* n, f32* A, INT* ld
     INT _iu = *iu - 1;
     ssyevx_2stage(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -2612,7 +2612,7 @@ void ssyevx_(char* jobz, char* range, char* uplo, INT* n, f32* A, INT* lda, f32*
     INT _iu = *iu - 1;
     ssyevx(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
@@ -2641,7 +2641,7 @@ void ssygvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, f32* A, IN
     INT _iu = *iu - 1;
     ssygvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
     if (*lwork != -1) {
-        if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
     }
 }
 
