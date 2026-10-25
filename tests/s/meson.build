@@ -99,6 +99,7 @@ lapack_tests_s = {
   'sstein_unconverged': ['test_sstein_unconverged.c', 'eigen'],
   'sstebz_discard': ['test_sstebz_discard.c', 'eigen'],
   'sgeqp3_fixed': ['test_sgeqp3_fixed.c', 'qr'],
+  'stgsen_lwork': ['test_stgsen_lwork.c', 'eigen'],
   'sdrgsx': ['test_sdrgsx.c', 'eigen'],
   'sdrvsg': ['test_sdrvsg.c', 'eigen'],
   'sdrvsg2stg': ['test_sdrvsg2stg.c', 'eigen'],

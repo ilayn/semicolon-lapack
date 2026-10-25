@@ -55,7 +55,9 @@
  * @param[out]    pr      Lower bound on reciprocal of projection onto right eigenspace.
  * @param[out]    dif     Array of dimension (2). Estimates of Difu and Difl.
  * @param[out]    work    Complex array of dimension (max(1, lwork)).
- * @param[in]     lwork   The dimension of work.
+ * @param[in]     lwork   The dimension of work. lwork >= 1.
+ *                        If ijob = 1, 2 or 4, lwork >= 2*m*(n-m) + 1.
+ *                        If ijob = 3 or 5, lwork >= 4*m*(n-m).
  * @param[out]    iwork   Integer array of dimension (max(1, liwork)).
  * @param[in]     liwork  The dimension of iwork.
  * @param[out]    info
@@ -146,7 +148,7 @@ void ctgsen(
     }
 
     if (ijob == 1 || ijob == 2 || ijob == 4) {
-        lwmin = 1 > 2 * (*m) * (n - *m) ? 1 : 2 * (*m) * (n - *m);
+        lwmin = 1 > 2 * (*m) * (n - *m) + 1 ? 1 : 2 * (*m) * (n - *m) + 1;
         liwmin = 1 > n + 2 ? 1 : n + 2;
     } else if (ijob == 3 || ijob == 5) {
         lwmin = 1 > 4 * (*m) * (n - *m) ? 1 : 4 * (*m) * (n - *m);
