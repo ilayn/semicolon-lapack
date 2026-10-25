@@ -52,10 +52,11 @@ the Breathe extension. You will need:
 - `Doxygen <https://www.doxygen.nl/>`_ for parsing C source files
 - Python 3 with the following packages:
 
-  - `Sphinx <https://www.sphinx-doc.org/>`_ >= 7.2
-  - `Breathe <https://breathe.readthedocs.io/>`_ >= 4.35 (Doxygen-to-Sphinx bridge)
-  - `pydata-sphinx-theme <https://pydata-sphinx-theme.readthedocs.io/>`_ >= 0.15
+  - `Sphinx <https://www.sphinx-doc.org/>`_ >= 8.2
+  - `Breathe <https://breathe.readthedocs.io/>`_ >= 5.1 (Doxygen-to-Sphinx bridge)
+  - `pydata-sphinx-theme <https://pydata-sphinx-theme.readthedocs.io/>`_ >= 0.23
   - `sphinx-copybutton <https://sphinx-copybutton.readthedocs.io/>`_ >= 0.5
+  - `sphinx-design <https://sphinx-design.readthedocs.io/>`_ >= 0.6
 
 These are also listed in ``doc/requirements.txt`` for convenience:
 
