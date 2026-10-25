@@ -48,21 +48,31 @@ void clarf1l(const char* side, const INT m, const INT n,
     INT applyleft;
     INT firstv, lastv, lastc, i, j;
 
+    /* Quick return if C is empty */
+    if (m <= 0 || n <= 0) {
+        return;
+    }
+
     applyleft = (side[0] == 'L' || side[0] == 'l');
     firstv = 0;  /* 0-based */
     lastc = 0;
 
     if (tau != ZERO) {
-        /* Set up variables for scanning V. LASTV begins at the end of V. */
+        /* Set up variables for scanning V. LASTV begins pointing to the end
+         * of V up to V(1). */
         if (applyleft) {
             lastv = m;
         } else {
             lastv = n;
         }
 
-        i = 0;
+        if (incv > 0) {
+            i = 0;
+        } else {
+            i = -(lastv - 1) * incv;
+        }
 
-        /* Look for the first non-zero row in V (scanning from front). */
+        /* Look for the last non-zero row in V. */
         while (lastv > firstv + 1 && v[i] == ZERO) {
             firstv++;
             i += incv;
@@ -74,6 +84,12 @@ void clarf1l(const char* side, const INT m, const INT n,
         } else {
             /* Scan for the last non-zero row in C(:, 0:lastv-1) */
             lastc = ilaclr(m, lastv, C, ldc);
+        }
+
+        /* Set index for V. If INCV > 0, then I points to the start of V.
+         * For INCV < 0, set I to point to V(M-1) */
+        if (incv < 0) {
+            i = -incv;
         }
     }
 

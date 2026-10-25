@@ -46,7 +46,12 @@ void clarf1f(const char* side, const INT m, const INT n,
     c64 neg_tau;
     c64 one_minus_tau;
     INT applyleft;
-    INT lastv, lastc, i;
+    INT lastv, lastc, i, j;
+
+    /* Quick return if C is empty */
+    if (m <= 0 || n <= 0) {
+        return;
+    }
 
     applyleft = (side[0] == 'L' || side[0] == 'l');
     lastv = 1;
@@ -79,6 +84,12 @@ void clarf1f(const char* side, const INT m, const INT n,
             /* Scan for the last non-zero row in C(:, 0:lastv-1) */
             lastc = ilaclr(m, lastv, C, ldc);
         }
+
+        /* Set index for V. If INCV < 0, then I points to the end of V.
+         * For INCV > 0, set I to point to V(2) */
+        if (incv > 0) {
+            i = incv;
+        }
     }
 
     if (lastc == 0) {
@@ -95,34 +106,34 @@ void clarf1f(const char* side, const INT m, const INT n,
             cblas_cscal(lastc, &one_minus_tau, C, ldc);
         } else {
             /*
-             * w(0:lastc-1) := C(1:lastv-1, 0:lastc-1)**H * v(incv:)
+             * w(0:lastc-1) := C(1:lastv-1, 0:lastc-1)**H * v(i:)
              */
             cblas_cgemv(CblasColMajor, CblasConjTrans,
                         lastv - 1, lastc, &ONE,
                         &C[1], ldc,
-                        &v[incv], incv,
+                        &v[i], incv,
                         &ZERO, work, 1);
 
             /*
              * w(0:lastc-1) += conj(C(0, 0:lastc-1))
              */
-            for (i = 0; i < lastc; i++) {
-                work[i] = work[i] + conjf(C[i * ldc]);
+            for (j = 0; j < lastc; j++) {
+                work[j] = work[j] + conjf(C[j * ldc]);
             }
 
             /*
              * C(0, 0:lastc-1) -= tau * conj(w)
              */
-            for (i = 0; i < lastc; i++) {
-                C[i * ldc] = C[i * ldc] - tau * conjf(work[i]);
+            for (j = 0; j < lastc; j++) {
+                C[j * ldc] = C[j * ldc] - tau * conjf(work[j]);
             }
 
             /*
-             * C(1:lastv-1, 0:lastc-1) -= tau * v(incv:) * w(0:lastc-1)**H
+             * C(1:lastv-1, 0:lastc-1) -= tau * v(i:) * w(0:lastc-1)**H
              */
             neg_tau = -tau;
             cblas_cgerc(CblasColMajor, lastv - 1, lastc,
-                        &neg_tau, &v[incv], incv, work, 1,
+                        &neg_tau, &v[i], incv, work, 1,
                         &C[1], ldc);
         }
     } else {
@@ -135,12 +146,12 @@ void clarf1f(const char* side, const INT m, const INT n,
             cblas_cscal(lastc, &one_minus_tau, C, 1);
         } else {
             /*
-             * w(0:lastc-1) := C(0:lastc-1, 1:lastv-1) * v(incv:)
+             * w(0:lastc-1) := C(0:lastc-1, 1:lastv-1) * v(i:)
              */
             cblas_cgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv - 1, &ONE,
                         &C[ldc], ldc,
-                        &v[incv], incv,
+                        &v[i], incv,
                         &ZERO, work, 1);
 
             /*
@@ -155,10 +166,10 @@ void clarf1f(const char* side, const INT m, const INT n,
             cblas_caxpy(lastc, &neg_tau, work, 1, C, 1);
 
             /*
-             * C(0:lastc-1, 1:lastv-1) -= tau * w * v(incv:)**H
+             * C(0:lastc-1, 1:lastv-1) -= tau * w * v(i:)**H
              */
             cblas_cgerc(CblasColMajor, lastc, lastv - 1,
-                        &neg_tau, work, 1, &v[incv], incv,
+                        &neg_tau, work, 1, &v[i], incv,
                         &C[ldc], ldc);
         }
     }
