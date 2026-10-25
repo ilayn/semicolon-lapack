@@ -12,7 +12,7 @@
 #include <string.h>
 
 #define THRESH 50.0
-#define MAXTYP 18
+#define MAXTYP 19
 
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -60,9 +60,9 @@ typedef struct {
 
 static ddrvst_workspace_t* g_ws = NULL;
 
-static const INT KTYPE[MAXTYP]  = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9};
-static const INT KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3};
-static const INT KMODE[MAXTYP]  = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4};
+static const INT KTYPE[MAXTYP]  = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 10};
+static const INT KMAGN[MAXTYP]  = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 2, 3, 2};
+static const INT KMODE[MAXTYP]  = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 0};
 
 static int group_setup(void** state)
 {
@@ -159,7 +159,7 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
                            f64* U, INT ldu, f64* work, INT* iwork,
                            uint64_t state[static 4],
                            uint64_t state3[static 4],
-                           INT* ihbw_out)
+                           INT* ihbw_out, f64* anorm_out)
 {
     (void)ldu;
     INT itype = KTYPE[jtype - 1];
@@ -181,6 +181,7 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
         case 3: anorm = rtunfl * n * ulpinv; break;
         default: anorm = 1.0;
     }
+    *anorm_out = anorm;
 
     dlaset("F", lda, n, 0.0, 0.0, A, lda);
     iinfo = 0;
@@ -235,6 +236,22 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
                 A[i + j * lda] = U[irow + j * ldu_band];
             }
         }
+
+    } else if (itype == 10) {
+        /*
+         * Tridiagonal with equal diagonal entries and half that
+         * off the diagonal, so that the absolute tolerance below
+         * is a meaningful fraction of the spread of the
+         * eigenvalues.
+         */
+        for (INT jcol = 0; jcol < n; jcol++) {
+            A[jcol + jcol * lda] = anorm;
+        }
+        for (INT jcol = 0; jcol < n - 1; jcol++) {
+            A[jcol + (jcol + 1) * lda] = anorm / 2.0;
+            A[(jcol + 1) + jcol * lda] = A[jcol + (jcol + 1) * lda];
+        }
+
     } else {
         iinfo = 1;
     }
@@ -376,8 +393,6 @@ static void run_ddrvst_single(ddrvst_params_t* params)
         liwedc = 8;
     }
 
-    f64 abstol = unfl + unfl;
-
     /* Initialize all results to zero */
     for (INT j = 0; j < 140; j++) {
         ws->result[j] = 0.0;
@@ -401,11 +416,12 @@ static void run_ddrvst_single(ddrvst_params_t* params)
     }
 
     INT ihbw = 0;
+    f64 anorm = 0.0;
 
     /* Generate matrix — ddrvst.f lines 647-753 */
     if (jtype <= MAXTYP) {
         iinfo = generate_matrix(n, jtype, A, lda, U, ldu, work, iwork,
-                                ws->rng_state, ws->rng_state3, &ihbw);
+                                ws->rng_state, ws->rng_state3, &ihbw, &anorm);
         if (iinfo != 0) {
             fprintf(stderr, "Matrix generation failed for jtype=%d, n=%d, iinfo=%d\n",
                           jtype, n, iinfo);
@@ -415,8 +431,18 @@ static void run_ddrvst_single(ddrvst_params_t* params)
         }
     }
 
+    f64 abstol = unfl + unfl;
+
+    /*
+     * A tolerance at or below the smallest pivot is inert in the
+     * bisection, so type 19 asks for one that the routine has to
+     * scale along with the matrix.
+     */
+    if (jtype == 19)
+        abstol = 10.0 * ulp * anorm;
+
     /* 3) If matrix is tridiagonal, call DSTEV and DSTEVX — ddrvst.f line 773 */
-    if (jtype <= 7) {
+    if (jtype <= 7 || jtype == 19) {
         ntest = 1;
         for (INT i = 0; i < n; i++)
             D1[i] = A[i + i * lda];
@@ -816,7 +842,7 @@ L630:
         ;
 
     } else {
-        /* JTYPE > 7: set tridiagonal results to zero (ddrvst.f line 1378) */
+        /* Not tridiagonal: set tridiagonal results to zero (ddrvst.f line 1378) */
         for (INT i = 0; i < 24; i++)
             ws->result[i] = 0.0;
         ntest = 24;
@@ -1221,7 +1247,7 @@ L1080:
         /* 6) Call DSBEV and DSBEVX (ddrvst.f line 2052) */
         ;
         INT kd;
-        if (jtype <= 7) {
+        if (jtype <= 7 || jtype == 19) {
             kd = 1;
         } else if (jtype >= 8 && jtype <= 15) {
             kd = (n - 1 > 0) ? n - 1 : 0;
@@ -1477,7 +1503,7 @@ L1480:
 L1580:
         /* 9) Call DSBEVD (ddrvst.f line 2556) */
         ;
-        if (jtype <= 7)
+        if (jtype <= 7 || jtype == 19)
             kd = 1;
         else if (jtype >= 8 && jtype <= 15)
             kd = (n - 1 > 0) ? n - 1 : 0;
