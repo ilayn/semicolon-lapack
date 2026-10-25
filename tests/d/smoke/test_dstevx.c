@@ -191,7 +191,7 @@ static void generate_stevx_matrix(INT n, INT imat, f64* D, f64* E,
  * Verifies via dstt21:
  *   result[0] = |T - Z*D*Z'| / (|T|*n*ulp)
  *   result[1] = |I - Z*Z'| / (n*ulp)
- * Also checks that all ifail[i] == 0.
+ * Also checks that all ifail[i] == -1.
  */
 static void test_range_all_V(void** state)
 {
@@ -221,9 +221,9 @@ static void test_range_all_V(void** state)
         assert_info_success(info);
         assert_int_equal(m, n);
 
-        /* Verify all ifail entries are zero */
+        /* Verify all ifail entries are -1 */
         for (INT i = 0; i < n; i++) {
-            assert_int_equal(fix->ifail[i], 0);
+            assert_int_equal(fix->ifail[i], -1);
         }
 
         /* Verify decomposition via dstt21:
@@ -423,9 +423,9 @@ static void test_range_value(void** state)
         free(ZtZ);
     }
 
-    /* Verify all ifail entries are zero */
+    /* Verify all ifail entries are -1 */
     for (INT i = 0; i < m; i++) {
-        assert_int_equal(fix->ifail[i], 0);
+        assert_int_equal(fix->ifail[i], -1);
     }
 
     free(D_tmp);
@@ -551,9 +551,9 @@ static void test_range_index(void** state)
         free(ZtZ);
     }
 
-    /* Verify all ifail entries are zero */
+    /* Verify all ifail entries are -1 */
     for (INT i = 0; i < m; i++) {
-        assert_int_equal(fix->ifail[i], 0);
+        assert_int_equal(fix->ifail[i], -1);
     }
 
     free(D_tmp);

@@ -222,7 +222,7 @@ void zhbevx(
             zsteqr(jobz, n, W, &rwork[indee], Z, ldz, &rwork[indrwk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }

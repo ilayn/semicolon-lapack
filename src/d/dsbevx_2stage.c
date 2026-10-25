@@ -238,7 +238,7 @@ void dsbevx_2stage(
             dsteqr(jobz, n, W, &work[indee], Z, ldz, &work[indwrk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }

@@ -61,7 +61,7 @@
  * @param[out]    work    Single precision array, dimension (5*n).
  * @param[out]    iwork   Integer array, dimension (n).
  * @param[out]    ifail   Integer array, dimension (m).
- *                        On normal exit, all elements of ifail are zero.
+ *                        On normal exit, all elements of ifail are -1.
  *                        If one or more eigenvectors fail to converge after
  *                        MAXITS iterations, then their indices are stored in
  *                        array ifail (0-based indices).
@@ -107,7 +107,7 @@ void cstein(
     /* Test the input parameters. */
     *info = 0;
     for (i = 0; i < m; i++) {
-        ifail[i] = 0;
+        ifail[i] = -1;
     }
 
     if (n < 0) {

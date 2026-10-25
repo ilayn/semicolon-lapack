@@ -262,7 +262,7 @@ void zheevx(const char* jobz, const char* range, const char* uplo,
                    &rwork[indrwk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }

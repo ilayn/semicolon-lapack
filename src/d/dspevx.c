@@ -55,7 +55,7 @@
  * @param[out]    iwork  Integer array, dimension (5*n).
  * @param[out]    ifail  Integer array, dimension (n).
  *                       If jobz = 'V', then if info = 0, the first m elements
- *                       of ifail are zero. If info > 0, then ifail contains
+ *                       of ifail are -1. If info > 0, then ifail contains
  *                       the indices of the eigenvectors that failed to converge.
  *                       If jobz = 'N', then ifail is not referenced.
  * @param[out]    info
@@ -204,7 +204,7 @@ void dspevx(const char* jobz, const char* range, const char* uplo,
             dsteqr(jobz, n, W, &work[indee], Z, ldz, &work[indwrk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }

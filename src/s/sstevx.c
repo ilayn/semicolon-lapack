@@ -188,7 +188,7 @@ void sstevx(const char* jobz, const char* range, const INT n,
             ssteqr("I", n, W, work, Z, ldz, &work[indwrk], info);
             if (*info == 0) {
                 for (INT i = 0; i < n; i++)
-                    ifail[i] = 0;
+                    ifail[i] = -1;
             }
         }
         if (*info == 0) {
