@@ -108,6 +108,7 @@ lapack_tests_d = {
   'dgeqp3_fixed': ['test_dgeqp3_fixed.c', 'qr'],
   'dtgsen_lwork': ['test_dtgsen_lwork.c', 'eigen'],
   'dtprfb_rowfwd': ['test_dtprfb_rowfwd.c', 'qr'],
+  'dbbcsd_restart': ['test_dbbcsd_restart.c', 'eigen'],
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
   'ddrvsg': ['test_ddrvsg.c', 'eigen'],      # Generalized symmetric eigenvalue (DSYGV/DSPGV/DSBGV)
   'ddrvsg2stg': ['test_ddrvsg2stg.c', 'eigen'],  # 2-stage generalized symmetric eigenvalue (DSYGV_2STAGE)

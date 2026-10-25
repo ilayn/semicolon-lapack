@@ -106,6 +106,7 @@ lapack_tests_c = {
   'cgeqp3_fixed': ['test_cgeqp3_fixed.c', 'qr'],
   'ctgsen_lwork': ['test_ctgsen_lwork.c', 'eigen'],
   'ctprfb_rowfwd': ['test_ctprfb_rowfwd.c', 'qr'],
+  'cbbcsd_restart': ['test_cbbcsd_restart.c', 'eigen'],
   'cdrgev': ['test_cdrgev.c', 'eigen'],
   'cdrgev3': ['test_cdrgev3.c', 'eigen'],
   'cdrgsx': ['test_cdrgsx.c', 'eigen'],

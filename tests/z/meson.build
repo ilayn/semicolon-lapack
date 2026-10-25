@@ -108,6 +108,7 @@ lapack_tests_z = {
   'zgeqp3_fixed': ['test_zgeqp3_fixed.c', 'qr'],
   'ztgsen_lwork': ['test_ztgsen_lwork.c', 'eigen'],
   'ztprfb_rowfwd': ['test_ztprfb_rowfwd.c', 'qr'],
+  'zbbcsd_restart': ['test_zbbcsd_restart.c', 'eigen'],
   'zdrgev': ['test_zdrgev.c', 'eigen'],
   'zdrgev3': ['test_zdrgev3.c', 'eigen'],
   'zdrgsx': ['test_zdrgsx.c', 'eigen'],

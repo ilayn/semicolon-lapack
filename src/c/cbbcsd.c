@@ -498,7 +498,7 @@ void cbbcsd(
             } else if (restart21 && !restart22) {
                 slartgp(b22bulge, B22E[i - 1], &rwork[iu2sn + i], &rwork[iu2cs + i], &r);
             } else if (nu < mu) {
-                slartgs(B21E[i], B21E[i + 1], nu, &rwork[iu2cs + i], &rwork[iu2sn + i]);
+                slartgs(B21E[i], B21D[i + 1], nu, &rwork[iu2cs + i], &rwork[iu2sn + i]);
             } else {
                 slartgs(B22D[i], B22E[i], mu, &rwork[iu2cs + i], &rwork[iu2sn + i]);
             }
