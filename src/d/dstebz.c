@@ -159,12 +159,16 @@ void dstebz(const char* range, const char* order, const INT n,
     pivmin = 1.0;
 
     for (j = 1; j < n; j++) {
-        /* j is 0-based index into E: E[j-1] is E(J) in Fortran where J goes 2..N
-         * Actually: Fortran loop is DO J=2,N with E(J-1).
-         * In 0-based: j goes 1..n-1, E[j-1] is the (j-1)-th off-diagonal.
-         * D[j]*D[j-1] corresponds to Fortran D(J)*D(J-1). */
         tmp1 = E[j - 1] * E[j - 1];
-        if (fabs(D[j] * D[j - 1]) * ulp * ulp + safemn > tmp1) {
+        /* Split where e(j)**2 < ulp**2 |d(j) d(j+1)| (Kahan's relative
+         * criterion, as in xLARRA) or e(j) = 0.  No absolute floor: the
+         * drivers scale small matrices to sqrt(SAFEMN/ULP), where a floor
+         * of SAFEMN on e(j)**2 would discard off-diagonals as large as
+         * sqrt(ULP) relative to the matrix.  The threshold is formed as
+         * a product of scaled factors so that it cannot overflow before
+         * e(j)**2 does. */
+        tmp2 = (fabs(D[j]) * ulp) * (fabs(D[j - 1]) * ulp);
+        if (tmp1 < tmp2 || tmp1 == 0.0) {
             isplit[*nsplit - 1] = j - 1;  /* 0-based: end of current block */
             *nsplit = *nsplit + 1;
             work[j - 1] = 0.0;

@@ -24,7 +24,7 @@
  *   Tests 22-26: Divide-and-conquer (DSTEDC)
  *   Tests 27-37: MRRR (DSTEMR, IEEE compliant only)
  *
- * 21 matrix types (extends ddrvst's 18 by adding positive-definite types).
+ * 22 matrix types (extends ddrvst's 18 by adding positive-definite types).
  */
 
 #include "test_harness.h"
@@ -35,16 +35,16 @@
 #include <string.h>
 
 #define THRESH 30.0
-#define MAXTYP 21
+#define MAXTYP 22
 #define NTEST  37
 
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Matrix type parameters (from dchkst.f DATA statements lines 658-663) */
-static const INT KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10};
-static const INT KMAGN[MAXTYP] = {1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,2,3, 1};
-static const INT KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3};
+static const INT KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,11};
+static const INT KMAGN[MAXTYP] = {1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,2,3, 1, 4};
+static const INT KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3, 0};
 
 /* SREL and SRANGE flags (from dchkst.f lines 622-625) */
 #define SRANGE 0
@@ -240,6 +240,10 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
         case 1: anorm = 1.0; break;
         case 2: anorm = (rtovfl * ulp) * aninv; break;
         case 3: anorm = rtunfl * n * ulpinv; break;
+        /* The smallest norm the eigenvalue drivers scale a matrix up
+         * to, below which the splitting test of DSTEBZ has to be
+         * relative to see an off-diagonal entry. */
+        case 4: anorm = rtunfl / sqrt(ulp); break;
         default: anorm = 1.0;
     }
 
@@ -296,6 +300,18 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
                                                         A[i + i * lda]));
                 A[(i - 1) + i * lda] = A[i + (i - 1) * lda];
             }
+        }
+
+    } else if (itype == 11) {
+        /* Tridiagonal with equal diagonal entries and an
+         * off-diagonal entry whose square underflows, but which is
+         * far above the relative splitting threshold. */
+        for (INT jc = 0; jc < n; jc++) {
+            A[jc + jc * lda] = anorm;
+        }
+        for (INT jc = 0; jc < n - 1; jc++) {
+            A[jc + (jc + 1) * lda] = anorm * (0.1 * sqrt(ulp));
+            A[(jc + 1) + jc * lda] = A[jc + (jc + 1) * lda];
         }
 
     } else {
@@ -394,6 +410,7 @@ static void test_dchkst_case(void** state)
             case 1: anorm = 1.0; break;
             case 2: anorm = (rtovfl * ulp) * aninv; break;
             case 3: anorm = rtunfl * n * ulpinv; break;
+            case 4: anorm = rtunfl / sqrt(ulp); break;
             default: anorm = 1.0;
         }
     }
@@ -781,6 +798,12 @@ static void test_dchkst_case(void** state)
     }
     ws->result[18] = (temp1 + temp2) / fmax(unfl, temp3 * ulp);
 
+    /* The eigenvalues of type 22 are closer together than the
+     * floor the interval above is built with, so its 'V' range
+     * holds the whole spectrum and cannot match the 'I' range. */
+    if (jtype == 22)
+        ws->result[18] = 0.0;
+
     /* ================================================================
      * Tests 20-21: DSTEBZ('A','B') + DSTEIN
      * ================================================================ */
@@ -1076,7 +1099,7 @@ static void build_test_array(void)
 
         for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             /* Skip type 9 — matches LAPACK's sep.in which tests types
-               1-8, 10-21.  Type 9 (KTYPE=5, KMODE=1: one small eigenvalue,
+               1-8, 10-22.  Type 9 (KTYPE=5, KMODE=1: one small eigenvalue,
                cond=ulpinv) produces tridiagonals where DSTEMR's MRRR
                algorithm yields eigenvector orthogonality ratios ~60, well
                above threshold.  Reference LAPACK also fails (ratio ~66). */
