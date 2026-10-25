@@ -100,6 +100,7 @@ lapack_tests_s = {
   'sstebz_discard': ['test_sstebz_discard.c', 'eigen'],
   'sgeqp3_fixed': ['test_sgeqp3_fixed.c', 'qr'],
   'stgsen_lwork': ['test_stgsen_lwork.c', 'eigen'],
+  'stprfb_rowfwd': ['test_stprfb_rowfwd.c', 'qr'],
   'sdrgsx': ['test_sdrgsx.c', 'eigen'],
   'sdrvsg': ['test_sdrvsg.c', 'eigen'],
   'sdrvsg2stg': ['test_sdrvsg2stg.c', 'eigen'],

@@ -107,6 +107,7 @@ lapack_tests_z = {
   'zstein_unconverged': ['test_zstein_unconverged.c', 'eigen'],
   'zgeqp3_fixed': ['test_zgeqp3_fixed.c', 'qr'],
   'ztgsen_lwork': ['test_ztgsen_lwork.c', 'eigen'],
+  'ztprfb_rowfwd': ['test_ztprfb_rowfwd.c', 'qr'],
   'zdrgev': ['test_zdrgev.c', 'eigen'],
   'zdrgev3': ['test_zdrgev3.c', 'eigen'],
   'zdrgsx': ['test_zdrgsx.c', 'eigen'],

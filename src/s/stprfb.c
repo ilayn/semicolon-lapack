@@ -351,7 +351,7 @@ void stprfb(const char* side, const char* trans, const char* direct,
             }
         }
         cblas_strmm(CblasColMajor, CblasLeft, CblasLower, CblasNoTrans,
-                    CblasNonUnit, l, n, ONE, &V[(mp - 1) * ldv], ldv, work, ldb);
+                    CblasNonUnit, l, n, ONE, &V[(mp - 1) * ldv], ldv, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,
                     l, n, m - l, ONE, V, ldv, B, ldb, ONE, work, ldwork);
         cblas_sgemm(CblasColMajor, CblasNoTrans, CblasNoTrans,

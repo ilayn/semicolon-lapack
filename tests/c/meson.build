@@ -105,6 +105,7 @@ lapack_tests_c = {
   'cstein_unconverged': ['test_cstein_unconverged.c', 'eigen'],
   'cgeqp3_fixed': ['test_cgeqp3_fixed.c', 'qr'],
   'ctgsen_lwork': ['test_ctgsen_lwork.c', 'eigen'],
+  'ctprfb_rowfwd': ['test_ctprfb_rowfwd.c', 'qr'],
   'cdrgev': ['test_cdrgev.c', 'eigen'],
   'cdrgev3': ['test_cdrgev3.c', 'eigen'],
   'cdrgsx': ['test_cdrgsx.c', 'eigen'],
