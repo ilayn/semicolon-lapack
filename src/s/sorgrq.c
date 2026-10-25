@@ -97,6 +97,7 @@ void sorgrq(const INT m, const INT n, const INT k,
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
         nx = lapack_get_nx("ORGRQ");
+        if (nx < 0) nx = 0;
         if (nx < k) {
             ldwork = m;
             iws = ldwork * nb;

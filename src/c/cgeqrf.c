@@ -89,6 +89,7 @@ void cgeqrf(const INT m, const INT n,
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
         nx = lapack_get_nx("GEQRF");
+        if (nx < 0) nx = 0;
         if (nx < k) {
             /* Determine if workspace is large enough for blocked code */
             iws = n * nb;
