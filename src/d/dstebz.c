@@ -491,7 +491,7 @@ void dstebz(const char* range, const char* order, const INT n,
 
             /*
              * Copy Eigenvalues Into W and IBLOCK.
-             * Use -(jb+1) for block number for unconverged eigenvalues.
+             * Use -(jb+2) for block number for unconverged eigenvalues.
              *
              * Fortran loop: DO J=1,IOUT
              *   TMP1 = HALF*(WORK(J+N) + WORK(J+IN+N))
@@ -625,7 +625,7 @@ void dstebz(const char* range, const char* order, const INT n,
                             wkill = W[je];
                         }
                     }
-                    iblock[iw] = -1;
+                    if (iw != -1) iblock[iw] = -1;
                 }
             }
             if (idiscu > 0) {
@@ -638,7 +638,7 @@ void dstebz(const char* range, const char* order, const INT n,
                             wkill = W[je];
                         }
                     }
-                    iblock[iw] = -1;
+                    if (iw != -1) iblock[iw] = -1;
                 }
             }
             im = 0;

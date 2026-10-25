@@ -104,6 +104,7 @@ lapack_tests_d = {
   'dgges3_scaling': ['test_dgges3_scaling.c', 'eigen'],  # DGGES3 QZ regressions (DLAQZ0/DLAQZ4)
   'dstevx_scaling': ['test_dstevx_scaling.c', 'eigen'],
   'dstein_unconverged': ['test_dstein_unconverged.c', 'eigen'],
+  'dstebz_discard': ['test_dstebz_discard.c', 'eigen'],
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
   'ddrvsg': ['test_ddrvsg.c', 'eigen'],      # Generalized symmetric eigenvalue (DSYGV/DSPGV/DSBGV)
   'ddrvsg2stg': ['test_ddrvsg2stg.c', 'eigen'],  # 2-stage generalized symmetric eigenvalue (DSYGV_2STAGE)
