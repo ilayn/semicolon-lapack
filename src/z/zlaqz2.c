@@ -188,9 +188,12 @@ void zlaqz2(const INT ilschur, const INT ilq, const INT ilz,
 
     if (kwtop != ilo && s != CZERO) {
         /* Reflect spike back, this will create optimally packed bulges */
-        for (INT i = kwtop; i <= kwbot; i++) {
-            A[i + (kwtop - 1) * lda] = A[kwtop + (kwtop - 1) * lda] *
-                                        conj(QC[0 + (i - kwtop) * ldqc]);
+        {
+            c128 a_val = A[kwtop + (kwtop - 1) * lda];
+            for (INT i = kwtop; i <= kwbot; i++) {
+                A[i + (kwtop - 1) * lda] = a_val *
+                                            conj(QC[0 + (i - kwtop) * ldqc]);
+            }
         }
         for (k = kwbot - 1; k >= kwtop; k--) {
             zlartg(A[k + (kwtop - 1) * lda], A[k + 1 + (kwtop - 1) * lda],

@@ -304,6 +304,7 @@ void zlaqz0(
         while (k >= istart2) {
 
             if (cabs(B[k + k * ldb]) < btol) {
+                B[k + k * ldb] = CZERO;
                 /* A diagonal element of B is negligible, move it
                    to the top and deflate it */
                 for (k2 = k; k2 >= istart2 + 1; k2--) {

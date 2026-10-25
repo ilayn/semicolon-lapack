@@ -227,26 +227,9 @@ void dlaqz4(
         for (i = ns - 1; i >= 0; i -= 2) {
             for (j = 0; j <= np - 1; j++) {
                 /* Move down the block with index k+i+j-1, updating
-                   the (ns+np x ns+np) block: (k:k+ns+np, k:k+ns+np-1)
-                   Fortran: DLAQZ2(.TRUE., .TRUE., K+I+J-1, ISTARTB, ISTOPB, IHI, ...)
-                   where K, I, J are all 1-based
-                   In C: k, i, j are 0-based equivalents
-                   k_fortran = k + 1, i_fortran = i + 1 (but Fortran loop goes NS-1 down to 0)
-                   Actually in Fortran: I goes from NS-1 to 0 (by -2), J goes from 0 to NP-1
-                   The index K+I+J-1 in Fortran (1-based K,I,J):
-                   - K is 1-based loop variable starting at ILO
-                   - I is loop counter NS-1, NS-3, ..., 1 (or 0)
-                   - J is loop counter 0, 1, ..., NP-1
-                   In C with 0-based k: Fortran K = C k + 1
-                   Fortran K+I+J-1 = (k+1)+I+J-1 = k+I+J
-                   But we also need to convert I,J. Looking at Fortran loop:
-                   I goes NS-1, NS-3, ... which is the same values in C
-                   J goes 0 to NP-1 which is the same
-                   So Fortran index K+I+J-1 with Fortran K = k_c+1 gives us k_c+I+J
-                   But wait, I need to be more careful about what dlaqz2 expects.
-                   dlaqz2's k parameter is the bulge position (0-based in C).
-                   So we pass k + i + j directly (all 0-based). */
-                dlaqz2(1, 1, k + i + j, istartb, istopb, ihi,
+                   the (ns+np x ns+np) block:
+                   (k:k+ns+np,k:k+ns+np-1) */
+                dlaqz2(1, 1, k + i + j - 1, istartb, istopb, ihi,
                        A, lda, B, ldb, nblock, k + 1, QC, ldqc,
                        nblock, k, ZC, ldzc);
             }

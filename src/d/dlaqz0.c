@@ -10,7 +10,7 @@
 /**
  * DLAQZ0 computes the eigenvalues of a real matrix pair (H,T),
  * where H is an upper Hessenberg matrix and T is upper triangular,
- * using the f64-shift QZ method with aggressive early deflation.
+ * using the double-shift QZ method with aggressive early deflation.
  *
  * @param[in]     wants    'E': Compute eigenvalues only; 'S': Compute Schur form.
  * @param[in]     wantq    'N': Q not computed; 'I': Q initialized; 'V': Q updated.
@@ -309,6 +309,7 @@ void dlaqz0(
         k = istop;
         while (k >= istart2) {
             if (fabs(B[k + k * ldb]) < btol) {
+                B[k + k * ldb] = ZERO;
                 /* A diagonal element of B is negligible, move it to the top and deflate it */
                 for (k2 = k; k2 >= istart2 + 1; k2--) {
                     dlartg(B[(k2 - 1) + k2 * ldb], B[(k2 - 1) + (k2 - 1) * ldb],
@@ -410,8 +411,8 @@ void dlaqz0(
         if (ns > n_undeflated) ns = n_undeflated;
         shiftpos = istop - n_undeflated + 1;
 
-        /* Shuffle shifts to put f64 shifts in front */
-        for (i = shiftpos; i <= shiftpos + n_undeflated - 1; i += 2) {
+        /* Shuffle shifts to put double shifts in front */
+        for (i = shiftpos; i <= shiftpos + n_undeflated - 3; i += 2) {
             if (alphai[i] != -alphai[i + 1]) {
                 swap = alphar[i];
                 alphar[i] = alphar[i + 1];
