@@ -102,6 +102,7 @@ lapack_tests_c = {
   'cdrges': ['test_cdrges.c', 'eigen'],
   'cdrges3': ['test_cdrges3.c', 'eigen'],
   'cgges3_scaling': ['test_cgges3_scaling.c', 'eigen'],
+  'cstein_unconverged': ['test_cstein_unconverged.c', 'eigen'],
   'cdrgev': ['test_cdrgev.c', 'eigen'],
   'cdrgev3': ['test_cdrgev3.c', 'eigen'],
   'cdrgsx': ['test_cdrgsx.c', 'eigen'],

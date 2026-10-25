@@ -37,10 +37,14 @@
  *                        with ORDER = 'B' is expected here.)
  * @param[in]     iblock  Integer array, dimension (m).
  *                        The submatrix indices associated with the
- *                        corresponding eigenvalues in W; iblock[i]=1 if
+ *                        corresponding eigenvalues in W; iblock[i]=0 if
  *                        eigenvalue W[i] belongs to the first submatrix from
- *                        the top, =2 if W[i] belongs to the second submatrix,
- *                        etc. (1-based block numbers.)
+ *                        the top, =1 if W[i] belongs to the second submatrix,
+ *                        etc. (0-based block numbers.) (The output array
+ *                        iblock from SSTEBZ is expected here.)
+ *                        A negative entry -(b+2), with which SSTEBZ flags an
+ *                        eigenvalue of block b that did not converge, is
+ *                        treated as block b.
  * @param[in]     isplit  Integer array, dimension (nsplit).
  *                        The splitting points, at which T breaks up into
  *                        submatrices. The first submatrix consists of
@@ -114,11 +118,13 @@ void cstein(
         *info = -9;
     } else {
         for (j = 1; j < m; j++) {
-            if (iblock[j] < iblock[j - 1]) {
+            INT ibj = (iblock[j] >= 0) ? iblock[j] : -iblock[j] - 2;
+            INT ibjm1 = (iblock[j - 1] >= 0) ? iblock[j - 1] : -iblock[j - 1] - 2;
+            if (ibj < ibjm1) {
                 *info = -6;
                 break;
             }
-            if (iblock[j] == iblock[j - 1] && W[j] < W[j - 1]) {
+            if (ibj == ibjm1 && W[j] < W[j - 1]) {
                 *info = -5;
                 break;
             }
@@ -153,7 +159,7 @@ void cstein(
      * j1 is the 0-based index of the first eigenvalue in the current block.
      */
     j1 = 0;
-    for (nblk = 0; nblk <= iblock[m - 1]; nblk++) {
+    for (nblk = 0; nblk <= ((iblock[m - 1] >= 0) ? iblock[m - 1] : -iblock[m - 1] - 2); nblk++) {
 
         /*
          * Find starting and ending indices of block nblk (0-based).
@@ -186,7 +192,7 @@ void cstein(
         /* Loop through eigenvalues of block nblk. */
         jblk = 0;
         for (j = j1; j < m; j++) {
-            if (iblock[j] != nblk) {
+            if (((iblock[j] >= 0) ? iblock[j] : -iblock[j] - 2) != nblk) {
                 j1 = j;
                 break;
             }

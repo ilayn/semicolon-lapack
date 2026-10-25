@@ -34,7 +34,11 @@
  *                        corresponding eigenvalues in W; iblock[i]=0 if
  *                        eigenvalue W[i] belongs to the first submatrix from
  *                        the top, =1 if W[i] belongs to the second submatrix,
- *                        etc. (0-based block numbers.)
+ *                        etc. (0-based block numbers.) (The output array
+ *                        iblock from DSTEBZ is expected here.)
+ *                        A negative entry -(b+2), with which DSTEBZ flags an
+ *                        eigenvalue of block b that did not converge, is
+ *                        treated as block b.
  * @param[in]     isplit  Integer array, dimension (nsplit).
  *                        The splitting points, at which T breaks up into
  *                        submatrices. The first submatrix consists of
@@ -83,7 +87,7 @@ void dstein(
     const f64 ODM1 = 1.0e-1;
 
     INT b1, blksiz, bn, gpind = 0, i, iinfo, its, j, j1, jblk, jmax, nblk, nrmchk;
-    f64 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm, ztr;
+    f64 dtpcrt, eps, eps1, nrm, onenrm, ortol, pertol, scl, sep, tol, xj, xjm = 0.0, ztr;
     INT iseed[4];
 
     /* Workspace offsets: each segment has n elements */
@@ -107,11 +111,13 @@ void dstein(
         *info = -9;
     } else {
         for (j = 1; j < m; j++) {
-            if (iblock[j] < iblock[j - 1]) {
+            INT ibj = (iblock[j] >= 0) ? iblock[j] : -iblock[j] - 2;
+            INT ibjm1 = (iblock[j - 1] >= 0) ? iblock[j - 1] : -iblock[j - 1] - 2;
+            if (ibj < ibjm1) {
                 *info = -6;
                 break;
             }
-            if (iblock[j] == iblock[j - 1] && W[j] < W[j - 1]) {
+            if (ibj == ibjm1 && W[j] < W[j - 1]) {
                 *info = -5;
                 break;
             }
@@ -146,7 +152,7 @@ void dstein(
      * j1 is the 0-based index of the first eigenvalue in the current block.
      */
     j1 = 0;
-    for (nblk = 0; nblk <= iblock[m - 1]; nblk++) {
+    for (nblk = 0; nblk <= ((iblock[m - 1] >= 0) ? iblock[m - 1] : -iblock[m - 1] - 2); nblk++) {
 
         /*
          * Find starting and ending indices of block nblk (0-based).
@@ -180,7 +186,7 @@ void dstein(
         /* Loop through eigenvalues of block nblk. */
         jblk = 0;
         for (j = j1; j < m; j++) {
-            if (iblock[j] != nblk) {
+            if (((iblock[j] >= 0) ? iblock[j] : -iblock[j] - 2) != nblk) {
                 j1 = j;
                 break;
             }

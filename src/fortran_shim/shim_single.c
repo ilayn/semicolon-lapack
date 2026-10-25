@@ -2440,7 +2440,7 @@ void sstein_(INT* n, f32* D, f32* E, INT* m, f32* W, INT* iblock, INT* isplit, f
     if (iblock) {
         INT _iblock_sz = *m;
         _iblock0 = (INT*)malloc(_iblock_sz * sizeof(INT));
-        for (INT _i = 0; _i < _iblock_sz; _i++) _iblock0[_i] = (iblock[_i] > 0) ? iblock[_i] - 1 : iblock[_i];
+        for (INT _i = 0; _i < _iblock_sz; _i++) _iblock0[_i] = iblock[_i] - 1;
     }
     if (isplit) {
         INT _isplit_sz = *n;

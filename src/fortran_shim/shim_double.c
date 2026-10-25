@@ -2456,7 +2456,7 @@ void dstein_(INT* n, f64* D, f64* E, INT* m, f64* W, INT* iblock, INT* isplit, f
     if (iblock) {
         INT _iblock_sz = *m;
         _iblock0 = (INT*)malloc(_iblock_sz * sizeof(INT));
-        for (INT _i = 0; _i < _iblock_sz; _i++) _iblock0[_i] = (iblock[_i] > 0) ? iblock[_i] - 1 : iblock[_i];
+        for (INT _i = 0; _i < _iblock_sz; _i++) _iblock0[_i] = iblock[_i] - 1;
     }
     if (isplit) {
         INT _isplit_sz = *n;
