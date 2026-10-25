@@ -363,14 +363,15 @@ gen_ok:
         /* Sorting an ill-conditioned matrix can fail with INFO = N+3 (DTGSEN
            could not reorder). It happens on GitHub runners with OpenBLAS
            Cooperlake kernels but not with Zen kernels. N+3 is a documented
-           result, so the sorting checks are skipped deliberately for that
-           matrix, as Reference-LAPACK e2e67bcd1 does for DGEES. */
+           result, so once the unsorted checks have passed, the sorting
+           checks are deliberately reported as skipped for that matrix, as
+           Reference-LAPACK e2e67bcd1 does for DGEES. */
         if (isort == 1 && iinfo == n + 3) {
             result[rsub + isort] = -1.0;
-            fprintf(stderr, "DGGES returned the known code N+3=%d: reordering "
-                          "failed; ill-conditioned matrix, accepted as no error. "
-                          "N=%d JTYPE=%d\n", iinfo, n, jtype);
-            goto check_results;
+            for (INT jr = 0; jr < 13; jr++) {
+                if (result[jr] >= THRESH) goto check_results;
+            }
+            skip();
         }
         if (iinfo != 0 && iinfo != n + 2) {
             result[rsub + isort] = ulpinv;
