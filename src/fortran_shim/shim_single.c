@@ -844,21 +844,12 @@ void sgelst_(char* trans, INT* m, INT* n, INT* nrhs, f32* A, INT* lda, f32* B, I
 }
 
 void sgelsy_(INT* m, INT* n, INT* nrhs, f32* A, INT* lda, f32* B, INT* ldb, INT* jpvt, f32* rcond, INT* rank, f32* work, INT* lwork, INT* info) {
-    INT* _jpvt0 = NULL;
+    f32 _anrm = 0;
+    if (*lwork != -1 && *m > 0 && *n > 0 && *lda >= *m)
+        _anrm = slange("M", *m, *n, A, *lda, NULL);
+    sgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, jpvt, *rcond, rank, work, *lwork, info);
     if (*lwork != -1) {
-        if (jpvt) {
-            INT _jpvt_sz = *n;
-            _jpvt0 = (INT*)malloc(_jpvt_sz * sizeof(INT));
-            for (INT _i = 0; _i < _jpvt_sz; _i++) _jpvt0[_i] = (jpvt[_i] > 0) ? jpvt[_i] - 1 : jpvt[_i];
-        }
-    }
-    if (*lwork != -1) {
-        sgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, _jpvt0, *rcond, rank, work, *lwork, info);
-    } else {
-        sgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, jpvt, *rcond, rank, work, *lwork, info);
-    }
-    if (*lwork != -1) {
-        free(_jpvt0);
+        if (jpvt && *info == 0 && *nrhs > 0 && _anrm != 0) { for (INT _i = 0; _i < *n; _i++) jpvt[_i]++; }
     }
 }
 

@@ -803,21 +803,12 @@ void cgelss_(INT* m, INT* n, INT* nrhs, c64* A, INT* lda, c64* B, INT* ldb, f32*
 }
 
 void cgelsy_(INT* m, INT* n, INT* nrhs, c64* A, INT* lda, c64* B, INT* ldb, INT* jpvt, f32* rcond, INT* rank, c64* work, INT* lwork, f32* rwork, INT* info) {
-    INT* _jpvt0 = NULL;
+    f32 _anrm = 0;
+    if (*lwork != -1 && *m > 0 && *n > 0 && *lda >= *m)
+        _anrm = clange("M", *m, *n, A, *lda, NULL);
+    cgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, jpvt, *rcond, rank, work, *lwork, rwork, info);
     if (*lwork != -1) {
-        if (jpvt) {
-            INT _jpvt_sz = *n;
-            _jpvt0 = (INT*)malloc(_jpvt_sz * sizeof(INT));
-            for (INT _i = 0; _i < _jpvt_sz; _i++) _jpvt0[_i] = (jpvt[_i] > 0) ? jpvt[_i] - 1 : jpvt[_i];
-        }
-    }
-    if (*lwork != -1) {
-        cgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, _jpvt0, *rcond, rank, work, *lwork, rwork, info);
-    } else {
-        cgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, jpvt, *rcond, rank, work, *lwork, rwork, info);
-    }
-    if (*lwork != -1) {
-        free(_jpvt0);
+        if (jpvt && *info == 0 && *nrhs > 0 && _anrm != 0) { for (INT _i = 0; _i < *n; _i++) jpvt[_i]++; }
     }
 }
 

@@ -819,21 +819,12 @@ void zgelss_(INT* m, INT* n, INT* nrhs, c128* A, INT* lda, c128* B, INT* ldb, f6
 }
 
 void zgelsy_(INT* m, INT* n, INT* nrhs, c128* A, INT* lda, c128* B, INT* ldb, INT* jpvt, f64* rcond, INT* rank, c128* work, INT* lwork, f64* rwork, INT* info) {
-    INT* _jpvt0 = NULL;
+    f64 _anrm = 0;
+    if (*lwork != -1 && *m > 0 && *n > 0 && *lda >= *m)
+        _anrm = zlange("M", *m, *n, A, *lda, NULL);
+    zgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, jpvt, *rcond, rank, work, *lwork, rwork, info);
     if (*lwork != -1) {
-        if (jpvt) {
-            INT _jpvt_sz = *n;
-            _jpvt0 = (INT*)malloc(_jpvt_sz * sizeof(INT));
-            for (INT _i = 0; _i < _jpvt_sz; _i++) _jpvt0[_i] = (jpvt[_i] > 0) ? jpvt[_i] - 1 : jpvt[_i];
-        }
-    }
-    if (*lwork != -1) {
-        zgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, _jpvt0, *rcond, rank, work, *lwork, rwork, info);
-    } else {
-        zgelsy(*m, *n, *nrhs, A, *lda, B, *ldb, jpvt, *rcond, rank, work, *lwork, rwork, info);
-    }
-    if (*lwork != -1) {
-        free(_jpvt0);
+        if (jpvt && *info == 0 && *nrhs > 0 && _anrm != 0) { for (INT _i = 0; _i < *n; _i++) jpvt[_i]++; }
     }
 }
 
