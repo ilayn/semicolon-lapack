@@ -88,6 +88,7 @@ void dgelqf(const INT m, const INT n,
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
         nx = lapack_get_nx("GELQF");
+        if (nx < 0) nx = 0;
         if (nx < k) {
             iws = m * nb;
             if (lwork < iws) {

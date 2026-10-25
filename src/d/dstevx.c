@@ -136,6 +136,7 @@ void dstevx(const char* jobz, const char* range, const INT n,
 
     /* Scale matrix to allowable range, if necessary. */
     INT iscale = 0;
+    f64 abstll = abstol;
     f64 vll = ZERO, vuu = ZERO;
     if (valeig) {
         vll = vl;
@@ -147,12 +148,22 @@ void dstevx(const char* jobz, const char* range, const INT n,
         iscale = 1;
         sigma = rmin / tnrm;
     } else if (tnrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / tnrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         cblas_dscal(n, sigma, D, 1);
         cblas_dscal(n - 1, sigma, E, 1);
+
+        /* Scale a positive ABSTOL with the matrix.  Keep the product
+         * positive, as DSTEBZ takes ABSTOL <= 0 as a request for its
+         * default tolerance EPS*|T|, and cap ABSTOL at |T| so that the
+         * product cannot overflow. */
+        if (abstol > ZERO)
+            abstll = fmax(fmin(abstol, tnrm) * sigma, safmin);
         if (valeig) {
             vll = vl * sigma;
             vuu = vu * sigma;
@@ -177,7 +188,7 @@ void dstevx(const char* jobz, const char* range, const INT n,
             dsteqr("I", n, W, work, Z, ldz, &work[indwrk], info);
             if (*info == 0) {
                 for (INT i = 0; i < n; i++)
-                    ifail[i] = 0;
+                    ifail[i] = -1;
             }
         }
         if (*info == 0) {
@@ -197,7 +208,7 @@ void dstevx(const char* jobz, const char* range, const INT n,
 
     INT iinfo;
     INT nsplit;
-    dstebz(range, order_str, n, vll, vuu, il, iu, abstol, D, E,
+    dstebz(range, order_str, n, vll, vuu, il, iu, abstll, D, E,
            m, &nsplit, W, iwork, &iwork[n], &work[0], &iwork[2 * n], &iinfo);
     if (iinfo != 0) {
         *info = n + iinfo;
@@ -214,15 +225,8 @@ void dstevx(const char* jobz, const char* range, const INT n,
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 rescale:
-    if (iscale == 1) {
-        INT imax;
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_dscal(*m, ONE / sigma, W, 1);
 
     /* If eigenvalues are not in order, then sort them, along with
      * eigenvectors. */
@@ -238,11 +242,14 @@ rescale:
             }
 
             if (imin != 0) {
+                INT itmp1 = iwork[imin];
                 W[imin] = W[j];
+                iwork[imin] = iwork[j];
                 W[j] = tmp1;
+                iwork[j] = itmp1;
                 cblas_dswap(n, &Z[0 + imin * ldz], 1, &Z[0 + j * ldz], 1);
                 if (*info != 0) {
-                    INT itmp1 = ifail[imin];
+                    itmp1 = ifail[imin];
                     ifail[imin] = ifail[j];
                     ifail[j] = itmp1;
                 }

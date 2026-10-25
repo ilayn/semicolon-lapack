@@ -33,6 +33,12 @@ FUNCPTR_TYPES = frozenset({
 # Each value is a list of conversion actions:
 #
 #   ('out_pivot',      param, size_expr)           — output pivot array: ++ after call
+#   ('cond_out_pivot', param, size_expr, cond_param, cond_expr)
+#                                                  — conditional output pivot array: ++ after call
+#                                                    only when cond_expr is true (C expression
+#                                                    using cond_param).  For pivot arrays the
+#                                                    routine leaves untouched on some returns,
+#                                                    e.g. xGEQP3 JPVT on an argument error.
 #   ('in_pivot',       param, size_expr)           — input pivot array: -- copy before call
 #   ('io_pivot',       param, size_expr, cond_param, cond_val)
 #                                                  — conditional I/O: branch on char param
@@ -44,7 +50,25 @@ FUNCPTR_TYPES = frozenset({
 #                                                  — conditional output index array: ++ only
 #                                                    when cond_expr is true (C expression using
 #                                                    the char* parameter cond_param)
+#   ('gelsy_jpvt',     param)                      — xGELSY JPVT: the 0/nonzero flags mean the
+#                                                    same in C and Fortran and pass through.  C
+#                                                    writes the permutation only when INFO = 0,
+#                                                    MIN(M,N,NRHS) > 0 and max|A| != 0 (its own
+#                                                    xLANGE('M') check), so ++ only then.
+#   ('out_fail_arr',   param, size_expr)           — eigenvector-failure array (IFAIL): C writes
+#                                                    -1 for a converged eigenvector and the 0-based
+#                                                    index of a failed one.  The call gets a temp
+#                                                    copy filled with -2; afterwards only the
+#                                                    entries C wrote are copied back, ++.  Entries
+#                                                    C left alone keep the caller's values, as in
+#                                                    Fortran, whatever INFO or M say.
 #   ('in_idx_arr',     param, size_expr)           — input index array: -- copy before call
+#   ('in_blk_arr',     param, size_expr)           — input block-number array: unconditional --
+#                                                    copy before call, the exact inverse of
+#                                                    out_idx_arr.  For stein's iblock, where
+#                                                    stebz encodes Fortran IBLOCK = -JB (block
+#                                                    JB did not converge) as C -(jb+2) and
+#                                                    Fortran 0 as C -1.
 #   ('gebal_scale',    param, ilo_param, ihi_param, n_param)
 #                                                  — gebal: scale[0..ilo-2] and scale[ihi..n-1]
 #                                                    contain permutation indices (0-based in C),
@@ -59,6 +83,7 @@ FUNCPTR_TYPES = frozenset({
 # Size expressions use shim parameter names with * dereference (e.g. '*n').
 # They are evaluated in C at the point where they appear in the generated code.
 # ---------------------------------------------------------------------------
+
 INDEX_RULES = {
     # --- LU factorization family ---
     'getrf':  [('out_pivot', 'ipiv', '((*m < *n) ? *m : *n)')],
@@ -197,13 +222,17 @@ INDEX_RULES = {
     'pstrf':  [('out_pivot', 'piv', '*n')],
 
     # --- QR with column pivoting ---
-    'geqp3':   [('out_pivot', 'jpvt', '*n')],
-    'geqp3rk': [('out_pivot', 'jpiv', '*n')],
-    'gelsy':   [('in_pivot',  'jpvt', '*n')],
-    'laqp2':   [('out_pivot', 'jpvt', '*n')],
-    'laqps':   [('out_pivot', 'jpvt', '*n')],
-    'laqp2rk': [('out_pivot', 'jpiv', '*n')],
-    'laqp3rk': [('out_pivot', 'jpiv', '*n')],
+    # On entry xGEQP3 JPVT holds 0 / nonzero flags, the same in C and Fortran.
+    # JPVT is untouched on an argument error, and xGEQP3RK JPIV also when
+    # M = 0 or N = 0.
+    'geqp3':   [('cond_out_pivot', 'jpvt', '*n', 'info', '*info >= 0')],
+    'geqp3rk': [('cond_out_pivot', 'jpiv', '*n', 'info', '*info >= 0 && *m > 0 && *n > 0')],
+    'gelsy':   [('gelsy_jpvt', 'jpvt')],
+    # xLAQP2, xLAQPS, xLAQP2RK and xLAQP3RK only permute the entries of
+    # JPVT/JPIV, so the caller's values pass through unchanged.  KP1 is a
+    # column index.
+    'laqp2rk': [('in_scalar_idx', 'kp1')],
+    'laqp3rk': [('in_scalar_idx', 'kp1')],
 
     # --- latdf ---
     'latdf':  [('in_pivot', 'ipiv', '*n')],
@@ -275,10 +304,10 @@ INDEX_RULES = {
     'stebz':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('out_idx_arr', 'iblock', '*m'),
                ('out_idx_arr', 'isplit', '*nsplit')],
-    'stein':  [('in_idx_arr', 'iblock', '*m'), ('in_idx_arr', 'isplit', '*n'),
-               ('out_idx_arr', 'ifail', '*m')],
+    'stein':  [('in_blk_arr', 'iblock', '*m'), ('in_idx_arr', 'isplit', '*n'),
+               ('out_fail_arr', 'ifail', '*m')],
     'stevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'stevr':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('cond_out_idx_arr', 'isuppz', '2 * (*m)', 'range', "(*jobz == 'V' || *jobz == 'v') && (*range == 'A' || *range == 'a')")],
     'stegr':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
@@ -286,45 +315,45 @@ INDEX_RULES = {
     'stemr':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('cond_out_idx_arr', 'isuppz', '2 * (*m)', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
     'syevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'syevr':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('cond_out_idx_arr', 'isuppz', '2 * (*m)', 'range', "(*jobz == 'V' || *jobz == 'v') && (*range == 'A' || *range == 'a')")],
     'syevx_2stage': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-                     ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+                     ('out_fail_arr', 'ifail', '*n')],
     'syevr_2stage': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                      ('cond_out_idx_arr', 'isuppz', '2 * (*m)', 'range', "(*jobz == 'V' || *jobz == 'v') && (*range == 'A' || *range == 'a')")],
     'heevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'heevr':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                ('cond_out_idx_arr', 'isuppz', '2 * (*m)', 'range', "(*jobz == 'V' || *jobz == 'v') && (*range == 'A' || *range == 'a')")],
     'heevx_2stage': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-                     ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+                     ('out_fail_arr', 'ifail', '*n')],
     'heevr_2stage': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
                      ('cond_out_idx_arr', 'isuppz', '2 * (*m)', 'range', "(*jobz == 'V' || *jobz == 'v') && (*range == 'A' || *range == 'a')")],
     'spevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'hpevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'sbevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'hbevx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'sbevx_2stage': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-                     ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+                     ('out_fail_arr', 'ifail', '*n')],
     'hbevx_2stage': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-                     ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+                     ('out_fail_arr', 'ifail', '*n')],
     'sygvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'sbgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'hbgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'hegvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'spgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
     'hpgvx':  [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu'),
-               ('cond_out_idx_arr', 'ifail', '*m', 'jobz', "(*jobz == 'V' || *jobz == 'v')")],
+               ('out_fail_arr', 'ifail', '*n')],
 
     'gesvdx': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu')],
     'bdsvdx': [('in_scalar_idx', 'il'), ('in_scalar_idx', 'iu')],
@@ -349,8 +378,10 @@ INDEX_RULES = {
     'larra':  [('out_idx_arr', 'isplit', '*nsplit')],
 
     # --- Eigenvector failure arrays ---
-    'hsein':  [('cond_out_idx_arr', 'ifaill', '*mm', 'side', "(*side == 'L' || *side == 'l' || *side == 'B' || *side == 'b')"),
-               ('cond_out_idx_arr', 'ifailr', '*mm', 'side', "(*side == 'R' || *side == 'r' || *side == 'B' || *side == 'b')")],
+    # xHSEIN sets IFAILL/IFAILR(1:M) (C: -1 converged, else 0-based index) and
+    # leaves them untouched on an argument error.
+    'hsein':  [('cond_out_idx_arr', 'ifaill', '*m', 'side', "*info >= 0 && (*side == 'L' || *side == 'l' || *side == 'B' || *side == 'b')"),
+               ('cond_out_idx_arr', 'ifailr', '*m', 'side', "*info >= 0 && (*side == 'R' || *side == 'r' || *side == 'B' || *side == 'b')")],
 
     # --- Secular equation eigenvalue index ---
     'lasd4':  [('in_scalar_idx', 'i')],
@@ -507,11 +538,12 @@ def generate_wrapper(func_name, return_type, params, rules):
     # placeholders for those arrays, so iterating over them would corrupt the
     # stack.  We guard array-level conversions with `if (*lwork != -1)`.
     needs_lwork_guard = bool(lwork_params) and any(
-        r[0] in ('out_pivot', 'in_pivot', 'in_idx_arr', 'out_idx_arr',
-                 'cond_out_idx_arr')
+        r[0] in ('out_pivot', 'cond_out_pivot', 'in_pivot', 'in_idx_arr',
+                 'in_blk_arr', 'out_idx_arr', 'cond_out_idx_arr',
+                 'out_fail_arr', 'gelsy_jpvt')
         for r in rules)
 
-    # Pre-call: in_scalar_idx locals, in_pivot/in_idx_arr temp copies
+    # Pre-call: in_scalar_idx locals, in_pivot/in_idx_arr/in_blk_arr temp copies
     pre_lines = []
     free_list = []
 
@@ -523,6 +555,11 @@ def generate_wrapper(func_name, return_type, params, rules):
             pre_lines.append(f'    INT _{pname} = *{pname} - 1;')
         elif action == 'io_scalar_idx':
             pre_lines.append(f'    INT _{pname} = *{pname} - 1;')
+        elif action == 'gelsy_jpvt':
+            rtype = 'f64' if func_name[0] in 'dz' else 'f32'
+            pre_lines.append(f'    {rtype} _anrm = 0;')
+            pre_lines.append(f'    if (*lwork != -1 && *m > 0 && *n > 0 && *lda >= *m)')
+            pre_lines.append(f'        _anrm = {func_name[0]}lange("M", *m, *n, A, *lda, NULL);')
         elif action == 'gebak_scale':
             # Convert scale permutation indices from 1-based to 0-based
             # before calling our library.  Uses original (1-based) ilo/ihi.
@@ -545,14 +582,28 @@ def generate_wrapper(func_name, return_type, params, rules):
     for r in rules:
         action = r[0]
         pname = r[1]
-        if action in ('in_pivot', 'in_idx_arr'):
+        if action in ('in_pivot', 'in_idx_arr', 'in_blk_arr'):
+            size_expr = r[2]
+            tmp = f'_{pname}0'
+            if action == 'in_blk_arr':
+                conv = f'{pname}[_i] - 1'
+            else:
+                conv = f'({pname}[_i] > 0) ? {pname}[_i] - 1 : {pname}[_i]'
+            arr_decl_lines.append(f'    INT* {tmp} = NULL;')
+            arr_init_lines.append(f'    if ({pname}) {{')
+            arr_init_lines.append(f'        INT _{pname}_sz = {size_expr};')
+            arr_init_lines.append(f'        {tmp} = (INT*)malloc(_{pname}_sz * sizeof(INT));')
+            arr_init_lines.append(f'        for (INT _i = 0; _i < _{pname}_sz; _i++) {tmp}[_i] = {conv};')
+            arr_init_lines.append(f'    }}')
+            free_list.append(tmp)
+        elif action == 'out_fail_arr':
             size_expr = r[2]
             tmp = f'_{pname}0'
             arr_decl_lines.append(f'    INT* {tmp} = NULL;')
             arr_init_lines.append(f'    if ({pname}) {{')
             arr_init_lines.append(f'        INT _{pname}_sz = {size_expr};')
             arr_init_lines.append(f'        {tmp} = (INT*)malloc(_{pname}_sz * sizeof(INT));')
-            arr_init_lines.append(f'        for (INT _i = 0; _i < _{pname}_sz; _i++) {tmp}[_i] = ({pname}[_i] > 0) ? {pname}[_i] - 1 : {pname}[_i];')
+            arr_init_lines.append(f'        for (INT _i = 0; _i < _{pname}_sz; _i++) {tmp}[_i] = -2;')
             arr_init_lines.append(f'    }}')
             free_list.append(tmp)
 
@@ -583,7 +634,7 @@ def generate_wrapper(func_name, return_type, params, rules):
         elif any(r[0] == 'io_scalar_idx' for r in prules):
             call_args.append(f'&_{pname}')
             call_args_passthru.append(f'&_{pname}')
-        elif any(r[0] in ('in_pivot', 'in_idx_arr') for r in prules):
+        elif any(r[0] in ('in_pivot', 'in_idx_arr', 'in_blk_arr', 'out_fail_arr') for r in prules):
             call_args.append(f'_{pname}0')
             call_args_passthru.append(pname)
         elif p['scalar']:
@@ -593,7 +644,7 @@ def generate_wrapper(func_name, return_type, params, rules):
             call_args.append(pname)
             call_args_passthru.append(pname)
 
-    has_in_arr_rules = any(r[0] in ('in_pivot', 'in_idx_arr') for r in rules)
+    has_in_arr_rules = any(r[0] in ('in_pivot', 'in_idx_arr', 'in_blk_arr', 'out_fail_arr') for r in rules)
 
     if needs_lwork_guard and has_in_arr_rules:
         # Two call paths: guarded uses temp copies, query path passes originals
@@ -630,6 +681,11 @@ def generate_wrapper(func_name, return_type, params, rules):
             size_expr = r[2]
             post_arr_lines.append(f'    if ({pname}) {{ INT _sz = {size_expr}; for (INT _i = 0; _i < _sz; _i++) {{ if ({pname}[_i] >= 0) {pname}[_i]++; }} }}')
 
+        elif action == 'cond_out_pivot':
+            size_expr = r[2]
+            cond_expr = r[4]
+            post_arr_lines.append(f'    if ({pname} && ({cond_expr})) {{ INT _sz = {size_expr}; for (INT _i = 0; _i < _sz; _i++) {{ if ({pname}[_i] >= 0) {pname}[_i]++; }} }}')
+
         elif action == 'out_scalar_idx':
             post_scalar_lines.append(f'    (*{pname})++;')
 
@@ -641,6 +697,14 @@ def generate_wrapper(func_name, return_type, params, rules):
             size_expr = r[2]
             cond_expr = r[4]
             post_arr_lines.append(f'    if ({pname} && ({cond_expr})) {{ INT _sz = {size_expr}; for (INT _i = 0; _i < _sz; _i++) {pname}[_i]++; }}')
+
+        elif action == 'gelsy_jpvt':
+            post_arr_lines.append(f'    if ({pname} && *info == 0 && *nrhs > 0 && _anrm != 0) {{ for (INT _i = 0; _i < *n; _i++) {pname}[_i]++; }}')
+
+        elif action == 'out_fail_arr':
+            size_expr = r[2]
+            tmp = f'_{pname}0'
+            post_arr_lines.append(f'    if ({tmp}) {{ INT _sz = {size_expr}; for (INT _i = 0; _i < _sz; _i++) {{ if ({tmp}[_i] != -2) {pname}[_i] = {tmp}[_i] + 1; }} }}')
 
         elif action == 'io_scalar_idx':
             post_scalar_lines.append(f'    *{pname} = _{pname} + 1;')

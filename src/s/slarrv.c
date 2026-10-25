@@ -470,6 +470,10 @@ void slarrv(const INT n, const f32 vl, const f32 vu,
                                    &werr[wbegin], &work[indwrk],
                                    &iwork[iindwk], pivmin, spdiam,
                                    in, &iinfo);
+                            if (iinfo != 0) {
+                                *info = -1;
+                                return;
+                            }
                         }
 
                         if ((wbegin + newlst < dol) ||

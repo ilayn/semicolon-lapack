@@ -57,7 +57,7 @@
  * @param[out]    iwork  Integer array, dimension (5*n).
  * @param[out]    ifail  Integer array, dimension (n).
  *                       If jobz = 'V', then if info = 0, the first m elements
- *                       of ifail are zero. If info > 0, then ifail contains
+ *                       of ifail are -1. If info > 0, then ifail contains
  *                       the indices of the eigenvectors that failed to converge.
  *                       If jobz = 'N', then ifail is not referenced.
  * @param[out]    info
@@ -82,7 +82,7 @@ void zhpevx(const char* jobz, const char* range, const char* uplo,
     const c128 CONE = CMPLX(1.0, 0.0);
 
     INT alleig, indeig, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indisp, indiwk, indrwk;
+    INT i, iinfo, indd, inde, indee, indisp, indiwk, indrwk;
     INT indtau, indwrk, iscale, itmp1, j, jj, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     f64 tmp1, vll, vuu;
@@ -173,8 +173,12 @@ void zhpevx(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO) {
+            iscale = 1;
+        }
     }
     if (iscale == 1) {
         cblas_zdscal((n * (n + 1)) / 2, sigma, AP, 1);
@@ -220,7 +224,7 @@ void zhpevx(const char* jobz, const char* range, const char* uplo,
             zsteqr(jobz, n, W, &rwork[indee], Z, ldz, &rwork[indrwk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }
@@ -270,12 +274,7 @@ void zhpevx(const char* jobz, const char* range, const char* uplo,
 
 L20:
     if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
+        cblas_dscal(*m, ONE / sigma, W, 1);
     }
 
     /* If eigenvalues are not in order, then sort them, along with

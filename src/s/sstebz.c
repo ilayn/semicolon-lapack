@@ -60,7 +60,7 @@ void sstebz(const char* range, const char* order, const INT n,
             INT* info)
 {
     /* Internal parameters from the Fortran source */
-    const f32 FUDGE = 2.1f;
+    const f32 FUDGE = 2.3f;
     const f32 RELFAC = 2.0f;
 
     INT ncnvrg, toofew;
@@ -159,12 +159,16 @@ void sstebz(const char* range, const char* order, const INT n,
     pivmin = 1.0f;
 
     for (j = 1; j < n; j++) {
-        /* j is 0-based index into E: E[j-1] is E(J) in Fortran where J goes 2..N
-         * Actually: Fortran loop is DO J=2,N with E(J-1).
-         * In 0-based: j goes 1..n-1, E[j-1] is the (j-1)-th off-diagonal.
-         * D[j]*D[j-1] corresponds to Fortran D(J)*D(J-1). */
         tmp1 = E[j - 1] * E[j - 1];
-        if (fabsf(D[j] * D[j - 1]) * ulp * ulp + safemn > tmp1) {
+        /* Split where e(j)**2 < ulp**2 |d(j) d(j+1)| (Kahan's relative
+         * criterion, as in xLARRA) or e(j) = 0.  No absolute floor: the
+         * drivers scale small matrices to sqrt(SAFEMN/ULP), where a floor
+         * of SAFEMN on e(j)**2 would discard off-diagonals as large as
+         * sqrt(ULP) relative to the matrix.  The threshold is formed as
+         * a product of scaled factors so that it cannot overflow before
+         * e(j)**2 does. */
+        tmp2 = (fabsf(D[j]) * ulp) * (fabsf(D[j - 1]) * ulp);
+        if (tmp1 < tmp2 || tmp1 == 0.0f) {
             isplit[*nsplit - 1] = j - 1;  /* 0-based: end of current block */
             *nsplit = *nsplit + 1;
             work[j - 1] = 0.0f;
@@ -491,7 +495,7 @@ void sstebz(const char* range, const char* order, const INT n,
 
             /*
              * Copy Eigenvalues Into W and IBLOCK.
-             * Use -(jb+1) for block number for unconverged eigenvalues.
+             * Use -(jb+2) for block number for unconverged eigenvalues.
              *
              * Fortran loop: DO J=1,IOUT
              *   TMP1 = HALF*(WORK(J+N) + WORK(J+IN+N))
@@ -625,7 +629,7 @@ void sstebz(const char* range, const char* order, const INT n,
                             wkill = W[je];
                         }
                     }
-                    iblock[iw] = -1;
+                    if (iw != -1) iblock[iw] = -1;
                 }
             }
             if (idiscu > 0) {
@@ -638,7 +642,7 @@ void sstebz(const char* range, const char* order, const INT n,
                             wkill = W[je];
                         }
                     }
-                    iblock[iw] = -1;
+                    if (iw != -1) iblock[iw] = -1;
                 }
             }
             im = 0;

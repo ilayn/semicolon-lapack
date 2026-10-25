@@ -43,7 +43,11 @@
  * @param[in]     pivmin  The minimum pivot in the Sturm sequence for T.
  * @param[in]     spdiam  The spectral diameter of T.
  * @param[out]    info
- *                           Error flag.
+ *                         - = 0: successful exit
+ *                         - = 1: the interval around one of the eigenvalues could not
+ *                                be widened to contain it: the Sturm counts of the
+ *                                matrix are inconsistent, as they are when it contains
+ *                                a NaN or an Inf.
  */
 void dlarrj(const INT n, const f64* D, const f64* E2,
             const INT ifirst, const INT ilast, const f64 rtol,
@@ -56,7 +60,7 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
 
     INT cnt, i, i1, i2, ii, iter, j, k, next, nint, olnint, p, prev, savi1;
     INT maxitr;
-    f64 dplus, fac, left, mid, right, s, tmp, width;
+    f64 back, dplus, left, mid, right, s, tmp, width;
 
     *info = 0;
 
@@ -111,8 +115,17 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
             prev = i;
             /* Make sure that [left,right] contains the desired eigenvalue */
 
-            /* Do while( cnt(left) > i ) */
-            fac = 1.0;
+            /* Do while( cnt(left) > i )
+             *
+             * The interval is widened by BACK, doubled at every step,
+             * until the Sturm count agrees with the index.  In exact
+             * arithmetic this terminates because the count is 0 below the
+             * spectrum and N above it.  A NaN or an Inf in the matrix is
+             * never counted, so the count can stay short of the index;
+             * stop once BACK has overflowed, when no further step can move
+             * the endpoint.  BACK starts at no less than the minimum
+             * interval width so that a zero WERR still makes progress. */
+            back = fmax(werr[ii], TWO * pivmin);
             for (;;) {
                 cnt = 0;
                 s = left;
@@ -123,15 +136,19 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
                     if (dplus < 0.0) cnt = cnt + 1;
                 }
                 if (cnt > i) {
-                    left = left - werr[ii] * fac;
-                    fac = TWO * fac;
+                    if (!(back < TWO * back)) {
+                        *info = 1;
+                        return;
+                    }
+                    left = left - back;
+                    back = TWO * back;
                 } else {
                     break;
                 }
             }
 
             /* Do while( cnt(right) < i+1 ) */
-            fac = 1.0;
+            back = fmax(werr[ii], TWO * pivmin);
             for (;;) {
                 cnt = 0;
                 s = right;
@@ -142,8 +159,12 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
                     if (dplus < 0.0) cnt = cnt + 1;
                 }
                 if (cnt < i + 1) {
-                    right = right + werr[ii] * fac;
-                    fac = TWO * fac;
+                    if (!(back < TWO * back)) {
+                        *info = 1;
+                        return;
+                    }
+                    right = right + back;
+                    back = TWO * back;
                 } else {
                     break;
                 }

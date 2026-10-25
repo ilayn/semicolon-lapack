@@ -97,6 +97,7 @@ void dorgql(const INT m, const INT n, const INT k,
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
         nx = lapack_get_nx("ORGQL");
+        if (nx < 0) nx = 0;
         if (nx < k) {
             ldwork = n;
             iws = ldwork * nb;

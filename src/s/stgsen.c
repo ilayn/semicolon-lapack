@@ -42,6 +42,8 @@
  * @param[out]    dif     Array of dimension (2). Estimates of Difu and Difl.
  * @param[out]    work    Array of dimension (lwork).
  * @param[in]     lwork   The dimension of work. lwork >= 4*n+16.
+ *                        If ijob = 1, 2 or 4, lwork >= max(4*n+16, 2*m*(n-m) + 1).
+ *                        If ijob = 3 or 5, lwork >= max(4*n+16, 4*m*(n-m)).
  * @param[out]    iwork   Integer array of dimension (liwork).
  * @param[in]     liwork  The dimension of iwork. liwork >= 1.
  * @param[out]    info
@@ -147,7 +149,7 @@ void stgsen(
 
     if (ijob == 1 || ijob == 2 || ijob == 4) {
         lwmin = 1 > 4 * n + 16 ? 1 : 4 * n + 16;
-        lwmin = lwmin > 2 * (*m) * (n - *m) ? lwmin : 2 * (*m) * (n - *m);
+        lwmin = lwmin > 2 * (*m) * (n - *m) + 1 ? lwmin : 2 * (*m) * (n - *m) + 1;
         liwmin = 1 > n + 6 ? 1 : n + 6;
     } else if (ijob == 3 || ijob == 5) {
         lwmin = 1 > 4 * n + 16 ? 1 : 4 * n + 16;

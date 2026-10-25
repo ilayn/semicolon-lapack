@@ -115,8 +115,11 @@ void ztpmlqt(const char* side, const char* trans, const INT m, const INT n,
         for (i = 0; i < k; i += mb) {
             ib = ((k - i) < mb) ? (k - i) : mb;
             nb = ((m - l + i + ib) < m) ? (m - l + i + ib) : m;
-            /* LAPACK has identical branches */
-            lb = 0;
+            if (i + 1 >= l) {
+                lb = 0;
+            } else {
+                lb = nb - m + l - i;
+            }
             ztprfb("L", "C", "F", "R", nb, n, ib, lb,
                    &V[i], ldv, &T[i * ldt], ldt,
                    &A[i], lda, B, ldb, work, ib);
@@ -141,8 +144,11 @@ void ztpmlqt(const char* side, const char* trans, const INT m, const INT n,
         for (i = kf; i >= 0; i -= mb) {
             ib = ((k - i) < mb) ? (k - i) : mb;
             nb = ((m - l + i + ib) < m) ? (m - l + i + ib) : m;
-            /* LAPACK has identical branches */
-            lb = 0;
+            if (i + 1 >= l) {
+                lb = 0;
+            } else {
+                lb = nb - m + l - i;
+            }
             ztprfb("L", "N", "F", "R", nb, n, ib, lb,
                    &V[i], ldv, &T[i * ldt], ldt,
                    &A[i], lda, B, ldb, work, ib);

@@ -111,11 +111,6 @@ void cgeqp3(const INT m, const INT n,
         return;
     }
 
-    /* Quick return if possible */
-    if (minmn == 0) {
-        return;
-    }
-
     /*
      * Move initial columns up front.
      * In 0-based indexing: nfxd counts how many fixed columns we have.
@@ -135,6 +130,11 @@ void cgeqp3(const INT m, const INT n,
         } else {
             jpvt[j] = j;  /* 0-based original column index */
         }
+    }
+
+    /* Quick return if possible */
+    if (minmn == 0) {
+        return;
     }
 
     /*
@@ -179,9 +179,7 @@ void cgeqp3(const INT m, const INT n,
             /* Determine when to cross over from blocked to unblocked code. */
             /* ILAENV(3, 'CGEQRF', ' ', SM, SN, -1, -1) -> NX for GEQRF */
             nx = lapack_get_nx("GEQRF");
-            if (nx > 0) {
-                nx = 0 > nx ? 0 : nx;
-            }
+            nx = 0 > nx ? 0 : nx;
 
             if (nx < sminmn) {
 

@@ -64,7 +64,7 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
     const f64 ONE = 1.0;
 
     INT alleig, indeig, lower, lquery, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo;
+    INT i, iinfo, indd, inde, indee, indibl, indisp, indiwo;
     INT indtau, indwkn, indwrk, iscale, itmp1, j, jj, llwork;
     INT llwrkn, lwkmin, lwkopt, nb, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma = 0.0, smlnum, tmp1, vll = 0.0, vuu = 0.0;
@@ -176,8 +176,11 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -230,7 +233,7 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
             dsteqr(jobz, n, W, &work[indee], Z, ldz, &work[indwrk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }
@@ -278,14 +281,8 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 L40:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_dscal(*m, ONE / sigma, W, 1);
 
     /* If eigenvalues are not in order, then sort them, along with
      * eigenvectors. */

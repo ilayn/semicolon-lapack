@@ -396,6 +396,10 @@ void sstemr(const char* jobz, const char* range, const INT n,
                        &work[inderr + wbegin],
                        &work[indwrk], &iwork[iindwk], pivmin,
                        tnrm, &iinfo);
+                if (iinfo != 0) {
+                    *info = 30 + abs(iinfo);
+                    return;
+                }
                 ibegin = iend + 1;
                 wbegin = wend + 1;
             }

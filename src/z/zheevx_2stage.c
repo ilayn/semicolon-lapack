@@ -68,7 +68,7 @@ void zheevx_2stage(
     const c128 CONE = CMPLX(1.0, 0.0);
 
     INT alleig, indeig, lower, lquery, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indibl;
+    INT i, iinfo, indd, inde, indee, indibl;
     INT indisp, indiwk, indtau, indwrk, indrwk, iscale;
     INT itmp1, j, jj, llwork;
     INT nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
@@ -176,8 +176,11 @@ void zheevx_2stage(
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -230,7 +233,7 @@ void zheevx_2stage(
                    &rwork[indrwk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }
@@ -266,14 +269,8 @@ void zheevx_2stage(
     }
 
 L40:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_dscal(*m, ONE / sigma, W, 1);
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {

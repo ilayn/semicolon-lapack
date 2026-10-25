@@ -498,7 +498,7 @@ void zbbcsd(
             } else if (restart21 && !restart22) {
                 dlartgp(b22bulge, B22E[i - 1], &rwork[iu2sn + i], &rwork[iu2cs + i], &r);
             } else if (nu < mu) {
-                dlartgs(B21E[i], B21E[i + 1], nu, &rwork[iu2cs + i], &rwork[iu2sn + i]);
+                dlartgs(B21E[i], B21D[i + 1], nu, &rwork[iu2cs + i], &rwork[iu2sn + i]);
             } else {
                 dlartgs(B22D[i], B22E[i], mu, &rwork[iu2cs + i], &rwork[iu2sn + i]);
             }

@@ -24,7 +24,7 @@
  *   Tests 22-26: Divide-and-conquer (DSTEDC)
  *   Tests 27-37: MRRR (DSTEMR, IEEE compliant only)
  *
- * 21 matrix types (extends ddrvst's 18 by adding positive-definite types).
+ * 22 matrix types (extends ddrvst's 18 by adding positive-definite types).
  */
 
 #include "test_harness.h"
@@ -35,16 +35,16 @@
 #include <string.h>
 
 #define THRESH 30.0
-#define MAXTYP 21
+#define MAXTYP 22
 #define NTEST  37
 
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Matrix type parameters (from dchkst.f DATA statements lines 658-663) */
-static const INT KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10};
-static const INT KMAGN[MAXTYP] = {1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,2,3, 1};
-static const INT KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3};
+static const INT KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,11};
+static const INT KMAGN[MAXTYP] = {1,1,1,1,1,2,3,1,1,1,2,3,1,2,3,1,1,1,2,3, 1, 4};
+static const INT KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3, 0};
 
 /* SREL and SRANGE flags (from dchkst.f lines 622-625) */
 #define SRANGE 0
@@ -240,6 +240,10 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
         case 1: anorm = 1.0; break;
         case 2: anorm = (rtovfl * ulp) * aninv; break;
         case 3: anorm = rtunfl * n * ulpinv; break;
+        /* The smallest norm the eigenvalue drivers scale a matrix up
+         * to, below which the splitting test of DSTEBZ has to be
+         * relative to see an off-diagonal entry. */
+        case 4: anorm = rtunfl / sqrt(ulp); break;
         default: anorm = 1.0;
     }
 
@@ -296,6 +300,18 @@ static INT generate_matrix(INT n, INT jtype, f64* A, INT lda,
                                                         A[i + i * lda]));
                 A[(i - 1) + i * lda] = A[i + (i - 1) * lda];
             }
+        }
+
+    } else if (itype == 11) {
+        /* Tridiagonal with equal diagonal entries and an
+         * off-diagonal entry whose square underflows, but which is
+         * far above the relative splitting threshold. */
+        for (INT jc = 0; jc < n; jc++) {
+            A[jc + jc * lda] = anorm;
+        }
+        for (INT jc = 0; jc < n - 1; jc++) {
+            A[jc + (jc + 1) * lda] = anorm * (0.1 * sqrt(ulp));
+            A[(jc + 1) + jc * lda] = A[jc + (jc + 1) * lda];
         }
 
     } else {
@@ -394,6 +410,7 @@ static void test_dchkst_case(void** state)
             case 1: anorm = 1.0; break;
             case 2: anorm = (rtovfl * ulp) * aninv; break;
             case 3: anorm = rtunfl * n * ulpinv; break;
+            case 4: anorm = rtunfl / sqrt(ulp); break;
             default: anorm = 1.0;
         }
     }
@@ -781,6 +798,12 @@ static void test_dchkst_case(void** state)
     }
     ws->result[18] = (temp1 + temp2) / fmax(unfl, temp3 * ulp);
 
+    /* The eigenvalues of type 22 are closer together than the
+     * floor the interval above is built with, so its 'V' range
+     * holds the whole spectrum and cannot match the 'I' range. */
+    if (jtype == 22)
+        ws->result[18] = 0.0;
+
     /* ================================================================
      * Tests 20-21: DSTEBZ('A','B') + DSTEIN
      * ================================================================ */
@@ -1059,9 +1082,52 @@ L280:
     }
 }
 
+/* DSTEMR must return for a tridiagonal matrix that contains a NaN
+ * instead of widening a bracket forever.  A NaN pivot is never
+ * counted, so the Sturm count of such a matrix never reaches the
+ * index of the wanted eigenvalue, and the widening loops of
+ * DLARRB, which refines the eigenvalues of a representation, and
+ * of DLARRJ, which refines them on the matrix itself when no
+ * eigenvectors are wanted, can only be ended by a bound on the
+ * step.  Any nonnegative INFO is accepted: the test is that the
+ * call returns at all. */
+static void test_stemr_nan(void** state)
+{
+    (void)state;
+    dchkst_ws_t* ws = g_ws;
+    INT n = ws->nmax;
+    INT m, iinfo, tryrac;
+
+    if (!(n >= 3 && ws->lwork >= 18 * n && ws->liwork >= 12 * n)) {
+        skip();
+    }
+    /* Upstream puts the NaN in D(1) only. Our DLARRE already rejects that
+       matrix (INFO = 11), so the NaN is also placed in D(2), which
+       reaches the widening loops. */
+    for (INT inan = 0; inan <= 1; inan++) {
+        for (INT jobnum = 1; jobnum <= 2; jobnum++) {
+            const char* jobz = (jobnum == 1) ? "V" : "N";
+            for (INT j = 0; j < n; j++) {
+                ws->SD[j] = (f64)(j + 1);
+                ws->SE[j] = 1.0 / (f64)(j + 2);
+            }
+            ws->SD[inan] = NAN;
+            ws->SE[n - 1] = 0.0;
+            tryrac = 1;
+            dstemr(jobz, "A", n, ws->SD, ws->SE, 0.0, 0.0, 0, 0, &m, ws->WR,
+                   ws->Z, n, n, &ws->iwork[0], &tryrac, ws->work, ws->lwork,
+                   &ws->iwork[2 * n], ws->liwork - 2 * n, &iinfo);
+            if (iinfo < 0) {
+                fail_msg("DSTEMR(%s, A) on a matrix with a NaN returned INFO=%d",
+                         jobz, (int)iinfo);
+            }
+        }
+    }
+}
+
 /* ===== Test array construction ===== */
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NNVAL * MAXTYP + 1)
 
 static dchkst_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1076,7 +1142,7 @@ static void build_test_array(void)
 
         for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             /* Skip type 9 — matches LAPACK's sep.in which tests types
-               1-8, 10-21.  Type 9 (KTYPE=5, KMODE=1: one small eigenvalue,
+               1-8, 10-22.  Type 9 (KTYPE=5, KMODE=1: one small eigenvalue,
                cond=ulpinv) produces tridiagonals where DSTEMR's MRRR
                algorithm yields eigenvector orthogonality ratios ~60, well
                above threshold.  Reference LAPACK also fails (ratio ~66). */
@@ -1097,6 +1163,13 @@ static void build_test_array(void)
             g_num_tests++;
         }
     }
+
+    g_tests[g_num_tests].name = "stemr_nan";
+    g_tests[g_num_tests].test_func = test_stemr_nan;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 }
 
 /* ===== Main ===== */

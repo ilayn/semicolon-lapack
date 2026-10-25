@@ -89,7 +89,7 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
     INT alleig, indeig, lower, lquery, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwk;
+    INT i, iinfo, indd, inde, indee, indibl, indisp, indiwk;
     INT indrwk, indtau, indwrk, iscale, itmp1, j, jj;
     INT llwork, lwkmin, lwkopt, nb, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum,
@@ -201,8 +201,12 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO) {
+            iscale = 1;
+        }
     }
     if (iscale == 1) {
         if (lower) {
@@ -258,7 +262,7 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
                    &rwork[indrwk], info);
             if (*info == 0) {
                 for (i = 0; i < n; i++) {
-                    ifail[i] = 0;
+                    ifail[i] = -1;
                 }
             }
         }
@@ -305,12 +309,7 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 L40:
     if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, ONE / sigma, W, 1);
+        cblas_sscal(*m, ONE / sigma, W, 1);
     }
 
     /* If eigenvalues are not in order, then sort them, along with

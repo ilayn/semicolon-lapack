@@ -127,8 +127,8 @@ void sstevr(const char* jobz, const char* range, const INT n,
 
     INT wantz, alleig, valeig, indeig, lquery, test;
     INT tryrac;
-    INT i, imax, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
-    f32 bignum, eps, rmax, rmin, safmin, sigma, smlnum,
+    INT i, iscale, j, jj, lwmin, liwmin, nsplit, itmp1;
+    f32 abstll, bignum, eps, rmax, rmin, safmin, sigma, smlnum,
            tmp1, tnrm, vll, vuu;
 
     /* Workspace indices for fallback path (SSTEBZ/SSTEIN) */
@@ -228,6 +228,7 @@ void sstevr(const char* jobz, const char* range, const INT n,
 
     /* Scale matrix to allowable range, if necessary */
     iscale = 0;
+    abstll = abstol;
     vll = ZERO;
     vuu = ZERO;
     if (valeig) {
@@ -240,12 +241,22 @@ void sstevr(const char* jobz, const char* range, const INT n,
         iscale = 1;
         sigma = rmin / tnrm;
     } else if (tnrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / tnrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         cblas_sscal(n, sigma, D, 1);
         cblas_sscal(n - 1, sigma, E, 1);
+
+        /* Scale a positive ABSTOL with the matrix.  Keep the product
+         * positive, as SSTEBZ takes ABSTOL <= 0 as a request for its
+         * default tolerance EPS*|T|, and cap ABSTOL at |T| so that the
+         * product cannot overflow. */
+        if (abstol > ZERO)
+            abstll = fmaxf(fminf(abstol, tnrm) * sigma, safmin);
         if (valeig) {
             vll = vl * sigma;
             vuu = vu * sigma;
@@ -312,7 +323,7 @@ void sstevr(const char* jobz, const char* range, const INT n,
             order = "E";
         }
 
-        sstebz(range, order, n, vll, vuu, il, iu, abstol, D, E,
+        sstebz(range, order, n, vll, vuu, il, iu, abstll, D, E,
                m, &nsplit, W, &iwork[indibl], &iwork[indisp], work,
                &iwork[indiwo], info);
     }
@@ -326,14 +337,8 @@ void sstevr(const char* jobz, const char* range, const INT n,
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 L10:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_sscal(*m, ONE / sigma, W, 1);
 
     /* If eigenvalues are not in order, then sort them, along with
      * eigenvectors. */

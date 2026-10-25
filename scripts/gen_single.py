@@ -38,6 +38,14 @@ EXCLUDE_FILES = {
     "iparmq.c",   # precision-independent, built once from src/d
 }
 
+# Per-file literal replacements applied after conversion, for constants that
+# upstream sets per precision rather than deriving them
+LITERAL_OVERRIDES = {
+    "dstebz.c": [   # SRC/sstebz.f: FUDGE = 2.3E0
+        ("const f32 FUDGE = 2.1f;", "const f32 FUDGE = 2.3f;"),
+    ],
+}
+
 # Precision-independent files that live in src/auxiliary/, not src/d/ or src/s/
 AUXILIARY_FILES = {
     "ieeeck.c",
@@ -428,6 +436,8 @@ def main():
         dst_path = os.path.join(SRC_S, dst_name)
 
         content = process_file(src_path, code_subs, string_subs, comment_subs)
+        for old, new in LITERAL_OVERRIDES.get(fname, []):
+            content = content.replace(old, new)
 
         # Check if file needs manual review
         with open(src_path) as f:
