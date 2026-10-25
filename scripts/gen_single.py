@@ -35,6 +35,7 @@ EXCLUDE_FILES = {
     "dsposv.c",   # mixed-precision iterative refinement (SPD)
     "dlag2s.c",   # double -> single conversion
     "dlat2s.c",   # double -> single symmetric conversion
+    "iparmq.c",   # precision-independent, built once from src/d
 }
 
 # Precision-independent files that live in src/auxiliary/, not src/d/ or src/s/
