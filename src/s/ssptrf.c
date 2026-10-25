@@ -218,11 +218,10 @@ void ssptrf(
                         d22 = AP[knc + k - 1] / d12;
                         d11 = AP[kc + k] / d12;
                         t = ONE / (d11 * d22 - ONE);
-                        d12 = t / d12;
 
                         for (j = k - 2; j >= 0; j--) {
-                            wkm1 = d12 * (d11 * AP[knc + j] - AP[kc + j]);
-                            wk = d12 * (d22 * AP[kc + j] - AP[knc + j]);
+                            wkm1 = t * ((d11 * AP[knc + j] - AP[kc + j]) / d12);
+                            wk = t * ((d22 * AP[kc + j] - AP[knc + j]) / d12);
                             for (i = j; i >= 0; i--) {
                                 INT jc = i + j * (j + 1) / 2;
                                 AP[jc] = AP[jc] - AP[kc + i] * wk - AP[knc + i] * wkm1;
@@ -340,11 +339,10 @@ void ssptrf(
                         d11 = AP[knc] / d21;
                         d22 = AP[kc] / d21;
                         t = ONE / (d11 * d22 - ONE);
-                        d21 = t / d21;
 
                         for (j = k + 2; j < n; j++) {
-                            wk = d21 * (d11 * AP[kc + j - k] - AP[knc + j - k - 1]);
-                            wkp1 = d21 * (d22 * AP[knc + j - k - 1] - AP[kc + j - k]);
+                            wk = t * ((d11 * AP[kc + j - k] - AP[knc + j - k - 1]) / d21);
+                            wkp1 = t * ((d22 * AP[knc + j - k - 1] - AP[kc + j - k]) / d21);
                             for (i = j; i < n; i++) {
                                 INT jc = npp - (n - j) * (n - j + 1) / 2 + i - j;
                                 AP[jc] = AP[jc] - AP[kc + i - k] * wk - AP[knc + i - k - 1] * wkp1;

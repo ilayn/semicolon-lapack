@@ -276,16 +276,16 @@ void dsytf2_rk(
 
                         for (j = k - 2; j >= 0; j--) {
 
-                            wkm1 = t * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
-                            wk = t * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
+                            wkm1 = t * ((d11 * A[j + (k - 1) * lda] - A[j + k * lda]) / d12);
+                            wk = t * ((d22 * A[j + k * lda] - A[j + (k - 1) * lda]) / d12);
 
                             for (i = j; i >= 0; i--) {
-                                A[i + j * lda] = A[i + j * lda] - (A[i + k * lda] / d12) * wk -
-                                                 (A[i + (k - 1) * lda] / d12) * wkm1;
+                                A[i + j * lda] = A[i + j * lda] - A[i + k * lda] * wk -
+                                                 A[i + (k - 1) * lda] * wkm1;
                             }
 
-                            A[j + k * lda] = wk / d12;
-                            A[j + (k - 1) * lda] = wkm1 / d12;
+                            A[j + k * lda] = wk;
+                            A[j + (k - 1) * lda] = wkm1;
                         }
                     }
 
@@ -463,16 +463,16 @@ void dsytf2_rk(
 
                         for (j = k + 2; j < n; j++) {
 
-                            wk = t * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
-                            wkp1 = t * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
+                            wk = t * ((d11 * A[j + k * lda] - A[j + (k + 1) * lda]) / d21);
+                            wkp1 = t * ((d22 * A[j + (k + 1) * lda] - A[j + k * lda]) / d21);
 
                             for (i = j; i < n; i++) {
-                                A[i + j * lda] = A[i + j * lda] - (A[i + k * lda] / d21) * wk -
-                                                 (A[i + (k + 1) * lda] / d21) * wkp1;
+                                A[i + j * lda] = A[i + j * lda] - A[i + k * lda] * wk -
+                                                 A[i + (k + 1) * lda] * wkp1;
                             }
 
-                            A[j + k * lda] = wk / d21;
-                            A[j + (k + 1) * lda] = wkp1 / d21;
+                            A[j + k * lda] = wk;
+                            A[j + (k + 1) * lda] = wkp1;
                         }
                     }
 

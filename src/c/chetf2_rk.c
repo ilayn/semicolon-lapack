@@ -291,17 +291,17 @@ void chetf2_rk(
 
                         for (j = k - 2; j >= 0; j--) {
 
-                            wkm1 = tt * (d11 * A[j + (k - 1) * lda] - conjf(d12) * A[j + k * lda]);
-                            wk = tt * (d22 * A[j + k * lda] - d12 * A[j + (k - 1) * lda]);
+                            wkm1 = tt * ((d11 * A[j + (k - 1) * lda] - conjf(d12) * A[j + k * lda]) / d);
+                            wk = tt * ((d22 * A[j + k * lda] - d12 * A[j + (k - 1) * lda]) / d);
 
                             for (i = j; i >= 0; i--) {
                                 A[i + j * lda] = A[i + j * lda] -
-                                                 (A[i + k * lda] / d) * conjf(wk) -
-                                                 (A[i + (k - 1) * lda] / d) * conjf(wkm1);
+                                                 A[i + k * lda] * conjf(wk) -
+                                                 A[i + (k - 1) * lda] * conjf(wkm1);
                             }
 
-                            A[j + k * lda] = wk / d;
-                            A[j + (k - 1) * lda] = wkm1 / d;
+                            A[j + k * lda] = wk;
+                            A[j + (k - 1) * lda] = wkm1;
                             A[j + j * lda] = CMPLXF(crealf(A[j + j * lda]), 0.0f);
                         }
                     }
@@ -495,17 +495,17 @@ void chetf2_rk(
 
                         for (j = k + 2; j < n; j++) {
 
-                            wk = tt * (d11 * A[j + k * lda] - d21 * A[j + (k + 1) * lda]);
-                            wkp1 = tt * (d22 * A[j + (k + 1) * lda] - conjf(d21) * A[j + k * lda]);
+                            wk = tt * ((d11 * A[j + k * lda] - d21 * A[j + (k + 1) * lda]) / d);
+                            wkp1 = tt * ((d22 * A[j + (k + 1) * lda] - conjf(d21) * A[j + k * lda]) / d);
 
                             for (i = j; i < n; i++) {
                                 A[i + j * lda] = A[i + j * lda] -
-                                                 (A[i + k * lda] / d) * conjf(wk) -
-                                                 (A[i + (k + 1) * lda] / d) * conjf(wkp1);
+                                                 A[i + k * lda] * conjf(wk) -
+                                                 A[i + (k + 1) * lda] * conjf(wkp1);
                             }
 
-                            A[j + k * lda] = wk / d;
-                            A[j + (k + 1) * lda] = wkp1 / d;
+                            A[j + k * lda] = wk;
+                            A[j + (k + 1) * lda] = wkp1;
                             A[j + j * lda] = CMPLXF(crealf(A[j + j * lda]), 0.0f);
                         }
                     }

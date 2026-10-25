@@ -219,13 +219,12 @@ void zhetf2(
                         f64 d11 = creal(A[k + k * lda]) / d;
                         f64 tt = 1.0 / (d11 * d22 - 1.0);
                         c128 d12 = A[(k - 1) + k * lda] / d;
-                        d = tt / d;
 
                         for (INT j = k - 2; j >= 0; j--) {
-                            c128 wkm1 = d * (d11 * A[j + (k - 1) * lda] -
-                                                       conj(d12) * A[j + k * lda]);
-                            c128 wk = d * (d22 * A[j + k * lda] -
-                                                     d12 * A[j + (k - 1) * lda]);
+                            c128 wkm1 = tt * ((d11 * A[j + (k - 1) * lda] -
+                                                       conj(d12) * A[j + k * lda]) / d);
+                            c128 wk = tt * ((d22 * A[j + k * lda] -
+                                                     d12 * A[j + (k - 1) * lda]) / d);
                             for (INT i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * conj(wk) +
                                                   A[i + (k - 1) * lda] * conj(wkm1);
@@ -342,13 +341,12 @@ void zhetf2(
                         f64 d22 = creal(A[k + k * lda]) / d;
                         f64 tt = 1.0 / (d11 * d22 - 1.0);
                         c128 d21 = A[(k + 1) + k * lda] / d;
-                        d = tt / d;
 
                         for (INT j = k + 2; j < n; j++) {
-                            c128 wk = d * (d11 * A[j + k * lda] -
-                                                     d21 * A[j + (k + 1) * lda]);
-                            c128 wkp1 = d * (d22 * A[j + (k + 1) * lda] -
-                                                       conj(d21) * A[j + k * lda]);
+                            c128 wk = tt * ((d11 * A[j + k * lda] -
+                                                     d21 * A[j + (k + 1) * lda]) / d);
+                            c128 wkp1 = tt * ((d22 * A[j + (k + 1) * lda] -
+                                                       conj(d21) * A[j + k * lda]) / d);
                             for (INT i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * conj(wk) +
                                                   A[i + (k + 1) * lda] * conj(wkp1);

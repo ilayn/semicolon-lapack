@@ -219,13 +219,12 @@ void chetf2(
                         f32 d11 = crealf(A[k + k * lda]) / d;
                         f32 tt = 1.0f / (d11 * d22 - 1.0f);
                         c64 d12 = A[(k - 1) + k * lda] / d;
-                        d = tt / d;
 
                         for (INT j = k - 2; j >= 0; j--) {
-                            c64 wkm1 = d * (d11 * A[j + (k - 1) * lda] -
-                                                       conjf(d12) * A[j + k * lda]);
-                            c64 wk = d * (d22 * A[j + k * lda] -
-                                                     d12 * A[j + (k - 1) * lda]);
+                            c64 wkm1 = tt * ((d11 * A[j + (k - 1) * lda] -
+                                                       conjf(d12) * A[j + k * lda]) / d);
+                            c64 wk = tt * ((d22 * A[j + k * lda] -
+                                                     d12 * A[j + (k - 1) * lda]) / d);
                             for (INT i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * conjf(wk) +
                                                   A[i + (k - 1) * lda] * conjf(wkm1);
@@ -342,13 +341,12 @@ void chetf2(
                         f32 d22 = crealf(A[k + k * lda]) / d;
                         f32 tt = 1.0f / (d11 * d22 - 1.0f);
                         c64 d21 = A[(k + 1) + k * lda] / d;
-                        d = tt / d;
 
                         for (INT j = k + 2; j < n; j++) {
-                            c64 wk = d * (d11 * A[j + k * lda] -
-                                                     d21 * A[j + (k + 1) * lda]);
-                            c64 wkp1 = d * (d22 * A[j + (k + 1) * lda] -
-                                                       conjf(d21) * A[j + k * lda]);
+                            c64 wk = tt * ((d11 * A[j + k * lda] -
+                                                     d21 * A[j + (k + 1) * lda]) / d);
+                            c64 wkp1 = tt * ((d22 * A[j + (k + 1) * lda] -
+                                                       conjf(d21) * A[j + k * lda]) / d);
                             for (INT i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * conjf(wk) +
                                                   A[i + (k + 1) * lda] * conjf(wkp1);

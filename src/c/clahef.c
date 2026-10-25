@@ -251,11 +251,10 @@ void clahef(
                         c64 d11 = W[k + kw * ldw] / conjf(d21);
                         c64 d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
                         f32 t = 1.0f / (crealf(d11 * d22) - 1.0f);
-                        d21 = t / d21;
 
                         for (INT j = 0; j <= k - 2; j++) {
-                            A[j + (k - 1) * lda] = d21 * (d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]);
-                            A[j + k * lda] = conjf(d21) * (d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]);
+                            A[j + (k - 1) * lda] = t * ((d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]) / d21);
+                            A[j + k * lda] = t * ((d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]) / conjf(d21));
                         }
                     }
 
@@ -475,11 +474,10 @@ void clahef(
                         c64 d11 = W[(k + 1) + (k + 1) * ldw] / d21;
                         c64 d22 = W[k + k * ldw] / conjf(d21);
                         f32 t = 1.0f / (crealf(d11 * d22) - 1.0f);
-                        d21 = t / d21;
 
                         for (INT j = k + 2; j <= n - 1; j++) {
-                            A[j + k * lda] = conjf(d21) * (d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]);
-                            A[j + (k + 1) * lda] = d21 * (d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]);
+                            A[j + k * lda] = t * ((d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]) / conjf(d21));
+                            A[j + (k + 1) * lda] = t * ((d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]) / d21);
                         }
                     }
 
