@@ -242,11 +242,14 @@ rescale:
             }
 
             if (imin != 0) {
+                INT itmp1 = iwork[imin];
                 W[imin] = W[j];
+                iwork[imin] = iwork[j];
                 W[j] = tmp1;
+                iwork[j] = itmp1;
                 cblas_dswap(n, &Z[0 + imin * ldz], 1, &Z[0 + j * ldz], 1);
                 if (*info != 0) {
-                    INT itmp1 = ifail[imin];
+                    itmp1 = ifail[imin];
                     ifail[imin] = ifail[j];
                     ifail[j] = itmp1;
                 }
