@@ -505,8 +505,12 @@ def get_sources(page_name, prefix, src_dir):
 # RST generation helpers
 # ---------------------------------------------------------------------------
 def make_doxygenfile_block(filename, indent):
-    """Generate a doxygenfile directive block."""
-    return (f"{indent}.. doxygenfile:: {filename}\n"
+    """Generate a doxygenfile directive block.
+
+    Breathe 5 matches the file name Doxygen reports, which is the basename,
+    so the directory is dropped; basenames are unique across src/.
+    """
+    return (f"{indent}.. doxygenfile:: {os.path.basename(filename)}\n"
             f"{indent}   :project: semicolon-lapack\n"
             f"{indent}   :sections: func")
 
