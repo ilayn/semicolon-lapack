@@ -57,7 +57,11 @@
  *                        TWIST = 0:   Compute negcount from L D L^T - LAMBDA I = U- D- U-^T
  *                        TWIST = R:   Compute negcount from L D L^T - LAMBDA I = N(r) D(r) N(r)
  * @param[out]    info
- *                           Error flag.
+ *                         - = 0: successful exit
+ *                         - = 1: the interval around one of the eigenvalues could not
+ *                                be widened to contain it: the Sturm counts of the
+ *                                representation are inconsistent, as they are when it
+ *                                contains a NaN or an Inf.
  */
 void slarrb(const INT n, const f32* D, const f32* lld,
             const INT ifirst, const INT ilast,
@@ -118,11 +122,24 @@ void slarrb(const INT n, const f32* D, const f32* lld,
          * Compute negcount from dstqds facto L+D+L+^T = L D L^T - LEFT
          *
          * Do while( NEGCNT(LEFT).GT.I )
+         *
+         * The interval is widened by BACK, doubled at every step, until
+         * the Sturm count agrees with the index.  In exact arithmetic
+         * this terminates because the count is 0 below the spectrum and
+         * N above it.  A NaN or an Inf in the representation is never
+         * counted, so the count can stay short of the index; stop once
+         * BACK has overflowed, when no further step can move the
+         * endpoint.  BACK starts at no less than the minimum interval
+         * width so that a zero WERR still makes progress.
          */
-        back = werr[ii];
+        back = fmaxf(werr[ii], mnwdth);
         for (;;) {
             negcnt = slaneg(n, D, lld, left, pivmin, r);
             if (negcnt > i) {
+                if (!(back < TWO * back)) {
+                    *info = 1;
+                    return;
+                }
                 left = left - back;
                 back = TWO * back;
             } else {
@@ -134,10 +151,14 @@ void slarrb(const INT n, const f32* D, const f32* lld,
          * Do while( NEGCNT(RIGHT).LT.I+1 )
          * Compute negcount from dstqds facto L+D+L+^T = L D L^T - RIGHT
          */
-        back = werr[ii];
+        back = fmaxf(werr[ii], mnwdth);
         for (;;) {
             negcnt = slaneg(n, D, lld, right, pivmin, r);
             if (negcnt < i + 1) {
+                if (!(back < TWO * back)) {
+                    *info = 1;
+                    return;
+                }
                 right = right + back;
                 back = TWO * back;
             } else {
