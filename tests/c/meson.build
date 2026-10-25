@@ -107,6 +107,7 @@ lapack_tests_c = {
   'ctgsen_lwork': ['test_ctgsen_lwork.c', 'eigen'],
   'ctprfb_rowfwd': ['test_ctprfb_rowfwd.c', 'qr'],
   'clarf_incv': ['test_clarf_incv.c', 'qr'],
+  'clauum_cdiag': ['test_clauum_cdiag.c', 'cholesky'],
   'cbbcsd_restart': ['test_cbbcsd_restart.c', 'eigen'],
   'cdrgev': ['test_cdrgev.c', 'eigen'],
   'cdrgev3': ['test_cdrgev3.c', 'eigen'],

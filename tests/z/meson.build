@@ -109,6 +109,7 @@ lapack_tests_z = {
   'ztgsen_lwork': ['test_ztgsen_lwork.c', 'eigen'],
   'ztprfb_rowfwd': ['test_ztprfb_rowfwd.c', 'qr'],
   'zlarf_incv': ['test_zlarf_incv.c', 'qr'],
+  'zlauum_cdiag': ['test_zlauum_cdiag.c', 'cholesky'],
   'zbbcsd_restart': ['test_zbbcsd_restart.c', 'eigen'],
   'zdrgev': ['test_zdrgev.c', 'eigen'],
   'zdrgev3': ['test_zdrgev3.c', 'eigen'],

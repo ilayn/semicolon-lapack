@@ -29,7 +29,9 @@
  *                      On exit, if UPLO = 'U', the upper triangle of A is
  *                      overwritten with the upper triangle of the product U * U**H;
  *                      if UPLO = 'L', the lower triangle of A is overwritten with
- *                      the lower triangle of the product L**H * L.
+ *                      the lower triangle of the product L**H * L. Regardless,
+ *                      the imaginary parts of the diagonal elements are set
+ *                      to zero before exit.
  * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
  * @param[out]    info
  *                         - = 0: successful exit
@@ -62,45 +64,43 @@ void clauu2(
 
     if (upper) {
         /* Compute the product U * U**H. */
-        for (INT i = 0; i < n; i++) {
-            f32 aii = crealf(A[i + i * lda]);
-            if (i < n - 1) {
-                c64 dotc;
-                cblas_cdotc_sub(n - i - 1, &A[i + (i + 1) * lda], lda,
-                                &A[i + (i + 1) * lda], lda, &dotc);
-                A[i + i * lda] = CMPLXF(aii * aii + crealf(dotc), 0.0f);
-                clacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
-                c64 alpha = CMPLXF(aii, 0.0f);
-                cblas_cgemv(CblasColMajor, CblasNoTrans,
-                            i, n - i - 1, &ONE,
-                            &A[(i + 1) * lda], lda,
-                            &A[i + (i + 1) * lda], lda,
-                            &alpha, &A[i * lda], 1);
-                clacgv(n - i - 1, &A[i + (i + 1) * lda], lda);
+        for (INT j = 0; j < n; j++) {
+            c64 ajj = conjf(A[j + j * lda]);
+            if (j == n - 1) {
+                /* We have this case separate just to ensure we never
+                 * access A out of bounds when we do A(J,J+1) = A(N,N+1) */
+                cblas_cscal(n, &ajj, &A[(n - 1) * lda], 1);
             } else {
-                cblas_csscal(i + 1, aii, &A[i * lda], 1);
+                cblas_cgemm(CblasColMajor, CblasNoTrans, CblasConjTrans,
+                            j + 1, 1, n - j - 1, &ONE,
+                            &A[(j + 1) * lda], lda,
+                            &A[j + (j + 1) * lda], lda,
+                            &ajj, &A[j * lda], lda);
             }
+            /* Since in exact arithmetic the diagonal will be real on output
+             * we explicitly cast the diagonal to real (zero out the
+             * imaginary component) */
+            A[j + j * lda] = CMPLXF(crealf(A[j + j * lda]), 0.0f);
         }
     } else {
         /* Compute the product L**H * L. */
         for (INT i = 0; i < n; i++) {
-            f32 aii = crealf(A[i + i * lda]);
-            if (i < n - 1) {
-                c64 dotc;
-                cblas_cdotc_sub(n - i - 1, &A[(i + 1) + i * lda], 1,
-                                &A[(i + 1) + i * lda], 1, &dotc);
-                A[i + i * lda] = CMPLXF(aii * aii + crealf(dotc), 0.0f);
-                clacgv(i, &A[i], lda);
-                c64 alpha = CMPLXF(aii, 0.0f);
-                cblas_cgemv(CblasColMajor, CblasConjTrans,
-                            n - i - 1, i, &ONE,
-                            &A[(i + 1)], lda,
-                            &A[(i + 1) + i * lda], 1,
-                            &alpha, &A[i], lda);
-                clacgv(i, &A[i], lda);
+            c64 aii = conjf(A[i + i * lda]);
+            if (i == n - 1) {
+                /* We have this case separate just to ensure we never
+                 * access A out of bounds when we do A(I+1,I) = A(N+1,N) */
+                cblas_cscal(n, &aii, &A[n - 1], lda);
             } else {
-                cblas_csscal(i + 1, aii, &A[i], lda);
+                cblas_cgemm(CblasColMajor, CblasConjTrans, CblasNoTrans,
+                            1, i + 1, n - i - 1, &ONE,
+                            &A[(i + 1) + i * lda], lda,
+                            &A[i + 1], lda,
+                            &aii, &A[i], lda);
             }
+            /* Since in exact arithmetic the diagonal will be real on output
+             * we explicitly cast the diagonal to real (zero out the
+             * imaginary component) */
+            A[i + i * lda] = CMPLXF(crealf(A[i + i * lda]), 0.0f);
         }
     }
 }
