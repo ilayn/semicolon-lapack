@@ -95,6 +95,7 @@ lapack_tests_s = {
   'sdrges': ['test_sdrges.c', 'eigen'],
   'sdrges3': ['test_sdrges3.c', 'eigen'],
   'sgges3_scaling': ['test_sgges3_scaling.c', 'eigen'],
+  'sstevx_scaling': ['test_sstevx_scaling.c', 'eigen'],
   'sdrgsx': ['test_sdrgsx.c', 'eigen'],
   'sdrvsg': ['test_sdrvsg.c', 'eigen'],
   'sdrvsg2stg': ['test_sdrvsg2stg.c', 'eigen'],

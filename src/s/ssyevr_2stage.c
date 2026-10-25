@@ -243,7 +243,7 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
 
     INT alleig, indeig, lower, lquery, valeig, wantz, tryrac;
     char order;
-    INT i, ieeeok, iinfo, imax, indd, inddd, inde;
+    INT i, ieeeok, iinfo, indd, inddd, inde;
     INT indee, indibl, indifl, indisp, indiwo, indtau;
     INT indwk, indwkn, iscale, j, jj, liwmin;
     INT llwork, llwrkn, lwmin, nsplit;
@@ -362,8 +362,11 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > zero)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -462,14 +465,8 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
     }
 
 label30:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, one / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_sscal(*m, one / sigma, W, 1);
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {

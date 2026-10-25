@@ -76,7 +76,7 @@ void dspevx(const char* jobz, const char* range, const char* uplo,
 
     INT alleig, indeig, test, valeig, wantz;
     char order;
-    INT i, iinfo, imax, indd, inde, indee, indisp, indiwo, indtau, indwrk;
+    INT i, iinfo, indd, inde, indee, indisp, indiwo, indtau, indwrk;
     INT iscale, itmp1, j, jj, nsplit;
     f64 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     f64 tmp1, vll, vuu;
@@ -163,8 +163,11 @@ void dspevx(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         cblas_dscal((n * (n + 1)) / 2, sigma, AP, 1);
@@ -248,14 +251,8 @@ void dspevx(const char* jobz, const char* range, const char* uplo,
     }
 
 L20:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_dscal(*m, ONE / sigma, W, 1);
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {

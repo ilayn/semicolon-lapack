@@ -72,7 +72,7 @@ void ssbevx(
 
     INT alleig, indeig, lower, test, valeig, wantz;
     char order;
-    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo, indwrk;
+    INT i, iinfo, indd, inde, indee, indibl, indisp, indiwo, indwrk;
     INT iscale, itmp1, j, jj, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum, tmp1, vll, vuu;
 
@@ -167,8 +167,11 @@ void ssbevx(
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -256,14 +259,8 @@ void ssbevx(
 
 L30:
     // If matrix was scaled, then rescale eigenvalues appropriately.
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_sscal(*m, ONE / sigma, W, 1);
 
     // If eigenvalues are not in order, then sort them, along with eigenvectors.
     if (wantz) {

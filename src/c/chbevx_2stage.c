@@ -76,7 +76,7 @@ void chbevx_2stage(
 
     INT alleig, indeig, lower, test, valeig, wantz, lquery;
     char order;
-    INT i, iinfo, imax, indd, inde, indee, indibl;
+    INT i, iinfo, indd, inde, indee, indibl;
     INT indisp, indiwk, indrwk, indwrk, iscale, itmp1, j, jj;
     INT llwork, lwmin, lhtrd = 0, lwtrd, ib, indhous, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin;
@@ -190,8 +190,11 @@ void chbevx_2stage(
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -281,14 +284,8 @@ void chbevx_2stage(
     }
 
 L30:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_sscal(*m, ONE / sigma, W, 1);
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {

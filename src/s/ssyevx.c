@@ -64,7 +64,7 @@ void ssyevx(const char* jobz, const char* range, const char* uplo,
     const f32 ONE = 1.0f;
 
     INT alleig, indeig, lower, lquery, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indibl, indisp, indiwo;
+    INT i, iinfo, indd, inde, indee, indibl, indisp, indiwo;
     INT indtau, indwkn, indwrk, iscale, itmp1, j, jj, llwork;
     INT llwrkn, lwkmin, lwkopt, nb, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma = 0.0f, smlnum, tmp1, vll = 0.0f, vuu = 0.0f;
@@ -176,8 +176,11 @@ void ssyevx(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -278,14 +281,8 @@ void ssyevx(const char* jobz, const char* range, const char* uplo,
 
     /* If matrix was scaled, then rescale eigenvalues appropriately. */
 L40:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_sscal(*m, ONE / sigma, W, 1);
 
     /* If eigenvalues are not in order, then sort them, along with
      * eigenvectors. */

@@ -82,7 +82,7 @@ void chpevx(const char* jobz, const char* range, const char* uplo,
     const c64 CONE = CMPLXF(1.0f, 0.0f);
 
     INT alleig, indeig, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indisp, indiwk, indrwk;
+    INT i, iinfo, indd, inde, indee, indisp, indiwk, indrwk;
     INT indtau, indwrk, iscale, itmp1, j, jj, nsplit;
     f32 abstll, anrm, bignum, eps, rmax, rmin, safmin, sigma, smlnum;
     f32 tmp1, vll, vuu;
@@ -173,8 +173,12 @@ void chpevx(const char* jobz, const char* range, const char* uplo,
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO) {
+            iscale = 1;
+        }
     }
     if (iscale == 1) {
         cblas_csscal((n * (n + 1)) / 2, sigma, AP, 1);
@@ -270,12 +274,7 @@ void chpevx(const char* jobz, const char* range, const char* uplo,
 
 L20:
     if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_sscal(imax, ONE / sigma, W, 1);
+        cblas_sscal(*m, ONE / sigma, W, 1);
     }
 
     /* If eigenvalues are not in order, then sort them, along with

@@ -85,7 +85,7 @@ void zheevr(
     const f64 TWO = 2.0;
 
     INT alleig, indeig, lower, lquery, valeig, wantz, tryrac;
-    INT i, ieeeok, iinfo, imax, indibl, indifl, indisp, indiwo;
+    INT i, ieeeok, iinfo, indibl, indifl, indisp, indiwo;
     INT indrd, indrdd, indre, indree, indrwk, indtau, indwk, indwkn;
     INT iscale, itmp1, j, jj, liwmin, llwork, llrwork, llwrkn;
     INT lrwmin, lwkopt, lwmin, nb, nsplit;
@@ -209,8 +209,11 @@ void zheevr(
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -308,14 +311,8 @@ void zheevr(
     }
 
 L30:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_dscal(*m, ONE / sigma, W, 1);
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {

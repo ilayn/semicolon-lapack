@@ -63,7 +63,7 @@ void dsyevx_2stage(
     const f64 ONE = 1.0;
 
     INT alleig, indeig, lower, lquery, test, valeig, wantz;
-    INT i, iinfo, imax, indd, inde, indee, indibl;
+    INT i, iinfo, indd, inde, indee, indibl;
     INT indisp, indiwo, indtau, indwkn, indwrk, iscale;
     INT itmp1, j, jj, llwork, llwrkn;
     INT nsplit, lwmin, lhtrd = 0, lwtrd, kd, ib, indhous;
@@ -177,8 +177,11 @@ void dsyevx_2stage(
         iscale = 1;
         sigma = rmin / anrm;
     } else if (anrm > rmax) {
-        iscale = 1;
+        /* An infinite norm gives SIGMA = 0; leave such a matrix
+         * unscaled so that VL and VU remain a valid interval. */
         sigma = rmax / anrm;
+        if (sigma > ZERO)
+            iscale = 1;
     }
     if (iscale == 1) {
         if (lower) {
@@ -269,14 +272,8 @@ void dsyevx_2stage(
     }
 
 L40:
-    if (iscale == 1) {
-        if (*info == 0) {
-            imax = *m;
-        } else {
-            imax = *info - 1;
-        }
-        cblas_dscal(imax, ONE / sigma, W, 1);
-    }
+    if (iscale == 1)
+        cblas_dscal(*m, ONE / sigma, W, 1);
 
     if (wantz) {
         for (j = 0; j < *m - 1; j++) {
