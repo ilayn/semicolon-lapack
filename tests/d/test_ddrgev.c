@@ -335,6 +335,7 @@ static void test_ddrgev_case(void** state)
     if (n == 0) return;
 
     const f64 ulpinv = 1.0 / dlamch("P");
+    const f64 safmin = dlamch("S") / dlamch("P");
 
     /* Generate test matrices */
     INT iinfo = generate_matrices(params->jsize, jtype);
@@ -388,42 +389,20 @@ static void test_ddrgev_case(void** state)
                      (long long)iinfo_nn, (long long)n, (long long)jtype);
             return;
         }
-        INT nmismatch = 0;
+        /* Bit-perfect equality of the eigenvalues does not work on GitHub's Intel
+           runners (OpenBLAS Cooperlake kernels) but passes on AMD runners (Zen
+           kernels). Hence the test bound is relaxed deliberately, here and in the
+           next two tests (Reference-LAPACK 1f7b0760a). */
+        f64 result = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-                g_ws->alphai[j] != g_ws->alphi1[j] ||
-                g_ws->beta[j]   != g_ws->beta1[j]) {
-                nmismatch++;
-            }
+            result = fmax(result, fabs(g_ws->alphar[j] - g_ws->alphr1[j]) /
+                          fmax(fmax(fabs(g_ws->alphar[j]), fabs(g_ws->alphr1[j])), safmin));
+            result = fmax(result, fabs(g_ws->alphai[j] - g_ws->alphi1[j]) /
+                          fmax(fmax(fabs(g_ws->alphai[j]), fabs(g_ws->alphi1[j])), safmin));
+            result = fmax(result, fabs(g_ws->beta[j] - g_ws->beta1[j]) /
+                          fmax(fmax(fabs(g_ws->beta[j]), fabs(g_ws->beta1[j])), safmin));
         }
-        if (nmismatch > 0) {
-            fprintf(stderr, "DGGEV(V,V) vs (N,N): %lld of %lld eigenvalues "
-                          "differ, info(V,V)=%lld info(N,N)=%lld\n",
-                          (long long)nmismatch, (long long)n,
-                          (long long)iinfo_vv, (long long)iinfo_nn);
-            for (INT j = 0; j < n; j++) {
-                int ar_eq = (g_ws->alphar[j] == g_ws->alphr1[j]);
-                int ai_eq = (g_ws->alphai[j] == g_ws->alphi1[j]);
-                int b_eq  = (g_ws->beta[j]   == g_ws->beta1[j]);
-                if (!(ar_eq && ai_eq && b_eq)) {
-                    union { f64 d; uint64_t u; } vv_ar, nn_ar, vv_ai, nn_ai, vv_b, nn_b;
-                    vv_ar.d = g_ws->alphar[j]; nn_ar.d = g_ws->alphr1[j];
-                    vv_ai.d = g_ws->alphai[j]; nn_ai.d = g_ws->alphi1[j];
-                    vv_b.d  = g_ws->beta[j];   nn_b.d  = g_ws->beta1[j];
-                    fprintf(stderr, "  j=%lld:\n", (long long)j);
-                    fprintf(stderr, "    alphar: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
-                                  vv_ar.d, (unsigned long long)vv_ar.u,
-                                  nn_ar.d, (unsigned long long)nn_ar.u);
-                    fprintf(stderr, "    alphai: V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
-                                  vv_ai.d, (unsigned long long)vv_ai.u,
-                                  nn_ai.d, (unsigned long long)nn_ai.u);
-                    fprintf(stderr, "    beta:   V,V=%.17e [%016llx]  N,N=%.17e [%016llx]\n",
-                                  vv_b.d, (unsigned long long)vv_b.u,
-                                  nn_b.d, (unsigned long long)nn_b.u);
-                }
-            }
-            assert_residual_below(ulpinv, THRESH);
-        }
+        assert_residual_below(result, THRESH);
 
     } else if (test_num == 6) {
         /* Test 6: left eigenvector consistency V,V vs V,N */
@@ -439,25 +418,22 @@ static void test_ddrgev_case(void** state)
                      (long long)iinfo_vn, (long long)n, (long long)jtype);
             return;
         }
-        INT nmismatch_eig = 0, nmismatch_vec = 0;
+        f64 result = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-                g_ws->alphai[j] != g_ws->alphi1[j] ||
-                g_ws->beta[j]   != g_ws->beta1[j])
-                nmismatch_eig++;
+            result = fmax(result, fabs(g_ws->alphar[j] - g_ws->alphr1[j]) /
+                          fmax(fmax(fabs(g_ws->alphar[j]), fabs(g_ws->alphr1[j])), safmin));
+            result = fmax(result, fabs(g_ws->alphai[j] - g_ws->alphi1[j]) /
+                          fmax(fmax(fabs(g_ws->alphai[j]), fabs(g_ws->alphi1[j])), safmin));
+            result = fmax(result, fabs(g_ws->beta[j] - g_ws->beta1[j]) /
+                          fmax(fmax(fabs(g_ws->beta[j]), fabs(g_ws->beta1[j])), safmin));
         }
         for (INT j = 0; j < n; j++) {
             for (INT jc = 0; jc < n; jc++) {
                 if (g_ws->Q[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
-                    nmismatch_vec++;
+                    result = ulpinv;
             }
         }
-        if (nmismatch_eig > 0 || nmismatch_vec > 0) {
-            fprintf(stderr, "DGGEV(V,V) vs (V,N): %lld eigenvalue mismatches, "
-                          "%lld VL element mismatches\n",
-                          (long long)nmismatch_eig, (long long)nmismatch_vec);
-            assert_residual_below(ulpinv, THRESH);
-        }
+        assert_residual_below(result, THRESH);
 
     } else {
         /* Test 7: right eigenvector consistency V,V vs N,V */
@@ -473,25 +449,22 @@ static void test_ddrgev_case(void** state)
                      (long long)iinfo_nv, (long long)n, (long long)jtype);
             return;
         }
-        INT nmismatch_eig = 0, nmismatch_vec = 0;
+        f64 result = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (g_ws->alphar[j] != g_ws->alphr1[j] ||
-                g_ws->alphai[j] != g_ws->alphi1[j] ||
-                g_ws->beta[j]   != g_ws->beta1[j])
-                nmismatch_eig++;
+            result = fmax(result, fabs(g_ws->alphar[j] - g_ws->alphr1[j]) /
+                          fmax(fmax(fabs(g_ws->alphar[j]), fabs(g_ws->alphr1[j])), safmin));
+            result = fmax(result, fabs(g_ws->alphai[j] - g_ws->alphi1[j]) /
+                          fmax(fmax(fabs(g_ws->alphai[j]), fabs(g_ws->alphi1[j])), safmin));
+            result = fmax(result, fabs(g_ws->beta[j] - g_ws->beta1[j]) /
+                          fmax(fmax(fabs(g_ws->beta[j]), fabs(g_ws->beta1[j])), safmin));
         }
         for (INT j = 0; j < n; j++) {
             for (INT jc = 0; jc < n; jc++) {
                 if (g_ws->Z[j + jc * ldq] != g_ws->QE[j + jc * ldqe])
-                    nmismatch_vec++;
+                    result = ulpinv;
             }
         }
-        if (nmismatch_eig > 0 || nmismatch_vec > 0) {
-            fprintf(stderr, "DGGEV(V,V) vs (N,V): %lld eigenvalue mismatches, "
-                          "%lld VR element mismatches\n",
-                          (long long)nmismatch_eig, (long long)nmismatch_vec);
-            assert_residual_below(ulpinv, THRESH);
-        }
+        assert_residual_below(result, THRESH);
     }
 }
 

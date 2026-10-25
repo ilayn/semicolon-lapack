@@ -43,6 +43,18 @@ EXCLUDE_FILES = {
     "dget08.c",        # Mixed-precision residual verification
 }
 
+# Per-file literal replacements applied after conversion, for constants that
+# upstream sets per precision rather than deriving them
+LITERAL_OVERRIDES = {
+    "test_dgges3_scaling.c": [   # TESTING/EIG/test_sgges3_scaling.f90
+        ("1.0e-280f", "1.0e-30f"),
+        ("1.0e-20f", "1.0e-10f"),
+        ("1.0e-18f", "1.0e-8f"),
+        ("(float)aerr, (float)berr, (float)lower, (float)tol",
+         "(double)aerr, (double)berr, (double)lower, (double)tol"),
+    ],
+}
+
 # Identifiers with embedded precision marker (not a simple d -> s prefix)
 EMBEDDED_PRECISION = {
     "iladlc": "ilaslc",
@@ -603,6 +615,8 @@ def main():
 
         content = process_file(src_path, code_subs, string_subs, comment_subs,
                                line_subs)
+        for old, new in LITERAL_OVERRIDES.get(fname, []):
+            content = content.replace(old, new)
 
         if args.dry_run:
             print(f"=== {fname} -> {dst_name} ===", file=sys.stderr)

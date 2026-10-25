@@ -367,6 +367,7 @@ static void run_zdrgev_single(zdrgev_params_t* params)
     INT   lwork  = ws->lwork;
 
     f32 ulpinv = 1.0f / slamch("P");
+    f32 safmin = slamch("S") / slamch("P");
 
     for (INT j = 0; j < 7; j++)
         ws->result[j] = -1.0f;
@@ -429,9 +430,15 @@ static void run_zdrgev_single(zdrgev_params_t* params)
         goto done;
     }
 
+    /* Bit-perfect equality of the eigenvalues does not work on GitHub's Intel
+       runners (OpenBLAS Cooperlake kernels) but passes on AMD runners (Zen
+       kernels). Hence the test bound is relaxed deliberately, here and in the
+       next two tests (Reference-LAPACK 1f7b0760a). */
     for (INT j = 0; j < n; j++) {
-        if (alpha[j] != alpha1[j] || beta[j] != beta1[j])
-            ws->result[4] = ulpinv;
+        ws->result[4] = fmaxf(ws->result[4], cabsf(alpha[j] - alpha1[j]) /
+                             fmaxf(fmaxf(cabsf(alpha[j]), cabsf(alpha1[j])), safmin));
+        ws->result[4] = fmaxf(ws->result[4], cabsf(beta[j] - beta1[j]) /
+                             fmaxf(fmaxf(cabsf(beta[j]), cabsf(beta1[j])), safmin));
     }
 
     /* Test 5: left eigenvectors only, compare eigenvalues and eigenvectors. */
@@ -447,8 +454,10 @@ static void run_zdrgev_single(zdrgev_params_t* params)
     }
 
     for (INT j = 0; j < n; j++) {
-        if (alpha[j] != alpha1[j] || beta[j] != beta1[j])
-            ws->result[5] = ulpinv;
+        ws->result[5] = fmaxf(ws->result[5], cabsf(alpha[j] - alpha1[j]) /
+                             fmaxf(fmaxf(cabsf(alpha[j]), cabsf(alpha1[j])), safmin));
+        ws->result[5] = fmaxf(ws->result[5], cabsf(beta[j] - beta1[j]) /
+                             fmaxf(fmaxf(cabsf(beta[j]), cabsf(beta1[j])), safmin));
     }
 
     for (INT j = 0; j < n; j++) {
@@ -471,8 +480,10 @@ static void run_zdrgev_single(zdrgev_params_t* params)
     }
 
     for (INT j = 0; j < n; j++) {
-        if (alpha[j] != alpha1[j] || beta[j] != beta1[j])
-            ws->result[6] = ulpinv;
+        ws->result[6] = fmaxf(ws->result[6], cabsf(alpha[j] - alpha1[j]) /
+                             fmaxf(fmaxf(cabsf(alpha[j]), cabsf(alpha1[j])), safmin));
+        ws->result[6] = fmaxf(ws->result[6], cabsf(beta[j] - beta1[j]) /
+                             fmaxf(fmaxf(cabsf(beta[j]), cabsf(beta1[j])), safmin));
     }
 
     for (INT j = 0; j < n; j++) {

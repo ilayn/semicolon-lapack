@@ -40,6 +40,19 @@ EXCLUDE_FILES = {
     "test_zdrvac.c",   # ZCPOSV mixed-precision solver
 }
 
+# Per-file literal replacements applied after conversion, for constants that
+# upstream sets per precision rather than deriving them
+LITERAL_OVERRIDES = {
+    "test_zgges3_scaling.c": [   # TESTING/EIG/test_cgges3_scaling.f90
+        ("1.0e-280f", "1.0e-30f"),
+        ("1.0e-20f", "1.0e-10f"),
+        ("1.0e-18f", "1.0e-8f"),
+        ("2.0e-18f", "2.0e-8f"),
+        ("1e-20 0 -1", "1e-10 0 -1"),
+        ("(1+2i)*1e-18", "(1+2i)*1e-8"),
+    ],
+}
+
 # Identifiers with embedded precision marker (not a simple z -> c prefix)
 EMBEDDED_PRECISION = {
     "ilazlc": "ilaclc",
@@ -778,6 +791,8 @@ def main():
 
         content = process_file(src_path, code_subs, string_subs, comment_subs,
                                line_subs)
+        for old, new in LITERAL_OVERRIDES.get(fname, []):
+            content = content.replace(old, new)
 
         if args.dry_run:
             print(f"=== {fname} -> {dst_name} ===", file=sys.stderr)

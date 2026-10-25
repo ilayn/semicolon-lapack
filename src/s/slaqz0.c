@@ -309,6 +309,7 @@ void slaqz0(
         k = istop;
         while (k >= istart2) {
             if (fabsf(B[k + k * ldb]) < btol) {
+                B[k + k * ldb] = ZERO;
                 /* A diagonal element of B is negligible, move it to the top and deflate it */
                 for (k2 = k; k2 >= istart2 + 1; k2--) {
                     slartg(B[(k2 - 1) + k2 * ldb], B[(k2 - 1) + (k2 - 1) * ldb],
@@ -411,7 +412,7 @@ void slaqz0(
         shiftpos = istop - n_undeflated + 1;
 
         /* Shuffle shifts to put double shifts in front */
-        for (i = shiftpos; i <= shiftpos + n_undeflated - 1; i += 2) {
+        for (i = shiftpos; i <= shiftpos + n_undeflated - 3; i += 2) {
             if (alphai[i] != -alphai[i + 1]) {
                 swap = alphar[i];
                 alphar[i] = alphar[i + 1];
