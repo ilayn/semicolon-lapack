@@ -179,9 +179,7 @@ void zgeqp3(const INT m, const INT n,
             /* Determine when to cross over from blocked to unblocked code. */
             /* ILAENV(3, 'ZGEQRF', ' ', SM, SN, -1, -1) -> NX for GEQRF */
             nx = lapack_get_nx("GEQRF");
-            if (nx > 0) {
-                nx = 0 > nx ? 0 : nx;
-            }
+            nx = 0 > nx ? 0 : nx;
 
             if (nx < sminmn) {
 
