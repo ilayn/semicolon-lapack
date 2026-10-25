@@ -889,14 +889,14 @@ void sgeqlf_(INT* m, INT* n, f32* A, INT* lda, f32* tau, f32* work, INT* lwork, 
 void sgeqp3_(INT* m, INT* n, f32* A, INT* lda, INT* jpvt, f32* tau, f32* work, INT* lwork, INT* info) {
     sgeqp3(*m, *n, A, *lda, jpvt, tau, work, *lwork, info);
     if (*lwork != -1) {
-        if (jpvt) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpvt[_i] >= 0) jpvt[_i]++; } }
+        if (jpvt && (*info >= 0)) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpvt[_i] >= 0) jpvt[_i]++; } }
     }
 }
 
 void sgeqp3rk_(INT* m, INT* n, INT* nrhs, INT* kmax, f32* abstol, f32* reltol, f32* A, INT* lda, INT* K, f32* maxc2nrmk, f32* relmaxc2nrmk, INT* jpiv, f32* tau, f32* work, INT* lwork, INT* iwork, INT* info) {
     sgeqp3rk(*m, *n, *nrhs, *kmax, *abstol, *reltol, A, *lda, K, maxc2nrmk, relmaxc2nrmk, jpiv, tau, work, *lwork, iwork, info);
     if (*lwork != -1) {
-        if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
+        if (jpiv && (*info >= 0 && *m > 0 && *n > 0)) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
     }
 }
 
@@ -1230,8 +1230,8 @@ void shgeqz_(char* job, char* compq, char* compz, INT* n, INT* ilo, INT* ihi, f3
 
 void shsein_(char* side, char* eigsrc, char* initv, INT* select, INT* n, f32* H, INT* ldh, f32* wr, f32* wi, f32* VL, INT* ldvl, f32* VR, INT* ldvr, INT* mm, INT* m, f32* work, INT* ifaill, INT* ifailr, INT* info) {
     shsein(side, eigsrc, initv, select, *n, H, *ldh, wr, wi, VL, *ldvl, VR, *ldvr, *mm, m, work, ifaill, ifailr, info);
-    if (ifaill && ((*side == 'L' || *side == 'l' || *side == 'B' || *side == 'b'))) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifaill[_i]++; }
-    if (ifailr && ((*side == 'R' || *side == 'r' || *side == 'B' || *side == 'b'))) { INT _sz = *mm; for (INT _i = 0; _i < _sz; _i++) ifailr[_i]++; }
+    if (ifaill && (*info >= 0 && (*side == 'L' || *side == 'l' || *side == 'B' || *side == 'b'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifaill[_i]++; }
+    if (ifailr && (*info >= 0 && (*side == 'R' || *side == 'r' || *side == 'B' || *side == 'b'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifailr[_i]++; }
 }
 
 void shseqr_(char* job, char* compz, INT* n, INT* ilo, INT* ihi, f32* H, INT* ldh, f32* wr, f32* wi, f32* Z, INT* ldz, f32* work, INT* lwork, INT* info) {
@@ -1446,22 +1446,20 @@ void slaqge_(INT* m, INT* n, f32* A, INT* lda, f32* R, f32* C, f32* rowcnd, f32*
 
 void slaqp2_(INT* m, INT* n, INT* offset, f32* A, INT* lda, INT* jpvt, f32* tau, f32* vn1, f32* vn2, f32* work) {
     slaqp2(*m, *n, *offset, A, *lda, jpvt, tau, vn1, vn2, work);
-    if (jpvt) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpvt[_i] >= 0) jpvt[_i]++; } }
 }
 
 void slaqp2rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* kmax, f32* abstol, f32* reltol, INT* kp1, f32* maxc2nrm, f32* A, INT* lda, INT* K, f32* maxc2nrmk, f32* relmaxc2nrmk, INT* jpiv, f32* tau, f32* vn1, f32* vn2, f32* work, INT* info) {
-    slaqp2rk(*m, *n, *nrhs, *ioffset, *kmax, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, K, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, work, info);
-    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
+    INT _kp1 = *kp1 - 1;
+    slaqp2rk(*m, *n, *nrhs, *ioffset, *kmax, *abstol, *reltol, _kp1, *maxc2nrm, A, *lda, K, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, work, info);
 }
 
 void slaqp3rk_(INT* m, INT* n, INT* nrhs, INT* ioffset, INT* nb, f32* abstol, f32* reltol, INT* kp1, f32* maxc2nrm, f32* A, INT* lda, INT* done, INT* KB, f32* maxc2nrmk, f32* relmaxc2nrmk, INT* jpiv, f32* tau, f32* vn1, f32* vn2, f32* auxv, f32* F, INT* ldf, INT* iwork, INT* info) {
-    slaqp3rk(*m, *n, *nrhs, *ioffset, nb, *abstol, *reltol, *kp1, *maxc2nrm, A, *lda, done, KB, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, auxv, F, *ldf, iwork, info);
-    if (jpiv) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpiv[_i] >= 0) jpiv[_i]++; } }
+    INT _kp1 = *kp1 - 1;
+    slaqp3rk(*m, *n, *nrhs, *ioffset, nb, *abstol, *reltol, _kp1, *maxc2nrm, A, *lda, done, KB, maxc2nrmk, relmaxc2nrmk, jpiv, tau, vn1, vn2, auxv, F, *ldf, iwork, info);
 }
 
 void slaqps_(INT* m, INT* n, INT* offset, INT* nb, INT* kb, f32* A, INT* lda, INT* jpvt, f32* tau, f32* vn1, f32* vn2, f32* auxv, f32* F, INT* ldf) {
     slaqps(*m, *n, *offset, *nb, kb, A, *lda, jpvt, tau, vn1, vn2, auxv, F, *ldf);
-    if (jpvt) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (jpvt[_i] >= 0) jpvt[_i]++; } }
 }
 
 void slaqr0_(INT* wantt, INT* wantz, INT* n, INT* ilo, INT* ihi, f32* H, INT* ldh, f32* wr, f32* wi, INT* iloz, INT* ihiz, f32* Z, INT* ldz, f32* work, INT* lwork, INT* info) {
@@ -2265,17 +2263,39 @@ void ssbevd_(char* jobz, char* uplo, INT* n, INT* kd, f32* AB, INT* ldab, f32* W
 void ssbevx_2stage_(char* jobz, char* range, char* uplo, INT* n, INT* kd, f32* AB, INT* ldab, f32* Q, INT* ldq, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* lwork, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    ssbevx_2stage(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    INT* _ifail0 = NULL;
     if (*lwork != -1) {
-        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail) {
+            INT _ifail_sz = *n;
+            _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+            for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+        }
+    }
+    if (*lwork != -1) {
+        ssbevx_2stage(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, _ifail0, info);
+    } else {
+        ssbevx_2stage(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    }
+    if (*lwork != -1) {
+        if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    }
+    if (*lwork != -1) {
+        free(_ifail0);
     }
 }
 
 void ssbevx_(char* jobz, char* range, char* uplo, INT* n, INT* kd, f32* AB, INT* ldab, f32* Q, INT* ldq, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    ssbevx(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    INT* _ifail0 = NULL;
+    if (ifail) {
+        INT _ifail_sz = *n;
+        _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+        for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+    }
+    ssbevx(jobz, range, uplo, *n, *kd, AB, *ldab, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, _ifail0, info);
+    if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    free(_ifail0);
 }
 
 void ssbgst_(char* vect, char* uplo, INT* n, INT* ka, INT* kb, f32* AB, INT* ldab, f32* BB, INT* ldbb, f32* X, INT* ldx, f32* work, INT* info) {
@@ -2293,8 +2313,15 @@ void ssbgvd_(char* jobz, char* uplo, INT* n, INT* ka, INT* kb, f32* AB, INT* lda
 void ssbgvx_(char* jobz, char* range, char* uplo, INT* n, INT* ka, INT* kb, f32* AB, INT* ldab, f32* BB, INT* ldbb, f32* Q, INT* ldq, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    ssbgvx(jobz, range, uplo, *n, *ka, *kb, AB, *ldab, BB, *ldbb, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    INT* _ifail0 = NULL;
+    if (ifail) {
+        INT _ifail_sz = *n;
+        _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+        for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+    }
+    ssbgvx(jobz, range, uplo, *n, *ka, *kb, AB, *ldab, BB, *ldbb, Q, *ldq, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, _ifail0, info);
+    if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    free(_ifail0);
 }
 
 void ssbtrd_(char* vect, char* uplo, INT* n, INT* kd, f32* AB, INT* ldab, f32* D, f32* E, f32* Q, INT* ldq, f32* work, INT* info) {
@@ -2327,8 +2354,15 @@ void sspevd_(char* jobz, char* uplo, INT* n, f32* AP, f32* W, f32* Z, INT* ldz, 
 void sspevx_(char* jobz, char* range, char* uplo, INT* n, f32* AP, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    sspevx(jobz, range, uplo, *n, AP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    INT* _ifail0 = NULL;
+    if (ifail) {
+        INT _ifail_sz = *n;
+        _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+        for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+    }
+    sspevx(jobz, range, uplo, *n, AP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, _ifail0, info);
+    if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    free(_ifail0);
 }
 
 void sspgst_(INT* itype, char* uplo, INT* n, f32* AP, f32* BP, INT* info) {
@@ -2346,8 +2380,15 @@ void sspgvd_(INT* itype, char* jobz, char* uplo, INT* n, f32* AP, f32* BP, f32* 
 void sspgvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, f32* AP, f32* BP, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    sspgvx(*itype, jobz, range, uplo, *n, AP, BP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    INT* _ifail0 = NULL;
+    if (ifail) {
+        INT _ifail_sz = *n;
+        _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+        for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+    }
+    sspgvx(*itype, jobz, range, uplo, *n, AP, BP, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, _ifail0, info);
+    if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    free(_ifail0);
 }
 
 void ssprfs_(char* uplo, INT* n, INT* nrhs, f32* AP, f32* AFP, INT* ipiv, f32* B, INT* ldb, f32* X, INT* ldx, f32* ferr, f32* berr, f32* work, INT* iwork, INT* info) {
@@ -2437,6 +2478,7 @@ void sstegr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
 void sstein_(INT* n, f32* D, f32* E, INT* m, f32* W, INT* iblock, INT* isplit, f32* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info) {
     INT* _iblock0 = NULL;
     INT* _isplit0 = NULL;
+    INT* _ifail0 = NULL;
     if (iblock) {
         INT _iblock_sz = *m;
         _iblock0 = (INT*)malloc(_iblock_sz * sizeof(INT));
@@ -2447,10 +2489,16 @@ void sstein_(INT* n, f32* D, f32* E, INT* m, f32* W, INT* iblock, INT* isplit, f
         _isplit0 = (INT*)malloc(_isplit_sz * sizeof(INT));
         for (INT _i = 0; _i < _isplit_sz; _i++) _isplit0[_i] = (isplit[_i] > 0) ? isplit[_i] - 1 : isplit[_i];
     }
-    sstein(*n, D, E, *m, W, _iblock0, _isplit0, Z, *ldz, work, iwork, ifail, info);
-    if (ifail) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    if (ifail) {
+        INT _ifail_sz = *m;
+        _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+        for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+    }
+    sstein(*n, D, E, *m, W, _iblock0, _isplit0, Z, *ldz, work, iwork, _ifail0, info);
+    if (_ifail0) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
     free(_iblock0);
     free(_isplit0);
+    free(_ifail0);
 }
 
 void sstemr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, INT* il, INT* iu, INT* m, f32* W, f32* Z, INT* ldz, INT* nzc, INT* isuppz, INT* tryrac, f32* work, INT* lwork, INT* iwork, INT* liwork, INT* info) {
@@ -2490,8 +2538,15 @@ void sstevr_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, 
 void sstevx_(char* jobz, char* range, INT* n, f32* D, f32* E, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    sstevx(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, ifail, info);
-    if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+    INT* _ifail0 = NULL;
+    if (ifail) {
+        INT _ifail_sz = *n;
+        _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+        for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+    }
+    sstevx(jobz, range, *n, D, E, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, iwork, _ifail0, info);
+    if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    free(_ifail0);
 }
 
 void ssycon_3_(char* uplo, INT* n, f32* A, INT* lda, f32* E, INT* ipiv, f32* anorm, f32* rcond, f32* work, INT* iwork, INT* info) {
@@ -2601,18 +2656,48 @@ void ssyevr_(char* jobz, char* range, char* uplo, INT* n, f32* A, INT* lda, f32*
 void ssyevx_2stage_(char* jobz, char* range, char* uplo, INT* n, f32* A, INT* lda, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* lwork, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    ssyevx_2stage(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    INT* _ifail0 = NULL;
     if (*lwork != -1) {
-        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail) {
+            INT _ifail_sz = *n;
+            _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+            for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+        }
+    }
+    if (*lwork != -1) {
+        ssyevx_2stage(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, _ifail0, info);
+    } else {
+        ssyevx_2stage(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    }
+    if (*lwork != -1) {
+        if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    }
+    if (*lwork != -1) {
+        free(_ifail0);
     }
 }
 
 void ssyevx_(char* jobz, char* range, char* uplo, INT* n, f32* A, INT* lda, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* lwork, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    ssyevx(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    INT* _ifail0 = NULL;
     if (*lwork != -1) {
-        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail) {
+            INT _ifail_sz = *n;
+            _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+            for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+        }
+    }
+    if (*lwork != -1) {
+        ssyevx(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, _ifail0, info);
+    } else {
+        ssyevx(jobz, range, uplo, *n, A, *lda, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    }
+    if (*lwork != -1) {
+        if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    }
+    if (*lwork != -1) {
+        free(_ifail0);
     }
 }
 
@@ -2639,9 +2724,24 @@ void ssygvd_(INT* itype, char* jobz, char* uplo, INT* n, f32* A, INT* lda, f32* 
 void ssygvx_(INT* itype, char* jobz, char* range, char* uplo, INT* n, f32* A, INT* lda, f32* B, INT* ldb, f32* vl, f32* vu, INT* il, INT* iu, f32* abstol, INT* m, f32* W, f32* Z, INT* ldz, f32* work, INT* lwork, INT* iwork, INT* ifail, INT* info) {
     INT _il = *il - 1;
     INT _iu = *iu - 1;
-    ssygvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    INT* _ifail0 = NULL;
     if (*lwork != -1) {
-        if (ifail && ((*jobz == 'V' || *jobz == 'v'))) { INT _sz = *m; for (INT _i = 0; _i < _sz; _i++) ifail[_i]++; }
+        if (ifail) {
+            INT _ifail_sz = *n;
+            _ifail0 = (INT*)malloc(_ifail_sz * sizeof(INT));
+            for (INT _i = 0; _i < _ifail_sz; _i++) _ifail0[_i] = -2;
+        }
+    }
+    if (*lwork != -1) {
+        ssygvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, _ifail0, info);
+    } else {
+        ssygvx(*itype, jobz, range, uplo, *n, A, *lda, B, *ldb, *vl, *vu, _il, _iu, *abstol, m, W, Z, *ldz, work, *lwork, iwork, ifail, info);
+    }
+    if (*lwork != -1) {
+        if (_ifail0) { INT _sz = *n; for (INT _i = 0; _i < _sz; _i++) { if (_ifail0[_i] != -2) ifail[_i] = _ifail0[_i] + 1; } }
+    }
+    if (*lwork != -1) {
+        free(_ifail0);
     }
 }
 
