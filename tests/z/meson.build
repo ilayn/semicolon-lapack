@@ -105,6 +105,7 @@ lapack_tests_z = {
   'zdrges3': ['test_zdrges3.c', 'eigen'],
   'zgges3_scaling': ['test_zgges3_scaling.c', 'eigen'],
   'zstein_unconverged': ['test_zstein_unconverged.c', 'eigen'],
+  'zgeqp3_fixed': ['test_zgeqp3_fixed.c', 'qr'],
   'zdrgev': ['test_zdrgev.c', 'eigen'],
   'zdrgev3': ['test_zdrgev3.c', 'eigen'],
   'zdrgsx': ['test_zdrgsx.c', 'eigen'],

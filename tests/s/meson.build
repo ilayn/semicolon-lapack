@@ -98,6 +98,7 @@ lapack_tests_s = {
   'sstevx_scaling': ['test_sstevx_scaling.c', 'eigen'],
   'sstein_unconverged': ['test_sstein_unconverged.c', 'eigen'],
   'sstebz_discard': ['test_sstebz_discard.c', 'eigen'],
+  'sgeqp3_fixed': ['test_sgeqp3_fixed.c', 'qr'],
   'sdrgsx': ['test_sdrgsx.c', 'eigen'],
   'sdrvsg': ['test_sdrvsg.c', 'eigen'],
   'sdrvsg2stg': ['test_sdrvsg2stg.c', 'eigen'],

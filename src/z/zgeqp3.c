@@ -111,11 +111,6 @@ void zgeqp3(const INT m, const INT n,
         return;
     }
 
-    /* Quick return if possible */
-    if (minmn == 0) {
-        return;
-    }
-
     /*
      * Move initial columns up front.
      * In 0-based indexing: nfxd counts how many fixed columns we have.
@@ -135,6 +130,11 @@ void zgeqp3(const INT m, const INT n,
         } else {
             jpvt[j] = j;  /* 0-based original column index */
         }
+    }
+
+    /* Quick return if possible */
+    if (minmn == 0) {
+        return;
     }
 
     /*

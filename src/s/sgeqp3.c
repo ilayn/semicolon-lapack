@@ -108,11 +108,6 @@ void sgeqp3(const INT m, const INT n,
         return;
     }
 
-    /* Quick return if possible */
-    if (minmn == 0) {
-        return;
-    }
-
     /*
      * Move initial columns up front.
      * In 0-based indexing: nfxd counts how many fixed columns we have.
@@ -132,6 +127,11 @@ void sgeqp3(const INT m, const INT n,
         } else {
             jpvt[j] = j;  /* 0-based original column index */
         }
+    }
+
+    /* Quick return if possible */
+    if (minmn == 0) {
+        return;
     }
 
     /*
@@ -184,7 +184,7 @@ void sgeqp3(const INT m, const INT n,
             if (nx < sminmn) {
 
                 /* Determine if workspace is large enough for blocked code. */
-                minws = 2 * sn + (sn + 1) * nb;
+                minws = 2 * n + (sn + 1) * nb;
                 iws = iws > minws ? iws : minws;
                 if (lwork < minws) {
 
@@ -192,7 +192,7 @@ void sgeqp3(const INT m, const INT n,
                      * Not enough workspace to use optimal NB: Reduce NB and
                      * determine the minimum value of NB.
                      */
-                    nb = (lwork - 2 * sn) / (sn + 1);
+                    nb = (lwork - 2 * n) / (sn + 1);
                     /* ILAENV(2, 'SGEQRF', ' ', SM, SN, -1, -1) -> NBMIN for GEQRF */
                     nbmin = lapack_get_nbmin("GEQRF");
                     nbmin = 2 > nbmin ? 2 : nbmin;
