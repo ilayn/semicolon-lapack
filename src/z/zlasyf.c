@@ -155,6 +155,7 @@ void zlasyf(
                     *info = k + 1;
                 }
                 kp = k;
+                cblas_zcopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
             } else {
                 if (absakk >= ALPHA_BK * colmax) {
                     /* No interchange, use 1-by-1 pivot block */
@@ -414,6 +415,7 @@ void zlasyf(
                     *info = k + 1;
                 }
                 kp = k;
+                cblas_zcopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
             } else {
                 if (absakk >= ALPHA_BK * colmax) {
                     /* No interchange, use 1-by-1 pivot block */

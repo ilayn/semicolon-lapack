@@ -145,7 +145,7 @@ void clahef(
                     *info = k + 1;
                 }
                 kp = k;
-                A[k + k * lda] = crealf(A[k + k * lda]);
+                cblas_ccopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
             } else {
 
                 if (absakk >= ALPHA_BK * colmax) {
@@ -372,7 +372,7 @@ void clahef(
                     *info = k + 1;
                 }
                 kp = k;
-                A[k + k * lda] = crealf(A[k + k * lda]);
+                cblas_ccopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
             } else {
 
                 if (absakk >= ALPHA_BK * colmax) {

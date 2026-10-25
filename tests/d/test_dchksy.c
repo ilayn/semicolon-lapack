@@ -457,6 +457,61 @@ static void test_dchksy_case(void** state)
     run_dchksy_single(params->n, params->iuplo, params->imat, params->inb);
 }
 
+/**
+ * Check an exact zero pivot created by updating a rank-one block
+ * when the singular matrix tests are requested.
+ * Unlike a row that is zero on input, its original diagonal must
+ * be replaced by the updated zero before returning the factors.
+ */
+static void run_dchksy_zero_pivot(INT n, INT iuplo, INT inb)
+{
+    const f64 ZERO = 0.0;
+    dchksy_workspace_t* ws = g_workspace;
+
+    char uplo = UPLOS[iuplo];
+    char uplo_str[2] = {uplo, '\0'};
+    INT lda = n;
+    INT nb = NBVAL[inb];
+    INT info;
+    f64 result;
+    char ctx[128];
+
+    INT i1 = (iuplo == 0) ? n - 2 : 0;
+    INT i2 = i1 + 1;
+    INT izero = (iuplo == 0) ? i1 + 1 : i2 + 1;
+
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            ws->A[i + j * lda] = ZERO;
+        }
+        ws->A[j + j * lda] = 1.0;
+    }
+    ws->A[i1 + i1 * lda] = 0.0625;
+    ws->A[i2 + i2 * lda] = 0.0625;
+    ws->A[i1 + i2 * lda] = 0.0625;
+    ws->A[i2 + i1 * lda] = 0.0625;
+
+    xlaenv(1, nb);
+    dlacpy(uplo_str, n, n, ws->A, lda, ws->AFAC, lda);
+    INT lwork = ((2 > nb) ? 2 : nb) * lda;
+    dsytrf(uplo_str, n, ws->AFAC, lda, ws->IPIV, ws->AINV, lwork, &info);
+
+    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c nb=%d zero pivot", n, uplo, nb);
+    set_test_context(ctx);
+    assert_int_equal(info, izero);
+    dsyt01(uplo_str, n, ws->A, lda, ws->AFAC, lda, ws->IPIV,
+           ws->AINV, lda, ws->RWORK, &result);
+    assert_residual_below(result, THRESH);
+
+    clear_test_context();
+}
+
+static void test_dchksy_zero_pivot(void** state)
+{
+    dchksy_params_t* params = *state;
+    run_dchksy_zero_pivot(params->n, params->iuplo, params->inb);
+}
+
 /*
  * Generate all parameter combinations.
  * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 11 * 5 = 770 tests
@@ -464,7 +519,7 @@ static void test_dchksy_case(void** state)
  */
 
 /* Maximum number of test cases */
-#define MAX_TESTS (NN * NUPLO * NTYPES * NNB)
+#define MAX_TESTS (NN * NUPLO * NTYPES * NNB + NN * NUPLO * NNB)
 
 static dchksy_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -515,6 +570,32 @@ static void build_test_array(void)
 
                     g_num_tests++;
                 }
+            }
+        }
+    }
+
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        if (n < 3) {
+            continue;
+        }
+        for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+            for (INT inb = 0; inb < (INT)NNB; inb++) {
+                dchksy_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->imat = 0;
+                p->iuplo = iuplo;
+                p->inb = inb;
+                snprintf(p->name, sizeof(p->name), "dchksy_n%d_%c_zeropiv_nb%d_%d",
+                         n, UPLOS[iuplo], NBVAL[inb], inb);
+
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_dchksy_zero_pivot;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
+
+                g_num_tests++;
             }
         }
     }

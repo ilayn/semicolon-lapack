@@ -55,6 +55,7 @@ typedef struct {
     INT imat;
     INT iuplo;  /* 0='U', 1='L' */
     INT inb;    /* Index into NBVAL[] */
+    INT mode;
     char name[64];
 } zchkhe_params_t;
 
@@ -423,6 +424,65 @@ static void test_zchkhe_case(void** state)
     run_zchkhe_single(params->n, params->iuplo, params->imat, params->inb);
 }
 
+/**
+ * Check an exact zero pivot created by updating a rank-one block
+ * when the singular matrix tests are requested.
+ * Unlike a row that is zero on input, its original diagonal must
+ * be replaced by the updated zero before returning the factors.
+ */
+static void run_zchkhe_zero_pivot(INT n, INT iuplo, INT mode, INT inb)
+{
+    const c128 ZERO = CMPLX(0.0, 0.0);
+    zchkhe_workspace_t* ws = g_workspace;
+
+    char uplo = UPLOS[iuplo];
+    char uplo_str[2] = {uplo, '\0'};
+    INT lda = n;
+    INT nb = NBVAL[inb];
+    INT info;
+    f64 result;
+    char ctx[128];
+
+    INT i1 = (iuplo == 0) ? n - 2 : 0;
+    INT i2 = i1 + 1;
+    INT izero = (iuplo == 0) ? i1 + 1 : i2 + 1;
+
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            ws->A[i + j * lda] = ZERO;
+        }
+        ws->A[j + j * lda] = CMPLX(1.0, 0.0);
+    }
+    ws->A[i1 + i1 * lda] = CMPLX(0.0625, 0.0);
+    ws->A[i2 + i2 * lda] = CMPLX(0.0625, 0.0);
+    ws->A[i1 + i2 * lda] = CMPLX(0.0625, 0.0);
+    ws->A[i2 + i1 * lda] = CMPLX(0.0625, 0.0);
+    if (mode == 2) {
+        ws->A[i1 + i2 * lda] = CMPLX(0.0, 0.0625);
+        ws->A[i2 + i1 * lda] = -ws->A[i1 + i2 * lda];
+    }
+
+    xlaenv(1, nb);
+    zlacpy(uplo_str, n, n, ws->A, lda, ws->AFAC, lda);
+    INT lwork = ((2 > nb) ? 2 : nb) * lda;
+    zhetrf(uplo_str, n, ws->AFAC, lda, ws->IPIV, ws->AINV, lwork, &info);
+
+    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c nb=%d mode=%d zero pivot", n, uplo, nb, mode);
+    set_test_context(ctx);
+    assert_int_equal(info, izero);
+    zhet01(uplo_str, n, ws->A, lda, ws->AFAC, lda, ws->IPIV,
+           ws->AINV, lda, ws->RWORK, &result);
+    assert_residual_below(result, THRESH);
+
+    clear_test_context();
+}
+
+static void test_zchkhe_zero_pivot(void** state)
+{
+    zchkhe_params_t* params = *state;
+    run_zchkhe_zero_pivot(params->n, params->iuplo, params->mode, params->inb);
+}
+
 /*
  * Generate all parameter combinations.
  * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 10 * 5 = 700 tests
@@ -430,7 +490,7 @@ static void test_zchkhe_case(void** state)
  */
 
 /* Maximum number of test cases */
-#define MAX_TESTS (NN * NUPLO * NTYPES * NNB)
+#define MAX_TESTS (NN * NUPLO * NTYPES * NNB + NN * NUPLO * 2 * NNB)
 
 static zchkhe_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -475,6 +535,35 @@ static void build_test_array(void)
                     /* Create CMocka test entry */
                     g_tests[g_num_tests].name = p->name;
                     g_tests[g_num_tests].test_func = test_zchkhe_case;
+                    g_tests[g_num_tests].setup_func = NULL;
+                    g_tests[g_num_tests].teardown_func = NULL;
+                    g_tests[g_num_tests].initial_state = p;
+
+                    g_num_tests++;
+                }
+            }
+        }
+    }
+
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        if (n < 3) {
+            continue;
+        }
+        for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+            for (INT mode = 1; mode <= 2; mode++) {
+                for (INT inb = 0; inb < (INT)NNB; inb++) {
+                    zchkhe_params_t* p = &g_params[g_num_tests];
+                    p->n = n;
+                    p->imat = 0;
+                    p->iuplo = iuplo;
+                    p->mode = mode;
+                    p->inb = inb;
+                    snprintf(p->name, sizeof(p->name), "zchkhe_n%d_%c_zeropiv_mode%d_nb%d_%d",
+                             n, UPLOS[iuplo], mode, NBVAL[inb], inb);
+
+                    g_tests[g_num_tests].name = p->name;
+                    g_tests[g_num_tests].test_func = test_zchkhe_zero_pivot;
                     g_tests[g_num_tests].setup_func = NULL;
                     g_tests[g_num_tests].teardown_func = NULL;
                     g_tests[g_num_tests].initial_state = p;

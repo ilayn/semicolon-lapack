@@ -145,7 +145,7 @@ void zlahef(
                     *info = k + 1;
                 }
                 kp = k;
-                A[k + k * lda] = creal(A[k + k * lda]);
+                cblas_zcopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
             } else {
 
                 if (absakk >= ALPHA_BK * colmax) {
@@ -372,7 +372,7 @@ void zlahef(
                     *info = k + 1;
                 }
                 kp = k;
-                A[k + k * lda] = creal(A[k + k * lda]);
+                cblas_zcopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
             } else {
 
                 if (absakk >= ALPHA_BK * colmax) {
