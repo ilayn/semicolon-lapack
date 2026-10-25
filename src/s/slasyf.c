@@ -149,6 +149,7 @@ void slasyf(
                     *info = k + 1;
                 }
                 kp = k;
+                cblas_scopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
             } else {
                 if (absakk >= ALPHA_BK * colmax) {
                     /* No interchange, use 1-by-1 pivot block */
@@ -288,20 +289,20 @@ void slasyf(
                          * = 1/d21 * T * ( ( D11 ) (  -1 ) )
                          *               ( (  -1 ) ( D22 ) )
                          *
-                         * = D21 * ( ( D11 ) (  -1 ) )
-                         *         ( (  -1 ) ( D22 ) ) */
+                         * T/d21 is not formed, since it overflows when d21 is
+                         * subnormal: each entry of the product is divided by
+                         * d21 and then scaled by T. */
                         f32 d21 = W[(k - 1) + kw * ldw];
                         f32 d11 = W[k + kw * ldw] / d21;
                         f32 d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
                         f32 t = 1.0f / (d11 * d22 - 1.0f);
-                        d21 = t / d21;
 
                         /* Update elements in columns A(k-1) and A(k) as
                          * dot products of rows of ( W(kw-1) W(kw) ) and columns
                          * of D**(-1) */
                         for (INT j = 0; j <= k - 2; j++) {
-                            A[j + (k - 1) * lda] = d21 * (d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]);
-                            A[j + k * lda] = d21 * (d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]);
+                            A[j + (k - 1) * lda] = t * ((d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]) / d21);
+                            A[j + k * lda] = t * ((d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]) / d21);
                         }
                     }
 
@@ -408,6 +409,7 @@ void slasyf(
                     *info = k + 1;
                 }
                 kp = k;
+                cblas_scopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
             } else {
                 if (absakk >= ALPHA_BK * colmax) {
                     /* No interchange, use 1-by-1 pivot block */
@@ -542,20 +544,20 @@ void slasyf(
                          * = 1/d21 * T * ( ( D11 ) (  -1 ) )
                          *               ( (  -1 ) ( D22 ) )
                          *
-                         * = D21 * ( ( D11 ) (  -1 ) )
-                         *         ( (  -1 ) ( D22 ) ) */
+                         * T/d21 is not formed, since it overflows when d21 is
+                         * subnormal: each entry of the product is divided by
+                         * d21 and then scaled by T. */
                         f32 d21 = W[(k + 1) + k * ldw];
                         f32 d11 = W[(k + 1) + (k + 1) * ldw] / d21;
                         f32 d22 = W[k + k * ldw] / d21;
                         f32 t = 1.0f / (d11 * d22 - 1.0f);
-                        d21 = t / d21;
 
                         /* Update elements in columns A(k) and A(k+1) as
                          * dot products of rows of ( W(k) W(k+1) ) and columns
                          * of D**(-1) */
                         for (INT j = k + 2; j <= n - 1; j++) {
-                            A[j + k * lda] = d21 * (d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]);
-                            A[j + (k + 1) * lda] = d21 * (d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]);
+                            A[j + k * lda] = t * ((d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]) / d21);
+                            A[j + (k + 1) * lda] = t * ((d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]) / d21);
                         }
                     }
 

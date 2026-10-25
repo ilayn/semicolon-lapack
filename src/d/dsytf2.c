@@ -225,11 +225,10 @@ void dsytf2(
                         f64 d22 = A[(k - 1) + (k - 1) * lda] / d12;
                         f64 d11 = A[k + k * lda] / d12;
                         f64 t = 1.0 / (d11 * d22 - 1.0);
-                        d12 = t / d12;
 
                         for (INT j = k - 2; j >= 0; j--) {
-                            f64 wkm1 = d12 * (d11 * A[j + (k - 1) * lda] - A[j + k * lda]);
-                            f64 wk = d12 * (d22 * A[j + k * lda] - A[j + (k - 1) * lda]);
+                            f64 wkm1 = t * ((d11 * A[j + (k - 1) * lda] - A[j + k * lda]) / d12);
+                            f64 wk = t * ((d22 * A[j + k * lda] - A[j + (k - 1) * lda]) / d12);
                             for (INT i = j; i >= 0; i--) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k - 1) * lda] * wkm1;
@@ -353,11 +352,10 @@ void dsytf2(
                         f64 d11 = A[(k + 1) + (k + 1) * lda] / d21;
                         f64 d22 = A[k + k * lda] / d21;
                         f64 t = 1.0 / (d11 * d22 - 1.0);
-                        d21 = t / d21;
 
                         for (INT j = k + 2; j < n; j++) {
-                            f64 wk = d21 * (d11 * A[j + k * lda] - A[j + (k + 1) * lda]);
-                            f64 wkp1 = d21 * (d22 * A[j + (k + 1) * lda] - A[j + k * lda]);
+                            f64 wk = t * ((d11 * A[j + k * lda] - A[j + (k + 1) * lda]) / d21);
+                            f64 wkp1 = t * ((d22 * A[j + (k + 1) * lda] - A[j + k * lda]) / d21);
                             for (INT i = j; i < n; i++) {
                                 A[i + j * lda] -= A[i + k * lda] * wk +
                                                   A[i + (k + 1) * lda] * wkp1;

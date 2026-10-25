@@ -30,7 +30,9 @@
  *                      On exit, if UPLO = 'U', the upper triangle of A is
  *                      overwritten with the upper triangle of the product U * U**H;
  *                      if UPLO = 'L', the lower triangle of A is overwritten with
- *                      the lower triangle of the product L**H * L.
+ *                      the lower triangle of the product L**H * L. Regardless,
+ *                      the imaginary parts of the diagonal elements are set
+ *                      to zero before exit.
  * @param[in]     lda   The leading dimension of the array A. lda >= max(1, n).
  * @param[out]    info
  *                         - = 0: successful exit

@@ -32,10 +32,10 @@
  * @param[in]     ldq    The leading dimension of the array Q.
  *                        LDQ >= max(1,N).
  * @param[out]    qstore Complex*16 array, dimension (LDQS, N).
- *                        Used to store parts of the eigenvector matrix when
- *                        the updating matrix multiplies take place.
+ *                        Workspace: holds the products of the leaf eigenvector
+ *                        matrices and the QSIZ*N workspace of ZLAED7.
  * @param[in]     ldqs   The leading dimension of the array QSTORE.
- *                        LDQS >= max(1,N).
+ *                        LDQS >= max(1,QSIZ).
  * @param[out]    rwork  Double precision array,
  *                        dimension (1 + 3*N + 2*N*lg(N) + 3*N**2).
  * @param[out]    iwork  Integer array,
@@ -166,6 +166,8 @@ void zlaed0(const INT qsiz, const INT n,
         zlacrm(qsiz, matsiz, &Q[submat * ldq], ldq, &rwork[ll],
                matsiz, &qstore[submat * ldqs], ldqs,
                &rwork[iwrem]);
+        zlacpy("A", qsiz, matsiz, &qstore[submat * ldqs], ldqs,
+               &Q[submat * ldq], ldq);
         iwork[iqptr + curr + 1] = iwork[iqptr + curr] + matsiz * matsiz;
         curr = curr + 1;
         if (*info > 0) {
@@ -207,15 +209,17 @@ void zlaed0(const INT qsiz, const INT n,
              * when the eigenvectors of a full or band Hermitian matrix (which
              * was reduced to tridiagonal form) are desired.
              *
-             * I am free to use Q as a valuable working space until Loop 150.
+             * The eigenvectors stay in Q, which has leading dimension LDQ, and
+             * the contiguous QSTORE is the QSIZ*MATSIZ workspace of ZLAED7:
+             * Q(N+1:LDQ,:) belongs to the caller and must not be touched.
              */
             zlaed7(matsiz, msd2, qsiz, tlvls, curlvl, curprb,
-                   &D[submat], &qstore[submat * ldqs], ldqs,
+                   &D[submat], &Q[submat * ldq], ldq,
                    E[submat + msd2 - 1], &iwork[indxq + submat],
                    &rwork[iq], &iwork[iqptr], &iwork[iprmpt],
                    &iwork[iperm], &iwork[igivpt],
                    &iwork[igivcl], &rwork[igivnm],
-                   &Q[submat * ldq], &rwork[iwrem],
+                   qstore, &rwork[iwrem],
                    &iwork[subpbs], info);
             if (*info > 0) {
                 *info = (submat + 1) * (n + 1) + submat + matsiz;
@@ -235,9 +239,10 @@ void zlaed0(const INT qsiz, const INT n,
     for (i = 0; i < n; i++) {
         j = iwork[indxq + i];
         rwork[i] = D[j];
-        cblas_zcopy(qsiz, &qstore[j * ldqs], 1, &Q[i * ldq], 1);
+        cblas_zcopy(qsiz, &Q[j * ldq], 1, &qstore[i * ldqs], 1);
     }
     cblas_dcopy(n, rwork, 1, D, 1);
+    zlacpy("A", qsiz, n, qstore, ldqs, Q, ldq);
 
     return;
 }

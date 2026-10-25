@@ -21,7 +21,7 @@
  * Parameters from dtest.in:
  *   N values: 0, 1, 2, 3, 5, 10, 50
  *   NRHS values: 1, 2, 15
- *   Matrix types: 1-10
+ *   Matrix types: 1-11
  *   THRESH: 30.0
  */
 
@@ -41,7 +41,7 @@ static const char UPLOS[] = {'U', 'L'};
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
 #define NNB     (sizeof(NBVAL) / sizeof(NBVAL[0]))
 #define NUPLO   (sizeof(UPLOS) / sizeof(UPLOS[0]))
-#define NTYPES  10
+#define NTYPES  11
 #define NTESTS  9
 #define THRESH  30.0f
 #define NMAX    50  /* Maximum matrix dimension */
@@ -259,6 +259,28 @@ static void run_dchksy_single(INT n, INT iuplo, INT imat, INT inb)
         izero = -1;  /* No zeroing, use -1 to indicate none */
     }
 
+    /* Type 11:  scale two adjacent rows and columns into the
+     * subnormal range and give them a 2 by 2 pivot block whose
+     * off-diagonal entry is four times its diagonal, at the
+     * end the factorization starts from.  Inverting that pivot
+     * through the reciprocal of the off-diagonal entry
+     * overflows. */
+    if (imat == 11 && n >= 2) {
+        const f32 FOUR = 4.0f;
+        f32 subnrm = slamch("S") / 512;
+        INT i1 = (iuplo == 0) ? n - 2 : 0;
+        INT i2 = i1 + 1;
+        for (INT j = 0; j < n; j++) ws->A[i1 + j * lda] *= subnrm;
+        for (INT j = 0; j < n; j++) ws->A[i2 + j * lda] *= subnrm;
+        for (INT i = 0; i < n; i++) ws->A[i + i1 * lda] *= subnrm;
+        for (INT i = 0; i < n; i++) ws->A[i + i2 * lda] *= subnrm;
+        ws->A[i1 + i1 * lda] = subnrm;
+        ws->A[i2 + i2 * lda] = subnrm;
+        ws->A[i1 + i2 * lda] = FOUR * subnrm;
+        ws->A[i2 + i1 * lda] = FOUR * subnrm;
+        izero = -1;
+    }
+
     /* Copy A to AFAC for factorization */
     slacpy(uplo_str, n, n, ws->A, lda, ws->AFAC, lda);
 
@@ -288,7 +310,7 @@ static void run_dchksy_single(INT n, INT iuplo, INT imat, INT inb)
         /* info should match the effective singular position */
         assert_true(info >= 0);
     }
-    trfcon = (info != 0);
+    trfcon = (info != 0 || imat == 11);
     if (trfcon) {
         rcondc = ZERO;
     }
@@ -300,6 +322,7 @@ static void run_dchksy_single(INT n, INT iuplo, INT imat, INT inb)
     set_test_context(ctx);
     ssyt01(uplo_str, n, ws->A, lda, ws->AFAC, lda, ws->IPIV,
            ws->AINV, lda, ws->RWORK, &result[0]);
+    assert_false(isnan(result[0]));
     assert_residual_below(result[0], THRESH);
 
     /*
@@ -316,6 +339,7 @@ static void run_dchksy_single(INT n, INT iuplo, INT imat, INT inb)
         if (info == 0) {
             spot03(uplo_str, n, ws->A, lda, ws->AINV, lda, ws->WORK, lda,
                    ws->RWORK, &rcondc, &result[1]);
+            assert_false(isnan(result[1]));
             assert_residual_below(result[1], THRESH);
         }
     }
@@ -404,6 +428,10 @@ static void run_dchksy_single(INT n, INT iuplo, INT imat, INT inb)
     }
 
 test9:
+    if (imat == 11) {
+        clear_test_context();
+        return;
+    }
     /*
      * TEST 9: Get an estimate of RCOND = 1/CNDNUM
      */
@@ -429,14 +457,69 @@ static void test_dchksy_case(void** state)
     run_dchksy_single(params->n, params->iuplo, params->imat, params->inb);
 }
 
+/**
+ * Check an exact zero pivot created by updating a rank-one block
+ * when the singular matrix tests are requested.
+ * Unlike a row that is zero on input, its original diagonal must
+ * be replaced by the updated zero before returning the factors.
+ */
+static void run_dchksy_zero_pivot(INT n, INT iuplo, INT inb)
+{
+    const f32 ZERO = 0.0f;
+    dchksy_workspace_t* ws = g_workspace;
+
+    char uplo = UPLOS[iuplo];
+    char uplo_str[2] = {uplo, '\0'};
+    INT lda = n;
+    INT nb = NBVAL[inb];
+    INT info;
+    f32 result;
+    char ctx[128];
+
+    INT i1 = (iuplo == 0) ? n - 2 : 0;
+    INT i2 = i1 + 1;
+    INT izero = (iuplo == 0) ? i1 + 1 : i2 + 1;
+
+    for (INT j = 0; j < n; j++) {
+        for (INT i = 0; i < n; i++) {
+            ws->A[i + j * lda] = ZERO;
+        }
+        ws->A[j + j * lda] = 1.0f;
+    }
+    ws->A[i1 + i1 * lda] = 0.0625f;
+    ws->A[i2 + i2 * lda] = 0.0625f;
+    ws->A[i1 + i2 * lda] = 0.0625f;
+    ws->A[i2 + i1 * lda] = 0.0625f;
+
+    xlaenv(1, nb);
+    slacpy(uplo_str, n, n, ws->A, lda, ws->AFAC, lda);
+    INT lwork = ((2 > nb) ? 2 : nb) * lda;
+    ssytrf(uplo_str, n, ws->AFAC, lda, ws->IPIV, ws->AINV, lwork, &info);
+
+    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c nb=%d zero pivot", n, uplo, nb);
+    set_test_context(ctx);
+    assert_int_equal(info, izero);
+    ssyt01(uplo_str, n, ws->A, lda, ws->AFAC, lda, ws->IPIV,
+           ws->AINV, lda, ws->RWORK, &result);
+    assert_residual_below(result, THRESH);
+
+    clear_test_context();
+}
+
+static void test_dchksy_zero_pivot(void** state)
+{
+    dchksy_params_t* params = *state;
+    run_dchksy_zero_pivot(params->n, params->iuplo, params->inb);
+}
+
 /*
  * Generate all parameter combinations.
- * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 10 * 5 = 700 tests
+ * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 11 * 5 = 770 tests
  * (minus skipped cases for small n and singular types)
  */
 
 /* Maximum number of test cases */
-#define MAX_TESTS (NN * NUPLO * NTYPES * NNB)
+#define MAX_TESTS (NN * NUPLO * NTYPES * NNB + NN * NUPLO * NNB)
 
 static dchksy_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -487,6 +570,32 @@ static void build_test_array(void)
 
                     g_num_tests++;
                 }
+            }
+        }
+    }
+
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        if (n < 3) {
+            continue;
+        }
+        for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+            for (INT inb = 0; inb < (INT)NNB; inb++) {
+                dchksy_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->imat = 0;
+                p->iuplo = iuplo;
+                p->inb = inb;
+                snprintf(p->name, sizeof(p->name), "dchksy_n%d_%c_zeropiv_nb%d_%d",
+                         n, UPLOS[iuplo], NBVAL[inb], inb);
+
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_dchksy_zero_pivot;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
+
+                g_num_tests++;
             }
         }
     }

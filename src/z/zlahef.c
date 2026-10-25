@@ -145,7 +145,7 @@ void zlahef(
                     *info = k + 1;
                 }
                 kp = k;
-                A[k + k * lda] = creal(A[k + k * lda]);
+                cblas_zcopy(k + 1, &W[0 + kw * ldw], 1, &A[0 + k * lda], 1);
             } else {
 
                 if (absakk >= ALPHA_BK * colmax) {
@@ -251,11 +251,10 @@ void zlahef(
                         c128 d11 = W[k + kw * ldw] / conj(d21);
                         c128 d22 = W[(k - 1) + (kw - 1) * ldw] / d21;
                         f64 t = 1.0 / (creal(d11 * d22) - 1.0);
-                        d21 = t / d21;
 
                         for (INT j = 0; j <= k - 2; j++) {
-                            A[j + (k - 1) * lda] = d21 * (d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]);
-                            A[j + k * lda] = conj(d21) * (d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]);
+                            A[j + (k - 1) * lda] = t * ((d11 * W[j + (kw - 1) * ldw] - W[j + kw * ldw]) / d21);
+                            A[j + k * lda] = t * ((d22 * W[j + kw * ldw] - W[j + (kw - 1) * ldw]) / conj(d21));
                         }
                     }
 
@@ -373,7 +372,7 @@ void zlahef(
                     *info = k + 1;
                 }
                 kp = k;
-                A[k + k * lda] = creal(A[k + k * lda]);
+                cblas_zcopy(n - k, &W[k + k * ldw], 1, &A[k + k * lda], 1);
             } else {
 
                 if (absakk >= ALPHA_BK * colmax) {
@@ -475,11 +474,10 @@ void zlahef(
                         c128 d11 = W[(k + 1) + (k + 1) * ldw] / d21;
                         c128 d22 = W[k + k * ldw] / conj(d21);
                         f64 t = 1.0 / (creal(d11 * d22) - 1.0);
-                        d21 = t / d21;
 
                         for (INT j = k + 2; j <= n - 1; j++) {
-                            A[j + k * lda] = conj(d21) * (d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]);
-                            A[j + (k + 1) * lda] = d21 * (d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]);
+                            A[j + k * lda] = t * ((d11 * W[j + k * ldw] - W[j + (k + 1) * ldw]) / conj(d21));
+                            A[j + (k + 1) * lda] = t * ((d22 * W[j + (k + 1) * ldw] - W[j + k * ldw]) / d21);
                         }
                     }
 

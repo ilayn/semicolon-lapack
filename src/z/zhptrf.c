@@ -279,11 +279,10 @@ void zhptrf(
                         d11 = creal(AP[kc + k]) / d;
                         tt = ONE / (d11 * d22 - ONE);
                         d12 = AP[kc + k - 1] / d;
-                        d = tt / d;
 
                         for (j = k - 2; j >= 0; j--) {
-                            wkm1 = d * (d11 * AP[knc + j] - conj(d12) * AP[kc + j]);
-                            wk = d * (d22 * AP[kc + j] - d12 * AP[knc + j]);
+                            wkm1 = tt * ((d11 * AP[knc + j] - conj(d12) * AP[kc + j]) / d);
+                            wk = tt * ((d22 * AP[kc + j] - d12 * AP[knc + j]) / d);
                             for (i = j; i >= 0; i--) {
                                 INT jc_idx = i + j * (j + 1) / 2;
                                 AP[jc_idx] = AP[jc_idx] - AP[kc + i] * conj(wk) - AP[knc + i] * conj(wkm1);
@@ -466,11 +465,10 @@ void zhptrf(
                         d22 = creal(AP[kc]) / d;
                         tt = ONE / (d11 * d22 - ONE);
                         d21 = AP[kc + 1] / d;
-                        d = tt / d;
 
                         for (j = k + 2; j < n; j++) {
-                            wk = d * (d11 * AP[kc + j - k] - d21 * AP[knc + j - k - 1]);
-                            wkp1 = d * (d22 * AP[knc + j - k - 1] - conj(d21) * AP[kc + j - k]);
+                            wk = tt * ((d11 * AP[kc + j - k] - d21 * AP[knc + j - k - 1]) / d);
+                            wkp1 = tt * ((d22 * AP[knc + j - k - 1] - conj(d21) * AP[kc + j - k]) / d);
                             for (i = j; i < n; i++) {
                                 INT jc_idx = npp - (n - j) * (n - j + 1) / 2 + i - j;
                                 AP[jc_idx] = AP[jc_idx] - AP[kc + i - k] * conj(wk) - AP[knc + i - k - 1] * conj(wkp1);

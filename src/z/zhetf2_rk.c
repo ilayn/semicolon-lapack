@@ -291,17 +291,17 @@ void zhetf2_rk(
 
                         for (j = k - 2; j >= 0; j--) {
 
-                            wkm1 = tt * (d11 * A[j + (k - 1) * lda] - conj(d12) * A[j + k * lda]);
-                            wk = tt * (d22 * A[j + k * lda] - d12 * A[j + (k - 1) * lda]);
+                            wkm1 = tt * ((d11 * A[j + (k - 1) * lda] - conj(d12) * A[j + k * lda]) / d);
+                            wk = tt * ((d22 * A[j + k * lda] - d12 * A[j + (k - 1) * lda]) / d);
 
                             for (i = j; i >= 0; i--) {
                                 A[i + j * lda] = A[i + j * lda] -
-                                                 (A[i + k * lda] / d) * conj(wk) -
-                                                 (A[i + (k - 1) * lda] / d) * conj(wkm1);
+                                                 A[i + k * lda] * conj(wk) -
+                                                 A[i + (k - 1) * lda] * conj(wkm1);
                             }
 
-                            A[j + k * lda] = wk / d;
-                            A[j + (k - 1) * lda] = wkm1 / d;
+                            A[j + k * lda] = wk;
+                            A[j + (k - 1) * lda] = wkm1;
                             A[j + j * lda] = CMPLX(creal(A[j + j * lda]), 0.0);
                         }
                     }
@@ -495,17 +495,17 @@ void zhetf2_rk(
 
                         for (j = k + 2; j < n; j++) {
 
-                            wk = tt * (d11 * A[j + k * lda] - d21 * A[j + (k + 1) * lda]);
-                            wkp1 = tt * (d22 * A[j + (k + 1) * lda] - conj(d21) * A[j + k * lda]);
+                            wk = tt * ((d11 * A[j + k * lda] - d21 * A[j + (k + 1) * lda]) / d);
+                            wkp1 = tt * ((d22 * A[j + (k + 1) * lda] - conj(d21) * A[j + k * lda]) / d);
 
                             for (i = j; i < n; i++) {
                                 A[i + j * lda] = A[i + j * lda] -
-                                                 (A[i + k * lda] / d) * conj(wk) -
-                                                 (A[i + (k + 1) * lda] / d) * conj(wkp1);
+                                                 A[i + k * lda] * conj(wk) -
+                                                 A[i + (k + 1) * lda] * conj(wkp1);
                             }
 
-                            A[j + k * lda] = wk / d;
-                            A[j + (k + 1) * lda] = wkp1 / d;
+                            A[j + k * lda] = wk;
+                            A[j + (k + 1) * lda] = wkp1;
                             A[j + j * lda] = CMPLX(creal(A[j + j * lda]), 0.0);
                         }
                     }

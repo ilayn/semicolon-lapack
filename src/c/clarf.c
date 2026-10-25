@@ -72,6 +72,12 @@ void clarf(const char* side, const INT m, const INT n,
             /* Scan for the last non-zero row in C(:, 0:lastv-1) */
             lastc = ilaclr(m, lastv, C, ldc);
         }
+
+        /* Set index for V. If INCV < 0, then I points to the end of V.
+         * For INCV > 0, set I = 1 */
+        if (incv > 0) {
+            i = 0;
+        }
     }
 
     /* Note that lastc == 0 renders the BLAS operations null */
@@ -81,12 +87,12 @@ void clarf(const char* side, const INT m, const INT n,
             /* w(0:lastc-1) := C(0:lastv-1, 0:lastc-1)**H * v(0:lastv-1) */
             cblas_cgemv(CblasColMajor, CblasConjTrans,
                         lastv, lastc, &ONE, C, ldc,
-                        v, incv, &ZERO, work, 1);
+                        &v[i], incv, &ZERO, work, 1);
 
             /* C(0:lastv-1, 0:lastc-1) -= tau * v(0:lastv-1) * w**H */
             const c64 neg_tau = -tau;
             cblas_cgerc(CblasColMajor, lastv, lastc,
-                        &neg_tau, v, incv, work, 1, C, ldc);
+                        &neg_tau, &v[i], incv, work, 1, C, ldc);
         }
     } else {
         /* Form C * H */
@@ -94,12 +100,12 @@ void clarf(const char* side, const INT m, const INT n,
             /* w(0:lastc-1) := C(0:lastc-1, 0:lastv-1) * v(0:lastv-1) */
             cblas_cgemv(CblasColMajor, CblasNoTrans,
                         lastc, lastv, &ONE, C, ldc,
-                        v, incv, &ZERO, work, 1);
+                        &v[i], incv, &ZERO, work, 1);
 
             /* C(0:lastc-1, 0:lastv-1) -= tau * w * v**H */
             const c64 neg_tau = -tau;
             cblas_cgerc(CblasColMajor, lastc, lastv,
-                        &neg_tau, work, 1, v, incv, C, ldc);
+                        &neg_tau, work, 1, &v[i], incv, C, ldc);
         }
     }
 }

@@ -1152,9 +1152,78 @@ static void test_stemr_nan(void** state)
     }
 }
 
+/* CSTEDC( 'V' ) must leave the rows of Z below N alone.  CLAED0
+ * used the caller's Z as a packed QSIZ by N workspace, which
+ * spills into rows N+1 to LDZ whenever LDZ > N.  The sizes in the
+ * input file do not reach the divide and conquer recursion, so it
+ * is exercised with local arrays and N > SMLSIZ.
+ * The group workspace is sized for NVAL, so WORK, RWORK and IWORK
+ * are also allocated here from the workspace query. */
+static void test_stedc_ldz(void** state)
+{
+    (void)state;
+    const INT nsmlsz = LAPACK_SMLSIZ;
+    const INT n = (2 > nsmlsz + 1) ? 2 : nsmlsz + 1;
+    const INT ldzreg = n + 1;
+    const c64 CZERO = CMPLXF(0.0f, 0.0f);
+    const c64 CONE = CMPLXF(1.0f, 0.0f);
+    c64 wq;
+    f32 rq;
+    INT iq, iinfo;
+    f32 dumma[1];
+    f32 result[2];
+
+    f32* dreg = malloc(n * sizeof(f32));
+    f32* ereg = malloc(n * sizeof(f32));
+    f32* d1reg = malloc(n * sizeof(f32));
+    c64* zreg = malloc(ldzreg * n * sizeof(c64));
+    assert_non_null(dreg); assert_non_null(ereg);
+    assert_non_null(d1reg); assert_non_null(zreg);
+
+    cstedc("V", n, dreg, ereg, zreg, ldzreg, &wq, -1, &rq, -1, &iq, -1, &iinfo);
+    assert_info_success(iinfo);
+    INT lwork = (INT)crealf(wq);
+    INT lrwork = n + (INT)rq;
+    INT liwork = iq;
+    c64* work = malloc(lwork * sizeof(c64));
+    f32* rwork = malloc(lrwork * sizeof(f32));
+    INT* iwork = malloc(liwork * sizeof(INT));
+    assert_non_null(work); assert_non_null(rwork); assert_non_null(iwork);
+
+    for (INT j = 0; j < n; j++) {
+        dreg[j] = (f32)(j + 1);
+        ereg[j] = 1.0f / (f32)(j + 2);
+    }
+    ereg[n - 1] = 0.0f;
+    cblas_scopy(n, dreg, 1, d1reg, 1);
+    cblas_scopy(n - 1, ereg, 1, rwork, 1);
+    claset("F", n, n, CZERO, CONE, zreg, ldzreg);
+    claset("F", ldzreg - n, n, -CONE, -CONE, &zreg[n], ldzreg);
+    cstedc("V", n, d1reg, rwork, zreg, ldzreg, work, lwork,
+           rwork + n, lrwork - n, iwork, liwork, &iinfo);
+    assert_info_success(iinfo);
+
+    INT itemp = 0;
+    for (INT j = 0; j < n; j++) {
+        for (INT i = n; i < ldzreg; i++) {
+            if (zreg[i + j * ldzreg] != -CONE) {
+                itemp++;
+            }
+        }
+    }
+    assert_int_equal(itemp, 0);
+
+    cstt21(n, 0, dreg, ereg, d1reg, dumma, zreg, ldzreg, work, rwork + n, result);
+    assert_residual_below(result[0], THRESH);
+    assert_residual_below(result[1], THRESH);
+
+    free(dreg); free(ereg); free(d1reg); free(zreg);
+    free(work); free(rwork); free(iwork);
+}
+
 /* ===== Test array construction ===== */
 
-#define MAX_TESTS (NNVAL * MAXTYP + 1)
+#define MAX_TESTS (NNVAL * MAXTYP + 2)
 
 static zchkst_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1188,6 +1257,13 @@ static void build_test_array(void)
 
     g_tests[g_num_tests].name = "stemr_nan";
     g_tests[g_num_tests].test_func = test_stemr_nan;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
+
+    g_tests[g_num_tests].name = "stedc_ldz";
+    g_tests[g_num_tests].test_func = test_stedc_ldz;
     g_tests[g_num_tests].setup_func = NULL;
     g_tests[g_num_tests].teardown_func = NULL;
     g_tests[g_num_tests].initial_state = NULL;

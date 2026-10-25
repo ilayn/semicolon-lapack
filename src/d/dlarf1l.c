@@ -24,7 +24,7 @@
  * @param[in]     v      The vector v in the representation of H.
  *                       Dimension (1+(m-1)*|incv|) if side='L',
  *                       or (1+(n-1)*|incv|) if side='R'.
- * @param[in]     incv   The increment between elements of v. incv != 0.
+ * @param[in]     incv   The increment between elements of v. incv > 0.
  * @param[in]     tau    The value tau in the representation of H.
  * @param[in,out] C      Double precision array, dimension (ldc, n).
  *                       On exit, overwritten by H*C or C*H.
@@ -42,21 +42,31 @@ void dlarf1l(const char* side, const INT m, const INT n,
     INT applyleft;
     INT firstv, lastv, lastc, i;
 
+    /* Quick return if C is empty */
+    if (m <= 0 || n <= 0) {
+        return;
+    }
+
     applyleft = (side[0] == 'L' || side[0] == 'l');
     firstv = 0;  /* 0-based */
     lastc = 0;
 
     if (tau != 0.0) {
-        /* Set up variables for scanning V. LASTV begins at the end of V. */
+        /* Set up variables for scanning V. LASTV begins pointing to the end
+         * of V up to V(1). */
         if (applyleft) {
             lastv = m;
         } else {
             lastv = n;
         }
 
-        i = 0;  /* Start scanning from the beginning */
+        if (incv > 0) {
+            i = 0;
+        } else {
+            i = -(lastv - 1) * incv;
+        }
 
-        /* Look for the first non-zero row in V (scanning from front). */
+        /* Look for the last non-zero row in V. */
         while (lastv > firstv + 1 && v[i] == 0.0) {
             firstv++;
             i += incv;
@@ -69,6 +79,12 @@ void dlarf1l(const char* side, const INT m, const INT n,
             /* Scan for the last non-zero row in C(:, 0:lastv-1) */
             lastc = iladlr(m, lastv, C, ldc);
         }
+
+        /* Set index for V. If INCV > 0, then I points to the start of V.
+         * For INCV < 0, set I to point to V(M-1) */
+        if (incv < 0) {
+            i = -incv;
+        }
     }
 
     if (lastc == 0) {
@@ -76,56 +92,76 @@ void dlarf1l(const char* side, const INT m, const INT n,
     }
 
     if (applyleft) {
-        /* Form H * C */
-        if (lastv > 0) {
-            if (lastv == firstv + 1) {
-                /* v has only one element = 1, so H*C = (1 - tau)*C(firstv, :) */
-                cblas_dscal(lastc, ONE - tau, &C[firstv], ldc);
-            } else {
-                /* w(0:lastc-1) := C(firstv:lastv-2, 0:lastc-1)^T * v(i:) */
-                cblas_dgemv(CblasColMajor, CblasTrans,
-                            lastv - firstv - 1, lastc, ONE,
-                            &C[firstv], ldc,
-                            &v[i], incv,
-                            ZERO, work, 1);
+        /*
+         * Form  H * C
+         */
+        if (lastv == firstv + 1) {
+            /*
+             * C(lastv-1,0:lastc-1) := ( 1 - tau ) * C(lastv-1,0:lastc-1)
+             */
+            cblas_dscal(lastc, ONE - tau, &C[lastv - 1], ldc);
+        } else {
+            /*
+             * w(0:lastc-1) := C(firstv:lastv-2,0:lastc-1)**T * v(firstv:lastv-2)
+             */
+            cblas_dgemv(CblasColMajor, CblasTrans,
+                        lastv - firstv - 1, lastc, ONE,
+                        &C[firstv], ldc,
+                        &v[i], incv,
+                        ZERO, work, 1);
 
-                /* w += C(lastv-1, 0:lastc-1)^T (since v(lastv-1) = 1) */
-                cblas_daxpy(lastc, ONE, &C[lastv - 1], ldc, work, 1);
+            /*
+             * w(0:lastc-1) += C(lastv-1,0:lastc-1)**T * v(lastv-1)
+             */
+            cblas_daxpy(lastc, ONE, &C[lastv - 1], ldc, work, 1);
 
-                /* C(lastv-1, 0:lastc-1) -= tau * w^T */
-                cblas_daxpy(lastc, -tau, work, 1, &C[lastv - 1], ldc);
+            /*
+             * C(lastv-1,0:lastc-1) += - tau * v(lastv-1) * w(0:lastc-1)**T
+             */
+            cblas_daxpy(lastc, -tau, work, 1, &C[lastv - 1], ldc);
 
-                /* C(firstv:lastv-2, 0:lastc-1) -= tau * v(i:) * w^T */
-                cblas_dger(CblasColMajor, lastv - firstv - 1, lastc,
-                           -tau, &v[i], incv, work, 1,
-                           &C[firstv], ldc);
-            }
+            /*
+             * C(firstv:lastv-2,0:lastc-1) += - tau * v(firstv:lastv-2) * w(0:lastc-1)**T
+             */
+            cblas_dger(CblasColMajor, lastv - firstv - 1, lastc,
+                       -tau, &v[i], incv, work, 1,
+                       &C[firstv], ldc);
         }
     } else {
-        /* Form C * H */
-        if (lastv > 0) {
-            if (lastv == firstv + 1) {
-                /* v has only one element = 1, so C*H = (1 - tau)*C(:, 0) */
-                cblas_dscal(lastc, ONE - tau, C, 1);
-            } else {
-                /* w(0:lastc-1) := C(0:lastc-1, firstv:lastv-2) * v(i:) */
-                cblas_dgemv(CblasColMajor, CblasNoTrans,
-                            lastc, lastv - firstv - 1, ONE,
-                            &C[firstv * ldc], ldc,
-                            &v[i], incv,
-                            ZERO, work, 1);
+        /*
+         * Form  C * H
+         */
+        if (lastv == firstv + 1) {
+            /*
+             * C(0:lastc-1,lastv-1) := ( 1 - tau ) * C(0:lastc-1,lastv-1)
+             */
+            cblas_dscal(lastc, ONE - tau, &C[(lastv - 1) * ldc], 1);
+        } else {
+            /*
+             * w(0:lastc-1) := C(0:lastc-1,firstv:lastv-2) * v(firstv:lastv-2)
+             */
+            cblas_dgemv(CblasColMajor, CblasNoTrans,
+                        lastc, lastv - firstv - 1, ONE,
+                        &C[firstv * ldc], ldc,
+                        &v[i], incv,
+                        ZERO, work, 1);
 
-                /* w += C(0:lastc-1, lastv-1) (since v(lastv-1) = 1) */
-                cblas_daxpy(lastc, ONE, &C[(lastv - 1) * ldc], 1, work, 1);
+            /*
+             * w(0:lastc-1) += C(0:lastc-1,lastv-1) * v(lastv-1)
+             */
+            cblas_daxpy(lastc, ONE, &C[(lastv - 1) * ldc], 1, work, 1);
 
-                /* C(0:lastc-1, lastv-1) -= tau * w */
-                cblas_daxpy(lastc, -tau, work, 1, &C[(lastv - 1) * ldc], 1);
+            /*
+             * C(0:lastc-1,lastv-1) += - tau * v(lastv-1) * w(0:lastc-1)
+             */
+            cblas_daxpy(lastc, -tau, work, 1, &C[(lastv - 1) * ldc], 1);
 
-                /* C(0:lastc-1, firstv:lastv-2) -= tau * w * v(i:)^T */
-                cblas_dger(CblasColMajor, lastc, lastv - firstv - 1,
-                           -tau, work, 1, &v[i], incv,
-                           &C[firstv * ldc], ldc);
-            }
+            /*
+             * C(0:lastc-1,firstv:lastv-2) += - tau * w(0:lastc-1) * v(firstv:lastv-2)**T
+             */
+            cblas_dger(CblasColMajor, lastc, lastv - firstv - 1,
+                       -tau, work, 1, &v[i], incv,
+                       &C[firstv * ldc], ldc);
         }
     }
 }
