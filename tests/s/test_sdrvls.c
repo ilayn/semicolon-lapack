@@ -229,6 +229,7 @@ static int group_teardown(void** state)
  */
 static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT nx)
 {
+    const f32 smlx = 256 * slamch("S");
     ddrvls_workspace_t* ws = g_workspace;
     f32 result[6];
     f32 norma;
@@ -265,6 +266,12 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
                 }
             }
             cblas_sscal(ncols * nrhs, ONE / (f32)ncols, ws->WORK, 1);
+            /* Make the last solution column small
+             * enough that undoing the scaling of
+             * the solution in two steps flushes it. */
+            if (iscale == 2 && nrhs > 1) {
+                cblas_sscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            }
         }
         cblas_sgemm(CblasColMajor,
                     (itran == 1) ? CblasNoTrans : CblasTrans,
@@ -309,6 +316,12 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
                 }
             }
             cblas_sscal(ncols * nrhs, ONE / (f32)ncols, ws->WORK, 1);
+            /* Make the last solution column small
+             * enough that undoing the scaling of
+             * the solution in two steps flushes it. */
+            if (iscale == 2 && nrhs > 1) {
+                cblas_sscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            }
         }
         cblas_sgemm(CblasColMajor,
                     (itran == 1) ? CblasNoTrans : CblasTrans,
@@ -353,6 +366,12 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
                 }
             }
             cblas_sscal(ncols * nrhs, ONE / (f32)ncols, ws->WORK, 1);
+            /* Make the last solution column small
+             * enough that undoing the scaling of
+             * the solution in two steps flushes it. */
+            if (iscale == 2 && nrhs > 1) {
+                cblas_sscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            }
         }
         cblas_sgemm(CblasColMajor,
                     (itran == 1) ? CblasNoTrans : CblasTrans,

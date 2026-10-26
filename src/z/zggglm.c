@@ -127,6 +127,9 @@ void zggglm(
     const c128 neg_one = CMPLX(-1.0, 0.0);
 
     INT i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
+    INT ia, ib, ibig, id, isml, ka, kb, kd;
+    f64 anrm, bignum, bnrm, dnrm, smlnum;
+    f64 rwork[1];
     INT lquery;
     INT max_val;
 
@@ -187,6 +190,63 @@ void zggglm(
         return;
     }
 
+    /* Get machine parameters */
+    smlnum = dlamch("S") / dlamch("P");
+    bignum = 1.0 / smlnum;
+    isml = ilogb(smlnum) + 1;
+    ibig = ilogb(bignum);
+
+    /* Scale A, B and d independently by powers of two 2**KA, 2**KB and
+     * 2**KD so that their largest entries lie in [SMLNUM,BIGNUM), the
+     * values whose exponent lies in [ISML,IBIG].  x is then scaled by
+     * 2**(KD-KA) and y by 2**(KD-KB).  Scaling by a power of two is
+     * exact.  A norm that is zero, infinite or NaN takes no part.
+     * ZLASCL is called with both endpoints at or above one so that
+     * forming the factor raises no underflow. */
+    anrm = zlange("M", n, m, A, lda, rwork);
+    ka = 0;
+    if (anrm > 0.0 && anrm <= DBL_MAX) {
+        ia = ilogb(anrm) + 1;
+        if (ia < isml) {
+            ka = isml - ia;
+        } else if (ia > ibig) {
+            ka = ibig - ia;
+        }
+    }
+    if (ka != 0) {
+        zlascl("G", 0, 0, ldexp(1.0, (int)(-ka > 0 ? -ka : 0)),
+               ldexp(1.0, (int)(ka > 0 ? ka : 0)), n, m, A, lda, info);
+    }
+
+    bnrm = zlange("M", n, p, B, ldb, rwork);
+    kb = 0;
+    if (bnrm > 0.0 && bnrm <= DBL_MAX) {
+        ib = ilogb(bnrm) + 1;
+        if (ib < isml) {
+            kb = isml - ib;
+        } else if (ib > ibig) {
+            kb = ibig - ib;
+        }
+    }
+    if (kb != 0) {
+        zlascl("G", 0, 0, ldexp(1.0, (int)(-kb > 0 ? -kb : 0)),
+               ldexp(1.0, (int)(kb > 0 ? kb : 0)), n, p, B, ldb, info);
+    }
+
+    dnrm = zlange("M", n, 1, D, n, rwork);
+    kd = 0;
+    if (dnrm > 0.0 && dnrm <= DBL_MAX) {
+        id = ilogb(dnrm) + 1;
+        if (id < isml) {
+            kd = isml - id;
+        } else if (id > ibig) {
+            kd = ibig - id;
+        }
+    }
+    if (kd != 0) {
+        cblas_zdscal(n, ldexp(1.0, (int)kd), D, 1);
+    }
+
     zggqrf(n, m, p, A, lda, work, B, ldb, &work[m],
            &work[m + np], lwork - m - np, info);
     lopt = (INT)creal(work[m + np]);
@@ -231,5 +291,13 @@ void zggglm(
     zunmrq("L", "C", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
+    /* Undo scaling: x carries 2**(KD-KA) and y carries 2**(KD-KB) */
+    if (ka != kd) {
+        cblas_zdscal(m, ldexp(1.0, (int)(ka - kd)), X, 1);
+    }
+    if (kb != kd) {
+        cblas_zdscal(p, ldexp(1.0, (int)(kb - kd)), Y, 1);
+    }
+
     work[0] = (c128)(m + np + ((lopt > (INT)creal(work[m + np])) ? lopt : (INT)creal(work[m + np])));
 }

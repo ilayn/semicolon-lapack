@@ -40,10 +40,8 @@ void sqrt13(const INT scale, const INT m, const INT n,
             f32* A, const INT lda, f32* norma,
             uint64_t state[static 4])
 {
-    const f32 ONE = 1.0f;
-
     INT info, j;
-    f32 bignum, smlnum;
+    f32 bigup, smlnum;
     (void)(m < n);  /* minmn was computed but unused */
     f32 dummy[1];
 
@@ -71,13 +69,16 @@ void sqrt13(const INT scale, const INT m, const INT n,
     if (scale != 1) {
         *norma = slange("M", m, n, A, lda, dummy);
         smlnum = slamch("S");  /* Safe minimum */
-        bignum = ONE / smlnum;
         smlnum = smlnum / slamch("E");  /* Safe minimum / epsilon */
-        bignum = ONE / smlnum;
+
+        /* The least squares drivers scale a matrix whose largest
+         * entry lies outside [SMLNUM, BIGNUM].  Scale up past
+         * that bound, so that their scaling is exercised. */
+        bigup = slamch("O") / 256;
 
         if (scale == 2) {
             /* Matrix scaled up */
-            slascl("G", 0, 0, *norma, bignum, m, n, A, lda, &info);
+            slascl("G", 0, 0, *norma, bigup, m, n, A, lda, &info);
         } else if (scale == 3) {
             /* Matrix scaled down */
             slascl("G", 0, 0, *norma, smlnum, m, n, A, lda, &info);

@@ -214,6 +214,7 @@ static int group_teardown(void** state)
 
 static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
 {
+    const f32 smlx = 256 * slamch("S");
     zdrvls_workspace_t* ws = g_workspace;
     const INT lwork = ws->lwork;
 
@@ -254,6 +255,12 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
             if (ncols > 0) {
                 clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
                 cblas_csscal(ncols * nrhs, 1.0f / (f32)ncols, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
             c64 cone = CMPLXF(1.0f, 0.0f);
             c64 czero = CMPLXF(0.0f, 0.0f);
@@ -335,6 +342,12 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
             if (ncols > 0) {
                 clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
                 cblas_csscal(ncols * nrhs, 1.0f / (f32)ncols, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
             c64 cone = CMPLXF(1.0f, 0.0f);
             c64 czero = CMPLXF(0.0f, 0.0f);
@@ -417,6 +430,12 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
                 clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
                 c64 scale = CMPLXF(1.0f / (f32)ncols, 0.0f);
                 cblas_cscal(ncols * nrhs, &scale, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
             c64 cone = CMPLXF(1.0f, 0.0f);
             c64 czero = CMPLXF(0.0f, 0.0f);

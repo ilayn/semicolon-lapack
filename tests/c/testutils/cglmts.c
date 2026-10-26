@@ -54,6 +54,9 @@ void cglmts(
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 CNEGONE = CMPLXF(-1.0f, 0.0f);
     INT info;
+    const INT MAXEXP = FLT_MAX_EXP - 2;
+    INT iscale, j;
+    f32 ascl, bscl, dscl, scl, t, tnrm;
     f32 anorm, bnorm, dnorm, eps, unfl, xnorm, ynorm;
 
     eps = slamch("E");
@@ -92,5 +95,61 @@ void cglmts(
         *result = ZERO;
     } else {
         *result = ((dnorm / ynorm) / xnorm) / eps;
+    }
+
+    /* A, B and d may be scaled independently: for factors a, b, d,
+     * the solutions become (d/a)*x and (d/b)*u.  Test large and
+     * tiny inputs, then undo solution scaling before the residual. */
+    tnrm = clange("M", n, m, A, lda, rwork);
+    t = clange("M", n, p, B, ldb, rwork);
+    if (t > tnrm) tnrm = t;
+    t = clange("M", n, 1, D, n, rwork);
+    if (t > tnrm) tnrm = t;
+    if (tnrm > 0.0f && tnrm <= slamch("O")) {
+        /* Cases: common large, common tiny, tiny d, tiny (A,d),
+         * and tiny (B,d). */
+        for (iscale = 1; iscale <= 5; iscale++) {
+            if (iscale == 1) {
+                scl = ldexpf(1.0f, MAXEXP - (ilogbf(tnrm) + 1));
+            } else {
+                scl = slamch("S") / slamch("P");
+                scl = ldexpf(1.0f, (ilogbf(scl) + 1) - 4 - (ilogbf(tnrm) + 1));
+            }
+            ascl = scl;
+            bscl = scl;
+            dscl = scl;
+            if (iscale == 3 || iscale == 5) ascl = 1.0f;
+            if (iscale == 3 || iscale == 4) bscl = 1.0f;
+            clacpy("F", n, m, A, lda, AF, lda);
+            clacpy("F", n, p, B, ldb, BF, ldb);
+            cblas_ccopy(n, D, 1, DF, 1);
+            for (j = 0; j < m; j++) {
+                cblas_csscal(n, ascl, &AF[j * lda], 1);
+            }
+            for (j = 0; j < p; j++) {
+                cblas_csscal(n, bscl, &BF[j * ldb], 1);
+            }
+            cblas_csscal(n, dscl, DF, 1);
+
+            cggglm(n, m, p, AF, lda, BF, ldb, DF, X, U, work, lwork, &info);
+            if (info != 0) {
+                *result = 1.0f / eps;
+                continue;
+            }
+            cblas_csscal(m, ascl / dscl, X, 1);
+            cblas_csscal(p, bscl / dscl, U, 1);
+
+            cblas_ccopy(n, D, 1, DF, 1);
+            cblas_cgemv(CblasColMajor, CblasNoTrans, n, m, &CNEGONE, A, lda, X, 1, &CONE, DF, 1);
+            cblas_cgemv(CblasColMajor, CblasNoTrans, n, p, &CNEGONE, B, ldb, U, 1, &CONE, DF, 1);
+            dnorm = cblas_scasum(n, DF, 1);
+            xnorm = cblas_scasum(m, X, 1) + cblas_scasum(p, U, 1);
+            if (isnan(dnorm) || isnan(xnorm)) {
+                *result = 1.0f / eps;
+            } else if (xnorm > 0.0f) {
+                t = ((dnorm / ynorm) / xnorm) / eps;
+                if (t > *result) *result = t;
+            }
+        }
     }
 }

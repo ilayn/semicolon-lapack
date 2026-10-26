@@ -199,6 +199,7 @@ def build_code_subs(all_d_names):
         ("log10",    "log10f"),
         ("atan2",    "atan2f"),
         ("ldexp",    "ldexpf"),
+        ("ilogb",    "ilogbf"),
         ("floor",    "floorf"),
         ("round",    "roundf"),
         ("sqrt",     "sqrtf"),

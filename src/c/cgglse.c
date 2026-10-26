@@ -121,6 +121,9 @@ void cgglse(
     const c64 neg_cone = CMPLXF(-1.0f, 0.0f);
 
     INT lopt, lwkmin, lwkopt, mn, nb, nb1, nb2, nb3, nb4, nr;
+    INT ia, ib, ibig, ic, id, isml, iu, ka, kb, kt;
+    f32 anrm, bignum, bnrm, cnrm, dnrm, smlnum;
+    f32 rwork[1];
     INT lquery;
     INT max_val;
 
@@ -175,6 +178,76 @@ void cgglse(
         return;
     }
 
+    /* Get machine parameters */
+    smlnum = slamch("S") / slamch("P");
+    bignum = 1.0f / smlnum;
+    isml = ilogbf(smlnum) + 1;
+    ibig = ilogbf(bignum);
+
+    /* Scale A, B, c and d by powers of two so that their largest
+     * entries lie in [SMLNUM,BIGNUM), the values whose exponent lies
+     * in [ISML,IBIG].  A and B are scaled independently, by 2**KA and
+     * 2**KB.  c is scaled by 2**(KA+KT) and d by 2**(KB+KT), which
+     * keeps the constraint and the residual consistent and scales x by
+     * 2**KT; KT brings the larger of the two right-hand sides into
+     * range.  Scaling by a power of two is exact.  A norm that is zero,
+     * infinite or NaN takes no part.  CLASCL is called with both
+     * endpoints at or above one so that forming the factor raises no
+     * underflow. */
+    anrm = clange("M", m, n, A, lda, rwork);
+    ka = 0;
+    if (anrm > 0.0f && anrm <= FLT_MAX) {
+        ia = ilogbf(anrm) + 1;
+        if (ia < isml) {
+            ka = isml - ia;
+        } else if (ia > ibig) {
+            ka = ibig - ia;
+        }
+    }
+    if (ka != 0) {
+        clascl("G", 0, 0, ldexpf(1.0f, (int)(-ka > 0 ? -ka : 0)),
+               ldexpf(1.0f, (int)(ka > 0 ? ka : 0)), m, n, A, lda, info);
+    }
+
+    bnrm = clange("M", p, n, B, ldb, rwork);
+    kb = 0;
+    if (bnrm > 0.0f && bnrm <= FLT_MAX) {
+        ib = ilogbf(bnrm) + 1;
+        if (ib < isml) {
+            kb = isml - ib;
+        } else if (ib > ibig) {
+            kb = ibig - ib;
+        }
+    }
+    if (kb != 0) {
+        clascl("G", 0, 0, ldexpf(1.0f, (int)(-kb > 0 ? -kb : 0)),
+               ldexpf(1.0f, (int)(kb > 0 ? kb : 0)), p, n, B, ldb, info);
+    }
+
+    cnrm = clange("M", m, 1, C, (1 > m ? 1 : m), rwork);
+    dnrm = clange("M", p, 1, D, (1 > p ? 1 : p), rwork);
+    ic = -INT32_MAX;
+    if (cnrm > 0.0f && cnrm <= FLT_MAX) {
+        ic = ilogbf(cnrm) + 1 + ka;
+    }
+    id = -INT32_MAX;
+    if (dnrm > 0.0f && dnrm <= FLT_MAX) {
+        id = ilogbf(dnrm) + 1 + kb;
+    }
+    iu = (ic > id) ? ic : id;
+    kt = 0;
+    if (iu > ibig) {
+        kt = ibig - iu;
+    } else if (iu < isml && iu != -INT32_MAX) {
+        kt = isml - iu;
+    }
+    if (ka + kt != 0) {
+        cblas_csscal(m, ldexpf(1.0f, (int)(ka + kt)), C, 1);
+    }
+    if (kb + kt != 0) {
+        cblas_csscal(p, ldexpf(1.0f, (int)(kb + kt)), D, 1);
+    }
+
     cggrqf(p, m, n, B, ldb, work, A, lda, &work[p],
            &work[p + mn], lwork - p - mn, info);
     lopt = (INT)crealf(work[p + mn]);
@@ -225,5 +298,14 @@ void cgglse(
 
     cunmrq("L", "C", n, 1, p, B, ldb, work, X, n,
            &work[p + mn], lwork - p - mn, info);
+    /* Undo scaling: x carries 2**KT and the residual in c(N-P+1:M)
+     * carries 2**(KA+KT) */
+    if (kt != 0) {
+        cblas_csscal(n, ldexpf(1.0f, (int)(-kt)), X, 1);
+    }
+    if (ka + kt != 0 && m + p > n) {
+        cblas_csscal(m + p - n, ldexpf(1.0f, (int)(-ka - kt)), &C[n - p], 1);
+    }
+
     work[0] = (c64)(p + mn + ((lopt > (INT)crealf(work[p + mn])) ? lopt : (INT)crealf(work[p + mn])));
 }

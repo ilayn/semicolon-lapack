@@ -214,6 +214,7 @@ static int group_teardown(void** state)
 
 static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
 {
+    const f64 smlx = 256 * dlamch("S");
     zdrvls_workspace_t* ws = g_workspace;
     const INT lwork = ws->lwork;
 
@@ -254,6 +255,12 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
             if (ncols > 0) {
                 zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
                 cblas_zdscal(ncols * nrhs, 1.0 / (f64)ncols, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
             c128 cone = CMPLX(1.0, 0.0);
             c128 czero = CMPLX(0.0, 0.0);
@@ -335,6 +342,12 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
             if (ncols > 0) {
                 zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
                 cblas_zdscal(ncols * nrhs, 1.0 / (f64)ncols, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
             c128 cone = CMPLX(1.0, 0.0);
             c128 czero = CMPLX(0.0, 0.0);
@@ -417,6 +430,12 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
                 zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
                 c128 scale = CMPLX(1.0 / (f64)ncols, 0.0);
                 cblas_zscal(ncols * nrhs, &scale, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
             c128 cone = CMPLX(1.0, 0.0);
             c128 czero = CMPLX(0.0, 0.0);

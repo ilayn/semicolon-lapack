@@ -4,6 +4,7 @@
  *        constrained least square problem (LSE).
  */
 
+#include <math.h>
 #include "semicolon_cblas.h"
 #include "verify.h"
 
@@ -53,6 +54,9 @@ void zlsets(
     f64* result)
 {
     INT info;
+    const INT MAXEXP = DBL_MAX_EXP - 2;
+    INT iscale, j;
+    f64 ascl, bscl, cscl, dscl, resid, scl, t, tnrm;
 
     /* Copy the matrices A and B to the arrays AF and BF,
        and the vectors C and D to the arrays CF and DF, */
@@ -77,4 +81,70 @@ void zlsets(
     /* Compute result(2) = norm( B*x - d ) / norm(B)*norm(X)*EPS */
 
     zget02("N", p, n, 1, B, ldb, X, n, DF, p, rwork, &result[1]);
+
+    /* Scaling (A,c) and (B,d) independently leaves x unchanged.
+     * Scaling only (c,d) scales x by the same factor.  Exercise
+     * both ends of the range and check residuals at the input scale. */
+    tnrm = zlange("M", m, n, A, lda, rwork);
+    t = zlange("M", p, n, B, ldb, rwork);
+    if (t > tnrm) tnrm = t;
+    t = zlange("M", m, 1, C, m, rwork);
+    if (t > tnrm) tnrm = t;
+    t = zlange("M", p, 1, D, p, rwork);
+    if (t > tnrm) tnrm = t;
+    if (tnrm > 0.0 && tnrm <= dlamch("O")) {
+        /* Cases: common large, common tiny, tiny (c,d), tiny (A,c),
+         * and tiny (B,d). */
+        for (iscale = 1; iscale <= 5; iscale++) {
+            if (iscale == 1) {
+                scl = ldexp(1.0, MAXEXP - (ilogb(tnrm) + 1));
+            } else {
+                scl = dlamch("S") / dlamch("P");
+                scl = ldexp(1.0, (ilogb(scl) + 1) - 4 - (ilogb(tnrm) + 1));
+            }
+            ascl = scl;
+            bscl = scl;
+            cscl = scl;
+            dscl = scl;
+            if (iscale == 3 || iscale == 5) ascl = 1.0;
+            if (iscale == 3 || iscale == 4) bscl = 1.0;
+            if (iscale == 4) dscl = 1.0;
+            if (iscale == 5) cscl = 1.0;
+            zlacpy("F", m, n, A, lda, AF, lda);
+            zlacpy("F", p, n, B, ldb, BF, ldb);
+            cblas_zcopy(m, C, 1, CF, 1);
+            cblas_zcopy(p, D, 1, DF, 1);
+            for (j = 0; j < n; j++) {
+                cblas_zdscal(m, ascl, &AF[j * lda], 1);
+                cblas_zdscal(p, bscl, &BF[j * ldb], 1);
+            }
+            cblas_zdscal(m, cscl, CF, 1);
+            cblas_zdscal(p, dscl, DF, 1);
+
+            zgglse(m, n, p, AF, lda, BF, ldb, CF, DF, X, work, lwork, &info);
+            if (info != 0) {
+                result[0] = 1.0 / dlamch("E");
+                result[1] = result[0];
+                continue;
+            }
+            if (iscale == 3) {
+                cblas_zdscal(n, 1.0 / scl, X, 1);
+            }
+
+            cblas_zcopy(m, C, 1, CF, 1);
+            cblas_zcopy(p, D, 1, DF, 1);
+            zget02("N", m, n, 1, A, lda, X, n, CF, m, rwork, &resid);
+            if (isnan(resid)) {
+                result[0] = 1.0 / dlamch("E");
+            } else if (resid > result[0]) {
+                result[0] = resid;
+            }
+            zget02("N", p, n, 1, B, ldb, X, n, DF, p, rwork, &resid);
+            if (isnan(resid)) {
+                result[1] = 1.0 / dlamch("E");
+            } else if (resid > result[1]) {
+                result[1] = resid;
+            }
+        }
+    }
 }
