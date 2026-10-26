@@ -55,13 +55,22 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 30.0
+#define THRESH 20.0
 #define THRSHN 10.0
 #define MAXTYP 26
 #define NTEST  15
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NBVAL, NBMIN, NSVAL, MXBVAL, IACC22, NBCOL from dgg.in */
+static const INT NBVAL[]  = {1, 1, 2, 2};
+static const INT NBMIN[]  = {40, 40, 2, 2};
+static const INT NSVAL[]  = {2, 4, 2, 4};
+static const INT MXBVAL[] = {40, 40, 2, 2};
+static const INT IACC22[] = {1, 2, 1, 2};
+static const INT NBCOL[]  = {40, 40, 2, 2};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* ===================================================================== */
 /* DATA arrays from zchkgg.f lines 571-593                               */
@@ -129,6 +138,7 @@ static const INT kadd[6] = {0, 0, 0, 0, 3, 2};
 typedef struct {
     INT jsize;    /* index into NVAL[] */
     INT jtype;    /* matrix type 1..26 */
+    INT iparm;
     char name[96];
 } zchkgg_params_t;
 
@@ -263,6 +273,12 @@ static void run_zchkgg_single(zchkgg_params_t* params)
 {
     const INT n = NVAL[params->jsize];
     const INT jtype = params->jtype;
+    xlaenv(1, NBVAL[params->iparm]);
+    xlaenv(2, NBMIN[params->iparm]);
+    xlaenv(4, NSVAL[params->iparm]);
+    xlaenv(8, MXBVAL[params->iparm]);
+    xlaenv(16, IACC22[params->iparm]);
+    xlaenv(5, NBCOL[params->iparm]);
     const INT jt = jtype - 1;
 
     if (n == 0) {
@@ -699,7 +715,7 @@ gen_done:
         snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d TEST %d",
                  n, jtype, jr + 1);
         set_test_context(ctx);
-        assert_residual_ok(result[jr]);
+        assert_residual_below(result[jr], THRESH);
     }
     clear_test_context();
 }
@@ -718,7 +734,7 @@ static void test_zchkgg_case(void** state)
 /* Build test array and main                                             */
 /* ===================================================================== */
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
 
 static zchkgg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -728,22 +744,25 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t in = 0; in < NNVAL; in++) {
-        INT n_val = NVAL[in];
-        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-            zchkgg_params_t* p = &g_params[g_num_tests];
-            p->jsize = (INT)in;
-            p->jtype = jtype;
-            snprintf(p->name, sizeof(p->name),
-                     "zchkgg_n%d_type%d", n_val, jtype);
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t in = 0; in < NNVAL; in++) {
+            INT n_val = NVAL[in];
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                zchkgg_params_t* p = &g_params[g_num_tests];
+                p->jsize = (INT)in;
+                p->jtype = jtype;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "zchkgg_p%d_n%d_type%d", (int)ip, n_val, jtype);
 
-            g_tests[g_num_tests].name = p->name;
-            g_tests[g_num_tests].test_func = test_zchkgg_case;
-            g_tests[g_num_tests].setup_func = NULL;
-            g_tests[g_num_tests].teardown_func = NULL;
-            g_tests[g_num_tests].initial_state = p;
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_zchkgg_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
 
-            g_num_tests++;
+                g_num_tests++;
+            }
         }
     }
 }
