@@ -217,6 +217,7 @@ void slarfb_(char* side, char* trans, char* direct, char* storev, INT* m, INT* n
 void slarfg_(INT* n, f32* alpha, f32* x, INT* incx, f32* tau);
 void slarfgp_(INT* n, f32* alpha, f32* x, INT* incx, f32* tau);
 void slarft_(char* direct, char* storev, INT* n, INT* k, f32* V, INT* ldv, f32* tau, f32* T, INT* ldt);
+void slarft_lvl2_(char* direct, char* storev, INT* n, INT* k, f32* V, INT* ldv, f32* tau, f32* T, INT* ldt);
 void slarfx_(char* side, INT* m, INT* n, f32* v, f32* tau, f32* C, INT* ldc, f32* work);
 void slarfy_(char* uplo, INT* n, f32* V, INT* incv, f32* tau, f32* C, INT* ldc, f32* work);
 void slargv_(INT* n, f32* X, INT* incx, f32* Y, INT* incy, f32* C, INT* incc);
@@ -1584,6 +1585,10 @@ void slarfgp_(INT* n, f32* alpha, f32* x, INT* incx, f32* tau) {
 
 void slarft_(char* direct, char* storev, INT* n, INT* k, f32* V, INT* ldv, f32* tau, f32* T, INT* ldt) {
     slarft(direct, storev, *n, *k, V, *ldv, tau, T, *ldt);
+}
+
+void slarft_lvl2_(char* direct, char* storev, INT* n, INT* k, f32* V, INT* ldv, f32* tau, f32* T, INT* ldt) {
+    slarft_lvl2(direct, storev, *n, *k, V, *ldv, tau, T, *ldt);
 }
 
 void slarfx_(char* side, INT* m, INT* n, f32* v, f32* tau, f32* C, INT* ldc, f32* work) {

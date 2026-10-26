@@ -223,6 +223,7 @@ SEMICOLON_API void dlarfb(const char* side, const char* trans, const char* direc
 SEMICOLON_API void dlarfg(const INT n, f64* alpha, f64* x, const INT incx, f64* tau);
 SEMICOLON_API void dlarfgp(const INT n, f64* alpha, f64* restrict x, const INT incx, f64* tau);
 SEMICOLON_API void dlarft(const char* direct, const char* storev, const INT n, const INT k, const f64* restrict V, const INT ldv, const f64* restrict tau, f64* restrict T, const INT ldt);
+SEMICOLON_API void dlarft_lvl2(const char* direct, const char* storev, const INT n, const INT k, const f64* restrict V, const INT ldv, const f64* restrict tau, f64* restrict T, const INT ldt);
 SEMICOLON_API void dlarfx(const char* side, const INT m, const INT n, const f64* restrict v, const f64 tau, f64* restrict C, const INT ldc, f64* restrict work);
 SEMICOLON_API void dlarfy(const char* uplo, const INT n, const f64* restrict V, const INT incv, const f64 tau, f64* restrict C, const INT ldc, f64* restrict work);
 SEMICOLON_API void dlargv(const INT n, f64* restrict X, const INT incx, f64* restrict Y, const INT incy, f64* restrict C, const INT incc);

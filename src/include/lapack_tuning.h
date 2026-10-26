@@ -183,6 +183,7 @@ static const lapack_tuning_t lapack_tuning_table[] = {
     {"LATRS",     32,    2,   0,  0.0},  /* Block triangular solve, ilaenv.f line 496 */
     {"STEBZ",      1,    2,   0,  0.0},  /* Bisection eigenvalue, ilaenv.f line 503 */
     {"GEQP3",     32,    2, 128,  0.0},  /* QR with column pivoting (QP3RK), ilaenv.f line 358 */
+    {"LARFT",      1,    2,  64,  0.0},  /* NX=64 per ilaenv.f line 687 */
     {NULL,         1,    2,   0,  0.0}   /* Sentinel / default */
 };
 
