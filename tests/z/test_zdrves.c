@@ -46,25 +46,30 @@ static f64 g_selwr[20];
 static f64 g_selwi[20];
 
 /**
- * Selection function for zgees.
- * Selects eigenvalues based on global selection criteria.
+ * ZSLECT returns .TRUE. if the eigenvalue Z is to be selected,
+ * otherwise it returns .FALSE.
+ * It is used by ZCHK41 to test if ZGEES successfully sorts eigenvalues,
+ * and by ZCHK43 to test if ZGEESX successfully sorts eigenvalues.
  */
-static INT zslect(const c128* w)
+static INT zslect(const c128* z)
 {
-    INT j;
-    f64 eps = dlamch("P");
+    INT i;
+    f64 rmin, x;
 
     if (g_selopt == 0) {
-        return 1;
-    }
-
-    for (j = 0; j < g_seldim; j++) {
-        f64 rmin = cabs(*w - CMPLX(g_selwr[j], g_selwi[j]));
-        if (rmin < eps) {
-            return g_selval[j];
+        return (creal(*z) < 0.0);
+    } else {
+        rmin = cabs(*z - CMPLX(g_selwr[0], g_selwi[0]));
+        INT val = g_selval[0];
+        for (i = 1; i < g_seldim; i++) {
+            x = cabs(*z - CMPLX(g_selwr[i], g_selwi[i]));
+            if (x <= rmin) {
+                rmin = x;
+                val = g_selval[i];
+            }
         }
+        return val;
     }
-    return 0;
 }
 
 typedef struct {
@@ -341,7 +346,7 @@ static void run_zdrves_single(zdrves_params_t* params)
 
     zlacpy("F", n, n, A, lda, H, lda);
 
-    g_selopt = 1;
+    g_selopt = 0;
 
     INT sdim;
     zgees("V", sort, zslect, n, H, lda, &sdim, W, VS, ldvs,
@@ -349,10 +354,7 @@ static void run_zdrves_single(zdrves_params_t* params)
 
     if (iinfo != 0) {
         ws->result[rsub] = ulpinv;
-        if (iinfo > 0 && iinfo <= n) {
-            fprintf(stderr, "ZGEES failed with info=%d (QR failed)\n", iinfo);
-        }
-        return;
+        fail_msg("ZGEES1 returned INFO = %d", (int)iinfo);
     }
 
     /* Test 1 (or 7): Verify upper triangular structure.
@@ -397,6 +399,7 @@ static void run_zdrves_single(zdrves_params_t* params)
 
     if (iinfo != 0) {
         ws->result[rsub + 4] = ulpinv;
+        fail_msg("ZGEES2 returned INFO = %d", (int)iinfo);
     } else {
         /* Test 5: Compare T matrices */
         ws->result[rsub + 4] = 0.0;

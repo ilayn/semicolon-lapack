@@ -139,7 +139,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("V", isort == 0 ? "N" : "S", dslect, "N", n, H, lda, &sdim,
                wr, wi, VS, ldvs, &rconde, &rcondv, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            return;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[0 + rsub] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
             return;
@@ -231,7 +233,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("N", isort == 0 ? "N" : "S", dslect, "N", n, HT, lda, &sdim,
                wrt, wit, VS, ldvs, &rconde, &rcondv, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[4 + rsub] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
             goto label_250;
@@ -284,7 +288,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("V", "S", dslect, "B", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rconde, &rcondv, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[13] = ulpinv;
             result[14] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
@@ -310,7 +316,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("N", "S", dslect, "B", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rcnde1, &rcndv1, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[13] = ulpinv;
             result[14] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
@@ -342,7 +350,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("V", "S", dslect, "E", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rcnde1, &rcndv1, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[13] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
             goto label_250;
@@ -371,7 +381,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("N", "S", dslect, "E", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rcnde1, &rcndv1, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[13] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
             goto label_250;
@@ -400,7 +412,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("V", "S", dslect, "V", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rcnde1, &rcndv1, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[14] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
             goto label_250;
@@ -429,7 +443,9 @@ void dget24(const INT comp, const INT jtype, const f64 thresh,
         dgeesx("N", "S", dslect, "V", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rcnde1, &rcndv1, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_250;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[14] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
             goto label_250;
@@ -500,7 +516,9 @@ label_250:
         dgeesx("N", "S", dslect, "B", n, HT, lda, &sdim1, wrt,
                wit, VS1, ldvs, &rconde, &rcondv, work, lwork,
                iwork, liwork, bwork, &iinfo);
-        if (iinfo != 0 && iinfo != n + 2) {
+        if (iinfo == n + 1) {
+            goto label_300;
+        } else if (iinfo != 0 && iinfo != n + 2) {
             result[15] = ulpinv;
             result[16] = ulpinv;
             *info = (iinfo < 0) ? -iinfo : iinfo;
