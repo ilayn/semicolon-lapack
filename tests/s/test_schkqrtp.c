@@ -14,10 +14,10 @@
  *   TEST 6: |C*Q' - C*Q'| / (eps * max(1,M2) * |D|)
  *
  * Parameters:
- *   M values: 0, 1, 2, 3, 5, 10, 16, 50
- *   N values: 0, 1, 2, 3, 5, 10, 16, 50
- *   NB values: 1, 2, 3, 5, 10, 16
- *   L values: 0, min(M,N) (and intermediate if min(M,N) > 1)
+ *   M values: 0, 1, 2, 3, 5, 10, 50
+ *   N values: 0, 1, 2, 3, 5, 10, 50
+ *   NB values: 1, 3, 3, 3, 20
+ *   L values: 0 to min(M,N), stepping by max(min(M,N), 1)
  *   THRESH: 30.0
  */
 
@@ -26,9 +26,9 @@
 #include <string.h>
 #include <stdio.h>
 
-static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const INT NBVAL[] = {1, 2, 3, 5, 10, 16};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))

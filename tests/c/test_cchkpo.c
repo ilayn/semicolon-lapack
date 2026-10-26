@@ -32,7 +32,7 @@
 /* Test parameters from ztest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from ztest.in */
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -348,7 +348,7 @@ static void test_zchkpo_case(void** state)
 
 /*
  * Generate all parameter combinations.
- * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 9 * 5 = 630 tests
+ * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 9 * 3 = 378 tests
  * (minus skipped cases for small n and singular types)
  */
 

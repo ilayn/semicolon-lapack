@@ -33,7 +33,7 @@
 /* Test parameters from ztest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from ztest.in */
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -166,6 +166,7 @@ static void run_zchkhe_rook_single(INT n, INT iuplo, INT imat, INT inb)
     /* Set block size for this test via xlaenv */
     INT nb = NBVAL[inb];
     xlaenv(1, nb);
+    xlaenv(2, 2);
 
     /* Seed based on (n, uplo, imat) for reproducibility */
     uint64_t rng_state[4];
@@ -518,7 +519,7 @@ static void test_zchkhe_rook_case(void** state)
 
 /*
  * Generate all parameter combinations.
- * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 10 * 5 = 700 tests
+ * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 10 * 3 = 420 tests
  * (minus skipped cases for small n and singular types)
  */
 

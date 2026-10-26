@@ -18,10 +18,13 @@
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
+#define NNB     (sizeof(NBVAL) / sizeof(NBVAL[0]))
 #define NTYPES  6
 #define NTESTS  18
 #define THRESH  30.0
@@ -188,6 +191,8 @@ static int group_setup(void** state)
         !g_workspace->RWORK || !g_workspace->IWORK) {
         return -1;
     }
+
+    xlaenv(9, SMLSIZ);
     return 0;
 }
 
@@ -245,77 +250,84 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
         /* Generate a matrix of scaling type ISCALE */
         zqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-        for (INT itran = 0; itran < 2; itran++) {
-            const char* trans = (itran == 0) ? "N" : "C";
-            INT nrows = (itran == 0) ? m : n;
-            INT ncols = (itran == 0) ? n : m;
-            INT ldwork = imax2(1, ncols);
+        /* Loop for testing different block sizes. */
+        for (INT inb = 0; inb < (INT)NNB; inb++) {
+            INT nb = NBVAL[inb];
+            xlaenv(1, nb);
+            xlaenv(3, NXVAL[inb]);
 
-            /* Set up a consistent rhs */
-            if (ncols > 0) {
-                zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-                cblas_zdscal(ncols * nrhs, 1.0 / (f64)ncols, ws->WORK, 1);
-                /* Make the last solution column small
-                 * enough that undoing the scaling of
-                 * the solution in two steps flushes it. */
-                if (iscale == 2 && nrhs > 1) {
-                    cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            for (INT itran = 0; itran < 2; itran++) {
+                const char* trans = (itran == 0) ? "N" : "C";
+                INT nrows = (itran == 0) ? m : n;
+                INT ncols = (itran == 0) ? n : m;
+                INT ldwork = imax2(1, ncols);
+
+                /* Set up a consistent rhs */
+                if (ncols > 0) {
+                    zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                    cblas_zdscal(ncols * nrhs, 1.0 / (f64)ncols, ws->WORK, 1);
+                    /* Make the last solution column small
+                     * enough that undoing the scaling of
+                     * the solution in two steps flushes it. */
+                    if (iscale == 2 && nrhs > 1) {
+                        cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                    }
                 }
-            }
-            c128 cone = CMPLX(1.0, 0.0);
-            c128 czero = CMPLX(0.0, 0.0);
-            cblas_zgemm(CblasColMajor,
-                        (itran == 0) ? CblasNoTrans : CblasConjTrans,
-                        CblasNoTrans,
-                        nrows, nrhs, ncols,
-                        &cone, ws->COPYA, lda,
-                        ws->WORK, ldwork,
-                        &czero, ws->B, ldb);
-            zlacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+                c128 cone = CMPLX(1.0, 0.0);
+                c128 czero = CMPLX(0.0, 0.0);
+                cblas_zgemm(CblasColMajor,
+                            (itran == 0) ? CblasNoTrans : CblasConjTrans,
+                            CblasNoTrans,
+                            nrows, nrhs, ncols,
+                            &cone, ws->COPYA, lda,
+                            ws->WORK, ldwork,
+                            &czero, ws->B, ldb);
+                zlacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-            /* Solve LS or overdetermined system */
-            if (m > 0 && n > 0) {
-                zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-                zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-            }
-            zgels(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
-                  ws->WORK, lwork, &info);
+                /* Solve LS or overdetermined system */
+                if (m > 0 && n > 0) {
+                    zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+                    zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+                }
+                zgels(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
+                      ws->WORK, lwork, &info);
 
-            if (info != 0) {
-                fail_msg("ZGELS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
-                         (long long)info, trans, (long long)m, (long long)n,
-                         (long long)nrhs, (long long)itype);
-                return;
-            }
+                if (info != 0) {
+                    fail_msg("ZGELS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
+                             (long long)info, trans, (long long)m, (long long)n,
+                             (long long)nrhs, (long long)itype);
+                    return;
+                }
 
-            /* Test 1: residual norm(B - A*X) / ... */
-            if (nrows > 0 && nrhs > 0)
-                zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-            zqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-                   ws->C, ldb, ws->RWORK, &result[itran * 2 + 0]);
+                /* Test 1: residual norm(B - A*X) / ... */
+                if (nrows > 0 && nrhs > 0)
+                    zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+                zqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+                       ws->C, ldb, ws->RWORK, &result[itran * 2 + 0]);
 
-            /* Test 2: check correctness of results */
-            if ((itran == 0 && m >= n) ||
-                (itran == 1 && m < n)) {
-                /* Solving LS system */
-                result[itran * 2 + 1] = zqrt17(trans, 1, m, n, nrhs,
-                                               ws->COPYA, lda, ws->B, ldb,
-                                               ws->COPYB, ldb, ws->C,
-                                               ws->WORK, lwork);
-            } else {
-                /* Solving overdetermined system */
-                result[itran * 2 + 1] = zqrt14(trans, m, n, nrhs,
-                                               ws->COPYA, lda, ws->B, ldb,
-                                               ws->WORK, lwork);
-            }
+                /* Test 2: check correctness of results */
+                if ((itran == 0 && m >= n) ||
+                    (itran == 1 && m < n)) {
+                    /* Solving LS system */
+                    result[itran * 2 + 1] = zqrt17(trans, 1, m, n, nrhs,
+                                                   ws->COPYA, lda, ws->B, ldb,
+                                                   ws->COPYB, ldb, ws->C,
+                                                   ws->WORK, lwork);
+                } else {
+                    /* Solving overdetermined system */
+                    result[itran * 2 + 1] = zqrt14(trans, m, n, nrhs,
+                                                   ws->COPYA, lda, ws->B, ldb,
+                                                   ws->WORK, lwork);
+                }
 
-            for (INT k = itran * 2; k < itran * 2 + 2; k++) {
-                if (result[k] >= THRESH) {
-                    fail_msg("ZGELS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
-                             "test(%lld)=%.6e",
-                             trans, (long long)m, (long long)n,
-                             (long long)nrhs, (long long)itype,
-                             (long long)(k + 1), result[k]);
+                for (INT k = itran * 2; k < itran * 2 + 2; k++) {
+                    if (result[k] >= THRESH) {
+                        fail_msg("ZGELS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
+                                 "test(%lld)=%.6e",
+                                 trans, (long long)m, (long long)n,
+                                 (long long)nrhs, (long long)itype,
+                                 (long long)(k + 1), result[k]);
+                    }
                 }
             }
         }
@@ -332,77 +344,84 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
         /* Generate a matrix of scaling type ISCALE */
         zqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-        for (INT itran = 0; itran < 2; itran++) {
-            const char* trans = (itran == 0) ? "N" : "C";
-            INT nrows = (itran == 0) ? m : n;
-            INT ncols = (itran == 0) ? n : m;
-            INT ldwork = imax2(1, ncols);
+        /* Loop for testing different block sizes. */
+        for (INT inb = 0; inb < (INT)NNB; inb++) {
+            INT nb = NBVAL[inb];
+            xlaenv(1, nb);
+            xlaenv(3, NXVAL[inb]);
 
-            /* Set up a consistent rhs */
-            if (ncols > 0) {
-                zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-                cblas_zdscal(ncols * nrhs, 1.0 / (f64)ncols, ws->WORK, 1);
-                /* Make the last solution column small
-                 * enough that undoing the scaling of
-                 * the solution in two steps flushes it. */
-                if (iscale == 2 && nrhs > 1) {
-                    cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            for (INT itran = 0; itran < 2; itran++) {
+                const char* trans = (itran == 0) ? "N" : "C";
+                INT nrows = (itran == 0) ? m : n;
+                INT ncols = (itran == 0) ? n : m;
+                INT ldwork = imax2(1, ncols);
+
+                /* Set up a consistent rhs */
+                if (ncols > 0) {
+                    zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                    cblas_zdscal(ncols * nrhs, 1.0 / (f64)ncols, ws->WORK, 1);
+                    /* Make the last solution column small
+                     * enough that undoing the scaling of
+                     * the solution in two steps flushes it. */
+                    if (iscale == 2 && nrhs > 1) {
+                        cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                    }
                 }
-            }
-            c128 cone = CMPLX(1.0, 0.0);
-            c128 czero = CMPLX(0.0, 0.0);
-            cblas_zgemm(CblasColMajor,
-                        (itran == 0) ? CblasNoTrans : CblasConjTrans,
-                        CblasNoTrans,
-                        nrows, nrhs, ncols,
-                        &cone, ws->COPYA, lda,
-                        ws->WORK, ldwork,
-                        &czero, ws->B, ldb);
-            zlacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+                c128 cone = CMPLX(1.0, 0.0);
+                c128 czero = CMPLX(0.0, 0.0);
+                cblas_zgemm(CblasColMajor,
+                            (itran == 0) ? CblasNoTrans : CblasConjTrans,
+                            CblasNoTrans,
+                            nrows, nrhs, ncols,
+                            &cone, ws->COPYA, lda,
+                            ws->WORK, ldwork,
+                            &czero, ws->B, ldb);
+                zlacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-            /* Solve LS or overdetermined system */
-            if (m > 0 && n > 0) {
-                zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-                zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-            }
-            zgelst(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
-                   ws->WORK, lwork, &info);
+                /* Solve LS or overdetermined system */
+                if (m > 0 && n > 0) {
+                    zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+                    zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+                }
+                zgelst(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
+                       ws->WORK, lwork, &info);
 
-            if (info != 0) {
-                fail_msg("ZGELST info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
-                         (long long)info, trans, (long long)m, (long long)n,
-                         (long long)nrhs, (long long)itype);
-                return;
-            }
+                if (info != 0) {
+                    fail_msg("ZGELST info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
+                             (long long)info, trans, (long long)m, (long long)n,
+                             (long long)nrhs, (long long)itype);
+                    return;
+                }
 
-            /* Test 3: residual */
-            if (nrows > 0 && nrhs > 0)
-                zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-            zqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-                   ws->C, ldb, ws->RWORK, &result[2 + itran * 2 + 0]);
+                /* Test 3: residual */
+                if (nrows > 0 && nrhs > 0)
+                    zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+                zqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+                       ws->C, ldb, ws->RWORK, &result[2 + itran * 2 + 0]);
 
-            /* Test 4 */
-            if ((itran == 0 && m >= n) ||
-                (itran == 1 && m < n)) {
-                result[2 + itran * 2 + 1] = zqrt17(trans, 1, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->COPYB, ldb, ws->C,
-                                                    ws->WORK, lwork);
-            } else {
-                result[2 + itran * 2 + 1] = zqrt14(trans, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->WORK, lwork);
-            }
+                /* Test 4 */
+                if ((itran == 0 && m >= n) ||
+                    (itran == 1 && m < n)) {
+                    result[2 + itran * 2 + 1] = zqrt17(trans, 1, m, n, nrhs,
+                                                        ws->COPYA, lda,
+                                                        ws->B, ldb,
+                                                        ws->COPYB, ldb, ws->C,
+                                                        ws->WORK, lwork);
+                } else {
+                    result[2 + itran * 2 + 1] = zqrt14(trans, m, n, nrhs,
+                                                        ws->COPYA, lda,
+                                                        ws->B, ldb,
+                                                        ws->WORK, lwork);
+                }
 
-            for (INT k = 2 + itran * 2; k < 2 + itran * 2 + 2; k++) {
-                if (result[k] >= THRESH) {
-                    fail_msg("ZGELST trans=%s m=%lld n=%lld nrhs=%lld type%lld "
-                             "test(%lld)=%.6e",
-                             trans, (long long)m, (long long)n,
-                             (long long)nrhs, (long long)itype,
-                             (long long)(k + 1), result[k]);
+                for (INT k = 2 + itran * 2; k < 2 + itran * 2 + 2; k++) {
+                    if (result[k] >= THRESH) {
+                        fail_msg("ZGELST trans=%s m=%lld n=%lld nrhs=%lld type%lld "
+                                 "test(%lld)=%.6e",
+                                 trans, (long long)m, (long long)n,
+                                 (long long)nrhs, (long long)itype,
+                                 (long long)(k + 1), result[k]);
+                    }
                 }
             }
         }
@@ -419,81 +438,94 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
         /* Generate a matrix of scaling type ISCALE */
         zqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-        for (INT itran = 0; itran < 2; itran++) {
-            const char* trans = (itran == 0) ? "N" : "C";
-            INT nrows = (itran == 0) ? m : n;
-            INT ncols = (itran == 0) ? n : m;
-            INT ldwork = imax2(1, ncols);
+        /* Loop for testing different block sizes MB. */
+        for (INT inb = 0; inb < (INT)NNB; inb++) {
+            INT mb = NBVAL[inb];
+            xlaenv(1, mb);
 
-            /* Set up a consistent rhs */
-            if (ncols > 0) {
-                zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-                c128 scale = CMPLX(1.0 / (f64)ncols, 0.0);
-                cblas_zscal(ncols * nrhs, &scale, ws->WORK, 1);
-                /* Make the last solution column small
-                 * enough that undoing the scaling of
-                 * the solution in two steps flushes it. */
-                if (iscale == 2 && nrhs > 1) {
-                    cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
-                }
-            }
-            c128 cone = CMPLX(1.0, 0.0);
-            c128 czero = CMPLX(0.0, 0.0);
-            cblas_zgemm(CblasColMajor,
-                        (itran == 0) ? CblasNoTrans : CblasConjTrans,
-                        CblasNoTrans,
-                        nrows, nrhs, ncols,
-                        &cone, ws->COPYA, lda,
-                        ws->WORK, ldwork,
-                        &czero, ws->B, ldb);
-            zlacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+            /* Loop for testing different block sizes NB. */
+            for (INT imb = 0; imb < (INT)NNB; imb++) {
+                INT nb = NBVAL[imb];
+                xlaenv(2, nb);
 
-            /* Solve LS or overdetermined system */
-            if (m > 0 && n > 0) {
-                zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-                zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-            }
-            zgetsls(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
-                    ws->WORK, lwork, &info);
+                for (INT itran = 0; itran < 2; itran++) {
+                    const char* trans = (itran == 0) ? "N" : "C";
+                    INT nrows = (itran == 0) ? m : n;
+                    INT ncols = (itran == 0) ? n : m;
+                    INT ldwork = imax2(1, ncols);
 
-            if (info != 0) {
-                fail_msg("ZGETSLS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
-                         (long long)info, trans, (long long)m, (long long)n,
-                         (long long)nrhs, (long long)itype);
-                return;
-            }
+                    /* Set up a consistent rhs */
+                    if (ncols > 0) {
+                        zlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                        c128 scale = CMPLX(1.0 / (f64)ncols, 0.0);
+                        cblas_zscal(ncols * nrhs, &scale, ws->WORK, 1);
+                        /* Make the last solution column small
+                         * enough that undoing the scaling of
+                         * the solution in two steps flushes it. */
+                        if (iscale == 2 && nrhs > 1) {
+                            cblas_zdscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                        }
+                    }
+                    c128 cone = CMPLX(1.0, 0.0);
+                    c128 czero = CMPLX(0.0, 0.0);
+                    cblas_zgemm(CblasColMajor,
+                                (itran == 0) ? CblasNoTrans : CblasConjTrans,
+                                CblasNoTrans,
+                                nrows, nrhs, ncols,
+                                &cone, ws->COPYA, lda,
+                                ws->WORK, ldwork,
+                                &czero, ws->B, ldb);
+                    zlacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-            /* Test 5: residual — uses WORK2 for rwork param */
-            if (nrows > 0 && nrhs > 0)
-                zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-            zqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-                   ws->C, ldb, ws->WORK2, &result[4 + itran * 2 + 0]);
+                    /* Solve LS or overdetermined system */
+                    if (m > 0 && n > 0) {
+                        zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+                        zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+                    }
+                    zgetsls(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
+                            ws->WORK, lwork, &info);
 
-            /* Test 6 */
-            if ((itran == 0 && m >= n) ||
-                (itran == 1 && m < n)) {
-                result[4 + itran * 2 + 1] = zqrt17(trans, 1, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->COPYB, ldb, ws->C,
-                                                    ws->WORK, lwork);
-            } else {
-                result[4 + itran * 2 + 1] = zqrt14(trans, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->WORK, lwork);
-            }
+                    if (info != 0) {
+                        fail_msg("ZGETSLS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
+                                 (long long)info, trans, (long long)m, (long long)n,
+                                 (long long)nrhs, (long long)itype);
+                        return;
+                    }
 
-            for (INT k = 4 + itran * 2; k < 4 + itran * 2 + 2; k++) {
-                if (result[k] >= THRESH) {
-                    fail_msg("ZGETSLS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
-                             "test(%lld)=%.6e",
-                             trans, (long long)m, (long long)n,
-                             (long long)nrhs, (long long)itype,
-                             (long long)(k + 1), result[k]);
+                    /* Test 5: residual — uses WORK2 for rwork param */
+                    if (nrows > 0 && nrhs > 0)
+                        zlacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+                    zqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+                           ws->C, ldb, ws->WORK2, &result[4 + itran * 2 + 0]);
+
+                    /* Test 6 */
+                    if ((itran == 0 && m >= n) ||
+                        (itran == 1 && m < n)) {
+                        result[4 + itran * 2 + 1] = zqrt17(trans, 1, m, n, nrhs,
+                                                            ws->COPYA, lda,
+                                                            ws->B, ldb,
+                                                            ws->COPYB, ldb, ws->C,
+                                                            ws->WORK, lwork);
+                    } else {
+                        result[4 + itran * 2 + 1] = zqrt14(trans, m, n, nrhs,
+                                                            ws->COPYA, lda,
+                                                            ws->B, ldb,
+                                                            ws->WORK, lwork);
+                    }
+
+                    for (INT k = 4 + itran * 2; k < 4 + itran * 2 + 2; k++) {
+                        if (result[k] >= THRESH) {
+                            fail_msg("ZGETSLS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
+                                     "test(%lld)=%.6e",
+                                     trans, (long long)m, (long long)n,
+                                     (long long)nrhs, (long long)itype,
+                                     (long long)(k + 1), result[k]);
+                        }
+                    }
                 }
             }
         }
+        xlaenv(2, -1);
     }
     /* =====================================================
      *       End test ZGETSLS
@@ -508,157 +540,166 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
 
     INT ldwork = imax2(1, m);
 
-    /* =====================================================
-     *       Test ZGELSY
-     * ===================================================== */
+    /* Loop for testing different block sizes. */
+    for (INT inb = 0; inb < (INT)NNB; inb++) {
+        INT nb = NBVAL[inb];
+        xlaenv(1, nb);
+        xlaenv(3, NXVAL[inb]);
 
-    /* ZGELSY: Compute the minimum-norm solution X to
-     * min( norm( A * X - B ) ) using the rank-revealing
-     * orthogonal factorization. */
+        /* =====================================================
+         *       Test ZGELSY
+         * ===================================================== */
 
-    zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-    zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
+        /* ZGELSY: Compute the minimum-norm solution X to
+         * min( norm( A * X - B ) ) using the rank-revealing
+         * orthogonal factorization. */
 
-    /* Initialize vector IWORK */
-    for (INT j = 0; j < n; j++)
-        ws->IWORK[j] = 0;
+        zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+        zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
 
-    INT crank;
-    zgelsy(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->IWORK,
-           rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
+        /* Initialize vector IWORK */
+        for (INT j = 0; j < n; j++)
+            ws->IWORK[j] = 0;
 
-    if (info != 0) {
-        fail_msg("ZGELSY info=%lld m=%lld n=%lld nrhs=%lld type%lld",
-                 (long long)info, (long long)m, (long long)n,
-                 (long long)nrhs, (long long)itype);
-        return;
-    }
+        INT crank;
+        zgelsy(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->IWORK,
+               rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
 
-    /* Test 7: Compute relative error in svd */
-    result[6] = zqrt12(crank, crank, ws->A, lda, ws->COPYS,
-                        ws->WORK, lwork, ws->RWORK);
+        if (info != 0) {
+            fail_msg("ZGELSY info=%lld m=%lld n=%lld nrhs=%lld type%lld",
+                     (long long)info, (long long)m, (long long)n,
+                     (long long)nrhs, (long long)itype);
+            return;
+        }
 
-    /* Test 8: Compute error in solution */
-    zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
-    zqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-           ws->WORK, ldwork, ws->RWORK, &result[7]);
+        /* Test 7: Compute relative error in svd */
+        result[6] = zqrt12(crank, crank, ws->A, lda, ws->COPYS,
+                            ws->WORK, lwork, ws->RWORK);
 
-    /* Test 9: Check norm of r'*A */
-    result[8] = 0.0;
-    if (m > crank)
-        result[8] = zqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
-                           ws->B, ldb, ws->COPYB, ldb, ws->C,
-                           ws->WORK, lwork);
+        /* Test 8: Compute error in solution */
+        zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
+        zqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+               ws->WORK, ldwork, ws->RWORK, &result[7]);
 
-    /* Test 10: Check if x is in the rowspace of A */
-    result[9] = 0.0;
-    if (n > crank)
-        result[9] = zqrt14("N", m, n, nrhs, ws->COPYA, lda,
-                           ws->B, ldb, ws->WORK, lwork);
+        /* Test 9: Check norm of r'*A */
+        result[8] = 0.0;
+        if (m > crank)
+            result[8] = zqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
+                               ws->B, ldb, ws->COPYB, ldb, ws->C,
+                               ws->WORK, lwork);
 
-    /* =====================================================
-     *       Test ZGELSS
-     * ===================================================== */
+        /* Test 10: Check if x is in the rowspace of A */
+        result[9] = 0.0;
+        if (n > crank)
+            result[9] = zqrt14("N", m, n, nrhs, ws->COPYA, lda,
+                               ws->B, ldb, ws->WORK, lwork);
 
-    /* ZGELSS: Compute the minimum-norm solution X to
-     * min( norm( A * X - B ) ) using the SVD. */
+        /* =====================================================
+         *       Test ZGELSS
+         * ===================================================== */
 
-    zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-    zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
+        /* ZGELSS: Compute the minimum-norm solution X to
+         * min( norm( A * X - B ) ) using the SVD. */
 
-    zgelss(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
-           rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
+        zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+        zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
 
-    if (info != 0) {
-        fail_msg("ZGELSS info=%lld m=%lld n=%lld nrhs=%lld type%lld",
-                 (long long)info, (long long)m, (long long)n,
-                 (long long)nrhs, (long long)itype);
-        return;
-    }
+        zgelss(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
+               rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
 
-    /* Test 11: Compute relative error in svd */
-    if (rank > 0) {
-        cblas_daxpy(mnmin, -1.0, ws->COPYS, 1, ws->S, 1);
-        result[10] = cblas_dasum(mnmin, ws->S, 1) /
-                     cblas_dasum(mnmin, ws->COPYS, 1) /
-                     (eps * (f64)mnmin);
-    } else {
-        result[10] = 0.0;
-    }
+        if (info != 0) {
+            fail_msg("ZGELSS info=%lld m=%lld n=%lld nrhs=%lld type%lld",
+                     (long long)info, (long long)m, (long long)n,
+                     (long long)nrhs, (long long)itype);
+            return;
+        }
 
-    /* Test 12: Compute error in solution */
-    zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
-    zqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-           ws->WORK, ldwork, ws->RWORK, &result[11]);
+        /* Test 11: Compute relative error in svd */
+        if (rank > 0) {
+            cblas_daxpy(mnmin, -1.0, ws->COPYS, 1, ws->S, 1);
+            result[10] = cblas_dasum(mnmin, ws->S, 1) /
+                         cblas_dasum(mnmin, ws->COPYS, 1) /
+                         (eps * (f64)mnmin);
+        } else {
+            result[10] = 0.0;
+        }
 
-    /* Test 13: Check norm of r'*A */
-    result[12] = 0.0;
-    if (m > crank)
-        result[12] = zqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->COPYB, ldb, ws->C,
-                            ws->WORK, lwork);
+        /* Test 12: Compute error in solution */
+        zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
+        zqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+               ws->WORK, ldwork, ws->RWORK, &result[11]);
 
-    /* Test 14: Check if x is in the rowspace of A */
-    result[13] = 0.0;
-    if (n > crank)
-        result[13] = zqrt14("N", m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->WORK, lwork);
+        /* Test 13: Check norm of r'*A */
+        result[12] = 0.0;
+        if (m > crank)
+            result[12] = zqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->COPYB, ldb, ws->C,
+                                ws->WORK, lwork);
 
-    /* =====================================================
-     *       Test ZGELSD
-     * ===================================================== */
+        /* Test 14: Check if x is in the rowspace of A */
+        result[13] = 0.0;
+        if (n > crank)
+            result[13] = zqrt14("N", m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->WORK, lwork);
 
-    /* ZGELSD: Compute the minimum-norm solution X to
-     * min( norm( A * X - B ) ) using a divide and conquer SVD. */
+        /* =====================================================
+         *       Test ZGELSD
+         * ===================================================== */
 
-    zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-    zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
+        /* ZGELSD: Compute the minimum-norm solution X to
+         * min( norm( A * X - B ) ) using a divide and conquer SVD. */
 
-    zgelsd(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
-           rcond, &crank, ws->WORK, lwork, ws->RWORK,
-           ws->IWORK, &info);
+        xlaenv(9, 25);
 
-    if (info != 0) {
-        fail_msg("ZGELSD info=%lld m=%lld n=%lld nrhs=%lld type%lld",
-                 (long long)info, (long long)m, (long long)n,
-                 (long long)nrhs, (long long)itype);
-        return;
-    }
+        zlacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+        zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
 
-    /* Test 15: Compute relative error in svd */
-    if (rank > 0) {
-        cblas_daxpy(mnmin, -1.0, ws->COPYS, 1, ws->S, 1);
-        result[14] = cblas_dasum(mnmin, ws->S, 1) /
-                     cblas_dasum(mnmin, ws->COPYS, 1) /
-                     (eps * (f64)mnmin);
-    } else {
-        result[14] = 0.0;
-    }
+        zgelsd(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
+               rcond, &crank, ws->WORK, lwork, ws->RWORK,
+               ws->IWORK, &info);
 
-    /* Test 16: Compute error in solution */
-    zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
-    zqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-           ws->WORK, ldwork, ws->RWORK, &result[15]);
+        if (info != 0) {
+            fail_msg("ZGELSD info=%lld m=%lld n=%lld nrhs=%lld type%lld",
+                     (long long)info, (long long)m, (long long)n,
+                     (long long)nrhs, (long long)itype);
+            return;
+        }
 
-    /* Test 17: Check norm of r'*A */
-    result[16] = 0.0;
-    if (m > crank)
-        result[16] = zqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->COPYB, ldb, ws->C,
-                            ws->WORK, lwork);
+        /* Test 15: Compute relative error in svd */
+        if (rank > 0) {
+            cblas_daxpy(mnmin, -1.0, ws->COPYS, 1, ws->S, 1);
+            result[14] = cblas_dasum(mnmin, ws->S, 1) /
+                         cblas_dasum(mnmin, ws->COPYS, 1) /
+                         (eps * (f64)mnmin);
+        } else {
+            result[14] = 0.0;
+        }
 
-    /* Test 18: Check if x is in the rowspace of A */
-    result[17] = 0.0;
-    if (n > crank)
-        result[17] = zqrt14("N", m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->WORK, lwork);
+        /* Test 16: Compute error in solution */
+        zlacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
+        zqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+               ws->WORK, ldwork, ws->RWORK, &result[15]);
 
-    /* Print information about the tests that did not pass the threshold */
-    for (INT k = 6; k < 18; k++) {
-        if (result[k] >= THRESH) {
-            fail_msg("m=%lld n=%lld nrhs=%lld type%lld test(%lld)=%.6e",
-                     (long long)m, (long long)n, (long long)nrhs,
-                     (long long)itype, (long long)(k + 1), result[k]);
+        /* Test 17: Check norm of r'*A */
+        result[16] = 0.0;
+        if (m > crank)
+            result[16] = zqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->COPYB, ldb, ws->C,
+                                ws->WORK, lwork);
+
+        /* Test 18: Check if x is in the rowspace of A */
+        result[17] = 0.0;
+        if (n > crank)
+            result[17] = zqrt14("N", m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->WORK, lwork);
+
+        /* Print information about the tests that did not pass the threshold */
+        for (INT k = 6; k < 18; k++) {
+            if (result[k] >= THRESH) {
+                fail_msg("m=%lld n=%lld nrhs=%lld type%lld test(%lld)=%.6e",
+                         (long long)m, (long long)n, (long long)nrhs,
+                         (long long)itype, (long long)(k + 1), result[k]);
+            }
         }
     }
 }

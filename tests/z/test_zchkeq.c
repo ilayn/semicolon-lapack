@@ -11,7 +11,7 @@
 
 #include "test_harness.h"
 
-#define THRESH 10.0  /* From LAPACK: should be between 2 and 10 */
+#define THRESH 2.0  /* THREQ in ZCHKAA (should be between 2 and 10) */
 
 #define NSZ   5             /* Maximum matrix size for tests */
 #define NSZB  (3*NSZ - 2)   /* Band storage size: 13 */

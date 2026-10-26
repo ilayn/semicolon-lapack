@@ -16,7 +16,7 @@
  *
  * Parameters from ztest.in:
  *   N values: 0, 1, 2, 3, 5, 10, 50
- *   NB values: 1, 3, 3, 3, 20
+ *   NB values: 1, 3, 20 (ztest.in NB values without duplicates)
  *   RANKVAL: 30, 50, 90 (percentages)
  *   Matrix types: 1-9
  *   THRESH: 30.0
@@ -30,7 +30,7 @@
 #include <math.h>
 /* Test parameters from ztest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 static const INT RANKVAL[] = {30, 50, 90};  /* Percentage of full rank */
 static const char UPLOS[] = {'U', 'L'};
 
