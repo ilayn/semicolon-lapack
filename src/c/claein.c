@@ -61,15 +61,17 @@ void claein(
     const c64 CZERO = CMPLXF(0.0f, 0.0f);
 
     INT i, ierr, its, j;
-    f32 growto, nrmsml, rootn, rtemp, scale, vnorm;
+    f32 growto, nrmsml, rootn, rtemp, scale, v0norm, v1norm;
     c64 ei, ej, temp, x;
 
     *info = 0;
 
-    /*     GROWTO is the threshold used in the acceptance test for an
-     *     eigenvector. */
+    /*     Each starting vector gets one solve, from v0 to v1.  The residual
+     *     of v1 is SCALE times the norm of v0, over the norm of v1, so
+     *     GROWTO is the growth V1NORM/(SCALE*V0NORM) that the acceptance
+     *     test below requires. */
     rootn = sqrtf((f32)n);
-    growto = TENTH / rootn;
+    growto = TENTH / ((f32)n * eps3);
     nrmsml = (ONE > eps3 * rootn ? ONE : eps3 * rootn) * smlnum;
 
     /*     Form B = H - W*I (except that the subdiagonal elements are not
@@ -88,8 +90,8 @@ void claein(
         }
     } else {
         /*        Scale supplied initial vector. */
-        vnorm = cblas_scnrm2(n, V, 1);
-        f32 denom = vnorm > nrmsml ? vnorm : nrmsml;
+        v0norm = cblas_scnrm2(n, V, 1);
+        f32 denom = v0norm > nrmsml ? v0norm : nrmsml;
         cblas_csscal(n, (eps3 * rootn) / denom, V, 1);
     }
 
@@ -158,6 +160,8 @@ void claein(
     char normin = 'N';
     char trans = rightv ? 'N' : 'C';
     for (its = 0; its < n; its++) {
+        v0norm = cblas_scasum(n, V, 1);
+
         /*        Solve U*x = scale*v for a right eigenvector
          *          or U**H *x = scale*v for a left eigenvector,
          *        overwriting x on v. */
@@ -165,8 +169,8 @@ void claein(
         normin = 'Y';
 
         /*        Test for sufficient growth in the norm of v. */
-        vnorm = cblas_scasum(n, V, 1);
-        if (vnorm >= growto * scale) {
+        v1norm = cblas_scasum(n, V, 1);
+        if (v1norm >= growto * scale * v0norm) {
             goto L120;
         }
 

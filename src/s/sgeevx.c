@@ -389,8 +389,8 @@ L50:
             if ((wntsnv || wntsnb) && icond == 0)
                 slascl("G", 0, 0, cscale, anrm, n, 1, rcondv, n, &ierr);
         } else {
-            slascl("G", 0, 0, cscale, anrm, *ilo - 1, 1, wr, n, &ierr);
-            slascl("G", 0, 0, cscale, anrm, *ilo - 1, 1, wi, n, &ierr);
+            slascl("G", 0, 0, cscale, anrm, *ilo, 1, wr, n, &ierr);
+            slascl("G", 0, 0, cscale, anrm, *ilo, 1, wi, n, &ierr);
         }
     }
 

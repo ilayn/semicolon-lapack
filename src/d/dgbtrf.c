@@ -4,6 +4,7 @@
  *        using the blocked version of the algorithm.
  */
 
+#include <math.h>
 #include "semicolon_cblas.h"
 #include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
@@ -91,7 +92,7 @@ void dgbtrf(
     f64 work31[LDWORK * NBMAX];
 
     INT i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
-    f64 temp;
+    f64 sfmin, temp;
     INT minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
@@ -119,6 +120,9 @@ void dgbtrf(
     if (m == 0 || n == 0) {
         return;
     }
+
+    /* Compute machine safe minimum */
+    sfmin = dlamch("S");
 
     /* Determine the block size for this environment */
     nb = lapack_get_nb("GBTRF");
@@ -224,7 +228,13 @@ void dgbtrf(
                     }
 
                     /* Compute multipliers */
-                    cblas_dscal(km, ONE / AB[kv + jj * ldab], &AB[kv + 1 + jj * ldab], 1);
+                    if (fabs(AB[kv + jj * ldab]) >= sfmin) {
+                        cblas_dscal(km, ONE / AB[kv + jj * ldab], &AB[kv + 1 + jj * ldab], 1);
+                    } else {
+                        for (i = 1; i <= km; i++) {
+                            AB[kv + i + jj * ldab] = AB[kv + i + jj * ldab] / AB[kv + jj * ldab];
+                        }
+                    }
 
                     /* Update trailing submatrix within the band and within
                        the current block. jm is the index of the last column

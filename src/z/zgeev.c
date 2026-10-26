@@ -179,6 +179,10 @@ void zgeev(const char* jobvl, const char* jobvr, const INT n,
     } else if (anrm > bignum) {
         scalea = 1;
         cscale = bignum;
+    } else if (isnan(anrm)) {
+        *info = -4;
+        xerbla("ZGEEV", -(*info));
+        return;
     }
     if (scalea)
         zlascl("G", 0, 0, anrm, cscale, n, n, A, lda, &ierr);

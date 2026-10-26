@@ -179,6 +179,10 @@ void cgeev(const char* jobvl, const char* jobvr, const INT n,
     } else if (anrm > bignum) {
         scalea = 1;
         cscale = bignum;
+    } else if (isnan(anrm)) {
+        *info = -4;
+        xerbla("CGEEV", -(*info));
+        return;
     }
     if (scalea)
         clascl("G", 0, 0, anrm, cscale, n, n, A, lda, &ierr);

@@ -1106,6 +1106,7 @@ void zsgt01(const INT itype, const char* uplo, const INT n, const INT m,
             const f64* D, c128* work, f64* rwork, f64* result);
 
 /* Error checking utilities */
+extern INT    xerbla_infot;
 extern INT    xerbla_ok;
 extern INT    xerbla_lerr;
 extern char   xerbla_srnamt[33];

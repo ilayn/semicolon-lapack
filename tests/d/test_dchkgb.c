@@ -22,7 +22,7 @@
  *   KL/KU values: 0, (5*M+1)/4, (3M-1)/4, (M+1)/4 (clamped to matrix size)
  *   NRHS values: 1, 2, 15
  *   NB values: 1, 3, 3, 3, 20
- *   Matrix types: 1-8
+ *   Matrix types: 1-9
  *   THRESH: 30.0
  */
 
@@ -43,7 +43,7 @@ static const char TRANSS[] = {'N', 'T', 'C'};
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
 #define NNB     (sizeof(NBVAL) / sizeof(NBVAL[0]))
 #define NTRAN   (sizeof(TRANSS) / sizeof(TRANSS[0]))
-#define NTYPES  8
+#define NTYPES  9
 #define NTESTS  7
 #define THRESH  30.0
 #define NMAX    50  /* Maximum matrix dimension */
@@ -242,6 +242,16 @@ static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
         izero = 0;
     }
 
+    /* Type 9:  scale the matrix into the subnormal range, where the
+     * reciprocal of a pivot overflows.  DLATMS cannot generate such a
+     * matrix, because it scales its output by the requested norm. */
+    if (imat == 9) {
+        f64 subnrm = dlamch("S") / 8;
+        for (INT i = 0; i < lda * n; i++) {
+            ws->A[i] *= subnrm;
+        }
+    }
+
     /* Copy A to AFAC for factorization (into rows kl+1 to 2*kl+ku+1) */
     if (m > 0 && n > 0) {
         for (INT j = 0; j < n; j++) {
@@ -266,13 +276,26 @@ static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
     /*
      * TEST 1: Reconstruct matrix from factors and compute residual.
      */
-    dgbt01(m, n, kl, ku, ws->A, lda, ws->AFAC, ldafac,
-           ws->IPIV, ws->WORK, &result[0]);
+    if (imat == 9) {
+        /* The subnormal matrix carries no accuracy to reconstruct, so
+         * test what the guarded pivot division promises: a finite
+         * factor. */
+        f64 anrmf = dlangb("M", n, kl, kl + ku, ws->AFAC, ldafac, ws->RWORK);
+        if (isnan(anrmf) || anrmf > dlamch("O")) {
+            result[0] = ONE / dlamch("E");
+        } else {
+            result[0] = ZERO;
+        }
+    } else {
+        dgbt01(m, n, kl, ku, ws->A, lda, ws->AFAC, ldafac,
+               ws->IPIV, ws->WORK, &result[0]);
+    }
 
-    if (result[0] >= THRESH) {
+    if (result[0] >= THRESH || isnan(result[0])) {
         print_error("TEST 1 FAILED: m=%d, n=%d, kl=%d, ku=%d, nb=%d, imat=%d: resid=%.6e >= %.1f\n",
                    m, n, kl, ku, nb, imat, result[0], THRESH);
     }
+    assert_false(isnan(result[0]));
     assert_residual_below(result[0], THRESH);
 
     /*
@@ -281,7 +304,7 @@ static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
      *   - Matrix is singular (trfcon), OR
      *   - Not the first block size (inb > 0)
      */
-    if (inb > 0 || m != n) {
+    if (inb > 0 || m != n || imat == 9) {
         goto test7;
     }
 
@@ -396,7 +419,7 @@ static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
      * This matches LAPACK's dchkgb.f line 499-500 and 640-679.
      */
 test7:
-    if (n <= 0 || m != n || inb > 0) {
+    if (n <= 0 || m != n || inb > 0 || imat == 9) {
         return;
     }
 

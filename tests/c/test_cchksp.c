@@ -324,7 +324,92 @@ static void test_zchksp_case(void** state)
     run_zchksp_single(params->n, params->iuplo, params->imat);
 }
 
-#define MAX_TESTS (NN * NUPLO * NTYPES)
+/**
+ * A NaN on the diagonal of the last column that CSPTRF visits --
+ * column N for UPLO = 'L', column 1 for UPLO = 'U' -- must be
+ * reported in INFO.  That column has no off-diagonal candidate, so
+ * COLMAX is zero and IMAX is never assigned; unless the pivot itself
+ * is tested for a NaN every later comparison is false, the code
+ * reaches the 2-by-2 branch, and it writes IPIV( K+1 ) or
+ * IPIV( K-1 ) -- one element past an end of IPIV -- with INFO left
+ * at zero.  The NaN column is otherwise zero and the remaining rows
+ * and columns hold I + ones, which is positive definite, so no
+ * interchange precedes the NaN and INFO is exactly its index.  IPIV
+ * is passed as IWORK( 2 ) so that a write below its first element
+ * lands inside IWORK.
+ *
+ * Not in LAPACK: a NaN pivot in the first column visited, next to a
+ * nonzero entry, must be reported in INFO as well.
+ */
+static void test_zchksp_nan_pivot(void** state)
+{
+    (void)state;
+    const INT IGUARD = -9999;
+    c64* AFAC = g_workspace->AFAC;
+    INT ipivg[NMAX + 2];
+    INT info, izero;
+
+    for (INT in = 0; in < (INT)NN; in++) {
+        INT n = NVAL[in];
+        if (n < 1) {
+            continue;
+        }
+        INT npp = n * (n + 1) / 2;
+        for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+            char uplo_str[2] = {UPLOS[iuplo], '\0'};
+            for (INT i = 0; i < npp; i++) {
+                AFAC[i] = CMPLXF(1.0f, 0.0f);
+            }
+            if (iuplo == 0) {
+                izero = 1;
+                for (INT j = 0; j < n; j++) {
+                    INT ioff = j * (j + 1) / 2;
+                    AFAC[ioff + j] = CMPLXF(2.0f, 0.0f);
+                    AFAC[ioff] = CMPLXF(0.0f, 0.0f);
+                }
+                AFAC[0] = CMPLXF(NAN, 0.0f);
+            } else {
+                izero = n;
+                for (INT j = 0; j < n; j++) {
+                    INT ioff = j * (2 * n - j - 1) / 2;
+                    AFAC[ioff + j] = CMPLXF(2.0f, 0.0f);
+                    AFAC[ioff + n - 1] = CMPLXF(0.0f, 0.0f);
+                }
+                AFAC[npp - 1] = CMPLXF(NAN, 0.0f);
+            }
+
+            ipivg[0] = IGUARD;
+            ipivg[n + 1] = IGUARD;
+            csptrf(uplo_str, n, AFAC, &ipivg[1], &info);
+            assert_int_equal(info, izero);
+            assert_int_equal(ipivg[0], IGUARD);
+            assert_int_equal(ipivg[n + 1], IGUARD);
+        }
+    }
+
+    /* N = 2, upper AP = ( 0, 1, NaN ) and lower AP = ( NaN, 1, 0 ) */
+    for (INT iuplo = 0; iuplo < (INT)NUPLO; iuplo++) {
+        char uplo_str[2] = {UPLOS[iuplo], '\0'};
+        if (iuplo == 0) {
+            AFAC[0] = CMPLXF(0.0f, 0.0f);
+            AFAC[2] = CMPLXF(NAN, 0.0f);
+            izero = 2;
+        } else {
+            AFAC[0] = CMPLXF(NAN, 0.0f);
+            AFAC[2] = CMPLXF(0.0f, 0.0f);
+            izero = 1;
+        }
+        AFAC[1] = CMPLXF(1.0f, 0.0f);
+        ipivg[0] = IGUARD;
+        ipivg[3] = IGUARD;
+        csptrf(uplo_str, 2, AFAC, &ipivg[1], &info);
+        assert_int_equal(info, izero);
+        assert_int_equal(ipivg[0], IGUARD);
+        assert_int_equal(ipivg[3], IGUARD);
+    }
+}
+
+#define MAX_TESTS (NN * NUPLO * NTYPES + 1)
 
 static zchksp_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -365,6 +450,13 @@ static void build_test_array(void)
             }
         }
     }
+
+    g_tests[g_num_tests].name = "nan_pivot";
+    g_tests[g_num_tests].test_func = test_zchksp_nan_pivot;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 }
 
 int main(void)

@@ -159,7 +159,7 @@ void dlasd2(const INT nl, const INT nr, const INT sqre, INT* k,
             IDXP[k2] = j;
             COLTYP[j] = 4;
         } else {
-            if (fabs(D[j] - D[jprev]) <= tol) {
+            if ((D[j] - D[jprev]) <= tol) {
                 s = Z[jprev];
                 c = Z[j];
                 tau = dlapy2(c, s);
@@ -184,7 +184,13 @@ void dlasd2(const INT nl, const INT nr, const INT sqre, INT* k,
                 }
                 COLTYP[jprev] = 4;
                 k2--;
-                IDXP[k2] = jprev;
+
+                /* Insert the deflated index in the correct position in IDXP.
+                 * If J - JPREV is greater than 1, the indices in between
+                 * must be shifted to preserve the correct output order. */
+                for (jp = jprev; jp < j; jp++) {
+                    IDXP[k2 + j - 1 - jp] = jp;
+                }
                 jprev = j;
             } else {
                 (*k)++;

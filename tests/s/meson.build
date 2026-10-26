@@ -102,6 +102,7 @@ lapack_tests_s = {
   'stgsen_lwork': ['test_stgsen_lwork.c', 'eigen'],
   'stprfb_rowfwd': ['test_stprfb_rowfwd.c', 'qr'],
   'slarf_incv': ['test_slarf_incv.c', 'qr'],
+  'sgeev_nan': ['test_sgeev_nan.c', 'eigen'],
   'sbbcsd_restart': ['test_sbbcsd_restart.c', 'eigen'],
   'sdrgsx': ['test_sdrgsx.c', 'eigen'],
   'sdrvsg': ['test_sdrvsg.c', 'eigen'],

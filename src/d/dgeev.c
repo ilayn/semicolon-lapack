@@ -184,6 +184,10 @@ void dgeev(const char* jobvl, const char* jobvr, const INT n,
     } else if (anrm > bignum) {
         scalea = 1;
         cscale = bignum;
+    } else if (isnan(anrm)) {
+        *info = -4;
+        xerbla("DGEEV", -(*info));
+        return;
     }
     if (scalea)
         dlascl("G", 0, 0, anrm, cscale, n, n, A, lda, &ierr);
@@ -308,8 +312,8 @@ L50:
         dlascl("G", 0, 0, cscale, anrm, n - *info, 1, &wi[*info],
                (n - *info) > 1 ? (n - *info) : 1, &ierr);
         if (*info > 0) {
-            dlascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wr, n, &ierr);
-            dlascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wi, n, &ierr);
+            dlascl("G", 0, 0, cscale, anrm, ilo, 1, wr, n, &ierr);
+            dlascl("G", 0, 0, cscale, anrm, ilo, 1, wi, n, &ierr);
         }
     }
 
