@@ -253,6 +253,6 @@ int main(void)
         DSYRFS_TESTS(setup_20_nrhs5),
     };
 
-    (void)cmocka_run_group_tests_name("dsyrfs", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("ssyrfs", tests, NULL, NULL);
     return 0;
 }

@@ -506,7 +506,7 @@ int main(void)
                     p->m      = m;
                     p->n      = n;
                     snprintf(p->name, sizeof(p->name),
-                             "zdrgsx_builtin_sense%d_type%d_m%d_n%d",
+                             "cdrgsx_builtin_sense%d_type%d_m%d_n%d",
                              ifunc, prtype, m, n);
                     nbuiltin++;
                 }
@@ -533,7 +533,7 @@ int main(void)
     for (INT i = 0; i < ZGSX_NUM_PRECOMPUTED; i++) {
         static char precomp_names[ZGSX_NUM_PRECOMPUTED][64];
         snprintf(precomp_names[i], sizeof(precomp_names[i]),
-                 "zdrgsx_precomputed_%d", i);
+                 "cdrgsx_precomputed_%d", i);
         tests[nbuiltin + i].name = precomp_names[i];
         tests[nbuiltin + i].test_func = test_precomputed;
         tests[nbuiltin + i].setup_func = NULL;
@@ -541,7 +541,7 @@ int main(void)
         tests[nbuiltin + i].initial_state = &g_precomputed_idx[i];
     }
 
-    int ret = _cmocka_run_group_tests("zdrgsx", tests, total,
+    int ret = _cmocka_run_group_tests("cdrgsx", tests, total,
                                        group_setup, group_teardown);
     free(tests);
     return ret;

@@ -189,6 +189,6 @@ int main(void)
         DPOTRS_TESTS(setup_20_nrhs5),
     };
 
-    (void)cmocka_run_group_tests_name("dpotrs", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("spotrs", tests, NULL, NULL);
     return 0;
 }

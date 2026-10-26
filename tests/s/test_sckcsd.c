@@ -304,7 +304,7 @@ int main(void)
             p->im = im;
             p->imat = imat;
             snprintf(p->name, sizeof(p->name),
-                     "dckcsd_m%d_p%d_q%d_type%d",
+                     "sckcsd_m%d_p%d_q%d_type%d",
                      MVAL[im], PVAL[im], QVAL[im], imat);
 
             all_tests[ntests] = (struct CMUnitTest){
@@ -318,7 +318,7 @@ int main(void)
         }
     }
 
-    (void)_cmocka_run_group_tests("dckcsd", all_tests, ntests,
+    (void)_cmocka_run_group_tests("sckcsd", all_tests, ntests,
                                     group_setup, group_teardown);
     return 0;
 }

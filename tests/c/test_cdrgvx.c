@@ -423,7 +423,7 @@ int main(void)
             p->iptype = iptype;
             p->iwa    = iwa;
             snprintf(p->name, sizeof(p->name),
-                     "zdrgvx_builtin_type%d_iwa%d", iptype, iwa);
+                     "cdrgvx_builtin_type%d_iwa%d", iptype, iwa);
             nbuiltin++;
         }
     }
@@ -447,7 +447,7 @@ int main(void)
     for (INT i = 0; i < ZGVX_NUM_PRECOMPUTED; i++) {
         static char precomp_names[ZGVX_NUM_PRECOMPUTED][64];
         snprintf(precomp_names[i], sizeof(precomp_names[i]),
-                 "zdrgvx_precomputed_%d", i);
+                 "cdrgvx_precomputed_%d", i);
         tests[nbuiltin + i].name = precomp_names[i];
         tests[nbuiltin + i].test_func = test_precomputed;
         tests[nbuiltin + i].setup_func = NULL;
@@ -455,7 +455,7 @@ int main(void)
         tests[nbuiltin + i].initial_state = &g_precomputed_idx[i];
     }
 
-    int ret = _cmocka_run_group_tests("zdrgvx", tests, total,
+    int ret = _cmocka_run_group_tests("cdrgvx", tests, total,
                                        group_setup, group_teardown);
     free(tests);
     return ret;

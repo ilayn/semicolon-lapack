@@ -1105,7 +1105,7 @@ static void build_test_array(void)
             p->n = n;
             p->itype = itype;
             snprintf(p->name, sizeof(p->name),
-                     "ddrvbd_m%d_n%d_type%d", m, n, itype);
+                     "sdrvbd_m%d_n%d_type%d", m, n, itype);
 
             /* Create CMocka test entry */
             g_tests[g_num_tests].name = p->name;
@@ -1127,7 +1127,7 @@ int main(void)
     build_test_array();
 
     /* Run all tests with shared workspace */
-    (void)_cmocka_run_group_tests("ddrvbd", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("sdrvbd", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

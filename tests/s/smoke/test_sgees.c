@@ -388,10 +388,10 @@ int main(void)
     };
 
     INT result = 0;
-    result += cmocka_run_group_tests_name("dgees_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgees_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgees_n20", tests_n20, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgees_n32", tests_n32, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgees_n5", tests_n5, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgees_n10", tests_n10, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgees_n20", tests_n20, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgees_n32", tests_n32, NULL, NULL);
 
     return result;
 }

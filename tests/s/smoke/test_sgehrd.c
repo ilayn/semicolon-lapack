@@ -415,10 +415,10 @@ int main(void)
     };
 
     INT result = 0;
-    result += cmocka_run_group_tests_name("dgehrd_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgehrd_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgehrd_n20", tests_n20, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgehrd_n32", tests_n32, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgehrd_n5", tests_n5, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgehrd_n10", tests_n10, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgehrd_n20", tests_n20, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgehrd_n32", tests_n32, NULL, NULL);
 
     return result;
 }

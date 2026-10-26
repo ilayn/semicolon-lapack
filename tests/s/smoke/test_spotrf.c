@@ -105,7 +105,7 @@ static int group_teardown(void** state)
  */
 static void run_dpotrf_single(INT n, INT iuplo, INT imat, INT iroutine)
 {
-    static const char* ROUTINE_NAMES[] = {"dpotf2", "dpotrf2", "dpotrf"};
+    static const char* ROUTINE_NAMES[] = {"spotf2", "spotrf2", "spotrf"};
     dpotrf_workspace_t* ws = g_workspace;
 
     char type, dist;
@@ -191,7 +191,7 @@ static INT g_num_tests = 0;
  */
 static void build_test_array(void)
 {
-    static const char* ROUTINE_NAMES[] = {"dpotf2", "dpotrf2", "dpotrf"};
+    static const char* ROUTINE_NAMES[] = {"spotf2", "spotrf2", "spotrf"};
 
     g_num_tests = 0;
 
@@ -241,7 +241,7 @@ int main(void)
     build_test_array();
 
     /* Run all tests with shared workspace. */
-    (void)_cmocka_run_group_tests("dpotrf", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("spotrf", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

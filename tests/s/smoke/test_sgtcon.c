@@ -298,6 +298,6 @@ int main(void)
         DGTCON_TESTS(setup_n20),
     };
 
-    (void)cmocka_run_group_tests_name("dgtcon", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgtcon", tests, NULL, NULL);
     return 0;
 }

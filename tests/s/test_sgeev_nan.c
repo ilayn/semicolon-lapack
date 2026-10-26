@@ -49,6 +49,6 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_nan),
     };
-    (void)cmocka_run_group_tests_name("dgeev_nan", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgeev_nan", tests, NULL, NULL);
     return 0;
 }

@@ -529,7 +529,7 @@ static void build_test_array(void)
                     p->imat = imat;
                     p->iuplo = iuplo;
                     p->inb = inb;
-                    snprintf(p->name, sizeof(p->name), "zchkhe_n%d_%c_type%d_nb%d_nx%d_%d",
+                    snprintf(p->name, sizeof(p->name), "cchkhe_n%d_%c_type%d_nb%d_nx%d_%d",
                              n, UPLOS[iuplo], imat, nb, NXVAL[inb], inb);
 
                     /* Create CMocka test entry */
@@ -559,7 +559,7 @@ static void build_test_array(void)
                     p->iuplo = iuplo;
                     p->mode = mode;
                     p->inb = inb;
-                    snprintf(p->name, sizeof(p->name), "zchkhe_n%d_%c_zeropiv_mode%d_nb%d_%d",
+                    snprintf(p->name, sizeof(p->name), "cchkhe_n%d_%c_zeropiv_mode%d_nb%d_%d",
                              n, UPLOS[iuplo], mode, NBVAL[inb], inb);
 
                     g_tests[g_num_tests].name = p->name;
@@ -581,7 +581,7 @@ int main(void)
     build_test_array();
 
     /* Run all tests with shared workspace */
-    (void)_cmocka_run_group_tests("zchkhe", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkhe", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

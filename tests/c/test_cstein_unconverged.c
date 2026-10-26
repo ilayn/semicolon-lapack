@@ -67,6 +67,6 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_flagged_blocks),
     };
-    (void)cmocka_run_group_tests_name("zstein_unconverged", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("cstein_unconverged", tests, NULL, NULL);
     return 0;
 }

@@ -488,7 +488,7 @@ int main(void)
                             params[idx].imat = imat;
                             params[idx].inb = inb;
                             snprintf(params[idx].name, sizeof(params[idx].name),
-                                    "zchkgb_m%d_n%d_kl%d_ku%d_type%d_nb%d_%d",
+                                    "cchkgb_m%d_n%d_kl%d_ku%d_type%d_nb%d_%d",
                                     m, n, kl, ku, imat, nb, inb);
 
                             tests[idx].name = params[idx].name;
@@ -505,7 +505,7 @@ int main(void)
         }
     }
 
-    INT result = _cmocka_run_group_tests("zchkgb", tests, idx,
+    INT result = _cmocka_run_group_tests("cchkgb", tests, idx,
                                          group_setup, group_teardown);
 
     free(tests);

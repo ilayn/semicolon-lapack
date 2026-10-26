@@ -273,7 +273,7 @@ static void run_zchkbb_single(zchkbb_params_t* params)
 
         if (iinfo != 0) {
             snprintf(ctx, sizeof(ctx),
-                     "zchkbb m=%d n=%d k=%d type=%d: Generator info=%d",
+                     "cchkbb m=%d n=%d k=%d type=%d: Generator info=%d",
                      m, n, k, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
@@ -292,7 +292,7 @@ static void run_zchkbb_single(zchkbb_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkbb m=%d n=%d k=%d type=%d: RHS Generator info=%d",
+                 "cchkbb m=%d n=%d k=%d type=%d: RHS Generator info=%d",
                  m, n, k, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -316,7 +316,7 @@ static void run_zchkbb_single(zchkbb_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkbb m=%d n=%d k=%d type=%d: CGBBRD info=%d",
+                 "cchkbb m=%d n=%d k=%d type=%d: CGBBRD info=%d",
                  m, n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -340,7 +340,7 @@ static void run_zchkbb_single(zchkbb_params_t* params)
 
 check_results:
     for (INT jr = 0; jr < ntest; jr++) {
-        snprintf(ctx, sizeof(ctx), "zchkbb m=%d n=%d k=%d type=%d TEST %d",
+        snprintf(ctx, sizeof(ctx), "cchkbb m=%d n=%d k=%d type=%d TEST %d",
                  m, n, k, jtype, jr + 1);
         set_test_context(ctx);
         assert_residual_below(result[jr], THRESH);
@@ -377,7 +377,7 @@ static void build_test_array(void)
                 p->jwidth = (INT)iw;
                 p->jtype = jtype;
                 snprintf(p->name, sizeof(p->name),
-                         "zchkbb_m%d_n%d_k%d_type%d", m, n, kval, jtype);
+                         "cchkbb_m%d_n%d_k%d_type%d", m, n, kval, jtype);
 
                 g_tests[g_num_tests].name = p->name;
                 g_tests[g_num_tests].test_func = test_zchkbb_case;
@@ -394,7 +394,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("zchkbb", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkbb", g_tests, g_num_tests,
                                     group_setup, group_teardown);
     return 0;
 }

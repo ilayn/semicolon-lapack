@@ -476,7 +476,7 @@ static void build_test_array(void)
                     p->iwk = iwk;
                     p->isort = isort;
                     snprintf(p->name, sizeof(p->name),
-                             "zdrves_n%d_type%d_wk%d_sort%d", n, jtype, iwk, isort);
+                             "cdrves_n%d_type%d_wk%d_sort%d", n, jtype, iwk, isort);
 
                     g_tests[g_num_tests].name = p->name;
                     g_tests[g_num_tests].test_func = test_zdrves_case;
@@ -495,7 +495,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("zdrves", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cdrves", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

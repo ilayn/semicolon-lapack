@@ -358,6 +358,6 @@ int main(void)
         cmocka_unit_test(test_wide_matrix),
     };
 
-    (void)cmocka_run_group_tests_name("dlaswp", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("slaswp", tests, NULL, NULL);
     return 0;
 }

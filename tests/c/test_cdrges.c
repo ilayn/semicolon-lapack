@@ -512,7 +512,7 @@ static void build_test_array(void)
             p->n = n;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
-                     "zdrges_n%d_type%d", n, jtype);
+                     "cdrges_n%d_type%d", n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_zdrges_case;
@@ -529,7 +529,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("zdrges", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cdrges", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

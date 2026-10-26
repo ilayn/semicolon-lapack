@@ -353,6 +353,6 @@ int main(void)
         DSTEQR_TESTS(setup_50),
     };
 
-    (void)cmocka_run_group_tests_name("dsteqr", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("ssteqr", tests, NULL, NULL);
     return 0;
 }

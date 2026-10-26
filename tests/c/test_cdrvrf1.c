@@ -128,7 +128,7 @@ static void build_test_array(void)
                     p->iuplo = iuplo;
                     p->iform = iform;
                     snprintf(p->name, sizeof(p->name),
-                             "zdrvrf1_n%d_scl%d_%c_%c",
+                             "cdrvrf1_n%d_scl%d_%c_%c",
                              NVAL[in], iit,
                              (iuplo == 0) ? 'U' : 'L',
                              (iform == 0) ? 'N' : 'C');
@@ -155,6 +155,6 @@ int main(void)
         return 0;
     }
 
-    (void)_cmocka_run_group_tests("zdrvrf1", g_tests, g_num_tests, NULL, NULL);
+    (void)_cmocka_run_group_tests("cdrvrf1", g_tests, g_num_tests, NULL, NULL);
     return 0;
 }

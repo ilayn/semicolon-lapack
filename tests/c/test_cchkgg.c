@@ -420,7 +420,7 @@ static void run_zchkgg_single(zchkgg_params_t* params)
 
     goto gen_done;
 gen_error:
-    snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: generator error info=%d",
+    snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: generator error info=%d",
              n, jtype, iinfo);
     set_test_context(ctx);
     assert_info_success(iinfo);
@@ -438,7 +438,7 @@ gen_done:
 
     cgeqr2(n, n, T, lda, work, &work[n], &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CGEQR2 info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CGEQR2 info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -447,7 +447,7 @@ gen_done:
 
     cunm2r("L", "C", n, n, n, T, lda, work, H, lda, &work[n], &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CUNM2R info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CUNM2R info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -457,7 +457,7 @@ gen_done:
     claset("Full", n, n, CMPLXF(0.0f, 0.0f), CMPLXF(1.0f, 0.0f), U, ldu);
     cunm2r("R", "N", n, n, n, T, lda, work, U, ldu, &work[n], &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CUNM2R info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CUNM2R info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -467,7 +467,7 @@ gen_done:
     /* 0-based: ilo=0, ihi=n-1 */
     cgghrd("V", "I", n, 0, n - 1, H, lda, T, lda, U, ldu, V, ldu, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CGGHRD info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CGGHRD info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -496,7 +496,7 @@ gen_done:
     chgeqz("E", "N", "N", n, 0, n - 1, S2, lda, P2, lda,
            alpha3, beta3, Q, ldu, Z, ldu, work, lwork, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CHGEQZ(E) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CHGEQZ(E) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -510,7 +510,7 @@ gen_done:
     chgeqz("S", "N", "N", n, 0, n - 1, S2, lda, P2, lda,
            alpha1, beta1, Q, ldu, Z, ldu, work, lwork, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CHGEQZ(S) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CHGEQZ(S) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -524,7 +524,7 @@ gen_done:
     chgeqz("S", "I", "I", n, 0, n - 1, S1, lda, P1, lda,
            alpha1, beta1, Q, ldu, Z, ldu, work, lwork, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CHGEQZ(V) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CHGEQZ(V) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -562,7 +562,7 @@ gen_done:
     ctgevc("L", "S", llwork, n, S1, lda, P1, lda, evectl, ldu,
            cdumma, ldu, n, &in_out, work, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CTGEVC(L,S1) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CTGEVC(L,S1) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -578,7 +578,7 @@ gen_done:
     ctgevc("L", "S", llwork, n, S1, lda, P1, lda,
            &evectl[i1 * ldu], ldu, cdumma, ldu, n, &in_out, work, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CTGEVC(L,S2) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CTGEVC(L,S2) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -595,7 +595,7 @@ gen_done:
     ctgevc("L", "B", llwork, n, S1, lda, P1, lda, evectl, ldu,
            cdumma, ldu, n, &in_out, work, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CTGEVC(L,B) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CTGEVC(L,B) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -618,7 +618,7 @@ gen_done:
     ctgevc("R", "S", llwork, n, S1, lda, P1, lda, cdumma, ldu,
            evectr, ldu, n, &in_out, work, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CTGEVC(R,S1) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CTGEVC(R,S1) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -634,7 +634,7 @@ gen_done:
     ctgevc("R", "S", llwork, n, S1, lda, P1, lda, cdumma, ldu,
            &evectr[i1 * ldu], ldu, n, &in_out, work, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CTGEVC(R,S2) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CTGEVC(R,S2) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -651,7 +651,7 @@ gen_done:
     ctgevc("R", "B", llwork, n, S1, lda, P1, lda, cdumma, ldu,
            evectr, ldu, n, &in_out, work, rwork, &iinfo);
     if (iinfo != 0) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d: CTGEVC(R,B) info=%d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d: CTGEVC(R,B) info=%d",
                  n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -696,7 +696,7 @@ gen_done:
     /* ================================================================ */
 
     for (INT jr = 0; jr < NTEST; jr++) {
-        snprintf(ctx, sizeof(ctx), "zchkgg n=%d type=%d TEST %d",
+        snprintf(ctx, sizeof(ctx), "cchkgg n=%d type=%d TEST %d",
                  n, jtype, jr + 1);
         set_test_context(ctx);
         assert_residual_ok(result[jr]);
@@ -735,7 +735,7 @@ static void build_test_array(void)
             p->jsize = (INT)in;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
-                     "zchkgg_n%d_type%d", n_val, jtype);
+                     "cchkgg_n%d_type%d", n_val, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_zchkgg_case;
@@ -751,7 +751,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("zchkgg", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkgg", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

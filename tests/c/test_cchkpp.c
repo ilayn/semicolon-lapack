@@ -377,7 +377,7 @@ static void build_test_array(void)
                 p->n = n;
                 p->imat = imat;
                 p->iuplo = iuplo;
-                snprintf(p->name, sizeof(p->name), "zchkpp_n%d_%c_type%d",
+                snprintf(p->name, sizeof(p->name), "cchkpp_n%d_%c_type%d",
                          n, UPLOS[iuplo], imat);
 
                 /* Create CMocka test entry */
@@ -399,7 +399,7 @@ int main(void)
     build_test_array();
 
     /* Run all tests with shared workspace */
-    (void)_cmocka_run_group_tests("zchkpp", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkpp", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

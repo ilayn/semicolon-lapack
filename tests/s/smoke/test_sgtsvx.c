@@ -457,6 +457,6 @@ int main(void)
         DGTSVX_TESTS(setup_n50_nrhs15),
     };
 
-    (void)cmocka_run_group_tests_name("dgtsvx", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgtsvx", tests, NULL, NULL);
     return 0;
 }

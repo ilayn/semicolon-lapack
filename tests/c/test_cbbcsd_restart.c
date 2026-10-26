@@ -84,6 +84,6 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_restart_u2_rotation),
     };
-    (void)cmocka_run_group_tests_name("zbbcsd_restart", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("cbbcsd_restart", tests, NULL, NULL);
     return 0;
 }

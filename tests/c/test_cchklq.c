@@ -270,7 +270,7 @@ static void build_test_array(void)
                     p->n = n;
                     p->imat = imat;
                     p->inb = inb;
-                    snprintf(p->name, sizeof(p->name), "zchklq_m%d_n%d_type%d_nb%d_%d",
+                    snprintf(p->name, sizeof(p->name), "cchklq_m%d_n%d_type%d_nb%d_%d",
                              m, n, imat, nb, inb);
 
                     g_tests[g_num_tests].name = p->name;
@@ -290,7 +290,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("zchklq", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchklq", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

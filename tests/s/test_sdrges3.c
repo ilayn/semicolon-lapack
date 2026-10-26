@@ -542,7 +542,7 @@ int main(void)
         }
     }
 
-    (void)cmocka_run_group_tests_name("ddrges3", all_tests, group_setup,
+    (void)cmocka_run_group_tests_name("sdrges3", all_tests, group_setup,
                                        group_teardown);
     return 0;
 }

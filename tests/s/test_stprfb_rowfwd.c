@@ -213,6 +213,6 @@ int main(void)
         cmocka_unit_test(test_tprfb_ldwork),
         cmocka_unit_test(test_tpmlqt_left),
     };
-    (void)cmocka_run_group_tests_name("dtprfb_rowfwd", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("stprfb_rowfwd", tests, NULL, NULL);
     return 0;
 }

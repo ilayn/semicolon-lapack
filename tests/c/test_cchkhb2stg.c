@@ -297,7 +297,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
 
         if (iinfo != 0) {
             snprintf(ctx, sizeof(ctx),
-                     "zchkhb2stg n=%d k=%d type=%d: Generator info=%d",
+                     "cchkhb2stg n=%d k=%d type=%d: Generator info=%d",
                      n, k, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
@@ -314,7 +314,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhb2stg n=%d k=%d type=%d: CHBTRD(U) info=%d",
+                 "cchkhb2stg n=%d k=%d type=%d: CHBTRD(U) info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -338,7 +338,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
            NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhb2stg n=%d k=%d type=%d: CSTEQR(N) info=%d",
+                 "cchkhb2stg n=%d k=%d type=%d: CSTEQR(N) info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -367,7 +367,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
            NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhb2stg n=%d k=%d type=%d: CSTEQR(N) D2 info=%d",
+                 "cchkhb2stg n=%d k=%d type=%d: CSTEQR(N) D2 info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -400,7 +400,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhb2stg n=%d k=%d type=%d: CHBTRD(L) info=%d",
+                 "cchkhb2stg n=%d k=%d type=%d: CHBTRD(L) info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -434,7 +434,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
            NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhb2stg n=%d k=%d type=%d: CSTEQR(N) D3 info=%d",
+                 "cchkhb2stg n=%d k=%d type=%d: CSTEQR(N) D3 info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -476,7 +476,7 @@ static void run_zchkhb2stg_single(zchkhb2stg_params_t* params)
 
 check_results:
     for (INT jr = 0; jr < ntest; jr++) {
-        snprintf(ctx, sizeof(ctx), "zchkhb2stg n=%d k=%d type=%d TEST %d",
+        snprintf(ctx, sizeof(ctx), "cchkhb2stg n=%d k=%d type=%d TEST %d",
                  n, k, jtype, jr + 1);
         set_test_context(ctx);
         assert_residual_below(result[jr], THRESH);
@@ -513,7 +513,7 @@ static void build_test_array(void)
                 p->jwidth = (INT)iw;
                 p->jtype = jtype;
                 snprintf(p->name, sizeof(p->name),
-                         "zchkhb2stg_n%d_k%d_type%d", n, kval, jtype);
+                         "cchkhb2stg_n%d_k%d_type%d", n, kval, jtype);
 
                 g_tests[g_num_tests].name = p->name;
                 g_tests[g_num_tests].test_func = test_zchkhb2stg_case;
@@ -530,7 +530,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("zchkhb2stg", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkhb2stg", g_tests, g_num_tests,
                                     group_setup, group_teardown);
     return 0;
 }

@@ -198,6 +198,6 @@ int main(void)
         cmocka_unit_test_setup_teardown(test_dormlq, setup_20x10, orm_teardown),
         cmocka_unit_test_setup_teardown(test_dormlq, setup_10x20, orm_teardown),
     };
-    (void)cmocka_run_group_tests_name("dormqr", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sormqr", tests, NULL, NULL);
     return 0;
 }

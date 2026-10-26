@@ -186,6 +186,6 @@ int main(void)
         cmocka_unit_test(test_dpoequ_n1),
     };
 
-    (void)cmocka_run_group_tests_name("dpoequ", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("spoequ", tests, NULL, NULL);
     return 0;
 }

@@ -109,6 +109,6 @@ int main(void)
         cmocka_unit_test(test_fixed_minlwork),
         cmocka_unit_test(test_empty_jpvt),
     };
-    (void)cmocka_run_group_tests_name("zgeqp3_fixed", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("cgeqp3_fixed", tests, NULL, NULL);
     return 0;
 }

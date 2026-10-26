@@ -194,6 +194,6 @@ int main(void)
         cmocka_unit_test(test_negligible_pivot),
         cmocka_unit_test(test_multishift),
     };
-    (void)cmocka_run_group_tests_name("zgges3_scaling", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("cgges3_scaling", tests, NULL, NULL);
     return 0;
 }

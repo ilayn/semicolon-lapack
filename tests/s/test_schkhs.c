@@ -386,7 +386,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 
         if (iinfo != 0) {
             snprintf(ctx, sizeof(ctx),
-                     "dchkhs n=%d type=%d: Generator info=%d", n, jtype, iinfo);
+                     "schkhs n=%d type=%d: Generator info=%d", n, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
             return;
@@ -404,7 +404,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     if (iinfo != 0) {
         result[0] = ulpinv;
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SGEHRD info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SGEHRD info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -439,7 +439,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     if (iinfo != 0) {
         if (iinfo <= n + 2) {
             snprintf(ctx, sizeof(ctx),
-                     "dchkhs n=%d type=%d: SHSEQR(E) info=%d", n, jtype, iinfo);
+                     "schkhs n=%d type=%d: SHSEQR(E) info=%d", n, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
             return;
@@ -453,7 +453,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            UZ, ldu, work, nwork, &iinfo);
     if (iinfo != 0 && iinfo <= n + 2) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SHSEQR(S) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SHSEQR(S) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -467,7 +467,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            UZ, ldu, work, nwork, &iinfo);
     if (iinfo != 0 && iinfo <= n + 2) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SHSEQR(V) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SHSEQR(V) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -547,7 +547,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            evectr, ldu, n, &in, work, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: STREVC(R,A) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: STREVC(R,A) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -562,7 +562,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            evectl, ldu, n, &in, work, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: STREVC(R,S) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: STREVC(R,S) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -600,7 +600,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            dumma, ldu, n, &in, work, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: STREVC(L,A) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: STREVC(L,A) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -615,7 +615,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            dumma, ldu, n, &in, work, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: STREVC(L,S) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: STREVC(L,S) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -659,7 +659,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            work, iwork, iwork + n, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SHSEIN(R) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SHSEIN(R) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -683,7 +683,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            work, iwork, iwork + n, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SHSEIN(L) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SHSEIN(L) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -707,7 +707,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            work, nwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SORMHR(R) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SORMHR(R) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -727,7 +727,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
            work, nwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: SORMHR(L) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: SORMHR(L) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -753,7 +753,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
             evectr, ldu, n, &in, work, nwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: STREVC3(R,B) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: STREVC3(R,B) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -772,7 +772,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
             dumma, ldu, n, &in, work, nwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkhs n=%d type=%d: STREVC3(L,B) info=%d", n, jtype, iinfo);
+                 "schkhs n=%d type=%d: STREVC3(L,B) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -787,7 +787,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     /* ================================================================ */
 
     for (INT jr = 0; jr < NTEST; jr++) {
-        snprintf(ctx, sizeof(ctx), "dchkhs n=%d type=%d TEST %d",
+        snprintf(ctx, sizeof(ctx), "schkhs n=%d type=%d TEST %d",
                  n, jtype, jr + 1);
         set_test_context(ctx);
         assert_residual_ok(result[jr]);
@@ -826,7 +826,7 @@ static void build_test_array(void)
             p->jsize = (INT)in;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
-                     "dchkhs_n%d_type%d", n, jtype);
+                     "schkhs_n%d_type%d", n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_dchkhs_case;
@@ -842,7 +842,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("dchkhs", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("schkhs", g_tests, g_num_tests,
                                     group_setup, group_teardown);
     return 0;
 }

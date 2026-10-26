@@ -469,9 +469,9 @@ int main(void)
     };
 
     INT result = 0;
-    result += cmocka_run_group_tests_name("dgeesx_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeesx_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeesx_n20", tests_n20, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeesx_n5", tests_n5, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeesx_n10", tests_n10, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeesx_n20", tests_n20, NULL, NULL);
 
     return result;
 }

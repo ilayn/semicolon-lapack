@@ -204,7 +204,7 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
 
     /* shseqr may return info > 0 if it doesn't converge, which is not a failure */
     if (info < 0) {
-        fail_msg("dhseqr returned info = %d", info);
+        fail_msg("shseqr returned info = %d", info);
     }
 
     /* Copy H to T2 for Schur decomposition without Z */
@@ -215,7 +215,7 @@ static void test_qr_schur(dhseqr_fixture_t* fix)
            NULL, lda, fix->work, lwork, &info);
 
     if (info < 0) {
-        fail_msg("dhseqr (no Z) returned info = %d", info);
+        fail_msg("shseqr (no Z) returned info = %d", info);
     }
 
     /* Test 3: | H - Z*T*Z' | / ( |H| n ulp ) */
@@ -286,7 +286,7 @@ static void test_eigenvalues_only(void** state)
            NULL, lda, fix->work, lwork, &info);
 
     if (info < 0) {
-        fail_msg("dhseqr (E) returned info = %d", info);
+        fail_msg("shseqr (E) returned info = %d", info);
     }
 
     /* The eigenvalues should be reasonable (not NaN or Inf) */
@@ -343,7 +343,7 @@ static void test_diagonal_matrix(void** state)
 
     /* Should succeed */
     if (info < 0) {
-        fail_msg("dhseqr returned info = %d for diagonal matrix", info);
+        fail_msg("shseqr returned info = %d for diagonal matrix", info);
     }
 
     /* Eigenvalues should be 1, 2, ..., n (real, no imaginary part) */
@@ -387,10 +387,10 @@ int main(void)
     };
 
     INT result = 0;
-    result += cmocka_run_group_tests_name("dhseqr_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dhseqr_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dhseqr_n20", tests_n20, NULL, NULL);
-    result += cmocka_run_group_tests_name("dhseqr_n32", tests_n32, NULL, NULL);
+    result += cmocka_run_group_tests_name("shseqr_n5", tests_n5, NULL, NULL);
+    result += cmocka_run_group_tests_name("shseqr_n10", tests_n10, NULL, NULL);
+    result += cmocka_run_group_tests_name("shseqr_n20", tests_n20, NULL, NULL);
+    result += cmocka_run_group_tests_name("shseqr_n32", tests_n32, NULL, NULL);
 
     return result;
 }

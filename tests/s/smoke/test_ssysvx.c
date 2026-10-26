@@ -459,6 +459,6 @@ int main(void)
         DSYSVX_TESTS(setup_50_5),
     };
 
-    (void)cmocka_run_group_tests_name("dsysvx", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("ssysvx", tests, NULL, NULL);
     return 0;
 }
