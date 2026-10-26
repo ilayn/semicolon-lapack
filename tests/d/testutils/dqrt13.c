@@ -40,10 +40,8 @@ void dqrt13(const INT scale, const INT m, const INT n,
             f64* A, const INT lda, f64* norma,
             uint64_t state[static 4])
 {
-    const f64 ONE = 1.0;
-
     INT info, j;
-    f64 bignum, smlnum;
+    f64 bigup, smlnum;
     (void)(m < n);  /* minmn was computed but unused */
     f64 dummy[1];
 
@@ -71,13 +69,16 @@ void dqrt13(const INT scale, const INT m, const INT n,
     if (scale != 1) {
         *norma = dlange("M", m, n, A, lda, dummy);
         smlnum = dlamch("S");  /* Safe minimum */
-        bignum = ONE / smlnum;
         smlnum = smlnum / dlamch("E");  /* Safe minimum / epsilon */
-        bignum = ONE / smlnum;
+
+        /* The least squares drivers scale a matrix whose largest
+         * entry lies outside [SMLNUM, BIGNUM].  Scale up past
+         * that bound, so that their scaling is exercised. */
+        bigup = dlamch("O") / 256;
 
         if (scale == 2) {
             /* Matrix scaled up */
-            dlascl("G", 0, 0, *norma, bignum, m, n, A, lda, &info);
+            dlascl("G", 0, 0, *norma, bigup, m, n, A, lda, &info);
         } else if (scale == 3) {
             /* Matrix scaled down */
             dlascl("G", 0, 0, *norma, smlnum, m, n, A, lda, &info);

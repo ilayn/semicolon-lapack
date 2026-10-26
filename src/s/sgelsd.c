@@ -393,18 +393,29 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
                B, ldb, &work[nwork], lwork - nwork, &iinfo);
     }
 
-    /* Undo scaling */
+    /* Undo scaling.  The solution carries the factor of B divided by
+     * the factor of A.  When both were scaled to the same end of the
+     * range the constants cancel and BNRM/ANRM is applied in one step:
+     * applied in two, the first step could flush or overflow an entry
+     * that the second would have brought back into range. */
+    if (iascl == ibscl && iascl != 0) {
+        slascl("G", 0, 0, anrm, bnrm, n, nrhs, B, ldb, &iinfo);
+    } else {
+        if (iascl == 1) {
+            slascl("G", 0, 0, anrm, smlnum, n, nrhs, B, ldb, &iinfo);
+        } else if (iascl == 2) {
+            slascl("G", 0, 0, anrm, bignum, n, nrhs, B, ldb, &iinfo);
+        }
+        if (ibscl == 1) {
+            slascl("G", 0, 0, smlnum, bnrm, n, nrhs, B, ldb, &iinfo);
+        } else if (ibscl == 2) {
+            slascl("G", 0, 0, bignum, bnrm, n, nrhs, B, ldb, &iinfo);
+        }
+    }
     if (iascl == 1) {
-        slascl("G", 0, 0, anrm, smlnum, n, nrhs, B, ldb, &iinfo);
         slascl("G", 0, 0, smlnum, anrm, minmn, 1, S, minmn, &iinfo);
     } else if (iascl == 2) {
-        slascl("G", 0, 0, anrm, bignum, n, nrhs, B, ldb, &iinfo);
         slascl("G", 0, 0, bignum, anrm, minmn, 1, S, minmn, &iinfo);
-    }
-    if (ibscl == 1) {
-        slascl("G", 0, 0, smlnum, bnrm, n, nrhs, B, ldb, &iinfo);
-    } else if (ibscl == 2) {
-        slascl("G", 0, 0, bignum, bnrm, n, nrhs, B, ldb, &iinfo);
     }
 
 cleanup:

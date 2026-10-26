@@ -40,10 +40,8 @@ void zqrt13(const INT scale, const INT m, const INT n,
             c128* A, const INT lda, f64* norma,
             uint64_t state[static 4])
 {
-    const f64 ONE = 1.0;
-
     INT info, j;
-    f64 bignum, smlnum;
+    f64 bigup, smlnum;
     f64 dummy[1];
 
     if (m <= 0 || n <= 0) {
@@ -68,13 +66,16 @@ void zqrt13(const INT scale, const INT m, const INT n,
     if (scale != 1) {
         *norma = zlange("M", m, n, A, lda, dummy);
         smlnum = dlamch("S");
-        bignum = ONE / smlnum;
         smlnum = smlnum / dlamch("E");
-        bignum = ONE / smlnum;
+
+        /* The least squares drivers scale a matrix whose largest
+         * entry lies outside [SMLNUM, BIGNUM].  Scale up past
+         * that bound, so that their scaling is exercised. */
+        bigup = dlamch("O") / 256;
 
         if (scale == 2) {
             /* matrix scaled up */
-            zlascl("G", 0, 0, *norma, bignum, m, n, A, lda, &info);
+            zlascl("G", 0, 0, *norma, bigup, m, n, A, lda, &info);
         } else if (scale == 3) {
             /* matrix scaled down */
             zlascl("G", 0, 0, *norma, smlnum, m, n, A, lda, &info);
