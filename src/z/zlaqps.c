@@ -73,7 +73,7 @@ void zlaqps(const INT m, const INT n, const INT offset, const INT nb,
     lastrk = m < n + offset ? m : n + offset;
     lsticc = 0;
     k = 0;
-    tol3z = sqrt(DBL_EPSILON);
+    tol3z = sqrt(dlamch("E"));
 
     /*
      * Beginning of while loop.

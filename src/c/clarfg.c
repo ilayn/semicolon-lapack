@@ -67,7 +67,7 @@ void clarfg(const INT n, c64* alpha, c64* x,
         /* general case */
 
         beta = -copysignf(slapy3(alphr, alphi, xnorm), alphr);
-        safmin = FLT_MIN / FLT_EPSILON;
+        safmin = slamch("S") / slamch("E");
         rsafmn = ONE / safmin;
 
         knt = 0;

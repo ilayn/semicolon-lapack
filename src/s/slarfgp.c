@@ -74,7 +74,7 @@ void slarfgp(const INT n, f32* alpha, f32* restrict x,
          * General case
          */
         beta = copysignf(slapy2(*alpha, xnorm), *alpha);
-        smlnum = FLT_MIN / FLT_EPSILON;
+        smlnum = slamch("S") / slamch("E");
         knt = 0;
 
         if (fabsf(beta) < smlnum) {

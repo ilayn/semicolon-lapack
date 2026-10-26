@@ -155,7 +155,7 @@ void dsyevx(const char* jobz, const char* range, const char* uplo,
 
     /* Get machine constants */
     safmin = dlamch("S");
-    eps = dlamch("E");
+    eps = dlamch("P");
     smlnum = safmin / eps;
     bignum = ONE / smlnum;
     rmin = sqrt(smlnum);

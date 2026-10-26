@@ -173,7 +173,7 @@ void ssyevr(const char* jobz, const char* range, const char* uplo,
 
     /* Get machine constants */
     safmin = slamch("S");
-    eps = slamch("E");
+    eps = slamch("P");
     smlnum = safmin / eps;
     bignum = ONE / smlnum;
     rmin = sqrtf(smlnum);

@@ -70,7 +70,7 @@ void claic1(
            norma, s1, s2, scl, t, test, tmp, zeta1, zeta2;
     c64 alpha, cosine, sine;
 
-    eps = FLT_EPSILON;
+    eps = slamch("E");
     cblas_cdotc_sub(j, x, 1, w, 1, &alpha);
 
     absalp = cabsf(alpha);

@@ -52,7 +52,7 @@ void zlaqp2(const INT m, const INT n, const INT offset,
             c128* restrict work)
 {
     INT mn = (m - offset) < n ? (m - offset) : n;
-    f64 tol3z = sqrt(DBL_EPSILON);
+    f64 tol3z = sqrt(dlamch("E"));
 
     /* Compute factorization. */
     for (INT i = 0; i < mn; i++) {

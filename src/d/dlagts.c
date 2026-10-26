@@ -89,7 +89,7 @@ void dlagts(
         return;
     }
 
-    eps = DBL_EPSILON;
+    eps = dlamch("E");
     sfmin = DBL_MIN;
     bignum = 1.0 / sfmin;
 

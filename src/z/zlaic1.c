@@ -70,7 +70,7 @@ void zlaic1(
            norma, s1, s2, scl, t, test, tmp, zeta1, zeta2;
     c128 alpha, cosine, sine;
 
-    eps = DBL_EPSILON;
+    eps = dlamch("E");
     cblas_zdotc_sub(j, x, 1, w, 1, &alpha);
 
     absalp = cabs(alpha);

@@ -231,7 +231,7 @@ void dsysvx(
            ferr, berr, work, iwork, info);
 
     /* Set INFO = N+1 if the matrix is singular to working precision. */
-    if (*rcond < DBL_EPSILON) {
+    if (*rcond < dlamch("E")) {
         *info = n + 1;
     }
 

@@ -110,7 +110,7 @@ void cheev(const char* jobz, const char* uplo, const INT n,
 
     /* Get machine constants */
     safmin = slamch("S");
-    eps = slamch("E");
+    eps = slamch("P");
     smlnum = safmin / eps;
     bignum = ONE / smlnum;
     rmin = sqrtf(smlnum);
