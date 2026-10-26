@@ -20,6 +20,13 @@ subdir('z')
 subdir('c')
 
 # Precision-independent tests
+test('name_map_current',
+  python,
+  args: [files('../scripts/generate_name_map.py'), '--check'],
+  suite: 'build',
+  timeout: 60,
+)
+
 test('rng_validation',
   executable('test_rng_validation', 'test_rng_validation.c',
     include_directories: include_directories('.'),
