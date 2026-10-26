@@ -8,6 +8,8 @@ on:
       - 'src/**/*.c'
       - 'src/**/*.h'
       - 'include/**'
+      - 'scripts/gen_docs.py'
+      - '.github/workflows/docs.yml'
   pull_request:
     branches: [main]
     paths:
@@ -15,6 +17,8 @@ on:
       - 'src/**/*.c'
       - 'src/**/*.h'
       - 'include/**'
+      - 'scripts/gen_docs.py'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
