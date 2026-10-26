@@ -1,0 +1,5 @@
+# Mechanical commits that git blame skips.
+# Local use: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# TST: Generated s/c tests report their own names (#44)
+44303067958286b74da708d790ce0925ac80bfc6
