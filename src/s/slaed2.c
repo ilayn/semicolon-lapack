@@ -27,7 +27,7 @@
  *                        submatrices to be combined.
  *                        On exit, D contains the trailing (N-K) updated
  *                        eigenvalues (those which were deflated) sorted into
- *                        increasing order.
+ *                        decreasing order.
  * @param[in,out] Q       Double precision array, dimension (LDQ, N).
  *                        On entry, Q contains the eigenvectors of two
  *                        submatrices in the two square blocks with corners at
