@@ -5,6 +5,7 @@
 
 #include <math.h>
 #include "semicolon_lapack_single.h"
+#include "lapack_tuning.h"
 
 /**
  * SSTEBZ computes the eigenvalues of a symmetric tridiagonal
@@ -131,13 +132,13 @@ void sstebz(const char* range, const char* order, const INT n,
 
     /* Get machine constants
      * NB is the minimum vector length for vector bisection, or 0
-     * if only scalar is to be done.
-     * SSTEBZ has no special case in ILAENV, so NB defaults to 1,
-     * and since NB<=1 implies NB=0, we use scalar only. */
+     * if only scalar is to be done. */
     safemn = slamch("S");
     ulp = slamch("P");
     rtoli = ulp * RELFAC;
-    nb = 0;  /* scalar bisection only */
+    nb = lapack_get_nb("STEBZ");
+    if (nb <= 1)
+        nb = 0;
 
     /* Special case when N=1 */
     if (n == 1) {
