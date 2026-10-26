@@ -20,7 +20,7 @@
  *         CHSEIN computes the left and right eigenvector matrices
  *         Y and X for H, using inverse iteration.
  *
- * Test ratios (16 total):
+ * Test ratios (17 total):
  *                    *
  *   (1)  | A - U H U  | / ( |A| n ulp )
  *                *
@@ -42,17 +42,19 @@
  *
  *   (10) | L*T - W*L | / ( |T| |L| ulp )
  *
- *   (11) | HX - XW | / ( |H| |X| ulp )     (from inverse iteration)
+ *   (11) | ( W3 - W1 ) s | / ( max(|W1|,|W3|) ulp )
  *
- *   (12) | Y*H - W*Y | / ( |H| |Y| ulp )   (from inverse iteration)
+ *   (12) | HX - XW | / ( |H| |X| ulp )     (from inverse iteration)
  *
- *   (13) | AX - XW | / ( |A| |X| ulp )      (CUNMHR on inverse iteration)
+ *   (13) | Y*H - W*Y | / ( |H| |Y| ulp )   (from inverse iteration)
  *
- *   (14) | Y*A - W*Y | / ( |A| |Y| ulp )    (CUNMHR on inverse iteration)
+ *   (14) | AX - XW | / ( |A| |X| ulp )      (CUNMHR on inverse iteration)
  *
- *   (15) | AR - RW | / ( |A| |R| ulp )      (CTREVC3 backtransform)
+ *   (15) | Y*A - W*Y | / ( |A| |Y| ulp )    (CUNMHR on inverse iteration)
  *
- *   (16) | L*A - W*L | / ( |A| |L| ulp )   (CTREVC3 backtransform)
+ *   (16) | AR - RW | / ( |A| |R| ulp )      (CTREVC3 backtransform)
+ *
+ *   (17) | L*A - W*L | / ( |A| |L| ulp )   (CTREVC3 backtransform)
  *
  * Matrix types: 21 types (MAXTYP = 21)
  */
@@ -64,12 +66,23 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 30.0f
+#define THRESH 20.0f
 #define MAXTYP 21
-#define NTEST  16
+#define NTEST  17
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 20, 50};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS, IACC22 from nep.in */
+static const INT NBVAL[]  = {1, 3, 3, 3, 20};
+static const INT NBMIN[]  = {2, 2, 2, 2, 2};
+static const INT NXVAL[]  = {1, 0, 5, 9, 1};
+static const INT INMIN[]  = {11, 12, 11, 15, 11};
+static const INT INWIN[]  = {2, 3, 5, 3, 2};
+static const INT INIBL[]  = {0, 5, 7, 3, 200};
+static const INT ISHFTS[] = {1, 2, 4, 2, 1};
+static const INT IACC22[] = {0, 1, 2, 0, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* ===================================================================== */
 /* DATA arrays from zchkhs.f lines 481-486                               */
@@ -99,6 +112,7 @@ static const INT kconds[MAXTYP] = {
 typedef struct {
     INT jsize;    /* index into NVAL[] */
     INT jtype;    /* matrix type 1..21 */
+    INT iparm;    /* index into the nep.in parameter sets */
     char name[96];
 } zchkhs_params_t;
 
@@ -117,6 +131,7 @@ typedef struct {
     c64* evecty;
     c64* evectx;
     c64* W1;
+    c64* W2;
     c64* W3;
     c64* tau;
     c64* work;
@@ -163,6 +178,7 @@ static int group_setup(void** state)
     g_ws->evectx = malloc(n2 * sizeof(c64));
 
     g_ws->W1  = malloc(nmax * sizeof(c64));
+    g_ws->W2  = malloc(nmax * sizeof(c64));
     g_ws->W3  = malloc(nmax * sizeof(c64));
     g_ws->tau  = malloc(nmax * sizeof(c64));
 
@@ -177,7 +193,7 @@ static int group_setup(void** state)
     if (!g_ws->A || !g_ws->H || !g_ws->T1 || !g_ws->T2 ||
         !g_ws->U || !g_ws->Z || !g_ws->UZ || !g_ws->UU ||
         !g_ws->evectl || !g_ws->evectr || !g_ws->evecty || !g_ws->evectx ||
-        !g_ws->W1 || !g_ws->W3 || !g_ws->tau ||
+        !g_ws->W1 || !g_ws->W2 || !g_ws->W3 || !g_ws->tau ||
         !g_ws->work || !g_ws->rwork || !g_ws->iwork || !g_ws->selectarr) {
         return -1;
     }
@@ -204,6 +220,7 @@ static int group_teardown(void** state)
         free(g_ws->evecty);
         free(g_ws->evectx);
         free(g_ws->W1);
+        free(g_ws->W2);
         free(g_ws->W3);
         free(g_ws->tau);
         free(g_ws->work);
@@ -225,6 +242,16 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     const INT n = NVAL[params->jsize];
     const INT jtype = params->jtype;
     const INT jt = jtype - 1;
+    const INT ip = params->iparm;
+
+    xlaenv(1, NBVAL[ip]);
+    xlaenv(2, NBMIN[ip]);
+    xlaenv(3, NXVAL[ip]);
+    xlaenv(12, (INMIN[ip] > 11) ? INMIN[ip] : 11);
+    xlaenv(13, INWIN[ip]);
+    xlaenv(14, INIBL[ip]);
+    xlaenv(15, ISHFTS[ip]);
+    xlaenv(16, IACC22[ip]);
 
     if (n == 0) return;
 
@@ -245,6 +272,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     c64* evecty = g_ws->evecty;
     c64* evectx = g_ws->evectx;
     c64* W1     = g_ws->W1;
+    c64* W2     = g_ws->W2;
     c64* W3     = g_ws->W3;
     c64* tau    = g_ws->tau;
     c64* work   = g_ws->work;
@@ -436,10 +464,10 @@ static void run_zchkhs_single(zchkhs_params_t* params)
         }
     }
 
-    /* Eigenvalues (W1) and Full Schur Form (T2) */
+    /* Eigenvalues (W2) and Full Schur Form (T2) */
     clacpy(" ", n, n, H, lda, T2, lda);
 
-    chseqr("S", "N", n, 0, n - 1, T2, lda, W1,
+    chseqr("S", "N", n, 0, n - 1, T2, lda, W2,
            UZ, ldu, work, nwork, &iinfo);
     if (iinfo != 0 && iinfo <= n + 2) {
         snprintf(ctx, sizeof(ctx),
@@ -480,17 +508,17 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     /* Test 7: | T2 - T1 | / ( |T| n ulp ) */
     cget10(n, n, T2, lda, T1, lda, work, rwork, &result[6]);
 
-    /* Test 8: | W3 - W1 | / ( max(|W1|,|W3|) ulp ) */
+    /* Test 8: | W2 - W1 | / ( max(|W1|,|W2|) ulp ) */
     {
         f32 temp1 = 0.0f;
         f32 temp2 = 0.0f;
         for (INT j = 0; j < n; j++) {
             f32 w1mag = cabsf(W1[j]);
-            f32 w3mag = cabsf(W3[j]);
-            f32 wmax = (w1mag > w3mag) ? w1mag : w3mag;
+            f32 w2mag = cabsf(W2[j]);
+            f32 wmax = (w1mag > w2mag) ? w1mag : w2mag;
             if (wmax > temp1) temp1 = wmax;
 
-            f32 wdiff = cabsf(W1[j] - W3[j]);
+            f32 wdiff = cabsf(W1[j] - W2[j]);
             if (wdiff > temp2) temp2 = wdiff;
         }
         f32 denom = (temp1 > temp2) ? temp1 : temp2;
@@ -569,6 +597,39 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     cget22("C", "N", "C", n, T1, lda, evectl, ldu, W1, work, rwork, &dumma[2]);
     result[9] = dumma[2];
 
+    /*
+     * Do Test 11: | ( W3 - W1 ) s | / ( max(|W1|,|W3|) ulp )
+     * W1 comes from JOB = 'S' and W3 from JOB = 'E'.  Unlike test
+     * 8, which varies only COMPZ, these two are not expected to
+     * agree exactly: the paths cover different index ranges and
+     * need not round alike.  s(j) = |y(j)**H x(j)| over
+     * ||y(j)|| ||x(j)||, the reciprocal condition number of
+     * eigenvalue j of T1, is what makes the comparison meaningful.
+     * A backward error eps in H moves that eigenvalue by
+     * eps / s(j), so the two can only be asked to agree to within
+     * |dW(j)| s(j); s(j) = 1 for a normal matrix.  Eigenvalues
+     * with s(j) < sqrt(ulp) are skipped: those are the ones the
+     * two paths have been seen to return in a different order,
+     * which the index-wise comparison could not tell apart from a
+     * real error.
+     */
+    result[10] = ulpinv;
+    {
+        f32 temp1 = 0.0f;
+        f32 temp2 = 0.0f;
+        for (INT j = 0; j < n; j++) {
+            f32 xnorm = cblas_scnrm2(n, &evectr[j * ldu], 1);
+            f32 ynorm = cblas_scnrm2(n, &evectl[j * ldu], 1);
+            c64 dot;
+            cblas_cdotc_sub(n, &evectl[j * ldu], 1, &evectr[j * ldu], 1, &dot);
+            f32 sj = cabsf(dot) / fmaxf(xnorm * ynorm, unfl);
+            temp1 = fmaxf(temp1, fmaxf(cabsf(W1[j]), cabsf(W3[j])));
+            if (sj >= rtulp)
+                temp2 = fmaxf(temp2, sj * cabsf(W1[j] - W3[j]));
+        }
+        result[10] = temp2 / fmaxf(unfl, ulp * fmaxf(temp1, temp2));
+    }
+
     /* Compute selected left eigenvectors and confirm they agree */
     ctrevc("L", "S", selectarr, n, T1, lda, evectr, ldu,
            cdumma, ldu, n, &in, work, rwork, &iinfo);
@@ -594,10 +655,10 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     }
 
     /* ================================================================ */
-    /* Tests 11-12: CHSEIN eigenvectors of H via inverse iteration      */
+    /* Tests 12-13: CHSEIN eigenvectors of H via inverse iteration      */
     /* ================================================================ */
 
-    result[10] = ulpinv;
+    result[11] = ulpinv;
     for (INT j = 0; j < n; j++)
         selectarr[j] = 1;
 
@@ -613,15 +674,15 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 11: | HX - XW | / ( |H| |X| ulp ) */
+        /* Test 12: | HX - XW | / ( |H| |X| ulp ) */
         cget22("N", "N", "N", n, H, lda, evectx, ldu, W3,
                work, rwork, dumma);
         if (dumma[0] < ulpinv)
-            result[10] = dumma[0] * aninv;
+            result[11] = dumma[0] * aninv;
     }
 
     /* Left eigenvectors of H via inverse iteration */
-    result[11] = ulpinv;
+    result[12] = ulpinv;
     for (INT j = 0; j < n; j++)
         selectarr[j] = 1;
 
@@ -637,18 +698,18 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 12: | Y*H - W*Y | / ( |H| |Y| ulp ) */
+        /* Test 13: | Y*H - W*Y | / ( |H| |Y| ulp ) */
         cget22("C", "N", "C", n, H, lda, evecty, ldu, W3,
                work, rwork, &dumma[2]);
         if (dumma[2] < ulpinv)
-            result[11] = dumma[2] * aninv;
+            result[12] = dumma[2] * aninv;
     }
 
     /* ================================================================ */
-    /* Tests 13-14: CUNMHR back-transform CHSEIN eigenvectors           */
+    /* Tests 14-15: CUNMHR back-transform CHSEIN eigenvectors           */
     /* ================================================================ */
 
-    result[12] = ulpinv;
+    result[13] = ulpinv;
 
     cunmhr("L", "N", n, n, 0, n - 1, UU, ldu, tau, evectx, ldu,
            work, nwork, &iinfo);
@@ -661,14 +722,14 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 13: | AX - XW | / ( |A| |X| ulp ) */
+        /* Test 14: | AX - XW | / ( |A| |X| ulp ) */
         cget22("N", "N", "N", n, A, lda, evectx, ldu, W3,
                work, rwork, dumma);
         if (dumma[0] < ulpinv)
-            result[12] = dumma[0] * aninv;
+            result[13] = dumma[0] * aninv;
     }
 
-    result[13] = ulpinv;
+    result[14] = ulpinv;
 
     cunmhr("L", "N", n, n, 0, n - 1, UU, ldu, tau, evecty, ldu,
            work, nwork, &iinfo);
@@ -681,18 +742,18 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 14: | Y*A - W*Y | / ( |A| |Y| ulp ) */
+        /* Test 15: | Y*A - W*Y | / ( |A| |Y| ulp ) */
         cget22("C", "N", "C", n, A, lda, evecty, ldu, W3,
                work, rwork, &dumma[2]);
         if (dumma[2] < ulpinv)
-            result[13] = dumma[2] * aninv;
+            result[14] = dumma[2] * aninv;
     }
 
     /* ================================================================ */
-    /* Tests 15-16: CTREVC3 eigenvectors of A via back-transform        */
+    /* Tests 16-17: CTREVC3 eigenvectors of A via back-transform        */
     /* ================================================================ */
 
-    result[14] = ulpinv;
+    result[15] = ulpinv;
 
     clacpy(" ", n, n, UZ, ldu, evectr, ldu);
 
@@ -706,12 +767,12 @@ static void run_zchkhs_single(zchkhs_params_t* params)
         return;
     }
 
-    /* Test 15: | AR - RW | / ( |A| |R| ulp ) */
+    /* Test 16: | AR - RW | / ( |A| |R| ulp ) */
     cget22("N", "N", "N", n, A, lda, evectr, ldu, W1, work, rwork, dumma);
-    result[14] = dumma[0];
+    result[15] = dumma[0];
 
     /* Left eigenvectors via back-transform */
-    result[15] = ulpinv;
+    result[16] = ulpinv;
 
     clacpy(" ", n, n, UZ, ldu, evectl, ldu);
 
@@ -725,19 +786,19 @@ static void run_zchkhs_single(zchkhs_params_t* params)
         return;
     }
 
-    /* Test 16: | L*A - W*L | / ( |A| |L| ulp ) */
+    /* Test 17: | L*A - W*L | / ( |A| |L| ulp ) */
     cget22("C", "N", "C", n, A, lda, evectl, ldu, W1, work, rwork, &dumma[2]);
-    result[15] = dumma[2];
+    result[16] = dumma[2];
 
     /* ================================================================ */
     /* Check results against threshold                                  */
     /* ================================================================ */
 
     for (INT jr = 0; jr < NTEST; jr++) {
-        snprintf(ctx, sizeof(ctx), "cchkhs n=%d type=%d TEST %d",
-                 n, jtype, jr + 1);
+        snprintf(ctx, sizeof(ctx), "cchkhs n=%d type=%d parms=%d TEST %d",
+                 n, jtype, ip, jr + 1);
         set_test_context(ctx);
-        assert_residual_ok(result[jr]);
+        assert_residual_below(result[jr], THRESH);
     }
     clear_test_context();
 }
@@ -756,7 +817,7 @@ static void test_zchkhs_case(void** state)
 /* Build test array and main                                             */
 /* ===================================================================== */
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
 
 static zchkhs_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -766,14 +827,16 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
+    for (size_t ip = 0; ip < NPARMS; ip++) {
     for (size_t in = 0; in < NNVAL; in++) {
         INT n = NVAL[in];
         for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             zchkhs_params_t* p = &g_params[g_num_tests];
             p->jsize = (INT)in;
             p->jtype = jtype;
+            p->iparm = (INT)ip;
             snprintf(p->name, sizeof(p->name),
-                     "cchkhs_n%d_type%d", n, jtype);
+                     "cchkhs_p%d_n%d_type%d", (int)ip, n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_zchkhs_case;
@@ -783,6 +846,7 @@ static void build_test_array(void)
 
             g_num_tests++;
         }
+    }
     }
 }
 
