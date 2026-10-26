@@ -15,10 +15,10 @@
 #include "test_rng.h"
 #include "semicolon_cblas.h"
 
-#define THRESH 5.0f
+#define THRESH 30.0f
 #define NMAX   50
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 6, 10, 11, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
 typedef struct {

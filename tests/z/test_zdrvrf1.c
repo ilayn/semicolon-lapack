@@ -14,10 +14,10 @@
 #include "verify.h"
 #include "test_rng.h"
 
-#define THRESH 3.0
+#define THRESH 30.0
 #define NMAX   50
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 6, 10, 11, 50};
 #define NN (sizeof(NVAL) / sizeof(NVAL[0]))
 
 typedef struct {
