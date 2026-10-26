@@ -83,12 +83,18 @@
 #define THRESH 50.0f
 #define MAXTYP 16
 #define NTESTS 34
-#define NRHS   2
 
 /* M,N pairs from svd.in */
 static const INT MVAL[] = {0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 10, 10, 16, 16, 30, 30, 40, 40};
 static const INT NVAL[] = {0, 1, 3, 0, 1, 2, 0, 1, 0, 1, 3, 10, 16, 10, 16, 30, 40, 30, 40};
 #define NSIZES ((int)(sizeof(MVAL) / sizeof(MVAL[0])))
+
+/* NBVAL, NBMIN, NXVAL, NSVAL from svd.in */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NBMIN[] = {2, 2, 2, 2, 2};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
+static const INT NSVAL[] = {2, 0, 2, 2, 2};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* External function declarations */
 /* ===================================================================== */
@@ -113,6 +119,7 @@ static const INT kmode[MAXTYP] = {
 typedef struct {
     INT jsize;     /* index into MVAL[]/NVAL[] */
     INT jtype;     /* matrix type 1..16 */
+    INT iparm;
     char name[128];
 } dchkbd_params_t;
 
@@ -168,6 +175,10 @@ static int group_setup(void** state)
     INT mmax  = g_ws->mmax;
     INT nmax  = g_ws->nmax;
     INT mnmax = g_ws->mnmax;
+    INT nrhsmax = 0;
+    for (size_t i = 0; i < NPARMS; i++) {
+        if (NSVAL[i] > nrhsmax) nrhsmax = NSVAL[i];
+    }
 
     g_ws->lda  = (mmax > 1) ? mmax : 1;
     g_ws->ldx  = (mmax > 1) ? mmax : 1;
@@ -187,9 +198,9 @@ static int group_setup(void** state)
      * clamp in sbdsvdx. Reference LAPACK masks this via D(NMAX,12). */
     g_ws->S1  = malloc((size_t)(2 * mnmax) * sizeof(f32));
     g_ws->S2  = malloc((size_t)(2 * mnmax) * sizeof(f32));
-    g_ws->X   = malloc((size_t)ldx * NRHS * sizeof(f32));
-    g_ws->Y   = malloc((size_t)ldx * NRHS * sizeof(f32));
-    g_ws->Z   = malloc((size_t)ldx * NRHS * sizeof(f32));
+    g_ws->X   = malloc((size_t)ldx * nrhsmax * sizeof(f32));
+    g_ws->Y   = malloc((size_t)ldx * nrhsmax * sizeof(f32));
+    g_ws->Z   = malloc((size_t)ldx * nrhsmax * sizeof(f32));
     g_ws->Q   = malloc((size_t)ldq * mmax * sizeof(f32));
     g_ws->PT  = malloc((size_t)ldpt * nmax * sizeof(f32));
     g_ws->U   = malloc((size_t)ldpt * mnmax * sizeof(f32));
@@ -202,7 +213,7 @@ static int group_setup(void** state)
          * M*(M + MAX(M,N,NRHS) + 1) + N*MIN(N,M) */
         INT mx = mmax;
         if (nmax > mx) mx = nmax;
-        if (NRHS > mx) mx = NRHS;
+        if (nrhsmax > mx) mx = nrhsmax;
         INT alt = mmax * (mmax + mx + 1) + nmax * mnmax;
         if (alt > minwrk) minwrk = alt;
     }
@@ -220,7 +231,7 @@ static int group_setup(void** state)
         return -1;
     }
 
-    rng_seed(g_ws->rng_state, 0xDCBD50D1ULL);
+    rng_seed(g_ws->rng_state, 0x37E83672575AC1A5ULL);
     return 0;
 }
 
@@ -305,6 +316,10 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     const INT n = NVAL[params->jsize];
     const INT jtype = params->jtype;
     const INT jt = jtype - 1;
+    xlaenv(1, NBVAL[params->iparm]);
+    xlaenv(2, NBMIN[params->iparm]);
+    xlaenv(3, NXVAL[params->iparm]);
+    const INT nrhs = NSVAL[params->iparm];
 
     const INT mnmin = (m < n) ? m : n;
     INT mxn = m;
@@ -444,17 +459,17 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         /* Generate Right-Hand Side */
         if (bidiag) {
             INT idumma[1] = {0};
-            slatmr(mnmin, NRHS, "S", "N", work, 6,
+            slatmr(mnmin, nrhs, "S", "N", work, 6,
                    1.0f, 1.0f, "T", "N", work + mnmin, 1, 1.0f,
                    work + 2 * mnmin, 1, 1.0f, "N",
-                   idumma, mnmin, NRHS, 0.0f, 1.0f, "NO", Y,
+                   idumma, mnmin, nrhs, 0.0f, 1.0f, "NO", Y,
                    ldx, iwork, &iinfo, rng);
         } else {
             INT idumma[1] = {0};
-            slatmr(m, NRHS, "S", "N", work, 6, 1.0f,
+            slatmr(m, nrhs, "S", "N", work, 6, 1.0f,
                    1.0f, "T", "N", work + m, 1, 1.0f,
                    work + 2 * m, 1, 1.0f, "N",
-                   idumma, m, NRHS, 0.0f, 1.0f, "NO", X,
+                   idumma, m, nrhs, 0.0f, 1.0f, "NO", X,
                    ldx, iwork, &iinfo, rng);
         }
     }
@@ -500,7 +515,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
         /* Generate Q */
         mq = m;
-        if (NRHS <= 0)
+        if (nrhs <= 0)
             mq = mnmin;
         sorgbr("Q", m, mq, n, Q, ldq, work,
                work + 2 * mnmin, lwork - 2 * mnmin, &iinfo);
@@ -529,7 +544,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
         /* Y := Q' * X */
         cblas_sgemm(CblasColMajor, CblasTrans, CblasNoTrans,
-                    m, NRHS, m, 1.0f, Q, ldq, X, ldx, 0.0f, Y, ldx);
+                    m, nrhs, m, 1.0f, Q, ldq, X, ldx, 0.0f, Y, ldx);
 
         /* Test 1:  Check the decomposition A := Q * B * PT */
         sbdt01(m, n, 1, A, lda, Q, ldq, BD, BE, PT, ldpt,
@@ -549,11 +564,11 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     cblas_scopy(mnmin, BD, 1, S1, 1);
     if (mnmin > 0)
         cblas_scopy(mnmin - 1, BE, 1, work, 1);
-    slacpy(" ", m, NRHS, Y, ldx, Z, ldx);
+    slacpy(" ", m, nrhs, Y, ldx, Z, ldx);
     slaset("Full", mnmin, mnmin, 0.0f, 1.0f, U, ldpt);
     slaset("Full", mnmin, mnmin, 0.0f, 1.0f, VT, ldpt);
 
-    sbdsqr(uplo_str, mnmin, mnmin, mnmin, NRHS, S1, work, VT,
+    sbdsqr(uplo_str, mnmin, mnmin, mnmin, nrhs, S1, work, VT,
            ldpt, U, ldpt, Z, ldx, work + mnmin, &iinfo);
 
     if (iinfo != 0) {
@@ -596,7 +611,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
     sbdt03(uplo_str, mnmin, 1, BD, BE, U, ldpt, S1, VT, ldpt,
            work, &result[3]);
     /* Test 5:  Check the computation Z := U' * Y */
-    sbdt02(mnmin, NRHS, Y, ldx, Z, ldx, U, ldpt, work, &result[4]);
+    sbdt02(mnmin, nrhs, Y, ldx, Z, ldx, U, ldpt, work, &result[4]);
     /* Test 6:  Check the orthogonality of U */
     sort01("Columns", mnmin, mnmin, U, ldpt, work, lwork, &result[5]);
     /* Test 7:  Check the orthogonality of VT */
@@ -641,7 +656,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         if (mnmin > 0)
             cblas_scopy(mnmin - 1, BE, 1, work, 1);
 
-        sbdsqr(uplo_str, mnmin, n, m, NRHS, S2, work, PT, ldpt,
+        sbdsqr(uplo_str, mnmin, n, m, nrhs, S2, work, PT, ldpt,
                Q, ldq, Y, ldx, work + mnmin, &iinfo);
 
         /* Test 11:  Check the decomposition A := Q*U * S2 * VT*PT */
@@ -649,7 +664,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
         sbdt01(m, n, 0, A, lda, Q, ldq, S2, dumma, PT,
                ldpt, work, &result[10]);
         /* Test 12:  Check the computation Z := U' * Q' * X */
-        sbdt02(m, NRHS, X, ldx, Y, ldx, Q, ldq, work, &result[11]);
+        sbdt02(m, nrhs, X, ldx, Y, ldx, Q, ldq, work, &result[11]);
         /* Test 13:  Check the orthogonality of Q*U */
         sort01("Columns", m, mq, Q, ldq, work, lwork, &result[12]);
         /* Test 14:  Check the orthogonality of VT*PT */
@@ -1095,7 +1110,7 @@ static void test_dchkbd(void** state)
 /* Test table generation                                                 */
 /* ===================================================================== */
 
-#define MAX_TESTS (NSIZES * MAXTYP)
+#define MAX_TESTS (NPARMS * NSIZES * MAXTYP)
 
 static dchkbd_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1104,21 +1119,24 @@ static INT g_ntests = 0;
 static void generate_test_table(void)
 {
     g_ntests = 0;
-    for (INT js = 0; js < NSIZES; js++) {
-        for (INT jt = 1; jt <= MAXTYP; jt++) {
-            dchkbd_params_t* p = &g_params[g_ntests];
-            p->jsize = js;
-            p->jtype = jt;
-            snprintf(p->name, sizeof(p->name),
-                     "schkbd M=%d N=%d type=%d",
-                     MVAL[js], NVAL[js], jt);
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (INT js = 0; js < NSIZES; js++) {
+            for (INT jt = 1; jt <= MAXTYP; jt++) {
+                dchkbd_params_t* p = &g_params[g_ntests];
+                p->jsize = js;
+                p->jtype = jt;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "schkbd p=%d M=%d N=%d type=%d", (int)ip,
+                         MVAL[js], NVAL[js], jt);
 
-            g_tests[g_ntests].name = p->name;
-            g_tests[g_ntests].test_func = test_dchkbd;
-            g_tests[g_ntests].initial_state = p;
-            g_tests[g_ntests].setup_func = NULL;
-            g_tests[g_ntests].teardown_func = NULL;
-            g_ntests++;
+                g_tests[g_ntests].name = p->name;
+                g_tests[g_ntests].test_func = test_dchkbd;
+                g_tests[g_ntests].initial_state = p;
+                g_tests[g_ntests].setup_func = NULL;
+                g_tests[g_ntests].teardown_func = NULL;
+                g_ntests++;
+            }
         }
     }
 }

@@ -68,6 +68,12 @@ static const dim_pair_t DIM_PAIRS[] = {
 };
 #define NDIM_PAIRS (sizeof(DIM_PAIRS) / sizeof(DIM_PAIRS[0]))
 
+/* NBVAL, NBMIN, NXVAL from svd.in */
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NBMIN[] = {2, 2, 2, 2, 2};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
+
 /**
  * Test parameters for a single test case.
  */
@@ -75,6 +81,7 @@ typedef struct {
     INT m;
     INT n;
     INT itype;
+    INT iparm;
     char name[64];
 } zdrvbd_params_t;
 
@@ -957,6 +964,9 @@ static void run_zdrvbd_single(zdrvbd_params_t* p)
     INT m = p->m;
     INT n = p->n;
     INT itype = p->itype;
+    xlaenv(1, NBVAL[p->iparm]);
+    xlaenv(2, NBMIN[p->iparm]);
+    xlaenv(3, NXVAL[p->iparm]);
 
     /* Skip degenerate cases */
     if (m == 0 || n == 0) return;
@@ -1107,7 +1117,7 @@ static void test_zdrvbd_case(void** state)
  */
 
 /* Maximum number of test cases */
-#define MAX_TESTS (NDIM_PAIRS * NTYPES)
+#define MAX_TESTS (NPARMS * NDIM_PAIRS * NTYPES)
 
 static zdrvbd_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1120,27 +1130,30 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t ipair = 0; ipair < NDIM_PAIRS; ipair++) {
-        INT m = DIM_PAIRS[ipair].m;
-        INT n = DIM_PAIRS[ipair].n;
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t ipair = 0; ipair < NDIM_PAIRS; ipair++) {
+            INT m = DIM_PAIRS[ipair].m;
+            INT n = DIM_PAIRS[ipair].n;
 
-        for (INT itype = 1; itype <= NTYPES; itype++) {
-            /* Store parameters */
-            zdrvbd_params_t* p = &g_params[g_num_tests];
-            p->m = m;
-            p->n = n;
-            p->itype = itype;
-            snprintf(p->name, sizeof(p->name),
-                     "zdrvbd_m%d_n%d_type%d", m, n, itype);
+            for (INT itype = 1; itype <= NTYPES; itype++) {
+                /* Store parameters */
+                zdrvbd_params_t* p = &g_params[g_num_tests];
+                p->m = m;
+                p->n = n;
+                p->itype = itype;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "zdrvbd_p%d_m%d_n%d_type%d", (int)ip, m, n, itype);
 
-            /* Create CMocka test entry */
-            g_tests[g_num_tests].name = p->name;
-            g_tests[g_num_tests].test_func = test_zdrvbd_case;
-            g_tests[g_num_tests].setup_func = NULL;
-            g_tests[g_num_tests].teardown_func = NULL;
-            g_tests[g_num_tests].initial_state = p;
+                /* Create CMocka test entry */
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_zdrvbd_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
 
-            g_num_tests++;
+                g_num_tests++;
+            }
         }
     }
 }
