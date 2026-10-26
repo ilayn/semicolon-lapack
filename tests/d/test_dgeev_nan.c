@@ -26,7 +26,7 @@ static void test_nan(void** state)
             A[i + j * NMAX] = (i == j) ? 2.0 : 1.0;
         }
     }
-    A[1 + 1 * NMAX] = NAN;
+    A[1 + 1 * NMAX] = (f64)NAN;
 
     strcpy(xerbla_srnamt, "DGEEV");
     xerbla_infot = 4;

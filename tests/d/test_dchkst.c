@@ -1111,7 +1111,7 @@ static void test_stemr_nan(void** state)
                 ws->SD[j] = (f64)(j + 1);
                 ws->SE[j] = 1.0 / (f64)(j + 2);
             }
-            ws->SD[inan] = NAN;
+            ws->SD[inan] = (f64)NAN;
             ws->SE[n - 1] = 0.0;
             tryrac = 1;
             dstemr(jobz, "A", n, ws->SD, ws->SE, 0.0, 0.0, 0, 0, &m, ws->WR,

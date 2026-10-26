@@ -140,8 +140,13 @@ static inline void rng_fill(uint64_t state[static 4], int idist, int n, f64* x) 
  * Generate uniform random f32 in (0, 1).
  * RNG operates at f64 precision, result is narrowed to f32.
  * A value that rounds to 1.0 is drawn again, as SLARAN does.
+ * Not inline: compilers may decline to inline the redraw loop, which
+ * -Winline reports, so it is a static function marked unused instead.
  */
-static inline f32 rng_uniform_f32(uint64_t state[static 4]) {
+#if defined(__GNUC__) || defined(__clang__)
+__attribute__((unused))
+#endif
+static f32 rng_uniform_f32(uint64_t state[static 4]) {
     f32 u;
     do {
         u = (f32)rng_uniform(state);
