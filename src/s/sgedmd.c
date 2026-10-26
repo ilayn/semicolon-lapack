@@ -301,6 +301,7 @@ void sgedmd(const char* jobs, const char* jobz, const char* jobr,
                 *k = 0;
                 *info = -8;
                 xerbla("SGEDMD", -(*info));
+                return;
             }
             if ((scale != ZERO) && (ssum != ZERO)) {
                 rootsc = sqrtf(ssum);
@@ -353,6 +354,7 @@ void sgedmd(const char* jobs, const char* jobz, const char* jobr,
                 *k = 0;
                 *info = -10;
                 xerbla("SGEDMD", -(*info));
+                return;
             }
             if (scale != ZERO && (ssum != ZERO)) {
                 rootsc = sqrtf(ssum);
