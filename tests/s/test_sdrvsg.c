@@ -371,8 +371,8 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
         il = 0;
         iu = n - 1;
     } else {
-        il = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        iu = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        il = (INT)(n * rng_uniform_f32(ws->rng_state2));
+        iu = (INT)(n * rng_uniform_f32(ws->rng_state2));
         if (il > iu) {
             INT itemp = il;
             il = iu;

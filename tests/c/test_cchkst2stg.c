@@ -796,8 +796,8 @@ static void test_zchkst2stg_case(void** state)
         il = 0;
         iu = n - 1;
     } else {
-        il = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        iu = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        il = (INT)(n * rng_uniform_f32(ws->rng_state2));
+        iu = (INT)(n * rng_uniform_f32(ws->rng_state2));
         if (iu < il) { INT itemp = iu; iu = il; il = itemp; }
     }
 
@@ -975,8 +975,8 @@ static void test_zchkst2stg_case(void** state)
         claset("F", n, n, CMPLXF(0.0f, 0.0f), CMPLXF(1.0f, 0.0f), Z, ldu);
 
         ntest = 29;
-        il = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
-        iu = (INT)((n - 1) * rng_uniform_f32(ws->rng_state2));
+        il = (INT)(n * rng_uniform_f32(ws->rng_state2));
+        iu = (INT)(n * rng_uniform_f32(ws->rng_state2));
         if (iu < il) { INT itemp = iu; iu = il; il = itemp; }
 
         {

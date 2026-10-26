@@ -110,6 +110,7 @@ typedef struct {
 
     /* RNG state */
     uint64_t rng_state[4];
+    f32 anorm;   /* ANORM of the generated matrix */
 } zdrvbd_workspace_t;
 
 /* Global workspace pointer */
@@ -205,7 +206,7 @@ static f32 check_sv_order(const f32* S, INT n, f32 ulpinv)
  *   5: Same as 3, scaled near overflow
  */
 static void generate_test_matrix(INT itype, INT m, INT n, c64* A, INT lda,
-                                 f32* S, c64* work, INT* info,
+                                 f32* S, c64* work, f32* anorm_out, INT* info,
                                  uint64_t state[static 4])
 {
     f32 ulp = slamch("P");
@@ -214,6 +215,8 @@ static void generate_test_matrix(INT itype, INT m, INT n, c64* A, INT lda,
     INT mnmin = (m < n) ? m : n;
 
     *info = 0;
+    /* ZDRVBD sets ANORM only for types 3-5; zero is used for types 1 and 2. */
+    *anorm_out = 0.0f;
 
     if (m == 0 || n == 0) {
         return;
@@ -241,6 +244,7 @@ static void generate_test_matrix(INT itype, INT m, INT n, c64* A, INT lda,
             anorm = ovfl * ulp;
         }
 
+        *anorm_out = anorm;
         clatms(m, n, "U", "N", S, 4, cond, anorm,
                m - 1, n - 1, "N", A, lda, work, info, state);
 
@@ -726,81 +730,88 @@ static void test_zgesvdx(INT m, INT n, const c64* ASAV, INT lda,
         }
     }
 
-    /* === RANGE='I' (index range) === */
-    /* IL/IU are 0-based: valid range [0, mnmin-1] */
-    if (mnmin > 1) {
-        INT il = (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
-        INT iu = (INT)((mnmin - 1) * rng_uniform_f32(ws->rng_state));
+    /* Do tests 30--32: CGESVDX( 'V', 'V', 'I' ) */
+    const f32 rtunfl = sqrtf(unfl);
+    const INT ldvt = mnmin;
+    uint64_t rng2[4];
+    INT il, iu, nsi, nsv;
+    for (INT i = 0; i < 4; i++) {
+        rng2[i] = ws->rng_state[i];
+    }
+    if (mnmin <= 1) {
+        il = 0;
+        iu = ((mnmin > 1) ? mnmin : 1) - 1;
+    } else {
+        il = (INT)(mnmin * rng_uniform_f32(rng2));
+        iu = (INT)(mnmin * rng_uniform_f32(rng2));
         if (iu < il) {
-            INT tmp = il;
-            il = iu;
-            iu = tmp;
-        }
-        INT nsi = iu - il + 1;
-
-        clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-        cgesvdx("V", "V", "I", m, n, ws->A, lda,
-                0.0f, 0.0f, il, iu, &ns,
-                ws->S, ws->U, m, ws->VT, nsi,
-                ws->work, lwork, ws->rwork, ws->iwork, &info);
-
-        if (info == 0 && ns > 0) {
-            /* Test 30: Partial SVD reconstruction using cbdt05 */
-            cbdt05(m, n, ASAV, lda, ws->S, ns, ws->U, m, ws->VT, nsi,
-                   ws->work, &ws->result[29]);
-
-            /* Test 31: U orthogonality */
-            if (m != 0 && n != 0) {
-                cunt01("C", m, ns, ws->U, m, ws->work, ws->lwork,
-                       ws->rwork, &ws->result[30]);
-
-                /* Test 32: VT orthogonality */
-                cunt01("R", ns, n, ws->VT, nsi, ws->work, ws->lwork,
-                       ws->rwork, &ws->result[31]);
-            }
+            INT itemp = iu;
+            iu = il;
+            il = itemp;
         }
     }
+    clacpy("F", m, n, ASAV, lda, ws->A, lda);
+    cgesvdx("V", "V", "I", m, n, ws->A, lda,
+            0.0f, 0.0f, il, iu, &nsi,
+            ws->S, ws->U, m, ws->VT, ldvt,
+            ws->work, lwork, ws->rwork, ws->iwork, &info);
+    assert_info_success(info);
 
-    /* === RANGE='V' (value range) === */
-    /* Compute VL, VU from SSAV (from RANGE='A' call above) */
+    ws->result[29] = 0.0f;
+    ws->result[30] = 0.0f;
+    ws->result[31] = 0.0f;
+    cbdt05(m, n, ASAV, lda, ws->S, nsi, ws->U, m, ws->VT, ldvt,
+           ws->work, &ws->result[29]);
+    if (m != 0 && n != 0) {
+        cunt01("C", m, nsi, ws->U, m, ws->work, ws->lwork,
+               ws->rwork, &ws->result[30]);
+        cunt01("R", nsi, n, ws->VT, ldvt, ws->work, ws->lwork,
+               ws->rwork, &ws->result[31]);
+    }
+
+    /* Do tests 33--35: CGESVDX( 'V', 'V', 'V' ) */
     f32 vl, vu;
-
-    if (mnmin > 1 && ws->SSAV[0] > ws->SSAV[mnmin - 1]) {
-        vl = ws->SSAV[mnmin - 1] - ulp * ws->SSAV[0];
-        vu = ws->SSAV[0] + ulp * ws->SSAV[0];
-
-        INT mid = mnmin / 2;
-        if (mid > 0 && mid < mnmin - 1) {
-            vl = ws->SSAV[mid + 1] - ulp * ws->SSAV[0];
-            vu = ws->SSAV[mid - 1] + ulp * ws->SSAV[0];
+    if (mnmin > 0 && nsi > 1) {
+        if (il != 0) {
+            vu = ws->SSAV[il] +
+                 fmaxf(fmaxf(0.5f * fabsf(ws->SSAV[il] - ws->SSAV[il - 1]),
+                           ulp * ws->anorm), 2.0f * rtunfl);
+        } else {
+            vu = ws->SSAV[0] +
+                 fmaxf(fmaxf(0.5f * fabsf(ws->SSAV[ns - 1] - ws->SSAV[0]),
+                           ulp * ws->anorm), 2.0f * rtunfl);
         }
-
-        if (vl < 0.0f) vl = 0.0f;
-
-        clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-        INT nsv;
-        cgesvdx("V", "V", "V", m, n, ws->A, lda,
-                vl, vu, 0, 0, &nsv,
-                ws->S, ws->U, m, ws->VT, mnmin,
-                ws->work, lwork, ws->rwork, ws->iwork, &info);
-
-        if (info == 0 && nsv > 0) {
-            /* Test 33: Partial SVD reconstruction using cbdt05 */
-            cbdt05(m, n, ASAV, lda, ws->S, nsv, ws->U, m, ws->VT, mnmin,
-                   ws->work, &ws->result[32]);
-
-            /* Test 34: U orthogonality */
-            if (m != 0 && n != 0) {
-                cunt01("C", m, nsv, ws->U, m, ws->work, ws->lwork,
-                       ws->rwork, &ws->result[33]);
-
-                /* Test 35: VT orthogonality */
-                cunt01("R", nsv, n, ws->VT, mnmin, ws->work, ws->lwork,
-                       ws->rwork, &ws->result[34]);
-            }
+        if (iu != ns - 1) {
+            vl = ws->SSAV[iu] - fmaxf(fmaxf(ulp * ws->anorm, 2.0f * rtunfl),
+                                     0.5f * fabsf(ws->SSAV[iu + 1] - ws->SSAV[iu]));
+        } else {
+            vl = ws->SSAV[ns - 1] - fmaxf(fmaxf(ulp * ws->anorm, 2.0f * rtunfl),
+                                         0.5f * fabsf(ws->SSAV[ns - 1] - ws->SSAV[0]));
         }
+        vl = fmaxf(vl, 0.0f);
+        vu = fmaxf(vu, 0.0f);
+        if (vl >= vu) vu = fmaxf(vu * 2, vu + vl + 0.5f);
+    } else {
+        vl = 0.0f;
+        vu = 1.0f;
+    }
+    clacpy("F", m, n, ASAV, lda, ws->A, lda);
+    cgesvdx("V", "V", "V", m, n, ws->A, lda,
+            vl, vu, il, iu, &nsv,
+            ws->S, ws->U, m, ws->VT, ldvt,
+            ws->work, lwork, ws->rwork, ws->iwork, &info);
+    assert_info_success(info);
+
+    ws->result[32] = 0.0f;
+    ws->result[33] = 0.0f;
+    ws->result[34] = 0.0f;
+    cbdt05(m, n, ASAV, lda, ws->S, nsv, ws->U, m, ws->VT, ldvt,
+           ws->work, &ws->result[32]);
+    if (m != 0 && n != 0) {
+        cunt01("C", m, nsv, ws->U, m, ws->work, ws->lwork,
+               ws->rwork, &ws->result[33]);
+        cunt01("R", nsv, n, ws->VT, ldvt, ws->work, ws->lwork,
+               ws->rwork, &ws->result[34]);
     }
 }
 
@@ -966,7 +977,7 @@ static void run_zdrvbd_single(zdrvbd_params_t* p)
 
     /* Generate test matrix */
     generate_test_matrix(itype, m, n, ws->ASAV, m,
-                         ws->SSAV, ws->work, &info, ws->rng_state);
+                         ws->SSAV, ws->work, &ws->anorm, &info, ws->rng_state);
 
     if (info != 0) {
         snprintf(context, sizeof(context),
