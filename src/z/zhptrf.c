@@ -155,8 +155,9 @@ void zhptrf(
                 colmax = ZERO;
             }
 
-            if (fmax(absakk, colmax) == ZERO) {
-                /* Column K is zero: set INFO and continue */
+            if (fmax(absakk, colmax) == ZERO || isnan(absakk)) {
+                /* Column K is zero or underflow, or contains a NaN:
+                   set INFO and continue */
                 if (*info == 0)
                     *info = k + 1;
                 kp = k;
@@ -337,8 +338,9 @@ void zhptrf(
                 colmax = ZERO;
             }
 
-            if (fmax(absakk, colmax) == ZERO) {
-                /* Column K is zero: set INFO and continue */
+            if (fmax(absakk, colmax) == ZERO || isnan(absakk)) {
+                /* Column K is zero or underflow, or contains a NaN:
+                   set INFO and continue */
                 if (*info == 0)
                     *info = k + 1;
                 kp = k;

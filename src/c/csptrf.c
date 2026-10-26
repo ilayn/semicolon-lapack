@@ -151,7 +151,7 @@ void csptrf(
                 colmax = ZERO;
             }
 
-            if (fmaxf(absakk, colmax) == ZERO) {
+            if (fmaxf(absakk, colmax) == ZERO || isnan(absakk)) {
                 if (*info == 0)
                     *info = k + 1;
                 kp = k;
@@ -272,7 +272,7 @@ void csptrf(
                 colmax = ZERO;
             }
 
-            if (fmaxf(absakk, colmax) == ZERO) {
+            if (fmaxf(absakk, colmax) == ZERO || isnan(absakk)) {
                 if (*info == 0)
                     *info = k + 1;
                 kp = k;
