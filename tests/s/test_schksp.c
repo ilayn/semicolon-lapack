@@ -435,7 +435,7 @@ static void test_dchksp_nan_pivot(void** state)
                     AFAC[ioff + j] = 2.0f;
                     AFAC[ioff] = 0.0f;
                 }
-                AFAC[0] = NAN;
+                AFAC[0] = (f32)NAN;
             } else {
                 izero = n;
                 for (INT j = 0; j < n; j++) {
@@ -443,7 +443,7 @@ static void test_dchksp_nan_pivot(void** state)
                     AFAC[ioff + j] = 2.0f;
                     AFAC[ioff + n - 1] = 0.0f;
                 }
-                AFAC[npp - 1] = NAN;
+                AFAC[npp - 1] = (f32)NAN;
             }
 
             ipivg[0] = IGUARD;
@@ -460,10 +460,10 @@ static void test_dchksp_nan_pivot(void** state)
         char uplo_str[2] = {UPLOS[iuplo], '\0'};
         if (iuplo == 0) {
             AFAC[0] = 0.0f;
-            AFAC[2] = NAN;
+            AFAC[2] = (f32)NAN;
             izero = 2;
         } else {
-            AFAC[0] = NAN;
+            AFAC[0] = (f32)NAN;
             AFAC[2] = 0.0f;
             izero = 1;
         }

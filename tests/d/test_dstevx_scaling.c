@@ -33,7 +33,7 @@ static void test_inf_range_v(void** state)
     f64 rzero, rinf;
 
     rzero = 0.0;
-    rinf = INFINITY;
+    rinf = (f64)INFINITY;
     for (INT j = 0; j < NMAX; j++) {
         D[j] = (f64)(j + 1);
         E[j] = 1.0 / (f64)(j + 2);
@@ -126,7 +126,7 @@ static void test_inf_w_bound(void** state)
             D[j] = (f64)(j + 1);
             E[j] = 1.0 / (f64)(j + 2);
         }
-        D[0] = INFINITY;
+        D[0] = (f64)INFINITY;
         E[n - 1] = 0.0;
         memset(A, 0, sizeof(A));
         for (INT j = 0; j < n; j++) {

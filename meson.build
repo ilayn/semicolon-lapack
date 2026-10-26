@@ -271,7 +271,7 @@ endif
 
 # Testing (optional, enabled by default)
 if get_option('tests')
-  cmocka_dep = dependency('cmocka', required: true)
+  cmocka_dep = dependency('cmocka', required: true, include_type: 'system')
   subdir('tests')
 endif
 
