@@ -225,12 +225,10 @@ static void generate_test_matrix(INT itype, INT m, INT n, c64* A, INT lda,
     if (itype == 1) {
         /* Type 1: Zero matrix */
         claset("F", m, n, 0.0f, 0.0f, A, lda);
-        for (INT i = 0; i < mnmin; i++) S[i] = 0.0f;
     }
     else if (itype == 2) {
         /* Type 2: Identity matrix */
         claset("F", m, n, 0.0f, 1.0f, A, lda);
-        for (INT i = 0; i < mnmin; i++) S[i] = 1.0f;
     }
     else if (itype >= 3 && itype <= 5) {
         /* Types 3-5: Random matrix with controlled singular values */
@@ -250,12 +248,6 @@ static void generate_test_matrix(INT itype, INT m, INT n, c64* A, INT lda,
 
         if (*info != 0) {
             return;
-        }
-
-        /* Sort singular values in decreasing order for verification */
-        for (INT i = 0; i < mnmin; i++) {
-            f32 t = (f32)i / (f32)(mnmin > 1 ? mnmin - 1 : 1);
-            S[i] = anorm * (1.0f - t * (1.0f - 1.0f / cond));
         }
     }
     else {
