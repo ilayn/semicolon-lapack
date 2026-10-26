@@ -308,8 +308,8 @@ L50:
         dlascl("G", 0, 0, cscale, anrm, n - *info, 1, &wi[*info],
                (n - *info) > 1 ? (n - *info) : 1, &ierr);
         if (*info > 0) {
-            dlascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wr, n, &ierr);
-            dlascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wi, n, &ierr);
+            dlascl("G", 0, 0, cscale, anrm, ilo, 1, wr, n, &ierr);
+            dlascl("G", 0, 0, cscale, anrm, ilo, 1, wi, n, &ierr);
         }
     }
 

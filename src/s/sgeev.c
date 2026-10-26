@@ -308,8 +308,8 @@ L50:
         slascl("G", 0, 0, cscale, anrm, n - *info, 1, &wi[*info],
                (n - *info) > 1 ? (n - *info) : 1, &ierr);
         if (*info > 0) {
-            slascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wr, n, &ierr);
-            slascl("G", 0, 0, cscale, anrm, ilo - 1, 1, wi, n, &ierr);
+            slascl("G", 0, 0, cscale, anrm, ilo, 1, wr, n, &ierr);
+            slascl("G", 0, 0, cscale, anrm, ilo, 1, wi, n, &ierr);
         }
     }
 
