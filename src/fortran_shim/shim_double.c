@@ -217,6 +217,7 @@ void dlarfb_(char* side, char* trans, char* direct, char* storev, INT* m, INT* n
 void dlarfg_(INT* n, f64* alpha, f64* x, INT* incx, f64* tau);
 void dlarfgp_(INT* n, f64* alpha, f64* x, INT* incx, f64* tau);
 void dlarft_(char* direct, char* storev, INT* n, INT* k, f64* V, INT* ldv, f64* tau, f64* T, INT* ldt);
+void dlarft_lvl2_(char* direct, char* storev, INT* n, INT* k, f64* V, INT* ldv, f64* tau, f64* T, INT* ldt);
 void dlarfx_(char* side, INT* m, INT* n, f64* v, f64* tau, f64* C, INT* ldc, f64* work);
 void dlarfy_(char* uplo, INT* n, f64* V, INT* incv, f64* tau, f64* C, INT* ldc, f64* work);
 void dlargv_(INT* n, f64* X, INT* incx, f64* Y, INT* incy, f64* C, INT* incc);
@@ -1587,6 +1588,10 @@ void dlarfgp_(INT* n, f64* alpha, f64* x, INT* incx, f64* tau) {
 
 void dlarft_(char* direct, char* storev, INT* n, INT* k, f64* V, INT* ldv, f64* tau, f64* T, INT* ldt) {
     dlarft(direct, storev, *n, *k, V, *ldv, tau, T, *ldt);
+}
+
+void dlarft_lvl2_(char* direct, char* storev, INT* n, INT* k, f64* V, INT* ldv, f64* tau, f64* T, INT* ldt) {
+    dlarft_lvl2(direct, storev, *n, *k, V, *ldv, tau, T, *ldt);
 }
 
 void dlarfx_(char* side, INT* m, INT* n, f64* v, f64* tau, f64* C, INT* ldc, f64* work) {

@@ -223,6 +223,7 @@ SEMICOLON_API void slarfb(const char* side, const char* trans, const char* direc
 SEMICOLON_API void slarfg(const INT n, f32* alpha, f32* x, const INT incx, f32* tau);
 SEMICOLON_API void slarfgp(const INT n, f32* alpha, f32* restrict x, const INT incx, f32* tau);
 SEMICOLON_API void slarft(const char* direct, const char* storev, const INT n, const INT k, const f32* restrict V, const INT ldv, const f32* restrict tau, f32* restrict T, const INT ldt);
+SEMICOLON_API void slarft_lvl2(const char* direct, const char* storev, const INT n, const INT k, const f32* restrict V, const INT ldv, const f32* restrict tau, f32* restrict T, const INT ldt);
 SEMICOLON_API void slarfx(const char* side, const INT m, const INT n, const f32* restrict v, const f32 tau, f32* restrict C, const INT ldc, f32* restrict work);
 SEMICOLON_API void slarfy(const char* uplo, const INT n, const f32* restrict V, const INT incv, const f32 tau, f32* restrict C, const INT ldc, f32* restrict work);
 SEMICOLON_API void slargv(const INT n, f32* restrict X, const INT incx, f32* restrict Y, const INT incy, f32* restrict C, const INT incc);
