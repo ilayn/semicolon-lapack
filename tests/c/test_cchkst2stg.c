@@ -1141,7 +1141,7 @@ L280:
     {
         static char ctx[128];
         for (INT jr = 0; jr < ntest; jr++) {
-            snprintf(ctx, sizeof(ctx), "zchkst2stg n=%d type=%d TEST %d", n, jtype, jr + 1);
+            snprintf(ctx, sizeof(ctx), "cchkst2stg n=%d type=%d TEST %d", n, jtype, jr + 1);
             set_test_context(ctx);
             assert_residual_ok(ws->result[jr]);
         }
@@ -1175,7 +1175,7 @@ static void build_test_array(void)
             p->n = n;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
-                     "zchkst2stg_n%d_type%d", n, jtype);
+                     "cchkst2stg_n%d_type%d", n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_zchkst2stg_case;
@@ -1194,7 +1194,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("zchkst2stg", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkst2stg", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

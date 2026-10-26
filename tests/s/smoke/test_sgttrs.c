@@ -284,6 +284,6 @@ int main(void)
         DGTTRS_TESTS(setup_n50_nrhs15),
     };
 
-    (void)cmocka_run_group_tests_name("dgttrs", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgttrs", tests, NULL, NULL);
     return 0;
 }

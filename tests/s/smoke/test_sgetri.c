@@ -191,6 +191,6 @@ int main(void)
         DGETRI_TESTS(setup_20),
     };
 
-    (void)cmocka_run_group_tests_name("dgetri", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgetri", tests, NULL, NULL);
     return 0;
 }

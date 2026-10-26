@@ -111,6 +111,6 @@ int main(void)
         cmocka_unit_test(test_ijob2),
         cmocka_unit_test(test_ijob4),
     };
-    (void)cmocka_run_group_tests_name("ztgsen_lwork", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("ctgsen_lwork", tests, NULL, NULL);
     return 0;
 }

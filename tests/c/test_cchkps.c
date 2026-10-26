@@ -146,7 +146,7 @@ static void run_zchkps_single(INT n, INT iuplo, INT imat, INT irank, INT inb)
     /* Get matrix parameters for this type */
     clatb5("CPS", imat, n, &type, &kl, &ku, &anorm, &mode, &cndnum, &dist);
 
-    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d rank=%d nb=%d (zlatmt)",
+    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d rank=%d nb=%d (clatmt)",
              n, uplo, imat, rank, nb);
     set_test_context(ctx);
 
@@ -163,7 +163,7 @@ static void run_zchkps_single(INT n, INT iuplo, INT imat, INT irank, INT inb)
     /* Copy A to AFAC for factorization */
     clacpy(uplo_str, n, n, ws->A, lda, ws->AFAC, lda);
 
-    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d rank=%d nb=%d (zpstrf)",
+    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d rank=%d nb=%d (cpstrf)",
              n, uplo, imat, rank, nb);
     set_test_context(ctx);
 
@@ -195,7 +195,7 @@ static void run_zchkps_single(INT n, INT iuplo, INT imat, INT irank, INT inb)
     }
 
     /* Reconstruct matrix from factors and compute residual */
-    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d rank=%d nb=%d (zpst01)",
+    snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d rank=%d nb=%d (cpst01)",
              n, uplo, imat, rank, nb);
     set_test_context(ctx);
 
@@ -273,7 +273,7 @@ static void build_test_array(void)
                         p->irank = irank;
                         p->inb = inb;
                         snprintf(p->name, sizeof(p->name),
-                                 "zchkps_n%d_%c_type%d_rank%d_nb%d",
+                                 "cchkps_n%d_%c_type%d_rank%d_nb%d",
                                  n, UPLOS[iuplo], imat, rank, nb);
 
                         /* Create CMocka test entry */
@@ -297,7 +297,7 @@ int main(void)
     build_test_array();
 
     /* Run all tests with shared workspace */
-    (void)_cmocka_run_group_tests("zchkps", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkps", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

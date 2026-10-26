@@ -301,7 +301,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("zdrvsy_aa", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cdrvsy_aa", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

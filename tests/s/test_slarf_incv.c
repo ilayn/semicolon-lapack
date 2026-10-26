@@ -130,6 +130,6 @@ int main(void)
         cmocka_unit_test(test_larf1l),
         cmocka_unit_test(test_empty),
     };
-    (void)cmocka_run_group_tests_name("dlarf_incv", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("slarf_incv", tests, NULL, NULL);
     return 0;
 }

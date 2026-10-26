@@ -334,7 +334,7 @@ static void build_test_array(void)
                     p->n = n;
                     p->imat = imat;
                     p->inb = inb;
-                    snprintf(p->name, sizeof(p->name), "dchkql_m%d_n%d_type%d_nb%d_%d",
+                    snprintf(p->name, sizeof(p->name), "schkql_m%d_n%d_type%d_nb%d_%d",
                              m, n, imat, nb, inb);
 
                     /* Create CMocka test entry */
@@ -360,7 +360,7 @@ int main(void)
      * We use _cmocka_run_group_tests directly because the test array
      * is built dynamically and the standard macro uses sizeof() which
      * only works for compile-time array sizes. */
-    (void)_cmocka_run_group_tests("dchkql", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("schkql", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

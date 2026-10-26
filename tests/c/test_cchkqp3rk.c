@@ -580,7 +580,7 @@ static void build_test_array(void)
                             p->inb = inb;
                             p->kmax = kmax;
                             snprintf(p->name, sizeof(p->name),
-                                     "zchkqp3rk_m%d_n%d_nrhs%d_type%d_nb%d_kmax%d",
+                                     "cchkqp3rk_m%d_n%d_nrhs%d_type%d_nb%d_kmax%d",
                                      m, n, nrhs, imat, nb, kmax);
 
                             g_tests[g_num_tests].name = p->name;
@@ -601,7 +601,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("zchkqp3rk", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkqp3rk", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

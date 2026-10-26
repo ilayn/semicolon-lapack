@@ -328,7 +328,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
 
         if (iinfo != 0) {
             snprintf(ctx, sizeof(ctx),
-                     "dchksb2stg n=%d k=%d type=%d: Generator info=%d",
+                     "schksb2stg n=%d k=%d type=%d: Generator info=%d",
                      n, k, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
@@ -349,7 +349,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchksb2stg n=%d k=%d type=%d: SSBTRD(U) info=%d",
+                 "schksb2stg n=%d k=%d type=%d: SSBTRD(U) info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -384,7 +384,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
            NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchksb2stg n=%d k=%d type=%d: SSTEQR(N) info=%d",
+                 "schksb2stg n=%d k=%d type=%d: SSTEQR(N) info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -421,7 +421,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
            NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchksb2stg n=%d k=%d type=%d: SSTEQR(N) D2 info=%d",
+                 "schksb2stg n=%d k=%d type=%d: SSTEQR(N) D2 info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -463,7 +463,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchksb2stg n=%d k=%d type=%d: SSBTRD(L) info=%d",
+                 "schksb2stg n=%d k=%d type=%d: SSBTRD(L) info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -507,7 +507,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
            NULL, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchksb2stg n=%d k=%d type=%d: SSTEQR(N) D3 info=%d",
+                 "schksb2stg n=%d k=%d type=%d: SSTEQR(N) D3 info=%d",
                  n, k, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
@@ -558,7 +558,7 @@ static void run_dchksb2stg_single(dchksb2stg_params_t* params)
 
 check_results:
     for (INT jr = 0; jr < ntest; jr++) {
-        snprintf(ctx, sizeof(ctx), "dchksb2stg n=%d k=%d type=%d TEST %d",
+        snprintf(ctx, sizeof(ctx), "schksb2stg n=%d k=%d type=%d TEST %d",
                  n, k, jtype, jr + 1);
         set_test_context(ctx);
         assert_residual_below(result[jr], THRESH);
@@ -603,7 +603,7 @@ static void build_test_array(void)
                 p->jwidth = (INT)iw;
                 p->jtype = jtype;
                 snprintf(p->name, sizeof(p->name),
-                         "dchksb2stg_n%d_k%d_type%d", n, kval, jtype);
+                         "schksb2stg_n%d_k%d_type%d", n, kval, jtype);
 
                 g_tests[g_num_tests].name = p->name;
                 g_tests[g_num_tests].test_func = test_dchksb2stg_case;
@@ -620,7 +620,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("dchksb2stg", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("schksb2stg", g_tests, g_num_tests,
                                     group_setup, group_teardown);
     return 0;
 }

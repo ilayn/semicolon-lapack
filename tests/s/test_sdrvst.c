@@ -1712,7 +1712,7 @@ static void build_test_array(void)
             p->n = n;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
-                     "ddrvst_n%d_type%d", n, jtype);
+                     "sdrvst_n%d_type%d", n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_ddrvst_case;
@@ -1729,7 +1729,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("ddrvst", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("sdrvst", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

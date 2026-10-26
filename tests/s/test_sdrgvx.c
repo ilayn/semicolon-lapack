@@ -476,7 +476,7 @@ int main(void)
         idx++;
     }
 
-    (void)cmocka_run_group_tests_name("ddrgvx", all_tests, group_setup,
+    (void)cmocka_run_group_tests_name("sdrgvx", all_tests, group_setup,
                                        group_teardown);
     return 0;
 }

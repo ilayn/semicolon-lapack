@@ -489,7 +489,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("dchktr", g_tests, (size_t)g_num_tests,
+    (void)_cmocka_run_group_tests("schktr", g_tests, (size_t)g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

@@ -240,6 +240,6 @@ int main(void)
         DSYSV_TESTS(setup_50_nrhs5),
     };
 
-    (void)cmocka_run_group_tests_name("dsysv", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("ssysv", tests, NULL, NULL);
     return 0;
 }

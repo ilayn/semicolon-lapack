@@ -97,7 +97,7 @@ static void build_test_array(void)
                 p->m = m;
                 p->n = n;
                 p->nb = nb;
-                snprintf(p->name, sizeof(p->name), "zchklqt_m%d_n%d_nb%d", m, n, nb);
+                snprintf(p->name, sizeof(p->name), "cchklqt_m%d_n%d_nb%d", m, n, nb);
 
                 g_tests[g_num_tests].name = p->name;
                 g_tests[g_num_tests].test_func = test_zchklqt_case;
@@ -120,6 +120,6 @@ int main(void)
         return 0;
     }
 
-    (void)_cmocka_run_group_tests("zchklqt", g_tests, g_num_tests, NULL, NULL);
+    (void)_cmocka_run_group_tests("cchklqt", g_tests, g_num_tests, NULL, NULL);
     return 0;
 }

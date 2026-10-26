@@ -442,7 +442,7 @@ static void build_test_array(void)
             zchkgt_params_t* p = &g_params[g_num_tests];
             p->n = n;
             p->imat = imat;
-            snprintf(p->name, sizeof(p->name), "zchkgt_n%d_type%d", n, imat);
+            snprintf(p->name, sizeof(p->name), "cchkgt_n%d_type%d", n, imat);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_zchkgt_case;
@@ -459,7 +459,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("zchkgt", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkgt", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

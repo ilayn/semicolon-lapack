@@ -10,8 +10,9 @@ Usage:
 
 Reads tests/z/ tree, applies token-aware precision substitutions, writes tests/c/ tree.
 Comments are left unchanged except for @file tags and uppercase routine names.
-String literals only get uppercase routine name substitutions (for xerbla) and
-precision-path substitutions ("ZGE" -> "CGE").
+String literals only get uppercase routine name substitutions (for xerbla),
+precision-path substitutions ("ZGE" -> "CGE") and the test's own name
+("zchkge_n%d" -> "cchkge_n%d").
 """
 
 import os
@@ -324,6 +325,16 @@ def build_string_subs(z_names, d_names):
         upper_s = ("S" + name[1:]).upper()
         if upper_d != upper_s:
             subs.append((re.compile(re.escape(upper_d)), upper_s))
+
+    # Lowercase routine names as whole words: "zhetf2" -> "chetf2"
+    for name in sorted(z_names, key=len, reverse=True):
+        lower_c = z_to_c_name(name)
+        if name != lower_c:
+            subs.append((re.compile(r"\b" + re.escape(name) + r"\b"), lower_c))
+    for name in sorted(d_names, key=len, reverse=True):
+        lower_s = "s" + name[1:]
+        if name != lower_s:
+            subs.append((re.compile(r"\b" + re.escape(name) + r"\b"), lower_s))
 
     # Testdata struct/array prefixes in strings
     subs.append((re.compile(r"\bzsx_"), "csx_"))
@@ -790,7 +801,14 @@ def main():
 
         dst_path = os.path.join(dst_dir, dst_name)
 
-        content = process_file(src_path, code_subs, string_subs, comment_subs,
+        # The test's own name in string literals: "dchkge_n%d" -> "schkge_n%d"
+        src_stem = os.path.splitext(fname)[0].removeprefix("test_")
+        dst_stem = os.path.splitext(dst_name)[0].removeprefix("test_")
+        file_string_subs = string_subs
+        if src_stem != dst_stem:
+            file_string_subs = [(re.compile(r"\b" + re.escape(src_stem)), dst_stem)] + string_subs
+
+        content = process_file(src_path, code_subs, file_string_subs, comment_subs,
                                line_subs)
         for old, new in LITERAL_OVERRIDES.get(fname, []):
             content = content.replace(old, new)

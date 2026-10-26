@@ -444,6 +444,6 @@ int main(void)
         DSTEBZ_TESTS(setup_50),
     };
 
-    (void)cmocka_run_group_tests_name("dstebz", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sstebz", tests, NULL, NULL);
     return 0;
 }

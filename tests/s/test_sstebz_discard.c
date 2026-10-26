@@ -51,6 +51,6 @@ int main(void)
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_discard_no_candidate),
     };
-    (void)cmocka_run_group_tests_name("dstebz_discard", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sstebz_discard", tests, NULL, NULL);
     return 0;
 }

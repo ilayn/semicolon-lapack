@@ -555,7 +555,7 @@ static void build_test_array(void)
                 p->iwk = iwk;
                 p->precomp_idx = -1;
                 snprintf(p->name, sizeof(p->name),
-                         "ddrvvx_n%d_type%d_wk%d", n, jtype, iwk);
+                         "sdrvvx_n%d_type%d_wk%d", n, jtype, iwk);
 
                 g_tests[g_num_tests].name = p->name;
                 g_tests[g_num_tests].test_func = test_ddrvvx_random_case;
@@ -576,7 +576,7 @@ static void build_test_array(void)
         p->iwk = 3;
         p->precomp_idx = idx;
         snprintf(p->name, sizeof(p->name),
-                 "ddrvvx_precomp_%d_n%d", idx + 1, p->n);
+                 "sdrvvx_precomp_%d_n%d", idx + 1, p->n);
 
         g_tests[g_num_tests].name = p->name;
         g_tests[g_num_tests].test_func = test_ddrvvx_precomp_case;
@@ -594,7 +594,7 @@ int main(void)
 {
     build_test_array();
 
-    (void)_cmocka_run_group_tests("ddrvvx", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("sdrvvx", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

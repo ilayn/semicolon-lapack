@@ -286,7 +286,7 @@ static void build_test_array(void)
                         p->iuplo = iuplo;
                         p->iform = iform;
                         snprintf(p->name, sizeof(p->name),
-                                 "dchkrfp_n%d_nrhs%d_imat%d_%c_%c",
+                                 "schkrfp_n%d_nrhs%d_imat%d_%c_%c",
                                  n, nrhs, imat,
                                  (iuplo == 0) ? 'U' : 'L',
                                  (iform == 0) ? 'N' : 'T');
@@ -315,6 +315,6 @@ int main(void)
         return 0;
     }
 
-    (void)_cmocka_run_group_tests("dchkrfp", g_tests, g_num_tests, NULL, NULL);
+    (void)_cmocka_run_group_tests("schkrfp", g_tests, g_num_tests, NULL, NULL);
     return 0;
 }

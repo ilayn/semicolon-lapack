@@ -201,6 +201,6 @@ int main(void)
         DGECON_TESTS(setup_20),
     };
 
-    (void)cmocka_run_group_tests_name("dgecon", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgecon", tests, NULL, NULL);
     return 0;
 }

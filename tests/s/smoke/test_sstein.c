@@ -384,6 +384,6 @@ int main(void)
         DSTEIN_TESTS(setup_50),
     };
 
-    (void)cmocka_run_group_tests_name("dstein", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sstein", tests, NULL, NULL);
     return 0;
 }

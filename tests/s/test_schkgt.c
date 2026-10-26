@@ -504,7 +504,7 @@ static void build_test_array(void)
             dchkgt_params_t* p = &g_params[g_num_tests];
             p->n = n;
             p->imat = imat;
-            snprintf(p->name, sizeof(p->name), "dchkgt_n%d_type%d", n, imat);
+            snprintf(p->name, sizeof(p->name), "schkgt_n%d_type%d", n, imat);
 
             /* Create CMocka test entry */
             g_tests[g_num_tests].name = p->name;
@@ -527,7 +527,7 @@ int main(void)
      * We use _cmocka_run_group_tests directly because the test array
      * is built dynamically and the standard macro uses sizeof() which
      * only works for compile-time array sizes. */
-    (void)_cmocka_run_group_tests("dchkgt", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("schkgt", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

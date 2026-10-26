@@ -256,6 +256,6 @@ int main(void)
         cmocka_unit_test(test_inf_w_bound),
         cmocka_unit_test(test_abstol_scaled),
     };
-    (void)cmocka_run_group_tests_name("dstevx_scaling", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sstevx_scaling", tests, NULL, NULL);
     return 0;
 }

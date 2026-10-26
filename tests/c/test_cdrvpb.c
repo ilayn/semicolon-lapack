@@ -439,7 +439,7 @@ int main(void) {
     zdrvpb_params_t* params = malloc(count * sizeof(*params));
     struct CMUnitTest* tests = malloc(count * sizeof(*tests));
     build_test_array(params, tests);
-    INT result = _cmocka_run_group_tests("zdrvpb", tests, count,
+    INT result = _cmocka_run_group_tests("cdrvpb", tests, count,
                                           group_setup, group_teardown);
     free(tests);
     free(params);

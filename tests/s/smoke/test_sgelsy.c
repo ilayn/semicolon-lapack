@@ -369,6 +369,6 @@ int main(void)
         /* Workspace query */
         cmocka_unit_test_setup_teardown(test_workspace_query, setup_20x10_1, lsy_teardown),
     };
-    (void)cmocka_run_group_tests_name("dgelsy", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgelsy", tests, NULL, NULL);
     return 0;
 }

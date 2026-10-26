@@ -461,7 +461,7 @@ static void run_dchkbd_single(dchkbd_params_t* params)
 
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "dchkbd m=%d n=%d type=%d: Generator info=%d",
+                 "schkbd m=%d n=%d type=%d: Generator info=%d",
                  m, n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
@@ -1071,7 +1071,7 @@ results:
     for (INT j = 0; j < NTESTS; j++) {
         if (result[j] >= THRESH) {
             snprintf(ctx, sizeof(ctx),
-                     "dchkbd M=%d N=%d type=%d test(%d)=%.4g",
+                     "schkbd M=%d N=%d type=%d test(%d)=%.4g",
                      m, n, jtype, j + 1, (double)result[j]);
             set_test_context(ctx);
             assert_residual_below(result[j], THRESH);
@@ -1110,7 +1110,7 @@ static void generate_test_table(void)
             p->jsize = js;
             p->jtype = jt;
             snprintf(p->name, sizeof(p->name),
-                     "dchkbd M=%d N=%d type=%d",
+                     "schkbd M=%d N=%d type=%d",
                      MVAL[js], NVAL[js], jt);
 
             g_tests[g_ntests].name = p->name;
@@ -1126,7 +1126,7 @@ static void generate_test_table(void)
 int main(void)
 {
     generate_test_table();
-    (void)cmocka_run_group_tests_name("dchkbd", g_tests, group_setup,
+    (void)cmocka_run_group_tests_name("schkbd", g_tests, group_setup,
                                        group_teardown);
     return 0;
 }

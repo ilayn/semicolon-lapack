@@ -311,6 +311,6 @@ int main(void)
         DGTTRF_TESTS(setup_50),
     };
 
-    (void)cmocka_run_group_tests_name("dgttrf", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sgttrf", tests, NULL, NULL);
     return 0;
 }

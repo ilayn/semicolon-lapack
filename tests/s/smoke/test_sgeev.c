@@ -382,10 +382,10 @@ int main(void)
     };
 
     INT result = 0;
-    result += cmocka_run_group_tests_name("dgeev_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeev_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeev_n20", tests_n20, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeev_n32", tests_n32, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeev_n5", tests_n5, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeev_n10", tests_n10, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeev_n20", tests_n20, NULL, NULL);
+    result += cmocka_run_group_tests_name("sgeev_n32", tests_n32, NULL, NULL);
 
     return result;
 }

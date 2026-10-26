@@ -134,7 +134,7 @@ static void build_test_array(void)
                             p->nb2 = nb2;
                             p->variant = variant;
                             snprintf(p->name, sizeof(p->name),
-                                     "dchkorhr_col%d_m%d_n%d_mb1_%d_nb1_%d_nb2_%d",
+                                     "schkorhr_col%d_m%d_n%d_mb1_%d_nb1_%d_nb2_%d",
                                      variant, m, n, mb1, nb1, nb2);
 
                             g_tests[g_num_tests].name = p->name;
@@ -161,6 +161,6 @@ int main(void)
         return 0;
     }
 
-    (void)_cmocka_run_group_tests("dchkorhr_col", g_tests, g_num_tests, NULL, NULL);
+    (void)_cmocka_run_group_tests("schkorhr_col", g_tests, g_num_tests, NULL, NULL);
     return 0;
 }

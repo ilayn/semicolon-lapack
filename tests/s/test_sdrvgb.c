@@ -616,7 +616,7 @@ int main(void)
     }
 
     build_test_array(params, tests);
-    INT result = _cmocka_run_group_tests("ddrvgb", tests, count,
+    INT result = _cmocka_run_group_tests("sdrvgb", tests, count,
                                           group_setup, group_teardown);
     free(tests);
     free(params);

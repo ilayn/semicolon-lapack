@@ -183,6 +183,6 @@ int main(void)
         DPOCON_TESTS(setup_20),
     };
 
-    (void)cmocka_run_group_tests_name("dpocon", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("spocon", tests, NULL, NULL);
     return 0;
 }

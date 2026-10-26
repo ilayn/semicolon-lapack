@@ -215,7 +215,7 @@ static void run_dsytrf_single(INT n, INT iuplo, INT imat, INT routine)
 
     /* Set test context for error messages */
     snprintf(ctx, sizeof(ctx), "n=%d uplo=%c imat=%d routine=%s",
-             n, uplo, imat, routine == 0 ? "dsytf2" : "dsytrf");
+             n, uplo, imat, routine == 0 ? "ssytf2" : "ssytrf");
     set_test_context(ctx);
 
     /* Factorize */
@@ -290,7 +290,7 @@ static void build_test_array(void)
                     p->iuplo = iuplo;
                     p->routine = routine;
                     snprintf(p->name, sizeof(p->name), "%s_n%d_%c_type%d",
-                             routine == 0 ? "dsytf2" : "dsytrf",
+                             routine == 0 ? "ssytf2" : "ssytrf",
                              n, UPLOS[iuplo], imat);
 
                     /* Create CMocka test entry */
@@ -316,7 +316,7 @@ int main(void)
      * We use _cmocka_run_group_tests directly because the test array
      * is built dynamically and the standard macro uses sizeof() which
      * only works for compile-time array sizes. */
-    (void)_cmocka_run_group_tests("dsytrf", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("ssytrf", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }

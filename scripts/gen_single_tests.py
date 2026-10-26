@@ -10,8 +10,9 @@ Usage:
 
 Reads tests/d/ tree, applies token-aware precision substitutions, writes tests/s/ tree.
 Comments are left unchanged except for @file tags and uppercase routine names.
-String literals only get uppercase routine name substitutions (for xerbla) and
-precision-path substitutions ("DGE" -> "SGE").
+String literals only get uppercase routine name substitutions (for xerbla),
+precision-path substitutions ("DGE" -> "SGE") and the test's own name
+("dchkge_n%d" -> "schkge_n%d").
 """
 
 import os
@@ -245,6 +246,12 @@ def build_string_subs(all_d_names):
         upper_s = ("S" + name[1:]).upper()
         if upper_d != upper_s:
             subs.append((re.compile(re.escape(upper_d)), upper_s))
+
+    # Lowercase routine names as whole words: "dsytf2" -> "ssytf2"
+    for name in sorted(all_d_names, key=len, reverse=True):
+        lower_s = "s" + name[1:]
+        if name != lower_s:
+            subs.append((re.compile(r"\b" + re.escape(name) + r"\b"), lower_s))
 
     # Testdata struct/array prefixes in strings (unlikely but safe)
     subs.append((re.compile(r"\bdsx_"), "ssx_"))
@@ -614,7 +621,14 @@ def main():
 
         dst_path = os.path.join(dst_dir, dst_name)
 
-        content = process_file(src_path, code_subs, string_subs, comment_subs,
+        # The test's own name in string literals: "dchkge_n%d" -> "schkge_n%d"
+        src_stem = os.path.splitext(fname)[0].removeprefix("test_")
+        dst_stem = os.path.splitext(dst_name)[0].removeprefix("test_")
+        file_string_subs = string_subs
+        if src_stem != dst_stem:
+            file_string_subs = [(re.compile(r"\b" + re.escape(src_stem)), dst_stem)] + string_subs
+
+        content = process_file(src_path, code_subs, file_string_subs, comment_subs,
                                line_subs)
         for old, new in LITERAL_OVERRIDES.get(fname, []):
             content = content.replace(old, new)

@@ -200,6 +200,6 @@ int main(void)
         DPORFS_TESTS(setup_20_nrhs5),
     };
 
-    (void)cmocka_run_group_tests_name("dporfs", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sporfs", tests, NULL, NULL);
     return 0;
 }

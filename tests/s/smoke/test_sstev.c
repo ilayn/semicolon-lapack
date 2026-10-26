@@ -317,6 +317,6 @@ int main(void)
         DSTEV_TESTS(setup_50),
     };
 
-    (void)cmocka_run_group_tests_name("dstev", tests, NULL, NULL);
+    (void)cmocka_run_group_tests_name("sstev", tests, NULL, NULL);
     return 0;
 }

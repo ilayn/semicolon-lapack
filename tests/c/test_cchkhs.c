@@ -377,7 +377,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
 
         if (iinfo != 0) {
             snprintf(ctx, sizeof(ctx),
-                     "zchkhs n=%d type=%d: Generator info=%d", n, jtype, iinfo);
+                     "cchkhs n=%d type=%d: Generator info=%d", n, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
             return;
@@ -394,7 +394,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     if (iinfo != 0) {
         result[0] = ulpinv;
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CGEHRD info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CGEHRD info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -429,7 +429,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     if (iinfo != 0) {
         if (iinfo <= n + 2) {
             snprintf(ctx, sizeof(ctx),
-                     "zchkhs n=%d type=%d: CHSEQR(E) info=%d", n, jtype, iinfo);
+                     "cchkhs n=%d type=%d: CHSEQR(E) info=%d", n, jtype, iinfo);
             set_test_context(ctx);
             assert_info_success(iinfo);
             return;
@@ -443,7 +443,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            UZ, ldu, work, nwork, &iinfo);
     if (iinfo != 0 && iinfo <= n + 2) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CHSEQR(S) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CHSEQR(S) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -457,7 +457,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            UZ, ldu, work, nwork, &iinfo);
     if (iinfo != 0 && iinfo <= n + 2) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CHSEQR(V) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CHSEQR(V) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -519,7 +519,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            evectr, ldu, n, &in, work, rwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CTREVC(R,A) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CTREVC(R,A) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -534,7 +534,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            evectl, ldu, n, &in, work, rwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CTREVC(R,S) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CTREVC(R,S) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -559,7 +559,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            cdumma, ldu, n, &in, work, rwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CTREVC(L,A) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CTREVC(L,A) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -574,7 +574,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            cdumma, ldu, n, &in, work, rwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CTREVC(L,S) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CTREVC(L,S) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -606,7 +606,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            work, rwork, iwork, iwork + lda, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CHSEIN(R) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CHSEIN(R) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -630,7 +630,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            work, rwork, iwork, iwork + lda, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CHSEIN(L) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CHSEIN(L) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -654,7 +654,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            work, nwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CUNMHR(R) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CUNMHR(R) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -674,7 +674,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
            work, nwork, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CUNMHR(L) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CUNMHR(L) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         if (iinfo < 0) {
             assert_info_success(iinfo);
@@ -700,7 +700,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             evectr, ldu, n, &in, work, nwork, rwork, n, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CTREVC3(R,B) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CTREVC3(R,B) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -719,7 +719,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             cdumma, ldu, n, &in, work, nwork, rwork, n, &iinfo);
     if (iinfo != 0) {
         snprintf(ctx, sizeof(ctx),
-                 "zchkhs n=%d type=%d: CTREVC3(L,B) info=%d", n, jtype, iinfo);
+                 "cchkhs n=%d type=%d: CTREVC3(L,B) info=%d", n, jtype, iinfo);
         set_test_context(ctx);
         assert_info_success(iinfo);
         return;
@@ -734,7 +734,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
     /* ================================================================ */
 
     for (INT jr = 0; jr < NTEST; jr++) {
-        snprintf(ctx, sizeof(ctx), "zchkhs n=%d type=%d TEST %d",
+        snprintf(ctx, sizeof(ctx), "cchkhs n=%d type=%d TEST %d",
                  n, jtype, jr + 1);
         set_test_context(ctx);
         assert_residual_ok(result[jr]);
@@ -773,7 +773,7 @@ static void build_test_array(void)
             p->jsize = (INT)in;
             p->jtype = jtype;
             snprintf(p->name, sizeof(p->name),
-                     "zchkhs_n%d_type%d", n, jtype);
+                     "cchkhs_n%d_type%d", n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_zchkhs_case;
@@ -789,7 +789,7 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
-    (void)_cmocka_run_group_tests("zchkhs", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("cchkhs", g_tests, g_num_tests,
                                     group_setup, group_teardown);
     return 0;
 }

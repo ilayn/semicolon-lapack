@@ -558,7 +558,7 @@ static void build_test_array(void)
                     p->imat = imat;
                     p->iuplo = iuplo;
                     p->inb = inb;
-                    snprintf(p->name, sizeof(p->name), "dchksy_n%d_%c_type%d_nb%d_nx%d_%d",
+                    snprintf(p->name, sizeof(p->name), "schksy_n%d_%c_type%d_nb%d_nx%d_%d",
                              n, UPLOS[iuplo], imat, nb, NXVAL[inb], inb);
 
                     /* Create CMocka test entry */
@@ -586,7 +586,7 @@ static void build_test_array(void)
                 p->imat = 0;
                 p->iuplo = iuplo;
                 p->inb = inb;
-                snprintf(p->name, sizeof(p->name), "dchksy_n%d_%c_zeropiv_nb%d_%d",
+                snprintf(p->name, sizeof(p->name), "schksy_n%d_%c_zeropiv_nb%d_%d",
                          n, UPLOS[iuplo], NBVAL[inb], inb);
 
                 g_tests[g_num_tests].name = p->name;
@@ -610,7 +610,7 @@ int main(void)
      * We use _cmocka_run_group_tests directly because the test array
      * is built dynamically and the standard macro uses sizeof() which
      * only works for compile-time array sizes. */
-    (void)_cmocka_run_group_tests("dchksy", g_tests, g_num_tests,
+    (void)_cmocka_run_group_tests("schksy", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
 }
