@@ -270,6 +270,7 @@ def build_code_subs(z_names, d_names):
         ("log2",     "log2f"),
         ("atan2",    "atan2f"),
         ("ldexp",    "ldexpf"),
+        ("ilogb",    "ilogbf"),
         ("floor",    "floorf"),
         ("round",    "roundf"),
         ("sqrt",     "sqrtf"),

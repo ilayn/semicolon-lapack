@@ -127,6 +127,9 @@ void cggglm(
     const c64 neg_one = CMPLXF(-1.0f, 0.0f);
 
     INT i, lopt, lwkmin, lwkopt, nb, nb1, nb2, nb3, nb4, np;
+    INT ia, ib, ibig, id, isml, ka, kb, kd;
+    f32 anrm, bignum, bnrm, dnrm, smlnum;
+    f32 rwork[1];
     INT lquery;
     INT max_val;
 
@@ -187,6 +190,63 @@ void cggglm(
         return;
     }
 
+    /* Get machine parameters */
+    smlnum = slamch("S") / slamch("P");
+    bignum = 1.0f / smlnum;
+    isml = ilogbf(smlnum) + 1;
+    ibig = ilogbf(bignum);
+
+    /* Scale A, B and d independently by powers of two 2**KA, 2**KB and
+     * 2**KD so that their largest entries lie in [SMLNUM,BIGNUM), the
+     * values whose exponent lies in [ISML,IBIG].  x is then scaled by
+     * 2**(KD-KA) and y by 2**(KD-KB).  Scaling by a power of two is
+     * exact.  A norm that is zero, infinite or NaN takes no part.
+     * CLASCL is called with both endpoints at or above one so that
+     * forming the factor raises no underflow. */
+    anrm = clange("M", n, m, A, lda, rwork);
+    ka = 0;
+    if (anrm > 0.0f && anrm <= FLT_MAX) {
+        ia = ilogbf(anrm) + 1;
+        if (ia < isml) {
+            ka = isml - ia;
+        } else if (ia > ibig) {
+            ka = ibig - ia;
+        }
+    }
+    if (ka != 0) {
+        clascl("G", 0, 0, ldexpf(1.0f, (int)(-ka > 0 ? -ka : 0)),
+               ldexpf(1.0f, (int)(ka > 0 ? ka : 0)), n, m, A, lda, info);
+    }
+
+    bnrm = clange("M", n, p, B, ldb, rwork);
+    kb = 0;
+    if (bnrm > 0.0f && bnrm <= FLT_MAX) {
+        ib = ilogbf(bnrm) + 1;
+        if (ib < isml) {
+            kb = isml - ib;
+        } else if (ib > ibig) {
+            kb = ibig - ib;
+        }
+    }
+    if (kb != 0) {
+        clascl("G", 0, 0, ldexpf(1.0f, (int)(-kb > 0 ? -kb : 0)),
+               ldexpf(1.0f, (int)(kb > 0 ? kb : 0)), n, p, B, ldb, info);
+    }
+
+    dnrm = clange("M", n, 1, D, n, rwork);
+    kd = 0;
+    if (dnrm > 0.0f && dnrm <= FLT_MAX) {
+        id = ilogbf(dnrm) + 1;
+        if (id < isml) {
+            kd = isml - id;
+        } else if (id > ibig) {
+            kd = ibig - id;
+        }
+    }
+    if (kd != 0) {
+        cblas_csscal(n, ldexpf(1.0f, (int)kd), D, 1);
+    }
+
     cggqrf(n, m, p, A, lda, work, B, ldb, &work[m],
            &work[m + np], lwork - m - np, info);
     lopt = (INT)crealf(work[m + np]);
@@ -231,5 +291,13 @@ void cggglm(
     cunmrq("L", "C", p, 1, np,
            &B[b_row_start + 0 * ldb], ldb, &work[m], Y,
            (1 > p ? 1 : p), &work[m + np], lwork - m - np, info);
+    /* Undo scaling: x carries 2**(KD-KA) and y carries 2**(KD-KB) */
+    if (ka != kd) {
+        cblas_csscal(m, ldexpf(1.0f, (int)(ka - kd)), X, 1);
+    }
+    if (kb != kd) {
+        cblas_csscal(p, ldexpf(1.0f, (int)(kb - kd)), Y, 1);
+    }
+
     work[0] = (c64)(m + np + ((lopt > (INT)crealf(work[m + np])) ? lopt : (INT)crealf(work[m + np])));
 }
