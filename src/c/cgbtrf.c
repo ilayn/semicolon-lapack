@@ -93,6 +93,7 @@ void cgbtrf(
 
     INT i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
     c64 temp;
+    f32 sfmin;
     INT minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
@@ -120,6 +121,9 @@ void cgbtrf(
     if (m == 0 || n == 0) {
         return;
     }
+
+    /* Compute machine safe minimum */
+    sfmin = slamch("S");
 
     /* Determine the block size for this environment */
     nb = lapack_get_nb("GBTRF");
@@ -225,9 +229,13 @@ void cgbtrf(
                     }
 
                     /* Compute multipliers */
-                    {
+                    if (cabsf(AB[kv + jj * ldab]) >= sfmin) {
                         const c64 scale = ONE / AB[kv + jj * ldab];
                         cblas_cscal(km, &scale, &AB[kv + 1 + jj * ldab], 1);
+                    } else {
+                        for (i = 1; i <= km; i++) {
+                            AB[kv + i + jj * ldab] = AB[kv + i + jj * ldab] / AB[kv + jj * ldab];
+                        }
                     }
 
                     /* Update trailing submatrix within the band and within

@@ -4,6 +4,7 @@
  *        using the unblocked version of the algorithm.
  */
 
+#include <math.h>
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_double.h"
 
@@ -81,6 +82,7 @@ void dgbtf2(
     const f64 ZERO = 0.0;
 
     INT i, j, jp, ju, km, kv;
+    f64 sfmin;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
     kv = ku + kl;
@@ -107,6 +109,9 @@ void dgbtf2(
     if (m == 0 || n == 0) {
         return;
     }
+
+    /* Compute machine safe minimum */
+    sfmin = dlamch("S");
 
     /* Gaussian elimination with partial pivoting */
 
@@ -169,7 +174,13 @@ void dgbtf2(
             if (km > 0) {
                 /* Compute multipliers.
                    Scale elements in column j, rows kv+1 to kv+km (0-based) */
-                cblas_dscal(km, ONE / AB[kv + j * ldab], &AB[kv + 1 + j * ldab], 1);
+                if (fabs(AB[kv + j * ldab]) >= sfmin) {
+                    cblas_dscal(km, ONE / AB[kv + j * ldab], &AB[kv + 1 + j * ldab], 1);
+                } else {
+                    for (i = 1; i <= km; i++) {
+                        AB[kv + i + j * ldab] = AB[kv + i + j * ldab] / AB[kv + j * ldab];
+                    }
+                }
 
                 /* Update trailing submatrix within the band.
                    A[kv+1:kv+km, j+1:ju] -= A[kv+1:kv+km, j] * A[kv, j+1:ju]

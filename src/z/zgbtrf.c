@@ -93,6 +93,7 @@ void zgbtrf(
 
     INT i, i2, i3, ii, ip, j, j2, j3, jb, jj, jm, jp, ju, k2, km, kv, nb, nw;
     c128 temp;
+    f64 sfmin;
     INT minmn;
 
     /* kv is the number of superdiagonals in the factor U, allowing for fill-in */
@@ -120,6 +121,9 @@ void zgbtrf(
     if (m == 0 || n == 0) {
         return;
     }
+
+    /* Compute machine safe minimum */
+    sfmin = dlamch("S");
 
     /* Determine the block size for this environment */
     nb = lapack_get_nb("GBTRF");
@@ -225,9 +229,13 @@ void zgbtrf(
                     }
 
                     /* Compute multipliers */
-                    {
+                    if (cabs(AB[kv + jj * ldab]) >= sfmin) {
                         const c128 scale = ONE / AB[kv + jj * ldab];
                         cblas_zscal(km, &scale, &AB[kv + 1 + jj * ldab], 1);
+                    } else {
+                        for (i = 1; i <= km; i++) {
+                            AB[kv + i + jj * ldab] = AB[kv + i + jj * ldab] / AB[kv + jj * ldab];
+                        }
                     }
 
                     /* Update trailing submatrix within the band and within
