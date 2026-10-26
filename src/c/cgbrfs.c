@@ -137,7 +137,7 @@ void cgbrfs(
 
     /* NZ = maximum number of nonzero elements in each row of A, plus 1 */
     nz = (kl + ku + 2 < n + 1) ? kl + ku + 2 : n + 1;
-    eps = FLT_EPSILON;
+    eps = slamch("E");
     safmin = FLT_MIN;
     safe1 = nz * safmin;
     safe2 = safe1 / eps;

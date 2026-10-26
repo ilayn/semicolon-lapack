@@ -52,29 +52,30 @@ static f64 g_selwr[20]; /* Real parts of selected eigenvalues */
 static f64 g_selwi[20]; /* Imaginary parts of selected eigenvalues */
 
 /**
- * Selection function for dgees.
- * Selects eigenvalues based on global selection criteria.
+ * DSLECT returns .TRUE. if the eigenvalue ZR+sqrt(-1)*ZI is to be
+ * selected, and otherwise it returns .FALSE.
+ * It is used by DCHK41 to test if DGEES successfully sorts eigenvalues,
+ * and by DCHK43 to test if DGEESX successfully sorts eigenvalues.
  */
-static INT dslect(const f64* wr, const f64* wi)
+static INT dslect(const f64* zr, const f64* zi)
 {
-    INT j;
-    f64 eps = dlamch("P");
+    INT i;
+    f64 rmin, x;
 
     if (g_selopt == 0) {
-        /* Select all eigenvalues */
-        return 1;
-    }
-
-    for (j = 0; j < g_seldim; j++) {
-        f64 rmin = fabs(*wr - g_selwr[j]);
-        if (fabs(*wi - g_selwi[j]) < rmin) {
-            rmin = fabs(*wi - g_selwi[j]);
+        return (*zr < 0.0);
+    } else {
+        rmin = dlapy2(*zr - g_selwr[0], *zi - g_selwi[0]);
+        INT val = g_selval[0];
+        for (i = 1; i < g_seldim; i++) {
+            x = dlapy2(*zr - g_selwr[i], *zi - g_selwi[i]);
+            if (x <= rmin) {
+                rmin = x;
+                val = g_selval[i];
+            }
         }
-        if (rmin < eps) {
-            return g_selval[j];
-        }
+        return val;
     }
-    return 0;
 }
 
 /* Test parameters for a single test case */
@@ -374,20 +375,18 @@ static void run_ddrves_single(ddrves_params_t* params)
     dlacpy("F", n, n, A, lda, H, lda);
 
     /* Setup selection */
-    g_selopt = 1;
+    g_selopt = 0;
 
     /* Compute Schur form with vectors */
     INT sdim;
     dgees("V", sort, dslect, n, H, lda, &sdim, WR, WI, VS, ldvs,
           work, nnwork, bwork, &iinfo);
 
-    if (iinfo != 0 && iinfo != n + 2) {
+    if (iinfo == n + 1) {
+        skip();
+    } else if (iinfo != 0 && iinfo != n + 2) {
         ws->result[rsub] = ulpinv;
-        if (iinfo > 0 && iinfo <= n) {
-            /* QR algorithm failed */
-            fprintf(stderr, "DGEES failed with info=%d (QR failed)\n", iinfo);
-        }
-        return;
+        fail_msg("DGEES1 returned INFO = %d", (int)iinfo);
     }
 
     /* Test 1 (or 7): Verify quasi-triangular structure */
@@ -473,8 +472,11 @@ static void run_ddrves_single(ddrves_params_t* params)
     dgees("N", sort, dslect, n, HT, lda, &sdim, WRT, WIT, VS, ldvs,
           work, nnwork, bwork, &iinfo);
 
-    if (iinfo != 0 && iinfo != n + 2) {
+    if (iinfo == n + 1) {
+        skip();
+    } else if (iinfo != 0 && iinfo != n + 2) {
         ws->result[rsub + 4] = ulpinv;
+        fail_msg("DGEES2 returned INFO = %d", (int)iinfo);
     } else {
         /* Test 5: Compare T matrices */
         ws->result[rsub + 4] = 0.0;
@@ -500,14 +502,25 @@ static void run_ddrves_single(ddrves_params_t* params)
 
     /* Test 13 (only for sorted case): SDIM validation */
     if (isort == 1) {
-        /* Count expected selected eigenvalues */
+        ws->result[12] = 0.0;
         INT knteig = 0;
         for (INT i = 0; i < n; i++) {
-            if (dslect(&WR[i], &WI[i])) {
+            f64 mwi = -WI[i];
+            if (dslect(&WR[i], &WI[i]) || dslect(&WR[i], &mwi)) {
                 knteig++;
             }
+            if (i < n - 1) {
+                f64 mwi1 = -WI[i + 1];
+                if ((dslect(&WR[i + 1], &WI[i + 1]) || dslect(&WR[i + 1], &mwi1)) &&
+                    !(dslect(&WR[i], &WI[i]) || dslect(&WR[i], &mwi)) &&
+                    iinfo != n + 2) {
+                    ws->result[12] = ulpinv;
+                }
+            }
         }
-        ws->result[12] = (sdim == knteig) ? 0.0 : ulpinv;
+        if (sdim != knteig) {
+            ws->result[12] = ulpinv;
+        }
         assert_residual_ok(ws->result[12]);
     }
 }

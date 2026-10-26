@@ -366,7 +366,7 @@ void sgbsvx(
     }
 
     /* Set INFO = N+1 if the matrix is singular to working precision */
-    if (*rcond < FLT_EPSILON) {
+    if (*rcond < slamch("E")) {
         *info = n + 1;
     }
 

@@ -68,7 +68,7 @@ void dlaic1(
     f64 absalp, absest, absgam, alpha, b, cosine, eps,
            norma, s1, s2, sine, t, test, tmp, zeta1, zeta2;
 
-    eps = DBL_EPSILON;
+    eps = dlamch("E");
     alpha = cblas_ddot(j, x, 1, w, 1);
 
     absalp = fabs(alpha);

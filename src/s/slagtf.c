@@ -92,7 +92,7 @@ void slagtf(
         return;
     }
 
-    eps = FLT_EPSILON;
+    eps = slamch("E");
 
     tl = fmaxf(tol, eps);
     scale1 = fabsf(A[0]) + fabsf(B[0]);

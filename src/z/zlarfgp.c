@@ -86,7 +86,7 @@ void zlarfgp(const INT n, c128* alpha, c128* restrict x,
          */
 
         beta = copysign(dlapy3(alphr, alphi, xnorm), alphr);
-        smlnum = DBL_MIN / DBL_EPSILON;
+        smlnum = dlamch("S") / dlamch("E");
         bignum = ONE / smlnum;
 
         knt = 0;

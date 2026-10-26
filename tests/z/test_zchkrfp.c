@@ -31,8 +31,8 @@
 #include <stdio.h>
 #include <math.h>
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const INT NSVAL[] = {1, 2, 5, 10};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 6, 10, 11, 50};
+static const INT NSVAL[] = {1, 2, 15};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))

@@ -121,7 +121,7 @@ void zgerfs(
     }
 
     nz = n + 1;
-    eps = DBL_EPSILON;
+    eps = dlamch("E");
     safmin = DBL_MIN;
     safe1 = nz * safmin;
     safe2 = safe1 / eps;

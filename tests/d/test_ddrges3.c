@@ -205,8 +205,8 @@ static void test_ddrges3(void** state)
     /* Quick return for n=0 */
     if (n == 0) return;
 
-    const f64 safmin = dlamch("S");
     const f64 ulp = dlamch("P");
+    const f64 safmin = dlamch("S") / ulp;
     const f64 safmax = 1.0 / safmin;
     const f64 ulpinv = 1.0 / ulp;
 

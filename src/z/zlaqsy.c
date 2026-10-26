@@ -56,16 +56,8 @@ void zlaqsy(
         return;
     }
 
-    // Initialize LARGE and SMALL
-    // SMALL = DLAMCH('Safe minimum') / DLAMCH('Precision')
-    // LARGE = 1 / SMALL
-    f64 eps = DBL_EPSILON * 0.5;
-    f64 sfmin = DBL_MIN;
-    f64 small_val = 1.0 / DBL_MAX;
-    if (small_val >= sfmin) {
-        sfmin = small_val * (1.0 + eps);
-    }
-    f64 small = sfmin / eps;
+    /* Initialize LARGE and SMALL. */
+    f64 small = dlamch("S") / dlamch("P");
     f64 large = 1.0 / small;
 
     if (scond >= THRESH && amax >= small && amax <= large) {

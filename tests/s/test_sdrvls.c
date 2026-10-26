@@ -260,11 +260,7 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
 
         if (ncols > 0) {
             rng_seed(rng_state, 1989 + m * 100 + n * 10 + iscale + itran + nb);
-            for (INT j = 0; j < nrhs; j++) {
-                for (INT i = 0; i < ncols; i++) {
-                    ws->WORK[i + j * ldwork] = ((f32)(i + j * ncols + 1)) / (ncols * nrhs + 1);
-                }
-            }
+            slarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
             cblas_sscal(ncols * nrhs, ONE / (f32)ncols, ws->WORK, 1);
             /* Make the last solution column small
              * enough that undoing the scaling of
@@ -310,11 +306,7 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
 
         if (ncols > 0) {
             rng_seed(rng_state, 2989 + m * 100 + n * 10 + iscale + itran + nb);
-            for (INT j = 0; j < nrhs; j++) {
-                for (INT i = 0; i < ncols; i++) {
-                    ws->WORK[i + j * ldwork] = ((f32)(i + j * ncols + 1)) / (ncols * nrhs + 1);
-                }
-            }
+            slarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
             cblas_sscal(ncols * nrhs, ONE / (f32)ncols, ws->WORK, 1);
             /* Make the last solution column small
              * enough that undoing the scaling of
@@ -360,11 +352,7 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
 
         if (ncols > 0) {
             rng_seed(rng_state, 3989 + m * 100 + n * 10 + iscale + itran + nb);
-            for (INT j = 0; j < nrhs; j++) {
-                for (INT i = 0; i < ncols; i++) {
-                    ws->WORK[i + j * ldwork] = ((f32)(i + j * ncols + 1)) / (ncols * nrhs + 1);
-                }
-            }
+            slarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
             cblas_sscal(ncols * nrhs, ONE / (f32)ncols, ws->WORK, 1);
             /* Make the last solution column small
              * enough that undoing the scaling of

@@ -132,8 +132,8 @@ static int group_setup(void** state)
                         INT iwq;
                         INT info;
                         INT crank;
-                        f32 rcond = sqrtf(FLT_EPSILON) -
-                                    (sqrtf(FLT_EPSILON) - FLT_EPSILON) / 2.0f;
+                        f32 eps = slamch("E");
+                        f32 rcond = sqrtf(eps) - (sqrtf(eps) - eps) / 2.0f;
 
                         /* Workspace needed for CGELSY */
                         cgelsy(m, n, nrhs, NULL, lda, NULL, ldb, &iwq,
@@ -218,7 +218,7 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
     zdrvls_workspace_t* ws = g_workspace;
     const INT lwork = ws->lwork;
 
-    f32 eps = FLT_EPSILON;
+    f32 eps = slamch("E");
     f32 rcond = sqrtf(eps) - (sqrtf(eps) - eps) / 2.0f;
     INT itype = (irank - 1) * 3 + iscale;
 

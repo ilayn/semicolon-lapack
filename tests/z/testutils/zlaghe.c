@@ -70,10 +70,15 @@ void zlaghe(
         INT len = n - i;
         zlarnv_rng(3, len, work, state);
         wn = cblas_dznrm2(len, work, 1);
-        wa = (wn / cabs(work[0])) * work[0];
         if (wn == 0.0) {
+            wa = CZERO;
             tau = 0.0;
         } else {
+            if (cabs(work[0]) == 0.0) {
+                wa = CMPLX(wn, 0.0);
+            } else {
+                wa = (wn / cabs(work[0])) * work[0];
+            }
             wb = work[0] + wa;
             c128 scale = CONE / wb;
             cblas_zscal(len - 1, &scale, &work[1], 1);
@@ -105,10 +110,15 @@ void zlaghe(
     for (i = 0; i < n - 1 - k; i++) {
         INT len = n - k - i;
         wn = cblas_dznrm2(len, &A[k + i + i * lda], 1);
-        wa = (wn / cabs(A[k + i + i * lda])) * A[k + i + i * lda];
         if (wn == 0.0) {
+            wa = CZERO;
             tau = 0.0;
         } else {
+            if (cabs(A[k + i + i * lda]) == 0.0) {
+                wa = CMPLX(wn, 0.0);
+            } else {
+                wa = (wn / cabs(A[k + i + i * lda])) * A[k + i + i * lda];
+            }
             wb = A[k + i + i * lda] + wa;
             c128 scale = CONE / wb;
             cblas_zscal(len - 1, &scale, &A[k + i + 1 + i * lda], 1);

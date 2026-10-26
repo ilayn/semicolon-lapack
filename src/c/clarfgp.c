@@ -86,7 +86,7 @@ void clarfgp(const INT n, c64* alpha, c64* restrict x,
          */
 
         beta = copysignf(slapy3(alphr, alphi, xnorm), alphr);
-        smlnum = FLT_MIN / FLT_EPSILON;
+        smlnum = slamch("S") / slamch("E");
         bignum = ONE / smlnum;
 
         knt = 0;

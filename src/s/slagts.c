@@ -89,7 +89,7 @@ void slagts(
         return;
     }
 
-    eps = FLT_EPSILON;
+    eps = slamch("E");
     sfmin = FLT_MIN;
     bignum = 1.0f / sfmin;
 

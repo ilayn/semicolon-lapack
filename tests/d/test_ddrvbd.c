@@ -110,6 +110,7 @@ typedef struct {
 
     /* RNG state */
     uint64_t rng_state[4];
+    f64 anorm;   /* ANORM of the generated matrix */
 } ddrvbd_workspace_t;
 
 /* Global workspace pointer */
@@ -174,7 +175,7 @@ static f64 check_sv_order(const f64* S, INT n, f64 ulpinv)
  *   5: Same as 3, scaled near overflow
  */
 static void generate_test_matrix(INT itype, INT m, INT n, f64* A, INT lda,
-                                 f64* S, f64* work, INT* info,
+                                 f64* S, f64* work, f64* anorm_out, INT* info,
                                  uint64_t state[static 4])
 {
     f64 ulp = dlamch("P");
@@ -183,6 +184,8 @@ static void generate_test_matrix(INT itype, INT m, INT n, f64* A, INT lda,
     INT mnmin = (m < n) ? m : n;
 
     *info = 0;
+    /* DDRVBD sets ANORM only for types 3-5; zero is used for types 1 and 2. */
+    *anorm_out = 0.0;
 
     if (m == 0 || n == 0) {
         return;
@@ -191,12 +194,10 @@ static void generate_test_matrix(INT itype, INT m, INT n, f64* A, INT lda,
     if (itype == 1) {
         /* Type 1: Zero matrix */
         dlaset("F", m, n, 0.0, 0.0, A, lda);
-        for (INT i = 0; i < mnmin; i++) S[i] = 0.0;
     }
     else if (itype == 2) {
         /* Type 2: Identity matrix */
         dlaset("F", m, n, 0.0, 1.0, A, lda);
-        for (INT i = 0; i < mnmin; i++) S[i] = 1.0;
     }
     else if (itype >= 3 && itype <= 5) {
         /* Types 3-5: Random matrix with controlled singular values */
@@ -217,19 +218,12 @@ static void generate_test_matrix(INT itype, INT m, INT n, f64* A, INT lda,
         }
 
         /* Use dlatms to generate random matrix with specified singular values */
+        *anorm_out = anorm;
         dlatms(m, n, "U", "N", S, 4, cond, anorm,
                m - 1, n - 1, "N", A, lda, work, info, state);
 
         if (*info != 0) {
             return;
-        }
-
-        /* Sort singular values in decreasing order for verification */
-        /* dlatms with mode=4 gives SV from 1 to 1/cond */
-        /* We need to know what values to expect */
-        for (INT i = 0; i < mnmin; i++) {
-            f64 t = (f64)i / (f64)(mnmin > 1 ? mnmin - 1 : 1);
-            S[i] = anorm * (1.0 - t * (1.0 - 1.0 / cond));
         }
     }
     else {
@@ -710,69 +704,81 @@ static void test_dgesvdx(INT m, INT n, const f64* ASAV, INT lda,
         }
     }
 
-    /* === RANGE='I' (index range) === */
-    if (mnmin > 1) {
-        INT il = (INT)((mnmin - 1) * rng_uniform(ws->rng_state));
-        INT iu = (INT)((mnmin - 1) * rng_uniform(ws->rng_state));
+    /* Do tests 30--32: DGESVDX( 'V', 'V', 'I' ) */
+    const f64 rtunfl = sqrt(unfl);
+    const INT ldvt = mnmin;
+    uint64_t rng2[4];
+    INT il, iu, nsi, nsv;
+    for (INT i = 0; i < 4; i++) {
+        rng2[i] = ws->rng_state[i];
+    }
+    if (mnmin <= 1) {
+        il = 0;
+        iu = ((mnmin > 1) ? mnmin : 1) - 1;
+    } else {
+        il = (INT)(mnmin * rng_uniform(rng2));
+        iu = (INT)(mnmin * rng_uniform(rng2));
         if (iu < il) {
-            INT tmp = il;
-            il = iu;
-            iu = tmp;
-        }
-        INT nsi = iu - il + 1;
-
-        dlacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-        dgesvdx("V", "V", "I", m, n, ws->A, lda,
-                0.0, 0.0, il, iu, &ns,
-                ws->S, ws->U, m, ws->VT, nsi,
-                ws->work, lwork, ws->iwork, &info);
-
-        if (info == 0 && ns > 0) {
-            /* Test 30: Partial SVD reconstruction using dbdt05 */
-            dbdt05(m, n, ASAV, lda, ws->S, ns, ws->U, m, ws->VT, nsi,
-                   ws->work, &ws->result[29]);
-
-            /* Test 31: U orthogonality */
-            dort01("C", m, ns, ws->U, m, ws->work, ws->lwork, &ws->result[30]);
-
-            /* Test 32: VT orthogonality */
-            dort01("R", ns, n, ws->VT, nsi, ws->work, ws->lwork, &ws->result[31]);
+            INT itemp = iu;
+            iu = il;
+            il = itemp;
         }
     }
+    dlacpy("F", m, n, ASAV, lda, ws->A, lda);
+    dgesvdx("V", "V", "I", m, n, ws->A, lda,
+            0.0, 0.0, il, iu, &nsi,
+            ws->S, ws->U, m, ws->VT, ldvt,
+            ws->work, lwork, ws->iwork, &info);
+    assert_info_success(info);
 
-    /* === RANGE='V' (value range) === */
-    if (mnmin > 1 && ws->SSAV[0] > ws->SSAV[mnmin - 1]) {
-        f64 vl = ws->SSAV[mnmin - 1] - ulp * ws->SSAV[0];
-        f64 vu = ws->SSAV[0] + ulp * ws->SSAV[0];
+    ws->result[29] = 0.0;
+    ws->result[30] = 0.0;
+    ws->result[31] = 0.0;
+    dbdt05(m, n, ASAV, lda, ws->S, nsi, ws->U, m, ws->VT, ldvt,
+           ws->work, &ws->result[29]);
+    dort01("C", m, nsi, ws->U, m, ws->work, ws->lwork, &ws->result[30]);
+    dort01("R", nsi, n, ws->VT, ldvt, ws->work, ws->lwork, &ws->result[31]);
 
-        INT mid = mnmin / 2;
-        if (mid > 0 && mid < mnmin - 1) {
-            vl = ws->SSAV[mid + 1] - ulp * ws->SSAV[0];
-            vu = ws->SSAV[mid - 1] + ulp * ws->SSAV[0];
+    /* Do tests 33--35: DGESVDX( 'V', 'V', 'V' ) */
+    f64 vl, vu;
+    if (mnmin > 0 && nsi > 1) {
+        if (il != 0) {
+            vu = ws->SSAV[il] +
+                 fmax(fmax(0.5 * fabs(ws->SSAV[il] - ws->SSAV[il - 1]),
+                           ulp * ws->anorm), 2.0 * rtunfl);
+        } else {
+            vu = ws->SSAV[0] +
+                 fmax(fmax(0.5 * fabs(ws->SSAV[ns - 1] - ws->SSAV[0]),
+                           ulp * ws->anorm), 2.0 * rtunfl);
         }
-
-        if (vl < 0.0) vl = 0.0;
-
-        dlacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-        dgesvdx("V", "V", "V", m, n, ws->A, lda,
-                vl, vu, 0, 0, &ns,
-                ws->S, ws->U, m, ws->VT, mnmin,
-                ws->work, lwork, ws->iwork, &info);
-
-        if (info == 0 && ns > 0) {
-            /* Test 33: Partial SVD reconstruction using dbdt05 */
-            dbdt05(m, n, ASAV, lda, ws->S, ns, ws->U, m, ws->VT, mnmin,
-                   ws->work, &ws->result[32]);
-
-            /* Test 34: U orthogonality */
-            dort01("C", m, ns, ws->U, m, ws->work, ws->lwork, &ws->result[33]);
-
-            /* Test 35: VT orthogonality */
-            dort01("R", ns, n, ws->VT, mnmin, ws->work, ws->lwork, &ws->result[34]);
+        if (iu != ns - 1) {
+            vl = ws->SSAV[iu] - fmax(fmax(ulp * ws->anorm, 2.0 * rtunfl),
+                                     0.5 * fabs(ws->SSAV[iu + 1] - ws->SSAV[iu]));
+        } else {
+            vl = ws->SSAV[ns - 1] - fmax(fmax(ulp * ws->anorm, 2.0 * rtunfl),
+                                         0.5 * fabs(ws->SSAV[ns - 1] - ws->SSAV[0]));
         }
+        vl = fmax(vl, 0.0);
+        vu = fmax(vu, 0.0);
+        if (vl >= vu) vu = fmax(vu * 2, vu + vl + 0.5);
+    } else {
+        vl = 0.0;
+        vu = 1.0;
     }
+    dlacpy("F", m, n, ASAV, lda, ws->A, lda);
+    dgesvdx("V", "V", "V", m, n, ws->A, lda,
+            vl, vu, il, iu, &nsv,
+            ws->S, ws->U, m, ws->VT, ldvt,
+            ws->work, lwork, ws->iwork, &info);
+    assert_info_success(info);
+
+    ws->result[32] = 0.0;
+    ws->result[33] = 0.0;
+    ws->result[34] = 0.0;
+    dbdt05(m, n, ASAV, lda, ws->S, nsv, ws->U, m, ws->VT, ldvt,
+           ws->work, &ws->result[32]);
+    dort01("C", m, nsv, ws->U, m, ws->work, ws->lwork, &ws->result[33]);
+    dort01("R", nsv, n, ws->VT, ldvt, ws->work, ws->lwork, &ws->result[34]);
 }
 
 /* ===== DGESVDQ Tests (36-39) ===== */
@@ -934,7 +940,7 @@ static void run_ddrvbd_single(ddrvbd_params_t* p)
 
     /* Generate test matrix */
     generate_test_matrix(itype, m, n, ws->ASAV, m,
-                         ws->SSAV, ws->work, &info, ws->rng_state);
+                         ws->SSAV, ws->work, &ws->anorm, &info, ws->rng_state);
 
     if (info != 0) {
         snprintf(context, sizeof(context),

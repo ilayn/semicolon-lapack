@@ -56,7 +56,7 @@ void dlarfg(const INT n, f64* alpha, f64* x,
     } else {
         /* General case */
         beta = -copysign(dlapy2(*alpha, xnorm), *alpha);
-        safmin = DBL_MIN / DBL_EPSILON;
+        safmin = dlamch("S") / dlamch("E");
         knt = 0;
 
         if (fabs(beta) < safmin) {

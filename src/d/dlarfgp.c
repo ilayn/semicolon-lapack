@@ -74,7 +74,7 @@ void dlarfgp(const INT n, f64* alpha, f64* restrict x,
          * General case
          */
         beta = copysign(dlapy2(*alpha, xnorm), *alpha);
-        smlnum = DBL_MIN / DBL_EPSILON;
+        smlnum = dlamch("S") / dlamch("E");
         knt = 0;
 
         if (fabs(beta) < smlnum) {

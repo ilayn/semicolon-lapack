@@ -848,8 +848,8 @@ static void run_dchkbd_single(dchkbd_params_t* params)
             il = 0;
             iu = mnmin - 1;
         } else {
-            il = (INT)((mnmin - 1) * rng_uniform(iseed2));
-            iu = (INT)((mnmin - 1) * rng_uniform(iseed2));
+            il = (INT)(mnmin * rng_uniform(iseed2));
+            iu = (INT)(mnmin * rng_uniform(iseed2));
             if (iu < il) {
                 INT itemp = iu;
                 iu = il;

@@ -788,8 +788,8 @@ static void test_dchkst2stg_case(void** state)
         il = 0;
         iu = n - 1;
     } else {
-        il = (INT)((n - 1) * rng_uniform(ws->rng_state2));
-        iu = (INT)((n - 1) * rng_uniform(ws->rng_state2));
+        il = (INT)(n * rng_uniform(ws->rng_state2));
+        iu = (INT)(n * rng_uniform(ws->rng_state2));
         if (iu < il) { INT itemp = iu; iu = il; il = itemp; }
     }
 
@@ -952,8 +952,8 @@ static void test_dchkst2stg_case(void** state)
         dlaset("F", n, n, 0.0, 1.0, Z, ldu);
 
         ntest = 29;
-        il = (INT)((n - 1) * rng_uniform(ws->rng_state2));
-        iu = (INT)((n - 1) * rng_uniform(ws->rng_state2));
+        il = (INT)(n * rng_uniform(ws->rng_state2));
+        iu = (INT)(n * rng_uniform(ws->rng_state2));
         if (iu < il) { INT itemp = iu; iu = il; il = itemp; }
 
         {

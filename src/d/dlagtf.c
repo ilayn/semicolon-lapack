@@ -92,7 +92,7 @@ void dlagtf(
         return;
     }
 
-    eps = DBL_EPSILON;
+    eps = dlamch("E");
 
     tl = fmax(tol, eps);
     scale1 = fabs(A[0]) + fabs(B[0]);

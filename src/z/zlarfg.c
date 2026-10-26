@@ -67,7 +67,7 @@ void zlarfg(const INT n, c128* alpha, c128* x,
         /* general case */
 
         beta = -copysign(dlapy3(alphr, alphi, xnorm), alphr);
-        safmin = DBL_MIN / DBL_EPSILON;
+        safmin = dlamch("S") / dlamch("E");
         rsafmn = ONE / safmin;
 
         knt = 0;

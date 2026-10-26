@@ -68,7 +68,7 @@ void slaic1(
     f32 absalp, absest, absgam, alpha, b, cosine, eps,
            norma, s1, s2, sine, t, test, tmp, zeta1, zeta2;
 
-    eps = FLT_EPSILON;
+    eps = slamch("E");
     alpha = cblas_sdot(j, x, 1, w, 1);
 
     absalp = fabsf(alpha);

@@ -60,14 +60,8 @@ void claqhe(
         return;
     }
 
-    // Initialize LARGE and SMALL
-    f32 eps = FLT_EPSILON * 0.5f;
-    f32 sfmin = FLT_MIN;
-    f32 small_val = 1.0f / FLT_MAX;
-    if (small_val >= sfmin) {
-        sfmin = small_val * (1.0f + eps);
-    }
-    f32 small = sfmin / eps;
+    /* Initialize LARGE and SMALL. */
+    f32 small = slamch("S") / slamch("P");
     f32 large = 1.0f / small;
 
     if (scond >= THRESH && amax >= small && amax <= large) {

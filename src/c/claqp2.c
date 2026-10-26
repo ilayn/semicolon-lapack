@@ -52,7 +52,7 @@ void claqp2(const INT m, const INT n, const INT offset,
             c64* restrict work)
 {
     INT mn = (m - offset) < n ? (m - offset) : n;
-    f32 tol3z = sqrtf(FLT_EPSILON);
+    f32 tol3z = sqrtf(slamch("E"));
 
     /* Compute factorization. */
     for (INT i = 0; i < mn; i++) {

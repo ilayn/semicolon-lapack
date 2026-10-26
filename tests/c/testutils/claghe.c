@@ -70,10 +70,15 @@ void claghe(
         INT len = n - i;
         clarnv_rng(3, len, work, state);
         wn = cblas_scnrm2(len, work, 1);
-        wa = (wn / cabsf(work[0])) * work[0];
         if (wn == 0.0f) {
+            wa = CZERO;
             tau = 0.0f;
         } else {
+            if (cabsf(work[0]) == 0.0f) {
+                wa = CMPLXF(wn, 0.0f);
+            } else {
+                wa = (wn / cabsf(work[0])) * work[0];
+            }
             wb = work[0] + wa;
             c64 scale = CONE / wb;
             cblas_cscal(len - 1, &scale, &work[1], 1);
@@ -105,10 +110,15 @@ void claghe(
     for (i = 0; i < n - 1 - k; i++) {
         INT len = n - k - i;
         wn = cblas_scnrm2(len, &A[k + i + i * lda], 1);
-        wa = (wn / cabsf(A[k + i + i * lda])) * A[k + i + i * lda];
         if (wn == 0.0f) {
+            wa = CZERO;
             tau = 0.0f;
         } else {
+            if (cabsf(A[k + i + i * lda]) == 0.0f) {
+                wa = CMPLXF(wn, 0.0f);
+            } else {
+                wa = (wn / cabsf(A[k + i + i * lda])) * A[k + i + i * lda];
+            }
             wb = A[k + i + i * lda] + wa;
             c64 scale = CONE / wb;
             cblas_cscal(len - 1, &scale, &A[k + i + 1 + i * lda], 1);
