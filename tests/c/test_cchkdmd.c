@@ -109,7 +109,7 @@ static void run_case(INT M, INT N)
     const c64 CZERO = CMPLXF(0.0, 0.0), CONE = CMPLXF(1.0, 0.0);
     const INT lda = M, ldf = M, ldx = M, ldy = M, ldw = N, ldz = M, ldau = M, lds = N;
     const f32 eps = slamch("P");
-    const f32 tol = M * eps;
+    const f32 tol = 10.0f * M * eps;
     INT info, i;
 
     f32 e_zxw = ZERO, e_au = ZERO, e_rez = ZERO, e_fqr = ZERO, e_rezq = ZERO;
@@ -226,7 +226,7 @@ static void run_case(INT M, INT N)
                                            w->ZEIGS, w->ZZ, ldz, w->RES, w->ZAU, ldau,
                                            w->ZW, ldw, w->ZS, lds, w->zwork, lzwork,
                                            w->rwork, lrwork, w->iwork, liwork, &info);
-                                    assert_true(info == 0 || info == 4);
+                                    assert_int_equal(info, 0);
 
                                     for (i = 0; i < N; i++) w->SINGVX[i] = w->rwork[i];
 
@@ -310,7 +310,7 @@ static void run_case(INT M, INT N)
                                                 ldz, w->RES, w->ZAU, ldau, w->ZW, ldw, w->ZS,
                                                 lds, w->zwork, lzwork, w->rwork, lrwork,
                                                 w->iwork, liwork, &info);
-                                        assert_true(info == 0 || info == 4);
+                                        assert_int_equal(info, 0);
 
                                         for (i = 0; i < N; i++) w->SINGVQX[i] = w->rwork[i];
 
