@@ -12,11 +12,19 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 50.0f
+#define THRESH 20.0f
 #define MAXTYP 21
+/* NMAX of DCHKEE, which sizes the WORK and IWORK it passes to DDRVSG2STG */
+#define CHKEE_NMAX 132
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NBVAL, NBMIN, NXVAL from dsg.in */
+static const INT NBVAL[] = {1, 3, 20};
+static const INT NBMIN[] = {2, 2, 2};
+static const INT NXVAL[] = {1, 1, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* Generalized symmetric eigenvalue routines */
 /* Packed storage variants */
@@ -25,6 +33,7 @@ static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 typedef struct {
     INT n;
     INT jtype;
+    INT iparm;
     char name[96];
 } ddrvsg2stg_params_t;
 
@@ -82,30 +91,8 @@ static int group_setup(void** state)
     INT nmax = g_ws->nmax;
     INT n2 = nmax * nmax;
 
-    /* Workspace sizes from ddrvsg2stg.f docstring:
-     * NWORK >= 1 + 5*N + 2*N*lg(N) + 3*N^2
-     * LIWORK >= 6*N
-     * where lg(N) = smallest integer k such that 2^k >= N. */
-    INT lgn = 0;
-    if (nmax > 0) {
-        lgn = (INT)(logf((f32)nmax) / logf(2.0f));
-        if ((1 << lgn) < nmax) lgn++;
-        if ((1 << lgn) < nmax) lgn++;
-    }
-    g_ws->nwork = 1 + 5 * nmax + 2 * nmax * lgn + 3 * n2;
-    if (g_ws->nwork < 18) g_ws->nwork = 18;
-    g_ws->liwork = 6 * nmax + 6 + 5 * nmax * lgn;
-    if (g_ws->liwork < 18) g_ws->liwork = 18;
-
-    /* SSYGV_2STAGE workspace: lwmin = 2*n + lhtrd + lwtrd where
-     * lhtrd = 4*n (JOBZ='N'), lwtrd = n*kd + n*max(kd+1,nb) + 2*kd^2 + (kd+1)*n
-     * with kd=32, nb=32 (iparam2stage, single-threaded real): 104*n + 2048 */
-    {
-        INT nwork_2stg = 104 * nmax + 2048;
-        if (nwork_2stg > g_ws->nwork) {
-            g_ws->nwork = nwork_2stg;
-        }
-    }
+    g_ws->nwork = CHKEE_NMAX * (5 * CHKEE_NMAX + 5) + 1;
+    g_ws->liwork = CHKEE_NMAX * (5 * CHKEE_NMAX + 20);
 
     g_ws->A  = malloc(n2 * sizeof(f32));
     g_ws->B  = malloc(n2 * sizeof(f32));
@@ -314,6 +301,9 @@ static void run_ddrvsg2stg_single(ddrvsg2stg_params_t* params)
 {
     INT n = params->n;
     INT jtype = params->jtype;
+    xlaenv(1, NBVAL[params->iparm]);
+    xlaenv(2, NBMIN[params->iparm]);
+    xlaenv(3, NXVAL[params->iparm]);
 
     ddrvsg2stg_workspace_t* ws = g_ws;
     INT nmax = ws->nmax;
@@ -829,7 +819,7 @@ static void test_ddrvsg2stg_case(void** state)
     run_ddrvsg2stg_single(params);
 }
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
 
 static ddrvsg2stg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -839,23 +829,26 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t in = 0; in < NNVAL; in++) {
-        INT n = NVAL[in];
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t in = 0; in < NNVAL; in++) {
+            INT n = NVAL[in];
 
-        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-            ddrvsg2stg_params_t* p = &g_params[g_num_tests];
-            p->n = n;
-            p->jtype = jtype;
-            snprintf(p->name, sizeof(p->name),
-                     "sdrvsg2stg_n%d_type%d", n, jtype);
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                ddrvsg2stg_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->jtype = jtype;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "sdrvsg2stg_p%d_n%d_type%d", (int)ip, n, jtype);
 
-            g_tests[g_num_tests].name = p->name;
-            g_tests[g_num_tests].test_func = test_ddrvsg2stg_case;
-            g_tests[g_num_tests].setup_func = NULL;
-            g_tests[g_num_tests].teardown_func = NULL;
-            g_tests[g_num_tests].initial_state = p;
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_ddrvsg2stg_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
 
-            g_num_tests++;
+                g_num_tests++;
+            }
         }
     }
 }

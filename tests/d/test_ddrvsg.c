@@ -11,11 +11,17 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 50.0
+#define THRESH 20.0
 #define MAXTYP 21
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NBVAL, NBMIN, NXVAL from dsg.in */
+static const INT NBVAL[] = {1, 3, 20};
+static const INT NBMIN[] = {2, 2, 2};
+static const INT NXVAL[] = {1, 1, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* Generalized symmetric eigenvalue routines */
 /* Packed storage variants */
@@ -24,6 +30,7 @@ static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 typedef struct {
     INT n;
     INT jtype;
+    INT iparm;
     char name[96];
 } ddrvsg_params_t;
 
@@ -299,6 +306,9 @@ static void run_ddrvsg_single(ddrvsg_params_t* params)
 {
     INT n = params->n;
     INT jtype = params->jtype;
+    xlaenv(1, NBVAL[params->iparm]);
+    xlaenv(2, NBMIN[params->iparm]);
+    xlaenv(3, NXVAL[params->iparm]);
 
     ddrvsg_workspace_t* ws = g_ws;
     INT nmax = ws->nmax;
@@ -782,7 +792,7 @@ static void test_ddrvsg_case(void** state)
     run_ddrvsg_single(params);
 }
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
 
 static ddrvsg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -792,23 +802,26 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t in = 0; in < NNVAL; in++) {
-        INT n = NVAL[in];
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t in = 0; in < NNVAL; in++) {
+            INT n = NVAL[in];
 
-        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-            ddrvsg_params_t* p = &g_params[g_num_tests];
-            p->n = n;
-            p->jtype = jtype;
-            snprintf(p->name, sizeof(p->name),
-                     "ddrvsg_n%d_type%d", n, jtype);
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                ddrvsg_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->jtype = jtype;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "ddrvsg_p%d_n%d_type%d", (int)ip, n, jtype);
 
-            g_tests[g_num_tests].name = p->name;
-            g_tests[g_num_tests].test_func = test_ddrvsg_case;
-            g_tests[g_num_tests].setup_func = NULL;
-            g_tests[g_num_tests].teardown_func = NULL;
-            g_tests[g_num_tests].initial_state = p;
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_ddrvsg_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
 
-            g_num_tests++;
+                g_num_tests++;
+            }
         }
     }
 }
