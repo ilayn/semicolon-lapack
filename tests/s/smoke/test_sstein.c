@@ -221,9 +221,9 @@ static void run_dstein_test(dstein_fixture_t* fix, INT imat)
            fix->Z, n, fix->work, fix->iwork, fix->ifail, &info);
     assert_info_success(info);
 
-    /* Check all ifail entries are zero (all eigenvectors converged) */
+    /* Check all ifail entries are -1 (all eigenvectors converged) */
     for (INT i = 0; i < m; i++) {
-        assert_int_equal(fix->ifail[i], 0);
+        assert_int_equal(fix->ifail[i], -1);
     }
 
     /* Verify with sstt21: A = Z * diag(W) * Z', kband=0 (diagonal S) */
@@ -295,7 +295,7 @@ static void test_partial(void** state)
     assert_info_success(info);
 
     for (INT i = 0; i < m; i++) {
-        assert_int_equal(fix->ifail[i], 0);
+        assert_int_equal(fix->ifail[i], -1);
     }
 
     /* Verify T*z_j = lambda_j * z_j for each eigenvector */
