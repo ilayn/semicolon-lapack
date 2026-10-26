@@ -109,6 +109,7 @@ lapack_tests_d = {
   'dtgsen_lwork': ['test_dtgsen_lwork.c', 'eigen'],
   'dtprfb_rowfwd': ['test_dtprfb_rowfwd.c', 'qr'],
   'dlarf_incv': ['test_dlarf_incv.c', 'qr'],
+  'dlarft': ['test_dlarft.c', 'qr'],
   'dlaed4_overshoot': ['test_dlaed4_overshoot.c', 'eigen'],
   'dgeev_nan': ['test_dgeev_nan.c', 'eigen'],
   'dbbcsd_restart': ['test_dbbcsd_restart.c', 'eigen'],
