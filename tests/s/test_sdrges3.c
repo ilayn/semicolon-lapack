@@ -205,8 +205,8 @@ static void test_ddrges3(void** state)
     /* Quick return for n=0 */
     if (n == 0) return;
 
-    const f32 safmin = slamch("S");
     const f32 ulp = slamch("P");
+    const f32 safmin = slamch("S") / ulp;
     const f32 safmax = 1.0f / safmin;
     const f32 ulpinv = 1.0f / ulp;
 

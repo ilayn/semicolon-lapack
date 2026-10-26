@@ -202,8 +202,8 @@ static INT generate_matrices(INT jsize, INT jtype)
     const INT ldq = NMAX;
     const INT jt = jtype - 1;
 
-    const f32 safmin = slamch("S");
     const f32 ulp = slamch("P");
+    const f32 safmin = slamch("S") / ulp;
     const f32 safmax = 1.0f / safmin;
     const f32 ulpinv = 1.0f / ulp;
     const INT n1 = (n > 1) ? n : 1;
