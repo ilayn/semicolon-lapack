@@ -1245,7 +1245,7 @@ static void build_test_array(void)
             INT n = NVAL[in];
 
             for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-                /* se2.in lists types 1-8 and 10 up, so DCHKEE never runs type 9. */
+                /* se2.in lists types 1-8 and 10 up, so ZCHKEE never runs type 9. */
                 if (jtype == 9) continue;
 
                 zdrvst2stg_params_t* p = &g_params[g_num_tests];
