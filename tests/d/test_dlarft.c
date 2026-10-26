@@ -132,7 +132,11 @@ static void check_mode(const larft_mode* md, uint64_t seed)
             for (INT q = 0; q < ldt * k; q++) {
                 T[q] = -GUARD;
             }
-            xlaenv(3, (iv == 2) ? 2 : (iv == 3) ? 5 : 0);
+            if (iv == 2) {
+                xlaenv(3, 2);
+            } else if (iv == 3) {
+                xlaenv(3, 5);
+            }
             strcpy(xerbla_srnamt, (iv == 0) ? "DLARFT_LVL2" : "DLARFT");
             xerbla_infot = 0;
             xerbla_lerr = 0;
@@ -148,7 +152,7 @@ static void check_mode(const larft_mode* md, uint64_t seed)
             xerbla_srnamt[0] = '\0';
             xerbla_lerr = 0;
             xerbla_ok = 1;
-            xlaenv(3, 0);
+            xlaenv_reset();
             assert_false(lerr);
 
             INT touched = 0;
