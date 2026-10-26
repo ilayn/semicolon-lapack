@@ -6,6 +6,7 @@
  */
 
 #include "semicolon_lapack_complex_single.h"
+#include "lapack_tuning.h"
 #include <complex.h>
 #include "semicolon_cblas.h"
 #include <math.h>
@@ -114,7 +115,7 @@ void ctrevc3(const char* side, const char* howmny, INT* select,
     }
 
     *info = 0;
-    nb = 64;
+    nb = lapack_get_nb("TREVC");
     maxwrk = n + 2 * n * nb;
     if (maxwrk < 1) maxwrk = 1;
     work[0] = (f32)maxwrk;

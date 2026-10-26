@@ -32,7 +32,7 @@
  *   ISPEC=2:  NBMIN   - Minimum block size for blocking to be used
  *   ISPEC=3:  NX      - Crossover point (use unblocked if N < NX)
  *   ISPEC=4:  6       - Number of shifts for xHSEQR (DEPRECATED, handled by IPARMQ)
- *   ISPEC=5:  2       - Minimum column dimension (not used)
+ *   ISPEC=5:  2       - Minimum column dimension (xTGSYL), lapack_get_nbcol()
  *   ISPEC=6:  MNTHR   - SVD crossover point = mnthr_mult * min(M,N)
  *   ISPEC=7:  1       - Number of processors (not used)
  *   ISPEC=8:  50      - Crossover point for multishift QR (DEPRECATED, handled by IPARMQ)
@@ -96,6 +96,12 @@ int lapack_get_gelq_nb(int m, int n);
  *   Complex: NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)),  80)
  */
 int lapack_get_trsyl_nb(int n1, int n2, int is_complex);
+
+/*
+ * ISPEC=5, the minimum column dimension, read by xTGSYL as its column block
+ * size. ilaenv.f returns 2 for every routine.
+ */
+int lapack_get_nbcol(const char* routine);
 
 /*
  * ISPEC=12..17 where the Fortran calls ILAENV for xHSEQR, xLAQR0, xLAQR3,
@@ -227,7 +233,7 @@ static const lapack_tuning_t* lapack_tuning_lookup(const char* routine)
  *   IPARMS[1] = NBMIN   (ISPEC=2)
  *   IPARMS[2] = NX      (ISPEC=3)
  *   IPARMS[3] = unused  (ISPEC=4, number of shifts for xHSEQR)
- *   IPARMS[4] = unused  (ISPEC=5)
+ *   IPARMS[4] = NBCOL   (ISPEC=5, minimum column dimension, read by xTGSYL)
  *   IPARMS[5] = MNTHR override (ISPEC=6, if >= 0 use this instead of mult*min(m,n))
  *   ... up to IPARMS[8] for ISPEC=1..9
  *   IPARMS[11..15] = ISPEC=12..16 for lapack_get_iparmq (INMIN, INWIN,
@@ -253,6 +259,15 @@ void xlaenv_reset(void)
     for (int i = 0; i < LAPACK_TUNING_NPARMS; i++) {
         iparms[i] = -1;
     }
+}
+
+int lapack_get_nbcol(const char* routine)
+{
+    (void)routine;
+    if (iparms[4] >= 0) {
+        return iparms[4];
+    }
+    return 2;
 }
 
 int lapack_get_iparmq(int ispec, const char* name, const char* opts,
@@ -464,6 +479,12 @@ LAPACK_WEAK int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
         if (nb > 240) nb = 240;
         return nb;
     }
+}
+
+LAPACK_WEAK int lapack_get_nbcol(const char* routine)
+{
+    (void)routine;
+    return 2;
 }
 
 LAPACK_WEAK int lapack_get_iparmq(int ispec, const char* name, const char* opts,
