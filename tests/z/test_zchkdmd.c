@@ -226,7 +226,7 @@ static void run_case(INT M, INT N)
                                            w->ZEIGS, w->ZZ, ldz, w->RES, w->ZAU, ldau,
                                            w->ZW, ldw, w->ZS, lds, w->zwork, lzwork,
                                            w->rwork, lrwork, w->iwork, liwork, &info);
-                                    assert_true(info == 0 || info == 4);
+                                    assert_int_equal(info, 0);
 
                                     for (i = 0; i < N; i++) w->SINGVX[i] = w->rwork[i];
 
@@ -310,7 +310,7 @@ static void run_case(INT M, INT N)
                                                 ldz, w->RES, w->ZAU, ldau, w->ZW, ldw, w->ZS,
                                                 lds, w->zwork, lzwork, w->rwork, lrwork,
                                                 w->iwork, liwork, &info);
-                                        assert_true(info == 0 || info == 4);
+                                        assert_int_equal(info, 0);
 
                                         for (i = 0; i < N; i++) w->SINGVQX[i] = w->rwork[i];
 

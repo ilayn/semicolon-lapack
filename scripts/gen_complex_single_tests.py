@@ -52,6 +52,9 @@ LITERAL_OVERRIDES = {
         ("1e-20 0 -1", "1e-10 0 -1"),
         ("(1+2i)*1e-18", "(1+2i)*1e-8"),
     ],
+    "test_zchkdmd.c": [   # TESTING/EIG/cchkdmd.f90 line 197
+        ("const f32 tol = M * eps;", "const f32 tol = 10.0f * M * eps;"),
+    ],
 }
 
 # Identifiers with embedded precision marker (not a simple z -> c prefix)
