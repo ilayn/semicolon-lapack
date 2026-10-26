@@ -306,7 +306,7 @@ void dtsqr01(const char* tssw, const INT m, const INT n, const INT mb,
         /* Compute |C*Q - C*Q| / |C| */
         cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, n,
                     -ONE, C, m, Q, n, ONE, CF, m);
-        resid = dlange("1", n, m, DF, n, rwork);
+        resid = dlange("1", m, n, CF, m, rwork);
         if (cnorm > ZERO) {
             result[4] = resid / (eps * (1 > n ? 1 : n) * cnorm);
         } else {
