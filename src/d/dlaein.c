@@ -64,13 +64,16 @@ void dlaein(
 
     INT i, i1, i2, i3, ierr, its, j;
     f64 absbii, absbjj, ei, ej, growto, norm, nrmsml;
-    f64 rec, rootn, scale, temp, vcrit, vmax, vnorm, w, w1, x, xi, xr, y;
+    f64 rec, rootn, scale, temp, v0norm, v1norm, vcrit, vmax, w, w1, x, xi, xr, y;
 
     *info = 0;
 
-    /* GROWTO is the threshold used in the acceptance test for an eigenvector */
+    /* Each starting vector gets one solve, from v0 to v1.  The residual
+     * of v1 is SCALE times the norm of v0, over the norm of v1, so
+     * GROWTO is the growth V1NORM/(SCALE*V0NORM) that the acceptance
+     * test below requires. */
     rootn = sqrt((f64)n);
-    growto = TENTH / rootn;
+    growto = TENTH / ((f64)n * eps3);
     nrmsml = ONE > eps3 * rootn ? ONE : eps3 * rootn;
     nrmsml *= smlnum;
 
@@ -93,8 +96,8 @@ void dlaein(
             }
         } else {
             /* Scale supplied initial vector */
-            vnorm = cblas_dnrm2(n, vr, 1);
-            f64 denom = vnorm > nrmsml ? vnorm : nrmsml;
+            v0norm = cblas_dnrm2(n, vr, 1);
+            f64 denom = v0norm > nrmsml ? v0norm : nrmsml;
             cblas_dscal(n, (eps3 * rootn) / denom, vr, 1);
         }
 
@@ -132,13 +135,15 @@ void dlaein(
             /* Solve using DLATRS */
             char normin = 'N';
             for (its = 0; its < n; its++) {
+                v0norm = cblas_dasum(n, vr, 1);
+
                 /* Solve U*x = scale*v for a right eigenvector */
                 dlatrs("U", "N", "N", &normin, n, B, ldb, vr, &scale, work, &ierr);
                 normin = 'Y';
 
                 /* Test for sufficient growth in the norm of v */
-                vnorm = cblas_dasum(n, vr, 1);
-                if (vnorm >= growto * scale) {
+                v1norm = cblas_dasum(n, vr, 1);
+                if (v1norm >= growto * scale * v0norm) {
                     goto L120;
                 }
 
@@ -193,13 +198,15 @@ void dlaein(
             /* Solve using DLATRS */
             char normin = 'N';
             for (its = 0; its < n; its++) {
+                v0norm = cblas_dasum(n, vr, 1);
+
                 /* Solve U**T*x = scale*v for a left eigenvector */
                 dlatrs("U", "T", "N", &normin, n, B, ldb, vr, &scale, work, &ierr);
                 normin = 'Y';
 
                 /* Test for sufficient growth in the norm of v */
-                vnorm = cblas_dasum(n, vr, 1);
-                if (vnorm >= growto * scale) {
+                v1norm = cblas_dasum(n, vr, 1);
+                if (v1norm >= growto * scale * v0norm) {
                     goto L120b;
                 }
 
@@ -359,6 +366,7 @@ void dlaein(
         }
 
         for (its = 0; its < n; its++) {
+            v0norm = cblas_dasum(n, vr, 1) + cblas_dasum(n, vi, 1);
             scale = ONE;
             vmax = ONE;
             vcrit = bignum;
@@ -425,8 +433,8 @@ void dlaein(
             }
 
             /* Test for sufficient growth in the norm of (vr,vi) */
-            vnorm = cblas_dasum(n, vr, 1) + cblas_dasum(n, vi, 1);
-            if (vnorm >= growto * scale) {
+            v1norm = cblas_dasum(n, vr, 1) + cblas_dasum(n, vi, 1);
+            if (v1norm >= growto * scale * v0norm) {
                 goto L280;
             }
 
@@ -446,14 +454,14 @@ void dlaein(
 
     L280:
         /* Normalize eigenvector */
-        vnorm = ZERO;
+        v1norm = ZERO;
         for (i = 0; i < n; i++) {
             f64 mag = fabs(vr[i]) + fabs(vi[i]);
-            if (mag > vnorm) {
-                vnorm = mag;
+            if (mag > v1norm) {
+                v1norm = mag;
             }
         }
-        cblas_dscal(n, ONE / vnorm, vr, 1);
-        cblas_dscal(n, ONE / vnorm, vi, 1);
+        cblas_dscal(n, ONE / v1norm, vr, 1);
+        cblas_dscal(n, ONE / v1norm, vi, 1);
     }
 }
