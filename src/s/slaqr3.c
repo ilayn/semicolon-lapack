@@ -4,16 +4,9 @@
  */
 
 #include "semicolon_lapack_single.h"
+#include "lapack_tuning.h"
 #include "semicolon_cblas.h"
 #include <math.h>
-
-/** @cond */
-/* ISPEC=12: NMIN - crossover to SLAHQR (from iparmq.f) */
-static INT iparmq_nmin(void)
-{
-    return 75;
-}
-/** @endcond */
 
 /**
  * SLAQR3 accepts as input an upper Hessenberg matrix H and performs an
@@ -157,7 +150,7 @@ SEMICOLON_API void slaqr3(const INT wantt, const INT wantz, const INT n,
     slaset("A", jw, jw, zero, one, V, ldv);
 
     /* Get crossover point: use SLAQR4 for jw > nmin, else SLAHQR */
-    nmin = iparmq_nmin();
+    nmin = lapack_get_iparmq(12, "SLAQR3", "SV", jw, 1, jw, lwork);
     if (jw > nmin) {
         /* 0-based: Fortran calls SLAQR4(.true., .true., JW, 1, JW, ...)
          * which becomes (JW, 0, JW-1) in 0-based indexing */

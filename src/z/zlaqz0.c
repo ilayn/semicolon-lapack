@@ -7,6 +7,7 @@
 #include <complex.h>
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_double.h"
+#include "lapack_tuning.h"
 
 /**
  * ZLAQZ0 computes the eigenvalues of a complex matrix pair (H,T),
@@ -165,8 +166,8 @@ void zlaqz0(
     jbcmpz[2] = wantz[0];
     jbcmpz[3] = '\0';
 
-    nmin = iparmq(12, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    nwr = iparmq(13, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nmin = lapack_get_iparmq(12, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nwr = lapack_get_iparmq(13, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     nwr = (2 > nwr) ? 2 : nwr;
     {
         INT tmp = ihi - ilo + 1;
@@ -175,9 +176,9 @@ void zlaqz0(
         nwr = (nwr < tmp) ? nwr : tmp;
     }
 
-    nibble = iparmq(14, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nibble = lapack_get_iparmq(14, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
 
-    nsr = iparmq(15, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nsr = lapack_get_iparmq(15, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     {
         INT tmp = (n + 6) / 9;
         INT tmp2 = ihi - ilo;
@@ -186,7 +187,7 @@ void zlaqz0(
     }
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
-    rcost = iparmq(17, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    rcost = lapack_get_iparmq(17, "ZLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     itemp1 = (INT)(nsr / sqrt(1.0 + 2.0 * nsr / ((f64)rcost / 100.0 * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;

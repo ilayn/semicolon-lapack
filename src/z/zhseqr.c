@@ -5,15 +5,9 @@
  */
 
 #include "semicolon_lapack_complex_double.h"
+#include "lapack_tuning.h"
 #include <complex.h>
 #include "semicolon_cblas.h"
-
-/** @cond */
-static INT iparmq_nmin(void)
-{
-    return 75;
-}
-/** @endcond */
 
 /**
  * ZHSEQR computes the eigenvalues of a Hessenberg matrix H
@@ -124,7 +118,8 @@ void zhseqr(const char* job, const char* compz, const INT n,
             return;
         }
 
-        nmin = iparmq_nmin();
+        const char jbcmpz[3] = {job[0], compz[0], '\0'};
+        nmin = lapack_get_iparmq(12, "ZHSEQR", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nmin < ntiny) nmin = ntiny;
 
         /* ZLAQR0 for big matrices; ZLAHQR for small ones */

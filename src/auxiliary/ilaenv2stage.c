@@ -4,6 +4,7 @@
  */
 
 #include "semicolon_lapack_auxiliary.h"
+#include "lapack_tuning.h"
 
 /**
  * ILAENV2STAGE is called from the LAPACK routines to choose problem-dependent
@@ -77,5 +78,5 @@ INT ilaenv2stage(const INT ispec, const char* name, const char* opts,
     }
 
     iispec = 16 + ispec;
-    return iparam2stage(iispec, name, opts, n1, n2, n3, n4);
+    return lapack_get_iparam2stage(iispec, name, opts, n1, n2, n3, n4);
 }

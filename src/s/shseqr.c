@@ -5,14 +5,7 @@
  */
 
 #include "semicolon_lapack_single.h"
-
-/** @cond */
-/* ISPEC=12: NMIN - crossover to SLAHQR (from iparmq.f) */
-static INT iparmq_nmin(void)
-{
-    return 75;
-}
-/** @endcond */
+#include "lapack_tuning.h"
 
 /**
  * SHSEQR computes the eigenvalues of a Hessenberg matrix H
@@ -153,7 +146,8 @@ void shseqr(const char* job, const char* compz, const INT n,
         }
 
         /* SLAHQR/SLAQR0 crossover point */
-        nmin = iparmq_nmin();
+        const char jbcmpz[3] = {job[0], compz[0], '\0'};
+        nmin = lapack_get_iparmq(12, "SHSEQR", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nmin < ntiny) nmin = ntiny;
 
         /* SLAQR0 for big matrices; SLAHQR for small ones */
