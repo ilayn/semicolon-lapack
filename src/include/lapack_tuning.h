@@ -212,12 +212,13 @@ static const lapack_tuning_t* lapack_tuning_lookup(const char* routine)
  *   IPARMS[2] = NX      (ISPEC=3)
  *   IPARMS[3] = unused  (ISPEC=4, number of shifts for xHSEQR)
  *   IPARMS[4] = unused  (ISPEC=5)
- *   IPARMS[5] = MNTHR override (ISPEC=6, if > 0 use this instead of mult*min(m,n))
+ *   IPARMS[5] = MNTHR override (ISPEC=6, if >= 0 use this instead of mult*min(m,n))
  *   ... up to IPARMS[8] for ISPEC=1..9
  *
- * If IPARMS[i] == 0, fall back to table lookup.
+ * If IPARMS[i] < 0 (the initial state, restored by xlaenv_reset), fall back
+ * to table lookup, so a test can set any value from 0 up, including NX = 0.
  */
-static int iparms[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+static int iparms[9] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
 
 void xlaenv(int ispec, int nvalue)
 {
@@ -229,13 +230,13 @@ void xlaenv(int ispec, int nvalue)
 void xlaenv_reset(void)
 {
     for (int i = 0; i < 9; i++) {
-        iparms[i] = 0;
+        iparms[i] = -1;
     }
 }
 
 int lapack_get_nb(const char* routine)
 {
-    if (iparms[0] > 0) {
+    if (iparms[0] >= 0) {
         return iparms[0];
     }
     return lapack_tuning_lookup(routine)->nb;
@@ -243,7 +244,7 @@ int lapack_get_nb(const char* routine)
 
 int lapack_get_nbmin(const char* routine)
 {
-    if (iparms[1] > 0) {
+    if (iparms[1] >= 0) {
         return iparms[1];
     }
     return lapack_tuning_lookup(routine)->nbmin;
@@ -251,7 +252,7 @@ int lapack_get_nbmin(const char* routine)
 
 int lapack_get_nx(const char* routine)
 {
-    if (iparms[2] > 0) {
+    if (iparms[2] >= 0) {
         return iparms[2];
     }
     return lapack_tuning_lookup(routine)->nx;
@@ -259,8 +260,8 @@ int lapack_get_nx(const char* routine)
 
 int lapack_get_mnthr(const char* routine, int m, int n)
 {
-    /* Test override: if IPARMS[5] > 0, use it directly */
-    if (iparms[5] > 0) {
+    /* Test override: if IPARMS[5] >= 0, use it directly */
+    if (iparms[5] >= 0) {
         return iparms[5];
     }
     /* Otherwise compute from multiplier */
@@ -275,7 +276,7 @@ int lapack_get_mnthr(const char* routine, int m, int n)
 
 int lapack_get_geqr_mb(int m, int n)
 {
-    if (iparms[0] > 0) {
+    if (iparms[0] >= 0) {
         return iparms[0];
     }
     if ((m * n <= 131072) || (m <= 8192)) {
@@ -287,7 +288,7 @@ int lapack_get_geqr_mb(int m, int n)
 int lapack_get_geqr_nb(int m, int n)
 {
     (void)m; (void)n;
-    if (iparms[1] > 0) {
+    if (iparms[1] >= 0) {
         return iparms[1];
     }
     return 1;
@@ -296,7 +297,7 @@ int lapack_get_geqr_nb(int m, int n)
 int lapack_get_gelq_mb(int m, int n)
 {
     (void)m; (void)n;
-    if (iparms[0] > 0) {
+    if (iparms[0] >= 0) {
         return iparms[0];
     }
     return 1;
@@ -304,7 +305,7 @@ int lapack_get_gelq_mb(int m, int n)
 
 int lapack_get_gelq_nb(int m, int n)
 {
-    if (iparms[1] > 0) {
+    if (iparms[1] >= 0) {
         return iparms[1];
     }
     if ((m * n <= 131072) || (m <= 8192)) {
@@ -315,7 +316,7 @@ int lapack_get_gelq_nb(int m, int n)
 
 int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
 {
-    if (iparms[0] > 0) {
+    if (iparms[0] >= 0) {
         return iparms[0];
     }
     int min_mn = (n1 < n2) ? n1 : n2;
