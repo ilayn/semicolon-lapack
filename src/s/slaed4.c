@@ -54,7 +54,7 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
     INT orgati, swtch, swtch3;
     INT ii, iim1, iip1, ip1, iter, j, niter;
     f32 a, b, c, del, dltlb, dltub, dphi, dpsi, dw;
-    f32 eps, erretm, eta, midpt, phi, prew, psi;
+    f32 eps, erretm, eta, eta1, eta2, midpt, phi, prew, psi;
     f32 rhoinv, tau, temp, temp1, w;
     f32 zz[3];
 
@@ -202,10 +202,21 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
             eta = -w / (dpsi + dphi);
         temp = tau + eta;
         if (temp > dltub || temp < dltlb) {
+            eta1 = -w / (dpsi + dphi);
+            temp = tau + eta1;
             if (w < ZERO) {
-                eta = (dltub - tau) / TWO;
+                eta2 = (dltub - tau) / TWO;
             } else {
-                eta = (dltlb - tau) / TWO;
+                eta2 = (dltlb - tau) / TWO;
+            }
+            if (dltlb <= temp && temp <= dltub) {
+                /* If Newton step is within boundaries,
+                 * use the geometric mean of the distance
+                 * and keep the direction (sign). */
+                eta = copysignf(ONE, eta1) *
+                      sqrtf(fabsf(eta1)) * sqrtf(fabsf(eta2));
+            } else {
+                eta = eta2;
             }
         }
         for (j = 0; j < n; j++) {
@@ -668,10 +679,21 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
                 eta = -w / dw;
             temp = tau + eta;
             if (temp > dltub || temp < dltlb) {
+                eta1 = -w / dw;
+                temp = tau + eta1;
                 if (w < ZERO) {
-                    eta = (dltub - tau) / TWO;
+                    eta2 = (dltub - tau) / TWO;
                 } else {
-                    eta = (dltlb - tau) / TWO;
+                    eta2 = (dltlb - tau) / TWO;
+                }
+                if (dltlb <= temp && temp <= dltub) {
+                    /* If Newton step is within boundaries,
+                     * use the geometric mean of the distance
+                     * and keep the direction (sign). */
+                    eta = copysignf(ONE, eta1) *
+                          sqrtf(fabsf(eta1)) * sqrtf(fabsf(eta2));
+                } else {
+                    eta = eta2;
                 }
             }
 
