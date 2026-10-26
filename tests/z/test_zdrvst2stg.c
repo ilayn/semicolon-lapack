@@ -142,9 +142,9 @@ static int group_setup(void** state)
         return -1;
     }
 
-    rng_seed(g_ws->rng_state, 0xA37B1C924E68F05DULL);
-    rng_seed(g_ws->rng_state2, 0xA37B1C924E68F05DULL);
-    rng_seed(g_ws->rng_state3, 0xA37B1C924E68F05DULL);
+    rng_seed(g_ws->rng_state, 0x3B9F1E07C2A85D64ULL);
+    rng_seed(g_ws->rng_state2, 0x3B9F1E07C2A85D64ULL);
+    rng_seed(g_ws->rng_state3, 0x3B9F1E07C2A85D64ULL);
     return 0;
 }
 
