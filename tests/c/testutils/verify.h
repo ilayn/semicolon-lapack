@@ -1106,6 +1106,7 @@ void csgt01(const INT itype, const char* uplo, const INT n, const INT m,
             const f32* D, c64* work, f32* rwork, f32* result);
 
 /* Error checking utilities */
+extern INT    xerbla_infot;
 extern INT    xerbla_ok;
 extern INT    xerbla_lerr;
 extern char   xerbla_srnamt[33];

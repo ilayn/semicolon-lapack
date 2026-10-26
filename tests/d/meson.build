@@ -110,6 +110,7 @@ lapack_tests_d = {
   'dtprfb_rowfwd': ['test_dtprfb_rowfwd.c', 'qr'],
   'dlarf_incv': ['test_dlarf_incv.c', 'qr'],
   'dlaed4_overshoot': ['test_dlaed4_overshoot.c', 'eigen'],
+  'dgeev_nan': ['test_dgeev_nan.c', 'eigen'],
   'dbbcsd_restart': ['test_dbbcsd_restart.c', 'eigen'],
   'ddrgsx': ['test_ddrgsx.c', 'eigen'],      # Generalized Schur form expert (DGGESX)
   'ddrvsg': ['test_ddrvsg.c', 'eigen'],      # Generalized symmetric eigenvalue (DSYGV/DSPGV/DSBGV)
