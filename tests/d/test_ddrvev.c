@@ -32,7 +32,7 @@
 #include <string.h>
 
 /* Test threshold from LAPACK ddrvev.f */
-#define THRESH 30.0
+#define THRESH 20.0
 
 /* Maximum matrix type to test */
 #define MAXTYP 21
@@ -427,10 +427,10 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[0]);
-    assert_residual_ok(ws->result[1]);
-    assert_residual_ok(ws->result[2]);
-    assert_residual_ok(ws->result[3]);
+    assert_residual_below(ws->result[0], THRESH);
+    assert_residual_below(ws->result[1], THRESH);
+    assert_residual_below(ws->result[2], THRESH);
+    assert_residual_below(ws->result[3], THRESH);
 
     /* ========== Test DGEEV with eigenvalues only ========== */
     dlacpy("F", n, n, A, lda, H, lda);
@@ -519,9 +519,9 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[4]);
-    assert_residual_ok(ws->result[5]);
-    assert_residual_ok(ws->result[6]);
+    assert_residual_below(ws->result[4], THRESH);
+    assert_residual_below(ws->result[5], THRESH);
+    assert_residual_below(ws->result[6], THRESH);
 }
 
 /**
@@ -582,6 +582,16 @@ int main(void)
 {
     /* Build all test cases */
     build_test_array();
+
+    /* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS and IACC22 from ded.in */
+    xlaenv(1, 3);
+    xlaenv(2, 3);
+    xlaenv(3, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 4);
+    xlaenv(14, 8);
+    xlaenv(15, 2);
+    xlaenv(16, 0);
 
     /* Run all tests with shared workspace */
     (void)_cmocka_run_group_tests("ddrvev", g_tests, g_num_tests,

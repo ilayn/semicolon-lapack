@@ -594,6 +594,16 @@ int main(void)
 {
     build_test_array();
 
+    /* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS and IACC22 from ded.in */
+    xlaenv(1, 3);
+    xlaenv(2, 3);
+    xlaenv(3, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 4);
+    xlaenv(14, 8);
+    xlaenv(15, 2);
+    xlaenv(16, 0);
+
     (void)_cmocka_run_group_tests("ddrvvx", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
