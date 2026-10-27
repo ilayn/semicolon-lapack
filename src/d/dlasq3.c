@@ -154,15 +154,15 @@ compute_shift:
                     Z[4 * (*n0) + *pp + 2] = Z[4 * i0 + *pp + 2];
                     Z[4 * (*n0) - *pp + 3] = Z[4 * i0 - *pp + 3];
                 }
-                *dmin2 = fmin(*dmin2, Z[4 * (*n0) + *pp + 2]);
-                Z[4 * (*n0) + *pp + 2] = fmin(fmin(Z[4 * (*n0) + *pp + 2],
-                                                     Z[4 * i0 + *pp + 2]),
-                                                Z[4 * i0 + *pp + 6]);
-                Z[4 * (*n0) - *pp + 3] = fmin(fmin(Z[4 * (*n0) - *pp + 3],
-                                                     Z[4 * i0 - *pp + 3]),
-                                                Z[4 * i0 - *pp + 7]);
-                *qmax = fmax(fmax(*qmax, Z[4 * i0 + *pp]),
-                                         Z[4 * i0 + *pp + 4]);
+                *dmin2 = (*dmin2 < Z[4 * (*n0) + *pp + 2]) ? *dmin2 : Z[4 * (*n0) + *pp + 2];
+                temp = (Z[4 * (*n0) + *pp + 2] < Z[4 * i0 + *pp + 2])
+                       ? Z[4 * (*n0) + *pp + 2] : Z[4 * i0 + *pp + 2];
+                Z[4 * (*n0) + *pp + 2] = (temp < Z[4 * i0 + *pp + 6]) ? temp : Z[4 * i0 + *pp + 6];
+                temp = (Z[4 * (*n0) - *pp + 3] < Z[4 * i0 - *pp + 3])
+                       ? Z[4 * (*n0) - *pp + 3] : Z[4 * i0 - *pp + 3];
+                Z[4 * (*n0) - *pp + 3] = (temp < Z[4 * i0 - *pp + 7]) ? temp : Z[4 * i0 - *pp + 7];
+                temp = (*qmax > Z[4 * i0 + *pp]) ? *qmax : Z[4 * i0 + *pp];
+                *qmax = (temp > Z[4 * i0 + *pp + 4]) ? temp : Z[4 * i0 + *pp + 4];
                 *dmin = -ZERO;
             }
         }

@@ -109,11 +109,11 @@ void slarrf(const INT n, const f32* restrict D,
     /* Compute the average gap length of the cluster */
     clwdth = fabsf(W[clend] - W[clstrt]) + werr[clend] + werr[clstrt];
     avgap = clwdth / (f32)(clend - clstrt);
-    mingap = fminf(clgapl, clgapr);
+    mingap = (clgapl < clgapr) ? clgapl : clgapr;
 
     /* Initial values for shifts to both ends of cluster */
-    lsigma = fminf(W[clstrt], W[clend]) - werr[clstrt];
-    rsigma = fmaxf(W[clstrt], W[clend]) + werr[clend];
+    lsigma = ((W[clstrt] < W[clend]) ? W[clstrt] : W[clend]) - werr[clstrt];
+    rsigma = ((W[clstrt] > W[clend]) ? W[clstrt] : W[clend]) + werr[clend];
 
     /* Use a small fudge to make sure that we really shift to the outside */
     lsigma = lsigma - fabsf(lsigma) * TWO * eps;
@@ -123,8 +123,8 @@ void slarrf(const INT n, const f32* restrict D,
     ldmax = QUART * mingap + TWO * pivmin;
     rdmax = QUART * mingap + TWO * pivmin;
 
-    ldelta = fmaxf(avgap, wgap[clstrt]) / fact;
-    rdelta = fmaxf(avgap, wgap[clend - 1]) / fact;
+    ldelta = ((avgap > wgap[clstrt]) ? avgap : wgap[clstrt]) / fact;
+    rdelta = ((avgap > wgap[clend - 1]) ? avgap : wgap[clend - 1]) / fact;
 
     /* Initialize the record of the best representation found */
     s = slamch("S");
@@ -143,8 +143,8 @@ void slarrf(const INT n, const f32* restrict D,
         sawnan2 = 0;
 
         /* Ensure that we do not back off too much of the initial shifts */
-        ldelta = fminf(ldmax, ldelta);
-        rdelta = fminf(rdmax, rdelta);
+        ldelta = (ldmax < ldelta) ? ldmax : ldelta;
+        rdelta = (rdmax < rdelta) ? rdmax : rdelta;
 
         /* Compute the element growth when shifting to both ends of the cluster
          * accept the shift if there is no element growth at one of the two ends */
@@ -169,7 +169,7 @@ void slarrf(const INT n, const f32* restrict D,
                  * in this case */
                 sawnan1 = 1;
             }
-            max1 = fmaxf(max1, fabsf(dplus[i + 1]));
+            max1 = (max1 > fabsf(dplus[i + 1])) ? max1 : fabsf(dplus[i + 1]);
         }
         sawnan1 = sawnan1 || sisnan(max1);
 
@@ -199,7 +199,7 @@ void slarrf(const INT n, const f32* restrict D,
                  * in this case */
                 sawnan2 = 1;
             }
-            max2 = fmaxf(max2, fabsf(work[i + 1]));
+            max2 = (max2 > fabsf(work[i + 1])) ? max2 : fabsf(work[i + 1]);
         }
         sawnan2 = sawnan2 || sisnan(max2);
 
@@ -240,7 +240,7 @@ void slarrf(const INT n, const f32* restrict D,
          * refined test for RRR. This test supposes that no NaN occurred.
          * Moreover, we use the refined RRR test only for isolated clusters. */
         if ((clwdth < mingap / (f32)(128)) &&
-            (fminf(max1, max2) < fail2) &&
+            (((max1 < max2) ? max1 : max2) < fail2) &&
             (!sawnan1) && (!sawnan2)) {
             dorrr1 = 1;
         } else {
@@ -262,7 +262,7 @@ void slarrf(const INT n, const f32* restrict D,
                     }
                     oldp = prod;
                     znm2 = znm2 + prod * prod;
-                    tmp = fmaxf(tmp, fabsf(dplus[i] * prod));
+                    tmp = (tmp > fabsf(dplus[i] * prod)) ? tmp : fabsf(dplus[i] * prod);
                 }
                 rrr1 = tmp / (spdiam * sqrtf(znm2));
                 if (rrr1 <= MAXGROWTH2) {
@@ -284,7 +284,7 @@ void slarrf(const INT n, const f32* restrict D,
                     }
                     oldp = prod;
                     znm2 = znm2 + prod * prod;
-                    tmp = fmaxf(tmp, fabsf(work[i] * prod));
+                    tmp = (tmp > fabsf(work[i] * prod)) ? tmp : fabsf(work[i] * prod);
                 }
                 rrr2 = tmp / (spdiam * sqrtf(znm2));
                 if (rrr2 <= MAXGROWTH2) {
@@ -299,8 +299,8 @@ backoff:
         if (ktry < KTRYMAX) {
             /* If we are here, both shifts failed also the RRR test.
              * Back off to the outside */
-            lsigma = fmaxf(lsigma - ldelta, lsigma - ldmax);
-            rsigma = fminf(rsigma + rdelta, rsigma + rdmax);
+            lsigma = (lsigma - ldelta > lsigma - ldmax) ? lsigma - ldelta : lsigma - ldmax;
+            rsigma = (rsigma + rdelta < rsigma + rdmax) ? rsigma + rdelta : rsigma + rdmax;
             ldelta = TWO * ldelta;
             rdelta = TWO * rdelta;
             ktry = ktry + 1;
