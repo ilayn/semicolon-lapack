@@ -5,54 +5,17 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # Run one test job, or several copies of it, on any branch:
-  #   gh workflow run tests.yml --ref <branch> -f jobs=windows -f copies=4
-  # Each copy gets its own runner, so copies sample different runner CPUs
-  # (and with them different OpenBLAS kernels).
-  workflow_dispatch:
-    inputs:
-      jobs:
-        description: 'Test job to run'
-        type: choice
-        options: [all, linux-openblas, linux-mkl, windows, emscripten]
-        default: all
-      copies:
-        description: 'Copies of each selected job (1-8), each on its own runner'
-        type: number
-        default: 1
 
 jobs:
   get_commit_message:
     name: Get commit message
     uses: ./.github/workflows/commit_message.yml
 
-  copies:
-    name: List job copies
-    runs-on: ubuntu-latest
-    outputs:
-      list: ${{ steps.list.outputs.list }}
-    steps:
-      - name: List job copies
-        id: list
-        env:
-          COPIES: ${{ inputs.copies || 1 }}
-        run: |
-          n=$COPIES
-          [ "$n" -ge 1 ] 2>/dev/null || n=1
-          [ "$n" -le 8 ] || n=8
-          echo "list=[$(seq -s, 1 "$n")]" >> "$GITHUB_OUTPUT"
-
   test-linux:
-    name: Test Linux OpenBLAS${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
-    needs: [get_commit_message, copies]
-    if: >-
-      needs.get_commit_message.outputs.run_tests == '1' &&
-      (github.event_name != 'workflow_dispatch' || inputs.jobs == 'all' || inputs.jobs == 'linux-openblas')
+    name: Test Linux OpenBLAS
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        copy: ${{ fromJSON(needs.copies.outputs.list) }}
     defaults:
       run:
         shell: bash -el {0}
@@ -112,16 +75,10 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
 
   test-linux-mkl:
-    name: Test Linux MKL${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
-    needs: [get_commit_message, copies]
-    if: >-
-      needs.get_commit_message.outputs.run_tests == '1' &&
-      (github.event_name != 'workflow_dispatch' || inputs.jobs == 'all' || inputs.jobs == 'linux-mkl')
+    name: Test Linux MKL
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        copy: ${{ fromJSON(needs.copies.outputs.list) }}
     defaults:
       run:
         shell: bash -el {0}
@@ -178,16 +135,10 @@ jobs:
           MKL_NUM_THREADS: '1'
 
   test-windows-clang:
-    name: Test Windows MSYS2 CLANG64${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
-    needs: [get_commit_message, copies]
-    if: >-
-      needs.get_commit_message.outputs.run_tests == '1' &&
-      (github.event_name != 'workflow_dispatch' || inputs.jobs == 'all' || inputs.jobs == 'windows')
+    name: Test Windows MSYS2 CLANG64
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        copy: ${{ fromJSON(needs.copies.outputs.list) }}
     defaults:
       run:
         shell: msys2 {0}
@@ -307,17 +258,14 @@ jobs:
           consumer_test.exe
 
   test-emscripten:
-    name: Test WebAssembly BLIS (Emscripten ${{ matrix.emscripten-version }})${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
-    needs: [get_commit_message, copies]
-    if: >-
-      needs.get_commit_message.outputs.run_tests == '1' &&
-      (github.event_name != 'workflow_dispatch' || inputs.jobs == 'all' || inputs.jobs == 'emscripten')
+    name: Test WebAssembly BLIS (Emscripten ${{ matrix.emscripten-version }})
+    needs: get_commit_message
+    if: needs.get_commit_message.outputs.run_tests == '1'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         emscripten-version: ['5.0.3', '6.0.5']
-        copy: ${{ fromJSON(needs.copies.outputs.list) }}
     defaults:
       run:
         shell: bash -el {0}
