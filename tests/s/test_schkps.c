@@ -16,7 +16,7 @@
  *
  * Parameters from dtest.in:
  *   N values: 0, 1, 2, 3, 5, 10, 50
- *   NB values: 1, 3, 3, 3, 20
+ *   NB values: 1, 3, 20 (dtest.in NB values without duplicates)
  *   RANKVAL: 30, 50, 90 (percentages)
  *   Matrix types: 1-9
  *   THRESH: 30.0
@@ -30,7 +30,7 @@
 #include <math.h>
 /* Test parameters from dtest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NBVAL[] = {1, 3, 20};  /* dtest.in NB values without duplicates */
 static const INT RANKVAL[] = {30, 50, 90};  /* Percentage of full rank */
 static const char UPLOS[] = {'U', 'L'};
 
@@ -141,6 +141,7 @@ static void run_dchkps_single(INT n, INT iuplo, INT imat, INT irank, INT inb)
     /* Set block size for this test via xlaenv */
     INT nb = NBVAL[inb];
     xlaenv(1, nb);
+    xlaenv(2, 2);
 
     /* Compute expected rank from percentage */
     INT rank = (INT)ceilf((n * (f32)RANKVAL[irank]) / 100.0f);

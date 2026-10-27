@@ -18,10 +18,13 @@
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
+#define NNB     (sizeof(NBVAL) / sizeof(NBVAL[0]))
 #define NTYPES  6
 #define NTESTS  18
 #define THRESH  30.0f
@@ -188,6 +191,8 @@ static int group_setup(void** state)
         !g_workspace->RWORK || !g_workspace->IWORK) {
         return -1;
     }
+
+    xlaenv(9, SMLSIZ);
     return 0;
 }
 
@@ -245,77 +250,84 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
         /* Generate a matrix of scaling type ISCALE */
         cqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-        for (INT itran = 0; itran < 2; itran++) {
-            const char* trans = (itran == 0) ? "N" : "C";
-            INT nrows = (itran == 0) ? m : n;
-            INT ncols = (itran == 0) ? n : m;
-            INT ldwork = imax2(1, ncols);
+        /* Loop for testing different block sizes. */
+        for (INT inb = 0; inb < (INT)NNB; inb++) {
+            INT nb = NBVAL[inb];
+            xlaenv(1, nb);
+            xlaenv(3, NXVAL[inb]);
 
-            /* Set up a consistent rhs */
-            if (ncols > 0) {
-                clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-                cblas_csscal(ncols * nrhs, 1.0f / (f32)ncols, ws->WORK, 1);
-                /* Make the last solution column small
-                 * enough that undoing the scaling of
-                 * the solution in two steps flushes it. */
-                if (iscale == 2 && nrhs > 1) {
-                    cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            for (INT itran = 0; itran < 2; itran++) {
+                const char* trans = (itran == 0) ? "N" : "C";
+                INT nrows = (itran == 0) ? m : n;
+                INT ncols = (itran == 0) ? n : m;
+                INT ldwork = imax2(1, ncols);
+
+                /* Set up a consistent rhs */
+                if (ncols > 0) {
+                    clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                    cblas_csscal(ncols * nrhs, 1.0f / (f32)ncols, ws->WORK, 1);
+                    /* Make the last solution column small
+                     * enough that undoing the scaling of
+                     * the solution in two steps flushes it. */
+                    if (iscale == 2 && nrhs > 1) {
+                        cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                    }
                 }
-            }
-            c64 cone = CMPLXF(1.0f, 0.0f);
-            c64 czero = CMPLXF(0.0f, 0.0f);
-            cblas_cgemm(CblasColMajor,
-                        (itran == 0) ? CblasNoTrans : CblasConjTrans,
-                        CblasNoTrans,
-                        nrows, nrhs, ncols,
-                        &cone, ws->COPYA, lda,
-                        ws->WORK, ldwork,
-                        &czero, ws->B, ldb);
-            clacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+                c64 cone = CMPLXF(1.0f, 0.0f);
+                c64 czero = CMPLXF(0.0f, 0.0f);
+                cblas_cgemm(CblasColMajor,
+                            (itran == 0) ? CblasNoTrans : CblasConjTrans,
+                            CblasNoTrans,
+                            nrows, nrhs, ncols,
+                            &cone, ws->COPYA, lda,
+                            ws->WORK, ldwork,
+                            &czero, ws->B, ldb);
+                clacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-            /* Solve LS or overdetermined system */
-            if (m > 0 && n > 0) {
-                clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-                clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-            }
-            cgels(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
-                  ws->WORK, lwork, &info);
+                /* Solve LS or overdetermined system */
+                if (m > 0 && n > 0) {
+                    clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+                    clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+                }
+                cgels(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
+                      ws->WORK, lwork, &info);
 
-            if (info != 0) {
-                fail_msg("CGELS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
-                         (long long)info, trans, (long long)m, (long long)n,
-                         (long long)nrhs, (long long)itype);
-                return;
-            }
+                if (info != 0) {
+                    fail_msg("CGELS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
+                             (long long)info, trans, (long long)m, (long long)n,
+                             (long long)nrhs, (long long)itype);
+                    return;
+                }
 
-            /* Test 1: residual norm(B - A*X) / ... */
-            if (nrows > 0 && nrhs > 0)
-                clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-            cqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-                   ws->C, ldb, ws->RWORK, &result[itran * 2 + 0]);
+                /* Test 1: residual norm(B - A*X) / ... */
+                if (nrows > 0 && nrhs > 0)
+                    clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+                cqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+                       ws->C, ldb, ws->RWORK, &result[itran * 2 + 0]);
 
-            /* Test 2: check correctness of results */
-            if ((itran == 0 && m >= n) ||
-                (itran == 1 && m < n)) {
-                /* Solving LS system */
-                result[itran * 2 + 1] = cqrt17(trans, 1, m, n, nrhs,
-                                               ws->COPYA, lda, ws->B, ldb,
-                                               ws->COPYB, ldb, ws->C,
-                                               ws->WORK, lwork);
-            } else {
-                /* Solving overdetermined system */
-                result[itran * 2 + 1] = cqrt14(trans, m, n, nrhs,
-                                               ws->COPYA, lda, ws->B, ldb,
-                                               ws->WORK, lwork);
-            }
+                /* Test 2: check correctness of results */
+                if ((itran == 0 && m >= n) ||
+                    (itran == 1 && m < n)) {
+                    /* Solving LS system */
+                    result[itran * 2 + 1] = cqrt17(trans, 1, m, n, nrhs,
+                                                   ws->COPYA, lda, ws->B, ldb,
+                                                   ws->COPYB, ldb, ws->C,
+                                                   ws->WORK, lwork);
+                } else {
+                    /* Solving overdetermined system */
+                    result[itran * 2 + 1] = cqrt14(trans, m, n, nrhs,
+                                                   ws->COPYA, lda, ws->B, ldb,
+                                                   ws->WORK, lwork);
+                }
 
-            for (INT k = itran * 2; k < itran * 2 + 2; k++) {
-                if (result[k] >= THRESH) {
-                    fail_msg("CGELS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
-                             "test(%lld)=%.6e",
-                             trans, (long long)m, (long long)n,
-                             (long long)nrhs, (long long)itype,
-                             (long long)(k + 1), (double)result[k]);
+                for (INT k = itran * 2; k < itran * 2 + 2; k++) {
+                    if (result[k] >= THRESH) {
+                        fail_msg("CGELS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
+                                 "test(%lld)=%.6e",
+                                 trans, (long long)m, (long long)n,
+                                 (long long)nrhs, (long long)itype,
+                                 (long long)(k + 1), (double)result[k]);
+                    }
                 }
             }
         }
@@ -332,77 +344,84 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
         /* Generate a matrix of scaling type ISCALE */
         cqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-        for (INT itran = 0; itran < 2; itran++) {
-            const char* trans = (itran == 0) ? "N" : "C";
-            INT nrows = (itran == 0) ? m : n;
-            INT ncols = (itran == 0) ? n : m;
-            INT ldwork = imax2(1, ncols);
+        /* Loop for testing different block sizes. */
+        for (INT inb = 0; inb < (INT)NNB; inb++) {
+            INT nb = NBVAL[inb];
+            xlaenv(1, nb);
+            xlaenv(3, NXVAL[inb]);
 
-            /* Set up a consistent rhs */
-            if (ncols > 0) {
-                clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-                cblas_csscal(ncols * nrhs, 1.0f / (f32)ncols, ws->WORK, 1);
-                /* Make the last solution column small
-                 * enough that undoing the scaling of
-                 * the solution in two steps flushes it. */
-                if (iscale == 2 && nrhs > 1) {
-                    cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+            for (INT itran = 0; itran < 2; itran++) {
+                const char* trans = (itran == 0) ? "N" : "C";
+                INT nrows = (itran == 0) ? m : n;
+                INT ncols = (itran == 0) ? n : m;
+                INT ldwork = imax2(1, ncols);
+
+                /* Set up a consistent rhs */
+                if (ncols > 0) {
+                    clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                    cblas_csscal(ncols * nrhs, 1.0f / (f32)ncols, ws->WORK, 1);
+                    /* Make the last solution column small
+                     * enough that undoing the scaling of
+                     * the solution in two steps flushes it. */
+                    if (iscale == 2 && nrhs > 1) {
+                        cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                    }
                 }
-            }
-            c64 cone = CMPLXF(1.0f, 0.0f);
-            c64 czero = CMPLXF(0.0f, 0.0f);
-            cblas_cgemm(CblasColMajor,
-                        (itran == 0) ? CblasNoTrans : CblasConjTrans,
-                        CblasNoTrans,
-                        nrows, nrhs, ncols,
-                        &cone, ws->COPYA, lda,
-                        ws->WORK, ldwork,
-                        &czero, ws->B, ldb);
-            clacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+                c64 cone = CMPLXF(1.0f, 0.0f);
+                c64 czero = CMPLXF(0.0f, 0.0f);
+                cblas_cgemm(CblasColMajor,
+                            (itran == 0) ? CblasNoTrans : CblasConjTrans,
+                            CblasNoTrans,
+                            nrows, nrhs, ncols,
+                            &cone, ws->COPYA, lda,
+                            ws->WORK, ldwork,
+                            &czero, ws->B, ldb);
+                clacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-            /* Solve LS or overdetermined system */
-            if (m > 0 && n > 0) {
-                clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-                clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-            }
-            cgelst(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
-                   ws->WORK, lwork, &info);
+                /* Solve LS or overdetermined system */
+                if (m > 0 && n > 0) {
+                    clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+                    clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+                }
+                cgelst(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
+                       ws->WORK, lwork, &info);
 
-            if (info != 0) {
-                fail_msg("CGELST info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
-                         (long long)info, trans, (long long)m, (long long)n,
-                         (long long)nrhs, (long long)itype);
-                return;
-            }
+                if (info != 0) {
+                    fail_msg("CGELST info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
+                             (long long)info, trans, (long long)m, (long long)n,
+                             (long long)nrhs, (long long)itype);
+                    return;
+                }
 
-            /* Test 3: residual */
-            if (nrows > 0 && nrhs > 0)
-                clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-            cqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-                   ws->C, ldb, ws->RWORK, &result[2 + itran * 2 + 0]);
+                /* Test 3: residual */
+                if (nrows > 0 && nrhs > 0)
+                    clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+                cqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+                       ws->C, ldb, ws->RWORK, &result[2 + itran * 2 + 0]);
 
-            /* Test 4 */
-            if ((itran == 0 && m >= n) ||
-                (itran == 1 && m < n)) {
-                result[2 + itran * 2 + 1] = cqrt17(trans, 1, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->COPYB, ldb, ws->C,
-                                                    ws->WORK, lwork);
-            } else {
-                result[2 + itran * 2 + 1] = cqrt14(trans, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->WORK, lwork);
-            }
+                /* Test 4 */
+                if ((itran == 0 && m >= n) ||
+                    (itran == 1 && m < n)) {
+                    result[2 + itran * 2 + 1] = cqrt17(trans, 1, m, n, nrhs,
+                                                        ws->COPYA, lda,
+                                                        ws->B, ldb,
+                                                        ws->COPYB, ldb, ws->C,
+                                                        ws->WORK, lwork);
+                } else {
+                    result[2 + itran * 2 + 1] = cqrt14(trans, m, n, nrhs,
+                                                        ws->COPYA, lda,
+                                                        ws->B, ldb,
+                                                        ws->WORK, lwork);
+                }
 
-            for (INT k = 2 + itran * 2; k < 2 + itran * 2 + 2; k++) {
-                if (result[k] >= THRESH) {
-                    fail_msg("CGELST trans=%s m=%lld n=%lld nrhs=%lld type%lld "
-                             "test(%lld)=%.6e",
-                             trans, (long long)m, (long long)n,
-                             (long long)nrhs, (long long)itype,
-                             (long long)(k + 1), (double)result[k]);
+                for (INT k = 2 + itran * 2; k < 2 + itran * 2 + 2; k++) {
+                    if (result[k] >= THRESH) {
+                        fail_msg("CGELST trans=%s m=%lld n=%lld nrhs=%lld type%lld "
+                                 "test(%lld)=%.6e",
+                                 trans, (long long)m, (long long)n,
+                                 (long long)nrhs, (long long)itype,
+                                 (long long)(k + 1), (double)result[k]);
+                    }
                 }
             }
         }
@@ -419,81 +438,94 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
         /* Generate a matrix of scaling type ISCALE */
         cqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-        for (INT itran = 0; itran < 2; itran++) {
-            const char* trans = (itran == 0) ? "N" : "C";
-            INT nrows = (itran == 0) ? m : n;
-            INT ncols = (itran == 0) ? n : m;
-            INT ldwork = imax2(1, ncols);
+        /* Loop for testing different block sizes MB. */
+        for (INT inb = 0; inb < (INT)NNB; inb++) {
+            INT mb = NBVAL[inb];
+            xlaenv(1, mb);
 
-            /* Set up a consistent rhs */
-            if (ncols > 0) {
-                clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-                c64 scale = CMPLXF(1.0f / (f32)ncols, 0.0f);
-                cblas_cscal(ncols * nrhs, &scale, ws->WORK, 1);
-                /* Make the last solution column small
-                 * enough that undoing the scaling of
-                 * the solution in two steps flushes it. */
-                if (iscale == 2 && nrhs > 1) {
-                    cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
-                }
-            }
-            c64 cone = CMPLXF(1.0f, 0.0f);
-            c64 czero = CMPLXF(0.0f, 0.0f);
-            cblas_cgemm(CblasColMajor,
-                        (itran == 0) ? CblasNoTrans : CblasConjTrans,
-                        CblasNoTrans,
-                        nrows, nrhs, ncols,
-                        &cone, ws->COPYA, lda,
-                        ws->WORK, ldwork,
-                        &czero, ws->B, ldb);
-            clacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+            /* Loop for testing different block sizes NB. */
+            for (INT imb = 0; imb < (INT)NNB; imb++) {
+                INT nb = NBVAL[imb];
+                xlaenv(2, nb);
 
-            /* Solve LS or overdetermined system */
-            if (m > 0 && n > 0) {
-                clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-                clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-            }
-            cgetsls(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
-                    ws->WORK, lwork, &info);
+                for (INT itran = 0; itran < 2; itran++) {
+                    const char* trans = (itran == 0) ? "N" : "C";
+                    INT nrows = (itran == 0) ? m : n;
+                    INT ncols = (itran == 0) ? n : m;
+                    INT ldwork = imax2(1, ncols);
 
-            if (info != 0) {
-                fail_msg("CGETSLS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
-                         (long long)info, trans, (long long)m, (long long)n,
-                         (long long)nrhs, (long long)itype);
-                return;
-            }
+                    /* Set up a consistent rhs */
+                    if (ncols > 0) {
+                        clarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                        c64 scale = CMPLXF(1.0f / (f32)ncols, 0.0f);
+                        cblas_cscal(ncols * nrhs, &scale, ws->WORK, 1);
+                        /* Make the last solution column small
+                         * enough that undoing the scaling of
+                         * the solution in two steps flushes it. */
+                        if (iscale == 2 && nrhs > 1) {
+                            cblas_csscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                        }
+                    }
+                    c64 cone = CMPLXF(1.0f, 0.0f);
+                    c64 czero = CMPLXF(0.0f, 0.0f);
+                    cblas_cgemm(CblasColMajor,
+                                (itran == 0) ? CblasNoTrans : CblasConjTrans,
+                                CblasNoTrans,
+                                nrows, nrhs, ncols,
+                                &cone, ws->COPYA, lda,
+                                ws->WORK, ldwork,
+                                &czero, ws->B, ldb);
+                    clacpy("Full", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-            /* Test 5: residual — uses WORK2 for rwork param */
-            if (nrows > 0 && nrhs > 0)
-                clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-            cqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-                   ws->C, ldb, ws->WORK2, &result[4 + itran * 2 + 0]);
+                    /* Solve LS or overdetermined system */
+                    if (m > 0 && n > 0) {
+                        clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+                        clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+                    }
+                    cgetsls(trans, m, n, nrhs, ws->A, lda, ws->B, ldb,
+                            ws->WORK, lwork, &info);
 
-            /* Test 6 */
-            if ((itran == 0 && m >= n) ||
-                (itran == 1 && m < n)) {
-                result[4 + itran * 2 + 1] = cqrt17(trans, 1, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->COPYB, ldb, ws->C,
-                                                    ws->WORK, lwork);
-            } else {
-                result[4 + itran * 2 + 1] = cqrt14(trans, m, n, nrhs,
-                                                    ws->COPYA, lda,
-                                                    ws->B, ldb,
-                                                    ws->WORK, lwork);
-            }
+                    if (info != 0) {
+                        fail_msg("CGETSLS info=%lld trans=%s m=%lld n=%lld nrhs=%lld type%lld",
+                                 (long long)info, trans, (long long)m, (long long)n,
+                                 (long long)nrhs, (long long)itype);
+                        return;
+                    }
 
-            for (INT k = 4 + itran * 2; k < 4 + itran * 2 + 2; k++) {
-                if (result[k] >= THRESH) {
-                    fail_msg("CGETSLS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
-                             "test(%lld)=%.6e",
-                             trans, (long long)m, (long long)n,
-                             (long long)nrhs, (long long)itype,
-                             (long long)(k + 1), (double)result[k]);
+                    /* Test 5: residual — uses WORK2 for rwork param */
+                    if (nrows > 0 && nrhs > 0)
+                        clacpy("Full", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+                    cqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+                           ws->C, ldb, ws->WORK2, &result[4 + itran * 2 + 0]);
+
+                    /* Test 6 */
+                    if ((itran == 0 && m >= n) ||
+                        (itran == 1 && m < n)) {
+                        result[4 + itran * 2 + 1] = cqrt17(trans, 1, m, n, nrhs,
+                                                            ws->COPYA, lda,
+                                                            ws->B, ldb,
+                                                            ws->COPYB, ldb, ws->C,
+                                                            ws->WORK, lwork);
+                    } else {
+                        result[4 + itran * 2 + 1] = cqrt14(trans, m, n, nrhs,
+                                                            ws->COPYA, lda,
+                                                            ws->B, ldb,
+                                                            ws->WORK, lwork);
+                    }
+
+                    for (INT k = 4 + itran * 2; k < 4 + itran * 2 + 2; k++) {
+                        if (result[k] >= THRESH) {
+                            fail_msg("CGETSLS trans=%s m=%lld n=%lld nrhs=%lld type%lld "
+                                     "test(%lld)=%.6e",
+                                     trans, (long long)m, (long long)n,
+                                     (long long)nrhs, (long long)itype,
+                                     (long long)(k + 1), (double)result[k]);
+                        }
+                    }
                 }
             }
         }
+        xlaenv(2, -1);
     }
     /* =====================================================
      *       End test CGETSLS
@@ -508,157 +540,166 @@ static void run_zdrvls_single(INT m, INT n, INT nrhs, INT irank, INT iscale)
 
     INT ldwork = imax2(1, m);
 
-    /* =====================================================
-     *       Test CGELSY
-     * ===================================================== */
+    /* Loop for testing different block sizes. */
+    for (INT inb = 0; inb < (INT)NNB; inb++) {
+        INT nb = NBVAL[inb];
+        xlaenv(1, nb);
+        xlaenv(3, NXVAL[inb]);
 
-    /* CGELSY: Compute the minimum-norm solution X to
-     * min( norm( A * X - B ) ) using the rank-revealing
-     * orthogonal factorization. */
+        /* =====================================================
+         *       Test CGELSY
+         * ===================================================== */
 
-    clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-    clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
+        /* CGELSY: Compute the minimum-norm solution X to
+         * min( norm( A * X - B ) ) using the rank-revealing
+         * orthogonal factorization. */
 
-    /* Initialize vector IWORK */
-    for (INT j = 0; j < n; j++)
-        ws->IWORK[j] = 0;
+        clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+        clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
 
-    INT crank;
-    cgelsy(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->IWORK,
-           rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
+        /* Initialize vector IWORK */
+        for (INT j = 0; j < n; j++)
+            ws->IWORK[j] = 0;
 
-    if (info != 0) {
-        fail_msg("CGELSY info=%lld m=%lld n=%lld nrhs=%lld type%lld",
-                 (long long)info, (long long)m, (long long)n,
-                 (long long)nrhs, (long long)itype);
-        return;
-    }
+        INT crank;
+        cgelsy(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->IWORK,
+               rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
 
-    /* Test 7: Compute relative error in svd */
-    result[6] = cqrt12(crank, crank, ws->A, lda, ws->COPYS,
-                        ws->WORK, lwork, ws->RWORK);
+        if (info != 0) {
+            fail_msg("CGELSY info=%lld m=%lld n=%lld nrhs=%lld type%lld",
+                     (long long)info, (long long)m, (long long)n,
+                     (long long)nrhs, (long long)itype);
+            return;
+        }
 
-    /* Test 8: Compute error in solution */
-    clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
-    cqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-           ws->WORK, ldwork, ws->RWORK, &result[7]);
+        /* Test 7: Compute relative error in svd */
+        result[6] = cqrt12(crank, crank, ws->A, lda, ws->COPYS,
+                            ws->WORK, lwork, ws->RWORK);
 
-    /* Test 9: Check norm of r'*A */
-    result[8] = 0.0f;
-    if (m > crank)
-        result[8] = cqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
-                           ws->B, ldb, ws->COPYB, ldb, ws->C,
-                           ws->WORK, lwork);
+        /* Test 8: Compute error in solution */
+        clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
+        cqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+               ws->WORK, ldwork, ws->RWORK, &result[7]);
 
-    /* Test 10: Check if x is in the rowspace of A */
-    result[9] = 0.0f;
-    if (n > crank)
-        result[9] = cqrt14("N", m, n, nrhs, ws->COPYA, lda,
-                           ws->B, ldb, ws->WORK, lwork);
+        /* Test 9: Check norm of r'*A */
+        result[8] = 0.0f;
+        if (m > crank)
+            result[8] = cqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
+                               ws->B, ldb, ws->COPYB, ldb, ws->C,
+                               ws->WORK, lwork);
 
-    /* =====================================================
-     *       Test CGELSS
-     * ===================================================== */
+        /* Test 10: Check if x is in the rowspace of A */
+        result[9] = 0.0f;
+        if (n > crank)
+            result[9] = cqrt14("N", m, n, nrhs, ws->COPYA, lda,
+                               ws->B, ldb, ws->WORK, lwork);
 
-    /* CGELSS: Compute the minimum-norm solution X to
-     * min( norm( A * X - B ) ) using the SVD. */
+        /* =====================================================
+         *       Test CGELSS
+         * ===================================================== */
 
-    clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-    clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
+        /* CGELSS: Compute the minimum-norm solution X to
+         * min( norm( A * X - B ) ) using the SVD. */
 
-    cgelss(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
-           rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
+        clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+        clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
 
-    if (info != 0) {
-        fail_msg("CGELSS info=%lld m=%lld n=%lld nrhs=%lld type%lld",
-                 (long long)info, (long long)m, (long long)n,
-                 (long long)nrhs, (long long)itype);
-        return;
-    }
+        cgelss(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
+               rcond, &crank, ws->WORK, lwork, ws->RWORK, &info);
 
-    /* Test 11: Compute relative error in svd */
-    if (rank > 0) {
-        cblas_saxpy(mnmin, -1.0f, ws->COPYS, 1, ws->S, 1);
-        result[10] = cblas_sasum(mnmin, ws->S, 1) /
-                     cblas_sasum(mnmin, ws->COPYS, 1) /
-                     (eps * (f32)mnmin);
-    } else {
-        result[10] = 0.0f;
-    }
+        if (info != 0) {
+            fail_msg("CGELSS info=%lld m=%lld n=%lld nrhs=%lld type%lld",
+                     (long long)info, (long long)m, (long long)n,
+                     (long long)nrhs, (long long)itype);
+            return;
+        }
 
-    /* Test 12: Compute error in solution */
-    clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
-    cqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-           ws->WORK, ldwork, ws->RWORK, &result[11]);
+        /* Test 11: Compute relative error in svd */
+        if (rank > 0) {
+            cblas_saxpy(mnmin, -1.0f, ws->COPYS, 1, ws->S, 1);
+            result[10] = cblas_sasum(mnmin, ws->S, 1) /
+                         cblas_sasum(mnmin, ws->COPYS, 1) /
+                         (eps * (f32)mnmin);
+        } else {
+            result[10] = 0.0f;
+        }
 
-    /* Test 13: Check norm of r'*A */
-    result[12] = 0.0f;
-    if (m > crank)
-        result[12] = cqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->COPYB, ldb, ws->C,
-                            ws->WORK, lwork);
+        /* Test 12: Compute error in solution */
+        clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
+        cqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+               ws->WORK, ldwork, ws->RWORK, &result[11]);
 
-    /* Test 14: Check if x is in the rowspace of A */
-    result[13] = 0.0f;
-    if (n > crank)
-        result[13] = cqrt14("N", m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->WORK, lwork);
+        /* Test 13: Check norm of r'*A */
+        result[12] = 0.0f;
+        if (m > crank)
+            result[12] = cqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->COPYB, ldb, ws->C,
+                                ws->WORK, lwork);
 
-    /* =====================================================
-     *       Test CGELSD
-     * ===================================================== */
+        /* Test 14: Check if x is in the rowspace of A */
+        result[13] = 0.0f;
+        if (n > crank)
+            result[13] = cqrt14("N", m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->WORK, lwork);
 
-    /* CGELSD: Compute the minimum-norm solution X to
-     * min( norm( A * X - B ) ) using a divide and conquer SVD. */
+        /* =====================================================
+         *       Test CGELSD
+         * ===================================================== */
 
-    clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
-    clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
+        /* CGELSD: Compute the minimum-norm solution X to
+         * min( norm( A * X - B ) ) using a divide and conquer SVD. */
 
-    cgelsd(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
-           rcond, &crank, ws->WORK, lwork, ws->RWORK,
-           ws->IWORK, &info);
+        xlaenv(9, 25);
 
-    if (info != 0) {
-        fail_msg("CGELSD info=%lld m=%lld n=%lld nrhs=%lld type%lld",
-                 (long long)info, (long long)m, (long long)n,
-                 (long long)nrhs, (long long)itype);
-        return;
-    }
+        clacpy("Full", m, n, ws->COPYA, lda, ws->A, lda);
+        clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->B, ldb);
 
-    /* Test 15: Compute relative error in svd */
-    if (rank > 0) {
-        cblas_saxpy(mnmin, -1.0f, ws->COPYS, 1, ws->S, 1);
-        result[14] = cblas_sasum(mnmin, ws->S, 1) /
-                     cblas_sasum(mnmin, ws->COPYS, 1) /
-                     (eps * (f32)mnmin);
-    } else {
-        result[14] = 0.0f;
-    }
+        cgelsd(m, n, nrhs, ws->A, lda, ws->B, ldb, ws->S,
+               rcond, &crank, ws->WORK, lwork, ws->RWORK,
+               ws->IWORK, &info);
 
-    /* Test 16: Compute error in solution */
-    clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
-    cqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
-           ws->WORK, ldwork, ws->RWORK, &result[15]);
+        if (info != 0) {
+            fail_msg("CGELSD info=%lld m=%lld n=%lld nrhs=%lld type%lld",
+                     (long long)info, (long long)m, (long long)n,
+                     (long long)nrhs, (long long)itype);
+            return;
+        }
 
-    /* Test 17: Check norm of r'*A */
-    result[16] = 0.0f;
-    if (m > crank)
-        result[16] = cqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->COPYB, ldb, ws->C,
-                            ws->WORK, lwork);
+        /* Test 15: Compute relative error in svd */
+        if (rank > 0) {
+            cblas_saxpy(mnmin, -1.0f, ws->COPYS, 1, ws->S, 1);
+            result[14] = cblas_sasum(mnmin, ws->S, 1) /
+                         cblas_sasum(mnmin, ws->COPYS, 1) /
+                         (eps * (f32)mnmin);
+        } else {
+            result[14] = 0.0f;
+        }
 
-    /* Test 18: Check if x is in the rowspace of A */
-    result[17] = 0.0f;
-    if (n > crank)
-        result[17] = cqrt14("N", m, n, nrhs, ws->COPYA, lda,
-                            ws->B, ldb, ws->WORK, lwork);
+        /* Test 16: Compute error in solution */
+        clacpy("Full", m, nrhs, ws->COPYB, ldb, ws->WORK, ldwork);
+        cqrt16("N", m, n, nrhs, ws->COPYA, lda, ws->B, ldb,
+               ws->WORK, ldwork, ws->RWORK, &result[15]);
 
-    /* Print information about the tests that did not pass the threshold */
-    for (INT k = 6; k < 18; k++) {
-        if (result[k] >= THRESH) {
-            fail_msg("m=%lld n=%lld nrhs=%lld type%lld test(%lld)=%.6e",
-                     (long long)m, (long long)n, (long long)nrhs,
-                     (long long)itype, (long long)(k + 1), (double)result[k]);
+        /* Test 17: Check norm of r'*A */
+        result[16] = 0.0f;
+        if (m > crank)
+            result[16] = cqrt17("N", 1, m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->COPYB, ldb, ws->C,
+                                ws->WORK, lwork);
+
+        /* Test 18: Check if x is in the rowspace of A */
+        result[17] = 0.0f;
+        if (n > crank)
+            result[17] = cqrt14("N", m, n, nrhs, ws->COPYA, lda,
+                                ws->B, ldb, ws->WORK, lwork);
+
+        /* Print information about the tests that did not pass the threshold */
+        for (INT k = 6; k < 18; k++) {
+            if (result[k] >= THRESH) {
+                fail_msg("m=%lld n=%lld nrhs=%lld type%lld test(%lld)=%.6e",
+                         (long long)m, (long long)n, (long long)nrhs,
+                         (long long)itype, (long long)(k + 1), (double)result[k]);
+            }
         }
     }
 }

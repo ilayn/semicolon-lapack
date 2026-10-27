@@ -32,7 +32,7 @@
 #include <string.h>
 #include <complex.h>
 
-#define THRESH 30.0f
+#define THRESH 20.0f
 #define MAXTYP 21
 
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
@@ -278,10 +278,13 @@ static void run_zdrvev_single(zdrvev_params_t* params)
     c64* W = ws->W;
     c64* W1 = ws->W1;
     c64* work = ws->work;
+    INT* perm = ws->iwork;
     f32* rwork = ws->rwork;
 
     f32 ulp = slamch("P");
     f32 ulpinv = 1.0f / ulp;
+    f32 unfl = slamch("S");
+    f32 wnrm, wdif;
 
     for (INT j = 0; j < 7; j++) {
         ws->result[j] = -1.0f;
@@ -383,10 +386,10 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[0]);
-    assert_residual_ok(ws->result[1]);
-    assert_residual_ok(ws->result[2]);
-    assert_residual_ok(ws->result[3]);
+    assert_residual_below(ws->result[0], THRESH);
+    assert_residual_below(ws->result[1], THRESH);
+    assert_residual_below(ws->result[2], THRESH);
+    assert_residual_below(ws->result[3], THRESH);
 
     /* ========== Test CGEEV with eigenvalues only ========== */
     clacpy("F", n, n, A, lda, H, lda);
@@ -400,12 +403,21 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "CGEEV(N,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5: W(full) = W(partial) */
-        ws->result[4] = 0.0f;
+        /*
+         * The runs with and without eigenvectors can return the eigenvalues
+         * in a different order, so W1 is paired with W by closest match
+         * instead of by index.
+         */
+        cpair_eigs(n, W, W1, perm);
+        wnrm = 0.0f;
+        wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            if (W[j] != W1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
+        ws->result[4] = fmaxf(ws->result[4],
+                             wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
     }
 
     /* ========== Test CGEEV with right eigenvectors only ========== */
@@ -419,11 +431,16 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "CGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        cpair_eigs(n, W, W1, perm);
+        wnrm = 0.0f;
+        wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            if (W[j] != W1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
+        ws->result[4] = fmaxf(ws->result[4],
+                             wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Test 6: VR(full) = VR(partial) */
         ws->result[5] = 0.0f;
@@ -447,11 +464,16 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "CGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        cpair_eigs(n, W, W1, perm);
+        wnrm = 0.0f;
+        wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            if (W[j] != W1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
+        ws->result[4] = fmaxf(ws->result[4],
+                             wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Test 7: VL(full) = VL(partial) */
         ws->result[6] = 0.0f;
@@ -464,9 +486,9 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[4]);
-    assert_residual_ok(ws->result[5]);
-    assert_residual_ok(ws->result[6]);
+    assert_residual_below(ws->result[4], THRESH);
+    assert_residual_below(ws->result[5], THRESH);
+    assert_residual_below(ws->result[6], THRESH);
 }
 
 static void test_zdrvev_case(void** state)
@@ -512,6 +534,16 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
+
+    /* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS and IACC22 from zed.in */
+    xlaenv(1, 3);
+    xlaenv(2, 3);
+    xlaenv(3, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 4);
+    xlaenv(14, 8);
+    xlaenv(15, 2);
+    xlaenv(16, 0);
 
     (void)_cmocka_run_group_tests("cdrvev", g_tests, g_num_tests,
                                    group_setup, group_teardown);

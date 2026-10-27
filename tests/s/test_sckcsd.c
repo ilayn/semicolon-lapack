@@ -273,7 +273,7 @@ static void run_dckcsd_single(dckcsd_params_t* params)
                  "M=%d P=%d Q=%d type=%d test=%d ratio=%.6e",
                  m, p, q, imat, i + 1, (double)result[i]);
         set_test_context(ctx);
-        assert_residual_ok(result[i]);
+        assert_residual_below(result[i], THRESH);
     }
 }
 
@@ -317,6 +317,9 @@ int main(void)
             ntests++;
         }
     }
+
+    /* Block size as DCHKEE sets it for the CSD path */
+    xlaenv(1, 1);
 
     (void)_cmocka_run_group_tests("sckcsd", all_tests, ntests,
                                     group_setup, group_teardown);

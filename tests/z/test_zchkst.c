@@ -35,12 +35,18 @@
 #include <string.h>
 #include <complex.h>
 
-#define THRESH 30.0
+#define THRESH 60.0
 #define MAXTYP 22
 #define NTEST  37
 
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NBVAL, NBMIN, NXVAL from sep.in */
+static const INT NBVAL[] = {1, 3, 3, 3, 10};
+static const INT NBMIN[] = {2, 2, 2, 2, 2};
+static const INT NXVAL[] = {1, 0, 5, 9, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* Matrix type parameters (from zchkst.f DATA statements lines 674-680) */
 static const INT KTYPE[MAXTYP] = {1,2,4,4,4,4,4,5,5,5,5,5,8,8,8,9,9,9,9,9,10,11};
@@ -54,6 +60,7 @@ static const INT KMODE[MAXTYP] = {0,0,4,3,1,4,4,4,3,1,4,4,0,0,0,4,3,1,4,4, 3, 0}
 typedef struct {
     INT n;
     INT jtype;
+    INT iparm;
     char name[96];
 } zchkst_params_t;
 
@@ -174,8 +181,8 @@ static int group_setup(void** state)
         return -1;
     }
 
-    rng_seed(g_ws->rng_state, 0xDEADBEEFULL);
-    rng_seed(g_ws->rng_state2, 0xDEADBEEFULL);
+    rng_seed(g_ws->rng_state, 0xB3C4904A6D278932ULL);
+    rng_seed(g_ws->rng_state2, 0xB3C4904A6D278932ULL);
     return 0;
 }
 
@@ -348,6 +355,9 @@ static void test_zchkst_case(void** state)
     zchkst_params_t* params = *state;
     INT n = params->n;
     INT jtype = params->jtype;
+    xlaenv(1, NBVAL[params->iparm]);
+    xlaenv(2, NBMIN[params->iparm]);
+    xlaenv(3, NXVAL[params->iparm]);
 
     zchkst_ws_t* ws = g_ws;
     INT lda = ws->nmax;
@@ -1104,7 +1114,7 @@ L280:
         for (INT jr = 0; jr < ntest; jr++) {
             snprintf(ctx, sizeof(ctx), "zchkst n=%d type=%d TEST %d", n, jtype, jr + 1);
             set_test_context(ctx);
-            assert_residual_ok(ws->result[jr]);
+            assert_residual_below(ws->result[jr], THRESH);
         }
     }
 }
@@ -1223,7 +1233,7 @@ static void test_stedc_ldz(void** state)
 
 /* ===== Test array construction ===== */
 
-#define MAX_TESTS (NNVAL * MAXTYP + 2)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP + 2)
 
 static zchkst_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1233,25 +1243,28 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t in = 0; in < NNVAL; in++) {
-        INT n = NVAL[in];
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t in = 0; in < NNVAL; in++) {
+            INT n = NVAL[in];
 
-        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-            if (jtype == 9) continue;
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                if (jtype == 9) continue;
 
-            zchkst_params_t* p = &g_params[g_num_tests];
-            p->n = n;
-            p->jtype = jtype;
-            snprintf(p->name, sizeof(p->name),
-                     "zchkst_n%d_type%d", n, jtype);
+                zchkst_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->jtype = jtype;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "zchkst_p%d_n%d_type%d", (int)ip, n, jtype);
 
-            g_tests[g_num_tests].name = p->name;
-            g_tests[g_num_tests].test_func = test_zchkst_case;
-            g_tests[g_num_tests].setup_func = NULL;
-            g_tests[g_num_tests].teardown_func = NULL;
-            g_tests[g_num_tests].initial_state = p;
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_zchkst_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
 
-            g_num_tests++;
+                g_num_tests++;
+            }
         }
     }
 

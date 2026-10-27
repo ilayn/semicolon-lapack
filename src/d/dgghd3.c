@@ -184,7 +184,7 @@ void dgghd3(
 
     } else {
 
-        kacc22 = (nh >= 14) ? 2 : 1;
+        kacc22 = lapack_get_iparmq(16, "DGGHD3", " ", n, ilo + 1, ihi + 1, -1);
         blk22 = (kacc22 == 2);
 
         for (jcol = ilo; jcol <= ihi - 2; jcol += nb) {

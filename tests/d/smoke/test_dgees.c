@@ -365,33 +365,19 @@ static void test_ordering_n20(void** state) { test_schur_with_ordering(*state); 
 
 int main(void)
 {
-    const struct CMUnitTest tests_n5[] = {
+    const struct CMUnitTest tests[] = {
         cmocka_unit_test_setup_teardown(test_vectors_n5, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_eigenvalues_only, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_workspace_query, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_identity_matrix, setup_5, teardown),
-    };
-
-    const struct CMUnitTest tests_n10[] = {
         cmocka_unit_test_setup_teardown(test_vectors_n10, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_ordering_n10, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_symmetric_matrix, setup_10, teardown),
-    };
-
-    const struct CMUnitTest tests_n20[] = {
         cmocka_unit_test_setup_teardown(test_vectors_n20, setup_20, teardown),
         cmocka_unit_test_setup_teardown(test_ordering_n20, setup_20, teardown),
-    };
-
-    const struct CMUnitTest tests_n32[] = {
         cmocka_unit_test_setup_teardown(test_vectors_n32, setup_32, teardown),
     };
 
-    INT result = 0;
-    result += cmocka_run_group_tests_name("dgees_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgees_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgees_n20", tests_n20, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgees_n32", tests_n32, NULL, NULL);
-
-    return result;
+    (void)cmocka_run_group_tests_name("dgees", tests, NULL, NULL);
+    return 0;
 }

@@ -15,7 +15,7 @@
 #include "test_harness.h"
 #include "verify.h"
 
-#define THRESH 30.0f
+#define THRESH 20.0f
 
 /* ------------------------------------------------------------------ */
 /*  Error exit tests                                                  */
@@ -230,6 +230,13 @@ int main(void)
         cmocka_unit_test(test_dget39_dlaqtr),
         cmocka_unit_test(test_dget40_dtgexc),
     };
+    /* Threshold from dec.in; ISPECs 1 and 12-16 as DCHKEE sets them for SEC */
+    xlaenv(1, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 2);
+    xlaenv(14, 0);
+    xlaenv(15, 2);
+    xlaenv(16, 2);
     (void)cmocka_run_group_tests_name("schkec", tests, NULL, NULL);
     return 0;
 }

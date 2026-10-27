@@ -4,16 +4,10 @@
  */
 
 #include "semicolon_lapack_complex_single.h"
+#include "lapack_tuning.h"
 #include <complex.h>
 #include "semicolon_cblas.h"
 #include <math.h>
-
-/** @cond */
-static INT iparmq_nmin(void)
-{
-    return 75;
-}
-/** @endcond */
 
 /**
  * CLAQR3 performs the unitary similarity transformation of a Hessenberg
@@ -138,7 +132,7 @@ void claqr3(const INT wantt, const INT wantz, const INT n,
 
     claset("A", jw, jw, czero, cone, V, ldv);
 
-    nmin = iparmq_nmin();
+    nmin = lapack_get_iparmq(12, "CLAQR3", "SV", jw, 1, jw, lwork);
     if (jw > nmin) {
         claqr4(1, 1, jw, 0, jw - 1, T, ldt, &SH[kwtop],
                0, jw - 1, V, ldv, work, lwork, &infqr);

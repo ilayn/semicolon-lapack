@@ -46,10 +46,10 @@
 #include <string.h>
 #include <complex.h>
 
-#define THRESH 30.0
+#define THRESH 10.0
 #define MAXTYP 26
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 6, 8, 10, 12, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* ===================================================================== */
@@ -557,6 +557,13 @@ int main(void)
 {
     build_test_array();
 
+    /* NB, NBMIN, NX, NS and MAXB from zgd.in; ZCHKEE sets ISPEC 16 to 2 before ZDRGEV3 */
+    xlaenv(1, 1);
+    xlaenv(2, 1);
+    xlaenv(3, 1);
+    xlaenv(4, 2);
+    xlaenv(8, 1);
+    xlaenv(16, 2);
     (void)_cmocka_run_group_tests("zdrgev3", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;

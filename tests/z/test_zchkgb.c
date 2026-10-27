@@ -21,7 +21,7 @@
  *   N values: 0, 1, 2, 3, 5, 10, 50
  *   KL/KU values: 0, (5*M+1)/4, (3M-1)/4, (M+1)/4 (clamped to matrix size)
  *   NRHS values: 1, 2, 15
- *   NB values: 1, 3, 3, 3, 20
+ *   NB values: 1, 3, 20 (ztest.in NB values without duplicates)
  *   Matrix types: 1-9
  *   THRESH: 30.0
  */
@@ -35,7 +35,7 @@
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};
-static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))

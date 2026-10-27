@@ -14,10 +14,10 @@
  *   TEST 6: |C*Q' - C*Q'| / (eps * max(1,N2) * |D|)
  *
  * Parameters:
- *   M values: 0, 1, 2, 3, 5, 10, 16, 50
- *   N values: 0, 1, 2, 3, 5, 10, 16, 50
+ *   M values: 0, 1, 2, 3, 5, 10, 50
+ *   N values: 0, 1, 2, 3, 5, 10, 50
  *   L values: 0 to min(M,N), stepping by max(min(M,N), 1)
- *   NB values: 1, 2, 3, 5, 10, 16
+ *   NB values: 1, 3, 3, 3, 20
  *   THRESH: 30.0
  */
 
@@ -26,9 +26,9 @@
 #include <string.h>
 #include <stdio.h>
 
-static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 50};
-static const INT NBVAL[] = {1, 2, 3, 5, 10, 16};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -49,12 +49,7 @@ static void run_dchklqtp_single(INT m, INT n, INT l, INT nb)
     f32 result[NTESTS];
     char ctx[128];
 
-    // Skip invalid parameter combinations:
-    // - nb > m: stplqt requires mb <= m
-    // - nb <= 0: invalid block size
-    // - m == 0: trivial case
-    // - n > 0 && nb > n: slqt05.f documents "NB <= N" constraint (line 53)
-    if (nb > m || nb <= 0 || m == 0 || (n > 0 && nb > n)) {
+    if (nb > m || nb <= 0) {
         return;
     }
 
@@ -98,7 +93,7 @@ static void build_test_array(void)
                     INT nb = NBVAL[inb];
 
                     // Skip invalid parameter combinations
-                    if (nb > m || nb <= 0 || m == 0 || (n > 0 && nb > n)) {
+                    if (nb > m || nb <= 0) {
                         continue;
                     }
 

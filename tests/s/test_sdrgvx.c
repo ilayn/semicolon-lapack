@@ -476,6 +476,14 @@ int main(void)
         idx++;
     }
 
+    /* NB, NBMIN, NX, NS and MAXB from dgd.in; ISPEC 16 and 5 are still 2 from the SGS and DGX paths */
+    xlaenv(1, 1);
+    xlaenv(2, 1);
+    xlaenv(3, 1);
+    xlaenv(4, 2);
+    xlaenv(8, 1);
+    xlaenv(16, 2);
+    xlaenv(5, 2);
     (void)cmocka_run_group_tests_name("sdrgvx", all_tests, group_setup,
                                        group_teardown);
     return 0;

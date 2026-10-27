@@ -7,6 +7,7 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_complex_single.h"
+#include "lapack_tuning.h"
 
 /**
  * CTGSYL solves the generalized Sylvester equation:
@@ -214,8 +215,8 @@ void ctgsyl(
         return;
     }
 
-    mb = 2;
-    nb = 2;
+    mb = lapack_get_nbmin("TGSYL");
+    nb = lapack_get_nbcol("TGSYL");
 
     isolve = 1;
     ifunc = 0;

@@ -97,6 +97,7 @@ void dtrsyl3(const char* trana, const char* tranb, const INT isgn,
     if (max_mn < 1) max_mn = 1;
 
     nb = lapack_get_trsyl_nb(m, n, 0);
+    if (nb < 8) nb = 8;
 
     /* Compute number of blocks in A and B */
     nba = (m + nb - 1) / nb;

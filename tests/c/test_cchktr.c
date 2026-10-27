@@ -39,7 +39,7 @@
 /* Test parameters from ztest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes */
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
 #define NNS     (sizeof(NSVAL) / sizeof(NSVAL[0]))
@@ -193,6 +193,8 @@ static void test_standard(void** state)
 
     /* Loop over block sizes (only test 1 uses multiple block sizes) */
     for (INT inb = 0; inb < (INT)NNB; inb++) {
+        xlaenv(1, NBVAL[inb]);
+
         /* TEST 1: Form the inverse of A */
         clacpy(uplo, n, n, ws->A, lda, ws->AINV, lda);
         ctrtri(uplo, &diag, n, ws->AINV, lda, &info);

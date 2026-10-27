@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <stdlib.h>
 #include "semicolon_cblas.h"
 #include "verify.h"
 /**
@@ -51,7 +52,7 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
     INT i, j, jj, kmin;
     INT ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
     f64 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
-    f64 ulp, ulpinv, v, vmax, vmx, vricmp, vrimin, vrmx, vtst;
+    f64 ulp, ulpinv, v, vmax, vmx, vricmp, vrimin, vrmx, vtst, wdif, wnrm;
     const char* sens[2] = {"N", "V"};
     f64 res[2];
     c128 cdum[1];
@@ -95,6 +96,8 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
     if (n == 0)
         return;
 
+    INT* perm = malloc(n * sizeof(INT));
+
     /* More Important constants */
     ulp = dlamch("P");
     smlnum = dlamch("S");
@@ -117,6 +120,7 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
     if (iinfo != 0) {
         result[0] = ulpinv;
         *info = (iinfo < 0) ? -iinfo : iinfo;
+        free(perm);
         return;
     }
 
@@ -181,10 +185,21 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) */
+        /*
+         * The runs with and without eigenvectors can return the eigenvalues
+         * in a different order, so W1 is paired with W by closest match
+         * instead of by index.
+         */
+        zpair_eigs(n, W, W1, perm);
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (creal(W[j]) != creal(W1[j]) || cimag(W[j]) != cimag(W1[j]))
-                result[4] = ulpinv;
+            INT k = perm[j];
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[k])));
+            wdif = fmax(wdif, cabs(W[j] - W1[k]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (8) */
         if (!nobal) {
@@ -220,10 +235,16 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) again */
+        zpair_eigs(n, W, W1, perm);
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (creal(W[j]) != creal(W1[j]) || cimag(W[j]) != cimag(W1[j]))
-                result[4] = ulpinv;
+            INT k = perm[j];
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[k])));
+            wdif = fmax(wdif, cabs(W[j] - W1[k]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (6) */
         for (j = 0; j < n; j++) {
@@ -268,10 +289,16 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) again */
+        zpair_eigs(n, W, W1, perm);
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (creal(W[j]) != creal(W1[j]) || cimag(W[j]) != cimag(W1[j]))
-                result[4] = ulpinv;
+            INT k = perm[j];
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[k])));
+            wdif = fmax(wdif, cabs(W[j] - W1[k]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (7) */
         for (j = 0; j < n; j++) {
@@ -417,4 +444,5 @@ label_190:
 label_250:
         ;
     }
+    free(perm);
 }

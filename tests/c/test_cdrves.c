@@ -32,7 +32,7 @@
 #include <string.h>
 #include <complex.h>
 
-#define THRESH 30.0f
+#define THRESH 20.0f
 #define MAXTYP 21
 
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
@@ -369,7 +369,7 @@ static void run_zdrves_single(zdrves_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[rsub]);
+    assert_residual_below(ws->result[rsub], THRESH);
 
     /* Tests 2-3 (or 8-9): | A - VS*T*VS' | and | I - VS*VS' | */
     INT lwork_hst = 2 * n * n > 1 ? 2 * n * n : 1;
@@ -378,8 +378,8 @@ static void run_zdrves_single(zdrves_params_t* params)
     ws->result[rsub + 1] = res[0];
     ws->result[rsub + 2] = res[1];
 
-    assert_residual_ok(ws->result[rsub + 1]);
-    assert_residual_ok(ws->result[rsub + 2]);
+    assert_residual_below(ws->result[rsub + 1], THRESH);
+    assert_residual_below(ws->result[rsub + 2], THRESH);
 
     /* Test 4 (or 10): Check eigenvalues match diagonal of T */
     ws->result[rsub + 3] = 0.0f;
@@ -389,7 +389,7 @@ static void run_zdrves_single(zdrves_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[rsub + 3]);
+    assert_residual_below(ws->result[rsub + 3], THRESH);
 
     /* Tests 5-6 (or 11-12): Compare with and without VS */
     clacpy("F", n, n, A, lda, HT, lda);
@@ -420,8 +420,8 @@ static void run_zdrves_single(zdrves_params_t* params)
         }
     }
 
-    assert_residual_ok(ws->result[rsub + 4]);
-    assert_residual_ok(ws->result[rsub + 5]);
+    assert_residual_below(ws->result[rsub + 4], THRESH);
+    assert_residual_below(ws->result[rsub + 5], THRESH);
 
     /* Test 13 (only for sorted case): SDIM validation */
     if (isort == 1) {
@@ -444,7 +444,7 @@ static void run_zdrves_single(zdrves_params_t* params)
             }
         }
 
-        assert_residual_ok(ws->result[12]);
+        assert_residual_below(ws->result[12], THRESH);
     }
 }
 
@@ -494,6 +494,16 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
+
+    /* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS and IACC22 from zed.in */
+    xlaenv(1, 3);
+    xlaenv(2, 3);
+    xlaenv(3, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 4);
+    xlaenv(14, 8);
+    xlaenv(15, 2);
+    xlaenv(16, 0);
 
     (void)_cmocka_run_group_tests("cdrves", g_tests, g_num_tests,
                                    group_setup, group_teardown);

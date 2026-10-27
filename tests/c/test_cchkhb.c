@@ -42,7 +42,7 @@ static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
 #define NSIZES (sizeof(NVAL) / sizeof(NVAL[0]))
 
 /* Bandwidth values */
-static const INT KK[] = {0, 1, 2, 3, 10};
+static const INT KK[] = {0, 1, 2, 3, 5, 10, 16};
 #define NWDTHS (sizeof(KK) / sizeof(KK[0]))
 
 /*                    1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 */

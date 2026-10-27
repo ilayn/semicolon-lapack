@@ -5,60 +5,9 @@
  */
 
 #include "semicolon_lapack_complex_double.h"
+#include "lapack_tuning.h"
 #include <complex.h>
 #include <math.h>
-
-/** @cond */
-static INT iparmq_nmin(void)
-{
-    return 75;
-}
-
-static INT iparmq_nshfts(INT nh)
-{
-    INT ns = 2;
-    if (nh >= 30) ns = 4;
-    if (nh >= 60) ns = 10;
-    if (nh >= 150) {
-        f64 lognh = log((f64)nh) / log(2.0);
-        INT div = (INT)(lognh + 0.5);
-        if (div < 1) div = 1;
-        ns = nh / div;
-        if (ns < 10) ns = 10;
-    }
-    if (nh >= 590) ns = 64;
-    if (nh >= 3000) ns = 128;
-    if (nh >= 6000) ns = 256;
-    ns = ns - (ns % 2);
-    if (ns < 2) ns = 2;
-    return ns;
-}
-
-static INT iparmq_nwr(INT nh)
-{
-    INT ns = iparmq_nshfts(nh);
-    if (nh <= 500) {
-        return ns;
-    } else {
-        return 3 * ns / 2;
-    }
-}
-
-static INT iparmq_nibble(void)
-{
-    return 14;
-}
-
-static INT iparmq_kacc22(INT ns)
-{
-    const INT kacmin = 14;
-    const INT k22min = 14;
-    INT kacc = 0;
-    if (ns >= kacmin) kacc = 1;
-    if (ns >= k22min) kacc = 2;
-    return kacc;
-}
-/** @endcond */
 
 /**
  * ZLAQR4 implements one level of recursion for ZLAQR0.
@@ -129,12 +78,15 @@ void zlaqr4(const INT wantt, const INT wantz, const INT n,
 
         nh = ihi - ilo + 1;
 
-        nwr = iparmq_nwr(nh);
+        /* Set up job flags for ILAENV. */
+        const char jbcmpz[3] = {wantt ? 'S' : 'E', wantz ? 'V' : 'N', '\0'};
+
+        nwr = lapack_get_iparmq(13, "ZLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nwr < 2) nwr = 2;
         if (nwr > (n - 1) / 3) nwr = (n - 1) / 3;
         if (nwr > ihi - ilo + 1) nwr = ihi - ilo + 1;
 
-        nsr = iparmq_nshfts(nh);
+        nsr = lapack_get_iparmq(15, "ZLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nsr > (n - 3) / 6) nsr = (n - 3) / 6;
         if (nsr > ihi - ilo) nsr = ihi - ilo;
         nsr = nsr - (nsr % 2);
@@ -152,13 +104,13 @@ void zlaqr4(const INT wantt, const INT wantz, const INT n,
             return;
         }
 
-        nmin = iparmq_nmin();
+        nmin = lapack_get_iparmq(12, "ZLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nmin < ntiny) nmin = ntiny;
 
-        nibble = iparmq_nibble();
+        nibble = lapack_get_iparmq(14, "ZLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nibble < 0) nibble = 0;
 
-        kacc22 = iparmq_kacc22(nsr);
+        kacc22 = lapack_get_iparmq(16, "ZLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (kacc22 < 0) kacc22 = 0;
         if (kacc22 > 2) kacc22 = 2;
 

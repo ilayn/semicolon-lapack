@@ -439,6 +439,11 @@ int main(void) {
     zdrvpb_params_t* params = malloc(count * sizeof(*params));
     struct CMUnitTest* tests = malloc(count * sizeof(*tests));
     build_test_array(params, tests);
+
+    /* Set the block size and minimum block size for testing. */
+    xlaenv(1, 1);
+    xlaenv(2, 2);
+
     INT result = _cmocka_run_group_tests("cdrvpb", tests, count,
                                           group_setup, group_teardown);
     free(tests);

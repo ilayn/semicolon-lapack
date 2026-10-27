@@ -149,6 +149,7 @@ testutils_d_sources = files(
   'dget22.c',   # Eigenvector check: |A*E - E*W| / (|A| |E| ulp)
   'dget10.c',   # Matrix comparison: |A - B| / (|A| M eps)
   'dget23.c',   # DGEEVX verification: 11 tests for eigenvalues/eigenvectors/condition numbers
+  'dpair_eigs.c', # Pair two eigenvalue lists by closest match
   'dget24.c',   # DGEESX verification: 17 tests for Schur form/sorting/condition numbers
 
   # Generalized eigenvalue verification

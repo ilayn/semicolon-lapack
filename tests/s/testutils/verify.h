@@ -784,6 +784,9 @@ void sget23(const INT comp, const char* balanc, const INT jtype,
             f32* scale, f32* scale1, f32* result,
             f32* work, const INT lwork, INT* iwork, INT* info);
 
+void spair_eigs(const INT n, const f32* wr, const f32* wi,
+                const f32* wr1, const f32* wi1, INT* perm);
+
 /* SGEESX verification */
 void sget24(const INT comp, const INT jtype, const f32 thresh,
             const INT n, f32* A, const INT lda,

@@ -7,6 +7,7 @@
  */
 
 #include "semicolon_lapack_single.h"
+#include "lapack_tuning.h"
 #include <math.h>
 #include <float.h>
 #include "semicolon_cblas.h"
@@ -80,8 +81,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
 
     *info = 0;
 
-    /* Workspace query - use NB=64 as a reasonable default for STREVC */
-    nb = 64;
+    nb = lapack_get_nb("TREVC");
     maxwrk = n + 2 * n * nb;
     if (maxwrk < 1) maxwrk = 1;
     work[0] = (f32)maxwrk;

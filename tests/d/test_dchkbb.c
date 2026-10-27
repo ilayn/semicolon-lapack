@@ -40,12 +40,15 @@
 #define THRESH 20.0
 #define MAXTYP 15
 #define NTEST  4
-#define NRHS   2
 
 /* M,N pairs from dbb.in */
 static const INT MVAL[] = {0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 10, 10, 16, 16};
 static const INT NVAL[] = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 10, 16, 10, 16};
 #define NSIZES (sizeof(MVAL) / sizeof(MVAL[0]))
+
+/* NSVAL from dbb.in */
+static const INT NSVAL[] = {1, 2};
+#define NPARMS (sizeof(NSVAL) / sizeof(NSVAL[0]))
 
 /* Bandwidth values from dbb.in */
 static const INT KK[] = {0, 1, 2, 3, 16};
@@ -75,6 +78,7 @@ typedef struct {
     INT jsize;     /* index into MVAL[]/NVAL[] */
     INT jwidth;    /* index into KK[] */
     INT jtype;     /* matrix type 1..15 */
+    INT iparm;
     char name[128];
 } dchkbb_params_t;
 
@@ -128,6 +132,10 @@ static int group_setup(void** state)
     INT nmax  = g_ws->nmax;
     INT mnmax = g_ws->mnmax;
     INT kmax  = g_ws->kmax;
+    INT nrhsmax = 0;
+    for (size_t i = 0; i < NPARMS; i++) {
+        if (NSVAL[i] > nrhsmax) nrhsmax = NSVAL[i];
+    }
 
     g_ws->lda = (mmax > nmax) ? mmax : nmax;
     if (g_ws->lda < 1) g_ws->lda = 1;
@@ -143,8 +151,8 @@ static int group_setup(void** state)
     g_ws->BE   = malloc((size_t)mnmax * sizeof(f64));
     g_ws->Q    = malloc((size_t)mmax * mmax * sizeof(f64));
     g_ws->P    = malloc((size_t)nmax * nmax * sizeof(f64));
-    g_ws->C    = malloc((size_t)lda * NRHS * sizeof(f64));
-    g_ws->CC   = malloc((size_t)lda * NRHS * sizeof(f64));
+    g_ws->C    = malloc((size_t)lda * nrhsmax * sizeof(f64));
+    g_ws->CC   = malloc((size_t)lda * nrhsmax * sizeof(f64));
 
     /* Workspace: max(lda+1, nmax+1) * nmax, plus room for generators */
     g_ws->lwork = ((lda > nmax ? lda : nmax) + 1) * nmax;
@@ -194,6 +202,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     const INT k = KK[params->jwidth];
     const INT jtype = params->jtype;
     const INT jt = jtype - 1;
+    const INT nrhs = NSVAL[params->iparm];
 
     /* Skip if k >= m AND k >= n */
     if (k >= m && k >= n)
@@ -309,9 +318,9 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     /* Generate Right-Hand Side */
     {
         INT idumma[1] = {0};
-        dlatmr(m, NRHS, "S", "N", work, 6, 1.0, 1.0,
+        dlatmr(m, nrhs, "S", "N", work, 6, 1.0, 1.0,
                "T", "N", work + m, 1, 1.0,
-               work + 2 * m, 1, 1.0, "N", idumma, m, NRHS,
+               work + 2 * m, 1, 1.0, "N", idumma, m, nrhs,
                0.0, 1.0, "NO", C, ldc, iwork, &iinfo, rng);
     }
 
@@ -339,13 +348,13 @@ static void run_dchkbb_single(dchkbb_params_t* params)
     }
 
     /* Copy C */
-    dlacpy("Full", m, NRHS, C, ldc, CC, ldc);
+    dlacpy("Full", m, nrhs, C, ldc, CC, ldc);
 
     /* ----------------------------------------------------------- */
     /* Call DGBBRD                                                 */
     /* ----------------------------------------------------------- */
 
-    dgbbrd("B", m, n, NRHS, kl, ku, AB, ldab, BD, BE,
+    dgbbrd("B", m, n, nrhs, kl, ku, AB, ldab, BD, BE,
            Q, ldq, P, ldp, CC, ldc, work, &iinfo);
 
     if (iinfo != 0) {
@@ -375,7 +384,7 @@ static void run_dchkbb_single(dchkbb_params_t* params)
            work, &result[0]);
     dort01("Columns", m, m, Q, ldq, work, lwork, &result[1]);
     dort01("Rows", n, n, P, ldp, work, lwork, &result[2]);
-    dbdt02(m, NRHS, C, ldc, CC, ldc, Q, ldq, work, &result[3]);
+    dbdt02(m, nrhs, C, ldc, CC, ldc, Q, ldq, work, &result[3]);
 
     ntest = 4;
 
@@ -403,7 +412,7 @@ static void test_dchkbb_case(void** state)
 /* Build test array                                                      */
 /* ===================================================================== */
 
-#define MAX_TESTS (NSIZES * NWDTHS * MAXTYP)
+#define MAX_TESTS (NPARMS * NSIZES * NWDTHS * MAXTYP)
 
 static dchkbb_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -413,28 +422,31 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t is = 0; is < NSIZES; is++) {
-        INT m = MVAL[is];
-        INT n = NVAL[is];
-        for (size_t iw = 0; iw < NWDTHS; iw++) {
-            INT kval = KK[iw];
-            if (kval >= m && kval >= n)
-                continue;
-            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-                dchkbb_params_t* p = &g_params[g_num_tests];
-                p->jsize = (INT)is;
-                p->jwidth = (INT)iw;
-                p->jtype = jtype;
-                snprintf(p->name, sizeof(p->name),
-                         "dchkbb_m%d_n%d_k%d_type%d", m, n, kval, jtype);
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t is = 0; is < NSIZES; is++) {
+            INT m = MVAL[is];
+            INT n = NVAL[is];
+            for (size_t iw = 0; iw < NWDTHS; iw++) {
+                INT kval = KK[iw];
+                if (kval >= m && kval >= n)
+                    continue;
+                for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                    dchkbb_params_t* p = &g_params[g_num_tests];
+                    p->jsize = (INT)is;
+                    p->jwidth = (INT)iw;
+                    p->jtype = jtype;
+                p->iparm = (INT)ip;
+                    snprintf(p->name, sizeof(p->name),
+                             "dchkbb_p%d_m%d_n%d_k%d_type%d", (int)ip, m, n, kval, jtype);
 
-                g_tests[g_num_tests].name = p->name;
-                g_tests[g_num_tests].test_func = test_dchkbb_case;
-                g_tests[g_num_tests].setup_func = NULL;
-                g_tests[g_num_tests].teardown_func = NULL;
-                g_tests[g_num_tests].initial_state = p;
+                    g_tests[g_num_tests].name = p->name;
+                    g_tests[g_num_tests].test_func = test_dchkbb_case;
+                    g_tests[g_num_tests].setup_func = NULL;
+                    g_tests[g_num_tests].teardown_func = NULL;
+                    g_tests[g_num_tests].initial_state = p;
 
-                g_num_tests++;
+                    g_num_tests++;
+                }
             }
         }
     }

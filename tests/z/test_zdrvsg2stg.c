@@ -13,15 +13,25 @@
 #include <string.h>
 #include <complex.h>
 
-#define THRESH 50.0
+#define THRESH 20.0
 #define MAXTYP 21
+/* NMAX of ZCHKEE, which sizes the WORK, RWORK and IWORK it passes to
+ * ZDRVSG2STG; its LWORK serves as both NWORK and LRWORK */
+#define CHKEE_NMAX 132
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 20};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NBVAL, NBMIN, NXVAL from dsg.in */
+static const INT NBVAL[] = {1, 3, 20};
+static const INT NBMIN[] = {2, 2, 2};
+static const INT NXVAL[] = {1, 1, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 typedef struct {
     INT n;
     INT jtype;
+    INT iparm;
     char name[96];
 } zdrvsg2stg_params_t;
 
@@ -77,45 +87,9 @@ static int group_setup(void** state)
     INT nmax = g_ws->nmax;
     INT n2 = nmax * nmax;
 
-    /* Workspace sizes from zdrvsg2stg.f:
-     * NWORK  >= 2*MAX(NMAX,2)^2  (complex workspace)
-     * LRWORK >= 2*MAX(NMAX,2)^2  (real workspace)
-     * LIWORK >= 2*MAX(NMAX,2)^2
-     *
-     * Actual requirements from ZHEGVD:
-     *   LWORK  >= 2*N + N^2
-     *   LRWORK >= 1 + 5*N + 2*N*lg(N) + 3*N^2
-     *   LIWORK >= 3 + 5*N
-     * where lg(N) = smallest integer k such that 2^k >= N. */
-    INT lgn = 0;
-    if (nmax > 0) {
-        lgn = (INT)(log((f64)nmax) / log(2.0));
-        if ((1 << lgn) < nmax) lgn++;
-        if ((1 << lgn) < nmax) lgn++;
-    }
-
-    INT nwork1 = 2 * n2;
-    INT nwork2 = 2 * nmax + n2;
-    g_ws->nwork = (nwork1 > nwork2) ? nwork1 : nwork2;
-    if (g_ws->nwork < 18) g_ws->nwork = 18;
-
-    g_ws->lrwork = 1 + 5 * nmax + 2 * nmax * lgn + 3 * n2;
-    if (g_ws->lrwork < 2 * n2) g_ws->lrwork = 2 * n2;
-    if (g_ws->lrwork < 18) g_ws->lrwork = 18;
-
-    g_ws->liwork = 6 * nmax + 6 + 5 * nmax * lgn;
-    if (g_ws->liwork < 2 * n2) g_ws->liwork = 2 * n2;
-    if (g_ws->liwork < 18) g_ws->liwork = 18;
-
-    /* ZHEGV_2STAGE workspace: lwmin = n + lhtrd + lwtrd where
-     * lhtrd = 4*n (JOBZ='N'), lwtrd = n*kd + n*max(kd+1,nb) + 2*kd^2 + (kd+1)*n
-     * with kd=16, nb=32 (iparam2stage, single-threaded complex): ~70*n + 512 */
-    {
-        INT nwork_2stg = 70 * nmax + 512;
-        if (nwork_2stg > g_ws->nwork) {
-            g_ws->nwork = nwork_2stg;
-        }
-    }
+    g_ws->nwork = CHKEE_NMAX * (5 * CHKEE_NMAX + 20);
+    g_ws->lrwork = g_ws->nwork;
+    g_ws->liwork = CHKEE_NMAX * (CHKEE_NMAX + 20);
 
     g_ws->A  = malloc(n2 * sizeof(c128));
     g_ws->B  = malloc(n2 * sizeof(c128));
@@ -322,6 +296,9 @@ static void run_zdrvsg2stg_single(zdrvsg2stg_params_t* params)
 
     INT n = params->n;
     INT jtype = params->jtype;
+    xlaenv(1, NBVAL[params->iparm]);
+    xlaenv(2, NBMIN[params->iparm]);
+    xlaenv(3, NXVAL[params->iparm]);
 
     zdrvsg2stg_workspace_t* ws = g_ws;
     INT nmax = ws->nmax;
@@ -832,7 +809,7 @@ static void test_zdrvsg2stg_case(void** state)
     run_zdrvsg2stg_single(params);
 }
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
 
 static zdrvsg2stg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -842,23 +819,26 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t in = 0; in < NNVAL; in++) {
-        INT n = NVAL[in];
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (size_t in = 0; in < NNVAL; in++) {
+            INT n = NVAL[in];
 
-        for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
-            zdrvsg2stg_params_t* p = &g_params[g_num_tests];
-            p->n = n;
-            p->jtype = jtype;
-            snprintf(p->name, sizeof(p->name),
-                     "zdrvsg2stg_n%d_type%d", n, jtype);
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                zdrvsg2stg_params_t* p = &g_params[g_num_tests];
+                p->n = n;
+                p->jtype = jtype;
+                p->iparm = (INT)ip;
+                snprintf(p->name, sizeof(p->name),
+                         "zdrvsg2stg_p%d_n%d_type%d", (int)ip, n, jtype);
 
-            g_tests[g_num_tests].name = p->name;
-            g_tests[g_num_tests].test_func = test_zdrvsg2stg_case;
-            g_tests[g_num_tests].setup_func = NULL;
-            g_tests[g_num_tests].teardown_func = NULL;
-            g_tests[g_num_tests].initial_state = p;
+                g_tests[g_num_tests].name = p->name;
+                g_tests[g_num_tests].test_func = test_zdrvsg2stg_case;
+                g_tests[g_num_tests].setup_func = NULL;
+                g_tests[g_num_tests].teardown_func = NULL;
+                g_tests[g_num_tests].initial_state = p;
 
-            g_num_tests++;
+                g_num_tests++;
+            }
         }
     }
 }

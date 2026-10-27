@@ -143,6 +143,7 @@ testutils_s_sources = files(
   'sget22.c',
   'sget10.c',
   'sget23.c',
+  'spair_eigs.c',
   'sget24.c',
 
   # Generalized eigenvalue verification

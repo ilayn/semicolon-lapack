@@ -21,7 +21,7 @@
  *   M values: 0, 1, 2, 3, 5, 10, 50
  *   N values: 0, 1, 2, 3, 5, 10, 50
  *   NRHS values: 1, 2, 15
- *   NB values: 1, 3, 3, 3, 20 (unique: 1, 3, 20)
+ *   NB values: 1, 3, 20 (dtest.in NB values without duplicates)
  *   Matrix types: 1-11
  *   THRESH: 30.0
  */
@@ -35,7 +35,7 @@
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NBVAL[] = {1, 3, 20};  /* dtest.in NB values without duplicates */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
@@ -180,6 +180,7 @@ static void run_dchkge_single(INT m, INT n, INT imat, INT inb)
     /* Set block size for this test via xlaenv (mirrors LAPACK's XLAENV call) */
     INT nb = NBVAL[inb];
     xlaenv(1, nb);
+    xlaenv(2, 2);
 
     /* Seed based on (m, n, imat) for reproducibility.
      * Note: seed does NOT include inb so we test the same matrix with different NB */
@@ -380,7 +381,7 @@ static void test_dchkge_case(void** state)
 
 /*
  * Generate all parameter combinations.
- * Total: NM * NN * NTYPES * NNB = 7 * 7 * 11 * 5 = 2695 tests (with unique NB)
+ * Total: NM * NN * NTYPES * NNB = 7 * 7 * 11 * 3 = 1617 tests (with unique NB)
  * However, NBVAL has duplicates {1, 3, 3, 3, 20}, so effective unique values are {1, 3, 20}.
  * We test all 5 entries as LAPACK does, even with duplicates.
  * (minus skipped cases for small m,n and singular types)

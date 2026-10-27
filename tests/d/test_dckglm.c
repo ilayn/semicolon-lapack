@@ -21,7 +21,7 @@
 #include <string.h>
 
 /* Test threshold from LAPACK dckglm.f */
-#define THRESH 30.0
+#define THRESH 20.0
 
 /* Number of matrix types */
 #define NTYPES 8
@@ -173,7 +173,7 @@ static void test_dckglm_case(void** state)
            g_ws->D, g_ws->DF, g_ws->X, g_ws->U,
            g_ws->work, lwork, g_ws->rwork, &resid);
 
-    assert_residual_ok(resid);
+    assert_residual_below(resid, THRESH);
 }
 
 /* Parameterized test arrays */
@@ -215,6 +215,9 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
+
+    /* Block size as DCHKEE sets it for the GLM path */
+    xlaenv(1, 1);
 
     (void)_cmocka_run_group_tests("dckglm", g_tests, g_num_tests,
                                    group_setup, group_teardown);

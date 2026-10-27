@@ -5,68 +5,8 @@
  */
 
 #include "semicolon_lapack_single.h"
+#include "lapack_tuning.h"
 #include <math.h>
-
-/** @cond */
-
-/* ISPEC=12: NMIN - crossover to SLAHQR (must be at least 11) */
-static INT iparmq_nmin(void)
-{
-    return 75;
-}
-
-/* ISPEC=15: number of simultaneous shifts */
-static INT iparmq_nshfts(INT nh)
-{
-    INT ns = 2;
-    if (nh >= 30) ns = 4;
-    if (nh >= 60) ns = 10;
-    if (nh >= 150) {
-        /* ns = max(10, nh / nint(log(nh)/log(2))) */
-        f32 lognh = logf((f32)nh) / logf(2.0f);
-        INT div = (INT)(lognh + 0.5f);  /* nint */
-        if (div < 1) div = 1;
-        ns = nh / div;
-        if (ns < 10) ns = 10;
-    }
-    if (nh >= 590) ns = 64;
-    if (nh >= 3000) ns = 128;
-    if (nh >= 6000) ns = 256;
-    /* Make even and at least 2 */
-    ns = ns - (ns % 2);
-    if (ns < 2) ns = 2;
-    return ns;
-}
-
-/* ISPEC=13: deflation window size */
-static INT iparmq_nwr(INT nh)
-{
-    INT ns = iparmq_nshfts(nh);
-    if (nh <= 500) {
-        return ns;
-    } else {
-        return 3 * ns / 2;
-    }
-}
-
-/* ISPEC=14: nibble crossover point */
-static INT iparmq_nibble(void)
-{
-    return 14;
-}
-
-/* ISPEC=16: accumulation mode (0, 1, or 2) */
-static INT iparmq_kacc22(INT ns)
-{
-    /* For SLAQR4: use NS-based threshold */
-    const INT kacmin = 14;
-    const INT k22min = 14;
-    INT kacc = 0;
-    if (ns >= kacmin) kacc = 1;
-    if (ns >= k22min) kacc = 2;
-    return kacc;
-}
-/** @endcond */
 
 /**
  * SLAQR4 implements one level of recursion for SLAQR0.
@@ -173,13 +113,16 @@ SEMICOLON_API void slaqr4(const INT wantt, const INT wantz, const INT n,
         nh = ihi - ilo + 1;
 
         /* NWR = recommended deflation window size */
-        nwr = iparmq_nwr(nh);
+        /* Set up job flags for ILAENV. */
+        const char jbcmpz[3] = {wantt ? 'S' : 'E', wantz ? 'V' : 'N', '\0'};
+
+        nwr = lapack_get_iparmq(13, "SLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nwr < 2) nwr = 2;
         if (nwr > (n - 1) / 3) nwr = (n - 1) / 3;
         if (nwr > ihi - ilo + 1) nwr = ihi - ilo + 1;
 
         /* NSR = recommended number of simultaneous shifts */
-        nsr = iparmq_nshfts(nh);
+        nsr = lapack_get_iparmq(15, "SLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nsr > (n - 3) / 6) nsr = (n - 3) / 6;
         if (nsr > ihi - ilo) nsr = ihi - ilo;
         nsr = nsr - (nsr % 2);
@@ -202,15 +145,15 @@ SEMICOLON_API void slaqr4(const INT wantt, const INT wantz, const INT n,
         }
 
         /* NMIN = SLAHQR/SLAQR0 crossover point */
-        nmin = iparmq_nmin();
+        nmin = lapack_get_iparmq(12, "SLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nmin < ntiny) nmin = ntiny;
 
         /* NIBBLE crossover point */
-        nibble = iparmq_nibble();
+        nibble = lapack_get_iparmq(14, "SLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (nibble < 0) nibble = 0;
 
         /* KACC22 = accumulate reflections? Use block 2-by-2 structure? */
-        kacc22 = iparmq_kacc22(nsr);
+        kacc22 = lapack_get_iparmq(16, "SLAQR4", jbcmpz, n, ilo + 1, ihi + 1, lwork);
         if (kacc22 < 0) kacc22 = 0;
         if (kacc22 > 2) kacc22 = 2;
 

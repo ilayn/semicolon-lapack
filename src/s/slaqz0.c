@@ -6,6 +6,7 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 #include "semicolon_lapack_single.h"
+#include "lapack_tuning.h"
 
 /**
  * SLAQZ0 computes the eigenvalues of a real matrix pair (H,T),
@@ -148,8 +149,8 @@ void slaqz0(
     jbcmpz[2] = wantz[0];
     jbcmpz[3] = '\0';
 
-    nmin = iparmq(12, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
-    nwr = iparmq(13, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nmin = lapack_get_iparmq(12, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nwr = lapack_get_iparmq(13, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     nwr = (2 > nwr) ? 2 : nwr;
     {
         INT tmp = ihi - ilo + 1;
@@ -158,9 +159,9 @@ void slaqz0(
         nwr = (nwr < tmp) ? nwr : tmp;
     }
 
-    nibble = iparmq(14, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nibble = lapack_get_iparmq(14, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
 
-    nsr = iparmq(15, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    nsr = lapack_get_iparmq(15, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     {
         INT tmp = (n + 6) / 9;
         INT tmp2 = ihi - ilo;
@@ -169,7 +170,7 @@ void slaqz0(
     }
     nsr = (2 > nsr - (nsr % 2)) ? 2 : nsr - (nsr % 2);
 
-    rcost = iparmq(17, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
+    rcost = lapack_get_iparmq(17, "SLAQZ0", jbcmpz, n, ilo + 1, ihi + 1, lwork);
     itemp1 = (INT)(nsr / sqrtf(1.0f + 2.0f * nsr / ((f32)rcost / 100.0f * n)));
     itemp1 = ((itemp1 - 1) / 4) * 4 + 4;
     nbr = nsr + itemp1;

@@ -27,7 +27,7 @@
 /* Test parameters from dtest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NBVAL[] = {1, 3, 20};  /* dtest.in NB values without duplicates */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))

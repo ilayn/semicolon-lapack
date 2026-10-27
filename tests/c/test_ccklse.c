@@ -213,6 +213,9 @@ int main(void)
 {
     build_test_array();
 
+    /* Block size as ZCHKEE sets it for the LSE path */
+    xlaenv(1, 1);
+
     (void)_cmocka_run_group_tests("ccklse", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;

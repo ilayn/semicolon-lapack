@@ -15,7 +15,7 @@
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};
-static const INT NBVAL[] = {1, 3, 3, 3, 20};
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
@@ -122,6 +122,7 @@ static void run_zchkge_single(INT m, INT n, INT imat, INT inb)
 
     INT nb = NBVAL[inb];
     xlaenv(1, nb);
+    xlaenv(2, 2);
 
     uint64_t rng_state[4];
     rng_seed(rng_state, 1988198919901991ULL + (uint64_t)(m * 1000 + n * 100 + imat));

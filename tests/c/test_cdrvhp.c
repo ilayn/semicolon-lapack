@@ -419,6 +419,11 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
+
+    /* Set the block size and minimum block size for testing. */
+    xlaenv(1, 1);
+    xlaenv(2, 2);
+
     (void)_cmocka_run_group_tests("cdrvhp", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;

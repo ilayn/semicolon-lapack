@@ -16,11 +16,9 @@
  *   TEST 6: |D*Q' - D*Q'| / (eps * M * |D|)
  *
  * Parameters:
- *   M values: 5, 10, 16, 50
- *   N values: 2, 5, 10, 16
- *   MB1 values (must be > N): 16, 32, 64
- *   NB1 values: 1, 2, 5, 10
- *   NB2 values: 1, 2, 5, 10
+ *   M values: 0, 1, 2, 3, 5, 10, 50
+ *   N values: 0, 1, 2, 3, 5, 10, 50
+ *   MB1, NB1, NB2 values: 1, 3, 3, 3, 20 (MB1 > N only)
  *   THRESH: 30.0
  */
 
@@ -29,9 +27,9 @@
 #include <string.h>
 #include <stdio.h>
 
-static const INT MVAL[] = {5, 10, 16, 50};
-static const INT NVAL[] = {2, 5, 10, 16};
-static const INT NBVAL[] = {1, 2, 5, 10, 16, 32, 64};
+static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
+static const INT NBVAL[] = {1, 3, 3, 3, 20};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -134,8 +132,8 @@ static void build_test_array(void)
                             p->nb2 = nb2;
                             p->variant = variant;
                             snprintf(p->name, sizeof(p->name),
-                                     "schkorhr_col%d_m%d_n%d_mb1_%d_nb1_%d_nb2_%d",
-                                     variant, m, n, mb1, nb1, nb2);
+                                     "schkorhr_col%d_m%d_n%d_mb1_%d_nb1_%d_nb2_%d_%d%d%d",
+                                     variant, m, n, mb1, nb1, nb2, imb1, inb1, inb2);
 
                             g_tests[g_num_tests].name = p->name;
                             g_tests[g_num_tests].test_func = test_dchkorhr_col_case;

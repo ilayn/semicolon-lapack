@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include "semicolon_lapack_double.h"
+#include "lapack_tuning.h"
 
 /**
  * DLARRD computes the eigenvalues of a symmetric tridiagonal
@@ -162,9 +163,8 @@ void dlarrd(const char* range, const char* order, const INT n,
     }
 
     /* NB is the minimum vector length for vector bisection, or 0
-     * if only scalar is to be done.
-     * NB = ILAENV(1, 'DSTEBZ', ' ', N, -1, -1, -1) => default NB=1 */
-    nb = 1;
+     * if only scalar is to be done. */
+    nb = lapack_get_nb("STEBZ");
     if (nb <= 1) nb = 0;
 
     /* Find global spectral radius */

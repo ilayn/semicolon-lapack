@@ -385,40 +385,26 @@ static void test_partial_range(void** state)
 
 int main(void)
 {
-    const struct CMUnitTest tests_n5[] = {
+    const struct CMUnitTest tests[] = {
         cmocka_unit_test_setup_teardown(test_zero_matrix, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_identity_matrix, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_jordan_block, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_diagonal_arithmetic, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_random_general, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_workspace_query, setup_5, teardown),
-    };
-
-    const struct CMUnitTest tests_n10[] = {
         cmocka_unit_test_setup_teardown(test_zero_matrix, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_identity_matrix, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_jordan_block, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_diagonal_geometric, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_random_general, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_partial_range, setup_10, teardown),
-    };
-
-    const struct CMUnitTest tests_n20[] = {
         cmocka_unit_test_setup_teardown(test_identity_matrix, setup_20, teardown),
         cmocka_unit_test_setup_teardown(test_diagonal_clustered, setup_20, teardown),
         cmocka_unit_test_setup_teardown(test_random_general, setup_20, teardown),
-    };
-
-    const struct CMUnitTest tests_n32[] = {
         cmocka_unit_test_setup_teardown(test_random_general, setup_32, teardown),
         cmocka_unit_test_setup_teardown(test_partial_range, setup_32, teardown),
     };
 
-    INT result = 0;
-    result += cmocka_run_group_tests_name("dgehrd_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgehrd_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgehrd_n20", tests_n20, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgehrd_n32", tests_n32, NULL, NULL);
-
-    return result;
+    (void)cmocka_run_group_tests_name("dgehrd", tests, NULL, NULL);
+    return 0;
 }

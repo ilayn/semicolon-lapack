@@ -164,7 +164,7 @@ static int group_setup(void** state)
         return -1;
     }
 
-    rng_seed(g_ws->rng_state, 0xDEADBEEFULL);
+    rng_seed(g_ws->rng_state, 0x64D815DEEAF29DF3ULL);
     return 0;
 }
 
@@ -578,6 +578,16 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
+
+    /* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS and IACC22 from zed.in */
+    xlaenv(1, 3);
+    xlaenv(2, 3);
+    xlaenv(3, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 4);
+    xlaenv(14, 8);
+    xlaenv(15, 2);
+    xlaenv(16, 0);
 
     (void)_cmocka_run_group_tests("cdrvvx", g_tests, g_num_tests,
                                    group_setup, group_teardown);

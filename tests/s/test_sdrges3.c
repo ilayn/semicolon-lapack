@@ -42,13 +42,13 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 20.0f
+#define THRESH 10.0f
 #define MAXTYP 26
 
 /* Test dimensions from dgg.in */
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 6, 10, 12, 16, 20};
 #define NSIZES ((int)(sizeof(NVAL) / sizeof(NVAL[0])))
-#define NMAX 16   /* max(NVAL) */
+#define NMAX 20   /* max(NVAL) */
 
 /* External declarations */
 /**
@@ -520,7 +520,7 @@ check_results:
 
 int main(void)
 {
-    /* Total: NSIZES * MAXTYP test cases (7 * 26 = 182) */
+    /* Total: NSIZES * MAXTYP test cases (10 * 26 = 260) */
     static ddrges3_params_t all_params[NSIZES * MAXTYP];
     static struct CMUnitTest all_tests[NSIZES * MAXTYP];
     INT idx = 0;
@@ -542,6 +542,13 @@ int main(void)
         }
     }
 
+    /* NB, NBMIN, NX, NS and MAXB from dgd.in; DCHKEE sets ISPEC 16 to 2 before DDRGES3 */
+    xlaenv(1, 1);
+    xlaenv(2, 1);
+    xlaenv(3, 1);
+    xlaenv(4, 2);
+    xlaenv(8, 1);
+    xlaenv(16, 2);
     (void)cmocka_run_group_tests_name("sdrges3", all_tests, group_setup,
                                        group_teardown);
     return 0;

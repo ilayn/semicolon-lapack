@@ -784,6 +784,9 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
             f64* scale, f64* scale1, f64* result,
             f64* work, const INT lwork, INT* iwork, INT* info);
 
+void dpair_eigs(const INT n, const f64* wr, const f64* wi,
+                const f64* wr1, const f64* wi1, INT* perm);
+
 /* DGEESX verification */
 void dget24(const INT comp, const INT jtype, const f64 thresh,
             const INT n, f64* A, const INT lda,

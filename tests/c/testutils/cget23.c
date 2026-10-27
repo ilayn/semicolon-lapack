@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <stdlib.h>
 #include "semicolon_cblas.h"
 #include "verify.h"
 /**
@@ -51,7 +52,7 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
     INT i, j, jj, kmin;
     INT ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
     f32 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
-    f32 ulp, ulpinv, v, vmax, vmx, vricmp, vrimin, vrmx, vtst;
+    f32 ulp, ulpinv, v, vmax, vmx, vricmp, vrimin, vrmx, vtst, wdif, wnrm;
     const char* sens[2] = {"N", "V"};
     f32 res[2];
     c64 cdum[1];
@@ -95,6 +96,8 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
     if (n == 0)
         return;
 
+    INT* perm = malloc(n * sizeof(INT));
+
     /* More Important constants */
     ulp = slamch("P");
     smlnum = slamch("S");
@@ -117,6 +120,7 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
     if (iinfo != 0) {
         result[0] = ulpinv;
         *info = (iinfo < 0) ? -iinfo : iinfo;
+        free(perm);
         return;
     }
 
@@ -181,10 +185,21 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) */
+        /*
+         * The runs with and without eigenvectors can return the eigenvalues
+         * in a different order, so W1 is paired with W by closest match
+         * instead of by index.
+         */
+        cpair_eigs(n, W, W1, perm);
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (crealf(W[j]) != crealf(W1[j]) || cimagf(W[j]) != cimagf(W1[j]))
-                result[4] = ulpinv;
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
+        result[4] = fmaxf(result[4],
+                         wdif / fmaxf(smlnum, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Do Test (8) */
         if (!nobal) {
@@ -220,10 +235,16 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) again */
+        cpair_eigs(n, W, W1, perm);
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (crealf(W[j]) != crealf(W1[j]) || cimagf(W[j]) != cimagf(W1[j]))
-                result[4] = ulpinv;
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
+        result[4] = fmaxf(result[4],
+                         wdif / fmaxf(smlnum, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Do Test (6) */
         for (j = 0; j < n; j++) {
@@ -268,10 +289,16 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) again */
+        cpair_eigs(n, W, W1, perm);
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (crealf(W[j]) != crealf(W1[j]) || cimagf(W[j]) != cimagf(W1[j]))
-                result[4] = ulpinv;
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
+        result[4] = fmaxf(result[4],
+                         wdif / fmaxf(smlnum, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Do Test (7) */
         for (j = 0; j < n; j++) {
@@ -417,4 +444,5 @@ label_190:
 label_250:
         ;
     }
+    free(perm);
 }

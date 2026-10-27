@@ -16,7 +16,7 @@
  * Parameters from dtest.in:
  *   M values: 0, 1, 2, 3, 5, 10, 50
  *   N values: 0, 1, 2, 3, 5, 10, 50
- *   NRHS values: 1, 2, 4
+ *   NRHS values: 1, 2, 15
  *   NB values: 1, 3, 3, 3, 20
  *   Matrix types: 1-19
  *   THRESH: 30.0
@@ -30,7 +30,7 @@
 /* Test parameters from dtest.in */
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
-static const INT NSVAL[] = {1, 2, 4};
+static const INT NSVAL[] = {1, 2, 15};
 static const INT NBVAL[] = {1, 3, 3, 3, 20};
 static const INT NXVAL[] = {1, 0, 5, 9, 1};
 
@@ -42,7 +42,7 @@ static const INT NXVAL[] = {1, 0, 5, 9, 1};
 #define NTESTS  5
 #define THRESH  30.0f
 #define NMAX    50
-#define NSMAX   4
+#define NSMAX   15
 #define BIGNUM  1.0e+38f
 
 /* Routine under test */

@@ -14,7 +14,7 @@
 #include "test_harness.h"
 #include "verify.h"
 
-#define THRESH 30.0
+#define THRESH 20.0
 
 /* ------------------------------------------------------------------ */
 /*  ZTRSYL — Sylvester equation solver                                */
@@ -117,6 +117,13 @@ int main(void)
         cmocka_unit_test(test_zget37_ztrsna),
         cmocka_unit_test(test_zget38_ztrsen),
     };
+    /* Threshold from zec.in; ISPECs 1 and 12-16 as DCHKEE sets them for DEC */
+    xlaenv(1, 1);
+    xlaenv(12, 11);
+    xlaenv(13, 2);
+    xlaenv(14, 0);
+    xlaenv(15, 2);
+    xlaenv(16, 2);
     (void)cmocka_run_group_tests_name("zchkec", tests, NULL, NULL);
     return 0;
 }

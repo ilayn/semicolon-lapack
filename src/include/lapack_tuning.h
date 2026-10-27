@@ -32,21 +32,22 @@
  *   ISPEC=2:  NBMIN   - Minimum block size for blocking to be used
  *   ISPEC=3:  NX      - Crossover point (use unblocked if N < NX)
  *   ISPEC=4:  6       - Number of shifts for xHSEQR (DEPRECATED, handled by IPARMQ)
- *   ISPEC=5:  2       - Minimum column dimension (not used)
+ *   ISPEC=5:  2       - Minimum column dimension (xTGSYL), lapack_get_nbcol()
  *   ISPEC=6:  MNTHR   - SVD crossover point = mnthr_mult * min(M,N)
  *   ISPEC=7:  1       - Number of processors (not used)
  *   ISPEC=8:  50      - Crossover point for multishift QR (DEPRECATED, handled by IPARMQ)
  *   ISPEC=9:  SMLSIZ  - Max size of D&C subproblems (LAPACK_SMLSIZ below)
  *   ISPEC=10: 1       - IEEE NaN arithmetic can be trusted (assumed yes)
  *   ISPEC=11: 1       - IEEE infinity arithmetic can be trusted (assumed yes)
- *   ISPEC=12..17:      Handled by iparmq()
- *   ISPEC=17..21:      Handled by iparam2stage()
+ *   ISPEC=12..17:      Handled by iparmq(), through lapack_get_iparmq()
+ *   ISPEC=17..21:      Handled by iparam2stage(), through lapack_get_iparam2stage()
  */
 
 #ifndef LAPACK_TUNING_H
 #define LAPACK_TUNING_H
 
 #include <stddef.h>  /* for NULL */
+#include <stdint.h>
 
 /*
  * ISPEC=9: Maximum size of the subproblems at the bottom of the
@@ -96,6 +97,24 @@ int lapack_get_gelq_nb(int m, int n);
  */
 int lapack_get_trsyl_nb(int n1, int n2, int is_complex);
 
+/*
+ * ISPEC=5, the minimum column dimension, read by xTGSYL as its column block
+ * size. ilaenv.f returns 2 for every routine.
+ */
+int lapack_get_nbcol(const char* routine);
+
+/*
+ * ISPEC=12..17 where the Fortran calls ILAENV for xHSEQR, xLAQR0, xLAQR3,
+ * xLAQR4, xGGHD3 and xLAQZ0, and ISPEC=17..21 where ILAENV2STAGE calls
+ * IPARAM2STAGE. The production versions return iparmq() and iparam2stage().
+ * The test versions return the xlaenv value when one is set, as LAPACK's
+ * TESTING/EIG/ilaenv.f does: ISPEC=12..16 from XLAENV and ISPEC=17 = NB.
+ */
+int lapack_get_iparmq(int ispec, const char* name, const char* opts,
+                      int64_t n, int64_t ilo, int64_t ihi, int64_t lwork);
+int lapack_get_iparam2stage(int ispec, const char* name, const char* opts,
+                            int64_t ni, int64_t nbi, int64_t ibi, int64_t nxi);
+
 #ifdef LAPACK_TUNING_TEST
 /*
  * Test-only functions (equivalent to LAPACK's XLAENV)
@@ -113,7 +132,10 @@ void xlaenv_reset(void);
  * Implementation section - include in exactly ONE .c file
  * =============================================================================
  */
-#ifdef LAPACK_TUNING_IMPLEMENTATION
+#if defined(LAPACK_TUNING_IMPLEMENTATION) && !defined(LAPACK_TUNING_IMPLEMENTATION_INCLUDED)
+#define LAPACK_TUNING_IMPLEMENTATION_INCLUDED
+
+#include "semicolon_lapack_auxiliary.h"
 
 /*
  * Tuning table - values based on LAPACK's ilaenv defaults
@@ -211,27 +233,62 @@ static const lapack_tuning_t* lapack_tuning_lookup(const char* routine)
  *   IPARMS[1] = NBMIN   (ISPEC=2)
  *   IPARMS[2] = NX      (ISPEC=3)
  *   IPARMS[3] = unused  (ISPEC=4, number of shifts for xHSEQR)
- *   IPARMS[4] = unused  (ISPEC=5)
+ *   IPARMS[4] = NBCOL   (ISPEC=5, minimum column dimension, read by xTGSYL)
  *   IPARMS[5] = MNTHR override (ISPEC=6, if >= 0 use this instead of mult*min(m,n))
  *   ... up to IPARMS[8] for ISPEC=1..9
+ *   IPARMS[11..15] = ISPEC=12..16 for lapack_get_iparmq (INMIN, INWIN,
+ *                    INIBL, ISHFTS, IACC22)
  *
  * If IPARMS[i] < 0 (the initial state, restored by xlaenv_reset), fall back
  * to table lookup, so a test can set any value from 0 up, including NX = 0.
+ * A negative value given to xlaenv restores the table value of that ISPEC.
  */
-static int iparms[9] = {-1, -1, -1, -1, -1, -1, -1, -1, -1};
+#define LAPACK_TUNING_NPARMS 16
+static int iparms[LAPACK_TUNING_NPARMS] = {
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
 void xlaenv(int ispec, int nvalue)
 {
-    if (ispec >= 1 && ispec <= 9) {
+    if (ispec >= 1 && ispec <= LAPACK_TUNING_NPARMS) {
         iparms[ispec - 1] = nvalue;
     }
 }
 
 void xlaenv_reset(void)
 {
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < LAPACK_TUNING_NPARMS; i++) {
         iparms[i] = -1;
     }
+}
+
+int lapack_get_nbcol(const char* routine)
+{
+    (void)routine;
+    if (iparms[4] >= 0) {
+        return iparms[4];
+    }
+    return 2;
+}
+
+int lapack_get_iparmq(int ispec, const char* name, const char* opts,
+                      int64_t n, int64_t ilo, int64_t ihi, int64_t lwork)
+{
+    if (ispec >= 12 && ispec <= 16 && iparms[ispec - 1] >= 0) {
+        return iparms[ispec - 1];
+    }
+    if (ispec == 17 && iparms[0] >= 0) {
+        return iparms[0];
+    }
+    return (int)iparmq(ispec, name, opts, (INT)n, (INT)ilo, (INT)ihi, (INT)lwork);
+}
+
+int lapack_get_iparam2stage(int ispec, const char* name, const char* opts,
+                            int64_t ni, int64_t nbi, int64_t ibi, int64_t nxi)
+{
+    if (ispec == 17 && iparms[0] >= 0) {
+        return iparms[0];
+    }
+    return (int)iparam2stage(ispec, name, opts, (INT)ni, (INT)nbi, (INT)ibi, (INT)nxi);
 }
 
 int lapack_get_nb(const char* routine)
@@ -422,6 +479,24 @@ LAPACK_WEAK int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
         if (nb > 240) nb = 240;
         return nb;
     }
+}
+
+LAPACK_WEAK int lapack_get_nbcol(const char* routine)
+{
+    (void)routine;
+    return 2;
+}
+
+LAPACK_WEAK int lapack_get_iparmq(int ispec, const char* name, const char* opts,
+                                  int64_t n, int64_t ilo, int64_t ihi, int64_t lwork)
+{
+    return (int)iparmq(ispec, name, opts, (INT)n, (INT)ilo, (INT)ihi, (INT)lwork);
+}
+
+LAPACK_WEAK int lapack_get_iparam2stage(int ispec, const char* name, const char* opts,
+                                        int64_t ni, int64_t nbi, int64_t ibi, int64_t nxi)
+{
+    return (int)iparam2stage(ispec, name, opts, (INT)ni, (INT)nbi, (INT)ibi, (INT)nxi);
 }
 
 #undef LAPACK_WEAK

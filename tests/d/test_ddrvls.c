@@ -344,47 +344,53 @@ static void run_fullrank_tests(INT m, INT n, INT nrhs, INT iscale, INT nb, INT n
     rng_seed(rng_state, 3988 + m * 100 + n * 10 + iscale + nb);
     dqrt13(iscale, m, n, ws->COPYA, lda, &norma, rng_state);
 
-    for (INT itran = 1; itran <= 2; itran++) {
-        const char* trans = (itran == 1) ? "N" : "T";
-        INT nrows = (itran == 1) ? m : n;
-        INT ncols = (itran == 1) ? n : m;
-        INT ldwork = (ncols > 1) ? ncols : 1;
+    /* Loop for testing different block sizes NB. */
+    for (INT imb = 0; imb < (INT)NNB; imb++) {
+        xlaenv(2, NBVAL[imb]);
 
-        if (ncols > 0) {
-            rng_seed(rng_state, 3989 + m * 100 + n * 10 + iscale + itran + nb);
-            dlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
-            cblas_dscal(ncols * nrhs, ONE / (f64)ncols, ws->WORK, 1);
-            /* Make the last solution column small
-             * enough that undoing the scaling of
-             * the solution in two steps flushes it. */
-            if (iscale == 2 && nrhs > 1) {
-                cblas_dscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+        for (INT itran = 1; itran <= 2; itran++) {
+            const char* trans = (itran == 1) ? "N" : "T";
+            INT nrows = (itran == 1) ? m : n;
+            INT ncols = (itran == 1) ? n : m;
+            INT ldwork = (ncols > 1) ? ncols : 1;
+
+            if (ncols > 0) {
+                rng_seed(rng_state, 3989 + m * 100 + n * 10 + iscale + itran + nb);
+                dlarnv_rng(2, ncols * nrhs, ws->WORK, rng_state);
+                cblas_dscal(ncols * nrhs, ONE / (f64)ncols, ws->WORK, 1);
+                /* Make the last solution column small
+                 * enough that undoing the scaling of
+                 * the solution in two steps flushes it. */
+                if (iscale == 2 && nrhs > 1) {
+                    cblas_dscal(ncols, smlx, &ws->WORK[(nrhs - 1) * ldwork], 1);
+                }
             }
-        }
-        cblas_dgemm(CblasColMajor,
-                    (itran == 1) ? CblasNoTrans : CblasTrans,
-                    CblasNoTrans,
-                    nrows, nrhs, ncols, ONE, ws->COPYA, lda,
-                    ws->WORK, ldwork, ZERO, ws->B, ldb);
-        dlacpy("F", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
+            cblas_dgemm(CblasColMajor,
+                        (itran == 1) ? CblasNoTrans : CblasTrans,
+                        CblasNoTrans,
+                        nrows, nrhs, ncols, ONE, ws->COPYA, lda,
+                        ws->WORK, ldwork, ZERO, ws->B, ldb);
+            dlacpy("F", nrows, nrhs, ws->B, ldb, ws->COPYB, ldb);
 
-        if (m > 0 && n > 0) {
-            dlacpy("F", m, n, ws->COPYA, lda, ws->A, lda);
-            dlacpy("F", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
-        }
-        dgetsls(trans, m, n, nrhs, ws->A, lda, ws->B, ldb, ws->WORK, ws->lwork, &info);
+            if (m > 0 && n > 0) {
+                dlacpy("F", m, n, ws->COPYA, lda, ws->A, lda);
+                dlacpy("F", nrows, nrhs, ws->COPYB, ldb, ws->B, ldb);
+            }
+            dgetsls(trans, m, n, nrhs, ws->A, lda, ws->B, ldb, ws->WORK, ws->lwork, &info);
 
-        if (nrows > 0 && nrhs > 0) {
-            dlacpy("F", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
-        }
-        dqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb, ws->C, ldb,
-               ws->WORK, &result[4 + itran - 1]);
+            if (nrows > 0 && nrhs > 0) {
+                dlacpy("F", nrows, nrhs, ws->COPYB, ldb, ws->C, ldb);
+            }
+            dqrt16(trans, m, n, nrhs, ws->COPYA, lda, ws->B, ldb, ws->C, ldb,
+                   ws->WORK, &result[4 + itran - 1]);
 
-        snprintf(ctx, sizeof(ctx), "DGETSLS trans=%s m=%d n=%d nrhs=%d nb=%d scale=%d",
-                 trans, m, n, nrhs, nb, iscale);
-        set_test_context(ctx);
-        assert_residual_below(result[4 + itran - 1], THRESH);
+            snprintf(ctx, sizeof(ctx), "DGETSLS trans=%s m=%d n=%d nrhs=%d mb=%d nb=%d scale=%d",
+                     trans, m, n, nrhs, nb, NBVAL[imb], iscale);
+            set_test_context(ctx);
+            assert_residual_below(result[4 + itran - 1], THRESH);
+        }
     }
+    xlaenv(2, 2);
 
     clear_test_context();
 }

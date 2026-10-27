@@ -33,8 +33,7 @@
 /* Test parameters from ztest.in */
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from ztest.in */
-static const INT NXVAL[] = {1, 0, 5, 9, 1};   /* Crossover points from ztest.in */
+static const INT NBVAL[] = {1, 3, 20};  /* ztest.in NB values without duplicates */
 static const char UPLOS[] = {'U', 'L'};
 
 #define NN      (sizeof(NVAL) / sizeof(NVAL[0]))
@@ -168,11 +167,10 @@ static void run_zchkhe_single(INT n, INT iuplo, INT imat, INT inb)
     f64 result[NTESTS];
     char ctx[128];
 
-    /* Set block size and crossover point for this test via xlaenv */
+    /* Set block size for this test via xlaenv */
     INT nb = NBVAL[inb];
-    INT nx = NXVAL[inb];
     xlaenv(1, nb);
-    xlaenv(3, nx);
+    xlaenv(2, 2);
 
     /* Seed based on (n, uplo, imat) for reproducibility */
     uint64_t rng_state[4];
@@ -485,7 +483,7 @@ static void test_zchkhe_zero_pivot(void** state)
 
 /*
  * Generate all parameter combinations.
- * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 10 * 5 = 700 tests
+ * Total: NN * NUPLO * NTYPES * NNB = 7 * 2 * 10 * 3 = 420 tests
  * (minus skipped cases for small n and singular types)
  */
 
@@ -529,8 +527,8 @@ static void build_test_array(void)
                     p->imat = imat;
                     p->iuplo = iuplo;
                     p->inb = inb;
-                    snprintf(p->name, sizeof(p->name), "zchkhe_n%d_%c_type%d_nb%d_nx%d_%d",
-                             n, UPLOS[iuplo], imat, nb, NXVAL[inb], inb);
+                    snprintf(p->name, sizeof(p->name), "zchkhe_n%d_%c_type%d_nb%d_%d",
+                             n, UPLOS[iuplo], imat, nb, inb);
 
                     /* Create CMocka test entry */
                     g_tests[g_num_tests].name = p->name;

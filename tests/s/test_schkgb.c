@@ -21,7 +21,7 @@
  *   N values: 0, 1, 2, 3, 5, 10, 50
  *   KL/KU values: 0, (5*M+1)/4, (3M-1)/4, (M+1)/4 (clamped to matrix size)
  *   NRHS values: 1, 2, 15
- *   NB values: 1, 3, 3, 3, 20
+ *   NB values: 1, 3, 20 (dtest.in NB values without duplicates)
  *   Matrix types: 1-9
  *   THRESH: 30.0
  */
@@ -35,7 +35,7 @@
 static const INT MVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 50};
 static const INT NSVAL[] = {1, 2, 15};  /* NRHS values */
-static const INT NBVAL[] = {1, 3, 3, 3, 20};  /* Block sizes from dtest.in */
+static const INT NBVAL[] = {1, 3, 20};  /* dtest.in NB values without duplicates */
 static const char TRANSS[] = {'N', 'T', 'C'};
 
 #define NM      (sizeof(MVAL) / sizeof(MVAL[0]))
@@ -182,6 +182,7 @@ static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
     /* Set block size for this test via xlaenv */
     INT nb = NBVAL[inb];
     xlaenv(1, nb);
+    xlaenv(2, 2);
 
     /* Seed based on (m, n, kl, ku, imat) for reproducibility */
     uint64_t rng_state[4];

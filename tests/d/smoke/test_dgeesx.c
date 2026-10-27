@@ -447,31 +447,21 @@ static void test_symmetric_matrix(void** state)
 
 int main(void)
 {
-    const struct CMUnitTest tests_n5[] = {
+    const struct CMUnitTest tests[] = {
         cmocka_unit_test_setup_teardown(test_basic, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_with_ordering, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_workspace_query, setup_5, teardown),
         cmocka_unit_test_setup_teardown(test_no_vectors, setup_5, teardown),
-    };
-
-    const struct CMUnitTest tests_n10[] = {
         cmocka_unit_test_setup_teardown(test_basic, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_with_ordering, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_condition_eigenvalue, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_condition_subspace, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_condition_both, setup_10, teardown),
         cmocka_unit_test_setup_teardown(test_symmetric_matrix, setup_10, teardown),
-    };
-
-    const struct CMUnitTest tests_n20[] = {
         cmocka_unit_test_setup_teardown(test_basic, setup_20, teardown),
         cmocka_unit_test_setup_teardown(test_condition_both, setup_20, teardown),
     };
 
-    INT result = 0;
-    result += cmocka_run_group_tests_name("dgeesx_n5", tests_n5, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeesx_n10", tests_n10, NULL, NULL);
-    result += cmocka_run_group_tests_name("dgeesx_n20", tests_n20, NULL, NULL);
-
-    return result;
+    (void)cmocka_run_group_tests_name("dgeesx", tests, NULL, NULL);
+    return 0;
 }

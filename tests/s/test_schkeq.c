@@ -11,7 +11,7 @@
 
 #include "test_harness.h"
 
-#define THRESH 10.0f  /* From LAPACK: should be between 2 and 10 */
+#define THRESH 2.0f  /* THREQ in DCHKAA (should be between 2 and 10) */
 
 /* Parameters from dchkeq.f */
 #define NSZ   5             /* Maximum matrix size for tests */

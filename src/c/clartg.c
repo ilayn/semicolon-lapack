@@ -112,7 +112,7 @@ void clartg(const c64 f, const c64 g,
                 rtmax = rtmax * 2.0f;
                 if (f2 > rtmin && h2 < rtmax) {
                     /* safmin <= sqrt( f2*h2 ) <= safmax */
-                    *s = conjf(g) * (f / sqrtf(f2 * h2));
+                    *s = (f / sqrtf(f2)) * (conjf(g) / sqrtf(h2));
                 } else {
                     *s = conjf(g) * (*r / h2);
                 }
@@ -124,7 +124,7 @@ void clartg(const c64 f, const c64 g,
                 } else {
                     *r = f * (h2 / d);
                 }
-                *s = conjf(g) * (f / d);
+                *s = (f / sqrtf(f2)) * (conjf(g) / sqrtf(h2));
             }
         } else {
 
@@ -155,7 +155,7 @@ void clartg(const c64 f, const c64 g,
                 rtmax = rtmax * 2.0f;
                 if (f2 > rtmin && h2 < rtmax) {
                     /* safmin <= sqrt( f2*h2 ) <= safmax */
-                    *s = conjf(gs) * (fs / sqrtf(f2 * h2));
+                    *s = (fs / sqrtf(f2)) * (conjf(gs) / sqrtf(h2));
                 } else {
                     *s = conjf(gs) * (*r / h2);
                 }
@@ -167,7 +167,7 @@ void clartg(const c64 f, const c64 g,
                 } else {
                     *r = fs * (h2 / d);
                 }
-                *s = conjf(gs) * (fs / d);
+                *s = (fs / sqrtf(f2)) * (conjf(gs) / sqrtf(h2));
             }
             /* Rescale c and r */
             *c = *c * w;

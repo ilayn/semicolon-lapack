@@ -20,7 +20,7 @@
  *         DHSEIN computes the left and right eigenvector matrices
  *         Y and X for H, using inverse iteration.
  *
- * Test ratios (16 total):
+ * Test ratios (17 total):
  *                    T
  *   (1)  | A - U H U  | / ( |A| n ulp )
  *                T
@@ -42,17 +42,19 @@
  *
  *   (10) | L'T - W'L | / ( |T| |L| ulp )
  *
- *   (11) | HX - XW | / ( |H| |X| ulp )     (from inverse iteration)
+ *   (11) | ( W3 - W1 ) s | / ( max(|W1|,|W3|) ulp )
  *
- *   (12) | Y'H - W'Y | / ( |H| |Y| ulp )   (from inverse iteration)
+ *   (12) | HX - XW | / ( |H| |X| ulp )     (from inverse iteration)
  *
- *   (13) | AX - XW | / ( |A| |X| ulp )      (DORMHR on inverse iteration)
+ *   (13) | Y'H - W'Y | / ( |H| |Y| ulp )   (from inverse iteration)
  *
- *   (14) | Y'A - W'Y | / ( |A| |Y| ulp )    (DORMHR on inverse iteration)
+ *   (14) | AX - XW | / ( |A| |X| ulp )      (DORMHR on inverse iteration)
  *
- *   (15) | AR - RW | / ( |A| |R| ulp )      (DTREVC3 backtransform)
+ *   (15) | Y'A - W'Y | / ( |A| |Y| ulp )    (DORMHR on inverse iteration)
  *
- *   (16) | L'A - W'L | / ( |A| |L| ulp )   (DTREVC3 backtransform)
+ *   (16) | AR - RW | / ( |A| |R| ulp )      (DTREVC3 backtransform)
+ *
+ *   (17) | L'A - W'L | / ( |A| |L| ulp )   (DTREVC3 backtransform)
  *
  * Matrix types: 21 types (MAXTYP = 21)
  */
@@ -64,12 +66,23 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 30.0
+#define THRESH 20.0
 #define MAXTYP 21
-#define NTEST  16
+#define NTEST  17
 
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 20, 50};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16, 20, 50};
 #define NNVAL (sizeof(NVAL) / sizeof(NVAL[0]))
+
+/* NB, NBMIN, NX, INMIN, INWIN, INIBL, ISHFTS, IACC22 from nep.in */
+static const INT NBVAL[]  = {1, 3, 3, 3, 20};
+static const INT NBMIN[]  = {2, 2, 2, 2, 2};
+static const INT NXVAL[]  = {1, 0, 5, 9, 1};
+static const INT INMIN[]  = {11, 12, 11, 15, 11};
+static const INT INWIN[]  = {2, 3, 5, 3, 2};
+static const INT INIBL[]  = {0, 5, 7, 3, 200};
+static const INT ISHFTS[] = {1, 2, 4, 2, 1};
+static const INT IACC22[] = {0, 1, 2, 0, 1};
+#define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
 /* External function declarations */
 /* ===================================================================== */
@@ -100,6 +113,7 @@ static const INT kconds[MAXTYP] = {
 typedef struct {
     INT jsize;    /* index into NVAL[] */
     INT jtype;    /* matrix type 1..21 */
+    INT iparm;    /* index into the nep.in parameter sets */
     char name[96];
 } dchkhs_params_t;
 
@@ -236,6 +250,16 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     const INT n = NVAL[params->jsize];
     const INT jtype = params->jtype;
     const INT jt = jtype - 1;
+    const INT ip = params->iparm;
+
+    xlaenv(1, NBVAL[ip]);
+    xlaenv(2, NBMIN[ip]);
+    xlaenv(3, NXVAL[ip]);
+    xlaenv(12, (INMIN[ip] > 11) ? INMIN[ip] : 11);
+    xlaenv(13, INWIN[ip]);
+    xlaenv(14, INIBL[ip]);
+    xlaenv(15, ISHFTS[ip]);
+    xlaenv(16, IACC22[ip]);
 
     if (n == 0) return;
 
@@ -610,6 +634,67 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     dget22("T", "N", "C", n, T1, lda, evectl, ldu, wr1, wi1, work, &dumma[2]);
     result[9] = dumma[2];
 
+    /*
+     * Do Test 11: | ( W3 - W1 ) s | / ( max(|W1|,|W3|) ulp )
+     * W1 comes from JOB = 'S' and W3 from JOB = 'E'.  Unlike test
+     * 8, which varies only COMPZ, these two are not expected to
+     * agree exactly: the paths cover different index ranges and
+     * need not round alike.  s(j) = |y(j)**H x(j)| over
+     * ||y(j)|| ||x(j)||, the reciprocal condition number of
+     * eigenvalue j of T1, is what makes the comparison meaningful.
+     * A backward error eps in H moves that eigenvalue by
+     * eps / s(j), so the two can only be asked to agree to within
+     * |dW(j)| s(j); s(j) = 1 for a normal matrix.  Eigenvalues
+     * with s(j) < sqrt(ulp) are skipped: those are the ones the
+     * two paths have been seen to return in a different order,
+     * which the index-wise comparison could not tell apart from a
+     * real error.
+     */
+    /*
+     * Well-conditioned eigenvalues can come back in a different order
+     * too (seen with MKL and BLIS, in the reference DHSEQR as well), so
+     * W3 is paired with W1 by closest match instead of by index.
+     */
+    result[10] = ulpinv;
+    {
+        f64 temp1 = 0.0;
+        f64 temp2 = 0.0;
+        INT* perm = iwork;
+        dpair_eigs(n, wr1, wi1, wr3, wi3, perm);
+        for (INT j = 0; j < n; j++) {
+            INT jp = (wi1[j] < 0.0) ? j - 1 : j;
+            f64 xnorm, ynorm, sj;
+            if (wi1[jp] == 0.0) {
+                xnorm = cblas_dnrm2(n, &evectr[jp * ldu], 1);
+                ynorm = cblas_dnrm2(n, &evectl[jp * ldu], 1);
+                sj = fabs(cblas_ddot(n, &evectl[jp * ldu], 1,
+                                     &evectr[jp * ldu], 1));
+            } else {
+                xnorm = dlapy2(cblas_dnrm2(n, &evectr[jp * ldu], 1),
+                               cblas_dnrm2(n, &evectr[(jp + 1) * ldu], 1));
+                ynorm = dlapy2(cblas_dnrm2(n, &evectl[jp * ldu], 1),
+                               cblas_dnrm2(n, &evectl[(jp + 1) * ldu], 1));
+                f64 prodr = cblas_ddot(n, &evectl[jp * ldu], 1,
+                                       &evectr[jp * ldu], 1);
+                prodr += cblas_ddot(n, &evectl[(jp + 1) * ldu], 1,
+                                    &evectr[(jp + 1) * ldu], 1);
+                f64 prodi = cblas_ddot(n, &evectl[jp * ldu], 1,
+                                       &evectr[(jp + 1) * ldu], 1);
+                prodi -= cblas_ddot(n, &evectl[(jp + 1) * ldu], 1,
+                                    &evectr[jp * ldu], 1);
+                sj = dlapy2(prodr, prodi);
+            }
+            sj = sj / fmax(xnorm * ynorm, unfl);
+            INT k = perm[j];
+            temp1 = fmax(temp1, fmax(fabs(wr1[j]) + fabs(wi1[j]),
+                                     fabs(wr3[k]) + fabs(wi3[k])));
+            if (sj >= rtulp)
+                temp2 = fmax(temp2, sj * (fabs(wr1[j] - wr3[k]) +
+                                          fabs(wi1[j] - wi3[k])));
+        }
+        result[10] = temp2 / fmax(unfl, ulp * fmax(temp1, temp2));
+    }
+
     /* Compute selected left eigenvectors and confirm they agree */
     dtrevc("L", "S", selectarr, n, T1, lda, evectr, ldu,
            dumma, ldu, n, &in, work, &iinfo);
@@ -647,10 +732,10 @@ static void run_dchkhs_single(dchkhs_params_t* params)
     }
 
     /* ================================================================ */
-    /* Tests 11-12: DHSEIN eigenvectors of H via inverse iteration      */
+    /* Tests 12-13: DHSEIN eigenvectors of H via inverse iteration      */
     /* ================================================================ */
 
-    result[10] = ulpinv;
+    result[11] = ulpinv;
     for (INT j = 0; j < n; j++)
         selectarr[j] = 1;
 
@@ -666,15 +751,15 @@ static void run_dchkhs_single(dchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 11: | HX - XW | / ( |H| |X| ulp ) */
+        /* Test 12: | HX - XW | / ( |H| |X| ulp ) */
         dget22("N", "N", "N", n, H, lda, evectx, ldu, wr3, wi3,
                work, dumma);
         if (dumma[0] < ulpinv)
-            result[10] = dumma[0] * aninv;
+            result[11] = dumma[0] * aninv;
     }
 
     /* Left eigenvectors of H via inverse iteration */
-    result[11] = ulpinv;
+    result[12] = ulpinv;
     for (INT j = 0; j < n; j++)
         selectarr[j] = 1;
 
@@ -690,18 +775,18 @@ static void run_dchkhs_single(dchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 12: | Y'H - W'Y | / ( |H| |Y| ulp ) */
+        /* Test 13: | Y'H - W'Y | / ( |H| |Y| ulp ) */
         dget22("C", "N", "C", n, H, lda, evecty, ldu, wr3, wi3,
                work, &dumma[2]);
         if (dumma[2] < ulpinv)
-            result[11] = dumma[2] * aninv;
+            result[12] = dumma[2] * aninv;
     }
 
     /* ================================================================ */
-    /* Tests 13-14: DORMHR back-transform DHSEIN eigenvectors           */
+    /* Tests 14-15: DORMHR back-transform DHSEIN eigenvectors           */
     /* ================================================================ */
 
-    result[12] = ulpinv;
+    result[13] = ulpinv;
 
     dormhr("L", "N", n, n, 0, n - 1, UU, ldu, tau, evectx, ldu,
            work, nwork, &iinfo);
@@ -714,14 +799,14 @@ static void run_dchkhs_single(dchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 13: | AX - XW | / ( |A| |X| ulp ) */
+        /* Test 14: | AX - XW | / ( |A| |X| ulp ) */
         dget22("N", "N", "N", n, A, lda, evectx, ldu, wr3, wi3,
                work, dumma);
         if (dumma[0] < ulpinv)
-            result[12] = dumma[0] * aninv;
+            result[13] = dumma[0] * aninv;
     }
 
-    result[13] = ulpinv;
+    result[14] = ulpinv;
 
     dormhr("L", "N", n, n, 0, n - 1, UU, ldu, tau, evecty, ldu,
            work, nwork, &iinfo);
@@ -734,18 +819,18 @@ static void run_dchkhs_single(dchkhs_params_t* params)
             return;
         }
     } else {
-        /* Test 14: | Y'A - W'Y | / ( |A| |Y| ulp ) */
+        /* Test 15: | Y'A - W'Y | / ( |A| |Y| ulp ) */
         dget22("C", "N", "C", n, A, lda, evecty, ldu, wr3, wi3,
                work, &dumma[2]);
         if (dumma[2] < ulpinv)
-            result[13] = dumma[2] * aninv;
+            result[14] = dumma[2] * aninv;
     }
 
     /* ================================================================ */
-    /* Tests 15-16: DTREVC3 eigenvectors of A via back-transform        */
+    /* Tests 16-17: DTREVC3 eigenvectors of A via back-transform        */
     /* ================================================================ */
 
-    result[14] = ulpinv;
+    result[15] = ulpinv;
 
     dlacpy(" ", n, n, UZ, ldu, evectr, ldu);
 
@@ -759,12 +844,12 @@ static void run_dchkhs_single(dchkhs_params_t* params)
         return;
     }
 
-    /* Test 15: | AR - RW | / ( |A| |R| ulp ) */
+    /* Test 16: | AR - RW | / ( |A| |R| ulp ) */
     dget22("N", "N", "N", n, A, lda, evectr, ldu, wr1, wi1, work, dumma);
-    result[14] = dumma[0];
+    result[15] = dumma[0];
 
     /* Left eigenvectors via back-transform */
-    result[15] = ulpinv;
+    result[16] = ulpinv;
 
     dlacpy(" ", n, n, UZ, ldu, evectl, ldu);
 
@@ -778,19 +863,19 @@ static void run_dchkhs_single(dchkhs_params_t* params)
         return;
     }
 
-    /* Test 16: | L'A - W'L | / ( |A| |L| ulp ) */
+    /* Test 17: | L'A - W'L | / ( |A| |L| ulp ) */
     dget22("T", "N", "C", n, A, lda, evectl, ldu, wr1, wi1, work, &dumma[2]);
-    result[15] = dumma[2];
+    result[16] = dumma[2];
 
     /* ================================================================ */
     /* Check results against threshold                                  */
     /* ================================================================ */
 
     for (INT jr = 0; jr < NTEST; jr++) {
-        snprintf(ctx, sizeof(ctx), "dchkhs n=%d type=%d TEST %d",
-                 n, jtype, jr + 1);
+        snprintf(ctx, sizeof(ctx), "dchkhs n=%d type=%d parms=%d TEST %d",
+                 n, jtype, ip, jr + 1);
         set_test_context(ctx);
-        assert_residual_ok(result[jr]);
+        assert_residual_below(result[jr], THRESH);
     }
     clear_test_context();
 }
@@ -809,7 +894,7 @@ static void test_dchkhs_case(void** state)
 /* Build test array and main                                             */
 /* ===================================================================== */
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
 
 static dchkhs_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -819,14 +904,16 @@ static void build_test_array(void)
 {
     g_num_tests = 0;
 
+    for (size_t ip = 0; ip < NPARMS; ip++) {
     for (size_t in = 0; in < NNVAL; in++) {
         INT n = NVAL[in];
         for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
             dchkhs_params_t* p = &g_params[g_num_tests];
             p->jsize = (INT)in;
             p->jtype = jtype;
+            p->iparm = (INT)ip;
             snprintf(p->name, sizeof(p->name),
-                     "dchkhs_n%d_type%d", n, jtype);
+                     "dchkhs_p%d_n%d_type%d", (int)ip, n, jtype);
 
             g_tests[g_num_tests].name = p->name;
             g_tests[g_num_tests].test_func = test_dchkhs_case;
@@ -836,6 +923,7 @@ static void build_test_array(void)
 
             g_num_tests++;
         }
+    }
     }
 }
 
