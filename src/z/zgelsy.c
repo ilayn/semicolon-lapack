@@ -99,7 +99,31 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
 
     /* Test the input arguments */
     *info = 0;
+    {
+        INT nb1 = lapack_get_nb("GEQRF");
+        INT nb2 = lapack_get_tzrzf_nb(1);
+        INT nb3 = lapack_get_nb("UNMQR");
+        INT nb4 = lapack_get_nb("UNMRZ");
+        nb = nb1;
+        if (nb2 > nb) nb = nb2;
+        if (nb3 > nb) nb = nb3;
+        if (nb4 > nb) nb = nb4;
+    }
+    {
+        INT w1 = mn + 2 * n + nb * (n + 1);
+        INT w2 = 2 * mn + nb * nrhs;
+        lwkopt = 1;
+        if (w1 > lwkopt) lwkopt = w1;
+        if (w2 > lwkopt) lwkopt = w2;
+    }
+    work[0] = CMPLX((f64)lwkopt, 0.0);
     lquery = (lwork == -1);
+    {
+        INT tmax = 2 * mn;
+        if (n + 1 > tmax) tmax = n + 1;
+        if (mn + nrhs > tmax) tmax = mn + nrhs;
+        lwkmin = mn + tmax;
+    }
     if (m < 0) {
         *info = -1;
     } else if (n < 0) {
@@ -110,44 +134,8 @@ void zgelsy(const INT m, const INT n, const INT nrhs,
         *info = -5;
     } else if (ldb < (m > n ? (m > 1 ? m : 1) : (n > 1 ? n : 1))) {
         *info = -7;
-    }
-
-    /* Figure out optimal block size */
-    if (*info == 0) {
-        if (mn == 0 || nrhs == 0) {
-            lwkmin = 1;
-            lwkopt = 1;
-        } else {
-            INT nb1 = lapack_get_nb("GEQRF");
-            INT nb2 = lapack_get_nb("GERQF");
-            INT nb3 = lapack_get_nb("UNMQR");
-            INT nb4 = lapack_get_nb("UNMRQ");
-            nb = nb1;
-            if (nb2 > nb) nb = nb2;
-            if (nb3 > nb) nb = nb3;
-            if (nb4 > nb) nb = nb4;
-
-            /* LWKMIN = MN + MAX(2*MN, N+1, MN+NRHS) */
-            INT t1 = 2 * mn;
-            INT t2 = n + 1;
-            INT t3 = mn + nrhs;
-            INT tmax = t1;
-            if (t2 > tmax) tmax = t2;
-            if (t3 > tmax) tmax = t3;
-            lwkmin = mn + tmax;
-
-            /* LWKOPT = MAX(1, MN+2*N+NB*(N+1), 2*MN+NB*NRHS) */
-            INT w1 = mn + 2 * n + nb * (n + 1);
-            INT w2 = 2 * mn + nb * nrhs;
-            lwkopt = lwkmin;
-            if (w1 > lwkopt) lwkopt = w1;
-            if (w2 > lwkopt) lwkopt = w2;
-        }
-        work[0] = CMPLX((f64)lwkopt, 0.0);
-
-        if (lwork < lwkmin && !lquery) {
-            *info = -12;
-        }
+    } else if (lwork < lwkmin && !lquery) {
+        *info = -12;
     }
 
     if (*info != 0) {
