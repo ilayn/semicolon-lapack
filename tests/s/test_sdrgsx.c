@@ -689,6 +689,14 @@ int main(void)
         idx++;
     }
 
+    /* NB, NBMIN, NX, NS and MAXB from dgd.in; ISPEC 16 is still 2 from the SGS path, and DCHKEE sets ISPEC 5 to 2 for DGX */
+    xlaenv(1, 1);
+    xlaenv(2, 1);
+    xlaenv(3, 1);
+    xlaenv(4, 2);
+    xlaenv(8, 1);
+    xlaenv(16, 2);
+    xlaenv(5, 2);
     (void)cmocka_run_group_tests_name("sdrgsx", all_tests, group_setup,
                                        group_teardown);
     return 0;

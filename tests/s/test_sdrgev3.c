@@ -46,13 +46,13 @@
 #include <math.h>
 #include <string.h>
 
-#define THRESH 20.0f
+#define THRESH 10.0f
 #define MAXTYP 27
 
 /* Test dimensions from dgg.in */
-static const INT NVAL[] = {0, 1, 2, 3, 5, 10, 16};
+static const INT NVAL[] = {0, 1, 2, 3, 5, 6, 8, 10, 15, 16, 20};
 #define NSIZES ((int)(sizeof(NVAL) / sizeof(NVAL[0])))
-#define NMAX 16   /* max(NVAL) */
+#define NMAX 20   /* max(NVAL) */
 
 typedef struct {
     INT jsize;     /* index into NVAL[] */
@@ -519,6 +519,13 @@ int main(void)
         }
     }
 
+    /* NB, NBMIN, NX, NS and MAXB from dgd.in; ISPEC 16 is still 2 from the SGS path */
+    xlaenv(1, 1);
+    xlaenv(2, 1);
+    xlaenv(3, 1);
+    xlaenv(4, 2);
+    xlaenv(8, 1);
+    xlaenv(16, 2);
     (void)_cmocka_run_group_tests("sdrgev3", all_tests, idx,
                                    group_setup, group_teardown);
     return 0;
