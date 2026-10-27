@@ -73,7 +73,7 @@ void zhegst(
         return;
     }
 
-    nb = lapack_get_nb("SYGST");
+    nb = lapack_get_nb("HEGST");
 
     if (nb <= 1 || nb >= n) {
         zhegs2(itype, uplo, n, A, lda, B, ldb, info);

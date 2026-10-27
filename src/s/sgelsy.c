@@ -108,9 +108,9 @@ void sgelsy(const INT m, const INT n, const INT nrhs,
             lwkopt = 1;
         } else {
             INT nb1 = lapack_get_nb("GEQRF");
-            INT nb2 = lapack_get_nb("GERQF");
+            INT nb2 = lapack_get_tzrzf_nb(0);
             INT nb3 = lapack_get_nb("ORMQR");
-            INT nb4 = lapack_get_nb("ORMRQ");
+            INT nb4 = lapack_get_nb("ORMRZ");
             nb = nb1;
             if (nb2 > nb) nb = nb2;
             if (nb3 > nb) nb = nb3;

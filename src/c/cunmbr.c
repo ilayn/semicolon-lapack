@@ -137,9 +137,9 @@ void cunmbr(const char* vect, const char* side, const char* trans,
     if (*info == 0) {
         if (m > 0 && n > 0) {
             if (applyq) {
-                nb = lapack_get_nb("ORMQR");
+                nb = lapack_get_nb("UNMQR");
             } else {
-                nb = lapack_get_nb("ORMLQ");
+                nb = lapack_get_nb("UNMLQ");
             }
             lwkopt = nw * nb;
         } else {

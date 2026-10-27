@@ -140,7 +140,7 @@ void ssytrf_rook(
     }
 
     if (*info == 0) {
-        nb = lapack_get_nb("SYTRF");
+        nb = lapack_get_nb("SYTRF_ROOK");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
         work[0] = (f32)lwkopt;
     }
@@ -161,7 +161,7 @@ void ssytrf_rook(
             if (nb < 1) {
                 nb = 1;
             }
-            nbmin = lapack_get_nbmin("SYTRF");
+            nbmin = lapack_get_nbmin("SYTRF_ROOK");
             if (nbmin < 2) {
                 nbmin = 2;
             }

@@ -183,8 +183,8 @@ void zggevx(const char* balanc, const char* jobvl, const char* jobvr,
             }
             maxwrk = minwrk;
             nb_geqrf = lapack_get_nb("GEQRF");
-            nb_unmqr = lapack_get_nb("ORMQR");
-            nb_ungqr = lapack_get_nb("ORGQR");
+            nb_unmqr = lapack_get_nb("UNMQR");
+            nb_ungqr = lapack_get_nb("UNGQR");
             maxwrk = maxwrk > (n + n * nb_geqrf) ? maxwrk : (n + n * nb_geqrf);
             maxwrk = maxwrk > (n + n * nb_unmqr) ? maxwrk : (n + n * nb_unmqr);
             if (ilvl) {

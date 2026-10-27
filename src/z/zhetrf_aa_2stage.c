@@ -116,7 +116,7 @@ void zhetrf_aa_2stage(
         return;
     }
 
-    nb = lapack_get_nb("HETRF");
+    nb = lapack_get_nb("HETRF_AA_2STAGE");
 
     if (*info == 0) {
         if (tquery) {

@@ -104,7 +104,7 @@ void zunmqr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        nb = lapack_get_nb("ORMQR");
+        nb = lapack_get_nb("UNMQR");
         if (nb > NBMAX) {
             nb = NBMAX;
         }
@@ -129,7 +129,8 @@ void zunmqr(const char* side, const char* trans,
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
             nb = lwork / (ldwork + LDT);
-            nbmin = lapack_get_nbmin("ORMQR");
+            nbmin = lapack_get_nbmin("UNMQR");
+            if (nbmin < 2) nbmin = 2;
         }
     }
 

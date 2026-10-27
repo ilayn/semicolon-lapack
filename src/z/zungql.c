@@ -68,7 +68,7 @@ void zungql(const INT m, const INT n, const INT k,
         if (n == 0) {
             lwkopt = 1;
         } else {
-            nb = lapack_get_nb("ORGQL");
+            nb = lapack_get_nb("UNGQL");
             lwkopt = n * nb;
         }
         work[0] = (c128)lwkopt;
@@ -95,14 +95,15 @@ void zungql(const INT m, const INT n, const INT k,
     iws = n;
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
-        nx = lapack_get_nx("ORGQL");
+        nx = lapack_get_nx("UNGQL");
         if (nx < 0) nx = 0;
         if (nx < k) {
             ldwork = n;
             iws = ldwork * nb;
             if (lwork < iws) {
                 nb = lwork / ldwork;
-                nbmin = lapack_get_nbmin("ORGQL");
+                nbmin = lapack_get_nbmin("UNGQL");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

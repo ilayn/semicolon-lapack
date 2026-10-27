@@ -107,7 +107,7 @@ void dgelsd(const INT m, const INT n, const INT nrhs,
     *info = 0;
     minmn = m < n ? m : n;
     maxmn = m > n ? m : n;
-    mnthr = lapack_get_mnthr("GELSS", m, n);
+    mnthr = lapack_get_mnthr("GELSD", m, n);
     lquery = (lwork == -1);
 
     if (m < 0) {

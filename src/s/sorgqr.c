@@ -95,6 +95,7 @@ void sorgqr(const INT m, const INT n, const INT k,
             if (lwork < iws) {
                 nb = lwork / ldwork;
                 nbmin = lapack_get_nbmin("ORGQR");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

@@ -105,7 +105,7 @@ void zunmlq(const char* side, const char* trans,
 
     if (*info == 0) {
         /* Compute optimal workspace */
-        nb = lapack_get_nb("ORMLQ");
+        nb = lapack_get_nb("UNMLQ");
         if (nb > NBMAX) {
             nb = NBMAX;
         }
@@ -131,7 +131,8 @@ void zunmlq(const char* side, const char* trans,
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
             nb = lwork / (ldwork + LDT);
-            nbmin = lapack_get_nbmin("ORMLQ");
+            nbmin = lapack_get_nbmin("UNMLQ");
+            if (nbmin < 2) nbmin = 2;
         }
     }
 

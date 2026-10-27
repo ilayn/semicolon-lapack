@@ -168,8 +168,8 @@ void cgges(const char* jobvsl, const char* jobvsr, const char* sort,
     if (*info == 0) {
         lwkmin = 1 > 2 * n ? 1 : 2 * n;
         nb_geqrf = lapack_get_nb("GEQRF");
-        nb_unmqr = lapack_get_nb("ORMQR");
-        nb_ungqr = lapack_get_nb("ORGQR");
+        nb_unmqr = lapack_get_nb("UNMQR");
+        nb_ungqr = lapack_get_nb("UNGQR");
         lwkopt = 1 > n + n * nb_geqrf ? 1 : n + n * nb_geqrf;
         lwkopt = lwkopt > n + n * nb_unmqr ? lwkopt : n + n * nb_unmqr;
         if (ilvsl) {

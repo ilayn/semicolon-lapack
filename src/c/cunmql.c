@@ -110,7 +110,7 @@ void cunmql(const char* side, const char* trans,
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = lapack_get_nb("ORMQL");
+            nb = lapack_get_nb("UNMQL");
             if (nb > NBMAX) {
                 nb = NBMAX;
             }
@@ -131,7 +131,7 @@ void cunmql(const char* side, const char* trans,
         return;
     }
 
-    nb = lapack_get_nb("ORMQL");
+    nb = lapack_get_nb("UNMQL");
     if (nb > NBMAX) {
         nb = NBMAX;
     }
@@ -140,7 +140,8 @@ void cunmql(const char* side, const char* trans,
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
             nb = lwork / (ldwork + LDT);
-            nbmin = lapack_get_nbmin("ORMQL");
+            nbmin = lapack_get_nbmin("UNMQL");
+            if (nbmin < 2) nbmin = 2;
         }
     }
 

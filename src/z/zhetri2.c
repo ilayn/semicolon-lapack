@@ -65,7 +65,7 @@ void zhetri2(
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     lquery = (lwork == -1);
 
-    nbmax = lapack_get_nb("SYTRI2");
+    nbmax = lapack_get_nb("HETRF");
 
     if (n == 0) {
         minsize = 1;

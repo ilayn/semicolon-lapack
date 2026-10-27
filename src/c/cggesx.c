@@ -165,8 +165,8 @@ void cggesx(const char* jobvsl, const char* jobvsr, const char* sort,
         if (n > 0) {
             minwrk = 2 * n;
             nb_geqrf = lapack_get_nb("GEQRF");
-            nb_unmqr = lapack_get_nb("ORMQR");
-            nb_ungqr = lapack_get_nb("ORGQR");
+            nb_unmqr = lapack_get_nb("UNMQR");
+            nb_ungqr = lapack_get_nb("UNGQR");
             maxwrk = n * (1 + nb_geqrf);
             maxwrk = maxwrk > (n * (1 + nb_unmqr)) ?
                      maxwrk : (n * (1 + nb_unmqr));

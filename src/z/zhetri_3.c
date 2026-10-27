@@ -3,6 +3,7 @@
  * @brief ZHETRI_3 computes the inverse of a complex Hermitian indefinite matrix using the factorization computed by ZHETRF_RK or ZHETRF_BK.
  */
 
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 #include <complex.h>
 
@@ -89,7 +90,7 @@ void zhetri_3(
     INT* info)
 {
     INT upper, lquery;
-    INT lwkopt, nb;
+    INT lwkopt, nb = 0;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -98,7 +99,7 @@ void zhetri_3(
     if (n == 0) {
         lwkopt = 1;
     } else {
-        nb = 1;
+        nb = lapack_get_nb("HETRI_3");
         if (nb < 1) {
             nb = 1;
         }

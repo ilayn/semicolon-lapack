@@ -6,6 +6,7 @@
 #include <math.h>
 #include <complex.h>
 #include "semicolon_cblas.h"
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
 
@@ -89,7 +90,7 @@ void clatrs3(
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_CONE = CMPLXF(-1.0f, 0.0f);
 #define NRHSMIN 2
-#define NBRHS 32  /* ISPEC=1 for LATRS per ilaenv.f line 496 */
+#define NBRHS 32
 #define NBMIN 8
 #define NBMAX 64
 
@@ -112,7 +113,7 @@ void clatrs3(
     lquery = (lwork == -1);
 
     /* Partition A and X into blocks */
-    nb = NBMAX;
+    nb = lapack_get_nb("LATRS");
     if (nb < NBMIN) nb = NBMIN;
     if (nb > NBMAX) nb = NBMAX;
 

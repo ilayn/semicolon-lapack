@@ -51,7 +51,7 @@ void cunglq(const INT m, const INT n, const INT k,
 
     /* Parameter validation */
     *info = 0;
-    nb = lapack_get_nb("ORGLQ");
+    nb = lapack_get_nb("UNGLQ");
     lwkopt = (m > 1 ? m : 1) * nb;
     work[0] = CMPLXF((f32)lwkopt, 0.0f);
     lquery = (lwork == -1);
@@ -85,14 +85,15 @@ void cunglq(const INT m, const INT n, const INT k,
     iws = m;
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
-        nx = lapack_get_nx("ORGLQ");
+        nx = lapack_get_nx("UNGLQ");
         if (nx < 0) nx = 0;
         if (nx < k) {
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
                 nb = lwork / ldwork;
-                nbmin = lapack_get_nbmin("ORGLQ");
+                nbmin = lapack_get_nbmin("UNGLQ");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

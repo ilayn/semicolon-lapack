@@ -156,6 +156,7 @@ void sormrz(const char* side, const char* trans,
         if (lwork < lwkopt) {
             nb = (lwork - TSIZE) / ldwork;
             nbmin = lapack_get_nbmin("ORMRQ");
+            if (nbmin < 2) nbmin = 2;
         }
     }
 

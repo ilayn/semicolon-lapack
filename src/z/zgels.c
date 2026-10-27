@@ -100,11 +100,11 @@ void zgels(const char* trans,
 
         if (m >= n) {
             nb = lapack_get_nb("GEQRF");
-            INT nb2 = lapack_get_nb("ORMQR");
+            INT nb2 = lapack_get_nb("UNMQR");
             if (nb2 > nb) nb = nb2;
         } else {
             nb = lapack_get_nb("GELQF");
-            INT nb2 = lapack_get_nb("ORMLQ");
+            INT nb2 = lapack_get_nb("UNMLQ");
             if (nb2 > nb) nb = nb2;
         }
 

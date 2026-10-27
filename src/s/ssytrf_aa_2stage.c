@@ -109,7 +109,7 @@ void ssytrf_aa_2stage(
         return;
     }
 
-    nb = lapack_get_nb("SYTRF");
+    nb = lapack_get_nb("SYTRF_AA_2STAGE");
 
     if (*info == 0) {
         if (tquery) {

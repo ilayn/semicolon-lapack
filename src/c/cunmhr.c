@@ -90,7 +90,7 @@ void cunmhr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        nb = lapack_get_nb("ORMQR");
+        nb = lapack_get_nb("UNMQR");
         lwkopt = nw * nb;
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
     }

@@ -33,7 +33,7 @@
  *   ISPEC=3:  NX      - Crossover point (use unblocked if N < NX)
  *   ISPEC=4:  6       - Number of shifts for xHSEQR (DEPRECATED, handled by IPARMQ)
  *   ISPEC=5:  2       - Minimum column dimension (xTGSYL), lapack_get_nbcol()
- *   ISPEC=6:  MNTHR   - SVD crossover point = mnthr_mult * min(M,N)
+ *   ISPEC=6:  MNTHR   - SVD crossover point = INT(REAL(MIN(M,N))*1.6E0)
  *   ISPEC=7:  1       - Number of processors (not used)
  *   ISPEC=8:  50      - Crossover point for multishift QR (DEPRECATED, handled by IPARMQ)
  *   ISPEC=9:  SMLSIZ  - Max size of D&C subproblems (LAPACK_SMLSIZ below)
@@ -57,11 +57,10 @@
 #define LAPACK_SMLSIZ 25
 
 typedef struct {
-    const char* routine;  /* Routine name (uppercase, without precision prefix) */
+    const char* routine;  /* Name passed to ILAENV, without the precision prefix */
     int nb;               /* Block size (ISPEC=1) */
     int nbmin;            /* Minimum block size (ISPEC=2) */
     int nx;               /* Crossover point (ISPEC=3) */
-    double mnthr_mult;    /* SVD crossover multiplier (ISPEC=6): mnthr = mult * min(m,n) */
 } lapack_tuning_t;
 
 /*
@@ -96,6 +95,17 @@ int lapack_get_gelq_nb(int m, int n);
  *   Complex: NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)),  80)
  */
 int lapack_get_trsyl_nb(int n1, int n2, int is_complex);
+
+/*
+ * Block sizes that depend on a dimension or on the precision.
+ * From ilaenv.f:
+ *   xGBTRF, ILAENV(1, 'xGBTRF', ' ', M, N, KL, KU): NB = 1 if KU <= 64, else 32
+ *   xPBTRF, ILAENV(1, 'xPBTRF', UPLO, N, KD, -1, -1): NB = 1 if KD <= 64, else 32
+ *   xTZRZF, as queried by xGELSY: NB = 64 for real, 32 for complex
+ */
+int lapack_get_gbtrf_nb(int ku);
+int lapack_get_pbtrf_nb(int kd);
+int lapack_get_tzrzf_nb(int is_complex);
 
 /*
  * ISPEC=5, the minimum column dimension, read by xTGSYL as its column block
@@ -138,90 +148,119 @@ void xlaenv_reset(void);
 #include "semicolon_lapack_auxiliary.h"
 
 /*
- * Tuning table - values based on LAPACK's ilaenv defaults
- *
- * The mnthr_mult field is only used by SVD routines (GESVD, GESDD, GELSS).
- * From ilaenv.f: ILAENV(6,...) = INT(MIN(N1,N2) * 1.6)
- * A value of 0.0 means ISPEC=6 is not applicable to this routine.
+ * Tuning table: what SRC/ilaenv.f returns for ISPEC=1, 2 and 3, one row per
+ * name that a Fortran routine passes to ILAENV, without the precision prefix.
+ * Callers pass that same name. A name without a row gets the sentinel, which
+ * is ilaenv.f's default (NB=1, NBMIN=2, NX=0).
  */
 static const lapack_tuning_t lapack_tuning_table[] = {
-    /* Routine    NB  NBMIN  NX  MNTHR_MULT */
-    {"GETRF",     64,    2,   0,  0.0},
-    {"GBTRF",     32,    2,   0,  0.0},  /* NB=32 per ilaenv.f line 438 */
-    {"GETRI",     64,    2,   0,  0.0},
-    {"GEQRF",     32,    2, 128,  0.0},
-    {"GEQLF",     32,    2, 128,  0.0},
-    {"GERQF",     32,    2, 128,  0.0},
-    {"GELQF",     32,    2, 128,  0.0},
-    {"ORGQR",     32,    2, 128,  0.0},
-    {"ORGLQ",     32,    2, 128,  0.0},
-    {"ORGQL",     32,    2, 128,  0.0},
-    {"ORGRQ",     32,    2, 128,  0.0},
-    {"ORMQR",     32,    2, 128,  0.0},
-    {"ORMLQ",     32,    2, 128,  0.0},
-    {"ORMQL",     32,    2, 128,  0.0},
-    {"ORMRQ",     32,    2, 128,  0.0},
-    {"POTRF",     64,    2,   0,  0.0},
-    {"LAUUM",     64,    2,   0,  0.0},
-    {"SYTRF",     64,    8,   0,  0.0},  /* NBMIN=8 per ilaenv.f line 560 */
-    {"SYGST",     64,    2,   0,  0.0},  /* Generalized eigenproblem reduction */
-    {"HEGST",     64,    2,   0,  0.0},  /* Complex variant of SYGST */
-    {"HETRF",     64,    8,   0,  0.0},  /* NBMIN=8 per ilaenv.f line 560 */
-    {"TRTRI",     64,    2,   0,  0.0},
-    {"SYTRI2",    64,    2,   0,  0.0},
-    {"GEBRD",     32,    2, 128,  0.0},
-    {"SYTRD",     32,    2,  32,  0.0},  /* NX=32 per ilaenv.f line 641 */
-    {"HETRD",     32,    2,  32,  0.0},  /* NX=32 per ilaenv.f line 645 */
-    {"GEHRD",     32,    2, 128,  0.0},
-    {"GGHRD",     32,    2, 128,  0.0},  /* GG routines */
-    {"GGHD3",     32,    2, 128,  0.0},  /* Blocked variant */
-    {"STEQR",      0,    0,   0,  0.0},  /* Not blocked */
-    {"TREVC",     64,    2,   0,  0.0},
-    {"GESVD",     32,    2,   0,  1.6},  /* SVD crossover: mnthr = 1.6 * min(m,n) */
-    {"GESDD",     32,    2,   0,  1.6},  /* SVD crossover: mnthr = 1.6 * min(m,n) */
-    {"GELSS",     32,    2,   0,  1.6},  /* SVD crossover: mnthr = 1.6 * min(m,n) */
-    {"ORGHR",     32,    2, 128,  0.0},  /* Real orthogonal Hessenberg generate */
-    {"ORGTR",     32,    2, 128,  0.0},  /* Real orthogonal tridiag generate */
-    {"ORGBR",     32,    2, 128,  0.0},  /* Real orthogonal bidiag generate */
-    {"ORMBR",     32,    2,   0,  0.0},  /* Real orthogonal bidiag multiply */
-    {"ORMHR",     32,    2,   0,  0.0},  /* Real orthogonal Hessenberg multiply */
-    {"ORMTR",     32,    2,   0,  0.0},  /* Real orthogonal tridiag multiply */
-    {"UNGQR",     32,    2, 128,  0.0},  /* Complex unitary QR generate */
-    {"UNGLQ",     32,    2, 128,  0.0},  /* Complex unitary LQ generate */
-    {"UNGQL",     32,    2, 128,  0.0},  /* Complex unitary QL generate */
-    {"UNGRQ",     32,    2, 128,  0.0},  /* Complex unitary RQ generate */
-    {"UNGHR",     32,    2, 128,  0.0},  /* Complex unitary Hessenberg generate */
-    {"UNGTR",     32,    2, 128,  0.0},  /* Complex unitary tridiag generate */
-    {"UNGBR",     32,    2, 128,  0.0},  /* Complex unitary bidiag generate */
-    {"UNMQR",     32,    2,   0,  0.0},  /* Complex unitary QR multiply */
-    {"UNMLQ",     32,    2,   0,  0.0},  /* Complex unitary LQ multiply */
-    {"UNMQL",     32,    2,   0,  0.0},  /* Complex unitary QL multiply */
-    {"UNMRQ",     32,    2,   0,  0.0},  /* Complex unitary RQ multiply */
-    {"UNMBR",     32,    2,   0,  0.0},  /* Complex unitary bidiag multiply */
-    {"UNMHR",     32,    2,   0,  0.0},  /* Complex unitary Hessenberg multiply */
-    {"UNMTR",     32,    2,   0,  0.0},  /* Complex unitary tridiag multiply */
-    {"LAORH",     32,    2,   0,  0.0},  /* LAORHR_GETRFNP, ilaenv.f line 275 */
-    {"PBTRF",     32,    2,   0,  0.0},  /* Packed band Cholesky, ilaenv.f line 454 */
-    {"LATRS",     32,    2,   0,  0.0},  /* Block triangular solve, ilaenv.f line 496 */
-    {"STEBZ",      1,    2,   0,  0.0},  /* Bisection eigenvalue, ilaenv.f line 503 */
-    {"GEQP3",     32,    2, 128,  0.0},  /* QR with column pivoting (QP3RK), ilaenv.f line 358 */
-    {"LARFT",      1,    2,  64,  0.0},  /* NX=64 per ilaenv.f line 687 */
-    {NULL,         1,    2,   0,  0.0}   /* Sentinel / default */
+    /* Routine               NB  NBMIN   NX */
+    {"GETRF",                64,     2,   0},
+    {"GETRI",                64,     2,   0},
+    {"GEQRF",                32,     2, 128},
+    {"GEQLF",                32,     2, 128},
+    {"GERQF",                32,     2, 128},
+    {"GELQF",                32,     2, 128},
+    {"GEHRD",                32,     2, 128},
+    {"GEBRD",                32,     2, 128},
+    /*
+     * ilaenv.f compares SUBNAM(4:7) with 'QP3RK', which can never match,
+     * so it returns 1, 2, 0 for xGEQP3RK. These are the values that branch
+     * was written to return.
+     */
+    {"GEQP3RK",              32,     2, 128},
+    {"GELST",                 1,     2,   0},
+    {"POTRF",                64,     2,   0},
+    {"SYTRF",                64,     8,   0},
+    {"SYTRF_RK",             64,     8,   0},
+    {"SYTRF_ROOK",           64,     8,   0},
+    {"SYTRF_AA",             64,     8,   0},
+    {"SYTRF_AA_2STAGE",     192,     8,   0},
+    {"SYTRI2",                1,     2,   0},
+    {"SYTRI_3",               1,     2,   0},
+    {"SYTRD",                32,     2,  32},
+    {"SYGST",                64,     2,   0},
+    {"HETRF",                64,     2,   0},
+    {"HETRF_RK",             64,     2,   0},
+    {"HETRF_ROOK",           64,     2,   0},
+    {"HETRF_AA",             64,     2,   0},
+    {"HETRF_AA_2STAGE",     192,     2,   0},
+    {"HETRI_3",               1,     2,   0},
+    {"HETRD",                32,     2,  32},
+    {"HEGST",                64,     2,   0},
+    {"ORGQR",                32,     2, 128},
+    {"ORGQL",                32,     2, 128},
+    {"ORGRQ",                32,     2, 128},
+    {"ORGLQ",                32,     2, 128},
+    {"ORGHR",                32,     2, 128},
+    {"ORMQR",                32,     2,   0},
+    {"ORMQL",                32,     2,   0},
+    {"ORMRQ",                32,     2,   0},
+    {"ORMLQ",                32,     2,   0},
+    {"ORMBR",                32,     2,   0},
+    {"ORMTR",                32,     2,   0},
+    {"ORMRZ",                64,     2,   0},
+    {"UNGQR",                32,     2, 128},
+    {"UNGQL",                32,     2, 128},
+    {"UNGRQ",                32,     2, 128},
+    {"UNGLQ",                32,     2, 128},
+    {"UNGHR",                32,     2, 128},
+    {"UNMQR",                32,     2,   0},
+    {"UNMQL",                32,     2,   0},
+    {"UNMRQ",                32,     2,   0},
+    {"UNMLQ",                32,     2,   0},
+    {"UNMBR",                32,     2,   0},
+    {"UNMTR",                32,     2,   0},
+    {"UNMRZ",                32,     2,   0},
+    {"GGHD3",                32,     2, 128},
+    {"TRTRI",                64,     2,   0},
+    {"TREVC",                64,     2,   0},
+    {"TGSYL",                 1,     2,   0},
+    {"LAUUM",                64,     2,  64},
+    {"LATRS",                32,     2,   0},
+    {"LARFT",                 1,     2,  64},
+    {"LAORHR_COL_GETRFNP",   32,     2,   0},
+    {"STEBZ",                 1,     2,   0},
+    {NULL,                    1,     2,   0}   /* Sentinel / default */
 };
 
 /* Helper: look up entry in tuning table */
 static const lapack_tuning_t* lapack_tuning_lookup(const char* routine)
 {
     for (int i = 0; lapack_tuning_table[i].routine != NULL; i++) {
-        if (lapack_tuning_table[i].routine[0] == routine[0] &&
-            lapack_tuning_table[i].routine[1] == routine[1] &&
-            lapack_tuning_table[i].routine[2] == routine[2] &&
-            lapack_tuning_table[i].routine[3] == routine[3] &&
-            lapack_tuning_table[i].routine[4] == routine[4]) {
+        const char* a = lapack_tuning_table[i].routine;
+        const char* b = routine;
+        while (*a != '\0' && *a == *b) {
+            a++;
+            b++;
+        }
+        if (*a == *b) {
             return &lapack_tuning_table[i];
         }
     }
     return &lapack_tuning_table[sizeof(lapack_tuning_table)/sizeof(lapack_tuning_table[0]) - 1];
+}
+
+/* ISPEC=6 from ilaenv.f: INT( REAL( MIN( N1, N2 ) )*1.6E0 ) */
+static int lapack_tuning_mnthr(int m, int n)
+{
+    int minmn = (m < n) ? m : n;
+    return (int)((float)minmn * 1.6f);
+}
+
+static int lapack_tuning_gbtrf_nb(int ku)
+{
+    return (ku <= 64) ? 1 : 32;
+}
+
+static int lapack_tuning_pbtrf_nb(int kd)
+{
+    return (kd <= 64) ? 1 : 32;
+}
+
+static int lapack_tuning_tzrzf_nb(int is_complex)
+{
+    return is_complex ? 32 : 64;
 }
 
 #ifdef LAPACK_TUNING_TEST
@@ -317,18 +356,36 @@ int lapack_get_nx(const char* routine)
 
 int lapack_get_mnthr(const char* routine, int m, int n)
 {
+    (void)routine;
     /* Test override: if IPARMS[5] >= 0, use it directly */
     if (iparms[5] >= 0) {
         return iparms[5];
     }
-    /* Otherwise compute from multiplier */
-    int minmn = (m < n) ? m : n;
-    double mult = lapack_tuning_lookup(routine)->mnthr_mult;
-    if (mult <= 0.0) {
-        /* Routine doesn't use MNTHR, return minmn (no crossover benefit) */
-        return minmn;
+    return lapack_tuning_mnthr(m, n);
+}
+
+int lapack_get_gbtrf_nb(int ku)
+{
+    if (iparms[0] >= 0) {
+        return iparms[0];
     }
-    return (int)(mult * minmn);
+    return lapack_tuning_gbtrf_nb(ku);
+}
+
+int lapack_get_pbtrf_nb(int kd)
+{
+    if (iparms[0] >= 0) {
+        return iparms[0];
+    }
+    return lapack_tuning_pbtrf_nb(kd);
+}
+
+int lapack_get_tzrzf_nb(int is_complex)
+{
+    if (iparms[0] >= 0) {
+        return iparms[0];
+    }
+    return lapack_tuning_tzrzf_nb(is_complex);
 }
 
 int lapack_get_geqr_mb(int m, int n)
@@ -426,13 +483,23 @@ LAPACK_WEAK int lapack_get_nx(const char* routine)
 
 LAPACK_WEAK int lapack_get_mnthr(const char* routine, int m, int n)
 {
-    int minmn = (m < n) ? m : n;
-    double mult = lapack_tuning_lookup(routine)->mnthr_mult;
-    if (mult <= 0.0) {
-        /* Routine doesn't use MNTHR, return minmn (no crossover benefit) */
-        return minmn;
-    }
-    return (int)(mult * minmn);
+    (void)routine;
+    return lapack_tuning_mnthr(m, n);
+}
+
+LAPACK_WEAK int lapack_get_gbtrf_nb(int ku)
+{
+    return lapack_tuning_gbtrf_nb(ku);
+}
+
+LAPACK_WEAK int lapack_get_pbtrf_nb(int kd)
+{
+    return lapack_tuning_pbtrf_nb(kd);
+}
+
+LAPACK_WEAK int lapack_get_tzrzf_nb(int is_complex)
+{
+    return lapack_tuning_tzrzf_nb(is_complex);
 }
 
 LAPACK_WEAK int lapack_get_geqr_mb(int m, int n)

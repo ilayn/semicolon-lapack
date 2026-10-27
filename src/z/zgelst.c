@@ -5,6 +5,7 @@
 
 #include <complex.h>
 #include "semicolon_cblas.h"
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -109,7 +110,7 @@ void zgelst(
         if (trans[0] == 'N' || trans[0] == 'n')
             tpsd = 0;
 
-        nb = 32;
+        nb = lapack_get_nb("GELST");
 
         mnnrhs = (mn > nrhs) ? mn : nrhs;
         lwopt = (1 > (mn + mnnrhs) * nb) ? 1 : ((mn + mnnrhs) * nb);
@@ -136,7 +137,8 @@ void zgelst(
 
     nb = (nb < lwork / (mn + mnnrhs)) ? nb : (lwork / (mn + mnnrhs));
 
-    nbmin = 2;
+    nbmin = lapack_get_nbmin("GELST");
+    if (nbmin < 2) nbmin = 2;
 
     if (nb < nbmin) {
         nb = 1;

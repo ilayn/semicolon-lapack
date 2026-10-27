@@ -98,7 +98,7 @@ void zgelsd(const INT m, const INT n, const INT nrhs,
     *info = 0;
     minmn = m < n ? m : n;
     maxmn = m > n ? m : n;
-    mnthr = lapack_get_mnthr("GELSS", m, n);
+    mnthr = lapack_get_mnthr("GELSD", m, n);
     lquery = (lwork == -1);
 
     if (m < 0) {
@@ -129,7 +129,7 @@ void zgelsd(const INT m, const INT n, const INT nrhs,
             mm = n;
             nb = lapack_get_nb("GEQRF");
             maxwrk = n * nb;
-            nb = lapack_get_nb("ORMQR");
+            nb = lapack_get_nb("UNMQR");
             if (nrhs * nb > maxwrk) maxwrk = nrhs * nb;
         }
         if (m >= n) {
@@ -138,7 +138,7 @@ void zgelsd(const INT m, const INT n, const INT nrhs,
                       (smlsiz + 1) * (smlsiz + 1) : n * (1 + nrhs) + 2 * nrhs);
             nb = lapack_get_nb("GEBRD");
             if (2 * n + (mm + n) * nb > maxwrk) maxwrk = 2 * n + (mm + n) * nb;
-            nb = lapack_get_nb("ORMBR");
+            nb = lapack_get_nb("UNMBR");
             if (2 * n + nrhs * nb > maxwrk) maxwrk = 2 * n + nrhs * nb;
             if (2 * n + (n - 1) * nb > maxwrk) maxwrk = 2 * n + (n - 1) * nb;
             if (2 * n + n * nrhs > maxwrk) maxwrk = 2 * n + n * nrhs;
@@ -154,7 +154,7 @@ void zgelsd(const INT m, const INT n, const INT nrhs,
                 maxwrk = m + m * nb;
                 nb = lapack_get_nb("GEBRD");
                 if (m * m + 4 * m + 2 * m * nb > maxwrk) maxwrk = m * m + 4 * m + 2 * m * nb;
-                nb = lapack_get_nb("ORMBR");
+                nb = lapack_get_nb("UNMBR");
                 if (m * m + 4 * m + nrhs * nb > maxwrk) maxwrk = m * m + 4 * m + nrhs * nb;
                 if (m * m + 4 * m + (m - 1) * nb > maxwrk) maxwrk = m * m + 4 * m + (m - 1) * nb;
                 if (nrhs > 1) {
@@ -162,7 +162,7 @@ void zgelsd(const INT m, const INT n, const INT nrhs,
                 } else {
                     if (m * m + 2 * m > maxwrk) maxwrk = m * m + 2 * m;
                 }
-                nb = lapack_get_nb("ORMLQ");
+                nb = lapack_get_nb("UNMLQ");
                 if (m + nrhs * nb > maxwrk) maxwrk = m + nrhs * nb;
                 if (m * m + 4 * m + m * nrhs > maxwrk) maxwrk = m * m + 4 * m + m * nrhs;
                 /* Ensure the Path 2a case below is triggered */
@@ -173,7 +173,7 @@ void zgelsd(const INT m, const INT n, const INT nrhs,
             } else {
                 nb = lapack_get_nb("GEBRD");
                 maxwrk = 2 * m + (n + m) * nb;
-                nb = lapack_get_nb("ORMBR");
+                nb = lapack_get_nb("UNMBR");
                 if (2 * m + nrhs * nb > maxwrk) maxwrk = 2 * m + nrhs * nb;
                 if (2 * m + m * nb > maxwrk) maxwrk = 2 * m + m * nb;
                 if (2 * m + m * nrhs > maxwrk) maxwrk = 2 * m + m * nrhs;

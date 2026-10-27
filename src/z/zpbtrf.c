@@ -121,7 +121,7 @@ void zpbtrf(
     if (n == 0)
         return;
 
-    nb = lapack_get_nb("PBTRF");
+    nb = lapack_get_pbtrf_nb(kd);
     if (nb > NBMAX)
         nb = NBMAX;
 

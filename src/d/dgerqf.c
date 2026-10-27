@@ -95,6 +95,7 @@ void dgerqf(const INT m, const INT n,
             if (lwork < iws) {
                 nb = lwork / m;
                 nbmin = lapack_get_nbmin("GERQF");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

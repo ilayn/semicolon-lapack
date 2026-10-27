@@ -120,7 +120,7 @@ void cggrqf(const INT m, const INT p, const INT n,
     *info = 0;
     nb1 = lapack_get_nb("GERQF");
     nb2 = lapack_get_nb("GEQRF");
-    nb3 = lapack_get_nb("ORMRQ");
+    nb3 = lapack_get_nb("UNMRQ");
     nb = nb1;
     if (nb2 > nb) nb = nb2;
     if (nb3 > nb) nb = nb3;

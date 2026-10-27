@@ -125,6 +125,7 @@ void zgehrd(const INT n, const INT ilo, const INT ihi,
                    minimum value of NB, and reduce NB or force use of
                    unblocked code */
                 nbmin = lapack_get_nbmin("GEHRD");
+                if (nbmin < 2) nbmin = 2;
                 if (lwork >= (n * nbmin + TSIZE)) {
                     nb = (lwork - TSIZE) / n;
                 } else {

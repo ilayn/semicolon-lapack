@@ -96,6 +96,7 @@ void dgeqrf(const INT m, const INT n,
                 /* Not enough workspace: reduce nb */
                 nb = lwork / n;
                 nbmin = lapack_get_nbmin("GEQRF");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

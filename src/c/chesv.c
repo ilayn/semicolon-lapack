@@ -5,6 +5,7 @@
  *        N-by-NRHS matrices.
  */
 
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -110,8 +111,7 @@ void chesv(const char* uplo, const INT n, const INT nrhs,
         if (n == 0) {
             lwkopt = 1;
         } else {
-            chetrf(uplo, n, A, lda, ipiv, work, -1, info);
-            lwkopt = (INT)crealf(work[0]);
+            lwkopt = n * lapack_get_nb("HETRF");
         }
         work[0] = (c64)lwkopt;
     }

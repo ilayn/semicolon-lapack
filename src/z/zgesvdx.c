@@ -75,7 +75,7 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
 {
     INT alls, inds, lquery, vals, wantu, wantvt;
     INT i, id, ie, ierr, ilqf, iltgk, iutgk, iqrf, iscl, itau, itaup, itauq;
-    INT itemp, itempr, itgkz, j, k, maxwrk, minmn, minwrk, mnthr;
+    INT itemp, itempr, itgkz, j, k, maxwrk, minmn, minwrk, mnthr = 0;
     f64 anrm, bignum, eps, smlnum;
     char jobz, rngtgk;
     f64 dum[1];
@@ -146,49 +146,47 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
-            INT nb = lapack_get_nb("GEBRD");
-            if (nb < 1) nb = 32;
-
+            INT t;
             if (m >= n) {
-                mnthr = (INT)(1.6 * n);
+                mnthr = lapack_get_mnthr("GESVD", m, n);
                 if (m >= mnthr) {
                     /* Path 1 (M much larger than N) */
                     minwrk = n * (n + 5);
-                    maxwrk = n + n * nb;
-                    maxwrk = (maxwrk > n * n + 2 * n + 2 * n * nb) ?
-                             maxwrk : n * n + 2 * n + 2 * n * nb;
+                    maxwrk = n + n * lapack_get_nb("GEQRF");
+                    t = n * n + 2 * n + 2 * n * lapack_get_nb("GEBRD");
+                    maxwrk = (maxwrk > t) ? maxwrk : t;
                     if (wantu || wantvt) {
-                        maxwrk = (maxwrk > n * n + 2 * n + n * nb) ?
-                                 maxwrk : n * n + 2 * n + n * nb;
+                        t = n * n + 2 * n + n * lapack_get_nb("UNMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                 } else {
                     /* Path 2 (M at least N, but not much larger) */
                     minwrk = 3 * n + m;
-                    maxwrk = 2 * n + (m + n) * nb;
+                    maxwrk = 2 * n + (m + n) * lapack_get_nb("GEBRD");
                     if (wantu || wantvt) {
-                        maxwrk = (maxwrk > 2 * n + n * nb) ?
-                                 maxwrk : 2 * n + n * nb;
+                        t = 2 * n + n * lapack_get_nb("UNMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                 }
             } else {
-                mnthr = (INT)(1.6 * m);
+                mnthr = lapack_get_mnthr("GESVD", m, n);
                 if (n >= mnthr) {
                     /* Path 1t (N much larger than M) */
                     minwrk = m * (m + 5);
-                    maxwrk = m + m * nb;
-                    maxwrk = (maxwrk > m * m + 2 * m + 2 * m * nb) ?
-                             maxwrk : m * m + 2 * m + 2 * m * nb;
+                    maxwrk = m + m * lapack_get_nb("GELQF");
+                    t = m * m + 2 * m + 2 * m * lapack_get_nb("GEBRD");
+                    maxwrk = (maxwrk > t) ? maxwrk : t;
                     if (wantu || wantvt) {
-                        maxwrk = (maxwrk > m * m + 2 * m + m * nb) ?
-                                 maxwrk : m * m + 2 * m + m * nb;
+                        t = m * m + 2 * m + m * lapack_get_nb("UNMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                 } else {
                     /* Path 2t (N greater than M, but not much larger) */
                     minwrk = 3 * m + n;
-                    maxwrk = 2 * m + (m + n) * nb;
+                    maxwrk = 2 * m + (m + n) * lapack_get_nb("GEBRD");
                     if (wantu || wantvt) {
-                        maxwrk = (maxwrk > 2 * m + m * nb) ?
-                                 maxwrk : 2 * m + m * nb;
+                        t = 2 * m + m * lapack_get_nb("UNMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                 }
             }
@@ -246,8 +244,6 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
 
     if (m >= n) {
         /* A has at least as many rows as columns */
-        mnthr = (INT)(1.6 * n);
-
         if (m >= mnthr) {
             /* Path 1 (M much larger than N):
              * A = Q * R = Q * ( QB * B * PB**H )
@@ -375,8 +371,6 @@ void zgesvdx(const char* jobu, const char* jobvt, const char* range,
         }
     } else {
         /* A has more columns than rows */
-        mnthr = (INT)(1.6 * m);
-
         if (n >= mnthr) {
             /* Path 1t (N much larger than M):
              * A = L * Q = ( QB * B * PB**H ) * Q

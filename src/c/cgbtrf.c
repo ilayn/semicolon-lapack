@@ -126,7 +126,7 @@ void cgbtrf(
     sfmin = slamch("S");
 
     /* Determine the block size for this environment */
-    nb = lapack_get_nb("GBTRF");
+    nb = lapack_get_gbtrf_nb(ku);
 
     /* The block size must not exceed the limit set by the size of the
        local arrays work13 and work31 */

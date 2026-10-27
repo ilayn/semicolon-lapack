@@ -76,7 +76,7 @@ void zsytrf_aa(
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
 
-    nb = lapack_get_nb("SYTRF");
+    nb = lapack_get_nb("SYTRF_AA");
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

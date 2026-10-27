@@ -5,6 +5,7 @@
 
 #include <math.h>
 #include <complex.h>
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_double.h"
 
 /**
@@ -137,8 +138,7 @@ void zhesv_rook(
         if (n == 0) {
             lwkopt = 1;
         } else {
-            zhetrf_rook(uplo, n, A, lda, ipiv, work, -1, info);
-            lwkopt = (INT)creal(work[0]);
+            lwkopt = n * lapack_get_nb("HETRF_ROOK");
         }
         work[0] = (c128)lwkopt;
     }

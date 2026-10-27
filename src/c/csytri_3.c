@@ -3,6 +3,7 @@
  * @brief CSYTRI_3 computes the inverse of a complex symmetric indefinite matrix using the factorization computed by CSYTRF_RK or ZSYTRF_BK.
  */
 
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 #include <complex.h>
 
@@ -97,7 +98,7 @@ void csytri_3(
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
     lquery = (lwork == -1);
 
-    nb = 1;
+    nb = lapack_get_nb("SYTRI_3");
     if (nb < 1) {
         nb = 1;
     }
