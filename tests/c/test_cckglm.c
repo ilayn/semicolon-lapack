@@ -21,7 +21,7 @@
 #include <string.h>
 
 /* Test threshold from LAPACK zckglm.f */
-#define THRESH 30.0f
+#define THRESH 20.0f
 
 /* Number of matrix types */
 #define NTYPES 8
@@ -164,7 +164,7 @@ static void test_zckglm_case(void** state)
            g_ws->D, g_ws->DF, g_ws->X, g_ws->U,
            g_ws->work, lwork, g_ws->rwork, &resid);
 
-    assert_residual_ok(resid);
+    assert_residual_below(resid, THRESH);
 }
 
 static zckglm_params_t g_params[MAX_TESTS];
@@ -204,6 +204,9 @@ static void build_test_array(void)
 int main(void)
 {
     build_test_array();
+
+    /* Block size as ZCHKEE sets it for the GLM path */
+    xlaenv(1, 1);
 
     (void)_cmocka_run_group_tests("cckglm", g_tests, g_num_tests,
                                    group_setup, group_teardown);

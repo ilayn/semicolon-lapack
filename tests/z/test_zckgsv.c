@@ -208,6 +208,9 @@ int main(void)
 {
     build_test_array();
 
+    /* Block size as ZCHKEE sets it for the GSV path */
+    xlaenv(1, 1);
+
     (void)_cmocka_run_group_tests("zckgsv", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
