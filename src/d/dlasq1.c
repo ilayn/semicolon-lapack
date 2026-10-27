@@ -32,7 +32,8 @@
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
  *                         - > 0: the algorithm failed
- *                         - = 1, a split was marked by a positive value in E
+ *                         - = 1, a split was marked by a positive value in E, or
+ *                           the input contains a NaN
  *                         - = 2, current block of Z not diagonalized after 100*N
  *                           iterations (in inner while loop). On exit D and E
  *                           represent a matrix with the same singular values
@@ -68,9 +69,7 @@ void dlasq1(const INT n, f64* restrict D, f64* restrict E,
     sigmx = 0.0;
     for (i = 0; i < n - 1; i++) {
         D[i] = fabs(D[i]);
-        if (fabs(E[i]) > sigmx) {
-            sigmx = fabs(E[i]);
-        }
+        sigmx = (sigmx > fabs(E[i])) ? sigmx : fabs(E[i]);
     }
     D[n - 1] = fabs(D[n - 1]);
 
@@ -81,9 +80,16 @@ void dlasq1(const INT n, f64* restrict D, f64* restrict E,
     }
 
     for (i = 0; i < n; i++) {
-        if (D[i] > sigmx) {
-            sigmx = D[i];
-        }
+        sigmx = (sigmx > D[i]) ? sigmx : D[i];
+    }
+
+    /*
+     * A NaN in D or E can make SIGMX a NaN, which DLASCL would reject
+     * by stopping in XERBLA; report it through INFO instead.
+     */
+    if (disnan(sigmx)) {
+        *info = 1;
+        return;
     }
 
     /*
