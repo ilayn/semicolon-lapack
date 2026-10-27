@@ -203,8 +203,8 @@ static int group_setup(void** state)
         return -1;
     }
 
-    rng_seed(g_ws->rng_state, 0xAA80754D1A1A8D4FULL);
-    rng_seed(g_ws->rng_state2, 0xAA80754D1A1A8D4FULL);
+    rng_seed(g_ws->rng_state, 0xB3C4904A6D278932ULL);
+    rng_seed(g_ws->rng_state2, 0xB3C4904A6D278932ULL);
     return 0;
 }
 
