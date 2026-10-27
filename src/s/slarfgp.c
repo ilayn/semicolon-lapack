@@ -128,7 +128,12 @@ void slarfgp(const INT n, f32* alpha, f32* restrict x,
             /*
              * This is the general case.
              */
-            cblas_sscal(n - 1, ONE / *alpha, x, incx);
+            if (fabsf(*alpha) < smlnum) {
+                cblas_sscal(n - 1, ONE / smlnum, x, incx);
+                cblas_sscal(n - 1, smlnum / *alpha, x, incx);
+            } else {
+                cblas_sscal(n - 1, ONE / *alpha, x, incx);
+            }
         }
 
         /* If BETA is subnormal, it may lose relative accuracy */

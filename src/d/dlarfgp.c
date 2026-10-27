@@ -128,7 +128,12 @@ void dlarfgp(const INT n, f64* alpha, f64* restrict x,
             /*
              * This is the general case.
              */
-            cblas_dscal(n - 1, ONE / *alpha, x, incx);
+            if (fabs(*alpha) < smlnum) {
+                cblas_dscal(n - 1, ONE / smlnum, x, incx);
+                cblas_dscal(n - 1, smlnum / *alpha, x, incx);
+            } else {
+                cblas_dscal(n - 1, ONE / *alpha, x, incx);
+            }
         }
 
         /* If BETA is subnormal, it may lose relative accuracy */
