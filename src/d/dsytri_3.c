@@ -3,6 +3,7 @@
  * @brief DSYTRI_3 computes the inverse of a real symmetric indefinite matrix using the factorization computed by DSYTRF_RK or DSYTRF_BK.
  */
 
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_double.h"
 
 /**
@@ -90,7 +91,7 @@ void dsytri_3(
     INT* info)
 {
     INT upper, lquery;
-    INT lwkopt, nb;
+    INT lwkopt, nb = 0;
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -99,7 +100,7 @@ void dsytri_3(
     if (n == 0) {
         lwkopt = 1;
     } else {
-        nb = 1;
+        nb = lapack_get_nb("SYTRI_3");
         if (nb < 1) {
             nb = 1;
         }

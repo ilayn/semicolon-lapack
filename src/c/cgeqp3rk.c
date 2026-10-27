@@ -6,6 +6,7 @@
 #include <complex.h>
 #include <math.h>
 #include "semicolon_cblas.h"
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_complex_single.h"
 
 /**
@@ -131,7 +132,7 @@ void cgeqp3rk(
             lwkopt = 1;
         } else {
             iws = n + nrhs - 1;
-            nb = 32;
+            nb = lapack_get_nb("GEQP3RK");
             lwkopt = 2 * n + nb * (n + nrhs + 1);
         }
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
@@ -246,14 +247,16 @@ void cgeqp3rk(
 
     if (nb > 1 && nb < minmn) {
 
-        nx = 128;
+        nx = lapack_get_nx("GEQP3RK");
+        if (nx < 0) nx = 0;
 
         if (nx < minmn) {
 
             if (lwork < lwkopt) {
 
                 nb = (lwork - 2 * n) / (n + 1);
-                nbmin = 2;
+                nbmin = lapack_get_nbmin("GEQP3RK");
+                if (nbmin < 2) nbmin = 2;
 
             }
         }

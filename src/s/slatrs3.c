@@ -5,6 +5,7 @@
 
 #include <math.h>
 #include "semicolon_cblas.h"
+#include "../include/lapack_tuning.h"
 #include "semicolon_lapack_single.h"
 
 /**
@@ -82,7 +83,7 @@ void slatrs3(
     const f32 ZERO = 0.0f;
     const f32 ONE = 1.0f;
 #define NRHSMIN 2
-#define NBRHS 32  /* ISPEC=1 for LATRS per ilaenv.f line 496 */
+#define NBRHS 32
 #define NBMIN 8
 #define NBMAX 64
 
@@ -105,8 +106,7 @@ void slatrs3(
     lquery = (lwork == -1);
 
     /* Partition A and X into blocks */
-    /* NB from ILAENV for SLATRS is typically 64, but we use NBMIN=8 as floor */
-    nb = NBMAX;  /* Default block size for SLATRS */
+    nb = lapack_get_nb("LATRS");
     if (nb < NBMIN) nb = NBMIN;
     if (nb > NBMAX) nb = NBMAX;
 
