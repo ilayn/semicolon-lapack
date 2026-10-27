@@ -140,6 +140,7 @@ void zheevx(const char* jobz, const char* range, const char* uplo,
         } else {
             lwkmin = 2 * n;
             nb = lapack_get_nb("HETRD");
+            nb = nb > lapack_get_nb("UNMTR") ? nb : lapack_get_nb("UNMTR");
             lwkopt = (nb + 1) * n > lwkmin ? (nb + 1) * n : lwkmin;
         }
         work[0] = CMPLX((f64)lwkopt, 0.0);

@@ -77,7 +77,7 @@ void zgelss(const INT m, const INT n, const INT nrhs,
     INT lquery;
     INT bl, chunk, i, iascl, ibscl, ie, il, irwork, itau, itaup, itauq;
     INT iwork, ldwork, maxmn, maxwrk, minmn, minwrk, mm, mnthr = 0;
-    INT lwork_zgeqrf, lwork_zunmqr, lwork_zgebrd, lwork_zunmbr, lwork_zungbr;
+    INT lwork_zgebrd, lwork_zunmbr, lwork_zungbr;
     INT lwork_zgelqf, lwork_zunmlq;
     f64 anrm, bignum, bnrm, eps, sfmin, smlnum, thr;
     c128 wkopt[1];
@@ -109,17 +109,13 @@ void zgelss(const INT m, const INT n, const INT nrhs,
             mnthr = lapack_get_mnthr("GELSS", m, n);
             if (m >= n && m >= mnthr) {
                 /* Path 1a - overdetermined, with many more rows than columns */
-                zgeqrf(m, n, A, lda, NULL, wkopt, -1, &iinfo);
-                lwork_zgeqrf = (INT)creal(wkopt[0]);
-                zunmqr("L", "C", m, nrhs, n, A, lda, NULL, B, ldb, wkopt, -1, &iinfo);
-                lwork_zunmqr = (INT)creal(wkopt[0]);
                 mm = n;
                 {
-                    INT t = n + lwork_zgeqrf;
+                    INT t = n + n * lapack_get_nb("GEQRF");
                     if (t > maxwrk) maxwrk = t;
                 }
                 {
-                    INT t = n + lwork_zunmqr;
+                    INT t = n + nrhs * lapack_get_nb("UNMQR");
                     if (t > maxwrk) maxwrk = t;
                 }
             }

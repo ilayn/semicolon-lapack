@@ -72,7 +72,7 @@ void dgesvdx(const char* jobu, const char* jobvt, const char* range,
 {
     INT alls, inds, lquery, vals, wantu, wantvt;
     INT i, id, ie, ierr, ilqf, iltgk, iqrf, iscl, itau, itaup, itauq;
-    INT itemp, itgkz, iutgk, j, maxwrk, minmn, minwrk, mnthr;
+    INT itemp, itgkz, iutgk, j, maxwrk, minmn, minwrk, mnthr = 0;
     f64 anrm, bignum, eps, smlnum;
     char jobz, rngtgk;
 
@@ -142,71 +142,66 @@ void dgesvdx(const char* jobu, const char* jobvt, const char* range,
         minwrk = 1;
         maxwrk = 1;
         if (minmn > 0) {
-            /* Get block size from tuning parameters */
-            INT nb = lapack_get_nb("GEBRD");
-            if (nb < 1) nb = 32;
-
+            INT t;
             if (m >= n) {
-                /* MNTHR from ILAENV(6, 'DGESVD', ...) - typically 1.6 * n */
-                mnthr = (INT)(1.6 * n);
+                mnthr = lapack_get_mnthr("GESVD", m, n);
                 if (m >= mnthr) {
                     /* Path 1 (M much larger than N) */
-                    maxwrk = n + n * nb;
-                    maxwrk = (maxwrk > n * (n + 5) + 2 * n * nb) ?
-                             maxwrk : n * (n + 5) + 2 * n * nb;
+                    maxwrk = n + n * lapack_get_nb("GEQRF");
+                    t = n * (n + 5) + 2 * n * lapack_get_nb("GEBRD");
+                    maxwrk = (maxwrk > t) ? maxwrk : t;
                     if (wantu) {
-                        maxwrk = (maxwrk > n * (3 * n + 6) + n * nb) ?
-                                 maxwrk : n * (3 * n + 6) + n * nb;
+                        t = n * (n * 3 + 6) + n * lapack_get_nb("ORMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                     if (wantvt) {
-                        maxwrk = (maxwrk > n * (3 * n + 6) + n * nb) ?
-                                 maxwrk : n * (3 * n + 6) + n * nb;
+                        t = n * (n * 3 + 6) + n * lapack_get_nb("ORMLQ");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
-                    minwrk = n * (3 * n + 20);
+                    minwrk = n * (n * 3 + 20);
                 } else {
                     /* Path 2 (M at least N, but not much larger) */
-                    maxwrk = 4 * n + (m + n) * nb;
+                    maxwrk = 4 * n + (m + n) * lapack_get_nb("GEBRD");
                     if (wantu) {
-                        maxwrk = (maxwrk > n * (2 * n + 5) + n * nb) ?
-                                 maxwrk : n * (2 * n + 5) + n * nb;
+                        t = n * (n * 2 + 5) + n * lapack_get_nb("ORMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                     if (wantvt) {
-                        maxwrk = (maxwrk > n * (2 * n + 5) + n * nb) ?
-                                 maxwrk : n * (2 * n + 5) + n * nb;
+                        t = n * (n * 2 + 5) + n * lapack_get_nb("ORMLQ");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
-                    minwrk = (n * (2 * n + 19) > 4 * n + m) ?
-                             n * (2 * n + 19) : 4 * n + m;
+                    minwrk = (n * (n * 2 + 19) > 4 * n + m) ?
+                             n * (n * 2 + 19) : 4 * n + m;
                 }
             } else {
-                /* MNTHR from ILAENV(6, 'DGESVD', ...) - typically 1.6 * m */
-                mnthr = (INT)(1.6 * m);
+                mnthr = lapack_get_mnthr("GESVD", m, n);
                 if (n >= mnthr) {
                     /* Path 1t (N much larger than M) */
-                    maxwrk = m + m * nb;
-                    maxwrk = (maxwrk > m * (m + 5) + 2 * m * nb) ?
-                             maxwrk : m * (m + 5) + 2 * m * nb;
+                    maxwrk = m + m * lapack_get_nb("GELQF");
+                    t = m * (m + 5) + 2 * m * lapack_get_nb("GEBRD");
+                    maxwrk = (maxwrk > t) ? maxwrk : t;
                     if (wantu) {
-                        maxwrk = (maxwrk > m * (3 * m + 6) + m * nb) ?
-                                 maxwrk : m * (3 * m + 6) + m * nb;
+                        t = m * (m * 3 + 6) + m * lapack_get_nb("ORMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                     if (wantvt) {
-                        maxwrk = (maxwrk > m * (3 * m + 6) + m * nb) ?
-                                 maxwrk : m * (3 * m + 6) + m * nb;
+                        t = m * (m * 3 + 6) + m * lapack_get_nb("ORMLQ");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
-                    minwrk = m * (3 * m + 20);
+                    minwrk = m * (m * 3 + 20);
                 } else {
                     /* Path 2t (N at least M, but not much larger) */
-                    maxwrk = 4 * m + (m + n) * nb;
+                    maxwrk = 4 * m + (m + n) * lapack_get_nb("GEBRD");
                     if (wantu) {
-                        maxwrk = (maxwrk > m * (2 * m + 5) + m * nb) ?
-                                 maxwrk : m * (2 * m + 5) + m * nb;
+                        t = m * (m * 2 + 5) + m * lapack_get_nb("ORMQR");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
                     if (wantvt) {
-                        maxwrk = (maxwrk > m * (2 * m + 5) + m * nb) ?
-                                 maxwrk : m * (2 * m + 5) + m * nb;
+                        t = m * (m * 2 + 5) + m * lapack_get_nb("ORMLQ");
+                        maxwrk = (maxwrk > t) ? maxwrk : t;
                     }
-                    minwrk = (m * (2 * m + 19) > 4 * m + n) ?
-                             m * (2 * m + 19) : 4 * m + n;
+                    minwrk = (m * (m * 2 + 19) > 4 * m + n) ?
+                             m * (m * 2 + 19) : 4 * m + n;
                 }
             }
         }
@@ -263,9 +258,6 @@ void dgesvdx(const char* jobu, const char* jobvt, const char* range,
 
     if (m >= n) {
         /* A has at least as many rows as columns */
-        /* MNTHR from ILAENV(6, 'DGESVD', ...) */
-        mnthr = (INT)(1.6 * n);
-
         if (m >= mnthr) {
             /* Path 1 (M much larger than N):
              * A = Q * R = Q * ( QB * B * PB**T )
@@ -383,9 +375,6 @@ void dgesvdx(const char* jobu, const char* jobvt, const char* range,
         }
     } else {
         /* A has more columns than rows */
-        /* MNTHR from ILAENV(6, 'DGESVD', ...) */
-        mnthr = (INT)(1.6 * m);
-
         if (n >= mnthr) {
             /* Path 1t (N much larger than M):
              * A = L * Q = ( QB * B * PB**T ) * Q
