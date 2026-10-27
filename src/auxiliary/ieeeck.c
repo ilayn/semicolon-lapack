@@ -3,7 +3,21 @@
  * @brief IEEECK verifies IEEE infinity and NaN arithmetic is safe.
  */
 
+#include <float.h>
+#include <math.h>
 #include "semicolon_lapack_auxiliary.h"
+
+#if FLT_RADIX == 2 && FLT_MANT_DIG == 24 && FLT_MAX_EXP == 128
+#define IEEE_SUPPORT_INF 1
+#else
+#define IEEE_SUPPORT_INF 0
+#endif
+
+#if IEEE_SUPPORT_INF && defined(NAN)
+#define IEEE_SUPPORT_NAN 1
+#else
+#define IEEE_SUPPORT_NAN 0
+#endif
 
 /**
  * IEEECK is called from the ILAENV to verify that Infinity and
@@ -23,46 +37,10 @@
  */
 INT ieeeck(const INT ispec, const float zero, const float one)
 {
-    float nan1, nan2, nan3, nan4, nan5, nan6;
-    float neginf, negzro, newzro, posinf;
+    (void)zero;
+    (void)one;
 
-    posinf = one / zero;
-    if (posinf <= one) {
-        return 0;
-    }
-
-    neginf = -one / zero;
-    if (neginf >= zero) {
-        return 0;
-    }
-
-    negzro = one / (neginf + one);
-    if (negzro != zero) {
-        return 0;
-    }
-
-    neginf = one / negzro;
-    if (neginf >= zero) {
-        return 0;
-    }
-
-    newzro = negzro + zero;
-    if (newzro != zero) {
-        return 0;
-    }
-
-    posinf = one / newzro;
-    if (posinf <= one) {
-        return 0;
-    }
-
-    neginf = neginf * posinf;
-    if (neginf >= zero) {
-        return 0;
-    }
-
-    posinf = posinf * posinf;
-    if (posinf <= one) {
+    if (!IEEE_SUPPORT_INF) {
         return 0;
     }
 
@@ -70,34 +48,7 @@ INT ieeeck(const INT ispec, const float zero, const float one)
         return 1;
     }
 
-    nan1 = posinf + neginf;
-    nan2 = posinf / neginf;
-    nan3 = posinf / posinf;
-    nan4 = posinf * zero;
-    nan5 = neginf * negzro;
-    nan6 = nan5 * zero;
-
-    if (nan1 == nan1) {
-        return 0;
-    }
-
-    if (nan2 == nan2) {
-        return 0;
-    }
-
-    if (nan3 == nan3) {
-        return 0;
-    }
-
-    if (nan4 == nan4) {
-        return 0;
-    }
-
-    if (nan5 == nan5) {
-        return 0;
-    }
-
-    if (nan6 == nan6) {
+    if (!IEEE_SUPPORT_NAN) {
         return 0;
     }
 
