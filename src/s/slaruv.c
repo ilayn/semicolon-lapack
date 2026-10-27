@@ -231,10 +231,10 @@ void slaruv(INT* restrict iseed, const INT n, f32* restrict X)
              * simply to iterate again.
              * N.B. the case X[i] = 0.0 should not be possible.
              */
-            i1 = i1 + 2;
-            i2 = i2 + 2;
-            i3 = i3 + 2;
-            i4 = i4 + 2;
+            i1 = it1;
+            i2 = it2;
+            i3 = it3;
+            i4 = it4;
         }
     }
 
