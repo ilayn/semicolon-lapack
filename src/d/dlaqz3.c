@@ -132,9 +132,7 @@ void dlaqz3(
         *ns = 1;
         *nd = 0;
         {
-            f64 tmp = fabs(A[kwtop + kwtop * lda]);
-            if (smlnum > tmp) tmp = smlnum;
-            tmp = ulp * tmp;
+            f64 tmp = ulp * fabs(A[kwtop + kwtop * lda]);
             if (fabs(s) <= ((smlnum > tmp) ? smlnum : tmp)) {
                 *ns = 0;
                 *nd = 1;
