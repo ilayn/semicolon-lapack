@@ -163,7 +163,7 @@ static void generate_zgt_matrix(INT n, INT imat, c128* DL, c128* D, c128* DU,
         if (!AB || !d_sing) {
             free(AB);
             free(d_sing);
-            return;
+            fail_msg("generate_zgt_matrix: allocation failed (n=%d imat=%d)", n, imat);
         }
 
         zlatms(n, n, &dist, &type, d_sing, mode, cndnum, anorm,
@@ -280,11 +280,7 @@ static void run_zchkgt_single(INT n, INT imat)
     set_test_context(ctx);
     zgttrf(n, ws->DLF, ws->DF, ws->DUF, ws->DU2, ws->IPIV, &info);
 
-    if (izero >= 0) {
-        assert_true(info >= 0);
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero + 1);
     trfcon = (info != 0);
 
     zgtt01(n, ws->DL, ws->D, ws->DU, ws->DLF, ws->DF, ws->DUF,

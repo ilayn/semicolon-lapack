@@ -1,7 +1,7 @@
 /**
  * @file dglmts.c
  * @brief DGLMTS tests DGGGLM - a subroutine for solving the generalized
- *        linear model problem.
+ *        linear model problem, including independent scaling of its inputs.
  */
 
 #include <math.h>
@@ -10,7 +10,7 @@
 
 /**
  * DGLMTS tests DGGGLM - a subroutine for solving the generalized
- * linear model problem.
+ * linear model problem, including independent scaling of its inputs.
  *
  * @param[in]     n       The number of rows of the matrices A and B. n >= 0.
  * @param[in]     m       The number of columns of the matrix A. m >= 0.

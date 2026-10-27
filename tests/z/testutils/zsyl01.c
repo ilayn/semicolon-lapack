@@ -29,7 +29,8 @@
  * @param[out]    nfail   Integer array, dimension (3).
  * @param[out]    rmax    Double precision array, dimension (2).
  * @param[out]    ninfo   Integer array, dimension (2).
- * @param[out]    knt     Total number of examples tested.
+ * @param[out]    knt     Total number of examples tested, or -1 if the
+ *                        workspace could not be allocated.
  */
 void zsyl01(const f64 thresh, INT* nfail, f64* rmax, INT* ninfo, INT* knt)
 {
@@ -71,6 +72,16 @@ void zsyl01(const f64 thresh, INT* nfail, f64* rmax, INT* ninfo, INT* knt)
     c128* CC = malloc((size_t)MAXM * MAXN * sizeof(c128));
     c128* X = malloc((size_t)MAXM * MAXN * sizeof(c128));
     f64* swork = malloc((size_t)LDSWORK * 103 * sizeof(f64));
+    if (!A || !B || !C || !CC || !X || !swork) {
+        free(A);
+        free(B);
+        free(C);
+        free(CC);
+        free(X);
+        free(swork);
+        *knt = -1;
+        return;
+    }
 
     /* Stack arrays */
 

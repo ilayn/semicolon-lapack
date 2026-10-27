@@ -171,6 +171,7 @@ testutils_d_sources = files(
 
   # Error exit tests (double precision specific)
   'derrec.c',      # Error exit tests for eigencondition routines (DTRSYL, DTRSYL3, DTREXC, DTRSNA, DTRSEN)
+  'derrbd.c',
 
   # SVD verification
   'dsvdct.c',   # Count singular values via Sturm sequence

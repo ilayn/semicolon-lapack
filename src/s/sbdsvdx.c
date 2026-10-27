@@ -41,8 +41,10 @@ static const f32 FUDGE = 2.0f;
  *                         = 'V': all singular values in [VL,VU) will be found.
  *                         = 'I': the IL-th through IU-th singular values.
  * @param[in]     n       The order of the bidiagonal matrix. n >= 0.
- * @param[in]     D       Array of dimension n. Diagonal elements.
- * @param[in]     E       Array of dimension max(1,n-1). Superdiagonal elements.
+ * @param[in,out] D       Array of dimension n. Diagonal elements.
+ *                         On exit, very small entries are set to 0.
+ * @param[in,out] E       Array of dimension max(1,n-1). Superdiagonal elements.
+ *                         On exit, very small entries are set to 0.
  * @param[in]     vl      If range='V', lower bound of interval for singular values.
  * @param[in]     vu      If range='V', upper bound of interval. vu > vl.
  * @param[in]     il      If range='I', index of smallest singular value (0-based).

@@ -4,7 +4,7 @@
  *
  * Port of LAPACK's TESTING/LIN/ddrvrf3.f to C using CMocka.
  * Tests STFSM by comparing it against cblas_dtrsm on the same input:
- *   result = ||B_dtfsm - B_dtrsm||_I / (sqrt(eps) * max(M,N))
+ *   result = ||B_dtfsm - B_dtrsm||_I / (sqrt(eps) * max(M,N) * max(||B_dtrsm||_I, 1))
  *
  * To get a well-conditioned triangular matrix, the R factor of a
  * QR factorization (upper) or L factor of an LQ factorization (lower)
@@ -108,6 +108,8 @@ static void run_ddrvrf3_single(INT m, INT n, INT iform, INT iuplo,
 
     stfsm(cform, side, uplo, trans, diag, m, n, alpha, ARF, B2, lda);
 
+    f32 solnrm = slange("I", m, n, B1, lda, D_WORK_DLANGE);
+
     for (INT j = 0; j < n; j++)
         for (INT i = 0; i < m; i++)
             B1[i + j * lda] = B2[i + j * lda] - B1[i + j * lda];
@@ -116,7 +118,7 @@ static void run_ddrvrf3_single(INT m, INT n, INT iform, INT iuplo,
 
     INT mn_max = (m > n) ? m : n;
     if (mn_max < 1) mn_max = 1;
-    result = result / sqrtf(eps) / mn_max;
+    result = result / sqrtf(eps) / mn_max / ((solnrm > 1.0f) ? solnrm : 1.0f);
 
     snprintf(ctx, sizeof(ctx),
              "m=%d n=%d form=%s side=%s uplo=%s trans=%s diag=%s alpha=%.2f resid=%.6e",

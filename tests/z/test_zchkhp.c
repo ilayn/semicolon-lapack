@@ -185,7 +185,7 @@ static void run_zchkhp_single(INT n, INT iuplo, INT imat)
                 }
                 ioff = ioff - (izero - 1);
                 for (INT i = izero - 1; i < n; i++) {
-                    ws->A[ioff + i - (izero - 1)] = ZERO;
+                    ws->A[ioff + i] = ZERO;
                 }
             }
         } else {
@@ -238,9 +238,7 @@ static void run_zchkhp_single(INT n, INT iuplo, INT imat)
         }
     }
 
-    if (info != k + 1) {
-        return;
-    }
+    assert_int_equal(info, k + 1);
 
     if (info != 0) {
         trfcon = 1;

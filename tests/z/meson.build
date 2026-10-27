@@ -123,6 +123,7 @@ lapack_tests_z = {
   'zdrvsg2stg': ['test_zdrvsg2stg.c', 'eigen'],
   'zdrvbd': ['test_zdrvbd.c', 'eigen'],
   'zckcsd': ['test_zckcsd.c', 'eigen'],
+  'zwq_rwork': ['test_zwq_rwork.c', 'eigen'],
 }
 
 foreach name, info : lapack_tests_z

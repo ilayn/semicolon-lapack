@@ -1,7 +1,7 @@
 /**
  * @file clsets.c
  * @brief CLSETS tests CGGLSE - a subroutine for solving linear equality
- *        constrained least square problem (LSE).
+ *        constrained least square problem (LSE), including scaled inputs.
  */
 
 #include <math.h>
@@ -10,7 +10,7 @@
 
 /**
  * CLSETS tests CGGLSE - a subroutine for solving linear equality
- * constrained least square problem (LSE).
+ * constrained least square problem (LSE), including scaled inputs.
  *
  * @param[in]     m       The number of rows of the matrix A. m >= 0.
  * @param[in]     p       The number of rows of the matrix B. p >= 0.

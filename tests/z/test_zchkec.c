@@ -45,6 +45,7 @@ static void test_zsyl01_ztrsyl3(void** state)
 
     zsyl01(THRESH, ftrsyl, rtrsyl, itrsyl, &ktrsyl3);
 
+    assert_true(ktrsyl3 >= 0);
     assert_int_equal(ftrsyl[0], 0);
     assert_int_equal(ftrsyl[1], 0);
     assert_int_equal(ftrsyl[2], 0);

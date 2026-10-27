@@ -286,7 +286,9 @@ static void run_zchkhe_rk_single(INT n, INT iuplo, INT imat, INT inb)
                 break;
             }
         }
-        assert_true(info >= 0);
+        assert_int_equal(info, k + 1);
+    } else {
+        assert_int_equal(info, 0);
     }
     trfcon = (info != 0);
     if (trfcon) {

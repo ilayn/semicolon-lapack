@@ -201,7 +201,7 @@ static void run_zchkpp_single(INT n, INT iuplo, INT imat)
             }
             ioff = ioff - (izero - 1);
             for (INT i = izero - 1; i < n; i++) {
-                ws->A[ioff + i - (izero - 1)] = ZERO;
+                ws->A[ioff + i] = ZERO;
             }
         }
     } else {
@@ -222,14 +222,7 @@ static void run_zchkpp_single(INT n, INT iuplo, INT imat)
     zpptrf(uplo_str, n, ws->AFAC, &info);
 
     /* Check error code */
-    if (zerot) {
-        assert_true(info >= 0);
-        if (info != izero) {
-            return;
-        }
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero);
 
     /* Skip the rest if factorization failed */
     if (info != 0) {

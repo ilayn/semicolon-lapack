@@ -41,7 +41,11 @@
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, then i eigenvectors failed to converge
+ *                         - > 0: if info = i, and i is:
+ *                           - <= n: then i eigenvectors failed to converge in
+ *                             SSTEIN; their indices are stored in ifail.
+ *                           - > n: SSTEBZ returned info = i - n;
+ *                             see SSTEBZ for details.
  */
 void ssbevx(
     const char* jobz,

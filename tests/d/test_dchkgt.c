@@ -191,7 +191,7 @@ static void generate_gt_matrix(INT n, INT imat, f64* DL, f64* D, f64* DU,
             free(AB);
             free(d_sing);
             free(work);
-            return;
+            fail_msg("generate_gt_matrix: allocation failed (n=%d imat=%d)", n, imat);
         }
 
         dlatms(n, n, &dist,
@@ -324,9 +324,7 @@ static void run_dchkgt_single(INT n, INT imat)
     dgttrf(n, ws->DLF, ws->DF, ws->DUF, ws->DU2, ws->IPIV, &info);
 
     /* Check error code */
-    if (izero >= 0) {
-        assert_true(info >= 0);
-    }
+    assert_int_equal(info, izero + 1);
     trfcon = (info != 0);
 
     /* Verify factorization */

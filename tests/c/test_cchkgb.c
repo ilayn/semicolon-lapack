@@ -175,7 +175,7 @@ static void run_zchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
         } else if (imat == 3) {
             izero = minmn - 1;
         } else {
-            izero = (minmn - 1) / 2;
+            izero = minmn / 2;
         }
         INT ioff = izero * lda;
         INT i1 = (ku - izero > 0) ? ku - izero : 0;
@@ -215,11 +215,7 @@ static void run_zchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
 
     cgbtrf(m, n, kl, ku, ws->AFAC, ldafac, ws->IPIV, &info);
 
-    if (izero >= 0) {
-        assert_true(info >= 0);
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero + 1);
     trfcon = (info != 0);
 
     /*

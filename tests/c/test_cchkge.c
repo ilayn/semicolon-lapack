@@ -163,11 +163,7 @@ static void run_zchkge_single(INT m, INT n, INT imat, INT inb)
 
     cgetrf(m, n, ws->AFAC, lda, ws->IPIV, &info);
 
-    if (zerot) {
-        assert_true(info >= 0);
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero);
     trfcon = (info != 0);
 
     /* TEST 1 */

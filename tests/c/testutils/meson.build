@@ -240,6 +240,7 @@ testutils_c_sources = files(
 
   # Sylvester equation test
   'csyl01.c',       # Sylvester equation (ZTRSYL/ZTRSYL3) test
+  'cerrbd.c',
 
   # CSD (cosine-sine decomposition) verification
   'ccsdts.c',       # CSD verification: ZUNCSD/ZUNCSD2BY1

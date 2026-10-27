@@ -39,7 +39,13 @@
  * @param[out]    iwork   Integer workspace, dimension (5*n).
  * @param[out]    ifail   Indices of eigenvectors that failed to converge.
  * @param[out]    info
- *                         - = 0: success; < 0: illegal argument; > 0: convergence failure.
+ *                         - = 0: successful exit
+ *                         - < 0: if info = -i, the i-th argument had an illegal value
+ *                         - > 0: if info = i, and i is:
+ *                           - <= n: then i eigenvectors failed to converge in
+ *                             SSTEIN; their indices are stored in ifail.
+ *                           - > n: SSTEBZ returned info = i - n;
+ *                             see SSTEBZ for details.
  */
 void ssbevx_2stage(
     const char* jobz,

@@ -1099,6 +1099,14 @@ results:
 /* CMocka test wrapper                                                   */
 /* ===================================================================== */
 
+static void test_derrbd(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    derrbd(&ok, &nt);
+    assert_true(ok);
+}
+
 static void test_dchkbd(void** state)
 {
     (void)state;
@@ -1110,7 +1118,7 @@ static void test_dchkbd(void** state)
 /* Test table generation                                                 */
 /* ===================================================================== */
 
-#define MAX_TESTS (NPARMS * NSIZES * MAXTYP)
+#define MAX_TESTS (1 + NPARMS * NSIZES * MAXTYP)
 
 static dchkbd_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1119,6 +1127,12 @@ static INT g_ntests = 0;
 static void generate_test_table(void)
 {
     g_ntests = 0;
+    g_tests[g_ntests].name = "derrbd";
+    g_tests[g_ntests].test_func = test_derrbd;
+    g_tests[g_ntests].initial_state = NULL;
+    g_tests[g_ntests].setup_func = NULL;
+    g_tests[g_ntests].teardown_func = NULL;
+    g_ntests++;
     for (size_t ip = 0; ip < NPARMS; ip++) {
         for (INT js = 0; js < NSIZES; js++) {
             for (INT jt = 1; jt <= MAXTYP; jt++) {
