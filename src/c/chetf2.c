@@ -147,7 +147,7 @@ void chetf2(
                 colmax = cabs1f(A[imax + k * lda]);
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f || isnan(absakk)) {
                 if (*info == 0) {
                     *info = k + 1;
                 }
@@ -165,7 +165,7 @@ void chetf2(
                     }
                     if (imax > 0) {
                         INT jmax = cblas_icamax(imax, &A[0 + imax * lda], 1);
-                        rowmax = fmaxf(rowmax, cabs1f(A[jmax + imax * lda]));
+                        rowmax = (rowmax > cabs1f(A[jmax + imax * lda])) ? rowmax : cabs1f(A[jmax + imax * lda]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {
@@ -267,7 +267,7 @@ void chetf2(
                 colmax = cabs1f(A[imax + k * lda]);
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f || isnan(absakk)) {
                 if (*info == 0) {
                     *info = k + 1;
                 }
@@ -285,7 +285,7 @@ void chetf2(
                     }
                     if (imax < n - 1) {
                         INT jmax = imax + 1 + cblas_icamax(n - imax - 1, &A[(imax + 1) + imax * lda], 1);
-                        rowmax = fmaxf(rowmax, cabs1f(A[jmax + imax * lda]));
+                        rowmax = (rowmax > cabs1f(A[jmax + imax * lda])) ? rowmax : cabs1f(A[jmax + imax * lda]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {

@@ -143,7 +143,7 @@ void dlasyf(
 
             INT kp;
 
-            if (fmax(absakk, colmax) == 0.0) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0) {
                 /* Column K is zero or underflow: set INFO and continue */
                 if (*info == 0) {
                     *info = k + 1;
@@ -179,7 +179,7 @@ void dlasyf(
 
                     if (imax > 0) {
                         jmax = cblas_idamax(imax, &W[0 + (kw - 1) * ldw], 1);
-                        rowmax = fmax(rowmax, fabs(W[jmax + (kw - 1) * ldw]));
+                        rowmax = (rowmax > fabs(W[jmax + (kw - 1) * ldw])) ? rowmax : fabs(W[jmax + (kw - 1) * ldw]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {
@@ -403,7 +403,7 @@ void dlasyf(
 
             INT kp;
 
-            if (fmax(absakk, colmax) == 0.0) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0) {
                 /* Column K is zero or underflow: set INFO and continue */
                 if (*info == 0) {
                     *info = k + 1;
@@ -437,7 +437,7 @@ void dlasyf(
 
                     if (imax < n - 1) {
                         jmax = (imax + 1) + cblas_idamax(n - imax - 1, &W[(imax + 1) + (k + 1) * ldw], 1);
-                        rowmax = fmax(rowmax, fabs(W[jmax + (k + 1) * ldw]));
+                        rowmax = (rowmax > fabs(W[jmax + (k + 1) * ldw])) ? rowmax : fabs(W[jmax + (k + 1) * ldw]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {

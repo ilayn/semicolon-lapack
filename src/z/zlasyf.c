@@ -149,7 +149,7 @@ void zlasyf(
 
             INT kp;
 
-            if (fmax(absakk, colmax) == 0.0) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0) {
                 /* Column K is zero or underflow: set INFO and continue */
                 if (*info == 0) {
                     *info = k + 1;
@@ -185,7 +185,7 @@ void zlasyf(
 
                     if (imax > 0) {
                         jmax = cblas_izamax(imax, &W[0 + (kw - 1) * ldw], 1);
-                        rowmax = fmax(rowmax, cabs1(W[jmax + (kw - 1) * ldw]));
+                        rowmax = (rowmax > cabs1(W[jmax + (kw - 1) * ldw])) ? rowmax : cabs1(W[jmax + (kw - 1) * ldw]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {
@@ -409,7 +409,7 @@ void zlasyf(
 
             INT kp;
 
-            if (fmax(absakk, colmax) == 0.0) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0) {
                 /* Column K is zero or underflow: set INFO and continue */
                 if (*info == 0) {
                     *info = k + 1;
@@ -443,7 +443,7 @@ void zlasyf(
 
                     if (imax < n - 1) {
                         jmax = (imax + 1) + cblas_izamax(n - imax - 1, &W[(imax + 1) + (k + 1) * ldw], 1);
-                        rowmax = fmax(rowmax, cabs1(W[jmax + (k + 1) * ldw]));
+                        rowmax = (rowmax > cabs1(W[jmax + (k + 1) * ldw])) ? rowmax : cabs1(W[jmax + (k + 1) * ldw]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {

@@ -141,7 +141,7 @@ void csytf2_rk(
                 colmax = 0.0f;
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f) {
 
                 if (*info == 0) {
                     *info = k + 1;
@@ -326,7 +326,7 @@ void csytf2_rk(
                 colmax = 0.0f;
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f) {
 
                 if (*info == 0) {
                     *info = k + 1;

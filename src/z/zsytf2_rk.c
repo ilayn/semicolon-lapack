@@ -141,7 +141,7 @@ void zsytf2_rk(
                 colmax = 0.0;
             }
 
-            if (fmax(absakk, colmax) == 0.0) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0) {
 
                 if (*info == 0) {
                     *info = k + 1;
@@ -326,7 +326,7 @@ void zsytf2_rk(
                 colmax = 0.0;
             }
 
-            if (fmax(absakk, colmax) == 0.0) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0) {
 
                 if (*info == 0) {
                     *info = k + 1;

@@ -143,7 +143,7 @@ void clasyf_rook(
                 colmax = 0.0f;
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f) {
 
                 if (*info == 0) {
                     *info = k + 1;
@@ -344,7 +344,7 @@ void clasyf_rook(
                 colmax = 0.0f;
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f) {
 
                 if (*info == 0) {
                     *info = k + 1;

@@ -139,7 +139,7 @@ void clahef(
 
             INT kp;
 
-            if (fmaxf(absakk, colmax) == 0.0f) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f) {
                 /* Column K is zero or underflow: set INFO and continue */
                 if (*info == 0) {
                     *info = k + 1;
@@ -181,7 +181,7 @@ void clahef(
 
                     if (imax > 0) {
                         jmax = cblas_icamax(imax, &W[0 + (kw - 1) * ldw], 1);
-                        rowmax = fmaxf(rowmax, cabs1f(W[jmax + (kw - 1) * ldw]));
+                        rowmax = (rowmax > cabs1f(W[jmax + (kw - 1) * ldw])) ? rowmax : cabs1f(W[jmax + (kw - 1) * ldw]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {
@@ -366,7 +366,7 @@ void clahef(
 
             INT kp;
 
-            if (fmaxf(absakk, colmax) == 0.0f) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f) {
                 /* Column K is zero or underflow: set INFO and continue */
                 if (*info == 0) {
                     *info = k + 1;
@@ -407,7 +407,7 @@ void clahef(
 
                     if (imax < n - 1) {
                         jmax = (imax + 1) + cblas_icamax(n - imax - 1, &W[(imax + 1) + (k + 1) * ldw], 1);
-                        rowmax = fmaxf(rowmax, cabs1f(W[jmax + (k + 1) * ldw]));
+                        rowmax = (rowmax > cabs1f(W[jmax + (k + 1) * ldw])) ? rowmax : cabs1f(W[jmax + (k + 1) * ldw]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {

@@ -151,7 +151,7 @@ void zsptrf(
                 colmax = ZERO;
             }
 
-            if (fmax(absakk, colmax) == ZERO || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == ZERO || isnan(absakk)) {
                 if (*info == 0)
                     *info = k + 1;
                 kp = k;
@@ -170,7 +170,7 @@ void zsptrf(
                     kpc = imax * (imax + 1) / 2;
                     if (imax > 0) {
                         jmax = cblas_izamax(imax, &AP[kpc], 1);
-                        rowmax = fmax(rowmax, cabs1(AP[kpc + jmax]));
+                        rowmax = (rowmax > cabs1(AP[kpc + jmax])) ? rowmax : cabs1(AP[kpc + jmax]);
                     }
 
                     if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -272,7 +272,7 @@ void zsptrf(
                 colmax = ZERO;
             }
 
-            if (fmax(absakk, colmax) == ZERO || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == ZERO || isnan(absakk)) {
                 if (*info == 0)
                     *info = k + 1;
                 kp = k;
@@ -291,7 +291,7 @@ void zsptrf(
                     kpc = npp - (n - imax) * (n - imax + 1) / 2;
                     if (imax < n - 1) {
                         jmax = imax + 1 + cblas_izamax(n - imax - 1, &AP[kpc + 1], 1);
-                        rowmax = fmax(rowmax, cabs1(AP[kpc + jmax - imax]));
+                        rowmax = (rowmax > cabs1(AP[kpc + jmax - imax])) ? rowmax : cabs1(AP[kpc + jmax - imax]);
                     }
 
                     if (absakk >= alpha * colmax * (colmax / rowmax)) {

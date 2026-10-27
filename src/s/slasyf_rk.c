@@ -203,7 +203,7 @@ void slasyf_rk(
                 colmax = ZERO;
             }
 
-            if (fmaxf(absakk, colmax) == ZERO) {
+            if (((absakk > colmax) ? absakk : colmax) == ZERO) {
 
                 if (*info == 0) {
                     *info = k + 1;
@@ -397,7 +397,7 @@ void slasyf_rk(
                 colmax = ZERO;
             }
 
-            if (fmaxf(absakk, colmax) == ZERO) {
+            if (((absakk > colmax) ? absakk : colmax) == ZERO) {
 
                 if (*info == 0) {
                     *info = k + 1;
