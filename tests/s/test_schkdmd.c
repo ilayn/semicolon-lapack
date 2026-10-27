@@ -368,11 +368,6 @@ static void run_case(INT M, INT N)
                                         const INT mn = (M < N + 1) ? M : N + 1;
                                         for (i = 0; i < kq; i++)
                                             w->SINGVQX[i] = w->work[mn + i];
-                                        /* The reference indexes SINGVQX(K) even when K may
-                                         * exceed KQ; zero the unset tail so that read is
-                                         * benign (the entries do not exist for K > KQ). */
-                                        for (i = kq; i < N; i++)
-                                            w->SINGVQX[i] = ZERO;
 
                                         /* singular values agreement */
                                         f32 tmp1 = ZERO;
@@ -417,7 +412,7 @@ static void run_case(INT M, INT N)
                                             f32 tmpq = ZERO;
                                             for (i = 0; i < kq; i++) {
                                                 f32 v = fabsf(w->RES[i] - w->RES1[i]) *
-                                                        w->SINGVQX[k - 1] / (anorm * w->SINGVQX[0]);
+                                                        w->SINGVQX[kq - 1] / (anorm * w->SINGVQX[0]);
                                                 if (v > tmpq) tmpq = v;
                                             }
                                             if (tmpq > e_rezq) e_rezq = tmpq;
