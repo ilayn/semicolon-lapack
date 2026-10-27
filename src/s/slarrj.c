@@ -94,7 +94,7 @@ void slarrj(const INT n, const f32* D, const f32* E2,
         mid = W[ii];
         right = W[ii] + werr[ii];
         width = right - mid;
-        tmp = fmaxf(fabsf(left), fabsf(right));
+        tmp = (fabsf(left) > fabsf(right)) ? fabsf(left) : fabsf(right);
 
         /* The following test prevents the test of converged intervals */
         if (width < rtol * tmp) {
@@ -125,7 +125,7 @@ void slarrj(const INT n, const f32* D, const f32* E2,
              * stop once BACK has overflowed, when no further step can move
              * the endpoint.  BACK starts at no less than the minimum
              * interval width so that a zero WERR still makes progress. */
-            back = fmaxf(werr[ii], TWO * pivmin);
+            back = (werr[ii] > TWO * pivmin) ? werr[ii] : TWO * pivmin;
             for (;;) {
                 cnt = 0;
                 s = left;
@@ -148,7 +148,7 @@ void slarrj(const INT n, const f32* D, const f32* E2,
             }
 
             /* Do while( cnt(right) < i+1 ) */
-            back = fmaxf(werr[ii], TWO * pivmin);
+            back = (werr[ii] > TWO * pivmin) ? werr[ii] : TWO * pivmin;
             for (;;) {
                 cnt = 0;
                 s = right;
@@ -199,7 +199,7 @@ void slarrj(const INT n, const f32* D, const f32* E2,
 
             /* semiwidth of interval */
             width = right - mid;
-            tmp = fmaxf(fabsf(left), fabsf(right));
+            tmp = (fabsf(left) > fabsf(right)) ? fabsf(left) : fabsf(right);
 
             if ((width < rtol * tmp) || (iter == maxitr)) {
                 /* reduce number of unconverged intervals */

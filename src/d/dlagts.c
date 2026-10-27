@@ -97,10 +97,13 @@ void dlagts(
         if (*tol <= 0.0) {
             *tol = fabs(A[0]);
             if (n > 1) {
-                *tol = fmax(*tol, fmax(fabs(A[1]), fabs(B[0])));
+                *tol = (*tol > fabs(A[1])) ? *tol : fabs(A[1]);
+                *tol = (*tol > fabs(B[0])) ? *tol : fabs(B[0]);
             }
             for (k = 2; k < n; k++) {
-                *tol = fmax(*tol, fmax(fabs(A[k]), fmax(fabs(B[k - 1]), fabs(D[k - 2]))));
+                *tol = (*tol > fabs(A[k])) ? *tol : fabs(A[k]);
+                *tol = (*tol > fabs(B[k - 1])) ? *tol : fabs(B[k - 1]);
+                *tol = (*tol > fabs(D[k - 2])) ? *tol : fabs(D[k - 2]);
             }
             *tol = (*tol) * eps;
             if (*tol == 0.0) {

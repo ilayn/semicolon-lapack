@@ -54,7 +54,9 @@ void slartg(const f32 f, const f32 g, f32* c, f32* s, f32* r)
         *s = g / (*r);
     } else {
         /* Use scaled algorithm */
-        f32 u = fminf(safmax, fmaxf(safmin, fmaxf(f1, g1)));
+        f32 u = (safmin > f1) ? safmin : f1;
+        u = (u > g1) ? u : g1;
+        u = (safmax < u) ? safmax : u;
         f32 fs = f / u;
         f32 gs = g / u;
         f32 d = sqrtf(fs * fs + gs * gs);

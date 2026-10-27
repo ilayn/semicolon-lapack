@@ -47,7 +47,7 @@ void slarrk(const INT n, const INT iw, const f32 gl, const f32 gu,
     const f32 TWO = 2.0f;
 
     INT i, it, itmax, negcnt;
-    f32 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
+    f32 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tmp3, tnorm;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -58,7 +58,7 @@ void slarrk(const INT n, const INT iw, const f32 gl, const f32 gu,
     /* Get machine constants */
     eps = slamch("P");
 
-    tnorm = fmaxf(fabsf(gl), fabsf(gu));
+    tnorm = (fabsf(gl) > fabsf(gu)) ? fabsf(gl) : fabsf(gu);
     rtoli = reltol;
     atoli = FUDGE * TWO * pivmin;
 
@@ -73,8 +73,10 @@ void slarrk(const INT n, const INT iw, const f32 gl, const f32 gu,
     for (;;) {
         /* Check if interval converged or maximum number of iterations reached */
         tmp1 = fabsf(right - left);
-        tmp2 = fmaxf(fabsf(right), fabsf(left));
-        if (tmp1 < fmaxf(atoli, fmaxf(pivmin, rtoli * tmp2))) {
+        tmp2 = (fabsf(right) > fabsf(left)) ? fabsf(right) : fabsf(left);
+        tmp3 = (atoli > pivmin) ? atoli : pivmin;
+        tmp3 = (tmp3 > rtoli * tmp2) ? tmp3 : rtoli * tmp2;
+        if (tmp1 < tmp3) {
             *info = 0;
             break;
         }

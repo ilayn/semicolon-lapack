@@ -328,7 +328,7 @@ void zlaqp3rk(
 
                     temp = cabs(A[(i - 1) + j * lda]) / vn1[j];
                     temp = (1.0 + temp) * (1.0 - temp);
-                    temp = (temp > 0.0) ? temp : 0.0;
+                    temp = (0.0 > temp) ? 0.0 : temp;
                     temp2 = temp * pow(vn1[j] / vn2[j], 2.0);
                     if (temp2 <= tol3z) {
 

@@ -155,7 +155,7 @@ void chptrf(
                 colmax = ZERO;
             }
 
-            if (fmaxf(absakk, colmax) == ZERO || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == ZERO || isnan(absakk)) {
                 /* Column K is zero or underflow, or contains a NaN:
                    set INFO and continue */
                 if (*info == 0)
@@ -182,7 +182,7 @@ void chptrf(
                     kpc = imax * (imax + 1) / 2;
                     if (imax > 0) {
                         jmax = cblas_icamax(imax, &AP[kpc], 1);
-                        rowmax = fmaxf(rowmax, cabs1f(AP[kpc + jmax]));
+                        rowmax = (rowmax > cabs1f(AP[kpc + jmax])) ? rowmax : cabs1f(AP[kpc + jmax]);
                     }
 
                     if (absakk >= alpha * colmax * (colmax / rowmax)) {
@@ -338,7 +338,7 @@ void chptrf(
                 colmax = ZERO;
             }
 
-            if (fmaxf(absakk, colmax) == ZERO || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == ZERO || isnan(absakk)) {
                 /* Column K is zero or underflow, or contains a NaN:
                    set INFO and continue */
                 if (*info == 0)
@@ -365,7 +365,7 @@ void chptrf(
                     kpc = npp - (n - imax) * (n - imax + 1) / 2;
                     if (imax < n - 1) {
                         jmax = imax + 1 + cblas_icamax(n - imax - 1, &AP[kpc + 1], 1);
-                        rowmax = fmaxf(rowmax, cabs1f(AP[kpc + jmax - imax]));
+                        rowmax = (rowmax > cabs1f(AP[kpc + jmax - imax])) ? rowmax : cabs1f(AP[kpc + jmax - imax]);
                     }
 
                     if (absakk >= alpha * colmax * (colmax / rowmax)) {

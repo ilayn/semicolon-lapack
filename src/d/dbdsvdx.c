@@ -150,14 +150,16 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
     ortol = sqrt(ulp);
 
     /* Criterion for splitting from DBDSQR */
-    tol = fmax(TEN, fmin(HNDRD, pow(eps, MEIGTH))) * eps;
+    tol = pow(eps, MEIGTH);
+    tol = (HNDRD < tol) ? HNDRD : tol;
+    tol = ((TEN > tol) ? TEN : tol) * eps;
 
     /* Compute approximate maximum, minimum singular values */
     i = cblas_idamax(n, D, 1);
     smax = fabs(D[i]);
     if (n > 1) {
         i = cblas_idamax(n - 1, E, 1);
-        smax = fmax(smax, fabs(E[i]));
+        smax = (smax > fabs(E[i])) ? smax : fabs(E[i]);
     }
 
     /* Compute threshold for neglecting D's and E's */
@@ -166,7 +168,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         mu = smin;
         for (i = 1; i < n; i++) {
             mu = fabs(D[i]) * (mu / (mu + fabs(E[i - 1])));
-            smin = fmin(smin, mu);
+            smin = (smin < mu) ? smin : mu;
             if (smin == ZERO) break;
         }
     }
@@ -261,7 +263,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                iutgk, iutgk, abstol, &ns_local, S, Z, ldz, &work[itemp],
                &iwork[iiwork], &iwork[iifail], info);
         vutgk = S[0] + FUDGE * smax * ulp * n;
-        vutgk = fmin(vutgk, ZERO);
+        vutgk = (vutgk < ZERO) ? vutgk : ZERO;
 
         /* If VLTGK == VUTGK, DSTEVX returns error, so adjust slightly */
         if (vltgk == vutgk) {
@@ -382,18 +384,19 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                         return;
                     }
 
-                    /* Find absolute value of maximum eigenvalue.
-                     * Note: Fortran uses EMIN = ABS(MAXVAL(S(...))), which finds
-                     * the algebraically largest value, then takes its absolute value.
-                     * This is NOT the same as max(abs(values))!
-                     * For eigenvalues [-1.65e-138, -1.93e-308, 0], MAXVAL = 0,
-                     * so EMIN = ABS(0) = 0, triggering eigenvector concatenation. */
                     {
-                        f64 maxval = S[isbeg];
-                        for (i = 1; i < nsl; i++) {
-                            if (S[isbeg + i] > maxval) {
-                                maxval = S[isbeg + i];
+                        f64 maxval = -dlamch("O");
+                        i = 0;
+                        while (i < nsl && disnan(S[isbeg + i])) i++;
+                        if (i < nsl) {
+                            maxval = S[isbeg + i];
+                            for (i = i + 1; i < nsl; i++) {
+                                if (S[isbeg + i] > maxval) {
+                                    maxval = S[isbeg + i];
+                                }
                             }
+                        } else if (nsl > 0) {
+                            maxval = S[isbeg];
                         }
                         emin = fabs(maxval);
                     }

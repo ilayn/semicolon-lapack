@@ -1079,7 +1079,8 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                         xsc = sqrtf(small) / epsln;
                         for (p = 1; p < nr; p++) {
                             for (q = 0; q < p; q++) {
-                                temp1 = xsc * fminf(fabsf(V[p + p * ldv]), fabsf(V[q + q * ldv]));
+                                temp1 = xsc * ((fabsf(V[p + p * ldv]) < fabsf(V[q + q * ldv]))
+                                    ? fabsf(V[p + p * ldv]) : fabsf(V[q + q * ldv]));
                                 if (fabsf(V[q + p * ldv]) <= temp1) {
                                     V[q + p * ldv] = copysignf(temp1, V[q + p * ldv]);
                                 }
@@ -1109,7 +1110,8 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                         xsc = sqrtf(small);
                         for (p = 1; p < nr; p++) {
                             for (q = 0; q < p; q++) {
-                                temp1 = xsc * fminf(fabsf(V[p + p * ldv]), fabsf(V[q + q * ldv]));
+                                temp1 = xsc * ((fabsf(V[p + p * ldv]) < fabsf(V[q + q * ldv]))
+                                    ? fabsf(V[p + p * ldv]) : fabsf(V[q + q * ldv]));
                                 if (fabsf(V[q + p * ldv]) <= temp1) {
                                     V[q + p * ldv] = copysignf(temp1, V[q + p * ldv]);
                                 }
@@ -1123,7 +1125,8 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                         xsc = sqrtf(small);
                         for (p = 1; p < nr; p++) {
                             for (q = 0; q < p; q++) {
-                                temp1 = xsc * fminf(fabsf(V[p + p * ldv]), fabsf(V[q + q * ldv]));
+                                temp1 = xsc * ((fabsf(V[p + p * ldv]) < fabsf(V[q + q * ldv]))
+                                    ? fabsf(V[p + p * ldv]) : fabsf(V[q + q * ldv]));
                                 V[p + q * ldv] = -copysignf(temp1, V[q + p * ldv]);
                             }
                         }
@@ -1401,7 +1404,8 @@ void sgejsv(const char* joba, const char* jobu, const char* jobv,
                 xsc = sqrtf(small / epsln);
                 for (q = 1; q < nr; q++) {
                     for (p = 0; p < q; p++) {
-                        temp1 = xsc * fminf(fabsf(U[p + p * ldu]), fabsf(U[q + q * ldu]));
+                        temp1 = xsc * ((fabsf(U[p + p * ldu]) < fabsf(U[q + q * ldu]))
+                            ? fabsf(U[p + p * ldu]) : fabsf(U[q + q * ldu]));
                         U[p + q * ldu] = -copysignf(temp1, U[q + p * ldu]);
                     }
                 }

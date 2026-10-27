@@ -88,9 +88,12 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
     bignum = ONE / smlnum;
 
     xnorm = dlange("M", n, n, T, ldt, d);
-    if (!lreal)
-        xnorm = fmax(xnorm, fmax(fabs(w), dlange("M", n, 1, B, n, d)));
-    smin = fmax(smlnum, eps * xnorm);
+    if (!lreal) {
+        xnorm = (xnorm > fabs(w)) ? xnorm : fabs(w);
+        tmp = dlange("M", n, 1, B, n, d);
+        xnorm = (xnorm > tmp) ? xnorm : tmp;
+    }
+    smin = (smlnum > eps * xnorm) ? smlnum : eps * xnorm;
 
     /* Compute 1-norm of each column of strictly upper triangular
      * part of T to control overflow in triangular solver. */
@@ -202,10 +205,10 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
 
                     /* Scale V(1,1) (= X(J1)) and/or V(2,1) (=X(J2))
                      * to avoid overflow in updating right-hand side. */
-                    xj = fmax(fabs(v[0]), fabs(v[1]));
+                    xj = (fabs(v[0]) > fabs(v[1])) ? fabs(v[0]) : fabs(v[1]);
                     if (xj > ONE) {
                         rec = ONE / xj;
-                        if (fmax(work[j1], work[j2]) > (bignum - xmax) * rec) {
+                        if (((work[j1] > work[j2]) ? work[j1] : work[j2]) > (bignum - xmax) * rec) {
                             cblas_dscal(n, rec, X, 1);
                             *scale *= rec;
                         }
@@ -274,17 +277,17 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
                         }
                     }
                     X[j1] = X[j1] / tmp;
-                    xmax = fmax(xmax, fabs(X[j1]));
+                    xmax = (xmax > fabs(X[j1])) ? xmax : fabs(X[j1]);
 
                 } else {
 
                     /* 2 by 2 diagonal block
                      * Scale if necessary to avoid overflow in forming the
                      * right-hand side elements by inner product. */
-                    xj = fmax(fabs(X[j1]), fabs(X[j2]));
+                    xj = (fabs(X[j1]) > fabs(X[j2])) ? fabs(X[j1]) : fabs(X[j2]);
                     if (xmax > ONE) {
                         rec = ONE / xmax;
-                        if (fmax(work[j2], work[j1]) > (bignum - xj) * rec) {
+                        if (((work[j2] > work[j1]) ? work[j2] : work[j1]) > (bignum - xj) * rec) {
                             cblas_dscal(n, rec, X, 1);
                             *scale *= rec;
                             xmax *= rec;
@@ -306,7 +309,8 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
                     }
                     X[j1] = v[0];
                     X[j2] = v[1];
-                    xmax = fmax(fabs(X[j1]), fmax(fabs(X[j2]), xmax));
+                    tmp = (fabs(X[j1]) > fabs(X[j2])) ? fabs(X[j1]) : fabs(X[j2]);
+                    xmax = (tmp > xmax) ? tmp : xmax;
 
                 }
             }
@@ -314,7 +318,7 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
 
     } else {
 
-        sminw = fmax(eps * fabs(w), smin);
+        sminw = (eps * fabs(w) > smin) ? eps * fabs(w) : smin;
         if (notran) {
 
             /* Solve (T + iB)*(p+iq) = c+id */
@@ -383,7 +387,8 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
 
                         xmax = ZERO;
                         for (k = 0; k < j1; k++) {
-                            xmax = fmax(xmax, fabs(X[k]) + fabs(X[k + n]));
+                            xmax = (xmax > fabs(X[k]) + fabs(X[k + n]))
+                                ? xmax : fabs(X[k]) + fabs(X[k + n]);
                         }
                     }
 
@@ -411,10 +416,11 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
 
                     /* Scale X(J1), .... to avoid overflow in
                      * updating right hand side. */
-                    xj = fmax(fabs(v[0]) + fabs(v[2]), fabs(v[1]) + fabs(v[3]));
+                    xj = (fabs(v[0]) + fabs(v[2]) > fabs(v[1]) + fabs(v[3]))
+                        ? fabs(v[0]) + fabs(v[2]) : fabs(v[1]) + fabs(v[3]);
                     if (xj > ONE) {
                         rec = ONE / xj;
-                        if (fmax(work[j1], work[j2]) > (bignum - xmax) * rec) {
+                        if (((work[j1] > work[j2]) ? work[j1] : work[j2]) > (bignum - xmax) * rec) {
                             cblas_dscal(n2, rec, X, 1);
                             *scale *= rec;
                         }
@@ -433,7 +439,8 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
 
                         xmax = ZERO;
                         for (k = 0; k < j1; k++) {
-                            xmax = fmax(fabs(X[k]) + fabs(X[k + n]), xmax);
+                            xmax = (fabs(X[k]) + fabs(X[k + n]) > xmax)
+                                ? fabs(X[k]) + fabs(X[k + n]) : xmax;
                         }
                     }
 
@@ -505,18 +512,19 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
                     dladiv(X[j1], X[n + j1], tmp, -z, &sr, &si);
                     X[j1] = sr;
                     X[j1 + n] = si;
-                    xmax = fmax(fabs(X[j1]) + fabs(X[j1 + n]), xmax);
+                    xmax = (fabs(X[j1]) + fabs(X[j1 + n]) > xmax)
+                        ? fabs(X[j1]) + fabs(X[j1 + n]) : xmax;
 
                 } else {
 
                     /* 2 by 2 diagonal block
                      * Scale if necessary to avoid overflow in forming the
                      * right-hand side element by inner product. */
-                    xj = fmax(fabs(X[j1]) + fabs(X[n + j1]),
-                              fabs(X[j2]) + fabs(X[n + j2]));
+                    xj = (fabs(X[j1]) + fabs(X[n + j1]) > fabs(X[j2]) + fabs(X[n + j2]))
+                        ? fabs(X[j1]) + fabs(X[n + j1]) : fabs(X[j2]) + fabs(X[n + j2]);
                     if (xmax > ONE) {
                         rec = ONE / xmax;
-                        if (fmax(work[j1], work[j2]) > (bignum - xj) / xmax) {
+                        if (((work[j1] > work[j2]) ? work[j1] : work[j2]) > (bignum - xj) / xmax) {
                             cblas_dscal(n2, rec, X, 1);
                             *scale *= rec;
                             xmax *= rec;
@@ -546,8 +554,9 @@ void dlaqtr(const INT ltran, const INT lreal, const INT n,
                     X[j2] = v[1];
                     X[n + j1] = v[2];
                     X[n + j2] = v[3];
-                    xmax = fmax(fabs(X[j1]) + fabs(X[n + j1]),
-                           fmax(fabs(X[j2]) + fabs(X[n + j2]), xmax));
+                    tmp = (fabs(X[j1]) + fabs(X[n + j1]) > fabs(X[j2]) + fabs(X[n + j2]))
+                          ? fabs(X[j1]) + fabs(X[n + j1]) : fabs(X[j2]) + fabs(X[n + j2]);
+                    xmax = (tmp > xmax) ? tmp : xmax;
 
                 }
             }

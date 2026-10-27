@@ -89,7 +89,7 @@ void zlaesy(
 
         babs = cabs(b);
         tabs = cabs(t);
-        z = fmax(babs, tabs);
+        z = (babs > tabs) ? babs : tabs;
         if (z > ZERO) {
             t = z * csqrt((t / z) * (t / z) + (b / z) * (b / z));
         }

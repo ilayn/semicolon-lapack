@@ -132,7 +132,7 @@ void dlarrb(const INT n, const f64* D, const f64* lld,
          * endpoint.  BACK starts at no less than the minimum interval
          * width so that a zero WERR still makes progress.
          */
-        back = fmax(werr[ii], mnwdth);
+        back = (werr[ii] > mnwdth) ? werr[ii] : mnwdth;
         for (;;) {
             negcnt = dlaneg(n, D, lld, left, pivmin, r);
             if (negcnt > i) {
@@ -151,7 +151,7 @@ void dlarrb(const INT n, const f64* D, const f64* lld,
          * Do while( NEGCNT(RIGHT).LT.I+1 )
          * Compute negcount from dstqds facto L+D+L+^T = L D L^T - RIGHT
          */
-        back = fmax(werr[ii], mnwdth);
+        back = (werr[ii] > mnwdth) ? werr[ii] : mnwdth;
         for (;;) {
             negcnt = dlaneg(n, D, lld, right, pivmin, r);
             if (negcnt < i + 1) {

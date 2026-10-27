@@ -252,9 +252,9 @@ void chgeqz(
         if (ilast == ilo) {
             goto L60;
         } else {
-            if (cabs1f(H[ilast + (ilast - 1) * ldh]) <=
-                fmaxf(safmin, ulp * (cabs1f(H[ilast + ilast * ldh]) +
-                                    cabs1f(H[(ilast - 1) + (ilast - 1) * ldh])))) {
+            temp = ulp * (cabs1f(H[ilast + ilast * ldh]) + cabs1f(H[(ilast - 1) + (ilast - 1) * ldh]));
+            temp = (safmin > temp) ? safmin : temp;
+            if (cabs1f(H[ilast + (ilast - 1) * ldh]) <= temp) {
                 H[ilast + (ilast - 1) * ldh] = CZERO;
                 goto L60;
             }
@@ -274,9 +274,9 @@ void chgeqz(
             if (j == ilo) {
                 ilazro = 1;
             } else {
-                if (cabs1f(H[j + (j - 1) * ldh]) <=
-                    fmaxf(safmin, ulp * (cabs1f(H[j + j * ldh]) +
-                                        cabs1f(H[(j - 1) + (j - 1) * ldh])))) {
+                temp = ulp * (cabs1f(H[j + j * ldh]) + cabs1f(H[(j - 1) + (j - 1) * ldh]));
+                temp = (safmin > temp) ? safmin : temp;
+                if (cabs1f(H[j + (j - 1) * ldh]) <= temp) {
                     H[j + (j - 1) * ldh] = CZERO;
                     ilazro = 1;
                 } else {

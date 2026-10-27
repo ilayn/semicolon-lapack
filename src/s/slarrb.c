@@ -132,7 +132,7 @@ void slarrb(const INT n, const f32* D, const f32* lld,
          * endpoint.  BACK starts at no less than the minimum interval
          * width so that a zero WERR still makes progress.
          */
-        back = fmaxf(werr[ii], mnwdth);
+        back = (werr[ii] > mnwdth) ? werr[ii] : mnwdth;
         for (;;) {
             negcnt = slaneg(n, D, lld, left, pivmin, r);
             if (negcnt > i) {
@@ -151,7 +151,7 @@ void slarrb(const INT n, const f32* D, const f32* lld,
          * Do while( NEGCNT(RIGHT).LT.I+1 )
          * Compute negcount from dstqds facto L+D+L+^T = L D L^T - RIGHT
          */
-        back = fmaxf(werr[ii], mnwdth);
+        back = (werr[ii] > mnwdth) ? werr[ii] : mnwdth;
         for (;;) {
             negcnt = slaneg(n, D, lld, right, pivmin, r);
             if (negcnt < i + 1) {

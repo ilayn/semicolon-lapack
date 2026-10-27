@@ -390,8 +390,8 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     aapp = ZERO;
     aaqq = big;
     for (p = 0; p < n; p++) {
-        if (SVA[p] != ZERO) aaqq = fminf(aaqq, SVA[p]);
-        aapp = fmaxf(aapp, SVA[p]);
+        if (SVA[p] != ZERO) aaqq = (aaqq < SVA[p]) ? aaqq : SVA[p];
+        aapp = (aapp > SVA[p]) ? aapp : SVA[p];
     }
 
     if (aapp == ZERO) {
@@ -420,13 +420,13 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
     temp1 = sqrtf(big / (f32)n);
     if ((aapp <= sn) || (aaqq >= temp1) ||
         ((sn <= aaqq) && (aapp <= temp1))) {
-        temp1 = fminf(big, temp1 / aapp);
+        temp1 = (big < temp1 / aapp) ? big : temp1 / aapp;
     } else if ((aaqq <= sn) && (aapp <= temp1)) {
-        temp1 = fminf(sn / aaqq, big / (aapp * sqrtf((f32)n)));
+        temp1 = (sn / aaqq < big / (aapp * sqrtf((f32)n))) ? sn / aaqq : big / (aapp * sqrtf((f32)n));
     } else if ((aaqq >= sn) && (aapp >= temp1)) {
-        temp1 = fmaxf(sn / aaqq, temp1 / aapp);
+        temp1 = (sn / aaqq > temp1 / aapp) ? sn / aaqq : temp1 / aapp;
     } else if ((aaqq <= sn) && (aapp >= temp1)) {
-        temp1 = fminf(sn / aaqq, big / (sqrtf((f32)n) * aapp));
+        temp1 = (sn / aaqq < big / (sqrtf((f32)n) * aapp)) ? sn / aaqq : big / (sqrtf((f32)n) * aapp);
     } else {
         temp1 = ONE;
     }
@@ -595,7 +595,7 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                     }
                                 }
 
-                                mxaapq = fmaxf(mxaapq, fabsf(aapq));
+                                mxaapq = (mxaapq > fabsf(aapq)) ? mxaapq : fabsf(aapq);
 
                                 if (fabsf(aapq) > tol) {
 
@@ -618,9 +618,11 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                             fastr[3] = -t * work[q] / work[p];
                                             cblas_srotm(m, &A[p * lda], 1, &A[q * lda], 1, fastr);
                                             if (rsvec) cblas_srotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrtf(fmaxf(ZERO, ONE - t * aqoap * aapq));
-                                            mxsinj = fmaxf(mxsinj, fabsf(t));
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrtf((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
+                                            mxsinj = (mxsinj > fabsf(t)) ? mxsinj : fabsf(t);
 
                                         } else {
 
@@ -629,9 +631,11 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                             cs = sqrtf(ONE / (ONE + t * t));
                                             sn = t * cs;
 
-                                            mxsinj = fmaxf(mxsinj, fabsf(sn));
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrtf(fmaxf(ZERO, ONE - t * aqoap * aapq));
+                                            mxsinj = (mxsinj > fabsf(sn)) ? mxsinj : fabsf(sn);
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrtf((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
 
                                             apoaq = work[p] / work[q];
                                             aqoap = work[q] / work[p];
@@ -694,8 +698,9 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                         temp1 = -aapq * work[p] / work[q];
                                         cblas_saxpy(m, temp1, &work[n], 1, &A[q * lda], 1);
                                         slascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                        SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE - aapq * aapq));
-                                        mxsinj = fmaxf(mxsinj, sfmin);
+                                        SVA[q] = aaqq * sqrtf((ZERO > ONE - aapq * aapq)
+                                            ? ZERO : ONE - aapq * aapq);
+                                        mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                     }
 
                                     if ((SVA[q] / aaqq) * (SVA[q] / aaqq) <= rooteps) {
@@ -799,7 +804,7 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                     }
                                 }
 
-                                mxaapq = fmaxf(mxaapq, fabsf(aapq));
+                                mxaapq = (mxaapq > fabsf(aapq)) ? mxaapq : fabsf(aapq);
 
                                 if (fabsf(aapq) > tol) {
                                     notrot = 0;
@@ -820,9 +825,11 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                             fastr[3] = -t * work[q] / work[p];
                                             cblas_srotm(m, &A[p * lda], 1, &A[q * lda], 1, fastr);
                                             if (rsvec) cblas_srotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrtf(fmaxf(ZERO, ONE - t * aqoap * aapq));
-                                            mxsinj = fmaxf(mxsinj, fabsf(t));
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrtf((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
+                                            mxsinj = (mxsinj > fabsf(t)) ? mxsinj : fabsf(t);
 
                                         } else {
 
@@ -832,9 +839,11 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                             cs = sqrtf(ONE / (ONE + t * t));
                                             sn = t * cs;
 
-                                            mxsinj = fmaxf(mxsinj, fabsf(sn));
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrtf(fmaxf(ZERO, ONE - t * aqoap * aapq));
+                                            mxsinj = (mxsinj > fabsf(sn)) ? mxsinj : fabsf(sn);
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrtf((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
 
                                             apoaq = work[p] / work[q];
                                             aqoap = work[q] / work[p];
@@ -898,8 +907,9 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                             temp1 = -aapq * work[p] / work[q];
                                             cblas_saxpy(m, temp1, &work[n], 1, &A[q * lda], 1);
                                             slascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE - aapq * aapq));
-                                            mxsinj = fmaxf(mxsinj, sfmin);
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE - aapq * aapq)
+                                                ? ZERO : ONE - aapq * aapq);
+                                            mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         } else {
                                             cblas_scopy(m, &A[q * lda], 1, &work[n], 1);
                                             slascl("G", 0, 0, aaqq, ONE, m, 1, &work[n], lda, &ierr);
@@ -907,8 +917,9 @@ void sgesvj(const char* joba, const char* jobu, const char* jobv,
                                             temp1 = -aapq * work[q] / work[p];
                                             cblas_saxpy(m, temp1, &work[n], 1, &A[p * lda], 1);
                                             slascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
-                                            SVA[p] = aapp * sqrtf(fmaxf(ZERO, ONE - aapq * aapq));
-                                            mxsinj = fmaxf(mxsinj, sfmin);
+                                            SVA[p] = aapp * sqrtf((ZERO > ONE - aapq * aapq)
+                                                ? ZERO : ONE - aapq * aapq);
+                                            mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         }
                                     }
 

@@ -266,9 +266,9 @@ void shgeqz(
 
             do_split = 1;
         } else {
-            if (fabsf(H[ilast + (ilast - 1) * ldh]) <= fmaxf(safmin, ulp *
-                (fabsf(H[ilast + ilast * ldh]) +
-                 fabsf(H[(ilast - 1) + (ilast - 1) * ldh])))) {
+            temp = ulp * (fabsf(H[ilast + ilast * ldh]) + fabsf(H[(ilast - 1) + (ilast - 1) * ldh]));
+            temp = (safmin > temp) ? safmin : temp;
+            if (fabsf(H[ilast + (ilast - 1) * ldh]) <= temp) {
                 H[ilast + (ilast - 1) * ldh] = ZERO;
                 do_split = 1;
             }
@@ -291,9 +291,9 @@ void shgeqz(
                 if (j == ilo) {
                     ilazro = 1;
                 } else {
-                    if (fabsf(H[j + (j - 1) * ldh]) <= fmaxf(safmin, ulp *
-                        (fabsf(H[j + j * ldh]) +
-                         fabsf(H[(j - 1) + (j - 1) * ldh])))) {
+                    temp = ulp * (fabsf(H[j + j * ldh]) + fabsf(H[(j - 1) + (j - 1) * ldh]));
+                    temp = (safmin > temp) ? safmin : temp;
+                    if (fabsf(H[j + (j - 1) * ldh]) <= temp) {
                         H[j + (j - 1) * ldh] = ZERO;
                         ilazro = 1;
                     } else {
@@ -312,7 +312,7 @@ void shgeqz(
                     if (!ilazro) {
                         temp = fabsf(H[j + (j - 1) * ldh]);
                         temp2 = fabsf(H[j + j * ldh]);
-                        tempr = fmaxf(temp, temp2);
+                        tempr = (temp > temp2) ? temp : temp2;
                         if (tempr < ONE && tempr != ZERO) {
                             temp = temp / tempr;
                             temp2 = temp2 / tempr;
@@ -516,23 +516,25 @@ void shgeqz(
                 s1 = s2;
                 s2 = temp;
             }
-            temp = fmaxf(s1, safmin * fmaxf(ONE, fmaxf(fabsf(wr), fabsf(wi))));
+            temp = (ONE > fabsf(wr)) ? ONE : fabsf(wr);
+            temp = (temp > fabsf(wi)) ? temp : fabsf(wi);
+            temp = (s1 > safmin * temp) ? s1 : safmin * temp;
             if (wi != ZERO)
                 goto label_200;
         }
 
         /* Fiddle with shift to avoid overflow */
 
-        temp = fminf(ascale, ONE) * (HALF * safmax);
+        temp = ((ascale < ONE) ? ascale : ONE) * (HALF * safmax);
         if (s1 > temp) {
             scale = temp / s1;
         } else {
             scale = ONE;
         }
 
-        temp = fminf(bscale, ONE) * (HALF * safmax);
+        temp = ((bscale < ONE) ? bscale : ONE) * (HALF * safmax);
         if (fabsf(wr) > temp)
-            scale = fminf(scale, temp / fabsf(wr));
+            scale = (scale < temp / fabsf(wr)) ? scale : temp / fabsf(wr);
         s1 = scale * s1;
         wr = scale * wr;
 
@@ -542,7 +544,7 @@ void shgeqz(
             istart = j;
             temp = fabsf(s1 * H[j + (j - 1) * ldh]);
             temp2 = fabsf(s1 * H[j + j * ldh] - wr * T[j + j * ldt]);
-            tempr = fmaxf(temp, temp2);
+            tempr = (temp > temp2) ? temp : temp2;
             if (tempr < ONE && tempr != ZERO) {
                 temp = temp / tempr;
                 temp2 = temp2 / tempr;
@@ -910,11 +912,11 @@ label_200:
                  * Swap rows to pivot */
 
                 ilpivt = 0;
-                temp = fmaxf(fabsf(T[(j + 1) + (j + 1) * ldt]),
-                            fabsf(T[(j + 1) + (j + 2) * ldt]));
-                temp2 = fmaxf(fabsf(T[(j + 2) + (j + 1) * ldt]),
-                             fabsf(T[(j + 2) + (j + 2) * ldt]));
-                if (fmaxf(temp, temp2) < safmin) {
+                temp = (fabsf(T[(j + 1) + (j + 1) * ldt]) > fabsf(T[(j + 1) + (j + 2) * ldt]))
+                    ? fabsf(T[(j + 1) + (j + 1) * ldt]) : fabsf(T[(j + 1) + (j + 2) * ldt]);
+                temp2 = (fabsf(T[(j + 2) + (j + 1) * ldt]) > fabsf(T[(j + 2) + (j + 2) * ldt]))
+                    ? fabsf(T[(j + 2) + (j + 1) * ldt]) : fabsf(T[(j + 2) + (j + 2) * ldt]);
+                if (((temp > temp2) ? temp : temp2) < safmin) {
                     scale = ZERO;
                     u1 = ONE;
                     u2 = ZERO;
@@ -964,7 +966,7 @@ label_200:
                         if (fabsf(w22) < fabsf(u2))
                             scale = fabsf(w22 / u2);
                         if (fabsf(w11) < fabsf(u1))
-                            scale = fminf(scale, fabsf(w11 / u1));
+                            scale = (scale < fabsf(w11 / u1)) ? scale : fabsf(w11 / u1);
 
                         /* Solve */
 

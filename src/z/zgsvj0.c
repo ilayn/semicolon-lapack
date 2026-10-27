@@ -225,8 +225,10 @@ void zgsvj0(const char* jobv, const INT m, const INT n,
                                                      cs, conj(ompq) * t);
                                             }
 
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq1));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq1));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq1)
+                                                ? ZERO : ONE + t * apoaq * aapq1);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq1)
+                                                ? ZERO : ONE - t * aqoap * aapq1);
                                             mxsinj = (mxsinj > fabs(t)) ? mxsinj : fabs(t);
                                         } else {
                                             /* choose correct signum for THETA and rotate */
@@ -236,8 +238,10 @@ void zgsvj0(const char* jobv, const INT m, const INT n,
                                             sn = t * cs;
 
                                             mxsinj = (mxsinj > fabs(sn)) ? mxsinj : fabs(sn);
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq1));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq1));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq1)
+                                                ? ZERO : ONE + t * apoaq * aapq1);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq1)
+                                                ? ZERO : ONE - t * aqoap * aapq1);
 
                                             zrot(m, &A[p * lda], 1, &A[q * lda], 1,
                                                  cs, conj(ompq) * sn);
@@ -256,7 +260,8 @@ void zgsvj0(const char* jobv, const INT m, const INT n,
                                         c128 neg_aapq = -aapq;
                                         cblas_zaxpy(m, &neg_aapq, work, 1, &A[q * lda], 1);
                                         zlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                        SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq1 * aapq1));
+                                        SVA[q] = aaqq * sqrt((ZERO > ONE - aapq1 * aapq1)
+                                            ? ZERO : ONE - aapq1 * aapq1);
                                         mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                     }
 
@@ -388,8 +393,10 @@ L2103:
                                                 zrot(mvl, &V[p * ldv], 1, &V[q * ldv], 1,
                                                      cs, conj(ompq) * t);
                                             }
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq1));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq1));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq1)
+                                                ? ZERO : ONE + t * apoaq * aapq1);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq1)
+                                                ? ZERO : ONE - t * aqoap * aapq1);
                                             mxsinj = (mxsinj > fabs(t)) ? mxsinj : fabs(t);
                                         } else {
                                             thsign = -copysign(ONE, aapq1);
@@ -398,8 +405,10 @@ L2103:
                                             cs = sqrt(ONE / (ONE + t * t));
                                             sn = t * cs;
                                             mxsinj = (mxsinj > fabs(sn)) ? mxsinj : fabs(sn);
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq1));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq1));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq1)
+                                                ? ZERO : ONE + t * apoaq * aapq1);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq1)
+                                                ? ZERO : ONE - t * aqoap * aapq1);
 
                                             zrot(m, &A[p * lda], 1, &A[q * lda], 1,
                                                  cs, conj(ompq) * sn);
@@ -419,7 +428,8 @@ L2103:
                                             c128 neg_aapq = -aapq;
                                             cblas_zaxpy(m, &neg_aapq, work, 1, &A[q * lda], 1);
                                             zlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq1 * aapq1));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE - aapq1 * aapq1)
+                                                ? ZERO : ONE - aapq1 * aapq1);
                                             mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         } else {
                                             cblas_zcopy(m, &A[q * lda], 1, work, 1);
@@ -428,7 +438,8 @@ L2103:
                                             c128 neg_conjg_aapq = -conj(aapq);
                                             cblas_zaxpy(m, &neg_conjg_aapq, work, 1, &A[p * lda], 1);
                                             zlascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
-                                            SVA[p] = aapp * sqrt(fmax(ZERO, ONE - aapq1 * aapq1));
+                                            SVA[p] = aapp * sqrt((ZERO > ONE - aapq1 * aapq1)
+                                                ? ZERO : ONE - aapq1 * aapq1);
                                             mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         }
                                     }

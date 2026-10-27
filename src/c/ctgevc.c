@@ -211,12 +211,14 @@ void ctgevc(
             rwork[j] = rwork[j] + cabs1f(S[i + j * lds]);
             rwork[n + j] = rwork[n + j] + cabs1f(P[i + j * ldp]);
         }
-        anorm = fmaxf(anorm, rwork[j] + cabs1f(S[j + j * lds]));
-        bnorm = fmaxf(bnorm, rwork[n + j] + cabs1f(P[j + j * ldp]));
+        anorm = (anorm > rwork[j] + cabs1f(S[j + j * lds]))
+            ? anorm : rwork[j] + cabs1f(S[j + j * lds]);
+        bnorm = (bnorm > rwork[n + j] + cabs1f(P[j + j * ldp]))
+            ? bnorm : rwork[n + j] + cabs1f(P[j + j * ldp]);
     }
 
-    ascale = ONE / fmaxf(anorm, safmin);
-    bscale = ONE / fmaxf(bnorm, safmin);
+    ascale = ONE / ((anorm > safmin) ? anorm : safmin);
+    bscale = ONE / ((bnorm > safmin) ? bnorm : safmin);
 
     /* Left eigenvectors */
     if (compl_) {
@@ -247,8 +249,9 @@ void ctgevc(
                         H
                       y  ( a A - b B ) = 0 */
 
-                temp = ONE / fmaxf(fmaxf(cabs1f(S[je + je * lds]) * ascale,
-                             fabsf(crealf(P[je + je * ldp])) * bscale), safmin);
+                temp = (cabs1f(S[je + je * lds]) * ascale > fabsf(crealf(P[je + je * ldp])) * bscale)
+                    ? cabs1f(S[je + je * lds]) * ascale : fabsf(crealf(P[je + je * ldp])) * bscale;
+                temp = ONE / ((temp > safmin) ? temp : safmin);
                 salpha = (temp * S[je + je * lds]) * ascale;
                 sbeta = (temp * crealf(P[je + je * ldp])) * bscale;
                 acoeff = sbeta * ascale;
@@ -260,13 +263,16 @@ void ctgevc(
 
                 scale = ONE;
                 if (lsa)
-                    scale = (small_ / fabsf(sbeta)) * fminf(anorm, big);
-                if (lsb)
-                    scale = fmaxf(scale, (small_ / cabs1f(salpha)) * fminf(bnorm, big));
+                    scale = (small_ / fabsf(sbeta)) * ((anorm < big) ? anorm : big);
+                if (lsb) {
+                    temp = (small_ / cabs1f(salpha)) * ((bnorm < big) ? bnorm : big);
+                    scale = (scale > temp) ? scale : temp;
+                }
                 if (lsa || lsb) {
-                    scale = fminf(scale, ONE /
-                            (safmin * fmaxf(fmaxf(ONE, fabsf(acoeff)),
-                            cabs1f(bcoeff))));
+                    temp = (ONE > fabsf(acoeff)) ? ONE : fabsf(acoeff);
+                    temp = (temp > cabs1f(bcoeff)) ? temp : cabs1f(bcoeff);
+                    temp = ONE / (safmin * temp);
+                    scale = (scale < temp) ? scale : temp;
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -285,7 +291,9 @@ void ctgevc(
                 for (jr = 0; jr < n; jr++)
                     work[jr] = CZERO;
                 work[je] = CONE;
-                dmin_ = fmaxf(fmaxf(ulp * acoefa * anorm, ulp * bcoefa * bnorm), safmin);
+                dmin_ = (ulp * acoefa * anorm > ulp * bcoefa * bnorm)
+                    ? ulp * acoefa * anorm : ulp * bcoefa * bnorm;
+                dmin_ = (dmin_ > safmin) ? dmin_ : safmin;
 
                 /*                                    H
                    Triangular solve of  (a A - b B)  y = 0
@@ -334,7 +342,7 @@ void ctgevc(
                         }
                     }
                     work[j] = cladiv(-sum_, d);
-                    xmax = fmaxf(xmax, cabs1f(work[j]));
+                    xmax = (xmax > cabs1f(work[j])) ? xmax : cabs1f(work[j]);
                 }
 
                 /* Back transform eigenvector if HOWMNY='B'. */
@@ -352,7 +360,8 @@ void ctgevc(
                 /* Copy and scale eigenvector into column of VL */
                 xmax = ZERO;
                 for (jr = ibeg; jr < n; jr++)
-                    xmax = fmaxf(xmax, cabs1f(work[(isrc - 1) * n + jr]));
+                    xmax = (xmax > cabs1f(work[(isrc - 1) * n + jr]))
+                        ? xmax : cabs1f(work[(isrc - 1) * n + jr]);
 
                 if (xmax > safmin) {
                     temp = ONE / xmax;
@@ -398,8 +407,9 @@ void ctgevc(
 
                    ( a A - b B ) x  = 0 */
 
-                temp = ONE / fmaxf(fmaxf(cabs1f(S[je + je * lds]) * ascale,
-                             fabsf(crealf(P[je + je * ldp])) * bscale), safmin);
+                temp = (cabs1f(S[je + je * lds]) * ascale > fabsf(crealf(P[je + je * ldp])) * bscale)
+                    ? cabs1f(S[je + je * lds]) * ascale : fabsf(crealf(P[je + je * ldp])) * bscale;
+                temp = ONE / ((temp > safmin) ? temp : safmin);
                 salpha = (temp * S[je + je * lds]) * ascale;
                 sbeta = (temp * crealf(P[je + je * ldp])) * bscale;
                 acoeff = sbeta * ascale;
@@ -411,13 +421,16 @@ void ctgevc(
 
                 scale = ONE;
                 if (lsa)
-                    scale = (small_ / fabsf(sbeta)) * fminf(anorm, big);
-                if (lsb)
-                    scale = fmaxf(scale, (small_ / cabs1f(salpha)) * fminf(bnorm, big));
+                    scale = (small_ / fabsf(sbeta)) * ((anorm < big) ? anorm : big);
+                if (lsb) {
+                    temp = (small_ / cabs1f(salpha)) * ((bnorm < big) ? bnorm : big);
+                    scale = (scale > temp) ? scale : temp;
+                }
                 if (lsa || lsb) {
-                    scale = fminf(scale, ONE /
-                            (safmin * fmaxf(fmaxf(ONE, fabsf(acoeff)),
-                            cabs1f(bcoeff))));
+                    temp = (ONE > fabsf(acoeff)) ? ONE : fabsf(acoeff);
+                    temp = (temp > cabs1f(bcoeff)) ? temp : cabs1f(bcoeff);
+                    temp = ONE / (safmin * temp);
+                    scale = (scale < temp) ? scale : temp;
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -435,7 +448,9 @@ void ctgevc(
                 for (jr = 0; jr < n; jr++)
                     work[jr] = CZERO;
                 work[je] = CONE;
-                dmin_ = fmaxf(fmaxf(ulp * acoefa * anorm, ulp * bcoefa * bnorm), safmin);
+                dmin_ = (ulp * acoefa * anorm > ulp * bcoefa * bnorm)
+                    ? ulp * acoefa * anorm : ulp * bcoefa * bnorm;
+                dmin_ = (dmin_ > safmin) ? dmin_ : safmin;
 
                 /* Triangular solve of  (a A - b B) x = 0  (columnwise)
 
@@ -500,7 +515,8 @@ void ctgevc(
                 /* Copy and scale eigenvector into column of VR */
                 xmax = ZERO;
                 for (jr = 0; jr < iend; jr++)
-                    xmax = fmaxf(xmax, cabs1f(work[(isrc - 1) * n + jr]));
+                    xmax = (xmax > cabs1f(work[(isrc - 1) * n + jr]))
+                        ? xmax : cabs1f(work[(isrc - 1) * n + jr]);
 
                 if (xmax > safmin) {
                     temp = ONE / xmax;

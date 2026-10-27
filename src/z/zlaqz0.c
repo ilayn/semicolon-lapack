@@ -78,7 +78,7 @@ void zlaqz0(
     const c128 CONE = CMPLX(1.0, 0.0);
     const f64 ONE = 1.0;
 
-    f64 smlnum, ulp, safmin, c1;
+    f64 smlnum, ulp, safmin, c1, tempr;
     f64 bnorm, btol;
     c128 eshift, s1, temp;
     INT istart, istop, iiter, maxit, istart2, k, nshifts;
@@ -255,9 +255,9 @@ void zlaqz0(
         }
 
         /* Check deflations at the end */
-        if (cabs(A[istop + (istop - 1) * lda]) <=
-            fmax(smlnum, ulp * (cabs(A[istop + istop * lda]) +
-                                cabs(A[(istop - 1) + (istop - 1) * lda])))) {
+        tempr = ulp * (cabs(A[istop + istop * lda]) + cabs(A[(istop - 1) + (istop - 1) * lda]));
+        tempr = (smlnum > tempr) ? smlnum : tempr;
+        if (cabs(A[istop + (istop - 1) * lda]) <= tempr) {
             A[istop + (istop - 1) * lda] = CZERO;
             istop = istop - 1;
             ld = 0;
@@ -265,9 +265,9 @@ void zlaqz0(
         }
 
         /* Check deflations at the start */
-        if (cabs(A[(istart + 1) + istart * lda]) <=
-            fmax(smlnum, ulp * (cabs(A[istart + istart * lda]) +
-                                cabs(A[(istart + 1) + (istart + 1) * lda])))) {
+        tempr = ulp * (cabs(A[istart + istart * lda]) + cabs(A[(istart + 1) + (istart + 1) * lda]));
+        tempr = (smlnum > tempr) ? smlnum : tempr;
+        if (cabs(A[(istart + 1) + istart * lda]) <= tempr) {
             A[(istart + 1) + istart * lda] = CZERO;
             istart = istart + 1;
             ld = 0;
@@ -281,9 +281,9 @@ void zlaqz0(
         /* Check interior deflations */
         istart2 = istart;
         for (k = istop; k >= istart + 1; k--) {
-            if (cabs(A[k + (k - 1) * lda]) <=
-                fmax(smlnum, ulp * (cabs(A[k + k * lda]) +
-                                    cabs(A[(k - 1) + (k - 1) * lda])))) {
+            tempr = ulp * (cabs(A[k + k * lda]) + cabs(A[(k - 1) + (k - 1) * lda]));
+            tempr = (smlnum > tempr) ? smlnum : tempr;
+            if (cabs(A[k + (k - 1) * lda]) <= tempr) {
                 A[k + (k - 1) * lda] = CZERO;
                 istart2 = k;
                 break;

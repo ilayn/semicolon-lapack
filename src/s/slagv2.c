@@ -70,8 +70,9 @@ void slagv2(
     ulp = slamch("P");
 
     /* Scale A */
-    anorm = fmaxf(fmaxf(fabsf(A[0 + 0 * lda]) + fabsf(A[1 + 0 * lda]),
-                      fabsf(A[0 + 1 * lda]) + fabsf(A[1 + 1 * lda])), safmin);
+    anorm = (fabsf(A[0 + 0 * lda]) + fabsf(A[1 + 0 * lda]) > fabsf(A[0 + 1 * lda]) + fabsf(A[1 + 1 * lda]))
+        ? fabsf(A[0 + 0 * lda]) + fabsf(A[1 + 0 * lda]) : fabsf(A[0 + 1 * lda]) + fabsf(A[1 + 1 * lda]);
+    anorm = (anorm > safmin) ? anorm : safmin;
     ascale = ONE / anorm;
     A[0 + 0 * lda] = ascale * A[0 + 0 * lda];
     A[0 + 1 * lda] = ascale * A[0 + 1 * lda];
@@ -79,8 +80,9 @@ void slagv2(
     A[1 + 1 * lda] = ascale * A[1 + 1 * lda];
 
     /* Scale B */
-    bnorm = fmaxf(fmaxf(fabsf(B[0 + 0 * ldb]),
-                      fabsf(B[0 + 1 * ldb]) + fabsf(B[1 + 1 * ldb])), safmin);
+    bnorm = (fabsf(B[0 + 0 * ldb]) > fabsf(B[0 + 1 * ldb]) + fabsf(B[1 + 1 * ldb]))
+        ? fabsf(B[0 + 0 * ldb]) : fabsf(B[0 + 1 * ldb]) + fabsf(B[1 + 1 * ldb]);
+    bnorm = (bnorm > safmin) ? bnorm : safmin;
     bscale = ONE / bnorm;
     B[0 + 0 * ldb] = bscale * B[0 + 0 * ldb];
     B[0 + 1 * ldb] = bscale * B[0 + 1 * ldb];
@@ -146,10 +148,10 @@ void slagv2(
             cblas_srot(2, &B[0 + 0 * ldb], 1, &B[0 + 1 * ldb], 1, *csr, *snr);
 
             /* compute inf norms of A and B */
-            h1 = fmaxf(fabsf(A[0 + 0 * lda]) + fabsf(A[0 + 1 * lda]),
-                      fabsf(A[1 + 0 * lda]) + fabsf(A[1 + 1 * lda]));
-            h2 = fmaxf(fabsf(B[0 + 0 * ldb]) + fabsf(B[0 + 1 * ldb]),
-                      fabsf(B[1 + 0 * ldb]) + fabsf(B[1 + 1 * ldb]));
+            h1 = (fabsf(A[0 + 0 * lda]) + fabsf(A[0 + 1 * lda]) > fabsf(A[1 + 0 * lda]) + fabsf(A[1 + 1 * lda]))
+                ? fabsf(A[0 + 0 * lda]) + fabsf(A[0 + 1 * lda]) : fabsf(A[1 + 0 * lda]) + fabsf(A[1 + 1 * lda]);
+            h2 = (fabsf(B[0 + 0 * ldb]) + fabsf(B[0 + 1 * ldb]) > fabsf(B[1 + 0 * ldb]) + fabsf(B[1 + 1 * ldb]))
+                ? fabsf(B[0 + 0 * ldb]) + fabsf(B[0 + 1 * ldb]) : fabsf(B[1 + 0 * ldb]) + fabsf(B[1 + 1 * ldb]);
 
             if ((scale1 * h1) >= fabsf(wr1) * h2) {
                 /* find left rotation matrix Q to zero out B(2,1) */

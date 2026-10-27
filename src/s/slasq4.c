@@ -79,7 +79,7 @@ void slasq4(const INT i0, const INT n0, const f32* restrict Z,
                     gap1 = a2 - dn - (b1 + b2);
                 }
                 if (gap1 > ZERO && gap1 > b1) {
-                    s = fmaxf(dn - (b1 / gap1) * b1, HALF * dmin);
+                    s = (dn - (b1 / gap1) * b1 > HALF * dmin) ? dn - (b1 / gap1) * b1 : HALF * dmin;
                     *ttype = -2;
                 } else {
                     s = ZERO;
@@ -87,9 +87,9 @@ void slasq4(const INT i0, const INT n0, const f32* restrict Z,
                         s = dn - b1;
                     }
                     if (a2 > (b1 + b2)) {
-                        s = fminf(s, a2 - (b1 + b2));
+                        s = (s < a2 - (b1 + b2)) ? s : a2 - (b1 + b2);
                     }
-                    s = fmaxf(s, THIRD * dmin);
+                    s = (s > THIRD * dmin) ? s : THIRD * dmin;
                     *ttype = -3;
                 }
             } else {
@@ -130,7 +130,7 @@ void slasq4(const INT i0, const INT n0, const f32* restrict Z,
                     }
                     b2 = b2 * (Z[i4] / Z[i4 - 2]);
                     a2 = a2 + b2;
-                    if (HUNDRD * fmaxf(b2, b1) < a2 || CNST1 < a2) {
+                    if (HUNDRD * ((b2 > b1) ? b2 : b1) < a2 || CNST1 < a2) {
                         break;
                     }
                 }
@@ -170,7 +170,7 @@ void slasq4(const INT i0, const INT n0, const f32* restrict Z,
                     }
                     b2 = b2 * (Z[i4] / Z[i4 - 2]);
                     a2 = a2 + b2;
-                    if (HUNDRD * fmaxf(b2, b1) < a2 || CNST1 < a2) {
+                    if (HUNDRD * ((b2 > b1) ? b2 : b1) < a2 || CNST1 < a2) {
                         break;
                     }
                 }
@@ -216,7 +216,7 @@ void slasq4(const INT i0, const INT n0, const f32* restrict Z,
                 }
                 b1 = b1 * (Z[i4] / Z[i4 - 2]);
                 b2 = b2 + b1;
-                if (HUNDRD * fmaxf(b1, a2) < b2) {
+                if (HUNDRD * ((b1 > a2) ? b1 : a2) < b2) {
                     break;
                 }
             }
@@ -225,9 +225,10 @@ label_60:
             a2 = dmin1 / (ONE + b2 * b2);
             gap2 = HALF * dmin2 - a2;
             if (gap2 > ZERO && gap2 > b2 * a2) {
-                s = fmaxf(s, a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2));
+                s = (s > a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2))
+                    ? s : a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2);
             } else {
-                s = fmaxf(s, a2 * (ONE - CNST2 * b2));
+                s = (s > a2 * (ONE - CNST2 * b2)) ? s : a2 * (ONE - CNST2 * b2);
                 *ttype = -8;
             }
         } else {
@@ -272,9 +273,10 @@ label_80:
             gap2 = Z[nn - 7] + Z[nn - 9]
                    - sqrtf(Z[nn - 11]) * sqrtf(Z[nn - 9]) - a2;
             if (gap2 > ZERO && gap2 > b2 * a2) {
-                s = fmaxf(s, a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2));
+                s = (s > a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2))
+                    ? s : a2 * (ONE - CNST2 * a2 * (b2 / gap2) * b2);
             } else {
-                s = fmaxf(s, a2 * (ONE - CNST2 * b2));
+                s = (s > a2 * (ONE - CNST2 * b2)) ? s : a2 * (ONE - CNST2 * b2);
             }
         } else {
             s = QURTR * dmin2;

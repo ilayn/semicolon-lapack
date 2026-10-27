@@ -47,7 +47,7 @@ void dlarrk(const INT n, const INT iw, const f64 gl, const f64 gu,
     const f64 TWO = 2.0;
 
     INT i, it, itmax, negcnt;
-    f64 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tnorm;
+    f64 atoli, eps, left, mid, right, rtoli, tmp1, tmp2, tmp3, tnorm;
 
     /* Quick return if possible */
     if (n <= 0) {
@@ -58,7 +58,7 @@ void dlarrk(const INT n, const INT iw, const f64 gl, const f64 gu,
     /* Get machine constants */
     eps = dlamch("P");
 
-    tnorm = fmax(fabs(gl), fabs(gu));
+    tnorm = (fabs(gl) > fabs(gu)) ? fabs(gl) : fabs(gu);
     rtoli = reltol;
     atoli = FUDGE * TWO * pivmin;
 
@@ -73,8 +73,10 @@ void dlarrk(const INT n, const INT iw, const f64 gl, const f64 gu,
     for (;;) {
         /* Check if interval converged or maximum number of iterations reached */
         tmp1 = fabs(right - left);
-        tmp2 = fmax(fabs(right), fabs(left));
-        if (tmp1 < fmax(atoli, fmax(pivmin, rtoli * tmp2))) {
+        tmp2 = (fabs(right) > fabs(left)) ? fabs(right) : fabs(left);
+        tmp3 = (atoli > pivmin) ? atoli : pivmin;
+        tmp3 = (tmp3 > rtoli * tmp2) ? tmp3 : rtoli * tmp2;
+        if (tmp1 < tmp3) {
             *info = 0;
             break;
         }

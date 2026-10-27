@@ -137,8 +137,10 @@ void dpstf2(
             if (j > 0) {
                 // Find max in work[n+j : n+n-1]
                 INT itemp = 0;
-                f64 wmax = work[n + j];
-                for (INT i = 1; i < n - j; i++) {
+                while (itemp < n - j && disnan(work[n + j + itemp])) itemp++;
+                if (itemp == n - j) itemp = 0;
+                f64 wmax = work[n + j + itemp];
+                for (INT i = itemp + 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -208,8 +210,10 @@ void dpstf2(
             if (j > 0) {
                 // Find max in work[n+j : n+n-1]
                 INT itemp = 0;
-                f64 wmax = work[n + j];
-                for (INT i = 1; i < n - j; i++) {
+                while (itemp < n - j && disnan(work[n + j + itemp])) itemp++;
+                if (itemp == n - j) itemp = 0;
+                f64 wmax = work[n + j + itemp];
+                for (INT i = itemp + 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;

@@ -113,7 +113,7 @@ void zlaqz2(const INT ilschur, const INT ilq, const INT ilz,
         beta[kwtop] = B[kwtop + kwtop * ldb];
         *ns = 1;
         *nd = 0;
-        if (cabs(s) <= fmax(smlnum, ulp * cabs(A[kwtop + kwtop * lda]))) {
+        if (cabs(s) <= ((smlnum > ulp * cabs(A[kwtop + kwtop * lda])) ? smlnum : ulp * cabs(A[kwtop + kwtop * lda]))) {
             *ns = 0;
             *nd = 1;
             if (kwtop > ilo) {
@@ -159,7 +159,7 @@ void zlaqz2(const INT ilschur, const INT ilq, const INT ilz,
                 tempr = cabs(s);
             }
             if (cabs(s * QC[0 + (kwbot - kwtop) * ldqc]) <=
-                fmax(ulp * tempr, smlnum)) {
+                ((ulp * tempr > smlnum) ? ulp * tempr : smlnum)) {
                 /* Deflatable */
                 kwbot = kwbot - 1;
             } else {

@@ -164,8 +164,10 @@ void dstevx(const char* jobz, const char* range, const INT n,
          * positive, as DSTEBZ takes ABSTOL <= 0 as a request for its
          * default tolerance EPS*|T|, and cap ABSTOL at |T| so that the
          * product cannot overflow. */
-        if (abstol > ZERO)
-            abstll = fmax(fmin(abstol, tnrm) * sigma, safmin);
+        if (abstol > ZERO) {
+            abstll = ((abstol < tnrm) ? abstol : tnrm) * sigma;
+            abstll = (abstll > safmin) ? abstll : safmin;
+        }
         if (valeig) {
             vll = vl * sigma;
             vuu = vu * sigma;

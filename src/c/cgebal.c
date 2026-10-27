@@ -220,20 +220,12 @@ void cgebal(const char* job, const INT n, c64* A, const INT lda,
             f = ONE;
             s = c + r;
 
-            while (c < g && (f > sfmax2 ? sfmax2 : f) < sfmax2 &&
-                   (c > sfmax2 ? sfmax2 : c) < sfmax2 &&
-                   (ca > sfmax2 ? sfmax2 : ca) < sfmax2 &&
-                   (r < sfmin2 ? sfmin2 : r) > sfmin2 &&
-                   (g < sfmin2 ? sfmin2 : g) > sfmin2 &&
-                   (ra < sfmin2 ? sfmin2 : ra) > sfmin2) {
-                /* Re-check the actual condition from Fortran */
-                f32 maxfcca = f;
-                if (c > maxfcca) maxfcca = c;
-                if (ca > maxfcca) maxfcca = ca;
-                f32 minrgra = r;
-                if (g < minrgra) minrgra = g;
-                if (ra < minrgra) minrgra = ra;
-                if (!(c < g && maxfcca < sfmax2 && minrgra > sfmin2)) break;
+            while (c < g) {
+                f32 maxfcca = (f > c) ? f : c;
+                maxfcca = (maxfcca > ca) ? maxfcca : ca;
+                f32 minrgra = (r < g) ? r : g;
+                minrgra = (minrgra < ra) ? minrgra : ra;
+                if (!(maxfcca < sfmax2 && minrgra > sfmin2)) break;
 
                 f = f * SCLFAC;
                 c = c * SCLFAC;
@@ -246,12 +238,10 @@ void cgebal(const char* job, const INT n, c64* A, const INT lda,
             g = c / SCLFAC;
 
             while (g >= r) {
-                f32 maxrra = r;
-                if (ra > maxrra) maxrra = ra;
-                f32 minfcgca = f;
-                if (c < minfcgca) minfcgca = c;
-                if (g < minfcgca) minfcgca = g;
-                if (ca < minfcgca) minfcgca = ca;
+                f32 maxrra = (r > ra) ? r : ra;
+                f32 minfcgca = (f < c) ? f : c;
+                minfcgca = (minfcgca < g) ? minfcgca : g;
+                minfcgca = (minfcgca < ca) ? minfcgca : ca;
                 if (!(maxrra < sfmax2 && minfcgca > sfmin2)) break;
 
                 f = f / SCLFAC;

@@ -587,7 +587,7 @@ void zlarrv(const INT n, const f64 vl, const f64 vu,
                              * can lead to an overestimation of the left gap and
                              * thus to inadequately early RQI 'convergence'.
                              * Prevent this by forcing a small left gap. */
-                            lgap = eps * fmax(fabs(left), fabs(right));
+                            lgap = eps * ((fabs(left) > fabs(right)) ? fabs(left) : fabs(right));
                         } else {
                             lgap = wgap[windmn];
                         }
@@ -597,7 +597,7 @@ void zlarrv(const INT n, const f64 vl, const f64 vu,
                              * can lead to an overestimation of the right gap and
                              * thus to inadequately early RQI 'convergence'.
                              * Prevent this by forcing a small right gap. */
-                            rgap = eps * fmax(fabs(left), fabs(right));
+                            rgap = eps * ((fabs(left) > fabs(right)) ? fabs(left) : fabs(right));
                         } else {
                             rgap = wgap[windex];
                         }

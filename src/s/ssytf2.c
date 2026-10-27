@@ -142,7 +142,7 @@ void ssytf2(
                 colmax = fabsf(A[imax + k * lda]);
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f || isnan(absakk)) {
                 /* Column k is zero or underflow, or contains a NaN:
                  * set info and continue */
                 if (*info == 0) {
@@ -164,7 +164,7 @@ void ssytf2(
                     }
                     if (imax > 0) {
                         INT jmax = cblas_isamax(imax, &A[0 + imax * lda], 1);
-                        rowmax = fmaxf(rowmax, fabsf(A[jmax + imax * lda]));
+                        rowmax = (rowmax > fabsf(A[jmax + imax * lda])) ? rowmax : fabsf(A[jmax + imax * lda]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {
@@ -268,7 +268,7 @@ void ssytf2(
                 colmax = fabsf(A[imax + k * lda]);
             }
 
-            if (fmaxf(absakk, colmax) == 0.0f || isnan(absakk)) {
+            if (((absakk > colmax) ? absakk : colmax) == 0.0f || isnan(absakk)) {
                 /* Column k is zero or underflow, or contains a NaN:
                  * set info and continue */
                 if (*info == 0) {
@@ -290,7 +290,7 @@ void ssytf2(
                     }
                     if (imax < n - 1) {
                         INT jmax = imax + 1 + cblas_isamax(n - imax - 1, &A[(imax + 1) + imax * lda], 1);
-                        rowmax = fmaxf(rowmax, fabsf(A[jmax + imax * lda]));
+                        rowmax = (rowmax > fabsf(A[jmax + imax * lda])) ? rowmax : fabsf(A[jmax + imax * lda]);
                     }
 
                     if (absakk >= ALPHA_BK * colmax * (colmax / rowmax)) {

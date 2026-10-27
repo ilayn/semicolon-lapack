@@ -87,7 +87,8 @@ void dlaed6(const INT kniter, const INT orgati, const f64 rho,
             a = c * (D[0] + D[1]) + Z[0] + Z[1];
             b = c * D[0] * D[1] + Z[0] * D[1] + Z[1] * D[0];
         }
-        temp = fmax(fabs(a), fmax(fabs(b), fabs(c)));
+        temp = (fabs(a) > fabs(b)) ? fabs(a) : fabs(b);
+        temp = (temp > fabs(c)) ? temp : fabs(c);
         a = a / temp;
         b = b / temp;
         c = c / temp;
@@ -135,9 +136,9 @@ void dlaed6(const INT kniter, const INT orgati, const f64 rho,
        when computing 1/TEMP**3 */
 
     if (orgati) {
-        temp = fmin(fabs(D[1] - *tau), fabs(D[2] - *tau));
+        temp = (fabs(D[1] - *tau) < fabs(D[2] - *tau)) ? fabs(D[1] - *tau) : fabs(D[2] - *tau);
     } else {
-        temp = fmin(fabs(D[0] - *tau), fabs(D[1] - *tau));
+        temp = (fabs(D[0] - *tau) < fabs(D[1] - *tau)) ? fabs(D[0] - *tau) : fabs(D[1] - *tau);
     }
     scale = 0;
     if (temp <= small1) {
@@ -214,7 +215,8 @@ void dlaed6(const INT kniter, const INT orgati, const f64 rho,
         a = (temp1 + temp2) * f - temp1 * temp2 * df;
         b = temp1 * temp2 * f;
         c = f - (temp1 + temp2) * df + temp1 * temp2 * ddf;
-        temp = fmax(fabs(a), fmax(fabs(b), fabs(c)));
+        temp = (fabs(a) > fabs(b)) ? fabs(a) : fabs(b);
+        temp = (temp > fabs(c)) ? temp : fabs(c);
         a = a / temp;
         b = b / temp;
         c = c / temp;

@@ -70,8 +70,9 @@ void dlagv2(
     ulp = dlamch("P");
 
     /* Scale A */
-    anorm = fmax(fmax(fabs(A[0 + 0 * lda]) + fabs(A[1 + 0 * lda]),
-                      fabs(A[0 + 1 * lda]) + fabs(A[1 + 1 * lda])), safmin);
+    anorm = (fabs(A[0 + 0 * lda]) + fabs(A[1 + 0 * lda]) > fabs(A[0 + 1 * lda]) + fabs(A[1 + 1 * lda]))
+        ? fabs(A[0 + 0 * lda]) + fabs(A[1 + 0 * lda]) : fabs(A[0 + 1 * lda]) + fabs(A[1 + 1 * lda]);
+    anorm = (anorm > safmin) ? anorm : safmin;
     ascale = ONE / anorm;
     A[0 + 0 * lda] = ascale * A[0 + 0 * lda];
     A[0 + 1 * lda] = ascale * A[0 + 1 * lda];
@@ -79,8 +80,9 @@ void dlagv2(
     A[1 + 1 * lda] = ascale * A[1 + 1 * lda];
 
     /* Scale B */
-    bnorm = fmax(fmax(fabs(B[0 + 0 * ldb]),
-                      fabs(B[0 + 1 * ldb]) + fabs(B[1 + 1 * ldb])), safmin);
+    bnorm = (fabs(B[0 + 0 * ldb]) > fabs(B[0 + 1 * ldb]) + fabs(B[1 + 1 * ldb]))
+        ? fabs(B[0 + 0 * ldb]) : fabs(B[0 + 1 * ldb]) + fabs(B[1 + 1 * ldb]);
+    bnorm = (bnorm > safmin) ? bnorm : safmin;
     bscale = ONE / bnorm;
     B[0 + 0 * ldb] = bscale * B[0 + 0 * ldb];
     B[0 + 1 * ldb] = bscale * B[0 + 1 * ldb];
@@ -146,10 +148,10 @@ void dlagv2(
             cblas_drot(2, &B[0 + 0 * ldb], 1, &B[0 + 1 * ldb], 1, *csr, *snr);
 
             /* compute inf norms of A and B */
-            h1 = fmax(fabs(A[0 + 0 * lda]) + fabs(A[0 + 1 * lda]),
-                      fabs(A[1 + 0 * lda]) + fabs(A[1 + 1 * lda]));
-            h2 = fmax(fabs(B[0 + 0 * ldb]) + fabs(B[0 + 1 * ldb]),
-                      fabs(B[1 + 0 * ldb]) + fabs(B[1 + 1 * ldb]));
+            h1 = (fabs(A[0 + 0 * lda]) + fabs(A[0 + 1 * lda]) > fabs(A[1 + 0 * lda]) + fabs(A[1 + 1 * lda]))
+                ? fabs(A[0 + 0 * lda]) + fabs(A[0 + 1 * lda]) : fabs(A[1 + 0 * lda]) + fabs(A[1 + 1 * lda]);
+            h2 = (fabs(B[0 + 0 * ldb]) + fabs(B[0 + 1 * ldb]) > fabs(B[1 + 0 * ldb]) + fabs(B[1 + 1 * ldb]))
+                ? fabs(B[0 + 0 * ldb]) + fabs(B[0 + 1 * ldb]) : fabs(B[1 + 0 * ldb]) + fabs(B[1 + 1 * ldb]);
 
             if ((scale1 * h1) >= fabs(wr1) * h2) {
                 /* find left rotation matrix Q to zero out B(2,1) */

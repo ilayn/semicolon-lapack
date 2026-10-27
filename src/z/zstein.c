@@ -180,9 +180,11 @@ void zstein(
              * Compute reorthogonalization criterion and stopping criterion.
              */
             onenrm = fabs(D[b1]) + fabs(E[b1]);
-            onenrm = fmax(onenrm, fabs(D[bn]) + fabs(E[bn - 1]));
+            onenrm = (onenrm > fabs(D[bn]) + fabs(E[bn - 1]))
+                ? onenrm : fabs(D[bn]) + fabs(E[bn - 1]);
             for (i = b1 + 1; i <= bn - 1; i++) {
-                onenrm = fmax(onenrm, fabs(D[i]) + fabs(E[i - 1]) + fabs(E[i]));
+                onenrm = (onenrm > fabs(D[i]) + fabs(E[i - 1]) + fabs(E[i]))
+                    ? onenrm : fabs(D[i]) + fabs(E[i - 1]) + fabs(E[i]);
             }
             ortol = ODM3 * onenrm;
 
@@ -258,7 +260,7 @@ void zstein(
                  */
                 jmax = (INT)cblas_idamax(blksiz, &work[indrv1], 1);
                 scl = (f64)blksiz * onenrm *
-                      fmax(eps, fabs(work[indrv4 + blksiz - 1])) /
+                      ((eps > fabs(work[indrv4 + blksiz - 1])) ? eps : fabs(work[indrv4 + blksiz - 1])) /
                       fabs(work[indrv1 + jmax]);
                 cblas_dscal(blksiz, scl, &work[indrv1], 1);
 

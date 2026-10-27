@@ -218,8 +218,10 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                             if (rsvec) {
                                                 cblas_drotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
                                             }
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
                                             mxsinj = (mxsinj > fabs(t)) ? mxsinj : fabs(t);
                                         } else {
                                             /* choose correct signum for THETA and rotate */
@@ -229,8 +231,10 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                             sn = t * cs;
 
                                             mxsinj = (mxsinj > fabs(sn)) ? mxsinj : fabs(sn);
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
 
                                             apoaq = D[p] / D[q];
                                             aqoap = D[q] / D[p];
@@ -296,7 +300,8 @@ void dgsvj0(const char* jobv, const INT m, const INT n,
                                         temp1 = -aapq * D[p] / D[q];
                                         cblas_daxpy(m, temp1, work, 1, &A[q * lda], 1);
                                         dlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                        SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq * aapq));
+                                        SVA[q] = aaqq * sqrt((ZERO > ONE - aapq * aapq)
+                                            ? ZERO : ONE - aapq * aapq);
                                         mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                     }
 
@@ -421,8 +426,10 @@ L2103:
                                             if (rsvec) {
                                                 cblas_drotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
                                             }
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
                                             mxsinj = (mxsinj > fabs(t)) ? mxsinj : fabs(t);
                                         } else {
                                             thsign = -copysign(ONE, aapq);
@@ -431,8 +438,10 @@ L2103:
                                             cs = sqrt(ONE / (ONE + t * t));
                                             sn = t * cs;
                                             mxsinj = (mxsinj > fabs(sn)) ? mxsinj : fabs(sn);
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrt(fmax(ZERO, ONE - t * aqoap * aapq));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrt((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
 
                                             apoaq = D[p] / D[q];
                                             aqoap = D[q] / D[p];
@@ -499,7 +508,8 @@ L2103:
                                             temp1 = -aapq * D[p] / D[q];
                                             cblas_daxpy(m, temp1, work, 1, &A[q * lda], 1);
                                             dlascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                            SVA[q] = aaqq * sqrt(fmax(ZERO, ONE - aapq * aapq));
+                                            SVA[q] = aaqq * sqrt((ZERO > ONE - aapq * aapq)
+                                                ? ZERO : ONE - aapq * aapq);
                                             mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         } else {
                                             cblas_dcopy(m, &A[q * lda], 1, work, 1);
@@ -508,7 +518,8 @@ L2103:
                                             temp1 = -aapq * D[q] / D[p];
                                             cblas_daxpy(m, temp1, work, 1, &A[p * lda], 1);
                                             dlascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
-                                            SVA[p] = aapp * sqrt(fmax(ZERO, ONE - aapq * aapq));
+                                            SVA[p] = aapp * sqrt((ZERO > ONE - aapq * aapq)
+                                                ? ZERO : ONE - aapq * aapq);
                                             mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         }
                                     }

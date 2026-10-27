@@ -342,7 +342,8 @@ void zbbcsd(
         theta[imin - 1] = atan2(sqrt(B21D[imin - 1] * B21D[imin - 1] + b21bulge * b21bulge),
                                 sqrt(B11D[imin - 1] * B11D[imin - 1] + b11bulge * b11bulge));
 
-        thr = thresh * fmax(fmax(fabs(B11D[imin - 1]), fabs(B11D[imin])), unfl);
+        thr = (fabs(B11D[imin - 1]) > fabs(B11D[imin])) ? fabs(B11D[imin - 1]) : fabs(B11D[imin]);
+        thr = thresh * ((thr > unfl) ? thr : unfl);
         if (B11D[imin - 1] * B11D[imin - 1] + b11bulge * b11bulge > thr * thr) {
             dlartgp(b11bulge, B11D[imin - 1], &rwork[iu1sn + imin - 1],
                     &rwork[iu1cs + imin - 1], &r);
@@ -353,7 +354,8 @@ void zbbcsd(
             dlartgs(B12D[imin - 1], B12E[imin - 1], nu,
                     &rwork[iu1cs + imin - 1], &rwork[iu1sn + imin - 1]);
         }
-        thr = thresh * fmax(fmax(fabs(B21D[imin - 1]), fabs(B21D[imin])), unfl);
+        thr = (fabs(B21D[imin - 1]) > fabs(B21D[imin])) ? fabs(B21D[imin - 1]) : fabs(B21D[imin]);
+        thr = thresh * ((thr > unfl) ? thr : unfl);
         if (B21D[imin - 1] * B21D[imin - 1] + b21bulge * b21bulge > thr * thr) {
             dlartgp(b21bulge, B21D[imin - 1], &rwork[iu2sn + imin - 1],
                     &rwork[iu2cs + imin - 1], &r);
@@ -409,13 +411,17 @@ void zbbcsd(
 
             phi[i - 1] = atan2(sqrt(x1 * x1 + x2 * x2), sqrt(y1 * y1 + y2 * y2));
 
-            thr = thresh * fmax(fmax(fabs(B11D[i - 1]), fabs(B11D[i])), unfl);
+            thr = (fabs(B11D[i - 1]) > fabs(B11D[i])) ? fabs(B11D[i - 1]) : fabs(B11D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart11 = (B11E[i - 1] * B11E[i - 1] + b11bulge * b11bulge <= thr * thr);
-            thr = thresh * fmax(fmax(fabs(B21D[i - 1]), fabs(B21D[i])), unfl);
+            thr = (fabs(B21D[i - 1]) > fabs(B21D[i])) ? fabs(B21D[i - 1]) : fabs(B21D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart21 = (B21E[i - 1] * B21E[i - 1] + b21bulge * b21bulge <= thr * thr);
-            thr = thresh * fmax(fmax(fabs(B12E[i - 1]), fabs(B12D[i])), unfl);
+            thr = (fabs(B12E[i - 1]) > fabs(B12D[i])) ? fabs(B12E[i - 1]) : fabs(B12D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart12 = (B12D[i - 1] * B12D[i - 1] + b12bulge * b12bulge <= thr * thr);
-            thr = thresh * fmax(fmax(fabs(B22E[i - 1]), fabs(B22D[i])), unfl);
+            thr = (fabs(B22E[i - 1]) > fabs(B22D[i])) ? fabs(B22E[i - 1]) : fabs(B22D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart22 = (B22D[i - 1] * B22D[i - 1] + b22bulge * b22bulge <= thr * thr);
 
             if (!restart11 && !restart21) {
@@ -471,13 +477,17 @@ void zbbcsd(
 
             theta[i] = atan2(sqrt(y1 * y1 + y2 * y2), sqrt(x1 * x1 + x2 * x2));
 
-            thr = thresh * fmax(fmax(fabs(B11E[i]), fabs(B11D[i + 1])), unfl);
+            thr = (fabs(B11E[i]) > fabs(B11D[i + 1])) ? fabs(B11E[i]) : fabs(B11D[i + 1]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart11 = (B11D[i] * B11D[i] + b11bulge * b11bulge <= thr * thr);
-            thr = thresh * fmax(fmax(fabs(B12D[i]), fabs(B12E[i])), unfl);
+            thr = (fabs(B12D[i]) > fabs(B12E[i])) ? fabs(B12D[i]) : fabs(B12E[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart12 = (B12E[i - 1] * B12E[i - 1] + b12bulge * b12bulge <= thr * thr);
-            thr = thresh * fmax(fmax(fabs(B21E[i]), fabs(B21D[i + 1])), unfl);
+            thr = (fabs(B21E[i]) > fabs(B21D[i + 1])) ? fabs(B21E[i]) : fabs(B21D[i + 1]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart21 = (B21D[i] * B21D[i] + b21bulge * b21bulge <= thr * thr);
-            thr = thresh * fmax(fmax(fabs(B22D[i]), fabs(B22E[i])), unfl);
+            thr = (fabs(B22D[i]) > fabs(B22E[i])) ? fabs(B22D[i]) : fabs(B22E[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart22 = (B22E[i - 1] * B22E[i - 1] + b22bulge * b22bulge <= thr * thr);
 
             if (!restart11 && !restart12) {
@@ -540,9 +550,9 @@ void zbbcsd(
 
         phi[imax - 2] = atan2(fabs(x1), sqrt(y1 * y1 + y2 * y2));
 
-        thr = thresh * fmax(fabs(B12E[imax - 2]), unfl);
+        thr = thresh * ((fabs(B12E[imax - 2]) > unfl) ? fabs(B12E[imax - 2]) : unfl);
         restart12 = (B12D[imax - 2] * B12D[imax - 2] + b12bulge * b12bulge <= thr * thr);
-        thr = thresh * fmax(fabs(B22E[imax - 2]), unfl);
+        thr = thresh * ((fabs(B22E[imax - 2]) > unfl) ? fabs(B22E[imax - 2]) : unfl);
         restart22 = (B22D[imax - 2] * B22D[imax - 2] + b22bulge * b22bulge <= thr * thr);
 
         if (!restart12 && !restart22) {

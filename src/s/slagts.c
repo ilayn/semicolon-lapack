@@ -97,10 +97,13 @@ void slagts(
         if (*tol <= 0.0f) {
             *tol = fabsf(A[0]);
             if (n > 1) {
-                *tol = fmaxf(*tol, fmaxf(fabsf(A[1]), fabsf(B[0])));
+                *tol = (*tol > fabsf(A[1])) ? *tol : fabsf(A[1]);
+                *tol = (*tol > fabsf(B[0])) ? *tol : fabsf(B[0]);
             }
             for (k = 2; k < n; k++) {
-                *tol = fmaxf(*tol, fmaxf(fabsf(A[k]), fmaxf(fabsf(B[k - 1]), fabsf(D[k - 2]))));
+                *tol = (*tol > fabsf(A[k])) ? *tol : fabsf(A[k]);
+                *tol = (*tol > fabsf(B[k - 1])) ? *tol : fabsf(B[k - 1]);
+                *tol = (*tol > fabsf(D[k - 2])) ? *tol : fabsf(D[k - 2]);
             }
             *tol = (*tol) * eps;
             if (*tol == 0.0f) {

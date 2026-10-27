@@ -304,7 +304,7 @@ void slaqp3rk(
 
                     temp = fabsf(A[(i - 1) + j * lda]) / vn1[j];
                     temp = (1.0f + temp) * (1.0f - temp);
-                    temp = (temp > 0.0f) ? temp : 0.0f;
+                    temp = (0.0f > temp) ? 0.0f : temp;
                     temp2 = temp * powf(vn1[j] / vn2[j], 2.0f);
                     if (temp2 <= tol3z) {
 

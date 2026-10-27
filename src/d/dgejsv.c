@@ -1079,7 +1079,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                         xsc = sqrt(small) / epsln;
                         for (p = 1; p < nr; p++) {
                             for (q = 0; q < p; q++) {
-                                temp1 = xsc * fmin(fabs(V[p + p * ldv]), fabs(V[q + q * ldv]));
+                                temp1 = xsc * ((fabs(V[p + p * ldv]) < fabs(V[q + q * ldv]))
+                                    ? fabs(V[p + p * ldv]) : fabs(V[q + q * ldv]));
                                 if (fabs(V[q + p * ldv]) <= temp1) {
                                     V[q + p * ldv] = copysign(temp1, V[q + p * ldv]);
                                 }
@@ -1109,7 +1110,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                         xsc = sqrt(small);
                         for (p = 1; p < nr; p++) {
                             for (q = 0; q < p; q++) {
-                                temp1 = xsc * fmin(fabs(V[p + p * ldv]), fabs(V[q + q * ldv]));
+                                temp1 = xsc * ((fabs(V[p + p * ldv]) < fabs(V[q + q * ldv]))
+                                    ? fabs(V[p + p * ldv]) : fabs(V[q + q * ldv]));
                                 if (fabs(V[q + p * ldv]) <= temp1) {
                                     V[q + p * ldv] = copysign(temp1, V[q + p * ldv]);
                                 }
@@ -1123,7 +1125,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                         xsc = sqrt(small);
                         for (p = 1; p < nr; p++) {
                             for (q = 0; q < p; q++) {
-                                temp1 = xsc * fmin(fabs(V[p + p * ldv]), fabs(V[q + q * ldv]));
+                                temp1 = xsc * ((fabs(V[p + p * ldv]) < fabs(V[q + q * ldv]))
+                                    ? fabs(V[p + p * ldv]) : fabs(V[q + q * ldv]));
                                 V[p + q * ldv] = -copysign(temp1, V[q + p * ldv]);
                             }
                         }
@@ -1401,7 +1404,8 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 xsc = sqrt(small / epsln);
                 for (q = 1; q < nr; q++) {
                     for (p = 0; p < q; p++) {
-                        temp1 = xsc * fmin(fabs(U[p + p * ldu]), fabs(U[q + q * ldu]));
+                        temp1 = xsc * ((fabs(U[p + p * ldu]) < fabs(U[q + q * ldu]))
+                            ? fabs(U[p + p * ldu]) : fabs(U[q + q * ldu]));
                         U[p + q * ldu] = -copysign(temp1, U[q + p * ldu]);
                     }
                 }

@@ -82,7 +82,7 @@ void dlaic1(
         /* special cases */
 
         if (sest == ZERO) {
-            s1 = fmax(absgam, absalp);
+            s1 = (absgam > absalp) ? absgam : absalp;
             if (s1 == ZERO) {
                 *s = ZERO;
                 *c = ONE;
@@ -99,7 +99,7 @@ void dlaic1(
         } else if (absgam <= eps * absest) {
             *s = ONE;
             *c = ZERO;
-            tmp = fmax(absest, absalp);
+            tmp = (absest > absalp) ? absest : absalp;
             s1 = absest / tmp;
             s2 = absalp / tmp;
             *sestpr = tmp * sqrt(s1 * s1 + s2 * s2);
@@ -166,14 +166,14 @@ void dlaic1(
 
         if (sest == ZERO) {
             *sestpr = ZERO;
-            if (fmax(absgam, absalp) == ZERO) {
+            if (((absgam > absalp) ? absgam : absalp) == ZERO) {
                 sine = ONE;
                 cosine = ZERO;
             } else {
                 sine = -gamma;
                 cosine = alpha;
             }
-            s1 = fmax(fabs(sine), fabs(cosine));
+            s1 = (fabs(sine) > fabs(cosine)) ? fabs(sine) : fabs(cosine);
             *s = sine / s1;
             *c = cosine / s1;
             tmp = sqrt((*s) * (*s) + (*c) * (*c));
@@ -222,8 +222,8 @@ void dlaic1(
             zeta1 = alpha / absest;
             zeta2 = gamma / absest;
 
-            norma = fmax(ONE + zeta1 * zeta1 + fabs(zeta1 * zeta2),
-                         fabs(zeta1 * zeta2) + zeta2 * zeta2);
+            norma = (ONE + zeta1 * zeta1 + fabs(zeta1 * zeta2) > fabs(zeta1 * zeta2) + zeta2 * zeta2)
+                ? ONE + zeta1 * zeta1 + fabs(zeta1 * zeta2) : fabs(zeta1 * zeta2) + zeta2 * zeta2;
 
             /* See if root is closer to zero or to ONE */
 

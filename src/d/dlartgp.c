@@ -44,7 +44,7 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
     } else {
         f64 f1 = f;
         f64 g1 = g;
-        f64 scale = fmax(fabs(f1), fabs(g1));
+        f64 scale = (fabs(f1) > fabs(g1)) ? fabs(f1) : fabs(g1);
 
         if (scale >= safmx2) {
             INT count = 0;
@@ -52,7 +52,7 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
                 count++;
                 f1 = f1 * safmn2;
                 g1 = g1 * safmn2;
-                scale = fmax(fabs(f1), fabs(g1));
+                scale = (fabs(f1) > fabs(g1)) ? fabs(f1) : fabs(g1);
             } while (scale >= safmx2 && count < 20);
 
             *r = sqrt(f1 * f1 + g1 * g1);
@@ -67,7 +67,7 @@ void dlartgp(const f64 f, const f64 g, f64* cs, f64* sn, f64* r)
                 count++;
                 f1 = f1 * safmx2;
                 g1 = g1 * safmx2;
-                scale = fmax(fabs(f1), fabs(g1));
+                scale = (fabs(f1) > fabs(g1)) ? fabs(f1) : fabs(g1);
             } while (scale <= safmn2);
 
             *r = sqrt(f1 * f1 + g1 * g1);

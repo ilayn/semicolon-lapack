@@ -587,7 +587,7 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
                              * can lead to an overestimation of the left gap and
                              * thus to inadequately early RQI 'convergence'.
                              * Prevent this by forcing a small left gap. */
-                            lgap = eps * fmaxf(fabsf(left), fabsf(right));
+                            lgap = eps * ((fabsf(left) > fabsf(right)) ? fabsf(left) : fabsf(right));
                         } else {
                             lgap = wgap[windmn];
                         }
@@ -597,7 +597,7 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
                              * can lead to an overestimation of the right gap and
                              * thus to inadequately early RQI 'convergence'.
                              * Prevent this by forcing a small right gap. */
-                            rgap = eps * fmaxf(fabsf(left), fabsf(right));
+                            rgap = eps * ((fabsf(left) > fabsf(right)) ? fabsf(left) : fabsf(right));
                         } else {
                             rgap = wgap[windex];
                         }

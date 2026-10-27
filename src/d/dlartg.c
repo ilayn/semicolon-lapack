@@ -54,7 +54,9 @@ void dlartg(const f64 f, const f64 g, f64* c, f64* s, f64* r)
         *s = g / (*r);
     } else {
         /* Use scaled algorithm */
-        f64 u = fmin(safmax, fmax(safmin, fmax(f1, g1)));
+        f64 u = (safmin > f1) ? safmin : f1;
+        u = (u > g1) ? u : g1;
+        u = (safmax < u) ? safmax : u;
         f64 fs = f / u;
         f64 gs = g / u;
         f64 d = sqrt(fs * fs + gs * gs);

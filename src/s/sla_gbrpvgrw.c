@@ -56,13 +56,15 @@ f32 sla_gbrpvgrw(
         amax = 0.0f;
         umax = 0.0f;
         for (i = (j - ku > 0 ? j - ku : 0); i < (j + kl + 1 < n ? j + kl + 1 : n); i++) {
-            amax = fmaxf(fabsf(AB[kd + i - j + j * ldab]), amax);
+            amax = (fabsf(AB[kd + i - j + j * ldab]) > amax)
+                ? fabsf(AB[kd + i - j + j * ldab]) : amax;
         }
         for (i = (j - ku > 0 ? j - ku : 0); i <= j; i++) {
-            umax = fmaxf(fabsf(AFB[kd + i - j + j * ldafb]), umax);
+            umax = (fabsf(AFB[kd + i - j + j * ldafb]) > umax)
+                ? fabsf(AFB[kd + i - j + j * ldafb]) : umax;
         }
         if (umax != 0.0f) {
-            rpvgrw = fminf(amax / umax, rpvgrw);
+            rpvgrw = (amax / umax < rpvgrw) ? amax / umax : rpvgrw;
         }
     }
 

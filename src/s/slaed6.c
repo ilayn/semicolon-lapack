@@ -87,7 +87,8 @@ void slaed6(const INT kniter, const INT orgati, const f32 rho,
             a = c * (D[0] + D[1]) + Z[0] + Z[1];
             b = c * D[0] * D[1] + Z[0] * D[1] + Z[1] * D[0];
         }
-        temp = fmaxf(fabsf(a), fmaxf(fabsf(b), fabsf(c)));
+        temp = (fabsf(a) > fabsf(b)) ? fabsf(a) : fabsf(b);
+        temp = (temp > fabsf(c)) ? temp : fabsf(c);
         a = a / temp;
         b = b / temp;
         c = c / temp;
@@ -135,9 +136,9 @@ void slaed6(const INT kniter, const INT orgati, const f32 rho,
        when computing 1/TEMP**3 */
 
     if (orgati) {
-        temp = fminf(fabsf(D[1] - *tau), fabsf(D[2] - *tau));
+        temp = (fabsf(D[1] - *tau) < fabsf(D[2] - *tau)) ? fabsf(D[1] - *tau) : fabsf(D[2] - *tau);
     } else {
-        temp = fminf(fabsf(D[0] - *tau), fabsf(D[1] - *tau));
+        temp = (fabsf(D[0] - *tau) < fabsf(D[1] - *tau)) ? fabsf(D[0] - *tau) : fabsf(D[1] - *tau);
     }
     scale = 0;
     if (temp <= small1) {
@@ -214,7 +215,8 @@ void slaed6(const INT kniter, const INT orgati, const f32 rho,
         a = (temp1 + temp2) * f - temp1 * temp2 * df;
         b = temp1 * temp2 * f;
         c = f - (temp1 + temp2) * df + temp1 * temp2 * ddf;
-        temp = fmaxf(fabsf(a), fmaxf(fabsf(b), fabsf(c)));
+        temp = (fabsf(a) > fabsf(b)) ? fabsf(a) : fabsf(b);
+        temp = (temp > fabsf(c)) ? temp : fabsf(c);
         a = a / temp;
         b = b / temp;
         c = c / temp;
