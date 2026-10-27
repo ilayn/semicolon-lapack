@@ -192,6 +192,16 @@ void sget23(const INT comp, const char* balanc, const INT jtype,
         }
 
         /* Do Test (5) */
+        /*
+         * Test 5 compares W(j) with W1(j) at the same j. If the run without
+         * eigenvectors returns the same eigenvalues in a different order, the
+         * difference is the gap between two eigenvalues, not rounding, and
+         * the test fails although both results are right. With the ded.in
+         * tuning, xHSEQR takes the xLAQR0 path at N = 20, where some seeds of
+         * the complex xDRVVX tests hit such a reordering. The test is
+         * fragile: if it fails, check the order first. The repeats of test 5
+         * below have the same weakness.
+         */
         wnrm = ZERO;
         wdif = ZERO;
         for (j = 0; j < n; j++) {
