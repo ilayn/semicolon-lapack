@@ -278,6 +278,7 @@ static void run_zdrvev_single(zdrvev_params_t* params)
     c64* W = ws->W;
     c64* W1 = ws->W1;
     c64* work = ws->work;
+    INT* perm = ws->iwork;
     f32* rwork = ws->rwork;
 
     f32 ulp = slamch("P");
@@ -403,20 +404,17 @@ static void run_zdrvev_single(zdrvev_params_t* params)
     } else {
         /* Test 5: W(full) = W(partial) */
         /*
-         * Test 5 compares W(j) with W1(j) at the same j. If the run without
-         * eigenvectors returns the same eigenvalues in a different order, the
-         * difference is the gap between two eigenvalues, not rounding, and
-         * the test fails although both results are right. With the ded.in
-         * tuning, xHSEQR takes the xLAQR0 path at N = 20, where some seeds of
-         * the complex xDRVVX tests hit such a reordering (see xGET23). The
-         * test is fragile: if it fails, check the order first. The repeats
-         * of test 5 below have the same weakness.
+         * The runs with and without eigenvectors can return the eigenvalues
+         * in a different order, so W1 is paired with W by closest match
+         * instead of by index.
          */
+        cpair_eigs(n, W, W1, perm);
         wnrm = 0.0f;
         wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[j])));
-            wdif = fmaxf(wdif, cabsf(W[j] - W1[j]));
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
         ws->result[4] = fmaxf(ws->result[4],
                              wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
@@ -433,11 +431,13 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "CGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        cpair_eigs(n, W, W1, perm);
         wnrm = 0.0f;
         wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[j])));
-            wdif = fmaxf(wdif, cabsf(W[j] - W1[j]));
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
         ws->result[4] = fmaxf(ws->result[4],
                              wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
@@ -464,11 +464,13 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "CGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        cpair_eigs(n, W, W1, perm);
         wnrm = 0.0f;
         wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[j])));
-            wdif = fmaxf(wdif, cabsf(W[j] - W1[j]));
+            INT k = perm[j];
+            wnrm = fmaxf(wnrm, fmaxf(cabsf(W[j]), cabsf(W1[k])));
+            wdif = fmaxf(wdif, cabsf(W[j] - W1[k]));
         }
         ws->result[4] = fmaxf(ws->result[4],
                              wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));

@@ -1043,6 +1043,8 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
             f64* scale, f64* scale1, f64* result,
             c128* work, const INT lwork, f64* rwork, INT* info);
 
+void zpair_eigs(const INT n, const c128* w, const c128* w1, INT* perm);
+
 void zget24(const INT comp, const INT jtype, const f64 thresh,
             const INT n, c128* A, const INT lda,
             c128* H, c128* HT,

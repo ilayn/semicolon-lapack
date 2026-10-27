@@ -1043,6 +1043,8 @@ void cget23(const INT comp, const INT isrt, const char* balanc,
             f32* scale, f32* scale1, f32* result,
             c64* work, const INT lwork, f32* rwork, INT* info);
 
+void cpair_eigs(const INT n, const c64* w, const c64* w1, INT* perm);
+
 void cget24(const INT comp, const INT jtype, const f32 thresh,
             const INT n, c64* A, const INT lda,
             c64* H, c64* HT,

@@ -650,10 +650,17 @@ static void run_dchkhs_single(dchkhs_params_t* params)
      * which the index-wise comparison could not tell apart from a
      * real error.
      */
+    /*
+     * Well-conditioned eigenvalues can come back in a different order
+     * too (seen with MKL and BLIS, in the reference DHSEQR as well), so
+     * W3 is paired with W1 by closest match instead of by index.
+     */
     result[10] = ulpinv;
     {
         f64 temp1 = 0.0;
         f64 temp2 = 0.0;
+        INT* perm = iwork;
+        dpair_eigs(n, wr1, wi1, wr3, wi3, perm);
         for (INT j = 0; j < n; j++) {
             INT jp = (wi1[j] < 0.0) ? j - 1 : j;
             f64 xnorm, ynorm, sj;
@@ -678,11 +685,12 @@ static void run_dchkhs_single(dchkhs_params_t* params)
                 sj = dlapy2(prodr, prodi);
             }
             sj = sj / fmax(xnorm * ynorm, unfl);
+            INT k = perm[j];
             temp1 = fmax(temp1, fmax(fabs(wr1[j]) + fabs(wi1[j]),
-                                     fabs(wr3[j]) + fabs(wi3[j])));
+                                     fabs(wr3[k]) + fabs(wi3[k])));
             if (sj >= rtulp)
-                temp2 = fmax(temp2, sj * (fabs(wr1[j] - wr3[j]) +
-                                          fabs(wi1[j] - wi3[j])));
+                temp2 = fmax(temp2, sj * (fabs(wr1[j] - wr3[k]) +
+                                          fabs(wi1[j] - wi3[k])));
         }
         result[10] = temp2 / fmax(unfl, ulp * fmax(temp1, temp2));
     }

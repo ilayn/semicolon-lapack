@@ -613,19 +613,27 @@ static void run_zchkhs_single(zchkhs_params_t* params)
      * which the index-wise comparison could not tell apart from a
      * real error.
      */
+    /*
+     * Well-conditioned eigenvalues can come back in a different order
+     * too (seen with MKL and BLIS, in the reference CHSEQR as well), so
+     * W3 is paired with W1 by closest match instead of by index.
+     */
     result[10] = ulpinv;
     {
         f32 temp1 = 0.0f;
         f32 temp2 = 0.0f;
+        INT* perm = iwork;
+        cpair_eigs(n, W1, W3, perm);
         for (INT j = 0; j < n; j++) {
             f32 xnorm = cblas_scnrm2(n, &evectr[j * ldu], 1);
             f32 ynorm = cblas_scnrm2(n, &evectl[j * ldu], 1);
             c64 dot;
             cblas_cdotc_sub(n, &evectl[j * ldu], 1, &evectr[j * ldu], 1, &dot);
             f32 sj = cabsf(dot) / fmaxf(xnorm * ynorm, unfl);
-            temp1 = fmaxf(temp1, fmaxf(cabsf(W1[j]), cabsf(W3[j])));
+            INT k = perm[j];
+            temp1 = fmaxf(temp1, fmaxf(cabsf(W1[j]), cabsf(W3[k])));
             if (sj >= rtulp)
-                temp2 = fmaxf(temp2, sj * cabsf(W1[j] - W3[j]));
+                temp2 = fmaxf(temp2, sj * cabsf(W1[j] - W3[k]));
         }
         result[10] = temp2 / fmaxf(unfl, ulp * fmaxf(temp1, temp2));
     }

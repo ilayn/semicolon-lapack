@@ -164,13 +164,6 @@ static int group_setup(void** state)
         return -1;
     }
 
-    /*
-     * Five of the six seeds tried failed test 5 in xGET23, because the
-     * eigenvalues came out in a different order with and without
-     * eigenvectors (see the comment there). This one does not. A new test 5
-     * failure after a change to the seed or the random stream is likely the
-     * same issue.
-     */
     rng_seed(g_ws->rng_state, 0x64D815DEEAF29DF3ULL);
     return 0;
 }

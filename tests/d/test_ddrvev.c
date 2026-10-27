@@ -298,6 +298,7 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     f64* WR1 = ws->WR1;
     f64* WI1 = ws->WI1;
     f64* work = ws->work;
+    INT* perm = ws->iwork;
 
     f64 ulp = dlamch("P");
     f64 ulpinv = 1.0 / ulp;
@@ -445,21 +446,18 @@ static void run_ddrvev_single(ddrvev_params_t* params)
     } else {
         /* Test 5: W(full) = W(partial) */
         /*
-         * Test 5 compares W(j) with W1(j) at the same j. If the run without
-         * eigenvectors returns the same eigenvalues in a different order, the
-         * difference is the gap between two eigenvalues, not rounding, and
-         * the test fails although both results are right. With the ded.in
-         * tuning, xHSEQR takes the xLAQR0 path at N = 20, where some seeds of
-         * the complex xDRVVX tests hit such a reordering (see xGET23). The
-         * test is fragile: if it fails, check the order first. The repeats
-         * of test 5 below have the same weakness.
+         * The runs with and without eigenvectors can return the eigenvalues
+         * in a different order, so W1 is paired with W by closest match
+         * instead of by index.
          */
+        dpair_eigs(n, WR, WI, WR1, WI1, perm);
         wnrm = 0.0;
         wdif = 0.0;
         for (INT j = 0; j < n; j++) {
+            INT k = perm[j];
             wnrm = fmax(wnrm, fmax(fabs(WR[j]) + fabs(WI[j]),
-                                   fabs(WR1[j]) + fabs(WI1[j])));
-            wdif = fmax(wdif, fabs(WR[j] - WR1[j]) + fabs(WI[j] - WI1[j]));
+                                   fabs(WR1[k]) + fabs(WI1[k])));
+            wdif = fmax(wdif, fabs(WR[j] - WR1[k]) + fabs(WI[j] - WI1[k]));
         }
         ws->result[4] = fmax(ws->result[4],
                              wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
@@ -476,12 +474,14 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "DGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        dpair_eigs(n, WR, WI, WR1, WI1, perm);
         wnrm = 0.0;
         wdif = 0.0;
         for (INT j = 0; j < n; j++) {
+            INT k = perm[j];
             wnrm = fmax(wnrm, fmax(fabs(WR[j]) + fabs(WI[j]),
-                                   fabs(WR1[j]) + fabs(WI1[j])));
-            wdif = fmax(wdif, fabs(WR[j] - WR1[j]) + fabs(WI[j] - WI1[j]));
+                                   fabs(WR1[k]) + fabs(WI1[k])));
+            wdif = fmax(wdif, fabs(WR[j] - WR1[k]) + fabs(WI[j] - WI1[k]));
         }
         ws->result[4] = fmax(ws->result[4],
                              wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
@@ -508,12 +508,14 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "DGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        dpair_eigs(n, WR, WI, WR1, WI1, perm);
         wnrm = 0.0;
         wdif = 0.0;
         for (INT j = 0; j < n; j++) {
+            INT k = perm[j];
             wnrm = fmax(wnrm, fmax(fabs(WR[j]) + fabs(WI[j]),
-                                   fabs(WR1[j]) + fabs(WI1[j])));
-            wdif = fmax(wdif, fabs(WR[j] - WR1[j]) + fabs(WI[j] - WI1[j]));
+                                   fabs(WR1[k]) + fabs(WI1[k])));
+            wdif = fmax(wdif, fabs(WR[j] - WR1[k]) + fabs(WI[j] - WI1[k]));
         }
         ws->result[4] = fmax(ws->result[4],
                              wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));

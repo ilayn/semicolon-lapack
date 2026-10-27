@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <stdlib.h>
 #include "semicolon_cblas.h"
 #include "verify.h"
 /**
@@ -90,6 +91,8 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
     if (n == 0)
         return;
 
+    INT* perm = malloc(n * sizeof(INT));
+
     /* More Important constants */
     ulp = dlamch("P");
     smlnum = dlamch("S");
@@ -112,6 +115,7 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
     if (iinfo != 0) {
         result[0] = ulpinv;
         *info = (iinfo < 0) ? -iinfo : iinfo;
+        free(perm);
         return;
     }
 
@@ -193,21 +197,18 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
 
         /* Do Test (5) */
         /*
-         * Test 5 compares W(j) with W1(j) at the same j. If the run without
-         * eigenvectors returns the same eigenvalues in a different order, the
-         * difference is the gap between two eigenvalues, not rounding, and
-         * the test fails although both results are right. With the ded.in
-         * tuning, xHSEQR takes the xLAQR0 path at N = 20, where some seeds of
-         * the complex xDRVVX tests hit such a reordering. The test is
-         * fragile: if it fails, check the order first. The repeats of test 5
-         * below have the same weakness.
+         * The runs with and without eigenvectors can return the eigenvalues
+         * in a different order, so W1 is paired with W by closest match
+         * instead of by index.
          */
+        dpair_eigs(n, wr, wi, wr1, wi1, perm);
         wnrm = ZERO;
         wdif = ZERO;
         for (j = 0; j < n; j++) {
+            INT k = perm[j];
             wnrm = fmax(wnrm, fmax(fabs(wr[j]) + fabs(wi[j]),
-                                   fabs(wr1[j]) + fabs(wi1[j])));
-            wdif = fmax(wdif, fabs(wr[j] - wr1[j]) + fabs(wi[j] - wi1[j]));
+                                   fabs(wr1[k]) + fabs(wi1[k])));
+            wdif = fmax(wdif, fabs(wr[j] - wr1[k]) + fabs(wi[j] - wi1[k]));
         }
         result[4] = fmax(result[4],
                          wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
@@ -246,12 +247,14 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
         }
 
         /* Do Test (5) again */
+        dpair_eigs(n, wr, wi, wr1, wi1, perm);
         wnrm = ZERO;
         wdif = ZERO;
         for (j = 0; j < n; j++) {
+            INT k = perm[j];
             wnrm = fmax(wnrm, fmax(fabs(wr[j]) + fabs(wi[j]),
-                                   fabs(wr1[j]) + fabs(wi1[j])));
-            wdif = fmax(wdif, fabs(wr[j] - wr1[j]) + fabs(wi[j] - wi1[j]));
+                                   fabs(wr1[k]) + fabs(wi1[k])));
+            wdif = fmax(wdif, fabs(wr[j] - wr1[k]) + fabs(wi[j] - wi1[k]));
         }
         result[4] = fmax(result[4],
                          wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
@@ -298,12 +301,14 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
         }
 
         /* Do Test (5) again */
+        dpair_eigs(n, wr, wi, wr1, wi1, perm);
         wnrm = ZERO;
         wdif = ZERO;
         for (j = 0; j < n; j++) {
+            INT k = perm[j];
             wnrm = fmax(wnrm, fmax(fabs(wr[j]) + fabs(wi[j]),
-                                   fabs(wr1[j]) + fabs(wi1[j])));
-            wdif = fmax(wdif, fabs(wr[j] - wr1[j]) + fabs(wi[j] - wi1[j]));
+                                   fabs(wr1[k]) + fabs(wi1[k])));
+            wdif = fmax(wdif, fabs(wr[j] - wr1[k]) + fabs(wi[j] - wi1[k]));
         }
         result[4] = fmax(result[4],
                          wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
@@ -445,4 +450,5 @@ label_190:
 label_250:
         ;
     }
+    free(perm);
 }

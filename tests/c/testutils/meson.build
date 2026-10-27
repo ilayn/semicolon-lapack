@@ -30,6 +30,7 @@ testutils_c_sources = files(
   'cget10.c',   # Compare two matrices: ||A - B|| / (||A|| * eps)
   'cget22.c',   # Nonsymmetric eigenvalue check: A*E - E*W
   'cget23.c',   # ZGEEVX nonsymmetric eigenvalue driver test (11 ratios)
+  'cpair_eigs.c', # Pair two eigenvalue lists by closest match
   'cget24.c',   # ZGEESX nonsymmetric Schur form expert driver test (17 ratios)
   'cget35.c',   # Sylvester equation solver (ZTRSYL) test
   'cget36.c',   # Schur form reordering (ZTREXC) test
