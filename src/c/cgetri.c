@@ -93,7 +93,8 @@ void cgetri(
         iws = (ldwork * nb > 1) ? ldwork * nb : 1;
         if (lwork < iws) {
             nb = lwork / ldwork;
-            nbmin = 2;  // Could use ILAENV for NBMIN, but we use 2 as default
+            nbmin = lapack_get_nbmin("GETRI");
+            if (nbmin < 2) nbmin = 2;
         }
     } else {
         iws = n;

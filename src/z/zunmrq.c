@@ -139,7 +139,8 @@ void zunmrq(const char* side, const char* trans,
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
             nb = lwork / (ldwork + ldt);
-            nbmin = lapack_get_nbmin("UNMRQ") > 2 ? lapack_get_nbmin("UNMRQ") : 2;
+            nbmin = lapack_get_nbmin("UNMRQ");
+            if (nbmin < 2) nbmin = 2;
         }
     }
 

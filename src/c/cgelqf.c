@@ -95,6 +95,7 @@ void cgelqf(const INT m, const INT n,
             if (lwork < iws) {
                 nb = lwork / m;
                 nbmin = lapack_get_nbmin("GELQF");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

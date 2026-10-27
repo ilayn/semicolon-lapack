@@ -130,6 +130,7 @@ void zunmqr(const char* side, const char* trans,
         if (lwork < lwkopt) {
             nb = lwork / (ldwork + LDT);
             nbmin = lapack_get_nbmin("UNMQR");
+            if (nbmin < 2) nbmin = 2;
         }
     }
 

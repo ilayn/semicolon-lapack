@@ -96,6 +96,7 @@ void zgeqlf(const INT m, const INT n,
             if (lwork < iws) {
                 nb = lwork / n;
                 nbmin = lapack_get_nbmin("GEQLF");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }

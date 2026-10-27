@@ -95,6 +95,7 @@ void dorglq(const INT m, const INT n, const INT k,
             if (lwork < iws) {
                 nb = lwork / ldwork;
                 nbmin = lapack_get_nbmin("ORGLQ");
+                if (nbmin < 2) nbmin = 2;
             }
         }
     }
