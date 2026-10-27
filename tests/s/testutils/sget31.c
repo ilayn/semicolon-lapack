@@ -74,7 +74,7 @@ void sget31(f32* rmax, INT* lmax, INT ninfo[2], INT* knt)
     *rmax = ZERO;
 
     f32 a[2 * 2], b[2 * 2], x[2 * 2];
-    f32 d1, d2, ca, smin, wr, wi, scale, xnorm, res, den, tmp;
+    f32 cnorm, d1, d2, ca, smin, wr, wi, scale, xnorm, res, den, tmp;
     INT na, nw, info;
 
     for (INT id1 = 0; id1 < 4; id1++) {
@@ -110,13 +110,14 @@ void sget31(f32* rmax, INT* lmax, INT ninfo[2], INT* knt)
                                         ninfo[1] = ninfo[1] + 1;
                                     res = fabsf((ca * a[0] - wr * d1) *
                                           x[0] - scale * b[0]);
+                                    cnorm = fabsf(ca * a[0]) + fabsf(wr * d1);
                                     if (info == 0) {
-                                        den = fabsf((ca * a[0] - wr * d1) * x[0]);
-                                        den = eps * den;
-                                        if (smlnum > den) den = smlnum;
+                                        den = eps * cnorm * fabsf(x[0]);
+                                        den = (den > smlnum) ? den : smlnum;
                                     } else {
-                                        den = smin * fabsf(x[0]);
-                                        if (smlnum > den) den = smlnum;
+                                        den = (smin > eps * cnorm) ? smin : eps * cnorm;
+                                        den = den * fabsf(x[0]);
+                                        den = (den > smlnum) ? den : smlnum;
                                     }
                                     res = res / den;
                                     if (fabsf(x[0]) < unfl &&
@@ -172,17 +173,14 @@ void sget31(f32* rmax, INT* lmax, INT ninfo[2], INT* knt)
                                         res = res + fabsf((-wi * d1) * x[0] +
                                               (ca * a[0] - wr * d1) * x[0 + 1 * 2] -
                                               scale * b[0 + 1 * 2]);
+                                        cnorm = fabsf(ca * a[0]) + fabsf(wr * d1) + fabsf(wi * d1);
                                         if (info == 0) {
-                                            f32 t1 = fabsf(ca * a[0] - wr * d1);
-                                            f32 t2 = fabsf(d1 * wi);
-                                            den = (t1 > t2 ? t1 : t2) *
-                                                  (fabsf(x[0]) + fabsf(x[0 + 1 * 2]));
-                                            den = eps * den;
-                                            if (smlnum > den) den = smlnum;
+                                            den = eps * cnorm * (fabsf(x[0]) + fabsf(x[0 + 1 * 2]));
+                                            den = (den > smlnum) ? den : smlnum;
                                         } else {
-                                            den = smin * (fabsf(x[0]) +
-                                                  fabsf(x[0 + 1 * 2]));
-                                            if (smlnum > den) den = smlnum;
+                                            den = (smin > eps * cnorm) ? smin : eps * cnorm;
+                                            den = den * (fabsf(x[0]) + fabsf(x[0 + 1 * 2]));
+                                            den = (den > smlnum) ? den : smlnum;
                                         }
                                         res = res / den;
                                         if (fabsf(x[0]) < unfl &&

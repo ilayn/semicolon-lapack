@@ -74,7 +74,7 @@ void dget31(f64* rmax, INT* lmax, INT ninfo[2], INT* knt)
     *rmax = ZERO;
 
     f64 a[2 * 2], b[2 * 2], x[2 * 2];
-    f64 d1, d2, ca, smin, wr, wi, scale, xnorm, res, den, tmp;
+    f64 cnorm, d1, d2, ca, smin, wr, wi, scale, xnorm, res, den, tmp;
     INT na, nw, info;
 
     for (INT id1 = 0; id1 < 4; id1++) {
@@ -110,13 +110,14 @@ void dget31(f64* rmax, INT* lmax, INT ninfo[2], INT* knt)
                                         ninfo[1] = ninfo[1] + 1;
                                     res = fabs((ca * a[0] - wr * d1) *
                                           x[0] - scale * b[0]);
+                                    cnorm = fabs(ca * a[0]) + fabs(wr * d1);
                                     if (info == 0) {
-                                        den = fabs((ca * a[0] - wr * d1) * x[0]);
-                                        den = eps * den;
-                                        if (smlnum > den) den = smlnum;
+                                        den = eps * cnorm * fabs(x[0]);
+                                        den = (den > smlnum) ? den : smlnum;
                                     } else {
-                                        den = smin * fabs(x[0]);
-                                        if (smlnum > den) den = smlnum;
+                                        den = (smin > eps * cnorm) ? smin : eps * cnorm;
+                                        den = den * fabs(x[0]);
+                                        den = (den > smlnum) ? den : smlnum;
                                     }
                                     res = res / den;
                                     if (fabs(x[0]) < unfl &&
@@ -172,17 +173,14 @@ void dget31(f64* rmax, INT* lmax, INT ninfo[2], INT* knt)
                                         res = res + fabs((-wi * d1) * x[0] +
                                               (ca * a[0] - wr * d1) * x[0 + 1 * 2] -
                                               scale * b[0 + 1 * 2]);
+                                        cnorm = fabs(ca * a[0]) + fabs(wr * d1) + fabs(wi * d1);
                                         if (info == 0) {
-                                            f64 t1 = fabs(ca * a[0] - wr * d1);
-                                            f64 t2 = fabs(d1 * wi);
-                                            den = (t1 > t2 ? t1 : t2) *
-                                                  (fabs(x[0]) + fabs(x[0 + 1 * 2]));
-                                            den = eps * den;
-                                            if (smlnum > den) den = smlnum;
+                                            den = eps * cnorm * (fabs(x[0]) + fabs(x[0 + 1 * 2]));
+                                            den = (den > smlnum) ? den : smlnum;
                                         } else {
-                                            den = smin * (fabs(x[0]) +
-                                                  fabs(x[0 + 1 * 2]));
-                                            if (smlnum > den) den = smlnum;
+                                            den = (smin > eps * cnorm) ? smin : eps * cnorm;
+                                            den = den * (fabs(x[0]) + fabs(x[0 + 1 * 2]));
+                                            den = (den > smlnum) ? den : smlnum;
                                         }
                                         res = res / den;
                                         if (fabs(x[0]) < unfl &&
