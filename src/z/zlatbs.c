@@ -136,7 +136,7 @@ void zlatbs(
     xmax = ZERO;
     for (j = 0; j < n; j++) {
         f64 tmp = cabs2(X[j]);
-        if (xmax < tmp) xmax = tmp;
+        xmax = (xmax > tmp) ? xmax : tmp;
     }
     xbnd = xmax;
 
@@ -343,7 +343,7 @@ notran_skip:
                     }
                     tjj = cabs1(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = zladiv(uscal, tjjs);
                     }
                     if (rec < ONE) {
@@ -439,7 +439,7 @@ trans_skip: ;
                     }
                     tjj = cabs1(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = zladiv(uscal, tjjs);
                     }
                     if (rec < ONE) {

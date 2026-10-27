@@ -195,7 +195,7 @@ void ctrevc3(const char* side, const char* howmny, INT* select,
                     goto R80;
             }
             smin = ulp * cabs1f(T[ki + ki * ldt]);
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             work[ki + iv * n] = cone;
 
@@ -302,7 +302,7 @@ R80:        ;
                     goto L130;
             }
             smin = ulp * cabs1f(T[ki + ki * ldt]);
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             work[ki + iv * n] = cone;
 

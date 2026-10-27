@@ -227,7 +227,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                      sqrtf(fabsf(T[(ki - 1) + ki * ldt]));
             }
             smin = ulp * (fabsf(wr) + fabsf(wi));
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             if (ip == 0) {
                 /* --------------------------------------------------------
@@ -457,7 +457,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = 0; k < ki; k++) {
                         f32 val = fabsf(VR[k + (is - 1) * ldvr]) + fabsf(VR[k + is * ldvr]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_sscal(ki, remax, &VR[(is - 1) * ldvr], 1);
@@ -485,7 +485,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = 0; k < n; k++) {
                         f32 val = fabsf(VR[k + (ki - 1) * ldvr]) + fabsf(VR[k + ki * ldvr]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_sscal(n, remax, &VR[(ki - 1) * ldvr], 1);
@@ -539,7 +539,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                             for (ii = 0; ii < n; ii++) {
                                 f32 val = fabsf(work[ii + (nb + k) * n]) +
                                              fabsf(work[ii + (nb + k + 1) * n]);
-                                if (val > emax) emax = val;
+                                emax = (emax > val) ? emax : val;
                             }
                             remax = one / emax;
                             /* else if iscomplex[k] == -1:
@@ -605,7 +605,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                      sqrtf(fabsf(T[(ki + 1) + ki * ldt]));
             }
             smin = ulp * (fabsf(wr) + fabsf(wi));
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             if (ip == 0) {
                 /* --------------------------------------------------------
@@ -698,8 +698,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                         work[(j + 1) + iv * n] = x[1];
 
                         f32 tmp = fabsf(work[j + iv * n]);
-                        if (fabsf(work[(j + 1) + iv * n]) > tmp)
-                            tmp = fabsf(work[(j + 1) + iv * n]);
+                        tmp = (tmp > fabsf(work[(j + 1) + iv * n])) ? tmp : fabsf(work[(j + 1) + iv * n]);
                         if (tmp > vmax) vmax = tmp;
                         vcrit = bignum / vmax;
                     }
@@ -875,7 +874,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = ki; k < n; k++) {
                         f32 val = fabsf(VL[k + is * ldvl]) + fabsf(VL[k + (is + 1) * ldvl]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_sscal(n - ki, remax, &VL[ki + is * ldvl], 1);
@@ -905,7 +904,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = 0; k < n; k++) {
                         f32 val = fabsf(VL[k + ki * ldvl]) + fabsf(VL[k + (ki + 1) * ldvl]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_sscal(n, remax, &VL[ki * ldvl], 1);
@@ -959,7 +958,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                             for (ii = 0; ii < n; ii++) {
                                 f32 val = fabsf(work[ii + (nb + k) * n]) +
                                              fabsf(work[ii + (nb + k + 1) * n]);
-                                if (val > emax) emax = val;
+                                emax = (emax > val) ? emax : val;
                             }
                             remax = one / emax;
                             /* else if iscomplex[k] == -1:

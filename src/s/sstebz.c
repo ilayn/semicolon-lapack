@@ -175,8 +175,7 @@ void sstebz(const char* range, const char* order, const INT n,
             work[j - 1] = 0.0f;
         } else {
             work[j - 1] = tmp1;
-            if (tmp1 > pivmin)
-                pivmin = tmp1;
+            pivmin = (pivmin > tmp1) ? pivmin : tmp1;
         }
     }
     isplit[*nsplit - 1] = n - 1;  /* 0-based: last block ends at n-1 */
@@ -199,17 +198,13 @@ void sstebz(const char* range, const char* order, const INT n,
             /* Fortran: DO J=1,N-1 with TMP2 = SQRT(WORK(J))
              * work[j] = E[j]^2 (stored above for j=0..n-2) */
             tmp2 = sqrtf(work[j]);
-            if (D[j] + tmp1 + tmp2 > gu)
-                gu = D[j] + tmp1 + tmp2;
-            if (D[j] - tmp1 - tmp2 < gl)
-                gl = D[j] - tmp1 - tmp2;
+            gu = (gu > D[j] + tmp1 + tmp2) ? gu : D[j] + tmp1 + tmp2;
+            gl = (gl < D[j] - tmp1 - tmp2) ? gl : D[j] - tmp1 - tmp2;
             tmp1 = tmp2;
         }
 
-        if (D[n - 1] + tmp1 > gu)
-            gu = D[n - 1] + tmp1;
-        if (D[n - 1] - tmp1 < gl)
-            gl = D[n - 1] - tmp1;
+        gu = (gu > D[n - 1] + tmp1) ? gu : D[n - 1] + tmp1;
+        gl = (gl < D[n - 1] - tmp1) ? gl : D[n - 1] - tmp1;
 
         tnorm = fabsf(gl) > fabsf(gu) ? fabsf(gl) : fabsf(gu);
         gl = gl - FUDGE * tnorm * ulp * n - FUDGE * 2.0f * pivmin;
@@ -342,14 +337,14 @@ void sstebz(const char* range, const char* order, const INT n,
         tnorm = fabsf(D[0]) + fabsf(E[0]);
         {
             f32 t = fabsf(D[n - 1]) + fabsf(E[n - 2]);
-            if (t > tnorm) tnorm = t;
+            tnorm = (tnorm > t) ? tnorm : t;
         }
 
         for (j = 1; j < n - 1; j++) {
             /* Fortran: DO J=2,N-1; TNORM = MAX(TNORM, |D(J)|+|E(J-1)|+|E(J)|)
              * 0-based: j=1..n-2; |D[j]| + |E[j-1]| + |E[j]| */
             tmp1 = fabsf(D[j]) + fabsf(E[j - 1]) + fabsf(E[j]);
-            if (tmp1 > tnorm) tnorm = tmp1;
+            tnorm = (tnorm > tmp1) ? tnorm : tmp1;
         }
 
         if (abstol <= 0.0f) {
@@ -410,13 +405,13 @@ void sstebz(const char* range, const char* order, const INT n,
                 /* Fortran: DO J=IBEGIN,IEND-1; TMP2 = ABS(E(J))
                  * In 0-based: E[j] is the off-diagonal between D[j] and D[j+1] */
                 tmp2 = fabsf(E[j]);
-                if (D[j] + tmp1 + tmp2 > gu) gu = D[j] + tmp1 + tmp2;
-                if (D[j] - tmp1 - tmp2 < gl) gl = D[j] - tmp1 - tmp2;
+                gu = (gu > D[j] + tmp1 + tmp2) ? gu : D[j] + tmp1 + tmp2;
+                gl = (gl < D[j] - tmp1 - tmp2) ? gl : D[j] - tmp1 - tmp2;
                 tmp1 = tmp2;
             }
 
-            if (D[iend] + tmp1 > gu) gu = D[iend] + tmp1;
-            if (D[iend] - tmp1 < gl) gl = D[iend] - tmp1;
+            gu = (gu > D[iend] + tmp1) ? gu : D[iend] + tmp1;
+            gl = (gl < D[iend] - tmp1) ? gl : D[iend] - tmp1;
 
             bnorm = fabsf(gl) > fabsf(gu) ? fabsf(gl) : fabsf(gu);
             gl = gl - FUDGE * bnorm * ulp * in - FUDGE * pivmin;
@@ -436,8 +431,8 @@ void sstebz(const char* range, const char* order, const INT n,
                     nwu = nwu + in;
                     continue;  /* GO TO 70 */
                 }
-                if (gl < wl) gl = wl;
-                if (gu > wu) gu = wu;
+                gl = (gl > wl) ? gl : wl;
+                gu = (gu < wu) ? gu : wu;
                 if (gl >= gu)
                     continue;  /* GO TO 70 */
             }

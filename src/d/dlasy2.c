@@ -104,15 +104,15 @@ void dlasy2(const INT ltranl, const INT ltranr, const INT isgn,
                                             [TR21 TR22]              */
         smin = fabs(TL[0]);
         temp = fabs(TR[0]);
-        if (temp > smin) smin = temp;
-        temp = fabs(TR[1]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         temp = fabs(TR[ldtr]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
+        temp = fabs(TR[1]);
+        smin = (smin > temp) ? smin : temp;
         temp = fabs(TR[1 + ldtr]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         smin = eps * smin;
-        if (smin < smlnum) smin = smlnum;
+        smin = (smin > smlnum) ? smin : smlnum;
 
         tmp[0] = TL[0] + sgn * TR[0];
         tmp[3] = TL[0] + sgn * TR[1 + ldtr];
@@ -132,15 +132,15 @@ void dlasy2(const INT ltranl, const INT ltranr, const INT isgn,
              [TL21 TL22] [X21]        [X21]        [B21] */
         smin = fabs(TR[0]);
         temp = fabs(TL[0]);
-        if (temp > smin) smin = temp;
-        temp = fabs(TL[1]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         temp = fabs(TL[ldtl]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
+        temp = fabs(TL[1]);
+        smin = (smin > temp) ? smin : temp;
         temp = fabs(TL[1 + ldtl]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         smin = eps * smin;
-        if (smin < smlnum) smin = smlnum;
+        smin = (smin > smlnum) ? smin : smlnum;
 
         tmp[0] = TL[0] + sgn * TR[0];
         tmp[3] = TL[1 + ldtl] + sgn * TR[0];
@@ -211,22 +211,22 @@ void dlasy2(const INT ltranl, const INT ltranr, const INT isgn,
        Solve equivalent 4 by 4 system using complete pivoting. */
 
     smin = fabs(TR[0]);
-    temp = fabs(TR[1]);
-    if (temp > smin) smin = temp;
     temp = fabs(TR[ldtr]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
+    temp = fabs(TR[1]);
+    smin = (smin > temp) ? smin : temp;
     temp = fabs(TR[1 + ldtr]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
     temp = fabs(TL[0]);
-    if (temp > smin) smin = temp;
-    temp = fabs(TL[1]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
     temp = fabs(TL[ldtl]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
+    temp = fabs(TL[1]);
+    smin = (smin > temp) ? smin : temp;
     temp = fabs(TL[1 + ldtl]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
     smin = eps * smin;
-    if (smin < smlnum) smin = smlnum;
+    smin = (smin > smlnum) ? smin : smlnum;
 
     /* Initialize T16 to zero */
     for (i = 0; i < 16; i++)
@@ -315,9 +315,9 @@ void dlasy2(const INT ltranl, const INT ltranr, const INT isgn,
         (EIGHT * smlnum) * fabs(btmp[2]) > fabs(t16[2 + 4*2]) ||
         (EIGHT * smlnum) * fabs(btmp[3]) > fabs(t16[3 + 4*3])) {
         xmax = fabs(btmp[0]);
-        if (fabs(btmp[1]) > xmax) xmax = fabs(btmp[1]);
-        if (fabs(btmp[2]) > xmax) xmax = fabs(btmp[2]);
-        if (fabs(btmp[3]) > xmax) xmax = fabs(btmp[3]);
+        xmax = (xmax > fabs(btmp[1])) ? xmax : fabs(btmp[1]);
+        xmax = (xmax > fabs(btmp[2])) ? xmax : fabs(btmp[2]);
+        xmax = (xmax > fabs(btmp[3])) ? xmax : fabs(btmp[3]);
         *scale = (ONE / EIGHT) / xmax;
         btmp[0] = btmp[0] * (*scale);
         btmp[1] = btmp[1] * (*scale);
@@ -350,5 +350,5 @@ void dlasy2(const INT ltranl, const INT ltranr, const INT isgn,
     X[1 + ldx] = tmp[3];
     *xnorm = fabs(tmp[0]) + fabs(tmp[2]);
     temp = fabs(tmp[1]) + fabs(tmp[3]);
-    if (temp > *xnorm) *xnorm = temp;
+    *xnorm = (*xnorm > temp) ? *xnorm : temp;
 }

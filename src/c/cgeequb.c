@@ -112,9 +112,7 @@ void cgeequb(
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
             f32 abs_val = fabsf(crealf(A[i + j * lda])) + fabsf(cimagf(A[i + j * lda]));
-            if (abs_val > R[i]) {
-                R[i] = abs_val;
-            }
+            R[i] = (R[i] > abs_val) ? R[i] : abs_val;
         }
     }
 
@@ -129,12 +127,8 @@ void cgeequb(
     rcmin = bignum;
     rcmax = ZERO;
     for (i = 0; i < m; i++) {
-        if (R[i] > rcmax) {
-            rcmax = R[i];
-        }
-        if (R[i] < rcmin) {
-            rcmin = R[i];
-        }
+        rcmax = (rcmax > R[i]) ? rcmax : R[i];
+        rcmin = (rcmin < R[i]) ? rcmin : R[i];
     }
     *amax = rcmax;
 
@@ -150,12 +144,8 @@ void cgeequb(
         // Invert the scale factors
         for (i = 0; i < m; i++) {
             f32 ri = R[i];
-            if (ri < smlnum) {
-                ri = smlnum;
-            }
-            if (ri > bignum) {
-                ri = bignum;
-            }
+            ri = (ri > smlnum) ? ri : smlnum;
+            ri = (ri < bignum) ? ri : bignum;
             R[i] = ONE / ri;
         }
 
@@ -175,9 +165,7 @@ void cgeequb(
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {
             f32 scaled_val = (fabsf(crealf(A[i + j * lda])) + fabsf(cimagf(A[i + j * lda]))) * R[i];
-            if (scaled_val > C[j]) {
-                C[j] = scaled_val;
-            }
+            C[j] = (C[j] > scaled_val) ? C[j] : scaled_val;
         }
         // Round to power of radix
         if (C[j] > ZERO) {
@@ -189,12 +177,8 @@ void cgeequb(
     rcmin = bignum;
     rcmax = ZERO;
     for (j = 0; j < n; j++) {
-        if (C[j] < rcmin) {
-            rcmin = C[j];
-        }
-        if (C[j] > rcmax) {
-            rcmax = C[j];
-        }
+        rcmin = (rcmin < C[j]) ? rcmin : C[j];
+        rcmax = (rcmax > C[j]) ? rcmax : C[j];
     }
 
     if (rcmin == ZERO) {
@@ -209,12 +193,8 @@ void cgeequb(
         // Invert the scale factors
         for (j = 0; j < n; j++) {
             f32 cj = C[j];
-            if (cj < smlnum) {
-                cj = smlnum;
-            }
-            if (cj > bignum) {
-                cj = bignum;
-            }
+            cj = (cj > smlnum) ? cj : smlnum;
+            cj = (cj < bignum) ? cj : bignum;
             C[j] = ONE / cj;
         }
 

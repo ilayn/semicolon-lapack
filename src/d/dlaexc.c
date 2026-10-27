@@ -103,7 +103,7 @@ void dlaexc(const INT wantq, const INT n, f64* T, const INT ldt,
         eps = dlamch("P");
         smlnum = dlamch("S") / eps;
         thresh = TEN * eps * dnorm;
-        if (thresh < smlnum) thresh = smlnum;
+        thresh = (thresh > smlnum) ? thresh : smlnum;
 
         /* Solve T11*X - X*T22 = scale*T12 for X. */
         dlasy2(0, 0, -1, n1, n2, D, LDD, &D[n1 + n1 * LDD], LDD,

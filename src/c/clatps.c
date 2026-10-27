@@ -121,7 +121,7 @@ void clatps(
     xmax = ZERO;
     for (j = 0; j < n; j++) {
         f32 tmp = cabs2f(X[j]);
-        if (xmax < tmp) xmax = tmp;
+        xmax = (xmax > tmp) ? xmax : tmp;
     }
     xbnd = xmax;
 

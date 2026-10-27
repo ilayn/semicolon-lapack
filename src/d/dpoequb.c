@@ -84,8 +84,8 @@ void dpoequb(
     *amax = S[0];
     for (i = 1; i < n; i++) {
         S[i] = A[i + i * lda];
-        if (S[i] < smin) smin = S[i];
-        if (S[i] > *amax) *amax = S[i];
+        smin = (smin < S[i]) ? smin : S[i];
+        *amax = (*amax > S[i]) ? *amax : S[i];
     }
 
     if (smin <= zero) {

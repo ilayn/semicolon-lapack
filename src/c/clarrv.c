@@ -380,14 +380,12 @@ void clarrv(const INT n, const f32 vl, const f32 vu,
                     if (oldfst > 0) {
                         tmp = W[wbegin + oldfst] - werr[wbegin + oldfst]
                               - W[wbegin + oldfst - 1] - werr[wbegin + oldfst - 1];
-                        if (tmp > wgap[wbegin + oldfst - 1])
-                            wgap[wbegin + oldfst - 1] = tmp;
+                        wgap[wbegin + oldfst - 1] = (wgap[wbegin + oldfst - 1] > tmp) ? wgap[wbegin + oldfst - 1] : tmp;
                     }
                     if (wbegin + oldlst < wend) {
                         tmp = W[wbegin + oldlst + 1] - werr[wbegin + oldlst + 1]
                               - W[wbegin + oldlst] - werr[wbegin + oldlst];
-                        if (tmp > wgap[wbegin + oldlst])
-                            wgap[wbegin + oldlst] = tmp;
+                        wgap[wbegin + oldlst] = (wgap[wbegin + oldlst] > tmp) ? wgap[wbegin + oldlst] : tmp;
                     }
                     /* Each time the eigenvalues in WORK get refined, we store
                      * the newly found approximation with all shifts applied in W */
@@ -787,8 +785,7 @@ label_125:
                             if (k > 0) {
                                 tmp = W[windex] - werr[windex]
                                       - W[windmn] - werr[windmn];
-                                if (tmp > wgap[windmn])
-                                    wgap[windmn] = tmp;
+                                wgap[windmn] = (wgap[windmn] > tmp) ? wgap[windmn] : tmp;
                             }
                             if (windex < wend) {
                                 tmp = W[windpl] - werr[windpl]

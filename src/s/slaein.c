@@ -457,9 +457,7 @@ void slaein(
         v1norm = ZERO;
         for (i = 0; i < n; i++) {
             f32 mag = fabsf(vr[i]) + fabsf(vi[i]);
-            if (mag > v1norm) {
-                v1norm = mag;
-            }
+            v1norm = (v1norm > mag) ? v1norm : mag;
         }
         cblas_sscal(n, ONE / v1norm, vr, 1);
         cblas_sscal(n, ONE / v1norm, vi, 1);

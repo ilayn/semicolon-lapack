@@ -134,8 +134,8 @@ void zlatrs(
                     for (i = 0; i < j; i++) {
                         f64 re = fabs(creal(A[i + j * lda]));
                         f64 im = fabs(cimag(A[i + j * lda]));
-                        if (re > tmax) tmax = re;
-                        if (im > tmax) tmax = im;
+                        tmax = (tmax > re) ? tmax : re;
+                        tmax = (tmax > im) ? tmax : im;
                     }
                 }
             } else {
@@ -143,8 +143,8 @@ void zlatrs(
                     for (i = j + 1; i < n; i++) {
                         f64 re = fabs(creal(A[i + j * lda]));
                         f64 im = fabs(cimag(A[i + j * lda]));
-                        if (re > tmax) tmax = re;
-                        if (im > tmax) tmax = im;
+                        tmax = (tmax > re) ? tmax : re;
+                        tmax = (tmax > im) ? tmax : im;
                     }
                 }
             }
@@ -193,7 +193,7 @@ void zlatrs(
     xmax = ZERO;
     for (j = 0; j < n; j++) {
         f64 temp = cabs2(X[j]);
-        if (temp > xmax) xmax = temp;
+        xmax = (xmax > temp) ? xmax : temp;
     }
     xbnd = xmax;
 
@@ -396,7 +396,7 @@ void zlatrs(
                     }
                     tjj = cabs1(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = zladiv(uscal, tjjs);
                     }
                     if (rec < ONE) {
@@ -488,7 +488,7 @@ void zlatrs(
                     }
                     tjj = cabs1(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = zladiv(uscal, tjjs);
                     }
                     if (rec < ONE) {

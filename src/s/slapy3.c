@@ -27,8 +27,8 @@ f32 slapy3(const f32 x, const f32 y, const f32 z)
     yabs = fabsf(y);
     zabs = fabsf(z);
     w = xabs;
-    if (yabs > w) w = yabs;
-    if (zabs > w) w = zabs;
+    w = (w > yabs) ? w : yabs;
+    w = (w > zabs) ? w : zabs;
     if (w == ZERO || w > hugeval) {
         return xabs + yabs + zabs;
     } else {

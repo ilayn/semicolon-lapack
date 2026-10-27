@@ -192,7 +192,7 @@ void strevc(const char* side, const char* howmny, INT* select, const INT n,
                 wi = sqrtf(fabsf(T[ki + (ki - 1) * ldt])) *
                      sqrtf(fabsf(T[(ki - 1) + ki * ldt]));
             smin = ulp * (fabsf(wr) + fabsf(wi));
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             if (ip == 0) {
                 /* Real right eigenvector */
@@ -253,7 +253,7 @@ void strevc(const char* side, const char* howmny, INT* select, const INT n,
                          * updating the right-hand side. */
                         if (xnorm > 1.0f) {
                             beta = work[j - 1];
-                            if (work[j] > beta) beta = work[j];
+                            beta = (beta > work[j]) ? beta : work[j];
                             if (beta > bignum / xnorm) {
                                 x[0] = x[0] / xnorm;
                                 x[1] = x[1] / xnorm;
@@ -371,7 +371,7 @@ void strevc(const char* side, const char* howmny, INT* select, const INT n,
                          * the right-hand side. */
                         if (xnorm > 1.0f) {
                             beta = work[j - 1];
-                            if (work[j] > beta) beta = work[j];
+                            beta = (beta > work[j]) ? beta : work[j];
                             if (beta > bignum / xnorm) {
                                 rec = 1.0f / xnorm;
                                 x[0] = x[0] * rec;
@@ -408,7 +408,7 @@ void strevc(const char* side, const char* howmny, INT* select, const INT n,
                     emax = 0.0f;
                     for (k = 0; k <= ki; k++) {
                         f32 temp = fabsf(VR[k + (is - 1) * ldvr]) + fabsf(VR[k + is * ldvr]);
-                        if (temp > emax) emax = temp;
+                        emax = (emax > temp) ? emax : temp;
                     }
 
                     remax = 1.0f / emax;
@@ -436,7 +436,7 @@ void strevc(const char* side, const char* howmny, INT* select, const INT n,
                     emax = 0.0f;
                     for (k = 0; k < n; k++) {
                         f32 temp = fabsf(VR[k + (ki - 1) * ldvr]) + fabsf(VR[k + ki * ldvr]);
-                        if (temp > emax) emax = temp;
+                        emax = (emax > temp) ? emax : temp;
                     }
                     remax = 1.0f / emax;
                     cblas_sscal(n, remax, &VR[(ki - 1) * ldvr], 1);
@@ -478,7 +478,7 @@ L130:
                 wi = sqrtf(fabsf(T[ki + (ki + 1) * ldt])) *
                      sqrtf(fabsf(T[(ki + 1) + ki * ldt]));
             smin = ulp * (fabsf(wr) + fabsf(wi));
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             if (ip == 0) {
                 /* Real left eigenvector. */
@@ -539,7 +539,7 @@ L130:
                          * Scale if necessary to avoid overflow when forming
                          * the right-hand side. */
                         beta = work[j];
-                        if (work[j + 1] > beta) beta = work[j + 1];
+                        beta = (beta > work[j + 1]) ? beta : work[j + 1];
                         if (beta > vcrit) {
                             rec = 1.0f / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + n], 1);
@@ -673,7 +673,7 @@ L130:
                          * Scale if necessary to avoid overflow when forming
                          * the right-hand side elements. */
                         beta = work[j];
-                        if (work[j + 1] > beta) beta = work[j + 1];
+                        beta = (beta > work[j + 1]) ? beta : work[j + 1];
                         if (beta > vcrit) {
                             rec = 1.0f / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + n], 1);
@@ -724,7 +724,7 @@ L130:
                     emax = 0.0f;
                     for (k = ki; k < n; k++) {
                         f32 temp = fabsf(VL[k + is * ldvl]) + fabsf(VL[k + (is + 1) * ldvl]);
-                        if (temp > emax) emax = temp;
+                        emax = (emax > temp) ? emax : temp;
                     }
                     remax = 1.0f / emax;
                     cblas_sscal(n - ki, remax, &VL[ki + is * ldvl], 1);
@@ -752,7 +752,7 @@ L130:
                     emax = 0.0f;
                     for (k = 0; k < n; k++) {
                         f32 temp = fabsf(VL[k + ki * ldvl]) + fabsf(VL[k + (ki + 1) * ldvl]);
-                        if (temp > emax) emax = temp;
+                        emax = (emax > temp) ? emax : temp;
                     }
                     remax = 1.0f / emax;
                     cblas_sscal(n, remax, &VL[ki * ldvl], 1);

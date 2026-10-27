@@ -167,9 +167,9 @@ void dlarrb(const INT n, const f64* D, const f64* lld,
         }
         width = HALF * fabs(left - right);
         tmp = fabs(left);
-        if (fabs(right) > tmp) tmp = fabs(right);
+        tmp = (tmp > fabs(right)) ? tmp : fabs(right);
         cvrgd = rtol1 * gap;
-        if (rtol2 * tmp > cvrgd) cvrgd = rtol2 * tmp;
+        cvrgd = (cvrgd > rtol2 * tmp) ? cvrgd : rtol2 * tmp;
         if (width <= cvrgd || width <= mnwdth) {
             /*
              * This interval has already converged and does not need refinement.
@@ -217,9 +217,9 @@ void dlarrb(const INT n, const f64* D, const f64* lld,
             /* semiwidth of interval */
             width = right - mid;
             tmp = fabs(left);
-            if (fabs(right) > tmp) tmp = fabs(right);
+            tmp = (tmp > fabs(right)) ? tmp : fabs(right);
             cvrgd = rtol1 * gap;
-            if (rtol2 * tmp > cvrgd) cvrgd = rtol2 * tmp;
+            cvrgd = (cvrgd > rtol2 * tmp) ? cvrgd : rtol2 * tmp;
             if ((width <= cvrgd) || (width <= mnwdth) ||
                 (iter == maxitr)) {
                 /* reduce number of unconverged intervals */

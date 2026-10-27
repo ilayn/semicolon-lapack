@@ -240,10 +240,10 @@ void ztbrfs(
         for (i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 f64 tmp = cabs1(work[i]) / rwork[i];
-                if (s < tmp) s = tmp;
+                s = (s > tmp) ? s : tmp;
             } else {
                 f64 tmp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
-                if (s < tmp) s = tmp;
+                s = (s > tmp) ? s : tmp;
             }
         }
         berr[j] = s;
@@ -279,7 +279,7 @@ void ztbrfs(
         lstres = ZERO;
         for (i = 0; i < n; i++) {
             f64 tmp = cabs1(X[i + j * ldx]);
-            if (lstres < tmp) lstres = tmp;
+            lstres = (lstres > tmp) ? lstres : tmp;
         }
         if (lstres != ZERO)
             ferr[j] = ferr[j] / lstres;

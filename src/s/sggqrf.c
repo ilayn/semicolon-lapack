@@ -165,11 +165,11 @@ void sggqrf(const INT n, const INT m, const INT p,
         INT minmn = (n < m) ? n : m;
         sormqr("L", "T", n, p, minmn, A, lda, taua, B, ldb, work, lwork, info);
     }
-    if ((INT)work[0] > lopt) lopt = (INT)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
 
     /* RQ factorization of N-by-P matrix B: B = T*Z */
     sgerqf(n, p, B, ldb, taub, work, lwork, info);
-    if ((INT)work[0] > lopt) lopt = (INT)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
 
     work[0] = (f32)lopt;
 }

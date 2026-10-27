@@ -222,10 +222,10 @@ void dtbrfs(
         for (i = 0; i < n; i++) {
             if (work[i] > safe2) {
                 f64 tmp = fabs(work[n + i]) / work[i];
-                if (s < tmp) s = tmp;
+                s = (s > tmp) ? s : tmp;
             } else {
                 f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
-                if (s < tmp) s = tmp;
+                s = (s > tmp) ? s : tmp;
             }
         }
         berr[j] = s;
@@ -265,7 +265,7 @@ void dtbrfs(
         lstres = ZERO;
         for (i = 0; i < n; i++) {
             f64 tmp = fabs(X[i + j * ldx]);
-            if (lstres < tmp) lstres = tmp;
+            lstres = (lstres > tmp) ? lstres : tmp;
         }
         if (lstres != ZERO)
             ferr[j] = ferr[j] / lstres;

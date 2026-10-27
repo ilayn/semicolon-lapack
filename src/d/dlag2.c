@@ -61,9 +61,9 @@ void dlag2(
     anorm = fabs(A[0 + 0 * lda]) + fabs(A[1 + 0 * lda]);
     {
         f64 tmp = fabs(A[0 + 1 * lda]) + fabs(A[1 + 1 * lda]);
-        if (tmp > anorm) anorm = tmp;
+        anorm = (anorm > tmp) ? anorm : tmp;
     }
-    if (safmin > anorm) anorm = safmin;
+    anorm = (anorm > safmin) ? anorm : safmin;
     ascale = ONE / anorm;
     a11 = ascale * A[0 + 0 * lda];
     a21 = ascale * A[1 + 0 * lda];
@@ -78,9 +78,9 @@ void dlag2(
         f64 tmp2 = fabs(b12);
         f64 tmp3 = fabs(b22);
         f64 tmp = tmp1;
-        if (tmp2 > tmp) tmp = tmp2;
-        if (tmp3 > tmp) tmp = tmp3;
-        if (rtmin > tmp) tmp = rtmin;
+        tmp = (tmp > tmp2) ? tmp : tmp2;
+        tmp = (tmp > tmp3) ? tmp : tmp3;
+        tmp = (tmp > rtmin) ? tmp : rtmin;
         bmin = rtmin * tmp;
     }
     if (fabs(b11) < bmin)
@@ -91,11 +91,11 @@ void dlag2(
     {
         f64 tmp = fabs(b12) + fabs(b22);
         bnorm = fabs(b11);
-        if (tmp > bnorm) bnorm = tmp;
-        if (safmin > bnorm) bnorm = safmin;
+        bnorm = (bnorm > tmp) ? bnorm : tmp;
+        bnorm = (bnorm > safmin) ? bnorm : safmin;
     }
     bsize = fabs(b11);
-    if (fabs(b22) > bsize) bsize = fabs(b22);
+    bsize = (bsize > fabs(b22)) ? bsize : fabs(b22);
     bscale = ONE / bsize;
     b11 = b11 * bscale;
     b12 = b12 * bscale;
@@ -184,9 +184,9 @@ void dlag2(
         f64 tmp2 = (wabs > c5) ? wabs : c5;
         f64 tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
         wsize = safmin;
-        if (c1 > wsize) wsize = c1;
-        if (FUZZY1 * tmp1 > wsize) wsize = FUZZY1 * tmp1;
-        if (tmp3 > wsize) wsize = tmp3;
+        wsize = (wsize > c1) ? wsize : c1;
+        wsize = (wsize > FUZZY1 * tmp1) ? wsize : FUZZY1 * tmp1;
+        wsize = (wsize > tmp3) ? wsize : tmp3;
     }
     if (wsize != ONE) {
         wscale = ONE / wsize;
@@ -217,9 +217,9 @@ void dlag2(
             f64 tmp2 = (wabs > c5) ? wabs : c5;
             f64 tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
             wsize = safmin;
-            if (c1 > wsize) wsize = c1;
-            if (FUZZY1 * tmp1 > wsize) wsize = FUZZY1 * tmp1;
-            if (tmp3 > wsize) wsize = tmp3;
+            wsize = (wsize > c1) ? wsize : c1;
+            wsize = (wsize > FUZZY1 * tmp1) ? wsize : FUZZY1 * tmp1;
+            wsize = (wsize > tmp3) ? wsize : tmp3;
         }
         if (wsize != ONE) {
             wscale = ONE / wsize;

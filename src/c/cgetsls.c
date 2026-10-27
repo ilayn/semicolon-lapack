@@ -138,12 +138,12 @@ void cgetsls(
             tszo = (INT)crealf(tq[0]);
             lwo = (INT)crealf(workq[0]);
             cgemqr("L", trans, m, nrhs, n, A, lda, tq, tszo, B, ldb, workq, -1, &info2);
-            if ((INT)crealf(workq[0]) > lwo) lwo = (INT)crealf(workq[0]);
+            lwo = (lwo > (INT)crealf(workq[0])) ? lwo : (INT)crealf(workq[0]);
             cgeqr(m, n, A, lda, tq, -2, workq, -2, &info2);
             tszm = (INT)crealf(tq[0]);
             lwm = (INT)crealf(workq[0]);
             cgemqr("L", trans, m, nrhs, n, A, lda, tq, tszm, B, ldb, workq, -1, &info2);
-            if ((INT)crealf(workq[0]) > lwm) lwm = (INT)crealf(workq[0]);
+            lwm = (lwm > (INT)crealf(workq[0])) ? lwm : (INT)crealf(workq[0]);
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         } else {
@@ -151,12 +151,12 @@ void cgetsls(
             tszo = (INT)crealf(tq[0]);
             lwo = (INT)crealf(workq[0]);
             cgemlq("L", trans, n, nrhs, m, A, lda, tq, tszo, B, ldb, workq, -1, &info2);
-            if ((INT)crealf(workq[0]) > lwo) lwo = (INT)crealf(workq[0]);
+            lwo = (lwo > (INT)crealf(workq[0])) ? lwo : (INT)crealf(workq[0]);
             cgelq(m, n, A, lda, tq, -2, workq, -2, &info2);
             tszm = (INT)crealf(tq[0]);
             lwm = (INT)crealf(workq[0]);
             cgemlq("L", trans, n, nrhs, m, A, lda, tq, tszm, B, ldb, workq, -1, &info2);
-            if ((INT)crealf(workq[0]) > lwm) lwm = (INT)crealf(workq[0]);
+            lwm = (lwm > (INT)crealf(workq[0])) ? lwm : (INT)crealf(workq[0]);
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         }

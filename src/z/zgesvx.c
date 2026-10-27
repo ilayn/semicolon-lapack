@@ -177,8 +177,8 @@ void zgesvx(
             rcmin = bignum;
             rcmax = ZERO;
             for (j = 0; j < n; j++) {
-                if (R[j] < rcmin) rcmin = R[j];
-                if (R[j] > rcmax) rcmax = R[j];
+                rcmin = (rcmin < R[j]) ? rcmin : R[j];
+                rcmax = (rcmax > R[j]) ? rcmax : R[j];
             }
             if (rcmin <= ZERO) {
                 *info = -11;
@@ -194,8 +194,8 @@ void zgesvx(
             rcmin = bignum;
             rcmax = ZERO;
             for (j = 0; j < n; j++) {
-                if (C[j] < rcmin) rcmin = C[j];
-                if (C[j] > rcmax) rcmax = C[j];
+                rcmin = (rcmin < C[j]) ? rcmin : C[j];
+                rcmax = (rcmax > C[j]) ? rcmax : C[j];
             }
             if (rcmin <= ZERO) {
                 *info = -12;

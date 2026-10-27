@@ -192,10 +192,10 @@ void dgtrfs(
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
                     f64 temp = fabs(work[n + i]) / work[i];
-                    if (s < temp) s = temp;
+                    s = (s > temp) ? s : temp;
                 } else {
                     f64 temp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
-                    if (s < temp) s = temp;
+                    s = (s > temp) ? s : temp;
                 }
             }
             berr[j] = s;
@@ -249,7 +249,7 @@ void dgtrfs(
         lstres = ZERO;
         for (i = 0; i < n; i++) {
             f64 temp = fabs(X[i + j * ldx]);
-            if (lstres < temp) lstres = temp;
+            lstres = (lstres > temp) ? lstres : temp;
         }
         if (lstres != ZERO) {
             ferr[j] = ferr[j] / lstres;

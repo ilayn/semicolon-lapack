@@ -105,9 +105,9 @@ void ctrsyl(const char* trana, const char* tranb, const INT isgn,
 
     smin = smlnum;
     dum[0] = clange("M", m, m, A, lda, dum);
-    if (eps * dum[0] > smin) smin = eps * dum[0];
+    smin = (smin > eps * dum[0]) ? smin : eps * dum[0];
     dum[0] = clange("M", n, n, B, ldb, dum);
-    if (eps * dum[0] > smin) smin = eps * dum[0];
+    smin = (smin > eps * dum[0]) ? smin : eps * dum[0];
 
     sgn = (f32)isgn;
 

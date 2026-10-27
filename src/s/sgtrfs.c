@@ -192,10 +192,10 @@ void sgtrfs(
             for (i = 0; i < n; i++) {
                 if (work[i] > safe2) {
                     f32 temp = fabsf(work[n + i]) / work[i];
-                    if (s < temp) s = temp;
+                    s = (s > temp) ? s : temp;
                 } else {
                     f32 temp = (fabsf(work[n + i]) + safe1) / (work[i] + safe1);
-                    if (s < temp) s = temp;
+                    s = (s > temp) ? s : temp;
                 }
             }
             berr[j] = s;
@@ -249,7 +249,7 @@ void sgtrfs(
         lstres = ZERO;
         for (i = 0; i < n; i++) {
             f32 temp = fabsf(X[i + j * ldx]);
-            if (lstres < temp) lstres = temp;
+            lstres = (lstres > temp) ? lstres : temp;
         }
         if (lstres != ZERO) {
             ferr[j] = ferr[j] / lstres;

@@ -200,10 +200,10 @@ void zgtrfs(
             for (i = 0; i < n; i++) {
                 if (rwork[i] > safe2) {
                     f64 temp = cabs1(work[i]) / rwork[i];
-                    if (s < temp) s = temp;
+                    s = (s > temp) ? s : temp;
                 } else {
                     f64 temp = (cabs1(work[i]) + safe1) / (rwork[i] + safe1);
-                    if (s < temp) s = temp;
+                    s = (s > temp) ? s : temp;
                 }
             }
             berr[j] = s;
@@ -259,7 +259,7 @@ void zgtrfs(
         lstres = ZERO;
         for (i = 0; i < n; i++) {
             f64 temp = cabs1(X[i + j * ldx]);
-            if (lstres < temp) lstres = temp;
+            lstres = (lstres > temp) ? lstres : temp;
         }
         if (lstres != ZERO) {
             ferr[j] = ferr[j] / lstres;

@@ -196,7 +196,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
             if (cmax < smini) {
                 bnorm = fabsf(B[0]);
                 temp = fabsf(B[1]);
-                if (temp > bnorm) bnorm = temp;
+                bnorm = (bnorm > temp) ? bnorm : temp;
 
                 if (smini < 1.0f && bnorm > 1.0f) {
                     if (bnorm > bignum * smini) {
@@ -237,7 +237,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
 
             bbnd = fabsf(br1 * (ur22 * ur11r));
             temp = fabsf(br2);
-            if (temp > bbnd) bbnd = temp;
+            bbnd = (bbnd > temp) ? bbnd : temp;
 
             if (bbnd > 1.0f && fabsf(ur22) < 1.0f) {
                 if (bbnd >= bignum * fabsf(ur22)) {
@@ -257,7 +257,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
             }
             *xnorm = fabsf(xr1);
             temp = fabsf(xr2);
-            if (temp > *xnorm) *xnorm = temp;
+            *xnorm = (*xnorm > temp) ? *xnorm : temp;
 
             /* Further scaling if  norm(A) norm(X) > overflow */
             if (*xnorm > 1.0f && cmax > 1.0f) {
@@ -294,7 +294,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
             if (cmax < smini) {
                 bnorm = fabsf(B[0]) + fabsf(B[ldb]);
                 temp = fabsf(B[1]) + fabsf(B[1 + ldb]);
-                if (temp > bnorm) bnorm = temp;
+                bnorm = (bnorm > temp) ? bnorm : temp;
 
                 if (smini < 1.0f && bnorm > 1.0f) {
                     if (bnorm > bignum * smini) {
@@ -374,7 +374,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
 
             bbnd = (fabsf(br1) + fabsf(bi1)) * (u22abs * (fabsf(ur11r) + fabsf(ui11r)));
             temp = fabsf(br2) + fabsf(bi2);
-            if (temp > bbnd) bbnd = temp;
+            bbnd = (bbnd > temp) ? bbnd : temp;
 
             if (bbnd > 1.0f && u22abs < 1.0f) {
                 if (bbnd >= bignum * u22abs) {
@@ -403,7 +403,7 @@ void slaln2(const INT ltrans, const INT na, const INT nw, const f32 smin,
             }
             *xnorm = fabsf(xr1) + fabsf(xi1);
             temp = fabsf(xr2) + fabsf(xi2);
-            if (temp > *xnorm) *xnorm = temp;
+            *xnorm = (*xnorm > temp) ? *xnorm : temp;
 
             /* Further scaling if  norm(A) norm(X) > overflow */
             if (*xnorm > 1.0f && cmax > 1.0f) {

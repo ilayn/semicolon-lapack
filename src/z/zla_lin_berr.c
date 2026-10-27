@@ -55,9 +55,7 @@ void zla_lin_berr(
         for (i = 0; i < n; i++) {
             if (AYB[i + j * n] != 0.0) {
                 tmp = (safe1 + cabs1(RES[i + j * n])) / AYB[i + j * n];
-                if (BERR[j] < tmp) {
-                    BERR[j] = tmp;
-                }
+                BERR[j] = (BERR[j] > tmp) ? BERR[j] : tmp;
             }
 
             /*     If AYB is exactly 0.0 (and if computed by CLA_yyAMV), then we know */

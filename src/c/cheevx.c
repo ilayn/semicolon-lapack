@@ -189,9 +189,7 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
     bignum = ONE / smlnum;
     rmin = sqrtf(smlnum);
     rmax = sqrtf(bignum);
-    if (rmax > ONE / sqrtf(sqrtf(safmin))) {
-        rmax = ONE / sqrtf(sqrtf(safmin));
-    }
+    rmax = (rmax < ONE / sqrtf(sqrtf(safmin))) ? rmax : ONE / sqrtf(sqrtf(safmin));
 
     /* Scale matrix to allowable range, if necessary */
     iscale = 0;

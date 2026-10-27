@@ -148,16 +148,14 @@ void ddisna(
     eps = dlamch("E");
     safmin = dlamch("S");
     anorm = fabs(D[0]);
-    if (fabs(D[k - 1]) > anorm) {
-        anorm = fabs(D[k - 1]);
-    }
+    anorm = (anorm > fabs(D[k - 1])) ? anorm : fabs(D[k - 1]);
     if (anorm == zero) {
         thresh = eps;
     } else {
         thresh = eps * anorm;
-        if (safmin > thresh) thresh = safmin;
+        thresh = (thresh > safmin) ? thresh : safmin;
     }
     for (i = 0; i < k; i++) {
-        if (SEP[i] < thresh) SEP[i] = thresh;
+        SEP[i] = (SEP[i] > thresh) ? SEP[i] : thresh;
     }
 }

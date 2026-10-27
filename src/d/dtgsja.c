@@ -232,7 +232,7 @@ void dtgsja(const char* jobu, const char* jobv, const char* jobq,
                 cblas_dcopy(l - i, &A[(k + i) + (n - l + i) * lda], lda, work, 1);
                 cblas_dcopy(l - i, &B[i + (n - l + i) * ldb], ldb, &work[l], 1);
                 dlapll(l - i, work, 1, &work[l], 1, &ssmin);
-                if (ssmin > error) error = ssmin;
+                error = (error > ssmin) ? error : ssmin;
             }
 
             if (fabs(error) <= (tola < tolb ? tola : tolb)) {

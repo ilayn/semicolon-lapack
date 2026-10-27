@@ -104,8 +104,8 @@ void dpbequ(
     // Find the minimum and maximum diagonal elements
     for (i = 1; i < n; i++) {
         S[i] = AB[j + i * ldab];
-        if (smin > S[i]) smin = S[i];
-        if (*amax < S[i]) *amax = S[i];
+        smin = (smin < S[i]) ? smin : S[i];
+        *amax = (*amax > S[i]) ? *amax : S[i];
     }
 
     if (smin <= ZERO) {

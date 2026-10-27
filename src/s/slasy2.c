@@ -104,15 +104,15 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
                                             [TR21 TR22]              */
         smin = fabsf(TL[0]);
         temp = fabsf(TR[0]);
-        if (temp > smin) smin = temp;
-        temp = fabsf(TR[1]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         temp = fabsf(TR[ldtr]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
+        temp = fabsf(TR[1]);
+        smin = (smin > temp) ? smin : temp;
         temp = fabsf(TR[1 + ldtr]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         smin = eps * smin;
-        if (smin < smlnum) smin = smlnum;
+        smin = (smin > smlnum) ? smin : smlnum;
 
         tmp[0] = TL[0] + sgn * TR[0];
         tmp[3] = TL[0] + sgn * TR[1 + ldtr];
@@ -132,15 +132,15 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
              [TL21 TL22] [X21]        [X21]        [B21] */
         smin = fabsf(TR[0]);
         temp = fabsf(TL[0]);
-        if (temp > smin) smin = temp;
-        temp = fabsf(TL[1]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         temp = fabsf(TL[ldtl]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
+        temp = fabsf(TL[1]);
+        smin = (smin > temp) ? smin : temp;
         temp = fabsf(TL[1 + ldtl]);
-        if (temp > smin) smin = temp;
+        smin = (smin > temp) ? smin : temp;
         smin = eps * smin;
-        if (smin < smlnum) smin = smlnum;
+        smin = (smin > smlnum) ? smin : smlnum;
 
         tmp[0] = TL[0] + sgn * TR[0];
         tmp[3] = TL[1 + ldtl] + sgn * TR[0];
@@ -211,22 +211,22 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
        Solve equivalent 4 by 4 system using complete pivoting. */
 
     smin = fabsf(TR[0]);
-    temp = fabsf(TR[1]);
-    if (temp > smin) smin = temp;
     temp = fabsf(TR[ldtr]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
+    temp = fabsf(TR[1]);
+    smin = (smin > temp) ? smin : temp;
     temp = fabsf(TR[1 + ldtr]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
     temp = fabsf(TL[0]);
-    if (temp > smin) smin = temp;
-    temp = fabsf(TL[1]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
     temp = fabsf(TL[ldtl]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
+    temp = fabsf(TL[1]);
+    smin = (smin > temp) ? smin : temp;
     temp = fabsf(TL[1 + ldtl]);
-    if (temp > smin) smin = temp;
+    smin = (smin > temp) ? smin : temp;
     smin = eps * smin;
-    if (smin < smlnum) smin = smlnum;
+    smin = (smin > smlnum) ? smin : smlnum;
 
     /* Initialize T16 to zero */
     for (i = 0; i < 16; i++)
@@ -315,9 +315,9 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
         (EIGHT * smlnum) * fabsf(btmp[2]) > fabsf(t16[2 + 4*2]) ||
         (EIGHT * smlnum) * fabsf(btmp[3]) > fabsf(t16[3 + 4*3])) {
         xmax = fabsf(btmp[0]);
-        if (fabsf(btmp[1]) > xmax) xmax = fabsf(btmp[1]);
-        if (fabsf(btmp[2]) > xmax) xmax = fabsf(btmp[2]);
-        if (fabsf(btmp[3]) > xmax) xmax = fabsf(btmp[3]);
+        xmax = (xmax > fabsf(btmp[1])) ? xmax : fabsf(btmp[1]);
+        xmax = (xmax > fabsf(btmp[2])) ? xmax : fabsf(btmp[2]);
+        xmax = (xmax > fabsf(btmp[3])) ? xmax : fabsf(btmp[3]);
         *scale = (ONE / EIGHT) / xmax;
         btmp[0] = btmp[0] * (*scale);
         btmp[1] = btmp[1] * (*scale);
@@ -350,5 +350,5 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
     X[1 + ldx] = tmp[3];
     *xnorm = fabsf(tmp[0]) + fabsf(tmp[2]);
     temp = fabsf(tmp[1]) + fabsf(tmp[3]);
-    if (temp > *xnorm) *xnorm = temp;
+    *xnorm = (*xnorm > temp) ? *xnorm : temp;
 }

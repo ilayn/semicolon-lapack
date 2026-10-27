@@ -227,7 +227,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                      sqrt(fabs(T[(ki - 1) + ki * ldt]));
             }
             smin = ulp * (fabs(wr) + fabs(wi));
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             if (ip == 0) {
                 /* --------------------------------------------------------
@@ -457,7 +457,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = 0; k < ki; k++) {
                         f64 val = fabs(VR[k + (is - 1) * ldvr]) + fabs(VR[k + is * ldvr]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_dscal(ki, remax, &VR[(is - 1) * ldvr], 1);
@@ -485,7 +485,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = 0; k < n; k++) {
                         f64 val = fabs(VR[k + (ki - 1) * ldvr]) + fabs(VR[k + ki * ldvr]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_dscal(n, remax, &VR[(ki - 1) * ldvr], 1);
@@ -539,7 +539,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                             for (ii = 0; ii < n; ii++) {
                                 f64 val = fabs(work[ii + (nb + k) * n]) +
                                              fabs(work[ii + (nb + k + 1) * n]);
-                                if (val > emax) emax = val;
+                                emax = (emax > val) ? emax : val;
                             }
                             remax = one / emax;
                             /* else if iscomplex[k] == -1:
@@ -605,7 +605,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                      sqrt(fabs(T[(ki + 1) + ki * ldt]));
             }
             smin = ulp * (fabs(wr) + fabs(wi));
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             if (ip == 0) {
                 /* --------------------------------------------------------
@@ -698,8 +698,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                         work[(j + 1) + iv * n] = x[1];
 
                         f64 tmp = fabs(work[j + iv * n]);
-                        if (fabs(work[(j + 1) + iv * n]) > tmp)
-                            tmp = fabs(work[(j + 1) + iv * n]);
+                        tmp = (tmp > fabs(work[(j + 1) + iv * n])) ? tmp : fabs(work[(j + 1) + iv * n]);
                         if (tmp > vmax) vmax = tmp;
                         vcrit = bignum / vmax;
                     }
@@ -875,7 +874,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = ki; k < n; k++) {
                         f64 val = fabs(VL[k + is * ldvl]) + fabs(VL[k + (is + 1) * ldvl]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_dscal(n - ki, remax, &VL[ki + is * ldvl], 1);
@@ -905,7 +904,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                     emax = zero;
                     for (k = 0; k < n; k++) {
                         f64 val = fabs(VL[k + ki * ldvl]) + fabs(VL[k + (ki + 1) * ldvl]);
-                        if (val > emax) emax = val;
+                        emax = (emax > val) ? emax : val;
                     }
                     remax = one / emax;
                     cblas_dscal(n, remax, &VL[ki * ldvl], 1);
@@ -959,7 +958,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
                             for (ii = 0; ii < n; ii++) {
                                 f64 val = fabs(work[ii + (nb + k) * n]) +
                                              fabs(work[ii + (nb + k + 1) * n]);
-                                if (val > emax) emax = val;
+                                emax = (emax > val) ? emax : val;
                             }
                             remax = one / emax;
                             /* else if iscomplex[k] == -1:
