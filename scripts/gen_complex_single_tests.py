@@ -39,6 +39,7 @@ VERIFY_HEADER = os.path.join(TESTUTILS_Z, "verify.h")
 EXCLUDE_FILES = {
     "test_zdrvab.c",   # ZCGESV mixed-precision solver
     "test_zdrvac.c",   # ZCPOSV mixed-precision solver
+    "test_zwq_rwork.c",  # TESTING/EIG/test_wq_rwork.f exists for z only
 }
 
 # Per-file literal replacements applied after conversion, for constants that
