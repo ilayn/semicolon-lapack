@@ -69,8 +69,11 @@
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - > 0: if info = i, then i eigenvectors failed to converge.
- *                           Their indices are stored in array IFAIL.
+ *                         - > 0: if info = i, and i is:
+ *                           - <= n: then i eigenvectors failed to converge in
+ *                             CSTEIN; their indices are stored in ifail.
+ *                           - > n: SSTEBZ returned info = i - n;
+ *                             see SSTEBZ for details.
  */
 void cheevx(const char* jobz, const char* range, const char* uplo,
             const INT n, c64* restrict A, const INT lda,

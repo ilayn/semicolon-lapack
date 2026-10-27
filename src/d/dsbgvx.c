@@ -53,8 +53,14 @@
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - <= n: i eigenvectors failed to converge
- *                         - > n: dpbstf returned info = i (B not positive definite)
+ *                         - <= n: if info = i, then i eigenvectors failed to converge
+ *                           in DSTEIN; their indices are stored in ifail.
+ *                         - n+1..2n: if info = n + i, for 1 <= i <= n, then DPBSTF
+ *                           returned an error code; the leading principal minor
+ *                           of order i of B is not positive. No eigenvalues or
+ *                           eigenvectors were computed.
+ *                         - > 2n: if info = 2*n + i, then DSTEBZ returned
+ *                           info = i; see DSTEBZ for details.
  */
 void dsbgvx(
     const char* jobz,

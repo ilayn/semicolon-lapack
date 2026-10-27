@@ -157,7 +157,7 @@ void dsytrf(
 
     if (upper) {
         /* ============================================================
-         * Factorize A as U**T*D*U using the upper triangle of A
+         * Factorize A as U*D*U**T using the upper triangle of A
          *
          * K is the main loop index, decreasing from n-1 to 0 in steps of
          * kb, where kb is the number of columns factorized by dlasyf.

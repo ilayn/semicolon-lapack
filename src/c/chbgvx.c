@@ -57,8 +57,15 @@
  * @param[out]    info
  *                         - = 0: successful exit
  *                         - < 0: if info = -i, the i-th argument had an illegal value
- *                         - <= n: i eigenvectors failed to converge
- *                         - > n: cpbstf returned info = i (B not positive definite)
+ *                         - > 0: if info = i, and i is:
+ *                           - <= n: then i eigenvectors failed to converge in
+ *                             CSTEIN; their indices are stored in ifail.
+ *                           - n+1..2n: if info = n + i, for 1 <= i <= n, then CPBSTF
+ *                             returned info = i: B is not positive definite.
+ *                             The factorization of B could not be completed
+ *                             and no eigenvalues or eigenvectors were computed.
+ *                           - > 2n: if info = 2*n + i, then SSTEBZ returned
+ *                             info = i; see SSTEBZ for details.
  */
 void chbgvx(
     const char* jobz,

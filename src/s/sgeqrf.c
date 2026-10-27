@@ -24,7 +24,10 @@
  * @param[out]    tau    Array of dimension min(m, n).
  * @param[out]    work   Workspace, dimension (max(1, lwork)).
  *                       On exit, work[0] contains the optimal lwork.
- * @param[in]     lwork  Dimension of work. lwork >= max(1, n).
+ *                       For an empty matrix (min(m,n) = 0), the workspace
+ *                       query returns work[0] = 1.
+ * @param[in]     lwork  Dimension of work.
+ *                       If min(m,n) = 0, lwork >= 1, else lwork >= n.
  *                       For optimal performance, lwork >= n*nb.
  *                       If lwork == -1, workspace query only.
  * @param[out]    info
