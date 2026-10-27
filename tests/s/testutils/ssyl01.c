@@ -37,7 +37,8 @@
  * @param[out]    ninfo   Integer array, dimension (2).
  *                        ninfo[0] = No. of times STRSYL returns nonzero INFO
  *                        ninfo[1] = No. of times STRSYL3 returns nonzero INFO
- * @param[out]    knt     Total number of examples tested.
+ * @param[out]    knt     Total number of examples tested, or -1 if the
+ *                        workspace could not be allocated.
  */
 void ssyl01(const f32 thresh, INT* nfail, f32* rmax, INT* ninfo, INT* knt)
 {
@@ -76,6 +77,16 @@ void ssyl01(const f32 thresh, INT* nfail, f32* rmax, INT* ninfo, INT* knt)
     f32* CC = malloc((size_t)MAXM * MAXN * sizeof(f32));
     f32* X = malloc((size_t)MAXM * MAXN * sizeof(f32));
     f32* swork = malloc((size_t)LDSWORK * 54 * sizeof(f32));
+    if (!A || !B || !C || !CC || !X || !swork) {
+        free(A);
+        free(B);
+        free(C);
+        free(CC);
+        free(X);
+        free(swork);
+        *knt = -1;
+        return;
+    }
 
     /* Stack arrays */
 

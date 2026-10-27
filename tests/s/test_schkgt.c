@@ -191,7 +191,7 @@ static void generate_gt_matrix(INT n, INT imat, f32* DL, f32* D, f32* DU,
             free(AB);
             free(d_sing);
             free(work);
-            return;
+            fail_msg("generate_gt_matrix: allocation failed (n=%d imat=%d)", n, imat);
         }
 
         slatms(n, n, &dist,

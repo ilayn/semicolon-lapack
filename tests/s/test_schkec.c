@@ -121,6 +121,7 @@ static void test_dsyl01_dtrsyl3(void** state)
 
     ssyl01(THRESH, ftrsyl, rtrsyl, itrsyl, &ktrsyl3);
 
+    assert_true(ktrsyl3 >= 0);
     assert_int_equal(ftrsyl[0], 0);
     assert_int_equal(ftrsyl[1], 0);
     assert_int_equal(ftrsyl[2], 0);

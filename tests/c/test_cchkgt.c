@@ -163,7 +163,7 @@ static void generate_zgt_matrix(INT n, INT imat, c64* DL, c64* D, c64* DU,
         if (!AB || !d_sing) {
             free(AB);
             free(d_sing);
-            return;
+            fail_msg("generate_zgt_matrix: allocation failed (n=%d imat=%d)", n, imat);
         }
 
         clatms(n, n, &dist, &type, d_sing, mode, cndnum, anorm,
