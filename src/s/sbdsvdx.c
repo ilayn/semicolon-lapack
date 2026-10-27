@@ -382,18 +382,19 @@ void sbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                         return;
                     }
 
-                    /* Find absolute value of maximum eigenvalue.
-                     * Note: Fortran uses EMIN = ABS(MAXVAL(S(...))), which finds
-                     * the algebraically largest value, then takes its absolute value.
-                     * This is NOT the same as max(abs(values))!
-                     * For eigenvalues [-1.65e-138, -1.93e-308, 0], MAXVAL = 0,
-                     * so EMIN = ABS(0) = 0, triggering eigenvector concatenation. */
                     {
-                        f32 maxval = S[isbeg];
-                        for (i = 1; i < nsl; i++) {
-                            if (S[isbeg + i] > maxval) {
-                                maxval = S[isbeg + i];
+                        f32 maxval = -slamch("O");
+                        i = 0;
+                        while (i < nsl && sisnan(S[isbeg + i])) i++;
+                        if (i < nsl) {
+                            maxval = S[isbeg + i];
+                            for (i = i + 1; i < nsl; i++) {
+                                if (S[isbeg + i] > maxval) {
+                                    maxval = S[isbeg + i];
+                                }
                             }
+                        } else if (nsl > 0) {
+                            maxval = S[isbeg];
                         }
                         emin = fabsf(maxval);
                     }

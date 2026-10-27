@@ -104,8 +104,10 @@ void zpstrf(
 
     // Compute stopping value
     INT pvt = 0;
-    f64 ajj = creal(A[0]);
-    for (INT i = 1; i < n; i++) {
+    while (pvt < n && disnan(creal(A[pvt + pvt * lda]))) pvt++;
+    if (pvt == n) pvt = 0;
+    f64 ajj = creal(A[pvt + pvt * lda]);
+    for (INT i = pvt + 1; i < n; i++) {
         f64 tmp = creal(A[i + i * lda]);
         if (tmp > ajj) {
             pvt = i;
@@ -148,8 +150,10 @@ void zpstrf(
 
                 if (j > 0) {
                     INT itemp = 0;
-                    f64 wmax = work[n + j];
-                    for (INT i = 1; i < n - j; i++) {
+                    while (itemp < n - j && disnan(work[n + j + itemp])) itemp++;
+                    if (itemp == n - j) itemp = 0;
+                    f64 wmax = work[n + j + itemp];
+                    for (INT i = itemp + 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
                             itemp = i;
@@ -231,8 +235,10 @@ void zpstrf(
 
                 if (j > 0) {
                     INT itemp = 0;
-                    f64 wmax = work[n + j];
-                    for (INT i = 1; i < n - j; i++) {
+                    while (itemp < n - j && disnan(work[n + j + itemp])) itemp++;
+                    if (itemp == n - j) itemp = 0;
+                    f64 wmax = work[n + j + itemp];
+                    for (INT i = itemp + 1; i < n - j; i++) {
                         if (work[n + j + i] > wmax) {
                             wmax = work[n + j + i];
                             itemp = i;

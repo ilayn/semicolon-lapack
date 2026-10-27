@@ -98,8 +98,10 @@ void cpstf2(
     for (INT i = 0; i < n; i++) {
         work[i] = crealf(A[i + i * lda]);
     }
-    f32 ajj = work[0];
-    for (INT i = 1; i < n; i++) {
+    while (pvt < n && sisnan(work[pvt])) pvt++;
+    if (pvt == n) pvt = 0;
+    f32 ajj = work[pvt];
+    for (INT i = pvt + 1; i < n; i++) {
         if (work[i] > ajj) {
             pvt = i;
             ajj = work[i];
@@ -144,8 +146,10 @@ void cpstf2(
 
             if (j > 0) {
                 INT itemp = 0;
-                f32 wmax = work[n + j];
-                for (INT i = 1; i < n - j; i++) {
+                while (itemp < n - j && sisnan(work[n + j + itemp])) itemp++;
+                if (itemp == n - j) itemp = 0;
+                f32 wmax = work[n + j + itemp];
+                for (INT i = itemp + 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
@@ -220,8 +224,10 @@ void cpstf2(
 
             if (j > 0) {
                 INT itemp = 0;
-                f32 wmax = work[n + j];
-                for (INT i = 1; i < n - j; i++) {
+                while (itemp < n - j && sisnan(work[n + j + itemp])) itemp++;
+                if (itemp == n - j) itemp = 0;
+                f32 wmax = work[n + j + itemp];
+                for (INT i = itemp + 1; i < n - j; i++) {
                     if (work[n + j + i] > wmax) {
                         wmax = work[n + j + i];
                         itemp = i;
