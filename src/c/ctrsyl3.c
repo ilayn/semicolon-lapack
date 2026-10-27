@@ -87,6 +87,7 @@ void ctrsyl3(const char* trana, const char* tranb, const INT isgn,
     notrnb = (tranb[0] == 'N' || tranb[0] == 'n');
 
     nb = lapack_get_trsyl_nb(m, n, 1);
+    if (nb < 8) nb = 8;
 
     /* Compute number of blocks in A and B */
     nba = (m + nb - 1) / nb;
