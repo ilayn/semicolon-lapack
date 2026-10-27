@@ -222,15 +222,7 @@ static void run_zchkpo_single(INT n, INT iuplo, INT imat, INT inb)
     zpotrf(uplo_str, n, ws->AFAC, lda, &info);
 
     /* Check error code */
-    if (zerot) {
-        /* For singular matrices, info should be > 0 */
-        assert_true(info >= 0);
-        if (info != izero) {
-            return;
-        }
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero);
 
     /* Skip the rest if factorization failed */
     if (info != 0) {

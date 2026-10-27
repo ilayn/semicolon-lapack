@@ -266,12 +266,7 @@ static void run_dchkgb_single(INT m, INT n, INT kl, INT ku, INT imat, INT inb)
     dgbtrf(m, n, kl, ku, ws->AFAC, ldafac, ws->IPIV, &info);
 
     /* Check error code */
-    if (zerot) {
-        /* For singular matrices, info should equal izero */
-        assert_true(info >= 0);
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero);
     trfcon = (info != 0);
 
     /*

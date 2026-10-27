@@ -231,12 +231,7 @@ static void run_dchkge_single(INT m, INT n, INT imat, INT inb)
     dgetrf(m, n, ws->AFAC, lda, ws->IPIV, &info);
 
     /* Check error code */
-    if (zerot) {
-        /* For singular matrices, info should be > 0 */
-        assert_true(info >= 0);
-    } else {
-        assert_int_equal(info, 0);
-    }
+    assert_int_equal(info, izero);
     trfcon = (info != 0);
 
     /*
