@@ -157,9 +157,9 @@ void chpgvd(
     chpgst(itype, uplo, n, AP, BP, info);
     chpevd(jobz, uplo, n, AP, W, Z, ldz, work, lwork, rwork,
            lrwork, iwork, liwork, info);
-    lwmin = (INT)fmaxf((f32)lwmin, crealf(work[0]));
-    lrwmin = (INT)fmaxf((f32)lrwmin, rwork[0]);
-    liwmin = (INT)fmaxf((f32)liwmin, (f32)iwork[0]);
+    lwmin = (lwmin > (INT)crealf(work[0])) ? lwmin : (INT)crealf(work[0]);
+    lrwmin = (lrwmin > (INT)rwork[0]) ? lrwmin : (INT)rwork[0];
+    liwmin = (liwmin > iwork[0]) ? liwmin : iwork[0];
 
     if (wantz) {
 
