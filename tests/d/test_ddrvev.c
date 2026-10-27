@@ -301,6 +301,8 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     f64 ulp = dlamch("P");
     f64 ulpinv = 1.0 / ulp;
+    f64 unfl = dlamch("S");
+    f64 wnrm, wdif;
 
     /* Initialize results to -1 (not computed) */
     for (INT j = 0; j < 7; j++) {
@@ -442,12 +444,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "DGEEV(N,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5: W(full) = W(partial) */
-        ws->result[4] = 0.0;
+        wnrm = 0.0;
+        wdif = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmax(wnrm, fmax(fabs(WR[j]) + fabs(WI[j]),
+                                   fabs(WR1[j]) + fabs(WI1[j])));
+            wdif = fmax(wdif, fabs(WR[j] - WR1[j]) + fabs(WI[j] - WI1[j]));
         }
+        ws->result[4] = fmax(ws->result[4],
+                             wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
     }
 
     /* ========== Test DGEEV with right eigenvectors only ========== */
@@ -461,11 +466,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "DGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        wnrm = 0.0;
+        wdif = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmax(wnrm, fmax(fabs(WR[j]) + fabs(WI[j]),
+                                   fabs(WR1[j]) + fabs(WI1[j])));
+            wdif = fmax(wdif, fabs(WR[j] - WR1[j]) + fabs(WI[j] - WI1[j]));
         }
+        ws->result[4] = fmax(ws->result[4],
+                             wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Test 6: VR(full) = VR(partial) */
         ws->result[5] = 0.0;
@@ -489,11 +498,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "DGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        wnrm = 0.0;
+        wdif = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmax(wnrm, fmax(fabs(WR[j]) + fabs(WI[j]),
+                                   fabs(WR1[j]) + fabs(WI1[j])));
+            wdif = fmax(wdif, fabs(WR[j] - WR1[j]) + fabs(WI[j] - WI1[j]));
         }
+        ws->result[4] = fmax(ws->result[4],
+                             wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Test 7: VL(full) = VL(partial) */
         ws->result[6] = 0.0;

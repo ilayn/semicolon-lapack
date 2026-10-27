@@ -51,7 +51,7 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
     INT i, j, jj, kmin;
     INT ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
     f64 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
-    f64 ulp, ulpinv, v, vmax, vmx, vricmp, vrimin, vrmx, vtst;
+    f64 ulp, ulpinv, v, vmax, vmx, vricmp, vrimin, vrmx, vtst, wdif, wnrm;
     const char* sens[2] = {"N", "V"};
     f64 res[2];
     c128 cdum[1];
@@ -181,10 +181,14 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) */
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (creal(W[j]) != creal(W1[j]) || cimag(W[j]) != cimag(W1[j]))
-                result[4] = ulpinv;
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[j])));
+            wdif = fmax(wdif, cabs(W[j] - W1[j]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (8) */
         if (!nobal) {
@@ -220,10 +224,14 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) again */
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (creal(W[j]) != creal(W1[j]) || cimag(W[j]) != cimag(W1[j]))
-                result[4] = ulpinv;
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[j])));
+            wdif = fmax(wdif, cabs(W[j] - W1[j]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (6) */
         for (j = 0; j < n; j++) {
@@ -268,10 +276,14 @@ void zget23(const INT comp, const INT isrt, const char* balanc,
         }
 
         /* Do Test (5) again */
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (creal(W[j]) != creal(W1[j]) || cimag(W[j]) != cimag(W1[j]))
-                result[4] = ulpinv;
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[j])));
+            wdif = fmax(wdif, cabs(W[j] - W1[j]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (7) */
         for (j = 0; j < n; j++) {

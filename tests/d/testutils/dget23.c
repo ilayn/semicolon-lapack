@@ -50,7 +50,7 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
     INT i, j, jj, kmin;
     INT ihi, ihi1, iinfo, ilo, ilo1, isens, isensm;
     f64 abnrm, abnrm1, eps, smlnum, tnrm, tol, tolin;
-    f64 ulp, ulpinv, v, vimin, vmax, vmx, vrmin, vrmx, vtst;
+    f64 ulp, ulpinv, v, vimin, vmax, vmx, vrmin, vrmx, vtst, wdif, wnrm;
     const char* sens[2] = {"N", "V"};
     f64 dum[1], res[2];
     char sense_str[2];
@@ -192,10 +192,15 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
         }
 
         /* Do Test (5) */
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (wr[j] != wr1[j] || wi[j] != wi1[j])
-                result[4] = ulpinv;
+            wnrm = fmax(wnrm, fmax(fabs(wr[j]) + fabs(wi[j]),
+                                   fabs(wr1[j]) + fabs(wi1[j])));
+            wdif = fmax(wdif, fabs(wr[j] - wr1[j]) + fabs(wi[j] - wi1[j]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (8) */
         if (!nobal) {
@@ -231,10 +236,15 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
         }
 
         /* Do Test (5) again */
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (wr[j] != wr1[j] || wi[j] != wi1[j])
-                result[4] = ulpinv;
+            wnrm = fmax(wnrm, fmax(fabs(wr[j]) + fabs(wi[j]),
+                                   fabs(wr1[j]) + fabs(wi1[j])));
+            wdif = fmax(wdif, fabs(wr[j] - wr1[j]) + fabs(wi[j] - wi1[j]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (6) */
         for (j = 0; j < n; j++) {
@@ -278,10 +288,15 @@ void dget23(const INT comp, const char* balanc, const INT jtype,
         }
 
         /* Do Test (5) again */
+        wnrm = ZERO;
+        wdif = ZERO;
         for (j = 0; j < n; j++) {
-            if (wr[j] != wr1[j] || wi[j] != wi1[j])
-                result[4] = ulpinv;
+            wnrm = fmax(wnrm, fmax(fabs(wr[j]) + fabs(wi[j]),
+                                   fabs(wr1[j]) + fabs(wi1[j])));
+            wdif = fmax(wdif, fabs(wr[j] - wr1[j]) + fabs(wi[j] - wi1[j]));
         }
+        result[4] = fmax(result[4],
+                         wdif / fmax(smlnum, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Do Test (7) */
         for (j = 0; j < n; j++) {

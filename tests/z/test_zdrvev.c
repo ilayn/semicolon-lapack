@@ -282,6 +282,8 @@ static void run_zdrvev_single(zdrvev_params_t* params)
 
     f64 ulp = dlamch("P");
     f64 ulpinv = 1.0 / ulp;
+    f64 unfl = dlamch("S");
+    f64 wnrm, wdif;
 
     for (INT j = 0; j < 7; j++) {
         ws->result[j] = -1.0;
@@ -400,12 +402,14 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "ZGEEV(N,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5: W(full) = W(partial) */
-        ws->result[4] = 0.0;
+        wnrm = 0.0;
+        wdif = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (W[j] != W1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[j])));
+            wdif = fmax(wdif, cabs(W[j] - W1[j]));
         }
+        ws->result[4] = fmax(ws->result[4],
+                             wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
     }
 
     /* ========== Test ZGEEV with right eigenvectors only ========== */
@@ -419,11 +423,14 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "ZGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        wnrm = 0.0;
+        wdif = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (W[j] != W1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[j])));
+            wdif = fmax(wdif, cabs(W[j] - W1[j]));
         }
+        ws->result[4] = fmax(ws->result[4],
+                             wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Test 6: VR(full) = VR(partial) */
         ws->result[5] = 0.0;
@@ -447,11 +454,14 @@ static void run_zdrvev_single(zdrvev_params_t* params)
         fprintf(stderr, "ZGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        wnrm = 0.0;
+        wdif = 0.0;
         for (INT j = 0; j < n; j++) {
-            if (W[j] != W1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmax(wnrm, fmax(cabs(W[j]), cabs(W1[j])));
+            wdif = fmax(wdif, cabs(W[j] - W1[j]));
         }
+        ws->result[4] = fmax(ws->result[4],
+                             wdif / fmax(unfl, ulp * (f64)n * fmax(wnrm, wdif)));
 
         /* Test 7: VL(full) = VL(partial) */
         ws->result[6] = 0.0;

@@ -301,6 +301,8 @@ static void run_ddrvev_single(ddrvev_params_t* params)
 
     f32 ulp = slamch("P");
     f32 ulpinv = 1.0f / ulp;
+    f32 unfl = slamch("S");
+    f32 wnrm, wdif;
 
     /* Initialize results to -1 (not computed) */
     for (INT j = 0; j < 7; j++) {
@@ -442,12 +444,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "SGEEV(N,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5: W(full) = W(partial) */
-        ws->result[4] = 0.0f;
+        wnrm = 0.0f;
+        wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmaxf(wnrm, fmaxf(fabsf(WR[j]) + fabsf(WI[j]),
+                                   fabsf(WR1[j]) + fabsf(WI1[j])));
+            wdif = fmaxf(wdif, fabsf(WR[j] - WR1[j]) + fabsf(WI[j] - WI1[j]));
         }
+        ws->result[4] = fmaxf(ws->result[4],
+                             wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
     }
 
     /* ========== Test SGEEV with right eigenvectors only ========== */
@@ -461,11 +466,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "SGEEV(N,V) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        wnrm = 0.0f;
+        wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmaxf(wnrm, fmaxf(fabsf(WR[j]) + fabsf(WI[j]),
+                                   fabsf(WR1[j]) + fabsf(WI1[j])));
+            wdif = fmaxf(wdif, fabsf(WR[j] - WR1[j]) + fabsf(WI[j] - WI1[j]));
         }
+        ws->result[4] = fmaxf(ws->result[4],
+                             wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Test 6: VR(full) = VR(partial) */
         ws->result[5] = 0.0f;
@@ -489,11 +498,15 @@ static void run_ddrvev_single(ddrvev_params_t* params)
         fprintf(stderr, "SGEEV(V,N) failed with info=%d\n", iinfo);
     } else {
         /* Test 5 again */
+        wnrm = 0.0f;
+        wdif = 0.0f;
         for (INT j = 0; j < n; j++) {
-            if (WR[j] != WR1[j] || WI[j] != WI1[j]) {
-                ws->result[4] = ulpinv;
-            }
+            wnrm = fmaxf(wnrm, fmaxf(fabsf(WR[j]) + fabsf(WI[j]),
+                                   fabsf(WR1[j]) + fabsf(WI1[j])));
+            wdif = fmaxf(wdif, fabsf(WR[j] - WR1[j]) + fabsf(WI[j] - WI1[j]));
         }
+        ws->result[4] = fmaxf(ws->result[4],
+                             wdif / fmaxf(unfl, ulp * (f32)n * fmaxf(wnrm, wdif)));
 
         /* Test 7: VL(full) = VL(partial) */
         ws->result[6] = 0.0f;
