@@ -202,8 +202,8 @@ static int group_setup(void** state)
         return -1;
     }
 
-    rng_seed(g_ws->rng_state, 0xB3C4904A6D278932ULL);
-    rng_seed(g_ws->rng_state2, 0xB3C4904A6D278932ULL);
+    rng_seed(g_ws->rng_state, 0x4C88C014892416DCULL);
+    rng_seed(g_ws->rng_state2, 0x4C88C014892416DCULL);
     return 0;
 }
 
