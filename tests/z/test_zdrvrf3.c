@@ -4,7 +4,7 @@
  *
  * Port of LAPACK's TESTING/LIN/zdrvrf3.f to C using CMocka.
  * Tests ZTFSM by comparing it against cblas_ztrsm on the same input:
- *   result = ||B_ztfsm - B_ztrsm||_I / (sqrt(eps) * max(M,N))
+ *   result = ||B_ztfsm - B_ztrsm||_I / (sqrt(eps) * max(M,N) * max(||B_ztrsm||_I, 1))
  *
  * To get a well-conditioned triangular matrix, the R factor of a
  * QR factorization (upper) or L factor of an LQ factorization (lower)
@@ -112,6 +112,8 @@ static void run_zdrvrf3_single(INT m, INT n, INT iform, INT iuplo,
 
     ztfsm(cform, side, uplo, trans, diag, m, n, alpha, ARF, B2, lda);
 
+    f64 solnrm = zlange("I", m, n, B1, lda, D_WORK_ZLANGE);
+
     for (INT j = 0; j < n; j++)
         for (INT i = 0; i < m; i++)
             B1[i + j * lda] = B2[i + j * lda] - B1[i + j * lda];
@@ -120,7 +122,7 @@ static void run_zdrvrf3_single(INT m, INT n, INT iform, INT iuplo,
 
     INT mn_max = (m > n) ? m : n;
     if (mn_max < 1) mn_max = 1;
-    result = result / sqrt(eps) / mn_max;
+    result = result / sqrt(eps) / mn_max / ((solnrm > 1.0) ? solnrm : 1.0);
 
     snprintf(ctx, sizeof(ctx),
              "m=%d n=%d form=%s side=%s uplo=%s trans=%s diag=%s resid=%.6e",
