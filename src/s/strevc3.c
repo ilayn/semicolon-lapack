@@ -644,6 +644,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                         if (work[j] > vcrit) {
                             rec = one / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + iv * n], 1);
+                            vmax = one;
+                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -660,8 +662,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                             cblas_sscal(n - ki, scale, &work[ki + iv * n], 1);
                         }
                         work[j + iv * n] = x[0];
-                        vmax = fabsf(work[j + iv * n]);
-                        if (vmax > one) vmax = fabsf(work[j + iv * n]);
+                        vmax = (fabsf(work[j + iv * n]) > vmax) ? fabsf(work[j + iv * n]) : vmax;
                         vcrit = bignum / vmax;
 
                     } else {
@@ -673,6 +674,7 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                             rec = one / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + iv * n], 1);
                             vmax = one;
+                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -791,6 +793,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                             rec = one / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + iv * n], 1);
                             cblas_sscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
+                            vmax = one;
+                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -812,9 +816,9 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                         }
                         work[j + iv * n] = x[0];
                         work[j + (iv + 1) * n] = x[2];
-                        vmax = fabsf(work[j + iv * n]);
-                        if (fabsf(work[j + (iv + 1) * n]) > vmax)
-                            vmax = fabsf(work[j + (iv + 1) * n]);
+                        f32 tmp = (fabsf(work[j + iv * n]) > fabsf(work[j + (iv + 1) * n]))
+                                  ? fabsf(work[j + iv * n]) : fabsf(work[j + (iv + 1) * n]);
+                        vmax = (tmp > vmax) ? tmp : vmax;
                         vcrit = bignum / vmax;
 
                     } else {
@@ -826,6 +830,8 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                             rec = one / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + iv * n], 1);
                             cblas_sscal(n - ki, rec, &work[ki + (iv + 1) * n], 1);
+                            vmax = one;
+                            vcrit = bignum;
                         }
 
                         work[j + iv * n] = work[j + iv * n] -
@@ -857,10 +863,10 @@ SEMICOLON_API void strevc3(const char* side, const char* howmny, INT* select,
                         work[j + (iv + 1) * n] = x[2];
                         work[(j + 1) + iv * n] = x[1];
                         work[(j + 1) + (iv + 1) * n] = x[3];
-                        vmax = fabsf(x[0]);
-                        if (fabsf(x[2]) > vmax) vmax = fabsf(x[2]);
-                        if (fabsf(x[1]) > vmax) vmax = fabsf(x[1]);
-                        if (fabsf(x[3]) > vmax) vmax = fabsf(x[3]);
+                        f32 tmp = (fabsf(x[0]) > fabsf(x[2])) ? fabsf(x[0]) : fabsf(x[2]);
+                        tmp = (tmp > fabsf(x[1])) ? tmp : fabsf(x[1]);
+                        tmp = (tmp > fabsf(x[3])) ? tmp : fabsf(x[3]);
+                        vmax = (tmp > vmax) ? tmp : vmax;
                         vcrit = bignum / vmax;
                     }
                 }

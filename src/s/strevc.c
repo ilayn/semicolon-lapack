@@ -516,6 +516,8 @@ L130:
                         if (work[j] > vcrit) {
                             rec = 1.0f / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + n], 1);
+                            vmax = 1.0f;
+                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_sdot(j - ki - 1, &T[(ki + 1) + j * ldt], 1,
@@ -530,7 +532,7 @@ L130:
                         if (scale != 1.0f)
                             cblas_sscal(n - ki, scale, &work[ki + n], 1);
                         work[j + n] = x[0];
-                        vmax = fabsf(work[j + n]);
+                        vmax = (fabsf(work[j + n]) > vmax) ? fabsf(work[j + n]) : vmax;
                         vcrit = bignum / vmax;
 
                     } else {
@@ -543,6 +545,8 @@ L130:
                         if (beta > vcrit) {
                             rec = 1.0f / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + n], 1);
+                            vmax = 1.0f;
+                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_sdot(j - ki - 1, &T[(ki + 1) + j * ldt], 1,
@@ -564,8 +568,9 @@ L130:
                         work[j + n] = x[0];
                         work[(j + 1) + n] = x[1];
 
-                        vmax = fabsf(work[j + n]);
-                        if (fabsf(work[(j + 1) + n]) > vmax) vmax = fabsf(work[(j + 1) + n]);
+                        f32 tmp = (fabsf(work[j + n]) > fabsf(work[(j + 1) + n]))
+                                  ? fabsf(work[j + n]) : fabsf(work[(j + 1) + n]);
+                        vmax = (tmp > vmax) ? tmp : vmax;
                         vcrit = bignum / vmax;
                     }
                 }
@@ -644,6 +649,8 @@ L130:
                             rec = 1.0f / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + n], 1);
                             cblas_sscal(n - ki, rec, &work[ki + n2], 1);
+                            vmax = 1.0f;
+                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_sdot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
@@ -663,8 +670,9 @@ L130:
                         }
                         work[j + n] = x[0];
                         work[j + n2] = x[2];
-                        vmax = fabsf(work[j + n]);
-                        if (fabsf(work[j + n2]) > vmax) vmax = fabsf(work[j + n2]);
+                        f32 tmp = (fabsf(work[j + n]) > fabsf(work[j + n2]))
+                                  ? fabsf(work[j + n]) : fabsf(work[j + n2]);
+                        vmax = (tmp > vmax) ? tmp : vmax;
                         vcrit = bignum / vmax;
 
                     } else {
@@ -678,6 +686,8 @@ L130:
                             rec = 1.0f / vmax;
                             cblas_sscal(n - ki, rec, &work[ki + n], 1);
                             cblas_sscal(n - ki, rec, &work[ki + n2], 1);
+                            vmax = 1.0f;
+                            vcrit = bignum;
                         }
 
                         work[j + n] -= cblas_sdot(j - ki - 2, &T[(ki + 2) + j * ldt], 1,
@@ -708,10 +718,10 @@ L130:
                         work[j + n2] = x[2];
                         work[(j + 1) + n] = x[1];
                         work[(j + 1) + n2] = x[3];
-                        vmax = fabsf(x[0]);
-                        if (fabsf(x[2]) > vmax) vmax = fabsf(x[2]);
-                        if (fabsf(x[1]) > vmax) vmax = fabsf(x[1]);
-                        if (fabsf(x[3]) > vmax) vmax = fabsf(x[3]);
+                        f32 tmp = (fabsf(x[0]) > fabsf(x[2])) ? fabsf(x[0]) : fabsf(x[2]);
+                        tmp = (tmp > fabsf(x[1])) ? tmp : fabsf(x[1]);
+                        tmp = (tmp > fabsf(x[3])) ? tmp : fabsf(x[3]);
+                        vmax = (tmp > vmax) ? tmp : vmax;
                         vcrit = bignum / vmax;
                     }
                 }
