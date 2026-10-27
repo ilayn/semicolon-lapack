@@ -43,7 +43,7 @@ jobs:
           echo "list=[$(seq -s, 1 "$n")]" >> "$GITHUB_OUTPUT"
 
   test-linux:
-    name: Test Linux OpenBLAS${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
+    name: Test Linux OpenBLAS
     needs: [get_commit_message, copies]
     if: >-
       needs.get_commit_message.outputs.run_tests == '1' &&
@@ -57,6 +57,11 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
+      - name: Show job copy
+        if: inputs.copies > 1
+        shell: bash
+        run: echo "Copy ${{ matrix.copy }} of ${{ inputs.copies }}"
+
       - uses: actions/checkout@v7
 
       - name: Set up Miniforge
@@ -112,7 +117,7 @@ jobs:
           OPENBLAS_NUM_THREADS: '1'
 
   test-linux-mkl:
-    name: Test Linux MKL${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
+    name: Test Linux MKL
     needs: [get_commit_message, copies]
     if: >-
       needs.get_commit_message.outputs.run_tests == '1' &&
@@ -126,6 +131,11 @@ jobs:
       run:
         shell: bash -el {0}
     steps:
+      - name: Show job copy
+        if: inputs.copies > 1
+        shell: bash
+        run: echo "Copy ${{ matrix.copy }} of ${{ inputs.copies }}"
+
       - uses: actions/checkout@v7
 
       - name: Set up Miniforge
@@ -178,7 +188,7 @@ jobs:
           MKL_NUM_THREADS: '1'
 
   test-windows-clang:
-    name: Test Windows MSYS2 CLANG64${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
+    name: Test Windows MSYS2 CLANG64
     needs: [get_commit_message, copies]
     if: >-
       needs.get_commit_message.outputs.run_tests == '1' &&
@@ -192,6 +202,11 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
+      - name: Show job copy
+        if: inputs.copies > 1
+        shell: bash
+        run: echo "Copy ${{ matrix.copy }} of ${{ inputs.copies }}"
+
       - uses: actions/checkout@v7
 
       - uses: msys2/setup-msys2@v2
@@ -307,7 +322,7 @@ jobs:
           consumer_test.exe
 
   test-emscripten:
-    name: Test WebAssembly BLIS (Emscripten ${{ matrix.emscripten-version }})${{ inputs.copies > 1 && format(' (copy {0})', matrix.copy) || '' }}
+    name: Test WebAssembly BLIS (Emscripten ${{ matrix.emscripten-version }})
     needs: [get_commit_message, copies]
     if: >-
       needs.get_commit_message.outputs.run_tests == '1' &&
@@ -324,6 +339,11 @@ jobs:
     env:
       WASM_PREFIX: ${{ github.workspace }}/wasm-prefix
     steps:
+      - name: Show job copy
+        if: inputs.copies > 1
+        shell: bash
+        run: echo "Copy ${{ matrix.copy }} of ${{ inputs.copies }}"
+
       - uses: actions/checkout@v7
 
       - name: Set up Miniforge
