@@ -120,7 +120,7 @@ void zggqrf(const INT n, const INT m, const INT p,
     *info = 0;
     nb1 = lapack_get_nb("GEQRF");
     nb2 = lapack_get_nb("GERQF");
-    nb3 = lapack_get_nb("ORMQR");
+    nb3 = lapack_get_nb("UNMQR");
     nb = nb1;
     if (nb2 > nb) nb = nb2;
     if (nb3 > nb) nb = nb3;

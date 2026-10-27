@@ -120,8 +120,8 @@ void cgelsy(const INT m, const INT n, const INT nrhs,
         } else {
             INT nb1 = lapack_get_nb("GEQRF");
             INT nb2 = lapack_get_nb("GERQF");
-            INT nb3 = lapack_get_nb("ORMQR");
-            INT nb4 = lapack_get_nb("ORMRQ");
+            INT nb3 = lapack_get_nb("UNMQR");
+            INT nb4 = lapack_get_nb("UNMRQ");
             nb = nb1;
             if (nb2 > nb) nb = nb2;
             if (nb3 > nb) nb = nb3;

@@ -117,8 +117,8 @@ void spbtrf(
     if (n == 0)
         return;
 
-    // Block size from tuning table
-    nb = lapack_get_nb("PBTRF");
+    // Determine the block size for this environment
+    nb = lapack_get_pbtrf_nb(kd);
     if (nb > NBMAX)
         nb = NBMAX;
 

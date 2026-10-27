@@ -116,7 +116,7 @@ void cunmrq(const char* side, const char* trans,
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = nbmax < lapack_get_nb("ORMRQ") ? nbmax : lapack_get_nb("ORMRQ");
+            nb = nbmax < lapack_get_nb("UNMRQ") ? nbmax : lapack_get_nb("UNMRQ");
             lwkopt = nw * nb + ldt * nb;
         }
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
@@ -139,7 +139,7 @@ void cunmrq(const char* side, const char* trans,
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
             nb = lwork / (ldwork + ldt);
-            nbmin = lapack_get_nbmin("ORMRQ") > 2 ? lapack_get_nbmin("ORMRQ") : 2;
+            nbmin = lapack_get_nbmin("UNMRQ") > 2 ? lapack_get_nbmin("UNMRQ") : 2;
         }
     }
 

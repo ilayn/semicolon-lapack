@@ -123,7 +123,7 @@ void cunmrz(const char* side, const char* trans,
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = nbmax < lapack_get_nb("ORMRQ") ? nbmax : lapack_get_nb("ORMRQ");
+            nb = nbmax < lapack_get_nb("UNMRQ") ? nbmax : lapack_get_nb("UNMRQ");
             lwkopt = nw * nb + tsize;
         }
         work[0] = CMPLXF((f32)lwkopt, 0.0f);
@@ -143,13 +143,13 @@ void cunmrz(const char* side, const char* trans,
 
     /* Determine the block size. NB may be at most NBMAX, where NBMAX
        is used to define the local array T. */
-    nb = nbmax < lapack_get_nb("ORMRQ") ? nbmax : lapack_get_nb("ORMRQ");
+    nb = nbmax < lapack_get_nb("UNMRQ") ? nbmax : lapack_get_nb("UNMRQ");
     nbmin = 2;
     ldwork = nw;
     if (nb > 1 && nb < k) {
         if (lwork < lwkopt) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = lapack_get_nbmin("ORMRQ") > 2 ? lapack_get_nbmin("ORMRQ") : 2;
+            nbmin = lapack_get_nbmin("UNMRQ") > 2 ? lapack_get_nbmin("UNMRQ") : 2;
         }
     }
 

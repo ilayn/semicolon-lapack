@@ -72,7 +72,7 @@ void dsytrf_aa(
     INT nb, mj, nj, k1, k2, j1, j2, j3, jb;
     f64 alpha;
 
-    nb = lapack_get_nb("SYTRF");
+    nb = lapack_get_nb("SYTRF_AA");
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');

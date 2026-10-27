@@ -50,7 +50,7 @@ void cungqr(const INT m, const INT n, const INT k,
     const c64 ZERO = CMPLXF(0.0f, 0.0f);
 
     *info = 0;
-    nb = lapack_get_nb("ORGQR");
+    nb = lapack_get_nb("UNGQR");
     lwkopt = (n > 1 ? n : 1) * nb;
     work[0] = CMPLXF((f32)lwkopt, 0.0f);
     lquery = (lwork == -1);
@@ -84,14 +84,14 @@ void cungqr(const INT m, const INT n, const INT k,
     iws = n;
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
-        nx = lapack_get_nx("ORGQR");
+        nx = lapack_get_nx("UNGQR");
         if (nx < 0) nx = 0;
         if (nx < k) {
             ldwork = n;
             iws = ldwork * nb;
             if (lwork < iws) {
                 nb = lwork / ldwork;
-                nbmin = lapack_get_nbmin("ORGQR");
+                nbmin = lapack_get_nbmin("UNGQR");
             }
         }
     }

@@ -69,7 +69,7 @@ void zunghr(const INT n, const INT ilo, const INT ihi,
     }
 
     if (*info == 0) {
-        nb = lapack_get_nb("ORGQR");
+        nb = lapack_get_nb("UNGQR");
         lwkopt = nh_max_1 * nb;
         work[0] = CMPLX((f64)lwkopt, 0.0);
     }

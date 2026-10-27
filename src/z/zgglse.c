@@ -150,8 +150,8 @@ void zgglse(
         } else {
             nb1 = lapack_get_nb("GEQRF");
             nb2 = lapack_get_nb("GERQF");
-            nb3 = lapack_get_nb("ORMQR");
-            nb4 = lapack_get_nb("ORMRQ");
+            nb3 = lapack_get_nb("UNMQR");
+            nb4 = lapack_get_nb("UNMRQ");
             nb = nb1;
             if (nb2 > nb) nb = nb2;
             if (nb3 > nb) nb = nb3;

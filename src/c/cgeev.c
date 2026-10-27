@@ -110,7 +110,7 @@ void cgeev(const char* jobvl, const char* jobvr, const INT n,
             maxwrk = 1;
         } else {
             nb_gehrd = lapack_get_nb("GEHRD");
-            nb_unghr = lapack_get_nb("ORGHR");
+            nb_unghr = lapack_get_nb("UNGHR");
             if (nb_unghr == 1) nb_unghr = 32;
 
             maxwrk = n + n * nb_gehrd;

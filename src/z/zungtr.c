@@ -69,9 +69,9 @@ void zungtr(const char* uplo, const INT n,
 
     if (*info == 0) {
         if (upper) {
-            nb = lapack_get_nb("ORGQL");
+            nb = lapack_get_nb("UNGQL");
         } else {
-            nb = lapack_get_nb("ORGQR");
+            nb = lapack_get_nb("UNGQR");
         }
         lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
         work[0] = (c128)lwkopt;

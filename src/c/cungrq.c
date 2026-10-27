@@ -70,7 +70,7 @@ void cungrq(const INT m, const INT n, const INT k,
         if (m <= 0) {
             lwkopt = 1;
         } else {
-            nb = lapack_get_nb("ORGRQ");
+            nb = lapack_get_nb("UNGRQ");
             lwkopt = m * nb;
         }
         work[0] = (c64)lwkopt;
@@ -97,14 +97,14 @@ void cungrq(const INT m, const INT n, const INT k,
     iws = m;
     if (nb > 1 && nb < k) {
         /* Determine crossover point */
-        nx = lapack_get_nx("ORGRQ");
+        nx = lapack_get_nx("UNGRQ");
         if (nx < 0) nx = 0;
         if (nx < k) {
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
                 nb = lwork / ldwork;
-                nbmin = lapack_get_nbmin("ORGRQ");
+                nbmin = lapack_get_nbmin("UNGRQ");
             }
         }
     }

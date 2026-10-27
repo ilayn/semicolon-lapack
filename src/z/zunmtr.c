@@ -106,9 +106,9 @@ void zunmtr(const char* side, const char* uplo, const char* trans,
 
     if (*info == 0) {
         if (upper) {
-            nb = lapack_get_nb("ORMQL");
+            nb = lapack_get_nb("UNMQL");
         } else {
-            nb = lapack_get_nb("ORMQR");
+            nb = lapack_get_nb("UNMQR");
         }
         lwkopt = nw * nb;
         work[0] = CMPLX((f64)lwkopt, 0.0);
