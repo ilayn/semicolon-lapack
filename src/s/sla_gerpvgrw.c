@@ -44,13 +44,13 @@ f32 sla_gerpvgrw(
         amax = 0.0f;
         umax = 0.0f;
         for (i = 0; i < n; i++) {
-            amax = fmaxf(fabsf(A[i + j * lda]), amax);
+            amax = (fabsf(A[i + j * lda]) > amax) ? fabsf(A[i + j * lda]) : amax;
         }
         for (i = 0; i <= j; i++) {
-            umax = fmaxf(fabsf(AF[i + j * ldaf]), umax);
+            umax = (fabsf(AF[i + j * ldaf]) > umax) ? fabsf(AF[i + j * ldaf]) : umax;
         }
         if (umax != 0.0f) {
-            rpvgrw = fminf(amax / umax, rpvgrw);
+            rpvgrw = (amax / umax < rpvgrw) ? amax / umax : rpvgrw;
         }
     }
     return rpvgrw;

@@ -211,8 +211,10 @@ void sgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                             if (rsvec) {
                                                 cblas_srotm(mvl, &V[p * ldv], 1, &V[q * ldv], 1, fastr);
                                             }
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrtf(fmaxf(ZERO, ONE - t * aqoap * aapq));
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrtf((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
                                             mxsinj = (mxsinj > fabsf(t)) ? mxsinj : fabsf(t);
                                         } else {
                                             /* choose correct signum for THETA and rotate */
@@ -222,8 +224,10 @@ void sgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                             cs = sqrtf(ONE / (ONE + t * t));
                                             sn = t * cs;
                                             mxsinj = (mxsinj > fabsf(sn)) ? mxsinj : fabsf(sn);
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE + t * apoaq * aapq));
-                                            aapp = aapp * sqrtf(fmaxf(ZERO, ONE - t * aqoap * aapq));
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE + t * apoaq * aapq)
+                                                ? ZERO : ONE + t * apoaq * aapq);
+                                            aapp = aapp * sqrtf((ZERO > ONE - t * aqoap * aapq)
+                                                ? ZERO : ONE - t * aqoap * aapq);
 
                                             apoaq = D[p] / D[q];
                                             aqoap = D[q] / D[p];
@@ -290,7 +294,8 @@ void sgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                             temp1 = -aapq * D[p] / D[q];
                                             cblas_saxpy(m, temp1, work, 1, &A[q * lda], 1);
                                             slascl("G", 0, 0, ONE, aaqq, m, 1, &A[q * lda], lda, &ierr);
-                                            SVA[q] = aaqq * sqrtf(fmaxf(ZERO, ONE - aapq * aapq));
+                                            SVA[q] = aaqq * sqrtf((ZERO > ONE - aapq * aapq)
+                                                ? ZERO : ONE - aapq * aapq);
                                             mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         } else {
                                             cblas_scopy(m, &A[q * lda], 1, work, 1);
@@ -299,7 +304,8 @@ void sgsvj1(const char* jobv, const INT m, const INT n, const INT n1,
                                             temp1 = -aapq * D[q] / D[p];
                                             cblas_saxpy(m, temp1, work, 1, &A[p * lda], 1);
                                             slascl("G", 0, 0, ONE, aapp, m, 1, &A[p * lda], lda, &ierr);
-                                            SVA[p] = aapp * sqrtf(fmaxf(ZERO, ONE - aapq * aapq));
+                                            SVA[p] = aapp * sqrtf((ZERO > ONE - aapq * aapq)
+                                                ? ZERO : ONE - aapq * aapq);
                                             mxsinj = (mxsinj > sfmin) ? mxsinj : sfmin;
                                         }
                                     }

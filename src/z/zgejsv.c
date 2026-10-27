@@ -1098,7 +1098,8 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                     xsc = sqrt(small) / epsln;
                     for (p = 1; p < nr; p++) {
                         for (q = 0; q < p; q++) {
-                            ctemp = CMPLX(xsc * fmin(cabs(V[p + p * ldv]), cabs(V[q + q * ldv])), 0.0);
+                            ctemp = CMPLX(xsc * ((cabs(V[p + p * ldv]) < cabs(V[q + q * ldv]))
+                                ? cabs(V[p + p * ldv]) : cabs(V[q + q * ldv])), 0.0);
                             if (cabs(V[q + p * ldv]) <= temp1)
                                 V[q + p * ldv] = ctemp;
                         }
@@ -1130,7 +1131,8 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                     xsc = sqrt(small);
                     for (p = 1; p < nr; p++) {
                         for (q = 0; q < p; q++) {
-                            ctemp = CMPLX(xsc * fmin(cabs(V[p + p * ldv]), cabs(V[q + q * ldv])), 0.0);
+                            ctemp = CMPLX(xsc * ((cabs(V[p + p * ldv]) < cabs(V[q + q * ldv]))
+                                ? cabs(V[p + p * ldv]) : cabs(V[q + q * ldv])), 0.0);
                             if (cabs(V[q + p * ldv]) <= temp1)
                                 V[q + p * ldv] = ctemp;
                         }
@@ -1143,7 +1145,8 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                     xsc = sqrt(small);
                     for (p = 1; p < nr; p++) {
                         for (q = 0; q < p; q++) {
-                            ctemp = CMPLX(xsc * fmin(cabs(V[p + p * ldv]), cabs(V[q + q * ldv])), 0.0);
+                            ctemp = CMPLX(xsc * ((cabs(V[p + p * ldv]) < cabs(V[q + q * ldv]))
+                                ? cabs(V[p + p * ldv]) : cabs(V[q + q * ldv])), 0.0);
                             V[p + q * ldv] = -ctemp;
                         }
                     }
@@ -1417,7 +1420,8 @@ void zgejsv(const char* joba, const char* jobu, const char* jobv,
                 xsc = sqrt(small / epsln);
                 for (q = 1; q < nr; q++) {
                     for (p = 0; p < q; p++) {
-                        ctemp = CMPLX(xsc * fmin(cabs(U[p + p * ldu]), cabs(U[q + q * ldu])), 0.0);
+                        ctemp = CMPLX(xsc * ((cabs(U[p + p * ldu]) < cabs(U[q + q * ldu]))
+                            ? cabs(U[p + p * ldu]) : cabs(U[q + q * ldu])), 0.0);
                         U[p + q * ldu] = -ctemp;
                     }
                 }

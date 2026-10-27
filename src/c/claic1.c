@@ -84,7 +84,7 @@ void claic1(
         /* special cases */
 
         if (sest == ZERO) {
-            s1 = fmaxf(absgam, absalp);
+            s1 = (absgam > absalp) ? absgam : absalp;
             if (s1 == ZERO) {
                 *s = CMPLXF(ZERO, 0.0f);
                 *c = CMPLXF(ONE, 0.0f);
@@ -101,7 +101,7 @@ void claic1(
         } else if (absgam <= eps * absest) {
             *s = CMPLXF(ONE, 0.0f);
             *c = CMPLXF(ZERO, 0.0f);
-            tmp = fmaxf(absest, absalp);
+            tmp = (absest > absalp) ? absest : absalp;
             s1 = absest / tmp;
             s2 = absalp / tmp;
             *sestpr = tmp * sqrtf(s1 * s1 + s2 * s2);
@@ -170,14 +170,14 @@ void claic1(
 
         if (sest == ZERO) {
             *sestpr = ZERO;
-            if (fmaxf(absgam, absalp) == ZERO) {
+            if (((absgam > absalp) ? absgam : absalp) == ZERO) {
                 sine = CMPLXF(ONE, 0.0f);
                 cosine = CMPLXF(ZERO, 0.0f);
             } else {
                 sine = -conjf(gamma_);
                 cosine = conjf(alpha);
             }
-            s1 = fmaxf(cabsf(sine), cabsf(cosine));
+            s1 = (cabsf(sine) > cabsf(cosine)) ? cabsf(sine) : cabsf(cosine);
             *s = sine / s1;
             *c = cosine / s1;
             tmp = crealf(csqrtf((*s) * conjf(*s) + (*c) * conjf(*c)));
@@ -226,8 +226,8 @@ void claic1(
             zeta1 = absalp / absest;
             zeta2 = absgam / absest;
 
-            norma = fmaxf(ONE + zeta1 * zeta1 + zeta1 * zeta2,
-                         zeta1 * zeta2 + zeta2 * zeta2);
+            norma = (ONE + zeta1 * zeta1 + zeta1 * zeta2 > zeta1 * zeta2 + zeta2 * zeta2)
+                ? ONE + zeta1 * zeta1 + zeta1 * zeta2 : zeta1 * zeta2 + zeta2 * zeta2;
 
             /* See if root is closer to zero or to ONE */
 

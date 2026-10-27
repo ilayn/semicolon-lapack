@@ -70,7 +70,7 @@ void clartg(const c64 f, const c64 g,
             *r = fabsf(crealf(g));
             *s = conjf(g) / *r;
         } else {
-            g1 = fmaxf(fabsf(crealf(g)), fabsf(cimagf(g)));
+            g1 = (fabsf(crealf(g)) > fabsf(cimagf(g))) ? fabsf(crealf(g)) : fabsf(cimagf(g));
             rtmax = sqrtf(safmax / 2.0f);
             if (g1 > rtmin && g1 < rtmax) {
 
@@ -84,7 +84,8 @@ void clartg(const c64 f, const c64 g,
 
                 /* Use scaled algorithm */
 
-                u = fminf(safmax, fmaxf(safmin, g1));
+                u = (safmin > g1) ? safmin : g1;
+                u = (safmax < u) ? safmax : u;
                 gs = g / u;
                 g2 = abssq(gs);
                 d = sqrtf(g2);
@@ -93,8 +94,8 @@ void clartg(const c64 f, const c64 g,
             }
         }
     } else {
-        f1 = fmaxf(fabsf(crealf(f)), fabsf(cimagf(f)));
-        g1 = fmaxf(fabsf(crealf(g)), fabsf(cimagf(g)));
+        f1 = (fabsf(crealf(f)) > fabsf(cimagf(f))) ? fabsf(crealf(f)) : fabsf(cimagf(f));
+        g1 = (fabsf(crealf(g)) > fabsf(cimagf(g))) ? fabsf(crealf(g)) : fabsf(cimagf(g));
         rtmax = sqrtf(safmax / 4.0f);
         if (f1 > rtmin && f1 < rtmax &&
             g1 > rtmin && g1 < rtmax) {
@@ -130,12 +131,15 @@ void clartg(const c64 f, const c64 g,
 
             /* Use scaled algorithm */
 
-            u = fminf(safmax, fmaxf(safmin, fmaxf(f1, g1)));
+            u = (safmin > f1) ? safmin : f1;
+            u = (u > g1) ? u : g1;
+            u = (safmax < u) ? safmax : u;
             gs = g / u;
             g2 = abssq(gs);
             if (f1 / u < rtmin) {
 
-                v = fminf(safmax, fmaxf(safmin, f1));
+                v = (safmin > f1) ? safmin : f1;
+                v = (safmax < v) ? safmax : v;
                 w = v / u;
                 fs = f / v;
                 f2 = abssq(fs);

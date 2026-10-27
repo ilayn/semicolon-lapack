@@ -150,14 +150,16 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
     ortol = sqrt(ulp);
 
     /* Criterion for splitting from DBDSQR */
-    tol = fmax(TEN, fmin(HNDRD, pow(eps, MEIGTH))) * eps;
+    tol = pow(eps, MEIGTH);
+    tol = (HNDRD < tol) ? HNDRD : tol;
+    tol = ((TEN > tol) ? TEN : tol) * eps;
 
     /* Compute approximate maximum, minimum singular values */
     i = cblas_idamax(n, D, 1);
     smax = fabs(D[i]);
     if (n > 1) {
         i = cblas_idamax(n - 1, E, 1);
-        smax = fmax(smax, fabs(E[i]));
+        smax = (smax > fabs(E[i])) ? smax : fabs(E[i]);
     }
 
     /* Compute threshold for neglecting D's and E's */
@@ -166,7 +168,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
         mu = smin;
         for (i = 1; i < n; i++) {
             mu = fabs(D[i]) * (mu / (mu + fabs(E[i - 1])));
-            smin = fmin(smin, mu);
+            smin = (smin < mu) ? smin : mu;
             if (smin == ZERO) break;
         }
     }
@@ -261,7 +263,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
                iutgk, iutgk, abstol, &ns_local, S, Z, ldz, &work[itemp],
                &iwork[iiwork], &iwork[iifail], info);
         vutgk = S[0] + FUDGE * smax * ulp * n;
-        vutgk = fmin(vutgk, ZERO);
+        vutgk = (vutgk < ZERO) ? vutgk : ZERO;
 
         /* If VLTGK == VUTGK, DSTEVX returns error, so adjust slightly */
         if (vltgk == vutgk) {

@@ -121,7 +121,7 @@ void sstemr(const char* jobz, const char* range, const INT n,
     smlnum = safmin / eps;
     bignum = ONE / smlnum;
     rmin = sqrtf(smlnum);
-    rmax = fminf(sqrtf(bignum), ONE / sqrtf(sqrtf(safmin)));
+    rmax = (sqrtf(bignum) < ONE / sqrtf(sqrtf(safmin))) ? sqrtf(bignum) : ONE / sqrtf(sqrtf(safmin));
 
     if (*info == 0) {
         work[0] = lwmin;
@@ -321,8 +321,8 @@ void sstemr(const char* jobz, const char* range, const INT n,
             /* SLARRE computes the eigenvalues to less than full precision.
                SLARRV will refine the eigenvalue approximations, and we can
                need less accurate initial bisection in SLARRE. */
-            rtol1 = fmaxf(sqrtf(eps) * 5.0e-2f, FOUR * eps);
-            rtol2 = fmaxf(sqrtf(eps) * 5.0e-3f, FOUR * eps);
+            rtol1 = (sqrtf(eps) * 5.0e-2f > FOUR * eps) ? sqrtf(eps) * 5.0e-2f : FOUR * eps;
+            rtol2 = (sqrtf(eps) * 5.0e-3f > FOUR * eps) ? sqrtf(eps) * 5.0e-3f : FOUR * eps;
         }
         slarre(range, n, &wl, &wu, iil, iiu, D, E,
                &work[inde2], rtol1, rtol2, thresh, &nsplit,

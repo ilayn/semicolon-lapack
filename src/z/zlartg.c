@@ -70,7 +70,7 @@ void zlartg(const c128 f, const c128 g,
             *r = fabs(creal(g));
             *s = conj(g) / *r;
         } else {
-            g1 = fmax(fabs(creal(g)), fabs(cimag(g)));
+            g1 = (fabs(creal(g)) > fabs(cimag(g))) ? fabs(creal(g)) : fabs(cimag(g));
             rtmax = sqrt(safmax / 2.0);
             if (g1 > rtmin && g1 < rtmax) {
 
@@ -84,7 +84,8 @@ void zlartg(const c128 f, const c128 g,
 
                 /* Use scaled algorithm */
 
-                u = fmin(safmax, fmax(safmin, g1));
+                u = (safmin > g1) ? safmin : g1;
+                u = (safmax < u) ? safmax : u;
                 gs = g / u;
                 g2 = abssq(gs);
                 d = sqrt(g2);
@@ -93,8 +94,8 @@ void zlartg(const c128 f, const c128 g,
             }
         }
     } else {
-        f1 = fmax(fabs(creal(f)), fabs(cimag(f)));
-        g1 = fmax(fabs(creal(g)), fabs(cimag(g)));
+        f1 = (fabs(creal(f)) > fabs(cimag(f))) ? fabs(creal(f)) : fabs(cimag(f));
+        g1 = (fabs(creal(g)) > fabs(cimag(g))) ? fabs(creal(g)) : fabs(cimag(g));
         rtmax = sqrt(safmax / 4.0);
         if (f1 > rtmin && f1 < rtmax &&
             g1 > rtmin && g1 < rtmax) {
@@ -130,12 +131,15 @@ void zlartg(const c128 f, const c128 g,
 
             /* Use scaled algorithm */
 
-            u = fmin(safmax, fmax(safmin, fmax(f1, g1)));
+            u = (safmin > f1) ? safmin : f1;
+            u = (u > g1) ? u : g1;
+            u = (safmax < u) ? safmax : u;
             gs = g / u;
             g2 = abssq(gs);
             if (f1 / u < rtmin) {
 
-                v = fmin(safmax, fmax(safmin, f1));
+                v = (safmin > f1) ? safmin : f1;
+                v = (safmax < v) ? safmax : v;
                 w = v / u;
                 fs = f / v;
                 f2 = abssq(fs);

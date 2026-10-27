@@ -82,7 +82,7 @@ void slaic1(
         /* special cases */
 
         if (sest == ZERO) {
-            s1 = fmaxf(absgam, absalp);
+            s1 = (absgam > absalp) ? absgam : absalp;
             if (s1 == ZERO) {
                 *s = ZERO;
                 *c = ONE;
@@ -99,7 +99,7 @@ void slaic1(
         } else if (absgam <= eps * absest) {
             *s = ONE;
             *c = ZERO;
-            tmp = fmaxf(absest, absalp);
+            tmp = (absest > absalp) ? absest : absalp;
             s1 = absest / tmp;
             s2 = absalp / tmp;
             *sestpr = tmp * sqrtf(s1 * s1 + s2 * s2);
@@ -166,14 +166,14 @@ void slaic1(
 
         if (sest == ZERO) {
             *sestpr = ZERO;
-            if (fmaxf(absgam, absalp) == ZERO) {
+            if (((absgam > absalp) ? absgam : absalp) == ZERO) {
                 sine = ONE;
                 cosine = ZERO;
             } else {
                 sine = -gamma;
                 cosine = alpha;
             }
-            s1 = fmaxf(fabsf(sine), fabsf(cosine));
+            s1 = (fabsf(sine) > fabsf(cosine)) ? fabsf(sine) : fabsf(cosine);
             *s = sine / s1;
             *c = cosine / s1;
             tmp = sqrtf((*s) * (*s) + (*c) * (*c));
@@ -222,8 +222,8 @@ void slaic1(
             zeta1 = alpha / absest;
             zeta2 = gamma / absest;
 
-            norma = fmaxf(ONE + zeta1 * zeta1 + fabsf(zeta1 * zeta2),
-                         fabsf(zeta1 * zeta2) + zeta2 * zeta2);
+            norma = (ONE + zeta1 * zeta1 + fabsf(zeta1 * zeta2) > fabsf(zeta1 * zeta2) + zeta2 * zeta2)
+                ? ONE + zeta1 * zeta1 + fabsf(zeta1 * zeta2) : fabsf(zeta1 * zeta2) + zeta2 * zeta2;
 
             /* See if root is closer to zero or to ONE */
 

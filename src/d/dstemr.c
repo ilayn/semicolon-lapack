@@ -121,7 +121,7 @@ void dstemr(const char* jobz, const char* range, const INT n,
     smlnum = safmin / eps;
     bignum = ONE / smlnum;
     rmin = sqrt(smlnum);
-    rmax = fmin(sqrt(bignum), ONE / sqrt(sqrt(safmin)));
+    rmax = (sqrt(bignum) < ONE / sqrt(sqrt(safmin))) ? sqrt(bignum) : ONE / sqrt(sqrt(safmin));
 
     if (*info == 0) {
         work[0] = lwmin;
@@ -322,7 +322,7 @@ void dstemr(const char* jobz, const char* range, const INT n,
                DLARRV will refine the eigenvalue approximations, and we can
                need less accurate initial bisection in DLARRE. */
             rtol1 = sqrt(eps);
-            rtol2 = fmax(sqrt(eps) * 5.0e-3, FOUR * eps);
+            rtol2 = (sqrt(eps) * 5.0e-3 > FOUR * eps) ? sqrt(eps) * 5.0e-3 : FOUR * eps;
         }
         dlarre(range, n, &wl, &wu, iil, iiu, D, E,
                &work[inde2], rtol1, rtol2, thresh, &nsplit,

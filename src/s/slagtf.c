@@ -94,7 +94,7 @@ void slagtf(
 
     eps = slamch("E");
 
-    tl = fmaxf(tol, eps);
+    tl = (tol > eps) ? tol : eps;
     scale1 = fabsf(A[0]) + fabsf(B[0]);
     for (k = 0; k < n - 1; k++) {
         A[k + 1] = A[k + 1] - lambda;
@@ -138,7 +138,7 @@ void slagtf(
                 C[k] = mult;
             }
         }
-        if ((fmaxf(piv1, piv2) <= tl) && (in[n - 1] < 0)) {
+        if ((((piv1 > piv2) ? piv1 : piv2) <= tl) && (in[n - 1] < 0)) {
             in[n - 1] = k;
         }
     }

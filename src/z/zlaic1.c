@@ -84,7 +84,7 @@ void zlaic1(
         /* special cases */
 
         if (sest == ZERO) {
-            s1 = fmax(absgam, absalp);
+            s1 = (absgam > absalp) ? absgam : absalp;
             if (s1 == ZERO) {
                 *s = CMPLX(ZERO, 0.0);
                 *c = CMPLX(ONE, 0.0);
@@ -101,7 +101,7 @@ void zlaic1(
         } else if (absgam <= eps * absest) {
             *s = CMPLX(ONE, 0.0);
             *c = CMPLX(ZERO, 0.0);
-            tmp = fmax(absest, absalp);
+            tmp = (absest > absalp) ? absest : absalp;
             s1 = absest / tmp;
             s2 = absalp / tmp;
             *sestpr = tmp * sqrt(s1 * s1 + s2 * s2);
@@ -170,14 +170,14 @@ void zlaic1(
 
         if (sest == ZERO) {
             *sestpr = ZERO;
-            if (fmax(absgam, absalp) == ZERO) {
+            if (((absgam > absalp) ? absgam : absalp) == ZERO) {
                 sine = CMPLX(ONE, 0.0);
                 cosine = CMPLX(ZERO, 0.0);
             } else {
                 sine = -conj(gamma_);
                 cosine = conj(alpha);
             }
-            s1 = fmax(cabs(sine), cabs(cosine));
+            s1 = (cabs(sine) > cabs(cosine)) ? cabs(sine) : cabs(cosine);
             *s = sine / s1;
             *c = cosine / s1;
             tmp = creal(csqrt((*s) * conj(*s) + (*c) * conj(*c)));
@@ -226,8 +226,8 @@ void zlaic1(
             zeta1 = absalp / absest;
             zeta2 = absgam / absest;
 
-            norma = fmax(ONE + zeta1 * zeta1 + zeta1 * zeta2,
-                         zeta1 * zeta2 + zeta2 * zeta2);
+            norma = (ONE + zeta1 * zeta1 + zeta1 * zeta2 > zeta1 * zeta2 + zeta2 * zeta2)
+                ? ONE + zeta1 * zeta1 + zeta1 * zeta2 : zeta1 * zeta2 + zeta2 * zeta2;
 
             /* See if root is closer to zero or to ONE */
 

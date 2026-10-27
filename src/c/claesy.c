@@ -89,7 +89,7 @@ void claesy(
 
         babs = cabsf(b);
         tabs = cabsf(t);
-        z = fmaxf(babs, tabs);
+        z = (babs > tabs) ? babs : tabs;
         if (z > ZERO) {
             t = z * csqrtf((t / z) * (t / z) + (b / z) * (b / z));
         }

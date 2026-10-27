@@ -94,7 +94,7 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
         mid = W[ii];
         right = W[ii] + werr[ii];
         width = right - mid;
-        tmp = fmax(fabs(left), fabs(right));
+        tmp = (fabs(left) > fabs(right)) ? fabs(left) : fabs(right);
 
         /* The following test prevents the test of converged intervals */
         if (width < rtol * tmp) {
@@ -125,7 +125,7 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
              * stop once BACK has overflowed, when no further step can move
              * the endpoint.  BACK starts at no less than the minimum
              * interval width so that a zero WERR still makes progress. */
-            back = fmax(werr[ii], TWO * pivmin);
+            back = (werr[ii] > TWO * pivmin) ? werr[ii] : TWO * pivmin;
             for (;;) {
                 cnt = 0;
                 s = left;
@@ -148,7 +148,7 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
             }
 
             /* Do while( cnt(right) < i+1 ) */
-            back = fmax(werr[ii], TWO * pivmin);
+            back = (werr[ii] > TWO * pivmin) ? werr[ii] : TWO * pivmin;
             for (;;) {
                 cnt = 0;
                 s = right;
@@ -199,7 +199,7 @@ void dlarrj(const INT n, const f64* D, const f64* E2,
 
             /* semiwidth of interval */
             width = right - mid;
-            tmp = fmax(fabs(left), fabs(right));
+            tmp = (fabs(left) > fabs(right)) ? fabs(left) : fabs(right);
 
             if ((width < rtol * tmp) || (iter == maxitr)) {
                 /* reduce number of unconverged intervals */

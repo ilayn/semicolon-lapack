@@ -45,13 +45,13 @@ f64 zla_gerpvgrw(
         amax = 0.0;
         umax = 0.0;
         for (i = 0; i < n; i++) {
-            amax = fmax(cabs1(A[i + j * lda]), amax);
+            amax = (cabs1(A[i + j * lda]) > amax) ? cabs1(A[i + j * lda]) : amax;
         }
         for (i = 0; i <= j; i++) {
-            umax = fmax(cabs1(AF[i + j * ldaf]), umax);
+            umax = (cabs1(AF[i + j * ldaf]) > umax) ? cabs1(AF[i + j * ldaf]) : umax;
         }
         if (umax != 0.0) {
-            rpvgrw = fmin(amax / umax, rpvgrw);
+            rpvgrw = (amax / umax < rpvgrw) ? amax / umax : rpvgrw;
         }
     }
     return rpvgrw;

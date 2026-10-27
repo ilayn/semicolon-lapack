@@ -44,13 +44,13 @@ f64 dla_gerpvgrw(
         amax = 0.0;
         umax = 0.0;
         for (i = 0; i < n; i++) {
-            amax = fmax(fabs(A[i + j * lda]), amax);
+            amax = (fabs(A[i + j * lda]) > amax) ? fabs(A[i + j * lda]) : amax;
         }
         for (i = 0; i <= j; i++) {
-            umax = fmax(fabs(AF[i + j * ldaf]), umax);
+            umax = (fabs(AF[i + j * ldaf]) > umax) ? fabs(AF[i + j * ldaf]) : umax;
         }
         if (umax != 0.0) {
-            rpvgrw = fmin(amax / umax, rpvgrw);
+            rpvgrw = (amax / umax < rpvgrw) ? amax / umax : rpvgrw;
         }
     }
     return rpvgrw;

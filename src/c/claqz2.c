@@ -113,7 +113,7 @@ void claqz2(const INT ilschur, const INT ilq, const INT ilz,
         beta[kwtop] = B[kwtop + kwtop * ldb];
         *ns = 1;
         *nd = 0;
-        if (cabsf(s) <= fmaxf(smlnum, ulp * cabsf(A[kwtop + kwtop * lda]))) {
+        if (cabsf(s) <= ((smlnum > ulp * cabsf(A[kwtop + kwtop * lda])) ? smlnum : ulp * cabsf(A[kwtop + kwtop * lda]))) {
             *ns = 0;
             *nd = 1;
             if (kwtop > ilo) {
@@ -159,7 +159,7 @@ void claqz2(const INT ilschur, const INT ilq, const INT ilz,
                 tempr = cabsf(s);
             }
             if (cabsf(s * QC[0 + (kwbot - kwtop) * ldqc]) <=
-                fmaxf(ulp * tempr, smlnum)) {
+                ((ulp * tempr > smlnum) ? ulp * tempr : smlnum)) {
                 /* Deflatable */
                 kwbot = kwbot - 1;
             } else {

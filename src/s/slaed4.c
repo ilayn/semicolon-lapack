@@ -172,9 +172,9 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
         }
 
         if (w <= ZERO) {
-            dltlb = fmaxf(dltlb, tau);
+            dltlb = (dltlb > tau) ? dltlb : tau;
         } else {
-            dltub = fminf(dltub, tau);
+            dltub = (dltub < tau) ? dltub : tau;
         }
 
         /* Calculate the new step */
@@ -258,9 +258,9 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
             }
 
             if (w <= ZERO) {
-                dltlb = fmaxf(dltlb, tau);
+                dltlb = (dltlb > tau) ? dltlb : tau;
             } else {
-                dltub = fminf(dltub, tau);
+                dltub = (dltub < tau) ? dltub : tau;
             }
 
             /* Calculate the new step */
@@ -452,9 +452,9 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
         }
 
         if (w <= ZERO) {
-            dltlb = fmaxf(dltlb, tau);
+            dltlb = (dltlb > tau) ? dltlb : tau;
         } else {
-            dltub = fminf(dltub, tau);
+            dltub = (dltub < tau) ? dltub : tau;
         }
 
         /* Calculate the new step */
@@ -589,9 +589,9 @@ void slaed4(const INT n, const INT i, const f32* restrict D,
             }
 
             if (w <= ZERO) {
-                dltlb = fmaxf(dltlb, tau);
+                dltlb = (dltlb > tau) ? dltlb : tau;
             } else {
-                dltub = fminf(dltub, tau);
+                dltub = (dltub < tau) ? dltub : tau;
             }
 
             /* Calculate the new step */

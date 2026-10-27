@@ -342,7 +342,8 @@ void cbbcsd(
         theta[imin - 1] = atan2f(sqrtf(B21D[imin - 1] * B21D[imin - 1] + b21bulge * b21bulge),
                                 sqrtf(B11D[imin - 1] * B11D[imin - 1] + b11bulge * b11bulge));
 
-        thr = thresh * fmaxf(fmaxf(fabsf(B11D[imin - 1]), fabsf(B11D[imin])), unfl);
+        thr = (fabsf(B11D[imin - 1]) > fabsf(B11D[imin])) ? fabsf(B11D[imin - 1]) : fabsf(B11D[imin]);
+        thr = thresh * ((thr > unfl) ? thr : unfl);
         if (B11D[imin - 1] * B11D[imin - 1] + b11bulge * b11bulge > thr * thr) {
             slartgp(b11bulge, B11D[imin - 1], &rwork[iu1sn + imin - 1],
                     &rwork[iu1cs + imin - 1], &r);
@@ -353,7 +354,8 @@ void cbbcsd(
             slartgs(B12D[imin - 1], B12E[imin - 1], nu,
                     &rwork[iu1cs + imin - 1], &rwork[iu1sn + imin - 1]);
         }
-        thr = thresh * fmaxf(fmaxf(fabsf(B21D[imin - 1]), fabsf(B21D[imin])), unfl);
+        thr = (fabsf(B21D[imin - 1]) > fabsf(B21D[imin])) ? fabsf(B21D[imin - 1]) : fabsf(B21D[imin]);
+        thr = thresh * ((thr > unfl) ? thr : unfl);
         if (B21D[imin - 1] * B21D[imin - 1] + b21bulge * b21bulge > thr * thr) {
             slartgp(b21bulge, B21D[imin - 1], &rwork[iu2sn + imin - 1],
                     &rwork[iu2cs + imin - 1], &r);
@@ -409,13 +411,17 @@ void cbbcsd(
 
             phi[i - 1] = atan2f(sqrtf(x1 * x1 + x2 * x2), sqrtf(y1 * y1 + y2 * y2));
 
-            thr = thresh * fmaxf(fmaxf(fabsf(B11D[i - 1]), fabsf(B11D[i])), unfl);
+            thr = (fabsf(B11D[i - 1]) > fabsf(B11D[i])) ? fabsf(B11D[i - 1]) : fabsf(B11D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart11 = (B11E[i - 1] * B11E[i - 1] + b11bulge * b11bulge <= thr * thr);
-            thr = thresh * fmaxf(fmaxf(fabsf(B21D[i - 1]), fabsf(B21D[i])), unfl);
+            thr = (fabsf(B21D[i - 1]) > fabsf(B21D[i])) ? fabsf(B21D[i - 1]) : fabsf(B21D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart21 = (B21E[i - 1] * B21E[i - 1] + b21bulge * b21bulge <= thr * thr);
-            thr = thresh * fmaxf(fmaxf(fabsf(B12E[i - 1]), fabsf(B12D[i])), unfl);
+            thr = (fabsf(B12E[i - 1]) > fabsf(B12D[i])) ? fabsf(B12E[i - 1]) : fabsf(B12D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart12 = (B12D[i - 1] * B12D[i - 1] + b12bulge * b12bulge <= thr * thr);
-            thr = thresh * fmaxf(fmaxf(fabsf(B22E[i - 1]), fabsf(B22D[i])), unfl);
+            thr = (fabsf(B22E[i - 1]) > fabsf(B22D[i])) ? fabsf(B22E[i - 1]) : fabsf(B22D[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart22 = (B22D[i - 1] * B22D[i - 1] + b22bulge * b22bulge <= thr * thr);
 
             if (!restart11 && !restart21) {
@@ -471,13 +477,17 @@ void cbbcsd(
 
             theta[i] = atan2f(sqrtf(y1 * y1 + y2 * y2), sqrtf(x1 * x1 + x2 * x2));
 
-            thr = thresh * fmaxf(fmaxf(fabsf(B11E[i]), fabsf(B11D[i + 1])), unfl);
+            thr = (fabsf(B11E[i]) > fabsf(B11D[i + 1])) ? fabsf(B11E[i]) : fabsf(B11D[i + 1]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart11 = (B11D[i] * B11D[i] + b11bulge * b11bulge <= thr * thr);
-            thr = thresh * fmaxf(fmaxf(fabsf(B12D[i]), fabsf(B12E[i])), unfl);
+            thr = (fabsf(B12D[i]) > fabsf(B12E[i])) ? fabsf(B12D[i]) : fabsf(B12E[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart12 = (B12E[i - 1] * B12E[i - 1] + b12bulge * b12bulge <= thr * thr);
-            thr = thresh * fmaxf(fmaxf(fabsf(B21E[i]), fabsf(B21D[i + 1])), unfl);
+            thr = (fabsf(B21E[i]) > fabsf(B21D[i + 1])) ? fabsf(B21E[i]) : fabsf(B21D[i + 1]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart21 = (B21D[i] * B21D[i] + b21bulge * b21bulge <= thr * thr);
-            thr = thresh * fmaxf(fmaxf(fabsf(B22D[i]), fabsf(B22E[i])), unfl);
+            thr = (fabsf(B22D[i]) > fabsf(B22E[i])) ? fabsf(B22D[i]) : fabsf(B22E[i]);
+            thr = thresh * ((thr > unfl) ? thr : unfl);
             restart22 = (B22E[i - 1] * B22E[i - 1] + b22bulge * b22bulge <= thr * thr);
 
             if (!restart11 && !restart12) {
@@ -540,9 +550,9 @@ void cbbcsd(
 
         phi[imax - 2] = atan2f(fabsf(x1), sqrtf(y1 * y1 + y2 * y2));
 
-        thr = thresh * fmaxf(fabsf(B12E[imax - 2]), unfl);
+        thr = thresh * ((fabsf(B12E[imax - 2]) > unfl) ? fabsf(B12E[imax - 2]) : unfl);
         restart12 = (B12D[imax - 2] * B12D[imax - 2] + b12bulge * b12bulge <= thr * thr);
-        thr = thresh * fmaxf(fabsf(B22E[imax - 2]), unfl);
+        thr = thresh * ((fabsf(B22E[imax - 2]) > unfl) ? fabsf(B22E[imax - 2]) : unfl);
         restart22 = (B22D[imax - 2] * B22D[imax - 2] + b22bulge * b22bulge <= thr * thr);
 
         if (!restart12 && !restart22) {

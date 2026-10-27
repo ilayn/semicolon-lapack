@@ -1098,7 +1098,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     xsc = sqrtf(small) / epsln;
                     for (p = 1; p < nr; p++) {
                         for (q = 0; q < p; q++) {
-                            ctemp = CMPLXF(xsc * fminf(cabsf(V[p + p * ldv]), cabsf(V[q + q * ldv])), 0.0f);
+                            ctemp = CMPLXF(xsc * ((cabsf(V[p + p * ldv]) < cabsf(V[q + q * ldv]))
+                                ? cabsf(V[p + p * ldv]) : cabsf(V[q + q * ldv])), 0.0f);
                             if (cabsf(V[q + p * ldv]) <= temp1)
                                 V[q + p * ldv] = ctemp;
                         }
@@ -1130,7 +1131,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     xsc = sqrtf(small);
                     for (p = 1; p < nr; p++) {
                         for (q = 0; q < p; q++) {
-                            ctemp = CMPLXF(xsc * fminf(cabsf(V[p + p * ldv]), cabsf(V[q + q * ldv])), 0.0f);
+                            ctemp = CMPLXF(xsc * ((cabsf(V[p + p * ldv]) < cabsf(V[q + q * ldv]))
+                                ? cabsf(V[p + p * ldv]) : cabsf(V[q + q * ldv])), 0.0f);
                             if (cabsf(V[q + p * ldv]) <= temp1)
                                 V[q + p * ldv] = ctemp;
                         }
@@ -1143,7 +1145,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                     xsc = sqrtf(small);
                     for (p = 1; p < nr; p++) {
                         for (q = 0; q < p; q++) {
-                            ctemp = CMPLXF(xsc * fminf(cabsf(V[p + p * ldv]), cabsf(V[q + q * ldv])), 0.0f);
+                            ctemp = CMPLXF(xsc * ((cabsf(V[p + p * ldv]) < cabsf(V[q + q * ldv]))
+                                ? cabsf(V[p + p * ldv]) : cabsf(V[q + q * ldv])), 0.0f);
                             V[p + q * ldv] = -ctemp;
                         }
                     }
@@ -1417,7 +1420,8 @@ void cgejsv(const char* joba, const char* jobu, const char* jobv,
                 xsc = sqrtf(small / epsln);
                 for (q = 1; q < nr; q++) {
                     for (p = 0; p < q; p++) {
-                        ctemp = CMPLXF(xsc * fminf(cabsf(U[p + p * ldu]), cabsf(U[q + q * ldu])), 0.0f);
+                        ctemp = CMPLXF(xsc * ((cabsf(U[p + p * ldu]) < cabsf(U[q + q * ldu]))
+                            ? cabsf(U[p + p * ldu]) : cabsf(U[q + q * ldu])), 0.0f);
                         U[p + q * ldu] = -ctemp;
                     }
                 }

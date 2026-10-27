@@ -291,8 +291,9 @@ void dtgevc(
                 work[2 * n + jr] = ZERO;
 
             if (!ilcplx) {
-                temp = ONE / fmax(fmax(fabs(S[je + je * lds]) * ascale,
-                                       fabs(P[je + je * ldp]) * bscale), safmin);
+                temp = (fabs(S[je + je * lds]) * ascale > fabs(P[je + je * ldp]) * bscale)
+                    ? fabs(S[je + je * lds]) * ascale : fabs(P[je + je * ldp]) * bscale;
+                temp = ONE / ((temp > safmin) ? temp : safmin);
                 salfar = (temp * S[je + je * lds]) * ascale;
                 sbeta = (temp * P[je + je * ldp]) * bscale;
                 acoef = sbeta * ascale;
@@ -303,11 +304,16 @@ void dtgevc(
                 INT lsa = fabs(sbeta) >= safmin && fabs(acoef) < small;
                 INT lsb = fabs(salfar) >= safmin && fabs(bcoefr) < small;
                 if (lsa)
-                    scale = (small / fabs(sbeta)) * fmin(anorm, big);
-                if (lsb)
-                    scale = fmax(scale, (small / fabs(salfar)) * fmin(bnorm, big));
+                    scale = (small / fabs(sbeta)) * ((anorm < big) ? anorm : big);
+                if (lsb) {
+                    temp = (small / fabs(salfar)) * ((bnorm < big) ? bnorm : big);
+                    scale = (scale > temp) ? scale : temp;
+                }
                 if (lsa || lsb) {
-                    scale = fmin(scale, ONE / (safmin * fmax(fmax(ONE, fabs(acoef)), fabs(bcoefr))));
+                    temp = (ONE > fabs(acoef)) ? ONE : fabs(acoef);
+                    temp = (temp > fabs(bcoefr)) ? temp : fabs(bcoefr);
+                    temp = ONE / (safmin * temp);
+                    scale = (scale < temp) ? scale : temp;
                     if (lsa) {
                         acoef = ascale * (scale * sbeta);
                     } else {
@@ -339,11 +345,12 @@ void dtgevc(
                 if (acoefa * ulp < safmin && acoefa >= safmin)
                     scale = (safmin / ulp) / acoefa;
                 if (bcoefa * ulp < safmin && bcoefa >= safmin)
-                    scale = fmax(scale, (safmin / ulp) / bcoefa);
+                    scale = (scale > (safmin / ulp) / bcoefa) ? scale : (safmin / ulp) / bcoefa;
                 if (safmin * acoefa > ascale)
                     scale = ascale / (safmin * acoefa);
                 if (safmin * bcoefa > bscale)
-                    scale = fmin(scale, bscale / (safmin * bcoefa));
+                    scale = (scale < bscale / (safmin * bcoefa))
+                        ? scale : bscale / (safmin * bcoefa);
                 if (scale != ONE) {
                     acoef = scale * acoef;
                     acoefa = fabs(acoef);
@@ -368,11 +375,13 @@ void dtgevc(
                                         acoef * S[(je + 1) + (je + 1) * lds]) / temp;
                     work[3 * n + je] = bcoefi * P[(je + 1) + (je + 1) * ldp] / temp;
                 }
-                xmax = fmax(fabs(work[2 * n + je]) + fabs(work[3 * n + je]),
-                            fabs(work[2 * n + je + 1]) + fabs(work[3 * n + je + 1]));
+                xmax = (fabs(work[2 * n + je]) + fabs(work[3 * n + je]) > fabs(work[2 * n + je + 1]) + fabs(work[3 * n + je + 1]))
+                    ? fabs(work[2 * n + je]) + fabs(work[3 * n + je]) : fabs(work[2 * n + je + 1]) + fabs(work[3 * n + je + 1]);
             }
 
-            dmin = fmax(fmax(ulp * acoefa * anorm, ulp * bcoefa * bnorm), safmin);
+            dmin = (ulp * acoefa * anorm > ulp * bcoefa * bnorm)
+                ? ulp * acoefa * anorm : ulp * bcoefa * bnorm;
+            dmin = (dmin > safmin) ? dmin : safmin;
 
             il2by2 = 0;
 
@@ -392,13 +401,16 @@ void dtgevc(
                     }
                 }
 
-                xscale = ONE / fmax(ONE, xmax);
-                temp = fmax(fmax(work[j], work[n + j]),
-                            acoefa * work[j] + bcoefa * work[n + j]);
-                if (il2by2)
-                    temp = fmax(fmax(temp, work[j + 1]),
-                                fmax(work[n + j + 1],
-                                     acoefa * work[j + 1] + bcoefa * work[n + j + 1]));
+                xscale = ONE / ((ONE > xmax) ? ONE : xmax);
+                temp = (work[j] > work[n + j]) ? work[j] : work[n + j];
+                temp = (temp > acoefa * work[j] + bcoefa * work[n + j])
+                    ? temp : acoefa * work[j] + bcoefa * work[n + j];
+                if (il2by2) {
+                    temp = (temp > work[j + 1]) ? temp : work[j + 1];
+                    temp = (temp > work[n + j + 1]) ? temp : work[n + j + 1];
+                    temp = (temp > acoefa * work[j + 1] + bcoefa * work[n + j + 1])
+                           ? temp : acoefa * work[j + 1] + bcoefa * work[n + j + 1];
+                }
                 if (temp > bignum * xscale) {
                     for (jw = 0; jw < nw; jw++) {
                         for (jr = je; jr < j; jr++)
@@ -445,7 +457,7 @@ void dtgevc(
                     }
                     xmax = scale * xmax;
                 }
-                xmax = fmax(xmax, temp);
+                xmax = (xmax > temp) ? xmax : temp;
             }
 
             ieig++;
@@ -466,11 +478,12 @@ void dtgevc(
             xmax = ZERO;
             if (ilcplx) {
                 for (j = ibeg; j < n; j++)
-                    xmax = fmax(xmax, fabs(VL[j + (ieig - 1) * ldvl]) +
-                                      fabs(VL[j + ieig * ldvl]));
+                    xmax = (xmax > fabs(VL[j + (ieig - 1) * ldvl]) + fabs(VL[j + ieig * ldvl]))
+                        ? xmax : fabs(VL[j + (ieig - 1) * ldvl]) + fabs(VL[j + ieig * ldvl]);
             } else {
                 for (j = ibeg; j < n; j++)
-                    xmax = fmax(xmax, fabs(VL[j + (ieig - 1) * ldvl]));
+                    xmax = (xmax > fabs(VL[j + (ieig - 1) * ldvl]))
+                        ? xmax : fabs(VL[j + (ieig - 1) * ldvl]);
             }
 
             if (xmax > safmin) {
@@ -528,8 +541,9 @@ void dtgevc(
             }
 
             if (!ilcplx) {
-                temp = ONE / fmax(fmax(fabs(S[je + je * lds]) * ascale,
-                                       fabs(P[je + je * ldp]) * bscale), safmin);
+                temp = (fabs(S[je + je * lds]) * ascale > fabs(P[je + je * ldp]) * bscale)
+                    ? fabs(S[je + je * lds]) * ascale : fabs(P[je + je * ldp]) * bscale;
+                temp = ONE / ((temp > safmin) ? temp : safmin);
                 salfar = (temp * S[je + je * lds]) * ascale;
                 sbeta = (temp * P[je + je * ldp]) * bscale;
                 acoef = sbeta * ascale;
@@ -540,11 +554,16 @@ void dtgevc(
                 INT lsa = fabs(sbeta) >= safmin && fabs(acoef) < small;
                 INT lsb = fabs(salfar) >= safmin && fabs(bcoefr) < small;
                 if (lsa)
-                    scale = (small / fabs(sbeta)) * fmin(anorm, big);
-                if (lsb)
-                    scale = fmax(scale, (small / fabs(salfar)) * fmin(bnorm, big));
+                    scale = (small / fabs(sbeta)) * ((anorm < big) ? anorm : big);
+                if (lsb) {
+                    temp = (small / fabs(salfar)) * ((bnorm < big) ? bnorm : big);
+                    scale = (scale > temp) ? scale : temp;
+                }
                 if (lsa || lsb) {
-                    scale = fmin(scale, ONE / (safmin * fmax(fmax(ONE, fabs(acoef)), fabs(bcoefr))));
+                    temp = (ONE > fabs(acoef)) ? ONE : fabs(acoef);
+                    temp = (temp > fabs(bcoefr)) ? temp : fabs(bcoefr);
+                    temp = ONE / (safmin * temp);
+                    scale = (scale < temp) ? scale : temp;
                     if (lsa) {
                         acoef = ascale * (scale * sbeta);
                     } else {
@@ -578,11 +597,12 @@ void dtgevc(
                 if (acoefa * ulp < safmin && acoefa >= safmin)
                     scale = (safmin / ulp) / acoefa;
                 if (bcoefa * ulp < safmin && bcoefa >= safmin)
-                    scale = fmax(scale, (safmin / ulp) / bcoefa);
+                    scale = (scale > (safmin / ulp) / bcoefa) ? scale : (safmin / ulp) / bcoefa;
                 if (safmin * acoefa > ascale)
                     scale = ascale / (safmin * acoefa);
                 if (safmin * bcoefa > bscale)
-                    scale = fmin(scale, bscale / (safmin * bcoefa));
+                    scale = (scale < bscale / (safmin * bcoefa))
+                        ? scale : bscale / (safmin * bcoefa);
                 if (scale != ONE) {
                     acoef = scale * acoef;
                     acoefa = fabs(acoef);
@@ -608,8 +628,8 @@ void dtgevc(
                     work[3 * n + je] = bcoefi * P[(je - 1) + (je - 1) * ldp] / temp;
                 }
 
-                xmax = fmax(fabs(work[2 * n + je]) + fabs(work[3 * n + je]),
-                            fabs(work[2 * n + je - 1]) + fabs(work[3 * n + je - 1]));
+                xmax = (fabs(work[2 * n + je]) + fabs(work[3 * n + je]) > fabs(work[2 * n + je - 1]) + fabs(work[3 * n + je - 1]))
+                    ? fabs(work[2 * n + je]) + fabs(work[3 * n + je]) : fabs(work[2 * n + je - 1]) + fabs(work[3 * n + je - 1]);
 
                 creala = acoef * work[2 * n + je - 1];
                 cimaga = acoef * work[3 * n + je - 1];
@@ -629,7 +649,9 @@ void dtgevc(
                 }
             }
 
-            dmin = fmax(fmax(ulp * acoefa * anorm, ulp * bcoefa * bnorm), safmin);
+            dmin = (ulp * acoefa * anorm > ulp * bcoefa * bnorm)
+                ? ulp * acoefa * anorm : ulp * bcoefa * bnorm;
+            dmin = (dmin > safmin) ? dmin : safmin;
 
             il2by2 = 0;
             for (j = je - nw; j >= 0; j--) {
@@ -656,7 +678,7 @@ void dtgevc(
                             work[(jw + 2) * n + jr] = scale * work[(jw + 2) * n + jr];
                     }
                 }
-                xmax = fmax(scale * xmax, temp);
+                xmax = (scale * xmax > temp) ? scale * xmax : temp;
 
                 for (jw = 0; jw < nw; jw++) {
                     for (ja = 0; ja < na; ja++)
@@ -664,11 +686,13 @@ void dtgevc(
                 }
 
                 if (j > 0) {
-                    xscale = ONE / fmax(ONE, xmax);
+                    xscale = ONE / ((ONE > xmax) ? ONE : xmax);
                     temp = acoefa * work[j] + bcoefa * work[n + j];
                     if (il2by2)
-                        temp = fmax(temp, acoefa * work[j + 1] + bcoefa * work[n + j + 1]);
-                    temp = fmax(fmax(temp, acoefa), bcoefa);
+                        temp = (temp > acoefa * work[j + 1] + bcoefa * work[n + j + 1])
+                            ? temp : acoefa * work[j + 1] + bcoefa * work[n + j + 1];
+                    temp = (temp > acoefa) ? temp : acoefa;
+                    temp = (temp > bcoefa) ? temp : bcoefa;
                     if (temp > bignum * xscale) {
                         for (jw = 0; jw < nw; jw++) {
                             for (jr = 0; jr <= je; jr++)
@@ -737,10 +761,11 @@ void dtgevc(
             xmax = ZERO;
             if (ilcplx) {
                 for (j = 0; j < iend; j++)
-                    xmax = fmax(xmax, fabs(VR[j + ieig * ldvr]) + fabs(VR[j + (ieig + 1) * ldvr]));
+                    xmax = (xmax > fabs(VR[j + ieig * ldvr]) + fabs(VR[j + (ieig + 1) * ldvr]))
+                        ? xmax : fabs(VR[j + ieig * ldvr]) + fabs(VR[j + (ieig + 1) * ldvr]);
             } else {
                 for (j = 0; j < iend; j++)
-                    xmax = fmax(xmax, fabs(VR[j + ieig * ldvr]));
+                    xmax = (xmax > fabs(VR[j + ieig * ldvr])) ? xmax : fabs(VR[j + ieig * ldvr]);
             }
 
             if (xmax > safmin) {

@@ -44,7 +44,7 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
     } else {
         f32 f1 = f;
         f32 g1 = g;
-        f32 scale = fmaxf(fabsf(f1), fabsf(g1));
+        f32 scale = (fabsf(f1) > fabsf(g1)) ? fabsf(f1) : fabsf(g1);
 
         if (scale >= safmx2) {
             INT count = 0;
@@ -52,7 +52,7 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
                 count++;
                 f1 = f1 * safmn2;
                 g1 = g1 * safmn2;
-                scale = fmaxf(fabsf(f1), fabsf(g1));
+                scale = (fabsf(f1) > fabsf(g1)) ? fabsf(f1) : fabsf(g1);
             } while (scale >= safmx2 && count < 20);
 
             *r = sqrtf(f1 * f1 + g1 * g1);
@@ -67,7 +67,7 @@ void slartgp(const f32 f, const f32 g, f32* cs, f32* sn, f32* r)
                 count++;
                 f1 = f1 * safmx2;
                 g1 = g1 * safmx2;
-                scale = fmaxf(fabsf(f1), fabsf(g1));
+                scale = (fabsf(f1) > fabsf(g1)) ? fabsf(f1) : fabsf(g1);
             } while (scale <= safmn2);
 
             *r = sqrtf(f1 * f1 + g1 * g1);

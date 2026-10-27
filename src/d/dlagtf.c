@@ -94,7 +94,7 @@ void dlagtf(
 
     eps = dlamch("E");
 
-    tl = fmax(tol, eps);
+    tl = (tol > eps) ? tol : eps;
     scale1 = fabs(A[0]) + fabs(B[0]);
     for (k = 0; k < n - 1; k++) {
         A[k + 1] = A[k + 1] - lambda;
@@ -138,7 +138,7 @@ void dlagtf(
                 C[k] = mult;
             }
         }
-        if ((fmax(piv1, piv2) <= tl) && (in[n - 1] < 0)) {
+        if ((((piv1 > piv2) ? piv1 : piv2) <= tl) && (in[n - 1] < 0)) {
             in[n - 1] = k;
         }
     }

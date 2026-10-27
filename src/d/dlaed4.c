@@ -172,9 +172,9 @@ void dlaed4(const INT n, const INT i, const f64* restrict D,
         }
 
         if (w <= ZERO) {
-            dltlb = fmax(dltlb, tau);
+            dltlb = (dltlb > tau) ? dltlb : tau;
         } else {
-            dltub = fmin(dltub, tau);
+            dltub = (dltub < tau) ? dltub : tau;
         }
 
         /* Calculate the new step */
@@ -258,9 +258,9 @@ void dlaed4(const INT n, const INT i, const f64* restrict D,
             }
 
             if (w <= ZERO) {
-                dltlb = fmax(dltlb, tau);
+                dltlb = (dltlb > tau) ? dltlb : tau;
             } else {
-                dltub = fmin(dltub, tau);
+                dltub = (dltub < tau) ? dltub : tau;
             }
 
             /* Calculate the new step */
@@ -452,9 +452,9 @@ void dlaed4(const INT n, const INT i, const f64* restrict D,
         }
 
         if (w <= ZERO) {
-            dltlb = fmax(dltlb, tau);
+            dltlb = (dltlb > tau) ? dltlb : tau;
         } else {
-            dltub = fmin(dltub, tau);
+            dltub = (dltub < tau) ? dltub : tau;
         }
 
         /* Calculate the new step */
@@ -589,9 +589,9 @@ void dlaed4(const INT n, const INT i, const f64* restrict D,
             }
 
             if (w <= ZERO) {
-                dltlb = fmax(dltlb, tau);
+                dltlb = (dltlb > tau) ? dltlb : tau;
             } else {
-                dltub = fmin(dltub, tau);
+                dltub = (dltub < tau) ? dltub : tau;
             }
 
             /* Calculate the new step */

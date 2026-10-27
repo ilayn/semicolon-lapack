@@ -45,13 +45,13 @@ f32 cla_gerpvgrw(
         amax = 0.0f;
         umax = 0.0f;
         for (i = 0; i < n; i++) {
-            amax = fmaxf(cabs1f(A[i + j * lda]), amax);
+            amax = (cabs1f(A[i + j * lda]) > amax) ? cabs1f(A[i + j * lda]) : amax;
         }
         for (i = 0; i <= j; i++) {
-            umax = fmaxf(cabs1f(AF[i + j * ldaf]), umax);
+            umax = (cabs1f(AF[i + j * ldaf]) > umax) ? cabs1f(AF[i + j * ldaf]) : umax;
         }
         if (umax != 0.0f) {
-            rpvgrw = fminf(amax / umax, rpvgrw);
+            rpvgrw = (amax / umax < rpvgrw) ? amax / umax : rpvgrw;
         }
     }
     return rpvgrw;

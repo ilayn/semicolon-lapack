@@ -78,7 +78,7 @@ void claqz0(
     const c64 CONE = CMPLXF(1.0f, 0.0f);
     const f32 ONE = 1.0f;
 
-    f32 smlnum, ulp, safmin, c1;
+    f32 smlnum, ulp, safmin, c1, tempr;
     f32 bnorm, btol;
     c64 eshift, s1, temp;
     INT istart, istop, iiter, maxit, istart2, k, nshifts;
@@ -255,9 +255,9 @@ void claqz0(
         }
 
         /* Check deflations at the end */
-        if (cabsf(A[istop + (istop - 1) * lda]) <=
-            fmaxf(smlnum, ulp * (cabsf(A[istop + istop * lda]) +
-                                cabsf(A[(istop - 1) + (istop - 1) * lda])))) {
+        tempr = ulp * (cabsf(A[istop + istop * lda]) + cabsf(A[(istop - 1) + (istop - 1) * lda]));
+        tempr = (smlnum > tempr) ? smlnum : tempr;
+        if (cabsf(A[istop + (istop - 1) * lda]) <= tempr) {
             A[istop + (istop - 1) * lda] = CZERO;
             istop = istop - 1;
             ld = 0;
@@ -265,9 +265,9 @@ void claqz0(
         }
 
         /* Check deflations at the start */
-        if (cabsf(A[(istart + 1) + istart * lda]) <=
-            fmaxf(smlnum, ulp * (cabsf(A[istart + istart * lda]) +
-                                cabsf(A[(istart + 1) + (istart + 1) * lda])))) {
+        tempr = ulp * (cabsf(A[istart + istart * lda]) + cabsf(A[(istart + 1) + (istart + 1) * lda]));
+        tempr = (smlnum > tempr) ? smlnum : tempr;
+        if (cabsf(A[(istart + 1) + istart * lda]) <= tempr) {
             A[(istart + 1) + istart * lda] = CZERO;
             istart = istart + 1;
             ld = 0;
@@ -281,9 +281,9 @@ void claqz0(
         /* Check interior deflations */
         istart2 = istart;
         for (k = istop; k >= istart + 1; k--) {
-            if (cabsf(A[k + (k - 1) * lda]) <=
-                fmaxf(smlnum, ulp * (cabsf(A[k + k * lda]) +
-                                    cabsf(A[(k - 1) + (k - 1) * lda])))) {
+            tempr = ulp * (cabsf(A[k + k * lda]) + cabsf(A[(k - 1) + (k - 1) * lda]));
+            tempr = (smlnum > tempr) ? smlnum : tempr;
+            if (cabsf(A[k + (k - 1) * lda]) <= tempr) {
                 A[k + (k - 1) * lda] = CZERO;
                 istart2 = k;
                 break;

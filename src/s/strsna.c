@@ -324,7 +324,7 @@ void strsna(const char* job, const char* howmny, const INT* select,
                 }
             }
 
-            sep[ks] = scale / fmaxf(est, smlnum);
+            sep[ks] = scale / ((est > smlnum) ? est : smlnum);
             if (pair)
                 sep[ks + 1] = sep[ks];
         }

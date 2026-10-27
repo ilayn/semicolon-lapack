@@ -100,7 +100,7 @@ void zgetc2(
 
         // Set SMIN on first iteration
         if (i == 0) {
-            smin = fmax(eps * xmax, smlnum);
+            smin = (eps * xmax > smlnum) ? eps * xmax : smlnum;
         }
 
         // Swap rows
