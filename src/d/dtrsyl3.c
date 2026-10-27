@@ -7,12 +7,14 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
+/** @cond */
 static inline f64 pow2_exponent(const f64 x)
 {
     int e;
     (void)frexp(x, &e);
     return ldexp(1.0, e);
 }
+/** @endcond */
 
 /**
  * DTRSYL3 solves the real Sylvester matrix equation:

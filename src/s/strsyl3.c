@@ -7,12 +7,14 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
+/** @cond */
 static inline f32 pow2_exponent(const f32 x)
 {
     int e;
     (void)frexpf(x, &e);
     return ldexpf(1.0f, e);
 }
+/** @endcond */
 
 /**
  * STRSYL3 solves the real Sylvester matrix equation:
