@@ -193,22 +193,20 @@ void zlaqr5(const INT wantt, const INT wantz, const INT kacc22,
                 /* Accumulate unitary transformations */
                 if (accum) {
                     kms = k - incol;
-                    t1 = V[(m22 - 1) * ldv];
-                    t2 = t1 * conj(V[1 + (m22 - 1) * ldv]);
                     for (j = (1 > ktop - incol ? 1 : ktop - incol) - 1; j < kdu; j++) {
-                        refsum = U[j + kms * ldu] +
-                                 V[1 + (m22 - 1) * ldv] * U[j + (kms + 1) * ldu];
-                        U[j + kms * ldu] = U[j + kms * ldu] - refsum * t1;
-                        U[j + (kms + 1) * ldu] = U[j + (kms + 1) * ldu] - refsum * t2;
+                        refsum = V[(m22 - 1) * ldv] * (U[j + kms * ldu] +
+                                 V[1 + (m22 - 1) * ldv] * U[j + (kms + 1) * ldu]);
+                        U[j + kms * ldu] = U[j + kms * ldu] - refsum;
+                        U[j + (kms + 1) * ldu] = U[j + (kms + 1) * ldu] -
+                                                 refsum * conj(V[1 + (m22 - 1) * ldv]);
                     }
                 } else if (wantz) {
-                    t1 = V[(m22 - 1) * ldv];
-                    t2 = t1 * conj(V[1 + (m22 - 1) * ldv]);
                     for (j = iloz; j <= ihiz; j++) {
-                        refsum = Z[j + (k + 1) * ldz] +
-                                 V[1 + (m22 - 1) * ldv] * Z[j + (k + 2) * ldz];
-                        Z[j + (k + 1) * ldz] = Z[j + (k + 1) * ldz] - refsum * t1;
-                        Z[j + (k + 2) * ldz] = Z[j + (k + 2) * ldz] - refsum * t2;
+                        refsum = V[(m22 - 1) * ldv] * (Z[j + (k + 1) * ldz] +
+                                 V[1 + (m22 - 1) * ldv] * Z[j + (k + 2) * ldz]);
+                        Z[j + (k + 1) * ldz] = Z[j + (k + 1) * ldz] - refsum;
+                        Z[j + (k + 2) * ldz] = Z[j + (k + 2) * ldz] -
+                                               refsum * conj(V[1 + (m22 - 1) * ldv]);
                     }
                 }
             }
