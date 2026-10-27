@@ -112,7 +112,7 @@ void zlartg(const c128 f, const c128 g,
                 rtmax = rtmax * 2.0;
                 if (f2 > rtmin && h2 < rtmax) {
                     /* safmin <= sqrt( f2*h2 ) <= safmax */
-                    *s = conj(g) * (f / sqrt(f2 * h2));
+                    *s = (f / sqrt(f2)) * (conj(g) / sqrt(h2));
                 } else {
                     *s = conj(g) * (*r / h2);
                 }
@@ -124,7 +124,7 @@ void zlartg(const c128 f, const c128 g,
                 } else {
                     *r = f * (h2 / d);
                 }
-                *s = conj(g) * (f / d);
+                *s = (f / sqrt(f2)) * (conj(g) / sqrt(h2));
             }
         } else {
 
@@ -155,7 +155,7 @@ void zlartg(const c128 f, const c128 g,
                 rtmax = rtmax * 2.0;
                 if (f2 > rtmin && h2 < rtmax) {
                     /* safmin <= sqrt( f2*h2 ) <= safmax */
-                    *s = conj(gs) * (fs / sqrt(f2 * h2));
+                    *s = (fs / sqrt(f2)) * (conj(gs) / sqrt(h2));
                 } else {
                     *s = conj(gs) * (*r / h2);
                 }
@@ -167,7 +167,7 @@ void zlartg(const c128 f, const c128 g,
                 } else {
                     *r = fs * (h2 / d);
                 }
-                *s = conj(gs) * (fs / d);
+                *s = (fs / sqrt(f2)) * (conj(gs) / sqrt(h2));
             }
             /* Rescale c and r */
             *c = *c * w;
