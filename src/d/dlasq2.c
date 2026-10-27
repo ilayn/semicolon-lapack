@@ -154,9 +154,10 @@ void dlasq2(const INT n, f64* restrict Z, INT* info)
         }
         d = d + Z[k - 1];
         e = e + Z[k];
-        qmax = fmax(qmax, Z[k - 1]);
-        emin = fmin(emin, Z[k]);
-        zmax = fmax(fmax(qmax, zmax), Z[k]);
+        qmax = (qmax > Z[k - 1]) ? qmax : Z[k - 1];
+        emin = (emin < Z[k]) ? emin : Z[k];
+        zmax = (qmax > zmax) ? qmax : zmax;
+        zmax = (zmax > Z[k]) ? zmax : Z[k];
     }
     if (Z[2 * n - 2] < ZERO) {
         *info = -(200 + 2 * n - 1);
@@ -251,14 +252,14 @@ void dlasq2(const INT n, f64* restrict Z, INT* info)
                 Z[i4 - 2 * pp - 1] = Z[i4] * (Z[i4 - 2] / Z[i4 - 2 * pp - 3]);
                 d = Z[i4] * (d / Z[i4 - 2 * pp - 3]);
             }
-            emin = fmin(emin, Z[i4 - 2 * pp - 1]);
+            emin = (emin < Z[i4 - 2 * pp - 1]) ? emin : Z[i4 - 2 * pp - 1];
         }
         Z[4 * n0 - pp + 1] = d;
 
         /* Now find qmax. */
         qmax = Z[4 * i0 - pp + 1];
         for (i4 = 4 * i0 - pp + 6; i4 <= 4 * n0 - pp + 2; i4 += 4) {
-            qmax = fmax(qmax, Z[i4 - 1]);
+            qmax = (qmax > Z[i4 - 1]) ? qmax : Z[i4 - 1];
         }
 
         /* Prepare for the next iteration on K. */
@@ -320,11 +321,11 @@ void dlasq2(const INT n, f64* restrict Z, INT* info)
                 goto L100;
             }
             if (qmin >= FOUR * emax) {
-                qmin = fmin(qmin, Z[i4 - 4]);
-                emax = fmax(emax, Z[i4 - 6]);
+                qmin = (qmin < Z[i4 - 4]) ? qmin : Z[i4 - 4];
+                emax = (emax > Z[i4 - 6]) ? emax : Z[i4 - 6];
             }
-            qmax = fmax(qmax, Z[i4 - 8] + Z[i4 - 6]);
-            emin = fmin(emin, Z[i4 - 6]);
+            qmax = (qmax > Z[i4 - 8] + Z[i4 - 6]) ? qmax : Z[i4 - 8] + Z[i4 - 6];
+            emin = (emin < Z[i4 - 6]) ? emin : Z[i4 - 6];
         }
         i4 = 4;
 
@@ -365,7 +366,8 @@ L100:
         }
 
         /* Put -(initial shift) into DMIN. */
-        dmin = -fmax(ZERO, qmin - TWO * sqrt(qmin) * sqrt(emax));
+        dmin = -((ZERO > qmin - TWO * sqrt(qmin) * sqrt(emax))
+            ? ZERO : qmin - TWO * sqrt(qmin) * sqrt(emax));
 
         /*
          * Now I0:N0 is unreduced.
@@ -404,9 +406,9 @@ L100:
                             emin = Z[i4 + 2];
                             oldemn = Z[i4 + 3];
                         } else {
-                            qmax = fmax(qmax, Z[i4]);
-                            emin = fmin(emin, Z[i4 - 2]);
-                            oldemn = fmin(oldemn, Z[i4 - 1]);
+                            qmax = (qmax > Z[i4]) ? qmax : Z[i4];
+                            emin = (emin < Z[i4 - 2]) ? emin : Z[i4 - 2];
+                            oldemn = (oldemn < Z[i4 - 1]) ? oldemn : Z[i4 - 1];
                         }
                     }
                     Z[4 * n0 + 2] = emin;
