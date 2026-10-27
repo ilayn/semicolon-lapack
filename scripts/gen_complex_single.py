@@ -202,6 +202,7 @@ def build_code_subs(z_lapack_names, d_lapack_names):
         ("atan2",    "atan2f"),
         ("ldexp",    "ldexpf"),
         ("ilogb",    "ilogbf"),
+        ("frexp",    "frexpf"),
         ("floor",    "floorf"),
         ("round",    "roundf"),
         ("sqrt",     "sqrtf"),

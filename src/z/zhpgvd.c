@@ -157,9 +157,9 @@ void zhpgvd(
     zhpgst(itype, uplo, n, AP, BP, info);
     zhpevd(jobz, uplo, n, AP, W, Z, ldz, work, lwork, rwork,
            lrwork, iwork, liwork, info);
-    lwmin = (INT)fmax((f64)lwmin, creal(work[0]));
-    lrwmin = (INT)fmax((f64)lrwmin, rwork[0]);
-    liwmin = (INT)fmax((f64)liwmin, (f64)iwork[0]);
+    lwmin = (lwmin > (INT)creal(work[0])) ? lwmin : (INT)creal(work[0]);
+    lrwmin = (lrwmin > (INT)rwork[0]) ? lrwmin : (INT)rwork[0];
+    liwmin = (liwmin > iwork[0]) ? liwmin : iwork[0];
 
     if (wantz) {
 

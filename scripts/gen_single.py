@@ -133,6 +133,7 @@ def build_code_subs(lapack_names):
         ("copysign", "copysignf"),
         ("log10",    "log10f"),
         ("ilogb",    "ilogbf"),
+        ("frexp",    "frexpf"),
         ("atan2",    "atan2f"),
         ("ldexp",    "ldexpf"),
         ("floor",    "floorf"),
