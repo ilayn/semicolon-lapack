@@ -849,6 +849,7 @@ extern INT    xerbla_lerr;
 extern char   xerbla_srnamt[33];
 void chkxer(const char* srnamt, INT infot, INT* lerr, INT* ok);
 void derrec(INT* ok, INT* nt);
+void derrbd(INT* ok, INT* nt);
 
 /* SVD singular value verification */
 void dsvdct(const INT n, const f64* s, const f64* e, const f64 shift, INT* num);

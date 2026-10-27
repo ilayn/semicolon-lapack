@@ -1071,6 +1071,7 @@ void zunt03(const char* rc, const INT mu, const INT mv, const INT n,
 
 /* Sylvester equation test (ZTRSYL/ZTRSYL3) */
 void zsyl01(const f64 thresh, INT* nfail, f64* rmax, INT* ninfo, INT* knt);
+void zerrbd(INT* ok, INT* nt);
 
 /* Hermitian eigenvalue decomposition verification */
 void zhet21(const INT itype, const char* uplo, const INT n, const INT kband,
