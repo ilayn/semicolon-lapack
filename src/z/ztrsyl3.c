@@ -8,6 +8,13 @@
 #include <math.h>
 #include "semicolon_cblas.h"
 
+static inline f64 pow2_exponent(const f64 x)
+{
+    int e;
+    (void)frexp(x, &e);
+    return ldexp(1.0, e);
+}
+
 /**
  * ZTRSYL3 solves the complex Sylvester matrix equation:
  *
@@ -238,12 +245,12 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     if (scaloc == ZERO) {
                         buf = ZERO;
                     } else {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                            swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                            f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                            swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                         }
                     }
                 }
@@ -266,15 +273,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     anrm = swork[i + (awrk + k) * ldswork];
                     scaloc = dlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -321,15 +328,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     bnrm = swork[l + (bwrk + j) * ldswork];
                     scaloc = dlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -396,12 +403,12 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     if (scaloc == ZERO) {
                         buf = ZERO;
                     } else {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                            swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                            f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                            swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                         }
                     }
                 }
@@ -424,15 +431,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     anrm = swork[i + (awrk + k) * ldswork];
                     scaloc = dlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -479,15 +486,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     bnrm = swork[l + (bwrk + j) * ldswork];
                     scaloc = dlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -554,12 +561,12 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     if (scaloc == ZERO) {
                         buf = ZERO;
                     } else {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                            swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                            f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                            swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                         }
                     }
                 }
@@ -582,15 +589,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     anrm = swork[i + (awrk + k) * ldswork];
                     scaloc = dlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -637,15 +644,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     bnrm = swork[l + (bwrk + j) * ldswork];
                     scaloc = dlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -712,12 +719,12 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     if (scaloc == ZERO) {
                         buf = ZERO;
                     } else {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                     }
                     for (jj = 0; jj < nbb; jj++) {
                         for (ll = 0; ll < nba; ll++) {
-                            f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                            swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                            f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                            swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                         }
                     }
                 }
@@ -740,15 +747,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     anrm = swork[i + (awrk + k) * ldswork];
                     scaloc = dlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -795,15 +802,15 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
                     bnrm = swork[l + (bwrk + j) * ldswork];
                     scaloc = dlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == ZERO) {
-                        buf = buf * ldexp(1.0, ilogb(scaloc));
+                        buf = buf * pow2_exponent(scaloc);
                         for (jj = 0; jj < nbb; jj++) {
                             for (ll = 0; ll < nba; ll++) {
-                                f64 tmp = swork[ll + jj * ldswork] / ldexp(1.0, ilogb(scaloc));
-                                swork[ll + jj * ldswork] = (tmp < bignum) ? tmp : bignum;
+                                f64 tmp = swork[ll + jj * ldswork] / pow2_exponent(scaloc);
+                                swork[ll + jj * ldswork] = (bignum < tmp) ? bignum : tmp;
                             }
                         }
-                        scamin = scamin / ldexp(1.0, ilogb(scaloc));
-                        scaloc = scaloc / ldexp(1.0, ilogb(scaloc));
+                        scamin = scamin / pow2_exponent(scaloc);
+                        scaloc = scaloc / pow2_exponent(scaloc);
                     }
                     xnrm = xnrm * scaloc;
 
@@ -842,8 +849,7 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
     *scale = swork[0];
     for (k = 0; k < nba; k++) {
         for (l = 0; l < nbb; l++) {
-            if (*scale > swork[k + l * ldswork])
-                *scale = swork[k + l * ldswork];
+            *scale = (*scale < swork[k + l * ldswork]) ? *scale : swork[k + l * ldswork];
         }
     }
     if (*scale == ZERO) {
@@ -879,17 +885,11 @@ void ztrsyl3(const char* trana, const char* tranb, const INT isgn,
 
     if (buf != ONE && buf > ZERO) {
 
-        scal = fabs(creal(C[0]));
-        {
-            f64 tmp = fabs(cimag(C[0]));
-            if (tmp > scal) scal = tmp;
-        }
+        scal = (fabs(creal(C[0])) > fabs(cimag(C[0]))) ? fabs(creal(C[0])) : fabs(cimag(C[0]));
         for (k = 0; k < m; k++) {
             for (l = 0; l < n; l++) {
-                f64 tmp = fabs(creal(C[k + l * ldc]));
-                if (tmp > scal) scal = tmp;
-                tmp = fabs(cimag(C[k + l * ldc]));
-                if (tmp > scal) scal = tmp;
+                scal = (scal > fabs(creal(C[k + l * ldc]))) ? scal : fabs(creal(C[k + l * ldc]));
+                scal = (scal > fabs(cimag(C[k + l * ldc]))) ? scal : fabs(cimag(C[k + l * ldc]));
             }
         }
 
