@@ -60,6 +60,7 @@ void slatrs(
     INT upper, notran, nounit, normin_n;
     INT i, imax, j, jfirst, jinc, jlast;
     f32 bignum, grow, rec, smlnum, sumj, tjj, tjjs = 0.0f, tmax, tscal, uscal, xbnd, xj, xmax;
+    f32 work[1];
 
     *info = 0;
     upper = (uplo[0] == 'U' || uplo[0] == 'u');
@@ -120,23 +121,65 @@ void slatrs(
     } else {
         // Avoid NaN generation if entries in CNORM exceed the overflow threshold
         if (tmax <= FLT_MAX) {
+            // Case 1: All entries in CNORM are valid floating-point numbers
             tscal = ONE / (smlnum * tmax);
             cblas_sscal(n, tscal, cnorm, 1);
         } else {
-            // At least one entry of A is not a valid floating-point entry.
-            // Rely on TRSV to propagate Inf and NaN.
+            // Case 2: At least one column norm of A cannot be represented
+            // as floating-point number. Find the offdiagonal entry A( I, J )
+            // with the largest absolute value. If this entry is not +/- Infinity,
+            // use this value as TSCAL.
+            tmax = ZERO;
             if (upper) {
-                cblas_strsv(CblasColMajor, CblasUpper,
-                            notran ? CblasNoTrans : CblasTrans,
-                            nounit ? CblasNonUnit : CblasUnit,
-                            n, A, lda, X, 1);
+                // A is upper triangular.
+                for (j = 1; j < n; j++) {
+                    f32 tmp = slange("M", j, 1, &A[j * lda], 1, work);
+                    tmax = (tmp > tmax) ? tmp : tmax;
+                }
             } else {
-                cblas_strsv(CblasColMajor, CblasLower,
-                            notran ? CblasNoTrans : CblasTrans,
-                            nounit ? CblasNonUnit : CblasUnit,
-                            n, A, lda, X, 1);
+                // A is lower triangular.
+                for (j = 0; j < n - 1; j++) {
+                    f32 tmp = slange("M", n - j - 1, 1, &A[(j + 1) + j * lda], 1, work);
+                    tmax = (tmp > tmax) ? tmp : tmax;
+                }
             }
-            return;
+
+            if (tmax <= FLT_MAX) {
+                tscal = ONE / (smlnum * tmax);
+                for (j = 0; j < n; j++) {
+                    if (cnorm[j] <= FLT_MAX) {
+                        cnorm[j] = cnorm[j] * tscal;
+                    } else {
+                        // Recompute the 1-norm without introducing Infinity
+                        // in the summation
+                        cnorm[j] = ZERO;
+                        if (upper) {
+                            for (i = 0; i < j; i++) {
+                                cnorm[j] = cnorm[j] + tscal * fabsf(A[i + j * lda]);
+                            }
+                        } else {
+                            for (i = j + 1; i < n; i++) {
+                                cnorm[j] = cnorm[j] + tscal * fabsf(A[i + j * lda]);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // At least one entry of A is not a valid floating-point entry.
+                // Rely on TRSV to propagate Inf and NaN.
+                if (upper) {
+                    cblas_strsv(CblasColMajor, CblasUpper,
+                                notran ? CblasNoTrans : CblasTrans,
+                                nounit ? CblasNonUnit : CblasUnit,
+                                n, A, lda, X, 1);
+                } else {
+                    cblas_strsv(CblasColMajor, CblasLower,
+                                notran ? CblasNoTrans : CblasTrans,
+                                nounit ? CblasNonUnit : CblasUnit,
+                                n, A, lda, X, 1);
+                }
+                return;
+            }
         }
     }
 
