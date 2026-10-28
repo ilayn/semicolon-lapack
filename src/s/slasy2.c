@@ -267,10 +267,10 @@ void slasy2(const INT ltranl, const INT ltranr, const INT isgn,
     btmp[3] = B[1 + ldb];
 
     /* Perform elimination with complete pivoting */
+    ipsv = 0;
+    jpsv = 0;
     for (i = 0; i < 3; i++) {
         xmax = ZERO;
-        ipsv = i;
-        jpsv = i;
         for (ip = i; ip < 4; ip++) {
             for (jp = i; jp < 4; jp++) {
                 if (fabsf(t16[ip + 4*jp]) >= xmax) {

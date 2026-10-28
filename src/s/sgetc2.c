@@ -82,12 +82,12 @@ void sgetc2(
     // Factorize A using complete pivoting.
     // Set pivots less than SMIN to SMIN.
     smin = ZERO;  // Will be set on first iteration
+    ipv = 0;
+    jpv = 0;
 
     for (i = 0; i < n - 1; i++) {
         // Find max element in matrix A[i:n-1, i:n-1]
         xmax = ZERO;
-        ipv = i;
-        jpv = i;
 
         for (jp = i; jp < n; jp++) {
             for (ip = i; ip < n; ip++) {
