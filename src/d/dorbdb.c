@@ -166,7 +166,7 @@ void dorbdb(
         }
     }
     if (*info != 0) {
-        xerbla("xORBDB", -(*info));
+        xerbla("DORBDB", -(*info));
         return;
     } else if (lquery) {
         return;
