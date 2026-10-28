@@ -38,7 +38,7 @@ static const INT NVAL[] = { 0,  3, 30 };
 
 #define NMAX 30
 
-#define MAX_TESTS (NM * NP * NN * NTYPES)
+#define MAX_TESTS (1 + NM * NP * NN * NTYPES)
 
 typedef struct {
     INT im;
@@ -124,6 +124,14 @@ static int group_teardown(void** state)
     }
 
     return 0;
+}
+
+static void test_cerrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    cerrgg("GQR", &ok, &nt);
+    assert_true(ok);
 }
 
 static void test_zckgqr_case(void** state)
@@ -228,6 +236,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "cerrgg";
+    g_tests[g_num_tests].test_func = test_cerrgg;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (INT im = 0; im < (INT)NM; im++) {
         for (INT ip = 0; ip < (INT)NP; ip++) {

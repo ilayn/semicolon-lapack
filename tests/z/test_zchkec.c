@@ -17,6 +17,18 @@
 #define THRESH 20.0
 
 /* ------------------------------------------------------------------ */
+/*  Error exit tests                                                  */
+/* ------------------------------------------------------------------ */
+
+static void test_zerrec(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    zerrec("ZEC", &ok, &nt);
+    assert_true(ok);
+}
+
+/* ------------------------------------------------------------------ */
 /*  ZTRSYL — Sylvester equation solver                                */
 /* ------------------------------------------------------------------ */
 
@@ -112,6 +124,7 @@ static void test_zget38_ztrsen(void** state)
 int main(void)
 {
     const struct CMUnitTest tests[] = {
+        cmocka_unit_test(test_zerrec),
         cmocka_unit_test(test_zget35_ztrsyl),
         cmocka_unit_test(test_zsyl01_ztrsyl3),
         cmocka_unit_test(test_zget36_ztrexc),

@@ -28,6 +28,15 @@ INT    xerbla_ok     = 1;
 INT    xerbla_lerr   = 0;
 char   xerbla_srnamt[33] = "";
 
+/* Fortran compares CHARACTER values as if the shorter one were padded with
+ * blanks, so trailing blanks do not make SRNAME and SRNAMT differ. */
+static int srname_differs(const char* a, const char* b) {
+    size_t la = strlen(a), lb = strlen(b);
+    while (la > 0 && a[la - 1] == ' ') la--;
+    while (lb > 0 && b[lb - 1] == ' ') lb--;
+    return la != lb || strncmp(a, b, la) != 0;
+}
+
 void xerbla(const char* srname, INT info) {
     /* When not in error-testing mode, behave like production xerbla */
     if (xerbla_srnamt[0] == '\0') {
@@ -43,7 +52,7 @@ void xerbla(const char* srname, INT info) {
         fprintf(stderr, " *** routine = %s ***\n", srname);
         xerbla_ok = 0;
     }
-    if (strcmp(srname, xerbla_srnamt) != 0) {
+    if (srname_differs(srname, xerbla_srnamt)) {
         fprintf(stderr, " *** XERBLA was called with SRNAME = %s instead of %s ***\n",
                 srname, xerbla_srnamt);
         xerbla_ok = 0;

@@ -39,7 +39,7 @@ static const INT NVAL[] = { 3, 10, 15, 12,  8, 20,  8, 20 };
 #define NMAX 40
 
 /* Maximum number of test cases: NM * NTYPES */
-#define MAX_TESTS (NM * NTYPES)
+#define MAX_TESTS (1 + NM * NTYPES)
 
 /* External declarations */
 /* Test parameters for a single test case */
@@ -126,6 +126,14 @@ static int group_teardown(void** state)
     return 0;
 }
 
+static void test_serrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serrgg("GSV", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_dckgsv_case(void** state)
 {
     dckgsv_params_t* params = *state;
@@ -195,6 +203,12 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+    g_tests[g_num_tests].name = "serrgg";
+    g_tests[g_num_tests].test_func = test_serrgg;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (INT im = 0; im < NM; im++) {
         for (INT imat = 1; imat <= NTYPES; imat++) {

@@ -1071,7 +1071,12 @@ void cunt03(const char* rc, const INT mu, const INT mv, const INT n,
 
 /* Sylvester equation test (CTRSYL/CTRSYL3) */
 void csyl01(const f32 thresh, INT* nfail, f32* rmax, INT* ninfo, INT* knt);
-void cerrbd(INT* ok, INT* nt);
+void cerrbd(const char* path, INT* ok, INT* nt);
+void cerrec(const char* path, INT* ok, INT* nt);
+void cerred(const char* path, INT* ok, INT* nt);
+void cerrgg(const char* path, INT* ok, INT* nt);
+void cerrhs(const char* path, INT* ok, INT* nt);
+void cerrst(const char* path, INT* ok, INT* nt);
 
 /* Hermitian eigenvalue decomposition verification */
 void chet21(const INT itype, const char* uplo, const INT n, const INT kband,

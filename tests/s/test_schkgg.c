@@ -728,6 +728,14 @@ gen_done:
 /* CMocka test wrapper                                                   */
 /* ===================================================================== */
 
+static void test_serrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serrgg("SGG", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_dchkgg_case(void** state)
 {
     dchkgg_params_t* params = *state;
@@ -738,7 +746,7 @@ static void test_dchkgg_case(void** state)
 /* Build test array and main                                             */
 /* ===================================================================== */
 
-#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
+#define MAX_TESTS (1 + NPARMS * NNVAL * MAXTYP)
 
 static dchkgg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -747,6 +755,12 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+    g_tests[g_num_tests].name = "serrgg";
+    g_tests[g_num_tests].test_func = test_serrgg;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t ip = 0; ip < NPARMS; ip++) {
         for (size_t in = 0; in < NNVAL; in++) {

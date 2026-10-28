@@ -25,7 +25,7 @@ static void test_derrec(void** state)
 {
     (void)state;
     INT ok, nt;
-    derrec(&ok, &nt);
+    derrec("DEC", &ok, &nt);
     assert_true(ok);
 }
 
@@ -204,9 +204,9 @@ static void test_dget40_dtgexc(void** state)
 {
     (void)state;
     f64 rmax;
-    INT lmax, ninfo, knt;
+    INT lmax, ninfo[2], knt;
 
-    dget40(&rmax, &lmax, &ninfo, &knt);
+    dget40(&rmax, &lmax, ninfo, &knt);
 
     assert_true(rmax <= THRESH);
 }

@@ -639,12 +639,26 @@ static void test_ddrgsx_readin(void** state)
     assert_int_equal(any_fail, 0);
 }
 
+static void test_derrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    derrgg("DGX", &ok, &nt);
+    assert_true(ok);
+}
+
 int main(void)
 {
     static ddrgsx_params_t all_params[4 * 5 * NSIZE * NSIZE];
     static ddrgsx_readin_params_t readin_params[NREADIN];
-    static struct CMUnitTest all_tests[4 * 5 * NSIZE * NSIZE + NREADIN];
+    static struct CMUnitTest all_tests[1 + 4 * 5 * NSIZE * NSIZE + NREADIN];
     INT idx = 0;
+
+    all_tests[0].name = "derrgg";
+    all_tests[0].test_func = test_derrgg;
+    all_tests[0].setup_func = NULL;
+    all_tests[0].teardown_func = NULL;
+    all_tests[0].initial_state = NULL;
 
     static const char* sense_names[] = {"N", "E", "V", "B"};
 
@@ -662,11 +676,11 @@ int main(void)
                              "sense=%s_type=%d_m=%d_n=%d",
                              sense_names[ifunc], prtype, m, n);
 
-                    all_tests[idx].name = p->name;
-                    all_tests[idx].test_func = test_ddrgsx;
-                    all_tests[idx].setup_func = NULL;
-                    all_tests[idx].teardown_func = NULL;
-                    all_tests[idx].initial_state = p;
+                    all_tests[idx + 1].name = p->name;
+                    all_tests[idx + 1].test_func = test_ddrgsx;
+                    all_tests[idx + 1].setup_func = NULL;
+                    all_tests[idx + 1].teardown_func = NULL;
+                    all_tests[idx + 1].initial_state = p;
                     idx++;
                 }
             }
@@ -681,11 +695,11 @@ int main(void)
         rp->idx = ci;
         snprintf(rp->name, sizeof(rp->name), "readin_%d", ci + 1);
 
-        all_tests[idx].name = rp->name;
-        all_tests[idx].test_func = test_ddrgsx_readin;
-        all_tests[idx].setup_func = NULL;
-        all_tests[idx].teardown_func = NULL;
-        all_tests[idx].initial_state = rp;
+        all_tests[idx + 1].name = rp->name;
+        all_tests[idx + 1].test_func = test_ddrgsx_readin;
+        all_tests[idx + 1].setup_func = NULL;
+        all_tests[idx + 1].teardown_func = NULL;
+        all_tests[idx + 1].initial_state = rp;
         idx++;
     }
 

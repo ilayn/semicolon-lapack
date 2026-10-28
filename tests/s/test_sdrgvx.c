@@ -425,13 +425,27 @@ static void test_ddrgvx_readin(void** state)
     assert_int_equal(any_fail, 0);
 }
 
+static void test_serrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serrgg("SXV", &ok, &nt);
+    assert_true(ok);
+}
+
 int main(void)
 {
     /* 1250 built-in + 2 read-in = 1252 total */
     static ddrgvx_params_t all_params[2 * 5 * 5 * 5 * 5];
     static ddrgvx_readin_params_t readin_params[NREADIN];
-    static struct CMUnitTest all_tests[2 * 5 * 5 * 5 * 5 + NREADIN];
+    static struct CMUnitTest all_tests[1 + 2 * 5 * 5 * 5 * 5 + NREADIN];
     INT idx = 0;
+
+    all_tests[0].name = "serrgg";
+    all_tests[0].test_func = test_serrgg;
+    all_tests[0].setup_func = NULL;
+    all_tests[0].teardown_func = NULL;
+    all_tests[0].initial_state = NULL;
 
     /* Section 1: Built-in 5x5 tests via slatm6 (1250 cases) */
     for (INT iptype = 1; iptype <= 2; iptype++) {
@@ -449,11 +463,11 @@ int main(void)
                                  "type=%d_wa=%d_wb=%d_wx=%d_wy=%d",
                                  iptype, iwa + 1, iwb + 1, iwx + 1, iwy + 1);
 
-                        all_tests[idx].name = p->name;
-                        all_tests[idx].test_func = test_ddrgvx;
-                        all_tests[idx].setup_func = NULL;
-                        all_tests[idx].teardown_func = NULL;
-                        all_tests[idx].initial_state = p;
+                        all_tests[idx + 1].name = p->name;
+                        all_tests[idx + 1].test_func = test_ddrgvx;
+                        all_tests[idx + 1].setup_func = NULL;
+                        all_tests[idx + 1].teardown_func = NULL;
+                        all_tests[idx + 1].initial_state = p;
                         idx++;
                     }
                 }
@@ -468,11 +482,11 @@ int main(void)
         rp->idx = ci;
         snprintf(rp->name, sizeof(rp->name), "readin_%d", ci + 1);
 
-        all_tests[idx].name = rp->name;
-        all_tests[idx].test_func = test_ddrgvx_readin;
-        all_tests[idx].setup_func = NULL;
-        all_tests[idx].teardown_func = NULL;
-        all_tests[idx].initial_state = rp;
+        all_tests[idx + 1].name = rp->name;
+        all_tests[idx + 1].test_func = test_ddrgvx_readin;
+        all_tests[idx + 1].setup_func = NULL;
+        all_tests[idx + 1].teardown_func = NULL;
+        all_tests[idx + 1].initial_state = rp;
         idx++;
     }
 

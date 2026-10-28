@@ -518,12 +518,26 @@ check_results:
     assert_int_equal(any_fail, 0);
 }
 
+static void test_derrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    derrgg("DGS", &ok, &nt);
+    assert_true(ok);
+}
+
 int main(void)
 {
     /* Total: NSIZES * MAXTYP test cases (10 * 26 = 260) */
     static ddrges_params_t all_params[NSIZES * MAXTYP];
-    static struct CMUnitTest all_tests[NSIZES * MAXTYP];
+    static struct CMUnitTest all_tests[1 + NSIZES * MAXTYP];
     INT idx = 0;
+
+    all_tests[0].name = "derrgg";
+    all_tests[0].test_func = test_derrgg;
+    all_tests[0].setup_func = NULL;
+    all_tests[0].teardown_func = NULL;
+    all_tests[0].initial_state = NULL;
 
     for (INT js = 0; js < NSIZES; js++) {
         for (INT jt = 1; jt <= MAXTYP; jt++) {
@@ -533,11 +547,11 @@ int main(void)
             snprintf(p->name, sizeof(p->name),
                      "N=%d_type=%d", NVAL[js], jt);
 
-            all_tests[idx].name = p->name;
-            all_tests[idx].test_func = test_ddrges;
-            all_tests[idx].setup_func = NULL;
-            all_tests[idx].teardown_func = NULL;
-            all_tests[idx].initial_state = p;
+            all_tests[idx + 1].name = p->name;
+            all_tests[idx + 1].test_func = test_ddrges;
+            all_tests[idx + 1].setup_func = NULL;
+            all_tests[idx + 1].teardown_func = NULL;
+            all_tests[idx + 1].initial_state = p;
             idx++;
         }
     }

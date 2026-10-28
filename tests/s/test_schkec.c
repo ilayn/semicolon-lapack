@@ -21,11 +21,11 @@
 /*  Error exit tests                                                  */
 /* ------------------------------------------------------------------ */
 
-static void test_derrec(void** state)
+static void test_serrec(void** state)
 {
     (void)state;
     INT ok, nt;
-    serrec(&ok, &nt);
+    serrec("SEC", &ok, &nt);
     assert_true(ok);
 }
 
@@ -204,9 +204,9 @@ static void test_dget40_dtgexc(void** state)
 {
     (void)state;
     f32 rmax;
-    INT lmax, ninfo, knt;
+    INT lmax, ninfo[2], knt;
 
-    sget40(&rmax, &lmax, &ninfo, &knt);
+    sget40(&rmax, &lmax, ninfo, &knt);
 
     assert_true(rmax <= THRESH);
 }
@@ -218,7 +218,7 @@ static void test_dget40_dtgexc(void** state)
 int main(void)
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_derrec),
+        cmocka_unit_test(test_serrec),
         cmocka_unit_test(test_dget31_dlaln2),
         cmocka_unit_test(test_dget32_dlasy2),
         cmocka_unit_test(test_dget33_dlanv2),

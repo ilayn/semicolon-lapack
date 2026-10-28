@@ -36,7 +36,7 @@ static const INT NVAL[] = { 5,  5, 10, 25, 30, 40};
 #define NMAX 40
 
 /* Maximum number of test cases: NN * NTYPES */
-#define MAX_TESTS (NN * NTYPES)
+#define MAX_TESTS (1 + NN * NTYPES)
 
 typedef struct {
     INT ik;
@@ -112,6 +112,14 @@ static int group_teardown(void** state)
     return 0;
 }
 
+static void test_zerrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    zerrgg("GLM", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_zckglm_case(void** state)
 {
     zckglm_params_t* params = *state;
@@ -174,6 +182,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "zerrgg";
+    g_tests[g_num_tests].test_func = test_zerrgg;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (INT ik = 0; ik < (INT)NN; ik++) {
         INT m = MVAL[ik];

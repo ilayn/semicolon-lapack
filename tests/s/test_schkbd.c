@@ -1099,11 +1099,11 @@ results:
 /* CMocka test wrapper                                                   */
 /* ===================================================================== */
 
-static void test_derrbd(void** state)
+static void test_serrbd(void** state)
 {
     (void)state;
     INT ok, nt;
-    serrbd(&ok, &nt);
+    serrbd("SBD", &ok, &nt);
     assert_true(ok);
 }
 
@@ -1128,7 +1128,7 @@ static void generate_test_table(void)
 {
     g_ntests = 0;
     g_tests[g_ntests].name = "serrbd";
-    g_tests[g_ntests].test_func = test_derrbd;
+    g_tests[g_ntests].test_func = test_serrbd;
     g_tests[g_ntests].initial_state = NULL;
     g_tests[g_ntests].setup_func = NULL;
     g_tests[g_ntests].teardown_func = NULL;

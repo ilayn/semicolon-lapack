@@ -10,11 +10,11 @@
 #include "semicolon_lapack_double.h"
 #include "verify.h"
 
-void derrec(INT* ok, INT* nt)
+void derrec(const char* path, INT* ok, INT* nt)
 {
-    const INT NMAX = 4;
-    const f64 ONE = 1.0;
+    enum { NMAX = 4 };
     const f64 ZERO = 0.0;
+    const f64 ONE = 1.0;
 
     INT i, j, ifst, ilst, info, m;
     f64 scale;
@@ -24,6 +24,7 @@ void derrec(INT* ok, INT* nt)
     f64 a[NMAX * NMAX], b[NMAX * NMAX], c[NMAX * NMAX];
     f64 s[NMAX], sep[NMAX], wi[NMAX], work[NMAX], wr[NMAX];
 
+    (void)path;
     xerbla_ok = 1;
     *nt = 0;
 
@@ -73,35 +74,35 @@ void derrec(INT* ok, INT* nt)
     strcpy(xerbla_srnamt, "DTRSYL3");
     xerbla_infot = 1;
     dtrsyl3("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 2;
     dtrsyl3("N", "X", 1, 0, 0, a, 1, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 3;
     dtrsyl3("N", "N", 0, 0, 0, a, 1, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 4;
     dtrsyl3("N", "N", 1, -1, 0, a, 1, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 5;
     dtrsyl3("N", "N", 1, 0, -1, a, 1, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 7;
     dtrsyl3("N", "N", 1, 2, 0, a, 1, b, 1, c, 2, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 9;
     dtrsyl3("N", "N", 1, 0, 2, a, 1, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     xerbla_infot = 11;
     dtrsyl3("N", "N", 1, 2, 0, a, 2, b, 1, c, 1, &scale,
-            iwork, NMAX, (f64*)work, NMAX, &info);
+            iwork, NMAX, work, NMAX, &info);
     chkxer("DTRSYL3", xerbla_infot, &xerbla_lerr, &xerbla_ok);
     *nt = *nt + 8;
 
@@ -232,7 +233,6 @@ void derrec(INT* ok, INT* nt)
 
     *ok = xerbla_ok;
 
-    /* Reset error-testing mode so subsequent tests use production xerbla behavior */
     xerbla_srnamt[0] = '\0';
     xerbla_infot = 0;
 }

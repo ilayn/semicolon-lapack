@@ -458,15 +458,24 @@ static void test_zdrvsx_precomp_case(void** state)
     run_zdrvsx_precomp(params);
 }
 
+static void test_cerred(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    cerred("CSX", &ok, &nt);
+    assert_true(ok);
+}
+
 /*
  * Generate all parameter combinations.
+ * Error exits: CERRED = 1 test
  * Random: NNVAL * MAXTYP * 2 = 7 * 21 * 2 = 294 tests
  * Precomputed: ZSX_NUM_PRECOMPUTED = 20 tests
- * Total: 314 tests
+ * Total: 315 tests
  */
 
 #define MAX_RANDOM_TESTS (NNVAL * MAXTYP * 2)
-#define MAX_TESTS (MAX_RANDOM_TESTS + ZSX_NUM_PRECOMPUTED)
+#define MAX_TESTS (1 + MAX_RANDOM_TESTS + ZSX_NUM_PRECOMPUTED)
 
 static zdrvsx_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -478,6 +487,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "cerred";
+    g_tests[g_num_tests].test_func = test_cerred;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     /* Random tests: n x jtype x iwk */
     for (size_t in = 0; in < NNVAL; in++) {

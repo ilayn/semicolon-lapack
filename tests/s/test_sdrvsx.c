@@ -463,6 +463,14 @@ static void test_ddrvsx_precomp_case(void** state)
     run_ddrvsx_precomp(params);
 }
 
+static void test_serred(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serred("SSX", &ok, &nt);
+    assert_true(ok);
+}
+
 /*
  * Generate all parameter combinations.
  * Random: NNVAL * MAXTYP * 2 = 7 * 21 * 2 = 294 tests
@@ -471,7 +479,7 @@ static void test_ddrvsx_precomp_case(void** state)
  */
 
 #define MAX_RANDOM_TESTS (NNVAL * MAXTYP * 2)
-#define MAX_TESTS (MAX_RANDOM_TESTS + DSX_NUM_PRECOMPUTED)
+#define MAX_TESTS (1 + MAX_RANDOM_TESTS + DSX_NUM_PRECOMPUTED)
 
 static ddrvsx_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -483,6 +491,12 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+    g_tests[g_num_tests].name = "serred";
+    g_tests[g_num_tests].test_func = test_serred;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     /* Random tests: n x jtype x iwk */
     for (size_t in = 0; in < NNVAL; in++) {

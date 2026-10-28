@@ -545,13 +545,21 @@ static void test_ddrvev_case(void** state)
     run_ddrvev_single(params);
 }
 
+static void test_serred(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serred("SEV", &ok, &nt);
+    assert_true(ok);
+}
+
 /*
  * Generate all parameter combinations.
  * Total: NNVAL * MAXTYP * 2 = 7 * 21 * 2 = 294 tests
  */
 
 /* Maximum number of test cases */
-#define MAX_TESTS (NNVAL * MAXTYP * 2)
+#define MAX_TESTS (1 + NNVAL * MAXTYP * 2)
 
 static ddrvev_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -563,6 +571,12 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+    g_tests[g_num_tests].name = "serred";
+    g_tests[g_num_tests].test_func = test_serred;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t in = 0; in < NNVAL; in++) {
         INT n = NVAL[in];

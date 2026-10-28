@@ -506,13 +506,21 @@ done:
 /* CMocka test wrapper                                                    */
 /* ===================================================================== */
 
+static void test_cerrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    cerrgg("CGV", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_zdrgev_case(void** state)
 {
     zdrgev_params_t* params = *state;
     run_zdrgev_single(params);
 }
 
-#define MAX_TESTS (NNVAL * MAXTYP)
+#define MAX_TESTS (1 + NNVAL * MAXTYP)
 
 static zdrgev_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -521,6 +529,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "cerrgg";
+    g_tests[g_num_tests].test_func = test_cerrgg;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t in = 0; in < NNVAL; in++) {
         INT n = NVAL[in];

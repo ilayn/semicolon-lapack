@@ -815,6 +815,14 @@ static void run_zchkhs_single(zchkhs_params_t* params)
 /* CMocka test wrapper                                                   */
 /* ===================================================================== */
 
+static void test_cerrhs(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    cerrhs("CHSEQR", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_zchkhs_case(void** state)
 {
     zchkhs_params_t* params = *state;
@@ -825,7 +833,7 @@ static void test_zchkhs_case(void** state)
 /* Build test array and main                                             */
 /* ===================================================================== */
 
-#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
+#define MAX_TESTS (1 + NPARMS * NNVAL * MAXTYP)
 
 static zchkhs_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -834,6 +842,12 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+    g_tests[g_num_tests].name = "cerrhs";
+    g_tests[g_num_tests].test_func = test_cerrhs;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t ip = 0; ip < NPARMS; ip++) {
     for (size_t in = 0; in < NNVAL; in++) {

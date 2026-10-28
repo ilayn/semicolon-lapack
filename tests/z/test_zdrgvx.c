@@ -406,6 +406,14 @@ static void test_precomputed(void** state)
     }
 }
 
+static void test_zerrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    zerrgg("ZXV", &ok, &nt);
+    assert_true(ok);
+}
+
 /* ===================================================================== */
 /* Test array construction and main                                      */
 /* ===================================================================== */
@@ -431,28 +439,34 @@ int main(void)
     for (INT i = 0; i < ZGVX_NUM_PRECOMPUTED; i++)
         g_precomputed_idx[i] = i;
 
-    INT total = nbuiltin + ZGVX_NUM_PRECOMPUTED;
+    INT total = 1 + nbuiltin + ZGVX_NUM_PRECOMPUTED;
 
     struct CMUnitTest* tests = malloc(total * sizeof(struct CMUnitTest));
     if (!tests) return 1;
 
+    tests[0].name = "zerrgg";
+    tests[0].test_func = test_zerrgg;
+    tests[0].setup_func = NULL;
+    tests[0].teardown_func = NULL;
+    tests[0].initial_state = NULL;
+
     for (INT i = 0; i < nbuiltin; i++) {
-        tests[i].name = g_builtin_params[i].name;
-        tests[i].test_func = test_builtin;
-        tests[i].setup_func = NULL;
-        tests[i].teardown_func = NULL;
-        tests[i].initial_state = &g_builtin_params[i];
+        tests[1 + i].name = g_builtin_params[i].name;
+        tests[1 + i].test_func = test_builtin;
+        tests[1 + i].setup_func = NULL;
+        tests[1 + i].teardown_func = NULL;
+        tests[1 + i].initial_state = &g_builtin_params[i];
     }
 
     for (INT i = 0; i < ZGVX_NUM_PRECOMPUTED; i++) {
         static char precomp_names[ZGVX_NUM_PRECOMPUTED][64];
         snprintf(precomp_names[i], sizeof(precomp_names[i]),
                  "zdrgvx_precomputed_%d", i);
-        tests[nbuiltin + i].name = precomp_names[i];
-        tests[nbuiltin + i].test_func = test_precomputed;
-        tests[nbuiltin + i].setup_func = NULL;
-        tests[nbuiltin + i].teardown_func = NULL;
-        tests[nbuiltin + i].initial_state = &g_precomputed_idx[i];
+        tests[1 + nbuiltin + i].name = precomp_names[i];
+        tests[1 + nbuiltin + i].test_func = test_precomputed;
+        tests[1 + nbuiltin + i].setup_func = NULL;
+        tests[1 + nbuiltin + i].teardown_func = NULL;
+        tests[1 + nbuiltin + i].initial_state = &g_precomputed_idx[i];
     }
 
     /* NB, NBMIN, NX, NS and MAXB from zgd.in; ISPEC 16 and 5 are still 2 from the ZGV and ZGX paths */
