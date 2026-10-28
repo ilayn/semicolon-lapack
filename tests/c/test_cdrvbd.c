@@ -1,72 +1,166 @@
 /**
  * @file test_cdrvbd.c
- * @brief Comprehensive complex SVD test driver - port of LAPACK TESTING/EIG/zdrvbd.f
+ * @brief CDRVBD checks the singular value decomposition (SVD) drivers
+ *        CGESVD, CGESDD, CGESVJ, CGEJSV, CGESVDX, and CGESVDQ - port of
+ *        LAPACK TESTING/EIG/cdrvbd.f
  *
- * Tests all 6 complex SVD drivers:
- * - CGESVD:  QR iteration SVD
- * - CGESDD:  Divide-and-conquer SVD
- * - CGESVDX: SVD with range selection (bisection)
- * - CGESVDQ: QR-preconditioned SVD
- * - CGESVJ:  Jacobi SVD
- * - CGEJSV:  Preconditioned Jacobi SVD (high accuracy)
+ * CGESVD and CGESDD factors A = U diag(S) VT, where U and VT are
+ * unitary and diag(S) is diagonal with the entries of the array S on
+ * its diagonal. The entries of S are the singular values, nonnegative
+ * and stored in decreasing order.  U and VT can be optionally not
+ * computed, overwritten on A, or computed partially.
  *
- * Each (m, n, type) combination is registered as a separate CMocka test,
- * providing pytest-like parameterized test behavior with clear failure isolation.
+ * A is M by N. Let MNMIN = min( M, N ). S has dimension MNMIN.
+ * U can be M by M or M by MNMIN. VT can be N by N or MNMIN by N.
  *
- * Test ratios (39 total):
- *   CGESVD  (1-7):   Full and partial SVD
- *   CGESDD  (8-14):  Full and partial SVD
- *   CGESVJ  (15-18): Full SVD (M >= N only)
- *   CGEJSV  (19-22): Full SVD (M >= N only)
- *   CGESVDX (23-35): Full and range-selected SVD
- *   CGESVDQ (36-39): Full SVD (M >= N only)
+ * When CDRVBD is called, a number of matrix "sizes" (M's and N's)
+ * and a number of matrix "types" are specified.  For each size (M,N)
+ * and each type of matrix, and for the minimal workspace as well as
+ * workspace adequate to permit blocking, an  M x N  matrix "A" will be
+ * generated and used to test the SVD routines.  For each matrix, A will
+ * be factored as A = U diag(S) VT and the following 12 tests computed:
  *
- * Matrix types (5 total):
- *   1. Zero matrix
- *   2. Identity matrix
- *   3. Random with evenly spaced singular values in [ULP, 1]
- *   4. Same as 3, scaled near underflow
- *   5. Same as 3, scaled near overflow
+ * Test for CGESVD:
+ *
+ * (1)   | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+ *
+ * (2)   | I - U'U | / ( M ulp )
+ *
+ * (3)   | I - VT VT' | / ( N ulp )
+ *
+ * (4)   S contains MNMIN nonnegative values in decreasing order.
+ *       (Return 0 if true, 1/ULP if false.)
+ *
+ * (5)   | U - Upartial | / ( M ulp ) where Upartial is a partially
+ *       computed U.
+ *
+ * (6)   | VT - VTpartial | / ( N ulp ) where VTpartial is a partially
+ *       computed VT.
+ *
+ * (7)   | S - Spartial | / ( MNMIN ulp |S| ) where Spartial is the
+ *       vector of singular values from the partial SVD
+ *
+ * Test for CGESDD:
+ *
+ * (8)   | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+ *
+ * (9)   | I - U'U | / ( M ulp )
+ *
+ * (10)  | I - VT VT' | / ( N ulp )
+ *
+ * (11)  S contains MNMIN nonnegative values in decreasing order.
+ *       (Return 0 if true, 1/ULP if false.)
+ *
+ * (12)  | U - Upartial | / ( M ulp ) where Upartial is a partially
+ *       computed U.
+ *
+ * (13)  | VT - VTpartial | / ( N ulp ) where VTpartial is a partially
+ *       computed VT.
+ *
+ * (14)  | S - Spartial | / ( MNMIN ulp |S| ) where Spartial is the
+ *       vector of singular values from the partial SVD
+ *
+ * Test for CGESVDQ:
+ *
+ * (36)  | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+ *
+ * (37)  | I - U'U | / ( M ulp )
+ *
+ * (38)  | I - VT VT' | / ( N ulp )
+ *
+ * (39)  S contains MNMIN nonnegative values in decreasing order.
+ *       (Return 0 if true, 1/ULP if false.)
+ *
+ * Test for CGESVJ:
+ *
+ * (15)  | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+ *
+ * (16)  | I - U'U | / ( M ulp )
+ *
+ * (17)  | I - VT VT' | / ( N ulp )
+ *
+ * (18)  S contains MNMIN nonnegative values in decreasing order.
+ *       (Return 0 if true, 1/ULP if false.)
+ *
+ * Test for CGEJSV:
+ *
+ * (19)  | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+ *
+ * (20)  | I - U'U | / ( M ulp )
+ *
+ * (21)  | I - VT VT' | / ( N ulp )
+ *
+ * (22)  S contains MNMIN nonnegative values in decreasing order.
+ *        (Return 0 if true, 1/ULP if false.)
+ *
+ * Test for CGESVDX( 'V', 'V', 'A' )/CGESVDX( 'N', 'N', 'A' )
+ *
+ * (23)  | A - U diag(S) VT | / ( |A| max(M,N) ulp )
+ *
+ * (24)  | I - U'U | / ( M ulp )
+ *
+ * (25)  | I - VT VT' | / ( N ulp )
+ *
+ * (26)  S contains MNMIN nonnegative values in decreasing order.
+ *       (Return 0 if true, 1/ULP if false.)
+ *
+ * (27)  | U - Upartial | / ( M ulp ) where Upartial is a partially
+ *       computed U.
+ *
+ * (28)  | VT - VTpartial | / ( N ulp ) where VTpartial is a partially
+ *       computed VT.
+ *
+ * (29)  | S - Spartial | / ( MNMIN ulp |S| ) where Spartial is the
+ *       vector of singular values from the partial SVD
+ *
+ * Test for CGESVDX( 'V', 'V', 'I' )
+ *
+ * (30)  | U' A VT''' - diag(S) | / ( |A| max(M,N) ulp )
+ *
+ * (31)  | I - U'U | / ( M ulp )
+ *
+ * (32)  | I - VT VT' | / ( N ulp )
+ *
+ * Test for CGESVDX( 'V', 'V', 'V' )
+ *
+ * (33)   | U' A VT''' - diag(S) | / ( |A| max(M,N) ulp )
+ *
+ * (34)   | I - U'U | / ( M ulp )
+ *
+ * (35)   | I - VT VT' | / ( N ulp )
+ *
+ * Currently, the list of possible types is:
+ *
+ * (1)  The zero matrix.
+ * (2)  The identity matrix.
+ * (3)  A matrix of the form  U D V, where U and V are unitary and
+ *      D has evenly spaced entries 1, ..., ULP with random signs
+ *      on the diagonal.
+ * (4)  Same as (3), but multiplied by the underflow-threshold / ULP.
+ * (5)  Same as (3), but multiplied by the overflow-threshold * ULP.
  */
 
 #include "test_harness.h"
 #include "test_rng.h"
 #include "verify.h"
-#include "semicolon_cblas.h"
 #include <math.h>
 #include <complex.h>
 #include <string.h>
 
-/* Test threshold from LAPACK svd.in (line 10) */
+/* THRESH from svd.in */
 #define THRESH 50.0f
 
-/* Number of matrix types */
-#define NTYPES 5
+#define MAXTYP 5
 
-/* Number of test results */
-#define NRESULTS 39
+/* NMAX, LWORK = NMAX*(5*NMAX+20) and LIWORK = NMAX*(NMAX+20) of CCHKEE,
+ * which passes LDA = LDU = LDVT = NMAX, WORK(LWORK), RWORK(LWORK) and
+ * IWORK(LIWORK) to CDRVBD */
+#define CHKEE_NMAX 132
 
-/* Job option strings for partial SVD tests (from zdrvbd.f) */
-static const char* CJOB = "NOSA";   /* 'N', 'O', 'S', 'A' for CGESVD/CGESDD */
-static const char* CJOBV = "NV";    /* 'N', 'V' for CGESVDX */
-
-/* Test dimension pairs from LAPACK's svd.in
- * These are specific (M,N) pairs, not all combinations.
- * LAPACK tests: 0 0 0 1 1 1 2 2 3 3 3 10 10 16 16 30 30 40 40 (M values)
- *               0 1 3 0 1 2 0 1 0 1 3 10 16 10 16 30 40 30 40 (N values)
- */
-typedef struct { INT m; INT n; } dim_pair_t;
-static const dim_pair_t DIM_PAIRS[] = {
-    {0, 0}, {0, 1}, {0, 3},     /* M=0 cases */
-    {1, 0}, {1, 1}, {1, 2},     /* M=1 cases */
-    {2, 0}, {2, 1},             /* M=2 cases */
-    {3, 0}, {3, 1}, {3, 3},     /* M=3 cases */
-    {10, 10}, {10, 16},         /* M=10 cases */
-    {16, 10}, {16, 16},         /* M=16 cases */
-    {30, 30}, {30, 40},         /* M=30 cases */
-    {40, 30}, {40, 40}          /* M=40 cases */
-};
-#define NDIM_PAIRS (sizeof(DIM_PAIRS) / sizeof(DIM_PAIRS[0]))
+/* M,N pairs from svd.in */
+static const INT MVAL[] = {0, 0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 10, 10, 16, 16, 30, 30, 40, 40};
+static const INT NVAL[] = {0, 1, 3, 0, 1, 2, 0, 1, 0, 1, 3, 10, 16, 10, 16, 30, 40, 30, 40};
+#define NSIZES ((INT)(sizeof(MVAL) / sizeof(MVAL[0])))
 
 /* NBVAL, NBMIN, NXVAL from svd.in */
 static const INT NBVAL[] = {1, 3, 3, 3, 20};
@@ -74,857 +168,131 @@ static const INT NBMIN[] = {2, 2, 2, 2, 2};
 static const INT NXVAL[] = {1, 0, 5, 9, 1};
 #define NPARMS (sizeof(NBVAL) / sizeof(NBVAL[0]))
 
-/**
- * Test parameters for a single test case.
- */
+static const char CJOB[4] = {'N', 'O', 'S', 'A'};
+static const char CJOBR[3] = {'A', 'V', 'I'};
+static const char CJOBV[2] = {'N', 'V'};
+
 typedef struct {
-    INT m;
-    INT n;
-    INT itype;
+    INT jsize;
+    INT jtype;
     INT iparm;
     char name[64];
-} zdrvbd_params_t;
+} cdrvbd_params_t;
 
-/*
- * Workspace structure for all SVD tests.
- * Allocated once at maximum dimensions, reused for all size combinations.
- */
 typedef struct {
-    INT mmax, nmax, mnmax;
+    INT lda;
+    INT ldu;
+    INT ldvt;
 
-    /* Matrices (complex) */
-    c64* A;      /* m x n working copy */
-    c64* ASAV;   /* m x n saved copy */
-    c64* U;      /* m x m left singular vectors */
-    c64* USAV;   /* m x m saved U */
-    c64* VT;     /* n x n right singular vectors */
-    c64* VTSAV;  /* n x n saved VT */
+    c64* A;
+    c64* U;
+    c64* VT;
+    c64* ASAV;
+    c64* USAV;
+    c64* VTSAV;
+    f32* S;
+    f32* SSAV;
+    f32* E;
 
-    /* Singular values (real) */
-    f32* S;      /* min(m,n) computed singular values */
-    f32* SSAV;   /* min(m,n) saved singular values */
+    c64* work;
+    INT lwork;
+    f32* rwork;
+    INT* iwork;
 
-    /* Work arrays */
-    c64* work;   /* complex workspace */
-    f32* rwork;   /* real workspace */
-    INT* iwork;   /* integer workspace */
-    INT lwork;    /* complex workspace size */
-    INT liwork;   /* integer workspace size */
-    INT lrwork;   /* real workspace size */
-
-    /* Test results */
-    f32 result[NRESULTS];
-
-    /* RNG state */
+    f32 anorm;
     uint64_t rng_state[4];
-    f32 anorm;   /* ANORM of the generated matrix */
-} zdrvbd_workspace_t;
+    INT ntestf;
+    INT ntestf_iparm;
+} cdrvbd_workspace_t;
 
-/* Global workspace pointer */
-static zdrvbd_workspace_t* g_ws = NULL;
+static cdrvbd_workspace_t* g_ws = NULL;
 
-/* ===== Helper Functions ===== */
-
-/**
- * Compute maximum complex workspace needed for all SVD routines.
- * From zdrvbd.f workspace requirements.
- */
-static INT compute_lwork(INT mmax, INT nmax)
+static inline f32 fort_max(const f32 a, const f32 b)
 {
-    INT mnmax = (mmax < nmax) ? mmax : nmax;
-    INT mxmax = (mmax > nmax) ? mmax : nmax;
-
-    /* CGESVD: 2*MN + MX */
-    INT lwork1 = 2 * mnmax + mxmax;
-    /* CGESDD: 2*MN^2 + 2*MN + MX */
-    INT lwork2 = 2 * mnmax * mnmax + 2 * mnmax + mxmax;
-    INT lwork = (lwork1 > lwork2) ? lwork1 : lwork2;
-
-    /* Extra for CGESVDQ */
-    INT lwork_q = 5 * mnmax * mnmax + 9 * mnmax + mxmax;
-    if (lwork_q > lwork) lwork = lwork_q;
-
-    /* Extra for CGEJSV */
-    INT lwork_j = 6 * mnmax * mnmax + 10 * mnmax + mxmax;
-    if (lwork_j > lwork) lwork = lwork_j;
-
-    /* Extra safety margin */
-    lwork = lwork + 100;
-
-    return lwork;
+    return (a > b) ? a : b;
 }
-
-/**
- * Compute maximum real workspace needed.
- * From zdrvbd.f: RWORK dimension 5*max(max(MM,NN)).
- * Plus extra for CGESVJ (MAX(6,N)), CGEJSV (MAX(7,N+2*M)),
- * CGESVDQ (MAX(2,M,5*N)), and verification routines.
- */
-static INT compute_lrwork(INT mmax, INT nmax)
-{
-    INT mxmax = (mmax > nmax) ? mmax : nmax;
-    INT mnmax = (mmax < nmax) ? mmax : nmax;
-
-    INT lrwork = 5 * mxmax;
-
-    /* CGESDD needs 5*MN^2 + 7*MN */
-    INT lr_sdd = 5 * mnmax * mnmax + 7 * mnmax;
-    if (lr_sdd > lrwork) lrwork = lr_sdd;
-
-    /* CGEJSV: MAX(7, N+2*M) */
-    INT lr_jv = 7;
-    if (nmax + 2 * mmax > lr_jv) lr_jv = nmax + 2 * mmax;
-    if (lr_jv > lrwork) lrwork = lr_jv;
-
-    /* CGESVDQ: MAX(2, M, 5*N) */
-    INT lr_q = 2;
-    if (mmax > lr_q) lr_q = mmax;
-    if (5 * nmax > lr_q) lr_q = 5 * nmax;
-    if (lr_q > lrwork) lrwork = lr_q;
-
-    lrwork += 100;
-
-    return lrwork;
-}
-
-/**
- * Check that singular values are non-negative and decreasing.
- * Returns 0.0 if valid, 1/ULP if invalid.
- */
-static f32 check_sv_order(const f32* S, INT n, f32 ulpinv)
-{
-    for (INT i = 0; i < n; i++) {
-        if (S[i] < 0.0f) return ulpinv;
-    }
-    for (INT i = 0; i < n - 1; i++) {
-        if (S[i] < S[i + 1]) return ulpinv;
-    }
-    return 0.0f;
-}
-
-/**
- * Generate test matrix of specified type.
- *
- * Types (from zdrvbd.f):
- *   1: Zero matrix
- *   2: Identity matrix (diagonal of 1s)
- *   3: Random U*D*V with evenly spaced D in [ULP, 1]
- *   4: Same as 3, scaled near underflow
- *   5: Same as 3, scaled near overflow
- */
-static void generate_test_matrix(INT itype, INT m, INT n, c64* A, INT lda,
-                                 f32* S, c64* work, f32* anorm_out, INT* info,
-                                 uint64_t state[static 4])
-{
-    f32 ulp = slamch("P");
-    f32 unfl = slamch("S");
-    f32 ovfl = 1.0f / unfl;
-    INT mnmin = (m < n) ? m : n;
-
-    *info = 0;
-    /* ZDRVBD sets ANORM only for types 3-5; zero is used for types 1 and 2. */
-    *anorm_out = 0.0f;
-
-    if (m == 0 || n == 0) {
-        return;
-    }
-
-    if (itype == 1) {
-        /* Type 1: Zero matrix */
-        claset("F", m, n, 0.0f, 0.0f, A, lda);
-    }
-    else if (itype == 2) {
-        /* Type 2: Identity matrix */
-        claset("F", m, n, 0.0f, 1.0f, A, lda);
-    }
-    else if (itype >= 3 && itype <= 5) {
-        /* Types 3-5: Random matrix with controlled singular values */
-        f32 cond = (f32)mnmin;
-        f32 anorm = 1.0f;
-
-        if (itype == 4) {
-            anorm = unfl / ulp;
-        }
-        else if (itype == 5) {
-            anorm = ovfl * ulp;
-        }
-
-        *anorm_out = anorm;
-        clatms(m, n, "U", "N", S, 4, cond, anorm,
-               m - 1, n - 1, "N", A, lda, work, info, state);
-
-        if (*info != 0) {
-            return;
-        }
-    }
-    else {
-        *info = -1;  /* Invalid type */
-    }
-}
-
-/* ===== CGESVD Tests (1-7) ===== */
-
-/**
- * Test CGESVD with full and partial SVD.
- *
- * Tests 1-4: Full SVD (jobu='A', jobvt='A')
- *   1: |A - U*S*VT| / (|A| max(M,N) ulp)
- *   2: |I - U'*U| / (M ulp)
- *   3: |I - VT*VT'| / (N ulp)
- *   4: S non-negative decreasing
- *
- * Tests 5-7: Partial SVD comparison (max over all JOBU/JOBVT combinations)
- *   5: |U - Upartial| / (M ulp)
- *   6: |VT - VTpartial| / (N ulp)
- *   7: |S - Spartial| / (MNMIN ulp |S|)
- */
-static void test_zgesvd(INT m, INT n, const c64* ASAV, INT lda,
-                        INT lswork, zdrvbd_workspace_t* ws)
-{
-    INT mnmin = (m < n) ? m : n;
-    f32 ulp = slamch("P");
-    f32 ulpinv = 1.0f / ulp;
-    f32 unfl = slamch("S");
-    INT info;
-
-    /* Initialize results to 0 */
-    for (INT i = 0; i < 7; i++) ws->result[i] = 0.0f;
-
-    if (m == 0 || n == 0) return;
-
-    /* === Full SVD (jobu='A', jobvt='A') === */
-
-    clacpy("F", m, n, ASAV, lda, ws->A, lda);
-    cgesvd("A", "A", m, n, ws->A, lda, ws->SSAV,
-           ws->USAV, m, ws->VTSAV, n, ws->work, lswork, ws->rwork, &info);
-
-    if (info != 0) {
-        ws->result[0] = ulpinv;
-        return;
-    }
-
-    /* Test 1: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
-    cbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
-           ws->VTSAV, n, ws->work, ws->rwork, &ws->result[0]);
-
-    /* Test 2: U orthogonality */
-    if (m != 0 && n != 0) {
-        cunt01("C", mnmin, m, ws->USAV, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[1]);
-
-        /* Test 3: VT orthogonality */
-        cunt01("R", mnmin, n, ws->VTSAV, n, ws->work, ws->lwork,
-               ws->rwork, &ws->result[2]);
-    }
-
-    /* Test 4: S ordering */
-    ws->result[3] = check_sv_order(ws->SSAV, mnmin, ulpinv);
-
-    /* === Partial SVD: test all 14 JOBU/JOBVT combinations === */
-    ws->result[4] = 0.0f;  /* max |U - Upartial| */
-    ws->result[5] = 0.0f;  /* max |VT - VTpartial| */
-    ws->result[6] = 0.0f;  /* max |S - Spartial| */
-
-    for (INT iju = 0; iju <= 3; iju++) {
-        for (INT ijvt = 0; ijvt <= 3; ijvt++) {
-            /* Skip ('A','A') - tested above; skip ('O','O') - invalid */
-            if ((iju == 3 && ijvt == 3) || (iju == 1 && ijvt == 1)) continue;
-
-            char jobu[2] = {CJOB[iju], '\0'};
-            char jobvt[2] = {CJOB[ijvt], '\0'};
-
-            clacpy("F", m, n, ASAV, lda, ws->A, lda);
-            cgesvd(jobu, jobvt, m, n, ws->A, lda, ws->S,
-                   ws->U, m, ws->VT, n, ws->work, lswork, ws->rwork, &info);
-
-            if (info != 0) continue;
-
-            /* Compare U */
-            f32 dif = 0.0f;
-            if (m > 0 && n > 0) {
-                if (iju == 1) {
-                    /* JOBU='O': U stored in A */
-                    cunt03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->A, lda,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                } else if (iju == 2) {
-                    /* JOBU='S': economy U in ws->U */
-                    cunt03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->U, m,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                } else if (iju == 3) {
-                    /* JOBU='A': full U in ws->U */
-                    cunt03("C", m, m, m, mnmin, ws->USAV, m, ws->U, m,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                }
-            }
-            if (dif > ws->result[4]) ws->result[4] = dif;
-
-            /* Compare VT */
-            dif = 0.0f;
-            if (m > 0 && n > 0) {
-                if (ijvt == 1) {
-                    /* JOBVT='O': VT stored in A */
-                    cunt03("R", n, mnmin, n, mnmin, ws->VTSAV, n, ws->A, lda,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                } else if (ijvt == 2) {
-                    /* JOBVT='S': economy VT in ws->VT */
-                    cunt03("R", n, mnmin, n, mnmin, ws->VTSAV, n, ws->VT, n,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                } else if (ijvt == 3) {
-                    /* JOBVT='A': full VT in ws->VT */
-                    cunt03("R", n, n, n, mnmin, ws->VTSAV, n, ws->VT, n,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                }
-            }
-            if (dif > ws->result[5]) ws->result[5] = dif;
-
-            /* Compare S */
-            dif = 0.0f;
-            f32 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
-            for (INT i = 0; i < mnmin - 1; i++) {
-                if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
-                if (ws->SSAV[i] < 0.0f) dif = ulpinv;
-                f32 d = fabsf(ws->SSAV[i] - ws->S[i]) / div;
-                if (d > dif) dif = d;
-            }
-            if (dif > ws->result[6]) ws->result[6] = dif;
-        }
-    }
-}
-
-/* ===== CGESDD Tests (8-14) ===== */
-
-/**
- * Test CGESDD with full and partial SVD.
- * Same test structure as CGESVD, results stored in indices 7-13.
- */
-static void test_zgesdd(INT m, INT n, const c64* ASAV, INT lda,
-                        INT lswork, zdrvbd_workspace_t* ws)
-{
-    INT mnmin = (m < n) ? m : n;
-    f32 ulp = slamch("P");
-    f32 ulpinv = 1.0f / ulp;
-    f32 unfl = slamch("S");
-    INT info;
-
-    /* Initialize results to 0 */
-    for (INT i = 7; i < 14; i++) ws->result[i] = 0.0f;
-
-    if (m == 0 || n == 0) return;
-
-    /* === Full SVD (jobz='A') === */
-    clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-    cgesdd("A", m, n, ws->A, lda, ws->SSAV,
-           ws->USAV, m, ws->VTSAV, n, ws->work, lswork, ws->rwork,
-           ws->iwork, &info);
-
-    if (info != 0) {
-        ws->result[7] = ulpinv;
-        return;
-    }
-
-    /* Test 8: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
-    cbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
-           ws->VTSAV, n, ws->work, ws->rwork, &ws->result[7]);
-
-    /* Test 9: U orthogonality */
-    if (m != 0 && n != 0) {
-        cunt01("C", mnmin, m, ws->USAV, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[8]);
-
-        /* Test 10: VT orthogonality */
-        cunt01("R", mnmin, n, ws->VTSAV, n, ws->work, ws->lwork,
-               ws->rwork, &ws->result[9]);
-    }
-
-    /* Test 11: S ordering */
-    ws->result[10] = check_sv_order(ws->SSAV, mnmin, ulpinv);
-
-    /* === Partial SVD: test jobz='N','O','S' === */
-    ws->result[11] = 0.0f;  /* max |U - Upartial| */
-    ws->result[12] = 0.0f;  /* max |VT - VTpartial| */
-    ws->result[13] = 0.0f;  /* max |S - Spartial| */
-
-    for (INT ijq = 0; ijq <= 2; ijq++) {
-        char jobq[2] = {CJOB[ijq], '\0'};  /* 'N', 'O', 'S' */
-
-        clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-        cgesdd(jobq, m, n, ws->A, lda, ws->S,
-               ws->U, m, ws->VT, mnmin, ws->work, lswork, ws->rwork,
-               ws->iwork, &info);
-
-        if (info != 0) continue;
-
-        /* Compare U */
-        f32 dif = 0.0f;
-        if (m > 0 && n > 0) {
-            if (ijq == 1) {
-                /* JOBZ='O': U or VT in A depending on M >= N */
-                if (m >= n) {
-                    cunt03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->A, lda,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                } else {
-                    cunt03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->U, m,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                }
-            } else if (ijq == 2) {
-                /* JOBZ='S': economy U in ws->U */
-                cunt03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->U, m,
-                       ws->work, ws->lwork, ws->rwork, &dif, &info);
-            }
-        }
-        if (dif > ws->result[11]) ws->result[11] = dif;
-
-        /* Compare VT */
-        dif = 0.0f;
-        if (m > 0 && n > 0) {
-            if (ijq == 1) {
-                /* JOBZ='O': VT or U in A depending on M >= N */
-                if (m >= n) {
-                    cunt03("R", n, mnmin, n, mnmin, ws->VTSAV, n, ws->VT, mnmin,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                } else {
-                    cunt03("R", n, mnmin, n, mnmin, ws->VTSAV, n, ws->A, lda,
-                           ws->work, ws->lwork, ws->rwork, &dif, &info);
-                }
-            } else if (ijq == 2) {
-                /* JOBZ='S': economy VT in ws->VT */
-                cunt03("R", n, mnmin, n, mnmin, ws->VTSAV, n, ws->VT, mnmin,
-                       ws->work, ws->lwork, ws->rwork, &dif, &info);
-            }
-        }
-        if (dif > ws->result[12]) ws->result[12] = dif;
-
-        /* Compare S */
-        dif = 0.0f;
-        f32 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
-        for (INT i = 0; i < mnmin - 1; i++) {
-            if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
-            if (ws->SSAV[i] < 0.0f) dif = ulpinv;
-            f32 d = fabsf(ws->SSAV[i] - ws->S[i]) / div;
-            if (d > dif) dif = d;
-        }
-        if (dif > ws->result[13]) ws->result[13] = dif;
-    }
-}
-
-/* ===== CGESVJ Tests (15-18) ===== */
-
-/**
- * Test CGESVJ (Jacobi SVD).
- * Only works for M >= N.
- * Returns V (not VH), so we need to conjugate transpose.
- */
-static void test_zgesvj(INT m, INT n, const c64* ASAV, INT lda,
-                        zdrvbd_workspace_t* ws)
-{
-    f32 ulpinv = 1.0f / slamch("P");
-    INT info;
-
-    /* Initialize results to 0 */
-    for (INT i = 14; i < 18; i++) ws->result[i] = 0.0f;
-
-    /* CGESVJ only works for M >= N */
-    if (m < n || m == 0 || n == 0) return;
-
-    INT mnmin = n;  /* Since m >= n, mnmin = n */
-    INT lrwork_svj = 6;
-    if (n > lrwork_svj) lrwork_svj = n;
-
-    clacpy("F", m, n, ASAV, lda, ws->USAV, m);
-
-    cgesvj("G", "U", "V", m, n, ws->USAV, m, ws->SSAV, 0, ws->A, n,
-           ws->work, ws->lwork, ws->rwork, lrwork_svj, &info);
-
-    if (info != 0) {
-        ws->result[14] = ulpinv;
-        return;
-    }
-
-    /* CGESVJ returns V in A, conjugate transpose to VTSAV: VT(j,i) = conj(V(i,j)) */
-    for (INT j = 0; j < n; j++) {
-        for (INT i = 0; i < n; i++) {
-            ws->VTSAV[i + j * n] = conjf(ws->A[j + i * n]);
-        }
-    }
-
-    /* Test 15: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
-    cbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
-           ws->VTSAV, n, ws->work, ws->rwork, &ws->result[14]);
-
-    /* Test 16: U orthogonality, Test 17: VT orthogonality */
-    if (m != 0 && n != 0) {
-        cunt01("C", m, m, ws->USAV, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[15]);
-        cunt01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork,
-               ws->rwork, &ws->result[16]);
-    }
-
-    /* Test 18: S ordering */
-    ws->result[17] = check_sv_order(ws->SSAV, mnmin, ulpinv);
-}
-
-/* ===== CGEJSV Tests (19-22) ===== */
-
-/**
- * Test CGEJSV (Preconditioned Jacobi SVD).
- * Only works for M >= N.
- * Returns V (not VH), so we need to conjugate transpose.
- */
-static void test_zgejsv(INT m, INT n, const c64* ASAV, INT lda,
-                        zdrvbd_workspace_t* ws)
-{
-    f32 ulpinv = 1.0f / slamch("P");
-    INT info;
-
-    /* Initialize results to 0 */
-    for (INT i = 18; i < 22; i++) ws->result[i] = 0.0f;
-
-    /* CGEJSV only works for M >= N */
-    if (m < n || m == 0 || n == 0) return;
-
-    INT mnmin = n;  /* Since m >= n, mnmin = n */
-    INT lrwork_jv = 7;
-    if (n + 2 * m > lrwork_jv) lrwork_jv = n + 2 * m;
-
-    clacpy("F", m, n, ASAV, lda, ws->VTSAV, m);
-
-    cgejsv("G", "U", "V", "R", "N", "N", m, n, ws->VTSAV, m,
-           ws->SSAV, ws->USAV, m, ws->A, n, ws->work, ws->lwork,
-           ws->rwork, lrwork_jv, ws->iwork, &info);
-
-    if (info != 0) {
-        ws->result[18] = ulpinv;
-        return;
-    }
-
-    /* CGEJSV returns V in A, conjugate transpose to VTSAV */
-    for (INT j = 0; j < n; j++) {
-        for (INT i = 0; i < n; i++) {
-            ws->VTSAV[i + j * n] = conjf(ws->A[j + i * n]);
-        }
-    }
-
-    /* Test 19: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
-    cbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
-           ws->VTSAV, n, ws->work, ws->rwork, &ws->result[18]);
-
-    /* Test 20: U orthogonality, Test 21: VT orthogonality */
-    if (m != 0 && n != 0) {
-        cunt01("C", m, m, ws->USAV, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[19]);
-        cunt01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork,
-               ws->rwork, &ws->result[20]);
-    }
-
-    /* Test 22: S ordering */
-    ws->result[21] = check_sv_order(ws->SSAV, mnmin, ulpinv);
-}
-
-/* ===== CGESVDX Tests (23-35) ===== */
-
-/**
- * Test CGESVDX (SVD with range selection).
- *
- * Tests 23-26: RANGE='A' (all singular values), JOBU='V', JOBVT='V'
- * Tests 27-29: Partial SVD comparison (max over JOBU/JOBVT in {'N','V'})
- * Tests 30-32: RANGE='I' (index range)
- * Tests 33-35: RANGE='V' (value range)
- */
-static void test_zgesvdx(INT m, INT n, const c64* ASAV, INT lda,
-                         zdrvbd_workspace_t* ws)
-{
-    INT mnmin = (m < n) ? m : n;
-    f32 ulp = slamch("P");
-    f32 ulpinv = 1.0f / ulp;
-    f32 unfl = slamch("S");
-    INT info;
-    INT ns;
-    INT lwork = ws->lwork;
-
-    /* Initialize results to 0 */
-    for (INT i = 22; i < 35; i++) ws->result[i] = 0.0f;
-
-    if (m == 0 || n == 0) return;
-
-    /* === RANGE='A' with vectors === */
-    clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-    cgesvdx("V", "V", "A", m, n, ws->A, lda,
-            0.0f, 0.0f, 0, 0, &ns,
-            ws->SSAV, ws->USAV, m, ws->VTSAV, mnmin,
-            ws->work, lwork, ws->rwork, ws->iwork, &info);
-
-    if (info != 0) {
-        ws->result[22] = ulpinv;
-        return;
-    }
-
-    /* Test 23: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
-    cbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
-           ws->VTSAV, mnmin, ws->work, ws->rwork, &ws->result[22]);
-
-    /* Test 24: U orthogonality - U is M x MNMIN */
-    if (m != 0 && n != 0) {
-        cunt01("C", mnmin, m, ws->USAV, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[23]);
-
-        /* Test 25: VT orthogonality - VT is MNMIN x N */
-        cunt01("R", mnmin, n, ws->VTSAV, mnmin, ws->work, ws->lwork,
-               ws->rwork, &ws->result[24]);
-    }
-
-    /* Test 26: S ordering */
-    ws->result[25] = check_sv_order(ws->SSAV, mnmin, ulpinv);
-
-    /* === Partial SVD: test JOBU/JOBVT in {'N','V'} === */
-    ws->result[26] = 0.0f;  /* max |U - Upartial| */
-    ws->result[27] = 0.0f;  /* max |VT - VTpartial| */
-    ws->result[28] = 0.0f;  /* max |S - Spartial| */
-
-    for (INT iju = 0; iju <= 1; iju++) {
-        for (INT ijvt = 0; ijvt <= 1; ijvt++) {
-            /* Skip ('N','N') and ('V','V') - tested above */
-            if ((iju == 0 && ijvt == 0) || (iju == 1 && ijvt == 1)) continue;
-
-            char jobu[2] = {CJOBV[iju], '\0'};
-            char jobvt[2] = {CJOBV[ijvt], '\0'};
-
-            clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-            cgesvdx(jobu, jobvt, "A", m, n, ws->A, lda,
-                    0.0f, 0.0f, 0, 0, &ns,
-                    ws->S, ws->U, m, ws->VT, mnmin,
-                    ws->work, lwork, ws->rwork, ws->iwork, &info);
-
-            if (info != 0) continue;
-
-            /* Compare U */
-            f32 dif = 0.0f;
-            if (m > 0 && n > 0 && iju == 1) {
-                cunt03("C", m, mnmin, m, mnmin, ws->USAV, m, ws->U, m,
-                       ws->work, ws->lwork, ws->rwork, &dif, &info);
-            }
-            if (dif > ws->result[26]) ws->result[26] = dif;
-
-            /* Compare VT */
-            dif = 0.0f;
-            if (m > 0 && n > 0 && ijvt == 1) {
-                cunt03("R", n, mnmin, n, mnmin, ws->VTSAV, mnmin, ws->VT, mnmin,
-                       ws->work, ws->lwork, ws->rwork, &dif, &info);
-            }
-            if (dif > ws->result[27]) ws->result[27] = dif;
-
-            /* Compare S */
-            dif = 0.0f;
-            f32 div = (mnmin * ulp * ws->S[0] > unfl) ? mnmin * ulp * ws->S[0] : unfl;
-            for (INT i = 0; i < mnmin - 1; i++) {
-                if (ws->SSAV[i] < ws->SSAV[i + 1]) dif = ulpinv;
-                if (ws->SSAV[i] < 0.0f) dif = ulpinv;
-                f32 d = fabsf(ws->SSAV[i] - ws->S[i]) / div;
-                if (d > dif) dif = d;
-            }
-            if (dif > ws->result[28]) ws->result[28] = dif;
-        }
-    }
-
-    /* Do tests 30--32: CGESVDX( 'V', 'V', 'I' ) */
-    const f32 rtunfl = sqrtf(unfl);
-    const INT ldvt = mnmin;
-    uint64_t rng2[4];
-    INT il, iu, nsi, nsv;
-    for (INT i = 0; i < 4; i++) {
-        rng2[i] = ws->rng_state[i];
-    }
-    if (mnmin <= 1) {
-        il = 0;
-        iu = ((mnmin > 1) ? mnmin : 1) - 1;
-    } else {
-        il = (INT)(mnmin * rng_uniform_f32(rng2));
-        iu = (INT)(mnmin * rng_uniform_f32(rng2));
-        if (iu < il) {
-            INT itemp = iu;
-            iu = il;
-            il = itemp;
-        }
-    }
-    clacpy("F", m, n, ASAV, lda, ws->A, lda);
-    cgesvdx("V", "V", "I", m, n, ws->A, lda,
-            0.0f, 0.0f, il, iu, &nsi,
-            ws->S, ws->U, m, ws->VT, ldvt,
-            ws->work, lwork, ws->rwork, ws->iwork, &info);
-    assert_info_success(info);
-
-    ws->result[29] = 0.0f;
-    ws->result[30] = 0.0f;
-    ws->result[31] = 0.0f;
-    cbdt05(m, n, ASAV, lda, ws->S, nsi, ws->U, m, ws->VT, ldvt,
-           ws->work, &ws->result[29]);
-    if (m != 0 && n != 0) {
-        cunt01("C", m, nsi, ws->U, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[30]);
-        cunt01("R", nsi, n, ws->VT, ldvt, ws->work, ws->lwork,
-               ws->rwork, &ws->result[31]);
-    }
-
-    /* Do tests 33--35: CGESVDX( 'V', 'V', 'V' ) */
-    f32 vl, vu;
-    if (mnmin > 0 && nsi > 1) {
-        if (il != 0) {
-            vu = ws->SSAV[il] +
-                 fmaxf(fmaxf(0.5f * fabsf(ws->SSAV[il] - ws->SSAV[il - 1]),
-                           ulp * ws->anorm), 2.0f * rtunfl);
-        } else {
-            vu = ws->SSAV[0] +
-                 fmaxf(fmaxf(0.5f * fabsf(ws->SSAV[ns - 1] - ws->SSAV[0]),
-                           ulp * ws->anorm), 2.0f * rtunfl);
-        }
-        if (iu != ns - 1) {
-            vl = ws->SSAV[iu] - fmaxf(fmaxf(ulp * ws->anorm, 2.0f * rtunfl),
-                                     0.5f * fabsf(ws->SSAV[iu + 1] - ws->SSAV[iu]));
-        } else {
-            vl = ws->SSAV[ns - 1] - fmaxf(fmaxf(ulp * ws->anorm, 2.0f * rtunfl),
-                                         0.5f * fabsf(ws->SSAV[ns - 1] - ws->SSAV[0]));
-        }
-        vl = fmaxf(vl, 0.0f);
-        vu = fmaxf(vu, 0.0f);
-        if (vl >= vu) vu = fmaxf(vu * 2, vu + vl + 0.5f);
-    } else {
-        vl = 0.0f;
-        vu = 1.0f;
-    }
-    clacpy("F", m, n, ASAV, lda, ws->A, lda);
-    cgesvdx("V", "V", "V", m, n, ws->A, lda,
-            vl, vu, il, iu, &nsv,
-            ws->S, ws->U, m, ws->VT, ldvt,
-            ws->work, lwork, ws->rwork, ws->iwork, &info);
-    assert_info_success(info);
-
-    ws->result[32] = 0.0f;
-    ws->result[33] = 0.0f;
-    ws->result[34] = 0.0f;
-    cbdt05(m, n, ASAV, lda, ws->S, nsv, ws->U, m, ws->VT, ldvt,
-           ws->work, &ws->result[32]);
-    if (m != 0 && n != 0) {
-        cunt01("C", m, nsv, ws->U, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[33]);
-        cunt01("R", nsv, n, ws->VT, ldvt, ws->work, ws->lwork,
-               ws->rwork, &ws->result[34]);
-    }
-}
-
-/* ===== CGESVDQ Tests (36-39) ===== */
-
-/**
- * Test CGESVDQ (QR-preconditioned SVD).
- * Only works for M >= N.
- */
-static void test_zgesvdq(INT m, INT n, const c64* ASAV, INT lda,
-                         INT lswork, zdrvbd_workspace_t* ws)
-{
-    (void)lswork;
-    f32 ulpinv = 1.0f / slamch("P");
-    INT info;
-    INT numrank;
-
-    /* Initialize results to 0 */
-    for (INT i = 35; i < 39; i++) ws->result[i] = 0.0f;
-
-    /* CGESVDQ only works for M >= N */
-    if (m < n || m == 0 || n == 0) return;
-
-    INT mnmin = n;
-
-    INT lrwork_q = 2;
-    if (m > lrwork_q) lrwork_q = m;
-    if (5 * n > lrwork_q) lrwork_q = 5 * n;
-    INT liwork_q = n;
-    if (liwork_q < 1) liwork_q = 1;
-
-    clacpy("F", m, n, ASAV, lda, ws->A, lda);
-
-    /* CGESVDQ: joba='H' for complex (from zdrvbd.f line 875) */
-    cgesvdq("H", "N", "N", "A", "A", m, n, ws->A, lda,
-            ws->SSAV, ws->USAV, m, ws->VTSAV, n, &numrank,
-            ws->iwork, liwork_q, ws->work, ws->lwork,
-            ws->rwork, lrwork_q, &info);
-
-    if (info != 0) {
-        ws->result[35] = ulpinv;
-        return;
-    }
-
-    /* Test 36: Reconstruction |A - U*S*VT| / (n * |A| * eps) */
-    cbdt01(m, n, 0, ASAV, lda, ws->USAV, m, ws->SSAV, NULL,
-           ws->VTSAV, n, ws->work, ws->rwork, &ws->result[35]);
-
-    /* Test 37: U orthogonality, Test 38: VT orthogonality */
-    if (m != 0 && n != 0) {
-        cunt01("C", m, m, ws->USAV, m, ws->work, ws->lwork,
-               ws->rwork, &ws->result[36]);
-        cunt01("R", n, n, ws->VTSAV, n, ws->work, ws->lwork,
-               ws->rwork, &ws->result[37]);
-    }
-
-    /* Test 39: S ordering */
-    ws->result[38] = check_sv_order(ws->SSAV, mnmin, ulpinv);
-}
-
-/* ===== CMocka Setup/Teardown ===== */
 
 static int group_setup(void** state)
 {
     (void)state;
 
-    /* Find maximum dimensions from the dimension pairs */
-    INT mmax = 0, nmax = 0;
-    for (size_t i = 0; i < NDIM_PAIRS; i++) {
-        if (DIM_PAIRS[i].m > mmax) mmax = DIM_PAIRS[i].m;
-        if (DIM_PAIRS[i].n > nmax) nmax = DIM_PAIRS[i].n;
-    }
-
-    /* Ensure minimum size */
-    if (mmax < 1) mmax = 1;
-    if (nmax < 1) nmax = 1;
-
-    INT mnmax = (mmax > nmax) ? mmax : nmax;
-
-    /* Allocate workspace structure */
-    g_ws = malloc(sizeof(zdrvbd_workspace_t));
+    g_ws = calloc(1, sizeof(cdrvbd_workspace_t));
     if (!g_ws) return -1;
 
-    g_ws->mmax = mmax;
-    g_ws->nmax = nmax;
-    g_ws->mnmax = mnmax;
-    g_ws->lwork = compute_lwork(mmax, nmax);
-    g_ws->liwork = 12 * mnmax;
-    g_ws->lrwork = compute_lrwork(mmax, nmax);
-    rng_seed(g_ws->rng_state, 2024);
+    g_ws->lda = CHKEE_NMAX;
+    g_ws->ldu = CHKEE_NMAX;
+    g_ws->ldvt = CHKEE_NMAX;
+    g_ws->lwork = CHKEE_NMAX * (5 * CHKEE_NMAX + 20);
+    INT liwork = CHKEE_NMAX * (CHKEE_NMAX + 20);
 
-    /* Allocate complex arrays */
-    g_ws->A = malloc(mmax * nmax * sizeof(c64));
-    g_ws->ASAV = malloc(mmax * nmax * sizeof(c64));
-    g_ws->U = malloc(mmax * mmax * sizeof(c64));
-    g_ws->USAV = malloc(mmax * mmax * sizeof(c64));
-    g_ws->VT = malloc(nmax * nmax * sizeof(c64));
-    g_ws->VTSAV = malloc(nmax * nmax * sizeof(c64));
+    /* Check for errors */
+    INT info = 0;
+    INT badmm = 0;
+    INT badnn = 0;
+    INT mmax = 1;
+    INT nmax = 1;
+    INT minwrk = 1;
+    for (INT j = 0; j < NSIZES; j++) {
+        if (MVAL[j] > mmax) mmax = MVAL[j];
+        if (MVAL[j] < 0) badmm = 1;
+        if (NVAL[j] > nmax) nmax = NVAL[j];
+        if (NVAL[j] < 0) badnn = 1;
+        INT mnj = (MVAL[j] < NVAL[j]) ? MVAL[j] : NVAL[j];
+        INT mxj = (MVAL[j] > NVAL[j]) ? MVAL[j] : NVAL[j];
+        INT w = 3 * mnj + mxj * mxj;
+        if (5 * mnj > w) w = 5 * mnj;
+        if (3 * mxj > w) w = 3 * mxj;
+        if (w > minwrk) minwrk = w;
+    }
 
-    /* Allocate real arrays */
-    g_ws->S = malloc(2 * mnmax * sizeof(f32));
-    g_ws->SSAV = malloc(2 * mnmax * sizeof(f32));
-    g_ws->rwork = malloc(g_ws->lrwork * sizeof(f32));
+    if (badmm) {
+        info = -2;
+    } else if (badnn) {
+        info = -3;
+    } else if (g_ws->lda < mmax) {
+        info = -10;
+    } else if (g_ws->ldu < mmax) {
+        info = -12;
+    } else if (g_ws->ldvt < nmax) {
+        info = -14;
+    } else if (minwrk > g_ws->lwork) {
+        info = -21;
+    }
 
-    /* Allocate workspace */
-    g_ws->work = malloc(g_ws->lwork * sizeof(c64));
-    g_ws->iwork = malloc(g_ws->liwork * sizeof(INT));
+    if (info != 0) {
+        fprintf(stderr, " CDRVBD: parameter number %d had an illegal value\n",
+                (int)(-info));
+        free(g_ws);
+        g_ws = NULL;
+        return -1;
+    }
 
-    if (!g_ws->A || !g_ws->ASAV || !g_ws->U || !g_ws->USAV ||
-        !g_ws->VT || !g_ws->VTSAV || !g_ws->S || !g_ws->SSAV ||
+    INT nn = CHKEE_NMAX * CHKEE_NMAX;
+    g_ws->A     = malloc((size_t)nn * sizeof(c64));
+    g_ws->U     = malloc((size_t)nn * sizeof(c64));
+    g_ws->VT    = malloc((size_t)nn * sizeof(c64));
+    g_ws->ASAV  = malloc((size_t)nn * sizeof(c64));
+    g_ws->USAV  = malloc((size_t)nn * sizeof(c64));
+    g_ws->VTSAV = malloc((size_t)nn * sizeof(c64));
+    g_ws->S     = calloc(CHKEE_NMAX, sizeof(f32));
+    g_ws->SSAV  = calloc(CHKEE_NMAX, sizeof(f32));
+    g_ws->E     = calloc(CHKEE_NMAX, sizeof(f32));
+    g_ws->work  = malloc((size_t)g_ws->lwork * sizeof(c64));
+    g_ws->rwork = malloc((size_t)g_ws->lwork * sizeof(f32));
+    g_ws->iwork = malloc((size_t)liwork * sizeof(INT));
+
+    if (!g_ws->A || !g_ws->U || !g_ws->VT || !g_ws->ASAV || !g_ws->USAV ||
+        !g_ws->VTSAV || !g_ws->S || !g_ws->SSAV || !g_ws->E ||
         !g_ws->work || !g_ws->rwork || !g_ws->iwork) {
         return -1;
     }
 
+    g_ws->anorm = 0.0f;
+    g_ws->ntestf = 0;
+    g_ws->ntestf_iparm = -1;
+    rng_seed(g_ws->rng_state, 2024);
+    xlaenv(9, 25);
+    xlaenv(1, 1);
     return 0;
 }
 
@@ -934,220 +302,905 @@ static int group_teardown(void** state)
 
     if (g_ws) {
         free(g_ws->A);
-        free(g_ws->ASAV);
         free(g_ws->U);
-        free(g_ws->USAV);
         free(g_ws->VT);
+        free(g_ws->ASAV);
+        free(g_ws->USAV);
         free(g_ws->VTSAV);
         free(g_ws->S);
         free(g_ws->SSAV);
+        free(g_ws->E);
         free(g_ws->work);
         free(g_ws->rwork);
         free(g_ws->iwork);
         free(g_ws);
         g_ws = NULL;
     }
-
     return 0;
 }
 
-/* ===== Parameterized Test Function ===== */
-
-/**
- * Run all SVD tests for a single (m, n, itype) combination.
- * This includes the IWS loop over 4 workspace sizes.
- */
-static void run_zdrvbd_single(zdrvbd_params_t* p)
+static void print_header(void)
 {
-    zdrvbd_workspace_t* ws = g_ws;
-    char context[256];
-    INT m = p->m;
-    INT n = p->n;
-    INT itype = p->itype;
+    fprintf(stderr,
+        " SVD -- Complex Singular Value Decomposition Driver \n"
+        " Matrix types (see CDRVBD for details):\n"
+        "\n"
+        " 1 = Zero matrix\n"
+        " 2 = Identity matrix\n"
+        " 3 = Evenly spaced singular values near 1\n"
+        " 4 = Evenly spaced singular values near underflow\n"
+        " 5 = Evenly spaced singular values near overflow\n"
+        "\n"
+        " Tests performed: ( A is dense, U and V are unitary,\n"
+        "                    S is an array, and Upartial, VTpartial, and\n"
+        "                    Spartial are partially computed U, VT and S),\n"
+        "\n");
+    fprintf(stderr,
+        " Tests performed with Test Threshold = %8.2f\n"
+        " CGESVD: \n"
+        " 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) \n"
+        " 2 = | I - U**T U | / ( M ulp ) \n"
+        " 3 = | I - VT VT**T | / ( N ulp ) \n"
+        " 4 = 0 if S contains min(M,N) nonnegative values in"
+        " decreasing order, else 1/ulp\n"
+        " 5 = | U - Upartial | / ( M ulp )\n"
+        " 6 = | VT - VTpartial | / ( N ulp )\n"
+        " 7 = | S - Spartial | / ( min(M,N) ulp |S| )\n"
+        " CGESDD: \n"
+        " 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) \n"
+        " 9 = | I - U**T U | / ( M ulp ) \n"
+        "10 = | I - VT VT**T | / ( N ulp ) \n"
+        "11 = 0 if S contains min(M,N) nonnegative values in"
+        " decreasing order, else 1/ulp\n"
+        "12 = | U - Upartial | / ( M ulp )\n"
+        "13 = | VT - VTpartial | / ( N ulp )\n"
+        "14 = | S - Spartial | / ( min(M,N) ulp |S| )\n"
+        " CGESVJ: \n"
+        "\n"
+        "15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) \n"
+        "16 = | I - U**T U | / ( M ulp ) \n"
+        "17 = | I - VT VT**T | / ( N ulp ) \n"
+        "18 = 0 if S contains min(M,N) nonnegative values in"
+        " decreasing order, else 1/ulp\n"
+        " CGESJV: \n"
+        "\n"
+        "19 = | A - U diag(S) VT | / ( |A| max(M,N) ulp )\n"
+        "20 = | I - U**T U | / ( M ulp ) \n"
+        "21 = | I - VT VT**T | / ( N ulp ) \n"
+        "22 = 0 if S contains min(M,N) nonnegative values in"
+        " decreasing order, else 1/ulp\n"
+        " CGESVDX(V,V,A): \n"
+        "23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) \n"
+        "24 = | I - U**T U | / ( M ulp ) \n"
+        "25 = | I - VT VT**T | / ( N ulp ) \n"
+        "26 = 0 if S contains min(M,N) nonnegative values in"
+        " decreasing order, else 1/ulp\n"
+        "27 = | U - Upartial | / ( M ulp )\n"
+        "28 = | VT - VTpartial | / ( N ulp )\n"
+        "29 = | S - Spartial | / ( min(M,N) ulp |S| )\n"
+        " CGESVDX(V,V,I): \n"
+        "30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )\n"
+        "31 = | I - U**T U | / ( M ulp ) \n"
+        "32 = | I - VT VT**T | / ( N ulp ) \n"
+        " CGESVDX(V,V,V) \n"
+        "33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp )\n"
+        "34 = | I - U**T U | / ( M ulp ) \n"
+        "35 = | I - VT VT**T | / ( N ulp ) "
+        " CGESVDQ(H,N,N,A,A\n"
+        "36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) \n"
+        "37 = | I - U**T U | / ( M ulp ) \n"
+        "38 = | I - VT VT**T | / ( N ulp ) \n"
+        "39 = 0 if S contains min(M,N) nonnegative values in"
+        " decreasing order, else 1/ulp\n"
+        "\n"
+        "\n",
+        (double)THRESH);
+}
+
+static void info_fail(const char* name, const INT iinfo, const INT m,
+                      const INT n, const INT jtype, const INT lswork,
+                      const uint64_t* ioldsd)
+{
+    fprintf(stderr, " CDRVBD: %s returned INFO=%6d.\n"
+                    "         M=%6d, N=%6d, JTYPE=%6d, LSWORK=%6d\n"
+                    "         ISEED=(%llu,%llu,%llu,%llu)\n",
+            name, (int)iinfo, (int)m, (int)n, (int)jtype, (int)lswork,
+            (unsigned long long)ioldsd[0], (unsigned long long)ioldsd[1],
+            (unsigned long long)ioldsd[2], (unsigned long long)ioldsd[3]);
+    fail_msg("CDRVBD: %s returned INFO=%d M=%d N=%d JTYPE=%d LSWORK=%d",
+             name, (int)iinfo, (int)m, (int)n, (int)jtype, (int)lswork);
+}
+
+static void run_cdrvbd_single(const cdrvbd_params_t* p)
+{
+    const f32 ZERO = 0.0f;
+    const f32 ONE = 1.0f;
+    const f32 TWO = 2.0f;
+    const f32 HALF = 0.5f;
+    const c64 CZERO = CMPLXF(0.0f, 0.0f);
+    const c64 CONE = CMPLXF(1.0f, 0.0f);
+
+    cdrvbd_workspace_t* ws = g_ws;
+    const INT lda = ws->lda;
+    const INT ldu = ws->ldu;
+    const INT ldvt = ws->ldvt;
+    const INT lwork = ws->lwork;
+    c64* A = ws->A;
+    c64* U = ws->U;
+    c64* VT = ws->VT;
+    c64* ASAV = ws->ASAV;
+    c64* USAV = ws->USAV;
+    c64* VTSAV = ws->VTSAV;
+    f32* S = ws->S;
+    f32* SSAV = ws->SSAV;
+    f32* E = ws->E;
+    c64* work = ws->work;
+    f32* rwork = ws->rwork;
+    INT* iwork = ws->iwork;
+    uint64_t* iseed = ws->rng_state;
+
     xlaenv(1, NBVAL[p->iparm]);
     xlaenv(2, NBMIN[p->iparm]);
     xlaenv(3, NXVAL[p->iparm]);
 
-    /* Skip degenerate cases */
-    if (m == 0 || n == 0) return;
+    const INT m = MVAL[p->jsize];
+    const INT n = NVAL[p->jsize];
+    const INT jtype = p->jtype;
 
-    /* Seed based on parameters for reproducibility */
-    uint64_t seed = 2024 + m * 1000 + n * 100 + itype;
-    rng_seed(ws->rng_state, seed);
+    char jobq[2] = {0, 0};
+    char jobu[2] = {0, 0};
+    char jobvt[2] = {0, 0};
+    char range[2] = {0, 0};
+    INT i, iinfo, iju, ijq, ijvt, itemp, iwspc, iwtmp, j, lswork;
+    INT nfail, ns, nsi, nsv, ntest;
+    INT lrwork, liwork, numrank;
+    INT il = 0, iu = 0;
+    f32 dif, div;
+    f32 vl = ZERO, vu = ZERO;
+    f32 result[39];
+    uint64_t iseed2[4];
+    uint64_t ioldsd[4];
+    INT nerrs = 0;
+    INT ntestt = 0;
 
-    INT info;
+    /* More Important constants */
+    const f32 unfl = slamch("S");
+    const f32 ovfl = ONE / unfl;
+    const f32 ulp = slamch("E");
+    const f32 ulpinv = ONE / ulp;
+    const f32 rtunfl = sqrtf(unfl);
 
-    /* Generate test matrix */
-    generate_test_matrix(itype, m, n, ws->ASAV, m,
-                         ws->SSAV, ws->work, &ws->anorm, &info, ws->rng_state);
+    const INT mnmin = (m < n) ? m : n;
+    const INT mxmn = (m > n) ? m : n;
 
-    if (info != 0) {
-        snprintf(context, sizeof(context),
-                 "Matrix generation failed: m=%d n=%d type=%d info=%d",
-                 m, n, itype, info);
-        fprintf(stderr, "SKIP: %s\n", context);
-        return;
+    if (p->iparm != ws->ntestf_iparm) {
+        ws->ntestf_iparm = p->iparm;
+        ws->ntestf = 0;
     }
 
-    /* IWS loop: test with 4 different workspace sizes
-     * IWS=1: minimal workspace
-     * IWS=2,3: intermediate workspace sizes
-     * IWS=4: full workspace */
-    for (INT iws = 1; iws <= 4; iws++) {
-        INT mnmin = (m < n) ? m : n;
-        INT mxmax = (m > n) ? m : n;
+    ntest = 0;
 
-        /* Compute LSWORK for CGESVD (from zdrvbd.f line 620) */
-        INT iwtmp_gesvd = 2 * mnmin + mxmax;
-        INT lswork_gesvd = iwtmp_gesvd + (iws - 1) * (ws->lwork - iwtmp_gesvd) / 3;
-        if (lswork_gesvd > ws->lwork) lswork_gesvd = ws->lwork;
-        if (lswork_gesvd < 1) lswork_gesvd = 1;
-        if (iws == 4) lswork_gesvd = ws->lwork;
+    for (j = 0; j < 4; j++) {
+        ioldsd[j] = iseed[j];
+    }
 
-        /* Compute LSWORK for CGESDD (from zdrvbd.f line 741) */
-        INT iwtmp_gesdd = 2 * mnmin * mnmin + 2 * mnmin + mxmax;
-        INT lswork_gesdd = iwtmp_gesdd + (iws - 1) * (ws->lwork - iwtmp_gesdd) / 3;
-        if (lswork_gesdd > ws->lwork) lswork_gesdd = ws->lwork;
-        if (lswork_gesdd < 1) lswork_gesdd = 1;
-        if (iws == 4) lswork_gesdd = ws->lwork;
+    /* Compute "A" */
 
-        /* Initialize results to -1 */
-        for (INT i = 0; i < NRESULTS; i++) ws->result[i] = -1.0f;
+    if (jtype == 1) {
 
-        /* CGESVD (tests 1-7) */
-        test_zgesvd(m, n, ws->ASAV, m, lswork_gesvd, ws);
-        for (INT i = 0; i < 7; i++) {
-            if (ws->result[i] < 0.0f) continue;  /* Test not run */
-            if (ws->result[i] >= THRESH) {
-                snprintf(context, sizeof(context),
-                         "CGESVD m=%d n=%d type=%d iws=%d test=%d",
-                         m, n, itype, iws, i + 1);
-                set_test_context(context);
-                assert_residual_below(ws->result[i], THRESH);
+        /* Zero matrix */
+
+        claset("Full", m, n, CZERO, CZERO, A, lda);
+        for (i = 0; i < mnmin; i++) {
+            S[i] = ZERO;
+        }
+
+    } else if (jtype == 2) {
+
+        /* Identity matrix */
+
+        claset("Full", m, n, CZERO, CONE, A, lda);
+        for (i = 0; i < mnmin; i++) {
+            S[i] = ONE;
+        }
+
+    } else {
+
+        /* (Scaled) random matrix */
+
+        if (jtype == 3)
+            ws->anorm = ONE;
+        if (jtype == 4)
+            ws->anorm = unfl / ulp;
+        if (jtype == 5)
+            ws->anorm = ovfl * ulp;
+        clatms(m, n, "U", "N", S, 4, (f32)mnmin, ws->anorm, m - 1, n - 1,
+               "N", A, lda, work, &iinfo, iseed);
+        if (iinfo != 0) {
+            fprintf(stderr, " CDRVBD: Generator returned INFO=%6d.\n"
+                            "         M=%6d, N=%6d, JTYPE=%6d, "
+                            "ISEED=(%llu,%llu,%llu,%llu)\n",
+                    (int)iinfo, (int)m, (int)n, (int)jtype,
+                    (unsigned long long)ioldsd[0], (unsigned long long)ioldsd[1],
+                    (unsigned long long)ioldsd[2], (unsigned long long)ioldsd[3]);
+            fail_msg("CDRVBD: Generator returned INFO=%d M=%d N=%d JTYPE=%d",
+                     (int)iinfo, (int)m, (int)n, (int)jtype);
+            return;
+        }
+    }
+    const f32 anorm = ws->anorm;
+
+    clacpy("F", m, n, A, lda, ASAV, lda);
+
+    /* Do for minimal and adequate (for blocking) workspace */
+
+    for (iwspc = 1; iwspc <= 4; iwspc++) {
+
+        /* Test for CGESVD */
+
+        iwtmp = 2 * mnmin + mxmn;
+        lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
+        if (lswork > lwork) lswork = lwork;
+        if (lswork < 1) lswork = 1;
+        if (iwspc == 4)
+            lswork = lwork;
+
+        for (j = 0; j < 35; j++) {
+            result[j] = -ONE;
+        }
+
+        /* Factorize A */
+
+        if (iwspc > 1)
+            clacpy("F", m, n, ASAV, lda, A, lda);
+        cgesvd("A", "A", m, n, A, lda, SSAV, USAV, ldu,
+               VTSAV, ldvt, work, lswork, rwork, &iinfo);
+        if (iinfo != 0) {
+            info_fail("GESVD", iinfo, m, n, jtype, lswork, ioldsd);
+            return;
+        }
+
+        /* Do tests 1--4 */
+
+        cbdt01(m, n, 0, ASAV, lda, USAV, ldu, SSAV, E,
+               VTSAV, ldvt, work, rwork, &result[0]);
+        if (m != 0 && n != 0) {
+            cunt01("Columns", mnmin, m, USAV, ldu, work,
+                   lwork, rwork, &result[1]);
+            cunt01("Rows", mnmin, n, VTSAV, ldvt, work,
+                   lwork, rwork, &result[2]);
+        }
+        result[3] = 0;
+        for (i = 0; i < mnmin - 1; i++) {
+            if (SSAV[i] < SSAV[i + 1])
+                result[3] = ulpinv;
+            if (SSAV[i] < ZERO)
+                result[3] = ulpinv;
+        }
+        if (mnmin >= 1) {
+            if (SSAV[mnmin - 1] < ZERO)
+                result[3] = ulpinv;
+        }
+
+        /* Do partial SVDs, comparing to SSAV, USAV, and VTSAV */
+
+        result[4] = ZERO;
+        result[5] = ZERO;
+        result[6] = ZERO;
+        for (iju = 0; iju <= 3; iju++) {
+            for (ijvt = 0; ijvt <= 3; ijvt++) {
+                if ((iju == 3 && ijvt == 3) ||
+                    (iju == 1 && ijvt == 1)) continue;
+                jobu[0] = CJOB[iju];
+                jobvt[0] = CJOB[ijvt];
+                clacpy("F", m, n, ASAV, lda, A, lda);
+                cgesvd(jobu, jobvt, m, n, A, lda, S, U, ldu,
+                       VT, ldvt, work, lswork, rwork, &iinfo);
+
+                /* Compare U */
+
+                dif = ZERO;
+                if (m > 0 && n > 0) {
+                    if (iju == 1) {
+                        cunt03("C", m, mnmin, m, mnmin, USAV,
+                               ldu, A, lda, work, lwork, rwork,
+                               &dif, &iinfo);
+                    } else if (iju == 2) {
+                        cunt03("C", m, mnmin, m, mnmin, USAV,
+                               ldu, U, ldu, work, lwork, rwork,
+                               &dif, &iinfo);
+                    } else if (iju == 3) {
+                        cunt03("C", m, m, m, mnmin, USAV, ldu,
+                               U, ldu, work, lwork, rwork, &dif,
+                               &iinfo);
+                    }
+                }
+                result[4] = fort_max(result[4], dif);
+
+                /* Compare VT */
+
+                dif = ZERO;
+                if (m > 0 && n > 0) {
+                    if (ijvt == 1) {
+                        cunt03("R", n, mnmin, n, mnmin, VTSAV,
+                               ldvt, A, lda, work, lwork,
+                               rwork, &dif, &iinfo);
+                    } else if (ijvt == 2) {
+                        cunt03("R", n, mnmin, n, mnmin, VTSAV,
+                               ldvt, VT, ldvt, work, lwork,
+                               rwork, &dif, &iinfo);
+                    } else if (ijvt == 3) {
+                        cunt03("R", n, n, n, mnmin, VTSAV,
+                               ldvt, VT, ldvt, work, lwork,
+                               rwork, &dif, &iinfo);
+                    }
+                }
+                result[5] = fort_max(result[5], dif);
+
+                /* Compare S */
+
+                dif = ZERO;
+                div = fort_max((f32)mnmin * ulp * S[0], slamch("S"));
+                for (i = 0; i < mnmin - 1; i++) {
+                    if (SSAV[i] < SSAV[i + 1])
+                        dif = ulpinv;
+                    if (SSAV[i] < ZERO)
+                        dif = ulpinv;
+                    dif = fort_max(dif, fabsf(SSAV[i] - S[i]) / div);
+                }
+                result[6] = fort_max(result[6], dif);
             }
         }
 
-        /* CGESDD (tests 8-14) */
-        test_zgesdd(m, n, ws->ASAV, m, lswork_gesdd, ws);
-        for (INT i = 7; i < 14; i++) {
-            if (ws->result[i] < 0.0f) continue;
-            if (ws->result[i] >= THRESH) {
-                snprintf(context, sizeof(context),
-                         "CGESDD m=%d n=%d type=%d iws=%d test=%d",
-                         m, n, itype, iws, i + 1);
-                set_test_context(context);
-                assert_residual_below(ws->result[i], THRESH);
-            }
+        /* Test for CGESDD */
+
+        iwtmp = 2 * mnmin * mnmin + 2 * mnmin + mxmn;
+        lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
+        if (lswork > lwork) lswork = lwork;
+        if (lswork < 1) lswork = 1;
+        if (iwspc == 4)
+            lswork = lwork;
+
+        /* Factorize A */
+
+        clacpy("F", m, n, ASAV, lda, A, lda);
+        cgesdd("A", m, n, A, lda, SSAV, USAV, ldu, VTSAV,
+               ldvt, work, lswork, rwork, iwork, &iinfo);
+        if (iinfo != 0) {
+            info_fail("GESDD", iinfo, m, n, jtype, lswork, ioldsd);
+            return;
         }
 
-        /* CGESVJ (tests 15-18, M >= N only) */
-        if (m >= n) {
-            test_zgesvj(m, n, ws->ASAV, m, ws);
-            for (INT i = 14; i < 18; i++) {
-                if (ws->result[i] < 0.0f) continue;
-                if (ws->result[i] >= THRESH) {
-                    snprintf(context, sizeof(context),
-                             "CGESVJ m=%d n=%d type=%d iws=%d test=%d",
-                             m, n, itype, iws, i + 1);
-                    set_test_context(context);
-                    assert_residual_below(ws->result[i], THRESH);
+        /* Do tests 1--4 */
+
+        cbdt01(m, n, 0, ASAV, lda, USAV, ldu, SSAV, E,
+               VTSAV, ldvt, work, rwork, &result[7]);
+        if (m != 0 && n != 0) {
+            cunt01("Columns", mnmin, m, USAV, ldu, work,
+                   lwork, rwork, &result[8]);
+            cunt01("Rows", mnmin, n, VTSAV, ldvt, work,
+                   lwork, rwork, &result[9]);
+        }
+        result[10] = 0;
+        for (i = 0; i < mnmin - 1; i++) {
+            if (SSAV[i] < SSAV[i + 1])
+                result[10] = ulpinv;
+            if (SSAV[i] < ZERO)
+                result[10] = ulpinv;
+        }
+        if (mnmin >= 1) {
+            if (SSAV[mnmin - 1] < ZERO)
+                result[10] = ulpinv;
+        }
+
+        /* Do partial SVDs, comparing to SSAV, USAV, and VTSAV */
+
+        result[11] = ZERO;
+        result[12] = ZERO;
+        result[13] = ZERO;
+        for (ijq = 0; ijq <= 2; ijq++) {
+            jobq[0] = CJOB[ijq];
+            clacpy("F", m, n, ASAV, lda, A, lda);
+            cgesdd(jobq, m, n, A, lda, S, U, ldu, VT, ldvt,
+                   work, lswork, rwork, iwork, &iinfo);
+
+            /* Compare U */
+
+            dif = ZERO;
+            if (m > 0 && n > 0) {
+                if (ijq == 1) {
+                    if (m >= n) {
+                        cunt03("C", m, mnmin, m, mnmin, USAV,
+                               ldu, A, lda, work, lwork, rwork,
+                               &dif, &iinfo);
+                    } else {
+                        cunt03("C", m, mnmin, m, mnmin, USAV,
+                               ldu, U, ldu, work, lwork, rwork,
+                               &dif, &iinfo);
+                    }
+                } else if (ijq == 2) {
+                    cunt03("C", m, mnmin, m, mnmin, USAV, ldu,
+                           U, ldu, work, lwork, rwork, &dif,
+                           &iinfo);
                 }
             }
-        }
+            result[11] = fort_max(result[11], dif);
 
-        /* CGEJSV (tests 19-22, M >= N only) */
-        if (m >= n) {
-            test_zgejsv(m, n, ws->ASAV, m, ws);
-            for (INT i = 18; i < 22; i++) {
-                if (ws->result[i] < 0.0f) continue;
-                if (ws->result[i] >= THRESH) {
-                    snprintf(context, sizeof(context),
-                             "CGEJSV m=%d n=%d type=%d iws=%d test=%d",
-                             m, n, itype, iws, i + 1);
-                    set_test_context(context);
-                    assert_residual_below(ws->result[i], THRESH);
+            /* Compare VT */
+
+            dif = ZERO;
+            if (m > 0 && n > 0) {
+                if (ijq == 1) {
+                    if (m >= n) {
+                        cunt03("R", n, mnmin, n, mnmin, VTSAV,
+                               ldvt, VT, ldvt, work, lwork,
+                               rwork, &dif, &iinfo);
+                    } else {
+                        cunt03("R", n, mnmin, n, mnmin, VTSAV,
+                               ldvt, A, lda, work, lwork,
+                               rwork, &dif, &iinfo);
+                    }
+                } else if (ijq == 2) {
+                    cunt03("R", n, mnmin, n, mnmin, VTSAV,
+                           ldvt, VT, ldvt, work, lwork, rwork,
+                           &dif, &iinfo);
                 }
             }
+            result[12] = fort_max(result[12], dif);
+
+            /* Compare S */
+
+            dif = ZERO;
+            div = fort_max((f32)mnmin * ulp * S[0], slamch("S"));
+            for (i = 0; i < mnmin - 1; i++) {
+                if (SSAV[i] < SSAV[i + 1])
+                    dif = ulpinv;
+                if (SSAV[i] < ZERO)
+                    dif = ulpinv;
+                dif = fort_max(dif, fabsf(SSAV[i] - S[i]) / div);
+            }
+            result[13] = fort_max(result[13], dif);
         }
 
-        /* CGESVDX (tests 23-35) */
-        test_zgesvdx(m, n, ws->ASAV, m, ws);
-        for (INT i = 22; i < 35; i++) {
-            if (ws->result[i] < 0.0f) continue;
-            if (ws->result[i] >= THRESH) {
-                snprintf(context, sizeof(context),
-                         "CGESVDX m=%d n=%d type=%d iws=%d test=%d",
-                         m, n, itype, iws, i + 1);
-                set_test_context(context);
-                assert_residual_below(ws->result[i], THRESH);
+        /* Test CGESVDQ
+           Note: CGESVDQ only works for M >= N */
+
+        result[35] = ZERO;
+        result[36] = ZERO;
+        result[37] = ZERO;
+        result[38] = ZERO;
+
+        if (m >= n) {
+            iwtmp = 2 * mnmin * mnmin + 2 * mnmin + mxmn;
+            lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
+            if (lswork > lwork) lswork = lwork;
+            if (lswork < 1) lswork = 1;
+            if (iwspc == 4)
+                lswork = lwork;
+
+            clacpy("F", m, n, ASAV, lda, A, lda);
+
+            lrwork = 2;
+            if (m > lrwork) lrwork = m;
+            if (5 * n > lrwork) lrwork = 5 * n;
+            liwork = (n > 1) ? n : 1;
+            cgesvdq("H", "N", "N", "A", "A",
+                    m, n, A, lda, SSAV, USAV, ldu,
+                    VTSAV, ldvt, &numrank, iwork, liwork,
+                    work, lwork, rwork, lrwork, &iinfo);
+
+            if (iinfo != 0) {
+                info_fail("CGESVDQ", iinfo, m, n, jtype, lswork, ioldsd);
+                return;
+            }
+
+            /* Do tests 36--39 */
+
+            cbdt01(m, n, 0, ASAV, lda, USAV, ldu, SSAV, E,
+                   VTSAV, ldvt, work, rwork, &result[35]);
+            if (m != 0 && n != 0) {
+                cunt01("Columns", m, m, USAV, ldu, work,
+                       lwork, rwork, &result[36]);
+                cunt01("Rows", n, n, VTSAV, ldvt, work,
+                       lwork, rwork, &result[37]);
+            }
+            result[38] = ZERO;
+            for (i = 0; i < mnmin - 1; i++) {
+                if (SSAV[i] < SSAV[i + 1])
+                    result[38] = ulpinv;
+                if (SSAV[i] < ZERO)
+                    result[38] = ulpinv;
+            }
+            if (mnmin >= 1) {
+                if (SSAV[mnmin - 1] < ZERO)
+                    result[38] = ulpinv;
             }
         }
 
-        /* CGESVDQ (tests 36-39, M >= N only) */
+        /* Test CGESVJ
+           Note: CGESVJ only works for M >= N */
+
+        result[14] = ZERO;
+        result[15] = ZERO;
+        result[16] = ZERO;
+        result[17] = ZERO;
+
         if (m >= n) {
-            test_zgesvdq(m, n, ws->ASAV, m, lswork_gesdd, ws);
-            for (INT i = 35; i < 39; i++) {
-                if (ws->result[i] < 0.0f) continue;
-                if (ws->result[i] >= THRESH) {
-                    snprintf(context, sizeof(context),
-                             "CGESVDQ m=%d n=%d type=%d iws=%d test=%d",
-                             m, n, itype, iws, i + 1);
-                    set_test_context(context);
-                    assert_residual_below(ws->result[i], THRESH);
+            iwtmp = 2 * mnmin * mnmin + 2 * mnmin + mxmn;
+            lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
+            if (lswork > lwork) lswork = lwork;
+            if (lswork < 1) lswork = 1;
+            lrwork = (n > 6) ? n : 6;
+            if (iwspc == 4)
+                lswork = lwork;
+
+            clacpy("F", m, n, ASAV, lda, USAV, lda);
+            cgesvj("G", "U", "V", m, n, USAV, lda, SSAV,
+                   0, A, ldvt, work, lwork, rwork,
+                   lrwork, &iinfo);
+
+            /* CGESVJ returns V not VH */
+
+            for (j = 0; j < n; j++) {
+                for (i = 0; i < n; i++) {
+                    VTSAV[j + i * ldvt] = conjf(A[i + j * lda]);
                 }
             }
-        }
-    }  /* End IWS loop */
 
-    clear_test_context();
+            if (iinfo != 0) {
+                info_fail("GESVJ", iinfo, m, n, jtype, lswork, ioldsd);
+                return;
+            }
+
+            /* Do tests 15--18 */
+
+            cbdt01(m, n, 0, ASAV, lda, USAV, ldu, SSAV, E,
+                   VTSAV, ldvt, work, rwork, &result[14]);
+            if (m != 0 && n != 0) {
+                cunt01("Columns", m, m, USAV, ldu, work,
+                       lwork, rwork, &result[15]);
+                cunt01("Rows", n, n, VTSAV, ldvt, work,
+                       lwork, rwork, &result[16]);
+            }
+            result[17] = ZERO;
+            for (i = 0; i < mnmin - 1; i++) {
+                if (SSAV[i] < SSAV[i + 1])
+                    result[17] = ulpinv;
+                if (SSAV[i] < ZERO)
+                    result[17] = ulpinv;
+            }
+            if (mnmin >= 1) {
+                if (SSAV[mnmin - 1] < ZERO)
+                    result[17] = ulpinv;
+            }
+        }
+
+        /* Test CGEJSV
+           Note: CGEJSV only works for M >= N */
+
+        result[18] = ZERO;
+        result[19] = ZERO;
+        result[20] = ZERO;
+        result[21] = ZERO;
+        if (m >= n) {
+            iwtmp = 2 * mnmin * mnmin + 2 * mnmin + mxmn;
+            lswork = iwtmp + (iwspc - 1) * (lwork - iwtmp) / 3;
+            if (lswork > lwork) lswork = lwork;
+            if (lswork < 1) lswork = 1;
+            if (iwspc == 4)
+                lswork = lwork;
+            lrwork = (n + 2 * m > 7) ? n + 2 * m : 7;
+
+            clacpy("F", m, n, ASAV, lda, VTSAV, lda);
+            cgejsv("G", "U", "V", "R", "N", "N",
+                   m, n, VTSAV, lda, SSAV, USAV, ldu, A, ldvt,
+                   work, lwork, rwork,
+                   lrwork, iwork, &iinfo);
+
+            /* CGEJSV returns V not VH */
+
+            for (j = 0; j < n; j++) {
+                for (i = 0; i < n; i++) {
+                    VTSAV[j + i * ldvt] = conjf(A[i + j * lda]);
+                }
+            }
+
+            if (iinfo != 0) {
+                info_fail("GEJSV", iinfo, m, n, jtype, lswork, ioldsd);
+                return;
+            }
+
+            /* Do tests 19--22 */
+
+            cbdt01(m, n, 0, ASAV, lda, USAV, ldu, SSAV, E,
+                   VTSAV, ldvt, work, rwork, &result[18]);
+            if (m != 0 && n != 0) {
+                cunt01("Columns", m, m, USAV, ldu, work,
+                       lwork, rwork, &result[19]);
+                cunt01("Rows", n, n, VTSAV, ldvt, work,
+                       lwork, rwork, &result[20]);
+            }
+            result[21] = ZERO;
+            for (i = 0; i < mnmin - 1; i++) {
+                if (SSAV[i] < SSAV[i + 1])
+                    result[21] = ulpinv;
+                if (SSAV[i] < ZERO)
+                    result[21] = ulpinv;
+            }
+            if (mnmin >= 1) {
+                if (SSAV[mnmin - 1] < ZERO)
+                    result[21] = ulpinv;
+            }
+        }
+
+        /* Test CGESVDX */
+
+        /* Factorize A */
+
+        clacpy("F", m, n, ASAV, lda, A, lda);
+        cgesvdx("V", "V", "A", m, n, A, lda,
+                vl, vu, il, iu, &ns, SSAV, USAV, ldu,
+                VTSAV, ldvt, work, lwork, rwork,
+                iwork, &iinfo);
+        if (iinfo != 0) {
+            info_fail("GESVDX", iinfo, m, n, jtype, lswork, ioldsd);
+            return;
+        }
+
+        /* Do tests 1--4 */
+
+        result[22] = ZERO;
+        result[23] = ZERO;
+        result[24] = ZERO;
+        cbdt01(m, n, 0, ASAV, lda, USAV, ldu, SSAV, E,
+               VTSAV, ldvt, work, rwork, &result[22]);
+        if (m != 0 && n != 0) {
+            cunt01("Columns", mnmin, m, USAV, ldu, work,
+                   lwork, rwork, &result[23]);
+            cunt01("Rows", mnmin, n, VTSAV, ldvt, work,
+                   lwork, rwork, &result[24]);
+        }
+        result[25] = ZERO;
+        for (i = 0; i < mnmin - 1; i++) {
+            if (SSAV[i] < SSAV[i + 1])
+                result[25] = ulpinv;
+            if (SSAV[i] < ZERO)
+                result[25] = ulpinv;
+        }
+        if (mnmin >= 1) {
+            if (SSAV[mnmin - 1] < ZERO)
+                result[25] = ulpinv;
+        }
+
+        /* Do partial SVDs, comparing to SSAV, USAV, and VTSAV */
+
+        result[26] = ZERO;
+        result[27] = ZERO;
+        result[28] = ZERO;
+        for (iju = 0; iju <= 1; iju++) {
+            for (ijvt = 0; ijvt <= 1; ijvt++) {
+                if ((iju == 0 && ijvt == 0) ||
+                    (iju == 1 && ijvt == 1)) continue;
+                jobu[0] = CJOBV[iju];
+                jobvt[0] = CJOBV[ijvt];
+                range[0] = CJOBR[0];
+                clacpy("F", m, n, ASAV, lda, A, lda);
+                cgesvdx(jobu, jobvt, "A", m, n, A, lda,
+                        vl, vu, il, iu, &ns, SSAV, U, ldu,
+                        VT, ldvt, work, lwork, rwork,
+                        iwork, &iinfo);
+
+                /* Compare U */
+
+                dif = ZERO;
+                if (m > 0 && n > 0) {
+                    if (iju == 1) {
+                        cunt03("C", m, mnmin, m, mnmin, USAV,
+                               ldu, U, ldu, work, lwork, rwork,
+                               &dif, &iinfo);
+                    }
+                }
+                result[26] = fort_max(result[26], dif);
+
+                /* Compare VT */
+
+                dif = ZERO;
+                if (m > 0 && n > 0) {
+                    if (ijvt == 1) {
+                        cunt03("R", n, mnmin, n, mnmin, VTSAV,
+                               ldvt, VT, ldvt, work, lwork,
+                               rwork, &dif, &iinfo);
+                    }
+                }
+                result[27] = fort_max(result[27], dif);
+
+                /* Compare S */
+
+                dif = ZERO;
+                div = fort_max((f32)mnmin * ulp * S[0], slamch("S"));
+                for (i = 0; i < mnmin - 1; i++) {
+                    if (SSAV[i] < SSAV[i + 1])
+                        dif = ulpinv;
+                    if (SSAV[i] < ZERO)
+                        dif = ulpinv;
+                    dif = fort_max(dif, fabsf(SSAV[i] - S[i]) / div);
+                }
+                result[28] = fort_max(result[28], dif);
+            }
+        }
+        (void)range;
+
+        /* Do tests 8--10 */
+
+        for (i = 0; i < 4; i++) {
+            iseed2[i] = iseed[i];
+        }
+        if (mnmin <= 1) {
+            il = 0;
+            iu = ((mnmin > 1) ? mnmin : 1) - 1;
+        } else {
+            il = (INT)(mnmin * rng_uniform_f32(iseed2));
+            iu = (INT)(mnmin * rng_uniform_f32(iseed2));
+            if (iu < il) {
+                itemp = iu;
+                iu = il;
+                il = itemp;
+            }
+        }
+        clacpy("F", m, n, ASAV, lda, A, lda);
+        cgesvdx("V", "V", "I", m, n, A, lda,
+                vl, vu, il, iu, &nsi, S, U, ldu,
+                VT, ldvt, work, lwork, rwork,
+                iwork, &iinfo);
+        if (iinfo != 0) {
+            info_fail("GESVDX", iinfo, m, n, jtype, lswork, ioldsd);
+            return;
+        }
+
+        result[29] = ZERO;
+        result[30] = ZERO;
+        result[31] = ZERO;
+        cbdt05(m, n, ASAV, lda, S, nsi, U, ldu,
+               VT, ldvt, work, &result[29]);
+        if (m != 0 && n != 0) {
+            cunt01("Columns", m, nsi, U, ldu, work,
+                   lwork, rwork, &result[30]);
+            cunt01("Rows", nsi, n, VT, ldvt, work,
+                   lwork, rwork, &result[31]);
+        }
+
+        /* Do tests 11--13 */
+
+        if (mnmin > 0 && nsi > 1) {
+            if (il != 0) {
+                vu = SSAV[il] +
+                     fort_max(fort_max(HALF * fabsf(SSAV[il] - SSAV[il - 1]),
+                                       ulp * anorm), TWO * rtunfl);
+            } else {
+                vu = SSAV[0] +
+                     fort_max(fort_max(HALF * fabsf(SSAV[ns - 1] - SSAV[0]),
+                                       ulp * anorm), TWO * rtunfl);
+            }
+            if (iu != ns - 1) {
+                vl = SSAV[iu] - fort_max(fort_max(ulp * anorm, TWO * rtunfl),
+                                         HALF * fabsf(SSAV[iu + 1] - SSAV[iu]));
+            } else {
+                vl = SSAV[ns - 1] - fort_max(fort_max(ulp * anorm, TWO * rtunfl),
+                                             HALF * fabsf(SSAV[ns - 1] - SSAV[0]));
+            }
+            vl = fort_max(vl, ZERO);
+            vu = fort_max(vu, ZERO);
+            if (vl >= vu) vu = fort_max(vu * 2, vu + vl + HALF);
+        } else {
+            vl = ZERO;
+            vu = ONE;
+        }
+        clacpy("F", m, n, ASAV, lda, A, lda);
+        cgesvdx("V", "V", "V", m, n, A, lda,
+                vl, vu, il, iu, &nsv, S, U, ldu,
+                VT, ldvt, work, lwork, rwork,
+                iwork, &iinfo);
+        if (iinfo != 0) {
+            info_fail("GESVDX", iinfo, m, n, jtype, lswork, ioldsd);
+            return;
+        }
+
+        result[32] = ZERO;
+        result[33] = ZERO;
+        result[34] = ZERO;
+        cbdt05(m, n, ASAV, lda, S, nsv, U, ldu,
+               VT, ldvt, work, &result[32]);
+        if (m != 0 && n != 0) {
+            cunt01("Columns", m, nsv, U, ldu, work,
+                   lwork, rwork, &result[33]);
+            cunt01("Rows", nsv, n, VT, ldvt, work,
+                   lwork, rwork, &result[34]);
+        }
+
+        /* End of Loop -- Check for RESULT(j) > THRESH */
+
+        ntest = 0;
+        nfail = 0;
+        for (j = 0; j < 39; j++) {
+            if (result[j] >= ZERO)
+                ntest = ntest + 1;
+            if (result[j] >= THRESH)
+                nfail = nfail + 1;
+        }
+
+        if (nfail > 0)
+            ws->ntestf = ws->ntestf + 1;
+        if (ws->ntestf == 1) {
+            print_header();
+            ws->ntestf = 2;
+        }
+
+        for (j = 0; j < 39; j++) {
+            if (result[j] >= THRESH) {
+                fprintf(stderr, " M=%5d, N=%5d, type %1d, IWS=%1d, "
+                                "seed=%llu,%llu,%llu,%llu, test(%2d)=%11.4g\n",
+                        (int)m, (int)n, (int)jtype, (int)iwspc,
+                        (unsigned long long)ioldsd[0], (unsigned long long)ioldsd[1],
+                        (unsigned long long)ioldsd[2], (unsigned long long)ioldsd[3],
+                        (int)(j + 1), (double)result[j]);
+            }
+        }
+
+        nerrs = nerrs + nfail;
+        ntestt = ntestt + ntest;
+
+    }
+
+    if (nerrs > 0) {
+        fail_msg("CDRVBD M=%d N=%d type=%d: %d of %d test ratios >= THRESH",
+                 (int)m, (int)n, (int)jtype, (int)nerrs, (int)ntestt);
+    }
 }
 
-/**
- * CMocka test function - dispatches to run_zdrvbd_single based on prestate.
- */
-static void test_zdrvbd_case(void** state)
+static void test_cerred(void** state)
 {
-    zdrvbd_params_t* params = *state;
-    run_zdrvbd_single(params);
+    (void)state;
+    INT ok, nt;
+    cerred("CBD", &ok, &nt);
+    assert_true(ok);
 }
 
-/*
- * Generate all parameter combinations.
- * Total: NDIM_PAIRS * NTYPES tests
- */
+static void test_cdrvbd_case(void** state)
+{
+    const cdrvbd_params_t* params = *state;
+    run_cdrvbd_single(params);
+}
 
-/* Maximum number of test cases */
-#define MAX_TESTS (NPARMS * NDIM_PAIRS * NTYPES)
+#define MAX_TESTS (1 + NPARMS * NSIZES * MAXTYP)
 
-static zdrvbd_params_t g_params[MAX_TESTS];
+static cdrvbd_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
 static INT g_num_tests = 0;
 
-/**
- * Build the test array with all parameter combinations.
- */
 static void build_test_array(void)
 {
     g_num_tests = 0;
 
-    for (size_t ip = 0; ip < NPARMS; ip++) {
-        for (size_t ipair = 0; ipair < NDIM_PAIRS; ipair++) {
-            INT m = DIM_PAIRS[ipair].m;
-            INT n = DIM_PAIRS[ipair].n;
+    g_tests[g_num_tests].name = "cerred";
+    g_tests[g_num_tests].test_func = test_cerred;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_num_tests++;
 
-            for (INT itype = 1; itype <= NTYPES; itype++) {
-                /* Store parameters */
-                zdrvbd_params_t* p = &g_params[g_num_tests];
-                p->m = m;
-                p->n = n;
-                p->itype = itype;
+    for (size_t ip = 0; ip < NPARMS; ip++) {
+        for (INT jsize = 0; jsize < NSIZES; jsize++) {
+            for (INT jtype = 1; jtype <= MAXTYP; jtype++) {
+                cdrvbd_params_t* p = &g_params[g_num_tests];
+                p->jsize = jsize;
+                p->jtype = jtype;
                 p->iparm = (INT)ip;
                 snprintf(p->name, sizeof(p->name),
-                         "cdrvbd_p%d_m%d_n%d_type%d", (int)ip, m, n, itype);
+                         "cdrvbd_p%d_m%d_n%d_type%d", (int)ip,
+                         (int)MVAL[jsize], (int)NVAL[jsize], (int)jtype);
 
-                /* Create CMocka test entry */
                 g_tests[g_num_tests].name = p->name;
-                g_tests[g_num_tests].test_func = test_zdrvbd_case;
+                g_tests[g_num_tests].test_func = test_cdrvbd_case;
                 g_tests[g_num_tests].setup_func = NULL;
                 g_tests[g_num_tests].teardown_func = NULL;
                 g_tests[g_num_tests].initial_state = p;
@@ -1158,14 +1211,10 @@ static void build_test_array(void)
     }
 }
 
-/* ===== Main ===== */
-
 int main(void)
 {
-    /* Build all test cases */
     build_test_array();
 
-    /* Run all tests with shared workspace */
     (void)_cmocka_run_group_tests("cdrvbd", g_tests, g_num_tests,
                                    group_setup, group_teardown);
     return 0;
