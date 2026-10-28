@@ -449,9 +449,39 @@ int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
     }
 }
 
+/*
+ * Weak symbols do not reach into a Windows DLL, so the test version also
+ * installs itself as lapack_tuning_override, through which the production
+ * version answers. Elsewhere the strong symbols above already take precedence
+ * and the hook is never consulted.
+ */
+static const lapack_tuning_override_t lapack_tuning_test_override = {
+    .get_nb = lapack_get_nb,
+    .get_nbmin = lapack_get_nbmin,
+    .get_nx = lapack_get_nx,
+    .get_mnthr = lapack_get_mnthr,
+    .get_geqr_mb = lapack_get_geqr_mb,
+    .get_geqr_nb = lapack_get_geqr_nb,
+    .get_gelq_mb = lapack_get_gelq_mb,
+    .get_gelq_nb = lapack_get_gelq_nb,
+    .get_trsyl_nb = lapack_get_trsyl_nb,
+    .get_gbtrf_nb = lapack_get_gbtrf_nb,
+    .get_pbtrf_nb = lapack_get_pbtrf_nb,
+    .get_tzrzf_nb = lapack_get_tzrzf_nb,
+    .get_nbcol = lapack_get_nbcol,
+    .get_iparmq = lapack_get_iparmq,
+    .get_iparam2stage = lapack_get_iparam2stage,
+};
+
+static void __attribute__((constructor)) lapack_tuning_test_init(void)
+{
+    lapack_tuning_override = &lapack_tuning_test_override;
+}
+
 #else
 /*
- * Production version: direct table lookup, no override mechanism
+ * Production version: direct table lookup, unless lapack_tuning_override is
+ * set (see semicolon_lapack_auxiliary.h).
  *
  * These are marked as weak symbols so that the test version (which provides
  * strong symbols) takes precedence when both are linked. This allows tests
@@ -468,42 +498,66 @@ int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
 
 LAPACK_WEAK int lapack_get_nb(const char* routine)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_nb(routine);
+    }
     return lapack_tuning_lookup(routine)->nb;
 }
 
 LAPACK_WEAK int lapack_get_nbmin(const char* routine)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_nbmin(routine);
+    }
     return lapack_tuning_lookup(routine)->nbmin;
 }
 
 LAPACK_WEAK int lapack_get_nx(const char* routine)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_nx(routine);
+    }
     return lapack_tuning_lookup(routine)->nx;
 }
 
 LAPACK_WEAK int lapack_get_mnthr(const char* routine, int m, int n)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_mnthr(routine, m, n);
+    }
     (void)routine;
     return lapack_tuning_mnthr(m, n);
 }
 
 LAPACK_WEAK int lapack_get_gbtrf_nb(int ku)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_gbtrf_nb(ku);
+    }
     return lapack_tuning_gbtrf_nb(ku);
 }
 
 LAPACK_WEAK int lapack_get_pbtrf_nb(int kd)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_pbtrf_nb(kd);
+    }
     return lapack_tuning_pbtrf_nb(kd);
 }
 
 LAPACK_WEAK int lapack_get_tzrzf_nb(int is_complex)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_tzrzf_nb(is_complex);
+    }
     return lapack_tuning_tzrzf_nb(is_complex);
 }
 
 LAPACK_WEAK int lapack_get_geqr_mb(int m, int n)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_geqr_mb(m, n);
+    }
     if ((m * n <= 131072) || (m <= 8192)) {
         return m;
     }
@@ -512,18 +566,27 @@ LAPACK_WEAK int lapack_get_geqr_mb(int m, int n)
 
 LAPACK_WEAK int lapack_get_geqr_nb(int m, int n)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_geqr_nb(m, n);
+    }
     (void)m; (void)n;
     return 1;
 }
 
 LAPACK_WEAK int lapack_get_gelq_mb(int m, int n)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_gelq_mb(m, n);
+    }
     (void)m; (void)n;
     return 1;
 }
 
 LAPACK_WEAK int lapack_get_gelq_nb(int m, int n)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_gelq_nb(m, n);
+    }
     if ((m * n <= 131072) || (m <= 8192)) {
         return m;
     }
@@ -532,6 +595,9 @@ LAPACK_WEAK int lapack_get_gelq_nb(int m, int n)
 
 LAPACK_WEAK int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_trsyl_nb(n1, n2, is_complex);
+    }
     int min_mn = (n1 < n2) ? n1 : n2;
     if (is_complex) {
         /* ilaenv.f line 483: NB = MIN(MAX(24, INT(MIN(N1,N2)*8/100)), 80) */
@@ -550,19 +616,27 @@ LAPACK_WEAK int lapack_get_trsyl_nb(int n1, int n2, int is_complex)
 
 LAPACK_WEAK int lapack_get_nbcol(const char* routine)
 {
-    (void)routine;
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_nbcol(routine);
+    }
     return 2;
 }
 
 LAPACK_WEAK int lapack_get_iparmq(int ispec, const char* name, const char* opts,
                                   int64_t n, int64_t ilo, int64_t ihi, int64_t lwork)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_iparmq(ispec, name, opts, n, ilo, ihi, lwork);
+    }
     return (int)iparmq(ispec, name, opts, (INT)n, (INT)ilo, (INT)ihi, (INT)lwork);
 }
 
 LAPACK_WEAK int lapack_get_iparam2stage(int ispec, const char* name, const char* opts,
                                         int64_t ni, int64_t nbi, int64_t ibi, int64_t nxi)
 {
+    if (lapack_tuning_override) {
+        return lapack_tuning_override->get_iparam2stage(ispec, name, opts, ni, nbi, ibi, nxi);
+    }
     return (int)iparam2stage(ispec, name, opts, (INT)ni, (INT)nbi, (INT)ibi, (INT)nxi);
 }
 

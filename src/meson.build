@@ -4,6 +4,7 @@
 # Precision-independent utilities
 common_sources = files(
   'lapack_tuning.c',
+  'lapack_tuning_override.c',
 )
 
 # Precision-independent auxiliary routines
