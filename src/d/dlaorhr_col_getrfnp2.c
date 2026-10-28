@@ -89,13 +89,13 @@ void dlaorhr_col_getrfnp2(
 
     if (m == 1) {
 
-        D[0] = (A[0 + 0 * lda] >= 0.0) ? -1.0 : 1.0;
+        D[0] = -copysign(1.0, A[0 + 0 * lda]);
 
         A[0 + 0 * lda] = A[0 + 0 * lda] - D[0];
 
     } else if (n == 1) {
 
-        D[0] = (A[0 + 0 * lda] >= 0.0) ? -1.0 : 1.0;
+        D[0] = -copysign(1.0, A[0 + 0 * lda]);
 
         A[0 + 0 * lda] = A[0 + 0 * lda] - D[0];
 

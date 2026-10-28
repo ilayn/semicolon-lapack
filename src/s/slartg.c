@@ -43,14 +43,14 @@ void slartg(const f32 f, const f32 g, f32* c, f32* s, f32* r)
         *r = f;
     } else if (f == 0.0f) {
         *c = 0.0f;
-        *s = (g > 0.0f) ? 1.0f : -1.0f;
+        *s = copysignf(1.0f, g);
         *r = g1;
     } else if (f1 > rtmin && f1 < rtmax &&
                g1 > rtmin && g1 < rtmax) {
         /* Both f and g are in safe range */
         f32 d = sqrtf(f * f + g * g);
         *c = f1 / d;
-        *r = (f > 0.0f) ? d : -d;
+        *r = copysignf(d, f);
         *s = g / (*r);
     } else {
         /* Use scaled algorithm */
@@ -61,7 +61,7 @@ void slartg(const f32 f, const f32 g, f32* c, f32* s, f32* r)
         f32 gs = g / u;
         f32 d = sqrtf(fs * fs + gs * gs);
         *c = fabsf(fs) / d;
-        *r = (f > 0.0f) ? d : -d;
+        *r = copysignf(d, f);
         *s = gs / (*r);
         *r = (*r) * u;
     }

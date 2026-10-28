@@ -84,9 +84,9 @@ void slag2(
         bmin = rtmin * tmp;
     }
     if (fabsf(b11) < bmin)
-        b11 = (b11 >= ZERO) ? bmin : -bmin;
+        b11 = copysignf(bmin, b11);
     if (fabsf(b22) < bmin)
-        b22 = (b22 >= ZERO) ? bmin : -bmin;
+        b22 = copysignf(bmin, b22);
 
     {
         f32 tmp = fabsf(b12) + fabsf(b22);
@@ -135,8 +135,8 @@ void slag2(
     }
 
     if (discr >= ZERO || r == ZERO) {
-        sum = pp + ((pp >= ZERO) ? r : -r);
-        diff = pp - ((pp >= ZERO) ? r : -r);
+        sum = pp + copysignf(r, pp);
+        diff = pp - copysignf(r, pp);
         wbig = shift + sum;
 
         wsmall = shift + diff;

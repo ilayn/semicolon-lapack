@@ -111,10 +111,10 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
     /* smlsiz = 25 from ilaenv(9, 'SBDSDC', ...) */
     if (n == 1) {
         if (icompq == 1) {
-            Q[0] = (D[0] >= ZERO) ? ONE : -ONE;
+            Q[0] = copysignf(ONE, D[0]);
             Q[SMLSIZ * n] = ONE;
         } else if (icompq == 2) {
-            U[0] = (D[0] >= ZERO) ? ONE : -ONE;
+            U[0] = copysignf(ONE, D[0]);
             VT[0] = ONE;
         }
         D[0] = fabsf(D[0]);
@@ -226,7 +226,7 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
 
     for (i = 0; i < n; i++) {
         if (fabsf(D[i]) < eps) {
-            D[i] = (D[i] >= ZERO) ? eps : -eps;
+            D[i] = copysignf(eps, D[i]);
         }
     }
 
@@ -248,11 +248,11 @@ void sbdsdc(const char* uplo, const char* compq, const INT n,
                  * 1-by-1 subproblem at D[n-1]. Solve this 1-by-1 problem first. */
                 nsize = i - start + 1;
                 if (icompq == 2) {
-                    U[(n - 1) + (n - 1) * ldu] = (D[n - 1] >= ZERO) ? ONE : -ONE;
+                    U[(n - 1) + (n - 1) * ldu] = copysignf(ONE, D[n - 1]);
                     VT[(n - 1) + (n - 1) * ldvt] = ONE;
                 } else if (icompq == 1) {
                     /* Q(N + (QSTART-1)*N) in Fortran -> Q[(n-1) + qstart*n] in C */
-                    Q[(n - 1) + qstart * n] = (D[n - 1] >= ZERO) ? ONE : -ONE;
+                    Q[(n - 1) + qstart * n] = copysignf(ONE, D[n - 1]);
                     Q[(n - 1) + (SMLSIZ + qstart) * n] = ONE;
                 }
                 D[n - 1] = fabsf(D[n - 1]);

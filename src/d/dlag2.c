@@ -84,9 +84,9 @@ void dlag2(
         bmin = rtmin * tmp;
     }
     if (fabs(b11) < bmin)
-        b11 = (b11 >= ZERO) ? bmin : -bmin;
+        b11 = copysign(bmin, b11);
     if (fabs(b22) < bmin)
-        b22 = (b22 >= ZERO) ? bmin : -bmin;
+        b22 = copysign(bmin, b22);
 
     {
         f64 tmp = fabs(b12) + fabs(b22);
@@ -135,8 +135,8 @@ void dlag2(
     }
 
     if (discr >= ZERO || r == ZERO) {
-        sum = pp + ((pp >= ZERO) ? r : -r);
-        diff = pp - ((pp >= ZERO) ? r : -r);
+        sum = pp + copysign(r, pp);
+        diff = pp - copysign(r, pp);
         wbig = shift + sum;
 
         wsmall = shift + diff;
