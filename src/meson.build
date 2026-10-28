@@ -24,6 +24,7 @@ auxiliary_sources = files(
 d_sources = files(
   # Auxiliary
   'd/dlamch.c',
+  'd/droundup_lwork.c',
   'd/dlacn2.c',
   'd/dlacpy.c',
   'd/dlaic1.c',
@@ -957,6 +958,7 @@ s_sources = files(
   's/spttrf.c',
   's/spttrs.c',
   's/sptts2.c',
+  's/sroundup_lwork.c',
   's/srscl.c',
   's/ssb2st_kernels.c',
   's/ssbev.c',

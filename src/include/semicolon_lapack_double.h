@@ -34,6 +34,7 @@ SEMICOLON_API f64  dlapy3(const f64 x, const f64 y, const f64 z);
 SEMICOLON_API f64  dlarmm(const f64 anorm, const f64 bnorm, const f64 cnorm);
 SEMICOLON_API f64  dla_gbrpvgrw(const INT n, const INT kl, const INT ku, const INT ncols, const f64* restrict AB, const INT ldab, const f64* restrict AFB, const INT ldafb);
 SEMICOLON_API f64  dla_gerpvgrw(const INT n, const INT ncols, const f64* restrict A, const INT lda, const f64* restrict AF, const INT ldaf);
+SEMICOLON_API f64  droundup_lwork(const INT lwork);
 SEMICOLON_API INT  disnan(const f64 din);
 SEMICOLON_API INT  dlaisnan(const f64 din1, const f64 din2);
 SEMICOLON_API INT  dlaneg(const INT n, const f64* D, const f64* lld, const f64 sigma, const f64 pivmin, const INT r);

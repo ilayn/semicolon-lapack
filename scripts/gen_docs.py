@@ -460,6 +460,7 @@ HIERARCHY = {
     }),
     "auxiliary": ("Auxiliary Parameters", [
         "xerbla", "ieeeck", "ilaenv2stage", "ilaver", "iparam2stage", "labad",
+        "roundup_lwork",
         "chla_transtype", "iladiag", "ilaprec", "ilatrans", "ilauplo",
     ]),
 }

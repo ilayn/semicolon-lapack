@@ -28,6 +28,7 @@ f64 dlapy3_(f64* x, f64* y, f64* z);
 f64 dlarmm_(f64* anorm, f64* bnorm, f64* cnorm);
 f64 dla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f64* AB, INT* ldab, f64* AFB, INT* ldafb);
 f64 dla_gerpvgrw_(INT* n, INT* ncols, f64* A, INT* lda, f64* AF, INT* ldaf);
+f64 droundup_lwork_(INT* lwork);
 INT disnan_(f64* din);
 INT dlaisnan_(f64* din1, f64* din2);
 INT dlaneg_(INT* n, f64* D, f64* lld, f64* sigma, f64* pivmin, INT* r);
@@ -597,6 +598,11 @@ f64 dla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f64* AB, INT* ldab, f64*
 
 f64 dla_gerpvgrw_(INT* n, INT* ncols, f64* A, INT* lda, f64* AF, INT* ldaf) {
     f64 _ret = dla_gerpvgrw(*n, *ncols, A, *lda, AF, *ldaf);
+    return _ret;
+}
+
+f64 droundup_lwork_(INT* lwork) {
+    f64 _ret = droundup_lwork(*lwork);
     return _ret;
 }
 

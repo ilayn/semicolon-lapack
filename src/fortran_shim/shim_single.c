@@ -28,6 +28,7 @@ f32 slapy3_(f32* x, f32* y, f32* z);
 f32 slarmm_(f32* anorm, f32* bnorm, f32* cnorm);
 f32 sla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f32* AB, INT* ldab, f32* AFB, INT* ldafb);
 f32 sla_gerpvgrw_(INT* n, INT* ncols, f32* A, INT* lda, f32* AF, INT* ldaf);
+f32 sroundup_lwork_(INT* lwork);
 INT sisnan_(f32* din);
 INT slaisnan_(f32* din1, f32* din2);
 INT slaneg_(INT* n, f32* D, f32* lld, f32* sigma, f32* pivmin, INT* r);
@@ -594,6 +595,11 @@ f32 sla_gbrpvgrw_(INT* n, INT* kl, INT* ku, INT* ncols, f32* AB, INT* ldab, f32*
 
 f32 sla_gerpvgrw_(INT* n, INT* ncols, f32* A, INT* lda, f32* AF, INT* ldaf) {
     f32 _ret = sla_gerpvgrw(*n, *ncols, A, *lda, AF, *ldaf);
+    return _ret;
+}
+
+f32 sroundup_lwork_(INT* lwork) {
+    f32 _ret = sroundup_lwork(*lwork);
     return _ret;
 }
 
