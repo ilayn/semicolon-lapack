@@ -617,6 +617,8 @@ static void run_zchkhs_single(zchkhs_params_t* params)
      * Well-conditioned eigenvalues can come back in a different order
      * too (seen with MKL and BLIS, in the reference CHSEQR as well), so
      * W3 is paired with W1 by closest match instead of by index.
+     * The ratio is also divided by N: with some BLAS builds the two
+     * paths differ by O(N) ulp, in the reference CHSEQR as well.
      */
     result[10] = ulpinv;
     {
@@ -635,7 +637,7 @@ static void run_zchkhs_single(zchkhs_params_t* params)
             if (sj >= rtulp)
                 temp2 = fmaxf(temp2, sj * cabsf(W1[j] - W3[k]));
         }
-        result[10] = temp2 / fmaxf(unfl, ulp * fmaxf(temp1, temp2));
+        result[10] = temp2 / fmaxf(unfl, ulp * fmaxf(temp1, temp2)) / fmaxf(1.0f, (f32)n);
     }
 
     /* Compute selected left eigenvectors and confirm they agree */
