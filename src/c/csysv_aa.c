@@ -109,7 +109,7 @@ void csysv_aa(
         csytrs_aa(uplo, n, nrhs, A, lda, ipiv, B, ldb, work, -1, info);
         lwkopt_sytrs = (INT)crealf(work[0]);
         lwkopt = (lwkopt_sytrf > lwkopt_sytrs) ? lwkopt_sytrf : lwkopt_sytrs;
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -126,5 +126,5 @@ void csysv_aa(
 
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

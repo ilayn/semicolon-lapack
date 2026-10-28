@@ -167,7 +167,7 @@ void strsen(const char* job, const char* compq, const INT* select,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
     }
 
@@ -281,6 +281,6 @@ L40:
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

@@ -113,7 +113,7 @@ void cgghd3(
     } else {
         lwkopt = 6 * n * nb;
     }
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     initq = (compq[0] == 'I' || compq[0] == 'i');
     wantq = initq || (compq[0] == 'V' || compq[0] == 'v');
     initz = (compz[0] == 'I' || compz[0] == 'i');
@@ -609,5 +609,5 @@ void cgghd3(
                    Q, ldq, Z, ldz, &ierr);
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

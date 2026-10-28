@@ -110,7 +110,7 @@ void sormtr(const char* side, const char* uplo, const char* trans,
             nb = lapack_get_nb("ORMQR");
         }
         lwkopt = nw * nb;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -159,5 +159,5 @@ void sormtr(const char* side, const char* uplo, const char* trans,
                &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

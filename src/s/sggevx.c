@@ -193,7 +193,7 @@ void sggevx(const char* balanc, const char* jobvl, const char* jobvr,
                 maxwrk = maxwrk > (n + n * nb_orgqr) ? maxwrk : (n + n * nb_orgqr);
             }
         }
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -26;
@@ -455,6 +455,6 @@ L130:
         slascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
     }
 
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
     return;
 }

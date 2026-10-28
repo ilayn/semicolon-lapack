@@ -88,7 +88,7 @@ void chetrs_aa(
         xerbla("CHETRS_AA", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLXF((f32)lwkmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkmin), 0.0f);
         return;
     }
 

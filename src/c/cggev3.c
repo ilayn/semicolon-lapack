@@ -169,7 +169,7 @@ void cggev3(const char* jobvl, const char* jobvr, const INT n,
         if (n == 0) {
             work[0] = CONE;
         } else {
-            work[0] = CMPLXF((f32)lwkopt, 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         }
     }
 
@@ -338,6 +338,6 @@ L70:
     if (ilbscl)
         clascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     return;
 }

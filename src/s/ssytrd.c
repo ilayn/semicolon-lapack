@@ -89,7 +89,7 @@ void ssytrd(const char* uplo, const INT n, f32* A, const INT lda,
         /* Determine the block size. */
         nb = lapack_get_nb("SYTRD");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -255,5 +255,5 @@ void ssytrd(const char* uplo, const INT n, f32* A, const INT lda,
                &tau[i], &iinfo);
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

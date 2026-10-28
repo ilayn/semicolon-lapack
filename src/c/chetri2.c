@@ -89,7 +89,7 @@ void chetri2(
         xerbla("CHETRI2", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLXF((f32)minsize, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(minsize), 0.0f);
         return;
     }
 

@@ -52,7 +52,7 @@ void cungqr(const INT m, const INT n, const INT k,
     *info = 0;
     nb = lapack_get_nb("UNGQR");
     lwkopt = (n > 1 ? n : 1) * nb;
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     lquery = (lwork == -1);
 
     if (m < 0) {
@@ -154,5 +154,5 @@ void cungqr(const INT m, const INT n, const INT k,
         }
     }
 
-    work[0] = CMPLXF((f32)iws, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(iws), 0.0f);
 }

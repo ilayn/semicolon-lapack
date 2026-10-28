@@ -127,7 +127,7 @@ void sormbr(const char* vect, const char* side, const char* trans,
         }
         if (nb < 1) nb = 1;
         lwkopt = nw * nb;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -191,5 +191,5 @@ void sormbr(const char* vect, const char* side, const char* trans,
                    &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
         }
     }
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

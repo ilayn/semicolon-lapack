@@ -189,7 +189,7 @@ void stgsyl(
         } else {
             lwmin = 1;
         }
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
 
         if (lwork < lwmin && !lquery) {
             *info = -20;
@@ -460,5 +460,5 @@ void stgsyl(
 
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

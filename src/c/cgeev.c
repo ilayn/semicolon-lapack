@@ -146,7 +146,7 @@ void cgeev(const char* jobvl, const char* jobvr, const INT n,
             maxwrk = maxwrk > hswork ? maxwrk : hswork;
             maxwrk = maxwrk > minwrk ? maxwrk : minwrk;
         }
-        work[0] = CMPLXF((f32)maxwrk, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -304,5 +304,5 @@ L50:
         }
     }
 
-    work[0] = CMPLXF((f32)maxwrk, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 }

@@ -110,7 +110,7 @@ void ssbgvd(
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -162,6 +162,6 @@ void ssbgvd(
         slacpy("A", n, n, &work[indwk2], n, Z, ldz);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

@@ -182,7 +182,7 @@ void cggesx(const char* jobvsl, const char* jobvsr, const char* sort,
             maxwrk = 1;
             lwrk = 1;
         }
-        work[0] = CMPLXF((f32)lwrk, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwrk), 0.0f);
         if (wantsn || n == 0) {
             liwmin = 1;
         } else {
@@ -363,7 +363,7 @@ void cggesx(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L40:
-    work[0] = CMPLXF((f32)maxwrk, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
     iwork[0] = liwmin;
 
     return;

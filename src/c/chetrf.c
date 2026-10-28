@@ -138,7 +138,7 @@ void chetrf(
     INT lwkopt = n * nb > 1 ? n * nb : 1;
 
     if (*info == 0) {
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -244,5 +244,5 @@ void chetrf(
         }
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

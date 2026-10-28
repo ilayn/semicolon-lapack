@@ -114,7 +114,7 @@ void cgelst(
 
         mnnrhs = (mn > nrhs) ? mn : nrhs;
         lwopt = (1 > (mn + mnnrhs) * nb) ? 1 : ((mn + mnnrhs) * nb);
-        work[0] = (c64)lwopt;
+        work[0] = (c64)sroundup_lwork(lwopt);
 
     }
 
@@ -129,7 +129,7 @@ void cgelst(
     if (mn == 0 || nrhs == 0) {
         const c64 CZERO = CMPLXF(0.0f, 0.0f);
         claset("F", max_mn, nrhs, CZERO, CZERO, B, ldb);
-        work[0] = (c64)lwopt;
+        work[0] = (c64)sroundup_lwork(lwopt);
         return;
     }
 
@@ -161,7 +161,7 @@ void cgelst(
 
         const c64 CZERO = CMPLXF(0.0f, 0.0f);
         claset("F", max_mn, nrhs, CZERO, CZERO, B, ldb);
-        work[0] = (c64)lwopt;
+        work[0] = (c64)sroundup_lwork(lwopt);
         return;
     }
 
@@ -278,5 +278,5 @@ void cgelst(
         }
     }
 
-    work[0] = (c64)lwopt;
+    work[0] = (c64)sroundup_lwork(lwopt);
 }

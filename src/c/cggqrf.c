@@ -132,7 +132,7 @@ void cggqrf(const INT n, const INT m, const INT p,
 
     lwkopt = minval * nb;
     if (lwkopt < 1) lwkopt = 1;
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 
     lquery = (lwork == -1);
 
@@ -172,5 +172,5 @@ void cggqrf(const INT n, const INT m, const INT p,
     cgerqf(n, p, B, ldb, taub, work, lwork, info);
     lopt = (lopt > (INT)crealf(work[0])) ? lopt : (INT)crealf(work[0]);
 
-    work[0] = (c64)lopt;
+    work[0] = (c64)sroundup_lwork(lopt);
 }

@@ -137,13 +137,13 @@ void sgetsqrhrt(
         xerbla("SGETSQRHRT", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (f32)lworkopt;
+        work[0] = sroundup_lwork(lworkopt);
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (f32)lworkopt;
+        work[0] = sroundup_lwork(lworkopt);
         return;
     }
 
@@ -169,5 +169,5 @@ void sgetsqrhrt(
         }
     }
 
-    work[0] = (f32)lworkopt;
+    work[0] = sroundup_lwork(lworkopt);
 }

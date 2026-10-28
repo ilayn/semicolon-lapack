@@ -104,7 +104,7 @@ void slamtsqr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
     }
 
     if (*info != 0) {
@@ -252,5 +252,5 @@ void slamtsqr(const char* side, const char* trans,
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

@@ -194,7 +194,7 @@ void csysvx(
             INT nbnb = n * nb;
             lwkopt = (lwkopt > nbnb) ? lwkopt : nbnb;
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -236,5 +236,5 @@ void csysvx(
         *info = n + 1;
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

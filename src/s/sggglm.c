@@ -164,7 +164,7 @@ void sggglm(
             max_val = (n > p) ? n : p;
             lwkopt = m + np + max_val * nb;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;

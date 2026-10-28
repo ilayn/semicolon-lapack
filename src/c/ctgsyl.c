@@ -191,7 +191,7 @@ void ctgsyl(
         } else {
             lwmin = 1;
         }
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 
         if (lwork < lwmin && !lquery) {
             *info = -20;
@@ -494,5 +494,5 @@ void ctgsyl(
 
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

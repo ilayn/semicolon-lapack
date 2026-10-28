@@ -82,7 +82,7 @@ void ssygvd(
     }
 
     if (*info == 0) {
-        work[0] = (f32)lopt;
+        work[0] = sroundup_lwork(lopt);
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -141,6 +141,6 @@ void ssygvd(
         }
     }
 
-    work[0] = (f32)lopt;
+    work[0] = sroundup_lwork(lopt);
     iwork[0] = liopt;
 }

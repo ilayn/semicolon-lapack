@@ -180,7 +180,7 @@ void sstevr(const char* jobz, const char* range, const INT n,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -366,7 +366,7 @@ L10:
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
     return;
 }

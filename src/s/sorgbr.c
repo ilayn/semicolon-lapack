@@ -120,7 +120,7 @@ void sorgbr(const char* vect, const INT m, const INT n, const INT k,
         xerbla("SORGBR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -181,5 +181,5 @@ void sorgbr(const char* vect, const INT m, const INT n, const INT k,
             }
         }
     }
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

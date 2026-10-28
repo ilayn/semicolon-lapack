@@ -199,7 +199,7 @@ void slaqz0(
     lworkreq = (itemp1 + 2 * nw * nw > itemp2 + 2 * nbr * nbr) ?
                itemp1 + 2 * nw * nw : itemp2 + 2 * nbr * nbr;
     if (lwork == -1) {
-        work[0] = (f32)lworkreq;
+        work[0] = sroundup_lwork(lworkreq);
         return;
     } else if (lwork < lworkreq) {
         *info = -19;

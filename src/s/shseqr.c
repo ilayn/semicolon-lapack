@@ -82,7 +82,7 @@ void shseqr(const char* job, const char* compz, const INT n,
     wantt = (job[0] == 'S' || job[0] == 's');
     initz = (compz[0] == 'I' || compz[0] == 'i');
     wantz = initz || (compz[0] == 'V' || compz[0] == 'v');
-    work[0] = (f32)(1 > n ? 1 : n);
+    work[0] = sroundup_lwork(1 > n ? 1 : n);
     lquery = (lwork == -1);
 
     *info = 0;

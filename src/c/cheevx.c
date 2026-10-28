@@ -146,7 +146,7 @@ void cheevx(const char* jobz, const char* range, const char* uplo,
             nb = nb > lapack_get_nb("UNMTR") ? nb : lapack_get_nb("UNMTR");
             lwkopt = (nb + 1) * n > lwkmin ? (nb + 1) * n : lwkmin;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < lwkmin && !lquery) {
             *info = -17;
@@ -344,5 +344,5 @@ L40:
     }
 
     /* Set WORK(1) to optimal complex workspace size */
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

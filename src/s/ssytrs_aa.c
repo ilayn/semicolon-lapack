@@ -86,7 +86,7 @@ void ssytrs_aa(
         xerbla("SSYTRS_AA", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (f32)lwkmin;
+        work[0] = sroundup_lwork(lwkmin);
         return;
     }
 

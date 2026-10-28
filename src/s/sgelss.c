@@ -199,7 +199,7 @@ void sgelss(const INT m, const INT n, const INT nrhs,
             }
             if (maxwrk < minwrk) maxwrk = minwrk;
         }
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -524,5 +524,5 @@ void sgelss(const INT m, const INT n, const INT nrhs,
     }
 
 cleanup:
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
 }

@@ -62,7 +62,7 @@ void cgeqrf(const INT m, const INT n,
             work[0] = CMPLXF(1.0f, 0.0f);
         } else {
             nb = lapack_get_nb("GEQRF");
-            work[0] = CMPLXF((f32)(n * nb), 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(n * nb), 0.0f);
         }
         if (!lquery && lwork < (k > 0 ? (n > 1 ? n : 1) : 1)) {
             *info = -7;
@@ -137,5 +137,5 @@ void cgeqrf(const INT m, const INT n,
         cgeqr2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = CMPLXF((f32)iws, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(iws), 0.0f);
 }

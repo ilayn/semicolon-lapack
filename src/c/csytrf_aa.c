@@ -101,7 +101,7 @@ void csytrf_aa(
     }
 
     if (*info == 0) {
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -258,5 +258,5 @@ void csytrf_aa(
         }
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

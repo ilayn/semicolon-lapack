@@ -119,14 +119,14 @@ void cheevx_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = CMPLXF((f32)lwmin, 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         } else {
             kd = ilaenv2stage(1, "CHETRD_2STAGE", jobz, n, -1, -1, -1);
             ib = ilaenv2stage(2, "CHETRD_2STAGE", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "CHETRD_2STAGE", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "CHETRD_2STAGE", jobz, n, kd, ib, -1);
             lwmin = n + lhtrd + lwtrd;
-            work[0] = CMPLXF((f32)lwmin, 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         }
 
         if (lwork < lwmin && !lquery)
@@ -304,5 +304,5 @@ L40:
         }
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

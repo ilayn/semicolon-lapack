@@ -92,7 +92,7 @@ void sstevd(const char* jobz, const INT n, f32* D, f32* E,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -157,6 +157,6 @@ void sstevd(const char* jobz, const INT n, f32* D, f32* E,
         cblas_sscal(n, ONE / sigma, D, 1);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

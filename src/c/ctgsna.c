@@ -124,7 +124,7 @@ void ctgsna(
         } else {
             lwmin = n;
         }
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 
         if (mm < *m) {
             *info = -15;
@@ -219,5 +219,5 @@ void ctgsna(
             }
         }
     }
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

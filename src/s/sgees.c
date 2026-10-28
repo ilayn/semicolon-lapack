@@ -130,7 +130,7 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
                 maxwrk = maxwrk > (n + hswork) ? maxwrk : (n + hswork);
             }
         }
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -308,5 +308,5 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
         }
     }
 
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
 }

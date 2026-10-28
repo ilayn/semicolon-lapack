@@ -88,7 +88,7 @@ void slatsqr(const INT m, const INT n, const INT mb, const INT nb,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
     }
 
     if (*info != 0) {
@@ -129,5 +129,5 @@ void slatsqr(const INT m, const INT n, const INT mb, const INT nb,
                &T[0 + ctr * n * ldt], ldt, work, info);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

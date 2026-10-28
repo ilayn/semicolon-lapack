@@ -107,7 +107,7 @@ void slaqz3(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = (f32)lworkreq;
+        work[0] = sroundup_lwork(lworkreq);
         return;
     } else if (lwork < lworkreq) {
         *info = -26;

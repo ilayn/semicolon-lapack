@@ -202,7 +202,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
             }
             if (maxwrk < minwrk) maxwrk = minwrk;
         }
-        work[0] = CMPLXF((f32)maxwrk, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -515,5 +515,5 @@ void cgelss(const INT m, const INT n, const INT nrhs,
     }
 
 cleanup:
-    work[0] = CMPLXF((f32)maxwrk, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 }

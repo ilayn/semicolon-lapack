@@ -103,7 +103,7 @@ void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
         lwkopt = n + (INT)work[0];
         if (2 * n > lwkopt) lwkopt = 2 * n;
         if (lwkopt < 1) lwkopt = 1;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -152,5 +152,5 @@ void sggsvd3(const char* jobu, const char* jobv, const char* jobq,
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

@@ -114,7 +114,7 @@ void chesv_aa(
         lwkopt_hetrs = (INT)crealf(work[0]);
         tmp1 = (lwkmin > lwkopt_hetrf) ? lwkmin : lwkopt_hetrf;
         lwkopt = (tmp1 > lwkopt_hetrs) ? tmp1 : lwkopt_hetrs;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -131,5 +131,5 @@ void chesv_aa(
 
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

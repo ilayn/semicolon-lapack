@@ -137,7 +137,7 @@ void chbgvd(
     }
 
     if (*info == 0) {
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         rwork[0] = (f32)lrwmin;
         iwork[0] = liwmin;
 
@@ -195,7 +195,7 @@ void chbgvd(
         clacpy("A", n, n, &work[indwk2], n, Z, ldz);
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     rwork[0] = (f32)lrwmin;
     iwork[0] = liwmin;
 }

@@ -111,7 +111,7 @@ void cgemlq(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (c64)lwmin;
+        work[0] = (c64)sroundup_lwork(lwmin);
     }
 
     if (*info != 0) {
@@ -138,5 +138,5 @@ void cgemlq(const char* side, const char* trans,
                  A, lda, &T[5], mb, C, ldc, work, lwork, info);
     }
 
-    work[0] = (c64)lwmin;
+    work[0] = (c64)sroundup_lwork(lwmin);
 }

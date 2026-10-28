@@ -159,7 +159,7 @@ void ctgsen(
         liwmin = 1;
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     iwork[0] = liwmin;
 
     if (lwork < lwmin && !lquery) {
@@ -370,6 +370,6 @@ L50:
 
 L70:
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     iwork[0] = liwmin;
 }

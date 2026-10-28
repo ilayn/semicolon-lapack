@@ -97,7 +97,7 @@ void ssytrf_aa(
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -254,5 +254,5 @@ void ssytrf_aa(
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

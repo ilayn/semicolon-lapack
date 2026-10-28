@@ -129,7 +129,7 @@ void sggsvp3(const char* jobu, const char* jobv, const char* jobq,
         sgeqp3(m, n, A, lda, iwork, tau, work, -1, &ierr);
         lwkopt = (lwkopt > (INT)work[0]) ? lwkopt : (INT)work[0];
         if (lwkopt < 1) lwkopt = 1;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -264,5 +264,5 @@ void sggsvp3(const char* jobu, const char* jobv, const char* jobq,
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

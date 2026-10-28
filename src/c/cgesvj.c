@@ -272,8 +272,8 @@ void cgesvj(const char* joba, const char* jobu, const char* jobv,
         xerbla("CGESVJ", -(*info));
         return;
     } else if (lquery) {
-        cwork[0] = (c64)lwmin;
-        rwork[0] = (f32)lrwmin;
+        cwork[0] = (c64)sroundup_lwork(lwmin);
+        rwork[0] = sroundup_lwork(lrwmin);
         return;
     }
 

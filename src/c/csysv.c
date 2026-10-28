@@ -112,7 +112,7 @@ void csysv(const char* uplo, const INT n, const INT nrhs,
             csytrf(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (INT)crealf(work[0]);
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -129,5 +129,5 @@ void csysv(const char* uplo, const INT n, const INT nrhs,
         csytrs(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

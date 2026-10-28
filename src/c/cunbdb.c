@@ -174,7 +174,7 @@ void cunbdb(const char* trans, const char* signs,
     if (*info == 0) {
         lworkopt = m - q;
         lworkmin = m - q;
-        work[0] = CMPLXF((f32)lworkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lworkopt), 0.0f);
         if (lwork < lworkmin && !lquery) {
             *info = -21;
         }

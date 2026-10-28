@@ -142,7 +142,7 @@ void ssytrf_rook(
     if (*info == 0) {
         nb = lapack_get_nb("SYTRF_ROOK");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -226,5 +226,5 @@ void ssytrf_rook(
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

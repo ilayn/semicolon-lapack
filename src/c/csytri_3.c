@@ -118,7 +118,7 @@ void csytri_3(
         xerbla("CSYTRI_3", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
@@ -128,5 +128,5 @@ void csytri_3(
 
     csytri_3x(uplo, n, A, lda, E, ipiv, work, nb, info);
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

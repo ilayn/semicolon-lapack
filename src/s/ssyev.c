@@ -73,7 +73,7 @@ void ssyev(const char* jobz, const char* uplo, const INT n,
     if (*info == 0) {
         nb = lapack_get_nb("SYTRD");
         lwkopt = (n > 1) ? (nb + 2) * n : 2;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < (3 * n - 1 > 1 ? 3 * n - 1 : 1) && !lquery) {
             *info = -8;
@@ -152,5 +152,5 @@ void ssyev(const char* jobz, const char* uplo, const INT n,
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

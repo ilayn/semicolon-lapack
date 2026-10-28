@@ -130,9 +130,9 @@ void sgeqr(const INT m, const INT n,
         T[1] = (f32)mb;
         T[2] = (f32)nb;
         if (minw) {
-            work[0] = (f32)lwmin;
+            work[0] = sroundup_lwork(lwmin);
         } else {
-            work[0] = (f32)lwreq;
+            work[0] = sroundup_lwork(lwreq);
         }
     }
     if (*info != 0) {
@@ -154,5 +154,5 @@ void sgeqr(const INT m, const INT n,
         slatsqr(m, n, mb, nb, A, lda, &T[5], nb, work, lwork, info);
     }
 
-    work[0] = (f32)lwreq;
+    work[0] = sroundup_lwork(lwreq);
 }

@@ -105,7 +105,7 @@ void chetri_3(
         }
         lwkopt = (n + nb + 1) * (nb + 3);
     }
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -130,5 +130,5 @@ void chetri_3(
 
     chetri_3x(uplo, n, A, lda, E, ipiv, work, nb, info);
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

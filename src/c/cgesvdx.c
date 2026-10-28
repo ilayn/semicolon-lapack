@@ -192,7 +192,7 @@ void cgesvdx(const char* jobu, const char* jobvt, const char* range,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = CMPLXF((f32)maxwrk, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -508,5 +508,5 @@ void cgesvdx(const char* jobu, const char* jobvt, const char* range,
     }
 
     /* Return optimal workspace */
-    work[0] = CMPLXF((f32)maxwrk, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 }

@@ -147,8 +147,8 @@ void chetrd_2stage(const char* vect, const char* uplo, const INT n,
     }
 
     if (*info == 0) {
-        hous2[0] = CMPLXF((f32)lhmin, 0.0f);
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        hous2[0] = CMPLXF(sroundup_lwork(lhmin), 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     }
 
     if (*info != 0) {
@@ -183,5 +183,5 @@ void chetrd_2stage(const char* vect, const char* uplo, const INT n,
         return;
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

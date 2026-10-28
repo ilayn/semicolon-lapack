@@ -89,7 +89,7 @@ void csytrs_aa(
         xerbla("CSYTRS_AA", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (c64)lwkmin;
+        work[0] = (c64)sroundup_lwork(lwkmin);
         return;
     }
 

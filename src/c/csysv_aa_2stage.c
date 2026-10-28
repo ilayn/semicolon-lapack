@@ -124,7 +124,7 @@ void csysv_aa_2stage(
     if (*info == 0) {
         csytrf_aa_2stage(uplo, n, A, lda, TB, -1, ipiv, ipiv2, work, -1, info);
         lwkopt = (lwkmin > (INT)crealf(work[0])) ? lwkmin : (INT)crealf(work[0]);
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -141,5 +141,5 @@ void csysv_aa_2stage(
 
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

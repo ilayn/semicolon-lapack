@@ -110,7 +110,7 @@ void cunbdb1(const INT m, const INT p, const INT q,
         lworkopt = ilarf + llarf;
         if (iorbdb5 + lorbdb5 > lworkopt) lworkopt = iorbdb5 + lorbdb5;
         lworkmin = lworkopt;
-        work[0] = CMPLXF((f32)lworkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lworkopt), 0.0f);
         if (lwork < lworkmin && !lquery) {
             *info = -14;
         }

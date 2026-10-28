@@ -141,7 +141,7 @@ void csysv_rook(
             csytrf_rook(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (INT)crealf(work[0]);
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -156,5 +156,5 @@ void csysv_rook(
         csytrs_rook(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

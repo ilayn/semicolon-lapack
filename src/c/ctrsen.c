@@ -121,7 +121,7 @@ void ctrsen(const char* job, const char* compq, const INT* select,
     }
 
     if (*info == 0) {
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     }
 
     if (*info != 0) {
@@ -208,5 +208,5 @@ L40:
         W[k] = T[k + k * ldt];
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

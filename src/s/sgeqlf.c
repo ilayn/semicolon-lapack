@@ -59,7 +59,7 @@ void sgeqlf(const INT m, const INT n,
             work[0] = 1.0f;
         } else {
             nb = lapack_get_nb("GEQLF");
-            work[0] = (f32)(n * nb);
+            work[0] = sroundup_lwork(n * nb);
         }
         if (!lquery && lwork < (k > 0 ? (n > 1 ? n : 1) : 1)) {
             *info = -7;
@@ -145,5 +145,5 @@ void sgeqlf(const INT m, const INT n,
         sgeql2(mu, nu, A, lda, tau, work, &iinfo);
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

@@ -134,7 +134,7 @@ void clatrs3(
     } else {
         lwmin = lscale + lanrm;
     }
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 
     /* Test the input parameters */
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
@@ -425,5 +425,5 @@ void clatrs3(
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

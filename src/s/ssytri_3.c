@@ -106,7 +106,7 @@ void ssytri_3(
         }
         lwkopt = (n + nb + 1) * (nb + 3);
     }
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 
     if (!upper && !(uplo[0] == 'L' || uplo[0] == 'l')) {
         *info = -1;
@@ -131,5 +131,5 @@ void ssytri_3(
 
     ssytri_3x(uplo, n, A, lda, E, ipiv, work, nb, info);
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

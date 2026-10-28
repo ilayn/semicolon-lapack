@@ -131,9 +131,9 @@ void cgeqr(const INT m, const INT n,
         T[1] = (c64)mb;
         T[2] = (c64)nb;
         if (minw) {
-            work[0] = (c64)lwmin;
+            work[0] = (c64)sroundup_lwork(lwmin);
         } else {
-            work[0] = (c64)lwreq;
+            work[0] = (c64)sroundup_lwork(lwreq);
         }
     }
     if (*info != 0) {
@@ -155,5 +155,5 @@ void cgeqr(const INT m, const INT n,
         clatsqr(m, n, mb, nb, A, lda, &T[5], nb, work, lwork, info);
     }
 
-    work[0] = (c64)lwreq;
+    work[0] = (c64)sroundup_lwork(lwreq);
 }

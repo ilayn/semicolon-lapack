@@ -127,7 +127,7 @@ void cgees(const char* jobvs, const char* sort, cselect1_t select,
                 maxwrk = maxwrk > hswork ? maxwrk : hswork;
             }
         }
-        work[0] = CMPLXF((f32)maxwrk, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -221,5 +221,5 @@ void cgees(const char* jobvs, const char* sort, cselect1_t select,
         cblas_ccopy(n, A, lda + 1, W, 1);
     }
 
-    work[0] = CMPLXF((f32)maxwrk, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 }

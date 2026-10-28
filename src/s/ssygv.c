@@ -69,7 +69,7 @@ void ssygv(
         lwkmin = (3 * n - 1 > 1) ? 3 * n - 1 : 1;
         nb = lapack_get_nb("SYTRD");
         lwkopt = ((nb + 2) * n > lwkmin) ? (nb + 2) * n : lwkmin;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -11;
@@ -125,5 +125,5 @@ void ssygv(
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

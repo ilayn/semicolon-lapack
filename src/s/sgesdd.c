@@ -313,7 +313,7 @@ void sgesdd(const char* jobz, const INT m, const INT n,
         }
 
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -12;
@@ -772,5 +772,5 @@ void sgesdd(const char* jobz, const INT m, const INT n,
     }
 
     /* Return optimal workspace in WORK(1) */
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
 }

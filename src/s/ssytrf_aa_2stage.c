@@ -113,10 +113,10 @@ void ssytrf_aa_2stage(
 
     if (*info == 0) {
         if (tquery) {
-            TB[0] = (f32)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n);
+            TB[0] = sroundup_lwork((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n);
         }
         if (wquery) {
-            work[0] = (f32)((1 > n * nb) ? 1 : n * nb);
+            work[0] = sroundup_lwork((1 > n * nb) ? 1 : n * nb);
         }
     }
     if (tquery || wquery) {

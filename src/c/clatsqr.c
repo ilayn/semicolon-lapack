@@ -89,7 +89,7 @@ void clatsqr(const INT m, const INT n, const INT mb, const INT nb,
     }
 
     if (*info == 0) {
-        work[0] = (c64)lwmin;
+        work[0] = (c64)sroundup_lwork(lwmin);
     }
 
     if (*info != 0) {
@@ -130,5 +130,5 @@ void clatsqr(const INT m, const INT n, const INT mb, const INT nb,
                &T[0 + ctr * n * ldt], ldt, work, info);
     }
 
-    work[0] = (c64)lwmin;
+    work[0] = (c64)sroundup_lwork(lwmin);
 }

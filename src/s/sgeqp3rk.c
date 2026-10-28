@@ -129,7 +129,7 @@ void sgeqp3rk(
             nb = lapack_get_nb("GEQP3RK");
             lwkopt = 2 * n + nb * (n + nrhs + 1);
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < iws && !lquery) {
             *info = -15;
@@ -147,7 +147,7 @@ void sgeqp3rk(
         *K = 0;
         *maxc2nrmk = 0.0f;
         *relmaxc2nrmk = 0.0f;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -171,7 +171,7 @@ void sgeqp3rk(
         *maxc2nrmk = maxc2nrm;
         *relmaxc2nrmk = maxc2nrm;
 
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -185,7 +185,7 @@ void sgeqp3rk(
             tau[j] = 0.0f;
         }
 
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
 
     }
@@ -205,7 +205,7 @@ void sgeqp3rk(
         for (j = 0; j < minmn; j++) {
             tau[j] = 0.0f;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -232,7 +232,7 @@ void sgeqp3rk(
             tau[j] = 0.0f;
         }
 
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -290,7 +290,7 @@ void sgeqp3rk(
                     *info = ioffset + iinfo;
                 }
 
-                work[0] = (f32)lwkopt;
+                work[0] = sroundup_lwork(lwkopt);
 
                 return;
 
@@ -342,5 +342,5 @@ void sgeqp3rk(
 
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

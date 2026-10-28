@@ -113,7 +113,7 @@ void chesv(const char* uplo, const INT n, const INT nrhs,
         } else {
             lwkopt = n * lapack_get_nb("HETRF");
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -142,5 +142,5 @@ void chesv(const char* uplo, const INT n, const INT nrhs,
 
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

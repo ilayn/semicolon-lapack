@@ -80,7 +80,7 @@ void cheev(const char* jobz, const char* uplo, const INT n,
     if (*info == 0) {
         nb = lapack_get_nb("HETRD");
         lwkopt = (n > 1) ? (nb + 1) * n : 1;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < (2 * n - 1 > 1 ? 2 * n - 1 : 1) && !lquery) {
             *info = -8;
@@ -162,5 +162,5 @@ void cheev(const char* jobz, const char* uplo, const INT n,
     }
 
     /* Set WORK(1) to optimal complex workspace size */
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

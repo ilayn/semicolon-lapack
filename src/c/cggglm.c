@@ -166,7 +166,7 @@ void cggglm(
             max_val = (n > p) ? n : p;
             lwkopt = m + np + max_val * nb;
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;

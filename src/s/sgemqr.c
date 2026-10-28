@@ -112,7 +112,7 @@ void sgemqr(const char* side, const char* trans,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
     }
 
     if (*info != 0) {
@@ -139,5 +139,5 @@ void sgemqr(const char* side, const char* trans,
                  A, lda, &T[5], nb, C, ldc, work, lwork, info);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

@@ -92,7 +92,7 @@ void sgeqp3(const INT m, const INT n,
             nb = lapack_get_nb("GEQRF");
             lwkopt = 2 * n + (n + 1) * nb;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if ((lwork < iws) && !lquery) {
             *info = -8;
@@ -288,5 +288,5 @@ void sgeqp3(const INT m, const INT n,
         }
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

@@ -123,7 +123,7 @@ void chetrf_rk(
     if (*info == 0) {
         nb = lapack_get_nb("HETRF_RK");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -227,5 +227,5 @@ void chetrf_rk(
         }
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

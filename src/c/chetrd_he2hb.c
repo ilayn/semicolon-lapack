@@ -115,7 +115,7 @@ void chetrd_he2hb(const char* uplo, const INT n, const INT kd,
         xerbla("CHETRD_HE2HB", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         return;
     }
 
@@ -272,5 +272,5 @@ void chetrd_he2hb(const char* uplo, const INT n, const INT kd,
         }
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

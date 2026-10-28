@@ -132,7 +132,7 @@ void sgelsy(const INT m, const INT n, const INT nrhs,
             if (w1 > lwkopt) lwkopt = w1;
             if (w2 > lwkopt) lwkopt = w2;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;
@@ -172,7 +172,7 @@ void sgelsy(const INT m, const INT n, const INT nrhs,
         INT maxmn = m > n ? m : n;
         slaset("F", maxmn, nrhs, 0.0f, 0.0f, B, ldb);
         *rank = 0;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -203,7 +203,7 @@ void sgelsy(const INT m, const INT n, const INT nrhs,
         *rank = 0;
         INT maxmn = m > n ? m : n;
         slaset("F", maxmn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     } else {
         *rank = 1;
@@ -305,5 +305,5 @@ void sgelsy(const INT m, const INT n, const INT nrhs,
         slascl("U", 0, 0, bignum, anrm, *rank, *rank, A, lda, &iinfo);
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

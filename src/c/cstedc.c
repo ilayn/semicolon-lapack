@@ -140,7 +140,7 @@ void cstedc(const char* compz, const INT n,
             lrwmin = 1 + 4*n + 2*n*n;
             liwmin = 3 + 5*n;
         }
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         rwork[0] = (f32)lrwmin;
         iwork[0] = liwmin;
 
@@ -321,7 +321,7 @@ void cstedc(const char* compz, const INT n,
     }
 
 L70:
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     rwork[0] = (f32)lrwmin;
     iwork[0] = liwmin;
 

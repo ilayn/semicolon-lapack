@@ -136,7 +136,7 @@ void chesv_rk(
             chetrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
             lwkopt = (INT)crealf(work[0]);
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -154,5 +154,5 @@ void chesv_rk(
 
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

@@ -59,7 +59,7 @@ void sgerqf(const INT m, const INT n,
             work[0] = 1.0f;
         } else {
             nb = lapack_get_nb("GERQF");
-            work[0] = (f32)(m * nb);
+            work[0] = sroundup_lwork(m * nb);
         }
         if (!lquery && lwork < (k > 0 ? (m > 1 ? m : 1) : 1)) {
             *info = -7;
@@ -144,5 +144,5 @@ void sgerqf(const INT m, const INT n,
         sgerq2(mu, nu, A, lda, tau, work, &iinfo);
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

@@ -127,7 +127,7 @@ void cheev_2stage(const char* jobz, const char* uplo, const INT n,
         lhtrd = ilaenv2stage(3, "CHETRD_2STAGE", jobz, n, kd, ib, -1);
         lwtrd = ilaenv2stage(4, "CHETRD_2STAGE", jobz, n, kd, ib, -1);
         lwmin = n + lhtrd + lwtrd;
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 
         if (lwork < lwmin && !lquery) {
             *info = -8;
@@ -203,5 +203,5 @@ void cheev_2stage(const char* jobz, const char* uplo, const INT n,
         cblas_sscal(imax, one / sigma, W, 1);
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }
