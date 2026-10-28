@@ -61,7 +61,7 @@ void sstev(const char* jobz, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("SSTEV", -(*info));
+        xerbla("SSTEV ", -(*info));
         return;
     }
 

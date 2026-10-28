@@ -75,7 +75,7 @@ void zhpev(
     }
 
     if (*info != 0) {
-        xerbla("ZHPEV", -(*info));
+        xerbla("ZHPEV ", -(*info));
         return;
     }
 

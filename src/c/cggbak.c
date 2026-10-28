@@ -70,9 +70,13 @@ void cggbak(
         *info = -2;
     } else if (n < 0) {
         *info = -3;
-    } else if (ilo < 0 || (n > 0 && ilo > n - 1)) {
+    } else if (ilo < 0) {
         *info = -4;
-    } else if ((n > 0 && ihi < ilo) || ihi > n - 1) {
+    } else if (n == 0 && ihi == -1 && ilo != 0) {
+        *info = -4;
+    } else if (n > 0 && (ihi < ilo || ihi > n - 1)) {
+        *info = -5;
+    } else if (n == 0 && ilo == 0 && ihi != -1) {
         *info = -5;
     } else if (m < 0) {
         *info = -8;
