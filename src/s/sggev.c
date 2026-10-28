@@ -132,7 +132,7 @@ void sggev(const char* jobvl, const char* jobvr, const INT n,
         if (ilvl) {
             maxwrk = maxwrk > n * (7 + nb_orgqr) ? maxwrk : n * (7 + nb_orgqr);
         }
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -16;
@@ -354,6 +354,6 @@ L110:
         slascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
     }
 
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
     return;
 }

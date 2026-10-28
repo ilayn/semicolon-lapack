@@ -121,7 +121,7 @@ void chegvx(
         if (lwkopt < 1) {
             lwkopt = 1;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < (2 * n > 1 ? 2 * n : 1) && !lquery) {
             *info = -20;
@@ -187,5 +187,5 @@ void chegvx(
     }
 
     /* Set WORK(1) to optimal complex workspace size */
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

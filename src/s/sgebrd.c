@@ -81,7 +81,7 @@ void sgebrd(const INT m, const INT n, f32* restrict A, const INT lda,
         if (nb < 1) nb = 1;
         lwkopt = (m + n) * nb;
     }
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 
     lquery = (lwork == -1);
     if (m < 0) {
@@ -179,5 +179,5 @@ void sgebrd(const INT m, const INT n, f32* restrict A, const INT lda,
     /* Use unblocked code to reduce the remainder of the matrix */
     sgebd2(m - i, n - i, &A[i + i * lda], lda, &D[i], &E[i],
            &tauq[i], &taup[i], work, &iinfo);
-    work[0] = (f32)ws;
+    work[0] = sroundup_lwork(ws);
 }

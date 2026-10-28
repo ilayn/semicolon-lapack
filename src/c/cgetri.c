@@ -57,7 +57,7 @@ void cgetri(
     *info = 0;
     nb = lapack_get_nb("GETRI");
     lwkopt = (n > 1) ? n * nb : 1;
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 
     lquery = (lwork == -1);
     if (n < 0) {
@@ -152,5 +152,5 @@ void cgetri(
         }
     }
 
-    work[0] = (c64)iws;
+    work[0] = (c64)sroundup_lwork(iws);
 }

@@ -203,5 +203,5 @@ void ssyev_2stage(const char* jobz, const char* uplo, const INT n,
         cblas_sscal(imax, one / sigma, W, 1);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

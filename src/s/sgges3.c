@@ -157,7 +157,7 @@ void sgges3(const char* jobvsl, const char* jobvsr, const char* sort,
         if (n == 0) {
             work[0] = 1;
         } else {
-            work[0] = (f32)lwkopt;
+            work[0] = sroundup_lwork(lwkopt);
         }
     }
 
@@ -378,7 +378,7 @@ void sgges3(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L50:
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 
     return;
 }

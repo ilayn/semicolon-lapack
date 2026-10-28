@@ -105,7 +105,7 @@ void sorm22(
 
     if (*info == 0) {
         lwkopt = m * n;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -245,5 +245,5 @@ void sorm22(
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

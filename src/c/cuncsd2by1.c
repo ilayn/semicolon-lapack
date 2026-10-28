@@ -310,7 +310,7 @@ void cuncsd2by1(
         if (iorgqr + lorgqropt - 1 > lworkopt) lworkopt = iorgqr + lorgqropt - 1;
         if (iorglq + lorglqopt - 1 > lworkopt) lworkopt = iorglq + lorglqopt - 1;
 
-        work[0] = CMPLXF((f32)lworkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lworkopt), 0.0f);
         if (lwork < lworkmin && !lquery) {
             *info = -19;
         }

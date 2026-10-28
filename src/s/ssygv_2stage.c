@@ -124,5 +124,5 @@ void ssygv_2stage(
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

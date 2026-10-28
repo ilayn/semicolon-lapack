@@ -71,13 +71,13 @@ void ssbev_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = (f32)lwmin;
+            work[0] = sroundup_lwork(lwmin);
         } else {
             ib = ilaenv2stage(2, "SSYTRD_SB2ST", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "SSYTRD_SB2ST", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "SSYTRD_SB2ST", jobz, n, kd, ib, -1);
             lwmin = n + lhtrd + lwtrd;
-            work[0] = (f32)lwmin;
+            work[0] = sroundup_lwork(lwmin);
         }
 
         if (lwork < lwmin && !lquery) {
@@ -156,5 +156,5 @@ void ssbev_2stage(
         cblas_sscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

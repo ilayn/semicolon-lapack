@@ -145,7 +145,7 @@ void cunmbr(const char* vect, const char* side, const char* trans,
         } else {
             lwkopt = 1;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -223,5 +223,5 @@ void cunmbr(const char* vect, const char* side, const char* trans,
                    tau, &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
         }
     }
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

@@ -89,7 +89,7 @@ void chetrd(const char* uplo, const INT n, c64* A, const INT lda,
     if (*info == 0) {
         nb = lapack_get_nb("HETRD");
         lwkopt = (1 > n * nb) ? 1 : n * nb;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -187,5 +187,5 @@ void chetrd(const char* uplo, const INT n, c64* A, const INT lda,
                &tau[i], &iinfo);
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

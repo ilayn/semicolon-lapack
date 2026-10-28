@@ -73,7 +73,7 @@ void sorgtr(const char* uplo, const INT n,
             nb = lapack_get_nb("ORGQR");
         }
         lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -137,5 +137,5 @@ void sorgtr(const char* uplo, const INT n,
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

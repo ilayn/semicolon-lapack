@@ -116,7 +116,7 @@ void ssyevx_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = (f32)lwmin;
+            work[0] = sroundup_lwork(lwmin);
         } else {
             kd = ilaenv2stage(1, "SSYTRD_2STAGE", jobz, n, -1, -1, -1);
             ib = ilaenv2stage(2, "SSYTRD_2STAGE", jobz, n, kd, -1, -1);
@@ -306,5 +306,5 @@ L40:
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

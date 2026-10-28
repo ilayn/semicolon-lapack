@@ -77,13 +77,13 @@ void chbev_2stage(
     if (*info == 0) {
         if (n <= 1) {
             lwmin = 1;
-            work[0] = CMPLXF((f32)lwmin, 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         } else {
             ib = ilaenv2stage(2, "CHETRD_HB2ST", jobz, n, kd, -1, -1);
             lhtrd = ilaenv2stage(3, "CHETRD_HB2ST", jobz, n, kd, ib, -1);
             lwtrd = ilaenv2stage(4, "CHETRD_HB2ST", jobz, n, kd, ib, -1);
             lwmin = lhtrd + lwtrd;
-            work[0] = CMPLXF((f32)lwmin, 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         }
 
         if (lwork < lwmin && !lquery) {
@@ -164,5 +164,5 @@ void chbev_2stage(
         cblas_sscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
 }

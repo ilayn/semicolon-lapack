@@ -81,7 +81,7 @@ void dspgvd(
                 lwmin = 2 * n;
             }
         }
-        work[0] = (f64)lwmin;
+        work[0] = droundup_lwork(lwmin);
         iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -144,6 +144,6 @@ void dspgvd(
         }
     }
 
-    work[0] = (f64)lwmin;
+    work[0] = droundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

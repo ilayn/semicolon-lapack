@@ -147,7 +147,7 @@ void ssysv_rk(
             ssytrf_rk(uplo, n, A, lda, E, ipiv, work, -1, info);
             lwkopt = (INT)work[0];
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -165,5 +165,5 @@ void ssysv_rk(
 
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

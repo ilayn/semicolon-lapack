@@ -71,7 +71,7 @@ void cunghr(const INT n, const INT ilo, const INT ihi,
     if (*info == 0) {
         nb = lapack_get_nb("UNGQR");
         lwkopt = nh_max_1 * nb;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -119,5 +119,5 @@ void cunghr(const INT n, const INT ilo, const INT ihi,
         cungqr(nh, nh, nh, &A[(ilo + 1) + (ilo + 1) * lda], lda,
                &tau[ilo], work, lwork, &iinfo);
     }
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

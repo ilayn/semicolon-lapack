@@ -34,6 +34,7 @@ SEMICOLON_API f32  slapy3(const f32 x, const f32 y, const f32 z);
 SEMICOLON_API f32  slarmm(const f32 anorm, const f32 bnorm, const f32 cnorm);
 SEMICOLON_API f32  sla_gbrpvgrw(const INT n, const INT kl, const INT ku, const INT ncols, const f32* restrict AB, const INT ldab, const f32* restrict AFB, const INT ldafb);
 SEMICOLON_API f32  sla_gerpvgrw(const INT n, const INT ncols, const f32* restrict A, const INT lda, const f32* restrict AF, const INT ldaf);
+SEMICOLON_API f32  sroundup_lwork(const INT lwork);
 SEMICOLON_API INT  sisnan(const f32 din);
 SEMICOLON_API INT  slaisnan(const f32 din1, const f32 din2);
 SEMICOLON_API INT  slaneg(const INT n, const f32* D, const f32* lld, const f32 sigma, const f32 pivmin, const INT r);

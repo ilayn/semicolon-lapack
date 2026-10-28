@@ -95,7 +95,7 @@ void chegv(
         if (lwkopt < 1) {
             lwkopt = 1;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < (1 > 2 * n - 1 ? 1 : 2 * n - 1) && !lquery) {
             *info = -11;
@@ -160,5 +160,5 @@ void chegv(
         }
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

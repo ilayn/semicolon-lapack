@@ -134,7 +134,7 @@ void sormrz(const char* side, const char* trans,
             }
             lwkopt = nw * nb + TSIZE;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -227,5 +227,5 @@ void sormrz(const char* side, const char* trans,
         }
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

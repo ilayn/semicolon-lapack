@@ -158,7 +158,7 @@ void sgglse(
             max_val = (m > n) ? m : n;
             lwkopt = p + mn + max_val * nb;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -12;

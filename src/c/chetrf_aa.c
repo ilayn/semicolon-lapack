@@ -103,7 +103,7 @@ void chetrf_aa(
     }
 
     if (*info == 0) {
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -263,5 +263,5 @@ void chetrf_aa(
         }
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

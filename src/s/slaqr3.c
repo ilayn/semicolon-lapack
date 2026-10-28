@@ -95,7 +95,7 @@ SEMICOLON_API void slaqr3(const INT wantt, const INT wantz, const INT n,
 
     /* Quick return in case of workspace query */
     if (lwork == -1) {
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
         return;
     }
 
@@ -377,5 +377,5 @@ SEMICOLON_API void slaqr3(const INT wantt, const INT wantz, const INT n,
     *ns = *ns - infqr;
 
     /* Return optimal workspace */
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

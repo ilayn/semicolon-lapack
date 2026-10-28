@@ -76,7 +76,7 @@ void ctzrzf(const INT m, const INT n,
             lwkopt = m * nb;
             lwkmin = m > 1 ? m : 1;
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -7;
@@ -216,5 +216,5 @@ void ctzrzf(const INT m, const INT n,
         clatrz(mu, n, n - m, A, lda, tau, work);
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

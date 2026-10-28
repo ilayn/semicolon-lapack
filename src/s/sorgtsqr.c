@@ -110,13 +110,13 @@ void sorgtsqr(
         xerbla("SORGTSQR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (f32)lworkopt;
+        work[0] = sroundup_lwork(lworkopt);
         return;
     }
 
     minval = (m < n) ? m : n;
     if (minval == 0) {
-        work[0] = (f32)lworkopt;
+        work[0] = sroundup_lwork(lworkopt);
         return;
     }
 
@@ -129,5 +129,5 @@ void sorgtsqr(
         cblas_scopy(m, &work[j * ldc], 1, &A[0 + j * lda], 1);
     }
 
-    work[0] = (f32)lworkopt;
+    work[0] = sroundup_lwork(lworkopt);
 }

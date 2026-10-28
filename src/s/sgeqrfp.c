@@ -64,7 +64,7 @@ void sgeqrfp(const INT m, const INT n,
     } else {
         iws = n * nb;
     }
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 
     if (m < 0) {
         *info = -1;
@@ -145,5 +145,5 @@ void sgeqrfp(const INT m, const INT n,
         sgeqr2p(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

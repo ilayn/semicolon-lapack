@@ -93,8 +93,8 @@ void chegvd(
     }
 
     if (*info == 0) {
-        work[0] = CMPLXF((f32)lopt, 0.0f);
-        rwork[0] = (f32)lropt;
+        work[0] = CMPLXF(sroundup_lwork(lopt), 0.0f);
+        rwork[0] = sroundup_lwork(lropt);
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -163,7 +163,7 @@ void chegvd(
         }
     }
 
-    work[0] = CMPLXF((f32)lopt, 0.0f);
-    rwork[0] = (f32)lropt;
+    work[0] = CMPLXF(sroundup_lwork(lopt), 0.0f);
+    rwork[0] = sroundup_lwork(lropt);
     iwork[0] = liopt;
 }

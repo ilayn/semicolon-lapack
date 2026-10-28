@@ -72,7 +72,7 @@ void sorgrq(const INT m, const INT n, const INT k,
             nb = lapack_get_nb("ORGRQ");
             lwkopt = m * nb;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < (m > 1 ? m : 1) && !lquery) {
             *info = -8;
@@ -163,5 +163,5 @@ void sorgrq(const INT m, const INT n, const INT k,
         }
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

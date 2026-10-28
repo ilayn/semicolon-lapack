@@ -165,7 +165,7 @@ void cgetsls(
             *info = -10;
         }
 
-        work[0] = (f32)(wsizeo);
+        work[0] = sroundup_lwork(wsizeo);
     }
 
     if (*info != 0) {
@@ -173,7 +173,7 @@ void cgetsls(
         return;
     }
     if (lquery) {
-        if (lwork == -2) work[0] = (f32)(wsizem);
+        if (lwork == -2) work[0] = sroundup_lwork(wsizem);
         return;
     }
     if (lwork < wsizeo) {
@@ -207,7 +207,7 @@ void cgetsls(
         iascl = 2;
     } else if (anrm == zero) {
         claset("F", maxmn, nrhs, czero, czero, B, ldb);
-        work[0] = (f32)(tszo + lwo);
+        work[0] = sroundup_lwork(tszo + lwo);
         return;
     }
 
@@ -309,5 +309,5 @@ void cgetsls(
         }
     }
 
-    work[0] = (f32)(tszo + lwo);
+    work[0] = sroundup_lwork(tszo + lwo);
 }

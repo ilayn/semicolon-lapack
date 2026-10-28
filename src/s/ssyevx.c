@@ -121,7 +121,7 @@ void ssyevx(const char* jobz, const char* range, const char* uplo,
             nb = nb > lapack_get_nb("ORMTR") ? nb : lapack_get_nb("ORMTR");
             lwkopt = (nb + 3) * n > lwkmin ? (nb + 3) * n : lwkmin;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < lwkmin && !lquery) {
             *info = -17;
@@ -316,5 +316,5 @@ L40:
     }
 
     /* Set WORK(1) to optimal workspace size */
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

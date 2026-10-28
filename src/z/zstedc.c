@@ -140,7 +140,7 @@ void zstedc(const char* compz, const INT n,
             lrwmin = 1 + 4*n + 2*n*n;
             liwmin = 3 + 5*n;
         }
-        work[0] = CMPLX((f64)lwmin, 0.0);
+        work[0] = CMPLX(droundup_lwork(lwmin), 0.0);
         rwork[0] = (f64)lrwmin;
         iwork[0] = liwmin;
 
@@ -321,7 +321,7 @@ void zstedc(const char* compz, const INT n,
     }
 
 L70:
-    work[0] = CMPLX((f64)lwmin, 0.0);
+    work[0] = CMPLX(droundup_lwork(lwmin), 0.0);
     rwork[0] = (f64)lrwmin;
     iwork[0] = liwmin;
 

@@ -92,7 +92,7 @@ void cunmhr(const char* side, const char* trans,
     if (*info == 0) {
         nb = lapack_get_nb("UNMQR");
         lwkopt = nw * nb;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -124,5 +124,5 @@ void cunmhr(const char* side, const char* trans,
     cunmqr(side, trans, mi, ni, nh, &A[(ilo + 1) + ilo * lda], lda,
            &tau[ilo], &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

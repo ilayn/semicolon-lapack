@@ -113,7 +113,7 @@ void ssysv_aa(
         lwkopt_sytrs = (INT)work[0];
         tmp1 = (lwkmin > lwkopt_sytrf) ? lwkmin : lwkopt_sytrf;
         lwkopt = (tmp1 > lwkopt_sytrs) ? tmp1 : lwkopt_sytrs;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -130,5 +130,5 @@ void ssysv_aa(
 
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

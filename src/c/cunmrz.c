@@ -126,7 +126,7 @@ void cunmrz(const char* side, const char* trans,
             nb = nbmax < lapack_get_nb("UNMRQ") ? nbmax : lapack_get_nb("UNMRQ");
             lwkopt = nw * nb + tsize;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -231,5 +231,5 @@ void cunmrz(const char* side, const char* trans,
             }
         }
     }
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

@@ -124,7 +124,7 @@ void chesv_aa_2stage(
     if (*info == 0) {
         chetrf_aa_2stage(uplo, n, A, lda, TB, -1, ipiv, ipiv2, work, -1, info);
         lwkopt = (lwkmin > (INT)crealf(work[0])) ? lwkmin : (INT)crealf(work[0]);
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -141,5 +141,5 @@ void chesv_aa_2stage(
 
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

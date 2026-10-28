@@ -161,7 +161,7 @@ void stgsen(
         liwmin = 1;
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 
     if (lwork < lwmin && !lquery) {
@@ -414,6 +414,6 @@ L60:
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

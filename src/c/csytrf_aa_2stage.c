@@ -121,7 +121,7 @@ void csytrf_aa_2stage(
             TB[0] = CMPLXF((f32)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n), 0.0f);
         }
         if (wquery) {
-            work[0] = CMPLXF((f32)((1 > n * nb) ? 1 : n * nb), 0.0f);
+            work[0] = CMPLXF(sroundup_lwork((1 > n * nb) ? 1 : n * nb), 0.0f);
         }
     }
     if (tquery || wquery) {

@@ -93,8 +93,8 @@ void zhegvd(
     }
 
     if (*info == 0) {
-        work[0] = CMPLX((f64)lopt, 0.0);
-        rwork[0] = (f64)lropt;
+        work[0] = CMPLX(droundup_lwork(lopt), 0.0);
+        rwork[0] = droundup_lwork(lropt);
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -163,7 +163,7 @@ void zhegvd(
         }
     }
 
-    work[0] = CMPLX((f64)lopt, 0.0);
-    rwork[0] = (f64)lropt;
+    work[0] = CMPLX(droundup_lwork(lopt), 0.0);
+    rwork[0] = droundup_lwork(lropt);
     iwork[0] = liopt;
 }

@@ -125,7 +125,7 @@ void cstemr(const char* jobz, const char* range, const INT n,
     rmax = (sqrtf(bignum) < ONE / sqrtf(sqrtf(safmin))) ? sqrtf(bignum) : ONE / sqrtf(sqrtf(safmin));
 
     if (*info == 0) {
-        work[0] = lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
 
         if (wantz && alleig) {
@@ -448,6 +448,6 @@ void cstemr(const char* jobz, const char* range, const INT n,
         }
     }
 
-    work[0] = lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

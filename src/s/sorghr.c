@@ -70,7 +70,7 @@ void sorghr(const INT n, const INT ilo, const INT ihi,
     if (*info == 0) {
         nb = lapack_get_nb("ORGQR");
         lwkopt = nh_max_1 * nb;
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -118,5 +118,5 @@ void sorghr(const INT n, const INT ilo, const INT ihi,
         sorgqr(nh, nh, nh, &A[(ilo + 1) + (ilo + 1) * lda], lda,
                &tau[ilo], work, lwork, &iinfo);
     }
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

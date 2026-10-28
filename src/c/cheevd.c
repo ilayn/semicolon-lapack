@@ -114,8 +114,8 @@ void cheevd(const char* jobz, const char* uplo, const INT n,
             lropt = lrwmin;
             liopt = liwmin;
         }
-        work[0] = CMPLXF((f32)lopt, 0.0f);
-        rwork[0] = (f32)lropt;
+        work[0] = CMPLXF(sroundup_lwork(lopt), 0.0f);
+        rwork[0] = sroundup_lwork(lropt);
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -207,7 +207,7 @@ void cheevd(const char* jobz, const char* uplo, const INT n,
         cblas_sscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLXF((f32)lopt, 0.0f);
-    rwork[0] = (f32)lropt;
+    work[0] = CMPLXF(sroundup_lwork(lopt), 0.0f);
+    rwork[0] = sroundup_lwork(lropt);
     iwork[0] = liopt;
 }

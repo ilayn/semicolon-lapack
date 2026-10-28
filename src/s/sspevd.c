@@ -91,7 +91,7 @@ void sspevd(const char* jobz, const char* uplo, const INT n,
             }
         }
         iwork[0] = liwmin;
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
 
         if (lwork < lwmin && !lquery) {
             *info = -9;
@@ -171,6 +171,6 @@ void sspevd(const char* jobz, const char* uplo, const INT n,
         cblas_sscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

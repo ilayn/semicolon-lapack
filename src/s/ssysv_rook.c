@@ -140,7 +140,7 @@ void ssysv_rook(
             ssytrf_rook(uplo, n, A, lda, ipiv, work, -1, info);
             lwkopt = (INT)work[0];
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -155,5 +155,5 @@ void ssysv_rook(
         ssytrs_rook(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

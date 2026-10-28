@@ -120,10 +120,10 @@ void chetrf_aa_2stage(
 
     if (*info == 0) {
         if (tquery) {
-            TB[0] = CMPLXF((f32)((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n), 0.0f);
+            TB[0] = CMPLXF(sroundup_lwork((1 > (3 * nb + 1) * n) ? 1 : (3 * nb + 1) * n), 0.0f);
         }
         if (wquery) {
-            work[0] = CMPLXF((f32)((1 > n * nb) ? 1 : n * nb), 0.0f);
+            work[0] = CMPLXF(sroundup_lwork((1 > n * nb) ? 1 : n * nb), 0.0f);
         }
     }
     if (tquery || wquery) {

@@ -71,7 +71,7 @@ void cungql(const INT m, const INT n, const INT k,
             nb = lapack_get_nb("UNGQL");
             lwkopt = n * nb;
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
 
         if (lwork < (n > 1 ? n : 1) && !lquery) {
             *info = -8;

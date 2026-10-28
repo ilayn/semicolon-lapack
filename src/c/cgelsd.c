@@ -184,7 +184,7 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
     } else {
     }
     if (minwrk > maxwrk) minwrk = maxwrk;
-    work[0] = (c64)maxwrk;
+    work[0] = (c64)sroundup_lwork(maxwrk);
     iwork[0] = liwork;
     rwork[0] = (f32)lrwork;
 
@@ -403,7 +403,7 @@ void cgelsd(const INT m, const INT n, const INT nrhs,
     }
 
 cleanup:
-    work[0] = (c64)maxwrk;
+    work[0] = (c64)sroundup_lwork(maxwrk);
     iwork[0] = liwork;
     rwork[0] = (f32)lrwork;
 }

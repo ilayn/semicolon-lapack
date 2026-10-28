@@ -81,7 +81,7 @@ void sgehrd(const INT n, const INT ilo, const INT ihi,
             if (nb > NBMAX) nb = NBMAX;
             lwkopt = n * nb + TSIZE;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -179,5 +179,5 @@ void sgehrd(const INT n, const INT ilo, const INT ihi,
     /* Use unblocked code to reduce the rest of the matrix */
     sgehd2(n, i, ihi, A, lda, tau, work, &iinfo);
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

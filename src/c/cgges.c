@@ -175,7 +175,7 @@ void cgges(const char* jobvsl, const char* jobvsr, const char* sort,
         if (ilvsl) {
             lwkopt = lwkopt > n + n * nb_ungqr ? lwkopt : n + n * nb_ungqr;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < lwkmin && !lquery) {
             *info = -18;
@@ -352,7 +352,7 @@ void cgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L30:
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
     return;
 }

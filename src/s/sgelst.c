@@ -113,7 +113,7 @@ void sgelst(
 
         mnnrhs = (mn > nrhs) ? mn : nrhs;
         lwopt = (1 > (mn + mnnrhs) * nb) ? 1 : ((mn + mnnrhs) * nb);
-        work[0] = (f32)lwopt;
+        work[0] = sroundup_lwork(lwopt);
 
     }
 
@@ -127,7 +127,7 @@ void sgelst(
     max_mn = (m > n) ? m : n;
     if (mn == 0 || nrhs == 0) {
         slaset("F", max_mn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (f32)lwopt;
+        work[0] = sroundup_lwork(lwopt);
         return;
     }
 
@@ -158,7 +158,7 @@ void sgelst(
     } else if (anrm == 0.0f) {
 
         slaset("F", max_mn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (f32)lwopt;
+        work[0] = sroundup_lwork(lwopt);
         return;
     }
 
@@ -275,5 +275,5 @@ void sgelst(
         }
     }
 
-    work[0] = (f32)lwopt;
+    work[0] = sroundup_lwork(lwopt);
 }

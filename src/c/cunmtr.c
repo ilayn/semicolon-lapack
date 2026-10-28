@@ -111,7 +111,7 @@ void cunmtr(const char* side, const char* uplo, const char* trans,
             nb = lapack_get_nb("UNMQR");
         }
         lwkopt = nw * nb;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     }
 
     if (*info != 0) {
@@ -154,5 +154,5 @@ void cunmtr(const char* side, const char* uplo, const char* trans,
                &C[i1 + i2 * ldc], ldc, work, lwork, &iinfo);
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

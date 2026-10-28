@@ -89,7 +89,7 @@ void ssbevd_2stage(
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -168,6 +168,6 @@ void ssbevd_2stage(
         cblas_sscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

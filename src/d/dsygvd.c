@@ -82,7 +82,7 @@ void dsygvd(
     }
 
     if (*info == 0) {
-        work[0] = (f64)lopt;
+        work[0] = droundup_lwork(lopt);
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -141,6 +141,6 @@ void dsygvd(
         }
     }
 
-    work[0] = (f64)lopt;
+    work[0] = droundup_lwork(lopt);
     iwork[0] = liopt;
 }

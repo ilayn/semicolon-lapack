@@ -144,8 +144,8 @@ void cheevr(
         nb = lapack_get_nb("HETRD");
         nb = nb > lapack_get_nb("UNMTR") ? nb : lapack_get_nb("UNMTR");
         lwkopt = ((nb + 1) * n > lwmin) ? (nb + 1) * n : lwmin;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
-        rwork[0] = (f32)lrwmin;
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
+        rwork[0] = sroundup_lwork(lrwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -335,7 +335,7 @@ L30:
         }
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
-    rwork[0] = (f32)lrwmin;
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
+    rwork[0] = sroundup_lwork(lrwmin);
     iwork[0] = liwmin;
 }

@@ -118,7 +118,7 @@ void ctrevc3(const char* side, const char* howmny, INT* select,
     nb = lapack_get_nb("TREVC");
     maxwrk = n + 2 * n * nb;
     if (maxwrk < 1) maxwrk = 1;
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
     rwork[0] = (f32)(1 > n ? 1 : n);
     lquery = (lwork == -1 || lrwork == -1);
 

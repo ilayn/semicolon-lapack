@@ -88,7 +88,7 @@ void ssytri2(
         xerbla("SSYTRI2", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (f32)minsize;
+        work[0] = sroundup_lwork(minsize);
         return;
     }
 

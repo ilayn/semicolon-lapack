@@ -187,7 +187,7 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
         if (n == 0) {
             work[0] = CONE;
         } else {
-            work[0] = CMPLXF((f32)lwkopt, 0.0f);
+            work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         }
     }
 
@@ -334,7 +334,7 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L30:
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
     return;
 }

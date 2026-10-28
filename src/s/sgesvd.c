@@ -412,7 +412,7 @@ void sgesvd(const char* jobu, const char* jobvt,
             }
         }
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -13;
@@ -1732,7 +1732,7 @@ void sgesvd(const char* jobu, const char* jobvt,
     }
 
     /* Return optimal workspace */
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
 
     #undef MAX3
 }

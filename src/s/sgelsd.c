@@ -196,7 +196,7 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
             if (3 * m + wlalsd > minwrk) minwrk = 3 * m + wlalsd;
         }
         if (minwrk > maxwrk) minwrk = maxwrk;
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
         iwork[0] = liwork;
 
         if (lwork < minwrk && !lquery) {
@@ -419,6 +419,6 @@ void sgelsd(const INT m, const INT n, const INT nrhs,
     }
 
 cleanup:
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
     iwork[0] = liwork;
 }

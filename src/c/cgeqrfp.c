@@ -65,7 +65,7 @@ void cgeqrfp(const INT m, const INT n,
     } else {
         iws = n * nb;
     }
-    work[0] = (c64)iws;
+    work[0] = (c64)sroundup_lwork(iws);
 
     if (m < 0) {
         *info = -1;
@@ -146,5 +146,5 @@ void cgeqrfp(const INT m, const INT n,
         cgeqr2p(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (c64)iws;
+    work[0] = (c64)sroundup_lwork(iws);
 }

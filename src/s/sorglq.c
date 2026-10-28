@@ -55,7 +55,7 @@ void sorglq(const INT m, const INT n, const INT k,
     *info = 0;
     nb = lapack_get_nb("ORGLQ");
     lwkopt = (m > 1 ? m : 1) * nb;
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
     lquery = (lwork == -1);
 
     if (m < 0) {
@@ -157,5 +157,5 @@ void sorglq(const INT m, const INT n, const INT k,
         }
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

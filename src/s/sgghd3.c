@@ -111,7 +111,7 @@ void sgghd3(
     } else {
         lwkopt = 6 * n * nb;
     }
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
     initq = (compq[0] == 'I' || compq[0] == 'i');
     wantq = initq || (compq[0] == 'V' || compq[0] == 'v');
     initz = (compz[0] == 'I' || compz[0] == 'i');
@@ -607,5 +607,5 @@ void sgghd3(
                    Q, ldq, Z, ldz, &ierr);
     }
 
-    work[0] = (f32)lwkopt;
+    work[0] = sroundup_lwork(lwkopt);
 }

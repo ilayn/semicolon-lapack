@@ -123,8 +123,8 @@ void zhpgvd(
             }
         }
 
-        work[0] = CMPLX((f64)lwmin, 0.0);
-        rwork[0] = (f64)lrwmin;
+        work[0] = CMPLX(droundup_lwork(lwmin), 0.0);
+        rwork[0] = droundup_lwork(lrwmin);
         iwork[0] = liwmin;
         if (lwork < lwmin && !lquery) {
             *info = -11;
@@ -208,7 +208,7 @@ void zhpgvd(
         }
     }
 
-    work[0] = CMPLX((f64)lwmin, 0.0);
-    rwork[0] = (f64)lrwmin;
+    work[0] = CMPLX(droundup_lwork(lwmin), 0.0);
+    rwork[0] = droundup_lwork(lrwmin);
     iwork[0] = liwmin;
 }

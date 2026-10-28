@@ -74,7 +74,7 @@ void cungtr(const char* uplo, const INT n,
             nb = lapack_get_nb("UNGQR");
         }
         lwkopt = (n - 1 > 1 ? n - 1 : 1) * nb;
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -138,5 +138,5 @@ void cungtr(const char* uplo, const INT n,
         }
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

@@ -181,7 +181,7 @@ void ssytrd_sy2sb(const char* uplo, const INT n, const INT kd,
         xerbla("SSYTRD_SY2SB", -(*info));
         return;
     } else if (lquery) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         return;
     }
 
@@ -338,5 +338,5 @@ void ssytrd_sy2sb(const char* uplo, const INT n, const INT kd,
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

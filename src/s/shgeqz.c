@@ -1117,5 +1117,5 @@ label_380:
     /* Exit (other than argument error) -- return optimal workspace size */
 
 label_exit:
-    work[0] = (f32)n;
+    work[0] = sroundup_lwork(n);
 }

@@ -142,7 +142,7 @@ void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
             minwrk = 1;
             maxwrk = 1;
         }
-        work[0] = (f32)maxwrk;
+        work[0] = sroundup_lwork(maxwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -19;
@@ -366,7 +366,7 @@ void sgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
 L50:
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
 
     return;
 }

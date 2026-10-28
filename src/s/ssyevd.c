@@ -102,7 +102,7 @@ void ssyevd(const char* jobz, const char* uplo, const INT n,
             lopt = lwmin > 2 * n + n * nb ? lwmin : 2 * n + n * nb;
             liopt = liwmin;
         }
-        work[0] = (f32)lopt;
+        work[0] = sroundup_lwork(lopt);
         iwork[0] = liopt;
 
         if (lwork < lwmin && !lquery) {
@@ -184,6 +184,6 @@ void ssyevd(const char* jobz, const char* uplo, const INT n,
         cblas_sscal(n, ONE / sigma, W, 1);
     }
 
-    work[0] = (f32)lopt;
+    work[0] = sroundup_lwork(lopt);
     iwork[0] = liopt;
 }

@@ -134,8 +134,8 @@ void cheevr_2stage(
     }
 
     if (*info == 0) {
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
-        rwork[0] = (f32)lrwmin;
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
+        rwork[0] = sroundup_lwork(lrwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -326,7 +326,7 @@ L30:
         }
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
-    rwork[0] = (f32)lrwmin;
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
+    rwork[0] = sroundup_lwork(lrwmin);
     iwork[0] = liwmin;
 }

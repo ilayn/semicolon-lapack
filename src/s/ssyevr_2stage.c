@@ -310,7 +310,7 @@ void ssyevr_2stage(const char* jobz, const char* range, const char* uplo,
     }
 
     if (*info == 0) {
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
     }
 
@@ -487,6 +487,6 @@ label30:
         }
     }
 
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 }

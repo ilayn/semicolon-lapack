@@ -72,7 +72,7 @@ void sorgql(const INT m, const INT n, const INT k,
             nb = lapack_get_nb("ORGQL");
             lwkopt = n * nb;
         }
-        work[0] = (f32)lwkopt;
+        work[0] = sroundup_lwork(lwkopt);
 
         if (lwork < (n > 1 ? n : 1) && !lquery) {
             *info = -8;
@@ -162,5 +162,5 @@ void sorgql(const INT m, const INT n, const INT k,
         }
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

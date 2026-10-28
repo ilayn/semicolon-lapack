@@ -58,7 +58,7 @@ void sgelqf(const INT m, const INT n,
             work[0] = 1.0f;
         } else {
             nb = lapack_get_nb("GELQF");
-            work[0] = (f32)(m * nb);
+            work[0] = sroundup_lwork(m * nb);
         }
         if (!lquery && lwork < (k > 0 ? (m > 1 ? m : 1) : 1)) {
             *info = -7;
@@ -131,5 +131,5 @@ void sgelqf(const INT m, const INT n,
         sgelq2(m - i, n - i, &A[i + i * lda], lda, &tau[i], work, &iinfo);
     }
 
-    work[0] = (f32)iws;
+    work[0] = sroundup_lwork(iws);
 }

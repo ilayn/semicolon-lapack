@@ -107,7 +107,7 @@ void sgels(const char* trans,
         INT mn_nrhs = mn > nrhs ? mn : nrhs;
         wsize = mn + mn_nrhs * nb;
         if (wsize < 1) wsize = 1;
-        work[0] = (f32)wsize;
+        work[0] = sroundup_lwork(wsize);
     }
 
     if (*info != 0) {
@@ -143,7 +143,7 @@ void sgels(const char* trans,
         /* Matrix all zero. Return zero solution. */
         INT maxmn = m > n ? m : n;
         slaset("F", maxmn, nrhs, 0.0f, 0.0f, B, ldb);
-        work[0] = (f32)wsize;
+        work[0] = sroundup_lwork(wsize);
         return;
     }
 
@@ -270,5 +270,5 @@ void sgels(const char* trans,
         }
     }
 
-    work[0] = (f32)wsize;
+    work[0] = sroundup_lwork(wsize);
 }

@@ -136,7 +136,7 @@ void sstedc(const char* compz, const INT n,
                 liwmin = 3 + 5*n;
             }
         }
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
         iwork[0] = liwmin;
 
         if (lwork < lwmin && !lquery) {
@@ -346,7 +346,7 @@ void sstedc(const char* compz, const INT n,
     }
 
 L50:
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
     iwork[0] = liwmin;
 
     return;

@@ -140,7 +140,7 @@ void chesv_rook(
         } else {
             lwkopt = n * lapack_get_nb("HETRF_ROOK");
         }
-        work[0] = (c64)lwkopt;
+        work[0] = (c64)sroundup_lwork(lwkopt);
     }
 
     if (*info != 0) {
@@ -155,5 +155,5 @@ void chesv_rook(
         chetrs_rook(uplo, n, nrhs, A, lda, ipiv, B, ldb, info);
     }
 
-    work[0] = (c64)lwkopt;
+    work[0] = (c64)sroundup_lwork(lwkopt);
 }

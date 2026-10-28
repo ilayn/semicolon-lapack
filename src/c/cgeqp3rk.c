@@ -135,7 +135,7 @@ void cgeqp3rk(
             nb = lapack_get_nb("GEQP3RK");
             lwkopt = 2 * n + nb * (n + nrhs + 1);
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < iws && !lquery) {
             *info = -15;
@@ -153,7 +153,7 @@ void cgeqp3rk(
         *K = 0;
         *maxc2nrmk = 0.0f;
         *relmaxc2nrmk = 0.0f;
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
@@ -177,7 +177,7 @@ void cgeqp3rk(
         *maxc2nrmk = maxc2nrm;
         *relmaxc2nrmk = maxc2nrm;
 
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
@@ -191,7 +191,7 @@ void cgeqp3rk(
             tau[j] = CMPLXF(0.0f, 0.0f);
         }
 
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
 
     }
@@ -211,7 +211,7 @@ void cgeqp3rk(
         for (j = 0; j < minmn; j++) {
             tau[j] = CMPLXF(0.0f, 0.0f);
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
@@ -238,7 +238,7 @@ void cgeqp3rk(
             tau[j] = CMPLXF(0.0f, 0.0f);
         }
 
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
@@ -296,7 +296,7 @@ void cgeqp3rk(
                     *info = ioffset + iinfo;
                 }
 
-                work[0] = CMPLXF((f32)lwkopt, 0.0f);
+                work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
                 return;
 
@@ -348,5 +348,5 @@ void cgeqp3rk(
 
     }
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

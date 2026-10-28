@@ -129,7 +129,7 @@ void cungbr(const char* vect, const INT m, const INT n, const INT k,
         xerbla("CUNGBR", -(*info));
         return;
     } else if (lquery) {
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
         return;
     }
 
@@ -214,5 +214,5 @@ void cungbr(const char* vect, const INT m, const INT n, const INT k,
             }
         }
     }
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 }

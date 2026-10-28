@@ -159,7 +159,7 @@ void cgeesx(const char* jobvs, const char* sort, cselect1_t select,
             if (!wantsn)
                 lwrk = lwrk > ((n * n) / 2) ? lwrk : ((n * n) / 2);
         }
-        work[0] = CMPLXF((f32)lwrk, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwrk), 0.0f);
 
         if (lwork < minwrk && !lquery) {
             *info = -15;
@@ -265,5 +265,5 @@ void cgeesx(const char* jobvs, const char* sort, cselect1_t select,
         }
     }
 
-    work[0] = CMPLXF((f32)maxwrk, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(maxwrk), 0.0f);
 }

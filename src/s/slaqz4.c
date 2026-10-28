@@ -78,7 +78,7 @@ void slaqz4(
     }
     if (lwork == -1) {
         /* workspace query, quick return */
-        work[0] = (f32)(n * nblock_desired);
+        work[0] = sroundup_lwork(n * nblock_desired);
         return;
     } else if (lwork < n * nblock_desired) {
         *info = -25;

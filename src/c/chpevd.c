@@ -127,7 +127,7 @@ void chpevd(
                 liwmin = 1;
             }
         }
-        work[0] = CMPLXF((f32)lwmin, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
         rwork[0] = (f32)lrwmin;
         iwork[0] = liwmin;
 
@@ -218,7 +218,7 @@ void chpevd(
         cblas_sscal(imax, ONE / sigma, W, 1);
     }
 
-    work[0] = CMPLXF((f32)lwmin, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwmin), 0.0f);
     rwork[0] = (f32)lrwmin;
     iwork[0] = liwmin;
 }

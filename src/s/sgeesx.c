@@ -159,7 +159,7 @@ void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
                 liwrk = (n * n) / 4;
         }
         iwork[0] = liwrk;
-        work[0] = (f32)lwrk;
+        work[0] = sroundup_lwork(lwrk);
 
         if (lwork < minwrk && !lquery) {
             *info = -16;
@@ -354,7 +354,7 @@ void sgeesx(const char* jobvs, const char* sort, sselect2_t select,
         }
     }
 
-    work[0] = (f32)maxwrk;
+    work[0] = sroundup_lwork(maxwrk);
     if (wantsv || wantsb) {
         iwork[0] = 1 > (*sdim) * (n - (*sdim)) ? 1 : (*sdim) * (n - (*sdim));
     } else {

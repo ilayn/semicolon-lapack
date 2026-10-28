@@ -140,7 +140,7 @@ void stgsna(
         } else {
             lwmin = n;
         }
-        work[0] = (f32)lwmin;
+        work[0] = sroundup_lwork(lwmin);
 
         if (mm < *m) {
             *info = -15;
@@ -332,5 +332,5 @@ void stgsna(
             ks = ks + 1;
         }
     }
-    work[0] = (f32)lwmin;
+    work[0] = sroundup_lwork(lwmin);
 }

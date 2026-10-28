@@ -311,7 +311,7 @@ void cuncsd(
         if (iorbdb + lorbdbworkopt > lworkmin) lworkmin = iorbdb + lorbdbworkopt;
         lworkmin = lworkmin - 1;
 
-        work[0] = CMPLXF((f32)(lworkopt > lworkmin ? lworkopt : lworkmin), 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lworkopt > lworkmin ? lworkopt : lworkmin), 0.0f);
 
         if (lwork < lworkmin && !(lquery || lrquery)) {
             *info = -28;

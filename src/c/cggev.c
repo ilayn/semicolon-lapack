@@ -142,7 +142,7 @@ void cggev(const char* jobvl, const char* jobvr, const INT n,
         if (ilvl) {
             lwkopt = lwkopt > n + n * nb_ungqr ? lwkopt : n + n * nb_ungqr;
         }
-        work[0] = CMPLXF((f32)lwkopt, 0.0f);
+        work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
 
         if (lwork < lwkmin && !lquery) {
             *info = -15;
@@ -327,6 +327,6 @@ L70:
     if (ilbscl)
         clascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, &ierr);
 
-    work[0] = CMPLXF((f32)lwkopt, 0.0f);
+    work[0] = CMPLXF(sroundup_lwork(lwkopt), 0.0f);
     return;
 }
