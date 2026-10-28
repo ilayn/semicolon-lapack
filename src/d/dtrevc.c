@@ -135,6 +135,7 @@ void dtrevc(const char* side, const char* howmny, INT* select, const INT n,
     }
 
     if (*info != 0) {
+        xerbla("DTREVC", -(*info));
         return;
     }
 

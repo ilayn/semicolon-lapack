@@ -124,7 +124,7 @@ void sgghd3(
         *info = -2;
     } else if (n < 0) {
         *info = -3;
-    } else if (ilo < 0 || (n > 0 && ilo > n - 1)) {
+    } else if (ilo < 0) {
         *info = -4;
     } else if (ihi > n - 1 || ihi < ilo - 1) {
         *info = -5;

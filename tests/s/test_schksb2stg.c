@@ -577,11 +577,19 @@ static void test_dchksb2stg_case(void** state)
     run_dchksb2stg_single(params);
 }
 
+static void test_serrst(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serrst("SSB", &ok, &nt);
+    assert_true(ok);
+}
+
 /* ===================================================================== */
 /* Build test array                                                      */
 /* ===================================================================== */
 
-#define MAX_TESTS (NSIZES * NWDTHS * MAXTYP)
+#define MAX_TESTS (1 + NSIZES * NWDTHS * MAXTYP)
 
 static dchksb2stg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -590,6 +598,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "serrst";
+    g_tests[g_num_tests].test_func = test_serrst;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t is = 0; is < NSIZES; is++) {
         INT n = NVAL[is];

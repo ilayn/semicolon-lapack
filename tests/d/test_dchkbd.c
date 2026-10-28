@@ -1103,7 +1103,7 @@ static void test_derrbd(void** state)
 {
     (void)state;
     INT ok, nt;
-    derrbd(&ok, &nt);
+    derrbd("DBD", &ok, &nt);
     assert_true(ok);
 }
 

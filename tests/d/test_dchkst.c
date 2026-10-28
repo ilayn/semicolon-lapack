@@ -1135,9 +1135,19 @@ static void test_stemr_nan(void** state)
     }
 }
 
+static void test_derrst(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    xlaenv(1, 1);
+    xlaenv(9, 25);
+    derrst("DST", &ok, &nt);
+    assert_true(ok);
+}
+
 /* ===== Test array construction ===== */
 
-#define MAX_TESTS (NPARMS * NNVAL * MAXTYP + 1)
+#define MAX_TESTS (1 + NPARMS * NNVAL * MAXTYP + 1)
 
 static dchkst_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -1146,6 +1156,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "derrst";
+    g_tests[g_num_tests].test_func = test_derrst;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t ip = 0; ip < NPARMS; ip++) {
         for (size_t in = 0; in < NNVAL; in++) {

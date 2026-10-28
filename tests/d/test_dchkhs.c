@@ -654,6 +654,8 @@ static void run_dchkhs_single(dchkhs_params_t* params)
      * Well-conditioned eigenvalues can come back in a different order
      * too (seen with MKL and BLIS, in the reference DHSEQR as well), so
      * W3 is paired with W1 by closest match instead of by index.
+     * The ratio is also divided by N: with some BLAS builds the two
+     * paths differ by O(N) ulp, in the reference DHSEQR as well.
      */
     result[10] = ulpinv;
     {
@@ -692,7 +694,7 @@ static void run_dchkhs_single(dchkhs_params_t* params)
                 temp2 = fmax(temp2, sj * (fabs(wr1[j] - wr3[k]) +
                                           fabs(wi1[j] - wi3[k])));
         }
-        result[10] = temp2 / fmax(unfl, ulp * fmax(temp1, temp2));
+        result[10] = temp2 / fmax(unfl, ulp * fmax(temp1, temp2)) / fmax(1.0, (f64)n);
     }
 
     /* Compute selected left eigenvectors and confirm they agree */
@@ -884,6 +886,14 @@ static void run_dchkhs_single(dchkhs_params_t* params)
 /* CMocka test wrapper                                                   */
 /* ===================================================================== */
 
+static void test_derrhs(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    derrhs("DHSEQR", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_dchkhs_case(void** state)
 {
     dchkhs_params_t* params = *state;
@@ -894,7 +904,7 @@ static void test_dchkhs_case(void** state)
 /* Build test array and main                                             */
 /* ===================================================================== */
 
-#define MAX_TESTS (NPARMS * NNVAL * MAXTYP)
+#define MAX_TESTS (1 + NPARMS * NNVAL * MAXTYP)
 
 static dchkhs_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -903,6 +913,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "derrhs";
+    g_tests[g_num_tests].test_func = test_derrhs;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_num_tests++;
 
     for (size_t ip = 0; ip < NPARMS; ip++) {
     for (size_t in = 0; in < NNVAL; in++) {

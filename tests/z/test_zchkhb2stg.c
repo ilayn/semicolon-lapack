@@ -491,7 +491,15 @@ static void test_zchkhb2stg_case(void** state)
     run_zchkhb2stg_single(params);
 }
 
-#define MAX_TESTS (NSIZES * NWDTHS * MAXTYP)
+static void test_zerrst(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    zerrst("ZHB", &ok, &nt);
+    assert_true(ok);
+}
+
+#define MAX_TESTS (1 + NSIZES * NWDTHS * MAXTYP)
 
 static zchkhb2stg_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -500,6 +508,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "zerrst";
+    g_tests[g_num_tests].test_func = test_zerrst;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t is = 0; is < NSIZES; is++) {
         INT n = NVAL[is];

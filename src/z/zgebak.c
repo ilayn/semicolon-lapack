@@ -67,9 +67,9 @@ void zgebak(const char* job, const char* side, const INT n, const INT ilo,
         *info = -2;
     } else if (n < 0) {
         *info = -3;
-    } else if (ilo < 0 || (n > 0 && ilo > n - 1)) {
+    } else if (ilo < 0 || ilo > (n > 0 ? n - 1 : 0)) {
         *info = -4;
-    } else if ((n > 0 && ihi < ilo) || ihi > n - 1) {
+    } else if (ihi < (ilo < n - 1 ? ilo : n - 1) || ihi > n - 1) {
         *info = -5;
     } else if (m < 0) {
         *info = -7;

@@ -75,7 +75,7 @@ void chpev(
     }
 
     if (*info != 0) {
-        xerbla("CHPEV", -(*info));
+        xerbla("CHPEV ", -(*info));
         return;
     }
 

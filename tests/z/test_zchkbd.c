@@ -623,7 +623,7 @@ static void test_zerrbd(void** state)
 {
     (void)state;
     INT ok, nt;
-    zerrbd(&ok, &nt);
+    zerrbd("ZBD", &ok, &nt);
     assert_true(ok);
 }
 

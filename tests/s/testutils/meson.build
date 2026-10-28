@@ -166,6 +166,10 @@ testutils_s_sources = files(
   # Error exit tests
   'serrec.c',
   'serrbd.c',
+  'serred.c',
+  'serrgg.c',
+  'serrhs.c',
+  'serrst.c',
 
   # SVD verification
   'ssvdct.c',

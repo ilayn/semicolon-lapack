@@ -497,7 +497,15 @@ static void test_zdrvev_case(void** state)
     run_zdrvev_single(params);
 }
 
-#define MAX_TESTS (NNVAL * MAXTYP * 2)
+static void test_cerred(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    cerred("CEV", &ok, &nt);
+    assert_true(ok);
+}
+
+#define MAX_TESTS (1 + NNVAL * MAXTYP * 2)
 
 static zdrvev_params_t g_params[MAX_TESTS];
 static struct CMUnitTest g_tests[MAX_TESTS];
@@ -506,6 +514,13 @@ static INT g_num_tests = 0;
 static void build_test_array(void)
 {
     g_num_tests = 0;
+
+    g_tests[g_num_tests].name = "cerred";
+    g_tests[g_num_tests].test_func = test_cerred;
+    g_tests[g_num_tests].setup_func = NULL;
+    g_tests[g_num_tests].teardown_func = NULL;
+    g_tests[g_num_tests].initial_state = NULL;
+    g_num_tests++;
 
     for (size_t in = 0; in < NNVAL; in++) {
         INT n = NVAL[in];

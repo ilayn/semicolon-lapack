@@ -138,7 +138,7 @@ SEMICOLON_API void dtrevc3(const char* side, const char* howmny, INT* select,
     }
 
     if (*info != 0) {
-        /* Call xerbla equivalent - return with error */
+        xerbla("DTREVC3", -(*info));
         return;
     } else if (lquery) {
         return;

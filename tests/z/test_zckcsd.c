@@ -283,6 +283,14 @@ static void run_zckcsd_single(zckcsd_params_t* params)
 /* CMocka test wrapper                                                   */
 /* ===================================================================== */
 
+static void test_zerrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    zerrgg("CSD", &ok, &nt);
+    assert_true(ok);
+}
+
 static void test_zckcsd(void** state)
 {
     (void)state;
@@ -296,9 +304,18 @@ static void test_zckcsd(void** state)
 
 int main(void)
 {
-    static zckcsd_params_t all_params[NSIZES * NTYPES];
-    static struct CMUnitTest all_tests[NSIZES * NTYPES];
+    static zckcsd_params_t all_params[1 + NSIZES * NTYPES];
+    static struct CMUnitTest all_tests[1 + NSIZES * NTYPES];
     INT ntests = 0;
+
+    all_tests[ntests] = (struct CMUnitTest){
+        .name = "zerrgg",
+        .test_func = test_zerrgg,
+        .initial_state = NULL,
+        .setup_func = NULL,
+        .teardown_func = NULL,
+    };
+    ntests++;
 
     for (INT im = 0; im < (INT)NSIZES; im++) {
         for (INT imat = 1; imat <= NTYPES; imat++) {

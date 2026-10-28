@@ -189,9 +189,32 @@ endif
 # The BLAS standard name is cblas_dgemmtr (reference BLAS).  Some older
 # vendors only provide the legacy cblas_dgemmt name.  Our code uses gemmtr;
 # if the linked library only has the old name, alias it.
-if not cc.has_function('cblas_dgemmtr', dependencies: blas_dep)
+# OpenBLAS up to 0.3.34 built with CMake exports cblas_?gemmtr compiled from
+# gemm.c, i.e. GEMM under the new name (fixed by OpenBLAS PR 6118), so in a
+# native build also check that cblas_?gemmtr computes GEMMTR.
+_gemmtr_ok = cc.has_function('cblas_dgemmtr', dependencies: blas_dep)
+if _gemmtr_ok and not meson.is_cross_build()
+  _gemmtr_probe = cc.run(files('scripts/probe_gemmtr.c'),
+                         dependencies: blas_dep,
+                         args: _probe_args + ['-DPROBE_ILP64=' + (blas_is_ilp64 ? '1' : '0')],
+                         name: 'cblas_?gemmtr computes GEMMTR')
+  if _gemmtr_probe.returncode() != 0
+    _gemmt_probe = cc.run(files('scripts/probe_gemmtr.c'),
+                          dependencies: blas_dep,
+                          args: _probe_args + ['-DPROBE_ILP64=' + (blas_is_ilp64 ? '1' : '0'),
+                                               '-DPROBE_GEMMT'],
+                          name: 'cblas_?gemmt computes GEMMTR')
+    if _gemmt_probe.returncode() != 0
+      error('Neither cblas_?gemmtr nor cblas_?gemmt of this BLAS computes GEMMTR.')
+    endif
+    warning('cblas_?gemmtr of this BLAS does not compute GEMMTR (OpenBLAS <= 0.3.34 ' +
+            'built with CMake); using cblas_?gemmt instead.')
+    _gemmtr_ok = false
+  endif
+endif
+if not _gemmtr_ok
   if cc.has_function('cblas_dgemmt', dependencies: blas_dep)
-    message('BLAS provides cblas_dgemmt but not cblas_dgemmtr — adding aliases')
+    message('Using cblas_?gemmt for cblas_?gemmtr — adding aliases')
     add_project_arguments(
       '-Dcblas_sgemmtr=cblas_sgemmt',
       '-Dcblas_dgemmtr=cblas_dgemmt',

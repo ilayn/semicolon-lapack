@@ -468,11 +468,25 @@ static void test_sdrgev_case(void** state)
     }
 }
 
+static void test_serrgg(void** state)
+{
+    (void)state;
+    INT ok, nt;
+    serrgg("SGV", &ok, &nt);
+    assert_true(ok);
+}
+
 int main(void)
 {
     static sdrgev_params_t all_params[NSIZES * MAXTYP * 7];
-    static struct CMUnitTest all_tests[NSIZES * MAXTYP * 7];
+    static struct CMUnitTest all_tests[1 + NSIZES * MAXTYP * 7];
     INT idx = 0;
+
+    all_tests[0].name = "serrgg";
+    all_tests[0].test_func = test_serrgg;
+    all_tests[0].setup_func = NULL;
+    all_tests[0].teardown_func = NULL;
+    all_tests[0].initial_state = NULL;
 
     for (INT js = 0; js < NSIZES; js++) {
         for (INT jt = 1; jt <= MAXTYP; jt++) {
@@ -484,11 +498,11 @@ int main(void)
                 snprintf(p->name, sizeof(p->name),
                          "N=%d_type=%d_test%d", NVAL[js], jt, tn);
 
-                all_tests[idx].name = p->name;
-                all_tests[idx].test_func = test_sdrgev_case;
-                all_tests[idx].setup_func = NULL;
-                all_tests[idx].teardown_func = NULL;
-                all_tests[idx].initial_state = p;
+                all_tests[idx + 1].name = p->name;
+                all_tests[idx + 1].test_func = test_sdrgev_case;
+                all_tests[idx + 1].setup_func = NULL;
+                all_tests[idx + 1].teardown_func = NULL;
+                all_tests[idx + 1].initial_state = p;
                 idx++;
             }
         }
@@ -501,7 +515,7 @@ int main(void)
     xlaenv(4, 2);
     xlaenv(8, 1);
     xlaenv(16, 2);
-    (void)_cmocka_run_group_tests("sdrgev", all_tests, idx,
+    (void)_cmocka_run_group_tests("sdrgev", all_tests, idx + 1,
                                    group_setup, group_teardown);
     return 0;
 }

@@ -54,10 +54,7 @@ void cgehd2(const INT n, const INT ilo, const INT ihi,
     } else if (ilo < 0 || ilo > (n > 0 ? n - 1 : 0)) {
         *info = -2;
     } else if (ihi < (ilo < n - 1 ? ilo : n - 1) || ihi > n - 1) {
-        /* ihi < min(ilo, n-1) or ihi > n-1 is invalid
-           For n=0, this check is skipped since ihi should be -1 */
-        if (n > 0)
-            *info = -3;
+        *info = -3;
     } else if (lda < max_n_1) {
         *info = -5;
     }
