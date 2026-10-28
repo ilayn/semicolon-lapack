@@ -83,16 +83,16 @@ void cppequ(
         for (INT i = 1; i < n; i++) {
             jj = jj + (i + 1);
             S[i] = crealf(AP[jj]);
-            if (S[i] < smin) smin = S[i];
-            if (S[i] > *amax) *amax = S[i];
+            smin = (smin < S[i]) ? smin : S[i];
+            *amax = (*amax > S[i]) ? *amax : S[i];
         }
     } else {
         INT jj = 0;
         for (INT i = 1; i < n; i++) {
             jj = jj + n - i + 1;
             S[i] = crealf(AP[jj]);
-            if (S[i] < smin) smin = S[i];
-            if (S[i] > *amax) *amax = S[i];
+            smin = (smin < S[i]) ? smin : S[i];
+            *amax = (*amax > S[i]) ? *amax : S[i];
         }
     }
 

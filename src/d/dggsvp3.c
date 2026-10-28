@@ -127,7 +127,7 @@ void dggsvp3(const char* jobu, const char* jobv, const char* jobq,
             if (n > lwkopt) lwkopt = n;
         }
         dgeqp3(m, n, A, lda, iwork, tau, work, -1, &ierr);
-        if ((INT)work[0] > lwkopt) lwkopt = (INT)work[0];
+        lwkopt = (lwkopt > (INT)work[0]) ? lwkopt : (INT)work[0];
         if (lwkopt < 1) lwkopt = 1;
         work[0] = (f64)lwkopt;
     }

@@ -309,9 +309,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
         if (thr < ZERO) {
             thr = eps * S[0];
         }
-        if (thr < sfmin) {
-            thr = sfmin;
-        }
+        thr = (thr > sfmin) ? thr : sfmin;
         *rank = 0;
         for (i = 0; i < n; i++) {
             if (S[i] > thr) {
@@ -390,9 +388,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
         if (thr < ZERO) {
             thr = eps * S[0];
         }
-        if (thr < sfmin) {
-            thr = sfmin;
-        }
+        thr = (thr > sfmin) ? thr : sfmin;
         *rank = 0;
         for (i = 0; i < m; i++) {
             if (S[i] > thr) {
@@ -463,9 +459,7 @@ void cgelss(const INT m, const INT n, const INT nrhs,
         if (thr < ZERO) {
             thr = eps * S[0];
         }
-        if (thr < sfmin) {
-            thr = sfmin;
-        }
+        thr = (thr > sfmin) ? thr : sfmin;
         *rank = 0;
         for (i = 0; i < m; i++) {
             if (S[i] > thr) {

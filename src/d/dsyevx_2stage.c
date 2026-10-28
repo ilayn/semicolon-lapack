@@ -165,9 +165,7 @@ void dsyevx_2stage(
     bignum = ONE / smlnum;
     rmin = sqrt(smlnum);
     rmax = sqrt(bignum);
-    if (rmax > ONE / sqrt(sqrt(safmin))) {
-        rmax = ONE / sqrt(sqrt(safmin));
-    }
+    rmax = (rmax < ONE / sqrt(sqrt(safmin))) ? rmax : ONE / sqrt(sqrt(safmin));
 
     iscale = 0;
     abstll = abstol;

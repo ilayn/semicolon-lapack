@@ -468,7 +468,7 @@ L90:
             /* Chase bulge from top to bottom
              * Save cosines and sines for later singular vector updates */
             f = (fabsf(D[ll]) - shift) *
-                ((D[ll] >= ZERO ? ONE : NEGONE) + shift / D[ll]);
+                (copysignf(ONE, D[ll]) + shift / D[ll]);
             g = E[ll];
             for (i = ll; i <= m - 2; i++) {
                 slartg(f, g, &cosr, &sinr, &r);
@@ -516,7 +516,7 @@ L90:
             /* Chase bulge from bottom to top
              * Save cosines and sines for later singular vector updates */
             f = (fabsf(D[m - 1]) - shift) *
-                ((D[m - 1] >= ZERO ? ONE : NEGONE) + shift / D[m - 1]);
+                (copysignf(ONE, D[m - 1]) + shift / D[m - 1]);
             g = E[m - 2];
             for (i = m - 1; i >= ll + 1; i--) {
                 slartg(f, g, &cosr, &sinr, &r);

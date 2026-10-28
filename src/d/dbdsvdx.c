@@ -137,7 +137,7 @@ void dbdsvdx(const char* uplo, const char* jobz, const char* range, const INT n,
             }
         }
         if (wantz) {
-            Z[0] = (D[0] >= ZERO) ? ONE : -ONE;
+            Z[0] = copysign(ONE, D[0]);
             Z[1] = ONE;
         }
         return;

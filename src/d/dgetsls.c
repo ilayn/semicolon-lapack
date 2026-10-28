@@ -136,12 +136,12 @@ void dgetsls(
             tszo = (INT)tq[0];
             lwo = (INT)workq[0];
             dgemqr("L", trans, m, nrhs, n, A, lda, tq, tszo, B, ldb, workq, -1, &info2);
-            if ((INT)workq[0] > lwo) lwo = (INT)workq[0];
+            lwo = (lwo > (INT)workq[0]) ? lwo : (INT)workq[0];
             dgeqr(m, n, A, lda, tq, -2, workq, -2, &info2);
             tszm = (INT)tq[0];
             lwm = (INT)workq[0];
             dgemqr("L", trans, m, nrhs, n, A, lda, tq, tszm, B, ldb, workq, -1, &info2);
-            if ((INT)workq[0] > lwm) lwm = (INT)workq[0];
+            lwm = (lwm > (INT)workq[0]) ? lwm : (INT)workq[0];
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         } else {
@@ -149,12 +149,12 @@ void dgetsls(
             tszo = (INT)tq[0];
             lwo = (INT)workq[0];
             dgemlq("L", trans, n, nrhs, m, A, lda, tq, tszo, B, ldb, workq, -1, &info2);
-            if ((INT)workq[0] > lwo) lwo = (INT)workq[0];
+            lwo = (lwo > (INT)workq[0]) ? lwo : (INT)workq[0];
             dgelq(m, n, A, lda, tq, -2, workq, -2, &info2);
             tszm = (INT)tq[0];
             lwm = (INT)workq[0];
             dgemlq("L", trans, n, nrhs, m, A, lda, tq, tszm, B, ldb, workq, -1, &info2);
-            if ((INT)workq[0] > lwm) lwm = (INT)workq[0];
+            lwm = (lwm > (INT)workq[0]) ? lwm : (INT)workq[0];
             wsizeo = tszo + lwo;
             wsizem = tszm + lwm;
         }

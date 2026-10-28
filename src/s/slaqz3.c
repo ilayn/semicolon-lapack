@@ -132,9 +132,7 @@ void slaqz3(
         *ns = 1;
         *nd = 0;
         {
-            f32 tmp = fabsf(A[kwtop + kwtop * lda]);
-            if (smlnum > tmp) tmp = smlnum;
-            tmp = ulp * tmp;
+            f32 tmp = ulp * fabsf(A[kwtop + kwtop * lda]);
             if (fabsf(s) <= ((smlnum > tmp) ? smlnum : tmp)) {
                 *ns = 0;
                 *nd = 1;

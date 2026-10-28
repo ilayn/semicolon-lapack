@@ -88,7 +88,7 @@ L20:
     *est = cblas_dasum(n, X, 1);
 
     for (i = 0; i < n; i++) {
-        X[i] = (X[i] >= zero) ? one : -one;
+        X[i] = copysign(one, X[i]);
         ISGN[i] = (INT)(X[i] + 0.5);
         if (X[i] < zero) ISGN[i] = (INT)(X[i] - 0.5);
     }
@@ -114,7 +114,7 @@ L70:
     estold = *est;
     *est = cblas_dasum(n, V, 1);
     for (i = 0; i < n; i++) {
-        INT new_sgn = (X[i] >= zero) ? 1 : -1;
+        INT new_sgn = (INT)copysign(one, X[i]);
         if (new_sgn != ISGN[i]) {
             goto L90;
         }
@@ -127,7 +127,7 @@ L90:
     }
 
     for (i = 0; i < n; i++) {
-        X[i] = (X[i] >= zero) ? one : -one;
+        X[i] = copysign(one, X[i]);
         ISGN[i] = (INT)(X[i] + 0.5);
         if (X[i] < zero) ISGN[i] = (INT)(X[i] - 0.5);
     }

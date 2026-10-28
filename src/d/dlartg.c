@@ -43,14 +43,14 @@ void dlartg(const f64 f, const f64 g, f64* c, f64* s, f64* r)
         *r = f;
     } else if (f == 0.0) {
         *c = 0.0;
-        *s = (g > 0.0) ? 1.0 : -1.0;
+        *s = copysign(1.0, g);
         *r = g1;
     } else if (f1 > rtmin && f1 < rtmax &&
                g1 > rtmin && g1 < rtmax) {
         /* Both f and g are in safe range */
         f64 d = sqrt(f * f + g * g);
         *c = f1 / d;
-        *r = (f > 0.0) ? d : -d;
+        *r = copysign(d, f);
         *s = g / (*r);
     } else {
         /* Use scaled algorithm */
@@ -61,7 +61,7 @@ void dlartg(const f64 f, const f64 g, f64* c, f64* s, f64* r)
         f64 gs = g / u;
         f64 d = sqrt(fs * fs + gs * gs);
         *c = fabs(fs) / d;
-        *r = (f > 0.0) ? d : -d;
+        *r = copysign(d, f);
         *s = gs / (*r);
         *r = (*r) * u;
     }

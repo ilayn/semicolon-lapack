@@ -352,14 +352,12 @@ void dlaebz(const INT ijob, const INT nitmax, const INT n,
             tmp2 = fabs(AB[ji + 1 * mmax]);
             {
                 f64 atmp = fabs(AB[ji + 0 * mmax]);
-                if (atmp > tmp2)
-                    tmp2 = atmp;
+                tmp2 = (tmp2 > atmp) ? tmp2 : atmp;
             }
             {
                 f64 thresh = abstol > pivmin ? abstol : pivmin;
                 f64 rthresh = reltol * tmp2;
-                if (rthresh > thresh)
-                    thresh = rthresh;
+                thresh = (thresh > rthresh) ? thresh : rthresh;
 
                 if (tmp1 < thresh || NAB[ji + 0 * mmax] >= NAB[ji + 1 * mmax]) {
                     /*

@@ -178,9 +178,7 @@ void dsyevr(const char* jobz, const char* range, const char* uplo,
     bignum = ONE / smlnum;
     rmin = sqrt(smlnum);
     rmax = sqrt(bignum);
-    if (rmax > ONE / sqrt(sqrt(safmin))) {
-        rmax = ONE / sqrt(sqrt(safmin));
-    }
+    rmax = (rmax < ONE / sqrt(sqrt(safmin))) ? rmax : ONE / sqrt(sqrt(safmin));
 
     /* Scale matrix to allowable range, if necessary */
     iscale = 0;

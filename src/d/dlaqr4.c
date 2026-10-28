@@ -136,7 +136,7 @@ SEMICOLON_API void dlaqr4(const INT wantt, const INT wantz, const INT n,
 
         /* Optimal workspace = MAX(3*NSR/2, DLAQR2 workspace) */
         lwkopt = 3 * nsr / 2;
-        if ((INT)work[0] > lwkopt) lwkopt = (INT)work[0];
+        lwkopt = (lwkopt > (INT)work[0]) ? lwkopt : (INT)work[0];
 
         /* Quick return in case of workspace query */
         if (lwork == -1) {

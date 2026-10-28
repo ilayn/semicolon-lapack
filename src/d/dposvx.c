@@ -202,8 +202,8 @@ void dposvx(
             f64 smin_val = bignum;
             f64 smax_val = ZERO;
             for (INT j = 0; j < n; j++) {
-                if (S[j] < smin_val) smin_val = S[j];
-                if (S[j] > smax_val) smax_val = S[j];
+                smin_val = (smin_val < S[j]) ? smin_val : S[j];
+                smax_val = (smax_val > S[j]) ? smax_val : S[j];
             }
             if (smin_val <= ZERO) {
                 *info = -10;

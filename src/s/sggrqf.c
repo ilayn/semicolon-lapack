@@ -167,11 +167,11 @@ void sggrqf(const INT m, const INT p, const INT n,
         arow = (m - n > 0) ? (m - n) : 0;
         sormrq("R", "T", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }
-    if ((INT)work[0] > lopt) lopt = (INT)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
 
     /* QR factorization of P-by-N matrix B: B = Z*T */
     sgeqrf(p, n, B, ldb, taub, work, lwork, info);
-    if ((INT)work[0] > lopt) lopt = (INT)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
 
     work[0] = (f32)lopt;
 }

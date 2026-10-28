@@ -167,9 +167,9 @@ void slarrb(const INT n, const f32* D, const f32* lld,
         }
         width = HALF * fabsf(left - right);
         tmp = fabsf(left);
-        if (fabsf(right) > tmp) tmp = fabsf(right);
+        tmp = (tmp > fabsf(right)) ? tmp : fabsf(right);
         cvrgd = rtol1 * gap;
-        if (rtol2 * tmp > cvrgd) cvrgd = rtol2 * tmp;
+        cvrgd = (cvrgd > rtol2 * tmp) ? cvrgd : rtol2 * tmp;
         if (width <= cvrgd || width <= mnwdth) {
             /*
              * This interval has already converged and does not need refinement.
@@ -217,9 +217,9 @@ void slarrb(const INT n, const f32* D, const f32* lld,
             /* semiwidth of interval */
             width = right - mid;
             tmp = fabsf(left);
-            if (fabsf(right) > tmp) tmp = fabsf(right);
+            tmp = (tmp > fabsf(right)) ? tmp : fabsf(right);
             cvrgd = rtol1 * gap;
-            if (rtol2 * tmp > cvrgd) cvrgd = rtol2 * tmp;
+            cvrgd = (cvrgd > rtol2 * tmp) ? cvrgd : rtol2 * tmp;
             if ((width <= cvrgd) || (width <= mnwdth) ||
                 (iter == maxitr)) {
                 /* reduce number of unconverged intervals */

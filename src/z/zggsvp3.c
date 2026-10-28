@@ -130,7 +130,7 @@ void zggsvp3(const char* jobu, const char* jobv, const char* jobq,
             if (n > lwkopt) lwkopt = n;
         }
         zgeqp3(m, n, A, lda, iwork, tau, work, -1, rwork, &ierr);
-        if ((INT)creal(work[0]) > lwkopt) lwkopt = (INT)creal(work[0]);
+        lwkopt = (lwkopt > (INT)creal(work[0])) ? lwkopt : (INT)creal(work[0]);
         if (lwkopt < 1) lwkopt = 1;
         work[0] = CMPLX((f64)lwkopt, 0.0);
     }

@@ -121,7 +121,7 @@ void zlatps(
     xmax = ZERO;
     for (j = 0; j < n; j++) {
         f64 tmp = cabs2(X[j]);
-        if (xmax < tmp) xmax = tmp;
+        xmax = (xmax > tmp) ? xmax : tmp;
     }
     xbnd = xmax;
 

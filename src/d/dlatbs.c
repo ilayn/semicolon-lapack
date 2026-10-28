@@ -341,7 +341,7 @@ void dlatbs(
                     }
                     tjj = fabs(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = uscal / tjjs;
                     }
                     if (rec < ONE) {

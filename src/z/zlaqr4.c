@@ -97,7 +97,7 @@ void zlaqr4(const INT wantt, const INT wantz, const INT n,
                n, H, ldh, work, -1);
 
         lwkopt = 3 * nsr / 2;
-        if ((INT)creal(work[0]) > lwkopt) lwkopt = (INT)creal(work[0]);
+        lwkopt = (lwkopt > (INT)creal(work[0])) ? lwkopt : (INT)creal(work[0]);
 
         if (lwork == -1) {
             work[0] = (f64)lwkopt;

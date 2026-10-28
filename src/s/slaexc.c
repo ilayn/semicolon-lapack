@@ -103,7 +103,7 @@ void slaexc(const INT wantq, const INT n, f32* T, const INT ldt,
         eps = slamch("P");
         smlnum = slamch("S") / eps;
         thresh = TEN * eps * dnorm;
-        if (thresh < smlnum) thresh = smlnum;
+        thresh = (thresh > smlnum) ? thresh : smlnum;
 
         /* Solve T11*X - X*T22 = scale*T12 for X. */
         slasy2(0, 0, -1, n1, n2, D, LDD, &D[n1 + n1 * LDD], LDD,

@@ -394,7 +394,7 @@ L60:
 
             } else {
 
-                if ((B[k + k * ldb] < ZERO ? -ONE : ONE) < ZERO) {
+                if (copysignf(ONE, B[k + k * ldb]) < ZERO) {
 
                     /* If B(K,K) is negative, make it positive */
                     for (i = 0; i < n; i++) {

@@ -521,7 +521,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
     aapp = ZERO;
     aaqq = big;
     for (p = 0; p < n; p++) {
-        if (SVA[p] > aapp) aapp = SVA[p];
+        aapp = (aapp > SVA[p]) ? aapp : SVA[p];
         if (SVA[p] != ZERO && SVA[p] < aaqq) aaqq = SVA[p];
     }
 
@@ -622,14 +622,14 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
                 /* DLASSQ gets both the ell_2 and ell_infinity norm */
                 work[m + n + p] = xsc * scalem;
                 work[n + p] = xsc * (scalem * sqrt(temp1));
-                if (work[n + p] > aatmax) aatmax = work[n + p];
+                aatmax = (aatmax > work[n + p]) ? aatmax : work[n + p];
                 if (work[n + p] != ZERO && work[n + p] < aatmin) aatmin = work[n + p];
             }
         } else {
             for (p = 0; p < m; p++) {
                 work[m + n + p] = scalem * fabs(A[p + cblas_idamax(n, &A[p], lda) * lda]);
-                if (work[m + n + p] > aatmax) aatmax = work[m + n + p];
-                if (work[m + n + p] < aatmin) aatmin = work[m + n + p];
+                aatmax = (aatmax > work[m + n + p]) ? aatmax : work[m + n + p];
+                aatmin = (aatmin < work[m + n + p]) ? aatmin : work[m + n + p];
             }
         }
     }
@@ -812,7 +812,7 @@ void dgejsv(const char* joba, const char* jobu, const char* jobv,
         maxprj = ONE;
         for (p = 1; p < n; p++) {
             temp1 = fabs(A[p + p * lda]) / SVA[iwork[p]];
-            if (temp1 < maxprj) maxprj = temp1;
+            maxprj = (maxprj < temp1) ? maxprj : temp1;
         }
         if (maxprj * maxprj >= ONE - (f64)n * epsln) {
             almort = 1;

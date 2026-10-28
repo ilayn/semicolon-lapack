@@ -89,13 +89,13 @@ void slaorhr_col_getrfnp2(
 
     if (m == 1) {
 
-        D[0] = (A[0 + 0 * lda] >= 0.0f) ? -1.0f : 1.0f;
+        D[0] = -copysignf(1.0f, A[0 + 0 * lda]);
 
         A[0 + 0 * lda] = A[0 + 0 * lda] - D[0];
 
     } else if (n == 1) {
 
-        D[0] = (A[0 + 0 * lda] >= 0.0f) ? -1.0f : 1.0f;
+        D[0] = -copysignf(1.0f, A[0 + 0 * lda]);
 
         A[0 + 0 * lda] = A[0 + 0 * lda] - D[0];
 

@@ -165,6 +165,8 @@ void slasq2(const INT n, f32* restrict Z, INT* info)
         return;
     }
     d = d + Z[2 * n - 2];
+    qmax = (qmax > Z[2 * n - 2]) ? qmax : Z[2 * n - 2];
+    zmax = (qmax > zmax) ? qmax : zmax;
 
     /* Check for diagonality. */
     if (e == ZERO) {

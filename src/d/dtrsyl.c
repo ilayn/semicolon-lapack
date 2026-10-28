@@ -115,9 +115,9 @@ void dtrsyl(const char* trana, const char* tranb, const INT isgn,
 
     smin = smlnum;
     dum[0] = dlange("M", m, m, A, lda, dum);
-    if (eps * dum[0] > smin) smin = eps * dum[0];
+    smin = (smin > eps * dum[0]) ? smin : eps * dum[0];
     dum[0] = dlange("M", n, n, B, ldb, dum);
-    if (eps * dum[0] > smin) smin = eps * dum[0];
+    smin = (smin > eps * dum[0]) ? smin : eps * dum[0];
 
     sgn = (f64)isgn;
 

@@ -252,8 +252,8 @@ void dpbsvx(
             smin = bignum;
             smax = ZERO;
             for (j = 0; j < n; j++) {
-                if (smin > S[j]) smin = S[j];
-                if (smax < S[j]) smax = S[j];
+                smin = (smin < S[j]) ? smin : S[j];
+                smax = (smax > S[j]) ? smax : S[j];
             }
             if (smin <= ZERO) {
                 *info = -11;

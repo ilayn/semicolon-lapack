@@ -27,8 +27,8 @@ f64 dlapy3(const f64 x, const f64 y, const f64 z)
     yabs = fabs(y);
     zabs = fabs(z);
     w = xabs;
-    if (yabs > w) w = yabs;
-    if (zabs > w) w = zabs;
+    w = (w > yabs) ? w : yabs;
+    w = (w > zabs) ? w : zabs;
     if (w == ZERO || w > hugeval) {
         return xabs + yabs + zabs;
     } else {

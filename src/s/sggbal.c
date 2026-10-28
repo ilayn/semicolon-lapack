@@ -395,7 +395,7 @@ void sggbal(
         irab = cblas_isamax(n - k, &B[i + k * ldb], ldb);
         rab = (rab > fabsf(B[i + (irab + k) * ldb])) ? rab : fabsf(B[i + (irab + k) * ldb]);
         lrab = (INT)(log10f(rab + sfmin) / basl + ONE);
-        ir = (INT)(lscale[i] + (lscale[i] >= 0 ? HALF : -HALF));
+        ir = (INT)(lscale[i] + copysignf(HALF, lscale[i]));
         ir = (ir > lsfmin) ? ir : lsfmin;
         ir = (ir < lsfmax) ? ir : lsfmax;
         ir = (ir < lsfmax - lrab) ? ir : lsfmax - lrab;
@@ -405,7 +405,7 @@ void sggbal(
         icab = cblas_isamax(l + 1, &B[i * ldb], 1);
         cab = (cab > fabsf(B[icab + i * ldb])) ? cab : fabsf(B[icab + i * ldb]);
         lcab = (INT)(log10f(cab + sfmin) / basl + ONE);
-        jc = (INT)(rscale[i] + (rscale[i] >= 0 ? HALF : -HALF));
+        jc = (INT)(rscale[i] + copysignf(HALF, rscale[i]));
         jc = (jc > lsfmin) ? jc : lsfmin;
         jc = (jc < lsfmax) ? jc : lsfmax;
         jc = (jc < lsfmax - lcab) ? jc : lsfmax - lcab;

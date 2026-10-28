@@ -168,11 +168,11 @@ void zggrqf(const INT m, const INT p, const INT n,
         arow = (m - n > 0) ? (m - n) : 0;
         zunmrq("R", "C", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }
-    if ((INT)creal(work[0]) > lopt) lopt = (INT)creal(work[0]);
+    lopt = (lopt > (INT)creal(work[0])) ? lopt : (INT)creal(work[0]);
 
     /* QR factorization of P-by-N matrix B: B = Z*T */
     zgeqrf(p, n, B, ldb, taub, work, lwork, info);
-    if ((INT)creal(work[0]) > lopt) lopt = (INT)creal(work[0]);
+    lopt = (lopt > (INT)creal(work[0])) ? lopt : (INT)creal(work[0]);
 
     work[0] = (c128)lopt;
 }

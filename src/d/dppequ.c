@@ -93,8 +93,8 @@ void dppequ(
             // dppequ.f line 187: JJ = JJ + I (where I is 1-based, so I = i+1)
             jj = jj + (i + 1);
             S[i] = AP[jj];
-            if (S[i] < smin) smin = S[i];
-            if (S[i] > *amax) *amax = S[i];
+            smin = (smin < S[i]) ? smin : S[i];
+            *amax = (*amax > S[i]) ? *amax : S[i];
         }
     } else {
         // dppequ.f lines 193-205: UPLO = 'L': Lower triangle of A is stored.
@@ -108,8 +108,8 @@ void dppequ(
             // JJ = JJ + N - (i+1) + 2 = JJ + N - i + 1
             jj = jj + n - i + 1;
             S[i] = AP[jj];
-            if (S[i] < smin) smin = S[i];
-            if (S[i] > *amax) *amax = S[i];
+            smin = (smin < S[i]) ? smin : S[i];
+            *amax = (*amax > S[i]) ? *amax : S[i];
         }
     }
 

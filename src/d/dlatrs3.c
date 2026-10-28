@@ -213,9 +213,7 @@ void dlatrs3(
                 anrm = dlange("1", i2 - i1, j2 - j1, &A[i1 + j1 * lda], lda, W);
                 work[awrk + j + i * nba] = anrm;
             }
-            if (tmax < anrm) {
-                tmax = anrm;
-            }
+            tmax = (tmax > anrm) ? tmax : anrm;
         }
     }
 
@@ -372,9 +370,7 @@ void dlatrs3(
                     rhs = k1 + kk;
                     /* Compute consistent scaling */
                     scamin = work[i + (kk + 1) * lds];
-                    if (work[j + (kk + 1) * lds] < scamin) {
-                        scamin = work[j + (kk + 1) * lds];
-                    }
+                    scamin = (scamin < work[j + (kk + 1) * lds]) ? scamin : work[j + (kk + 1) * lds];
 
                     /* Compute scaling factor to survive the linear update */
                     bnrm = dlange("I", i2 - i1, 1, &X[i1 + rhs * ldx], ldx, W);
@@ -418,9 +414,7 @@ void dlatrs3(
         for (kk = 0; kk < k2 - k1; kk++) {
             rhs = k1 + kk;
             for (i = 0; i < nba; i++) {
-                if (scale[rhs] > work[i + (kk + 1) * lds]) {
-                    scale[rhs] = work[i + (kk + 1) * lds];
-                }
+                scale[rhs] = (scale[rhs] < work[i + (kk + 1) * lds]) ? scale[rhs] : work[i + (kk + 1) * lds];
             }
         }
 

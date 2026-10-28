@@ -151,7 +151,7 @@ void ztrevc(const char* side, const char* howmny, INT* select, const INT n,
                     goto L80;
             }
             smin = cabs1(T[ki + ki * ldt]) * ulp;
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             work[0] = CMONE;
 
@@ -219,7 +219,7 @@ L80:        ;
                     goto L130;
             }
             smin = cabs1(T[ki + ki * ldt]) * ulp;
-            if (smin < smlnum) smin = smlnum;
+            smin = (smin > smlnum) ? smin : smlnum;
 
             work[n - 1] = CMONE;
 

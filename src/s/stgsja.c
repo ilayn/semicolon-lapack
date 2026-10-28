@@ -232,7 +232,7 @@ void stgsja(const char* jobu, const char* jobv, const char* jobq,
                 cblas_scopy(l - i, &A[(k + i) + (n - l + i) * lda], lda, work, 1);
                 cblas_scopy(l - i, &B[i + (n - l + i) * ldb], ldb, &work[l], 1);
                 slapll(l - i, work, 1, &work[l], 1, &ssmin);
-                if (ssmin > error) error = ssmin;
+                error = (error > ssmin) ? error : ssmin;
             }
 
             if (fabsf(error) <= (tola < tolb ? tola : tolb)) {

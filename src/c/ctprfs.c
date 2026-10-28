@@ -223,10 +223,10 @@ void ctprfs(
         for (i = 0; i < n; i++) {
             if (rwork[i] > safe2) {
                 f32 tmp = cabs1f(work[i]) / rwork[i];
-                if (s < tmp) s = tmp;
+                s = (s > tmp) ? s : tmp;
             } else {
                 f32 tmp = (cabs1f(work[i]) + safe1) / (rwork[i] + safe1);
-                if (s < tmp) s = tmp;
+                s = (s > tmp) ? s : tmp;
             }
         }
         berr[j] = s;
@@ -262,7 +262,7 @@ void ctprfs(
         lstres = ZERO;
         for (i = 0; i < n; i++) {
             f32 tmp = cabs1f(X[i + j * ldx]);
-            if (lstres < tmp) lstres = tmp;
+            lstres = (lstres > tmp) ? lstres : tmp;
         }
         if (lstres != ZERO)
             ferr[j] = ferr[j] / lstres;

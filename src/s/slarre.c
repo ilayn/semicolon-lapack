@@ -193,13 +193,9 @@ void slarre(const char* range, const INT n, f32* vl, f32* vu,
         }
         tmp1 = eabs + eold;
         gers[2 * i] = D[i] - tmp1;
-        if (gl > gers[2 * i]) {
-            gl = gers[2 * i];
-        }
+        gl = (gl < gers[2 * i]) ? gl : gers[2 * i];
         gers[2 * i + 1] = D[i] + tmp1;
-        if (gu < gers[2 * i + 1]) {
-            gu = gers[2 * i + 1];
-        }
+        gu = (gu > gers[2 * i + 1]) ? gu : gers[2 * i + 1];
         eold = eabs;
     }
     /* The minimum pivot allowed in the Sturm sequence for T */
@@ -474,9 +470,7 @@ void slarre(const char* range, const INT n, f32* vl, f32* vu,
                 work[in + i] = tmp;
                 dpivot = (D[j + 1] - sigma) - tmp * E[j];
                 work[i + 1] = dpivot;
-                if (fabsf(dpivot) > dmax_) {
-                    dmax_ = fabsf(dpivot);
-                }
+                dmax_ = (dmax_ > fabsf(dpivot)) ? dmax_ : fabsf(dpivot);
                 j++;
             }
             /* check for element growth */

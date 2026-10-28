@@ -196,7 +196,7 @@ void dlaln2(const INT ltrans, const INT na, const INT nw, const f64 smin,
             if (cmax < smini) {
                 bnorm = fabs(B[0]);
                 temp = fabs(B[1]);
-                if (temp > bnorm) bnorm = temp;
+                bnorm = (bnorm > temp) ? bnorm : temp;
 
                 if (smini < 1.0 && bnorm > 1.0) {
                     if (bnorm > bignum * smini) {
@@ -237,7 +237,7 @@ void dlaln2(const INT ltrans, const INT na, const INT nw, const f64 smin,
 
             bbnd = fabs(br1 * (ur22 * ur11r));
             temp = fabs(br2);
-            if (temp > bbnd) bbnd = temp;
+            bbnd = (bbnd > temp) ? bbnd : temp;
 
             if (bbnd > 1.0 && fabs(ur22) < 1.0) {
                 if (bbnd >= bignum * fabs(ur22)) {
@@ -257,7 +257,7 @@ void dlaln2(const INT ltrans, const INT na, const INT nw, const f64 smin,
             }
             *xnorm = fabs(xr1);
             temp = fabs(xr2);
-            if (temp > *xnorm) *xnorm = temp;
+            *xnorm = (*xnorm > temp) ? *xnorm : temp;
 
             /* Further scaling if  norm(A) norm(X) > overflow */
             if (*xnorm > 1.0 && cmax > 1.0) {
@@ -294,7 +294,7 @@ void dlaln2(const INT ltrans, const INT na, const INT nw, const f64 smin,
             if (cmax < smini) {
                 bnorm = fabs(B[0]) + fabs(B[ldb]);
                 temp = fabs(B[1]) + fabs(B[1 + ldb]);
-                if (temp > bnorm) bnorm = temp;
+                bnorm = (bnorm > temp) ? bnorm : temp;
 
                 if (smini < 1.0 && bnorm > 1.0) {
                     if (bnorm > bignum * smini) {
@@ -374,7 +374,7 @@ void dlaln2(const INT ltrans, const INT na, const INT nw, const f64 smin,
 
             bbnd = (fabs(br1) + fabs(bi1)) * (u22abs * (fabs(ur11r) + fabs(ui11r)));
             temp = fabs(br2) + fabs(bi2);
-            if (temp > bbnd) bbnd = temp;
+            bbnd = (bbnd > temp) ? bbnd : temp;
 
             if (bbnd > 1.0 && u22abs < 1.0) {
                 if (bbnd >= bignum * u22abs) {
@@ -403,7 +403,7 @@ void dlaln2(const INT ltrans, const INT na, const INT nw, const f64 smin,
             }
             *xnorm = fabs(xr1) + fabs(xi1);
             temp = fabs(xr2) + fabs(xi2);
-            if (temp > *xnorm) *xnorm = temp;
+            *xnorm = (*xnorm > temp) ? *xnorm : temp;
 
             /* Further scaling if  norm(A) norm(X) > overflow */
             if (*xnorm > 1.0 && cmax > 1.0) {

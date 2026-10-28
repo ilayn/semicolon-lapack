@@ -134,8 +134,8 @@ void clatrs(
                     for (i = 0; i < j; i++) {
                         f32 re = fabsf(crealf(A[i + j * lda]));
                         f32 im = fabsf(cimagf(A[i + j * lda]));
-                        if (re > tmax) tmax = re;
-                        if (im > tmax) tmax = im;
+                        tmax = (tmax > re) ? tmax : re;
+                        tmax = (tmax > im) ? tmax : im;
                     }
                 }
             } else {
@@ -143,8 +143,8 @@ void clatrs(
                     for (i = j + 1; i < n; i++) {
                         f32 re = fabsf(crealf(A[i + j * lda]));
                         f32 im = fabsf(cimagf(A[i + j * lda]));
-                        if (re > tmax) tmax = re;
-                        if (im > tmax) tmax = im;
+                        tmax = (tmax > re) ? tmax : re;
+                        tmax = (tmax > im) ? tmax : im;
                     }
                 }
             }
@@ -193,7 +193,7 @@ void clatrs(
     xmax = ZERO;
     for (j = 0; j < n; j++) {
         f32 temp = cabs2f(X[j]);
-        if (temp > xmax) xmax = temp;
+        xmax = (xmax > temp) ? xmax : temp;
     }
     xbnd = xmax;
 
@@ -396,7 +396,7 @@ void clatrs(
                     }
                     tjj = cabs1f(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = cladiv(uscal, tjjs);
                     }
                     if (rec < ONE) {
@@ -488,7 +488,7 @@ void clatrs(
                     }
                     tjj = cabs1f(tjjs);
                     if (tjj > ONE) {
-                        rec = (rec * tjj < ONE) ? rec * tjj : ONE;
+                        rec = (ONE < rec * tjj) ? ONE : rec * tjj;
                         uscal = cladiv(uscal, tjjs);
                     }
                     if (rec < ONE) {

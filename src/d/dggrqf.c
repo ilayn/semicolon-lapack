@@ -167,11 +167,11 @@ void dggrqf(const INT m, const INT p, const INT n,
         arow = (m - n > 0) ? (m - n) : 0;
         dormrq("R", "T", p, n, minmn, &A[arow], lda, taua, B, ldb, work, lwork, info);
     }
-    if ((INT)work[0] > lopt) lopt = (INT)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
 
     /* QR factorization of P-by-N matrix B: B = Z*T */
     dgeqrf(p, n, B, ldb, taub, work, lwork, info);
-    if ((INT)work[0] > lopt) lopt = (INT)work[0];
+    lopt = (lopt > (INT)work[0]) ? lopt : (INT)work[0];
 
     work[0] = (f64)lopt;
 }

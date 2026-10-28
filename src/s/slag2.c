@@ -61,9 +61,9 @@ void slag2(
     anorm = fabsf(A[0 + 0 * lda]) + fabsf(A[1 + 0 * lda]);
     {
         f32 tmp = fabsf(A[0 + 1 * lda]) + fabsf(A[1 + 1 * lda]);
-        if (tmp > anorm) anorm = tmp;
+        anorm = (anorm > tmp) ? anorm : tmp;
     }
-    if (safmin > anorm) anorm = safmin;
+    anorm = (anorm > safmin) ? anorm : safmin;
     ascale = ONE / anorm;
     a11 = ascale * A[0 + 0 * lda];
     a21 = ascale * A[1 + 0 * lda];
@@ -78,24 +78,24 @@ void slag2(
         f32 tmp2 = fabsf(b12);
         f32 tmp3 = fabsf(b22);
         f32 tmp = tmp1;
-        if (tmp2 > tmp) tmp = tmp2;
-        if (tmp3 > tmp) tmp = tmp3;
-        if (rtmin > tmp) tmp = rtmin;
+        tmp = (tmp > tmp2) ? tmp : tmp2;
+        tmp = (tmp > tmp3) ? tmp : tmp3;
+        tmp = (tmp > rtmin) ? tmp : rtmin;
         bmin = rtmin * tmp;
     }
     if (fabsf(b11) < bmin)
-        b11 = (b11 >= ZERO) ? bmin : -bmin;
+        b11 = copysignf(bmin, b11);
     if (fabsf(b22) < bmin)
-        b22 = (b22 >= ZERO) ? bmin : -bmin;
+        b22 = copysignf(bmin, b22);
 
     {
         f32 tmp = fabsf(b12) + fabsf(b22);
         bnorm = fabsf(b11);
-        if (tmp > bnorm) bnorm = tmp;
-        if (safmin > bnorm) bnorm = safmin;
+        bnorm = (bnorm > tmp) ? bnorm : tmp;
+        bnorm = (bnorm > safmin) ? bnorm : safmin;
     }
     bsize = fabsf(b11);
-    if (fabsf(b22) > bsize) bsize = fabsf(b22);
+    bsize = (bsize > fabsf(b22)) ? bsize : fabsf(b22);
     bscale = ONE / bsize;
     b11 = b11 * bscale;
     b12 = b12 * bscale;
@@ -135,8 +135,8 @@ void slag2(
     }
 
     if (discr >= ZERO || r == ZERO) {
-        sum = pp + ((pp >= ZERO) ? r : -r);
-        diff = pp - ((pp >= ZERO) ? r : -r);
+        sum = pp + copysignf(r, pp);
+        diff = pp - copysignf(r, pp);
         wbig = shift + sum;
 
         wsmall = shift + diff;
@@ -184,9 +184,9 @@ void slag2(
         f32 tmp2 = (wabs > c5) ? wabs : c5;
         f32 tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
         wsize = safmin;
-        if (c1 > wsize) wsize = c1;
-        if (FUZZY1 * tmp1 > wsize) wsize = FUZZY1 * tmp1;
-        if (tmp3 > wsize) wsize = tmp3;
+        wsize = (wsize > c1) ? wsize : c1;
+        wsize = (wsize > FUZZY1 * tmp1) ? wsize : FUZZY1 * tmp1;
+        wsize = (wsize > tmp3) ? wsize : tmp3;
     }
     if (wsize != ONE) {
         wscale = ONE / wsize;
@@ -217,9 +217,9 @@ void slag2(
             f32 tmp2 = (wabs > c5) ? wabs : c5;
             f32 tmp3 = (c4 < HALF * tmp2) ? c4 : HALF * tmp2;
             wsize = safmin;
-            if (c1 > wsize) wsize = c1;
-            if (FUZZY1 * tmp1 > wsize) wsize = FUZZY1 * tmp1;
-            if (tmp3 > wsize) wsize = tmp3;
+            wsize = (wsize > c1) ? wsize : c1;
+            wsize = (wsize > FUZZY1 * tmp1) ? wsize : FUZZY1 * tmp1;
+            wsize = (wsize > tmp3) ? wsize : tmp3;
         }
         if (wsize != ONE) {
             wscale = ONE / wsize;

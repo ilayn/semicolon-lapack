@@ -202,8 +202,8 @@ void dgbsvx(
             rcmin = bignum;
             rcmax = ZERO;
             for (j = 0; j < n; j++) {
-                if (R[j] < rcmin) rcmin = R[j];
-                if (R[j] > rcmax) rcmax = R[j];
+                rcmin = (rcmin < R[j]) ? rcmin : R[j];
+                rcmax = (rcmax > R[j]) ? rcmax : R[j];
             }
             if (rcmin <= ZERO) {
                 *info = -13;
@@ -219,8 +219,8 @@ void dgbsvx(
             rcmin = bignum;
             rcmax = ZERO;
             for (j = 0; j < n; j++) {
-                if (C[j] < rcmin) rcmin = C[j];
-                if (C[j] > rcmax) rcmax = C[j];
+                rcmin = (rcmin < C[j]) ? rcmin : C[j];
+                rcmax = (rcmax > C[j]) ? rcmax : C[j];
             }
             if (rcmin <= ZERO) {
                 *info = -14;
@@ -299,7 +299,7 @@ void dgbsvx(
                 INT i_end = (n + ku - j - 1 < kl + ku) ? n + ku - j - 1 : kl + ku;
                 for (i = i_start; i <= i_end; i++) {
                     f64 temp = fabs(AB[i + j * ldab]);
-                    if (anorm < temp) anorm = temp;
+                    anorm = (anorm > temp) ? anorm : temp;
                 }
             }
             INT k_val = (*info - 1 < kl + ku) ? *info - 1 : kl + ku;

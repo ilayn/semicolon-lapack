@@ -229,10 +229,10 @@ void dtrrfs(
         for (INT i = 0; i < n; i++) {
             if (work[i] > safe2) {
                 f64 tmp = fabs(work[n + i]) / work[i];
-                if (tmp > s) s = tmp;
+                s = (s > tmp) ? s : tmp;
             } else {
                 f64 tmp = (fabs(work[n + i]) + safe1) / (work[i] + safe1);
-                if (tmp > s) s = tmp;
+                s = (s > tmp) ? s : tmp;
             }
         }
         berr[j] = s;
@@ -293,7 +293,7 @@ void dtrrfs(
         f64 lstres = ZERO;
         for (INT i = 0; i < n; i++) {
             f64 tmp = fabs(X[i + j * ldx]);
-            if (tmp > lstres) lstres = tmp;
+            lstres = (lstres > tmp) ? lstres : tmp;
         }
         if (lstres != ZERO) {
             ferr[j] = ferr[j] / lstres;

@@ -457,9 +457,7 @@ void dlaein(
         v1norm = ZERO;
         for (i = 0; i < n; i++) {
             f64 mag = fabs(vr[i]) + fabs(vi[i]);
-            if (mag > v1norm) {
-                v1norm = mag;
-            }
+            v1norm = (v1norm > mag) ? v1norm : mag;
         }
         cblas_dscal(n, ONE / v1norm, vr, 1);
         cblas_dscal(n, ONE / v1norm, vi, 1);
