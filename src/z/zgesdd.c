@@ -348,7 +348,7 @@ void zgesdd(const char* jobz, const INT m, const INT n,
         maxwrk = (maxwrk > minwrk) ? maxwrk : minwrk;
     }
     if (*info == 0) {
-        work[0] = CMPLX((f64)maxwrk, 0.0);
+        work[0] = CMPLX(droundup_lwork(maxwrk), 0.0);
         if (lwork < minwrk && !lquery) {
             *info = -12;
         }
@@ -1213,5 +1213,5 @@ void zgesdd(const char* jobz, const INT m, const INT n,
     }
 
     /* Return optimal workspace in WORK(1) */
-    work[0] = CMPLX((f64)maxwrk, 0.0);
+    work[0] = CMPLX(droundup_lwork(maxwrk), 0.0);
 }
