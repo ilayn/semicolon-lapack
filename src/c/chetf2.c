@@ -226,8 +226,8 @@ void chetf2(
                             c64 wk = tt * ((d22 * A[j + k * lda] -
                                                      d12 * A[j + (k - 1) * lda]) / d);
                             for (INT i = j; i >= 0; i--) {
-                                A[i + j * lda] -= A[i + k * lda] * conjf(wk) +
-                                                  A[i + (k - 1) * lda] * conjf(wkm1);
+                                A[i + j * lda] = A[i + j * lda] - A[i + k * lda] * conjf(wk) -
+                                                 A[i + (k - 1) * lda] * conjf(wkm1);
                             }
                             A[j + k * lda] = wk;
                             A[j + (k - 1) * lda] = wkm1;
@@ -348,8 +348,8 @@ void chetf2(
                             c64 wkp1 = tt * ((d22 * A[j + (k + 1) * lda] -
                                                        conjf(d21) * A[j + k * lda]) / d);
                             for (INT i = j; i < n; i++) {
-                                A[i + j * lda] -= A[i + k * lda] * conjf(wk) +
-                                                  A[i + (k + 1) * lda] * conjf(wkp1);
+                                A[i + j * lda] = A[i + j * lda] - A[i + k * lda] * conjf(wk) -
+                                                 A[i + (k + 1) * lda] * conjf(wkp1);
                             }
                             A[j + k * lda] = wk;
                             A[j + (k + 1) * lda] = wkp1;

@@ -230,8 +230,8 @@ void ssytf2(
                             f32 wkm1 = t * ((d11 * A[j + (k - 1) * lda] - A[j + k * lda]) / d12);
                             f32 wk = t * ((d22 * A[j + k * lda] - A[j + (k - 1) * lda]) / d12);
                             for (INT i = j; i >= 0; i--) {
-                                A[i + j * lda] -= A[i + k * lda] * wk +
-                                                  A[i + (k - 1) * lda] * wkm1;
+                                A[i + j * lda] = A[i + j * lda] - A[i + k * lda] * wk -
+                                                 A[i + (k - 1) * lda] * wkm1;
                             }
                             A[j + k * lda] = wk;
                             A[j + (k - 1) * lda] = wkm1;
@@ -357,8 +357,8 @@ void ssytf2(
                             f32 wk = t * ((d11 * A[j + k * lda] - A[j + (k + 1) * lda]) / d21);
                             f32 wkp1 = t * ((d22 * A[j + (k + 1) * lda] - A[j + k * lda]) / d21);
                             for (INT i = j; i < n; i++) {
-                                A[i + j * lda] -= A[i + k * lda] * wk +
-                                                  A[i + (k + 1) * lda] * wkp1;
+                                A[i + j * lda] = A[i + j * lda] - A[i + k * lda] * wk -
+                                                 A[i + (k + 1) * lda] * wkp1;
                             }
                             A[j + k * lda] = wk;
                             A[j + (k + 1) * lda] = wkp1;

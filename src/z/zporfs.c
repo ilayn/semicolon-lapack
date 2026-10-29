@@ -148,7 +148,7 @@ void zporfs(
                         rwork[i] += cabs1(A[i + k * lda]) * xk;
                         s += cabs1(A[i + k * lda]) * cabs1(X[i + j * ldx]);
                     }
-                    rwork[k] += fabs(creal(A[k + k * lda])) * xk + s;
+                    rwork[k] = rwork[k] + fabs(creal(A[k + k * lda])) * xk + s;
                 }
             } else {
                 for (INT k = 0; k < n; k++) {

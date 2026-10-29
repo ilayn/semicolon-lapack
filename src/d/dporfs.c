@@ -150,7 +150,7 @@ void dporfs(
                         work[i] += fabs(A[i + k * lda]) * xk;
                         s += fabs(A[i + k * lda]) * fabs(X[i + j * ldx]);
                     }
-                    work[k] += fabs(A[k + k * lda]) * xk + s;
+                    work[k] = work[k] + fabs(A[k + k * lda]) * xk + s;
                 }
             } else {
                 for (INT k = 0; k < n; k++) {
