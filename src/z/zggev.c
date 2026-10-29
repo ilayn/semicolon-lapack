@@ -150,7 +150,7 @@ void zggev(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("ZGGEV", -(*info));
+        xerbla("ZGGEV ", -(*info));
         return;
     } else if (lquery) {
         return;

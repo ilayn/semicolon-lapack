@@ -42,9 +42,11 @@ void slasrt(const char* id, const INT n, f32* restrict D, INT* info)
     }
     if (dir == -1) {
         *info = -1;
-        return;
     } else if (n < 0) {
         *info = -2;
+    }
+    if (*info != 0) {
+        xerbla("SLASRT", -(*info));
         return;
     }
 

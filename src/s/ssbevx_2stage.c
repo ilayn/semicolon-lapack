@@ -142,7 +142,7 @@ void ssbevx_2stage(
     }
 
     if (*info != 0) {
-        xerbla("SSBEVX_2STAGE", -(*info));
+        xerbla("SSBEVX_2STAGE ", -(*info));
         return;
     } else if (lquery) {
         return;

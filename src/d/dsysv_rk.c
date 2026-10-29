@@ -151,7 +151,7 @@ void dsysv_rk(
     }
 
     if (*info != 0) {
-        xerbla("DSYSV_RK", -(*info));
+        xerbla("DSYSV_RK ", -(*info));
         return;
     } else if (lquery) {
         return;

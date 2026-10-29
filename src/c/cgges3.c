@@ -192,7 +192,7 @@ void cgges3(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
     if (*info != 0) {
-        xerbla("CGGES3", -(*info));
+        xerbla("CGGES3 ", -(*info));
         return;
     } else if (lquery) {
         return;

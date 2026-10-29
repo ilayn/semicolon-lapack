@@ -81,7 +81,7 @@ void zposv(
         *info = -7;
     }
     if (*info != 0) {
-        xerbla("ZPOSV", -(*info));
+        xerbla("ZPOSV ", -(*info));
         return;
     }
 

@@ -140,7 +140,7 @@ void sggev(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("SGGEV", -(*info));
+        xerbla("SGGEV ", -(*info));
         return;
     } else if (lquery) {
         return;

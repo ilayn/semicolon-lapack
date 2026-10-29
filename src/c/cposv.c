@@ -81,7 +81,7 @@ void cposv(
         *info = -7;
     }
     if (*info != 0) {
-        xerbla("CPOSV", -(*info));
+        xerbla("CPOSV ", -(*info));
         return;
     }
 

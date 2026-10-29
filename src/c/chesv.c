@@ -117,7 +117,7 @@ void chesv(const char* uplo, const INT n, const INT nrhs,
     }
 
     if (*info != 0) {
-        xerbla("CHESV", -(*info));
+        xerbla("CHESV ", -(*info));
         return;
     } else if (lquery) {
         return;

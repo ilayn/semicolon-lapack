@@ -80,7 +80,7 @@ void sposv(
         *info = -7;
     }
     if (*info != 0) {
-        xerbla("SPOSV", -(*info));
+        xerbla("SPOSV ", -(*info));
         return;
     }
 

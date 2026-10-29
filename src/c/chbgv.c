@@ -90,7 +90,7 @@ void chbgv(
         *info = -12;
     }
     if (*info != 0) {
-        xerbla("CHBGV ", -(*info));
+        xerbla("CHBGV", -(*info));
         return;
     }
 

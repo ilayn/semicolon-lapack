@@ -138,7 +138,7 @@ void sgees(const char* jobvs, const char* sort, sselect2_t select,
     }
 
     if (*info != 0) {
-        xerbla("SGEES", -(*info));
+        xerbla("SGEES ", -(*info));
         return;
     } else if (lquery) {
         return;

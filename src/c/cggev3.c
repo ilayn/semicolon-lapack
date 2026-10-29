@@ -174,7 +174,7 @@ void cggev3(const char* jobvl, const char* jobvr, const INT n,
     }
 
     if (*info != 0) {
-        xerbla("CGGEV3", -(*info));
+        xerbla("CGGEV3 ", -(*info));
         return;
     } else if (lquery) {
         return;

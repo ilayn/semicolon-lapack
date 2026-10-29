@@ -144,7 +144,7 @@ void dsysv_rook(
     }
 
     if (*info != 0) {
-        xerbla("DSYSV_ROOK", -(*info));
+        xerbla("DSYSV_ROOK ", -(*info));
         return;
     } else if (lquery) {
         return;

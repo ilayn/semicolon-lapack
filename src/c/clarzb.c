@@ -61,15 +61,23 @@ void clarzb(const char* side, const char* trans, const char* direct,
 {
     const c64 ONE = CMPLXF(1.0f, 0.0f);
     const c64 NEG_ONE = CMPLXF(-1.0f, 0.0f);
-    INT i, j;
+    INT i, j, info;
     CBLAS_TRANSPOSE transt;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) return;
 
     /* Check for currently supported options */
-    if (direct[0] != 'B' && direct[0] != 'b') return;
-    if (storev[0] != 'R' && storev[0] != 'r') return;
+    info = 0;
+    if (direct[0] != 'B' && direct[0] != 'b') {
+        info = -3;
+    } else if (storev[0] != 'R' && storev[0] != 'r') {
+        info = -4;
+    }
+    if (info != 0) {
+        xerbla("CLARZB", -info);
+        return;
+    }
 
     if (trans[0] == 'N' || trans[0] == 'n') {
         transt = CblasConjTrans;

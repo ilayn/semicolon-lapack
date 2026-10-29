@@ -183,7 +183,7 @@ void zgges(const char* jobvsl, const char* jobvsr, const char* sort,
     }
 
     if (*info != 0) {
-        xerbla("ZGGES", -(*info));
+        xerbla("ZGGES ", -(*info));
         return;
     } else if (lquery) {
         return;

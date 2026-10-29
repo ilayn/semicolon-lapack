@@ -116,7 +116,7 @@ void ssysv(const char* uplo, const INT n, const INT nrhs,
     }
 
     if (*info != 0) {
-        xerbla("SSYSV", -(*info));
+        xerbla("SSYSV ", -(*info));
         return;
     } else if (lquery) {
         return;

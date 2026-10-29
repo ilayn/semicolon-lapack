@@ -61,15 +61,23 @@ void zlarzb(const char* side, const char* trans, const char* direct,
 {
     const c128 ONE = CMPLX(1.0, 0.0);
     const c128 NEG_ONE = CMPLX(-1.0, 0.0);
-    INT i, j;
+    INT i, j, info;
     CBLAS_TRANSPOSE transt;
 
     /* Quick return if possible */
     if (m <= 0 || n <= 0) return;
 
     /* Check for currently supported options */
-    if (direct[0] != 'B' && direct[0] != 'b') return;
-    if (storev[0] != 'R' && storev[0] != 'r') return;
+    info = 0;
+    if (direct[0] != 'B' && direct[0] != 'b') {
+        info = -3;
+    } else if (storev[0] != 'R' && storev[0] != 'r') {
+        info = -4;
+    }
+    if (info != 0) {
+        xerbla("ZLARZB", -info);
+        return;
+    }
 
     if (trans[0] == 'N' || trans[0] == 'n') {
         transt = CblasConjTrans;

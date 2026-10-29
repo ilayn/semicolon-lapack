@@ -140,7 +140,7 @@ void chesv_rk(
     }
 
     if (*info != 0) {
-        xerbla("CHESV_RK", -(*info));
+        xerbla("CHESV_RK ", -(*info));
         return;
     } else if (lquery) {
         return;

@@ -135,7 +135,7 @@ void cgees(const char* jobvs, const char* sort, cselect1_t select,
     }
 
     if (*info != 0) {
-        xerbla("CGEES", -(*info));
+        xerbla("CGEES ", -(*info));
         return;
     } else if (lquery) {
         return;

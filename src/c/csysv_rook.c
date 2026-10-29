@@ -145,7 +145,7 @@ void csysv_rook(
     }
 
     if (*info != 0) {
-        xerbla("CSYSV_ROOK", -(*info));
+        xerbla("CSYSV_ROOK ", -(*info));
         return;
     } else if (lquery) {
         return;
