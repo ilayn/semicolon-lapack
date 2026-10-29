@@ -32,7 +32,7 @@ static void test_cerrec(void** state)
 /*  CTRSYL — Sylvester equation solver                                */
 /* ------------------------------------------------------------------ */
 
-static void test_zget35_ztrsyl(void** state)
+static void test_cget35_ctrsyl(void** state)
 {
     (void)state;
     f32 rmax;
@@ -47,7 +47,7 @@ static void test_zget35_ztrsyl(void** state)
 /*  CTRSYL3 — Sylvester equation solver (level 3)                     */
 /* ------------------------------------------------------------------ */
 
-static void test_zsyl01_ztrsyl3(void** state)
+static void test_csyl01_ctrsyl3(void** state)
 {
     (void)state;
     INT ftrsyl[3];
@@ -67,7 +67,7 @@ static void test_zsyl01_ztrsyl3(void** state)
 /*  CTREXC — reorder Schur form                                       */
 /* ------------------------------------------------------------------ */
 
-static void test_zget36_ztrexc(void** state)
+static void test_cget36_ctrexc(void** state)
 {
     (void)state;
     f32 rmax;
@@ -83,7 +83,7 @@ static void test_zget36_ztrexc(void** state)
 /*  CTRSNA — condition numbers for eigenvalues/eigenvectors            */
 /* ------------------------------------------------------------------ */
 
-static void test_zget37_ztrsna(void** state)
+static void test_cget37_ctrsna(void** state)
 {
     (void)state;
     f32 rmax[3];
@@ -102,7 +102,7 @@ static void test_zget37_ztrsna(void** state)
 /*  CTRSEN — reorder and condition estimate for Schur clusters         */
 /* ------------------------------------------------------------------ */
 
-static void test_zget38_ztrsen(void** state)
+static void test_cget38_ctrsen(void** state)
 {
     (void)state;
     f32 rmax[3];
@@ -125,19 +125,15 @@ int main(void)
 {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_cerrec),
-        cmocka_unit_test(test_zget35_ztrsyl),
-        cmocka_unit_test(test_zsyl01_ztrsyl3),
-        cmocka_unit_test(test_zget36_ztrexc),
-        cmocka_unit_test(test_zget37_ztrsna),
-        cmocka_unit_test(test_zget38_ztrsen),
+        cmocka_unit_test(test_cget35_ctrsyl),
+        cmocka_unit_test(test_csyl01_ctrsyl3),
+        cmocka_unit_test(test_cget36_ctrexc),
+        cmocka_unit_test(test_cget37_ctrsna),
+        cmocka_unit_test(test_cget38_ctrsen),
     };
-    /* Threshold from zec.in; ISPECs 1 and 12-16 as DCHKEE sets them for DEC */
+    /* Threshold from cec.in; ISPECs 1 and 12 as CCHKEE sets them for CEC */
     xlaenv(1, 1);
-    xlaenv(12, 11);
-    xlaenv(13, 2);
-    xlaenv(14, 0);
-    xlaenv(15, 2);
-    xlaenv(16, 2);
+    xlaenv(12, 1);
     (void)cmocka_run_group_tests_name("cchkec", tests, NULL, NULL);
     return 0;
 }
