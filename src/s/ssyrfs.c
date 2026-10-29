@@ -155,7 +155,7 @@ void ssyrfs(
                         work[i] += fabsf(A[i + k * lda]) * xk;
                         s += fabsf(A[i + k * lda]) * fabsf(X[i + j * ldx]);
                     }
-                    work[k] += fabsf(A[k + k * lda]) * xk + s;
+                    work[k] = work[k] + fabsf(A[k + k * lda]) * xk + s;
                 }
             } else {
                 for (k = 0; k < n; k++) {

@@ -148,7 +148,7 @@ void cporfs(
                         rwork[i] += cabs1f(A[i + k * lda]) * xk;
                         s += cabs1f(A[i + k * lda]) * cabs1f(X[i + j * ldx]);
                     }
-                    rwork[k] += fabsf(crealf(A[k + k * lda])) * xk + s;
+                    rwork[k] = rwork[k] + fabsf(crealf(A[k + k * lda])) * xk + s;
                 }
             } else {
                 for (INT k = 0; k < n; k++) {
